@@ -160,19 +160,28 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
     return;
   }
   for(const label of ['app-color-601-unchanged-client','app-color-601-forced-source-coordinate-seek']){
-    const routeFailures=[],row={request:item.request,label,result:'observation-failed'};
+    const routeFailures=[],routeHits=[],row={request:item.request,label,result:'observation-failed'};
     retained.push(row);
     const diagnostic={item:plan.item,install:async page=>{
       await page.addInitScript(installAppColorAppendObserver);
-      await page.route(origin+plan.initPath,async route=>{
+      await page.route(url=>url.origin===origin && url.pathname===plan.initPath,async route=>{
+        const hit={ordinal:routeHits.length,requestShape:appColorRouteFacts(route.request().url(),origin,plan.initPath,
+          route.request().method(),route.request().headers().range),fulfilled:false};
+        if(routeHits.length>=32){routeFailures.push('init_route_overflow');await route.abort();return;}
+        routeHits.push(hit);
         try{
-          if(route.request().method()!=='GET' || route.request().headers().range)throw Error('app_color_init_request');
+          if(!hit.requestShape.qualified)throw Error('app_color_init_request');
           const original=await route.fetch({timeout:15000}),body=await original.body();
-          if(original.status()!==200 || body.length>65536 || sha(body)!==sha(pieces[0]))throw Error('app_color_route_binding');
+          hit.originalStatus=original.status();hit.originalBytes=body.length;hit.originalSHA256=sha(body);
+          hit.requestShape=appColorRouteFacts(route.request().url(),origin,plan.initPath,
+            route.request().method(),route.request().headers().range,original.headers()['x-playback-session']);
+          if(!hit.requestShape.qualified || original.status()!==200 || body.length>65536 ||
+            hit.originalSHA256!==sha(pieces[0]))throw Error('app_color_route_binding');
           await route.fulfill({status:200,contentType:'video/mp4',body:plan.init});
-        }catch{routeFailures.push('init_route_binding');await route.abort();}
+          hit.fulfilled=true;hit.fulfilledBytes=plan.init.length;hit.fulfilledSHA256=sha(plan.init);
+        }catch{hit.failureClass='init_route_binding';routeFailures.push('init_route_binding');await route.abort();}
       });
-    },snapshot:async page=>{const value=await page.evaluate(snapshotAppColor);value.failures.push(...routeFailures);return value;}};
+    },snapshot:async page=>{const value=await page.evaluate(snapshotAppColor);value.failures.push(...routeFailures);value.routeHits=routeHits;return value;}};
     try{Object.assign(row,await observe(item.request,label,diagnostic));}
     catch(error){row.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name||'app_color_observation';}
     row.referenceComplete=referenceComplete;row.colorMetadata=plan.facts;
@@ -181,6 +190,15 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
     row.appendWitness=appColorAppendFacts(row.actualAppColorAppend,plan,pieces);
     row.appends=row.appendWitness.appends;row.appendedMetadata=row.appendWitness.actualInitFacts;
     row.appendedBytesVerified=row.appendWitness.qualified;
+    row.routeWitness=routeHits;
+    row.independentPage601InitSeen=Boolean(row.observedSelectedAssets?.[Object.keys(plan.item.publicAssetSHA256)[0]]?.length &&
+      row.observedSelectedAssets[Object.keys(plan.item.publicAssetSHA256)[0]].every(v=>v.status===200 &&
+        v.bytes===plan.init.length && v.sha256===sha(plan.init)));
+    row.actual601InitSeen=row.appendWitness.actualInitFacts.some(v=>v.joinedSHA256===plan.facts.joinedSHA256);
+    row.routed601TransferObserved=routeHits.length>0 && routeHits.every(v=>v.requestShape.qualified &&
+      v.originalStatus===200 && v.originalSHA256===sha(pieces[0]) && v.fulfilled===true &&
+      v.fulfilledSHA256===sha(plan.init)) && row.independentPage601InitSeen && row.actual601InitSeen;
+    row.transferObservationScope='Exact routed601 init delivered and appended only; aggregate MIME/duplicate/frame oracles unchanged';
     row.colorComponentQualified=row.frameConsumerQualified===true && row.appendWitness.qualified;
   }
 }
@@ -188,4 +206,31 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
 export function appColorConsumerQualification(row,reference,expected,complete){
   return consumerQualification({...row,referenceComplete:complete,
     label:row.label==='app-color-601-forced-source-coordinate-seek'?'forced-source-coordinate-seek':row.label},reference,expected);
+}
+
+export function appColorRouteFacts(url,origin,path,method,range,responseSession){
+  const result={qualified:false,sameOrigin:false,selectedPathMatched:false,methodGET:method==='GET',
+    rangePresent:range!==undefined,hasQuery:false,queryCount:0,unknownQueryKeyCount:0,
+    queryKeyFlags:{playbackSession:false,playSessionId:false,start:false,ticket:false,api_key:false},
+    responseSessionHeaderPresent:typeof responseSession==='string' && responseSession.length>0,
+    responseSessionHeaderShapeMatched:false,querySessionHeaderMatched:null};
+  try{
+    if(typeof url!=='string' || url.length>2048 || typeof origin!=='string' || origin.length>256 ||
+      typeof path!=='string' || path.length>512)throw Error('route_shape');
+    const parsed=new URL(url),keys=[...parsed.searchParams.keys()];
+    result.sameOrigin=parsed.origin===origin;result.selectedPathMatched=parsed.pathname===path;
+    result.hasQuery=parsed.search.length>0;result.queryCount=keys.length;
+    for(const key of keys){
+      if(Object.hasOwn(result.queryKeyFlags,key))result.queryKeyFlags[key]=true;else result.unknownQueryKeyCount++;
+    }
+    const sessions=parsed.searchParams.getAll('playbackSession'),valid=v=>/^[A-Za-z0-9_-]{8,64}$/.test(v);
+    const queryOK=keys.length===0 || keys.length===1 && keys[0]==='playbackSession' && sessions.length===1 && valid(sessions[0]);
+    result.responseSessionHeaderShapeMatched=result.responseSessionHeaderPresent && valid(responseSession);
+    if(result.responseSessionHeaderPresent && sessions.length===1)result.querySessionHeaderMatched=sessions[0]===responseSession;
+    const headerOK=!result.responseSessionHeaderPresent || result.responseSessionHeaderShapeMatched &&
+      (sessions.length===0 || result.querySessionHeaderMatched===true);
+    result.qualified=result.sameOrigin && result.selectedPathMatched && result.methodGET && !result.rangePresent &&
+      !parsed.username && !parsed.password && !parsed.hash && queryOK && headerOK;
+  }catch{}
+  return result;
 }
