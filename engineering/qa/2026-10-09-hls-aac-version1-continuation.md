@@ -113,3 +113,16 @@ Captured attribution uses its retained witness after join rather than attempting
 A present literal-source witness receives the same strict identity check; existing fieldless literal controls remain unchanged.
 Sampler classification faults increment qualification errors while permitting its stop and owned teardown.
 This repairs captured classification only, not actual wrapper capture, initial-source/live FD accounting, transient /proc handling, or public GET delivery.
+
+## Captured controls green and live controls written first
+
+Exact captured repair `489710b450400496d87247567358be3697c67327` / tree `9a7d0dcb73aa8e45f7d17b9a018d1c525adffd7a` passed all20 controls in run38002601098.
+Artifact11650180053 has API archive digest `sha256:269547522c21266305d25a1d2fd892b817e94e9ca20b8a4268cb3a030550be87`; no archive was downloaded.
+This admits captured classification and sampler fault recording only.
+The new isolated process controls use the same pinned FFmpeg and fixed public fixture, with no Go worker or Server request.
+They observe the actual owned child alive, exact pinned argv, sole input target and output readiness before counting, then recheck liveness.
+An owned retained FD must count; a byte-identical other inode must reject rather than certify zero.
+The exact permitted startup HLS fixture must count as owned activity.
+The generated wrapper must capture its actual other FD target, rather than the expected original fixture's identity.
+Commands retain source FDs until every owned group has two zero observations; source SHA, file/log/time bounds and unresolved owners are recorded.
+Initial-source replacement, transient /proc races, real Server lifecycle/migration, and public GET remain held.
