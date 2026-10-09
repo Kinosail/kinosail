@@ -60,6 +60,21 @@ class ResponsiveWorkflowTests(unittest.TestCase):
                      'apps/player/e2e/responsive-failure-witness.mjs', 'scripts/testing/responsive-failure-witness.test.mjs'):
             self.assertIn('"' + path + '"', source)
 
+    def test_actual_recipes_bind_fresh_failure_stages_without_changing_public_oracles(self):
+        method=(ROOT/'apps/player/e2e/layout-audit-player.spec.ts').read_text()
+        before=method.index('watch, "at-method-switch"')
+        click=method.index('await actions.getByRole("link", { name: compatibleLabel }).click()')
+        after=method.index('watch, "after-method-switch"')
+        clock=method.index('{ timeout: 20_000 }).toBeGreaterThan(0.25)')
+        self.assertLess(before,click);self.assertLess(click,after);self.assertLess(after,clock)
+        self.assertNotIn('startWatchedPlayback',method)
+        focus=(ROOT/'apps/player/e2e/focus-audit.spec.ts').read_text()
+        self.assertIn('if (state.skipControl) await attachResponsiveFailure(page, testInfo, "keyboard-focus")',focus)
+        self.assertIn('expect(failures).toEqual([])',focus)
+        loading=(ROOT/'apps/player/e2e/loading-review.spec.ts').read_text()
+        self.assertIn('Math.min(320, viewport.width - 16) + 0.01',loading)
+        self.assertIn('await attachResponsiveFailure(page, testInfo, "player-loading-width"); throw error;',loading)
+
     def test_actual_recipe_binds_all99_existing_inputs_before_receipt_write(self):
         with patch.dict(os.environ, {'RESPONSIVE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), \
                 patch.object(Path, 'write_text') as write:

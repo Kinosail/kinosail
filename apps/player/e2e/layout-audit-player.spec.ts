@@ -84,8 +84,12 @@ test("player shows and switches its playback method without crowding actions", a
 			path: testInfo.outputPath(`${viewport.width}-player-actions-open.png`),
 			fullPage: true,
 		});
+		await attachResponsiveFailure(page, testInfo, "player-method-before-switch");
+		await attachPlaybackState(page, testInfo, watch, "at-method-switch");
 		await actions.getByRole("link", { name: compatibleLabel }).click();
 		await expect(method).toHaveText(compatibleLabel);
+		await attachPlaybackState(page, testInfo, watch, "after-method-switch");
+		await attachResponsiveFailure(page, testInfo, "player-method-after-switch");
 		try {
 			await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 		} catch (error) {

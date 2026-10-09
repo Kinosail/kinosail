@@ -66,3 +66,12 @@ test('attachment deadline cannot authorize intent and public gesture failures re
  await assert.rejects(startWatchedPlayback({locator:()=>({focus:async()=>{throw original;}})},
  {schemaVersion:1,stage:'before-loading',status:200,progress:{seconds:0,watched:true}}),error=>error===original);
 });
+
+test('fresh method-switch stages retain closed current progress without public playback intent',async()=>{
+ for(const stage of ['at-method-switch','after-method-switch']) {
+  const f=make(JSON.stringify({item:{progress:{seconds:12,watched:true}}}));
+  const value=await attachPlaybackState(f.page,f.info,'/watch/item',stage);
+  assert.deepEqual(value,{schemaVersion:1,stage,status:200,progress:{seconds:12,watched:true}});
+  assert.equal(f.calls.length,1);assert.equal(f.rows.length,1);
+ }
+});

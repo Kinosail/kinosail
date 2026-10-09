@@ -190,3 +190,49 @@ test('playback intent witness retains actual template autoplay and finite start 
  assert.equal(facts.state.videoAutoplayIntent,true);assert.equal(facts.state.videoStart,1);assert.equal(facts.state.theaterAvailable,false);
  assert.equal(JSON.stringify(facts).includes('PRIVATE'),false);
 });
+
+test('method switch facts close document route capability and identity observations',async()=>{
+ for(const kind of ['player-method-before-switch','player-method-after-switch']) {
+  const {rows,info}=recorder();const video=node({paused:true,readyState:4,currentTime:0,duration:12,autoplay:false,controls:true,
+   hasAttribute:()=>false,getAttribute:()=>null});
+  await attachResponsiveFailure(page({video},{location:{protocol:'http:',hostname:'localhost',pathname:'/watch/item',search:'?compatible=1',hash:''},
+   performance:{timeOrigin:1000000000000},document:{readyState:'complete',querySelector:s=>s==='video'?video:null,querySelectorAll:()=>[]}}),info,kind);
+  const value=JSON.parse(rows[0].body);assert.equal(value.state.documentEpoch,1000000000000);assert.equal(value.state.routeMode,'watch-compatible');
+  assert.equal(value.state.loopbackOwned,true);assert.equal(value.state.videoPaused,true);assert.equal(value.state.videoAutoplayIntent,false);
+ }
+});
+test('loading width facts distinguish absent hidden disconnected and visible statuses',async()=>{
+ for(const status of [null,node({hidden:true,isConnected:true}),node({isConnected:false}),node({isConnected:true})]) {
+  const {rows,info}=recorder();await attachResponsiveFailure(page({'[data-player-status]':status}),info,'player-loading-width');
+  const value=JSON.parse(rows[0].body);assert.equal(value.elements.status.available,status!==null);
+  assert.equal(value.elements.status.connected,status?.isConnected??null);
+  assert.equal(value.elements.status.hidden,status?.hidden??null);
+ }
+});
+test('keyboard focus facts report only fixed skip/code-input semantics and no private text',async()=>{
+ const skip=node({isConnected:true,matches:()=>false,textContent:'PRIVATE-SENTINEL'});
+ const active=node({tagName:'INPUT',hasAttribute:key=>key==='autofocus',matches:selector=>selector==='[data-quick-connect-digit]'});
+ const {rows,info}=recorder();await attachResponsiveFailure(page({}, {document:{readyState:'complete',activeElement:active,
+  querySelector:s=>s==='a.skip[href="#main"]'?skip:null},performance:{now:()=>50}}),info,'keyboard-focus');
+ const value=JSON.parse(rows[0].body);assert.equal(value.state.skipFocused,false);assert.equal(value.state.activeControl,'quick-code');
+ assert.equal(value.state.activeAutofocus,true);assert.ok(!rows[0].body.includes('PRIVATE-SENTINEL'));
+});
+test('new witness kinds reject rogue fields and observation failures preserve original errors',async()=>{
+ for(const kind of ['player-method-before-switch','player-method-after-switch','player-loading-width','keyboard-focus']) {
+  const {rows,info}=recorder();await attachResponsiveFailure({evaluate:async()=>({kind,private:'PRIVATE-SENTINEL'})},info,kind);
+  assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');assert.ok(!rows[0].body.includes('PRIVATE-SENTINEL'));
+  await attachResponsiveFailure({evaluate:async()=>{throw Error('PRIVATE-SENTINEL')}},{attach:async()=>{throw Error('PRIVATE-SENTINEL')}},kind);
+ }
+});
+
+test('new document and status fields reject malformed oversized unknown and conflicting values',async()=>{
+ const good=await page().evaluate(responsiveFailureFacts,'player-method-after-switch');
+ for(const change of [v=>delete v.state.documentEpoch,v=>v.state.documentEpoch=Infinity,v=>v.state.documentEpoch=-1,
+  v=>v.state.documentReadyState='PRIVATE',v=>v.state.routeMode='x'.repeat(16385),v=>v.state.touchPoints=33,
+  v=>v.state.appleTouch='true',v=>v.elements.status.connected=true,v=>v.elements.status.visibility='PRIVATE',
+  v=>v.state.statusState='PRIVATE',v=>v.state.unknown='PRIVATE']) {
+  const value=structuredClone(good);change(value);const {rows,info}=recorder();
+  await attachResponsiveFailure({evaluate:async()=>value},info,'player-method-after-switch');
+  assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');assert.ok(!rows[0].body.includes('PRIVATE'));
+ }
+});
