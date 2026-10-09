@@ -57,6 +57,19 @@ func remainingNonKeyPrivateAudioEntryDamage(t *testing.T, name string, data []by
 
 func remainingNonKeyPrivateAudioASCDamage(t *testing.T, name string, data []byte) {
 	t.Helper()
+	asc := remainingNonKeyPrivateAudioASCFixture(t, data)
+	switch name {
+	case "asc-rate":
+		asc[0], asc[1] = 0x12, asc[1]&0x7f
+	case "asc-channels":
+		asc[1] = asc[1]&0x87 | 1<<3
+	case "asc-short-frame":
+		asc[1] |= 4
+	}
+}
+
+func remainingNonKeyPrivateAudioASCFixture(t *testing.T, data []byte) []byte {
+	t.Helper()
 	esds := remainingNonKeyPrivateAudioHeader(t, data, "esds", 0)
 	size := binary.BigEndian.Uint32(data[esds-4 : esds])
 	if uint64(esds-4)+uint64(size) > uint64(len(data)) || size < 12 {
@@ -75,14 +88,7 @@ func remainingNonKeyPrivateAudioASCDamage(t *testing.T, name string, data []byte
 	if len(asc) < 2 || asc[0] != 0x11 || asc[1] != 0x90 {
 		t.Fatal("private AAC independent LC48000 stereo1024 fixture changed")
 	}
-	switch name {
-	case "asc-rate":
-		asc[0], asc[1] = 0x12, asc[1]&0x7f
-	case "asc-channels":
-		asc[1] = asc[1]&0x87 | 1<<3
-	case "asc-short-frame":
-		asc[1] |= 4
-	}
+	return asc
 }
 
 func remainingNonKeyPrivateAudioDescriptor(t *testing.T, data []byte, tag byte) []byte {
