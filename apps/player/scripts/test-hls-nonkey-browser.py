@@ -20,6 +20,7 @@ from hls_remaining_process import finish_processes, join_group
 from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection, browser_reference_config
 from hls_nonkey_browser_config import measured_delta, diagnostic_result
 from hls_nonkey_browser_video import actual_video_evidence
+from hls_nonkey_browser_color_clock import mse_clock_facts
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -40,8 +41,6 @@ def run(argv, timeout=60, bound=4<<20):
     check(len(process.stdout)<=bound,'browser_command_bound')
     check(process.returncode==0,'browser_command_failed')
     return process.stdout
-
-
 
 try:
     receipt['currentStage']='strict-cli-source-proof'
@@ -189,6 +188,7 @@ try:
                     browser_cases.append({'request':requested,'expectedSourceIndices':expected,
                         'publicJoinedPath':str(joined),'publicJoinedSHA256':sha(joined),'selectedSource':selected,
                         'publicVideoSuffixQualified':partial['actualVideoEvidence']['packetSuffix']['qualified'],
+                        'rawMSEClockFacts':mse_clock_facts(observed,requested),
                         'initialDeliveryStable':delivery['initialAssetBytesUnchanged'],
                         'publicAssetSHA256':{delivery['rendition']+'/'+p.name:sha(p) for p in assets},
                         'expectedPCM':{'samples':pcm['samples'],'sha256':pcm['sha256']}})
@@ -203,7 +203,7 @@ try:
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
                 node_failed=False
                 try:
-                    node_stdout,node_stderr=node.communicate(timeout=min(480,guard.check(25)))
+                    node_stdout,node_stderr=node.communicate(timeout=min(600,guard.check(25)))
                     check(len(node_stdout)<=1<<20 and len(node_stderr)<=1<<20,'browser_node_output_bound')
                     print(node_stdout.decode(),end='',flush=True)
                     check(node.returncode==0,'browser_node_failed')
@@ -281,7 +281,7 @@ finally:
     with guard.cleanup():
         receipt['handledTerminationSignals']=guard.signals
         files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',ROOT/'apps/player/scripts/hls_nonkey_browser_config.py',
-               ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',ROOT/'apps/player/scripts/hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_video.py',
+               ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',ROOT/'apps/player/scripts/hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_color_clock.py',
                *list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'

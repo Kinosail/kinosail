@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {chromium} from '@playwright/test';
 import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification,directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
 import {observeJoinedPublic} from './hls-nonkey-browser-joined.mjs';
+import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
 import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
@@ -229,6 +230,8 @@ try{
       result.cases.push(row);
       console.log(JSON.stringify({actualBrowser:safeBrowserProjection(row)}));
     }
+    await observeMSEColors(context,config.origin,item,joinedBytes,reference?.rows||[],result.referenceComplete,result.cases);
+    for(const row of result.cases.filter(v=>v.label?.startsWith('raw-mse-color-')))console.log(JSON.stringify({rawMSEColor:safeBrowserProjection(row)}));
     const bytes=await readFile(item.publicJoinedPath);
     if(bytes.length>8<<20)throw Error('public_joined_bound');
     const page=await context.newPage();await page.goto(config.origin+'/healthz');
