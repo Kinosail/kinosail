@@ -2,7 +2,8 @@
 import hashlib
 import struct
 import unittest
-from hls_nonkey_browser_video import public_video_suffix, avc_configuration_metadata
+from unittest.mock import patch
+from hls_nonkey_browser_video import public_video_suffix, avc_configuration_metadata, actual_video_evidence
 
 def packet(n):
     return {'stream_index':0,'data_hash':'SHA256:'+format(n,'064x'),'pts_time':str(n/24),
@@ -30,6 +31,23 @@ class PublicBrowserVideo(unittest.TestCase):
         for bad in [dict(source[2],data_hash='bad'),dict(source[2],pts_time='nan'),
                     dict(source[2],flags='_'),dict(source[2],duration_time='0')]:
             with self.assertRaises(RuntimeError):public_video_suffix(source,[bad]+source[3:],required)
+    def test_failed_actual_suffix_keeps_bounded_measurement_before_rejection(self):
+        result={}
+        with patch('hls_nonkey_browser_video.public_video_suffix',return_value={'qualified':False,'publicVideoPackets':3}):
+            with self.assertRaises(RuntimeError):actual_video_evidence('source','public',[],[],{},result)
+        self.assertEqual(result['packetSuffix'],{'qualified':False,'publicVideoPackets':3})
+        self.assertEqual(result['currentStage'],'actual-public-video-packets')
+    def test_failed_configuration_keeps_every_validated_metadata_stage(self):
+        result={}
+        configs=[{'avcConfigurationSHA256':'a'*64,'color':None},{'avcConfigurationSHA256':'b'*64,'color':None}]
+        streams=[{'extradata_hash':'SHA256:'+'a'*64},{'extradata_hash':'SHA256:'+'b'*64}]
+        with patch('hls_nonkey_browser_video.public_video_suffix',return_value={'qualified':True}), patch('hls_nonkey_browser_video.bounded_bytes',return_value=b'fixture'), patch('hls_nonkey_browser_video.avc_configuration_metadata',side_effect=configs), patch('hls_nonkey_browser_video.video_stream',side_effect=streams):
+            with self.assertRaises(RuntimeError):actual_video_evidence('source','public',[],[],{},result)
+        self.assertFalse(result['configurationIdentity'])
+        self.assertEqual(result['sourceAVC'],configs[0])
+        self.assertEqual(result['publicAVC'],configs[1])
+        self.assertEqual(result['sourceVideoStream'],streams[0])
+        self.assertEqual(result['publicVideoStream'],streams[1])
     def test_avc_configuration_and_explicit_or_absent_color_are_sealed(self):
         plain=avc_configuration_metadata(movie())
         self.assertIsNone(plain['color'])

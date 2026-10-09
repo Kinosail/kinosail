@@ -87,6 +87,9 @@ test('joined public direct decode needs sealed bytes, complete frames and explic
   assert.equal(joinedFrameQualification({...row,label:'joined-direct-explicit-zero',
     forceSeek:{seeking:false,seeked:true}},reference,[0,1,2,3]).qualified,false);
   assert.equal(joinedFrameQualification({...row,label:'joined-direct-explicit-zero',
-    forceSeek:{seeking:true,seeked:true,requestedLocal:0}},reference,[0,1,2,3]).qualified,true);
+    forceSeek:{seeking:true,seeked:true,requestedLocal:0,rawTime:0}},reference,[0,1,2,3]).qualified,true);
+  for(const rawTime of [0.1,NaN,Infinity,undefined])
+    assert.equal(joinedFrameQualification({...row,label:'joined-direct-explicit-zero',
+      forceSeek:{seeking:true,seeked:true,requestedLocal:0,rawTime}},reference,[0,1,2,3]).qualified,false);
   assert.equal(joinedFrameQualification({...row,observer:{phases:[{...phase,droppedCallbacks:1}]}},reference,[0,1,2,3]).qualified,false);
 });
