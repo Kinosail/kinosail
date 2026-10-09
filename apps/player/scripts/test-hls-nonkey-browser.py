@@ -166,17 +166,27 @@ try:
                 private.chmod(0o600)
                 node=subprocess.Popen(['node',str(ROOT/'apps/player/e2e/hls-nonkey-browser.mjs'),str(private)],
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+                node_failed=False
                 try:
                     node_stdout,node_stderr=node.communicate(timeout=min(480,guard.check(25)))
                     check(len(node_stdout)<=1<<20 and len(node_stderr)<=1<<20,'browser_node_output_bound')
                     print(node_stdout.decode(),end='',flush=True)
                     check(node.returncode==0,'browser_node_failed')
+                except Exception:
+                    node_failed=True
+                    raise
                 finally:
-                    case['ownedBrowserProcessJoin']=join_group(node)
-                    case['ownedChromiumProcessJoin']=chromium_join(node,directory/'browser-owner-private.json')
-                    check(case['ownedBrowserProcessJoin']['confirmedZeroSamples']==2 and
-                          not case['ownedBrowserProcessJoin']['qualificationFailures'] and
-                          case['ownedChromiumProcessJoin']['confirmedZeroSamples']==2,'browser_owned_join_failed')
+                    case['browserCleanupFailures']=[]
+                    with guard.cleanup():
+                        for label,join in [('ownedBrowserProcessJoin',lambda:join_group(node)),
+                            ('ownedChromiumProcessJoin',lambda:chromium_join(node,directory/'browser-owner-private.json'))]:
+                            try:case[label]=join()
+                            except Exception:case['browserCleanupFailures'].append(label+'_failed')
+                    joined=case.get('ownedBrowserProcessJoin',{})
+                    chromium=case.get('ownedChromiumProcessJoin',{})
+                    if case['browserCleanupFailures'] or joined.get('confirmedZeroSamples')!=2 or joined.get('qualificationFailures') or chromium.get('confirmedZeroSamples')!=2:
+                        case['browserCleanupFailures'].append('browser_owned_join_failed')
+                        if not node_failed:raise RuntimeError('browser_owned_join_failed')
                 browser=json.loads(bounded_bytes(output,8<<20,'browser_result_bound'))
                 case['browser']=browser
                 for value in case['publicCases']:
@@ -185,12 +195,27 @@ try:
                     check(value['mediaSHA256Before']==value['mediaSHA256After'],'browser_media_changed')
                 case['result']='observed'
             finally:
-                case.update(finish_processes(server,source,stop,sampler))
-                check(source_state(source)==before and source_state(reference)==reference_before,'browser_source_changed')
-                case.update(sourceUnchanged=True,referenceUnchanged=True,resources=resources)
-                if invocations.exists():
-                    case['actualProducerInvocations']=json.loads('['+','.join(invocations.read_text().splitlines())+']')
-                    check(invocations.stat().st_size<=65536,'browser_invocations_bound')
+                primary_failure=sys.exc_info()[1]
+                cleanup_failed=False
+                with guard.cleanup():
+                    try:
+                        case.update(finish_processes(server,source,stop,sampler))
+                    except Exception:
+                        case['serverCleanupFailureClass']='browser_server_join_failed'
+                        cleanup_failed=True
+                    joined=case.get('ownedProcessJoin',{})
+                    cleanup_failed=cleanup_failed or joined.get('confirmedZeroSamples')!=2 or bool(joined.get('qualificationFailures')) or bool(case.get('cleanupFailures'))
+                    case.update(sourceUnchanged=source_state(source)==before,
+                        referenceUnchanged=source_state(reference)==reference_before,resources=resources)
+                    if not case['sourceUnchanged'] or not case['referenceUnchanged']:
+                        case['sourceFailureClass']='browser_source_changed'
+                        cleanup_failed=True
+                    if invocations.exists():
+                        rows=bounded_bytes(invocations,65536,'browser_invocations_bound').decode().splitlines()
+                        case['actualProducerInvocations']=[json.loads(row) for row in rows]
+                if cleanup_failed:
+                    case['result']='failed'
+                    if primary_failure is None:raise RuntimeError('browser_server_or_source_join_failed')
         print(json.dumps({'container':container,'result':case['result'],
             'preparation':[{'request':v['request'],'state':v.get('preparationAttempt',{}).get('completionState')}
                            for v in case['preparation']],
