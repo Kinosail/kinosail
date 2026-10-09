@@ -6,7 +6,7 @@ import (
 )
 
 type copiedHLSPrivateAudioFacts struct {
-	FirstRawClock copiedHLSPrivateFirstClock
+	FirstRawClock     copiedHLSPrivateFirstClock
 	FirstPacket       [32]byte
 	Initialization    [32]byte
 	First             [32]byte
@@ -36,7 +36,7 @@ func parseCopiedHLSPrivateAudio(ctx context.Context, initialization, fragment []
 		return nil, err
 	}
 	facts := &copiedHLSPrivateAudioFacts{
-		FirstRawClock: clock,
+		FirstRawClock:     clock,
 		FirstPacket:       sha256.Sum256(packet),
 		Initialization:    sha256.Sum256(initialization),
 		First:             sha256.Sum256(fragment),

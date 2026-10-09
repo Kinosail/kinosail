@@ -107,7 +107,9 @@ func hlsPolicySourceVersion(policy string) (string, bool) {
 		return "", false
 	}
 	base, token, valid := copiedAACPolicyParts(policy)
-	if !valid { return "", false }
+	if !valid {
+		return "", false
+	}
 	parts := strings.Split(base, ":")
 	if len(parts) < 5 {
 		return "", false

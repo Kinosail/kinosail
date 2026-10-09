@@ -4,4 +4,4 @@ package playback
 
 import "os"
 
-func copiedAACSourceMatches(os.FileInfo,string) bool { return false }
+func copiedAACSourceMatches(os.FileInfo, string) bool { return false }

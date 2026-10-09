@@ -1,0 +1,30 @@
+name: Indexed AAC recovery quality
+on:
+  push:
+    branches: [codex/hls-aac-v2-r17-20261009]
+permissions: {contents: read}
+jobs:
+  lint:
+    name: Exact player and shared-source lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        with: {fetch-depth: 0, persist-credentials: false}
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
+      - name: Retain production file-size policy
+        run: make max-loc
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+        with:
+          version: v2.14.0
+          working-directory: packages
+          args: --timeout=5m --new-from-rev=664f4e2ad40049b03a5da62dba444adc3caa97ec
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+        with:
+          version: v2.14.0
+          working-directory: apps/player
+          args: --timeout=5m --new-from-rev=664f4e2ad40049b03a5da62dba444adc3caa97ec
