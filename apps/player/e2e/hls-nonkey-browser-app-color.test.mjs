@@ -149,3 +149,12 @@ test('each app arm is registered before execution and callback failure cannot om
   assert.equal(rows[2].label,'app-color-601-forced-source-coordinate-seek');
   assert.equal(rows[2].result,'observed');assert.equal(rows[2].appendWitness.qualified,true);
 });
+
+test('each media buffer needs its own exact init before its first fragment',()=>{
+  const plan=prepareAppColor(item,joined,pieces),value=witness(plan);
+  const split={...value,buffers:[...value.buffers,{...value.buffers[0],id:1}],
+    appends:value.appends.map((v,n)=>({...v,bufferID:n===0?0:1}))};
+  assert.equal(appColorAppendFacts(split,plan,pieces).qualified,false);
+  const reversed={...value,appends:[value.appends[1],value.appends[0],value.appends[2]].map((v,n)=>({...v,ordinal:n}))};
+  assert.equal(appColorAppendFacts(reversed,plan,pieces).qualified,false);
+});
