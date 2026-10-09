@@ -1,6 +1,7 @@
 """Strict fixed-source public AAC observations; every delivered packet remains."""
 import hashlib
 import json
+from decimal import Decimal
 from hls_followon_public import bounded_bytes, check
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_nonkey_evidence import observed_media
@@ -31,8 +32,7 @@ def cache_state(cache):
         'segments': names, 'audioOrigin': timeline['AudioOrigin'],
         'certificateVersion': certificate['version'], 'clock': timeline['Clock'],
         'timelineEnd': timeline['End'], 'timelineGrid': [timeline['Numerator'], timeline['Denominator']],
-        'timelineKeys': {'count': len(timeline['Keys']), 'first': timeline['Keys'][0],
-                         'last': timeline['Keys'][-1]}}
+        'timelineKeys': timeline['Keys']}
 
 
 def assert_fixed_packets(observed):
@@ -84,3 +84,52 @@ def qualify(source, joined, assets, metadata, result):
           and pcm['wholePublicEqualsReference'] and pcm['publicAndSourceCompleteEOFAccounted'],
           'v2_full_native_pcm_and_eof')
     result['fixedPublicMediaAccepted'] = True
+
+
+def assert_fixed_source_grid(data):
+    streams, rows = data['streams'], data['packets']
+    check(len(streams) == 1 and streams[0]['time_base'] == '1/16000' and len(rows) == 768,
+          'v2_complete_source_video_grid')
+    projected = []
+    for row in rows:
+        check(all(type(row[name]) is int for name in ['pts', 'dts', 'duration'])
+              and 0 <= row['pts'] <= 512000 and -16000 <= row['dts'] <= 512000
+              and 0 < row['duration'] <= 16000
+              and type(row['flags']) is str and 0 < len(row['flags']) <= 16,
+              'v2_source_video_packet_shape')
+        projected.append({name: row[name] for name in ['pts', 'dts', 'duration', 'flags']})
+    check(all(a['dts'] < b['dts'] for a, b in zip(projected, projected[1:])),
+          'v2_source_video_decode_order')
+    keys = [{'PTS': row['pts'], 'DTS': row['dts']} for row in projected if 'K' in row['flags']]
+    end = max(row['pts'] + row['duration'] for row in projected)
+    check([key['PTS'] for key in keys] == list(range(0, 512000, 32000)) and end == 511984,
+          'v2_pinned_source_key_end_witness')
+    return {'timeBase': [1, 16000], 'endTicks': end, 'keys': keys,
+            'packetSHA256': hashlib.sha256(json.dumps(projected, sort_keys=True,
+                separators=(',', ':'), allow_nan=False).encode()).hexdigest()}
+
+
+def assert_fixed_cache_grid(cache, grid):
+    check(cache['timelineGrid'] == grid['timeBase'] == [1, 16000]
+          and cache['timelineKeys'] == grid['keys'][6:]
+          and abs(cache['timelineEnd'] - grid['endTicks'] / 16000) <= 1e-12,
+          'v2_cached_timeline_not_source_bound')
+
+
+def assert_fixed_timeline(facts, fragments, grid):
+    keys = grid['keys'][6:]
+    check(grid['timeBase'] == [1, 16000] and grid['endTicks'] == 511984
+          and len(keys) == 10 and keys[0]['PTS'] == 192000,
+          'v2_pinned_resume_timeline')
+    durations = [b['PTS'] - a['PTS'] for a, b in zip(keys, keys[1:])]
+    durations.append(grid['endTicks'] - keys[-1]['PTS'])
+    check(durations == [32000] * 9 + [31984]
+          and facts['endlist'] and facts['playlistType'] == 'VOD'
+          and len(fragments) == 10, 'v2_complete_public_timeline')
+    check([name for name, _ in fragments] ==
+          ['segment-' + format(n, '05d') + '.m4s' for n in range(10)],
+          'v2_every_public_segment_name')
+    for (_, duration), expected in zip(fragments, durations):
+        check(Decimal(str(duration)) * 16000 == expected, 'v2_every_public_segment_duration')
+    check(Decimal(str(facts['durationSeconds'])) * 16000 == grid['endTicks'] - keys[0]['PTS'],
+          'v2_complete_public_source_span')

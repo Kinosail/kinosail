@@ -12,6 +12,7 @@ from hls_followon_public import bounded_bytes, check, encoder_count, sample_reso
 from hls_remaining_process import finish_processes
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_packets import manifest_facts
+from hls_aac_v2_public_evidence import assert_fixed_timeline
 
 
 class ActualServer:
@@ -197,7 +198,7 @@ def idle(api, server, source):
     raise RuntimeError('v2_cached_delivery_not_idle')
 
 
-def cached_media(owner, selected, directory):
+def cached_media(owner, selected, directory, source_grid):
     directory.mkdir()
     status, master, _ = owner.api.http(selected)
     check(status == 200 and len(master) <= 65536, 'v2_cached_master')
@@ -207,8 +208,7 @@ def cached_media(owner, selected, directory):
     status, manifest, _ = owner.api.http(prefix + 'index.m3u8')
     check(status == 200 and len(manifest) <= 65536, 'v2_cached_variant')
     facts, fragments = manifest_facts(manifest)
-    check(facts['endlist'] and facts['playlistType'] == 'VOD' and len(fragments) == 10
-          and abs(facts['durationSeconds'] - 20) < 0.00001, 'v2_full_indexed_timeline')
+    assert_fixed_timeline(facts, fragments, source_grid)
     assets = []
     for name in ['init.mp4', *[name for name, _ in fragments]]:
         status, data, _ = owner.api.http(prefix + name)

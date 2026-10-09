@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 from hls_aac_v2_public_http import ActualServer, actual_producer_rows, cached_media, diagnostic_producer_rows
-from hls_aac_v2_public_evidence import cache_state, qualify
+from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline, cache_state, qualify
 from hls_followon_frames import decode_frames
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_nonkey_browser_public import public_media
@@ -46,8 +46,7 @@ def case(label, selected, metadata, original):
         owner.log_path, owner.process, source)
     facts, fragments = manifest_facts(manifest)
     row.update(manifestFacts=facts, segmentNames=[name for name, _ in fragments], delivery=delivery)
-    check(facts['endlist'] and facts['playlistType'] == 'VOD' and len(fragments) == 10
-          and abs(facts['durationSeconds'] - 20) < 0.00001, 'v2_complete_public_timeline')
+    assert_fixed_timeline(facts, fragments, metadata['sourceVideoGrid'])
     row['delivery'] = delivery
     row['manifestSHA256'] = __import__('hashlib').sha256(manifest).hexdigest()
     qualify(source, joined, assets, metadata, row)
@@ -76,7 +75,11 @@ try:
           'v2_fixed_source_identity')
     _, frames = decode_frames(source)
     check(len(frames) == 768, 'v2_source_frame_count')
-    metadata = dict(facts, sourceFramePTS=[row[0] for row in frames], sourceTimeOriginSeconds=0)
+    source_grid = assert_fixed_source_grid(json.loads(run(['ffprobe', '-v', 'error', '-select_streams', 'v:0',
+        '-show_packets', '-show_streams', '-show_entries', 'packet=pts,dts,duration,flags:stream=time_base',
+        '-of', 'json', str(source)], 30)))
+    receipt['sourceVideoGrid'] = source_grid
+    metadata = dict(facts, sourceVideoGrid=source_grid, sourceFramePTS=[row[0] for row in frames], sourceTimeOriginSeconds=0)
     receipt['source'] = before
     receipt['stage'] = 'exact-source-build'
     binary = RUN / 'kinosail'
@@ -98,6 +101,7 @@ try:
     _, _, prefix = cache_state(directory / 'cache')
     check(prefix['segments'] == ['segment-' + format(n, '05d') + '.m4s' for n in range(4)],
           'v2_real_lazy_prefix_required')
+    assert_fixed_cache_grid(prefix, source_grid)
     origin = prefix['audioOrigin']
     check(origin['InitialSeekMicros'] == 12000000 and origin['FirstPTS'] == 571400
           and origin['Physical'] == -571400 and origin['Edit'] == 4600 and origin['SourceTrack'] == 1,
@@ -125,7 +129,7 @@ try:
     owner.start()
     row = {'label': 'cold-reopen', 'result': 'failed'}
     receipt['cases'].append(row)
-    joined, manifest, assets, idle = cached_media(owner, selected, RUN / 'cold-reopen')
+    joined, manifest, assets, idle = cached_media(owner, selected, RUN / 'cold-reopen', source_grid)
     qualify(source, joined, assets, metadata, row)
     check(len(owner.source_invocation_rows()) == 2, 'v2_reopen_started_encoder')
     _, _, reopened = cache_state(directory / 'cache')
@@ -235,6 +239,7 @@ finally:
             'producerCapture': receipt.get('producerCapture'), 'encoderLifecycle': receipt.get('encoderLifecycle'),
             'encoderSeekPhases': receipt.get('encoderSeekPhases'),
             'initialTimeline': {key: receipt.get('initialCache', {}).get(key) for key in ['timelineEnd', 'timelineGrid', 'timelineKeys']},
+            'sourceVideoGrid': receipt.get('sourceVideoGrid'),
             'finalSourceInvocationCount': receipt.get('finalSourceInvocationCount'),
             'finalSourceAudit': receipt.get('finalSourceAudit'),
             'cases': [{'label': value['label'], 'result': value['result'],
