@@ -96,7 +96,7 @@ def public_media(api, selected, directory, log_path, server, source):
                 entry=json.loads(line)
                 if entry.get('msg')=='HLS transcode completed' and entry.get('request_id') in request_ids:
                     rows.append({'requestID':entry['request_id'],'state':'completed'})
-        status,metrics=api.http('/settings/metrics')
+        status,metrics,_=api.http('/settings/metrics')
         check(status==200 and len(metrics)<=65536,'browser_owner_metrics')
         selected_metrics={}
         for line in metrics.decode().splitlines():

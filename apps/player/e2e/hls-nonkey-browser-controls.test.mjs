@@ -2,7 +2,7 @@
 // A bundled browser may advertise an unavailable H264/AAC decoder; actual decode must run.
 // Equal projected source time may skip decoder positioning; unchanged and forced runs stay separate.
 // Compositor callback losses, duplicate/unknown pixels, missing EOF or source frames reject qualification.
-// RGBA references must come from the same actual browser's full lossless source, bound to CLI frame identity.
+// RGBA references must come from the same actual browser's full coded AVC source, bound to CLI frame identity.
 // Raw/source coordinates and presentation offsets may differ; no observer row is trimmed or rewritten.
 // Complete browser AAC decode is distinct from synchronized HTMLMediaElement audio presentation.
 // Authenticated Go planning/preparation/cache/public delivery remain real; unavailable preparation stays unavailable.
