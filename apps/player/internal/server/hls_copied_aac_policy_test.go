@@ -34,6 +34,12 @@ func TestCopiedAACPolicyKeepsPositiveUntilSourceChanges(t *testing.T) {
 	if err := manager.recordCopiedAACPolicy("overflow", base, info, false, 0); err == nil {
 		t.Fatal("qualification capacity was not bounded")
 	}
+	if selected, _, known := manager.copiedAACPolicy("other-1", base, info); !known || selected {
+		t.Fatal("completed unsupported qualification remained unknown")
+	}
+	if selected, _, known := manager.copiedAACPolicy("overflow", base, info); known || selected {
+		t.Fatal("capacity failure acquired an unsupported or positive result")
+	}
 	selected, track, known := manager.copiedAACPolicy(key, base, info)
 	if !known || !selected || track != 1 {
 		t.Fatal("capacity erased an admitted source instead of rejecting new work")

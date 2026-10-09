@@ -18,7 +18,7 @@ func TestCopiedAACFirstSourceWitness(t *testing.T) {
 	if err != nil || origin.Physical != -571400 || origin.Edit != 4600 || origin.FirstPTS != first.PTS || origin.FirstHash != hash {
 		t.Fatalf("source first-packet origin = %#v, %v", origin, err)
 	}
-	for _, damage := range []string{"absent", "ambiguous", "raw-clock", "wrong-duration", "wrong-edit", "wrong-seek", "wrong-hash", "source-dts"} {
+	for _, damage := range []string{"absent", "ambiguous", "raw-clock", "wrong-duration", "wrong-edit", "wrong-seek", "wrong-hash", "source-dts", "raw-dts", "edited-dts", "distinct-clock-ambiguity"} {
 		t.Run(damage, func(t *testing.T) {
 			rows := append([]copiedHLSAudioPacket(nil), source...)
 			n, r, seek := edited, raw, int64(12000000)
@@ -39,6 +39,14 @@ func TestCopiedAACFirstSourceWitness(t *testing.T) {
 				n.Hash = "SHA256:" + strings.Repeat("c", 64)
 			case "source-dts":
 				rows[0].DTS--
+			case "raw-dts":
+				r.DTS++
+			case "edited-dts":
+				n.DTS++
+			case "distinct-clock-ambiguity":
+				other := first
+				other.PTS, other.DTS = first.PTS+2048, first.DTS+2048
+				rows = append(rows, other)
 			}
 			if _, err := copiedHLSAudioWitness(rows, n, r, seek); err == nil {
 				t.Fatal("uncertified first packet acquired an origin")
