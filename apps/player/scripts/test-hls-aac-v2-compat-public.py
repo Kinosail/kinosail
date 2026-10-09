@@ -231,13 +231,15 @@ try:
         for method in ['GET', 'HEAD', 'RANGE']:
             arm(asset + '-' + method.lower(), method, asset, candidate, baseline, seed / 'cache', selected)
     arm('all-media-journey', 'GET', 'journey', candidate, baseline, seed / 'cache', selected)
-    for invalid in ['missing-source', 'wrong-source', 'missing-clock', 'wrong-version',
+    for invalid in ['missing-source', 'wrong-source', 'missing-clock', 'missing-timeline', 'wrong-version',
                     'wrong-timeline', 'wrong-master', 'wrong-init', 'wrong-first']:
         arm(invalid, 'GET', 'master', candidate, baseline, seed / 'cache', selected, invalid)
+    arm('missing-timeline-warm', 'GET', 'master', candidate, baseline, seed / 'cache', selected,
+        'missing-timeline', warm=True)
     for label, query, expected in query_controls():
         arm(label, 'GET', 'rendition', candidate, baseline, seed / 'cache', selected,
             query=query, control_status=expected)
-    if len(receipt['cases']) == 37 and all(v['result'] == 'observed' for v in receipt['cases']):
+    if len(receipt['cases']) == 39 and all(v['result'] == 'observed' for v in receipt['cases']):
         receipt['completeAdoptedVersion1Acceptance'] = True
         receipt['result'] = 'observed'
 except Exception as error:

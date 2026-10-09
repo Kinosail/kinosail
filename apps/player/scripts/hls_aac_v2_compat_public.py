@@ -70,7 +70,7 @@ def fault(cache, name):
     check(json.loads(bounded_bytes(timeline, 256 << 10, 'compat_seed_timeline_bound'))['Policy']
         == bounded_bytes(binding, 16 << 10, 'compat_seed_binding_bound').decode(), 'compat_seed_binding_exact')
     target = {'missing-source': '.source', 'wrong-source': '.source',
-        'missing-clock': '.copy-clock', 'wrong-version': '.copy-clock',
+        'missing-clock': '.copy-clock', 'missing-timeline': '.copy-timeline', 'wrong-version': '.copy-clock',
         'wrong-timeline': '.copy-timeline', 'wrong-master': 'index.m3u8',
         'wrong-init': '360p/init.mp4', 'wrong-first': '360p/segment-00000.m4s'}[name]
     path = directory / target

@@ -106,7 +106,7 @@ disposable cache clones. Candidate traffic sends no preparation POST.
   exact bytes and Content-Range behavior.
 - A playlist-to-all-media journey must serve all ten fragments and exactly 480
   decoded source frames after the 12-second offset.
-- Missing/wrong binding, missing/mixed clock, corrupt timeline, master, init
+- Missing/wrong binding, missing/mixed clock, missing/corrupt timeline, master, init
   or first media must reject without encoders or cache/source mutation.
 - Immediate, idle and joined snapshots must preserve every cache file's inode,
   size, modification time and SHA256. Baseline response restoration is separate.
@@ -119,6 +119,12 @@ disposable cache clones. Candidate traffic sends no preparation POST.
   Ordinary public HTTP cannot reliably schedule those in-flight boundaries.
 - Each owned Server and child process must settle under the existing bounded
   process/resource checks. Receipts include exact revision, tree and script hashes.
+
+Independent review found missing .copy-timeline with a retained Version1 clock
+could fall through to preparation. Write actual cold/warm rejection controls and
+an isolated sticky-positive routing control before changing that selector.
+They must reject without encoders, cache writes or eligibility changes.
+Genuine unindexed cold caches with neither index marker retain their old path.
 
 Before full compatibility acceptance, add actual missing-zero, interior and final
 Version1 continuation; speculative adoption; policy/source/generation replacement;

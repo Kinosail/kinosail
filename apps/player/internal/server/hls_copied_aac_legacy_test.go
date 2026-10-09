@@ -287,3 +287,38 @@ func TestCopiedAACLegacyCancellationAndCloseReleaseDescriptors(t *testing.T) {
 		t.Fatal("legacy close did not restore the descriptor baseline")
 	}
 }
+
+func TestCopiedAACLegacyMissingTimelineIsHandledBeforePreparation(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("selected compatibility reader is Linux-only")
+	}
+	for _, warm := range []bool{false, true} {
+		t.Run(map[bool]string{false: "cold", true: "sticky-positive"}[warm], func(t *testing.T) {
+			manager, item, recipe, directory, base := copiedAACLegacyFixture(t)
+			key := hlsRecipeKey(item.ID, recipe)
+			if !warm {
+				manager.copiedMetadata.mu.Lock()
+				delete(manager.copiedMetadata.aacPolicies, key)
+				manager.copiedMetadata.mu.Unlock()
+			}
+			if err := os.Remove(filepath.Join(directory, ".copy-timeline")); err != nil {
+				t.Fatal(err)
+			}
+			before := copiedAACLegacyInventory(t, directory)
+			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8", nil)
+			writer := httptest.NewRecorder()
+			if !manager.serveCopiedHLSLegacy(writer, request, item, recipe, "index.m3u8") || writer.Code != http.StatusNotFound {
+				t.Fatal("missing indexed timeline fell through to preparation")
+			}
+			requireCopiedAACLegacyInventory(t, before, copiedAACLegacyInventory(t, directory))
+			info, err := os.Stat(item.Path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			selected, _, known := manager.copiedAACPolicy(key, base, info)
+			if selected != warm || known != warm {
+				t.Fatal("rejection changed the producer decision")
+			}
+		})
+	}
+}
