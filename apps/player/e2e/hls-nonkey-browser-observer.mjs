@@ -38,7 +38,8 @@ export function joinedFrameQualification(row,reference,expected){
   if(!phase)return {qualified:false,reason:'missing_observer'};
   const frame=frameQualification(phase,reference,expected);
   const seek=row.label!=='joined-direct-explicit-zero' ||
-    row.forceSeek?.requestedLocal===0 && row.forceSeek?.seeking && row.forceSeek?.seeked;
+    row.forceSeek?.requestedLocal===0 && row.forceSeek?.seeking && row.forceSeek?.seeked &&
+    Number.isFinite(row.forceSeek?.rawTime) && Math.abs(row.forceSeek.rawTime)<=0.000001;
   const healthy=row.result==='observed' && row.joinedBytesVerified===true &&
     row.publicVideoSuffixQualified===true && row.referenceComplete===true &&
     !row.pageErrors && !row.snapshotFailure && phase.firstCallbackGap===0 &&

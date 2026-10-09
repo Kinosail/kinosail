@@ -163,8 +163,10 @@ try:
                         partial.update(result='failed',failureClass='browser_complete_aac_payload_tail')
                         case.setdefault('heldTransportControls',[]).append({'request':requested,'failureClass':partial['failureClass']})
                         continue
-                    partial['actualVideoEvidence']=actual_video_evidence(source,joined,observed['sourcePacketRows'],observed['publicPacketRows'],selected_case['requiredPrecedingIDR'])
-                    print(json.dumps({'actualPublicVideo':partial['actualVideoEvidence']}),flush=True)
+                    partial['actualVideoEvidence']={}
+                    try:
+                        actual_video_evidence(source,joined,observed['sourcePacketRows'],observed['publicPacketRows'],selected_case['requiredPrecedingIDR'],partial['actualVideoEvidence'])
+                    finally:print(json.dumps({'actualPublicVideo':partial['actualVideoEvidence']}),flush=True)
                     expected=selected_case['observations']['mapping']['expectedSourceIndices']
                     pcm,_=native_pcm(source,requested)
                     public_case={'request':requested,'observations':observed,'aacPayloadTail':tail,

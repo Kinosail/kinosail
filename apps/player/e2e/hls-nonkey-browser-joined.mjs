@@ -1,10 +1,11 @@
 // Isolated decoder control using sealed bytes already delivered by the actual public server.
 import {createHash} from 'node:crypto';
 import {joinedFrameQualification} from './hls-nonkey-browser-observer.mjs';
-export async function observeJoinedPublic(context,origin,item,bytes,reference,label,referenceComplete){
+export async function observeJoinedPublic(context,origin,item,bytes,reference,label,referenceComplete,retainedCases){
   const row={request:item.request,label,result:'observation-failed',referenceComplete,
     joinedDirectScope:'Blob direct decode of sealed actual public init plus every delivered cut; application client unchanged',
     publicVideoSuffixQualified:item.publicVideoSuffixQualified===true};
+  retainedCases.push(row);
   const digest=createHash('sha256').update(bytes).digest('hex');
   if(!bytes.length || bytes.length>8<<20 || digest!==item.publicJoinedSHA256)throw Error('joined_public_byte_binding');
   row.joinedSHA256=digest;row.joinedBytesVerified=true;

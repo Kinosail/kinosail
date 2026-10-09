@@ -93,15 +93,23 @@ def video_stream(path):
             'browser_video_stream_projection_bound')
     return row
 
-def actual_video_evidence(source,public,source_rows,public_rows,required):
-    suffix=public_video_suffix(source_rows,public_rows,required)
-    check(suffix['qualified'],'browser_actual_video_complete_payload_tail')
-    source_config=avc_configuration_metadata(bounded_bytes(source,2<<20,'browser_source_avc_file_bound'))
-    public_config=avc_configuration_metadata(bounded_bytes(public,8<<20,'browser_public_avc_file_bound'))
-    source_stream,public_stream=video_stream(source),video_stream(public)
-    identity=source_config['avcConfigurationSHA256']==public_config['avcConfigurationSHA256'] and source_stream['extradata_hash']==public_stream['extradata_hash']=='SHA256:'+source_config['avcConfigurationSHA256']
-    check(identity,'browser_actual_avc_configuration_identity')
-    return {'packetSuffix':suffix,'sourceAVC':source_config,'publicAVC':public_config,
-        'sourceVideoStream':source_stream,'publicVideoStream':public_stream,
-        'configurationIdentity':identity,'colorMetadataIdentity':source_config['color']==public_config['color'],
-        'productionAcceptance':False,'browserFrameAcceptance':False}
+def actual_video_evidence(source,public,source_rows,public_rows,required,result):
+    result.update(currentStage='actual-public-video-packets',productionAcceptance=False,browserFrameAcceptance=False)
+    result['packetSuffix']=public_video_suffix(source_rows,public_rows,required)
+    check(result['packetSuffix']['qualified'],'browser_actual_video_complete_payload_tail')
+    result['currentStage']='source-avc-configuration'
+    result['sourceAVC']=avc_configuration_metadata(bounded_bytes(source,2<<20,'browser_source_avc_file_bound'))
+    result['currentStage']='public-avc-configuration'
+    result['publicAVC']=avc_configuration_metadata(bounded_bytes(public,8<<20,'browser_public_avc_file_bound'))
+    result['currentStage']='source-video-stream'
+    result['sourceVideoStream']=video_stream(source)
+    result['currentStage']='public-video-stream'
+    result['publicVideoStream']=video_stream(public)
+    source_config,public_config=result['sourceAVC'],result['publicAVC']
+    source_stream,public_stream=result['sourceVideoStream'],result['publicVideoStream']
+    result['configurationIdentity']=source_config['avcConfigurationSHA256']==public_config['avcConfigurationSHA256'] and source_stream['extradata_hash']==public_stream['extradata_hash']=='SHA256:'+source_config['avcConfigurationSHA256']
+    result['colorMetadataIdentity']=source_config['color']==public_config['color']
+    result['currentStage']='configuration-identity'
+    check(result['configurationIdentity'],'browser_actual_avc_configuration_identity')
+    result['currentStage']='complete'
+    return result

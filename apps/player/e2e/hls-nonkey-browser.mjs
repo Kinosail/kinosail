@@ -214,8 +214,8 @@ try{
   for(const item of config.cases){
     const joinedBytes=await readFile(item.publicJoinedPath);
     for(const label of ['joined-direct-unseeked','joined-direct-explicit-zero']){
-      const row=await observeJoinedPublic(context,config.origin,item,joinedBytes,reference?.rows||[],label,result.referenceComplete);
-      result.cases.push(row);console.log(JSON.stringify({joinedDirect:safeBrowserProjection(row)}));
+      const row=await observeJoinedPublic(context,config.origin,item,joinedBytes,reference?.rows||[],label,result.referenceComplete,result.cases);
+      console.log(JSON.stringify({joinedDirect:safeBrowserProjection(row)}));
     }
     if(terminated)throw Error('handled_browser_termination');
     for(const label of ['unchanged-client','forced-source-coordinate-seek']){
