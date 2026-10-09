@@ -54,8 +54,18 @@ func TestReadRejectsUnsafeFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 	public := filepath.Join(directory, "public")
-	if err := os.WriteFile(public, []byte("public"), 0o644); err != nil { //nolint:gosec // The test needs a deliberately public file.
+	if err := os.WriteFile(public, []byte("public"), 0o600); err != nil {
 		t.Fatal(err)
+	}
+	if err := os.Chmod(public, 0o644); err != nil { // #nosec G302 -- Unsafe permissions are the negative fixture in an owned private test directory.
+		t.Fatal(err)
+	}
+	info, err := os.Stat(public)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0o644 {
+		t.Fatalf("unsafe fixture permissions = %o, want 644", info.Mode().Perm())
 	}
 	for name, path := range map[string]string{"empty path": "", "missing": filepath.Join(directory, "missing"), "directory": directory, "symlink": link, "public": public, "oversized": target} {
 		t.Run(name, func(t *testing.T) {

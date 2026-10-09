@@ -80,8 +80,18 @@ func invalidStoredJSONDocuments(t *testing.T) map[string][]byte {
 
 func TestStoredJSONRequiresOwnerOnlyRegularFile(t *testing.T) {
 	path := filepath.Join(t.TempDir(), configurationFile)
-	if err := os.WriteFile(path, []byte("{}"), 0o644); err != nil { //nolint:gosec // Public permissions are the rejected boundary under test.
+	if err := os.WriteFile(path, []byte("{}"), 0o600); err != nil {
 		t.Fatal(err)
+	}
+	if err := os.Chmod(path, 0o644); err != nil { // #nosec G302 -- Unsafe permissions are the negative fixture in an owned private test directory.
+		t.Fatal(err)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Mode().Perm() != 0o644 {
+		t.Fatalf("unsafe fixture permissions = %o, want 644", info.Mode().Perm())
 	}
 	if _, err := readJSON(path); err == nil {
 		t.Fatal("public stored configuration was accepted")
