@@ -48,7 +48,7 @@ def retain_go_output(stdout,stderr,complete):
     receipt['goStderrSHA256']=hashlib.sha256(stderr).hexdigest()
     receipt['goStderrBytes']=len(stderr)
     compile_lines=[v.get('Output','') for v in events]+stderr.decode(errors='replace').splitlines()
-    receipt['safeGoCompilerMessages']=[line.strip()[:1000] for line in compile_lines if re.search(r'hls_remaining_nonkey_producer(?:_packets)?_test\\.go:[0-9]+:',line)][:64]
+    receipt['safeGoCompilerMessages']=[line.strip()[:1000] for line in compile_lines if re.search(r'hls_remaining_nonkey_producer(?:_packets)?_test\.go:[0-9]+:',line)][:64]
     receipt['tests']=[{'test':v.get('Test'),'action':v['Action']} for v in events if v.get('Test') and v['Action'] in ['pass','fail','skip']]
     receipt['safeGoMessages']=[v['Output'].strip() for v in events if v.get('Output') and
         ('pending producer ' in v['Output'] or 'nonkey actual-pending-producer ' in v['Output'])][:64]
