@@ -176,6 +176,17 @@ test('unknown queries, duplicate sessions, range requests and foreign paths fail
     [origin+path+'?playbackSession=','GET',undefined],
     [origin+path+'?playbackSession='+('a'.repeat(81)),'GET',undefined],
     [origin+path,'POST',undefined],[origin+path,'GET','bytes=0-10'],
-    ['http://other.invalid'+path,'GET',undefined],[origin+path+'x','GET',undefined]])
+    [origin+path+'?playbackSession='+('a'.repeat(7)),'GET',undefined],
+    [origin+path+'?playbackSession='+('a'.repeat(65)),'GET',undefined],['http://other.invalid'+path,'GET',undefined],[origin+path+'x','GET',undefined]])
     assert.equal(appColorRouteFacts(url,origin,path,method,range).qualified,false);
+});
+
+test('a present server playback-session header binds privately to the queried session',()=>{
+  const origin='http://held.invalid',path='/hls/held/360p/init.mp4',session='held_session-123',
+    url=origin+path+'?playbackSession='+session;
+  const good=appColorRouteFacts(url,origin,path,'GET',undefined,session);
+  assert.equal(good.qualified,true);assert.equal(good.responseSessionHeaderPresent,true);
+  assert.equal(good.querySessionHeaderMatched,true);assert.equal(JSON.stringify(good).includes(session),false);
+  assert.equal(appColorRouteFacts(url,origin,path,'GET',undefined,'other_session-123').qualified,false);
+  assert.equal(appColorRouteFacts(url,origin,path,'GET',undefined,'bad').qualified,false);
 });
