@@ -33,7 +33,8 @@ func verifyCopiedAACAssets(ctx context.Context, media *os.Root, timeline *copied
 	var expected [32]byte
 	copy(expected[:], bytes)
 	if err != nil || decodeErr != nil || len(bytes) != 32 || facts.FirstPacket != expected ||
-		facts.OriginalMediaTime != timeline.AudioOrigin.Edit || ctx.Err() != nil {
+		facts.OriginalMediaTime != timeline.AudioOrigin.Edit || facts.FirstRawClock.Decode != 0 ||
+		facts.FirstRawClock.Composition != 0 || facts.FirstRawClock.Duration != 1024 || ctx.Err() != nil {
 		return errCopiedHLSIndex
 	}
 	return nil

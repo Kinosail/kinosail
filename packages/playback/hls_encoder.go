@@ -97,7 +97,7 @@ func hlsSourceFresh(playlist, source, policy string) bool {
 		return false
 	}
 	expected, valid := hlsPolicySourceVersion(string(binding))
-	current, err := hlsSourceVersion(source)
+	current, err := hlsSourceState(source, string(binding))
 	return valid && err == nil && current == expected
 }
 
@@ -105,7 +105,9 @@ func hlsPolicySourceVersion(policy string) (string, bool) {
 	if len(policy) > hlsSourcePolicyLimit || strings.ContainsAny(policy, "\r\n") {
 		return "", false
 	}
-	parts := strings.Split(policy, ":")
+	base, token, valid := copiedAACPolicyParts(policy)
+	if !valid { return "", false }
+	parts := strings.Split(base, ":")
 	if len(parts) < 5 {
 		return "", false
 	}
@@ -118,7 +120,7 @@ func hlsPolicySourceVersion(policy string) (string, bool) {
 		return "", false
 	}
 	recipe, err := ParseHLSRecipe(fields[2], HLSRecipePolicy{MaxBitrate: math.MaxInt64, OffsetStepMilliseconds: 1})
-	if err != nil || recipe.Token() != fields[2] {
+	if err != nil || recipe.Token() != fields[2] || token != "" && recipe.Mode != "remux" {
 		return "", false
 	}
 	return version, true
@@ -134,11 +136,7 @@ func canonicalHLSSourceVersion(sizeText, modifiedText string) (string, bool) {
 }
 
 func hlsSourceVersion(source string) (string, error) {
-	info, err := os.Stat(source) //nolint:gosec // Source comes from the scanned library.
-	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 {
-		return "", errors.New("HLS source is not a regular media file")
-	}
-	return strconv.FormatInt(info.Size(), 10) + ":" + strconv.FormatInt(info.ModTime().UnixNano(), 10), nil
+	return hlsSourceState(source, "")
 }
 
 func openHLSSourceRoot(directory string) (*os.Root, error) {
@@ -204,7 +202,7 @@ func ValidateHLSSource(source, policy string) error {
 	if !valid {
 		return errors.New("HLS source policy is invalid")
 	}
-	current, err := hlsSourceVersion(source)
+	current, err := hlsSourceState(source, policy)
 	if err != nil {
 		return err
 	}
