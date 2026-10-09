@@ -87,6 +87,11 @@ func TestRemainingNonKeyProducerRecipeScope(t *testing.T) {
 			t.Errorf("pending producer acquired unsupported source recipe: %s", mode)
 		}
 	}
+	for _, recipe := range []hlsRecipe{{mode: "remux", dialogueBoost: true}, {mode: "remux", normalizeLoudness: true}, {mode: "remux", omitted: []PlaybackRange{{Start: 0, End: 1}}}} {
+		if copiedHLSPendingProducerRecipe(pending, recipe) {
+			t.Fatal("pending producer accepted changed source geometry")
+		}
+	}
 	if !copiedHLSPendingProducerRecipe(nil, hlsRecipe{mode: "transcode"}) {
 		t.Fatal("pending producer scope changed ordinary transcode")
 	}
