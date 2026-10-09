@@ -129,3 +129,23 @@ test('new actual-app qualification binds completeness and forced-seek semantics 
   assert.equal(forced.label,'app-color-601-forced-source-coordinate-seek');
   assert.equal(Object.hasOwn(forced,'referenceComplete'),false);
 });
+
+test('each app arm is registered before execution and callback failure cannot omit the following arm',async()=>{
+  const old={label:'original-audio'},rows=[old],plan=prepareAppColor(item,joined,pieces);
+  const context={request:{get:async url=>{
+    const name=url.slice(url.lastIndexOf('/')+1),bytes=name==='init.mp4'?pieces[0]:
+      name==='segment-00000.m4s'?pieces[1]:pieces[2];
+    return {status:()=>200,body:async()=>bytes};
+  }}};
+  let calls=0;
+  await observeAppColor(context,'http://held.invalid',item,joined,[],true,rows,async(request,label)=>{
+    assert.equal(rows.at(-1).label,label);calls++;
+    if(calls===1)throw Error('held_callback_failure');
+    return {request,label,result:'observed',frameConsumerQualified:false,actualAppColorAppend:witness(plan)};
+  });
+  assert.equal(calls,2);assert.equal(rows[0],old);assert.equal(rows.length,3);
+  assert.equal(rows[1].label,'app-color-601-unchanged-client');assert.equal(rows[1].result,'observation-failed');
+  assert.equal(rows[1].failureClass,'held_callback_failure');
+  assert.equal(rows[2].label,'app-color-601-forced-source-coordinate-seek');
+  assert.equal(rows[2].result,'observed');assert.equal(rows[2].appendWitness.qualified,true);
+});
