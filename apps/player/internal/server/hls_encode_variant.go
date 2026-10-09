@@ -29,10 +29,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		}
 		start = timeline.point(startNumber)
 	}
-	var refill *remainingAudioOrigin
-	if timeline == nil && startNumber > 0 && item.Kind == "audio" {
-		refill = remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, startNumber, audioRate)
-	}
+	refill := manager.hlsVariantRemainingRefill(ctx, item, sourceRecipe, recipe, start, startNumber, audioRate, timeline)
 	input, video := videoArguments(options, width)
 	arguments, err := hlsVariantInputArguments(ctx, item.Path, recipe, timeline, input, refill != nil, start, startNumber)
 	if err != nil {

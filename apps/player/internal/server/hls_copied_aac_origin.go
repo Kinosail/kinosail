@@ -117,7 +117,7 @@ func validCopiedAACOrigin(timeline *copiedHLSTimeline) bool {
 		return false
 	}
 	if timeline.Clock == nil {
-		return origin.FirstHash == "" && origin.FirstPTS == 0 && origin.Physical == 0 && origin.Edit == 0
+		return validCopiedAACPendingOrigin(origin)
 	}
 	seek, err := copiedAACRescale(origin.InitialSeekMicros)
 	return err == nil && *timeline.Clock == 0 && validCopiedAACMeasuredOrigin(origin, seek)
@@ -131,4 +131,8 @@ func validCopiedAACOriginEnvelope(timeline *copiedHLSTimeline, origin *copiedHLS
 func validCopiedAACMeasuredOrigin(origin *copiedHLSAudioOrigin, seek int64) bool {
 	return validCopiedAACHash(origin.FirstHash) && origin.FirstPTS >= -48000 && origin.FirstPTS <= maximumCopiedAACTicks &&
 		origin.Physical == -origin.FirstPTS && origin.Edit >= 0 && origin.Edit <= 48000 && origin.FirstPTS+origin.Edit == seek
+}
+
+func validCopiedAACPendingOrigin(origin *copiedHLSAudioOrigin) bool {
+	return origin.FirstHash == "" && origin.FirstPTS == 0 && origin.Physical == 0 && origin.Edit == 0
 }

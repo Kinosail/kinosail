@@ -163,26 +163,12 @@ func (manager *hlsManager) serveCopiedAACFile(writer http.ResponseWriter, reques
 		return true
 	}
 	defer value.close()
-	if !value.nameAllowed(name) {
-		localizedNotFound(writer, request)
-		return true
-	}
-	file, info, err := copiedHLSOpenFile(value.media, filepath.Base(name), 64<<20)
+	file, info, content, err := value.openAsset(name)
 	if err != nil {
 		localizedNotFound(writer, request)
 		return true
 	}
 	defer file.Close()
-	content, err := value.assetContent(file, info, filepath.Base(name))
-	if err != nil {
-		localizedNotFound(writer, request)
-		return true
-	}
-	after, statErr := value.media.Lstat(filepath.Base(name))
-	if statErr != nil || !sameCopiedHLSFile(info, after) || !value.current() {
-		localizedNotFound(writer, request)
-		return true
-	}
 	writer.Header().Set("Content-Type", "video/mp4")
 	manager.adoptRecipeFile(request, key, filepath.Join(manager.cache, key, name))
 	value.release()
@@ -204,4 +190,25 @@ func (value *copiedAACGeneration) assetContent(file *os.File, info os.FileInfo, 
 		return nil, errCopiedHLSIndex
 	}
 	return bytes.NewReader(data), nil
+}
+
+func (value *copiedAACGeneration) openAsset(name string) (*os.File, os.FileInfo, io.ReadSeeker, error) {
+	if !value.nameAllowed(name) {
+		return nil, nil, nil, errCopiedHLSIndex
+	}
+	file, info, err := copiedHLSOpenFile(value.media, filepath.Base(name), 64<<20)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	content, err := value.assetContent(file, info, filepath.Base(name))
+	if err != nil {
+		_ = file.Close()
+		return nil, nil, nil, err
+	}
+	after, statErr := value.media.Lstat(filepath.Base(name))
+	if statErr != nil || !sameCopiedHLSFile(info, after) || !value.current() {
+		_ = file.Close()
+		return nil, nil, nil, errCopiedHLSIndex
+	}
+	return file, info, content, nil
 }

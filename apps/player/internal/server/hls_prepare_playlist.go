@@ -29,7 +29,7 @@ func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, req
 	prepareContext, cancel := context.WithTimeout(prepareContext, 30*time.Second)
 	defer cancel()
 	started := time.Now()
-	cached := manager.startupWindowReady(prepareContext, item, recipe)
+	cached := manager.startupWindowReady(request.Context(), item, recipe)
 	if err := manager.prepare(prepareContext, item, recipe); err != nil { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
 		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "mode", recipe.mode, "encoder_phase", hlsReadinessPhase(err), "error", hlsDiagnostic(err, item.Path))
 		status := http.StatusServiceUnavailable

@@ -107,14 +107,7 @@ func copiedAACRootProbeFixture(t *testing.T) (*hlsManager, library.Item, hlsReci
 	}
 	tools := t.TempDir()
 	marker, release := filepath.Join(tools, "opened-pid"), filepath.Join(tools, "release")
-	probe := filepath.Join(tools, "grid-probe")
-	body := "#!/bin/sh\nset -eu\nprintf '%s' $$ > " + copiedRecoveryQuote(marker) + "\nwhile [ ! -f " + copiedRecoveryQuote(release) + " ]; do sleep 0.01; done\nprintf '%s\\n' 'index=0|codec_type=video|codec_name=h264|profile=High|time_base=1/16000' 'index=1|codec_type=audio|codec_name=aac|profile=LC|sample_rate=48000|channels=2|time_base=1/48000' 'format_name=mov,mp4,m4a,3gp,3g2,mj2'\n"
-	if err := os.WriteFile(probe, []byte(body), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chmod(probe, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	manager.probe.executable = probe
+	action := "printf '%s' $$ > " + copiedRecoveryQuote(marker) + "\nwhile [ ! -f " + copiedRecoveryQuote(release) + " ]; do sleep 0.01; done\nprintf '%s\\n' 'index=0|codec_type=video|codec_name=h264|profile=High|time_base=1/16000' 'index=1|codec_type=audio|codec_name=aac|profile=LC|sample_rate=48000|channels=2|time_base=1/48000' 'format_name=mov,mp4,m4a,3gp,3g2,mj2'\n" + "exit 0\n"
+	copiedRecoveryProbe(t, manager, action)
 	return manager, item, recipe, base, before, marker, release
 }

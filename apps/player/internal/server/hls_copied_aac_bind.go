@@ -93,8 +93,10 @@ func (manager *hlsManager) verifyCopiedAACVideoClock(ctx context.Context, media 
 		return err
 	}
 	rows, valid := 0, false
-	arguments := []string{"-v", "error", "-threads", "1", "-select_streams", "v:0", "-read_intervals", "%+#8", "-show_packets",
-		"-show_entries", "packet=pts,flags", "-of", "compact=p=0", "pipe:0"}
+	arguments := []string{
+		"-v", "error", "-threads", "1", "-select_streams", "v:0", "-read_intervals", "%+#8", "-show_packets",
+		"-show_entries", "packet=pts,flags", "-of", "compact=p=0", "pipe:0",
+	}
 	err = copiedHLSInputLines(ctx, manager.probe.executable, arguments, io.MultiReader(bytes.NewReader(initialization), bytes.NewReader(first)), 8<<10, 16, func(line string) error {
 		fields := copiedHLSFields(line)
 		if rows == 0 {

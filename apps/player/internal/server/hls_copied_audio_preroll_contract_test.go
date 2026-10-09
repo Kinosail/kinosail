@@ -26,17 +26,7 @@ func TestCopiedHLSVideoPrerollDoesNotSuppressCopiedAudio(t *testing.T) {
 }
 
 func TestCopiedHLSPrerollScopeKeepsLegacyAndAdmission(t *testing.T) {
-	original := []string{"-c:v", "copy", "-c:a", "copy"}
-	arguments, err := copiedHLSSeekArguments(append([]string(nil), original...), nil, 0)
-	if err != nil || !reflect.DeepEqual(arguments, original) {
-		t.Fatal("unindexed legacy arguments changed")
-	}
-	timeline := &copiedHLSTimeline{Keys: []copiedHLSKey{{PTS: 0}, {PTS: 16000}}, TimeBase: 1.0 / 16000}
-	for _, number := range []int{-1, 1, 2} {
-		if _, err := copiedHLSSeekArguments(append([]string(nil), original...), timeline, number); err == nil {
-			t.Fatalf("invalid or unbound segment %d was admitted", number)
-		}
-	}
+	assertCopiedHLSLegacyAdmission(t, copiedHLSSeekArguments)
 }
 
 func assertCopiedHLSVideoPreroll(t *testing.T, arguments []string, number int) {
@@ -55,5 +45,20 @@ func assertCopiedHLSVideoPreroll(t *testing.T, arguments []string, number int) {
 	}
 	if videoRule != 1 {
 		t.Fatalf("segment %d has %d video-only rules", number, videoRule)
+	}
+}
+
+func assertCopiedHLSLegacyAdmission(t *testing.T, argumentsFor func([]string, *copiedHLSTimeline, int) ([]string, error)) {
+	t.Helper()
+	original := []string{"-c:v", "copy", "-c:a", "copy"}
+	arguments, err := argumentsFor(append([]string(nil), original...), nil, 0)
+	if err != nil || !reflect.DeepEqual(arguments, original) {
+		t.Fatal("unindexed legacy arguments changed")
+	}
+	timeline := &copiedHLSTimeline{Keys: []copiedHLSKey{{PTS: 0}, {PTS: 16000}}, TimeBase: 1.0 / 16000}
+	for _, number := range []int{-1, 1, 2} {
+		if _, err := argumentsFor(append([]string(nil), original...), timeline, number); err == nil {
+			t.Fatalf("invalid or unbound segment %d was admitted", number)
+		}
 	}
 }

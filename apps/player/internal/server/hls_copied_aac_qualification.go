@@ -15,23 +15,16 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 	if !copiedAACRecipeSupported(item, recipe) {
 		return nil
 	}
-	if parent.Err() != nil || manager.index == nil || !manager.index.Safe(item.Path) {
-		return errCopiedHLSIndex
-	}
-	base, err := manager.baseHLSSettings(item, recipe)
+	base, before, err := manager.copiedAACQualificationSource(parent, item, recipe)
 	if err != nil {
 		return err
-	}
-	before, err := os.Lstat(item.Path)
-	if err != nil || !before.Mode().IsRegular() || before.Size() <= 0 {
-		return errCopiedHLSIndex
 	}
 	key := hlsRecipeKey(item.ID, recipe)
 	if _, _, known := manager.copiedAACPolicy(key, base.Cache, before); known {
 		return parent.Err()
 	}
 	directory := filepath.Join(manager.cache, key)
-	if !force && !manager.copiedHLSTimelinePresent(directory) && !manager.copiedAACMarkerPresent(directory) {
+	if !manager.copiedAACNeedsQualification(directory, force) {
 		return nil // An ordinary unindexed cold generation keeps its existing producer.
 	}
 	ctx, release, err := manager.copiedHLSClockAdmission(parent)
@@ -39,7 +32,7 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 		return err
 	}
 	defer release()
-	if manager.index == nil || !manager.index.Safe(item.Path) || ctx.Err() != nil {
+	if !manager.copiedAACQualificationAllowed(ctx, item) {
 		return errCopiedHLSIndex
 	}
 	file, source, err := openCopiedHLSSourceAudio(ctx, item.Path, before)
@@ -48,11 +41,7 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 	}
 	defer file.Close()
 	selected, track, err := copiedAACSourceGrid(ctx, manager.probe.executable, source)
-	after, statErr := os.Lstat(item.Path)
-	opened, openErr := file.Stat()
-	current, policyErr := manager.baseHLSSettings(item, recipe)
-	if err != nil || statErr != nil || openErr != nil || policyErr != nil || current.Cache != base.Cache ||
-		!sameCopiedHLSFile(before, after) || !sameCopiedHLSFile(before, opened) || !manager.index.Safe(item.Path) || ctx.Err() != nil {
+	if err != nil || !manager.copiedAACQualificationComplete(ctx, item, recipe, base.Cache, before, file) {
 		return errCopiedHLSIndex
 	}
 	return manager.recordCopiedAACPolicy(key, base.Cache, before, selected, track)
@@ -75,8 +64,10 @@ func (manager *hlsManager) copiedAACMarkerPresent(directory string) bool {
 
 func copiedAACSourceGrid(ctx context.Context, executable, source string) (bool, int, error) {
 	var grid copiedAACSourceDescription
-	arguments := []string{"-v", "error", "-threads", "1", "-show_streams", "-show_format", "-show_entries",
-		"stream=index,codec_type,codec_name,profile,sample_rate,channels,time_base:format=format_name", "-of", "compact=p=0", source}
+	arguments := []string{
+		"-v", "error", "-threads", "1", "-show_streams", "-show_format", "-show_entries",
+		"stream=index,codec_type,codec_name,profile,sample_rate,channels,time_base:format=format_name", "-of", "compact=p=0", source,
+	}
 	err := copiedHLSLines(ctx, executable, arguments, 64<<10, 64, grid.add)
 	if err != nil || grid.streams == 0 || grid.format == "" || grid.video == "" || ctx.Err() != nil {
 		return false, 0, errCopiedHLSIndex
@@ -121,4 +112,32 @@ func (grid *copiedAACSourceDescription) add(line string) error {
 
 func validCopiedAACSourceStream(fields map[string]string, index int) bool {
 	return index >= 0 && index <= 255 && fields["codec_type"] != "" && fields["codec_name"] != ""
+}
+
+func (manager *hlsManager) copiedAACQualificationSource(ctx context.Context, item library.Item, recipe hlsRecipe) (transcodeSettings, os.FileInfo, error) {
+	if ctx.Err() != nil || manager.index == nil || !manager.index.Safe(item.Path) {
+		return transcodeSettings{}, nil, errCopiedHLSIndex
+	}
+	base, err := manager.baseHLSSettings(item, recipe)
+	if err != nil {
+		return transcodeSettings{}, nil, err
+	}
+	before, err := os.Lstat(item.Path)
+	if err != nil || !before.Mode().IsRegular() || before.Size() <= 0 {
+		return transcodeSettings{}, nil, errCopiedHLSIndex
+	}
+	return base, before, nil
+}
+func (manager *hlsManager) copiedAACNeedsQualification(directory string, force bool) bool {
+	return force || manager.copiedHLSTimelinePresent(directory) || manager.copiedAACMarkerPresent(directory)
+}
+func (manager *hlsManager) copiedAACQualificationAllowed(ctx context.Context, item library.Item) bool {
+	return manager.index != nil && manager.index.Safe(item.Path) && ctx.Err() == nil
+}
+func (manager *hlsManager) copiedAACQualificationComplete(ctx context.Context, item library.Item, recipe hlsRecipe, policy string, before os.FileInfo, file *os.File) bool {
+	after, statErr := os.Lstat(item.Path)
+	opened, openErr := file.Stat()
+	current, policyErr := manager.baseHLSSettings(item, recipe)
+	return statErr == nil && openErr == nil && policyErr == nil && current.Cache == policy &&
+		sameCopiedHLSFile(before, after) && sameCopiedHLSFile(before, opened) && manager.index.Safe(item.Path) && ctx.Err() == nil
 }

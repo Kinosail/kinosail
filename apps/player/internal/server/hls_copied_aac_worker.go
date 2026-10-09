@@ -59,18 +59,7 @@ func (manager *hlsManager) bindCopiedAACIndex(ctx context.Context, item library.
 	if number != 0 || !manager.copiedAACWorkerCurrent(ctx, key, policy) {
 		return errCopiedHLSIndex // A selected producer never falls back to unindexed encoding.
 	}
-	timeline, err := manager.indexCopiedHLS(ctx, item, recipe, &startupEncoding{})
-	if err != nil || timeline.AudioOrigin == nil || !manager.copiedAACWorkerCurrent(ctx, key, policy) ||
-		manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
-		return errCopiedHLSIndex
-	}
-	if err := manager.writeCopiedHLSTimeline(directory, timeline); err != nil {
-		return err
-	}
-	if !manager.copiedAACWorkerCurrent(ctx, key, policy) {
-		return errCopiedHLSIndex
-	}
-	return nil
+	return manager.writeCopiedAACWorkerIndex(ctx, item, recipe, directory, policy, key)
 }
 
 func validCopiedAACWorkerIdentity(identity *copiedAACWorkerIdentity, key, policy string) bool {
@@ -87,4 +76,19 @@ func copiedAACPreparedIndex(ctx context.Context, policy string) (bool, error) {
 		return true, errCopiedHLSIndex
 	}
 	return true, nil
+}
+
+func (manager *hlsManager) writeCopiedAACWorkerIndex(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy, key string) error {
+	timeline, err := manager.indexCopiedHLS(ctx, item, recipe, &startupEncoding{})
+	if err != nil || timeline.AudioOrigin == nil || !manager.copiedAACWorkerCurrent(ctx, key, policy) ||
+		manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
+		return errCopiedHLSIndex
+	}
+	if err := manager.writeCopiedHLSTimeline(directory, timeline); err != nil {
+		return err
+	}
+	if !manager.copiedAACWorkerCurrent(ctx, key, policy) {
+		return errCopiedHLSIndex
+	}
+	return nil
 }

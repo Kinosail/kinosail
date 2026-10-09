@@ -62,8 +62,10 @@ type copiedAACDeliveryOwner struct {
 func newCopiedAACDelivery(t *testing.T) *copiedAACDeliveryOwner {
 	t.Helper()
 	ctx, cancel := context.WithCancel(t.Context())
-	owner := &copiedAACDeliveryOwner{ctx: ctx, cancel: cancel, done: make(chan bool, 1),
-		writer: &copiedAACSlowWriter{ResponseRecorder: httptest.NewRecorder(), entered: make(chan struct{}, 1), release: make(chan struct{})}}
+	owner := &copiedAACDeliveryOwner{
+		ctx: ctx, cancel: cancel, done: make(chan bool, 1),
+		writer: &copiedAACSlowWriter{ResponseRecorder: httptest.NewRecorder(), entered: make(chan struct{}, 1), release: make(chan struct{})},
+	}
 	t.Cleanup(func() {
 		owner.cancel()
 		owner.release()

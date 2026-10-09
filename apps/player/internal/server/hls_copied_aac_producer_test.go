@@ -1,7 +1,6 @@
 package server
 
 import (
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -27,17 +26,7 @@ func TestCopiedAACProducerVideoPrerollKeepsAudio(t *testing.T) {
 }
 
 func TestCopiedAACProducerKeepsLegacyAndAdmission(t *testing.T) {
-	original := []string{"-c:v", "copy", "-c:a", "copy"}
-	arguments, err := copiedHLSProducerArguments(append([]string(nil), original...), nil, 0)
-	if err != nil || !reflect.DeepEqual(arguments, original) {
-		t.Fatal("unindexed legacy arguments changed")
-	}
-	timeline := &copiedHLSTimeline{Keys: []copiedHLSKey{{PTS: 0}, {PTS: 16000}}, TimeBase: 1.0 / 16000}
-	for _, number := range []int{-1, 1, 2} {
-		if _, err := copiedHLSProducerArguments(append([]string(nil), original...), timeline, number); err == nil {
-			t.Fatalf("invalid or unbound segment %d was admitted", number)
-		}
-	}
+	assertCopiedHLSLegacyAdmission(t, copiedHLSProducerArguments)
 }
 
 func assertCopiedAACVideoPreroll(t *testing.T, arguments []string, number int) {

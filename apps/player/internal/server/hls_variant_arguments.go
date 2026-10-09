@@ -1,6 +1,9 @@
 package server
 
-import "context"
+import (
+	"context"
+	"github.com/MikeO7/kinosail/packages/library"
+)
 
 func hlsVariantInputArguments(ctx context.Context, source string, recipe hlsRecipe, timeline *copiedHLSTimeline, input []string, fromBeginning bool, start float64, startNumber int) ([]string, error) {
 	arguments := startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-y"})
@@ -51,4 +54,11 @@ func hlsVariantClockArguments(arguments []string, timeline *copiedHLSTimeline, r
 		return append(arguments, "-output_ts_offset", ffmpegSeconds(outputTime))
 	}
 	return arguments
+}
+
+func (manager *hlsManager) hlsVariantRemainingRefill(ctx context.Context, item library.Item, sourceRecipe, recipe hlsRecipe, start float64, number int, audioRate string, timeline *copiedHLSTimeline) *remainingAudioOrigin {
+	if timeline == nil && number > 0 && item.Kind == "audio" {
+		return remainingAudioOriginRefill(mediaFactsFor(item, manager.probe.facts(ctx, item)), sourceRecipe, recipe, start, number, audioRate)
+	}
+	return nil
 }
