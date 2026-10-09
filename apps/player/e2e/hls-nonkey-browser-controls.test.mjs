@@ -44,7 +44,7 @@ test('consumer admission requires actual selected HLS with no execution or HTTP 
   assert.equal(consumerQualification(row,reference,[0,1,2,3]).qualified,true);
   for(const bad of [{result:'observation-failed'},{pageErrors:1},{selectedPublicHLSObserved:false},
     {directMediaRequested:true},{wrongHLSRecipe:true},{httpOverflow:true},{httpBodyFailure:true},
-    {publicAssetHashMismatch:true},{snapshotFailure:true}])
+    {publicAssetHashMismatch:true},{snapshotFailure:true},{unexpectedSelectedAsset:true},{selectedHLSError:true}])
     assert.equal(consumerQualification({...row,...bad},reference,[0,1,2,3]).qualified,false);
   for(const bad of [{events:[{name:'error',errorCode:4}]},{firstCallbackGap:1},
     {quality:{droppedVideoFrames:1,totalVideoFrames:4}},{quality:null}])
