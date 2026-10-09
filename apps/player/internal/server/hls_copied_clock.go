@@ -183,17 +183,6 @@ func (manager *hlsManager) measureCopiedHLSClock(ctx context.Context, root *os.R
 	return decodeCopiedHLSClock(output.Bytes())
 }
 
-func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTimeline) []string {
-	if timeline != nil {
-		for number := range arguments {
-			if arguments[number] == "-hls_time" && number+1 < len(arguments) {
-				arguments[number+1] = "0.1"
-			}
-		}
-	}
-	return arguments
-}
-
 func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string, timeline *copiedHLSTimeline) (result error) {
 	observation := ctx
 	defer func() {

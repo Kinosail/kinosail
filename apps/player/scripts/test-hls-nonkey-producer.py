@@ -48,7 +48,7 @@ def retain_go_output(stdout,stderr,complete):
     receipt['goStderrSHA256']=hashlib.sha256(stderr).hexdigest()
     receipt['goStderrBytes']=len(stderr)
     compile_lines=[v.get('Output','') for v in events]+stderr.decode(errors='replace').splitlines()
-    receipt['safeGoCompilerMessages']=[line.strip()[:1000] for line in compile_lines if re.search(r'hls_remaining_nonkey_producer(?:_packets)?_test\.go:[0-9]+:',line)][:64]
+    receipt['safeGoCompilerMessages']=[line.strip()[:1000] for line in compile_lines if re.search(r'hls_remaining_nonkey_producer(?:_packets|_arguments)?_test\.go:[0-9]+:',line)][:64]
     receipt['tests']=[{'test':v.get('Test'),'action':v['Action']} for v in events if v.get('Test') and v['Action'] in ['pass','fail','skip']]
     receipt['safeGoMessages']=[v['Output'].strip() for v in events if v.get('Output') and
         ('pending producer ' in v['Output'] or 'nonkey actual-pending-producer ' in v['Output'])][:64]
@@ -66,15 +66,18 @@ try:
     receipt['referenceSHA256']=sha(reference)
     receipt['currentStage']='test-format-control'
     test=ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_test.go'
-    unformatted=run(['gofmt','-l',str(test),str(ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go')],10,65536)
+    formatted_files=[test]+[ROOT/'apps/player/internal/server'/p for p in [
+        'hls_remaining_nonkey_producer_packets_test.go','hls_remaining_nonkey_producer_arguments_test.go',
+        'hls_copied_startup.go','hls_copied_clock.go','hls_copied_segment_arguments.go','hls.go']]
+    unformatted=run(['gofmt','-l',*[str(p) for p in formatted_files]],10,65536)
     receipt['testSourceFormatted']=not unformatted.strip()
     if not receipt['testSourceFormatted']:
-        receipt['safeTestFormattingDiff']=run(['gofmt','-d',str(test),str(ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go')],10,65536).decode()
+        receipt['safeTestFormattingDiff']=run(['gofmt','-d',*[str(p) for p in formatted_files]],10,65536).decode()
     check(receipt['testSourceFormatted'],'producer_test_source_unformatted')
     receipt['currentStage']='actual-canonical-producer'
     env=dict(os.environ,KINOSAIL_COPIED_RECOVERY_MEDIA='1',KINOSAIL_NONKEY_CLI_REFERENCE=str(reference))
     command=['go','-C',str(ROOT/'apps/player'),'test','-count=1','-p=1','-json','./internal/server',
-        '-run','^TestRemainingNonKeyActualPendingProducer$','-timeout','180s']
+        '-run','^TestRemainingNonKey(ActualPendingProducer|Producer.*)$','-timeout','180s']
     process=subprocess.Popen(command,cwd=ROOT,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
     try:
         stdout,stderr=process.communicate(timeout=min(240,guard.check(25)))
@@ -117,7 +120,12 @@ finally:
         receipt['handledTerminationSignals']=guard.signals
         files=[Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_producer_reference.py',
             ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_test.go',
-            ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go']
+            ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_packets_test.go',
+            ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_arguments_test.go',
+            ROOT/'apps/player/internal/server/hls_copied_startup.go',
+            ROOT/'apps/player/internal/server/hls_copied_clock.go',
+            ROOT/'apps/player/internal/server/hls_copied_segment_arguments.go',
+            ROOT/'apps/player/internal/server/hls.go']
         receipt['executedSourceSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'
         check(0<len(raw.encode())<=4<<20,'producer_receipt_bound')

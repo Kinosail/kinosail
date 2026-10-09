@@ -114,7 +114,6 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	if err != nil {
 		return err
 	}
-
 	ticker := time.NewTicker(25 * time.Millisecond)
 	defer ticker.Stop()
 	for {
@@ -218,6 +217,9 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	defer output.close()
 	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
+	if !copiedHLSPendingProducerRecipe(timeline, sourceRecipe) {
+		return errCopiedHLSIndex
+	}
 	if timeline != nil {
 		if startNumber < 0 || startNumber >= len(timeline.Keys) {
 			return errCopiedHLSIndex

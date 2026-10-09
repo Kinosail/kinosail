@@ -56,6 +56,14 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 	if number < 0 || number >= len(timeline.Keys) {
 		return nil, errCopiedHLSIndex
 	}
+	if timeline.Presentation != nil || timeline.Strategy == copiedHLSPrerollStrategy {
+		if number != 0 || !validCopiedHLSPendingProducer(timeline) {
+			return nil, errCopiedHLSIndex
+		}
+		origin := float64(timeline.Presentation.RequestedMicros) / 1_000_000
+		return append(arguments, "-copypriorss:v", "0", "-avoid_negative_ts", "disabled",
+			"-output_ts_offset", copiedHLSTime(timeline.point(0)-origin)), nil
+	}
 	// FFmpeg can demux an earlier key for input -ss. Do not copy that preroll.
 	arguments = append(arguments, "-copypriorss", "0")
 	if number > 0 {
