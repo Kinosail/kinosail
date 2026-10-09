@@ -127,6 +127,7 @@ func TestCopiedAACPendingMasterKeepsGETAndHEADAdmission(t *testing.T) {
 					t.Fatal("pending admission changed the generation or initial owner")
 				}
 				commit()
+				committed := copiedAACPlaylistSnapshot(t, directory)
 				resume()
 				select {
 				case result := <-done:
@@ -139,8 +140,8 @@ func TestCopiedAACPendingMasterKeepsGETAndHEADAdmission(t *testing.T) {
 				case <-time.After(4 * time.Second):
 					t.Fatal("committed pending HTTP request did not join")
 				}
-				if manager.jobs[key] != job {
-					t.Fatal("pending request replaced its initial owner")
+				if manager.jobs[key] != job || !reflect.DeepEqual(committed, copiedAACPlaylistSnapshot(t, directory)) {
+					t.Fatal("committed pending delivery changed its generation or initial owner")
 				}
 			})
 		}

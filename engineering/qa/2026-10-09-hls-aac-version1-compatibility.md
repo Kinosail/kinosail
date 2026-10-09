@@ -244,3 +244,7 @@ scheduling evidence, not actual source-clock or media acceptance.
 A public old-format control removes only the bandwidth marker from genuine
 Version 1 media, then compares baseline/candidate bytes and 480 source frames.
 Pending owner-root and preflight-to-deletion races remain release blockers.
+
+The qualified cross-version RED is preserved in artifact `11645044736`.
+GitHub archive digest:
+`6b6545583bf36470d0d8940d59e4010f40e5a25923ca71bfc9a11b4bbd41915f`.

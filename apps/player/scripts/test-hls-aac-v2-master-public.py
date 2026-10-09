@@ -13,7 +13,7 @@ from hls_aac_v2_public_evidence import assert_fixed_source_grid, cache_state
 from hls_aac_v2_public_http import cached_media, diagnostic_producer_rows, idle
 from hls_aac_v2_compat_public import diagnostics, requests, responses, require_diagnostics, snapshot
 from hls_followon_frames import decode_frames
-from hls_followon_public import check, prepare_once
+from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 from hls_timeline_fixture import fixture
 from hls_timeline_http import sha, source_state
@@ -47,7 +47,7 @@ def older_marker_controls(cache, baseline, candidate, source, selected, referenc
     template = RUN / 'older-marker-cache'
     shutil.copytree(cache, template)
     path = master_path(template)
-    original = path.read_bytes()
+    original = bounded_bytes(path, 256 << 10, 'master_older_marker_bound')
     check(original.count(b'#KINOSAIL-BANDWIDTH:2\n') == 1, 'master_older_marker_fixture')
     changed = original.replace(b'#KINOSAIL-BANDWIDTH:2\n', b'', 1)
     path.write_bytes(changed)
