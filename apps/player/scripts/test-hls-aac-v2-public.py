@@ -7,15 +7,15 @@ import shutil
 import subprocess
 import sys
 import time
-from hls_aac_v2_public_http import ActualServer, actual_producer_rows, cached_media
+from hls_aac_v2_public_http import ActualServer, actual_producer_rows, cached_media, diagnostic_producer_rows
 from hls_aac_v2_public_evidence import cache_state, qualify
 from hls_followon_frames import decode_frames
-from hls_followon_public import check, prepare_once
+from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_nonkey_browser_public import public_media
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 from hls_timeline_fixture import fixture
 from hls_timeline_http import sha, source_state
-from hls_timeline_packets import manifest_facts
+from hls_timeline_packets import manifest_facts, safe_encoder_lifecycle, safe_seek_phases
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-aac-v2-public' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -101,8 +101,13 @@ try:
     check(origin['InitialSeekMicros'] == 12000000 and origin['FirstPTS'] == 571400
           and origin['Physical'] == -571400 and origin['Edit'] == 4600 and origin['SourceTrack'] == 1,
           'v2_actual_packet_origin')
-    check(len(owner.invocation_rows()) == 1, 'v2_prepare_encoder_count')
-    receipt.update(preparation=prepared, initialCache=prefix)
+    rows = owner.invocation_rows()
+    private = bounded_bytes(owner.log_path, 2 << 20, 'v2_private_lifecycle_bound').decode()
+    receipt.update(preparation=prepared, initialCache=prefix,
+        producerCapture={'records': len(rows), 'fileExists': owner.invocations.exists(),
+            'rows': diagnostic_producer_rows(rows, source, owner.process.pid)},
+        encoderLifecycle=safe_encoder_lifecycle(private), encoderSeekPhases=safe_seek_phases(private))
+    check(len(rows) == 1, 'v2_prepare_encoder_count')
     receipt['stage'] = 'causal-public-refill4'
     case('causal-refill4', selected, metadata, prefix)
     producer = actual_producer_rows(owner.invocation_rows())
@@ -217,6 +222,8 @@ finally:
             ''.join(sha(path) + '  ' + str(path.relative_to(ROOT)) + '\n' for path in files))
         print(json.dumps({'revision': receipt['revision'], 'tree': receipt['tree'], 'result': receipt['result'],
             'stage': receipt.get('stage'), 'failureClass': receipt.get('failureClass'),
+            'producerCapture': receipt.get('producerCapture'), 'encoderLifecycle': receipt.get('encoderLifecycle'),
+            'encoderSeekPhases': receipt.get('encoderSeekPhases'),
             'cases': [{'label': value['label'], 'result': value['result'],
                        'publicPackets': value.get('tail', {}).get('publicPackets'),
                        'videoFrames': len(value.get('observations', {}).get('publicFrameRows', []))}

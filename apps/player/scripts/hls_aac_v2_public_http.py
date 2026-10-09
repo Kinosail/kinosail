@@ -106,6 +106,28 @@ class ActualServer:
         return rows
 
 
+
+def diagnostic_producer_rows(rows, source, parent):
+    """Non-throwing whitelist projection keeps a failed counter's cause."""
+    output = []
+    for row in rows:
+        args = row['args']
+        fields = {'ownedParent': row['parent'] == parent,
+                  'exactSourceInputs': sum(args[n + 1] == str(source)
+                      for n, value in enumerate(args[:-1]) if value == '-i')}
+        for name in ['-ss', '-start_number', '-output_ts_offset', '-hls_time']:
+            values = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
+            fields[name.removeprefix('-')] = [value if re.fullmatch(r'-?[0-9]{1,12}(?:\\.[0-9]{1,9})?', value)
+                                              else 'other' for value in values]
+        for name in ['-c:a', '-c:v']:
+            values = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
+            fields[name.removeprefix('-')] = [value if value in ['copy', 'aac', 'libx264', 'libx265'] else 'other'
+                                              for value in values]
+        fields['videoCopyPriorSS'] = '-copypriorss:v' in args
+        fields['globalCopyPriorSS'] = '-copypriorss' in args
+        output.append(fields)
+    return output
+
 def option(args, name):
     matches = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
     check(len(matches) <= 1, 'v2_argv_duplicate_option')
