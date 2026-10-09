@@ -62,7 +62,7 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			job.cachePolicy = options.Cache
 			manager.jobs[key] = job
 			//nolint:contextcheck // The Server lifecycle owns shared output after this request ends.
-			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
+			go manager.encode(context.WithValue(jobContext, copiedAACWorkerKey{}, &copiedAACWorkerIdentity{key: key, recipe: recipe, policy: options.Cache, job: job}), item, job, key, options, recipe, 0, false)
 		}
 		manager.adoptStartupJob(ctx, job, key)
 		retainHLSPage(job, ctx)
@@ -104,6 +104,14 @@ func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recip
 }
 
 func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (transcodeSettings, error) {
+	options, err := manager.baseHLSSettings(item, recipe)
+	if err != nil {
+		return options, err
+	}
+	return manager.copiedAACSettings(item, recipe, options)
+}
+
+func (manager *hlsManager) baseHLSSettings(item library.Item, recipe hlsRecipe) (transcodeSettings, error) {
 	options, err := manager.settings.transcodingFor(recipe.codec)
 	if err != nil {
 		return transcodeSettings{}, err
@@ -126,6 +134,10 @@ func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.I
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	if copiedAACPolicyRequired(expected) && (manager.index == nil || !manager.index.Safe(item.Path)) {
+		return errHLSIdentityChanged
+	}
+	recipe = copiedAACCanonicalRecipe(ctx, recipe, expected)
 	current, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		if errors.Is(err, playback.ErrHLSSourceChanged) {

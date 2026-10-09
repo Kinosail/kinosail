@@ -6,13 +6,17 @@ final class RemoteHomeScrollingTests: RemoteTestCase {
     func testDeepHomeTraversalPreservesFocusAndReturnsToSearch() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
+        var downMovements = 1
         app.launch()
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         remote.press(.down)
         for _ in 0..<16 {
-            if app.staticTexts["Nature"].isHittable { break }
+            let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
+            if app.staticTexts["Nature"].isHittable && focused.exists &&
+               focused.frame.minY > app.staticTexts["Nature"].frame.maxY { break }
             remote.press(.down)
+            downMovements += 1
         }
         XCTAssertTrue(app.staticTexts["Nature"].isHittable, "The last genre shelf must remain reachable")
         let focus = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
@@ -36,11 +40,14 @@ final class RemoteHomeScrollingTests: RemoteTestCase {
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch.label,
                        selectedLabel, "Back must restore the selected Home card")
         record("deep home after detail", app)
+        var upMovements = 0
         for _ in 0..<16 {
             if app.buttons["Search"].hasFocus { break }
             remote.press(.up)
+            upMovements += 1
         }
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         record("deep home return to search", app)
+        print("REMOTE movements Search-to-Nature: \(downMovements) Down; Nature-to-Search: \(upMovements) Up")
     }
 }

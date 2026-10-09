@@ -50,7 +50,7 @@ func (manager *hlsManager) selectCopiedHLSTimeline(ctx context.Context, item lib
 		return nil, errCopiedHLSIndex
 	}
 	manager.mu.Lock()
-	idle := len(manager.jobs) == 0
+	idle := len(manager.jobs) == 0 || manager.copiedAACWorkerCurrentLocked(ctx, hlsRecipeKey(item.ID, recipe), timeline.Policy)
 	manager.mu.Unlock()
 	if !idle {
 		return nil, errCopiedHLSIndex

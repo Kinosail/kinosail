@@ -24,7 +24,19 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		localizedNotFound(writer, request)
 		return
 	}
+	if manager.serveCopiedHLSLegacy(writer, request, item, recipe, localName) {
+		return
+	}
+	if err := manager.qualifyCopiedAAC(request.Context(), item, recipe, false); err != nil {
+		localizedNotFound(writer, request)
+		return
+	}
 	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
+		directory := filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
+		if err := manager.copiedAACCacheAsset(request.Context(), item, recipe, directory, localName); err != nil {
+			localizedNotFound(writer, request)
+			return
+		}
 		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
 			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
 			localizedNotFound(writer, request)
@@ -35,6 +47,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	start := 0
 	duration := 0.0
 	if filepath.Base(name) == "index.m3u8" {
+		if err := manager.copiedAACPlaylistBinding(request.Context(), item, recipe, key); err != nil {
+			rejectCopiedAACPlaylistClass(writer, request, "invalid-source-binding")
+			return
+		}
 		var validStart bool
 		start, duration, validStart = manager.recipePlaylistStart(writer, request, item)
 		if !validStart {
@@ -54,14 +70,20 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	if !ready {
 		return
 	}
-	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
-		return
+	if filepath.Ext(name) == ".m3u8" {
+		if manager.serveCopiedAACPlaylist(writer, request, item, recipe, localName, key, start, hlsPlaybackDuration(recipe, duration)) ||
+			serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
+			return
+		}
 	}
 	if filepath.Ext(name) == ".m4s" {
 		if !manager.waitForRecipeSegment(request, item, recipe, name, key, path) {
 			localizedNotFound(writer, request)
 			return
 		}
+	}
+	if manager.serveCopiedAACFile(writer, request, item, recipe, localName, key) {
+		return
 	}
 	if manager.serveRemainingAACFile(writer, request, item, recipe, localName, key) {
 		return
@@ -72,14 +94,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	manager.adoptRecipeFile(request, key, path)
 	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
 	http.ServeFile(writer, request, path)
-}
-
-func (manager *hlsManager) adoptRecipeFile(request *http.Request, key, path string) {
-	if request.Method == http.MethodGet {
-		if _, err := os.Stat(path); err == nil {
-			manager.startup.playback(key)
-		}
-	}
 }
 
 func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, request *http.Request, item library.Item) (int, float64, bool) {
@@ -171,6 +185,14 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		localizedNotFound(writer, request)
 		return true
 	}
+	return writeHLSPlaylist(writer, request, hlsPlaylistSessionData(request, manifest, start, duration, projection...))
+}
+
+func hlsPlaylistSessionData(request *http.Request, manifest []byte, start int, duration float64, projection ...func([]byte) []byte) []byte {
+	playID := jellyfinPlaySessionQuery(request)
+	if playID != "" && !validPlaybackSession(playID) {
+		return nil
+	}
 	if playID == "" {
 		manifest = projectHLSPlaylist(manifest, duration, projection...)
 		if session := requestPlaybackSession(request.Context()); validPlaybackSession(session) {
@@ -180,11 +202,18 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
 	}
 	if manifest == nil {
-		localizedNotFound(writer, request)
-		return true
+		return nil
 	}
 	if ticket, ok := request.Context().Value(castTicketKey{}).(string); ok {
 		manifest = hlsPlaylistWithQuery(manifest, url.Values{"ticket": {ticket}})
+	}
+	return manifest
+}
+
+func writeHLSPlaylist(writer http.ResponseWriter, request *http.Request, manifest []byte) bool {
+	if manifest == nil {
+		localizedNotFound(writer, request)
+		return true
 	}
 	writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 	writer.Header().Set("X-Content-Type-Options", "nosniff")
@@ -263,32 +292,4 @@ func requestedHLSStart(request *http.Request) (int, error) {
 		return 0, errors.New("resume position is invalid")
 	}
 	return start, nil
-}
-
-func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
-	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
-	prepareContext = context.WithValue(prepareContext, viewerContextKey{}, currentViewer(request))
-	if request.Method != http.MethodGet {
-		prepareContext = context.WithValue(prepareContext, startupMetadataKey{}, true)
-	}
-	prepareContext, cancel := context.WithTimeout(prepareContext, 30*time.Second)
-	defer cancel()
-	started := time.Now()
-	cached := manager.startupWindowReady(item, recipe)
-	if err := manager.prepare(prepareContext, item, recipe); err != nil { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
-		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "mode", recipe.mode, "encoder_phase", hlsReadinessPhase(err), "error", hlsDiagnostic(err, item.Path))
-		status := http.StatusServiceUnavailable
-		if errors.Is(err, playback.ErrHLSSource) {
-			status = http.StatusBadRequest
-		}
-		localizedError(writer, request, err.Error(), status)
-		return false
-	}
-	cacheState := "cold"
-	if cached {
-		cacheState = "warm"
-	}
-	writer.Header().Set("X-Kinosail-Startup-Cache", cacheState)
-	slog.Info("HLS startup", "cache_state", cacheState, "prepare_ms", time.Since(started).Milliseconds())
-	return true
 }

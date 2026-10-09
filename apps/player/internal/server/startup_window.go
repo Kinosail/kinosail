@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -66,8 +67,11 @@ func missingStartupRendition(root *os.Root, directory, key, rendition string, du
 	return ""
 }
 
-func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecipe) bool {
+func (manager *hlsManager) startupWindowReady(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
 	if manager.cache == "" || manager.settings == nil {
+		return false
+	}
+	if err := manager.qualifyCopiedAAC(ctx, item, recipe, false); err != nil {
 		return false
 	}
 	key := hlsRecipeKey(item.ID, recipe)

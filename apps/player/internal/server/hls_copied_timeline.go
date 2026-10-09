@@ -29,7 +29,7 @@ func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
 			return false
 		}
 	}
-	return validCopiedHLSPresentation(timeline) && (timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1)
+	return validCopiedAACOrigin(timeline) && validCopiedHLSPresentation(timeline) && (timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1)
 }
 
 func validCopiedHLSHeader(timeline *copiedHLSTimeline) bool {

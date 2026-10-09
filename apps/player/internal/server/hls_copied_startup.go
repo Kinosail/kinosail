@@ -24,7 +24,7 @@ func (manager *hlsManager) copiedHLSVideo(ctx context.Context, item library.Item
 }
 
 func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.Item, directory, policy string, recipe hlsRecipe) bool {
-	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
+	if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil || ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
 		return false
 	}
 	if !manager.startupCompletionReusable(ctx, item, directory, policy) {

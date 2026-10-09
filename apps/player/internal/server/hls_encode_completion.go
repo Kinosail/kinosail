@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -36,4 +38,65 @@ func (manager *hlsManager) finishHLSEncode(job *hlsJob, key, directory string, s
 	}
 	close(job.done)
 	manager.mu.Unlock()
+}
+
+type hlsEncodeOutcome struct {
+	softwareFallback bool
+	superseded       bool
+	inactive         bool
+	preserve         bool
+}
+
+func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *hlsJob, key string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) {
+	started := time.Now()
+	job.observation.queued(recipe.mode)
+	directory := filepath.Join(manager.cache, key)
+	manager.prepareHLSEncodeDirectory(job, directory, preserve)
+	outcome := hlsEncodeOutcome{preserve: preserve}
+	if job.err == nil {
+		outcome = manager.runHLSEncode(ctx, item, job, directory, options, recipe, startNumber, preserve)
+		manager.reportHLSEncode(job, item, directory, options, recipe, outcome, started)
+	}
+	manager.finishHLSEncode(job, key, directory, startNumber, outcome.preserve)
+}
+
+func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory string, preserve bool) {
+	if !preserve {
+		job.err = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+	}
+	if job.err == nil {
+		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
+	}
+}
+
+func (manager *hlsManager) runHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) hlsEncodeOutcome {
+	outcome := hlsEncodeOutcome{preserve: preserve}
+	job.err = manager.encodeVariants(ctx, item, directory, options, recipe, startNumber)
+	outcome.superseded = errors.Is(context.Cause(ctx), errHLSSeekRestart) || errors.Is(context.Cause(ctx), errHLSIdentityChanged)
+	outcome.inactive = errors.Is(context.Cause(ctx), errHLSInactive)
+	if outcome.superseded || outcome.inactive {
+		job.err = nil
+	}
+	if outcome.inactive && !outcome.preserve {
+		outcome.preserve = preserveInactiveHLS(job, directory, item.Path, options.Cache)
+	}
+	if manager.retrySoftwareHLSEncode(ctx, item, job, directory, options, recipe, startNumber, outcome.preserve) {
+		outcome.softwareFallback = true
+	}
+	if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err == nil && job.err != nil {
+		outcome.preserve = true
+	}
+	return outcome
+}
+
+func preserveInactiveHLS(job *hlsJob, directory, source, cache string) bool {
+	preserve := false
+	if masterFresh(filepath.Join(directory, "index.m3u8"), source, cache) {
+		job.err = writeAtomicFile(filepath.Join(directory, ".seekable"), []byte(cache))
+		preserve = job.err == nil
+	}
+	if !preserve {
+		_ = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+	}
+	return preserve
 }
