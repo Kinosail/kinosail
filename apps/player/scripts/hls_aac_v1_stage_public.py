@@ -104,20 +104,32 @@ def settle(process, row):
     check(zeros == 2 and not failures, 'v1_stage_owned_group_not_joined')
 
 
-def execute(binary, args, directory, number, guard, row):
+def execute(binary, args, directory, number, guard, row, cli_owners):
     end = time.monotonic() + min(30, guard.check(20))
     with (directory.parent / (directory.name + '-private.log')).open('wb') as error:
         process = subprocess.Popen([binary, *args], stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=error, start_new_session=True)
+        cli_owners.append((process, row))
         row['commandStarted'] = True
         try:
             while process.poll() is None:
                 inventory(directory, number)
+                check(os.fstat(error.fileno()).st_size <= 2 << 20, 'v1_stage_private_log_bound')
                 check(time.monotonic() < end, 'v1_stage_command_deadline')
                 time.sleep(0.01)
             check(process.returncode == 0, 'v1_stage_command_failed')
+        except Exception as failure:
+            row['failureClass'] = str(failure) if isinstance(failure, RuntimeError) else type(failure).__name__
+            raise
         finally:
-            settle(process, row)
+            with guard.cleanup():
+                try:
+                    settle(process, row)
+                    cli_owners.remove((process, row))
+                except Exception as failure:
+                    row['cleanupFailureClass'] = type(failure).__name__
+                    raise RuntimeError('v1_stage_cleanup_unqualified') from None
+        check(os.fstat(error.fileno()).st_size <= 2 << 20, 'v1_stage_private_log_bound')
     row['joinedStageInventory'] = inventory(directory, number)
 
 def projected(rows):
@@ -157,10 +169,10 @@ def media_evidence(source_frames, media, directory, timeline, number, row):
         decodedFrames=len(frames), referenceFrames=len(reference),
         exactSourceFrames=[digest for _, digest in frames] == reference,
         historicalAACCorrectnessAccepted=False)
-    row['result'] = 'observed' if row['exactInitSHA256'] and row['exactBaselinePackets'] and row['exactSourceFrames'] else 'failed'
+    row['result'] = 'observed' if row['exactInitSHA256'] and row['exactBaselinePackets'] and row['exactSourceFrames'] and (number != 0 or row['exactFragmentSHA256']) else 'failed'
 
 
-def prove(binary, source, media, rows, timeline, run, guard, receipt):
+def prove(binary, source, media, rows, timeline, run, guard, receipt, cli_owners):
     _, source_frames = decode_frames(source)
     check(len(source_frames) == 768, 'v1_stage_independent_complete_source')
     before = source_state(source)
@@ -179,11 +191,11 @@ def prove(binary, source, media, rows, timeline, run, guard, receipt):
                 row['executedArgumentsSHA256'] = hashlib.sha256(repr(args).encode()).hexdigest()
                 row['sourceFDInputWitnessed'] = identity(os.stat(option(args, '-i'))) == identity(witness)
                 check(row['sourceFDInputWitnessed'], 'v1_stage_input_fd_mismatch')
-                execute(binary, args, directory, number, guard, row)
+                execute(binary, args, directory, number, guard, row, cli_owners)
                 media_evidence(source_frames, media, directory, timeline, number, row)
             except Exception as error:
-                row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
-                check(not row.get('commandStarted') or row.get('joinedGroupZeroSamples') == 2,
+                row.setdefault('failureClass', str(error) if isinstance(error, RuntimeError) else type(error).__name__)
+                check(not cli_owners,
                     'v1_stage_unknown_owned_command')
             check(identity(os.fstat(retained.fileno())) == identity(witness)
                 and identity(source.stat()) == identity(witness) and source_state(source) == before,

@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 import time
-from hls_aac_v1_stage_public import prove
+from hls_aac_v1_stage_public import prove, settle
 from hls_aac_v2_compat_public import snapshot
 from hls_aac_v2_lazy_public import indexed, seed
 from hls_followon_public import bounded_bytes, check
@@ -33,7 +33,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
     'remainingBoundaries': ['Server worker and GET hydration', 'observer FD accounting',
         'source/root/owner replacement and P2 migration races', 'historical Version1 AAC failures',
         'deleted-zero baseline remains unqualified', 'all50 and fourteen scanner holds']}
-owners, source, before, complete, seal = [], None, None, None, None
+owners, cli_owners, source, before, complete, seal = [], [], None, None, None, None
 guard = DiagnosticDeadline(900)
 guard.__enter__()
 
@@ -74,13 +74,21 @@ try:
     seal = snapshot(complete)
     receipt['completeCacheSealBeforeSHA256'] = hashlib.sha256(json.dumps(seal, sort_keys=True).encode()).hexdigest()
     prove(shutil.which('ffmpeg'), source, directory / '360p', owners[-1].source_invocation_rows(),
-        timeline, RUN, guard, receipt)
+        timeline, RUN, guard, receipt, cli_owners)
     if len(receipt['cases']) == 3 and all(row['result'] == 'observed' for row in receipt['cases']):
         receipt.update(result='observed', stageFeasibilityAcceptance=True)
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
     with guard.cleanup():
+        for process, row in list(cli_owners):
+            try:
+                settle(process, row)
+                cli_owners.remove((process, row))
+            except Exception:
+                row['cleanupFailureClass'] = 'v1_stage_final_cli_join_failed'
+                receipt.update(result='failed', cleanupFailureClass='v1_stage_final_cli_join_failed')
+        receipt['unresolvedCLIOwners'] = len(cli_owners)
         receipt['ownedServerEvidence'] = []
         for owner in owners:
             try:
@@ -120,6 +128,7 @@ finally:
             'cases': receipt['cases'], 'completeCacheUnchanged': receipt.get('completeCacheUnchanged'),
             'sourceUnchanged': receipt.get('sourceUnchanged'), 'ownedServerEvidence': receipt['ownedServerEvidence'],
             'cleanupFailureClass': receipt.get('cleanupFailureClass'),
+            'unresolvedCLIOwners': receipt['unresolvedCLIOwners'],
             'sourceGuardFailureClass': receipt.get('sourceGuardFailureClass'),
             'cacheGuardFailureClass': receipt.get('cacheGuardFailureClass'),
             'stageFeasibilityAcceptance': receipt['stageFeasibilityAcceptance'],
