@@ -1,0 +1,49 @@
+name: Indexed copied AAC V2 recovery contracts
+on:
+  push:
+    branches: [codex/hls-aac-v2-r17-20261009]
+permissions: {contents: read}
+jobs:
+  contracts:
+    name: Test-first AAC producer and cache boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        with: {fetch-depth: 0, persist-credentials: false}
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
+      - name: Execute source and cache contracts before production
+        id: contracts
+        timeout-minutes: 7
+        run: |
+          mkdir -p .verification/hls-aac-v2
+          set -o pipefail
+          go -C apps/player test ./internal/server -run '^TestCopiedAAC|^TestCopiedHLS(VideoPrerollDoesNotSuppressCopiedAudio|PrerollScopeKeepsLegacyAndAdmission)$' -v -count=1 2>&1 | tee .verification/hls-aac-v2/contracts.txt
+      - name: Preserve exact-source contract outcome
+        if: always()
+        env:
+          CONTRACT_OUTCOME: ${{ steps.contracts.outcome }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root=pathlib.Path('.verification/hls-aac-v2')
+          root.mkdir(parents=True,exist_ok=True)
+          data={'revision':os.environ['GITHUB_SHA'],'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),'contractOutcome':os.environ['CONTRACT_OUTCOME'],'publicAcceptance':False,'nativeAcceptance':False}
+          receipt=root/'receipt.json'
+          receipt.write_text(json.dumps(data,sort_keys=True,indent=2)+'\n')
+          (root/'SHA256SUMS').write_text(hashlib.sha256(receipt.read_bytes()).hexdigest()+'  receipt.json\n')
+          print(receipt.read_text())
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        timeout-minutes: 2
+        with:
+          name: aac-v2-contracts-${{ github.sha }}
+          path: .verification/hls-aac-v2
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
