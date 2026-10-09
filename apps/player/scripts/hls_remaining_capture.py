@@ -1,6 +1,11 @@
 """Private actual codec invocation capture and closed production origin-refill recipe."""
 from pathlib import Path
+import fcntl
+import json
+import os
+import re
 import shutil
+import stat
 from hls_followon_public import check
 from hls_timeline_http import sha
 
@@ -11,16 +16,12 @@ def capture_codec(directory, source, pacing, installation, env, case):
     check(real is not None, 'ffmpeg_unavailable')
     wrapper = directory / 'paced-ffmpeg'
     invocation = directory / 'pacing-invocations.jsonl'
-    wrapper.write_text('#!/usr/bin/env python3\nimport os,sys,json\na=sys.argv[1:]\n'
-        "if '-hls_time' in a and " + repr(pacing is not None) + ":\n"
-        " if '-readrate' in a: a[a.index('-readrate')+1]=" + repr(str(pacing)) + '\n'
-        " else: a[a.index('-i'):a.index('-i')]=['-readrate'," + repr(str(pacing)) + ']\n'
-        + ' with open(' + repr(str(invocation)) + ", 'a') as f: f.write(json.dumps({'pid':os.getpid(),'parent':os.getppid(),'sourceMatched':" + repr(str(source)) + " in a,'readrate':a[a.index('-readrate')+1]})+'\\n')\n"
-        + "if '-start_number' in a and a[a.index('-start_number')+1]=='4' and " + repr(str(source)) + " in a:\n"
-        + ' value=json.dumps(a)\n if not (0<len(a)<=96 and all(len(v.encode())<=4096 for v in a) and len(value.encode())<=8192): raise SystemExit("refill_capture_bound")\n'
-        + ' with os.fdopen(os.open(' + repr(str(directory / 'refill-recipe-private.json'))
-        + ',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600),"w") as f: f.write(value)\n'
-        + (" sys.path.insert(0," + repr(str(Path(__file__).parent)) + ")\n from hls_remaining_installation import installed_refill\n"
+    wrapper.write_text('#!/usr/bin/env python3\nimport os,sys\nsys.dont_write_bytecode=True\n'
+        + 'sys.path.insert(0,' + repr(str(Path(__file__).parent)) + ')\n'
+        + 'from hls_remaining_capture import captured_arguments\n'
+        + 'a=captured_arguments(sys.argv[1:],' + repr(str(source)) + ',' + repr(str(directory)) + ','
+        + repr(pacing) + ',' + repr(str(invocation)) + ',' + repr(str(directory/'refill-recipe-private.json')) + ')\n'
+        + ("if '-start_number' in a and a[a.index('-start_number')+1]=='4':\n from hls_remaining_installation import installed_refill\n"
             + " a=installed_refill(a," + repr(str(source)) + ',' + repr(str(directory))
             + ",os.environ.get('KINOSAIL_INSTALLATION_RECEIPT_DIR'))\n" if installation else '')
         + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
@@ -30,6 +31,85 @@ def capture_codec(directory, source, pacing, installation, env, case):
     if pacing is not None:
         case['testOnlyRealCodecPacing'] = dict(case['actualCodecInvocation'], readrate=pacing)
     return real, invocation
+
+
+def capture_log_bytes(fd, pacing):
+    info = os.fstat(fd)
+    check(stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1
+        and stat.S_IMODE(info.st_mode) == 0o600 and info.st_size <= 4096, 'refill_capture_log_file')
+    os.lseek(fd, 0, os.SEEK_SET)
+    raw = os.read(fd, 4097)
+    check(len(raw) == info.st_size and (not raw or raw.endswith(b'\n')) and len(raw.splitlines()) <= 32,
+        'refill_capture_log_bound')
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            check(key not in result, 'refill_capture_log_duplicate')
+            result[key] = value
+        return result
+    for line in raw.splitlines():
+        row = json.loads(line, object_pairs_hook=unique)
+        check(type(row) is dict and set(row) == {'pid', 'parent', 'sourceMatched', 'readrate'}
+            and all(type(row[k]) is int and 0 < row[k] < 1 << 31 for k in ['pid', 'parent'])
+            and type(row['sourceMatched']) is bool and row['sourceMatched']
+            and row['readrate'] == str(pacing), 'refill_capture_log_row')
+    return raw
+
+
+def captured_arguments(arguments, source, directory, pacing, invocation, capture):
+    a = list(arguments)
+    check(0 < len(a) <= 96 and all(type(v) is str and len(v.encode()) <= 4096 for v in a)
+        and len(json.dumps(a).encode()) <= 8192, 'refill_capture_bound')
+    if '-hls_time' not in a:
+        return a
+    check(a.count('-i') == 1 and a.index('-i')+1 < len(a) and a[a.index('-i')+1] == source,
+        'refill_capture_source')
+    check(a.count('-start_number') == 1 and a.index('-start_number')+1 < len(a)
+        and re.fullmatch(r'0|[1-9][0-9]{0,5}', a[a.index('-start_number')+1]) is not None,
+        'refill_capture_start')
+    fresh = a[a.index('-start_number')+1] == '4'
+    if fresh:
+        check(a.count('-map') == 1 and a.index('-map')+1 < len(a) and a[a.index('-map')+1] == '0:a:0'
+            and a.count('-hls_segment_filename') == 1 and a.index('-hls_segment_filename')+1 < len(a),
+            'refill_capture_track')
+        root = Path(a[-1]).parent.parent.parent
+        check(root.parent == Path(directory)/'cache' and re.fullmatch(r'[a-f0-9]{16}-plan-a-[a-zA-Z0-9-]+', root.name)
+            and a[-1] == str(root/'.seek-4/audio/index.m3u8')
+            and a[a.index('-hls_segment_filename')+1] == str(root/'audio/segment-%05d.m4s'),
+            'refill_capture_generation')
+        check(not os.path.lexists(capture), 'refill_capture_existing')
+    if pacing is not None:
+        check(a.count('-readrate') <= 1 and ('-readrate' not in a or a.index('-readrate')+1 < len(a)), 'refill_capture_readrate')
+        if '-readrate' in a:
+            a[a.index('-readrate')+1] = str(pacing)
+        else:
+            a[a.index('-i'):a.index('-i')] = ['-readrate', str(pacing)]
+    value = json.dumps(a).encode()
+    check(len(a) <= 96 and len(value) <= 8192, 'refill_capture_bound')
+    if pacing is None:
+        if fresh:
+            with os.fdopen(os.open(capture, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600), 'wb') as output:
+                output.write(value)
+        return a
+    row = (json.dumps({'pid': os.getpid(), 'parent': os.getppid(), 'sourceMatched': True, 'readrate': str(pacing)})+'\n').encode()
+    created = not os.path.lexists(invocation)
+    fd = os.open(invocation, os.O_RDWR|os.O_NOFOLLOW|(os.O_CREAT|os.O_EXCL if created else 0), 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        raw = capture_log_bytes(fd, pacing)
+        check(len(raw)+len(row) <= 4096 and len(raw.splitlines()) < 32, 'refill_capture_log_full')
+        if fresh:
+            with os.fdopen(os.open(capture, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW, 0o600), 'wb') as output:
+                output.write(value)
+        os.lseek(fd, 0, os.SEEK_END)
+        check(os.write(fd, row) == len(row), 'refill_capture_log_write')
+    except Exception:
+        if created and os.fstat(fd).st_size == 0 and os.path.samestat(os.fstat(fd), os.lstat(invocation)):
+            os.unlink(invocation)
+        raise
+    finally:
+        os.close(fd)
+    return a
 
 
 def origin_refill_template(source, root, case):
