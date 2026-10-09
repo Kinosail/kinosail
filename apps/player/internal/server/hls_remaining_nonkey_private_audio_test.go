@@ -77,9 +77,11 @@ func remainingNonKeyPrivateAudioCorrespondence(t *testing.T, facts *copiedHLSPri
 
 func remainingNonKeyPrivateAudioRejects(t *testing.T, ctx context.Context, initialization, fragment []byte) {
 	t.Helper()
-	for _, name := range []string{"empty-init", "empty-first", "truncated-first", "duplicate-moov", "duplicate-mdat",
+	for _, name := range []string{
+		"empty-init", "empty-first", "truncated-first", "duplicate-moov", "duplicate-mdat",
 		"ambiguous-audio", "absent-audio-track", "empty-edit", "negative-edit", "edit-rate",
-		"audio-sample-count", "audio-offset-header", "audio-offset-overflow", "audio-overlaps-video", "zero-audio-size"} {
+		"audio-sample-count", "audio-offset-header", "audio-offset-overflow", "audio-overlaps-video", "zero-audio-size",
+	} {
 		t.Run(name, func(t *testing.T) {
 			initCopy, firstCopy := bytes.Clone(initialization), bytes.Clone(fragment)
 			initCopy, firstCopy = remainingNonKeyPrivateAudioDamage(t, name, initCopy, firstCopy)

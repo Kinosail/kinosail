@@ -11,10 +11,12 @@ import (
 // They do not use the production reader to locate or validate configuration.
 func remainingNonKeyPrivateAudioConfigurationRejects(t *testing.T, ctx context.Context, initialization, fragment []byte) {
 	t.Helper()
-	for _, name := range []string{"entry-channels", "entry-rate", "entry-fractional-rate",
+	for _, name := range []string{
+		"entry-channels", "entry-rate", "entry-fractional-rate",
 		"asc-rate", "asc-channels", "asc-short-frame", "trex-description", "trex-track",
 		"trex-duplicate-track", "missing-trex", "missing-audio-minf", "duplicate-audio-minf",
-		"misbound-audio-stsd", "duplicate-audio-stsd"} {
+		"misbound-audio-stsd", "duplicate-audio-stsd",
+	} {
 		t.Run(name, func(t *testing.T) {
 			damage := remainingNonKeyPrivateAudioConfigurationDamage(t, name, bytes.Clone(initialization))
 			remainingNonKeyPrivateAudioRejectInput(t, ctx, damage, fragment, "nonkey inconsistent private AAC configuration acquired identity")
@@ -71,11 +73,12 @@ func remainingNonKeyPrivateAudioASCDamage(t *testing.T, name string, data []byte
 func remainingNonKeyPrivateAudioASCFixture(t *testing.T, data []byte) []byte {
 	t.Helper()
 	esds := remainingNonKeyPrivateAudioHeader(t, data, "esds", 0)
-	size := binary.BigEndian.Uint32(data[esds-4 : esds])
-	if uint64(esds-4)+uint64(size) > uint64(len(data)) || size < 12 {
+	box := data[esds-4:]
+	size := binary.BigEndian.Uint32(box[:4])
+	if uint64(size) > uint64(len(box)) || size < 12 {
 		t.Fatal("private AAC independent descriptor fixture bounds changed")
 	}
-	descriptor := data[esds+8 : uint64(esds-4)+uint64(size)]
+	descriptor := box[12:size]
 	es := remainingNonKeyPrivateAudioDescriptor(t, descriptor, 3)
 	if len(es) < 3 || es[2] != 0 {
 		t.Fatal("private AAC independent ES descriptor shape changed")
@@ -96,19 +99,19 @@ func remainingNonKeyPrivateAudioDescriptor(t *testing.T, data []byte, tag byte) 
 	if len(data) < 2 || data[0] != tag {
 		t.Fatal("private AAC independent descriptor tag changed")
 	}
-	size, position := uint64(0), 1
+	size, position := uint64(0), uint64(1)
 	for count := 0; count < 4; count++ {
-		if position >= len(data) {
+		if position >= uint64(len(data)) {
 			t.Fatal("private AAC independent descriptor length truncated")
 		}
 		value := data[position]
 		position++
 		size = size<<7 | uint64(value&0x7f)
 		if value&0x80 == 0 {
-			if size > uint64(len(data)-position) {
+			if size > uint64(len(data))-position {
 				t.Fatal("private AAC independent descriptor payload truncated")
 			}
-			return data[position : uint64(position)+size]
+			return data[position : position+size]
 		}
 	}
 	t.Fatal("private AAC independent descriptor length unterminated")
