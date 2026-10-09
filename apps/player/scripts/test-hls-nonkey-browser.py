@@ -143,7 +143,8 @@ try:
                     joined,manifest,assets,delivery=public_media(api,selected,directory/('public-'+str(requested)),log_path,server,source)
                     receipt['currentStage']='complete-raw-media-observation'
                     observed={}
-                    partial={'request':requested,'observations':observed,'delivery':delivery}
+                    partial={'request':requested,'observations':observed,'delivery':delivery,
+                        'mediaSHA256Before':{p.name:sha(p) for p in assets},'publicJoinedSHA256':sha(joined)}
                     case['publicCases'].append(partial)
                     invocation_rows=[json.loads(row) for row in bounded_bytes(invocations,65536,'browser_invocations_bound').decode().splitlines()] if invocations.exists() else []
                     delivery['diagnosticAdaptedInvocationCount']=sum(v.get('adapted') is True and v.get('request')==requested for v in invocation_rows)
@@ -165,7 +166,7 @@ try:
                     public_case={'request':requested,'observations':observed,'aacPayloadTail':tail,
                         'delivery':delivery,'manifestSHA256':hashlib.sha256(manifest).hexdigest(),'audioDiscontinuities':[],
                         'fragmentAudioFacts':[],
-                        'mediaSHA256Before':{p.name:sha(p) for p in assets},'publicJoinedSHA256':sha(joined)}
+                        'mediaSHA256Before':partial['mediaSHA256Before'],'publicJoinedSHA256':partial['publicJoinedSHA256']}
                     partial.update(public_case)
                     public_case=partial
                     previous_audio=None
