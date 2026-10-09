@@ -122,6 +122,7 @@ func remainingNonKeyPrivateAudioByteBound(t *testing.T, ctx context.Context, sou
 		overFirst = remainingNonKeyPrivateAudioPad(t, fragment, limit+1)
 	}
 	remainingNonKeyPrivateAudioRejectInput(t, ctx, overInit, overFirst, "nonkey oversized private AAC input acquired identity")
+	beforeInit, beforeFirst := sha256.Sum256(withinInit), sha256.Sum256(withinFirst)
 	request, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	started := time.Now()
@@ -129,7 +130,10 @@ func remainingNonKeyPrivateAudioByteBound(t *testing.T, ctx context.Context, sou
 	if err != nil || facts == nil {
 		t.Fatal("nonkey otherwise-valid private AAC at its original byte cap was rejected")
 	}
-	remainingNonKeyPrivateAudioCorrespondence(t, facts, source, 12.5, sha256.Sum256(withinInit), sha256.Sum256(withinFirst), time.Since(started))
+	if sha256.Sum256(withinInit) != beforeInit || sha256.Sum256(withinFirst) != beforeFirst {
+		t.Fatal("nonkey accepted byte-cap private AAC snapshot was mutated")
+	}
+	remainingNonKeyPrivateAudioCorrespondence(t, facts, source, 12.5, beforeInit, beforeFirst, time.Since(started))
 }
 
 func remainingNonKeyPrivateAudioPad(t *testing.T, data []byte, size int) []byte {
