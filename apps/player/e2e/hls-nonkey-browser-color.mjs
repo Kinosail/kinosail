@@ -77,7 +77,12 @@ export function colorFrameQualification(row,reference,expected){
   const frame=frameQualification(phase,reference,expected);
   const seek=row.forceSeek?.seeking && row.forceSeek?.seeked && Number.isFinite(row.forceSeek?.rawTime) &&
     Math.abs(row.forceSeek.rawTime-row.requestedSource)<=0.000001;
-  const healthy=row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
+  const config=row.appendConfiguration,clock=row.rawMSEClockFacts;
+  const configured=Number.isFinite(row.requestedSource) && row.requestedSource===12.5 &&
+    config?.mode==='segments' && config.appendWindowStart===0 && config.appendWindowEnd==='Infinity' &&
+    config.timestampOffset===row.requestedSource && clock?.qualified===true &&
+    clock.timestampOffset===row.requestedSource && clock.firstClipPTSSeconds===-0.5 && clock.firstSourcePTSSeconds===12;
+  const healthy=configured && row.endOfStreamReturned===true && row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
     row.deliveredBytesVerified===true && row.metadataByteIdentity===true && row.appendedBytesVerified===true &&
     row.adapter?.rawMSE===true && !row.pageErrors && !row.snapshotFailure && row.appendFailures?.length===0 &&
     phase.firstCallbackGap===0 && phase.quality?.droppedVideoFrames===0;
