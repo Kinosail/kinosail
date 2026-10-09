@@ -156,7 +156,16 @@ func TestCopiedAACPlaylistRejectsUnboundMasterURISet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, master := range []string{string(original) + "../escape.m3u8\n", string(original) + "360p/index.m3u8\n", strings.Replace(string(original), policy, policy+"-wrong", 1), string(original) + "720p/index.m3u8\n"} {
+	masters := []string{string(original) + "../escape.m3u8\n", string(original) + "360p/index.m3u8\n", strings.Replace(string(original), policy, policy+"-wrong", 1), string(original) + "720p/index.m3u8\n"}
+	for _, directive := range []string{
+		"#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"x\",URI=\"../escape.m3u8\"",
+		"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,URI=\"/escape.m3u8\"",
+		"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"https://example.invalid/key\"",
+		"#EXT-X-KEY:METHOD=AES-128,URI=\"360p/index.m3u8\"",
+	} {
+		masters = append(masters, string(original)+directive+"\n")
+	}
+	for _, master := range masters {
 		writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), master)
 		before := copiedAACPlaylistSnapshot(t, directory)
 		response := httptest.NewRecorder()
