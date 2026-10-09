@@ -236,3 +236,49 @@ test('new document and status fields reject malformed oversized unknown and conf
   assert.equal(JSON.parse(rows[0].body).reason,'invalid_snapshot');assert.ok(!rows[0].body.includes('PRIVATE'));
  }
 });
+
+
+test('owned loading gate rejects invalid targets before any route effects',async()=>{
+ const {holdStartupMedia}=await import('../../apps/player/e2e/startup-media-hold.mjs');let effects=0;
+ const good={baseURL:'http://127.0.0.1:8123',watch:'/watch/owned'};
+ for(const target of [undefined,null,[],{}, {...good,extra:'PRIVATE'}, {...good,watch:null}, {...good,watch:'/watch/other?direct=1'},
+  {...good,watch:'/watch/'+ 'x'.repeat(129)}, {...good,baseURL:null}, {...good,baseURL:'http://foreign.example'},
+  {...good,baseURL:'http://user:PRIVATE@localhost'}, {...good,baseURL:'http://localhost/path'},
+  {...good,baseURL:'http://localhost?secret=PRIVATE'}, {...good,baseURL:'x'.repeat(4097)},
+  Object.defineProperty({...good},'watch',{get(){effects++;return '/watch/owned'}})])
+  await assert.rejects(holdStartupMedia({route:async()=>effects++},'direct',target));
+ for(const source of ['automatic','compatible']) await assert.rejects(holdStartupMedia({route:async()=>effects++},source,good));
+ assert.equal(effects,0);
+});
+test('owned loading callbacks match only selected origin item and release original response once',async()=>{
+ const {holdStartupMedia}=await import('../../apps/player/e2e/startup-media-hold.mjs');const routes=[];let delivered=0;
+ const hold=await holdStartupMedia({route:async(p,h)=>routes.push([p,h]),unroute:async()=>{}},'direct',
+  {baseURL:'http://127.0.0.1:8123',watch:'/watch/owned'});
+ assert.deepEqual(hold.snapshot(),{mediaEntered:0,hlsEntered:0,released:false,finished:0,failed:0,overflow:false});
+ const [media,hls]=routes;assert.equal(typeof media[0],'function');
+ for(const url of ['http://foreign.example/media/owned','http://127.0.0.1:8123/media/other',
+  'http://127.0.0.1:8123/media/owned-extra','http://127.0.0.1:8123/hls/other/p/token/index.m3u8']) {
+  assert.equal(media[0](new URL(url)),false);assert.equal(hls[0](new URL(url)),false);
+ }
+ assert.equal(media[0](new URL('http://127.0.0.1:8123/media/owned?playbackSession=PRIVATE')),true);
+ assert.equal(hls[0](new URL('http://127.0.0.1:8123/hls/owned/p/token/index.m3u8')),true);
+ const original=Error('original request failure');const task=media[1]({continue:async()=>{delivered++;throw original;},fulfill:()=>assert.fail('changed bytes')});task.catch(()=>{});
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(hold.snapshot().mediaEntered,1);assert.equal(delivered,0);
+ hold.release();hold.release();await assert.rejects(task,e=>e===original);assert.equal(delivered,1);assert.equal(hold.snapshot().failed,1);
+ await hold.close();assert.equal(delivered,1);
+});
+
+
+test('actual loading finally preserves primary failures even when cleanup throws',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const source=readFileSync(new URL('../../apps/player/e2e/loading-review.spec.ts',import.meta.url),'utf8');
+ const start=source.indexOf('} finally {')+11,end=source.indexOf('\n\t}\n\ttry {',start);
+ const cleanup=new (Object.getPrototypeOf(async function(){}).constructor)('hold','expect','primaryFailed',source.slice(start,end));
+ const cleanupError=Error('PRIVATE cleanup');
+ for(const primary of [Error('original'),false,0,undefined]) {
+  let released=0,closed=0;
+  await assert.rejects(async()=>{try{throw primary;}finally{await cleanup({release(){released++},close:async()=>{closed++;throw cleanupError}},()=>{},true);}},e=>e===primary);
+  assert.equal(released,1);assert.equal(closed,1);
+ }
+ await assert.rejects(cleanup({release(){},close:async()=>{throw cleanupError}},()=>{},false),e=>e===cleanupError);
+});

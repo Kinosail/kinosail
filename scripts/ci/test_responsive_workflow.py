@@ -75,6 +75,19 @@ class ResponsiveWorkflowTests(unittest.TestCase):
         self.assertIn('Math.min(320, viewport.width - 16) + 0.01',loading)
         self.assertIn('await attachResponsiveFailure(page, testInfo, "player-loading-width"); throw error;',loading)
 
+    def test_loading_width_uses_actual_owned_pending_response_before_release(self):
+        source=(ROOT/'apps/player/e2e/loading-review.spec.ts').read_text()
+        install=source.index('holdStartupMedia(page, "direct", {baseURL, watch})')
+        click=source.index('await movie.click()')
+        entered=source.index('hold.snapshot().mediaEntered + hold.snapshot().hlsEntered')
+        width=source.index('Math.min(320, viewport.width - 16) + 0.01')
+        release=source.index('hold.release()')
+        clock=source.index('element.currentTime)).toBeGreaterThan(0.25)')
+        self.assertLess(install,click);self.assertLess(click,entered);self.assertLess(entered,width)
+        self.assertLess(width,release);self.assertLess(release,clock)
+        self.assertIn('if (!primaryFailed) throw error',source)
+        self.assertIn('Synthetic state exercise',source)
+
     def test_actual_recipe_binds_all99_existing_inputs_before_receipt_write(self):
         with patch.dict(os.environ, {'RESPONSIVE_PROJECT': 'webkit', 'PROOF_REVISION': 'fixture-revision'}), \
                 patch.object(Path, 'write_text') as write:
