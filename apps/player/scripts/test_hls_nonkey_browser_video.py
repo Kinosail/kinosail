@@ -22,7 +22,7 @@ class PublicBrowserVideo(unittest.TestCase):
         source=[packet(n) for n in range(8)]
         required={'pts_time':source[2]['pts_time'],'payloadSHA256':source[2]['data_hash'][7:]}
         self.assertTrue(public_video_suffix(source,source[2:],required)['qualified'])
-        for public in [source[2:-1],source[2:4]+source[5:],source[2:]+[source[-1]],source[3:]]:
+        for public in [source[2:-1],source[2:4]+source[5:],source[2:]+[source[-1]],[dict(source[3],flags='K')]+source[4:]]:
             self.assertFalse(public_video_suffix(source,public,required)['qualified'])
     def test_untrusted_video_packet_identity_and_required_key_are_rejected(self):
         source=[packet(n) for n in range(8)]
