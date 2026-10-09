@@ -13,7 +13,7 @@ const init=Buffer.concat([box('ftyp',Buffer.from('isom')),box('moov',box('trak',
   box('stbl',box('stsd',Buffer.from([0,0,0,0,0,0,0,1]),
     box('avc1',Buffer.alloc(78),box('avcC',Buffer.from([1,100,0,30,255,225,0])))))))))]);
 const pieces=[init,fragment(1),fragment(3)],joined=Buffer.concat(pieces);
-const item={request:12.5,selectedSource:'/hls/held/master.m3u8',publicJoinedSHA256:sha(joined),
+const item={request:12.5,selectedSource:'/hls/held/index.m3u8',publicJoinedSHA256:sha(joined),
   publicAssetSHA256:{'360p/init.mp4':sha(init),'360p/segment-00000.m4s':sha(pieces[1]),'360p/segment-00001.m4s':sha(pieces[2])}};
 function witness(plan){
   return {failures:[],overflow:false,buffers:[{id:0,mime:'video/mp4; codecs="avc1.64001e,mp4a.40.2"'}],
