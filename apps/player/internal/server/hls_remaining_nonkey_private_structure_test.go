@@ -15,7 +15,7 @@ type remainingNonKeyPrivateFixtureBox struct {
 // fragment payload remain unchanged, exposing global-list codec misassociation.
 func remainingNonKeyPrivateAudioStructureDamage(t *testing.T, name string, data []byte) []byte {
 	t.Helper()
-	return remainingNonKeyPrivateFixtureRewrite(t, data, "moov", 0, func(movie []byte) []byte {
+	result := remainingNonKeyPrivateFixtureRewrite(t, data, "moov", 0, func(movie []byte) []byte {
 		if name == "misbound-audio-stsd" {
 			table := remainingNonKeyPrivateFixtureAudioTable(t, movie)
 			movie = remainingNonKeyPrivateFixtureAudioMedia(t, movie, func(media []byte) []byte {
@@ -33,6 +33,10 @@ func remainingNonKeyPrivateAudioStructureDamage(t *testing.T, name string, data 
 		}
 		return remainingNonKeyPrivateAudioOtherStructure(t, name, movie)
 	})
+	if name == "misbound-audio-stsd" {
+		remainingNonKeyPrivateFixtureMovedTable(t, data, result)
+	}
+	return result
 }
 
 func remainingNonKeyPrivateAudioOtherStructure(t *testing.T, name string, movie []byte) []byte {
@@ -96,7 +100,7 @@ func remainingNonKeyPrivateFixtureRewrite(t *testing.T, data []byte, kind string
 	for _, box := range remainingNonKeyPrivateFixtureChildren(t, data) {
 		if box.kind == kind {
 			if ordinal == 0 {
-				box.data, changed = mutate(box.data), true
+				box.data, changed = mutate(bytes.Clone(box.data)), true
 			}
 			ordinal--
 		}
@@ -143,4 +147,52 @@ func remainingNonKeyPrivateFixtureEncode(kind string, data []byte) []byte {
 	copy(result[4:8], kind)
 	binary.BigEndian.PutUint64(result[8:16], uint64(len(data))+16)
 	return append(result, data...)
+}
+
+// The moved-table counterexample must retain both original sample descriptions,
+// unchanged track metadata and the AAC table physically inside the video track.
+func remainingNonKeyPrivateFixtureMovedTable(t *testing.T, original, changed []byte) {
+	t.Helper()
+	beforeMovie := remainingNonKeyPrivateFixtureSelect(t, original, "moov", 0)
+	afterMovie := remainingNonKeyPrivateFixtureSelect(t, changed, "moov", 0)
+	beforeAudio := remainingNonKeyPrivateFixtureSelect(t, beforeMovie, "trak", 1)
+	afterAudio := remainingNonKeyPrivateFixtureSelect(t, afterMovie, "trak", 1)
+	beforeVideo := remainingNonKeyPrivateFixtureSelect(t, beforeMovie, "trak", 0)
+	afterVideo := remainingNonKeyPrivateFixtureSelect(t, afterMovie, "trak", 0)
+	for _, pair := range [][2][]byte{{beforeVideo, afterVideo}, {beforeAudio, afterAudio}} {
+		if !bytes.Equal(remainingNonKeyPrivateFixtureSelect(t, pair[0], "tkhd", 0),
+			remainingNonKeyPrivateFixtureSelect(t, pair[1], "tkhd", 0)) {
+			t.Fatal("private AAC moved-table witness changed track identity")
+		}
+		remainingNonKeyPrivateFixtureMediaIdentity(t, pair[0], pair[1])
+	}
+	audioTable := remainingNonKeyPrivateFixtureAudioTable(t, beforeMovie)
+	originalMedia := remainingNonKeyPrivateFixtureSelect(t, beforeVideo, "mdia", 0)
+	originalInfo := remainingNonKeyPrivateFixtureSelect(t, originalMedia, "minf", 0)
+	originalVideoTable := remainingNonKeyPrivateFixtureSelect(t, originalInfo, "stbl", 0)
+	videoMedia := remainingNonKeyPrivateFixtureSelect(t, afterVideo, "mdia", 0)
+	videoInfo := remainingNonKeyPrivateFixtureSelect(t, videoMedia, "minf", 0)
+	if !bytes.Equal(audioTable, remainingNonKeyPrivateFixtureSelect(t, videoInfo, "stbl", 1)) ||
+		!bytes.Equal(originalVideoTable, remainingNonKeyPrivateFixtureSelect(t, videoInfo, "stbl", 0)) {
+		t.Fatal("private AAC moved-table witness changed the AAC table")
+	}
+	audioMedia := remainingNonKeyPrivateFixtureSelect(t, afterAudio, "mdia", 0)
+	audioInfo := remainingNonKeyPrivateFixtureSelect(t, audioMedia, "minf", 0)
+	for _, box := range remainingNonKeyPrivateFixtureChildren(t, audioInfo) {
+		if box.kind == "stbl" {
+			t.Fatal("private AAC moved-table witness retained the audio table")
+		}
+	}
+}
+
+func remainingNonKeyPrivateFixtureMediaIdentity(t *testing.T, original, changed []byte) {
+	t.Helper()
+	before := remainingNonKeyPrivateFixtureSelect(t, original, "mdia", 0)
+	after := remainingNonKeyPrivateFixtureSelect(t, changed, "mdia", 0)
+	for _, kind := range []string{"mdhd", "hdlr"} {
+		if !bytes.Equal(remainingNonKeyPrivateFixtureSelect(t, before, kind, 0),
+			remainingNonKeyPrivateFixtureSelect(t, after, kind, 0)) {
+			t.Fatal("private AAC moved-table witness changed media metadata")
+		}
+	}
 }
