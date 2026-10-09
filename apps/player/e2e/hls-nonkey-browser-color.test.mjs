@@ -7,6 +7,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {colorArm, colorFacts, colorFrameQualification} from './hls-nonkey-browser-color.mjs';
+import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const box=(kind,...parts)=>{const body=Buffer.concat(parts),out=Buffer.alloc(body.length+8);
   out.writeUInt32BE(out.length);out.write(kind,4,4,'ascii');body.copy(out,8);return out;};
@@ -60,4 +61,12 @@ test('all byte bindings, exact presented sequence, seek, healthy EOF and actual 
   for(const bad of [{ended:false},{rows:reference.slice(1)},{droppedCallbacks:1},{firstCallbackGap:1},
     {captureErrors:['capture']},{quality:{droppedVideoFrames:1}},{events:[{name:'error',errorCode:3}]}])
     assert.equal(colorFrameQualification({...row,observer:{phases:[{...phase,...bad}]}},reference,[0,1,2]).qualified,false);
+});
+test('new component setup errors retain a failure row and preserve original audio evidence',async()=>{
+  const audio={label:'original-audio',qualification:{qualified:false}},retained=[audio];
+  await observeMSEColors(null,'',{},Buffer.alloc(0),[],true,retained);
+  assert.equal(retained[0],audio);assert.equal(retained.length,2);
+  assert.equal(retained[1].label,'raw-mse-color-setup');
+  assert.equal(retained[1].result,'observation-failed');
+  assert.equal(retained[1].failureClass,'color_raw_clock_binding');
 });
