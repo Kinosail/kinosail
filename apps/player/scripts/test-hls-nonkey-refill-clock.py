@@ -61,6 +61,14 @@ def run(command, timeout=30, bound=4<<20):
         row['failureClass']='bounded_diagnostic_deadline' if isinstance(error,RuntimeError) and str(error)=='bounded_diagnostic_deadline' else matrix_failure(error)
         raise
 
+def fixed_metadata(path):
+    command=['ffprobe','-v','error','-show_entries',
+        'stream=index,codec_type,codec_name,time_base,start_time,duration,sample_rate,channels:format=start_time',
+        '-of','json',str(path)]
+    facts=json.loads(run(command,10,65536))
+    fixed_streams(facts)
+    return facts
+
 def assets(directory):
     manifest = bounded_bytes(directory/'index.m3u8',65536,'refill_matrix_manifest')
     facts, names = manifest_facts(manifest)
@@ -81,7 +89,7 @@ def initial_facts(source_rows, directory, initial):
     public_rows, missing = packet_rows(directory/'joined.mp4')
     check(not missing,'refill_matrix_complete_packet_clocks')
     video = [v for v in public_rows if v['stream_index']==0]
-    metadata = stream_metadata(directory/'joined.mp4')
+    metadata = fixed_metadata(directory/'joined.mp4')
     initial['streamMetadata']=metadata
     fixed_streams(metadata)
     video_streams = [v for v in metadata['streams'] if v['codec_type']=='video']
@@ -129,7 +137,7 @@ try:
     run(['ffmpeg','-nostdin','-v','error','-i',str(regular),'-map','0:v:0','-map','0:a:0','-c','copy',str(source)],45)
     before = source_state(source)
     check(before['sha256']==receipt['sourceIdentityExpected'],'refill_matrix_source_identity')
-    source_metadata=stream_metadata(source)
+    source_metadata=fixed_metadata(source)
     receipt['sourceMetadata']=source_metadata
     fixed_streams(source_metadata)
     check(source_metadata['format']['start_time']=='0.000000','refill_matrix_source_origin')
@@ -200,7 +208,7 @@ try:
                 observed = {}
                 value['observations']=observed
                 value['stage']='complete-media-observation'
-                fixed_streams(stream_metadata(joined))
+                value['joinedStreamMetadata']=fixed_metadata(joined)
                 observed_media(source,joined,init,fragments,metadata,12,observed)
                 tail = packet_tail(observed['sourcePacketRows'],observed['publicPacketRows'])
                 value['aacPayloadTail']=tail
