@@ -160,14 +160,22 @@ func copiedAACPendingHTTPCase(t *testing.T, certificatePublished bool, method st
 	committed := copiedAACPlaylistSnapshot(t, directory)
 	resume()
 	result := client.join(t)
+	assertCopiedAACPendingReply(t, method, result)
+	if manager.jobs[key] != job || !reflect.DeepEqual(committed, copiedAACPlaylistSnapshot(t, directory)) {
+		t.Fatal("committed pending delivery changed its generation or initial owner")
+	}
+}
+
+func assertCopiedAACPendingReply(t *testing.T, method string, result copiedAACPendingReply) {
+	t.Helper()
 	if result.err != nil || result.status != http.StatusOK || len(result.body) > 256<<10 {
 		t.Fatal("clock commit did not retain successful HTTP delivery")
 	}
-	if method == http.MethodHead && len(result.body) != 0 || method == http.MethodGet && !strings.HasPrefix(string(result.body), "#EXTM3U\n") {
-		t.Fatal("pending GET or HEAD delivery changed its transport contract")
+	if method == http.MethodHead && len(result.body) != 0 {
+		t.Fatal("pending HEAD delivery changed its transport contract")
 	}
-	if manager.jobs[key] != job || !reflect.DeepEqual(committed, copiedAACPlaylistSnapshot(t, directory)) {
-		t.Fatal("committed pending delivery changed its generation or initial owner")
+	if method == http.MethodGet && !strings.HasPrefix(string(result.body), "#EXTM3U\n") {
+		t.Fatal("pending GET delivery changed its transport contract")
 	}
 }
 
