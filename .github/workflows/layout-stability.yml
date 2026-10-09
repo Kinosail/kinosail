@@ -1,12 +1,12 @@
-name: Bounded actual-browser non-key observation
+name: Bounded canonical pending producer observation
 on:
   workflow_dispatch:
     inputs:
-      phase: {type: choice, options: [browser], default: browser}
+      phase: {type: choice, options: [producer], default: producer}
 permissions: {contents: read}
 jobs:
-  nonkey-browser:
-    name: Authenticated cold HLS and unchanged actual browser
+  nonkey-producer:
+    name: Fresh-reference actual canonical pending producer
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -20,19 +20,9 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
         with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
-        timeout-minutes: 2
-        with: {version: 11.22.0, install: false, node-version-file: false}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         timeout-minutes: 2
         with: {node-version: 26, package-manager-cache: false}
-      - name: Install existing pinned browser dependencies
-        timeout-minutes: 3
-        run: pnpm --dir apps/player/e2e install --frozen-lockfile
-      - name: Install existing hosted Chromium runtime
-        timeout-minutes: 5
-        working-directory: apps/player/e2e
-        run: pnpm exec playwright install --with-deps chromium
       - name: Install pinned public-media codecs
         timeout-minutes: 9
         run: |
@@ -60,33 +50,33 @@ jobs:
           fi
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Verify all strict source and browser observer controls
+      - name: Verify all unchanged strict source and observer controls
         timeout-minutes: 2
         run: |
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
-      - name: Observe actual public transport and decoded presentation once
+      - name: Observe canonical private producer against qualified fresh reference once
         run: |
           python3 - <<'PY'
           import json, os, pathlib, time
           remaining=2700-(time.time()-int(os.environ['NONKEY_JOB_STARTED']))
-          path=pathlib.Path('.verification/hls-nonkey-browser/budget.json')
+          path=pathlib.Path('.verification/hls-nonkey-producer/budget.json')
           path.parent.mkdir(parents=True,exist_ok=True)
-          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':1230})+'\n')
-          assert remaining>=1230, 'hosted_browser_cleanup_artifact_budget'
+          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':900})+'\n')
+          assert remaining>=900, 'hosted_producer_cleanup_artifact_budget'
           PY
-          timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
-      - name: Preserve complete safe observations and historical strict CLI controls
+          timeout --kill-after=90s 720s python3 apps/player/scripts/test-hls-nonkey-producer.py
+      - name: Preserve failed or passing canonical producer and complete independent reference
         timeout-minutes: 2
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: nonkey-actual-browser-observation-${{ github.sha }}
+          name: nonkey-canonical-producer-observation-${{ github.sha }}
           path: |
-            .verification/hls-nonkey-browser/budget.json
-            .verification/hls-nonkey-browser/*/receipt.json
-            .verification/hls-nonkey-browser/*/SHA256SUMS
-            .verification/hls-nonkey-browser/*/*/browser.json
+            .verification/hls-nonkey-producer/budget.json
+            .verification/hls-nonkey-producer/*/receipt.json
+            .verification/hls-nonkey-producer/*/SHA256SUMS
+            .verification/hls-nonkey-producer/*/reference.json
             .verification/hls-nonkey-mux/*/receipt.json
             .verification/hls-nonkey-mux/*/SHA256SUMS
           include-hidden-files: true

@@ -70,10 +70,11 @@ except Exception as error:
     receipt['failureClass']=str(error) if isinstance(error,RuntimeError) else type(error).__name__
 finally:
     with guard.cleanup():
-        receipt['sourcesUnchanged']=all(source_state(path)==state for path,state in sources)
+        receipt['sourceBindingEstablished']=len(sources)==2
+        receipt['sourcesUnchanged']=len(sources)==2 and all(source_state(path)==state for path,state in sources)
         if not receipt['sourcesUnchanged']:
             receipt['result']='failed'
-            receipt['sourceFailureClass']='producer_immutable_source_changed'
+            receipt['sourceFailureClass']='producer_immutable_source_changed' if sources else 'producer_source_binding_unavailable'
         receipt['handledTerminationSignals']=guard.signals
         files=[Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_producer_reference.py',
             ROOT/'apps/player/internal/server/hls_remaining_nonkey_producer_test.go']
