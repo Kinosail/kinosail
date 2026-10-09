@@ -32,3 +32,29 @@ test('unknown, malformed, oversized and conflicting metadata fails closed',async
  const error=failure();Object.defineProperty(error.cause.details,'hint',{get(){throw new Error('PRIVATE-SENTINEL');}});
  assert.equal((await observed(error)).category,'unqualified');
 });
+
+test('supported optional output and nullable exits qualify explicit unavailable facts',async()=>{
+ for(const details of [{exitCode:null},{exitCode:1},{stderr:'PRIVATE-SENTINEL',exitCode:null},
+  {stdout:undefined,stderr:undefined,exitCode:null},{stdout:'',stderr:'',exitCode:undefined}]) {
+  const error=failure();error.cause.details=details;
+  assert.deepEqual(await observed(error),{stage:'install_app',category:'command_failed',exitCode:details.exitCode??null,
+   stdoutBytes:details.stdout===undefined?null:Buffer.byteLength(details.stdout),stderrBytes:details.stderr===undefined?null:Buffer.byteLength(details.stderr),packageAbsentText:false});
+ }
+});
+test('optional does not accept malformed present outputs or emit arbitrary rejection data',async()=>{
+ for(const details of [{exitCode:null,stdout:null},{exitCode:null,stderr:42},{exitCode:null,stdout:'x'.repeat(65537)},
+  {exitCode:null,stderr:'x'.repeat(8193)},{exitCode:null,stdout:'\ud800'},{exitCode:'PRIVATE-SENTINEL'},
+  {exitCode:null,unknown:'PRIVATE-SENTINEL'},{exitCode:0},{exitCode:null,...Object.fromEntries(Array.from({length:129},(_,i)=>['unknown'+i,'PRIVATE-SENTINEL']))},
+  {exitCode:null,[Symbol('PRIVATE-SENTINEL')]:true},{stdout:undefined,stderr:undefined,exitCode:undefined},{},null]) {
+  const error=failure();error.cause.details=details;const value=await observed(error);
+  assert.equal(value.category,'unqualified');assert.ok(['invalid_fields','unknown_fields','missing_fields'].includes(value.reason));
+ }
+ const error=failure();Object.defineProperty(error.cause.details,'stdout',{get(){throw new Error('PRIVATE-SENTINEL')}});
+ assert.equal((await observed(error)).reason,'opaque');
+});
+
+test('accessors cannot change values between validation and projection',async()=>{
+ const error=failure();let reads=0;
+ Object.defineProperty(error.cause.details,'stdout',{get(){reads++;return reads===1?'':'PRIVATE-SENTINEL'.repeat(5000);}});
+ assert.equal((await observed(error)).reason,'opaque');assert.equal(reads,0);
+});
