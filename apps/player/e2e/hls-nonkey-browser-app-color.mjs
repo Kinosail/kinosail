@@ -195,9 +195,8 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
       row.observedSelectedAssets[Object.keys(plan.item.publicAssetSHA256)[0]].every(v=>v.status===200 &&
         v.bytes===plan.init.length && v.sha256===sha(plan.init)));
     row.actual601InitSeen=row.appendWitness.actualInitFacts.some(v=>v.joinedSHA256===plan.facts.joinedSHA256);
-    row.routed601TransferObserved=routeHits.length>0 && routeHits.every(v=>v.requestShape.qualified &&
-      v.originalStatus===200 && v.originalSHA256===sha(pieces[0]) && v.fulfilled===true &&
-      v.fulfilledSHA256===sha(plan.init)) && row.independentPage601InitSeen && row.actual601InitSeen;
+    row.routed601TransferObserved=appColorTransferObserved(routeHits,routeFailures,row.actualAppColorAppend,
+      row.independentPage601InitSeen,row.actual601InitSeen,sha(pieces[0]),sha(plan.init));
     row.transferObservationScope='Exact routed601 init delivered and appended only; aggregate MIME/duplicate/frame oracles unchanged';
     row.colorComponentQualified=row.frameConsumerQualified===true && row.appendWitness.qualified;
   }
@@ -233,4 +232,13 @@ export function appColorRouteFacts(url,origin,path,method,range,responseSession)
       !parsed.username && !parsed.password && !parsed.hash && queryOK && headerOK;
   }catch{}
   return result;
+}
+
+export function appColorTransferObserved(hits,routeFailures,appendState,pageInitSeen,actualInitSeen,originalSHA,modifiedSHA){
+  return Array.isArray(hits) && hits.length>0 && hits.length<=32 && Array.isArray(routeFailures) &&
+    routeFailures.length===0 && appendState?.overflow===false && Array.isArray(appendState.failures) &&
+    appendState.failures.length===0 && pageInitSeen===true && actualInitSeen===true &&
+    /^[a-f0-9]{64}$/.test(originalSHA) && /^[a-f0-9]{64}$/.test(modifiedSHA) &&
+    hits.every(v=>v.requestShape?.qualified===true && v.originalStatus===200 &&
+      v.originalSHA256===originalSHA && v.fulfilled===true && v.fulfilledSHA256===modifiedSHA);
 }
