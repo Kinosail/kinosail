@@ -212,6 +212,28 @@ test('socket pair cap rejects the next connection and explicit cleanup joins eve
  await relay.close();assert.equal(o.listener.listening,false);
  assert.ok([...clients,...o.sockets].every(socket=>socket.destroyed));
 });
+test('closed relay endpoints retire their pair and release exactly their capacity slots',async()=>{
+ for(const side of ['client','upstream']) {
+  const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),clients=[];
+  try {
+   for(let index=0;index<64;index++){const client=new PassThrough();clients.push(client);o.listener.connection(client);}
+   for(let index=0;index<3;index++)(side==='client'?clients[index]:o.sockets[index]).destroy();
+   await new Promise(resolve=>setImmediate(resolve));
+   assert.ok(clients.slice(0,3).every(socket=>socket.destroyed),'closed upstreams must retire their clients');
+   assert.ok(o.sockets.slice(0,3).every(socket=>socket.destroyed),'closed clients must retire their upstreams');
+   for(let index=0;index<3;index++){
+    const replacement=new PassThrough();clients.push(replacement);o.listener.connection(replacement);
+    assert.equal(replacement.destroyed,false,'each retired pair must admit one replacement');
+   }
+   assert.equal(o.calls.filter(row=>row[0]==='connect').length,67);
+   const excess=new PassThrough();o.listener.connection(excess);
+   assert.equal(excess.destroyed,true);
+   assert.equal(o.calls.filter(row=>row[0]==='connect').length,67,'capacity rejection must not connect upstream');
+   assert.equal(relay.snapshot().capacityRejected,1);
+  } finally {await relay.close();}
+  assert.ok([...clients,...o.sockets].every(socket=>socket.destroyed));
+ }
+});
 test('actual relay endpoint failures retain closed transport facts without raw errors or extra connections',async()=>{
  for(const side of ['client','upstream']) {
  const o=owner(),relay=await o.api.startRelay({ip:'172.28.0.2'}),client=new PassThrough();
