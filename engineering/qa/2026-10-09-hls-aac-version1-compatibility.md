@@ -248,3 +248,30 @@ Pending owner-root and preflight-to-deletion races remain release blockers.
 The qualified cross-version RED is preserved in artifact `11645044736`.
 GitHub archive digest:
 `6b6545583bf36470d0d8940d59e4010f40e5a25923ca71bfc9a11b4bbd41915f`.
+
+## Pending admission and narrow master repair
+
+Written-first head `5dd3ef8dd7a1bc4b4518ca22c7d9961396cd5b27` ran contracts before production changes.
+Run 37994081759 failed only `TestCopiedAACPendingMalformedMasterRejectsWithoutPreparation`.
+All four valid pending GET/HEAD controls passed, including certificate-first publication.
+Artifact 11646706125 preserves that qualified failure.
+Its API archive SHA256 is `22b4c930601c685fd93b66b85f59284c19c10c00ec233b0f9c03d376a301f307`.
+Dependent public-media jobs skipped; the older absent-bandwidth-marker positive control remains unqualified.
+Quality 37994081732 found only a gofumpt issue in the new fixture's job literal.
+The fixture literal is expanded without changing assertions.
+
+The candidate shares a bounded generated-master grammar across Version1 and Version2 readers.
+It accepts the known older header without a bandwidth marker, pending its actual baseline control.
+Present markers must equal the generated marker; unknown or duplicated tags and attributes reject.
+One stream entry pairs immediately with its one allowed rendition URI.
+Bound generations compare CODECS, dimensions and range against the same init bytes whose SHA matches the certificate.
+Bandwidth remains a grammar-checked estimate; no later hydration recomputation changes historical masters.
+Present Version2 masters receive read-only preflight before preparation.
+Pending clocks receive structural checks without requiring certificate/timeline agreement during the certificate-first interval.
+Existing source-policy and canonical-root checks remain; all leases end before preparation or network transfer.
+Final bound certification remains mandatory for delivery.
+
+This slice does not change missing-master handling, owner cancellation, cache deletion or lazy workers.
+The preflight-to-preparation deletion race and pending-owner root binding remain release blockers.
+Lazy/speculative Version1 compatibility, 14 inherited holds, and native50 retesting remain open.
+No production, older-client, native or all50 acceptance follows from this candidate alone.

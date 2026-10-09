@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 	"path/filepath"
-	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -54,7 +53,7 @@ func (held *copiedAACGeneration) playlist(name string, start int, duration float
 
 func (held *copiedAACGeneration) playlistContent(name string) ([]byte, func([]byte) []byte, error) {
 	master, err := copiedHLSCacheFile(held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
-	if err != nil || !copiedAACMasterAllowed(master, held.policy, held.certificate.Rendition) {
+	if err != nil || !held.masterAllowed(master) {
 		return nil, nil, errCopiedHLSIndex
 	}
 	switch name {
@@ -76,33 +75,6 @@ func (held *copiedAACGeneration) projectPlaylist(manifest []byte) []byte {
 	return result
 }
 
-func copiedAACMasterAllowed(master []byte, policy, rendition string) bool {
-	lines := strings.Split(string(master), "\n")
-	if lines[0] != "#EXTM3U" {
-		return false
-	}
-	bindings, renditions := 0, 0
-	for _, line := range lines {
-		if strings.HasPrefix(line, "#KINOSAIL-TRANSCODER:") {
-			if line != "#KINOSAIL-TRANSCODER:"+policy {
-				return false
-			}
-			bindings++
-		}
-		if strings.Contains(line, "URI=") {
-			return false
-		}
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		if line != rendition+"/index.m3u8" {
-			return false
-		}
-		renditions++
-	}
-	return bindings == 1 && renditions == 1
-}
-
 // Existing selected indexed caches require their complete source binding before
 // a playlist request can enter preparation and replace any generation.
 func (manager *hlsManager) copiedAACPlaylistBinding(ctx context.Context, item library.Item, recipe hlsRecipe, key string) error {
@@ -114,16 +86,7 @@ func (manager *hlsManager) copiedAACPlaylistBinding(ctx context.Context, item li
 	if !copiedAACPolicyRequired(options.Cache) || !manager.copiedHLSTimelinePresent(directory) {
 		return nil
 	}
-	root, err := manager.openCopiedHLSRoot(directory)
-	if err != nil {
-		return errCopiedHLSIndex
-	}
-	defer root.Close()
-	data, err := copiedHLSCacheFile(root, ".source", 16<<10)
-	if err != nil || string(data) != options.Cache || ctx.Err() != nil {
-		return errCopiedHLSIndex
-	}
-	return nil
+	return manager.copiedAACMasterPreflight(ctx, item, recipe, directory, options.Cache)
 }
 
 func rejectCopiedAACPlaylist(writer http.ResponseWriter, request *http.Request) bool {

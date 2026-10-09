@@ -40,7 +40,7 @@ func (legacy *copiedHLSLegacyRead) bindMetadata(held *copiedAACGeneration) error
 func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) error {
 	var err error
 	legacy.master, err = legacy.read(held.ctx, held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
-	if err != nil || !copiedAACMasterAllowed(legacy.master, held.policy, held.certificate.Rendition) {
+	if err != nil || !held.masterAllowed(legacy.master) {
 		return errCopiedHLSIndex
 	}
 	name := filepath.Join(held.certificate.Rendition, "index.m3u8")

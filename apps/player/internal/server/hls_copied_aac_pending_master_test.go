@@ -39,9 +39,14 @@ func copiedAACPendingMasterFixture(t *testing.T, certificatePublished bool) (*hl
 	}
 	lifecycle, cancel := context.WithCancelCause(t.Context())
 	manager.ctx = lifecycle
-	job := &hlsJob{lifecycle: lifecycle, done: make(chan struct{}), cancel: cancel,
-		activity: make(chan struct{}, 1), cachePolicy: held.policy,
-		observation: newHLSObservation("", 0)}
+	job := &hlsJob{
+		lifecycle:   lifecycle,
+		done:        make(chan struct{}),
+		cancel:      cancel,
+		activity:    make(chan struct{}, 1),
+		cachePolicy: held.policy,
+		observation: newHLSObservation("", 0),
+	}
 	key := hlsRecipeKey(held.item.ID, held.recipe)
 	manager.jobs[key] = job
 	t.Cleanup(func() {
