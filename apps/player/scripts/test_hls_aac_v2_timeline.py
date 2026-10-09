@@ -1,7 +1,7 @@
 """Pinned source-grid and every-cut controls missing from the endpoint-only timeline check."""
 import copy
 import unittest
-from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline
+from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline, expected_refill_audio
 
 
 class FixedTimelineControls(unittest.TestCase):
@@ -76,3 +76,11 @@ class FixedTimelineControls(unittest.TestCase):
                  'timelineKeys': copy.deepcopy(self.grid['keys'][6:])}
         with self.assertRaises(RuntimeError):
             assert_fixed_cache_grid(cache, self.grid)
+
+    def test_refill_clip_uses_the_independently_observed_key_dts(self):
+        self.assertEqual(expected_refill_audio(self.grid),
+            'noise=amount=0:drop=lt(pts+960000\\,956016),setts=pts=PTS+4600:dts=DTS+4600')
+        shifted = copy.deepcopy(self.grid)
+        shifted['keys'][10]['DTS'] += 1
+        self.assertEqual(expected_refill_audio(shifted),
+            'noise=amount=0:drop=lt(pts+960000\\,956019),setts=pts=PTS+4600:dts=DTS+4600')
