@@ -1,5 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
+import {createReadStream} from 'node:fs';
 import {chromium} from '@playwright/test';
 import {installBrowserObserver,frameQualification,browserAudioDecode,completeAudioQualification} from './hls-nonkey-browser-observer.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
@@ -8,6 +9,11 @@ const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clie
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const browser=await chromium.launch();
 result.browserVersion=browser.version();
+const binaryHash=createHash('sha256');let binaryBytes=0;
+for await(const part of createReadStream(chromium.executablePath())){
+  binaryBytes+=part.length;if(binaryBytes>512<<20)throw Error('browser_binary_bound');binaryHash.update(part);
+}
+result.browserBinary={sha256:binaryHash.digest('hex'),bytes:binaryBytes,packageVersion:'@playwright/test1.63.0',retries:0,workers:1};
 const context=await browser.newContext({extraHTTPHeaders:{Authorization:'Bearer '+config.token},viewport:{width:960,height:720}});
 await context.addInitScript(installBrowserObserver);
 const api=async(path,method='GET',body)=>{
@@ -36,6 +42,7 @@ async function observe(id,request,label){
       aacFile:document.createElement('audio').canPlayType('audio/mp4; codecs="mp4a.40.2"'),
       h264MSE:MediaSource.isTypeSupported('video/mp4; codecs="avc1.64001e"'),
       aacMSE:MediaSource.isTypeSupported('audio/mp4; codecs="mp4a.40.2"')}));
+    row.currentStage='actual-media-decode';
     await page.waitForFunction(()=>document.querySelector('video')?.readyState>=2,{},{timeout:20000});
     row.dataset=await page.locator('video').evaluate(v=>({start:v.dataset.start,duration:v.dataset.duration,
       compatibilityMode:v.dataset.compatibilityMode,policy:v.dataset.playbackPolicy,
@@ -61,8 +68,9 @@ async function observe(id,request,label){
     }
     await page.locator('video').click({force:true});
     await page.locator('video').evaluate(v=>{v.playbackRate=0.5;return v.play();});
+    row.currentStage='complete-presented-EOF';
     await page.waitForFunction(()=>window.nonkeyObservation?.active?.ended,{},{timeout:85000});
-    row.result='observed';
+    row.result='observed';row.currentStage='complete';
   }catch(error){row.failureClass=error.message?.match(/^[a-z_]+(?:_[0-9]+)?$/)?.[0]||error.name||'browser_operation';}
   finally{
     try{row.observer=await page.evaluate(()=>window.nonkeySnapshot());}catch{row.snapshotFailure=true;}
@@ -90,6 +98,10 @@ try{
       row.frameConsumerQualified=Boolean(result.referenceComplete && row.frameQualification?.qualified &&
         (label!=='forced-source-coordinate-seek' || row.forceSeek?.seeking && row.forceSeek?.seeked));
       result.cases.push(row);
+      console.log(JSON.stringify({request:row.request,label:row.label,result:row.result,currentStage:row.currentStage,
+        failureClass:row.failureClass,frames:selected?.rows?.length,droppedCallbacks:selected?.droppedCallbacks,
+        actualFirstSourceIndices:row.frameQualification?.actualSourceIndices?.slice(0,4),
+        frameQualified:row.frameConsumerQualified,referenceComplete:row.referenceComplete}));
     }
     const bytes=await readFile(item.publicJoinedPath);
     if(bytes.length>8<<20)throw Error('public_joined_bound');
