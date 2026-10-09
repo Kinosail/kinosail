@@ -12,17 +12,13 @@ import (
 // clock; it cannot certify video, worker ownership, cache or public readiness.
 func (manager *hlsManager) measureCopiedHLSPrivateSourceAudio(parent context.Context, item library.Item, recipe hlsRecipe, policy, directory string) (proof *copiedHLSAudioProof, facts *copiedHLSPrivateAudioFacts, result error) {
 	failure := "metadata-admission"
-	defer func() {
-		if result != nil && parent.Err() == nil {
-			slog.WarnContext(parent, "HLS private audio acquisition rejected",
-				"request_id", requestActivityID(parent), "playback_session", requestPlaybackSession(parent), "failure_class", failure)
-		}
-	}()
+	defer func() { copiedHLSPrivateAudioRejected(parent, failure, result) }()
 	ctx, release, err := manager.copiedHLSClockAdmission(parent)
 	if err != nil {
 		return nil, nil, errCopiedHLSIndex
 	}
 	defer release()
+	failure = "request-shape"
 	micros, err := copiedHLSPrivateRequestedMicros(recipe.offset)
 	if err != nil {
 		return nil, nil, err
@@ -67,4 +63,11 @@ func copiedHLSPrivateRequestedMicros(offset float64) (int64, error) {
 		return 0, errCopiedHLSIndex
 	}
 	return micros, nil
+}
+
+func copiedHLSPrivateAudioRejected(ctx context.Context, failure string, result error) {
+	if result != nil && ctx.Err() == nil {
+		slog.WarnContext(ctx, "HLS private audio acquisition rejected",
+			"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "failure_class", failure)
+	}
 }
