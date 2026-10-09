@@ -167,6 +167,44 @@ def physical(cache, item_id):
         'generationInode': generation.st_ino, 'generationDevice': generation.st_dev, 'assets': assets,
         'segments': names, 'packetCount': len(packets), 'firstPacket': packets[0], 'lastPacket': packets[-1]}
 
+def qualified_audio_lifecycle(case, life):
+    # The bounded preparation can stop at the rounded four-cut AAC prefix.
+    # Only that exact owned prefix permits one sequential playback refill.
+    preparation = case.get('preparationAttempt', {})
+    if (case.get('planDurationSeconds') != 10 or not isinstance(preparation, dict) or
+            preparation.get('posts') != 1 or preparation.get('completionState') != 'ready' or
+            preparation.get('ownedFFmpeg') != 0):
+        return life['starts'] == life['ends'] == 1
+    prefix = case.get('physicalBeforeFirstGET')
+    if not isinstance(prefix, dict) or prefix != case.get('physicalAfterPublicDelivery'):
+        return False
+    assets = prefix.get('assets')
+    names = ['index.m3u8', 'init.mp4', *[f'segment-{number:05d}.m4s' for number in range(4)]]
+    if (not isinstance(assets, list) or len(assets) != 6 or
+            any(not isinstance(asset, dict) for asset in assets) or
+            [asset.get('name') for asset in assets] != names or
+            any(type(asset.get('size')) is not int or not 0 < asset['size'] <= 16 << 20 or
+                not isinstance(asset.get('sha256'), str) or
+                re.fullmatch(r'[a-f0-9]{64}', asset['sha256']) is None for asset in assets)):
+        return False
+    manifest = prefix.get('manifest', {})
+    public = case.get('publicVariant', {})
+    if not isinstance(manifest, dict) or not isinstance(public, dict):
+        return False
+    duration = manifest.get('durationSeconds')
+    return (type(duration) in [int, float] and math.isfinite(duration) and
+        abs(duration - 8) <= 0.000002 and manifest.get('playlistType') == 'EVENT' and
+        manifest.get('endlist') is False and manifest.get('segmentCount') == 4 and
+        prefix.get('packetCount') == 375 and prefix.get('segments') ==
+        [f'segment-{number:05d}.m4s' for number in range(4)] and
+        public.get('playlistType') == 'VOD' and public.get('endlist') is True and
+        public.get('durationSeconds') == 10 and public.get('segmentCount') == 6 and
+        case.get('encoderStartsBounded') is True and case.get('encoderStarts') == [
+            {'input_seek_ms': 0, 'segment_start': 0, 'mode': 'audio-transcode', 'workClass': 'background'},
+            {'input_seek_ms': 8000, 'segment_start': 4, 'mode': 'audio-transcode', 'workClass': 'playback'}] and
+        life == {'starts': 2, 'ends': 2, 'peakActive': 1, 'activeAtTeardown': 0, 'validSequence': True})
+
+
 def annotate_case(case, log_path, source, before, server, resources, offset, pacing, invocation, audio):
     private = bounded_bytes(log_path, 2 << 20, 'private_log_bound').decode()
     case.update(safe_seek_phases(private))
@@ -185,7 +223,7 @@ def annotate_case(case, log_path, source, before, server, resources, offset, pac
         if not case['pacingApplied']:
             case['failures'].append('pacing_not_applied')
             case['result'] = 'failed'
-    if audio and (life['starts'] != 1 or life['ends'] != 1):
+    if audio and not qualified_audio_lifecycle(case, life):
         case['failures'].append('audio_required_new_encoder')
         case['result'] = 'failed'
     if not case['workerBound'] or not case['sourceUnchanged']:
