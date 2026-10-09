@@ -4,7 +4,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver,appColorConsumerQualification} from './hls-nonkey-browser-app-color.mjs';
+import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver,appColorConsumerQualification,appColorRouteFacts} from './hls-nonkey-browser-app-color.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const box=(kind,...parts)=>{const body=Buffer.concat(parts),out=Buffer.alloc(body.length+8);
   out.writeUInt32BE(out.length);out.write(kind,4,4,'ascii');body.copy(out,8);return out;};
@@ -157,4 +157,25 @@ test('each media buffer needs its own exact init before its first fragment',()=>
   assert.equal(appColorAppendFacts(split,plan,pieces).qualified,false);
   const reversed={...value,appends:[value.appends[1],value.appends[0],value.appends[2]].map((v,n)=>({...v,ordinal:n}))};
   assert.equal(appColorAppendFacts(reversed,plan,pieces).qualified,false);
+});
+
+test('selected init path may carry one bounded playback-session query without exposing its value',()=>{
+  const origin='http://held.invalid',path='/hls/held/360p/init.mp4';
+  const bare=appColorRouteFacts(origin+path,origin,path,'GET',undefined);
+  const queried=appColorRouteFacts(origin+path+'?playbackSession=held_session-123',origin,path,'GET',undefined);
+  assert.equal(bare.qualified,true);assert.equal(queried.qualified,true);
+  assert.equal(queried.sameOrigin,true);assert.equal(queried.selectedPathMatched,true);
+  assert.equal(queried.queryCount,1);assert.equal(queried.queryKeyFlags.playbackSession,true);
+  assert.equal(JSON.stringify(queried).includes('held_session-123'),false);
+});
+test('unknown queries, duplicate sessions, range requests and foreign paths fail the route witness',()=>{
+  const origin='http://held.invalid',path='/hls/held/360p/init.mp4';
+  for(const [url,method,range] of [[origin+path+'?other=value','GET',undefined],
+    [origin+path+'?api_key=held','GET',undefined],[origin+path+'?ticket=held','GET',undefined],
+    [origin+path+'?playbackSession=a&playbackSession=b','GET',undefined],
+    [origin+path+'?playbackSession=','GET',undefined],
+    [origin+path+'?playbackSession='+('a'.repeat(81)),'GET',undefined],
+    [origin+path,'POST',undefined],[origin+path,'GET','bytes=0-10'],
+    ['http://other.invalid'+path,'GET',undefined],[origin+path+'x','GET',undefined]])
+    assert.equal(appColorRouteFacts(url,origin,path,method,range).qualified,false);
 });
