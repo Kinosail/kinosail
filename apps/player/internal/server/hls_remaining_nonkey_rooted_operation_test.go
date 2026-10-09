@@ -1,3 +1,5 @@
+//go:build linux
+
 package server
 
 import (
@@ -52,15 +54,14 @@ func remainingNonKeyRootedOperationBound(t *testing.T, ctx context.Context, fixt
 	request, release := remainingNonKeyRootedOperationContext(t, ctx, manager, name)
 	defer release()
 	revocation, finishRevocation := remainingNonKeyRootedRevocation(request, manager, marker, name)
+	deadline, bounded := request.Deadline()
 	started := time.Now()
 	proof, facts, err := manager.measureCopiedHLSPrivateSourceAudio(request, fixture.item, fixture.recipe, fixture.policy, fixture.directory)
 	elapsed := time.Since(started)
 	finishRevocation()
-	if !<-revocation || err == nil || proof != nil || facts != nil || elapsed > 2*time.Second {
-		t.Fatal("nonkey invalid rooted private operation acquired identity or exceeded shared budget")
-	}
-	if name == "inherited-deadline" && request.Err() != context.DeadlineExceeded {
-		t.Fatal("nonkey rooted private operation did not retain the inherited deadline")
+	remainingNonKeyRootedOperationResult(t, proof, facts, err, elapsed, <-revocation)
+	if name == "inherited-deadline" && (!bounded || time.Now().After(deadline)) {
+		t.Fatal("nonkey rooted private operation exceeded the inherited original deadline")
 	}
 	remainingNonKeyRootedProcessWitness(t, marker, name)
 	remainingNonKeyRootedOperationFiles(t, fixture, name, originalSource, originalFirst)
@@ -157,5 +158,12 @@ func remainingNonKeyRootedProcessWitness(t *testing.T, marker, name string) {
 	}
 	for _, pid := range pids {
 		copiedRecoveryAssertStopped(t, []byte(pid))
+	}
+}
+
+func remainingNonKeyRootedOperationResult(t *testing.T, proof *copiedHLSAudioProof, facts *copiedHLSPrivateAudioFacts, err error, elapsed time.Duration, revoked bool) {
+	t.Helper()
+	if !revoked || err == nil || proof != nil || facts != nil || elapsed > 2*time.Second {
+		t.Fatal("nonkey invalid rooted private operation acquired identity or exceeded shared budget")
 	}
 }

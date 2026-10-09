@@ -1,3 +1,5 @@
+//go:build linux
+
 package server
 
 import (
@@ -31,17 +33,7 @@ func TestRemainingNonKeyRootedPrivateAssetChanges(t *testing.T) {
 func remainingNonKeyRootedAssetChange(t *testing.T, ctx context.Context, fixture remainingNonKeyRootedFixture, name string) {
 	t.Helper()
 	before := remainingNonKeyRootedFDCount(t, fixture.manager.cache)
-	assets, err := fixture.manager.openCopiedHLSPrivateAssets(ctx, fixture.directory)
-	if assets != nil {
-		t.Cleanup(assets.close)
-	}
-	if err != nil || assets == nil {
-		t.Fatal("nonkey valid private assets could not be retained before mutation")
-	}
-	facts, err := assets.audio(ctx)
-	if err != nil || facts == nil || !assets.current(ctx, facts) {
-		t.Fatal("nonkey unmodified rooted private pair failed its positive control")
-	}
+	assets, facts := remainingNonKeyRootedOpenValid(t, ctx, fixture)
 	request, cancel := context.WithCancel(ctx)
 	defer cancel()
 	remainingNonKeyRootedAssetMutation(t, fixture, assets, name, cancel)
@@ -72,21 +64,10 @@ func remainingNonKeyRootedAssetMutation(t *testing.T, fixture remainingNonKeyRoo
 		remainingNonKeyRootedReplaceFile(t, filepath.Join(fixture.directory, "init.mp4"))
 	case "replace-first":
 		remainingNonKeyRootedReplaceFile(t, filepath.Join(fixture.directory, "segment-00000.m4s"))
-	case "replace-stage":
-		if os.Rename(fixture.directory, fixture.directory+".held") != nil {
-			t.Fatal("rooted private stage replacement")
-		}
-		remainingNonKeyRootedWriteStage(t, fixture.directory, fixture.initialization, fixture.first)
-	case "replace-cache":
-		if os.Rename(fixture.manager.cache, fixture.manager.cache+".held") != nil ||
-			os.Mkdir(fixture.manager.cache, 0o700) != nil {
-			t.Fatal("rooted private cache replacement")
-		}
-		remainingNonKeyRootedWriteStage(t, fixture.directory, fixture.initialization, fixture.first)
+	case "replace-stage", "replace-cache":
+		remainingNonKeyRootedReplaceDirectory(t, fixture, name)
 	case "truncate-init":
-		if os.Truncate(filepath.Join(fixture.directory, "init.mp4"), int64(len(fixture.initialization)-32)) != nil {
-			t.Fatal("rooted private truncation")
-		}
+		remainingNonKeyRootedTruncate(t, filepath.Join(fixture.directory, "init.mp4"), int64(len(fixture.initialization)-32))
 	case "grow-first":
 		remainingNonKeyRootedGrow(t, filepath.Join(fixture.directory, "segment-00000.m4s"))
 	case "mutate-init-restored-mtime":
@@ -182,4 +163,42 @@ func remainingNonKeyRootedChangedMetadataValid(t *testing.T, ctx context.Context
 			t.Fatal("rooted private mutation changed packet or codec metadata instead of only asset identity")
 		}
 	}
+}
+
+func remainingNonKeyRootedReplaceDirectory(t *testing.T, fixture remainingNonKeyRootedFixture, name string) {
+	t.Helper()
+	directory := fixture.directory
+	if name == "replace-cache" {
+		directory = fixture.manager.cache
+	}
+	if os.Rename(directory, directory+".held") != nil {
+		t.Fatal("rooted private directory replacement")
+	}
+	if name == "replace-cache" && os.Mkdir(fixture.manager.cache, 0o700) != nil {
+		t.Fatal("rooted private replacement cache")
+	}
+	remainingNonKeyRootedWriteStage(t, fixture.directory, fixture.initialization, fixture.first)
+}
+
+func remainingNonKeyRootedTruncate(t *testing.T, name string, size int64) {
+	t.Helper()
+	if os.Truncate(name, size) != nil {
+		t.Fatal("rooted private truncation")
+	}
+}
+
+func remainingNonKeyRootedOpenValid(t *testing.T, ctx context.Context, fixture remainingNonKeyRootedFixture) (*copiedHLSPrivateAssets, *copiedHLSPrivateAudioFacts) {
+	t.Helper()
+	assets, err := fixture.manager.openCopiedHLSPrivateAssets(ctx, fixture.directory)
+	if assets != nil {
+		t.Cleanup(assets.close)
+	}
+	if err != nil || assets == nil {
+		t.Fatal("nonkey valid private assets could not be retained before mutation")
+	}
+	facts, err := assets.audio(ctx)
+	if err != nil || facts == nil || !assets.current(ctx, facts) {
+		t.Fatal("nonkey unmodified rooted private pair failed its positive control")
+	}
+	return assets, facts
 }

@@ -1,3 +1,5 @@
+//go:build linux
+
 package server
 
 import (
@@ -27,25 +29,7 @@ func TestRemainingNonKeyRootedPrivateFileBounds(t *testing.T) {
 func remainingNonKeyRootedFileBound(t *testing.T, ctx context.Context, fixture remainingNonKeyRootedFixture, asset, damage string) {
 	t.Helper()
 	name := filepath.Join(fixture.directory, asset)
-	if os.Remove(name) != nil {
-		t.Fatal("rooted private invalid file fixture removal")
-	}
-	var err error
-	switch damage {
-	case "empty":
-		err = os.WriteFile(name, nil, 0o600)
-	case "directory":
-		err = os.Mkdir(name, 0o700)
-	case "symlink":
-		err = os.Symlink(fixture.item.Path, name)
-	case "fifo":
-		err = syscall.Mkfifo(name, 0o600)
-	case "oversized":
-		remainingNonKeyRootedOversize(t, name, asset)
-	}
-	if err != nil {
-		t.Fatal("rooted private invalid file fixture construction")
-	}
+	remainingNonKeyRootedInvalidFile(t, fixture, name, asset, damage)
 	before := remainingNonKeyRootedFDCount(t, fixture.manager.cache)
 	value, openErr := fixture.manager.openCopiedHLSPrivateAssets(ctx, fixture.directory)
 	if value != nil {
@@ -147,5 +131,28 @@ func TestRemainingNonKeyRootedPrivateRetainsBothFiles(t *testing.T) {
 	assets.close()
 	if remainingNonKeyRootedFDCount(t, fixture.manager.cache) != 0 {
 		t.Fatal("nonkey rooted private close retained a descriptor")
+	}
+}
+
+func remainingNonKeyRootedInvalidFile(t *testing.T, fixture remainingNonKeyRootedFixture, name, asset, damage string) {
+	t.Helper()
+	if os.Remove(name) != nil {
+		t.Fatal("rooted private invalid file fixture removal")
+	}
+	var err error
+	switch damage {
+	case "empty":
+		err = os.WriteFile(name, nil, 0o600)
+	case "directory":
+		err = os.Mkdir(name, 0o700)
+	case "symlink":
+		err = os.Symlink(fixture.item.Path, name)
+	case "fifo":
+		err = syscall.Mkfifo(name, 0o600)
+	case "oversized":
+		remainingNonKeyRootedOversize(t, name, asset)
+	}
+	if err != nil {
+		t.Fatal("rooted private invalid file fixture construction")
 	}
 }

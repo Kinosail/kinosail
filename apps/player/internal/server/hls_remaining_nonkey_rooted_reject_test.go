@@ -1,3 +1,5 @@
+//go:build linux
+
 package server
 
 import (
@@ -12,19 +14,10 @@ import (
 func remainingNonKeyRootedOperationFiles(t *testing.T, fixture remainingNonKeyRootedFixture, name string, originalSource, originalFirst os.FileInfo) {
 	t.Helper()
 	if name == "replaced-source" {
-		current, err := os.Stat(fixture.item.Path)
-		if err != nil || os.SameFile(originalSource, current) ||
-			remainingNonKeyCollectorHash(t, fixture.item.Path) != fixture.source {
-			t.Fatal("nonkey actual source replacement did not retain bytes on another inode")
-		}
+		remainingNonKeyRootedSourceReplaced(t, fixture, originalSource)
 	}
 	if name == "private-restored-mtime" {
-		path := filepath.Join(fixture.directory, "segment-00000.m4s")
-		current, err := os.Stat(path)
-		if err != nil || !sameCopiedHLSFile(originalFirst, current) ||
-			bytes.Equal(fixture.first, remainingNonKeyCollectorRead(t, path, 64<<20)) {
-			t.Fatal("nonkey actual private rewrite did not retain inode, length and mtime")
-		}
+		remainingNonKeyRootedFirstRewritten(t, fixture, originalFirst)
 	} else {
 		fixture.unchanged(t)
 	}
@@ -81,4 +74,23 @@ func remainingNonKeyRootedInvalidInput(t *testing.T, fixture remainingNonKeyRoot
 		t.Fatal("rooted private malformed fixture")
 	}
 	return fixture.policy
+}
+
+func remainingNonKeyRootedSourceReplaced(t *testing.T, fixture remainingNonKeyRootedFixture, originalSource os.FileInfo) {
+	t.Helper()
+	current, err := os.Stat(fixture.item.Path)
+	if err != nil || os.SameFile(originalSource, current) ||
+		remainingNonKeyCollectorHash(t, fixture.item.Path) != fixture.source {
+		t.Fatal("nonkey actual source replacement did not retain bytes on another inode")
+	}
+}
+
+func remainingNonKeyRootedFirstRewritten(t *testing.T, fixture remainingNonKeyRootedFixture, originalFirst os.FileInfo) {
+	t.Helper()
+	path := filepath.Join(fixture.directory, "segment-00000.m4s")
+	current, err := os.Stat(path)
+	if err != nil || !sameCopiedHLSFile(originalFirst, current) ||
+		bytes.Equal(fixture.first, remainingNonKeyCollectorRead(t, path, 64<<20)) {
+		t.Fatal("nonkey actual private rewrite did not retain inode, length and mtime")
+	}
 }
