@@ -23,6 +23,7 @@ export function offlineSeekMedia(input) {
   const event = value => {
     if (events.length === 16) {events.shift(); eventOverflow = true;}
     events.push({kind: value.type, timeMs: elapsed(), currentTime: number(video.currentTime)});
+    if (seekRequested && ['seeking','seeked','waiting','stalled','error'].includes(value.type)) checkpoint(value.type);
   };
   for (const kind of kinds) video.addEventListener(kind, event);
   const schedule = () => {
@@ -32,6 +33,7 @@ export function offlineSeekMedia(input) {
       if (frames.length < 16) frames.push({mediaTime: number(metadata.mediaTime), currentTime: number(video.currentTime),
         presentedFrames: Number.isSafeInteger(metadata.presentedFrames) && metadata.presentedFrames >= 0 ? number(metadata.presentedFrames) : null,
         pending: Boolean(document.querySelector('.media-stage')?.classList.contains('is-busy')), afterSeek: seekRequested});
+      if (seekRequested && frames.length <= 3) checkpoint('frame');
       if (frames.length === 16) frameLimitReached = true;
       if (frames.length < 16 || !seekRequested) schedule();
     });
@@ -51,7 +53,24 @@ export function offlineSeekMedia(input) {
       rvfcSupported: typeof video.requestVideoFrameCallback === 'function', events: events.slice(), frames: frames.slice(),
       seekRequested, eventOverflow, frameLimitReached, workerState: controller?.state === 'activated' ? 'activated' : controller ? 'other' : 'unavailable', workerVersion55};
   };
-  globalThis[key] = {snapshot,seek:()=>{seekRequested=true;frames.length=0;frameLimitReached=false;schedule();return true;},
+  const counts = new Map();
+  const checkpoint = phase => {
+    if (stopped || (counts.get(phase)||0) >= (phase==='frame'?3:1)) return;
+    counts.set(phase,(counts.get(phase)||0)+1);
+    try {
+      const value=snapshot();let sourceKind='unavailable';const raw=video.currentSrc;
+      if(typeof raw==='string' && raw.length<=2048) {
+        if(!raw)sourceKind='empty';else {const url=new URL(raw,input.origin);
+          sourceKind=url.protocol==='blob:'?'blob':url.origin!==input.origin?'other'
+            :!url.search && !url.hash && /^\/offline-media\/[a-f0-9]{16}\/[a-f0-9]{16}$/.test(url.pathname)?'offline-range':'owned-other';}
+      }
+      const facts={timeMs:elapsed(),sourceKind};
+      for(const field of ['currentTime','duration','readyState','networkState','errorCode','paused','seeking','buffered','rangesUnavailable']) facts[field]=value[field];
+      console.debug('KINOSAIL_OFFLINE_SEEK '+JSON.stringify({schemaVersion:1,kind:'offline-seek-checkpoint',phase,facts}));
+    } catch { /* Diagnostics must not change the actual seek or native callback. */ }
+  };
+  globalThis[key] = {snapshot,seek:()=>{checkpoint('before-seek');seekRequested=true;frames.length=0;frameLimitReached=false;schedule();return true;},
+    afterSeek:()=>checkpoint('after-seek'),
     stop:()=>{stopped=true;for(const kind of kinds)video.removeEventListener(kind,event);
       if(callback !== undefined && typeof video.cancelVideoFrameCallback === 'function') video.cancelVideoFrameCallback(callback);}};
   schedule(); return true;
@@ -111,6 +130,7 @@ export function offlineSeekAction(video, origin) {
     throw new Error('invalid offline seek action');
   try {globalThis.__kinosailOfflineSeekWitness?.seek();} catch {}
   video.currentTime = 4;
+  try {globalThis.__kinosailOfflineSeekWitness?.afterSeek();} catch {}
 }
 
 const object = (value, keys) => value && typeof value === 'object' && !Array.isArray(value)
@@ -130,6 +150,18 @@ function validMedia(value) {
   return Array.isArray(value.frames) && value.frames.length<=16 && value.frames.every(frame=>object(frame,['mediaTime','currentTime','presentedFrames','pending','afterSeek'])
     && number(frame.mediaTime) && number(frame.currentTime) && (frame.presentedFrames===null || Number.isSafeInteger(frame.presentedFrames) && frame.presentedFrames>=0 && frame.presentedFrames<=1e12)
     && typeof frame.pending==='boolean' && typeof frame.afterSeek==='boolean');
+}
+function validCheckpoint(value) {
+  if(!object(value,['schemaVersion','kind','phase','facts']) || value.schemaVersion!==1 || value.kind!=='offline-seek-checkpoint'
+      || !['before-seek','after-seek','seeking','seeked','waiting','stalled','error','frame'].includes(value.phase)) return false;
+  const facts=value.facts;
+  if(!object(facts,['timeMs','sourceKind','currentTime','duration','readyState','networkState','errorCode','paused','seeking','buffered','rangesUnavailable'])
+      || !Number.isInteger(facts.timeMs) || facts.timeMs<0 || facts.timeMs>600000 || !number(facts.currentTime) || !number(facts.duration)
+      || !['offline-range','owned-other','blob','other','empty','unavailable'].includes(facts.sourceKind)) return false;
+  for(const [key,max] of [['readyState',4],['networkState',3],['errorCode',4]])
+    if(facts[key]!==null && !(Number.isInteger(facts[key]) && facts[key]>=0 && facts[key]<=max)) return false;
+  return ['paused','seeking','rangesUnavailable'].every(key=>typeof facts[key]==='boolean') && Array.isArray(facts.buffered) && facts.buffered.length<=8
+    && facts.buffered.every(range=>object(range,['start','end']) && range.start!==null && range.end!==null && number(range.start) && number(range.end) && range.end>=range.start);
 }
 function validStorage(value) {
   return object(value,['available','backend','size','bytes','chunks','opfsSize']) && typeof value.available==='boolean'
@@ -185,7 +217,20 @@ export function offlineSeekWitness(page, baseURL, jobID) {
         :/INTERNET_DISCONNECTED|OFFLINE/.test(text)?'offline':/CERT|UNKNOWN_ISSUER/.test(text)?'tls':'other';
     }catch{} record('failure',request,{family});
   };
-  page.on('request',requested);page.on('response',responded);page.on('requestfailed',failed);
+  const checkpoints=[],checkpointCounts=new Map();let checkpointOverflow=false;
+  const consoleMessage = message => {
+    try {
+      if(stopped || message.type()!=='debug' || !owned(page.url()))return;
+      const current=new URL(page.url());if(current.pathname!=='/offline' || current.search!=='?job='+jobID)return;
+      const text=message.text(),prefix='KINOSAIL_OFFLINE_SEEK ';
+      if(typeof text!=='string' || text.length>4096 || !text.startsWith(prefix))return;
+      const value=JSON.parse(text.slice(prefix.length));if(!validCheckpoint(value))return;
+      const count=checkpointCounts.get(value.phase)||0;
+      if(checkpoints.length>=10 || count>=(value.phase==='frame'?3:1)){checkpointOverflow=true;return;}
+      checkpointCounts.set(value.phase,count+1);checkpoints.push({phase:value.phase,facts:value.facts});
+    }catch{} // Console events are untrusted and have no verified script provenance.
+  };
+  page.on('request',requested);page.on('response',responded);page.on('requestfailed',failed);page.on('console',consoleMessage);
   const deadline=Symbol('offline observation deadline');let setupReason='not_armed';
   const bounded = async callback => {let timer;try{return await Promise.race([callback(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(deadline),1000);})]);}finally{clearTimeout(timer);}};
   const evaluate = operation => {if(!owned(page.url()))throw new Error('offline observation origin changed');return page.evaluate(offlineSeekMedia,{operation,origin});};
@@ -201,6 +246,8 @@ export function offlineSeekWitness(page, baseURL, jobID) {
     arm:async()=>{const result=await observe(()=>evaluate('arm'),value=>value===true);setup=result.value===true?'armed':'unavailable';setupReason=result.reason;},
     seek:async media=>{if(!owned(page.url()))throw new Error('offline seek origin changed');await media.evaluate(offlineSeekAction,origin);},
     attachFailure:async info=>{
+      const early=JSON.stringify({schemaVersion:1,kind:'offline-seek-checkpoints',source:'unverified-console',records:checkpoints.slice(),overflow:checkpointOverflow});
+      if(Buffer.byteLength(early)<=16384)try{await bounded(()=>info.attach('offline-seek-checkpoints',{contentType:'application/json',body:early}));}catch{}
       const mediaResult=await observe(()=>evaluate('snapshot'),validMedia);
       const storageResult=await observe(()=>page.evaluate(offlineSeekStorage,{jobID,origin}),validStorage);
       const media=mediaResult.value,storage=storageResult.value;
@@ -209,7 +256,7 @@ export function offlineSeekWitness(page, baseURL, jobID) {
       if(Buffer.byteLength(body)>16384)return false;
       try{await bounded(()=>info.attach('offline-seek-failure',{contentType:'application/json',body}));return true;}catch{return false;}
     },
-    stop:async()=>{if(stopped)return;stopped=true;page.off('request',requested);page.off('response',responded);page.off('requestfailed',failed);
+    stop:async()=>{if(stopped)return;stopped=true;page.off('request',requested);page.off('response',responded);page.off('requestfailed',failed);page.off('console',consoleMessage);
       try{await bounded(()=>evaluate('stop'));}catch{}},
   };
 }
