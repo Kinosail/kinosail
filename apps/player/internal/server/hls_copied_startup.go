@@ -100,7 +100,7 @@ func copiedHLSRefillAudioArguments(arguments []string, timeline *copiedHLSTimeli
 func validCopiedHLSAudioDTS(timeline *copiedHLSTimeline, number int) bool {
 	key := timeline.Keys[number]
 	return validCopiedHLSTimeBase(timeline) && timeline.Numerator <= 1<<52 && timeline.Denominator <= 1<<52 &&
-		key.PTS > timeline.Keys[number-1].PTS && key.PTS <= 1<<52 && key.DTS >= -(1<<52) && key.DTS <= key.PTS && key.DTS > timeline.Keys[number-1].DTS
+		key.PTS >= 0 && key.PTS > timeline.Keys[number-1].PTS && key.PTS <= 1<<52 && key.DTS >= -(1<<52) && key.DTS <= key.PTS && key.DTS > timeline.Keys[number-1].DTS
 }
 
 func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string) func([]byte) []byte {
