@@ -4,7 +4,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {installAudioTailMatcher} from './hls-nonkey-browser-audio-tail.mjs';
 const saved=globalThis.window;globalThis.window={};installAudioTailMatcher();
-const match=window.nonkeyAudioTailMatch;globalThis.window=saved;
+const match=window.nonkeyAudioTailMatch,qualify=window.nonkeyAudioTailQualification;globalThis.window=saved;
 const source=()=>[0,1].map(c=>Float32Array.from({length:512},(_,n)=>(n*3+c+1)/2048));
 const tail=(channels,first=136)=>channels.map(v=>v.slice(first));
 test('whole untouched stereo tail has one exact offset and includes returned EOF',()=>{
@@ -17,7 +17,7 @@ test('whole untouched stereo tail has one exact offset and includes returned EOF
   assert.equal(result.candidates.find(v=>v.offset===136).s16Mismatches,0);
 });
 test('omission, reorder, channel swap and a single interior changed sample remain failing',()=>{
-  const full=source(),correct=tail(full),omit=correct.map(v=>v.slice(1));
+  const full=source(),correct=tail(full),omit=correct.map(v=>Float32Array.from([...v.slice(0,100),...v.slice(101)]));
   const reorder=correct.map(v=>Float32Array.from(v));[reorder[0][50],reorder[0][51]]=[reorder[0][51],reorder[0][50]];
   const interior=correct.map(v=>Float32Array.from(v));interior[1][173]+=1/65536;
   const missing=correct.map(v=>v.slice(0,-1));
@@ -53,4 +53,20 @@ test('nonfinite, unequal stereo extents, invalid rates of search and empty PCM f
     [full,[new Float32Array(),new Float32Array()],128],[full,tail(full),NaN],
     [full,tail(full),-1],[full,tail(full),128.5],[full,tail(full),1600001]])
     assert.throws(()=>match(...args),/audio_tail_shape/);
+});
+
+test('repeat whole hashes and original returned counts must bind before correspondence admission',()=>{
+  const facts={sampleRate:48000,channels:2,samples:512,completeDecode:true,
+    float32InterleavedSHA256:'1'.repeat(64),s16leSHA256:'2'.repeat(64)};
+  const publicFacts={...facts,samples:376,float32InterleavedSHA256:'3'.repeat(64),s16leSHA256:'4'.repeat(64)};
+  const tailFacts=match(source(),tail(source()),128);
+  assert.equal(qualify(tailFacts,facts,facts,publicFacts,facts,publicFacts,true).qualified,true);
+  for(const [first,repeat,pub,oldSource,oldPublic,binding] of [
+    [facts,{...facts,float32InterleavedSHA256:'5'.repeat(64)},publicFacts,facts,publicFacts,true],
+    [facts,{...facts,s16leSHA256:'5'.repeat(64)},publicFacts,facts,publicFacts,true],
+    [facts,facts,{...publicFacts,samples:375},facts,publicFacts,true],
+    [facts,facts,publicFacts,{...facts,samples:513},publicFacts,true],
+    [facts,facts,publicFacts,facts,{...publicFacts,s16leSHA256:'5'.repeat(64)},true],
+    [facts,facts,publicFacts,facts,publicFacts,false]])
+    assert.equal(qualify(tailFacts,first,repeat,pub,oldSource,oldPublic,binding).qualified,false);
 });
