@@ -56,6 +56,21 @@ GET adoption can remove a speculative .startup marker. The first immutable
 cache test therefore explicitly uses an already-adopted seed with that marker
 absent. Speculative adoption and lazy continuation remain separate blockers.
 
+## Preserved fixture counterevidence
+
+Test-only checkpoint 113af591f8836889428cbbeed03ca18590de2358 ran on unchanged
+production source from 543a2f535be2ab1e3206ad8120c038c3b7960ae8.
+Hosted run 37978808780 stopped before candidate cases: compat_seed_all_media_physical.
+Receipt SHA256: c7c3597b3a0b6f0f882e499c4dcdaf9ee760605fe9f17bba2e9af957283bb1d5.
+This is a seed-completeness failure, not a qualified compatibility RED.
+The baseline preparation produces a genuine lazy Version1 cache. Its original
+playlist 200 controls therefore do not prove all physical fragments exist.
+For the separate complete-cache control, fetch init and all ten fragments through
+the disposable baseline Server's existing GET path before sealing independent
+clones. Record each response, prior physical presence, source calls and joined
+cache/source state. This baseline-only hydration is not a candidate behavior change.
+Lazy Version1 client compatibility remains mandatory and independently held.
+
 ## Written-first failure matrix
 
 The new public test runs real baseline and candidate Go Servers on hosted Linux.

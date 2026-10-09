@@ -175,6 +175,20 @@ try:
         'legacy_seed_baseline_adoption_failed')
     idle(owner.api, owner.process, source)
     check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_adoption_refilled_source')
+    # Existing baseline GET fills only this disposable seed before immutable clones.
+    hydration = []
+    prefix = selected.removesuffix('index.m3u8') + '360p/'
+    for name in ['init.mp4', *['segment-' + str(n).zfill(5) + '.m4s' for n in range(10)]]:
+        paths = list((seed / 'cache').glob('*/360p/' + name))
+        physical_before = len(paths) == 1 and paths[0].is_file()
+        status, body, _ = owner.api.http(prefix + name)
+        check(status == 200 and 0 < len(body) <= 2 << 20, 'compat_baseline_seed_hydration')
+        hydration.append({'asset': name, 'physicalBefore': physical_before, 'status': status,
+            'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()})
+    idle(owner.api, owner.process, source)
+    receipt['seedHydration'] = hydration
+    receipt['seedSourceInvocations'] = len(owner.source_invocation_rows())
+    check(1 <= receipt['seedSourceInvocations'] <= 10, 'compat_seed_hydration_encoder_bound')
     certificates = list((seed / 'cache').glob('*/.copy-clock'))
     check(len(certificates) == 1 and json.loads(bounded_bytes(certificates[0], 4096, 'legacy_certificate_bound'))['version'] == 1,
         'legacy_real_version1_control')
