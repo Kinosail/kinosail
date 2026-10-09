@@ -25,7 +25,9 @@ def cache_state(cache):
              for name in ['.source', '.copy-timeline', '.copy-clock']}
     assets = {name: hashlib.sha256(bounded_bytes(media / name, 2 << 20, 'v2_asset_bound')).hexdigest()
               for name in ['init.mp4', *names]}
+    generation = directory.stat()
     return directory, media, {'metadataSHA256': bound, 'assetSHA256': assets,
+        'generationDevice': generation.st_dev, 'generationInode': generation.st_ino,
         'segments': names, 'audioOrigin': timeline['AudioOrigin'],
         'certificateVersion': certificate['version'], 'clock': timeline['Clock']}
 
