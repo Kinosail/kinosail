@@ -275,3 +275,18 @@ This slice does not change missing-master handling, owner cancellation, cache de
 The preflight-to-preparation deletion race and pending-owner root binding remain release blockers.
 Lazy/speculative Version1 compatibility, 14 inherited holds, and native50 retesting remain open.
 No production, older-client, native or all50 acceptance follows from this candidate alone.
+
+## Qualified complete-cache and master result
+
+Head `2174aac2a10af0d0747893369056b0c63c9ae36c` completed proof 37994947510 and quality 37994947515 successfully.
+All 39 complete adopted Version1 compatibility cases passed; no candidate preparation POST or cache mutation occurred.
+Receipt SHA256: `c6ec2a6c8269fd3760da4461dc4591015c8e481f7ba06bbd28f713df48f64d24`.
+Artifact 11647282448 API archive SHA256: `87fdadf42a8ac677db357d1584b1f9870f713045e9aa6529c15bd4e11702b6a5`.
+All 24 malformed master cases rejected GET/HEAD with zero source encoders, unchanged caches and one correlated WARN each.
+Four positive master controls passed 480 exact source frames each, including actual older absent-marker baseline and candidate.
+Master receipt SHA256: `e365544fe57311b39f53bbf00c983931009c8be178471e6795aa49fe6e3bd197`.
+Artifact 11646533261 API archive SHA256: `7a6d086716c4b3a29c569d6acc2c0bc77ac2888812a242075314c1620e2598bd`.
+Five indexed AAC journeys, two interrupted unindexed cold cases and 18 missing-binding cases also passed.
+The valid pending admission and malformed pending grammar controls passed.
+Grammar-valid pending init mismatches, lazy continuation and ownership races remain unproved.
+This proves the complete/master slice; full older-client, production and native acceptance remain false.

@@ -374,3 +374,60 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+
+  lazy:
+    name: Actual Version1 lazy and speculative GET compatibility
+    needs: contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        with: {fetch-depth: 0, persist-credentials: false}
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        timeout-minutes: 3
+        with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
+      - name: Install pinned public-media codecs
+        timeout-minutes: 9
+        run: |
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/hls-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
+          printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/hls-ffmpeg.deb" | sha256sum --check
+          apt_options=(-o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::Retries=0)
+          if ! timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any; then
+            python3 - "$RUNNER_TEMP/hls-ubuntu.sources" <<'PY'
+          import pathlib, sys
+          source = pathlib.Path('/etc/apt/sources.list.d/ubuntu.sources')
+          with source.open('rb') as stream:
+              data = stream.read(65537)
+          assert len(data) <= 65536, 'runner_ubuntu_sources_bound'
+          lines = data.decode().splitlines(keepends=True)
+          changed = False
+          for index, line in enumerate(lines):
+              if line.rstrip('\r\n') in ['URIs: http://azure.archive.ubuntu.com/ubuntu/', 'URIs: http://azure.archive.ubuntu.com/ubuntu']:
+                  lines[index] = 'URIs: https://archive.ubuntu.com/ubuntu/\n'
+                  changed = True
+          assert changed, 'runner_ubuntu_mirror_not_supported'
+          pathlib.Path(sys.argv[1]).write_text(''.join(lines))
+          PY
+            sudo install -m 0644 "$RUNNER_TEMP/hls-ubuntu.sources" /etc/apt/sources.list.d/ubuntu.sources
+            timeout --kill-after=5s 90s sudo apt-get "${apt_options[@]}" update --error-on=any
+          fi
+          timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
+          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Actual Version1 lazy and speculative GET compatibility
+        timeout-minutes: 19
+        run: |
+          python3 -m py_compile apps/player/scripts/test-hls-aac-v2-lazy-public.py
+          timeout --signal=TERM --kill-after=90s 990s python3 apps/player/scripts/test-hls-aac-v2-lazy-public.py
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        timeout-minutes: 2
+        with:
+          name: aac-v2-lazy-${{ github.sha }}
+          path: |
+            .verification/hls-aac-v2-lazy/**/receipt.json
+            .verification/hls-aac-v2-lazy/**/SHA256SUMS
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
