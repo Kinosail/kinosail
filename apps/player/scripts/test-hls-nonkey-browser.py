@@ -29,7 +29,7 @@ RUN = ROOT / '.verification/hls-nonkey-browser' / time.strftime('%Y%m%dT%H%M%SZ'
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
     'tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
-    'productionAcceptance': False, 'sourceAndClientUnchanged': False, 'clientUnchanged': True, 'productionChange': 'video-only-copypriorss', 'containers': [], 'result': 'failed',
+    'productionAcceptance': False, 'sourceAndClientUnchanged': False, 'clientUnchanged': True, 'productionChange': 'copied-audio-key-dts-and-canonical-clock', 'containers': [], 'result': 'failed',
     'browserAudioPresentationAccepted': False, 'transport': 'Real Go authenticated unindexed cold HLS',
     'preparationAcceptance': False}
 guard = DiagnosticDeadline(840)
