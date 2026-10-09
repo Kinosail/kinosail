@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"path/filepath"
@@ -102,8 +103,34 @@ func copiedAACMasterAllowed(master []byte, policy, rendition string) bool {
 	return bindings == 1 && renditions == 1
 }
 
+// Existing selected indexed caches require their complete source binding before
+// a playlist request can enter preparation and replace any generation.
+func (manager *hlsManager) copiedAACPlaylistBinding(ctx context.Context, item library.Item, recipe hlsRecipe, key string) error {
+	options, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		return err
+	}
+	directory := filepath.Join(manager.cache, key)
+	if !copiedAACPolicyRequired(options.Cache) || !manager.copiedHLSTimelinePresent(directory) {
+		return nil
+	}
+	root, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	defer root.Close()
+	data, err := copiedHLSCacheFile(root, ".source", 16<<10)
+	if err != nil || string(data) != options.Cache || ctx.Err() != nil {
+		return errCopiedHLSIndex
+	}
+	return nil
+}
+
 func rejectCopiedAACPlaylist(writer http.ResponseWriter, request *http.Request) bool {
-	slog.WarnContext(request.Context(), "HLS copied playlist rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", "invalid-generation-or-manifest")
+	return rejectCopiedAACPlaylistClass(writer, request, "invalid-generation-or-manifest")
+}
+func rejectCopiedAACPlaylistClass(writer http.ResponseWriter, request *http.Request, failureClass string) bool {
+	slog.WarnContext(request.Context(), "HLS copied playlist rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", failureClass)
 	localizedNotFound(writer, request)
 	return true
 }

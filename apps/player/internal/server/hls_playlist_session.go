@@ -44,6 +44,10 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	start := 0
 	duration := 0.0
 	if filepath.Base(name) == "index.m3u8" {
+		if err := manager.copiedAACPlaylistBinding(request.Context(), item, recipe, key); err != nil {
+			rejectCopiedAACPlaylistClass(writer, request, "invalid-source-binding")
+			return
+		}
 		var validStart bool
 		start, duration, validStart = manager.recipePlaylistStart(writer, request, item)
 		if !validStart {
