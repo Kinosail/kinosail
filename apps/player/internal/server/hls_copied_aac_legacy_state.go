@@ -6,8 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 type copiedHLSLegacyRead struct {
@@ -47,9 +45,10 @@ func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) erro
 	}
 	name := filepath.Join(held.certificate.Rendition, "index.m3u8")
 	legacy.manifest, err = legacy.read(held.ctx, held.root, name, maximumCopiedHLSTimelineBytes)
-	if err != nil || !playback.PlaylistHas(legacy.manifest, "#EXT-X-ENDLIST") {
+	if err != nil {
 		return errCopiedHLSIndex
 	}
+	// The certified timeline can project a prefix; completeAssets checks every physical cut.
 	if _, valid := copiedHLSManifest(legacy.manifest, held.timeline); !valid {
 		return errCopiedHLSIndex
 	}
