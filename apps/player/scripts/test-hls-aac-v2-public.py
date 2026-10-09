@@ -191,6 +191,7 @@ try:
     prepare_once(owner.api, prepare, selected, owner.log_path, owner.process, source, prepared)
     check(prepared['preparationAttempt']['completionState'] == 'ready', 'v2_migration_not_ready')
     _, _, migrated = cache_state(legacy_directory / 'cache')
+    assert_fixed_cache_grid(migrated, source_grid)
     check(migrated['metadataSHA256'] != old_metadata, 'v2_version1_not_reindexed')
     case('version1-migration', selected, metadata, migrated)
     receipt['legacyPreparation'] = old_prepare
