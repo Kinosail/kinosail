@@ -45,6 +45,7 @@ class PlaybackApi(
             require(value.text("policy", 32) in setOf("automatic", "direct", "compatible")) { INVALID_RESPONSE }
         }
         val plan = value.getValue("plan").fields(PLAN_KEYS, setOf("allowed", "mode", "reason"))
+        plan["audioCompatibilityRequired"]?.let { plan.strictFlag("audioCompatibilityRequired") }
         require(plan.flag("allowed") == (plan.text("mode", 32) != "denied") &&
             plan.text("mode", 32) in MODES && plan.text("reason", 128).isNotEmpty() &&
             plan.text("markerMode", 32) in MARKER_MODES) { INVALID_RESPONSE }
@@ -59,6 +60,7 @@ class PlaybackApi(
                 INVALID_RESPONSE
             }
             val fallback = value.getValue("compatiblePlan").fields(PLAN_KEYS, setOf("allowed", "mode", "reason"))
+            fallback["audioCompatibilityRequired"]?.let { fallback.strictFlag("audioCompatibilityRequired") }
             require(fallback.flag("allowed") && fallback.text("mode", 32) in MODES - "direct" - "denied" &&
                 fallback.text("reason", 128).isNotEmpty() &&
                 fallback.text("markerMode", 32) in MARKER_MODES) { INVALID_RESPONSE }
@@ -119,7 +121,7 @@ class PlaybackApi(
             "subtitleLanguage", "subtitlePickerLimited")
         private val PLAN_KEYS = setOf("allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode",
             "colorMode", "audioIndex", "subtitleIndex", "subtitleSourceIndex", "subtitleText", "subtitleExternal",
-            "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline")
+            "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline", "audioCompatibilityRequired")
         private val SUBTITLE_KEYS = setOf("label", "source", "default", "language", "role", "kind", "forced", "embedded")
 
         private fun JsonElement.fields(allowed: Set<String>, required: Set<String>): JsonObject {
