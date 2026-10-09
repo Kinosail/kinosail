@@ -1,0 +1,129 @@
+package server
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"reflect"
+	"testing"
+	"time"
+)
+
+// Isolated gap: public fixed-media E2E has no AAC packet exactly on a fractional
+// seek boundary. These real pinned-BSF controls retain all copied payload hashes.
+// They do not grant general audio time-base, cache, decoder or producer admission.
+func TestCopiedHLSAACCutPinnedPacketBoundaries(t *testing.T) {
+	if os.Getenv("KINOSAIL_PINNED_AAC_CUT") != "1" {
+		t.Skip("hosted pinned FFmpeg boundary control")
+	}
+	encoder, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		t.Fatal("pinned AAC control executable unavailable")
+	}
+	probe, err := exec.LookPath("ffprobe")
+	if err != nil {
+		t.Fatal("pinned AAC control probe unavailable")
+	}
+	directory := t.TempDir()
+	source := filepath.Join(directory, "source.m4a")
+	copiedHLSAACControlCommand(t, encoder, "-nostdin", "-v", "error", "-threads", "1",
+		"-f", "lavfi", "-i", "sine=frequency=731:sample_rate=48000", "-t", "0.256",
+		"-c:a", "aac", "-threads", "1", "-b:a", "128k", "-y", source)
+	hashes := copiedHLSAACControlHashes(t, probe, source)
+	if len(hashes) < 6 {
+		t.Fatal("pinned AAC control packet bound")
+	}
+	cases := []struct {
+		name string
+		key copiedHLSKey
+		denominator int64
+		base int64
+		want int
+	}{
+		{"preserve_935_through_938", copiedHLSKey{PTS: 960000, DTS: 956000}, 48000, -4600, 1},
+		{"fractional_seek_exact_dts", copiedHLSKey{PTS: 960001, DTS: 956001}, 48000, -5024, 1},
+		{"fractional_dts_packet_before_key", copiedHLSKey{PTS: 256000, DTS: 255731}, 12800, -2033, 2},
+	}
+	for _, selected := range cases {
+		t.Run(selected.name, func(t *testing.T) {
+			timeline := copiedHLSAudioBoundaryTimeline(selected.key)
+			timeline.Denominator = selected.denominator
+			timeline.TimeBase = 1 / float64(selected.denominator)
+			timeline.Keys[0] = copiedHLSKey{PTS: 12 * selected.denominator, DTS: 11 * selected.denominator}
+			arguments, err := copiedHLSSeekArguments([]string{"-c:a", "copy"}, timeline, 1)
+			if err != nil {
+				t.Fatal("pinned AAC control rejected")
+			}
+			bsf := copiedHLSAudioOption(arguments, "-bsf:a")
+			output := filepath.Join(directory, selected.name+".nut")
+			copiedHLSAACControlOutput(t, encoder, source, output, selected.base, bsf)
+			actual := copiedHLSAACControlHashes(t, probe, output)
+			if !reflect.DeepEqual(actual, hashes[selected.want:]) {
+				t.Fatalf("complete copied AAC suffix differs: got %d want %d", len(actual), len(hashes)-selected.want)
+			}
+			t.Logf("all %d copied AAC payloads retained in order; sourceFirstOrdinal=%d", len(actual), selected.want)
+			if selected.name == "fractional_seek_exact_dts" {
+				broken := "noise=amount=0:drop=lt(pts*tb+20.000020\\,956001*1/48000)"
+				negative := filepath.Join(directory, "negative.nut")
+				copiedHLSAACControlOutput(t, encoder, source, negative, selected.base, broken)
+				if !reflect.DeepEqual(copiedHLSAACControlHashes(t, probe, negative), hashes[2:]) {
+					t.Fatal("fractional literal-seconds negative control stopped losing its exact-boundary packet")
+				}
+				t.Log("negative control loses the exact-boundary packet")
+			}
+		})
+	}
+	data, err := os.ReadFile(source)
+	if err != nil || len(data) > 1<<20 {
+		t.Fatal("pinned AAC control source bound")
+	}
+	t.Logf("syntheticControlSHA256=%x; sourcePackets=%d; no productionAcceptance", sha256.Sum256(data), len(hashes))
+}
+
+func copiedHLSAACControlOutput(t *testing.T, executable, source, output string, base int64, bsf string) {
+	t.Helper()
+	// Timestamp engineering isolates BSF numeric semantics; no payload is reencoded.
+	before := fmt.Sprintf("setts=pts=PTS-STARTPTS+(%d):dts=DTS-STARTDTS+(%d)", base, base)
+	chain := before + "," + bsf + ",setts=pts=PTS+24000:dts=DTS+24000"
+	copiedHLSAACControlCommand(t, executable, "-nostdin", "-v", "error", "-threads", "1", "-copyts",
+		"-i", source, "-map", "0:a:0", "-copypriorss:a", "1", "-c:a", "copy", "-bsf:a", chain,
+		"-avoid_negative_ts", "disabled", "-f", "nut", "-y", output)
+}
+
+func copiedHLSAACControlCommand(t *testing.T, executable string, arguments ...string) []byte {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Second)
+	defer cancel()
+	output, err := exec.CommandContext(ctx, executable, arguments...).Output()
+	if err != nil || len(output) > 1<<20 {
+		t.Fatal("bounded pinned AAC control command failed")
+	}
+	return output
+}
+
+func copiedHLSAACControlHashes(t *testing.T, probe, path string) []string {
+	t.Helper()
+	output := copiedHLSAACControlCommand(t, probe, "-v", "error", "-threads", "1",
+		"-select_streams", "a:0", "-show_packets", "-show_data_hash", "sha256",
+		"-show_entries", "packet=data_hash", "-of", "json", path)
+	var data struct {
+		Packets []struct {
+			Hash string `json:"data_hash"`
+		} `json:"packets"`
+	}
+	if json.Unmarshal(output, &data) != nil || len(data.Packets) == 0 || len(data.Packets) > 32 {
+		t.Fatal("bounded pinned AAC control packet shape")
+	}
+	result := make([]string, len(data.Packets))
+	for index, packet := range data.Packets {
+		if len(packet.Hash) != 71 {
+			t.Fatal("pinned AAC control payload hash shape")
+		}
+		result[index] = packet.Hash
+	}
+	return result
+}

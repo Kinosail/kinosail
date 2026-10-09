@@ -24,7 +24,7 @@ func TestCopiedHLSRefillAudioKeepsDTSBoundaryAndCanonicalClock(t *testing.T) {
 		if key.DTS == 956001 {
 			boundary = "956001"
 		}
-		want := "noise=amount=0:drop=lt(pts*tb+" + floor + "\\," + boundary + "*1/48000)"
+		want := "noise=amount=0:drop=lt(pts+round(" + floor + "/tb)\\,ceil(" + boundary + "*1*round(1/tb)/48000))"
 		if audio := copiedHLSAudioOption(arguments, "-bsf:a"); audio != want {
 			t.Fatalf("DTS boundary or payload preservation changed: %q", audio)
 		}
@@ -39,6 +39,7 @@ func TestCopiedHLSRefillAudioRejectsInvalidDTSMetadata(t *testing.T) {
 	mutations := []func(*copiedHLSTimeline){
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = v.Keys[1].PTS + 1 },
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = v.Keys[0].DTS },
+		func(v *copiedHLSTimeline) { v.Keys[1].PTS = v.Keys[0].PTS - 1; v.Keys[1].DTS = v.Keys[0].DTS + 1 },
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = -(1 << 52) - 1 },
 		func(v *copiedHLSTimeline) { v.Keys[1].PTS = (1 << 52) + 1 },
 		func(v *copiedHLSTimeline) { v.Numerator = 0 },
