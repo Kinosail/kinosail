@@ -4,7 +4,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver} from './hls-nonkey-browser-app-color.mjs';
+import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver,appColorConsumerQualification} from './hls-nonkey-browser-app-color.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const box=(kind,...parts)=>{const body=Buffer.concat(parts),out=Buffer.alloc(body.length+8);
   out.writeUInt32BE(out.length);out.write(kind,4,4,'ascii');body.copy(out,8);return out;};
@@ -114,4 +114,18 @@ test('contiguous media append groups preserve complete order without equating HT
   value.appends=[value.appends[0],{...value.appends[1],sha256:group.sha256,bytes:group.bytes,
     payloadBase64:group.data.toString('base64')}];
   assert.equal(appColorAppendFacts(value,plan,pieces).qualified,true);
+});
+
+test('new actual-app qualification binds completeness and forced-seek semantics before evaluation',()=>{
+  const reference=[0,1,2].map(n=>({sha256:String(n).padStart(64,'0')}));
+  const phase={rows:reference,ended:true,droppedCallbacks:0,firstCallbackGap:0,captureErrors:[],
+    quality:{droppedVideoFrames:0},events:[]};
+  const row={label:'app-color-601-unchanged-client',result:'observed',selectedPublicHLSObserved:true,observer:{phases:[phase]}};
+  assert.equal(appColorConsumerQualification(row,reference,[0,1,2],true).qualified,true);
+  assert.equal(appColorConsumerQualification(row,reference,[0,1,2],false).qualified,false);
+  const forced={...row,label:'app-color-601-forced-source-coordinate-seek'};
+  assert.equal(appColorConsumerQualification(forced,reference,[0,1,2],true).qualified,false);
+  assert.equal(appColorConsumerQualification({...forced,forceSeek:{seeking:true,seeked:true}},reference,[0,1,2],true).qualified,true);
+  assert.equal(forced.label,'app-color-601-forced-source-coordinate-seek');
+  assert.equal(Object.hasOwn(forced,'referenceComplete'),false);
 });
