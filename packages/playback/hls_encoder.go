@@ -91,7 +91,8 @@ func hlsSourceFresh(playlist, source, policy string) bool {
 	defer root.Close()
 	binding, err := readHLSSource(root)
 	if errors.Is(err, os.ErrNotExist) {
-		return Fresh(playlist, source)
+		_, token, valid := copiedAACPolicyParts(policy)
+		return valid && token == "" && Fresh(playlist, source)
 	}
 	if err != nil || policy != "" && string(binding) != policy {
 		return false
