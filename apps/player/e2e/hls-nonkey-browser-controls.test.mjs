@@ -93,3 +93,5 @@ test('joined public direct decode needs sealed bytes, complete frames and explic
       forceSeek:{seeking:true,seeked:true,requestedLocal:0,rawTime}},reference,[0,1,2,3]).qualified,false);
   assert.equal(joinedFrameQualification({...row,observer:{phases:[{...phase,droppedCallbacks:1}]}},reference,[0,1,2,3]).qualified,false);
 });
+
+import './hls-nonkey-browser-color.test.mjs';
