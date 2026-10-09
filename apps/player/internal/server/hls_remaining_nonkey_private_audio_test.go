@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -90,17 +91,57 @@ func remainingNonKeyPrivateAudioRejects(t *testing.T, ctx context.Context, initi
 }
 
 func TestRemainingNonKeyPrivateAudioInputBounds(t *testing.T) {
-	for _, name := range []string{"init-byte-limit", "fragment-byte-limit"} {
-		t.Run(name, func(t *testing.T) {
-			initialization, fragment := []byte{1}, []byte{1}
-			if name == "init-byte-limit" {
-				initialization = make([]byte, (2<<20)+1)
-			} else {
-				fragment = make([]byte, (64<<20)+1)
-			}
-			remainingNonKeyPrivateAudioRejectInput(t, t.Context(), initialization, fragment, "nonkey oversized private AAC input acquired identity")
+	if os.Getenv("KINOSAIL_COPIED_RECOVERY_MEDIA") != "1" {
+		t.Skip("The pinned hosted job owns otherwise-valid private audio byte bounds")
+	}
+	ffmpeg, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		t.Fatal("private-audio byte-bound pinned FFmpeg missing")
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	defer cancel()
+	sources := remainingNonKeyCollectorSources(t, ctx, ffmpeg)
+	directory := remainingNonKeyCollectorGeneratePrivate(t, ctx, ffmpeg, sources[0], 12.5)
+	initialization := remainingNonKeyCollectorRead(t, filepath.Join(directory, "init.mp4"), 2<<20)
+	fragment := remainingNonKeyCollectorRead(t, filepath.Join(directory, "segment-00000.m4s"), 64<<20)
+	for _, limit := range []int{2 << 20, 64 << 20} {
+		t.Run(fmt.Sprintf("cap-%d", limit), func(t *testing.T) {
+			remainingNonKeyPrivateAudioByteBound(t, ctx, sources[0], initialization, fragment, limit)
 		})
 	}
+}
+
+func remainingNonKeyPrivateAudioByteBound(t *testing.T, ctx context.Context, source string, initialization, fragment []byte, limit int) {
+	t.Helper()
+	withinInit, withinFirst, overInit, overFirst := initialization, fragment, initialization, fragment
+	if limit == 2<<20 {
+		withinInit = remainingNonKeyPrivateAudioPad(t, initialization, limit)
+		overInit = remainingNonKeyPrivateAudioPad(t, initialization, limit+1)
+	} else {
+		withinFirst = remainingNonKeyPrivateAudioPad(t, fragment, limit)
+		overFirst = remainingNonKeyPrivateAudioPad(t, fragment, limit+1)
+	}
+	remainingNonKeyPrivateAudioRejectInput(t, ctx, overInit, overFirst, "nonkey oversized private AAC input acquired identity")
+	request, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	started := time.Now()
+	facts, err := parseCopiedHLSPrivateAudio(request, withinInit, withinFirst)
+	if err != nil || facts == nil {
+		t.Fatal("nonkey otherwise-valid private AAC at its original byte cap was rejected")
+	}
+	remainingNonKeyPrivateAudioCorrespondence(t, facts, source, 12.5, sha256.Sum256(withinInit), sha256.Sum256(withinFirst), time.Since(started))
+}
+
+func remainingNonKeyPrivateAudioPad(t *testing.T, data []byte, size int) []byte {
+	t.Helper()
+	if size < len(data)+16 || size > (64<<20)+1 {
+		t.Fatal("private AAC independent padding bound")
+	}
+	padding := make([]byte, size-len(data))
+	binary.BigEndian.PutUint32(padding[:4], 1)
+	copy(padding[4:8], "free")
+	binary.BigEndian.PutUint64(padding[8:16], uint64(len(padding)))
+	return append(bytes.Clone(data), padding...)
 }
 
 func remainingNonKeyPrivateAudioRejectInput(t *testing.T, ctx context.Context, initialization, fragment []byte, failure string) {
