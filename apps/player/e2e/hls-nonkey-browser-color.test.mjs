@@ -47,14 +47,14 @@ test('all byte bindings, exact presented sequence, seek, healthy EOF and actual 
   const row={result:'observed',referenceComplete:true,publicVideoSuffixQualified:true,
     deliveredBytesVerified:true,metadataByteIdentity:true,appendedBytesVerified:true,
     requestedSource:12.5,forceSeek:{seeking:true,seeked:true,rawTime:12.5},
-    observer:{phases:[phase]},adapter:{rawMSE:true},appendFailures:[],endOfStreamReturned:true,
+    observer:{phases:[phase]},adapter:{rawMSE:true},appendFailures:[],endOfStreamReturned:true,mediaSourceState:'ended',
     rawMSEClockFacts:{qualified:true,timestampOffset:12.5,firstClipPTSSeconds:-0.5,firstSourcePTSSeconds:12},
     appendConfiguration:{mode:'segments',appendWindowStart:0,appendWindowEnd:'Infinity',timestampOffset:12.5}};
   assert.equal(colorFrameQualification(row,reference,[0,1,2]).qualified,true);
   for(const bad of [{deliveredBytesVerified:false},{metadataByteIdentity:false},{appendedBytesVerified:false},
     {referenceComplete:false},{publicVideoSuffixQualified:false},{result:'observation-failed'},
     {pageErrors:1},{snapshotFailure:true},{appendFailures:['append']},{adapter:{rawMSE:false}},
-    {endOfStreamReturned:false},{rawMSEClockFacts:{qualified:false}},{appendConfiguration:{mode:'sequence'}},
+    {endOfStreamReturned:false},{mediaSourceState:'open'},{mediaSourceState:undefined},{rawMSEClockFacts:{qualified:false}},{appendConfiguration:{mode:'sequence'}},
     {requestedSource:NaN},{requestedSource:Infinity},
     {forceSeek:{seeking:false,seeked:true,rawTime:12.5}},{forceSeek:{seeking:true,seeked:true,rawTime:12.5001}}])
     assert.equal(colorFrameQualification({...row,...bad},reference,[0,1,2]).qualified,false);
