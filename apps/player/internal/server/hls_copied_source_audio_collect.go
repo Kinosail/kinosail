@@ -16,9 +16,7 @@ func (manager *hlsManager) measureCopiedHLSSourceAudio(parent context.Context, i
 		return nil, errCopiedHLSIndex
 	}
 	defer release()
-	if !validCopiedHLSSourceAudioRequest(ctx, first, micros, original) ||
-		recipe.mode != "remux" || recipe.audio != 0 || recipe.offset != float64(micros)/1_000_000 ||
-		len(recipe.omitted) != 0 || manager.probe == nil || manager.probe.executable == "" || manager.ffmpeg == "" {
+	if !manager.validCopiedHLSSourceAudioCollection(ctx, recipe, first, micros, original) {
 		return nil, errCopiedHLSIndex
 	}
 	before, err := manager.copiedHLSSourceAudioIdentity(ctx, item, recipe, policy, nil)
@@ -47,8 +45,7 @@ func (manager *hlsManager) measureCopiedHLSSourceAudio(parent context.Context, i
 }
 
 func (manager *hlsManager) copiedHLSSourceAudioIdentity(ctx context.Context, item library.Item, recipe hlsRecipe, policy string, before os.FileInfo) (os.FileInfo, error) {
-	if ctx.Err() != nil || manager.index == nil || !manager.index.Safe(item.Path) ||
-		manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
+	if !manager.copiedHLSSourceAudioAllowed(ctx, item, recipe, policy) {
 		return nil, errCopiedHLSIndex
 	}
 	current, err := os.Lstat(item.Path)
@@ -86,4 +83,15 @@ func copiedHLSSourceAudioNormalizeArguments(source string) []string {
 		"-map", "0:a:0", "-vn", "-sn", "-dn", "-frames:a", "1024",
 		"-c:a", "pcm_s16le", "-threads:a", "1", "-f", "framemd5", "pipe:1",
 	}
+}
+
+func (manager *hlsManager) validCopiedHLSSourceAudioCollection(ctx context.Context, recipe hlsRecipe, first [32]byte, micros, original int64) bool {
+	return validCopiedHLSSourceAudioRequest(ctx, first, micros, original) &&
+		recipe.mode == "remux" && recipe.audio == 0 && recipe.offset == float64(micros)/1_000_000 &&
+		len(recipe.omitted) == 0 && manager.probe != nil && manager.probe.executable != "" && manager.ffmpeg != ""
+}
+
+func (manager *hlsManager) copiedHLSSourceAudioAllowed(ctx context.Context, item library.Item, recipe hlsRecipe, policy string) bool {
+	return ctx.Err() == nil && manager.index != nil && manager.index.Safe(item.Path) &&
+		manager.validateHLSPolicy(ctx, item, recipe, policy) == nil
 }
