@@ -26,3 +26,8 @@ def ordinary_cold_arguments(arguments, source):
         return arguments[position+1] if count==1 and position+1<len(arguments) else None
     return (value('-hls_time')=='2' and value('-start_number','0')=='0'
             and value('-i')==source and value('-ss') is not None)
+
+def diagnostic_result(containers):
+    """A held transport failure remains a failed diagnostic after later observations."""
+    return 'observed' if containers and all(c.get('result')=='observed' and
+        not c.get('heldTransportControls') for c in containers) else 'failed'

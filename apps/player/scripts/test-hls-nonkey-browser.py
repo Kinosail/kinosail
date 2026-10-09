@@ -18,7 +18,7 @@ from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_process import finish_processes, join_group
 from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection
-from hls_nonkey_browser_config import measured_delta
+from hls_nonkey_browser_config import measured_delta, diagnostic_result
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -153,7 +153,13 @@ try:
                     observed_media(source,joined,assets[0].read_bytes(),assets[1:],metadata,requested,observed)
                     tail=packet_tail(observed['sourcePacketRows'],observed['publicPacketRows'])
                     partial['aacPayloadTail']=tail
-                    check(tail['wholePublicPacketTail'],'browser_complete_aac_payload_tail')
+                    try:
+                        check(tail['wholePublicPacketTail'],'browser_complete_aac_payload_tail')
+                    except RuntimeError:
+                        if requested!=12:raise
+                        partial.update(result='failed',failureClass='browser_complete_aac_payload_tail')
+                        case.setdefault('heldTransportControls',[]).append({'request':requested,'failureClass':partial['failureClass']})
+                        continue
                     expected=selected_case['observations']['mapping']['expectedSourceIndices']
                     pcm,_=native_pcm(source,requested)
                     public_case={'request':requested,'observations':observed,'aacPayloadTail':tail,
@@ -248,7 +254,8 @@ try:
                  for v in case['browser']['cases']],
             'productionAcceptance':False,'browserAudioPresentationAccepted':False}),flush=True)
     receipt['currentStage']='complete'
-    receipt['result']='observed'
+    receipt['result']=diagnostic_result(receipt['containers'])
+    if receipt['result']=='failed':receipt['failureClass']='browser_prepared_control_aac_payload_tail'
 except Exception as error:
     receipt['failureClass']=str(error) if isinstance(error,RuntimeError) else type(error).__name__
     trace=error.__traceback__

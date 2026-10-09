@@ -147,4 +147,5 @@ def safe_transport_projection(case):
                 'finalSegmentNames','initialAssetBytesUnchanged','ownedFFmpegZeroSamples','workloadZeros','diagnosticAdaptedInvocationCount']}})
     return {'container':case.get('container'),'publicCases':projections,
         'producerInvocations':case.get('actualProducerInvocations',[]),
+        'heldTransportControls':case.get('heldTransportControls',[]),
         'sourceUnchanged':case.get('sourceUnchanged'),'referenceUnchanged':case.get('referenceUnchanged')}
