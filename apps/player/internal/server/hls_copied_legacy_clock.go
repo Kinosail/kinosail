@@ -36,7 +36,6 @@ func (manager *hlsManager) measureCopiedHLSClock(ctx context.Context, root *os.R
 	return decodeCopiedHLSClock(output.Bytes())
 }
 
-
 func decodeCopiedHLSClock(data []byte) (float64, error) {
 	var facts struct {
 		Packets []struct {
@@ -54,4 +53,3 @@ func decodeCopiedHLSClock(data []byte) (float64, error) {
 	}
 	return clock, nil
 }
-

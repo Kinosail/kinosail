@@ -33,7 +33,7 @@ type copiedHLSTimeline struct {
 	End          float64
 	Clock        *float64
 	Presentation *copiedHLSPresentation `json:",omitempty"`
-	AudioOrigin  *copiedHLSAudioOrigin `json:",omitempty"`
+	AudioOrigin  *copiedHLSAudioOrigin  `json:",omitempty"`
 }
 
 func (timeline *copiedHLSTimeline) point(number int) float64 {

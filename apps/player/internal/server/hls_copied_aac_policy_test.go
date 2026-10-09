@@ -2,8 +2,8 @@ package server
 
 import (
 	"os"
-	"runtime"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -14,7 +14,7 @@ import (
 // Gap: public media cannot schedule equal-stat inode replacement or table capacity.
 func TestCopiedAACPolicyKeepsPositiveUntilSourceChanges(t *testing.T) {
 	manager, item, recipe, _, _, _ := copiedRecoveryFixture(t)
-	copiedAACSourceRoots(manager,item)
+	copiedAACSourceRoots(manager, item)
 	info, err := os.Stat(item.Path)
 	if err != nil {
 		t.Fatal(err)
@@ -73,9 +73,11 @@ func TestCopiedAACPolicyKeepsPositiveUntilSourceChanges(t *testing.T) {
 }
 
 func TestCopiedAACPolicyCannotExposeLegacyIndexedAssets(t *testing.T) {
-	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
+	if runtime.GOOS != "linux" {
+		t.Skip("qualified retained-source producer is Linux-only")
+	}
 	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
-	copiedAACSourceRoots(manager,item)
+	copiedAACSourceRoots(manager, item)
 	copiedRecoveryProbe(t, manager, "")
 	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil {
 		t.Fatal(err)
@@ -113,11 +115,13 @@ func TestCopiedAACPolicyCannotExposeLegacyIndexedAssets(t *testing.T) {
 }
 
 func TestCopiedAACReadinessUnconfiguredRetainsFalse(t *testing.T) {
-	manager:=&hlsManager{}
-	if manager.startupWindowReady(library.Item{Path:"fixture.mp4"},hlsRecipe{mode:"remux"}) { t.Fatal("unconfigured readiness became ready") }
+	manager := &hlsManager{}
+	if manager.startupWindowReady(library.Item{Path: "fixture.mp4"}, hlsRecipe{mode: "remux"}) {
+		t.Fatal("unconfigured readiness became ready")
+	}
 }
 
 func copiedAACSourceRoots(manager *hlsManager, item library.Item) {
-	manager.index=memoryLibraryIndex([]library.Item{item},true)
-	manager.index.SetRoots([]libraryRoot{{Path:filepath.Dir(item.Path)}})
+	manager.index = memoryLibraryIndex([]library.Item{item}, true)
+	manager.index.SetRoots([]libraryRoot{{Path: filepath.Dir(item.Path)}})
 }

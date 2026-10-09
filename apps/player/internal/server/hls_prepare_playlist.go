@@ -20,7 +20,6 @@ func (manager *hlsManager) adoptRecipeFile(request *http.Request, key, path stri
 	}
 }
 
-
 func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
 	prepareContext := context.WithValue(manager.ctx, requestActivityKey{}, &requestActivity{id: requestActivityID(request.Context()), playbackSession: requestPlaybackSession(request.Context())})
 	prepareContext = context.WithValue(prepareContext, viewerContextKey{}, currentViewer(request))

@@ -11,9 +11,11 @@ import (
 
 // Gap: a public request cannot hold an old worker at its final join boundary.
 func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
-	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
+	if runtime.GOOS != "linux" {
+		t.Skip("qualified retained-source producer is Linux-only")
+	}
 	manager, item, recipe, directory, policy, _ := copiedRecoveryFixture(t)
-	copiedAACSourceRoots(manager,item)
+	copiedAACSourceRoots(manager, item)
 	before := copiedRecoveryPreserved(t, directory)
 	info, err := os.Stat(item.Path)
 	if err != nil {
@@ -47,9 +49,11 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 }
 
 func TestCopiedAACRefillKeepsCanonicalPolicy(t *testing.T) {
-	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
+	if runtime.GOOS != "linux" {
+		t.Skip("qualified retained-source producer is Linux-only")
+	}
 	manager, item, recipe, _, base, _ := copiedRecoveryFixture(t)
-	copiedAACSourceRoots(manager,item)
+	copiedAACSourceRoots(manager, item)
 	info, err := os.Stat(item.Path)
 	if err != nil {
 		t.Fatal(err)
@@ -74,30 +78,48 @@ func TestCopiedAACRefillKeepsCanonicalPolicy(t *testing.T) {
 }
 
 func TestCopiedAACLiveIndexOwnerCannotBeReplacedByLookalike(t *testing.T) {
-	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
+	if runtime.GOOS != "linux" {
+		t.Skip("qualified retained-source producer is Linux-only")
+	}
 	manager, item, recipe, _, base, _ := copiedRecoveryFixture(t)
-	copiedAACSourceRoots(manager,item)
+	copiedAACSourceRoots(manager, item)
 	info, err := os.Stat(item.Path)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	key := hlsRecipeKey(item.ID, recipe)
-	if err := manager.recordCopiedAACPolicy(key, base, info, true, 1); err != nil { t.Fatal(err) }
+	if err := manager.recordCopiedAACPolicy(key, base, info, true, 1); err != nil {
+		t.Fatal(err)
+	}
 	options, err := manager.hlsSettings(item, recipe)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	ctx, job := manager.newHLSJob(t.Context(), 0)
 	defer job.cancel(context.Canceled)
 	job.cachePolicy = options.Cache
 	manager.jobs[key] = job
 	ctx = context.WithValue(ctx, copiedAACWorkerKey{}, &copiedAACWorkerIdentity{key: key, recipe: recipe, policy: options.Cache, job: job})
-	if !manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("live observed owner was rejected") }
+	if !manager.copiedAACWorkerCurrent(ctx, key, options.Cache) {
+		t.Fatal("live observed owner was rejected")
+	}
 	manager.jobs["unrelated"] = &hlsJob{}
-	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("unrelated live job widened idle index admission") }
-	delete(manager.jobs,"unrelated")
+	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) {
+		t.Fatal("unrelated live job widened idle index admission")
+	}
+	delete(manager.jobs, "unrelated")
 	lookalike := *job
 	manager.jobs[key] = &lookalike
-	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("lookalike pointer acquired the old index publication") }
+	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) {
+		t.Fatal("lookalike pointer acquired the old index publication")
+	}
 	manager.jobs[key] = job
-	if manager.copiedAACWorkerCurrent(ctx, key, base) { t.Fatal("legacy policy acquired owned reindex admission") }
+	if manager.copiedAACWorkerCurrent(ctx, key, base) {
+		t.Fatal("legacy policy acquired owned reindex admission")
+	}
 	job.cancel(context.Canceled)
-	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("cancelled owner retained final publication admission") }
+	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) {
+		t.Fatal("cancelled owner retained final publication admission")
+	}
 	delete(manager.jobs, key)
 }

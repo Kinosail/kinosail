@@ -247,4 +247,3 @@ func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, dir
 	}
 	return options, nil
 }
-

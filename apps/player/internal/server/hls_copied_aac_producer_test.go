@@ -13,8 +13,8 @@ func TestCopiedAACProducerVideoPrerollKeepsAudio(t *testing.T) {
 	timeline := &copiedHLSTimeline{
 		Policy: "test:copied-aac=2", Strategy: "h264-idr-keys-1", End: 15,
 		Numerator: 1, Denominator: 16000, TimeBase: 1.0 / 16000,
-		Keys:     []copiedHLSKey{{PTS: 0, DTS: -1333}, {PTS: 48000, DTS: 46667}, {PTS: 96000, DTS: 94667}, {PTS: 144000, DTS: 142667}, {PTS: 192000, DTS: 190667}},
-		Clock:    &clock,
+		Keys:        []copiedHLSKey{{PTS: 0, DTS: -1333}, {PTS: 48000, DTS: 46667}, {PTS: 96000, DTS: 94667}, {PTS: 144000, DTS: 142667}, {PTS: 192000, DTS: 190667}},
+		Clock:       &clock,
 		AudioOrigin: &copiedHLSAudioOrigin{SourceTrack: 1, Physical: 0, Edit: 0, FirstHash: "SHA256:" + strings.Repeat("a", 64)},
 	}
 	for _, number := range []int{0, 4} {

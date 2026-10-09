@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/library"
@@ -84,7 +85,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
 	http.ServeFile(writer, request, path)
 }
-
 
 func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, request *http.Request, item library.Item) (int, float64, bool) {
 	start, err := requestedHLSStart(request)
@@ -268,4 +268,3 @@ func requestedHLSStart(request *http.Request) (int, error) {
 	}
 	return start, nil
 }
-

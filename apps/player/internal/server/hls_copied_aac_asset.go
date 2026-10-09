@@ -14,22 +14,32 @@ import (
 )
 
 type copiedAACGeneration struct {
-	manager *hlsManager
-	ctx context.Context
-	item library.Item
-	recipe hlsRecipe
-	directory, policy string
-	root, media *os.Root
-	timeline *copiedHLSTimeline
-	certificate copiedHLSClockCertificate
+	manager                       *hlsManager
+	ctx                           context.Context
+	item                          library.Item
+	recipe                        hlsRecipe
+	directory, policy             string
+	root, media                   *os.Root
+	timeline                      *copiedHLSTimeline
+	certificate                   copiedHLSClockCertificate
 	timelineData, certificateData []byte
-	release func()
+	release                       func()
 }
 
 func (value *copiedAACGeneration) close() {
-	if value.media != nil { _ = value.media.Close(); value.media = nil }
-	if value.root != nil { _ = value.root.Close(); value.root = nil }
-	if value.release != nil { release := value.release; value.release = nil; release() }
+	if value.media != nil {
+		_ = value.media.Close()
+		value.media = nil
+	}
+	if value.root != nil {
+		_ = value.root.Close()
+		value.root = nil
+	}
+	if value.release != nil {
+		release := value.release
+		value.release = nil
+		release()
+	}
 }
 
 func (manager *hlsManager) openCopiedAACGeneration(parent context.Context, item library.Item, recipe hlsRecipe, directory string) (*copiedAACGeneration, error) {

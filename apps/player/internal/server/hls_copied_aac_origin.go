@@ -10,12 +10,12 @@ const maximumCopiedAACTicks int64 = 7 * 24 * 60 * 60 * 48000
 
 // Generated proof is separate from the retained source eligibility decision.
 type copiedHLSAudioOrigin struct {
-	SourceTrack      int
+	SourceTrack       int
 	InitialSeekMicros int64
-	FirstPTS         int64
-	FirstHash        string
-	Physical         int64
-	Edit             int64
+	FirstPTS          int64
+	FirstHash         string
+	Physical          int64
+	Edit              int64
 }
 
 type copiedHLSAudioPacket struct {

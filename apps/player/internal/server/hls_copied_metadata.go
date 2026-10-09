@@ -16,9 +16,9 @@ import (
 )
 
 type copiedHLSMetadata struct {
-	mu        sync.Mutex
-	gate      chan struct{}
-	endpoints map[string]copiedHLSEndpoint
+	mu          sync.Mutex
+	gate        chan struct{}
+	endpoints   map[string]copiedHLSEndpoint
 	aacPolicies map[string]copiedAACPolicyDecision
 }
 

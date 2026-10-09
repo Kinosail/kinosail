@@ -93,4 +93,3 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	return output.publish(manager, ctx, item, recipe, options.Cache)
 }
-

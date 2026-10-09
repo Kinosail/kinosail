@@ -156,7 +156,6 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 	return errCopiedHLSIndex
 }
 
-
 func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTimeline) []string {
 	if timeline != nil {
 		for number := range arguments {
@@ -244,7 +243,6 @@ func copiedHLSClockRejected(ctx context.Context, mode string, result error) {
 		slog.WarnContext(ctx, "HLS copied clock rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", mode, "failure_class", "generation-or-assets")
 	}
 }
-
 
 func (manager *hlsManager) copiedHLSClockPending(ctx context.Context, directory, policy string) (bool, error) {
 	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)

@@ -211,7 +211,6 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 	return PlaybackQuality{Label: qualityLabel(width, height), Width: width, Height: height, Bitrate: max(1, bitrate), FrameRate: facts.Video.FrameRate}
 }
 
-
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {
 	qualities := hlsTranscodeQualities(facts, recipe)
 	capacity := manager.workloads.EncodingCapacity()

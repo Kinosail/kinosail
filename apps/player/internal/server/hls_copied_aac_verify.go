@@ -38,4 +38,3 @@ func verifyCopiedAACAssets(ctx context.Context, media *os.Root, timeline *copied
 	}
 	return nil
 }
-
