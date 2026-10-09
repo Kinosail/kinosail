@@ -36,24 +36,41 @@ func TestPlaybackSeekPlanReportsActualConversionBeforeMedia(t *testing.T) {
 		{"", "remux", "r-"}, {"?position=0", "remux", "r-"}, {"?position=12.5", "transcode", "t-"},
 	} {
 		response := serveRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/items/"+id+"/playback"+test.query, nil))
-		var result struct {
-			Compatible      string
-			CompatibleLabel string
-			CompatiblePlan  struct{ Mode string }
-		}
-		if err := json.Unmarshal(response.Body.Bytes(), &result); err != nil {
-			t.Fatal(err)
-		}
-		if response.Code != http.StatusOK || result.CompatiblePlan.Mode != test.mode || !strings.Contains(result.Compatible, "/p/"+test.prefix) {
-			t.Fatalf("seek %s = %d, plan=%s source=%s", test.query, response.Code, result.CompatiblePlan.Mode, result.Compatible)
-		}
-		if test.mode == "transcode" && (result.CompatibleLabel != "Transcoding video" || strings.Contains(result.Compatible, "-o")) {
-			t.Fatal("seek conversion label or full-origin native source disagrees with plan")
-		}
+		assertHTTPSeekPlan(t, response, test.query, test.mode, test.prefix)
 	}
 	if _, err := os.Stat(calls); !os.IsNotExist(err) {
 		t.Fatal("planning started an encoder")
 	}
+	assertSavedWebSeekModes(t, handler, id)
+}
+
+func assertHTTPSeekPlan(t *testing.T, response *httptest.ResponseRecorder, query, mode, prefix string) {
+	t.Helper()
+	var result struct {
+		Compatible      string
+		CompatibleLabel string
+		CompatiblePlan  struct{ Mode string }
+	}
+	if err := json.Unmarshal(response.Body.Bytes(), &result); err != nil {
+		t.Fatal(err)
+	}
+	if response.Code != http.StatusOK || result.CompatiblePlan.Mode != mode || !strings.Contains(result.Compatible, "/p/"+prefix) {
+		t.Fatalf("seek %s = %d, plan=%s source=%s", query, response.Code, result.CompatiblePlan.Mode, result.Compatible)
+	}
+	if mode == "transcode" {
+		assertFullOriginSeekConversion(t, result.Compatible, result.CompatibleLabel)
+	}
+}
+
+func assertFullOriginSeekConversion(t *testing.T, source, label string) {
+	t.Helper()
+	if label != "Transcoding video" || strings.Contains(source, "-o") {
+		t.Fatal("seek conversion label or full-origin native source disagrees with plan")
+	}
+}
+
+func assertSavedWebSeekModes(t *testing.T, handler http.Handler, id string) {
+	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/progress/"+id, strings.NewReader("seconds=12.5&duration=32.021"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if response := serveRequest(handler, request); response.Code != http.StatusNoContent {
@@ -73,11 +90,13 @@ func TestPlaybackSeekPlanReportsActualConversionBeforeMedia(t *testing.T) {
 
 func TestPlaybackSeekRejectsAmbiguousAndInvalidInputsBeforeWork(t *testing.T) {
 	handler, id, calls := seekPlanHTTPFixture(t)
-	for _, query := range []string{"position=", "position=-0", "position=-1", "position=NaN", "position=Infinity", "position=12.55",
+	for _, query := range []string{
+		"position=", "position=-0", "position=-1", "position=NaN", "position=Infinity", "position=12.55",
 		"position=32.021", "position=604801", "position=12.5&position=12.5", "position=%FF", "position=" + strings.Repeat("1", 4097),
 		"position=12.5&recipe=unknown", "recipe=r-a0-s0-none-t0-b0", "position=12.5&recipe=r-a0-s0-none-t0-b0-o12000",
 		"position=12.5&recipe=r-a1-s0-none-t0-b0", "position=12.5&recipe=r-a0-s0-none-t0-b0&recipe=r-a0-s0-none-t0-b0",
-		"position=12.5&recipe=a-a0-s0-none-t0-b0-e1", "position=12.5&recipe=" + strings.Repeat("a", 2049)} {
+		"position=12.5&recipe=a-a0-s0-none-t0-b0-e1", "position=12.5&recipe=" + strings.Repeat("a", 2049),
+	} {
 		response := serveRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/items/"+id+"/playback?"+query, nil))
 		if response.Code != http.StatusBadRequest {
 			t.Fatalf("invalid seek query admitted with status %d", response.Code)

@@ -33,28 +33,9 @@ func (api apiServices) applyPlaybackSources(request *http.Request, seek playback
 }
 
 func (api apiServices) applyCompatiblePlaybackSource(request *http.Request, seek playbackSeek, result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences) error {
-	intent := NetworkIntent{PreferCompatibility: true}
-	if seek.recipe != nil {
-		intent.AudioIndex, intent.MaxBitrate = &seek.recipe.audio, seek.recipe.maxBitrate
-		if seek.recipe.dialogueBoost != preferences.DialogueBoost || seek.recipe.normalizeLoudness != preferences.NightMode {
-			return errPlaybackSeek
-		}
-	}
-	compatible := playbackWithAutomaticSkip(facts, client, viewerPlaybackPolicy(viewer), intent, media.Markers, api.settings.autoSkip())
-	if plan.MarkerMode == "server" && plan.Mode != "transcode" {
-		compatible = plan
-	}
-	compatible, effects := audioEnhancedPlan(compatible, preferences, len(facts.Audio) > 0)
-	position := savedSeekPosition(result.Start, facts.Duration)
-	if seek.position != nil {
-		position = *seek.position
-	}
-	if compatible.MarkerMode != "server" && position > 0 {
-		var err error
-		compatible, err = api.hls.exactSeekPlan(request.Context(), item, facts, client, viewerPlaybackPolicy(viewer), compatible, audioEnhancedRecipe(compatible, preferences, effects), position)
-		if err != nil {
-			return err
-		}
+	compatible, effects, err := api.compatibleSeekPlan(request, seek, result.Start, item, media, viewer, facts, client, plan, preferences)
+	if err != nil {
+		return err
 	}
 	if compatible.Allowed && compatible.Mode != "direct" {
 		recipe := audioEnhancedRecipe(compatible, preferences, effects)
@@ -70,4 +51,38 @@ func (api apiServices) applyCompatiblePlaybackSource(request *http.Request, seek
 		result.Qualities = compatible.Qualities
 	}
 	return nil
+}
+
+func compatibleSeekIntent(seek playbackSeek, preferences playbackPreferences) (NetworkIntent, error) {
+	intent := NetworkIntent{PreferCompatibility: true}
+	if seek.recipe != nil {
+		intent.AudioIndex, intent.MaxBitrate = &seek.recipe.audio, seek.recipe.maxBitrate
+		if seek.recipe.dialogueBoost != preferences.DialogueBoost || seek.recipe.normalizeLoudness != preferences.NightMode {
+			return NetworkIntent{}, errPlaybackSeek
+		}
+	}
+	return intent, nil
+}
+
+func (api apiServices) compatibleSeekPlan(request *http.Request, seek playbackSeek, start float64, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, preferences playbackPreferences) (PlaybackPlan, bool, error) {
+	intent, err := compatibleSeekIntent(seek, preferences)
+	if err != nil {
+		return PlaybackPlan{}, false, err
+	}
+	compatible := playbackWithAutomaticSkip(facts, client, viewerPlaybackPolicy(viewer), intent, media.Markers, api.settings.autoSkip())
+	if plan.MarkerMode == "server" && plan.Mode != "transcode" {
+		compatible = plan
+	}
+	compatible, effects := audioEnhancedPlan(compatible, preferences, len(facts.Audio) > 0)
+	position := savedSeekPosition(start, facts.Duration)
+	if seek.position != nil {
+		position = *seek.position
+	}
+	if compatible.MarkerMode != "server" && position > 0 {
+		compatible, err = api.hls.exactSeekPlan(request.Context(), item, facts, client, viewerPlaybackPolicy(viewer), compatible, audioEnhancedRecipe(compatible, preferences, effects), position)
+		if err != nil {
+			return PlaybackPlan{}, false, err
+		}
+	}
+	return compatible, effects, nil
 }

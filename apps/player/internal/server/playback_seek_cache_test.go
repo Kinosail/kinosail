@@ -5,11 +5,27 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 // Existing controlled metadata fixtures isolate cache trust/cancellation;
 // only hosted real source/decode tests can certify actual key/frame identity.
 func TestSeekPlanKeepsCertifiedKeyAndRejectsInvalidCertificate(t *testing.T) {
+	manager, item, recipe, directory := certifiedSeekFixture(t)
+	if ok, err := manager.certifiedCopiedSeek(t.Context(), item, recipe); err != nil || !ok {
+		t.Fatalf("certified key rejected: %v", err)
+	}
+	assertSeekCertificatePermission(t, manager, item, recipe)
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	assertSeekCertificateRejected(t, manager, item, recipe, ctx)
+	writeHLSLoadingFile(t, filepath.Join(directory, ".copy-clock"), `{}`)
+	assertSeekCertificateRejected(t, manager, item, recipe, t.Context())
+}
+
+func certifiedSeekFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string) {
+	t.Helper()
 	manager, item, recipe, old, _, timeline := copiedRecoveryFixture(t)
 	recipe.offset = 2
 	options, err := manager.hlsSettings(item, recipe)
@@ -30,9 +46,11 @@ func TestSeekPlanKeepsCertifiedKeyAndRejectsInvalidCertificate(t *testing.T) {
 	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", options.Cache, timeline); err != nil {
 		t.Fatal(err)
 	}
-	if ok, err := manager.certifiedCopiedSeek(t.Context(), item, recipe); err != nil || !ok {
-		t.Fatalf("certified key rejected: %v", err)
-	}
+	return manager, item, recipe, directory
+}
+
+func assertSeekCertificatePermission(t *testing.T, manager *hlsManager, item library.Item, recipe hlsRecipe) {
+	t.Helper()
 	facts := mediaFactsFor(item, manager.probe.facts(t.Context(), item))
 	client := browserPlaybackCapabilities(manager.settings, nil)
 	allowed := ViewerPolicy{AllowPlayback: true, AllowTranscode: true}
@@ -41,14 +59,12 @@ func TestSeekPlanKeepsCertifiedKeyAndRejectsInvalidCertificate(t *testing.T) {
 	if err != nil || selected.Allowed || selected.Mode != "denied" {
 		t.Fatal("certification bypassed current conversion permission")
 	}
-	ctx, cancel := context.WithCancel(t.Context())
-	cancel()
+}
+
+func assertSeekCertificateRejected(t *testing.T, manager *hlsManager, item library.Item, recipe hlsRecipe, ctx context.Context) {
+	t.Helper()
 	if ok, err := manager.certifiedCopiedSeek(ctx, item, recipe); err == nil || ok {
-		t.Fatal("cancellation became copy admission")
-	}
-	writeHLSLoadingFile(t, filepath.Join(directory, ".copy-clock"), `{}`)
-	if ok, err := manager.certifiedCopiedSeek(t.Context(), item, recipe); err == nil || ok {
-		t.Fatal("invalid present certificate became absent/fallback admission")
+		t.Fatal("cancelled or invalid present certificate acquired copy/fallback admission")
 	}
 }
 
@@ -79,40 +95,44 @@ func TestSeekPlanAbsentCertificateDoesNotProbeOrCreateCache(t *testing.T) {
 }
 
 func TestSeekCertificateRejectsUnsafePresentGenerationAndTimeline(t *testing.T) {
-	for _, unsafe := range []string{"generation-symlink", "timeline-symlink", "timeline-hardlink"} {
-		t.Run(unsafe, func(t *testing.T) {
+	for _, test := range []struct {
+		name       string
+		makeUnsafe func(*testing.T, string)
+	}{
+		{"generation-symlink", makeSeekGenerationSymlink},
+		{"timeline-symlink", func(t *testing.T, directory string) { makeSeekTimelineLink(t, directory, os.Symlink) }},
+		{"timeline-hardlink", func(t *testing.T, directory string) { makeSeekTimelineLink(t, directory, os.Link) }},
+	} {
+		t.Run(test.name, func(t *testing.T) {
 			manager, item, recipe, directory, _, _ := copiedRecoveryFixture(t)
-			timeline := filepath.Join(directory, ".copy-timeline")
-			if unsafe == "generation-symlink" {
-				retired := directory + "-retired"
-				if err := os.Rename(directory, retired); err != nil {
-					t.Fatal(err)
-				}
-				if err := os.Symlink(retired, directory); err != nil {
-					t.Fatal(err)
-				}
-			} else {
-				retired := filepath.Join(t.TempDir(), "timeline")
-				if err := os.Rename(timeline, retired); err != nil {
-					t.Fatal(err)
-				}
-				var err error
-				if unsafe == "timeline-symlink" {
-					err = os.Symlink(retired, timeline)
-				} else {
-					err = os.Link(retired, timeline)
-				}
-				if err != nil {
-					t.Fatal(err)
-				}
-			}
-			if ok, err := manager.certifiedCopiedSeek(t.Context(), item, recipe); err == nil || ok {
-				t.Fatal("unsafe certificate acquired copy or fallback admission")
-			}
+			test.makeUnsafe(t, directory)
+			assertSeekCertificateRejected(t, manager, item, recipe, t.Context())
 			if len(manager.jobs) != 0 {
 				t.Fatal("rejected certificate started a producer")
 			}
 		})
+	}
+}
+
+func makeSeekGenerationSymlink(t *testing.T, directory string) {
+	t.Helper()
+	retired := directory + "-retired"
+	if err := os.Rename(directory, retired); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(retired, directory); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func makeSeekTimelineLink(t *testing.T, directory string, link func(string, string) error) {
+	t.Helper()
+	timeline, retired := filepath.Join(directory, ".copy-timeline"), filepath.Join(t.TempDir(), "timeline")
+	if err := os.Rename(timeline, retired); err != nil {
+		t.Fatal(err)
+	}
+	if err := link(retired, timeline); err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -131,9 +151,7 @@ func TestSeekPlanPreservesSelectionAndConversionPolicy(t *testing.T) {
 	plan := playbackWithAutomaticSkip(facts, client, policy, intent, nil, nil)
 	recipe := recipeFor(plan)
 	actual, err := manager.exactSeekPlan(t.Context(), item, facts, client, policy, plan, recipe, 12.5)
-	if err != nil || actual.Mode != "transcode" || actual.AudioIndex != 1 || actual.MaxBitrate != plan.MaxBitrate {
-		t.Fatalf("selection lost: %+v %v", actual, err)
-	}
+	assertSeekSelection(t, actual, err, plan.MaxBitrate)
 	policy.AllowTranscode = false
 	actual, err = manager.exactSeekPlan(t.Context(), item, facts, client, policy, plan, recipe, 12.5)
 	if err != nil || actual.Allowed || actual.Mode != "denied" {
@@ -146,5 +164,12 @@ func TestSeekPlanPreservesSelectionAndConversionPolicy(t *testing.T) {
 	}
 	if len(manager.jobs) != 0 {
 		t.Fatal("rejected/denied plan started producer")
+	}
+}
+
+func assertSeekSelection(t *testing.T, actual PlaybackPlan, err error, maxBitrate int64) {
+	t.Helper()
+	if err != nil || actual.Mode != "transcode" || actual.AudioIndex != 1 || actual.MaxBitrate != maxBitrate {
+		t.Fatalf("selection lost: %+v %v", actual, err)
 	}
 }
