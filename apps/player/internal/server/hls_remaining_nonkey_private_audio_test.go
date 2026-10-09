@@ -42,6 +42,7 @@ func remainingNonKeyPrivateAudioCase(t *testing.T, ctx context.Context, ffmpeg, 
 	initialization := remainingNonKeyCollectorRead(t, filepath.Join(directory, "init.mp4"), 2<<20)
 	fragment := remainingNonKeyCollectorRead(t, filepath.Join(directory, "segment-00000.m4s"), 64<<20)
 	inputInit, inputFirst := sha256.Sum256(initialization), sha256.Sum256(fragment)
+	remainingNonKeyPrivateAudioRejects(t, ctx, initialization, fragment)
 	request, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	started := time.Now()
@@ -55,7 +56,6 @@ func remainingNonKeyPrivateAudioCase(t *testing.T, ctx context.Context, ffmpeg, 
 		remainingNonKeyCollectorHash(t, source) != before {
 		t.Fatal("nonkey private audio acquisition changed inputs or source")
 	}
-	remainingNonKeyPrivateAudioRejects(t, ctx, initialization, fragment)
 }
 
 func remainingNonKeyPrivateAudioCorrespondence(t *testing.T, facts *copiedHLSPrivateAudioFacts, source string, offset float64, inputInit, inputFirst [32]byte, elapsed time.Duration) {
@@ -81,16 +81,12 @@ func remainingNonKeyPrivateAudioRejects(t *testing.T, ctx context.Context, initi
 		t.Run(name, func(t *testing.T) {
 			initCopy, firstCopy := bytes.Clone(initialization), bytes.Clone(fragment)
 			initCopy, firstCopy = remainingNonKeyPrivateAudioDamage(t, name, initCopy, firstCopy)
-			if facts, err := parseCopiedHLSPrivateAudio(ctx, initCopy, firstCopy); err == nil || facts != nil {
-				t.Fatal("nonkey damaged private AAC metadata acquired identity")
-			}
+			remainingNonKeyPrivateAudioRejectInput(t, ctx, initCopy, firstCopy, "nonkey damaged private AAC metadata acquired identity")
 		})
 	}
 	request, cancel := context.WithCancel(ctx)
 	cancel()
-	if facts, err := parseCopiedHLSPrivateAudio(request, initialization, fragment); err == nil || facts != nil {
-		t.Fatal("nonkey canceled private AAC acquisition acquired identity")
-	}
+	remainingNonKeyPrivateAudioRejectInput(t, request, initialization, fragment, "nonkey canceled private AAC acquisition acquired identity")
 }
 
 func TestRemainingNonKeyPrivateAudioInputBounds(t *testing.T) {
@@ -102,9 +98,18 @@ func TestRemainingNonKeyPrivateAudioInputBounds(t *testing.T) {
 			} else {
 				fragment = make([]byte, (64<<20)+1)
 			}
-			if facts, err := parseCopiedHLSPrivateAudio(t.Context(), initialization, fragment); err == nil || facts != nil {
-				t.Fatal("nonkey oversized private AAC input acquired identity")
-			}
+			remainingNonKeyPrivateAudioRejectInput(t, t.Context(), initialization, fragment, "nonkey oversized private AAC input acquired identity")
 		})
+	}
+}
+
+func remainingNonKeyPrivateAudioRejectInput(t *testing.T, ctx context.Context, initialization, fragment []byte, failure string) {
+	t.Helper()
+	beforeInit, beforeFirst := sha256.Sum256(initialization), sha256.Sum256(fragment)
+	if facts, err := parseCopiedHLSPrivateAudio(ctx, initialization, fragment); err == nil || facts != nil {
+		t.Fatal(failure)
+	}
+	if sha256.Sum256(initialization) != beforeInit || sha256.Sum256(fragment) != beforeFirst {
+		t.Fatal("nonkey rejected private AAC snapshot was mutated")
 	}
 }
