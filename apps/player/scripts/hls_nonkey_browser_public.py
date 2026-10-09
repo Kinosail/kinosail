@@ -11,6 +11,7 @@ from hls_timeline_http import sha, source_state
 from hls_timeline_packets import manifest_facts
 from hls_remaining_nonkey_evidence import native_pcm
 from hls_remaining_process import group_members
+from hls_nonkey_browser_audio_boundary import retained_audio_boundary, retained_source_boundary
 
 def chromium_join(node, path):
     if not path.exists():
@@ -144,9 +145,11 @@ def safe_transport_projection(case):
             'lastSourceAAC':edge(tail.get('completeSourceRows',[])[-1:]),
             'firstPublicAAC':edge(tail.get('completePublicRows',[])),
             'lastPublicAAC':edge(tail.get('completePublicRows',[])[-1:]),
+            'audioBoundaryFacts':retained_audio_boundary(value.get('observations',{})),
             'delivery':{k:delivery.get(k) for k in ['initialVariantFacts','finalVariantFacts','initialSegmentNames',
                 'finalSegmentNames','initialAssetBytesUnchanged','ownedFFmpegZeroSamples','workloadZeros','diagnosticAdaptedInvocationCount']}})
     return {'container':case.get('container'),'publicCases':projections,
+        'sourceAudioBoundary':case.get('referenceBindings',{}).get('sourceAudioBoundary'),
         'producerInvocations':case.get('actualProducerInvocations',[]),
         'heldTransportControls':case.get('heldTransportControls',[]),
         'sourceUnchanged':case.get('sourceUnchanged'),'referenceUnchanged':case.get('referenceUnchanged')}
@@ -168,4 +171,5 @@ def browser_reference_config(api,item,source,reference,source_facts):
         'sourceSHA256':source_identity['sha256'],'referenceSHA256':reference_identity['sha256'],
         'cliCodedSourceSHA256':source_facts['state']['sha256'],'completeFileByteIdentity':True,
         'actualDirectPlanBound':True,'authenticatedFullDirectSHA256':hashlib.sha256(data).hexdigest(),
-        'completeReferencePCM':pcm,'sourceStreamMetadata':source_facts['metadata']}
+        'completeReferencePCM':pcm,'sourceStreamMetadata':source_facts['metadata'],
+        'sourceAudioBoundary':retained_source_boundary(reference,reference_identity['sha256'])}

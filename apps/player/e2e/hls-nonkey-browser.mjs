@@ -7,6 +7,7 @@ import {installBrowserObserver,frameQualification,consumerQualification,browserA
 import {observeJoinedPublic} from './hls-nonkey-browser-joined.mjs';
 import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
 import {observeAppColor,appColorConsumerQualification} from './hls-nonkey-browser-app-color.mjs';
+import {observeAudioTail} from './hls-nonkey-browser-audio-tail.mjs';
 import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
@@ -256,6 +257,9 @@ try{
       });
     for(const row of result.cases.filter(v=>v.label?.startsWith('app-color-601-')))
       console.log(JSON.stringify({appHLSColor:safeBrowserProjection(row)}));
+    const audioTail=await observeAudioTail(context,config.origin,{...item,sourceSHA256:config.referenceSourceSHA256},
+      referenceBytes,joinedBytes,result.referenceAudioContextFull,audio.actual,result.cases);
+    console.log(JSON.stringify({wholeBrowserAudioTail:audioTail}));
   }
   result.result='observed';
 }catch(error){result.result='failed';result.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name;}
