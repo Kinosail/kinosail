@@ -76,18 +76,22 @@ class ActualServer:
         process = self.process
         try:
             result = finish_processes(process, self.source, self.stop_event, self.sampler)
-            result['resources'] = dict(self.resources)
-            result['sourceUnchanged'] = source_state(self.source) == self.before
-            self.sessions.append(result)
-            joined = result.get('ownedProcessJoin', {})
-            check(joined.get('confirmedZeroSamples') == 2 and not joined.get('qualificationFailures')
-                  and not result['cleanupFailures'] and result['sourceUnchanged']
-                  and self.resources['samples'] > 0 and self.resources['peakOwnedFFmpeg'] <= 1
-                  and self.resources['samplingErrors'] == 0, 'v2_owned_server_resource_join')
-        finally:
+        except Exception as error:
+            self.sessions.append({'teardownFailureClass': type(error).__name__, 'ownershipRetained': True})
+            raise
+        result['resources'] = dict(self.resources)
+        result['sourceUnchanged'] = source_state(self.source) == self.before
+        self.sessions.append(result)
+        joined = result.get('ownedProcessJoin', {})
+        settled = (process.poll() is not None and joined.get('confirmedZeroSamples') == 2
+                   and not joined.get('qualificationFailures') and not result['cleanupFailures'])
+        if settled:
             self.process = None
             self.log.close()
             self.log = None
+        check(settled and result['sourceUnchanged'] and self.resources['samples'] > 0
+              and self.resources['peakOwnedFFmpeg'] <= 1 and self.resources['samplingErrors'] == 0,
+              'v2_owned_server_resource_join')
 
     def invocation_rows(self):
         if not self.invocations.exists():
