@@ -63,23 +63,32 @@ async function installMSE(input){
   button.onclick=()=>video.play().catch(()=>{window.nonkeyColorPlayFailed=true;});document.body.append(button);
 }
 export async function observeMSEColors(context,origin,item,joined,reference,referenceComplete,retained){
+  let original;
+  try{
   if(!item.rawMSEClockFacts?.qualified || item.rawMSEClockFacts.timestampOffset!==item.request ||
     item.rawMSEClockFacts.firstClipPTSSeconds!==-0.5 || item.rawMSEClockFacts.firstSourcePTSSeconds!==12)
     throw Error('color_raw_clock_binding');
-  const original=await delivered(context,origin,item,joined);
+  original=await delivered(context,origin,item,joined);
+  }catch(error){
+    retained.push({request:item.request,label:'raw-mse-color-setup',result:'observation-failed',
+      failureClass:error.message?.match(/^[a-z_]+$/)?.[0]||error.name||'color_setup_operation',
+      colorScope:'Retained isolated component setup failure; original cases remain unchanged'});
+    return;
+  }
   for(const arm of ['original','601','709']){
     const row={request:item.request,requestedSource:item.request,label:'raw-mse-color-'+arm,result:'observation-failed',
       referenceComplete,publicVideoSuffixQualified:item.publicVideoSuffixQualified===true,deliveredBytesVerified:true,
       rawMSEClockFacts:item.rawMSEClockFacts,appendFailures:[],colorScope:'Isolated raw-MSE metadata counterfactual; no application or audible-audio acceptance'};
     retained.push(row);
+    let page;
+    try{
     const generated=colorArm(joined,arm);row.colorMetadata=generated.facts;
     row.metadataByteIdentity=generated.facts.metadataByteIdentity;
     if(colorFacts(joined).initBytes!==original[0].length)throw Error('color_init_extent_binding');
     const pieces=[generated.bytes.subarray(0,generated.facts.initBytes),...original.slice(1)];
     if(!Buffer.concat(pieces).equals(generated.bytes))throw Error('color_generated_join_binding');
     row.generatedSHA256=sha(generated.bytes);
-    const page=await context.newPage();page.on('pageerror',()=>{row.pageErrors=(row.pageErrors||0)+1;});
-    try{
+    page=await context.newPage();page.on('pageerror',()=>{row.pageErrors=(row.pageErrors||0)+1;});
       await page.goto(origin+'/healthz',{waitUntil:'domcontentloaded',timeout:15000});
       row.currentStage='raw-mse-sealed-append';
       await page.evaluate(installMSE,{request:item.request,pieces:pieces.map(bytes=>({bytes:[...bytes],sha256:sha(bytes)}))});
@@ -115,6 +124,7 @@ export async function observeMSEColors(context,origin,item,joined,reference,refe
       row.result='observed';row.currentStage='complete';
     }catch(error){row.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name||'color_mse_operation';}
     finally{
+      if(page){
       try{row.observer=await page.evaluate(()=>window.nonkeySnapshot());}catch{row.snapshotFailure=true;}
       try{
         const partial=await page.evaluate(()=>window.nonkeyColorAppend);
@@ -124,6 +134,7 @@ export async function observeMSEColors(context,origin,item,joined,reference,refe
       try{await page.evaluate(()=>{document.querySelector('video')?.pause();
         if(window.nonkeyColorURL)URL.revokeObjectURL(window.nonkeyColorURL);});}
       finally{await page.close();}
+      }
     }
     row.frameQualification=colorFrameQualification(row,reference,item.expectedSourceIndices);
     row.frameConsumerQualified=row.frameQualification.qualified;

@@ -12,9 +12,9 @@ def mse_clock_facts(observed, request):
     video=videos[0];scale=video['mediaTimescale']
     check(type(scale) is int and 0<scale<=10**9)
     edits=video['edits']
-    check(0<len(edits)<=8 and all(type(v['mediaTime']) is int and v['mediaTime']>=-1
+    check(len(edits)==1 and all(type(v['mediaTime']) is int and v['mediaTime']>=0
         and v['rateInteger']==1 and v['rateFraction']==0 for v in edits))
-    media=next((v['mediaTime'] for v in edits if v['mediaTime']>=0),None)
+    media=edits[0]['mediaTime']
     check(media is not None)
     samples=[]
     for fragment in observed['physicalFragments']:
@@ -27,7 +27,7 @@ def mse_clock_facts(observed, request):
     for sample,packet in zip(samples,packets):
         check(all(type(sample[k]) is int and abs(sample[k])<2**53 for k in ['pts','dts','duration'])
             and sample['dts']>=0 and sample['duration']>0)
-        mapped={k:Fraction(sample[k]-media,scale) for k in ['pts','dts']}
+        mapped={'pts':Fraction(sample['pts']-media,scale), 'dts':Fraction(sample['dts']-media,scale)}
         mapped['duration']=Fraction(sample['duration'],scale)
         for key,value in mapped.items():
             actual=float(packet[key+'_time'])
@@ -36,6 +36,8 @@ def mse_clock_facts(observed, request):
     first=projections[0]['pts']
     check(first==Fraction(-1,2) and first+Fraction(str(request))==12)
     return {'qualified':True,'trackID':video['trackID'],'mediaTimescale':scale,'editMediaTime':media,
+        'firstChromiumRawDTSSeconds':float(Fraction(samples[0]['dts'],scale)),
+        'firstFFprobeLogicalDTSSeconds':float(projections[0]['dts']),
         'sampleCount':len(samples),'firstClipPTSSeconds':float(first),'firstSourcePTSSeconds':float(first+Fraction(str(request))),
-        'timestampOffset':request,'allRawSamplesRetained':True,'everyVideoPacketClockMatched':True,
-        'interpretation':'Chromium153 first nonnegative ELST media_time subtraction; component-only'}
+        'timestampOffset':request,'allRawSamplesRetained':True,'everyFFprobeLogicalVideoPacketClockMatched':True,'chromiumDTSRemainsUnedited':True,
+        'interpretation':'Chromium153 first single nonnegative ELST subtracts CTS only; FFprobe logical DTS reported separately; component-only'}
