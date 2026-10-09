@@ -27,6 +27,8 @@ export function safeBrowserProjection(row){
     referenceComplete:row.referenceComplete,joinedBytesVerified:row.joinedBytesVerified,
     publicVideoSuffixQualified:row.publicVideoSuffixQualified,joinedSHA256:row.joinedSHA256,joinedDirectScope:row.joinedDirectScope,
     colorScope:row.colorScope,colorMetadata:row.colorMetadata,appendedMetadata:row.appendedMetadata,
+    colorComponentQualified:row.colorComponentQualified,appendWitness:row.appendWitness,
+    originalHTTPInitSHA256:row.originalHTTPInitSHA256,counterfactualHTTPInitSHA256:row.counterfactualHTTPInitSHA256,
     deliveredBytesVerified:row.deliveredBytesVerified,metadataByteIdentity:row.metadataByteIdentity,
     appendedBytesVerified:row.appendedBytesVerified,appends:row.appends,appendFailures:row.appendFailures,
     appendConfiguration:row.appendConfiguration,rawMSEClockFacts:row.rawMSEClockFacts,endOfStreamReturned:row.endOfStreamReturned,

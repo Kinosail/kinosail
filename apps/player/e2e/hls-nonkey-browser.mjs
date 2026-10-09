@@ -6,6 +6,7 @@ import {chromium} from '@playwright/test';
 import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification,directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
 import {observeJoinedPublic} from './hls-nonkey-browser-joined.mjs';
 import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
+import {observeAppColor} from './hls-nonkey-browser-app-color.mjs';
 import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
@@ -58,12 +59,13 @@ const api=async(path,method='GET',body)=>{
   if(!response.ok())throw Error('public_status_'+response.status());
   return response;
 };
-async function observe(id,request,label){
+async function observe(id,request,label,diagnostic){
   const row={request,label,result:'observation-failed',http:[],failureClass:undefined};
-  const expected=config.cases.find(v=>v.request===request);
+  const expected=diagnostic?.item||config.cases.find(v=>v.request===request);
   const mediaPending=[];
   row.observedSelectedAssets={};row.unexpectedSelectedAssets=[];row.directReferenceBodies=[];
   const page=await context.newPage();
+  if(diagnostic)await diagnostic.install(page);
   page.on('response',response=>{
     const url=new URL(response.url());
     if(url.origin!==config.origin)return;
@@ -124,7 +126,7 @@ async function observe(id,request,label){
       rawTime:Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'currentTime').get.call(v),
       projectedTime:v.currentTime,nativeHLS:v.canPlayType('application/vnd.apple.mpegurl'),
       hlsAvailable:typeof window.Hls!=='undefined'}));
-    if(label==='forced-source-coordinate-seek'){
+    if(label==='forced-source-coordinate-seek' || label==='app-color-601-forced-source-coordinate-seek'){
       row.forceSeek=await page.evaluate(async target=>{
         const v=document.querySelector('video');v.pause();
         let seeking=false,seeked=false;
@@ -154,6 +156,7 @@ async function observe(id,request,label){
     if(label==='source-reference')row.directReferenceBytesVerified=Boolean(row.directReferenceBodies.length>0 &&
       !row.directReferenceRouteMismatch && !row.httpBodyFailure && row.directReferenceBodies.every(v=>v.matched));
     try{row.observer=await page.evaluate(()=>window.nonkeySnapshot());}catch{row.snapshotFailure=true;}
+    if(diagnostic)try{row.actualAppColorAppend=await diagnostic.snapshot(page);}catch{row.actualAppColorAppend={failures:['append_snapshot']};}
     if(label!=='source-reference')row.selectedPublicHLSObserved=Boolean(!row.wrongHLSRecipe && !row.directMediaRequested &&
       !row.httpBodyFailure && expected?.initialDeliveryStable && Object.entries(expected.publicAssetSHA256).every(([name,digest])=>{
         const observed=row.observedSelectedAssets[name];return observed?.length>0 && observed.every(v=>v.status===200 && v.sha256===digest);
@@ -225,7 +228,9 @@ try{
       const selected=row.observer?.phases?.at(-1);
       if(selected && reference)row.frameQualification=frameQualification(selected,reference.rows,item.expectedSourceIndices);
       row.referenceComplete=result.referenceComplete;
-      row.consumerQualification=consumerQualification(row,reference?.rows||[],item.expectedSourceIndices);
+      row.referenceComplete=result.referenceComplete;
+        row.consumerQualification=consumerQualification({...row,label:label==='app-color-601-forced-source-coordinate-seek'?
+          'forced-source-coordinate-seek':label},reference?.rows||[],item.expectedSourceIndices);
       row.frameConsumerQualified=row.consumerQualification.qualified;
       result.cases.push(row);
       console.log(JSON.stringify({actualBrowser:safeBrowserProjection(row)}));
@@ -243,6 +248,15 @@ try{
     console.log(JSON.stringify({publicAudioContext:audio.actual,expectedPCM:item.expectedPCM,qualification:audio.qualification,failureClass:audio.failureClass}));
     await observeMSEColors(context,config.origin,item,joinedBytes,reference?.rows||[],result.referenceComplete,result.cases);
     for(const row of result.cases.filter(v=>v.label?.startsWith('raw-mse-color-')))console.log(JSON.stringify({rawMSEColor:safeBrowserProjection(row)}));
+    await observeAppColor(context,config.origin,item,joinedBytes,reference?.rows||[],result.referenceComplete,result.cases,
+      async(request,label,diagnostic)=>{
+        const row=await observe(config.itemID,request,label,diagnostic);
+        row.consumerQualification=consumerQualification(row,reference?.rows||[],item.expectedSourceIndices);
+        row.frameQualification=row.consumerQualification;row.frameConsumerQualified=row.consumerQualification.qualified;
+        return row;
+      });
+    for(const row of result.cases.filter(v=>v.label?.startsWith('app-color-601-')))
+      console.log(JSON.stringify({appHLSColor:safeBrowserProjection(row)}));
   }
   result.result='observed';
 }catch(error){result.result='failed';result.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name;}
