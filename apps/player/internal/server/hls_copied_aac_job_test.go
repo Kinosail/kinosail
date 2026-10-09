@@ -13,6 +13,7 @@ import (
 func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
 	manager, item, recipe, directory, policy, _ := copiedRecoveryFixture(t)
+	copiedAACSourceRoots(manager,item)
 	before := copiedRecoveryPreserved(t, directory)
 	info, err := os.Stat(item.Path)
 	if err != nil {
@@ -48,6 +49,7 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 func TestCopiedAACRefillKeepsCanonicalPolicy(t *testing.T) {
 	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
 	manager, item, recipe, _, base, _ := copiedRecoveryFixture(t)
+	copiedAACSourceRoots(manager,item)
 	info, err := os.Stat(item.Path)
 	if err != nil {
 		t.Fatal(err)
@@ -74,6 +76,7 @@ func TestCopiedAACRefillKeepsCanonicalPolicy(t *testing.T) {
 func TestCopiedAACLiveIndexOwnerCannotBeReplacedByLookalike(t *testing.T) {
 	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
 	manager, item, recipe, _, base, _ := copiedRecoveryFixture(t)
+	copiedAACSourceRoots(manager,item)
 	info, err := os.Stat(item.Path)
 	if err != nil { t.Fatal(err) }
 	key := hlsRecipeKey(item.ID, recipe)
@@ -86,6 +89,9 @@ func TestCopiedAACLiveIndexOwnerCannotBeReplacedByLookalike(t *testing.T) {
 	manager.jobs[key] = job
 	ctx = context.WithValue(ctx, copiedAACWorkerKey{}, &copiedAACWorkerIdentity{key: key, recipe: recipe, policy: options.Cache, job: job})
 	if !manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("live observed owner was rejected") }
+	manager.jobs["unrelated"] = &hlsJob{}
+	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("unrelated live job widened idle index admission") }
+	delete(manager.jobs,"unrelated")
 	lookalike := *job
 	manager.jobs[key] = &lookalike
 	if manager.copiedAACWorkerCurrent(ctx, key, options.Cache) { t.Fatal("lookalike pointer acquired the old index publication") }

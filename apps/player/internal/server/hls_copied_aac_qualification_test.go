@@ -1,0 +1,57 @@
+package server
+
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"runtime"
+	"testing"
+	"time"
+)
+
+// Gap: HTTP cannot deterministically revoke a scan root after the retained probe opens.
+func TestCopiedAACSourceRootRevocationCannotInstallOrReuseEligibility(t *testing.T) {
+	if runtime.GOOS!="linux" { t.Skip("retained source qualification is Linux-only") }
+	manager,item,_,_:=hlsLoadingFixture(t)
+	original:=item.Path
+	item.Path=filepath.Join(filepath.Dir(item.Path),"Fixture.mp4")
+	if err:=os.Rename(original,item.Path);err!=nil { t.Fatal(err) }
+	copiedAACSourceRoots(manager,item)
+	recipe:=hlsRecipe{mode:"remux"}
+	base,err:=manager.baseHLSSettings(item,recipe)
+	if err!=nil { t.Fatal(err) }
+	before,err:=os.Stat(item.Path)
+	if err!=nil { t.Fatal(err) }
+	tools:=t.TempDir()
+	marker,release:=filepath.Join(tools,"opened-pid"),filepath.Join(tools,"release")
+	probe:=filepath.Join(tools,"grid-probe")
+	body:="#!/bin/sh\nset -eu\nprintf '%s' $$ > "+copiedRecoveryQuote(marker)+"\nwhile [ ! -f "+copiedRecoveryQuote(release)+" ]; do sleep 0.01; done\nprintf '%s\\n' 'index=0|codec_type=video|codec_name=h264|profile=High|time_base=1/16000' 'index=1|codec_type=audio|codec_name=aac|profile=LC|sample_rate=48000|channels=2|time_base=1/48000' 'format_name=mov,mp4,m4a,3gp,3g2,mj2'\n"
+	if err:=os.WriteFile(probe,[]byte(body),0o700);err!=nil { t.Fatal(err) } //nolint:gosec // Owned compact-metadata probe schedules the root boundary.
+	manager.probe.executable=probe
+	ctx,cancel:=context.WithTimeout(t.Context(),2*time.Second)
+	defer cancel()
+	done:=make(chan error,1)
+	go func(){done<-manager.qualifyCopiedAAC(ctx,item,recipe,true)}()
+	deadline:=time.Now().Add(time.Second)
+	var pid []byte
+	for time.Now().Before(deadline) {
+		pid,_=os.ReadFile(marker)
+		if len(pid)>0 { break }
+		time.Sleep(time.Millisecond)
+	}
+	if len(pid)==0 { t.Fatal("controlled qualification never opened its probe") }
+	manager.index.SetRoots(nil)
+	writeHLSLoadingFile(t,release,"released")
+	if err:=<-done;err==nil { t.Fatal("revoked root installed source qualification") }
+	copiedRecoveryAssertStopped(t,pid)
+	key:=hlsRecipeKey(item.ID,recipe)
+	if _,_,known:=manager.copiedAACPolicy(key,base.Cache,before);known { t.Fatal("failed root proof became a completed unsupported decision") }
+	copiedAACSourceRoots(manager,item)
+	if err:=manager.qualifyCopiedAAC(t.Context(),item,recipe,true);err!=nil { t.Fatal("restored safe source qualification failed") }
+	selected,_,known:=manager.copiedAACPolicy(key,base.Cache,before)
+	if !known||!selected { t.Fatal("restored root did not record eligibility") }
+	manager.index.SetRoots(nil)
+	if err:=manager.qualifyCopiedAAC(t.Context(),item,recipe,false);err==nil { t.Fatal("known source decision bypassed revoked root") }
+	after,err:=os.Stat(item.Path)
+	if err!=nil||!sameCopiedHLSFile(before,after) { t.Fatal("qualification mutated its source") }
+}

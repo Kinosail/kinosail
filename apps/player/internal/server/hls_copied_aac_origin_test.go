@@ -84,3 +84,24 @@ func TestCopiedAACCertificateVersionFollowsOrigin(t *testing.T) {
 		t.Fatal("new origin reused Version1")
 	}
 }
+
+func TestCopiedAACPendingInitialAndBoundRefillRemainDistinct(t *testing.T) {
+	timeline := &copiedHLSTimeline{Policy:"test:copied-aac=2",Strategy:"h264-idr-keys-1",Numerator:1,Denominator:16000,TimeBase:1.0/16000,Keys:[]copiedHLSKey{{PTS:0,DTS:-1333},{PTS:32000,DTS:30667}},End:4,AudioOrigin:&copiedHLSAudioOrigin{SourceTrack:1}}
+	if !validCopiedAACOrigin(timeline) { t.Fatal("source-qualified initial generation could not bootstrap") }
+	if _,err:=copiedHLSProducerArguments([]string{"-c:a","copy"},timeline,1);err==nil { t.Fatal("pending initial source eligibility acquired refill admission") }
+	clock:=0.0
+	timeline.Clock=&clock
+	if validCopiedAACOrigin(timeline) { t.Fatal("empty origin acquired a bound certificate") }
+	timeline.AudioOrigin.FirstHash="SHA256:"+strings.Repeat("a",64)
+	if !validCopiedAACOrigin(timeline) { t.Fatal("complete zero-origin contract rejected") }
+	timeline.AudioOrigin.InitialSeekMicros=12000000
+	if validCopiedAACOrigin(timeline) { t.Fatal("different initial input seek inherited first-key geometry") }
+}
+
+func TestCopiedAACPolicyCannotCarryLegacyOriginKind(t *testing.T) {
+	clock:=0.0
+	timeline:=&copiedHLSTimeline{Policy:"test:copied-aac=2",Strategy:"h264-idr-keys-1",Numerator:1,Denominator:1000,TimeBase:0.001,Keys:[]copiedHLSKey{{PTS:0,DTS:0}},End:2,Clock:&clock}
+	if validCopiedHLSTimeline(timeline) { t.Fatal("P2 producer policy admitted a missing origin and Version1 dispatch") }
+	timeline.Policy="legacy"
+	if !validCopiedHLSTimeline(timeline) { t.Fatal("unqualified legacy contract changed") }
+}
