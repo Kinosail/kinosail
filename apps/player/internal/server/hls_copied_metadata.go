@@ -116,6 +116,9 @@ func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, direc
 	if err := verifyCopiedHLSRenditionAssets(ctx, rendition, certificate); err != nil {
 		return err
 	}
+	if err := verifyCopiedAACAssets(ctx, rendition, timeline); err != nil {
+		return err
+	}
 	return manager.verifyCopiedHLSBoundManifest(ctx, directory, root, rendition, data, certificateData, certificate.Rendition, timeline)
 }
 

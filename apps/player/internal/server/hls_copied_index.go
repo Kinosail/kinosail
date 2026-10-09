@@ -61,7 +61,16 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 		return nil, err
 	}
 	defer release()
-	timeline, err := manager.scanCopiedHLSPackets(scan, item, options.Cache, facts.Duration)
+	var origin *copiedHLSAudioOrigin
+	if copiedAACPolicyRequired(options.Cache) {
+		source, err := os.Lstat(item.Path)
+		selected, track, known := manager.copiedAACPolicy(hlsRecipeKey(item.ID, recipe), copiedAACBasePolicy(options.Cache), source)
+		if err != nil || !selected || !known {
+			return nil, errCopiedHLSIndex
+		}
+		origin = &copiedHLSAudioOrigin{SourceTrack: track}
+	}
+	timeline, err := manager.scanCopiedHLSPackets(scan, item, options.Cache, facts.Duration, origin)
 	if err != nil {
 		return nil, err
 	}
@@ -158,8 +167,12 @@ func copiedHLSInputLines(parent context.Context, executable string, arguments []
 	return err
 }
 
-func (manager *hlsManager) scanCopiedHLSPackets(ctx context.Context, item library.Item, policy string, duration float64) (*copiedHLSTimeline, error) {
+func (manager *hlsManager) scanCopiedHLSPackets(ctx context.Context, item library.Item, policy string, duration float64, origins ...*copiedHLSAudioOrigin) (*copiedHLSTimeline, error) {
 	timeline := &copiedHLSTimeline{Policy: policy, Strategy: "h264-idr-keys-1"}
+	if len(origins) > 0 && origins[0] != nil {
+		origin := *origins[0]
+		timeline.AudioOrigin = &origin
+	}
 	var end int64
 	arguments := []string{
 		"-v", "error", "-threads", "1", "-select_streams", "v:0", "-show_packets", "-show_streams",
@@ -168,6 +181,13 @@ func (manager *hlsManager) scanCopiedHLSPackets(ctx context.Context, item librar
 	err := copiedHLSLines(ctx, manager.probe.executable, arguments, 128<<20, 2_000_010, func(line string) error {
 		return timeline.packet(line, &end)
 	})
+	if timeline.AudioOrigin != nil && len(timeline.Keys) > 0 {
+		initial, rescaleErr := copiedAACKeyMicros(timeline, timeline.Keys[0].PTS)
+		if rescaleErr != nil {
+			return nil, errCopiedHLSIndex
+		}
+		timeline.AudioOrigin.InitialSeekMicros = initial
+	}
 	timeline.End = float64(end) * timeline.TimeBase
 	if err != nil || !validCopiedHLSTimeline(timeline) {
 		return nil, errCopiedHLSIndex

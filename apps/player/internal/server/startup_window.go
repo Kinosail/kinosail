@@ -68,14 +68,14 @@ func missingStartupRendition(root *os.Root, directory, key, rendition string, du
 }
 
 func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecipe, contexts ...context.Context) bool {
+	if manager.cache == "" || manager.settings == nil {
+		return false
+	}
 	ctx := manager.ctx
 	if len(contexts) > 0 {
 		ctx = contexts[0]
 	}
 	if err := manager.qualifyCopiedAAC(ctx, item, recipe, false); err != nil {
-		return false
-	}
-	if manager.cache == "" || manager.settings == nil {
 		return false
 	}
 	key := hlsRecipeKey(item.ID, recipe)

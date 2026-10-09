@@ -27,9 +27,9 @@ type copiedAACGeneration struct {
 }
 
 func (value *copiedAACGeneration) close() {
-	if value.media != nil { _ = value.media.Close() }
-	if value.root != nil { _ = value.root.Close() }
-	if value.release != nil { value.release() }
+	if value.media != nil { _ = value.media.Close(); value.media = nil }
+	if value.root != nil { _ = value.root.Close(); value.root = nil }
+	if value.release != nil { release := value.release; value.release = nil; release() }
 }
 
 func (manager *hlsManager) openCopiedAACGeneration(parent context.Context, item library.Item, recipe hlsRecipe, directory string) (*copiedAACGeneration, error) {
@@ -54,9 +54,17 @@ func (manager *hlsManager) openCopiedAACGeneration(parent context.Context, item 
 	if err == nil {
 		value.certificateData, err = copiedHLSCacheFile(value.root, ".copy-clock", 4096)
 	}
-	value.certificate, _ = decodeCopiedHLSCertificate(value.certificateData, value.timelineData)
+	if err != nil {
+		value.close()
+		return nil, errCopiedHLSIndex
+	}
+	value.certificate, err = decodeCopiedHLSCertificate(value.certificateData, value.timelineData)
+	if err != nil || value.certificate.Version != 2 {
+		value.close()
+		return nil, errCopiedHLSIndex
+	}
 	value.media, err = value.root.OpenRoot(value.certificate.Rendition)
-	if err != nil || !value.current() {
+	if err != nil || verifyCopiedHLSRenditionAssets(ctx, value.media, value.certificate) != nil || verifyCopiedAACAssets(ctx, value.media, value.timeline) != nil || !value.current() {
 		value.close()
 		return nil, errCopiedHLSIndex
 	}
@@ -65,7 +73,7 @@ func (manager *hlsManager) openCopiedAACGeneration(parent context.Context, item 
 
 func (value *copiedAACGeneration) current() bool {
 	data, err := json.Marshal(value.timeline)
-	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 2 && value.ctx.Err() == nil &&
+	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 2 && value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil &&
 		value.manager.validateHLSPolicy(value.ctx, value.item, value.recipe, value.policy) == nil &&
 		copiedHLSBoundMetadata(value.root, value.timelineData, value.certificateData, value.policy) &&
 		value.manager.copiedHLSCanonicalGeneration(value.directory, value.certificate.Rendition, value.root, value.media)
@@ -153,6 +161,8 @@ func (manager *hlsManager) serveCopiedAACFile(writer http.ResponseWriter, reques
 	}
 	writer.Header().Set("Content-Type", "video/mp4")
 	manager.adoptRecipeFile(request, key, filepath.Join(manager.cache, key, name))
+	value.release()
+	value.release = nil // The metadata/probe lease ends before network transfer.
 	http.ServeContent(writer, request, filepath.Base(name), info.ModTime(), content)
 	return true
 }

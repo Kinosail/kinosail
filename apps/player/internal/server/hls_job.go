@@ -134,6 +134,9 @@ func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.I
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	if copiedAACPolicyRequired(expected) && (manager.index == nil || !manager.index.Safe(item.Path)) {
+		return errHLSIdentityChanged
+	}
 	recipe = copiedAACCanonicalRecipe(ctx, recipe, expected)
 	current, err := manager.hlsSettings(item, recipe)
 	if err != nil {

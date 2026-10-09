@@ -27,7 +27,7 @@ func copiedAACCanonicalRecipe(ctx context.Context, recipe hlsRecipe, policy stri
 func (manager *hlsManager) copiedAACWorkerCurrentLocked(ctx context.Context, key, policy string) bool {
 	identity, ok := ctx.Value(copiedAACWorkerKey{}).(*copiedAACWorkerIdentity)
 	return ok && identity != nil && identity.key == key && identity.policy == policy && copiedAACPolicyRequired(policy) &&
-		identity.job != nil && manager.jobs[key] == identity.job && identity.job.lifecycle.Err() == nil && ctx.Err() == nil &&
+		identity.job != nil && len(manager.jobs) == 1 && manager.jobs[key] == identity.job && identity.job.lifecycle.Err() == nil && ctx.Err() == nil &&
 		identity.job.observation == hlsObservationFor(ctx) && identity.job.cachePolicy == policy && identity.job.startNumber == 0
 }
 

@@ -61,9 +61,16 @@ func (manager *hlsManager) copiedAACSettings(item library.Item, recipe hlsRecipe
 		return transcodeSettings{}, errHLSIdentityChanged
 	}
 	if selected {
-		token, err := copiedAACSourceToken(source)
+		if !found || !previous.selected || previous.base != options.Cache || !sameCopiedHLSFile(previous.source, source) {
+			return transcodeSettings{}, errHLSIdentityChanged
+		}
+		token, err := copiedAACSourceToken(previous.source)
 		if err != nil {
 			return transcodeSettings{}, err
+		}
+		after, err := os.Lstat(item.Path)
+		if err != nil || !sameCopiedHLSFile(previous.source, after) {
+			return transcodeSettings{}, errHLSIdentityChanged
 		}
 		options.Cache += ":copied-source=" + token + ":copied-aac=2"
 	}

@@ -15,6 +15,9 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 	if recipe.mode != "remux" || recipe.audio != 0 || recipe.dialogueBoost || recipe.normalizeLoudness || len(recipe.omitted) != 0 || runtime.GOOS != "linux" || !strings.EqualFold(filepath.Ext(item.Path), ".mp4") {
 		return nil
 	}
+	if parent.Err() != nil || manager.index == nil || !manager.index.Safe(item.Path) {
+		return errCopiedHLSIndex
+	}
 	base, err := manager.baseHLSSettings(item, recipe)
 	if err != nil {
 		return err
@@ -49,7 +52,7 @@ func (manager *hlsManager) qualifyCopiedAAC(parent context.Context, item library
 	opened, openErr := file.Stat()
 	current, policyErr := manager.baseHLSSettings(item, recipe)
 	if err != nil || statErr != nil || openErr != nil || policyErr != nil || current.Cache != base.Cache ||
-		!sameCopiedHLSFile(before, after) || !sameCopiedHLSFile(before, opened) || ctx.Err() != nil {
+		!sameCopiedHLSFile(before, after) || !sameCopiedHLSFile(before, opened) || !manager.index.Safe(item.Path) || ctx.Err() != nil {
 		return errCopiedHLSIndex
 	}
 	return manager.recordCopiedAACPolicy(key, base.Cache, before, selected, track)

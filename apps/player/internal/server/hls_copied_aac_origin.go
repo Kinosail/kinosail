@@ -93,7 +93,7 @@ func copiedHLSCertificateVersion(timeline *copiedHLSTimeline) int {
 func validCopiedAACOrigin(timeline *copiedHLSTimeline) bool {
 	origin := timeline.AudioOrigin
 	if origin == nil {
-		return true
+		return !copiedAACPolicyRequired(timeline.Policy)
 	}
 	if timeline.Presentation != nil || timeline.Strategy != "h264-idr-keys-1" || !strings.HasSuffix(timeline.Policy, ":copied-aac=2") ||
 		origin.SourceTrack < 0 || origin.SourceTrack > 255 || origin.InitialSeekMicros < 0 || origin.InitialSeekMicros > maximumCopiedAACMicros {
