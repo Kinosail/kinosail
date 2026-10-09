@@ -67,7 +67,7 @@ def fault(cache, name):
         and directory.is_dir() and not directory.is_symlink(), 'compat_indexed_generation_kind')
     binding = directory / '.source'
     check(binding.is_file() and not binding.is_symlink(), 'compat_seed_binding_kind')
-    check(json.loads(bounded_bytes(timeline, 256 << 10, 'compat_seed_timeline_bound'))['policy']
+    check(json.loads(bounded_bytes(timeline, 256 << 10, 'compat_seed_timeline_bound'))['Policy']
         == bounded_bytes(binding, 16 << 10, 'compat_seed_binding_bound').decode(), 'compat_seed_binding_exact')
     target = {'missing-source': '.source', 'wrong-source': '.source',
         'missing-clock': '.copy-clock', 'wrong-version': '.copy-clock',
