@@ -93,14 +93,14 @@ func copiedHLSRefillAudioArguments(arguments []string, timeline *copiedHLSTimeli
 	// Streamcopy rebases input packets before this BSF. The next key's DTS
 	// closes the retained audio prefix; key PTS would discard reordered audio.
 	// Preserve payload bytes and the canonical mux clock for every kept packet.
-	return fmt.Sprintf("noise=amount=0:drop=lt(pts*tb+%s\\,%d*%d/%d)",
+	return fmt.Sprintf("noise=amount=0:drop=lt(pts+round(%s/tb)\\,ceil(%d*%d*round(1/tb)/%d))",
 		copiedHLSTime(floor), key.DTS, timeline.Numerator, timeline.Denominator), nil
 }
 
 func validCopiedHLSAudioDTS(timeline *copiedHLSTimeline, number int) bool {
 	key := timeline.Keys[number]
 	return validCopiedHLSTimeBase(timeline) && timeline.Numerator <= 1<<52 && timeline.Denominator <= 1<<52 &&
-		key.PTS >= 0 && key.PTS <= 1<<52 && key.DTS >= -(1<<52) && key.DTS <= key.PTS && key.DTS > timeline.Keys[number-1].DTS
+		key.PTS > timeline.Keys[number-1].PTS && key.PTS <= 1<<52 && key.DTS >= -(1<<52) && key.DTS <= key.PTS && key.DTS > timeline.Keys[number-1].DTS
 }
 
 func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string) func([]byte) []byte {
