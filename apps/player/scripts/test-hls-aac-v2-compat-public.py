@@ -10,7 +10,7 @@ import sys
 import time
 from hls_followon_frames import decode_frames
 from hls_aac_v2_compat_public import diagnostics, fault, requests, require_diagnostics, responses, snapshot
-from hls_aac_v2_public_http import ActualServer, idle
+from hls_aac_v2_public_http import ActualServer, diagnostic_producer_rows, idle
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 from hls_timeline_fixture import fixture
@@ -176,23 +176,39 @@ try:
     idle(owner.api, owner.process, source)
     check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_adoption_refilled_source')
     # Existing baseline GET fills only this disposable seed before immutable clones.
-    hydration = []
+    hydration = receipt['seedHydration'] = []
+    hydration_bytes = []
     prefix = selected.removesuffix('index.m3u8') + '360p/'
     for name in ['init.mp4', *['segment-' + str(n).zfill(5) + '.m4s' for n in range(10)]]:
         paths = list((seed / 'cache').glob('*/360p/' + name))
         physical_before = len(paths) == 1 and paths[0].is_file()
         status, body, _ = owner.api.http(prefix + name)
-        check(status == 200 and 0 < len(body) <= 2 << 20, 'compat_baseline_seed_hydration')
         hydration.append({'asset': name, 'physicalBefore': physical_before, 'status': status,
             'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()})
+        check(status == 200 and 0 < len(body) <= 2 << 20, 'compat_baseline_seed_hydration')
+        hydration_bytes.append(body)
     idle(owner.api, owner.process, source)
-    receipt['seedHydration'] = hydration
+    receipt['seedSourceAudit'] = diagnostic_producer_rows(owner.invocation_rows(), source, owner.owned_pids)
     receipt['seedSourceInvocations'] = len(owner.source_invocation_rows())
     check(1 <= receipt['seedSourceInvocations'] <= 10, 'compat_seed_hydration_encoder_bound')
     certificates = list((seed / 'cache').glob('*/.copy-clock'))
     check(len(certificates) == 1 and json.loads(bounded_bytes(certificates[0], 4096, 'legacy_certificate_bound'))['version'] == 1,
         'legacy_real_version1_control')
+    seed_joined = seed / 'baseline-joined.mp4'
+    seed_joined.write_bytes(b''.join(hydration_bytes))
+    _, seed_rows = decode_frames(seed_joined)
+    _, seed_source_rows = decode_frames(source, offset=12)
+    check(len(seed_rows) == len(seed_source_rows) == 480
+        and [v[1] for v in seed_rows] == [v[1] for v in seed_source_rows],
+        'compat_seed_exact_source_frames')
+    receipt['seedDecodedSourceFrames'] = len(seed_rows)
     owner.stop()
+    receipt['seedFinalSourceAudit'] = diagnostic_producer_rows(owner.invocation_rows(), source, owner.owned_pids)
+    check(receipt['seedFinalSourceAudit'] == receipt['seedSourceAudit'], 'compat_seed_late_encoder')
+    for row in hydration:
+        paths = list((seed / 'cache').glob('*/360p/' + row['asset']))
+        row['postJoinPhysicalSHA256'] = sha(paths[0]) if len(paths) == 1 and paths[0].is_file() else None
+        check(row['postJoinPhysicalSHA256'] == row['sha256'], 'compat_seed_response_not_physical_file')
     check(not certificates[0].with_name('.startup').exists(), 'legacy_seed_unadopted_startup_marker')
     timelines = list((seed / 'cache').glob('*/.copy-timeline'))
     check(len(timelines) == 1, 'compat_seed_timeline_count')
@@ -228,6 +244,12 @@ finally:
                 owner.stop()
             except Exception:
                 receipt.update(result='failed', cleanupFailureClass='legacy_owned_join_failed')
+            receipt['incompleteSeedSessions'] = owner.sessions
+            try:
+                receipt['incompleteSeedSourceAudit'] = diagnostic_producer_rows(
+                    owner.invocation_rows(), source, owner.owned_pids)
+            except Exception as error:
+                receipt['seedAuditFailureClass'] = type(error).__name__
         try:
             receipt['sourceUnchanged'] = source_state(source) == before if source is not None and before is not None else None
         except Exception:
@@ -250,6 +272,10 @@ finally:
             ''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n' for p in files))
         print(json.dumps({'revision': receipt['revision'], 'tree': receipt['tree'], 'result': receipt['result'],
             'failureClass': receipt.get('failureClass'), 'receiptSHA256': sha(target),
+            'seedHydration': receipt.get('seedHydration'),
+            'seedDecodedSourceFrames': receipt.get('seedDecodedSourceFrames'),
+            'seedSourceAudit': receipt.get('seedSourceAudit'),
+            'seedFinalSourceAudit': receipt.get('seedFinalSourceAudit'),
             'cases': [{k: v.get(k) for k in ['label', 'result', 'failureClass', 'baselineStatuses', 'statuses',
                 'cacheUnchanged', 'sourceCalls', 'sourceUnchanged', 'olderClientPlaylistPlayable',
                 'baselineRestoredExactBody', 'exactBaselineBodies', 'baselineDecodedFrames', 'candidateDecodedFrames',
