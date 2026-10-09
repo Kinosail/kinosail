@@ -10,7 +10,7 @@
 // Wrong expected sequence, partial PCM, incomplete packet tails, stale media or failed owned joins stay red.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {frameQualification, completeAudioQualification} from './hls-nonkey-browser-observer.mjs';
+import {frameQualification, completeAudioQualification, consumerQualification} from './hls-nonkey-browser-observer.mjs';
 const reference = [0,1,2,3].map(n => ({sha256:String(n).padStart(64,'0'), mediaTime:n/24, presentedFrames:n+1}));
 const facts = {ended:true, rows:reference, droppedCallbacks:0, captureErrors:[], width:640,height:360};
 test('whole requested frame sequence and actual EOF are required', () => {
@@ -35,4 +35,21 @@ test('audio requires whole native stereo48k output and exact independent PCM byt
   assert.equal(completeAudioQualification(value,expected).qualified,true);
   for(const bad of [{samples:1},{channels:1},{sampleRate:44100},{s16leSHA256:'b'.repeat(64)},{completeDecode:false}])
     assert.equal(completeAudioQualification({...value,...bad},expected).qualified,false);
+});
+
+test('consumer admission requires actual selected HLS with no execution or HTTP errors', () => {
+  const phase={...facts,firstCallbackGap:0,quality:{droppedVideoFrames:0,totalVideoFrames:4}};
+  const row={result:'observed',pageErrors:0,selectedPublicHLSObserved:true,observer:{phases:[phase]},
+    label:'unchanged-client',referenceComplete:true};
+  assert.equal(consumerQualification(row,reference,[0,1,2,3]).qualified,true);
+  for(const bad of [{result:'observation-failed'},{pageErrors:1},{selectedPublicHLSObserved:false},
+    {directMediaRequested:true},{wrongHLSRecipe:true},{httpOverflow:true},{httpBodyFailure:true},
+    {publicAssetHashMismatch:true},{snapshotFailure:true}])
+    assert.equal(consumerQualification({...row,...bad},reference,[0,1,2,3]).qualified,false);
+  for(const bad of [{events:[{name:'error',errorCode:4}]},{firstCallbackGap:1},
+    {quality:{droppedVideoFrames:1,totalVideoFrames:4}},{quality:null}])
+    assert.equal(consumerQualification({...row,observer:{phases:[{...phase,...bad}]}},reference,[0,1,2,3]).qualified,false);
+  const forced={...row,label:'forced-source-coordinate-seek',forceSeek:{seeking:false,seeked:false}};
+  assert.equal(consumerQualification(forced,reference,[0,1,2,3]).qualified,false);
+  assert.equal(consumerQualification({...forced,forceSeek:{seeking:true,seeked:true}},reference,[0,1,2,3]).qualified,true);
 });
