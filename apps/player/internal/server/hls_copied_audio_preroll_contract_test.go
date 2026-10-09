@@ -19,21 +19,7 @@ func TestCopiedHLSVideoPrerollDoesNotSuppressCopiedAudio(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		videoRule := 0
-		for index, option := range arguments {
-			if option == "-copypriorss" || option == "-copypriorss:a" {
-				t.Fatalf("segment %d suppresses copied audio preroll: %q", number, option)
-			}
-			if option == "-copypriorss:v" {
-				if index+1 >= len(arguments) || arguments[index+1] != "0" {
-					t.Fatalf("segment %d lost the video preroll rejection", number)
-				}
-				videoRule++
-			}
-		}
-		if videoRule != 1 {
-			t.Fatalf("segment %d has %d video-only rules", number, videoRule)
-		}
+		assertCopiedHLSVideoPreroll(t, arguments, number)
 	}
 }
 
@@ -48,5 +34,24 @@ func TestCopiedHLSPrerollScopeKeepsLegacyAndAdmission(t *testing.T) {
 		if _, err := copiedHLSSeekArguments(append([]string(nil), original...), timeline, number); err == nil {
 			t.Fatalf("invalid or unbound segment %d was admitted", number)
 		}
+	}
+}
+
+func assertCopiedHLSVideoPreroll(t *testing.T, arguments []string, number int) {
+	t.Helper()
+	videoRule := 0
+	for index, option := range arguments {
+		if option == "-copypriorss" || option == "-copypriorss:a" {
+			t.Fatalf("segment %d suppresses copied audio preroll: %q", number, option)
+		}
+		if option == "-copypriorss:v" {
+			if index+1 >= len(arguments) || arguments[index+1] != "0" {
+				t.Fatalf("segment %d lost the video preroll rejection", number)
+			}
+			videoRule++
+		}
+	}
+	if videoRule != 1 {
+		t.Fatalf("segment %d has %d video-only rules", number, videoRule)
 	}
 }
