@@ -45,6 +45,7 @@ def case(label, selected, metadata, original):
     joined, manifest, assets, delivery = public_media(owner.api, selected, RUN / label,
         owner.log_path, owner.process, source)
     facts, fragments = manifest_facts(manifest)
+    row.update(manifestFacts=facts, segmentNames=[name for name, _ in fragments], delivery=delivery)
     check(facts['endlist'] and facts['playlistType'] == 'VOD' and len(fragments) == 10
           and abs(facts['durationSeconds'] - 20) < 0.00001, 'v2_complete_public_timeline')
     row['delivery'] = delivery
@@ -233,7 +234,11 @@ finally:
             'stage': receipt.get('stage'), 'failureClass': receipt.get('failureClass'),
             'producerCapture': receipt.get('producerCapture'), 'encoderLifecycle': receipt.get('encoderLifecycle'),
             'encoderSeekPhases': receipt.get('encoderSeekPhases'),
+            'initialTimeline': {key: receipt.get('initialCache', {}).get(key) for key in ['timelineEnd', 'timelineGrid', 'timelineKeys']},
+            'finalSourceInvocationCount': receipt.get('finalSourceInvocationCount'),
+            'finalSourceAudit': receipt.get('finalSourceAudit'),
             'cases': [{'label': value['label'], 'result': value['result'],
+                       'manifestFacts': value.get('manifestFacts'), 'segmentNames': value.get('segmentNames'),
                        'publicPackets': value.get('tail', {}).get('publicPackets'),
                        'videoFrames': len(value.get('observations', {}).get('publicFrameRows', []))}
                       for value in receipt['cases']], 'receiptSHA256': sha(target),

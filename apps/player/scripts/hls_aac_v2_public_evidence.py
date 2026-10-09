@@ -29,7 +29,10 @@ def cache_state(cache):
     return directory, media, {'metadataSHA256': bound, 'assetSHA256': assets,
         'generationDevice': generation.st_dev, 'generationInode': generation.st_ino,
         'segments': names, 'audioOrigin': timeline['AudioOrigin'],
-        'certificateVersion': certificate['version'], 'clock': timeline['Clock']}
+        'certificateVersion': certificate['version'], 'clock': timeline['Clock'],
+        'timelineEnd': timeline['End'], 'timelineGrid': [timeline['Numerator'], timeline['Denominator']],
+        'timelineKeys': {'count': len(timeline['Keys']), 'first': timeline['Keys'][0],
+                         'last': timeline['Keys'][-1]}}
 
 
 def assert_fixed_packets(observed):
