@@ -32,8 +32,9 @@ def sample_resources(server, source, stop, resources):
         try:
             resources['peakOwnedFFmpeg'] = max(resources['peakOwnedFFmpeg'], encoder_count(server, source))
             resources['samples'] += 1
-        except (OSError, subprocess.SubprocessError):
+        except (OSError, subprocess.SubprocessError, RuntimeError):
             resources['samplingErrors'] += 1
+            resources.setdefault('samplingQualificationFailures', ['owned_encoder_observation_failed'])
         stop.wait(0.05)
 
 

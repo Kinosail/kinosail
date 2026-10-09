@@ -13,6 +13,7 @@ from hls_remaining_process import finish_processes
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_packets import manifest_facts
 from hls_aac_v2_public_evidence import assert_fixed_timeline
+from hls_aac_v2_source_identity import matches_source_input
 
 
 class ActualServer:
@@ -120,7 +121,7 @@ def source_invocations(rows, source, owned_pids):
         args = row['args']
         inputs = [args[n + 1] for n, value in enumerate(args[:-1]) if value == '-i']
         check(len(inputs) == 1, 'v2_argv_single_input_required')
-        if inputs == [str(source)]:
+        if matches_source_input(inputs[0], row, source):
             selected.append(row)
             continue
         path = Path(inputs[0])

@@ -101,3 +101,15 @@ The wrapper must independently stat its sole actual input before exec, rather th
 Sampler classification faults must record qualification failure and allow owned teardown; they must never turn into a zero-count certificate.
 These isolated timing controls protect gaps before a compatible Server worker exists.
 Live retained-FD and permitted startup-fixture accounting, transient /proc races, and all public GET/owner/migration controls remain held.
+
+## Qualified captured-classifier RED
+
+Written-first head `ed700c693081290940d84f5d1042e49ce2f606fc` / tree `6ab5c9a7f843d6846d86bd985ad09468eccca004` failed hosted run38002250849.
+All20 controls executed: the old8 passed, valid retained and post-join FD rows errored, the wrong literal witness was admitted, and the sampler fault escaped.
+Artifact11648984214 and its API archive digest `sha256:560c42ceb00d763f6927369ae664f365ee0bd2eeeed76e9d3487bc8b6f38032d` preserve this RED.
+Max-loc and evidence preservation passed; no media command or Server worker ran.
+The narrowly staged repair recognizes only the owned canonical bounded FD alias with a complete typed regular-file witness matching the known fixture.
+Captured attribution uses its retained witness after join rather than attempting to reopen a dead FD path.
+A present literal-source witness receives the same strict identity check; existing fieldless literal controls remain unchanged.
+Sampler classification faults increment qualification errors while permitting its stop and owned teardown.
+This repairs captured classification only, not actual wrapper capture, initial-source/live FD accounting, transient /proc handling, or public GET delivery.
