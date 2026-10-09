@@ -72,6 +72,12 @@ func remainingNonKeyRetainedSourceProof(t *testing.T, proof *copiedHLSAudioProof
 
 func remainingNonKeyRetainedSourceProbe(t *testing.T, ffprobe, source, replacement, marker string) string {
 	t.Helper()
+	before, err := os.Stat(source)
+	if err != nil {
+		t.Fatal("retained-source cleanup identity")
+	}
+	original := remainingNonKeyCollectorHash(t, source)
+	t.Cleanup(func() { remainingNonKeyRestoreOwnedSource(t, source, source+".retained", before, original) })
 	sourceQuoted, backup := copiedRecoveryQuote(source), copiedRecoveryQuote(source+".retained")
 	body := "#!/bin/sh\nset -eu\n" +
 		"restore_source() { if [ -f " + backup + " ]; then mv -f " + backup + " " + sourceQuoted + "; fi; }\ntrap restore_source EXIT HUP INT TERM\n" +
@@ -87,17 +93,9 @@ func remainingNonKeyRetainedSourceProbe(t *testing.T, ffprobe, source, replaceme
 
 func remainingNonKeyRetainedSourceWitness(t *testing.T, manager *hlsManager, source, marker string, before os.FileInfo, original, replacement [32]byte) {
 	t.Helper()
-	data := remainingNonKeyCollectorRead(t, marker, 2048)
-	rows := strings.Split(strings.TrimSpace(string(data)), "\n")
-	if len(rows) != 3 || len(strings.Fields(rows[1])) < 1 || len(strings.Fields(rows[2])) < 1 {
-		t.Fatal("nonkey retained-source actual-open witnesses missing")
-	}
+	rows := remainingNonKeyRetainedSourceRows(t, marker)
 	copiedRecoveryAssertStopped(t, []byte(rows[0]))
-	after, err := os.Stat(source)
-	if err != nil || !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) ||
-		remainingNonKeyCollectorHash(t, source) != original {
-		t.Fatal("nonkey retained-source fixture did not restore the exact original inode and bytes")
-	}
+	remainingNonKeyAssertRestoredSource(t, source, before, original)
 	remainingNonKeyCollectorCacheEmpty(t, manager)
 	substitution, argument := strings.Fields(rows[1])[0], strings.Fields(rows[2])[0]
 	t.Logf("nonkey actual-retained-source replacement_sha=%s argument_sha=%s original_sha=%x restored_same_inode=true source_unchanged=true", substitution, argument, original)
@@ -107,4 +105,40 @@ func remainingNonKeyRetainedSourceWitness(t *testing.T, manager *hlsManager, sou
 	if argument != fmt.Sprintf("%x", original) {
 		t.Fatal("nonkey source-clock process consumed a replacement pathname")
 	}
+}
+
+func remainingNonKeyRetainedSourceRows(t *testing.T, marker string) []string {
+	t.Helper()
+	data := remainingNonKeyCollectorRead(t, marker, 2048)
+	rows := strings.Split(strings.TrimSpace(string(data)), "\n")
+	if len(rows) != 3 || len(strings.Fields(rows[1])) < 1 || len(strings.Fields(rows[2])) < 1 {
+		t.Fatal("nonkey retained-source actual-open witnesses missing")
+	}
+	return rows
+}
+
+func remainingNonKeyAssertRestoredSource(t *testing.T, source string, before os.FileInfo, original [32]byte) {
+	t.Helper()
+	after, err := os.Stat(source)
+	if err != nil || !sameCopiedHLSFile(before, after) || remainingNonKeyCollectorHash(t, source) != original {
+		t.Fatal("nonkey retained-source fixture did not restore the exact original inode and bytes")
+	}
+}
+
+// This cleanup owns only generated test media and runs after joined probes,
+// before the source temporary directory's separately registered cleanup.
+func remainingNonKeyRestoreOwnedSource(t *testing.T, source, backup string, before os.FileInfo, original [32]byte) {
+	t.Helper()
+	retained, err := os.Lstat(backup)
+	if err == nil {
+		if !sameCopiedHLSFile(before, retained) || remainingNonKeyCollectorHash(t, backup) != original {
+			t.Fatal("nonkey retained-source cleanup found a different backup")
+		}
+		if os.Rename(backup, source) != nil {
+			t.Fatal("nonkey retained-source owned restoration failed")
+		}
+	} else if !os.IsNotExist(err) {
+		t.Fatal("nonkey retained-source owned backup observation failed")
+	}
+	remainingNonKeyAssertRestoredSource(t, source, before, original)
 }
