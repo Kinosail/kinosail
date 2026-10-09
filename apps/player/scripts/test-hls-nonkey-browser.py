@@ -281,7 +281,7 @@ finally:
     with guard.cleanup():
         receipt['handledTerminationSignals']=guard.signals
         files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',ROOT/'apps/player/scripts/hls_nonkey_browser_config.py',
-               ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',ROOT/'apps/player/scripts/hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_color_clock.py',
+               ROOT/'apps/player/scripts/test_hls_nonkey_browser_config.py',ROOT/'apps/player/scripts/hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_video.py',ROOT/'apps/player/scripts/hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_color_clock.py',ROOT/'apps/player/scripts/hls_nonkey_browser_audio_boundary.py',ROOT/'apps/player/scripts/test_hls_nonkey_browser_audio_boundary.py',
                *list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'
