@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 from hls_followon_frames import decode_frames
-from hls_aac_v2_compat_public import diagnostics, fault, requests, require_diagnostics, responses, snapshot
+from hls_aac_v2_compat_public import diagnostics, fault, query_controls, requests, require_diagnostics, responses, snapshot
 from hls_aac_v2_public_http import ActualServer, diagnostic_producer_rows, idle
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -44,10 +44,10 @@ def run(command, timeout=60):
     return result.stdout
 
 
-def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid=None, warm=False):
+def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid=None, warm=False, query=None, control_status=None):
     global owner
     row = {'label': label, 'method': method, 'result': 'failed', 'candidatePreparePOST': False,
-        'expectedStatus': 404 if invalid else 206 if method == 'RANGE' else 200, 'warm': warm}
+        'expectedStatus': 404 if invalid else control_status or (206 if method == 'RANGE' else 200), 'warm': warm}
     receipt['cases'].append(row)
     directory = RUN / label
     directory.mkdir()
@@ -61,8 +61,10 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
         check(plan['compatible'].replace('/index.m3u8', '-o12000/index.m3u8') == selected,
             'compat_clone_identity')
         steps = requests(asset, method, selected)
+        if query is not None:
+            steps = [(target + '?' + query, verb, ranged) for target, verb, ranged in steps]
         controls = responses(owner, steps)
-        expected = 206 if method == 'RANGE' else 200
+        expected = control_status or (206 if method == 'RANGE' else 200)
         check(all(status == expected for status, _, _ in controls), 'compat_baseline_control')
         if asset == 'journey':
             reference = directory / 'baseline-joined.mp4'
@@ -232,7 +234,10 @@ try:
     for invalid in ['missing-source', 'wrong-source', 'missing-clock', 'wrong-version',
                     'wrong-timeline', 'wrong-master', 'wrong-init', 'wrong-first']:
         arm(invalid, 'GET', 'master', candidate, baseline, seed / 'cache', selected, invalid)
-    if len(receipt['cases']) == 26 and all(v['result'] == 'observed' for v in receipt['cases']):
+    for label, query, expected in query_controls():
+        arm(label, 'GET', 'rendition', candidate, baseline, seed / 'cache', selected,
+            query=query, control_status=expected)
+    if len(receipt['cases']) == 37 and all(v['result'] == 'observed' for v in receipt['cases']):
         receipt['completeAdoptedVersion1Acceptance'] = True
         receipt['result'] = 'observed'
 except Exception as error:

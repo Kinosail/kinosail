@@ -103,3 +103,19 @@ def diagnostics(owner, replies):
 def require_diagnostics(result, count):
     check(result['requestIDsValid'] and len(result['rows']) == count
         and all(v['boundedFieldsAndCorrelationValid'] for v in result['rows']), 'compat_rejection_diagnostic')
+
+
+def query_controls():
+    return [
+        ('start-valid', 'start=3', 200),
+        ('start-last-integer', 'start=31', 200),
+        ('session-start', 'playSessionId=PublicCompatSession0123&start=3', 200),
+        ('start-empty', 'start=', 400),
+        ('start-zero', 'start=0', 400),
+        ('start-negative', 'start=-1', 400),
+        ('start-duplicate', 'start=1&start=2', 400),
+        ('start-nonnumeric', 'start=abc', 400),
+        ('start-oversized', 'start=1234567890', 400),
+        ('start-at-source-end', 'start=32', 400),
+        ('start-above-source-end', 'start=33', 400),
+    ]

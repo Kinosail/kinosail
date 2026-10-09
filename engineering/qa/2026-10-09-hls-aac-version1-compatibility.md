@@ -89,6 +89,13 @@ disposable cache clones. Candidate traffic sends no preparation POST.
   or first media must reject without encoders or cache/source mutation.
 - Immediate, idle and joined snapshots must preserve every cache file's inode,
   size, modification time and SHA256. Baseline response restoration is separate.
+- Valid start and session/start queries must match the baseline renderer.
+  Empty, zero, negative, duplicate, nonnumeric, oversized, at-EOF and beyond-EOF
+  start values must preserve baseline rejection and cause zero encoder/cache writes.
+- Deterministic tests cover a sticky positive Version2 decision during Version1
+  reads, post-open source/root/generation/rendition/binding/master/manifest changes,
+  and exact metadata-lease release with retained later-media network delivery.
+  Ordinary public HTTP cannot reliably schedule those in-flight boundaries.
 - Each owned Server and child process must settle under the existing bounded
   process/resource checks. Receipts include exact revision, tree and script hashes.
 
