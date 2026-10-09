@@ -81,3 +81,23 @@ The corrected diagnostic independently binds the actual V1 Clock to the original
 It uses the old producer's clock-inclusive offset and the existing zero-stager's clock-inclusive two-GOP/EOF duration.
 The source span remains two GOPs or final EOF; duration adds the independently bound mux clock of at most one second (maximum5.01s).
 File8/128MiB/30s command/log2MiB/join bounds and exact init/zero/packet/frame assertions remain.
+
+## Qualified CLI feasibility and observer scheduling gap
+
+Exact diagnostic head `71ef876ac97666889ca663f1e687bbde0ccf3dd7` / tree `511a4c6de7aa980efe60293a038b7ea3c3eed486` passed run38001378568.
+Receipt SHA `0184deb70e8ce7ba908aa9689ec666910d168f5feca93a77d492a1eba40a0646` and artifact11649341663 are retained.
+Its API archive digest is `sha256:e3e4194e778a732100bde7b8e8c9e72de2ac4d49bea1b64dbb5b48ffd15033e6`; no archive was downloaded.
+Bound clock0.083 matched the first key packet; captured cut4 seek20 and offset8.083 matched the old producer.
+All three cuts preserved exact init and complete packet clocks/payloads, plus48 exact source frames.
+Cut0 and4 fragment bytes matched; cut9 bytes differed while complete packet equality passed.
+Original source/cache seals and all owned joins passed; no Server worker or production admission follows.
+
+The current live counter uses a literal source-path substring and would miss retained FD inputs.
+A captured call can finish before the live sampler observes it; classification must retain its actual input witness after join.
+Written-first captured-row controls require a canonical parent-owned /proc PID/fd alias and a complete regular-file device/inode/size/mtime witness.
+They reject extra inputs, foreign/malformed aliases, wrong or untyped witnesses and excess calls.
+A provided witness for a literal source must also match; known fieldless literal controls remain preserved.
+The wrapper must independently stat its sole actual input before exec, rather than trust declared identity data.
+Sampler classification faults must record qualification failure and allow owned teardown; they must never turn into a zero-count certificate.
+These isolated timing controls protect gaps before a compatible Server worker exists.
+Live retained-FD and permitted startup-fixture accounting, transient /proc races, and all public GET/owner/migration controls remain held.

@@ -1,0 +1,51 @@
+name: Retained-input observer written-first contracts
+on:
+  push:
+    branches: [codex/hls-aac-fd-observer-proof-20261009]
+permissions: {contents: read}
+jobs:
+  contracts:
+    name: Captured-input and sampler contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
+        with: {fetch-depth: 0, persist-credentials: false}
+      - run: test ! -e .gates-disabled
+      - name: Retain source-file cap
+        run: make max-loc
+      - name: Captured-input and sampler contracts
+        id: contracts
+        timeout-minutes: 2
+        run: |
+          mkdir -p .verification/hls-aac-fd-observer
+          set -o pipefail
+          observer_status=0
+          python3 -m unittest discover -v -s apps/player/scripts -p 'test_hls_aac_v2_*invocations.py' 2>&1 | tee .verification/hls-aac-fd-observer/contracts.txt || observer_status=1
+          python3 -m unittest discover -v -s apps/player/scripts -p 'test_hls_aac_v2_fd_sampler.py' 2>&1 | tee -a .verification/hls-aac-fd-observer/contracts.txt || observer_status=1
+          exit "$observer_status"
+      - name: Preserve exact-source contract outcome
+        if: always()
+        env:
+          CONTRACT_OUTCOME: ${{ steps.contracts.outcome }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('.verification/hls-aac-fd-observer')
+          root.mkdir(parents=True, exist_ok=True)
+          data = {'revision': os.environ['GITHUB_SHA'], 'tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(), 'contractOutcome': os.environ['CONTRACT_OUTCOME'], 'productionAcceptance': False, 'publicGETAcceptance': False}
+          receipt = root / 'receipt.json'
+          receipt.write_text(json.dumps(data, sort_keys=True) + '\n')
+          (root / 'SHA256SUMS').write_text(''.join(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.name+'\n' for path in [receipt, root/'contracts.txt'] if path.exists()))
+          print(receipt.read_text())
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        timeout-minutes: 2
+        with:
+          name: aac-fd-observer-${{ github.sha }}
+          path: .verification/hls-aac-fd-observer
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
