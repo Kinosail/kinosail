@@ -77,6 +77,7 @@ Diagnostic head `8583152db6044e0b519ca1994da7668c87aabb40` / tree `4c5eb1fb6edbc
 All three arms hit the diagnostic's incorrect zero-clock assumption; this is unqualified setup evidence, not an output compatibility failure.
 Receipt SHA `ccff481ec59af4662cfc9903523105c05f65137442241f4f15bc39efe3ab14cb`, artifact11648857186, API archive `sha256:a95d1b5a3d01aaa6a01d60b381850b6ee22f42470ce67d977d22c9352c749b88` are preserved.
 Max-loc, complete-cache equality, source seal and owned cleanup passed, with zero unresolved CLI owners.
-The corrected diagnostic independently binds the actual V1 Clock to the original certified zero's first key packet and captured old cut4 mux offset.
+The corrected diagnostic independently binds the actual V1 Clock to the original certified zero's first key packet and captured old cut4 mux offset and input seek.
 It uses the old producer's clock-inclusive offset and the existing zero-stager's clock-inclusive two-GOP/EOF duration.
-All exact init, zero bytes, packet clocks/payloads, source frames, bounds and owned resource gates remain unchanged.
+The source span remains two GOPs or final EOF; duration adds the independently bound mux clock of at most one second (maximum5.01s).
+File8/128MiB/30s command/log2MiB/join bounds and exact init/zero/packet/frame assertions remain.

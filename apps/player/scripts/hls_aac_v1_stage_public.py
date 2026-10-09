@@ -59,10 +59,12 @@ def qualify_clock(timeline, rows, source, media, run, receipt):
     floor = math.floor(start * 1000000) / 1000000
     expected = start - keys[0]['PTS'] * grid + clock - (start - floor)
     observed = option(original, '-output_ts_offset')
+    seek = option(original, '-ss')
     receipt['baselineClockWitness'] = {'boundClockSeconds': clock, 'firstVideoPTSSeconds': first,
         'firstVideoKeyFlag': True, 'template4MuxOffsetSeconds': float(observed),
-        'sourcePoint4Seconds': start, 'referenceMissingClockFields': missing}
-    check(first == clock and observed == format(expected, '.6f'),
+        'sourcePoint4Seconds': start, 'template4InputSeekSeconds': float(seek),
+        'referenceMissingClockFields': missing}
+    check(first == clock and observed == format(expected, '.6f') and seek == format(floor, '.6f'),
         'v1_stage_baseline_clock_binding')
 
 def arguments(rows, source, retained, directory, timeline, number):
