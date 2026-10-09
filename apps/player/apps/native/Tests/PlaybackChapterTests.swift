@@ -44,12 +44,37 @@ struct PlaybackChapterTests {
         return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
     }
 
-    private func sourceWithDirectType(_ directType: String) throws -> PlaybackSource {
+    private func sourceWithDirectType(_ directType: String, planFields: String = "", compatiblePlanFields: String = "") throws -> PlaybackSource {
         let escapedDirectType = directType.replacingOccurrences(of: "\"", with: "\\\"")
         let body = """
-        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":0,"directAllowed":true,"direct":"/media/movie","directType":"\(escapedDirectType)","compatibleDuration":60,"compatible":"/hls/movie/index.m3u8","compatiblePlan":{"allowed":true,"mode":"remux","reason":"compatibility-requested"},"chapters":[]}
+        {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"\(planFields)},"duration":60,"start":0,"directAllowed":true,"direct":"/media/movie","directType":"\(escapedDirectType)","compatibleDuration":60,"compatible":"/hls/movie/index.m3u8","compatiblePlan":{"allowed":true,"mode":"remux","reason":"compatibility-requested"\(compatiblePlanFields)},"chapters":[]}
         """
         return try PlaybackSource(StrictJSON.decode(Data(body.utf8)), itemID: "movie", server: ServerAddress("https://example.com"))
+    }
+
+    @Test func acceptsOptionalAudioCompatibilityRequirementInEitherPlan() throws {
+        for primary in [true, false] {
+            for raw in ["", "true", "false"] {
+                let member = raw.isEmpty ? "" : ",\"audioCompatibilityRequired\":\(raw)"
+                let value = try sourceWithDirectType("video/mp4", planFields: primary ? member : "", compatiblePlanFields: primary ? "" : member)
+                #expect(value.direct?.path == "/media/movie")
+                #expect(value.compatible != nil)
+                #expect(value.start == 0)
+            }
+        }
+    }
+
+    @Test func rejectsMalformedAudioCompatibilityRequirementAndUnknownPlanFields() {
+        let members = ["null", "0", "1", "\"true\"", "\"false\"", "\"\"", "[]", "{}"].map {
+            ",\"audioCompatibilityRequired\":\($0)"
+        } + [",\"unknownPlaybackFlag\":true", ",\"audioCompatibilityRequired\":true,\"audioCompatibilityRequired\":false"]
+        for primary in [true, false] {
+            for member in members {
+                #expect(throws: ClientError.self) {
+                    try sourceWithDirectType("video/mp4", planFields: primary ? member : "", compatiblePlanFields: primary ? "" : member)
+                }
+            }
+        }
     }
 
     @Test func acceptsServerChapterIndexes() throws {

@@ -30,6 +30,37 @@ class PlaybackApiTest {
         assertFalse(connection.instanceFollowRedirects)
     }
 
+    @Test fun acceptsOptionalAudioCompatibilityRequirementInBothPlans() {
+        for (field in listOf("plan", "compatiblePlan")) {
+            for (member in listOf("", "\"audioCompatibilityRequired\":true,", "\"audioCompatibilityRequired\":false,")) {
+                val current = response.replace("\"$field\":{", "\"$field\":{$member")
+                val connection = PlaybackResponse(200, current)
+                val source = PlaybackApi(server) { connection }.source("film-1", "token", "alex", capabilities)
+                assertEquals("/media/film-1", source.direct)
+                assertEquals("/hls/film-1/p/r-a0-s0-none-t0-b0/index.m3u8", source.compatible)
+                assertEquals(30.0, source.start, 0.0)
+                assertTrue(connection.closed)
+            }
+        }
+    }
+
+    @Test fun rejectsMalformedAudioCompatibilityRequirementAndUnknownPlanFields() {
+        val members = listOf("null", "0", "1", "\"true\"", "\"false\"", "\"\"", "[]", "{}")
+            .map { "\"audioCompatibilityRequired\":$it," } + listOf(
+                "\"unknownPlaybackFlag\":true,",
+                "\"audioCompatibilityRequired\":true,\"audioCompatibilityRequired\":false,")
+        for (field in listOf("plan", "compatiblePlan")) {
+            for (member in members) {
+                val current = response.replace("\"$field\":{", "\"$field\":{$member")
+                val connection = PlaybackResponse(200, current)
+                assertThrows(Exception::class.java) {
+                    PlaybackApi(server) { connection }.source("film-1", "token", "alex", capabilities)
+                }
+                assertTrue(connection.closed)
+            }
+        }
+    }
+
     @Test fun aNewTitleMayOmitZeroStartAndUnusedProgressToken() {
         val fresh = response.replace("\"start\":30,", "").replace(",\"progressToken\":\"abc\"", "")
         val source = PlaybackApi(server) { PlaybackResponse(200, fresh) }
