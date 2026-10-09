@@ -1,7 +1,7 @@
 name: Indexed AAC recovery quality
 on:
   push:
-    branches: [codex/hls-aac-v2-r17-20261009]
+    branches: [codex/hls-aac-v2-r17-20261009, codex/hls-v1-lazy-read-20261009]
 permissions: {contents: read}
 jobs:
   lint:

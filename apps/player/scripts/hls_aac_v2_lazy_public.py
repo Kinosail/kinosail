@@ -203,6 +203,12 @@ def journey(root, run, label, binary, source, cache, selected, owners, source_be
         sessions=owner.sessions)
     after = snapshot(cache)
     row['existingCachePreserved'] = candidate_changes(before, after, generation, startup)
+    retained = {name: facts for name, facts in before.items() if name != generation + '/.startup'}
+    row['retainedFilesUnchanged'] = all(after.get(name) == facts for name, facts in retained.items())
+    row['wholeCacheUnchangedAfterJourney'] = before == after
+    row['cacheChangeCounts'] = {'added': len(set(after) - set(before)),
+        'removed': len(set(before) - set(after)),
+        'changedRetained': sum(after.get(name) != facts for name, facts in retained.items())}
     row['joinedCacheUnchangedFromIdle'] = idle_snapshot == after
     if all(v[0] == 200 for v in replies):
         joined = owner.directory / 'joined.mp4'
