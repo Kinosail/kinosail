@@ -65,7 +65,6 @@ func copiedAACPendingInitFault(t *testing.T, certificatePublished bool, before, 
 			t.Error("init-mismatched pending master acquired preparation admission")
 		}
 		assertCopiedAACPendingInitOwner(t, manager, directory, snapshot, job)
-
 	}
 }
 
