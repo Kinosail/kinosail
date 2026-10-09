@@ -63,7 +63,7 @@ func copiedHLSPrivateMovieTracks(children []copiedHLSPrivateBox, config isobmff.
 			return tracks, errCopiedHLSIndex
 		}
 		track, err := copiedHLSPrivateTrackMetadata(box.data)
-		if err != nil || !copiedHLSPrivateTrackCodec(track, config.Tracks[count]) {
+		if err != nil || !copiedHLSPrivateTrackConfiguration(box.data, track) {
 			return tracks, errCopiedHLSIndex
 		}
 		if err := tracks.add(track); err != nil {
@@ -71,13 +71,13 @@ func copiedHLSPrivateMovieTracks(children []copiedHLSPrivateBox, config isobmff.
 		}
 		count++
 	}
-	if !tracks.complete(count) {
+	if !tracks.complete(count) || copiedHLSPrivateMovieDefaults(children, tracks) != nil {
 		return tracks, errCopiedHLSIndex
 	}
 	return tracks, nil
 }
 
-func (tracks copiedHLSPrivateTracks) complete(count int) bool {
+func (tracks *copiedHLSPrivateTracks) complete(count int) bool {
 	return count == 2 && tracks.audio.id != 0 && tracks.video.id != 0 && tracks.audio.id != tracks.video.id
 }
 
