@@ -262,7 +262,7 @@ jobs:
           retention-days: 14
 
   legacy:
-    name: Actual Version1 playlist-only older-client diagnostic
+    name: Actual Version1 older-client cache compatibility
     needs: contracts
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -301,19 +301,19 @@ jobs:
           fi
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Actual Version1 playlist-only older-client diagnostic
-        timeout-minutes: 14
+      - name: Actual Version1 older-client cache compatibility
+        timeout-minutes: 19
         run: |
-          python3 -m py_compile apps/player/scripts/test-hls-aac-v2-legacy-public.py
-          timeout --signal=TERM --kill-after=90s 690s python3 apps/player/scripts/test-hls-aac-v2-legacy-public.py
+          python3 -m py_compile apps/player/scripts/test-hls-aac-v2-compat-public.py
+          timeout --signal=TERM --kill-after=90s 990s python3 apps/player/scripts/test-hls-aac-v2-compat-public.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         timeout-minutes: 2
         with:
-          name: aac-v2-legacy-${{ github.sha }}
+          name: aac-v2-compat-${{ github.sha }}
           path: |
-            .verification/hls-aac-v2-legacy/**/receipt.json
-            .verification/hls-aac-v2-legacy/**/SHA256SUMS
+            .verification/hls-aac-v2-compat/**/receipt.json
+            .verification/hls-aac-v2-compat/**/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

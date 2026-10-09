@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+"""Actual Version1 older-client compatibility; no preparation POST or migration."""
+import hashlib
+import json
+from pathlib import Path
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+from hls_followon_frames import decode_frames
+from hls_aac_v2_public_http import ActualServer, idle
+from hls_followon_public import bounded_bytes, check, prepare_once
+from hls_remaining_nonkey_deadline import DiagnosticDeadline
+from hls_timeline_fixture import fixture
+from hls_timeline_http import sha, source_state
+
+ROOT = Path(__file__).resolve().parents[3]
+RUN = ROOT / '.verification/hls-aac-v2-compat' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
+RUN.mkdir(parents=True)
+receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+    'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+    'command': 'python3 apps/player/scripts/test-hls-aac-v2-compat-public.py',
+    'environment': {'platform': platform.platform(), 'python': sys.version.split()[0],
+        'codecPackage': 'jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb',
+        'codecPackageSHA256': 'b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3'},
+    'baselineRevision': '664f4e2ad40049b03a5da62dba444adc3caa97ec',
+    'scope': 'Complete adopted Version1 master/rendition, init, every media fragment and Range; no candidate POST, migration or regeneration',
+    'result': 'failed', 'cases': [], 'releaseBlocker': 'supported-client-version1-request-path-unverified',
+    'olderClientAcceptance': False, 'productionAcceptance': False, 'nativeAcceptance': False,
+    'remainingBoundaries': ['Version1 lazy/interrupted continuation', 'speculative startup adoption',
+        'concurrent migration and filesystem races', 'actual native client and all50', 'historical Version1 AAC failures']}
+owner, source, before = None, None, None
+guard = DiagnosticDeadline(900)
+guard.__enter__()
+
+
+def run(command, timeout=60):
+    result = subprocess.run(command, capture_output=True, timeout=min(timeout, guard.check(15)))
+    check(result.returncode == 0 and len(result.stdout) <= 2 << 20 and len(result.stderr) <= 2 << 20,
+          'legacy_command_failed_or_unbounded')
+    return result.stdout
+
+
+def snapshot(cache):
+    result = {}
+    paths = sorted(cache.rglob('*'))
+    check(len(paths) <= 96, 'binding_cache_path_bound')
+    for path in paths:
+        if path.is_dir():
+            continue
+        check(path.is_file() and not path.is_symlink(), 'binding_cache_kind')
+        stat = path.stat()
+        result[str(path.relative_to(cache))] = {'inode': stat.st_ino, 'bytes': stat.st_size,
+            'mtimeNs': stat.st_mtime_ns, 'sha256': hashlib.sha256(
+                bounded_bytes(path, 2 << 20, 'binding_cache_bytes_bound')).hexdigest()}
+    return result
+
+
+
+def http(owner, target, method, ranged=False):
+    if not ranged:
+        return owner.api.http(target, method=method)
+    request = urllib.request.Request(owner.api.url + target, method=method,
+        headers={'Authorization': 'Bearer ' + owner.api.token, 'Range': 'bytes=7-31'})
+    try:
+        response = owner.api.opener.open(request, timeout=40)
+    except urllib.error.HTTPError as error:
+        response = error
+    with response:
+        body = response.read((2 << 20) + 1)
+        check(len(body) <= 2 << 20, 'compat_range_response_bound')
+        return response.getcode(), body, dict(response.headers)
+
+
+def requests(asset, method, selected):
+    prefix = selected.removesuffix('index.m3u8') + '360p/'
+    names = {'master': selected, 'rendition': prefix + 'index.m3u8',
+        'init': prefix + 'init.mp4', 'first': prefix + 'segment-00000.m4s',
+        'last': prefix + 'segment-00009.m4s'}
+    if asset == 'journey':
+        return [(selected, 'GET', False), (prefix + 'index.m3u8', 'GET', False),
+            (prefix + 'init.mp4', 'GET', False),
+            *[(prefix + 'segment-' + str(n).zfill(5) + '.m4s', 'GET', False) for n in range(10)]]
+    return [(names[asset], 'GET' if method == 'RANGE' else method, method == 'RANGE')]
+
+
+def responses(owner, steps):
+    result = []
+    for target, method, ranged in steps:
+        status, body, headers = http(owner, target, method, ranged)
+        result.append((status, body, headers))
+    return result
+
+
+def fault(cache, name):
+    directories = [p for p in cache.iterdir() if p.is_dir()]
+    check(len(directories) == 1, 'compat_generation_count')
+    directory = directories[0]
+    target = {'missing-source': '.source', 'wrong-source': '.source',
+        'missing-clock': '.copy-clock', 'wrong-version': '.copy-clock',
+        'wrong-timeline': '.copy-timeline', 'wrong-master': 'index.m3u8',
+        'wrong-init': '360p/init.mp4', 'wrong-first': '360p/segment-00000.m4s'}[name]
+    path = directory / target
+    if name.startswith('missing-'):
+        path.unlink()
+    elif name == 'wrong-version':
+        value = json.loads(bounded_bytes(path, 4096, 'compat_certificate_bound'))
+        value['version'] = 2
+        path.write_text(json.dumps(value, separators=(',', ':')))
+    else:
+        data = bytearray(bounded_bytes(path, 2 << 20, 'compat_fault_bound'))
+        check(len(data) > 16, 'compat_fault_minimum')
+        data[len(data) // 2] ^= 1
+        path.write_bytes(data)
+
+
+def diagnostics(owner, replies, rejected):
+    rows = []
+    request_ids = [next((v for k, v in headers.items() if k.lower() == 'x-request-id'), '')
+        for _, _, headers in replies]
+    check(all(re.fullmatch(r'[a-zA-Z0-9_-]{8,96}', v) for v in request_ids), 'compat_request_id')
+    for line in bounded_bytes(owner.log_path, 2 << 20, 'compat_private_log_bound').splitlines():
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if entry.get('request_id') not in request_ids or entry.get('msg') != 'HLS copied playlist rejected':
+            continue
+        valid = (set(entry) == {'time', 'level', 'msg', 'request_id', 'playback_session', 'failure_class'}
+            and entry.get('level') == 'WARN' and entry.get('playback_session') == ''
+            and entry.get('failure_class') in ['invalid-source-binding', 'invalid-generation-or-manifest',
+                'invalid-legacy-generation'])
+        rows.append({'boundedFieldsAndCorrelationValid': valid})
+    check(len(rows) == (len(replies) if rejected else 0)
+        and all(v['boundedFieldsAndCorrelationValid'] for v in rows), 'compat_rejection_diagnostic')
+    return rows
+
+
+def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid=None, warm=False):
+    global owner
+    row = {'label': label, 'method': method, 'result': 'failed', 'candidatePreparePOST': False,
+        'expectedStatus': 404 if invalid else 206 if method == 'RANGE' else 200, 'warm': warm}
+    receipt['cases'].append(row)
+    directory = RUN / label
+    directory.mkdir()
+    shutil.copytree(seed_cache, directory / 'cache')
+    original = snapshot(directory / 'cache')
+    owner = ActualServer(ROOT, directory, source, candidate)
+    try:
+        owner.start(authorize=True, binary=baseline)
+        item = next(v for v in owner.api.call('/api/v1/library')['items'] if v['title'] == 'Fixture')
+        plan = owner.api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
+        check(plan['compatible'].replace('/index.m3u8', '-o12000/index.m3u8') == selected,
+            'compat_clone_identity')
+        steps = requests(asset, method, selected)
+        controls = responses(owner, steps)
+        expected = 206 if method == 'RANGE' else 200
+        check(all(status == expected for status, _, _ in controls), 'compat_baseline_control')
+        if asset == 'journey':
+            reference = directory / 'baseline-joined.mp4'
+            reference.write_bytes(b''.join(body for _, body, _ in controls[2:]))
+            _, reference_rows = decode_frames(reference)
+            _, source_rows = decode_frames(source, offset=12)
+            check(len(reference_rows) == len(source_rows) == 480
+                and [v[1] for v in reference_rows] == [v[1] for v in source_rows],
+                'compat_baseline_exact_source_frame_count')
+            row['baselineDecodedFrames'] = len(reference_rows)
+        idle(owner.api, owner.process, source)
+        check(snapshot(directory / 'cache') == original and len(owner.source_invocation_rows()) == 0,
+            'compat_baseline_silently_regenerated')
+        owner.stop()
+        check(snapshot(directory / 'cache') == original, 'compat_baseline_stop_changed_cache')
+        if invalid:
+            fault(directory / 'cache', invalid)
+            original = snapshot(directory / 'cache')
+        owner.start()
+        if warm:
+            binding = next((directory / 'cache').glob('*/.source'))
+            retained = directory / 'retained-binding'
+            binding.rename(retained)
+            absent = snapshot(directory / 'cache')
+            status, _, _ = owner.api.http(selected)
+            idle(owner.api, owner.process, source)
+            check(status == 404 and snapshot(directory / 'cache') == absent
+                and len(owner.source_invocation_rows()) == 0, 'compat_warm_missing_binding_control')
+            retained.rename(binding)
+            check(snapshot(directory / 'cache') == original, 'compat_warm_exact_binding_restore')
+            row['warmMissingBindingRejectedWithoutWrites'] = True
+        actual = responses(owner, steps)
+        immediate, calls = snapshot(directory / 'cache'), len(owner.source_invocation_rows())
+        row.update(baselineStatuses=[v[0] for v in controls], statuses=[v[0] for v in actual],
+            bodySHA256=[hashlib.sha256(v[1]).hexdigest() for v in actual],
+            cacheUnchanged=immediate == original, sourceCalls=calls)
+        idle(owner.api, owner.process, source)
+        row['diagnostics'] = diagnostics(owner, actual, invalid is not None)
+        owner.stop()
+        row.update(finalCacheUnchanged=snapshot(directory / 'cache') == original,
+            finalSourceCalls=len(owner.source_invocation_rows()), sourceUnchanged=source_state(source) == before)
+        check(immediate == original and calls == 0 and row['finalCacheUnchanged']
+            and row['finalSourceCalls'] == 0 and row['sourceUnchanged'], 'compat_request_changed_cache_or_source')
+        if invalid:
+            check(all(status == 404 for status, _, _ in actual), 'compat_invalid_generation_admitted')
+        else:
+            row['exactBaselineBodies'] = all(a[:2] == b[:2] for a, b in zip(actual, controls))
+            check(row['exactBaselineBodies'], 'compat_existing_client_status_or_body_regression')
+            if method == 'RANGE':
+                check(len(actual[0][1]) == 25 and actual[0][2].get('Content-Range', '').startswith('bytes 7-31/'),
+                    'compat_range_shape')
+            if asset == 'journey':
+                joined = directory / 'candidate-joined.mp4'
+                joined.write_bytes(b''.join(body for _, body, _ in actual[2:]))
+                _, rows = decode_frames(joined)
+                check(rows == reference_rows, 'compat_existing_client_decoded_frames_changed')
+                row['candidateDecodedFrames'] = len(rows)
+            owner.start(binary=baseline)
+            restored = responses(owner, steps)
+            check(all(a[:2] == b[:2] for a, b in zip(restored, controls)), 'compat_baseline_restore')
+            row['baselineRestoredExactBody'] = True
+        row['result'] = 'observed'
+    except Exception as error:
+        row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+    finally:
+        try:
+            owner.stop()
+        except Exception:
+            row['sessions'] = owner.sessions
+            raise RuntimeError('compat_owned_join_failed') from None
+        row['sessions'] = owner.sessions
+        if row['result'] == 'observed' and (snapshot(directory / 'cache') != original
+            or len(owner.source_invocation_rows()) != 0 or source_state(source) != before):
+            row.update(result='failed', failureClass='compat_late_cache_or_source_mutation')
+        owner = None
+
+
+try:
+    check(shutil.disk_usage(RUN).free >= 2 << 30, 'legacy_hosted_disk_budget')
+    regular, _ = fixture(RUN, 'regular', 48, ','.join(str(v) for v in range(0, 32, 2)), frames=768)
+    seed = RUN / 'seed'
+    media = seed / 'media'
+    media.mkdir(parents=True)
+    source = media / 'Fixture.mp4'
+    run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(regular), '-map', '0:v:0', '-map', '0:a:0',
+        '-c', 'copy', str(source)], 45)
+    before = source_state(source)
+    check(before['sha256'] == '198a6808092cea2a5481afc24e79481e4966ae577cbb8c46c214737e2173a3ed',
+        'legacy_fixed_source_identity')
+    old_source = RUN / 'baseline-source'
+    run(['git', 'worktree', 'add', '--detach', str(old_source), receipt['baselineRevision']], 30)
+    baseline, candidate = RUN / 'baseline-kinosail', RUN / 'candidate-kinosail'
+    run(['go', '-C', str(old_source / 'apps/player'), 'build', '-p=1', '-o', str(baseline), './cmd/kinosail'], 180)
+    run(['go', '-C', str(ROOT / 'apps/player'), 'build', '-p=1', '-o', str(candidate), './cmd/kinosail'], 180)
+    owner = ActualServer(ROOT, seed, source, candidate)
+    owner.start(authorize=True, binary=baseline)
+    item = next(v for v in owner.api.call('/api/v1/library')['items'] if v['title'] == 'Fixture')
+    plan = owner.api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
+    selected = plan['compatible'].replace('/index.m3u8', '-o12000/index.m3u8')
+    prepared = {}
+    prepare_once(owner.api, '/api/v1/items/' + item['id'] + '/playback-prepare',
+        selected, owner.log_path, owner.process, source, prepared)
+    check(prepared['preparationAttempt']['completionState'] == 'ready', 'legacy_real_seed_not_ready')
+    idle(owner.api, owner.process, source)
+    check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_source_invocation_control')
+    # Adopt only the disposable baseline seed before sealing independent clones.
+    check(owner.api.http(selected)[0] == 200
+        and owner.api.http(selected.removesuffix('index.m3u8') + '360p/index.m3u8')[0] == 200,
+        'legacy_seed_baseline_adoption_failed')
+    idle(owner.api, owner.process, source)
+    check(len(owner.source_invocation_rows()) == 1, 'legacy_seed_adoption_refilled_source')
+    certificates = list((seed / 'cache').glob('*/.copy-clock'))
+    check(len(certificates) == 1 and json.loads(bounded_bytes(certificates[0], 4096, 'legacy_certificate_bound'))['version'] == 1,
+        'legacy_real_version1_control')
+    owner.stop()
+    check(not certificates[0].with_name('.startup').exists(), 'legacy_seed_unadopted_startup_marker')
+    timelines = list((seed / 'cache').glob('*/.copy-timeline'))
+    check(len(timelines) == 1, 'compat_seed_timeline_count')
+    timeline = json.loads(bounded_bytes(timelines[0], 256 << 10, 'compat_seed_timeline_bound'))
+    check(len(timeline['Keys']) == 10 and timeline.get('AudioOrigin') is None
+        and timeline.get('Presentation') is None and timeline.get('Clock') is not None,
+        'compat_seed_version1_contract')
+    rendition = timelines[0].parent / '360p'
+    for name in ['init.mp4', *['segment-' + str(n).zfill(5) + '.m4s' for n in range(10)]]:
+        check((rendition / name).is_file(), 'compat_seed_all_media_physical')
+    receipt['seedSessions'] = owner.sessions
+    owner = None
+    for asset in ['master', 'rendition']:
+        for method in ['GET', 'HEAD']:
+            arm(asset + '-' + method.lower(), method, asset, candidate, baseline, seed / 'cache', selected)
+            arm(asset + '-' + method.lower() + '-warm', method, asset, candidate, baseline, seed / 'cache', selected, warm=True)
+    for asset in ['init', 'first', 'last']:
+        for method in ['GET', 'HEAD', 'RANGE']:
+            arm(asset + '-' + method.lower(), method, asset, candidate, baseline, seed / 'cache', selected)
+    arm('all-media-journey', 'GET', 'journey', candidate, baseline, seed / 'cache', selected)
+    for invalid in ['missing-source', 'wrong-source', 'missing-clock', 'wrong-version',
+                    'wrong-timeline', 'wrong-master', 'wrong-init', 'wrong-first']:
+        arm(invalid, 'GET', 'master', candidate, baseline, seed / 'cache', selected, invalid)
+    if len(receipt['cases']) == 26 and all(v['result'] == 'observed' for v in receipt['cases']):
+        receipt['olderClientAcceptance'] = True
+        receipt['releaseBlocker'] = None
+        receipt['result'] = 'observed'
+except Exception as error:
+    receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+finally:
+    with guard.cleanup():
+        if owner is not None:
+            try:
+                owner.stop()
+            except Exception:
+                receipt.update(result='failed', cleanupFailureClass='legacy_owned_join_failed')
+        try:
+            receipt['sourceUnchanged'] = source_state(source) == before if source is not None and before is not None else None
+        except Exception:
+            receipt['sourceUnchanged'] = False
+        if receipt['sourceUnchanged'] is False:
+            receipt.update(result='failed', failureClass='legacy_source_changed')
+        names = ['hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',
+            'hls_remaining_nonkey_deadline.py', 'hls_remaining_process.py', 'hls_timeline_http.py',
+            'hls_timeline_fixture.py', 'hls_timeline_packets.py', 'hls_remaining_nonkey_evidence.py',
+            'hls_remaining_nonkey_boundary.py', 'hls_nonkey_browser_public.py',
+            'hls_nonkey_browser_audio_boundary.py', 'hls_nonkey_browser_packet_association.py',
+            'hls_nonkey_browser_packet_clock.py', 'hls_followon_frames.py']
+        files = [Path(__file__), *(Path(__file__).with_name(name) for name in names)]
+        receipt['executedScriptSHA256'] = {str(p.relative_to(ROOT)): sha(p) for p in files}
+        raw = json.dumps(receipt, separators=(',', ':'), allow_nan=False) + '\n'
+        check(0 < len(raw.encode()) <= 32 << 20, 'legacy_receipt_bound')
+        target = RUN / 'receipt.json'
+        target.write_text(raw)
+        (RUN / 'SHA256SUMS').write_text(sha(target) + '  receipt.json\n' +
+            ''.join(sha(p) + '  ' + str(p.relative_to(ROOT)) + '\n' for p in files))
+        print(json.dumps({'revision': receipt['revision'], 'tree': receipt['tree'], 'result': receipt['result'],
+            'failureClass': receipt.get('failureClass'), 'receiptSHA256': sha(target),
+            'cases': [{k: v.get(k) for k in ['label', 'result', 'failureClass', 'baselineStatuses', 'statuses',
+                'cacheUnchanged', 'sourceCalls', 'sourceUnchanged', 'olderClientPlaylistPlayable',
+                'baselineRestoredExactBody', 'exactBaselineBodies', 'baselineDecodedFrames', 'candidateDecodedFrames',
+                'warm', 'warmMissingBindingRejectedWithoutWrites', 'diagnostics']} for v in receipt['cases']],
+            'olderClientAcceptance': receipt['olderClientAcceptance'], 'releaseBlocker': receipt['releaseBlocker'],
+            'productionAcceptance': False, 'nativeAcceptance': False}), flush=True)
+    guard.__exit__()
+raise SystemExit(0 if receipt['result'] == 'observed' else 1)
