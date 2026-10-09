@@ -37,6 +37,9 @@ func TestCopiedAACPolicyBindsSharedSourcePublication(t *testing.T) {
 	master:=filepath.Join(directory,"index.m3u8")
 	writeHLSLoadingFile(t,master,"#EXTM3U\n#KINOSAIL-TRANSCODER:"+options.Cache+"\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n")
 	if !playback.MasterFresh(master,item.Path,options.Cache)||playback.MasterFresh(master,item.Path,base.Cache) { t.Fatal("master lost exact full-policy identity") }
+	if err:=os.Rename(bindingPath,bindingPath+"-held");err!=nil { t.Fatal(err) }
+	if playback.MasterFresh(master,item.Path,options.Cache) { t.Fatal("missing P2 source binding acquired legacy freshness") }
+	if err:=os.Rename(bindingPath+"-held",bindingPath);err!=nil { t.Fatal(err) }
 	if err:=playback.BindHLSSource(directory,item.Path,base.Cache);err==nil { t.Fatal("different full binding replaced Version2 policy") }
 	after,err:=os.ReadFile(bindingPath)
 	if err!=nil||string(after)!=string(binding) { t.Fatal("rejected binding changed preserved metadata") }
