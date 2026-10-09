@@ -88,14 +88,14 @@ class ActualFDObserverControls(unittest.TestCase):
             time.sleep(0.02)
         self.alive(process)
         actual = bounded_bytes(Path('/proc') / str(process.pid) / 'cmdline',
-            65536, 'fd_live_actual_argv_bound').rstrip(b'\\0').split(b'\\0')
+            65536, 'fd_live_actual_argv_bound').rstrip(bytes([0])).split(bytes([0]))
         actual = [v.decode() for v in actual]
         check(actual[0] == shutil.which('ffmpeg') and actual[1:] == args,
             'fd_live_actual_pinned_argv')
         status = bounded_bytes(Path('/proc') / str(process.pid) / 'status', 65536,
             'fd_live_status_bound').decode()
-        check(re.search(r'^PPid:\\s+' + str(os.getpid()) + r'$', status, re.M),
-            'fd_live_actual_owned_parent')
+        parents = [line.split()[1] for line in status.splitlines() if line.startswith('PPid:')]
+        check(parents == [str(os.getpid())], 'fd_live_actual_owned_parent')
         self.row.update(actualLeaderAlive=True, actualPinnedArguments=True,
             actualArgumentSHA256=hashlib.sha256(repr(actual).encode()).hexdigest(),
             actualInputWitness=regular_identity(input_value))
@@ -106,7 +106,8 @@ class ActualFDObserverControls(unittest.TestCase):
         try:
             count = encoder_count(self.server, self.source)
         except RuntimeError as failure:
-            self.row['liveClassificationFailureClass'] = str(failure)
+            message = str(failure)
+            self.row['liveClassificationFailureClass'] = message if re.fullmatch(r'[a-z0-9_]{1,96}', message) else 'fd_live_other_classification_failure'
             self.alive(process)
             raise
         self.alive(process)
@@ -153,8 +154,15 @@ class ActualFDObserverControls(unittest.TestCase):
                     check(len(paths) <= 8 and all(p.is_file() and not p.is_symlink() for p in paths)
                         and sum(p.stat().st_size for p in paths) <= 8 << 20, 'fd_live_output_bound')
                     check(os.fstat(owned['error'].fileno()).st_size <= 2 << 20, 'fd_live_log_bound')
+                except Exception:
+                    row.update(result='failed', resourceFailureClass='fd_live_resource_guard_failed')
+                    raise
                 finally:
-                    settle(process, row)
+                    try:
+                        settle(process, row)
+                    except Exception:
+                        row.update(result='failed', cleanupFailureClass='fd_live_owned_group_unqualified')
+                        raise
                     self.owners.remove((process, row, owned))
                     owned['error'].close()
             self.row['sourceUnchanged'] = source_state(self.source) == self.before
@@ -181,7 +189,7 @@ class ActualFDObserverControls(unittest.TestCase):
                 'retainedSourcesClosedAfterJoin': all(v.closed for v in cls.retained),
                 'cases': cls.cases, 'workerAcceptance': False, 'publicGETAcceptance': False,
                 'executedScriptSHA256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
-            (cls.run.parent / 'live-receipt.json').write_text(json.dumps(evidence, sort_keys=True) + '\\n')
+            (cls.run.parent / 'live-receipt.json').write_text(json.dumps(evidence, sort_keys=True) + chr(10))
             print(json.dumps({'liveContractProjection': evidence}, sort_keys=True), flush=True)
         cls.guard.__exit__()
         check(not cls.owners and evidence['sourceUnchanged']
