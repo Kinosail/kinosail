@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
 // Gap: public HTTP cannot revoke a source/root or replace one exact opened
@@ -33,10 +34,11 @@ func copiedAACLegacyFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe,
 	if err != nil {
 		t.Fatal(err)
 	}
-	initialization, err := os.ReadFile(filepath.Join(directory, "360p/init.mp4"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	initialization := mp4fixture.Initialization(640, 360, "h264", "aac", "")
+	writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), string(initialization))
+	master := "#EXTM3U\n#KINOSAIL-TRANSCODER:" + base + "\n#KINOSAIL-BANDWIDTH:2\n#EXT-X-VERSION:7\n" +
+		"#EXT-X-STREAM-INF:BANDWIDTH=1100,AVERAGE-BANDWIDTH=1000,CODECS=\"avc1.64002A,mp4a.40.2\",RESOLUTION=640x360,FRAME-RATE=24,VIDEO-RANGE=SDR,CLOSED-CAPTIONS=NONE\n360p/index.m3u8\n"
+	writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), master)
 	first, err := os.ReadFile(filepath.Join(directory, "360p/segment-00000.m4s"))
 	if err != nil {
 		t.Fatal(err)

@@ -11,7 +11,7 @@ from hls_aac_v2_lazy_public import clone_arm, seed, selected_path
 from hls_aac_v2_master_public import FAULTS, reject
 from hls_aac_v2_public_evidence import assert_fixed_source_grid, cache_state
 from hls_aac_v2_public_http import cached_media, diagnostic_producer_rows, idle
-from hls_aac_v2_compat_public import requests, responses, snapshot
+from hls_aac_v2_compat_public import diagnostics, requests, responses, require_diagnostics, snapshot
 from hls_followon_frames import decode_frames
 from hls_followon_public import check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -88,12 +88,20 @@ try:
         row = {'version': version, 'result': 'failed', 'candidatePreparePOST': False}
         receipt['controls'].append(row)
         owner = clone_arm(ROOT, RUN, 'valid-v' + str(version), candidate, source, cache, owners)
+        heads = responses(owner, [*requests('master', 'HEAD', path), *requests('rendition', 'HEAD', path)])
+        row.update(headStatuses=[v[0] for v in heads], headBodiesEmpty=all(not v[1] for v in heads),
+            headCacheUnchanged=snapshot(owner.directory / 'cache') == owner.clone_snapshot,
+            headSourceCalls=len(owner.source_invocation_rows()))
+        check(row['headStatuses'] == [200, 200] and row['headBodiesEmpty']
+            and row['headCacheUnchanged'] and row['headSourceCalls'] == 0, 'master_positive_head_control')
         replies = responses(owner, requests('journey', 'GET', path))
         row.update(statuses=[v[0] for v in replies],
             immediateCacheUnchanged=snapshot(owner.directory / 'cache') == owner.clone_snapshot,
             immediateSourceCalls=len(owner.source_invocation_rows()))
         row['idle'] = idle(owner.api, owner.process, source)
         row['idleCacheUnchanged'] = snapshot(owner.directory / 'cache') == owner.clone_snapshot
+        row['diagnostics'] = diagnostics(owner, [*heads, *replies])
+        require_diagnostics(row['diagnostics'], 0)
         owner.stop()
         row.update(cacheUnchanged=snapshot(owner.directory / 'cache') == owner.clone_snapshot,
             sourceCalls=len(owner.source_invocation_rows()), sessions=owner.sessions)
