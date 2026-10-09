@@ -23,14 +23,19 @@ func (manager *hlsManager) measureCopiedHLSSourceAudio(parent context.Context, i
 	if err != nil {
 		return nil, err
 	}
-	native, err := copiedHLSSourceAudioOutput(ctx, manager.probe.executable, copiedHLSSourceAudioProbeArguments(item.Path), 24_000)
+	file, source, err := openCopiedHLSSourceAudio(ctx, item.Path, before)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	native, err := copiedHLSSourceAudioNative(ctx, manager.probe.executable, source, first)
 	if err != nil {
 		return nil, err
 	}
 	if _, err = manager.copiedHLSSourceAudioIdentity(ctx, item, recipe, policy, before); err != nil {
 		return nil, err
 	}
-	normalized, err := copiedHLSSourceAudioOutput(ctx, manager.ffmpeg, copiedHLSSourceAudioNormalizeArguments(item.Path), 1040)
+	normalized, err := copiedHLSSourceAudioOutput(ctx, manager.ffmpeg, copiedHLSSourceAudioNormalizeArguments(source), 1040)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +43,8 @@ func (manager *hlsManager) measureCopiedHLSSourceAudio(parent context.Context, i
 	if err != nil {
 		return nil, err
 	}
-	if _, err = manager.copiedHLSSourceAudioIdentity(ctx, item, recipe, policy, before); err != nil {
-		return nil, err
+	if !manager.copiedHLSSourceAudioComplete(ctx, item, recipe, policy, before, file) {
+		return nil, errCopiedHLSIndex
 	}
 	return proof, nil
 }
