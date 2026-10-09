@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"encoding/hex"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -99,10 +99,10 @@ func remainingNonKeyRetainedSourceWitness(t *testing.T, manager *hlsManager, sou
 	remainingNonKeyCollectorCacheEmpty(t, manager)
 	substitution, argument := strings.Fields(rows[1])[0], strings.Fields(rows[2])[0]
 	t.Logf("nonkey actual-retained-source replacement_sha=%s argument_sha=%s original_sha=%x restored_same_inode=true source_unchanged=true", substitution, argument, original)
-	if original == replacement || substitution != fmt.Sprintf("%x", replacement) {
+	if original == replacement || substitution != hex.EncodeToString(replacement[:]) {
 		t.Fatal("nonkey retained-source replacement never existed at actual probe open")
 	}
-	if argument != fmt.Sprintf("%x", original) {
+	if argument != hex.EncodeToString(original[:]) {
 		t.Fatal("nonkey source-clock process consumed a replacement pathname")
 	}
 }

@@ -31,8 +31,10 @@ func remainingNonKeyCollectorExpected(t *testing.T, source string, offset float6
 
 func remainingNonKeyCollectorCorrespondence(t *testing.T, proof *copiedHLSAudioProof, expected []int64) {
 	t.Helper()
-	actual := []int64{proof.FirstPTS, proof.FirstNativeSample, proof.TargetPTS, proof.TargetNativeSample,
-		proof.MediaTime, proof.LeadingSamples, proof.SourcePhase, proof.Denominator, proof.OriginalMediaTime}
+	actual := []int64{
+		proof.FirstPTS, proof.FirstNativeSample, proof.TargetPTS, proof.TargetNativeSample,
+		proof.MediaTime, proof.LeadingSamples, proof.SourcePhase, proof.Denominator, proof.OriginalMediaTime,
+	}
 	if !slices.Equal(actual, expected) || proof.TargetSamples != 1024 || proof.Numerator != 1 ||
 		proof.SampleRate != 48000 || proof.Channels != 2 || proof.Codec != "aac" || proof.Profile != "LC" {
 		t.Fatal("nonkey actual source-clock differs from independent complete-source correspondence")

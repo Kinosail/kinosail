@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/binary"
 	"testing"
 )
@@ -27,17 +28,30 @@ func remainingNonKeyCollectorAudioEdit(t *testing.T, data []byte) int64 {
 		}
 		audio = remainingNonKeyCollectorBox(t, remainingNonKeyCollectorBox(t, payload, "edts"), "elst")
 	}
+	return remainingNonKeyCollectorSignedEdit(t, audio)
+}
+
+func remainingNonKeyCollectorSignedEdit(t *testing.T, audio []byte) int64 {
+	t.Helper()
 	if len(audio) < 8 || binary.BigEndian.Uint32(audio[4:8]) != 1 {
 		t.Fatal("source-clock private fixture audio edit missing")
 	}
 	switch audio[0] {
 	case 0:
 		if len(audio) == 20 {
-			return int64(int32(binary.BigEndian.Uint32(audio[12:16])))
+			var value int32
+			if binary.Read(bytes.NewReader(audio[12:16]), binary.BigEndian, &value) != nil {
+				t.Fatal("source-clock private fixture signed edit read")
+			}
+			return int64(value)
 		}
 	case 1:
 		if len(audio) == 28 {
-			return int64(binary.BigEndian.Uint64(audio[16:24]))
+			var value int64
+			if binary.Read(bytes.NewReader(audio[16:24]), binary.BigEndian, &value) != nil {
+				t.Fatal("source-clock private fixture signed edit read")
+			}
+			return value
 		}
 	}
 	t.Fatal("source-clock private fixture edit shape")

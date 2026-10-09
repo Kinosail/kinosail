@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -45,10 +46,10 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 	t.Helper()
 	first, original := remainingNonKeyCollectorPrivateAudio(t, ctx, ffmpeg, ffprobe, source, offset)
 	expectedHash, expected := remainingNonKeyCollectorExpected(t, source, offset)
-	if fmt.Sprintf("%x", first) != expectedHash || original != expected[8] {
+	if hex.EncodeToString(first[:]) != expectedHash || original != expected[8] {
 		t.Fatal("nonkey actual private fixture differs from independently measured packet and edit")
 	}
-	manager, item, _, _ := hlsLoadingFixture(t)
+	manager, item, _, _ := hlsLoadingFixtureContext(t, ctx)
 	item.Path = source
 	manager.index = &libraryIndex{Index: catalog.NewMemoryIndex(nil, true)}
 	manager.index.SetRoots([]catalog.ScanRoot{{Path: filepath.Dir(source)}})
@@ -68,13 +69,7 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 	started := time.Now()
 	proof, err := manager.measureCopiedHLSSourceAudio(ctx, item, recipe, options.Cache, first, int64(offset*1_000_000), original)
 	elapsed := time.Since(started)
-	if err != nil || proof == nil {
-		t.Fatal("nonkey actual source-clock producer missing or rejected qualified private packet")
-	}
-	if elapsed > 2*time.Second || proof.FirstPacket != first || proof.SourceClock == [32]byte{} ||
-		proof.RequestedSample != int64(offset*48000) || proof.OriginalMediaTime != original {
-		t.Fatal("nonkey actual source-clock identity or complete-operation budget")
-	}
+	remainingNonKeyCollectorResult(t, proof, err, elapsed, first, offset, original)
 	if remainingNonKeyCollectorHash(t, source) != before {
 		t.Fatal("nonkey source-clock producer changed its source")
 	}
@@ -86,6 +81,17 @@ func remainingNonKeyActualClock(t *testing.T, ctx context.Context, ffmpeg, ffpro
 		proof.FirstNativeSample, proof.TargetNativeSample, proof.TargetPTS, proof.MediaTime,
 		proof.OriginalMediaTime, proof.LeadingSamples, proof.SourcePhase)
 	remainingNonKeyCollectorRejects(t, ctx, manager, item, recipe, first, original, options.Cache)
+}
+
+func remainingNonKeyCollectorResult(t *testing.T, proof *copiedHLSAudioProof, err error, elapsed time.Duration, first [32]byte, offset float64, original int64) {
+	t.Helper()
+	if err != nil || proof == nil {
+		t.Fatal("nonkey actual source-clock producer missing or rejected qualified private packet")
+	}
+	if elapsed > 2*time.Second || proof.FirstPacket != first || proof.SourceClock == [32]byte{} ||
+		proof.RequestedSample != int64(offset*48000) || proof.OriginalMediaTime != original {
+		t.Fatal("nonkey actual source-clock identity or complete-operation budget")
+	}
 }
 
 func remainingNonKeyCollectorRejects(t *testing.T, ctx context.Context, manager *hlsManager, item library.Item, recipe hlsRecipe, first [32]byte, original int64, policy string) {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -84,6 +85,11 @@ func TestHLSFactsDoNotRemovePlaybackPlanningEnrichment(t *testing.T) {
 
 func hlsLoadingFixture(t *testing.T) (*hlsManager, library.Item, *atomic.Int32, string) {
 	t.Helper()
+	return hlsLoadingFixtureContext(t, t.Context())
+}
+
+func hlsLoadingFixtureContext(t *testing.T, ctx context.Context) (*hlsManager, library.Item, *atomic.Int32, string) {
+	t.Helper()
 	var chapterCalls atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		chapterCalls.Add(1)
@@ -105,7 +111,7 @@ esac
 	}
 	probe := newMediaProbe(executable)
 	probe.chapters = newChapterProvider(provider.URL + "/api/v1")
-	if facts := probe.core.Facts(t.Context(), item); facts.Duration != 120 {
+	if facts := probe.core.Facts(ctx, item); facts.Duration != 120 {
 		t.Fatalf("fixture source facts = %#v", facts)
 	}
 	ffmpeg := filepath.Join(tools, "ffmpeg")
@@ -114,7 +120,7 @@ esac
 	}
 	settings := &settingsStore{}
 	settings.value.Selection = transcodehardware.Selection{Accelerator: "none"}
-	manager := newHLS(t.Context(), t.TempDir(), ffmpeg, nil, probe, settings, workload.New(1))
+	manager := newHLS(ctx, t.TempDir(), ffmpeg, nil, probe, settings, workload.New(1))
 	return manager, item, &chapterCalls, arguments
 }
 

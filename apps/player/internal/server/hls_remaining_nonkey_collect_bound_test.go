@@ -44,17 +44,7 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	nativePath, normalizedPath := filepath.Join(tools, "native.json"), filepath.Join(tools, "normalized.txt")
 	writeHLSLoadingFile(t, nativePath, native.String())
 	writeHLSLoadingFile(t, normalizedPath, fixture.normalized)
-	probeAction, normalizedAction := "", ""
-	switch name {
-	case "shared-two-process-deadline":
-		probeAction, normalizedAction = "sleep 1.1\n", "sleep 1.1\n"
-	case "inherited-stdout":
-		probeAction = "(sleep 3; cat " + copiedRecoveryQuote(nativePath) + ") &\nprintf '%s\\n' $! >> " + copiedRecoveryQuote(marker) + "\nexit 0\n"
-	case "same-byte-source-replacement":
-		source := copiedRecoveryQuote(item.Path)
-		replacement := copiedRecoveryQuote(item.Path + ".replacement")
-		normalizedAction = "cp " + source + " " + replacement + "\ntouch -r " + source + " " + replacement + "\nmv " + replacement + " " + source + "\n"
-	}
+	probeAction, normalizedAction := remainingNonKeyCollectorActions(name, item.Path, marker, nativePath)
 	manager.probe.executable = remainingNonKeyCollectorAdapter(t, tools, "probe", marker, nativePath, probeAction)
 	manager.ffmpeg = remainingNonKeyCollectorAdapter(t, tools, "normalize", marker, normalizedPath, normalizedAction)
 	before := remainingNonKeyCollectorHash(t, item.Path)
@@ -74,6 +64,21 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	remainingNonKeyCollectorBoundWitness(t, manager, item.Path, marker, name, original, before, elapsed)
 }
 
+func remainingNonKeyCollectorActions(name, sourcePath, marker, nativePath string) (string, string) {
+	probeAction, normalizedAction := "", ""
+	switch name {
+	case "shared-two-process-deadline":
+		probeAction, normalizedAction = "sleep 1.1\n", "sleep 1.1\n"
+	case "inherited-stdout":
+		probeAction = "(sleep 3; cat " + copiedRecoveryQuote(nativePath) + ") &\nprintf '%s\\n' $! >> " + copiedRecoveryQuote(marker) + "\nexit 0\n"
+	case "same-byte-source-replacement":
+		source := copiedRecoveryQuote(sourcePath)
+		replacement := copiedRecoveryQuote(sourcePath + ".replacement")
+		normalizedAction = "cp " + source + " " + replacement + "\ntouch -r " + source + " " + replacement + "\nmv " + replacement + " " + source + "\n"
+	}
+	return probeAction, normalizedAction
+}
+
 func remainingNonKeyCollectorBoundWitness(t *testing.T, manager *hlsManager, source, marker, name string, original os.FileInfo, before [32]byte, elapsed time.Duration) {
 	t.Helper()
 	data, err := os.ReadFile(marker)
@@ -90,18 +95,23 @@ func remainingNonKeyCollectorBoundWitness(t *testing.T, manager *hlsManager, sou
 	if remainingNonKeyCollectorHash(t, source) != before {
 		t.Fatal("nonkey source-clock rejection changed source bytes")
 	}
-	if name == "same-byte-source-replacement" {
-		replaced, err := os.Stat(source)
-		if err != nil || os.SameFile(original, replaced) || original.Size() != replaced.Size() || !original.ModTime().Equal(replaced.ModTime()) {
-			t.Fatal("nonkey source-clock controlled replacement did not retain bytes and timestamps on a different inode")
-		}
-	}
+	remainingNonKeyCollectorReplacement(t, source, name, original)
 	entries, err := os.ReadDir(manager.cache)
 	if err != nil || len(entries) != 0 {
 		t.Fatal("nonkey source-clock rejection exposed cache output")
 	}
 	t.Logf("nonkey actual-clock-rejection case=%s elapsed_ns=%d markers=%d settled=true cache_files=0 source_unchanged=true",
 		name, elapsed.Nanoseconds(), len(pids))
+}
+
+func remainingNonKeyCollectorReplacement(t *testing.T, source, name string, original os.FileInfo) {
+	t.Helper()
+	if name == "same-byte-source-replacement" {
+		replaced, err := os.Stat(source)
+		if err != nil || os.SameFile(original, replaced) || original.Size() != replaced.Size() || !original.ModTime().Equal(replaced.ModTime()) {
+			t.Fatal("nonkey source-clock controlled replacement did not retain bytes and timestamps on a different inode")
+		}
+	}
 }
 
 func remainingNonKeyCollectorAdapter(t *testing.T, tools, name, marker, output, action string) string {
@@ -136,6 +146,20 @@ func TestRemainingNonKeySourceClockRejectsRevokedRoot(t *testing.T) {
 	manager.ffmpeg = remainingNonKeyCollectorAdapter(t, tools, "normalize", marker, normalizedPath, "")
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
+	revoked := remainingNonKeyCollectorRevoke(ctx, manager, marker)
+	proof, err := manager.measureCopiedHLSSourceAudio(ctx, item, recipe, options.Cache, fixture.first, 12_500_000, fixture.edit)
+	cancel()
+	if err == nil || proof != nil || !<-revoked {
+		t.Fatal("nonkey source-clock did not reject an actually revoked source root")
+	}
+	data, err := os.ReadFile(marker)
+	if err != nil || len(strings.Fields(string(data))) != 1 {
+		t.Fatal("nonkey revoked root launched another source process")
+	}
+	copiedRecoveryAssertStopped(t, []byte(strings.TrimSpace(string(data))))
+}
+
+func remainingNonKeyCollectorRevoke(ctx context.Context, manager *hlsManager, marker string) <-chan bool {
 	revoked := make(chan bool, 1)
 	go func() {
 		for ctx.Err() == nil {
@@ -148,14 +172,5 @@ func TestRemainingNonKeySourceClockRejectsRevokedRoot(t *testing.T) {
 		}
 		revoked <- false
 	}()
-	proof, err := manager.measureCopiedHLSSourceAudio(ctx, item, recipe, options.Cache, fixture.first, 12_500_000, fixture.edit)
-	cancel()
-	if err == nil || proof != nil || !<-revoked {
-		t.Fatal("nonkey source-clock did not reject an actually revoked source root")
-	}
-	data, err := os.ReadFile(marker)
-	if err != nil || len(strings.Fields(string(data))) != 1 {
-		t.Fatal("nonkey revoked root launched another source process")
-	}
-	copiedRecoveryAssertStopped(t, []byte(strings.TrimSpace(string(data))))
+	return revoked
 }
