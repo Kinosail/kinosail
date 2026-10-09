@@ -84,7 +84,17 @@ if [ "$format" = hls ] && [ "$start" = 0 ]; then while :; do sleep .02; done; fi
 }
 
 func TestCompatiblePlaybackGeneratesAnAlignedSeekableSuffix(t *testing.T) {
-	transcodeFixture().CompatiblePlaybackGeneratesAnAlignedSeekableSuffix(t, "2941100", "2941.1")
+	t.Parallel()
+	handler, id, cache, arguments := alignedSeekFixture(t)
+	assertOldAlignedSeekRequiresPlan(t, handler, id, cache, arguments)
+	source := alignedSeekPlaybackSource(t, handler, id)
+	assertNoAlignedSeekEncoder(t, arguments)
+	playlist := serveRequest(handler, httptest.NewRequestWithContext(t.Context(), http.MethodGet,
+		strings.Replace(source, "/index.m3u8", "-o2941100/index.m3u8", 1), nil))
+	used, err := os.ReadFile(arguments)
+	if playlist.Code != http.StatusOK || err != nil || !strings.Contains(string(used), "-ss 2941.1") {
+		t.Fatalf("seek playlist = %d, arguments = %q, error = %v", playlist.Code, used, err)
+	}
 }
 
 func TestCompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding(t *testing.T) {
