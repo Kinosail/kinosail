@@ -10,7 +10,8 @@
 // Wrong expected sequence, partial PCM, incomplete packet tails, stale media or failed owned joins stay red.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {frameQualification, completeAudioQualification, consumerQualification} from './hls-nonkey-browser-observer.mjs';
+import {frameQualification, completeAudioQualification, consumerQualification, directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
+import {directReferenceBodyFacts} from './hls-nonkey-browser-reference.mjs';
 const reference = [0,1,2,3].map(n => ({sha256:String(n).padStart(64,'0'), mediaTime:n/24, presentedFrames:n+1}));
 const facts = {ended:true, rows:reference, droppedCallbacks:0, captureErrors:[], width:640,height:360};
 test('whole requested frame sequence and actual EOF are required', () => {
@@ -52,4 +53,25 @@ test('consumer admission requires actual selected HLS with no execution or HTTP 
   const forced={...row,label:'forced-source-coordinate-seek',forceSeek:{seeking:false,seeked:false}};
   assert.equal(consumerQualification(forced,reference,[0,1,2,3]).qualified,false);
   assert.equal(consumerQualification({...forced,forceSeek:{seeking:true,seeked:true}},reference,[0,1,2,3]).qualified,true);
+});
+
+test('direct pixel calibration requires the actual sealed route and complete healthy observation',()=>{
+  const phase={...facts,firstCallbackGap:0,quality:{droppedVideoFrames:0,totalVideoFrames:4}};
+  const row={result:'observed',directReferenceBytesVerified:true,adapter:{direct:true},
+    observer:{phases:[phase]}};
+  assert.equal(directReferenceQualification(row,reference,[0,1,2,3]).qualified,true);
+  for(const bad of [{directReferenceBytesVerified:false},{adapter:{direct:false}},{pageErrors:1},
+    {snapshotFailure:true},{httpBodyFailure:true},{directReferenceRouteMismatch:true},{httpOverflow:true}])
+    assert.equal(directReferenceQualification({...row,...bad},reference,[0,1,2,3]).qualified,false);
+  assert.equal(directReferenceQualification({...row,observer:{phases:[{...phase,droppedCallbacks:1}]}},reference,[0,1,2,3]).qualified,false);
+});
+test('direct media seals exact full or bounded range bytes rather than just status',()=>{
+  const bytes=Buffer.from([0,1,2,3,4,5]);
+  assert.equal(directReferenceBodyFacts(200,null,bytes,bytes).matched,true);
+  assert.equal(directReferenceBodyFacts(206,'bytes 2-4/6',bytes.subarray(2,5),bytes).matched,true);
+  assert.equal(directReferenceBodyFacts(206,'bytes 2-4/6',Buffer.from([2,9,4]),bytes).matched,false);
+  for(const args of [[206,null,bytes,bytes],[206,'bytes 2-6/6',bytes,bytes],
+    [206,'bytes 2-4/7',bytes.subarray(2,5),bytes],[206,'bytes 2-4/6',bytes.subarray(2,4),bytes],
+    [500,null,bytes,bytes]])
+    assert.throws(()=>directReferenceBodyFacts(...args));
 });
