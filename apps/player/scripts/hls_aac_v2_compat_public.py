@@ -59,9 +59,16 @@ def responses(owner, steps):
 
 
 def fault(cache, name):
-    directories = [p for p in cache.iterdir() if p.is_dir()]
-    check(len(directories) == 1, 'compat_generation_count')
-    directory = directories[0]
+    timelines = sorted(cache.glob('*/.copy-timeline'))
+    check(len(timelines) == 1, 'compat_indexed_generation_count')
+    timeline = timelines[0]
+    directory = timeline.parent
+    check(timeline.is_file() and not timeline.is_symlink()
+        and directory.is_dir() and not directory.is_symlink(), 'compat_indexed_generation_kind')
+    binding = directory / '.source'
+    check(binding.is_file() and not binding.is_symlink(), 'compat_seed_binding_kind')
+    check(json.loads(bounded_bytes(timeline, 256 << 10, 'compat_seed_timeline_bound'))['policy']
+        == bounded_bytes(binding, 16 << 10, 'compat_seed_binding_bound').decode(), 'compat_seed_binding_exact')
     target = {'missing-source': '.source', 'wrong-source': '.source',
         'missing-clock': '.copy-clock', 'wrong-version': '.copy-clock',
         'wrong-timeline': '.copy-timeline', 'wrong-master': 'index.m3u8',

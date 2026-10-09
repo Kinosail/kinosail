@@ -155,31 +155,11 @@ func damageCopiedAACLegacy(t *testing.T, manager *hlsManager, item library.Item,
 	case "source-root":
 		manager.index.SetRoots(nil)
 	case "generation", "rendition":
-		name := directory
-		if damage == "rendition" {
-			name = filepath.Join(directory, "360p")
-		}
-		retired := name + "-retired"
-		if err := os.Rename(name, retired); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.CopyFS(name, os.DirFS(retired)); err != nil {
-			t.Fatal(err)
-		}
+		name := map[string]string{"generation": directory, "rendition": filepath.Join(directory, "360p")}[damage]
+		replaceCopiedAACLegacyDirectory(t, name)
 	case "certificate", "timeline":
-		name := ".copy-clock"
-		if damage == "timeline" {
-			name = ".copy-timeline"
-		}
-		path := filepath.Join(directory, name)
-		data, err := os.ReadFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := os.Rename(path, path+"-retired"); err != nil {
-			t.Fatal(err)
-		}
-		writeHLSLoadingFile(t, path, string(data))
+		name := map[string]string{"certificate": ".copy-clock", "timeline": ".copy-timeline"}[damage]
+		replaceCopiedAACLegacyMetadata(t, filepath.Join(directory, name))
 	case "source-binding":
 		writeHLSLoadingFile(t, filepath.Join(directory, ".source"), "wrong policy")
 	case "master":
@@ -188,6 +168,29 @@ func damageCopiedAACLegacy(t *testing.T, manager *hlsManager, item library.Item,
 		writeHLSLoadingFile(t, filepath.Join(directory, "360p/index.m3u8"),
 			strings.Replace(copiedRecoveryManifest, "2.000000", "2.400000", 1))
 	}
+}
+
+func replaceCopiedAACLegacyDirectory(t *testing.T, name string) {
+	t.Helper()
+	retired := name + "-retired"
+	if err := os.Rename(name, retired); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.CopyFS(name, os.DirFS(retired)); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func replaceCopiedAACLegacyMetadata(t *testing.T, path string) {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(path, path+"-retired"); err != nil {
+		t.Fatal(err)
+	}
+	writeHLSLoadingFile(t, path, string(data))
 }
 
 type copiedAACLegacyEntry struct {

@@ -71,6 +71,27 @@ clones. Record each response, prior physical presence, source calls and joined
 cache/source state. This baseline-only hydration is not a candidate behavior change.
 Lazy Version1 client compatibility remains mandatory and independently held.
 
+## Qualified complete-cache RED
+
+Test-only head 6d801195ae0738a2f2ae6dbcd8aa2bb58aa960de preserves unchanged production.
+Hosted run: https://github.com/Kinosail/kinosail/actions/runs/37980045962
+Receipt SHA256: 9eb7bc0441bd0e1dc64ca7ca2b4818f5e156cd37164fddfe9cde1a6fbe5c4ef2.
+Artifact: 11641222032. GitHub archive metadata digest:
+0bcd51b491b49305d0f4982f640a3b540b03dfa335b1ec7b09425f1d8e69a15d.
+
+Baseline GET hydration served init and all ten fragments through its existing
+Version1 lifecycle. Two joined source workers used offsets 12 and 20 seconds.
+All served asset hashes match physical files after joining. The complete journey
+matches exactly 480 independently decoded source frames before sealing clones.
+Eighteen positive controls returned baseline 200/206 and candidate 404.
+Each reached the zero-encoder and unchanged-cache/source checks.
+Independent exact-source review qualified those eighteen as causal regression evidence.
+
+Eight negative controls stopped before candidate requests at compat_generation_count.
+Hydration creates additional seek directories. They are fixture-blocked, not qualified RED.
+Select the unique bound .copy-timeline generation without removing other directories.
+All Version2 contracts, strict media, cold-cache and missing-binding jobs passed.
+
 ## Written-first failure matrix
 
 The new public test runs real baseline and candidate Go Servers on hosted Linux.
