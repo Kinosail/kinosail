@@ -131,7 +131,11 @@ func rejectCopiedAACPlaylist(writer http.ResponseWriter, request *http.Request) 
 }
 
 func rejectCopiedAACPlaylistClass(writer http.ResponseWriter, request *http.Request, failureClass string) bool {
-	slog.WarnContext(request.Context(), "HLS copied playlist rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", failureClass)
+	warnCopiedAACPlaylist(request, failureClass)
 	localizedNotFound(writer, request)
 	return true
+}
+
+func warnCopiedAACPlaylist(request *http.Request, failureClass string) {
+	slog.WarnContext(request.Context(), "HLS copied playlist rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", failureClass)
 }

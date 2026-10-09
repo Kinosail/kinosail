@@ -47,10 +47,12 @@ func (manager *hlsManager) copiedHLSLegacyBinding(item library.Item, recipe hlsR
 		return true, "invalid-legacy-generation"
 	}
 	defer root.Close()
-	if _, err := root.Lstat(".copy-timeline"); os.IsNotExist(err) {
-		return false, ""
-	} else if err != nil {
+	present, err := copiedHLSLegacyIndexPresent(root)
+	if err != nil {
 		return true, "invalid-legacy-generation"
+	}
+	if !present {
+		return false, ""
 	}
 	base, err := manager.baseHLSSettings(item, recipe)
 	if err != nil {
@@ -67,6 +69,19 @@ func (manager *hlsManager) copiedHLSLegacyBinding(item library.Item, recipe hlsR
 		return true, "invalid-source-binding"
 	}
 	return true, ""
+}
+
+func copiedHLSLegacyIndexPresent(root *os.Root) (bool, error) {
+	for _, name := range []string{".copy-timeline", ".copy-clock"} {
+		_, err := root.Lstat(name)
+		if err == nil {
+			return true, nil
+		}
+		if !os.IsNotExist(err) {
+			return false, errCopiedHLSIndex
+		}
+	}
+	return false, nil
 }
 
 func (manager *hlsManager) serveCopiedHLSLegacy(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe, name string) bool {
@@ -95,6 +110,7 @@ func (manager *hlsManager) serveCopiedHLSLegacy(writer http.ResponseWriter, requ
 func (held *copiedAACGeneration) serveLegacyPlaylist(writer http.ResponseWriter, request *http.Request, name string) bool {
 	start, err := requestedHLSStart(request)
 	if err != nil || start > 0 && !validHLSOffset(float64(start), held.timeline.End) {
+		warnCopiedAACPlaylist(request, "invalid-start")
 		localizedError(writer, request, "resume position is invalid", http.StatusBadRequest)
 		return true
 	}

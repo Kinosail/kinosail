@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -30,7 +31,7 @@ func (legacy *copiedHLSLegacyRead) bindMetadata(held *copiedAACGeneration) error
 		data  []byte
 		limit int64
 	}{{".source", []byte(held.policy), 16 << 10}, {".copy-timeline", held.timelineData, maximumCopiedHLSTimelineBytes}, {".copy-clock", held.certificateData, 4096}} {
-		data, err := legacy.read(held.root, metadata.name, metadata.limit)
+		data, err := legacy.read(held.ctx, held.root, metadata.name, metadata.limit)
 		if err != nil || !bytes.Equal(data, metadata.data) {
 			return errCopiedHLSIndex
 		}
@@ -40,12 +41,12 @@ func (legacy *copiedHLSLegacyRead) bindMetadata(held *copiedAACGeneration) error
 
 func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) error {
 	var err error
-	legacy.master, err = legacy.read(held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
+	legacy.master, err = legacy.read(held.ctx, held.root, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	if err != nil || !copiedAACMasterAllowed(legacy.master, held.policy, held.certificate.Rendition) {
 		return errCopiedHLSIndex
 	}
 	name := filepath.Join(held.certificate.Rendition, "index.m3u8")
-	legacy.manifest, err = legacy.read(held.root, name, maximumCopiedHLSTimelineBytes)
+	legacy.manifest, err = legacy.read(held.ctx, held.root, name, maximumCopiedHLSTimelineBytes)
 	if err != nil || !playback.PlaylistHas(legacy.manifest, "#EXT-X-ENDLIST") {
 		return errCopiedHLSIndex
 	}
@@ -55,13 +56,13 @@ func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) erro
 	return nil
 }
 
-func (legacy *copiedHLSLegacyRead) read(root *os.Root, name string, limit int64) ([]byte, error) {
+func (legacy *copiedHLSLegacyRead) read(ctx context.Context, root *os.Root, name string, limit int64) ([]byte, error) {
 	file, info, err := copiedHLSOpenFile(root, name, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
-	data, err := io.ReadAll(io.LimitReader(file, limit+1))
+	data, err := io.ReadAll(copiedHLSContextReader{ctx, io.LimitReader(file, limit+1)})
 	after, statErr := root.Lstat(name)
 	if err != nil || statErr != nil || int64(len(data)) != info.Size() || !sameCopiedHLSFile(info, after) {
 		return nil, errCopiedHLSIndex
@@ -71,12 +72,14 @@ func (legacy *copiedHLSLegacyRead) read(root *os.Root, name string, limit int64)
 }
 
 func (legacy *copiedHLSLegacyRead) completeAssets(held *copiedAACGeneration) error {
-	names := make([]string, 0, len(held.timeline.Keys)+1)
-	names = append(names, "init.mp4")
-	for number := range held.timeline.Keys {
-		names = append(names, "segment-"+copiedHLSSegmentDigits(number)+".m4s")
-	}
-	for _, name := range names {
+	for number := -1; number < len(held.timeline.Keys); number++ {
+		if held.ctx.Err() != nil {
+			return errCopiedHLSIndex
+		}
+		name := "init.mp4"
+		if number >= 0 {
+			name = "segment-" + copiedHLSSegmentDigits(number) + ".m4s"
+		}
 		file, info, err := copiedHLSOpenFile(held.media, name, 64<<20)
 		if err != nil {
 			return errCopiedHLSIndex
@@ -92,7 +95,7 @@ func (legacy *copiedHLSLegacyRead) current(held *copiedAACGeneration) bool {
 	return legacy.sourceCurrent(held) && os.IsNotExist(startupErr) &&
 		copiedHLSBoundMetadata(held.root, held.timelineData, held.certificateData, held.policy) &&
 		held.manager.copiedHLSCanonicalGeneration(held.directory, held.certificate.Rendition, held.root, held.media) &&
-		legacy.entriesCurrent(held.root) && legacy.manifestsCurrent(held)
+		legacy.entriesCurrent(held.ctx, held.root) && legacy.manifestsCurrent(held)
 }
 
 func (legacy *copiedHLSLegacyRead) sourceCurrent(held *copiedAACGeneration) bool {
@@ -107,8 +110,11 @@ func (legacy *copiedHLSLegacyRead) sourceCurrent(held *copiedAACGeneration) bool
 	return err == nil
 }
 
-func (legacy *copiedHLSLegacyRead) entriesCurrent(root *os.Root) bool {
+func (legacy *copiedHLSLegacyRead) entriesCurrent(ctx context.Context, root *os.Root) bool {
 	for name, before := range legacy.entries {
+		if ctx.Err() != nil {
+			return false
+		}
 		after, err := root.Lstat(name)
 		if err != nil || !sameCopiedHLSFile(before, after) {
 			return false

@@ -137,6 +137,9 @@ func (value *copiedAACGeneration) current() bool {
 }
 
 func (value *copiedAACGeneration) invariant(version int) bool {
+	if value.root == nil || value.media == nil || value.timeline == nil {
+		return false
+	}
 	data, err := json.Marshal(value.timeline)
 	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == version &&
 		value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil
