@@ -10,7 +10,7 @@
 // Wrong expected sequence, partial PCM, incomplete packet tails, stale media or failed owned joins stay red.
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {frameQualification, completeAudioQualification, consumerQualification, directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
+import {frameQualification, completeAudioQualification, consumerQualification, directReferenceQualification, joinedFrameQualification} from './hls-nonkey-browser-observer.mjs';
 import {directReferenceBodyFacts} from './hls-nonkey-browser-reference.mjs';
 const reference = [0,1,2,3].map(n => ({sha256:String(n).padStart(64,'0'), mediaTime:n/24, presentedFrames:n+1}));
 const facts = {ended:true, rows:reference, droppedCallbacks:0, captureErrors:[], width:640,height:360};
@@ -74,4 +74,19 @@ test('direct media seals exact full or bounded range bytes rather than just stat
     [206,'bytes 2-4/7',bytes.subarray(2,5),bytes],[206,'bytes 2-4/6',bytes.subarray(2,4),bytes],
     [500,null,bytes,bytes]])
     assert.throws(()=>directReferenceBodyFacts(...args));
+});
+
+test('joined public direct decode needs sealed bytes, complete frames and explicit seek events',()=>{
+  const phase={...facts,firstCallbackGap:0,quality:{droppedVideoFrames:0,totalVideoFrames:4}};
+  const row={result:'observed',joinedBytesVerified:true,publicVideoSuffixQualified:true,referenceComplete:true,
+    observer:{phases:[phase]},label:'joined-direct-unseeked'};
+  assert.equal(joinedFrameQualification(row,reference,[0,1,2,3]).qualified,true);
+  for(const bad of [{joinedBytesVerified:false},{publicVideoSuffixQualified:false},{referenceComplete:false},
+    {pageErrors:1},{snapshotFailure:true},{result:'observation-failed'}])
+    assert.equal(joinedFrameQualification({...row,...bad},reference,[0,1,2,3]).qualified,false);
+  assert.equal(joinedFrameQualification({...row,label:'joined-direct-explicit-zero',
+    forceSeek:{seeking:false,seeked:true}},reference,[0,1,2,3]).qualified,false);
+  assert.equal(joinedFrameQualification({...row,label:'joined-direct-explicit-zero',
+    forceSeek:{seeking:true,seeked:true,requestedLocal:0}},reference,[0,1,2,3]).qualified,true);
+  assert.equal(joinedFrameQualification({...row,observer:{phases:[{...phase,droppedCallbacks:1}]}},reference,[0,1,2,3]).qualified,false);
 });
