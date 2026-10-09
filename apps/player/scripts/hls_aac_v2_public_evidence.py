@@ -133,3 +133,9 @@ def assert_fixed_timeline(facts, fragments, grid):
         check(Decimal(str(duration)) * 16000 == expected, 'v2_every_public_segment_duration')
     check(Decimal(str(facts['durationSeconds'])) * 16000 == grid['endTicks'] - keys[0]['PTS'],
           'v2_complete_public_source_span')
+
+
+def expected_refill_audio(grid):
+    check(grid['timeBase'] == [1, 16000] and len(grid['keys']) == 16, 'v2_refill_source_grid')
+    clip = grid['keys'][10]['DTS'] * 3
+    return rf'noise=amount=0:drop=lt(pts+960000\,{clip}),setts=pts=PTS+4600:dts=DTS+4600'

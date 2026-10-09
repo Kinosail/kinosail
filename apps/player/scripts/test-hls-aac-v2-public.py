@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 from hls_aac_v2_public_http import ActualServer, actual_producer_rows, cached_media, diagnostic_producer_rows
-from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline, cache_state, qualify
+from hls_aac_v2_public_evidence import assert_fixed_cache_grid, assert_fixed_source_grid, assert_fixed_timeline, cache_state, expected_refill_audio, qualify
 from hls_followon_frames import decode_frames
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_nonkey_browser_public import public_media
@@ -121,7 +121,7 @@ try:
     check(len(producer) == 2 and producer[0]['seek'] == '12.000000'
           and producer[0]['startNumber'] == '0' and producer[1]['seek'] == '20.000000'
           and producer[1]['startNumber'] == '4' and producer[1]['muxOffset'] == '8.000000'
-          and producer[1]['audioBSF'] == 'noise=amount=0:drop=lt(pts+960000\\,956001),setts=pts=PTS+4600:dts=DTS+4600',
+          and producer[1]['audioBSF'] == expected_refill_audio(source_grid),
           'v2_actual_source_derived_refill_argv')
     _, media_cache, complete = cache_state(directory / 'cache')
     owner.stop()
