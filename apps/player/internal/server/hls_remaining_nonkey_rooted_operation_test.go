@@ -4,9 +4,9 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -128,7 +128,7 @@ func remainingNonKeyRootedProcessActions(t *testing.T, fixture remainingNonKeyRo
 		first := copiedRecoveryQuote(filepath.Join(fixture.directory, "segment-00000.m4s"))
 		backup := copiedRecoveryQuote(filepath.Join(fixture.directory, "first-mtime"))
 		action := "cp -p " + first + " " + backup + "\nprintf '\\001' | dd of=" + first +
-			" bs=1 seek=" + fmt.Sprint(len(fixture.first)-1) + " count=1 conv=notrunc status=none\n" +
+			" bs=1 seek=" + strconv.Itoa(len(fixture.first)-1) + " count=1 conv=notrunc status=none\n" +
 			"touch -r " + backup + " " + first + "\nrm " + backup + "\n"
 		return "", action
 	}
