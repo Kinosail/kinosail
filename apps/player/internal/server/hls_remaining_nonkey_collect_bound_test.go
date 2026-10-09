@@ -49,7 +49,7 @@ func remainingNonKeyCollectorOperationBound(t *testing.T, name string) {
 	case "shared-two-process-deadline":
 		probeAction, normalizedAction = "sleep 1.1\n", "sleep 1.1\n"
 	case "inherited-stdout":
-		probeAction = "sleep 3 &\nprintf '%s\\n' $! >> " + copiedRecoveryQuote(marker) + "\n"
+		probeAction = "(sleep 3; cat " + copiedRecoveryQuote(nativePath) + ") &\nprintf '%s\\n' $! >> " + copiedRecoveryQuote(marker) + "\nexit 0\n"
 	case "same-byte-source-replacement":
 		source := copiedRecoveryQuote(item.Path)
 		replacement := copiedRecoveryQuote(item.Path + ".replacement")
