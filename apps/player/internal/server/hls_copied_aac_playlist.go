@@ -88,6 +88,9 @@ func copiedAACMasterAllowed(master []byte, policy, rendition string) bool {
 			}
 			bindings++
 		}
+		if strings.Contains(line, "URI=") {
+			return false
+		}
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
