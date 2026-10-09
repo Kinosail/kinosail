@@ -2,7 +2,6 @@ package server
 
 import (
 	"crypto/sha256"
-	"io"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
@@ -19,10 +18,17 @@ import (
 func copiedAACPartialFixture(t *testing.T, shape string) (*hlsManager, library.Item, hlsRecipe, string) {
 	t.Helper()
 	manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
-	if shape != "complete" {
-		if err := os.Remove(filepath.Join(directory, "360p/segment-00001.m4s")); err != nil {
-			t.Fatal(err)
-		}
+	copiedAACPartialShape(t, directory, shape)
+	return manager, item, recipe, directory
+}
+
+func copiedAACPartialShape(t *testing.T, directory, shape string) {
+	t.Helper()
+	if shape == "complete" {
+		return
+	}
+	if err := os.Remove(filepath.Join(directory, "360p/segment-00001.m4s")); err != nil {
+		t.Fatal(err)
 	}
 	if shape == "prefix" || shape == "speculative" {
 		prefix := strings.Replace(copiedRecoveryManifest, "#EXTINF:2.000000,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n", "", 1)
@@ -31,7 +37,6 @@ func copiedAACPartialFixture(t *testing.T, shape string) (*hlsManager, library.I
 	if shape == "speculative" {
 		writeHLSLoadingFile(t, filepath.Join(directory, ".startup"), "1")
 	}
-	return manager, item, recipe, directory
 }
 
 func copiedAACPartialSnapshot(t *testing.T, directory string) map[string]copiedAACLegacyEntry {
@@ -91,20 +96,16 @@ func copiedAACPartialResponse(t *testing.T, manager *hlsManager, item library.It
 
 func copiedAACPartialSource(t *testing.T, path string) copiedAACLegacyEntry {
 	t.Helper()
-	file, err := os.Open(path)
+	root, err := os.OpenRoot(filepath.Dir(path))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer file.Close()
-	info, err := file.Stat()
-	if err != nil || !info.Mode().IsRegular() || info.Size() > 2<<20 {
+	defer root.Close()
+	entry, err := copiedAACLegacyInventoryEntry(root, filepath.Base(path))
+	if err != nil || !entry.info.Mode().IsRegular() {
 		t.Fatal("partial source fixture invalid")
 	}
-	data, err := io.ReadAll(io.LimitReader(file, (2<<20)+1))
-	if err != nil || int64(len(data)) != info.Size() {
-		t.Fatal("partial source fixture read failed")
-	}
-	return copiedAACLegacyEntry{info: info, hash: sha256.Sum256(data)}
+	return entry
 }
 
 func requireCopiedAACPartialSource(t *testing.T, before copiedAACLegacyEntry, path string) {

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"runtime"
 	"testing"
 )
@@ -23,66 +22,25 @@ func TestCopiedAACPartialReadRejectsDamageWithoutPreparation(t *testing.T) {
 	for _, damage := range []string{"first-cut", "init", "binding", "timeline", "certificate", "master",
 		"source-root", "startup-value", "startup-empty", "startup-overflow", "startup-directory",
 		"startup-symlink", "later-directory", "later-symlink"} {
-		t.Run(damage, func(t *testing.T) {
-			manager, item, recipe, directory := copiedAACPartialFixture(t, "speculative")
-			switch damage {
-			case "first-cut":
-				if err := os.Remove(filepath.Join(directory, "360p/segment-00000.m4s")); err != nil {
-					t.Fatal(err)
-				}
-			case "init":
-				writeHLSLoadingFile(t, filepath.Join(directory, "360p/init.mp4"), "invalid init")
-			case "binding":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".source"), "wrong binding")
-			case "timeline":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".copy-timeline"), "{}")
-			case "certificate":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".copy-clock"), "{}")
-			case "master":
-				writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n")
-			case "source-root":
-				manager.index.SetRoots(nil)
-			case "startup-value":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".startup"), "0")
-			case "startup-empty":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".startup"), "")
-			case "startup-overflow":
-				writeHLSLoadingFile(t, filepath.Join(directory, ".startup"), "11")
-			case "startup-directory", "startup-symlink":
-				path := filepath.Join(directory, ".startup")
-				if err := os.Remove(path); err != nil {
-					t.Fatal(err)
-				}
-				if damage == "startup-directory" {
-					if err := os.Mkdir(path, 0o700); err != nil {
-						t.Fatal(err)
-					}
-				} else if err := os.Symlink(item.Path, path); err != nil {
-					t.Fatal(err)
-				}
-			case "later-directory", "later-symlink":
-				path := filepath.Join(directory, "360p/segment-00001.m4s")
-				if damage == "later-directory" {
-					if err := os.Mkdir(path, 0o700); err != nil {
-						t.Fatal(err)
-					}
-				} else if err := os.Symlink(filepath.Join(directory, "360p/segment-00000.m4s"), path); err != nil {
-					t.Fatal(err)
-				}
-			}
-			before, source := copiedAACPartialSnapshot(t, directory), copiedAACPartialSource(t, item.Path)
-			for _, method := range []string{http.MethodGet, http.MethodHead} {
-				result := copiedAACPartialResponse(t, manager, item, recipe, "index.m3u8", method, "")
-				if result.Code != http.StatusNotFound {
-					t.Error("damaged partial cache reached delivery")
-				}
-			}
-			requireCopiedAACLegacyInventory(t, before, copiedAACPartialSnapshot(t, directory))
-			requireCopiedAACPartialSource(t, source, item.Path)
-			if len(manager.jobs) != 0 {
-				t.Fatal("partial rejection started preparation")
-			}
-		})
+		t.Run(damage, func(t *testing.T) { requireCopiedAACPartialReject(t, damage) })
+	}
+}
+
+func requireCopiedAACPartialReject(t *testing.T, damage string) {
+	t.Helper()
+	manager, item, recipe, directory := copiedAACPartialFixture(t, "speculative")
+	damageCopiedAACPartial(t, manager, item.Path, directory, damage)
+	before, source := copiedAACPartialSnapshot(t, directory), copiedAACPartialSource(t, item.Path)
+	for _, method := range []string{http.MethodGet, http.MethodHead} {
+		result := copiedAACPartialResponse(t, manager, item, recipe, "index.m3u8", method, "")
+		if result.Code != http.StatusNotFound {
+			t.Error("damaged partial cache reached delivery")
+		}
+	}
+	requireCopiedAACLegacyInventory(t, before, copiedAACPartialSnapshot(t, directory))
+	requireCopiedAACPartialSource(t, source, item.Path)
+	if len(manager.jobs) != 0 {
+		t.Fatal("partial rejection started preparation")
 	}
 }
 
