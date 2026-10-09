@@ -2,6 +2,7 @@ package server
 
 import (
 	"os"
+	"runtime"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -69,6 +70,7 @@ func TestCopiedAACPolicyKeepsPositiveUntilSourceChanges(t *testing.T) {
 }
 
 func TestCopiedAACPolicyCannotExposeLegacyIndexedAssets(t *testing.T) {
+	if runtime.GOOS != "linux" { t.Skip("qualified retained-source producer is Linux-only") }
 	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
 	copiedRecoveryProbe(t, manager, "")
 	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil {
