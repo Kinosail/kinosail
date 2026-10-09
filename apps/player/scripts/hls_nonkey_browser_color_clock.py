@@ -41,3 +41,25 @@ def mse_clock_facts(observed, request):
         'sampleCount':len(samples),'firstClipPTSSeconds':float(first),'firstSourcePTSSeconds':float(first+Fraction(str(request))),
         'timestampOffset':request,'allRawSamplesRetained':True,'everyFFprobeLogicalVideoPacketClockMatched':True,'chromiumDTSRemainsUnedited':True,
         'interpretation':'Chromium153 first single nonnegative ELST subtracts CTS only; FFprobe logical DTS reported separately; component-only'}
+
+def retained_mse_clock_facts(observed, request):
+    """A new held component must not omit the existing app/audio observations."""
+    operation='raw-elst-tfdt-trun-clock-binding'
+    try:
+        return dict(mse_clock_facts(observed,request),operation=operation)
+    except (RuntimeError,KeyError,TypeError,ValueError,IndexError,OverflowError):
+        tracks=observed.get('initialization',{}).get('tracks',[]) if type(observed) is dict else []
+        videos=[v for v in tracks if type(v) is dict and v.get('handler')=='vide'] if type(tracks) is list else []
+        numeric={}
+        if len(videos)==1:
+            for key in ['trackID','mediaTimescale']:
+                value=videos[0].get(key)
+                if type(value) is int and abs(value)<2**53:numeric[key]=value
+            edits=videos[0].get('edits')
+            if type(edits) is list:
+                numeric['editCount']=len(edits)
+                if edits and type(edits[0]) is dict:
+                    numeric['firstEdit']={k:v for k,v in edits[0].items()
+                        if k in ['mediaTime','duration','rateInteger','rateFraction'] and type(v) is int and abs(v)<2**53}
+        return {'qualified':False,'failureClass':'browser_raw_mse_clock','operation':operation,
+            'safeRawTrackFacts':numeric,'failureMessageIncluded':False,'allOriginalCasesStillRequired':True}

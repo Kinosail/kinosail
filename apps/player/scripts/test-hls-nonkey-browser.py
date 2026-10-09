@@ -20,7 +20,7 @@ from hls_remaining_process import finish_processes, join_group
 from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection, browser_reference_config
 from hls_nonkey_browser_config import measured_delta, diagnostic_result
 from hls_nonkey_browser_video import actual_video_evidence
-from hls_nonkey_browser_color_clock import mse_clock_facts
+from hls_nonkey_browser_color_clock import retained_mse_clock_facts
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -188,7 +188,7 @@ try:
                     browser_cases.append({'request':requested,'expectedSourceIndices':expected,
                         'publicJoinedPath':str(joined),'publicJoinedSHA256':sha(joined),'selectedSource':selected,
                         'publicVideoSuffixQualified':partial['actualVideoEvidence']['packetSuffix']['qualified'],
-                        'rawMSEClockFacts':mse_clock_facts(observed,requested),
+                        'rawMSEClockFacts':retained_mse_clock_facts(observed,requested),
                         'initialDeliveryStable':delivery['initialAssetBytesUnchanged'],
                         'publicAssetSHA256':{delivery['rendition']+'/'+p.name:sha(p) for p in assets},
                         'expectedPCM':{'samples':pcm['samples'],'sha256':pcm['sha256']}})
