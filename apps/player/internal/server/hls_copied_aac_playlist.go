@@ -129,6 +129,7 @@ func (manager *hlsManager) copiedAACPlaylistBinding(ctx context.Context, item li
 func rejectCopiedAACPlaylist(writer http.ResponseWriter, request *http.Request) bool {
 	return rejectCopiedAACPlaylistClass(writer, request, "invalid-generation-or-manifest")
 }
+
 func rejectCopiedAACPlaylistClass(writer http.ResponseWriter, request *http.Request, failureClass string) bool {
 	slog.WarnContext(request.Context(), "HLS copied playlist rejected", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "failure_class", failureClass)
 	localizedNotFound(writer, request)
