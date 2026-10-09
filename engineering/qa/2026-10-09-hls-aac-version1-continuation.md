@@ -44,3 +44,29 @@ Version1 AAC correctness, pending source ownership, root replacement and preflig
 Fourteen scanner holds and historical failures remain preserved.
 Native50 remains with its native owner; this work does not interact with the simulator or deploy Nox.
 No PR or merge is admitted until full compatibility and independent exact-source review pass.
+
+## Qualified pending repair and lazy failure
+
+Production head `4c9153393b7811f6d253acf85d3134e8fb5916a3` / tree `e42505917599bea932422602f5dc0c11962e9a59` passed 82 contracts and quality 37997673457.
+Proof 37997673510 is terminal: contracts, complete39, master24, binding18, core5 and cold2 passed; lazy failed.
+Lazy receipt SHA is `a0f4faee0d2dfb905da07f93ee466355a64150ccfe42e2b16cc9bdc87adba2f0`.
+Artifact 11648570346 has API archive digest `sha256:8d5770f3fe1778b1eef0e60bb423409e6dd1fa51be3037d05abd2a7805dda080`.
+Adopted, speculative, missing4 and missing9 baselines each passed HEAD200/200, thirteen GET200 and 480 exact source frames.
+Each candidate returned HEAD404/404 and thirteen GET404 without source encoders.
+Missing0 baseline segment GET returned404; its candidate never ran and cannot qualify a new regression.
+Source guards and every owned join passed. Physical assets and startup markers stayed unchanged.
+The prior composite preservation flag also requires hydration; a separate whole-cache equality fact was not projected.
+All historical failures and fourteen holds remain preserved.
+
+## Written-first private CLI feasibility
+
+A separate diagnostic branch leaves production and prior proof workflows unchanged.
+It rebuilds the same genuine complete baseline cache, then privately regenerates cuts0,4,9 with captured old arguments.
+Only seek, start number, clock offset, bounded duration and private input/output locations change.
+The same source FD stays retained through all joined commands. Each command permits eight regular files and 128MiB for at most30seconds.
+Each requested fragment is decoded with the original canonical init and compared against complete baseline packet clocks, payloads and exact source frames.
+Full init SHA and BMFF/edit differences are recorded; whole fragment-byte differences are also retained.
+Compatibility mismatches never skip the remaining arms or weaken acceptance.
+Cut0 compares against the original complete zero and certificate; deleted-zero baseline compatibility remains unqualified.
+Complete-cache and source seals must remain unchanged and all CLI/Server groups must join.
+This is CLI feasibility only. It admits no Server worker, GET hydration, policy downgrade, owner/race exception, PR or merge.
