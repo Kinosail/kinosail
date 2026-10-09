@@ -101,7 +101,7 @@ def diagnostics(owner, replies):
         valid = (set(entry) == {'time', 'level', 'msg', 'request_id', 'playback_session', 'failure_class'}
             and entry.get('level') == 'WARN' and entry.get('playback_session') == ''
             and entry.get('failure_class') in ['invalid-source-binding', 'invalid-generation-or-manifest',
-                'invalid-legacy-generation'])
+                'invalid-legacy-generation', 'invalid-start'])
         rows.append({'boundedFieldsAndCorrelationValid': valid})
     return {'requestIDsValid': all(re.fullmatch(r'[a-zA-Z0-9_-]{8,96}', v) for v in request_ids),
         'rows': rows}

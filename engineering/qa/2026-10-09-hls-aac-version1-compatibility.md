@@ -113,9 +113,11 @@ disposable cache clones. Candidate traffic sends no preparation POST.
 - Valid start and session/start queries must match the baseline renderer.
   Empty, zero, negative, duplicate, nonnumeric, oversized, at-EOF and beyond-EOF
   start values must preserve baseline rejection and cause zero encoder/cache writes.
+  Their single WARN must contain only bounded correlation and the invalid-start class.
 - Deterministic tests cover a sticky positive Version2 decision during Version1
   reads, post-open source/root/generation/rendition/binding/master/manifest changes,
   and exact metadata-lease release with retained later-media network delivery.
+  Canceled callers and closed generations under inherited leases must reject safely.
   Ordinary public HTTP cannot reliably schedule those in-flight boundaries.
 - Each owned Server and child process must settle under the existing bounded
   process/resource checks. Receipts include exact revision, tree and script hashes.

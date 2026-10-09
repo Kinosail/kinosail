@@ -322,3 +322,28 @@ func TestCopiedAACLegacyMissingTimelineIsHandledBeforePreparation(t *testing.T) 
 		})
 	}
 }
+
+func TestCopiedAACLegacyClosedInheritedLeaseRejectsSafely(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("selected compatibility reader is Linux-only")
+	}
+	manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
+	ctx, release, err := manager.copiedHLSClockAdmission(t.Context())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer release()
+	held, err := manager.openCopiedHLSLegacyGeneration(ctx, item, recipe, directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer held.close()
+	held.close()
+	if held.current() {
+		t.Fatal("closed generation remained admitted under a caller-owned lease")
+	}
+	request := httptest.NewRequestWithContext(ctx, http.MethodGet, "/index.m3u8", nil)
+	if _, err := held.playlist("index.m3u8", 0, 4, request); err == nil {
+		t.Fatal("closed generation reached playlist rendering")
+	}
+}

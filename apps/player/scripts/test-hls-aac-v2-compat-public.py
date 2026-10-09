@@ -85,7 +85,9 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
             original = snapshot(directory / 'cache')
         owner.start()
         if warm:
-            binding = next((directory / 'cache').glob('*/.source'))
+            clocks = list((directory / 'cache').glob('*/.copy-clock'))
+            check(len(clocks) == 1, 'compat_warm_indexed_generation_count')
+            binding = clocks[0].with_name('.source')
             retained = directory / 'retained-binding'
             binding.rename(retained)
             absent = snapshot(directory / 'cache')
@@ -126,7 +128,7 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
             restored = responses(owner, steps)
             check(all(a[:2] == b[:2] for a, b in zip(restored, controls)), 'compat_baseline_restore')
             row['baselineRestoredExactBody'] = True
-        require_diagnostics(row['diagnostics'], len(actual) if invalid else 0)
+        require_diagnostics(row['diagnostics'], len(actual) if invalid or control_status == 400 else 0)
         row['result'] = 'observed'
     except Exception as error:
         row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
