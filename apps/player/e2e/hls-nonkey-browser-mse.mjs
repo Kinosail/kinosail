@@ -118,10 +118,10 @@ export async function observeMSEColors(context,origin,item,joined,reference,refe
       await page.locator('#nonkey-color-play').click({timeout:10000});
       await page.waitForFunction(()=>window.nonkeyColorPlayFailed || window.nonkeyObservation?.active?.ended,{},{timeout:85000});
       if(await page.evaluate(()=>window.nonkeyColorPlayFailed===true))throw Error('color_play_failed');
-      row.adapter=await page.locator('video').evaluate(v=>({rawMSE:true,rawTime:v.currentTime,rawDuration:v.duration,
+      row.adapter=await page.locator('video').evaluate(v=>({rawMSE:true,rawTime:v.currentTime,rawDuration:v.duration,mediaSourceState:window.nonkeyColorMedia.readyState,
         buffered:Array.from({length:v.buffered.length},(_,n)=>[v.buffered.start(n),v.buffered.end(n)]),
         seekable:Array.from({length:v.seekable.length},(_,n)=>[v.seekable.start(n),v.seekable.end(n)])}));
-      row.result='observed';row.currentStage='complete';
+      row.mediaSourceState=row.adapter.mediaSourceState;row.result='observed';row.currentStage='complete';
     }catch(error){row.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name||'color_mse_operation';}
     finally{
       if(page){

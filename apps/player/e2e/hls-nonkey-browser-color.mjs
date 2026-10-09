@@ -82,7 +82,7 @@ export function colorFrameQualification(row,reference,expected){
     config?.mode==='segments' && config.appendWindowStart===0 && config.appendWindowEnd==='Infinity' &&
     config.timestampOffset===row.requestedSource && clock?.qualified===true &&
     clock.timestampOffset===row.requestedSource && clock.firstClipPTSSeconds===-0.5 && clock.firstSourcePTSSeconds===12;
-  const healthy=configured && row.endOfStreamReturned===true && row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
+  const healthy=configured && row.endOfStreamReturned===true && row.mediaSourceState==='ended' && row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
     row.deliveredBytesVerified===true && row.metadataByteIdentity===true && row.appendedBytesVerified===true &&
     row.adapter?.rawMSE===true && !row.pageErrors && !row.snapshotFailure && row.appendFailures?.length===0 &&
     phase.firstCallbackGap===0 && phase.quality?.droppedVideoFrames===0;
