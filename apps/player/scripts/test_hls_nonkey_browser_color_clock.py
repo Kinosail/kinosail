@@ -8,11 +8,11 @@ from hls_nonkey_browser_color_clock import mse_clock_facts
 
 class ClockTests(unittest.TestCase):
     def facts(self):
-        samples=[{'pts':0,'dts':-2,'duration':1},{'pts':1,'dts':-1,'duration':1}]
+        samples=[{'pts':2,'dts':0,'duration':1},{'pts':3,'dts':1,'duration':1}]
         packets=[{'stream_index':0,'pts_time':'-0.5','dts_time':'-1.5','duration_time':'0.5'},
                  {'stream_index':0,'pts_time':'0','dts_time':'-1','duration_time':'0.5'}]
         return {'initialization':{'tracks':[{'trackID':1,'handler':'vide','mediaTimescale':2,
-            'edits':[{'mediaTime':1,'duration':0,'rateInteger':1,'rateFraction':0}]}]},
+            'edits':[{'mediaTime':3,'duration':0,'rateInteger':1,'rateFraction':0}]}]},
             'physicalFragments':[{'tracks':[{'trackID':1,'samples':samples}]}],
             'publicPacketRows':packets}
     def test_complete_raw_map_not_reinterpreted_or_trimmed(self):
