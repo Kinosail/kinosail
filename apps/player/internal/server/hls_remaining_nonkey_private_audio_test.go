@@ -44,6 +44,7 @@ func remainingNonKeyPrivateAudioCase(t *testing.T, ctx context.Context, ffmpeg, 
 	fragment := remainingNonKeyCollectorRead(t, filepath.Join(directory, "segment-00000.m4s"), 64<<20)
 	inputInit, inputFirst := sha256.Sum256(initialization), sha256.Sum256(fragment)
 	remainingNonKeyPrivateAudioRejects(t, ctx, initialization, fragment)
+	remainingNonKeyPrivateAudioConfigurationRejects(t, ctx, initialization, fragment)
 	request, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	started := time.Now()
