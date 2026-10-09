@@ -1,14 +1,14 @@
-name: Bounded actual-browser non-key observation
+name: Bounded copied AAC refill clock isolation
 on:
   push:
-    branches: [codex/hls-copied-audio-boundary-r15-20261009]
+    branches: [codex/hls-copied-audio-clock-matrix-r16-20261009]
   workflow_dispatch:
     inputs:
       phase: {type: choice, options: [browser], default: browser}
 permissions: {contents: read}
 jobs:
   nonkey-browser:
-    name: Authenticated cold HLS and unchanged actual browser
+    name: Fixed-source initial and refill clocks
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -68,25 +68,27 @@ jobs:
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
           KINOSAIL_PINNED_AAC_CUT=1 go -C apps/player test ./internal/server -run '^TestCopiedHLS(VideoPrerollDoesNotSuppressCopiedAudio|PrerollScopeKeepsLegacyAndAdmission|RefillAudio.*|AACCutPinnedPacketBoundaries)$' -v -count=1
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
-      - name: Observe actual public transport and decoded presentation once
+      - name: Observe fixed initial and refill mux clocks once
         run: |
           python3 - <<'PY'
           import json, os, pathlib, time
           remaining=2700-(time.time()-int(os.environ['NONKEY_JOB_STARTED']))
           path=pathlib.Path('.verification/hls-nonkey-browser/budget.json')
           path.parent.mkdir(parents=True,exist_ok=True)
-          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':1230})+'\n')
-          assert remaining>=1230, 'hosted_browser_cleanup_artifact_budget'
+          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':750})+'\n')
+          assert remaining>=750, 'hosted_browser_cleanup_artifact_budget'
           PY
-          timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
+          timeout --kill-after=90s 420s python3 apps/player/scripts/test-hls-nonkey-refill-clock.py
       - name: Preserve complete safe observations and historical strict CLI controls
         timeout-minutes: 2
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: nonkey-actual-browser-observation-${{ github.sha }}
+          name: nonkey-refill-clock-isolation-${{ github.sha }}
           path: |
             .verification/hls-nonkey-browser/budget.json
+            .verification/hls-nonkey-refill-clock/*/receipt.json
+            .verification/hls-nonkey-refill-clock/*/SHA256SUMS
             .verification/hls-nonkey-browser/*/receipt.json
             .verification/hls-nonkey-browser/*/SHA256SUMS
             .verification/hls-nonkey-browser/*/*/browser.json
