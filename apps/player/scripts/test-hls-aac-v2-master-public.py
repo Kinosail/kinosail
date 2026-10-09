@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 from hls_aac_v2_lazy_public import clone_arm, seed, selected_path
-from hls_aac_v2_master_public import FAULTS, reject
+from hls_aac_v2_master_public import FAULTS, master_path, reject
 from hls_aac_v2_public_evidence import assert_fixed_source_grid, cache_state
 from hls_aac_v2_public_http import cached_media, diagnostic_producer_rows, idle
 from hls_aac_v2_compat_public import diagnostics, requests, responses, require_diagnostics, snapshot
@@ -41,6 +41,50 @@ def run(command, timeout=60):
     check(result.returncode == 0 and len(result.stdout) <= 2 << 20 and len(result.stderr) <= 2 << 20,
         'master_command_failed_or_unbounded')
     return result.stdout
+
+
+def older_marker_controls(cache, baseline, candidate, source, selected, reference):
+    template = RUN / 'older-marker-cache'
+    shutil.copytree(cache, template)
+    path = master_path(template)
+    original = path.read_bytes()
+    check(original.count(b'#KINOSAIL-BANDWIDTH:2\\n') == 1, 'master_older_marker_fixture')
+    changed = original.replace(b'#KINOSAIL-BANDWIDTH:2\\n', b'', 1)
+    path.write_bytes(changed)
+    expected = None
+    for label, binary in [('baseline', baseline), ('candidate', candidate)]:
+        row = {'version': 1, 'format': 'before-bandwidth-marker', 'arm': label,
+            'result': 'failed', 'candidatePreparePOST': False}
+        receipt['controls'].append(row)
+        owner = clone_arm(ROOT, RUN, 'older-marker-' + label, binary, source, template, owners)
+        steps = [*requests('master', 'HEAD', selected), *requests('rendition', 'HEAD', selected),
+            *requests('journey', 'GET', selected)]
+        replies = responses(owner, steps)
+        row.update(statuses=[v[0] for v in replies], headBodiesEmpty=all(not v[1] for v in replies[:2]),
+            immediateCacheUnchanged=snapshot(owner.directory / 'cache') == owner.clone_snapshot,
+            immediateSourceCalls=len(owner.source_invocation_rows()))
+        row['idle'] = idle(owner.api, owner.process, source)
+        row['idleCacheUnchanged'] = snapshot(owner.directory / 'cache') == owner.clone_snapshot
+        row['diagnostics'] = diagnostics(owner, replies)
+        require_diagnostics(row['diagnostics'], 0)
+        owner.stop()
+        row.update(cacheUnchanged=snapshot(owner.directory / 'cache') == owner.clone_snapshot,
+            sourceCalls=len(owner.source_invocation_rows()), sessions=owner.sessions,
+            masterSHA256=sha(master_path(owner.directory / 'cache')))
+        check(row['statuses'] == [200] * 15 and row['headBodiesEmpty']
+            and row['immediateCacheUnchanged'] and row['idleCacheUnchanged'] and row['cacheUnchanged']
+            and row['immediateSourceCalls'] == row['sourceCalls'] == 0, 'master_older_marker_client_control')
+        bodies = [v[1] for v in replies[2:]]
+        if expected is None:
+            expected = bodies
+        row['exactBaselineBodies'] = bodies == expected
+        check(row['exactBaselineBodies'], 'master_older_marker_exact_baseline_bodies')
+        joined = owner.directory / 'older-joined.mp4'
+        joined.write_bytes(b''.join(v[1] for v in replies[4:]))
+        _, actual = decode_frames(joined)
+        row.update(decodedFrames=len(actual), exactSourceFrames=[v[1] for v in actual] == [v[1] for v in reference])
+        check(len(actual) == 480 and row['exactSourceFrames'], 'master_older_marker_exact_source_frames')
+        row['result'] = 'observed'
 
 
 try:
@@ -126,7 +170,8 @@ try:
                 row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
                 for owned in owners:
                     owned.stop()
-    if len(receipt['controls']) == 2 and len(receipt['cases']) == 24 and (
+    older_marker_controls(complete, baseline, candidate, source, selected, reference)
+    if len(receipt['controls']) == 4 and len(receipt['cases']) == 24 and (
         all(v['result'] == 'observed' for v in [*receipt['controls'], *receipt['cases']])):
         receipt.update(result='observed', masterRejectionAcceptance=True)
 except Exception as error:

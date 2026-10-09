@@ -231,3 +231,16 @@ joins it, and then seals playback clones. Every existing clone immutability
 assertion remains required. No production source has changed.
 The Version 2 metadata fixture now uses the generated master writer with its
 real initialization. It does not supply an actual source packet proof.
+
+At `11733ff6`, both actual V1/V2 positive controls passed HEAD and the
+13-request GET journey with 480 exact source frames and unchanged cache.
+All 24 malformed-master cases executed; 23 failed. V2 missing stream tags
+and duplicate renditions caused cache writes and 12 source encoders each.
+Receipt SHA256: `f7e860598c35fa67c95f7df8b30c62036538bd2058c89c27c43391b01b229422`.
+The pending-clock controls freeze metadata between master publication and
+clock commit. They test GET/HEAD admission and committed HTTP delivery,
+and reject a damaged present tag before preparation. They provide metadata
+scheduling evidence, not actual source-clock or media acceptance.
+A public old-format control removes only the bandwidth marker from genuine
+Version 1 media, then compares baseline/candidate bytes and 480 source frames.
+Pending owner-root and preflight-to-deletion races remain release blockers.
