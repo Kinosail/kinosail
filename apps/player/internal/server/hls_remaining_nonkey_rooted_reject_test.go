@@ -44,6 +44,9 @@ func TestRemainingNonKeyRootedPrivateRejectsBeforeProbe(t *testing.T) {
 			manager.probe.executable = remainingNonKeyRootedProcess(t, ffprobe, marker, "")
 			manager.ffmpeg = remainingNonKeyRootedProcess(t, ffmpeg, marker, "")
 			policy := remainingNonKeyRootedInvalidInput(t, fixture, damage)
+			fixture.initialization = remainingNonKeyCollectorRead(t, filepath.Join(fixture.directory, "init.mp4"), 2<<20)
+			fixture.first = remainingNonKeyCollectorRead(t, filepath.Join(fixture.directory, "segment-00000.m4s"), 64<<20)
+			fixture.unchanged(t) // Seal deliberate damage before the rejected call.
 			proof, facts, err := manager.measureCopiedHLSPrivateSourceAudio(ctx, fixture.item, fixture.recipe, policy, fixture.directory)
 			if err == nil || proof != nil || facts != nil {
 				t.Fatal("nonkey malformed or unbound private input acquired source identity")
@@ -51,6 +54,7 @@ func TestRemainingNonKeyRootedPrivateRejectsBeforeProbe(t *testing.T) {
 			if _, err := os.Lstat(marker); !os.IsNotExist(err) {
 				t.Fatal("nonkey invalid private input launched a source process")
 			}
+			fixture.unchanged(t)
 			remainingNonKeyCollectorReserved(t, manager)
 			remainingNonKeyRootedLeaseReleased(t, manager)
 			if remainingNonKeyRootedFDCount(t, manager.cache) != 0 {

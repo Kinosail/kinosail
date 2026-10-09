@@ -140,6 +140,7 @@ func TestRemainingNonKeyRootedPrivateCanceledAcquisition(t *testing.T) {
 	fixture := remainingNonKeyRootedFixtureFor(t, ctx, ffmpeg, ffprobe, sources[0], 12.5)
 	request, cancel := context.WithCancel(ctx)
 	cancel()
+	before := remainingNonKeyRootedFDCount(t, fixture.manager.cache)
 	started := time.Now()
 	assets, err := fixture.manager.openCopiedHLSPrivateAssets(request, fixture.directory)
 	if assets != nil {
@@ -147,6 +148,9 @@ func TestRemainingNonKeyRootedPrivateCanceledAcquisition(t *testing.T) {
 	}
 	if err == nil || assets != nil || time.Since(started) > 2*time.Second {
 		t.Fatal("nonkey canceled rooted acquisition opened private assets")
+	}
+	if remainingNonKeyRootedFDCount(t, fixture.manager.cache) != before {
+		t.Fatal("nonkey canceled private acquisition leaked a descriptor")
 	}
 	fixture.unchanged(t)
 }

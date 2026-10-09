@@ -71,12 +71,16 @@ func TestRemainingNonKeyRootedPrivateDirectoryBounds(t *testing.T) {
 		t.Run(damage, func(t *testing.T) {
 			fixture := remainingNonKeyRootedFixtureFrom(t, ctx, ffmpeg, ffprobe, sources[0], 12.5, base.initialization, base.first)
 			directory := remainingNonKeyRootedInvalidDirectory(t, fixture, damage)
+			before := remainingNonKeyRootedDirectoryFDCount(t, fixture.manager.cache, directory)
 			assets, err := fixture.manager.openCopiedHLSPrivateAssets(ctx, directory)
 			if assets != nil {
 				assets.close()
 			}
 			if err == nil || assets != nil {
 				t.Fatal("nonkey rooted acquisition opened an unbound private directory")
+			}
+			if remainingNonKeyRootedDirectoryFDCount(t, fixture.manager.cache, directory) != before {
+				t.Fatal("nonkey invalid private directory leaked a descriptor")
 			}
 		})
 	}
@@ -155,4 +159,11 @@ func remainingNonKeyRootedInvalidFile(t *testing.T, fixture remainingNonKeyRoote
 	if err != nil {
 		t.Fatal("rooted private invalid file fixture construction")
 	}
+}
+
+func remainingNonKeyRootedDirectoryFDCount(t *testing.T, cache, directory string) int {
+	t.Helper()
+	return remainingNonKeyRootedFDCount(t, cache) +
+		remainingNonKeyRootedFDCount(t, cache+".held") +
+		remainingNonKeyRootedFDCount(t, directory)
 }
