@@ -52,8 +52,12 @@ func TestCopiedAACPartialReadDoesNotAdoptOrCancelForeignJob(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
 	defer cancel(context.Canceled)
 	cancellations := 0
-	job := &hlsJob{lifecycle: ctx, done: make(chan struct{}), cachePolicy: "unrelated-policy",
-		cancel: func(cause error) { cancellations++; cancel(cause) }}
+	job := &hlsJob{
+		lifecycle:   ctx,
+		done:        make(chan struct{}),
+		cachePolicy: "unrelated-policy",
+		cancel:      func(cause error) { cancellations++; cancel(cause) },
+	}
 	key := hlsRecipeKey(item.ID, recipe)
 	manager.jobs[key] = job
 	before := copiedAACPartialSnapshot(t, directory)
