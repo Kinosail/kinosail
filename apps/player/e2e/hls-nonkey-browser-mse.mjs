@@ -1,6 +1,6 @@
 // Raw MSE decoder counterfactual; original public assets and app cases remain untouched.
 import {createHash} from 'node:crypto';
-import {colorArm,colorFacts,colorFrameQualification} from './hls-nonkey-browser-color.mjs';
+import {colorArm,colorFacts,colorFrameQualification,colorSeekSetupQualification} from './hls-nonkey-browser-color.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 async function delivered(context,origin,item,joined){
   const entries=Object.entries(item.publicAssetSHA256);
@@ -62,6 +62,15 @@ async function installMSE(input){
   const button=document.createElement('button');button.id='nonkey-color-play';button.textContent='Play diagnostic';
   button.onclick=()=>video.play().catch(()=>{window.nonkeyColorPlayFailed=true;});document.body.append(button);
 }
+
+function mseSetupState(){
+  const v=document.querySelector('video');
+  return {readyState:v.readyState,rawTime:v.currentTime,rawDuration:Number.isFinite(v.duration)?v.duration:null,
+    durationKind:Number.isFinite(v.duration)?'finite':v.duration===Infinity?'infinite':'unknown',
+    buffered:Array.from({length:v.buffered.length},(_,n)=>[v.buffered.start(n),v.buffered.end(n)]),
+    seekable:Array.from({length:v.seekable.length},(_,n)=>[v.seekable.start(n),v.seekable.end(n)]),
+    mediaSourceState:window.nonkeyColorMedia.readyState,errorCode:v.error?.code||0};
+}
 export async function observeMSEColors(context,origin,item,joined,reference,referenceComplete,retained){
   let original;
   try{
@@ -100,10 +109,14 @@ export async function observeMSEColors(context,origin,item,joined,reference,refe
         v.index===n && v.bytes===pieces[n].length && v.sha256===sha(pieces[n]) && v.outcome==='updateend') &&
         row.appendedMetadata.joinedSHA256===generated.facts.joinedSHA256;
       if(!row.appendedBytesVerified)throw Error('color_actual_append_binding');
-      await page.waitForFunction(()=>document.querySelector('video')?.readyState>=2,{},{timeout:20000});
-      row.beforeSeek=await page.locator('video').evaluate(v=>({rawTime:v.currentTime,rawDuration:v.duration,
-        buffered:Array.from({length:v.buffered.length},(_,n)=>[v.buffered.start(n),v.buffered.end(n)]),
-        seekable:Array.from({length:v.seekable.length},(_,n)=>[v.seekable.start(n),v.seekable.end(n)])}));
+      row.afterAppend=await page.evaluate(mseSetupState);
+      row.currentStage='raw-mse-metadata-readiness';
+      await page.waitForFunction(()=>document.querySelector('video')?.readyState>=1 ||
+        document.querySelector('video')?.error,{},{timeout:20000});
+      row.beforeSeek=await page.evaluate(mseSetupState);
+      row.seekSetupQualification=colorSeekSetupQualification(row.beforeSeek,item.request);
+      if(!row.seekSetupQualification.qualified)throw Error('color_target_range_not_ready');
+      row.currentStage='raw-mse-measured-source-seek';
       row.forceSeek=await page.evaluate(async target=>{
         const video=document.querySelector('video');window.nonkeyBeginPhase('raw-mse-explicit-source-seek');
         let seeking=false,seeked=false;
@@ -114,6 +127,10 @@ export async function observeMSEColors(context,origin,item,joined,reference,refe
         finally{video.removeEventListener('seeking',first);video.removeEventListener('seeked',last);}
         return {requestedSourceCoordinate:target,seeking,seeked,rawTime:video.currentTime,diagnosticOnly:true};
       },item.request);
+      if(!row.forceSeek.seeking || !row.forceSeek.seeked ||
+        Math.abs(row.forceSeek.rawTime-item.request)>0.000001)throw Error('color_seek_not_measured');
+      row.currentStage='raw-mse-positioned-frame-readiness';
+      await page.waitForFunction(()=>document.querySelector('video')?.readyState>=2,{},{timeout:20000});
       row.currentStage='raw-mse-complete-presented-EOF';
       await page.locator('#nonkey-color-play').click({timeout:10000});
       await page.waitForFunction(()=>window.nonkeyColorPlayFailed || window.nonkeyObservation?.active?.ended,{},{timeout:85000});

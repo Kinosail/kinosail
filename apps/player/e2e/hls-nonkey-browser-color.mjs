@@ -82,10 +82,20 @@ export function colorFrameQualification(row,reference,expected){
     config?.mode==='segments' && config.appendWindowStart===0 && config.appendWindowEnd==='Infinity' &&
     config.timestampOffset===row.requestedSource && clock?.qualified===true &&
     clock.timestampOffset===row.requestedSource && clock.firstClipPTSSeconds===-0.5 && clock.firstSourcePTSSeconds===12;
-  const healthy=configured && row.endOfStreamReturned===true && row.mediaSourceState==='ended' && row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
+  const healthy=configured && row.seekSetupQualification?.qualified===true && row.endOfStreamReturned===true && row.mediaSourceState==='ended' && row.result==='observed' && row.referenceComplete===true && row.publicVideoSuffixQualified===true &&
     row.deliveredBytesVerified===true && row.metadataByteIdentity===true && row.appendedBytesVerified===true &&
     row.adapter?.rawMSE===true && !row.pageErrors && !row.snapshotFailure && row.appendFailures?.length===0 &&
     phase.firstCallbackGap===0 && phase.quality?.droppedVideoFrames===0;
   return {...frame,qualified:Boolean(frame.qualified && healthy && seek),
     scope:'Isolated raw MSE video component; no app, audio, native or production acceptance'};
+}
+
+export function colorSeekSetupQualification(value,target){
+  const ranges=rows=>Array.isArray(rows) && rows.length>0 && rows.length<=64 && rows.every((v,n)=>
+    Array.isArray(v) && v.length===2 && v.every(Number.isFinite) && v[0]>=0 && v[1]>v[0] &&
+    (n===0 || rows[n-1][1]<=v[0])) && rows.some(v=>v[0]<=target && target<v[1]);
+  return {qualified:Boolean(value && target===12.5 && Number.isInteger(value.readyState) &&
+    value.readyState>=1 && value.readyState<=4 && Number.isFinite(value.rawTime) && value.rawTime>=0 &&
+    value.errorCode===0 && value.mediaSourceState==='ended' && ranges(value.buffered) && ranges(value.seekable)),
+    requestedSource:target,scope:'Measured metadata and target coverage before position-dependent frame readiness'};
 }
