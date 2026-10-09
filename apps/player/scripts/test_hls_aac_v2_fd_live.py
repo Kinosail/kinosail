@@ -27,10 +27,10 @@ class ActualFDObserverControls(unittest.TestCase):
         check(os.name == 'posix' and hasattr(os, 'WNOWAIT'), 'fd_live_linux_required')
         cls.guard = DiagnosticDeadline(120)
         cls.guard.__enter__()
-        cls.run = ROOT / '.verification/hls-aac-fd-observer/live'
-        cls.run.mkdir(parents=True)
-        regular, _ = fixture(cls.run, 'regular', 48, ','.join(str(v) for v in range(0,32,2)), frames=768)
-        cls.source = cls.run / 'Fixture.mp4'
+        cls.fixture_directory = ROOT / '.verification/hls-aac-fd-observer/live'
+        cls.fixture_directory.mkdir(parents=True)
+        regular, _ = fixture(cls.fixture_directory, 'regular', 48, ','.join(str(v) for v in range(0,32,2)), frames=768)
+        cls.source = cls.fixture_directory / 'Fixture.mp4'
         result = subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(regular),
             '-map', '0:v:0', '-map', '0:a:0', '-c', 'copy', str(cls.source)],
             capture_output=True, timeout=30)
@@ -46,7 +46,7 @@ class ActualFDObserverControls(unittest.TestCase):
         check(not self.owners, 'fd_live_previous_owner_unresolved')
         self.row = {'case': self._testMethodName, 'result': 'failed'}
         self.cases.append(self.row)
-        self.directory = self.run / self._testMethodName
+        self.directory = self.fixture_directory / self._testMethodName
         self.directory.mkdir()
 
     def alias(self, retained):
@@ -189,7 +189,7 @@ class ActualFDObserverControls(unittest.TestCase):
                 'retainedSourcesClosedAfterJoin': all(v.closed for v in cls.retained),
                 'cases': cls.cases, 'workerAcceptance': False, 'publicGETAcceptance': False,
                 'executedScriptSHA256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
-            (cls.run.parent / 'live-receipt.json').write_text(json.dumps(evidence, sort_keys=True) + chr(10))
+            (cls.fixture_directory.parent / 'live-receipt.json').write_text(json.dumps(evidence, sort_keys=True) + chr(10))
             print(json.dumps({'liveContractProjection': evidence}, sort_keys=True), flush=True)
         cls.guard.__exit__()
         check(not cls.owners and evidence['sourceUnchanged']

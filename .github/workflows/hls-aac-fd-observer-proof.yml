@@ -73,7 +73,11 @@ jobs:
         timeout-minutes: 2
         with:
           name: aac-fd-observer-${{ github.sha }}
-          path: .verification/hls-aac-fd-observer
+          path: |
+            .verification/hls-aac-fd-observer/receipt.json
+            .verification/hls-aac-fd-observer/live-receipt.json
+            .verification/hls-aac-fd-observer/contracts.txt
+            .verification/hls-aac-fd-observer/SHA256SUMS
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

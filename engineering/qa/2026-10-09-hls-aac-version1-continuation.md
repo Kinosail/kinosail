@@ -126,3 +126,12 @@ The exact permitted startup HLS fixture must count as owned activity.
 The generated wrapper must capture its actual other FD target, rather than the expected original fixture's identity.
 Commands retain source FDs until every owned group has two zero observations; source SHA, file/log/time bounds and unresolved owners are recorded.
 Initial-source replacement, transient /proc races, real Server lifecycle/migration, and public GET remain held.
+
+## Preserved live-run setup failure
+
+Head `3fcca4d300da3f59f5f980acd8cc0f1d93214892` / tree `8caf4c8a0952da92e36e83d2cc9d8edf9f82ddae` failed run38003222258 before any live assertion.
+The fixture-directory attribute shadowed unittest's run method; the corrected name changes no live oracle.
+All20 captured/sampler controls passed again; this attempt qualifies no new live regression.
+Artifact11650270839 and API archive digest `sha256:d3589afd7813fa9ffcda219ed14475e5dbffa1f7ce4f3e31855d5fe250469e32` remain preserved.
+Future uploads select only receipts, contract text and checksum files; public fixture files and private codec/capture logs remain on the hosted runner.
+Production and all compatibility/ownership gates remain unchanged.
