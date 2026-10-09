@@ -4,6 +4,7 @@ import {createReadStream} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {chromium} from '@playwright/test';
 import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification,directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
+import {observeJoinedPublic} from './hls-nonkey-browser-joined.mjs';
 import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
@@ -179,6 +180,7 @@ try{
   if(terminated)throw Error('handled_browser_termination');
   browser=await chromium.connect(browserServer.wsEndpoint(),{timeout:15000});
   result.browserVersion=browser.version();
+  console.log(JSON.stringify({actualBrowserRuntime:{version:result.browserVersion,binary:result.browserBinary}}));
   context=await browser.newContext({extraHTTPHeaders:{Authorization:'Bearer '+config.token},viewport:{width:960,height:720}});
   await context.addInitScript(installBrowserObserver);
   result.referenceScope='Same-browser complete coded AVC source; original source packet-copy remux, no lossless encoder claim';
@@ -210,6 +212,11 @@ try{
       qualification:result.referenceAudioContextQualification}));
   }finally{await calibrationPage.close();}
   for(const item of config.cases){
+    const joinedBytes=await readFile(item.publicJoinedPath);
+    for(const label of ['joined-direct-unseeked','joined-direct-explicit-zero']){
+      const row=await observeJoinedPublic(context,config.origin,item,joinedBytes,reference?.rows||[],label,result.referenceComplete);
+      result.cases.push(row);console.log(JSON.stringify({joinedDirect:safeBrowserProjection(row)}));
+    }
     if(terminated)throw Error('handled_browser_termination');
     for(const label of ['unchanged-client','forced-source-coordinate-seek']){
       const row=await observe(config.itemID,item.request,label);

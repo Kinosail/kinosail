@@ -33,6 +33,19 @@ export function directReferenceQualification(row,reference,expected){
     phase.quality?.droppedVideoFrames===0;
   return {...frame,qualified:Boolean(frame.qualified && healthy)};
 }
+export function joinedFrameQualification(row,reference,expected){
+  const phase=row.observer?.phases?.at(-1);
+  if(!phase)return {qualified:false,reason:'missing_observer'};
+  const frame=frameQualification(phase,reference,expected);
+  const seek=row.label!=='joined-direct-explicit-zero' ||
+    row.forceSeek?.requestedLocal===0 && row.forceSeek?.seeking && row.forceSeek?.seeked;
+  const healthy=row.result==='observed' && row.joinedBytesVerified===true &&
+    row.publicVideoSuffixQualified===true && row.referenceComplete===true &&
+    !row.pageErrors && !row.snapshotFailure && phase.firstCallbackGap===0 &&
+    phase.quality?.droppedVideoFrames===0;
+  return {...frame,qualified:Boolean(frame.qualified && healthy && seek)};
+}
+
 export function completeAudioQualification(value, expected) {
   return {qualified:Boolean(value.completeDecode && value.sampleRate===48000 && value.channels===2 &&
     value.samples===expected.samples && value.s16leSHA256===expected.sha256),
