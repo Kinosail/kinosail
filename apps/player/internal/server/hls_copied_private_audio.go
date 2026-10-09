@@ -1,6 +1,9 @@
 package server
 
-import "context"
+import (
+	"context"
+	"crypto/sha256"
+)
 
 type copiedHLSPrivateAudioFacts struct {
 	FirstPacket       [32]byte
@@ -11,7 +14,32 @@ type copiedHLSPrivateAudioFacts struct {
 	Timescale         uint32
 }
 
-// No caller, certificate or cache admission exists for private audio yet.
-func parseCopiedHLSPrivateAudio(context.Context, []byte, []byte) (*copiedHLSPrivateAudioFacts, error) {
-	return nil, errCopiedHLSIndex
+// These facts describe bounded byte snapshots, not a source, generation or
+// readiness certificate. Rooted acquisition and all presentation proofs remain
+// separate requirements before any production caller can publish these assets.
+func parseCopiedHLSPrivateAudio(ctx context.Context, initialization, fragment []byte) (*copiedHLSPrivateAudioFacts, error) {
+	if ctx.Err() != nil || len(initialization) == 0 || len(initialization) > 2<<20 ||
+		len(fragment) == 0 || len(fragment) > 64<<20 {
+		return nil, errCopiedHLSIndex
+	}
+	tracks, err := copiedHLSPrivateInitialization(initialization)
+	if err != nil {
+		return nil, err
+	}
+	packet, err := copiedHLSPrivateFirstAudio(ctx, fragment, tracks)
+	if err != nil {
+		return nil, err
+	}
+	facts := &copiedHLSPrivateAudioFacts{
+		FirstPacket:       sha256.Sum256(packet),
+		Initialization:    sha256.Sum256(initialization),
+		First:             sha256.Sum256(fragment),
+		OriginalMediaTime: tracks.audio.edit,
+		TrackID:           tracks.audio.id,
+		Timescale:         tracks.audio.scale,
+	}
+	if ctx.Err() != nil {
+		return nil, errCopiedHLSIndex
+	}
+	return facts, nil
 }
