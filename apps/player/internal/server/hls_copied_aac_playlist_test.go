@@ -51,7 +51,7 @@ func TestCopiedAACPlaylistRejectsMissingBindingWithoutMutation(t *testing.T) {
 	if err := os.Rename(filepath.Join(directory, ".source"), filepath.Join(directory, ".source-hidden")); err != nil {
 		t.Fatal(err)
 	}
-	missing := copiedRecoveryPreserved(t, directory)
+	missing := copiedAACPlaylistSnapshot(t, directory)
 	for _, name := range []string{"index.m3u8", "360p/index.m3u8", "720p/index.m3u8"} {
 		writer := httptest.NewRecorder()
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/"+name, nil)
