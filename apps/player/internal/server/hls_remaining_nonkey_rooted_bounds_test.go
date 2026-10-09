@@ -118,17 +118,7 @@ func TestRemainingNonKeyRootedPrivateRetainsBothFiles(t *testing.T) {
 	if err != nil || assets == nil {
 		t.Fatal("nonkey valid rooted private files were not opened")
 	}
-	entries, err := os.ReadDir("/proc/self/fd")
-	if err != nil {
-		t.Fatal("rooted private opened file witness")
-	}
-	found := map[string]bool{}
-	for _, entry := range entries {
-		target, err := os.Readlink(filepath.Join("/proc/self/fd", entry.Name()))
-		if err == nil && strings.HasPrefix(target, fixture.directory+string(os.PathSeparator)) {
-			found[filepath.Base(target)] = true
-		}
-	}
+	found := remainingNonKeyRootedOpenedFiles(t, fixture.directory)
 	if !found["init.mp4"] || !found["segment-00000.m4s"] {
 		t.Fatal("nonkey private acquisition did not retain both file descriptors before reading")
 	}
@@ -166,4 +156,20 @@ func remainingNonKeyRootedDirectoryFDCount(t *testing.T, cache, directory string
 	return remainingNonKeyRootedFDCount(t, cache) +
 		remainingNonKeyRootedFDCount(t, cache+".held") +
 		remainingNonKeyRootedFDCount(t, directory)
+}
+
+func remainingNonKeyRootedOpenedFiles(t *testing.T, directory string) map[string]bool {
+	t.Helper()
+	entries, err := os.ReadDir("/proc/self/fd")
+	if err != nil {
+		t.Fatal("rooted private opened file witness")
+	}
+	found := map[string]bool{}
+	for _, entry := range entries {
+		target, err := os.Readlink(filepath.Join("/proc/self/fd", entry.Name()))
+		if err == nil && strings.HasPrefix(target, directory+string(os.PathSeparator)) {
+			found[filepath.Base(target)] = true
+		}
+	}
+	return found
 }
