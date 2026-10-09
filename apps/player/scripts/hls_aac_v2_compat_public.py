@@ -59,7 +59,7 @@ def responses(owner, steps):
     return result
 
 
-def fault(cache, name):
+def fault(cache, name, witness=None):
     timelines = sorted(cache.glob('*/.copy-timeline'))
     check(len(timelines) == 1, 'compat_indexed_generation_count')
     timeline = timelines[0]
@@ -84,7 +84,11 @@ def fault(cache, name):
     else:
         data = bytearray(bounded_bytes(path, 2 << 20, 'compat_fault_bound'))
         check(len(data) > 16, 'compat_fault_minimum')
-        data[len(data) // 2] ^= 1
+        offset = len(data) // 2
+        before = bytes(data)
+        data[offset] ^= 1
+        if witness is not None and name == 'wrong-master':
+            witness.update(master_mutation(before, bytes(data), offset))
         path.write_bytes(data)
 
 
@@ -150,3 +154,47 @@ def seed_prefix(cache, witness):
     check(len(physical) == 11, 'compat_prefix_all_certified_assets_physical')
     check(timeline['Policy'] == bounded_bytes(directory / '.source', 16 << 10,
         'compat_prefix_binding_bound').decode(), 'compat_prefix_whole_binding')
+
+
+def master_mutation(before, after, offset):
+    start, end = before.rfind(b'\n', 0, offset) + 1, before.find(b'\n', offset)
+    end = len(before) if end < 0 else end
+    left, right = before[start:end].decode('ascii'), after[start:end].decode('ascii')
+    families = {'#EXTM3U': 'header', '#KINOSAIL-TRANSCODER': 'source-binding',
+        '#KINOSAIL-BANDWIDTH': 'bandwidth-policy', '#EXT-X-VERSION': 'version',
+        '#EXT-X-INDEPENDENT-SEGMENTS': 'independent', '#EXT-X-STREAM-INF': 'stream-inf'}
+    tag = left.split(':', 1)[0]
+    family = families.get(tag, 'other')
+    attribute, original_valid, mutated_valid = 'none', None, None
+    if family == 'stream-inf':
+        position = offset - start
+        fields = list(re.finditer(r'([A-Z-]+)=("[^"]*"|[^,]*)', left))
+        for field in fields:
+            if field.start() <= position < field.end():
+                attribute = field[1] if field[1] in ['BANDWIDTH', 'AVERAGE-BANDWIDTH',
+                    'CODECS', 'RESOLUTION', 'FRAME-RATE', 'VIDEO-RANGE', 'CLOSED-CAPTIONS'] else 'other'
+                original_valid = master_attribute_syntax(attribute, field[2])
+                mutated = next((match[2] for match in re.finditer(r'([A-Z-]+)=("[^"]*"|[^,]*)', right)
+                    if match[1] == field[1]), None)
+                mutated_valid = mutated is not None and master_attribute_syntax(attribute, mutated)
+                break
+    else:
+        fixed = {'header': '#EXTM3U', 'bandwidth-policy': '#KINOSAIL-BANDWIDTH:2',
+            'version': '#EXT-X-VERSION:7', 'independent': '#EXT-X-INDEPENDENT-SEGMENTS'}
+        if family in fixed:
+            original_valid, mutated_valid = left == fixed[family], right == fixed[family]
+    return {'offset': offset, 'lineOffset': offset - start, 'byteBefore': before[offset],
+        'byteAfter': after[offset], 'tagFamily': family, 'attribute': attribute,
+        'originalFieldSyntaxValid': original_valid, 'mutatedFieldSyntaxValid': mutated_valid,
+        'originalMasterSHA256': hashlib.sha256(before).hexdigest(),
+        'mutatedMasterSHA256': hashlib.sha256(after).hexdigest()}
+
+
+def master_attribute_syntax(name, value):
+    patterns = {'BANDWIDTH': r'[1-9][0-9]{0,12}', 'AVERAGE-BANDWIDTH': r'[1-9][0-9]{0,12}',
+        'CODECS': r'"avc[13]\.[0-9a-fA-F]{6},mp4a\.40\.[1-9][0-9]?"',
+        'RESOLUTION': r'[1-9][0-9]{0,5}x[1-9][0-9]{0,5}',
+        'FRAME-RATE': r'[1-9][0-9]{0,2}(?:\.[0-9]{1,3})?',
+        'VIDEO-RANGE': r'SDR|PQ|HLG', 'CLOSED-CAPTIONS': r'NONE'}
+    pattern = patterns.get(name)
+    return pattern is not None and re.fullmatch(pattern, value) is not None

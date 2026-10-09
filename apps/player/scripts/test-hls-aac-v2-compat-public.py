@@ -81,7 +81,7 @@ def arm(label, method, asset, candidate, baseline, seed_cache, selected, invalid
         owner.stop()
         check(snapshot(directory / 'cache') == original, 'compat_baseline_stop_changed_cache')
         if invalid:
-            fault(directory / 'cache', invalid)
+            fault(directory / 'cache', invalid, row.setdefault('faultControl', {}))
             original = snapshot(directory / 'cache')
         owner.start()
         if warm:
@@ -290,7 +290,7 @@ finally:
             'cases': [{k: v.get(k) for k in ['label', 'result', 'failureClass', 'baselineStatuses', 'statuses',
                 'cacheUnchanged', 'sourceCalls', 'sourceUnchanged', 'olderClientPlaylistPlayable',
                 'baselineRestoredExactBody', 'exactBaselineBodies', 'baselineDecodedFrames', 'candidateDecodedFrames',
-                'warm', 'warmMissingBindingRejectedWithoutWrites', 'diagnostics']} for v in receipt['cases']],
+                'warm', 'warmMissingBindingRejectedWithoutWrites', 'diagnostics', 'faultControl']} for v in receipt['cases']],
             'completeAdoptedVersion1Acceptance': receipt['completeAdoptedVersion1Acceptance'],
             'olderClientAcceptance': False, 'releaseBlocker': receipt['releaseBlocker'],
             'productionAcceptance': False, 'nativeAcceptance': False}), flush=True)

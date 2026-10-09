@@ -164,3 +164,31 @@ Quality counterevidence is also preserved. The first head failed the 300-line
 test-file cap. Its test-only split 675c63c1760a5a17a27a6b85fea7492943a631df passed
 that cap and contracts, then exposed five formatting, complexity and inventory
 filesystem findings. Repair them without suppressions or weakened checks.
+
+
+## Preserved prefix-reader result and master admission gap
+
+Exact c845ee45d9874b51cfa806f7e4656ae2adafc46e completed all 39 public cases.
+Run: https://github.com/Kinosail/kinosail/actions/runs/37985912538
+Receipt SHA256: d5b859bc1f50bdff5108a0b7de214e323e5b4423c5153c980e9c5e75653144a9.
+Artifact: 11643713118. GitHub archive metadata digest:
+60d9748ba4d51919c6a0dc89f16b4d182b1b8ddbab2b1ee7506777db866c90a0.
+
+The genuine physical EVENT prefix contains four cuts, no ENDLIST and all eleven
+physical assets. All eighteen complete-cache playback controls and eleven
+query controls match baseline bodies and statuses. The journey matches
+480 decoded source frames. All cases preserved cache and source and used
+zero candidate source encoders. Nine malformed-cache controls reject.
+
+The wrong-master control alone returned 200. Complete Version1 acceptance
+remains false. The shared master selector skips every non-policy comment/tag.
+The old receipt lacks the mutation coordinate and enclosing tag or attribute.
+A diagnostic-only child records fixed-enum tag/attribute names, integer byte
+coordinates, grammar booleans and before/after hashes before that assertion.
+It never prints manifest content, source policy or paths.
+
+Before a production correction, classify this actual mutation and write
+cross-version malformed-master controls. Preserve historical bandwidth
+estimates; existing Version1 certificates do not authenticate an arbitrary
+syntactically valid bandwidth edit. No assertion or gate may be weakened.
+Lazy continuation tests remain independently held.
