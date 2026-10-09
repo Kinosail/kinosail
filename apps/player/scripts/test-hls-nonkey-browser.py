@@ -17,7 +17,7 @@ from hls_timeline_packets import manifest_facts, fragment_audio
 from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_process import finish_processes, join_group
-from hls_nonkey_browser_public import chromium_join, public_media
+from hls_nonkey_browser_public import chromium_join, public_media, safe_transport_projection
 from hls_nonkey_browser_config import measured_delta
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -81,6 +81,7 @@ try:
         adapter = directory/'diagnostic-ffmpeg'
         adapter.write_text((ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py').read_text())
         adapter.chmod(0o700)
+        shutil.copy2(ROOT/'apps/player/scripts/hls_nonkey_browser_config.py',directory/'hls_nonkey_browser_config.py')
         receipt['currentStage']='fixed-producer-rational-config'
         producer = directory/'producer-private.json'
         producer_cases=[]
@@ -142,12 +143,16 @@ try:
                     joined,manifest,assets,delivery=public_media(api,selected,directory/('public-'+str(requested)),log_path,server,source)
                     receipt['currentStage']='complete-raw-media-observation'
                     observed={}
-                    partial={'request':requested,'observations':observed}
+                    partial={'request':requested,'observations':observed,'delivery':delivery}
                     case['publicCases'].append(partial)
+                    invocation_rows=[json.loads(row) for row in bounded_bytes(invocations,65536,'browser_invocations_bound').decode().splitlines()] if invocations.exists() else []
+                    delivery['diagnosticAdaptedInvocationCount']=sum(v.get('adapted') is True and v.get('request')==requested for v in invocation_rows)
+                    check(requested!=12.5 or delivery['diagnosticAdaptedInvocationCount']>0,'browser_fixed_recipe_never_installed')
                     metadata={'sourceFramePTS':source_facts['sourceFramePTS'],
                               'sourceTimeOriginSeconds':float(source_facts['metadata']['format']['start_time'])}
                     observed_media(source,joined,assets[0].read_bytes(),assets[1:],metadata,requested,observed)
                     tail=packet_tail(observed['sourcePacketRows'],observed['publicPacketRows'])
+                    partial['aacPayloadTail']=tail
                     check(tail['wholePublicPacketTail'],'browser_complete_aac_payload_tail')
                     expected=selected_case['observations']['mapping']['expectedSourceIndices']
                     pcm,_=native_pcm(source,requested)
@@ -229,6 +234,7 @@ try:
                     if invocations.exists():
                         rows=bounded_bytes(invocations,65536,'browser_invocations_bound').decode().splitlines()
                         case['actualProducerInvocations']=[json.loads(row) for row in rows]
+                case['safeTransportProjection']=safe_transport_projection(case)
                 if cleanup_failed:
                     case['result']='failed'
                     if primary_failure is None:raise RuntimeError('browser_server_or_source_join_failed')
@@ -271,6 +277,7 @@ finally:
         print(json.dumps({'revision':receipt['revision'],'tree':receipt['tree'],'result':receipt['result'],
             'failureClass':receipt.get('failureClass'),'currentStage':receipt.get('currentStage'),
             'safeFailureFrames':receipt.get('safeFailureFrames',[]),'rationalProducerClocks':receipt.get('rationalProducerClocks',[]),
+            'safeTransportProjection':[c.get('safeTransportProjection',{}) for c in receipt['containers']],
             'receiptSHA256':sha(target),
             'productionAcceptance':False,'preparationAcceptance':False,'browserAudioPresentationAccepted':False}))
     guard.__exit__()

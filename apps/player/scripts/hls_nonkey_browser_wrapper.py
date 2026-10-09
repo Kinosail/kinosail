@@ -2,10 +2,10 @@
 """Only the fixed synthetic ordinary-cold producer receives a diagnostic recipe."""
 import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import sys
+from hls_nonkey_browser_config import ordinary_cold_arguments
 
 config_path = Path(os.environ['KINOSAIL_BROWSER_PRODUCER_CONFIG'])
 raw = config_path.read_bytes()
@@ -15,10 +15,7 @@ config = json.loads(raw)
 arguments = sys.argv[1:]
 original = list(arguments)
 # Indexed/speculative jobs retain the published producer unchanged.
-eligible = ('-hls_time' in arguments and '-seek_timestamp' not in arguments
-            and '-start_number' in arguments and arguments[arguments.index('-start_number')+1] == '0'
-            and '-i' in arguments and arguments[arguments.index('-i')+1] == config['source']
-            and '-ss' in arguments)
+eligible = ordinary_cold_arguments(arguments,config['source'])
 if eligible:
     selected = float(arguments[arguments.index('-ss')+1])
     cases = [v for v in config['cases'] if abs(v['request']-selected) <= 0.000001]
@@ -39,14 +36,24 @@ if eligible:
         arguments[arguments.index('-hls_segment_options')+1] = options
     else:
         arguments[-1:-1] = ['-hls_segment_options', options]
-    evidence = {'pid': os.getpid(), 'parent': os.getppid(), 'request': selected,
-                'inputSeek': case['inputSeek'], 'sourceIDRPTS': case['sourceIDRPTS'],
-                'delta': case['delta'], 'measuredDeltaRational':case['measuredDeltaRational'],
-                'sourceMatched': True, 'indexedJobChanged': False,
-                'originalArgvSHA256': hashlib.sha256(json.dumps(original).encode()).hexdigest(),
-                'actualArgvSHA256': hashlib.sha256(json.dumps(arguments).encode()).hexdigest()}
-    path = Path(config['invocations'])
-    if path.exists() and path.stat().st_size > 65536:
+# Retain both adapted and bypassed fixed-source HLS workers without private argv.
+if '-hls_time' in original and '-i' in original and original[original.index('-i')+1]==config['source']:
+    def option(arguments,name,default=None):
+        return arguments[arguments.index(name)+1] if name in arguments else default
+    evidence={'pid':os.getpid(),'parent':os.getppid(),'adapted':eligible,
+        'sourceMatched':True,'indexedJobChanged':False,
+        'indexedArgumentPresent':'-seek_timestamp' in original,
+        'startNumberPresent':'-start_number' in original,
+        'startNumber':option(original,'-start_number','0'),
+        'originalHLSTime':option(original,'-hls_time'),
+        'actualHLSTime':option(arguments,'-hls_time'),
+        'originalArgvSHA256':hashlib.sha256(json.dumps(original).encode()).hexdigest(),
+        'actualArgvSHA256':hashlib.sha256(json.dumps(arguments).encode()).hexdigest()}
+    if eligible:
+        evidence.update(request=selected,inputSeek=case['inputSeek'],sourceIDRPTS=case['sourceIDRPTS'],
+            delta=case['delta'],measuredDeltaRational=case['measuredDeltaRational'])
+    path=Path(config['invocations'])
+    if path.exists() and path.stat().st_size>65536:
         raise SystemExit('diagnostic_invocation_bound')
     with path.open('a') as stream:
         stream.write(json.dumps(evidence)+'\n')

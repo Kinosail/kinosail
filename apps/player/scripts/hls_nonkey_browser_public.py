@@ -73,7 +73,7 @@ def public_media(api, selected, directory, log_path, server, source):
     facts,names=manifest_facts(manifest)
     check(0<len(names)<=32,'browser_public_asset_count')
     evidence={'initialMasterSHA256':hashlib.sha256(master).hexdigest(),
-        'initialVariantSHA256':hashlib.sha256(manifest).hexdigest(),'initialVariantFacts':facts,
+        'initialVariantSHA256':hashlib.sha256(manifest).hexdigest(),'initialVariantFacts':facts,'initialSegmentNames':[v for v,_ in names],
         'publicEndlistScope':'Public projection observation; not physical producer EOF',
         'initialAssetFailures':[],'initialAssets':{},'finalAssets':{},'rendition':rendition}
     assets=[]
@@ -112,7 +112,9 @@ def public_media(api, selected, directory, log_path, server, source):
     status,final_manifest=get(prefix+'index.m3u8')
     check(status==200 and len(final_manifest)<=65536,'browser_final_public_variant')
     evidence['finalVariantSHA256']=hashlib.sha256(final_manifest).hexdigest()
-    evidence['finalVariantFacts']=manifest_facts(final_manifest)[0]
+    final_facts,final_names=manifest_facts(final_manifest)
+    evidence['finalVariantFacts']=final_facts
+    evidence['finalSegmentNames']=[v for v,_ in final_names]
     for path in assets:
         status,data=get(prefix+path.name)
         check(status==200 and 0<len(data)<=2<<20,'browser_final_public_asset')
@@ -122,3 +124,27 @@ def public_media(api, selected, directory, log_path, server, source):
             evidence['initialAssetFailures'].append('changed_public_asset:'+path.name)
     evidence['initialAssetBytesUnchanged']=not evidence['initialAssetFailures']
     return joined,manifest,assets,evidence
+
+def safe_transport_projection(case):
+    """Whitelisted facts only; raw media, argv, URLs and private server logs stay private."""
+    def edge(rows):
+        if not rows:return None
+        row=rows[0]
+        digest=row.get('data_hash','')
+        check(re.fullmatch(r'SHA256:[a-f0-9]{64}',digest),'browser_safe_packet_hash')
+        return {'pts':row.get('pts'),'ptsTime':row.get('pts_time'),'payloadSHA256':digest}
+    projections=[]
+    for value in case.get('publicCases',[]):
+        tail=value.get('aacPayloadTail',{})
+        delivery=value.get('delivery',{})
+        projections.append({'request':value['request'],
+            'aac':{k:tail.get(k) for k in ['sourcePackets','publicPackets','sequenceMatches','uniqueSourceStart','wholePublicPacketTail','packetsTrimmed']},
+            'firstSourceAAC':edge(tail.get('completeSourceRows',[])),
+            'lastSourceAAC':edge(tail.get('completeSourceRows',[])[-1:]),
+            'firstPublicAAC':edge(tail.get('completePublicRows',[])),
+            'lastPublicAAC':edge(tail.get('completePublicRows',[])[-1:]),
+            'delivery':{k:delivery.get(k) for k in ['initialVariantFacts','finalVariantFacts','initialSegmentNames',
+                'finalSegmentNames','initialAssetBytesUnchanged','ownedFFmpegZeroSamples','workloadZeros','diagnosticAdaptedInvocationCount']}})
+    return {'container':case.get('container'),'publicCases':projections,
+        'producerInvocations':case.get('actualProducerInvocations',[]),
+        'sourceUnchanged':case.get('sourceUnchanged'),'referenceUnchanged':case.get('referenceUnchanged')}
