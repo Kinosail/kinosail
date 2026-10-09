@@ -63,8 +63,11 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	if !ready {
 		return
 	}
-	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
-		return
+	if filepath.Ext(name) == ".m3u8" {
+		if manager.serveCopiedAACPlaylist(writer, request, item, recipe, localName, key, start, hlsPlaybackDuration(recipe, duration)) ||
+			serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
+			return
+		}
 	}
 	if filepath.Ext(name) == ".m4s" {
 		if !manager.waitForRecipeSegment(request, item, recipe, name, key, path) {
@@ -175,6 +178,12 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		localizedNotFound(writer, request)
 		return true
 	}
+	return writeHLSPlaylist(writer, request, hlsPlaylistSessionData(request, manifest, start, duration, projection...))
+}
+
+func hlsPlaylistSessionData(request *http.Request, manifest []byte, start int, duration float64, projection ...func([]byte) []byte) []byte {
+	playID := jellyfinPlaySessionQuery(request)
+	if playID != "" && !validPlaybackSession(playID) { return nil }
 	if playID == "" {
 		manifest = projectHLSPlaylist(manifest, duration, projection...)
 		if session := requestPlaybackSession(request.Context()); validPlaybackSession(session) {
@@ -184,11 +193,18 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
 	}
 	if manifest == nil {
-		localizedNotFound(writer, request)
-		return true
+		return nil
 	}
 	if ticket, ok := request.Context().Value(castTicketKey{}).(string); ok {
 		manifest = hlsPlaylistWithQuery(manifest, url.Values{"ticket": {ticket}})
+	}
+	return manifest
+}
+
+func writeHLSPlaylist(writer http.ResponseWriter, request *http.Request, manifest []byte) bool {
+	if manifest == nil {
+		localizedNotFound(writer, request)
+		return true
 	}
 	writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 	writer.Header().Set("X-Content-Type-Options", "nosniff")
@@ -196,6 +212,7 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	_, _ = writer.Write(manifest)
 	return true
 }
+
 
 func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, duration float64, projection ...func([]byte) []byte) []byte {
 	query := url.Values{"playSessionId": {playID}}
