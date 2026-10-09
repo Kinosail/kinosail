@@ -13,6 +13,7 @@ from hls_remaining_nonkey_evidence import native_pcm
 from hls_remaining_process import group_members
 from hls_nonkey_browser_audio_boundary import retained_audio_boundary, retained_source_boundary
 from hls_nonkey_browser_packet_association import packet_association
+from hls_nonkey_browser_packet_clock import packet_clock
 
 def chromium_join(node, path):
     if not path.exists():
@@ -147,7 +148,9 @@ def safe_transport_projection(case):
             'firstPublicAAC':edge(tail.get('completePublicRows',[])),
             'lastPublicAAC':edge(tail.get('completePublicRows',[])[-1:]),
             'aacPayloadAssociation':packet_association(tail),
+            'aacPacketClock':packet_clock(tail,retained_audio_boundary(value.get('observations',{}))),
             'audioBoundaryFacts':retained_audio_boundary(value.get('observations',{})),
+            'fragmentAudioFacts':[{k:row.get(k) for k in ['audioPackets','firstAudioTime','lastAudioEnd','audioPacketOrderValid','maximumAudioGapSeconds','maximumAudioOverlapSeconds']} for row in value.get('fragmentAudioFacts',[])],
             'delivery':{k:delivery.get(k) for k in ['initialVariantFacts','finalVariantFacts','initialSegmentNames',
                 'finalSegmentNames','initialAssetBytesUnchanged','ownedFFmpegZeroSamples','workloadZeros','diagnosticAdaptedInvocationCount']}})
     return {'container':case.get('container'),'publicCases':projections,

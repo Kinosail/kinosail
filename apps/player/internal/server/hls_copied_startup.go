@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"math"
 	"os"
@@ -65,13 +66,36 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		start := timeline.point(number)
 		floor := math.Floor(start*1_000_000) / 1_000_000
 		offset := start - timeline.point(0) + *timeline.Clock - (start - floor)
-		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
-		// The mux clock restores copied video DTS; audio already keeps its source
-		// presentation offset. Avoid adding that clock twice at a refill boundary.
-		clock := copiedHLSTime(*timeline.Clock)
-		arguments = append(arguments, "-bsf:a", "setts=pts=PTS-"+clock+"/TB:dts=DTS-"+clock+"/TB")
+		audio, err := copiedHLSRefillAudioArguments(arguments, timeline, number, floor)
+		if err != nil {
+			return nil, err
+		}
+		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset), "-bsf:a", audio)
 	}
 	return arguments, nil
+}
+
+func copiedHLSRefillAudioArguments(arguments []string, timeline *copiedHLSTimeline, number int, floor float64) (string, error) {
+	codec := ""
+	for index, option := range arguments {
+		if option == "-c:a" && index+1 < len(arguments) {
+			codec = arguments[index+1]
+		}
+	}
+	if codec != "copy" {
+		clock := copiedHLSTime(*timeline.Clock)
+		return "setts=pts=PTS-" + clock + "/TB:dts=DTS-" + clock + "/TB", nil
+	}
+	key := timeline.Keys[number]
+	if !validCopiedHLSTimeBase(timeline) || timeline.Numerator > 1<<52 || timeline.Denominator > 1<<52 ||
+		key.PTS < 0 || key.PTS > 1<<52 || key.DTS < -(1<<52) || key.DTS > key.PTS || key.DTS <= timeline.Keys[number-1].DTS {
+		return "", errCopiedHLSIndex
+	}
+	// Streamcopy rebases input packets before this BSF. The next key's DTS
+	// closes the retained audio prefix; key PTS would discard reordered audio.
+	// Preserve payload bytes and the canonical mux clock for every kept packet.
+	return fmt.Sprintf("noise=amount=0:drop=lt(pts*tb+%s\\,%d*%d/%d)",
+		copiedHLSTime(floor), key.DTS, timeline.Numerator, timeline.Denominator), nil
 }
 
 func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item library.Item, recipe hlsRecipe, directory, rendition, policy string) func([]byte) []byte {

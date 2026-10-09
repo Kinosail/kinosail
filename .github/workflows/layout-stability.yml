@@ -64,7 +64,7 @@ jobs:
         timeout-minutes: 2
         run: |
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
-          go -C apps/player test ./internal/server -run '^TestCopiedHLS(VideoPrerollDoesNotSuppressCopiedAudio|PrerollScopeKeepsLegacyAndAdmission)$' -count=1
+          go -C apps/player test ./internal/server -run '^TestCopiedHLS(VideoPrerollDoesNotSuppressCopiedAudio|PrerollScopeKeepsLegacyAndAdmission|RefillAudio.*)$' -count=1
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
       - name: Observe actual public transport and decoded presentation once
         run: |
