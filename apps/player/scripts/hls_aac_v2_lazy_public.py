@@ -48,7 +48,39 @@ def selected_path(owner):
     return item, plan['compatible'].replace('/index.m3u8', '-o12000/index.m3u8')
 
 
+def warm_probe(root, run, baseline, source, owners, witness):
+    row = witness.setdefault('probeSetup', {})
+    owner = clone_arm(root, run, 'probe-warmup', baseline, source, run / 'empty-cache', owners)
+    row.update(stage='public-planning', candidatePreparePOST=False)
+    item, _ = selected_path(owner)
+    cache = owner.directory / 'cache'
+    name = 'probes/' + hashlib.sha256(item['id'].encode()).hexdigest()[:32] + '.json'
+    state = snapshot(cache)
+    row.update(cacheEntries=len(state), onlySourceProbe=set(state) == {name},
+        sourceCalls=len(owner.source_invocation_rows()))
+    check(row['onlySourceProbe'] and row['sourceCalls'] == 0, 'lazy_probe_setup_cache_or_encoder')
+    data = json.loads(bounded_bytes(cache / name, 512 << 10, 'lazy_probe_setup_bound'))
+    stat = source.stat()
+    row.update(schema=data.get('schema'), sourceVersionMatched=data.get('version') ==
+        str(stat.st_size) + ':' + str(stat.st_mtime_ns))
+    check(row['schema'] == 3 and row['sourceVersionMatched'], 'lazy_probe_setup_source_binding')
+    row['idle'] = idle(owner.api, owner.process, source)
+    row['idleCacheUnchanged'] = snapshot(cache) == state
+    owner.stop()
+    row.update(joinedCacheUnchanged=snapshot(cache) == state,
+        finalSourceCalls=len(owner.source_invocation_rows()), sourceUnchanged=source_state(source) == owner.before,
+        sessions=owner.sessions,
+        sourceAudit=diagnostic_producer_rows(owner.invocation_rows(), source, owner.owned_pids))
+    check(row['idleCacheUnchanged'] and row['joinedCacheUnchanged'] and row['finalSourceCalls'] == 0
+        and row['sourceUnchanged'], 'lazy_probe_setup_late_mutation')
+    check(snapshot(run / 'empty-cache') == {}, 'lazy_probe_template_already_populated')
+    shutil.copytree(cache, run / 'empty-cache', dirs_exist_ok=True)
+    check(set(snapshot(run / 'empty-cache')) == {name}, 'lazy_probe_template_identity')
+    row['stage'] = 'qualified'
+
+
 def seed(root, run, baseline, source, owners, witness):
+    warm_probe(root, run, baseline, source, owners, witness)
     witness['stage'] = 'owned-start'
     owner = clone_arm(root, run, 'seed', baseline, source, run / 'empty-cache', owners)
     item, selected = selected_path(owner)
