@@ -11,6 +11,8 @@ import (
 	"runtime"
 	"testing"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 // This fixture supplies metadata only; it does not claim an actual source packet proof.
@@ -46,7 +48,12 @@ func copiedAACGenerationFixture(t *testing.T) (*hlsManager, string, *copiedAACGe
 	writeHLSLoadingFile(t, filepath.Join(directory, ".source"), options.Cache)
 	writeHLSLoadingFile(t, filepath.Join(directory, ".copy-timeline"), string(data))
 	writeHLSLoadingFile(t, filepath.Join(directory, ".copy-clock"), string(certificate))
-	writeHLSLoadingFile(t, filepath.Join(directory, "index.m3u8"), "#EXTM3U\n#KINOSAIL-TRANSCODER:"+options.Cache+"\n#EXT-X-STREAM-INF:BANDWIDTH=1000000\n360p/index.m3u8\n")
+	if err := playback.WriteMaster(filepath.Join(directory, "index.m3u8"), options.Cache, []playback.PlaybackQuality{{Label: "360p", Width: 320, Height: 180, Bitrate: 1000000, FrameRate: 24}}, false, func(path string, data []byte) error {
+		writeHLSLoadingFile(t, path, string(data))
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
 	value, err := manager.openCopiedAACGeneration(t.Context(), item, recipe, directory)
 	if err != nil {
 		t.Fatal(err)

@@ -56,6 +56,11 @@ def warm_probe(root, run, baseline, source, owners, witness):
     cache = owner.directory / 'cache'
     name = 'probes/' + hashlib.sha256(item['id'].encode()).hexdigest()[:32] + '.json'
     state = snapshot(cache)
+    initial = owner.clone_snapshot
+    row['cacheChanges'] = {'addedSourceProbe': int(name in state and name not in initial),
+        'otherAdded': sum(v != name for v in set(state) - set(initial)),
+        'removed': len(set(initial) - set(state)),
+        'changed': sum(state[v] != initial[v] for v in set(state) & set(initial))}
     row.update(cacheEntries=len(state), onlySourceProbe=set(state) == {name},
         sourceCalls=len(owner.source_invocation_rows()))
     check(row['onlySourceProbe'] and row['sourceCalls'] == 0, 'lazy_probe_setup_cache_or_encoder')
@@ -63,7 +68,16 @@ def warm_probe(root, run, baseline, source, owners, witness):
     stat = source.stat()
     row.update(schema=data.get('schema'), sourceVersionMatched=data.get('version') ==
         str(stat.st_size) + ':' + str(stat.st_mtime_ns))
-    check(row['schema'] == 3 and row['sourceVersionMatched'], 'lazy_probe_setup_source_binding')
+    facts = data.get('result', {})
+    video, audio = facts.get('Video', {}), facts.get('AudioFacts', [])
+    row['fixedFixtureFactsMatched'] = (set(data) == {'schema', 'version', 'result'}
+        and video.get('Codec') == 'h264' and video.get('Width') == 640
+        and video.get('Height') == 360 and video.get('FrameRate') == 24
+        and len(audio) == 1 and audio[0].get('Codec') == 'aac'
+        and audio[0].get('SampleRate') == 48000 and audio[0].get('Channels') == 2
+        and 31.9 <= facts.get('Duration', 0) <= 32.1)
+    check(row['schema'] == 3 and row['sourceVersionMatched'] and row['fixedFixtureFactsMatched'],
+        'lazy_probe_setup_source_binding')
     row['idle'] = idle(owner.api, owner.process, source)
     row['idleCacheUnchanged'] = snapshot(cache) == state
     owner.stop()

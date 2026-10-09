@@ -220,3 +220,14 @@ that could delete or restart that malformed indexed generation.
 Do not replace historical bandwidth estimates or invent a Version1 master hash.
 The inherited certificate binds timeline, init and first media, not every
 possible syntactically valid edit to a historical master.
+
+The first cross-version master run at `2ddc704c` stopped during baseline
+fixture setup, before any candidate case. Receipt SHA256:
+`947f54877bfc01d9ee8d0238337973a2e92770446a4a48895005f9d89be36868`.
+Artifact `11645480738` retains that failed setup; it is not a qualified master RED.
+Baseline planning writes its real source-specific probe cache. The corrected
+setup populates and validates that probe through an owned baseline Server,
+joins it, and then seals playback clones. Every existing clone immutability
+assertion remains required. No production source has changed.
+The Version 2 metadata fixture now uses the generated master writer with its
+real initialization. It does not supply an actual source packet proof.
