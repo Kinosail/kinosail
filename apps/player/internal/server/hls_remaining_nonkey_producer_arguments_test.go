@@ -27,30 +27,35 @@ func TestRemainingNonKeyProducerArgumentContract(t *testing.T) {
 func TestRemainingNonKeyProducerArgumentDamageStaysClosed(t *testing.T) {
 	for _, damage := range []string{"refill", "negative", "proof", "clock", "missing", "decode", "strategy", "exact"} {
 		timeline := remainingNonKeyContractTimeline(t, 12.5, false)
-		number := 0
-		switch damage {
-		case "refill":
-			number = 1
-		case "negative":
-			number = -1
-		case "proof":
-			timeline.Presentation.Proof = &copiedHLSPresentationProof{}
-		case "clock":
-			clock := 0.0
-			timeline.Clock = &clock
-		case "missing":
-			timeline.Presentation = nil
-		case "decode":
-			timeline.Presentation.Decode.PTS++
-		case "strategy":
-			timeline.Strategy = "h264-idr-preroll-unknown"
-		case "exact":
-			timeline.Presentation.RequestedMicros = 12_000_000
-		}
+		number := remainingNonKeyProducerDamage(timeline, damage)
 		if actual, err := copiedHLSSeekArguments([]string{"-v", "error"}, timeline, number); err == nil || actual != nil {
 			t.Errorf("damaged pending producer acquired timestamp arguments: %s", damage)
 		}
 	}
+}
+
+func remainingNonKeyProducerDamage(timeline *copiedHLSTimeline, damage string) int {
+	number := 0
+	switch damage {
+	case "refill":
+		number = 1
+	case "negative":
+		number = -1
+	case "proof":
+		timeline.Presentation.Proof = &copiedHLSPresentationProof{}
+	case "clock":
+		clock := 0.0
+		timeline.Clock = &clock
+	case "missing":
+		timeline.Presentation = nil
+	case "decode":
+		timeline.Presentation.Decode.PTS++
+	case "strategy":
+		timeline.Strategy = "h264-idr-preroll-unknown"
+	case "exact":
+		timeline.Presentation.RequestedMicros = 12_000_000
+	}
+	return number
 }
 
 func TestRemainingNonKeyProducerLeavesLegacyAndUnindexedArgumentsExact(t *testing.T) {
