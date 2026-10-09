@@ -70,3 +70,13 @@ Compatibility mismatches never skip the remaining arms or weaken acceptance.
 Cut0 compares against the original complete zero and certificate; deleted-zero baseline compatibility remains unqualified.
 Complete-cache and source seals must remain unchanged and all CLI/Server groups must join.
 This is CLI feasibility only. It admits no Server worker, GET hydration, policy downgrade, owner/race exception, PR or merge.
+
+## Preserved zero-clock fixture failure
+
+Diagnostic head `8583152db6044e0b519ca1994da7668c87aabb40` / tree `4c5eb1fb6edbcbdafd048742a652d7facd7614e2` failed run38000516581 before any CLI command.
+All three arms hit the diagnostic's incorrect zero-clock assumption; this is unqualified setup evidence, not an output compatibility failure.
+Receipt SHA `ccff481ec59af4662cfc9903523105c05f65137442241f4f15bc39efe3ab14cb`, artifact11648857186, API archive `sha256:a95d1b5a3d01aaa6a01d60b381850b6ee22f42470ce67d977d22c9352c749b88` are preserved.
+Max-loc, complete-cache equality, source seal and owned cleanup passed, with zero unresolved CLI owners.
+The corrected diagnostic independently binds the actual V1 Clock to the original certified zero's first key packet and captured old cut4 mux offset.
+It uses the old producer's clock-inclusive offset and the existing zero-stager's clock-inclusive two-GOP/EOF duration.
+All exact init, zero bytes, packet clocks/payloads, source frames, bounds and owned resource gates remain unchanged.

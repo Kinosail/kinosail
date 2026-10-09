@@ -39,20 +39,49 @@ def replace(args, name, value, optional=False):
         args[-1:-1] = [name, value]
 
 
+
+def qualify_clock(timeline, rows, source, media, run, receipt):
+    clock = timeline['Clock']
+    check(type(clock) in [int, float] and math.isfinite(clock) and 0 <= clock <= 1,
+        'v1_stage_baseline_clock_shape')
+    init = bounded_bytes(media / 'init.mp4', 2 << 20, 'v1_stage_clock_init_bound')
+    zero = bounded_bytes(media / 'segment-00000.m4s', 64 << 20, 'v1_stage_clock_zero_bound')
+    reference = run / 'clock-reference.mp4'
+    reference.write_bytes(init + zero)
+    packets, missing = packet_rows(reference)
+    video = [packet for packet in packets if packet['stream_index'] == 0]
+    check(video and 'K' in video[0]['flags'] and 'pts_time' in video[0],
+        'v1_stage_baseline_first_clock_packet')
+    first = float(video[0]['pts_time'])
+    original = template(rows, 4, source)
+    grid, keys = timeline['Numerator'] / timeline['Denominator'], timeline['Keys']
+    start = keys[4]['PTS'] * grid
+    floor = math.floor(start * 1000000) / 1000000
+    expected = start - keys[0]['PTS'] * grid + clock - (start - floor)
+    observed = option(original, '-output_ts_offset')
+    receipt['baselineClockWitness'] = {'boundClockSeconds': clock, 'firstVideoPTSSeconds': first,
+        'firstVideoKeyFlag': True, 'template4MuxOffsetSeconds': float(observed),
+        'sourcePoint4Seconds': start, 'referenceMissingClockFields': missing}
+    check(first == clock and observed == format(expected, '.6f'),
+        'v1_stage_baseline_clock_binding')
+
 def arguments(rows, source, retained, directory, timeline, number):
     args = template(rows, 0 if number == 0 else 4, source)
     keys, grid = timeline['Keys'], timeline['Numerator'] / timeline['Denominator']
     start = keys[number]['PTS'] * grid
     next_key = min(number + 2, len(keys))
     end = keys[next_key]['PTS'] * grid if next_key < len(keys) else timeline['End']
-    check(timeline['Clock'] == 0 and math.isfinite(end) and 0 < end - start <= 4.01,
+    duration = end - start + timeline['Clock']
+    check(math.isfinite(end) and 0 < end - start <= 4.01 and 0 < duration <= 5.01,
         'v1_stage_two_gop_or_eof_bound')
     replace(args, '-i', '/proc/' + str(os.getpid()) + '/fd/' + str(retained.fileno()))
     replace(args, '-ss', format(math.floor(start * 1000000) / 1000000, '.6f'))
     replace(args, '-start_number', str(number), optional=True)
-    replace(args, '-t', format(end - start, '.6f'), optional=True)
+    replace(args, '-t', format(duration, '.6f'), optional=True)
     if number > 0:
-        replace(args, '-output_ts_offset', format(start - keys[0]['PTS'] * grid, '.6f'))
+        floor = math.floor(start * 1000000) / 1000000
+        shift = start - keys[0]['PTS'] * grid + timeline['Clock'] - (start - floor)
+        replace(args, '-output_ts_offset', format(shift, '.6f'))
     replace(args, '-hls_segment_filename', str(directory / 'segment-%05d.m4s'))
     args[-1] = str(directory / 'index.m3u8')
     check(option(args, '-hls_fmp4_init_filename') in [None, 'init.mp4'],

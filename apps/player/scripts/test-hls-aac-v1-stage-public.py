@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import sys
 import time
-from hls_aac_v1_stage_public import prove, settle
+from hls_aac_v1_stage_public import prove, qualify_clock, settle
 from hls_aac_v2_compat_public import snapshot
 from hls_aac_v2_lazy_public import indexed, seed
 from hls_followon_public import bounded_bytes, check
@@ -75,8 +75,10 @@ try:
         'v1_stage_complete_baseline_certificate')
     seal = snapshot(complete)
     receipt['completeCacheSealBeforeSHA256'] = hashlib.sha256(json.dumps(seal, sort_keys=True).encode()).hexdigest()
+    rows = owners[-1].source_invocation_rows()
+    qualify_clock(timeline, rows, source, directory / '360p', RUN, receipt)
     retained_source = source.open('rb')
-    prove(shutil.which('ffmpeg'), source, directory / '360p', owners[-1].source_invocation_rows(),
+    prove(shutil.which('ffmpeg'), source, directory / '360p', rows,
         timeline, RUN, guard, receipt, cli_owners, retained_source)
     if len(receipt['cases']) == 3 and all(row['result'] == 'observed' for row in receipt['cases']):
         receipt.update(result='observed', stageFeasibilityAcceptance=True)
@@ -133,7 +135,8 @@ finally:
             ''.join(sha(path) + '  ' + str(path.relative_to(ROOT)) + '\n' for path in files))
         print(json.dumps({'revision': receipt['revision'], 'tree': receipt['tree'],
             'result': receipt['result'], 'receiptSHA256': sha(target), 'failureClass': receipt.get('failureClass'),
-            'cases': receipt['cases'], 'completeCacheUnchanged': receipt.get('completeCacheUnchanged'),
+            'cases': receipt['cases'], 'baselineClockWitness': receipt.get('baselineClockWitness'),
+            'completeCacheUnchanged': receipt.get('completeCacheUnchanged'),
             'sourceUnchanged': receipt.get('sourceUnchanged'), 'ownedServerEvidence': receipt['ownedServerEvidence'],
             'cleanupFailureClass': receipt.get('cleanupFailureClass'),
             'unresolvedCLIOwners': receipt['unresolvedCLIOwners'],
