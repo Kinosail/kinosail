@@ -136,8 +136,14 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	}
 	recipe = localHLSRecipe(resolved)
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
+	if err := manager.qualifyCopiedAAC(ctx, item, recipe, false); err != nil {
+		return err
+	}
 	path := filepath.Join(directory, name)
 	if _, err := os.Stat(path); err == nil {
+		if err := manager.copiedAACCacheAsset(ctx, item, recipe, directory, name); err != nil {
+			return err
+		}
 		return manager.remainingAACCacheAsset(ctx, item, recipe, name)
 	}
 	duration := manager.probe.duration(ctx, item)
@@ -155,7 +161,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		if valid {
 			offset = timeline.point(segment) - timeline.point(0)
 		}
-	} else if manager.copiedHLSTimelinePresent(directory) {
+	} else if copiedAACPolicyRequired(options.Cache) || manager.copiedHLSTimelinePresent(directory) {
 		return errCopiedHLSIndex
 	}
 	if !valid || offset >= hlsPlaybackDuration(recipe, duration) {
@@ -179,10 +185,18 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		}
 		if _, err = os.Stat(path); err == nil {
 			manager.mu.Unlock()
-			return nil
+			return manager.copiedAACCacheAsset(ctx, item, recipe, directory, name)
 		}
 		job := manager.jobs[key]
 		if startupJobStopping(job) {
+			manager.mu.Unlock()
+			if err := waitForReplacedHLSJob(ctx, job); err != nil {
+				return err
+			}
+			continue
+		}
+		if job != nil && job.cachePolicy != options.Cache {
+			replaceHLSIdentity(ctx, job, recipe)
 			manager.mu.Unlock()
 			if err := waitForReplacedHLSJob(ctx, job); err != nil {
 				return err
@@ -217,7 +231,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		manager.jobs[key] = job
 		manager.mu.Unlock()
 		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected segment request does not destroy shared output.
-		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
+		go manager.encode(context.WithValue(jobContext, copiedAACWorkerKey{}, &copiedAACWorkerIdentity{key: key, recipe: recipe, policy: options.Cache, job: job}), item, job, key, options, seekRecipe, segment, true)
 		return nil
 	}
 }
@@ -234,63 +248,3 @@ func (manager *hlsManager) seekSettings(item library.Item, recipe hlsRecipe, dir
 	return options, nil
 }
 
-type hlsEncodeOutcome struct {
-	softwareFallback bool
-	superseded       bool
-	inactive         bool
-	preserve         bool
-}
-
-func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *hlsJob, key string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) {
-	started := time.Now()
-	job.observation.queued(recipe.mode)
-	directory := filepath.Join(manager.cache, key)
-	manager.prepareHLSEncodeDirectory(job, directory, preserve)
-	outcome := hlsEncodeOutcome{preserve: preserve}
-	if job.err == nil {
-		outcome = manager.runHLSEncode(ctx, item, job, directory, options, recipe, startNumber, preserve)
-		manager.reportHLSEncode(job, item, directory, options, recipe, outcome, started)
-	}
-	manager.finishHLSEncode(job, key, directory, startNumber, outcome.preserve)
-}
-
-func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory string, preserve bool) {
-	if !preserve {
-		job.err = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
-	}
-	if job.err == nil {
-		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
-	}
-}
-
-func (manager *hlsManager) runHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) hlsEncodeOutcome {
-	outcome := hlsEncodeOutcome{preserve: preserve}
-	job.err = manager.encodeVariants(ctx, item, directory, options, recipe, startNumber)
-	outcome.superseded = errors.Is(context.Cause(ctx), errHLSSeekRestart) || errors.Is(context.Cause(ctx), errHLSIdentityChanged)
-	outcome.inactive = errors.Is(context.Cause(ctx), errHLSInactive)
-	if outcome.superseded || outcome.inactive {
-		job.err = nil
-	}
-	if outcome.inactive && !outcome.preserve {
-		outcome.preserve = preserveInactiveHLS(job, directory, item.Path, options.Cache)
-	}
-	if manager.retrySoftwareHLSEncode(ctx, item, job, directory, options, recipe, startNumber, outcome.preserve) {
-		outcome.softwareFallback = true
-	}
-	if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err == nil && job.err != nil {
-		outcome.preserve = true
-	}
-	return outcome
-}
-
-func preserveInactiveHLS(job *hlsJob, directory, source, cache string) bool {
-	preserve := false
-	if masterFresh(filepath.Join(directory, "index.m3u8"), source, cache) {
-		job.err = writeAtomicFile(filepath.Join(directory, ".seekable"), []byte(cache))
-		preserve = job.err == nil
-	}
-	if !preserve {
-		_ = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
-	}
-	return preserve
-}

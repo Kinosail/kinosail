@@ -3,7 +3,9 @@ package server
 import (
 	"context"
 	"errors"
+	"io"
 	"math"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -31,6 +33,7 @@ type copiedHLSTimeline struct {
 	End          float64
 	Clock        *float64
 	Presentation *copiedHLSPresentation `json:",omitempty"`
+	AudioOrigin  *copiedHLSAudioOrigin `json:",omitempty"`
 }
 
 func (timeline *copiedHLSTimeline) point(number int) float64 {
@@ -41,6 +44,9 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 	facts := manager.probe.facts(ctx, item)
 	if !manager.copiedHLSVideo(ctx, item, recipe) || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
 		return nil, errCopiedHLSIndex
+	}
+	if err := manager.qualifyCopiedAAC(ctx, item, recipe, true); err != nil {
+		return nil, err
 	}
 	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
@@ -65,7 +71,20 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 	if err = manager.certifyCopiedHLSConfiguration(scan, item, timeline); err != nil {
 		return nil, err
 	}
-	return manager.selectCopiedHLSTimeline(scan, item, recipe, preparation, timeline)
+	selected, err := manager.selectCopiedHLSTimeline(scan, item, recipe, preparation, timeline)
+	if err != nil {
+		return nil, err
+	}
+	if copiedAACPolicyRequired(options.Cache) {
+		initial, err := copiedAACKeyMicros(selected, selected.Keys[0].PTS)
+		source, statErr := os.Lstat(item.Path)
+		_, track, known := manager.copiedAACPolicy(hlsRecipeKey(item.ID, recipe), copiedAACBasePolicy(options.Cache), source)
+		if err != nil || statErr != nil || !known {
+			return nil, errCopiedHLSIndex
+		}
+		selected.AudioOrigin = &copiedHLSAudioOrigin{SourceTrack: track, InitialSeekMicros: initial}
+	}
+	return selected, nil
 }
 
 func (timeline *copiedHLSTimeline) packet(line string, end *int64) error {
@@ -102,6 +121,10 @@ func copiedHLSFields(line string) map[string]string {
 }
 
 func copiedHLSLines(parent context.Context, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
+	return copiedHLSInputLines(parent, executable, arguments, nil, maximumBytes, maximumLines, visit)
+}
+
+func copiedHLSInputLines(parent context.Context, executable string, arguments []string, input io.Reader, maximumBytes int64, maximumLines int, visit func(string) error) error {
 	ctx, cancel, err := copiedHLSProbeContext(parent)
 	if err != nil {
 		return err
@@ -109,6 +132,7 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 	defer cancel()
 	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
 	command := exec.CommandContext(ctx, executable, arguments...)
+	command.Stdin = input
 	command.Cancel = nil // The joined owner below settles the entire process group.
 	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {

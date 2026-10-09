@@ -64,7 +64,7 @@ func newStartupPreparation(hls *hlsManager, auth *authentication, limit int64) *
 }
 
 func (startup *startupPreparation) enqueue(ctx context.Context, value startupRequest) string {
-	if !value.direct && startup.hls.startupWindowReady(value.item, value.recipe) {
+	if !value.direct && startup.hls.startupWindowReady(value.item, value.recipe, ctx) {
 		return "ready"
 	}
 	startup.mu.Lock()

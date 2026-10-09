@@ -1,18 +1,14 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"io"
 	"log/slog"
-	"math"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -159,29 +155,6 @@ func (manager *hlsManager) ensureCopiedHLSClock(ctx context.Context, item librar
 	return errCopiedHLSIndex
 }
 
-func (manager *hlsManager) measureCopiedHLSClock(ctx context.Context, root *os.Root) (float64, error) {
-	if ctx.Err() != nil {
-		return 0, errCopiedHLSIndex
-	}
-	initialization, err := copiedHLSCacheFile(root, "init.mp4", 2<<20)
-	if err != nil {
-		return 0, err
-	}
-	fragment, err := copiedHLSCacheFile(root, "segment-00000.m4s", 64<<20)
-	if err != nil {
-		return 0, err
-	}
-	output := copiedHLSProbeOutput{}
-	//nolint:gosec // Probe is installation config; input is bounded, rooted generated media.
-	command := exec.CommandContext(ctx, manager.probe.executable, "-v", "error", "-threads", "1", "-select_streams", "v:0",
-		"-read_intervals", "%+#8", "-show_packets", "-show_entries", "packet=pts_time,flags", "-of", "json", "pipe:0")
-	command.Stdin = io.MultiReader(bytes.NewReader(initialization), bytes.NewReader(fragment))
-	command.Stdout = &output
-	if command.Run() != nil {
-		return 0, errCopiedHLSIndex
-	}
-	return decodeCopiedHLSClock(output.Bytes())
-}
 
 func indexedCopiedHLSSegmentArguments(arguments []string, timeline *copiedHLSTimeline) []string {
 	if timeline != nil {
@@ -222,12 +195,24 @@ func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.
 	if err != nil {
 		return err
 	}
-	clock, probeErr := manager.measureCopiedHLSClock(ctx, media)
+	var clock float64
+	var probeErr error
+	bound := *timeline
+	if timeline.AudioOrigin != nil {
+		clock, probeErr = manager.measureCopiedAACVideoClock(ctx, media)
+		if probeErr == nil {
+			bound.AudioOrigin, probeErr = manager.measureCopiedAACOrigin(ctx, item, recipe, policy, timeline, media)
+		}
+	} else {
+		clock, probeErr = manager.measureCopiedHLSClock(ctx, media)
+	}
 	if probeErr != nil || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil || !manager.sameCopiedHLSClockGeneration(ctx, directory, name, root, media, before) {
 		return errCopiedHLSIndex
 	}
-	bound := *timeline
 	bound.Clock = &clock
+	if !validCopiedAACOrigin(&bound) {
+		return errCopiedHLSIndex
+	}
 	if err := manager.commitCopiedHLSClock(ctx, item, recipe, directory, name, policy, root, media, before, &bound); err != nil {
 		return err
 	}
@@ -240,7 +225,7 @@ func (manager *hlsManager) commitCopiedHLSClock(ctx context.Context, item librar
 	if err != nil || len(data) > maximumCopiedHLSTimelineBytes {
 		return errCopiedHLSIndex
 	}
-	certificate, err := json.Marshal(copiedHLSClockCertificate{Version: 1, Rendition: name, Timeline: sha256.Sum256(data), Initialization: before.hashes[2], First: before.hashes[3]})
+	certificate, err := json.Marshal(copiedHLSClockCertificate{Version: copiedHLSCertificateVersion(bound), Rendition: name, Timeline: sha256.Sum256(data), Initialization: before.hashes[2], First: before.hashes[3]})
 	if err != nil || writeCopiedHLSMetadata(root, ".copy-clock", certificate) != nil || !manager.sameCopiedHLSClockGeneration(ctx, directory, name, root, media, before) || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 		return errCopiedHLSIndex
 	}
@@ -259,23 +244,6 @@ func copiedHLSClockRejected(ctx context.Context, mode string, result error) {
 	}
 }
 
-func decodeCopiedHLSClock(data []byte) (float64, error) {
-	var facts struct {
-		Packets []struct {
-			PTS   string `json:"pts_time"`
-			Flags string `json:"flags"`
-		} `json:"packets"`
-	}
-	if json.Unmarshal(data, &facts) != nil || len(facts.Packets) == 0 ||
-		!strings.Contains(facts.Packets[0].Flags, "K") {
-		return 0, errCopiedHLSIndex
-	}
-	clock, err := strconv.ParseFloat(facts.Packets[0].PTS, 64)
-	if err != nil || math.IsNaN(clock) || clock < 0 || clock > 1 {
-		return 0, errCopiedHLSIndex
-	}
-	return clock, nil
-}
 
 func (manager *hlsManager) copiedHLSClockPending(ctx context.Context, directory, policy string) (bool, error) {
 	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)

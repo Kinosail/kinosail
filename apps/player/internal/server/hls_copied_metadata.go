@@ -19,6 +19,7 @@ type copiedHLSMetadata struct {
 	mu        sync.Mutex
 	gate      chan struct{}
 	endpoints map[string]copiedHLSEndpoint
+	aacPolicies map[string]copiedAACPolicyDecision
 }
 
 type copiedHLSEndpoint struct {
@@ -95,7 +96,7 @@ func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, direc
 	}
 	certificateData, err := copiedHLSCacheFile(root, ".copy-clock", 4096)
 	certificate, decodeErr := decodeCopiedHLSCertificate(certificateData, data)
-	if err != nil || decodeErr != nil {
+	if err != nil || decodeErr != nil || certificate.Version != copiedHLSCertificateVersion(timeline) {
 		return errCopiedHLSIndex
 	}
 	selected, err := copiedHLSRendition(root)
@@ -144,7 +145,7 @@ func (manager *hlsManager) verifyCopiedHLSBoundManifest(ctx context.Context, dir
 
 func decodeCopiedHLSCertificate(data, timeline []byte) (copiedHLSClockCertificate, error) {
 	var certificate copiedHLSClockCertificate
-	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 4096, &certificate) != nil || certificate.Version != 1 || !hlsFile(certificate.Rendition+"/index.m3u8") || certificate.Timeline != sha256.Sum256(timeline) {
+	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), 4096, &certificate) != nil || (certificate.Version != 1 && certificate.Version != 2) || !hlsFile(certificate.Rendition+"/index.m3u8") || certificate.Timeline != sha256.Sum256(timeline) {
 		return certificate, errCopiedHLSIndex
 	}
 	return certificate, nil
