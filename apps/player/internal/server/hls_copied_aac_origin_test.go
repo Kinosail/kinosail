@@ -34,7 +34,7 @@ func TestCopiedAACFirstSourceWitness(t *testing.T) {
 			case "wrong-edit":
 				n.PTS, n.DTS = -4601, -4601
 			case "wrong-seek":
-				seek++
+				seek += 21
 			case "wrong-hash":
 				n.Hash = "SHA256:" + strings.Repeat("c", 64)
 			case "source-dts":
