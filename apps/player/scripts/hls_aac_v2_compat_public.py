@@ -5,6 +5,7 @@ import re
 import urllib.error
 import urllib.request
 from hls_followon_public import bounded_bytes, check
+from hls_timeline_packets import manifest_facts
 
 
 def snapshot(cache):
@@ -126,3 +127,25 @@ def query_controls():
         ('start-at-source-end', 'start=32', 400),
         ('start-above-source-end', 'start=33', 400),
     ]
+
+
+def seed_prefix(cache, witness):
+    timelines = sorted(cache.glob('*/.copy-timeline'))
+    check(len(timelines) == 1, 'compat_prefix_indexed_generation_count')
+    directory = timelines[0].parent
+    timeline = json.loads(bounded_bytes(timelines[0], 256 << 10, 'compat_prefix_timeline_bound'))
+    data = bounded_bytes(directory / '360p/index.m3u8', 256 << 10, 'compat_prefix_manifest_bound')
+    witness['physicalManifestSHA256'] = hashlib.sha256(data).hexdigest()
+    facts, fragments = manifest_facts(data)
+    names = ['segment-' + str(n).zfill(5) + '.m4s' for n in range(10)]
+    physical = [name for name in ['init.mp4', *names] if (directory / '360p' / name).is_file()]
+    witness.update(physicalManifestCuts=len(fragments), physicalManifestEndlist=facts['endlist'],
+        physicalPlaylistType=facts['playlistType'], certifiedCuts=len(timeline['Keys']),
+        orderedPhysicalPrefix=[name for name, _ in fragments], physicalAssetNames=physical,
+        allCertifiedAssetsPhysical=len(physical) == 11)
+    check(facts['playlistType'] == 'EVENT' and not facts['endlist']
+        and 0 < len(fragments) < len(timeline['Keys']) == 10, 'compat_real_physical_event_prefix')
+    check([name for name, _ in fragments] == names[:len(fragments)], 'compat_physical_prefix_order')
+    check(len(physical) == 11, 'compat_prefix_all_certified_assets_physical')
+    check(timeline['Policy'] == bounded_bytes(directory / '.source', 16 << 10,
+        'compat_prefix_binding_bound').decode(), 'compat_prefix_whole_binding')

@@ -138,3 +138,29 @@ media journeys with every one of 942 AAC packets, packet duration/adjacency,
 480 decoded source frames and the full 960008-sample PCM/EOF oracle.
 No assertion, security, scanner or required gate may be weakened.
 The original all50 baseline failures and fourteen held fingerprints remain open.
+
+## Preserved first reader counterevidence
+
+Reader head 4dea2d5f7c6b86972294daa4ffe6f7627c42ccca did not restore compatibility.
+Run: https://github.com/Kinosail/kinosail/actions/runs/37983325864
+Receipt SHA256: fafe0e7194569b2a8aec8ce175dae827229f12a82acc77314ca76753a471b378.
+Artifact: 11642312462. GitHub archive metadata digest:
+3e88adb0a07e7956c83fb55c8dfa7a24a2bcf9593080471c354a62205e2cbbf7.
+
+All eighteen original valid controls and eleven query controls still returned 404.
+All ten malformed-cache controls passed without source encoders or cache/source writes.
+Strict Version2 core media, missing-binding and unindexed cold proof passed.
+The isolated lifetime, source/generation and sticky-eligibility contracts passed.
+
+The first reader also required raw ENDLIST. A certified Version1 timeline can
+render a full VOD from a checked physical EVENT prefix. Baseline lazy hydration
+can fill all physical assets without rewriting that prefix.
+Add explicit real-prefix evidence and a deterministic complete-assets/prefix
+regression before changing this condition. Keep every full physical asset,
+whole binding, certificate, prefix/timeline, source and generation check.
+A missing physical asset still rejects in this first slice.
+
+Quality counterevidence is also preserved. The first head failed the 300-line
+test-file cap. Its test-only split 675c63c1760a5a17a27a6b85fea7492943a631df passed
+that cap and contracts, then exposed five formatting, complexity and inventory
+filesystem findings. Repair them without suppressions or weakened checks.

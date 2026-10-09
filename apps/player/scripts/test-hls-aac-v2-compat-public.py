@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 from hls_followon_frames import decode_frames
-from hls_aac_v2_compat_public import diagnostics, fault, query_controls, requests, require_diagnostics, responses, snapshot
+from hls_aac_v2_compat_public import diagnostics, fault, query_controls, requests, require_diagnostics, responses, seed_prefix, snapshot
 from hls_aac_v2_public_http import ActualServer, diagnostic_producer_rows, idle
 from hls_followon_public import bounded_bytes, check, prepare_once
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
@@ -223,6 +223,7 @@ try:
     rendition = timelines[0].parent / '360p'
     for name in ['init.mp4', *['segment-' + str(n).zfill(5) + '.m4s' for n in range(10)]]:
         check((rendition / name).is_file(), 'compat_seed_all_media_physical')
+    seed_prefix(seed / 'cache', receipt.setdefault('seedPhysicalPrefix', {}))
     receipt['seedSessions'] = owner.sessions
     owner = None
     for asset in ['master', 'rendition']:
@@ -283,6 +284,7 @@ finally:
             'failureClass': receipt.get('failureClass'), 'receiptSHA256': sha(target),
             'seedHydration': receipt.get('seedHydration'),
             'seedDecodedSourceFrames': receipt.get('seedDecodedSourceFrames'),
+            'seedPhysicalPrefix': receipt.get('seedPhysicalPrefix'),
             'seedSourceAudit': receipt.get('seedSourceAudit'),
             'seedFinalSourceAudit': receipt.get('seedFinalSourceAudit'),
             'cases': [{k: v.get(k) for k in ['label', 'result', 'failureClass', 'baselineStatuses', 'statuses',

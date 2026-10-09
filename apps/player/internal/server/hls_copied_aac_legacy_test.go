@@ -196,3 +196,67 @@ func replaceCopiedAACLegacyMetadata(t *testing.T, path string) {
 	}
 	writeHLSLoadingFile(t, path, string(data))
 }
+
+func TestCopiedAACLegacyCompleteAssetsRenderCertifiedPrefix(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("selected compatibility reader is Linux-only")
+	}
+	manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
+	prefix := strings.Replace(copiedRecoveryManifest,
+		"#EXTINF:2.000000,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n", "", 1)
+	writeHLSLoadingFile(t, filepath.Join(directory, "360p/index.m3u8"), prefix)
+	before := copiedAACLegacyInventory(t, directory)
+	held, err := manager.openCopiedHLSLegacyGeneration(t.Context(), item, recipe, directory)
+	if err != nil {
+		t.Fatal("complete physical assets under the certified EVENT prefix were rejected")
+	}
+	defer held.close()
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/360p/index.m3u8", nil)
+	manifest, err := held.playlist("360p/index.m3u8", 0, 4, request)
+	expected, valid := copiedHLSManifest([]byte(copiedRecoveryManifest), held.timeline)
+	if err != nil || !valid || string(manifest) != string(expected) {
+		t.Fatal("certified full timeline was not rendered from the retained prefix")
+	}
+	requireCopiedAACLegacyInventory(t, before, copiedAACLegacyInventory(t, directory))
+}
+
+func TestCopiedAACLegacyPrefixRequiresEveryAssetAndValidManifest(t *testing.T) {
+	if runtime.GOOS != "linux" {
+		t.Skip("selected compatibility reader is Linux-only")
+	}
+	for _, damage := range []string{"first-cut", "last-cut", "map", "index", "duration", "truncated-endlist"} {
+		t.Run(damage, func(t *testing.T) {
+			manager, item, recipe, directory, _ := copiedAACLegacyFixture(t)
+			writeCopiedAACLegacyDamagedPrefix(t, directory, damage)
+			before := copiedAACLegacyInventory(t, directory)
+			held, err := manager.openCopiedHLSLegacyGeneration(t.Context(), item, recipe, directory)
+			if err == nil {
+				held.close()
+				t.Fatal("incomplete assets or malformed physical prefix were admitted")
+			}
+			requireCopiedAACLegacyInventory(t, before, copiedAACLegacyInventory(t, directory))
+		})
+	}
+}
+
+func writeCopiedAACLegacyDamagedPrefix(t *testing.T, directory, damage string) {
+	t.Helper()
+	prefix := strings.Replace(copiedRecoveryManifest,
+		"#EXTINF:2.000000,\nsegment-00001.m4s\n#EXT-X-ENDLIST\n", "", 1)
+	switch damage {
+	case "first-cut", "last-cut":
+		name := map[string]string{"first-cut": "segment-00000.m4s", "last-cut": "segment-00001.m4s"}[damage]
+		if err := os.Remove(filepath.Join(directory, "360p", name)); err != nil {
+			t.Fatal(err)
+		}
+	case "map":
+		prefix = strings.Replace(prefix, "init.mp4", "unbound.mp4", 1)
+	case "index":
+		prefix = strings.Replace(prefix, "segment-00000.m4s", "segment-00001.m4s", 1)
+	case "duration":
+		prefix = strings.Replace(prefix, "2.000000", "2.400000", 1)
+	case "truncated-endlist":
+		prefix += "#EXT-X-ENDLIST\n"
+	}
+	writeHLSLoadingFile(t, filepath.Join(directory, "360p/index.m3u8"), prefix)
+}
