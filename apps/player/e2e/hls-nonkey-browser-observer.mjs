@@ -9,6 +9,19 @@ export function frameQualification(facts, reference, expected) {
     exactRequestedSequence:exact, actualSourceIndices:actual, expectedSourceIndices:expected,
     allObserverRowsRetained:true, sourceReferenceUnique:unique, genuinePresentedEOF:facts.ended};
 }
+
+export function consumerQualification(row, reference, expected) {
+  const phase=row.observer?.phases?.at(-1);
+  if(!phase)return {qualified:false,reason:'missing_observer'};
+  const frame=frameQualification(phase,reference,expected);
+  const healthy=row.result==='observed' && !row.pageErrors && !row.snapshotFailure &&
+    !row.httpOverflow && !row.httpBodyFailure && !row.publicAssetHashMismatch &&
+    !row.directMediaRequested && !row.wrongHLSRecipe && row.selectedPublicHLSObserved===true;
+  const actualQuality=phase.quality && phase.quality.droppedVideoFrames===0 &&
+    phase.firstCallbackGap===0;
+  const seek=row.label!=='forced-source-coordinate-seek' || row.forceSeek?.seeking && row.forceSeek?.seeked;
+  return {...frame,qualified:Boolean(frame.qualified && healthy && actualQuality && seek && row.referenceComplete)};
+}
 export function completeAudioQualification(value, expected) {
   return {qualified:Boolean(value.completeDecode && value.sampleRate===48000 && value.channels===2 &&
     value.samples===expected.samples && value.s16leSHA256===expected.sha256),
@@ -24,7 +37,7 @@ export function installBrowserObserver() {
     video.playbackRate=0.5;
     const phase=label=>{
       const quality=video.getVideoPlaybackQuality?.();
-      const value={label,rows:[],events:[],ended:false,droppedCallbacks:0,captureErrors:[],pending:[],
+      const value={label,rows:[],events:[],ended:false,droppedCallbacks:0,firstCallbackGap:0,captureErrors:[],pending:[],
         qualityAtStart:quality?{droppedVideoFrames:quality.droppedVideoFrames,totalVideoFrames:quality.totalVideoFrames}:null};
       state.phases.push(value);state.active=value;return value;
     };
@@ -53,7 +66,9 @@ export function installBrowserObserver() {
       if(value.rows.length>=2048){value.captureErrors.push('frame_bound');video.pause();return;}
       const row={mediaTime:metadata.mediaTime,presentedFrames:metadata.presentedFrames,
         rawTime:rawTime.call(video),projectedTime:video.currentTime,width:video.videoWidth,height:video.videoHeight};
-      if(previous===undefined && metadata.presentedFrames>1)value.droppedCallbacks+=metadata.presentedFrames-1;
+      if(previous===undefined && metadata.presentedFrames>1){
+        value.firstCallbackGap=metadata.presentedFrames-1;value.droppedCallbacks+=metadata.presentedFrames-1;
+      }
       if(previous!==undefined && metadata.presentedFrames>previous+1)value.droppedCallbacks+=metadata.presentedFrames-previous-1;
       previous=metadata.presentedFrames;
       value.rows.push(row);
@@ -100,7 +115,8 @@ export async function browserAudioDecode(bytes) {
     return {sampleRate:decoded.sampleRate,channels:decoded.numberOfChannels,samples:decoded.length,
       float32InterleavedSHA256:await hash(raw.buffer),s16leSHA256:await hash(quantized.buffer),
       quantization:'round(sample*32768), signed16 clipping; complete float32 hash also retained',
-      clippedSamples:clipped,completeDecode:true,explicitResamplingRequested:false,
+      clippedSamples:clipped,completeDecode:true,requestedAudioContextRate:48000,decodeAudioDataReturnsContextRate:true,
+      browserResamplingMayApply:true,sourceRateVerifiedByCLI:48000,
       nativeDecoderEOFInstrumentation:false,htmlAudiblePresentationQualified:false};
   }finally{await context.close();}
 }

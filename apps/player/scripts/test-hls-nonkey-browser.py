@@ -17,6 +17,7 @@ from hls_timeline_packets import manifest_facts, fragment_audio
 from hls_remaining_nonkey_evidence import observed_media, native_pcm
 from hls_remaining_nonkey_boundary import packet_tail
 from hls_remaining_process import finish_processes, join_group
+from hls_nonkey_browser_public import chromium_join, public_media
 from hls_followon_public import bounded_bytes, check, prepare_once, sample_resources
 from hls_remaining_nonkey_deadline import DiagnosticDeadline
 
@@ -38,28 +39,7 @@ def run(argv, timeout=60, bound=4<<20):
     check(process.returncode==0,'browser_command_failed')
     return process.stdout
 
-def public_media(api, selected, directory):
-    status, master, _ = api.http(selected)
-    check(status==200 and len(master)<=65536,'browser_public_master')
-    lines = master.decode().splitlines()
-    renditions = [v for v in lines if re.fullmatch(r'[1-9][0-9]{2,3}p/index\.m3u8',v)]
-    check(len(renditions)==1,'browser_public_rendition')
-    prefix = selected.rsplit('/',1)[0]+'/'+renditions[0].rsplit('/',1)[0]+'/'
-    status, manifest, _ = api.http(prefix+'index.m3u8')
-    check(status==200 and b'#EXT-X-ENDLIST' in manifest,'browser_public_eof_manifest')
-    _, names = manifest_facts(manifest)
-    check(0<len(names)<=32,'browser_public_asset_count')
-    directory.mkdir()
-    assets = []
-    for name in ['init.mp4',*[v for v,_ in names]]:
-        status, data, _ = api.http(prefix+name)
-        check(status==200 and 0<len(data)<=2<<20,'browser_public_asset_bound')
-        target = directory/name
-        target.write_bytes(data)
-        assets.append(target)
-    joined = directory/'joined.mp4'
-    joined.write_bytes(b''.join(bounded_bytes(p,2<<20,'browser_join_bound') for p in assets))
-    return joined, manifest, assets
+
 
 try:
     # The original all-frame, payload-tail, native PCM and negative-control proof stays unchanged.
@@ -148,7 +128,7 @@ try:
                                 preparation['safeCompletionPhase']=entry.get('phase','completion')
                     check(preparation['preparationAttempt']['completionState']==('ready' if requested==12 else 'unavailable'),
                           'browser_preparation_boundary_changed')
-                    joined,manifest,assets=public_media(api,selected,directory/('public-'+str(requested)))
+                    joined,manifest,assets,delivery=public_media(api,selected,directory/('public-'+str(requested)),log_path,server,source)
                     observed={}
                     metadata={'sourceFramePTS':source_facts['sourceFramePTS'],
                               'sourceTimeOriginSeconds':float(source_facts['metadata']['format']['start_time'])}
@@ -158,7 +138,7 @@ try:
                     expected=selected_case['observations']['mapping']['expectedSourceIndices']
                     pcm,_=native_pcm(source,requested)
                     public_case={'request':requested,'observations':observed,'aacPayloadTail':tail,
-                        'manifestSHA256':hashlib.sha256(manifest).hexdigest(),'audioDiscontinuities':[],
+                        'delivery':delivery,'manifestSHA256':hashlib.sha256(manifest).hexdigest(),'audioDiscontinuities':[],
                         'fragmentAudioFacts':[],
                         'mediaSHA256Before':{p.name:sha(p) for p in assets},'publicJoinedSHA256':sha(joined)}
                     case['publicCases'].append(public_case)
@@ -175,12 +155,14 @@ try:
                         previous_audio=audio['lastAudioEnd']
                     browser_cases.append({'request':requested,'expectedSourceIndices':expected,
                         'publicJoinedPath':str(joined),'selectedSource':selected,
-                        'publicAssetSHA256':{'360p/'+p.name:sha(p) for p in assets},
+                        'initialDeliveryStable':delivery['initialAssetBytesUnchanged'],
+                        'publicAssetSHA256':{delivery['rendition']+'/'+p.name:sha(p) for p in assets},
                         'expectedPCM':{'samples':pcm['samples'],'sha256':pcm['sha256']}})
                 output=directory/'browser.json'
                 private=directory/'browser-private.json'
                 private.write_text(json.dumps({'origin':api.url,'token':api.token,'itemID':item['id'],
-                    'referenceID':ref_item['id'],'cases':browser_cases,'output':str(output)}))
+                    'referenceID':ref_item['id'],'cases':browser_cases,'output':str(output),
+                    'browserOwnerFile':str(directory/'browser-owner-private.json')}))
                 private.chmod(0o600)
                 node=subprocess.Popen(['node',str(ROOT/'apps/player/e2e/hls-nonkey-browser.mjs'),str(private)],
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
@@ -191,8 +173,10 @@ try:
                     check(node.returncode==0,'browser_node_failed')
                 finally:
                     case['ownedBrowserProcessJoin']=join_group(node)
+                    case['ownedChromiumProcessJoin']=chromium_join(node,directory/'browser-owner-private.json')
                     check(case['ownedBrowserProcessJoin']['confirmedZeroSamples']==2 and
-                          not case['ownedBrowserProcessJoin']['qualificationFailures'],'browser_owned_join_failed')
+                          not case['ownedBrowserProcessJoin']['qualificationFailures'] and
+                          case['ownedChromiumProcessJoin']['confirmedZeroSamples']==2,'browser_owned_join_failed')
                 browser=json.loads(bounded_bytes(output,8<<20,'browser_result_bound'))
                 case['browser']=browser
                 for value in case['publicCases']:
@@ -222,7 +206,7 @@ except Exception as error:
 finally:
     with guard.cleanup():
         receipt['handledTerminationSignals']=guard.signals
-        files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',
+        files={Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_browser_wrapper.py',ROOT/'apps/player/scripts/hls_nonkey_browser_public.py',
                *list((ROOT/'apps/player/e2e').glob('hls-nonkey-browser*.mjs'))}
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw=json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'

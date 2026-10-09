@@ -8,17 +8,23 @@ jobs:
   nonkey-browser:
     name: Authenticated cold HLS and unchanged actual browser
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
+      - name: Reserve artifact and cleanup time
+        run: |
+          echo "NONKEY_JOB_STARTED=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        timeout-minutes: 2
         with: {fetch-depth: 0, persist-credentials: false}
       - run: test ! -e .gates-disabled
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
         timeout-minutes: 3
         with: {go-version-file: go.work, cache-dependency-path: "**/go.sum"}
       - uses: pnpm/action-setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+        timeout-minutes: 2
         with: {version: 11.22.0}
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        timeout-minutes: 2
         with: {node-version: 26}
       - name: Install existing pinned browser dependencies
         timeout-minutes: 3
@@ -60,7 +66,16 @@ jobs:
           python3 -m unittest discover -s apps/player/scripts -p 'test_hls_*nonkey_*.py'
           node --test apps/player/e2e/hls-nonkey-browser-controls.test.mjs
       - name: Observe actual public transport and decoded presentation once
-        run: timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          remaining=2700-(time.time()-int(os.environ['NONKEY_JOB_STARTED']))
+          path=pathlib.Path('.verification/hls-nonkey-browser/budget.json')
+          path.parent.mkdir(parents=True,exist_ok=True)
+          path.write_text(json.dumps({'revision':os.environ['GITHUB_SHA'],'remainingSeconds':remaining,'requiredSeconds':1230})+'\n')
+          assert remaining>=1230, 'hosted_browser_cleanup_artifact_budget'
+          PY
+          timeout --kill-after=90s 900s python3 apps/player/scripts/test-hls-nonkey-browser.py
       - name: Preserve complete safe observations and historical strict CLI controls
         timeout-minutes: 2
         if: always()
@@ -68,6 +83,7 @@ jobs:
         with:
           name: nonkey-actual-browser-observation-${{ github.sha }}
           path: |
+            .verification/hls-nonkey-browser/budget.json
             .verification/hls-nonkey-browser/*/receipt.json
             .verification/hls-nonkey-browser/*/SHA256SUMS
             .verification/hls-nonkey-browser/*/*/browser.json
