@@ -86,3 +86,29 @@ test('actual native smoke does not spend live playback headroom awaiting diagnos
  await run({page:{goto:async()=>{},locator:()=>f.video,setViewportSize:async()=>{},screenshot:async()=>{}}},info);
  assert.deepEqual(actions.slice(0,5),['before-play','play','click','pausedfalse','after-click']);
 });
+
+test('actual native smoke retains finite EOF advancement and rejects invalid playback facts before click',async()=>{
+ const {attachNativePlaybackState}=await owner();
+ const source=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/test-instance-playback.spec.ts',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
+ const cases=[['active',{},true],['complete',{currentTime:12,ended:true,paused:true},true],
+  ['fake EOF',{ended:true},false],['premature EOF',{currentTime:11.99,ended:true,paused:true},false],
+  ['nonadvance',{currentTime:4},false],['paused',{paused:true},false],['seeking',{seeking:true},false],
+  ['error',{error:{code:3}},false],['unready',{readyState:0},false],['past duration',{currentTime:13},false],
+  ['negative',{currentTime:-1},false],['nonfinite time',{currentTime:NaN},false],
+  ['infinite duration',{duration:Infinity},false],['zero duration',{duration:0},false]];
+ for(const [name,values,accepted] of cases){
+  const f=fixture(),rejected=Error('playback facts rejected');let run,plays=0,clicks=0;
+  f.media.pause=()=>{f.media.paused=true;};
+  f.media.play=async()=>{plays++;Object.assign(f.media,{currentTime:5,paused:false,ended:false,...values});};
+  f.video.evaluate=async(callback,arg)=>callback(f.media,arg);f.video.dispatchEvent=async()=>{clicks++;};
+  const register=(title,callback)=>{if(title.startsWith('@smoke native playback'))run=callback;};
+  const expect=()=>({toHaveJSProperty:async(key,value)=>assert.equal(f.media[key],value),toHaveAttribute:async()=>{},toBeHidden:async()=>{}});
+  expect.poll=callback=>({toBeTruthy:async()=>assert(await callback()),toBe:async value=>assert.equal(await callback(),value),
+   toBeGreaterThanOrEqual:async value=>assert(await callback()>=value),toBeGreaterThan:async value=>{if(!(await callback()>value))throw rejected;}});
+  runInNewContext(source,{test:register,expect,attachNativePlaybackState,configureTestInstance:()=>{},login:async()=>{},firstPlayable:async()=>'/watch/item'});
+  const page={goto:async()=>{},locator:()=>f.video,setViewportSize:async()=>{},screenshot:async()=>{}};
+  if(accepted){await run({page},{...f.info,outputPath:name=>name});assert.equal(clicks,1,name);}
+  else {await assert.rejects(run({page},f.info),error=>error===rejected,name);assert.equal(clicks,0,name);}
+  assert.equal(plays,1,name);
+ }
+});
