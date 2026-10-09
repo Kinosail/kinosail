@@ -6,7 +6,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {colorArm, colorFacts, colorFrameQualification} from './hls-nonkey-browser-color.mjs';
+import {colorArm, colorFacts, colorFrameQualification,colorSeekSetupQualification} from './hls-nonkey-browser-color.mjs';
 import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const box=(kind,...parts)=>{const body=Buffer.concat(parts),out=Buffer.alloc(body.length+8);
@@ -69,4 +69,13 @@ test('new component setup errors retain a failure row and preserve original audi
   assert.equal(retained[1].label,'raw-mse-color-setup');
   assert.equal(retained[1].result,'observation-failed');
   assert.equal(retained[1].failureClass,'color_raw_clock_binding');
+});
+test('metadata readiness at unbuffered zero can prepare a measured seek without requiring a frame',()=>{
+  const value={readyState:1,rawTime:0,buffered:[[12,31.999833]],seekable:[[0,32.083]]};
+  assert.equal(colorSeekSetupQualification(value,12.5).qualified,true);
+  for(const bad of [{readyState:0},{buffered:[]},{buffered:[[13,32]]},
+    {buffered:[[12,Infinity]]},{buffered:[[12,12]]},{seekable:[]},
+    {seekable:[[0,12]]},{rawTime:NaN},{buffered:Array.from({length:65},()=>[12,32])}])
+    assert.equal(colorSeekSetupQualification({...value,...bad},12.5).qualified,false);
+  assert.equal(colorSeekSetupQualification(value,0).qualified,false);
 });
