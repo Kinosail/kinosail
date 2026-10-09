@@ -24,7 +24,7 @@ from hls_remaining_nonkey_deadline import DiagnosticDeadline
 from hls_nonkey_browser_audio_boundary import retained_audio_boundary
 from hls_nonkey_browser_packet_association import packet_association
 from hls_nonkey_browser_packet_clock import packet_clock
-from hls_nonkey_refill_clock import audio_origin, refill_shift
+from hls_nonkey_refill_clock import audio_origin, refill_shift, matrix_failure, fixed_streams
 
 ROOT = Path(__file__).resolve().parents[3]
 RUN = ROOT / '.verification/hls-nonkey-refill-clock' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -32,18 +32,34 @@ RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
     'tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
     'result':'failed','initialCases':[],'refillCases':[],'productionAcceptance':False,
-    'publicServerProof':False,'sourceAndClientChanged':False,
+    'publicServerProof':False,'sourceAndClientChanged':False,'initialCadenceSeconds':2,
+    'cadenceBoundary':'Fixed2s GOP yields the same key cuts; not byte-identical indexed0.1s public argv.',
     'boundary':'Fixed MP4/pinned-codec initial-refill isolation; all historical public/browser failures remain.',
     'sourceIdentityExpected':'198a6808092cea2a5481afc24e79481e4966ae577cbb8c46c214737e2173a3ed'}
+before, source = None, None
+receipt['commands']=[]
+receipt['commandCaptureScope']='Driver mux/run calls only; fixture/native/probe helpers are sealed separately.'
 guard = DiagnosticDeadline(240)
 guard.__enter__()
 
 def run(command, timeout=30, bound=4<<20):
     guard.check()
-    process = subprocess.run(command,capture_output=True,timeout=min(timeout,guard.check(5)))
-    check(len(process.stdout)<=bound and len(process.stderr)<=bound,'refill_matrix_command_bound')
-    check(process.returncode==0,'refill_matrix_command_failed')
-    return process.stdout
+    check(type(command) is list and 0<len(command)<=128 and
+          all(type(v) is str and len(v)<=2048 for v in command),'refill_matrix_command_shape')
+    row={'argv':command,'argvSHA256':hashlib.sha256(json.dumps(command).encode()).hexdigest(),
+         'result':'in-flight'}
+    receipt['commands'].append(row)
+    try:
+        process = subprocess.run(command,capture_output=True,timeout=min(timeout,guard.check(5)))
+        row.update(returncode=process.returncode,stdoutBytes=len(process.stdout),stderrBytes=len(process.stderr))
+        check(len(process.stdout)<=bound and len(process.stderr)<=bound,'refill_matrix_command_bound')
+        check(process.returncode==0,'refill_matrix_command_failed')
+        row['result']='waited-success'
+        return process.stdout
+    except Exception as error:
+        row['result']='failed'
+        row['failureClass']='bounded_diagnostic_deadline' if isinstance(error,RuntimeError) and str(error)=='bounded_diagnostic_deadline' else matrix_failure(error)
+        raise
 
 def assets(directory):
     manifest = bounded_bytes(directory/'index.m3u8',65536,'refill_matrix_manifest')
@@ -58,13 +74,16 @@ def initial_facts(source_rows, directory, initial):
     audio = [v for v in tracks if v['handler']=='soun']
     check(len(audio)==1 and audio[0]['mediaTimescale']==48000,'refill_matrix_audio_track')
     first = fragment_metadata(bounded_bytes(fragments[0],8<<20,'refill_matrix_first_fragment'))
-    selected = [v for v in first['tracks'] if v['trackID']==audio[0]['trackID']]
+    initial['rawFirstFragmentTracks']=first
+    selected = [v for v in first if v['trackID']==audio[0]['trackID']]
     check(len(selected)==1 and selected[0]['samples'],'refill_matrix_raw_first')
     raw_first = selected[0]['samples'][0]['pts']
     public_rows, missing = packet_rows(directory/'joined.mp4')
     check(not missing,'refill_matrix_complete_packet_clocks')
     video = [v for v in public_rows if v['stream_index']==0]
     metadata = stream_metadata(directory/'joined.mp4')
+    initial['streamMetadata']=metadata
+    fixed_streams(metadata)
     video_streams = [v for v in metadata['streams'] if v['codec_type']=='video']
     check(len(video_streams)==1 and video_streams[0]['time_base']=='1/16000',
           'refill_matrix_fixed_video_grid')
@@ -78,6 +97,10 @@ def initial_facts(source_rows, directory, initial):
         measuredEditedVideoClock={'numerator':clock.numerator,'denominator':clock.denominator},
         actualRefillMuxOffsetMicros=mux_us,
         derivedAudioBSFShiftTicks=refill_shift(origin,20000000,mux_us,48000))
+    if initial['label']=='r15-original':
+        initial['baselineCorrespondence']={'recordedR15Receipt':'e70f3f02305e8c5883ce8f474b6d685be1d711ea67691edc25518104fe9ea4e5',
+            'audioOriginMatches':origin==-571400,'videoClockMatches':clock==Fraction(1534,16000),
+            'rawAudioFirstMatches':raw_first==0,'scope':'Witness only; no adjustment selected from recorded constants.'}
     return init, fragments, mux_us, initial['derivedAudioBSFShiftTicks']
 
 def projection(row):
@@ -101,17 +124,22 @@ def projection(row):
 try:
     receipt['codecVersion']=run(['ffmpeg','-version'],10,65536).decode().splitlines()[0]
     regular, base = fixture(RUN,'regular',48,','.join(str(v) for v in range(0,32,2)),frames=768)
+    receipt['fixtureCommand']=base['command']
     source = RUN/'regular-copy.mp4'
     run(['ffmpeg','-nostdin','-v','error','-i',str(regular),'-map','0:v:0','-map','0:a:0','-c','copy',str(source)],45)
     before = source_state(source)
     check(before['sha256']==receipt['sourceIdentityExpected'],'refill_matrix_source_identity')
+    source_metadata=stream_metadata(source)
+    receipt['sourceMetadata']=source_metadata
+    fixed_streams(source_metadata)
+    check(source_metadata['format']['start_time']=='0.000000','refill_matrix_source_origin')
     source_rows, missing = packet_rows(source)
     check(not missing,'refill_matrix_source_clocks')
     source_decode, frames = decode_frames(source)
     check(len(frames)==768,'refill_matrix_source_frames')
     metadata = dict(base,sha256=before['sha256'],sourceFramePTS=[v[0] for v in frames],
         sourceTimeOriginSeconds=0)
-    receipt.update(source=before,sourceMetadata=stream_metadata(source),sourceDecode=source_decode,
+    receipt.update(source=before,sourceDecode=source_decode,
         completeSourcePacketRows=source_rows,completeSourceFrameRows=frames)
     video = [v for v in source_rows if v['stream_index']==0]
     check(len(video)==768,'refill_matrix_video_count')
@@ -128,13 +156,22 @@ try:
     for label, options in policies:
         guard.check(45)
         directory = RUN/label
-        initial = mux_case(run,source,metadata,directory,label,12,options)
+        options = dict(options,input=['-seek_timestamp','1'])
+        initial={'label':label,'result':'in-flight','stage':'initial-mux'}
         receipt['initialCases'].append(initial)
-        if initial['result']!='observed':
+        initial.update(mux_case(run,source,metadata,directory,label,12,options))
+        initial['stage']='initial-clocks'
+        try:
+            check(initial['result']=='observed','refill_matrix_initial_unobserved')
+            init, prefix, mux_us, shift = initial_facts(source_rows,directory,initial)
+            check(len(prefix)==10,'refill_matrix_initial_cuts')
+            canonical_hashes = {p.name:sha(p) for p in [directory/'init.mp4',*prefix]}
+        except Exception as error:
+            initial.update(result='failed',failureClass=matrix_failure(error))
+            for mapping in ['video-global-only','source-packet-origin']:
+                receipt['refillCases'].append({'initialPolicy':label,'audioMapping':mapping,
+                    'result':'failed','failureClass':'refill_matrix_initial_unavailable'})
             continue
-        init, prefix, mux_us, shift = initial_facts(source_rows,directory,initial)
-        check(len(prefix)==10,'refill_matrix_initial_cuts')
-        canonical_hashes = {p.name:sha(p) for p in [directory/'init.mp4',*prefix]}
         for mapping, adjustment in [('video-global-only',0),('source-packet-origin',shift)]:
             guard.check(30)
             target = directory/mapping
@@ -143,27 +180,35 @@ try:
                 bsf += ',setts=pts=PTS+'+str(adjustment)+':dts=DTS+'+str(adjustment)
             output = ['-copypriorss:v','0','-avoid_negative_ts','disabled',
                 '-output_ts_offset',format(mux_us/1000000,'.6f'),'-bsf:a',bsf,'-start_number','4']
-            value = mux_case(run,source,metadata,target,mapping,20,{'output':output})
-            value.update(initialPolicy=label,audioMapping=mapping,audioShiftTicks=adjustment)
+            value={'label':mapping,'initialPolicy':label,'audioMapping':mapping,
+                'audioShiftTicks':adjustment,'result':'in-flight','stage':'refill-mux'}
             receipt['refillCases'].append(value)
+            value.update(mux_case(run,source,metadata,target,mapping,20,{'input':['-seek_timestamp','1'],'output':output}))
+            value['stage']='canonical-join'
             if value['result']!='observed':
                 continue
-            _, suffix, refill_manifest = assets(target)
-            check(len(suffix)==6,'refill_matrix_refill_cuts')
-            fragments = [*prefix[:4],*suffix]
-            joined = target/'canonical-joined.mp4'
-            data = init
-            for path in fragments:
-                data += bounded_bytes(path,8<<20,'refill_matrix_join_fragment')
-                check(len(data)<=32<<20,'refill_matrix_join_bound')
-            joined.write_bytes(data)
-            observed = {}
-            value['observations']=observed
-            observed_media(source,joined,init,fragments,metadata,12,observed)
-            tail = packet_tail(observed['sourcePacketRows'],observed['publicPacketRows'])
-            value['aacPayloadTail']=tail
-            public_video = [v['data_hash'] for v in observed['publicPacketRows'] if v['stream_index']==0]
-            value['videoCompletePayloadTail']=public_video==[v['data_hash'] for v in video[288:]]
+            try:
+                _, suffix, refill_manifest = assets(target)
+                check(len(suffix)==6,'refill_matrix_refill_cuts')
+                fragments = [*prefix[:4],*suffix]
+                joined = target/'canonical-joined.mp4'
+                data = init
+                for path in fragments:
+                    data += bounded_bytes(path,8<<20,'refill_matrix_join_fragment')
+                    check(len(data)<=32<<20,'refill_matrix_join_bound')
+                joined.write_bytes(data)
+                observed = {}
+                value['observations']=observed
+                value['stage']='complete-media-observation'
+                fixed_streams(stream_metadata(joined))
+                observed_media(source,joined,init,fragments,metadata,12,observed)
+                tail = packet_tail(observed['sourcePacketRows'],observed['publicPacketRows'])
+                value['aacPayloadTail']=tail
+                public_video = [v['data_hash'] for v in observed['publicPacketRows'] if v['stream_index']==0]
+                value['videoCompletePayloadTail']=public_video==[v['data_hash'] for v in video[288:]]
+                value['stage']='complete'
+            except Exception as error:
+                value.update(result='failed',failureClass=matrix_failure(error))
             value['canonicalAssetsUnchanged']=canonical_hashes=={p.name:sha(p) for p in [directory/'init.mp4',*prefix]}
             value['sourceUnchanged']=source_state(source)==before
             check(value['canonicalAssetsUnchanged'] and value['sourceUnchanged'],'refill_matrix_assets_changed')
@@ -173,13 +218,28 @@ try:
     check(len(receipt['refillCases'])==6,'refill_matrix_refill_case_count')
     receipt['sourceUnchanged']=source_state(source)==before
     check(receipt['sourceUnchanged'],'refill_matrix_source_changed')
-    receipt['result']='observed'
+    complete = all(v['result']=='observed' for v in receipt['initialCases']+receipt['refillCases'])
+    receipt['result']='observed' if complete else 'failed'
+    if not complete:receipt['failureClass']='refill_matrix_incomplete_cells'
 except Exception as error:
-    receipt['failureClass']=str(error) if isinstance(error,RuntimeError) else type(error).__name__
+    receipt['failureClass']=str(error) if isinstance(error,RuntimeError) and str(error)=='bounded_diagnostic_deadline' else matrix_failure(error)
 finally:
     with guard.cleanup():
-        files = [Path(__file__),ROOT/'apps/player/scripts/hls_nonkey_refill_clock.py',
-                 ROOT/'apps/player/scripts/test_hls_nonkey_refill_clock.py']
+        if before is not None and source is not None:
+            try:
+                receipt['sourceUnchanged']=source_state(source)==before
+            except Exception as error:
+                receipt['sourceUnchanged']=False
+                receipt['sourceGuardFailureClass']=matrix_failure(error)
+            if not receipt['sourceUnchanged']:
+                receipt.update(result='failed',failureClass='refill_matrix_source_changed')
+        files = [Path(__file__),ROOT/'.github/workflows/layout-stability.yml',*(ROOT/'apps/player/scripts'/name for name in [
+            'hls_nonkey_refill_clock.py','test_hls_nonkey_refill_clock.py','hls_timeline_fixture.py',
+            'hls_timeline_http.py','hls_timeline_packets.py','hls_followon_frames.py',
+            'hls_followon_public.py','hls_remaining_mux.py','hls_remaining_nonkey_evidence.py',
+            'hls_remaining_nonkey_fragment.py','hls_remaining_nonkey_init.py','hls_remaining_nonkey_boundary.py',
+            'hls_remaining_nonkey_deadline.py','hls_nonkey_browser_audio_boundary.py',
+            'hls_nonkey_browser_packet_association.py','hls_nonkey_browser_packet_clock.py'])]
         receipt['executedScriptSHA256']={str(p.relative_to(ROOT)):sha(p) for p in files}
         raw = json.dumps(receipt,separators=(',',':'),allow_nan=False)+'\n'
         check(0<len(raw.encode())<=32<<20,'refill_matrix_receipt_bound')
@@ -190,7 +250,7 @@ finally:
             'failureClass':receipt.get('failureClass'),'sourceUnchanged':receipt.get('sourceUnchanged'),
             'initialPolicies':[{k:v.get(k) for k in ['label','result','failureClass','audioRawFirstPTS',
                 'audioPhysicalSourceOffsetTicks','measuredEditedVideoClock','actualRefillMuxOffsetMicros',
-                'derivedAudioBSFShiftTicks']} for v in receipt['initialCases']],
+                'derivedAudioBSFShiftTicks','baselineCorrespondence']} for v in receipt['initialCases']],
             'refillClockCases':[projection(v) for v in receipt['refillCases']],
             'receiptSHA256':sha(path),'productionAcceptance':False,'publicServerProof':False}))
     guard.__exit__()
