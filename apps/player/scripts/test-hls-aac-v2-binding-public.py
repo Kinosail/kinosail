@@ -79,6 +79,7 @@ def arm(warm, label, method, asset, byte_range, binary, seed_cache, seed_selecte
     directory = RUN / row['label']
     directory.mkdir()
     shutil.copytree(seed_cache, directory / 'cache')
+    original = snapshot(directory / 'cache')
     owner = ActualServer(ROOT, directory, source, binary)
     try:
         owner.start(authorize=True)
@@ -93,6 +94,10 @@ def arm(warm, label, method, asset, byte_range, binary, seed_cache, seed_selecte
         target = selected if asset == 'master' else selected.removesuffix('index.m3u8') + '360p/' + asset
         good_status, good_body = request(owner.api, target, method, byte_range)
         check(good_status == (206 if byte_range else 200), 'binding_valid_route_control')
+        idle(owner.api, owner.process, source)
+        row['cloneUnchanged'] = snapshot(directory / 'cache') == original
+        row['cloneSourceCalls'] = len(owner.source_invocation_rows())
+        check(row['cloneUnchanged'] and row['cloneSourceCalls'] == 0, 'binding_clone_silently_regenerated')
         if not warm:
             owner.stop()
         backup = directory / 'binding-backup'
@@ -107,9 +112,21 @@ def arm(warm, label, method, asset, byte_range, binary, seed_cache, seed_selecte
         row.update(status=status, bodyBytes=len(body), bodySHA256=hashlib.sha256(body).hexdigest(),
             sourceCallsBefore=count, sourceCallsAfter=after_count, cacheUnchanged=after == sealed,
             sealedCache=sealed, cacheAfter=after, sourceUnchanged=source_state(source) == before)
-        check(status == 404 and after == sealed and after_count == count and row['sourceUnchanged'],
+        idle(owner.api, owner.process, source)
+        settled = snapshot(directory / 'cache')
+        settled_count = len(owner.source_invocation_rows())
+        row.update(quiescentCache=settled, quiescentCacheUnchanged=settled == sealed,
+            quiescentSourceCalls=settled_count)
+        check(status == 404 and after == sealed and after_count == count and row['sourceUnchanged']
+              and settled == sealed and settled_count == count,
               'binding_http_admitted_or_mutated_missing_generation')
+        owner.stop()
+        joined = snapshot(directory / 'cache')
+        joined_count = len(owner.source_invocation_rows())
+        row.update(joinedCache=joined, joinedCacheUnchanged=joined == sealed, joinedSourceCalls=joined_count)
+        check(joined == sealed and joined_count == count, 'binding_late_missing_generation_mutation')
         backup.rename(root / '.source')
+        owner.start()
         restored_status, restored_body = request(owner.api, target, method, byte_range)
         check(restored_status == good_status and restored_body == good_body,
               'binding_restored_route_changed_exact_bytes')
@@ -125,6 +142,10 @@ def arm(warm, label, method, asset, byte_range, binary, seed_cache, seed_selecte
             # Retain the owner and stop creating arms until final bounded cleanup joins it.
             raise RuntimeError('binding_owned_join_failed') from None
         row['sessions'] = owner.sessions
+        row['finalSourceCalls'] = len(owner.source_invocation_rows())
+        row['finalCache'] = snapshot(directory / 'cache')
+        if row['result'] == 'observed' and (row['finalSourceCalls'] != 0 or row['finalCache'] != original):
+            row.update(result='failed', failureClass='binding_late_restored_generation_mutation')
         owner = None
 
 
