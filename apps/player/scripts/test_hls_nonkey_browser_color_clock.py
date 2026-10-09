@@ -4,7 +4,7 @@ Keep every raw sample; reject unknown edit rate, bad count/clock and a guessed s
 """
 import copy
 import unittest
-from hls_nonkey_browser_color_clock import mse_clock_facts
+from hls_nonkey_browser_color_clock import mse_clock_facts, retained_mse_clock_facts
 
 class ClockTests(unittest.TestCase):
     def facts(self):
@@ -40,4 +40,13 @@ class ClockTests(unittest.TestCase):
             if change=='request':request=13
             with self.subTest(change=change),self.assertRaises(RuntimeError):
                 mse_clock_facts(value,request)
+    def test_held_raw_clock_returns_retained_failure_without_aborting_original_browser(self):
+        value=self.facts();value['publicPacketRows'][0]['pts_time']='nan'
+        before=copy.deepcopy(value)
+        result=retained_mse_clock_facts(value,12.5)
+        self.assertFalse(result['qualified'])
+        self.assertEqual(result['failureClass'],'browser_raw_mse_clock')
+        self.assertEqual(result['operation'],'raw-elst-tfdt-trun-clock-binding')
+        self.assertEqual(value,before)
+        self.assertEqual(retained_mse_clock_facts(self.facts(),12.5)['qualified'],True)
 if __name__=='__main__':unittest.main()
