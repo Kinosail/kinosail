@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { attachResponsiveFailure } from "./responsive-failure-witness.mjs";
 import { writeFile } from "node:fs/promises";
 import { configureTestInstance, login } from "./test-instance-helpers";
 
@@ -49,9 +50,12 @@ for (const width of [390, 1440]) {
 					const poster = element.querySelector(".poster,.curation-poster,.collection-poster");
 					const choice = style.opacity === "0" ? element.nextElementSibling : null;
 					return { label: element.getAttribute("aria-label") || element.textContent?.trim().slice(0, 70) || element.getAttribute("name") || element.tagName,
-						focused: document.activeElement === element, visible: hasOutline(element) || !!poster && hasOutline(poster) || !!choice && hasOutline(choice) };
+						skipControl: element.matches('a.skip[href="#main"]'), focused: document.activeElement === element, visible: hasOutline(element) || !!poster && hasOutline(poster) || !!choice && hasOutline(choice) };
 				});
-				if (!state.focused || !state.visible) failures.push({ route, ...state });
+				if (!state.focused || !state.visible) {
+					failures.push({ route, ...state });
+					if (state.skipControl) await attachResponsiveFailure(page, testInfo, "keyboard-focus");
+				}
 				checked++;
 			}
 			report.push({ route, controls: checked });

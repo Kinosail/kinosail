@@ -56,7 +56,11 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 720, height: 450 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
 		await page.setViewportSize(viewport);
 		await video.dispatchEvent("loadstart");
-		expect((await page.locator("[data-player-status]").boundingBox())?.width).toBeLessThanOrEqual(Math.min(320, viewport.width - 16) + 0.01);
+		try {
+			expect((await page.locator("[data-player-status]").boundingBox())?.width).toBeLessThanOrEqual(Math.min(320, viewport.width - 16) + 0.01);
+		} catch (error) {
+			await attachResponsiveFailure(page, testInfo, "player-loading-width"); throw error;
+		}
 		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-loading.png`), fullPage: true });
 		await video.dispatchEvent("canplay");
 		await video.dispatchEvent("stalled");

@@ -1,7 +1,7 @@
 // Read-only public item progress. Never attach an item ID, title, URL or raw response.
 export async function attachPlaybackState(page, info, watch, stage) {
   if (typeof watch !== 'string' || watch.length > 135 || !/^\/watch\/[A-Za-z0-9_-]{1,128}$/.test(watch)
-      || !['before-method', 'before-loading'].includes(stage)) throw Error('invalid playback witness');
+      || !['before-method', 'before-loading', 'at-method-switch', 'after-method-switch'].includes(stage)) throw Error('invalid playback witness');
   const value = {schemaVersion: 1, stage, status: null, unavailable: true};
   let timer;
   try {
