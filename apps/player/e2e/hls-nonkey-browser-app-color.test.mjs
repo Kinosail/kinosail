@@ -4,7 +4,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver,appColorConsumerQualification,appColorRouteFacts} from './hls-nonkey-browser-app-color.mjs';
+import {prepareAppColor,appColorAppendFacts,observeAppColor,installAppColorAppendObserver,appColorConsumerQualification,appColorRouteFacts,appColorTransferObserved} from './hls-nonkey-browser-app-color.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const box=(kind,...parts)=>{const body=Buffer.concat(parts),out=Buffer.alloc(body.length+8);
   out.writeUInt32BE(out.length);out.write(kind,4,4,'ascii');body.copy(out,8);return out;};
@@ -189,4 +189,17 @@ test('a present server playback-session header binds privately to the queried se
   assert.equal(good.querySessionHeaderMatched,true);assert.equal(JSON.stringify(good).includes(session),false);
   assert.equal(appColorRouteFacts(url,origin,path,'GET',undefined,'other_session-123').qualified,false);
   assert.equal(appColorRouteFacts(url,origin,path,'GET',undefined,'bad').qualified,false);
+});
+
+test('good delivered init cannot hide latched route failures or append observer failures and overflow',()=>{
+  const original='1'.repeat(64),modified='2'.repeat(64),
+    hits=[{requestShape:{qualified:true},originalStatus:200,originalSHA256:original,
+      fulfilled:true,fulfilledSHA256:modified}],state={overflow:false,failures:[]};
+  assert.equal(appColorTransferObserved(hits,[],state,true,true,original,modified),true);
+  assert.equal(appColorTransferObserved(hits,['init_route_overflow'],state,true,true,original,modified),false);
+  assert.equal(appColorTransferObserved(hits,[],{...state,overflow:true},true,true,original,modified),false);
+  assert.equal(appColorTransferObserved(hits,[],{...state,failures:['append_observer']},true,true,original,modified),false);
+  assert.equal(appColorTransferObserved(hits,[],state,false,true,original,modified),false);
+  assert.equal(appColorTransferObserved(hits,[],state,true,false,original,modified),false);
+  assert.equal(appColorTransferObserved([...hits,{...hits[0],fulfilled:false}],[],state,true,true,original,modified),false);
 });
