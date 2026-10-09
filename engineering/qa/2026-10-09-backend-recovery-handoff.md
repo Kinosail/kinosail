@@ -41,3 +41,66 @@ Historical failed arms, observations, private receipts, workflow refs and API di
 The narrow MP4/H264/AAC-LC stereo48k mechanism does not grant MKV, HEVC, audio-transcode, arbitrary resume, non-key native presentation or fourteen held-fingerprint eligibility. All14 inherited holds remain unchanged. The preserved50 live simulator baselines are not repaired/retested; that next full sweep requires the separate native owner and authorized deployed runtime. No Nox deployment is changed or qualified by this checkpoint; historical f532 receipts remain preserved.
 
 Mac capacity hold and disconnected read-only execution transport prohibit local filesystem writes/builds/media/downloads/cleanup. This reconciliation uses GitHub objects and metadata only. No original-media mutation, credentials, Library writes, simulator action, Nox update or manual deployment.
+
+## Later verified checkpoint: 2026-10-09
+
+The prior source and R16 evidence above remain intact. Later candidates are preserved on separate owned refs.
+Fresh remote main is `922e7fa65cb3752d4a204b6e14782f58c6133fd7`, retaining delivered PR493/e30 ancestry.
+No later backend candidate is merged or admitted for production.
+
+### Delivered PR493 and original PR490
+
+PR493 reviewed head `6907a9b733ca8fcea7a545636edfa49796518e84` is merged at `e30de246899d583802d08038cf8623f34bc2eaa4`.
+Exact e30 CI/publication [37506502844](https://github.com/Kinosail/kinosail/actions/runs/37506502844) is terminal SUCCESS: 47 successful jobs and four intentional skips.
+Both architecture assemblies, image signing, provenance attestation/verification, commit tags, production-tag promotion and documentation publication passed.
+Player publish112430377793/promote112430788660 agree on `sha256:87bd9436f150ca7a454e2aac965ee8a20da094fa165a82d4d16ccb35ec2d63da`.
+Subtitles publish112430377898/promote112430788638 agree on `sha256:2a37c2f43ae0560d18c47fecd4444c60e6333415236cbdae4c4e5c0e928c5625`.
+These are exact e30 publication facts; current922 image publication and deployed Nox revision are separate boundaries.
+
+GitHub auto-marked diagnostic PR490 merged when its original head entered main through493 ancestry.
+Triage thread01a11221-d2d7-7711-a9f1-d380830b0020 is the sole writer for its create-if-absent branch restoration.
+Recovery made no original-ref or issue writes and did not race restoration.
+The restored remote `codex/hls-prepared-timeline-20261006` freshly verifies at exact `ab81e2dec1274f8ed073d126f2fba852ea032072`.
+Original branch/history/evidence and first failed CI attempts remain preserved.
+
+### Current production candidate and qualified remaining regression
+
+Owned branch `codex/hls-aac-v2-r17-20261009` remains at `4c9153393b7811f6d253acf85d3134e8fb5916a3` / tree `e42505917599bea932422602f5dc0c11962e9a59`.
+Pending-init consistency passed all82 contracts and quality37997673457.
+Proof37997673510 passed core5, cold2, malformed-master24, binding18 and complete39; its lazy job failed.
+Four qualified baselines returned HEAD200/200, thirteen GET200 and480 exact source frames.
+Adopted lazy, speculative lazy, missing4 and missing9 candidates returned HEAD404/404 and thirteen GET404 without source encoders.
+Missing0 baseline GET404 remains unqualified for a new regression; its candidate did not run.
+Lazy receipt `a0f4faee0d2dfb905da07f93ee466355a64150ccfe42e2b16cc9bdc87adba2f0` and artifact11648570346 remain preserved.
+API archive digest: `sha256:8d5770f3fe1778b1eef0e60bb423409e6dd1fa51be3037d05abd2a7805dda080`.
+Physical source/assets/startup markers and owned joins passed; the composite preservation flag also requires hydration.
+Future proof must separately project retained-file equality and exact permitted additions.
+GET-only compatibility remains required. No client POST, native-call requirement or generic canonical-cache fallback is admitted.
+
+### Accepted private CLI and narrowly qualified observer evidence
+
+CLI diagnostic `codex/hls-aac-v1-stage-proof-20261009` remains at `71ef876ac97666889ca663f1e687bbde0ccf3dd7` / tree `511a4c6de7aa980efe60293a038b7ea3c3eed486`.
+Run38001378568 passed private cuts0/4/9 with the independently bound old clock and captured seek/offset.
+All cuts matched exact init, complete packet clocks/payloads and48 source frames; cut9 whole-fragment bytes differed and remain recorded.
+Receipt `0184deb70e8ce7ba908aa9689ec666910d168f5feca93a77d492a1eba40a0646`, artifact11649341663, API archive `sha256:e3e4194e778a732100bde7b8e8c9e72de2ac4d49bea1b64dbb5b48ffd15033e6` remain preserved.
+
+Written-first live head `15e09ca1661d21200a814d8079647161a8b98c2f` qualified four causal failures in run38003516837 while the old20 controls passed.
+Artifact11648944910/API archive `sha256:9c2fece7e5d8d0473b67ab15d7d5da2460835ee1d1b047de2ace1014b8ed0b38` retains that RED.
+Observer branch `codex/hls-aac-fd-observer-proof-20261009` now holds `d6194353f26afc7c7e504e73e3c860f2dd6d4193` / tree `62c103782cb9dfd8ed7c9b31f97af973f4f9c1ad`.
+Independent exact-source review admitted one bounded run, [38004726356](https://github.com/Kinosail/kinosail/actions/runs/38004726356); it is terminal SUCCESS with all24 unchanged controls passing.
+Artifact11650736546 is3233bytes; API archive `sha256:87217f022ddbb0babb6652728925999fb42865cdd2f55c3fd7810961344b32a2`.
+Actual retained-FD and permitted startup children count1. A wrong other-inode FD raises the exact qualification class; the wrapper records its actual target identity.
+All four actual children were alive with pinned argv/input; every group had two zero observations without qualification errors.
+Source stayed unchanged, unresolved owners were zero, and all retained FDs closed afterward.
+The executed live-test SHA `0ced6815ea6a457eca74cec8f4568ebee36ac1b580e017403dfc1c4af4a15095` is unchanged from the causal RED.
+No artifact ZIP was downloaded or independently rehashed; stated archive digests come from GitHub API metadata.
+
+### Explicit next admission boundaries
+
+Observer admission covers the four witnessed argv forms containing `-hls_time`; default-HLS signatures remain unqualified.
+Initial-source swaps, transient proc observations, real Server lifecycle/join and owner/migration controls still require written-first proof.
+The private CLI does not authorize GET hydration. A typed Version1 worker still needs owned job/governor/source/root fences and absent-cut-only publication.
+No replacement PR or merge is admitted until full compatibility, current-main reconciliation, independent exact-source review and protected checks pass.
+All14 scanner holds, historical AAC failures and preserved50 simulator baselines remain unchanged.
+Native50 retesting and pairing remain with the native owner; no simulator action or complete50-retest claim follows.
+No local files/builds/media, credentials, original-media changes, Library writes, cleanup, Nox update or manual deployment occurred.
