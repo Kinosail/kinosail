@@ -44,6 +44,7 @@ test.describe("large offline transfers", () => {
     const title = await button.getAttribute("data-title");
     const quality = await button.getAttribute("data-quality");
     const profileID = await page.locator("#downloads").getAttribute("data-viewer-profile");
+    expect(jobID).toMatch(/^[a-f0-9]{16}$/);
     expect(jobID && itemID && title && quality && profileID).toBeTruthy();
     const media = Buffer.concat([Buffer.alloc(16, 1), Buffer.alloc(16, 2), Buffer.alloc(1, 3)]);
     const sha256 = createHash("sha256").update(media).digest("hex");
@@ -80,7 +81,11 @@ test.describe("large offline transfers", () => {
       request.onerror = () => reject(request.error);
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
-    await button.click();
+    const action = page.locator(`[data-download-device][data-job-id="${jobID}"]`);
+    await expect(action).toHaveCount(1);
+    await expect(action).toHaveAccessibleName(/^(Download to this device|Resume on this device)$/);
+    await expect(action).toBeEnabled();
+    await action.click();
     await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
     expect(await page.evaluate(async (id) => (await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile()).size, jobID!)).toBe(media.length);
@@ -112,6 +117,7 @@ test.describe("large offline transfers", () => {
     const title = await button.getAttribute("data-title");
     const quality = await button.getAttribute("data-quality");
     const profileID = await page.locator("#downloads").getAttribute("data-viewer-profile");
+    expect(jobID).toMatch(/^[a-f0-9]{16}$/);
     expect(jobID && itemID && title && quality && profileID).toBeTruthy();
     const media = Buffer.concat([Buffer.alloc(16, 1), Buffer.alloc(16, 2), Buffer.alloc(1, 3)]);
     const sha256 = createHash("sha256").update(media).digest("hex");
@@ -146,7 +152,11 @@ test.describe("large offline transfers", () => {
       request.onerror = () => reject(request.error);
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
-    await button.click();
+    const action = page.locator(`[data-download-device][data-job-id="${jobID}"]`);
+    await expect(action).toHaveCount(1);
+    await expect(action).toHaveAccessibleName(/^(Download to this device|Resume on this device)$/);
+    await expect(action).toBeEnabled();
+    await action.click();
     await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
   });

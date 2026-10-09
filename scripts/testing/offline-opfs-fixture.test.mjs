@@ -123,3 +123,88 @@ test('CI invokes this exact focused control once',()=>{
   for(const path of ['apps/player/e2e/offline-opfs-fixture.mjs','scripts/testing/offline-opfs-fixture.test.mjs'])
     assert.equal(layout.split('\n').filter(line=>line.includes('"'+path+'"')).length,1);
 });
+
+
+
+// Execute the actual registered quota callbacks with a controlled browser peer.
+// This proves public action selection/negative side effects, not browser storage.
+const quotaCases = new Map();
+const register = (title, callback) => quotaCases.set(title, callback);
+register.extend = () => register;
+register.use = () => {};
+register.describe = (_, body) => body();
+register.skip = () => {};
+register.info = () => ({attach: async()=>{}});
+const quotaExpect = value => ({
+  toBe: expected => assert.equal(value,expected),
+  toEqual: expected => assert.deepEqual(value,expected),
+  toBeTruthy: () => assert.ok(value),
+  toMatch: pattern => assert.match(value,pattern),
+  toHaveCount: async expected => assert.equal(value.count(),expected),
+  toHaveAccessibleName: async pattern => assert.match(value.label(),pattern),
+  toBeEnabled: async()=>assert.equal(value.enabled(),true),
+  toBeVisible: async()=>assert.equal(value.visible,true),
+});
+globalThis.kinosailQuotaControl = {test:register,expect:quotaExpect};
+const {registerHooks} = await import('node:module');
+const quotaRoot = new URL('../../apps/player/e2e/',import.meta.url).href;
+const hooks = registerHooks({resolve(specifier,context,next) {
+  if(context.parentURL === quotaRoot+'test-instance-large-offline-b.spec.ts') {
+    if(specifier === '@playwright/test') return {url:'data:text/javascript,'+encodeURIComponent('export const {test,expect}=globalThis.kinosailQuotaControl;'),shortCircuit:true};
+    if(specifier === './test-instance-helpers') return {url:'data:text/javascript,'+encodeURIComponent('export const configureTestInstance=()=>{}, login=async()=>{}, firstPlayable=async()=>"/watch/0123456789abcdef", downloadsSource="const chunkSize = 8 * 1024 * 1024;";'),shortCircuit:true};
+  }
+  return next(specifier,context);
+}});
+try {await import('../../apps/player/e2e/test-instance-large-offline-b.spec.ts');}
+finally {hooks.deregister();delete globalThis.kinosailQuotaControl;}
+class QuotaActionPage {
+  id='0123456789abcdef'; label='Resume on this device'; controlID=this.id;
+  controls=1; disabled=false; writes=0; orphanWrites=0; fixtureRoutes=0; clicks=0;
+  routes=[];
+  async route(matcher,handler) {this.routes.push({matcher,handler});if(this.routes.length>1)this.fixtureRoutes++;}
+  async addInitScript() {}
+  async goto() {}
+  getByText() {return {visible:true,click:async()=>{}};}
+  getByRole(_, {name}) {
+    if(name==='Prepare 720p offline')return {click:async()=>{}};
+    assert.equal(name,'Download to this device');
+    return {getAttribute:async key=>this.metadata(key),click:async()=>{assert.equal(this.label,'Download to this device','old action name became stale');await this.transfer();}};
+  }
+  metadata(key) {return {'data-job-id':this.id,'data-item-id':'fedcba9876543210','data-title':'Fixture movie','data-quality':'720p','data-viewer-profile':'owner'}[key];}
+  locator(selector) {
+    if(selector==='#downloads')return {getAttribute:async key=>this.metadata(key)};
+    const matched=selector.match(/^\[data-download-device\]\[data-job-id="([a-f0-9]{16})"\]$/);
+    assert.ok(matched,'only canonical exact job selector allowed');
+    return {count:()=>this.controlID===matched[1]?this.controls:0,label:()=>this.label,enabled:()=>!this.disabled,click:async()=>this.transfer()};
+  }
+  async evaluate(callback,args) {
+    if(callback===writeOrphanedOPFS){this.orphanWrites++;return true;}
+    if(args && typeof args==='object' && 'id' in args){this.writes++;return;}
+    return 33;
+  }
+  async transfer() {
+    this.clicks++;
+    const url=new URL('http://127.0.0.1:38127/api/v1/downloads/'+this.id+'/file');
+    const route=this.routes.find(row=>row.matcher(url));
+    assert.ok(route);
+    for(const range of ['bytes=0-15','bytes=16-31','bytes=32-32'])
+      await route.handler({request:()=>({headers:()=>({range})}),fulfill:async()=>{},abort:()=>{throw new Error('range rejected');}});
+  }
+}
+for(const [title,body] of quotaCases) {
+  for(const label of ['Download to this device','Resume on this device'])
+    test('actual quota callback clicks the same enabled canonical job with '+label+': '+title,async()=>{
+      const page=new QuotaActionPage();page.label=label;
+      await body({page});assert.equal(page.clicks,1);assert.equal(page.writes,1);
+    });
+  for(const invalid of ['',null,'ABCDEF0123456789','../private','a'.repeat(17),'a'.repeat(4097)])
+    test('actual quota callback rejects noncanonical job before local writes: '+title+' / '+String(invalid).length,async()=>{
+      const page=new QuotaActionPage();page.id=invalid;
+      await assert.rejects(body({page}));assert.equal(page.writes,0);assert.equal(page.orphanWrites,0);assert.equal(page.fixtureRoutes,0);assert.equal(page.clicks,0);
+    });
+  for(const values of [{label:'Pause download'},{label:'unknown'},{label:'Download to this device extra'},{controls:2},{controlID:'aaaaaaaaaaaaaaaa'},{disabled:true}])
+    test('actual quota callback refuses an ambiguous/replaced/disabled public action: '+title+' / '+JSON.stringify(values),async()=>{
+      const page=new QuotaActionPage();Object.assign(page,values);
+      await assert.rejects(body({page}));assert.equal(page.clicks,0);
+    });
+}

@@ -23,11 +23,14 @@ const expect = value => ({
   toContain: expected => assert.ok(value.includes(expected)),
   toHaveAttribute: async (name, expected) => assert.equal(value[name], expected),
   toHaveURL: async expected => assert.equal(value.url(), new URL(expected, origin).href),
+  toBeVisible: async () => {throw value.checkoutReached;},
 });
 globalThis.kinosailOfferControl = {test, expect};
 const qaRoot = new URL('../../apps/player/e2e/', import.meta.url).href;
 const shim = 'data:text/javascript,' + encodeURIComponent('export const {test,expect}=globalThis.kinosailOfferControl;');
 const hooks = registerHooks({resolve(specifier, context, next) {
+  if (specifier === '@axe-core/playwright' && context.parentURL === qaRoot + 'supporter-checkout.spec.ts')
+    return {url: 'data:text/javascript,export default class AxeBuilder {}', shortCircuit: true};
   if (specifier === '@playwright/test' && context.parentURL?.startsWith(qaRoot))
     return {url: shim, shortCircuit: true};
   if (context.parentURL === qaRoot + 'test-instance-helpers.ts' && specifier === '../../../scripts/testing/auth-form-navigation')
@@ -37,6 +40,7 @@ const hooks = registerHooks({resolve(specifier, context, next) {
   return next(specifier, context);
 }});
 await import('../../apps/player/e2e/navigation-repeat.spec.ts');
+await import('../../apps/player/e2e/supporter-checkout.spec.ts');
 hooks.deregister();
 delete globalThis.kinosailOfferControl;
 const run = registrations.get('repeating the active Movies link does not reload the document');
@@ -181,3 +185,53 @@ for (const state of ['rejects', 'stalls']) check(`diagnostic attachment ${state}
   assert.equal((await result).message, 'private-fulfill-marker');
   assert.equal(page.routes.length, 0);
 });
+
+// Only the sign-in/action boundary is exercised here. The sentinel at the first
+// checkout visibility assertion leaves the original cadence/Axe body untouched.
+const checkoutCase = registrations.get('Owner can switch Player checkout cadence without losing levels or accessibility');
+class CheckoutSignInPage {
+  current = origin + '/login';
+  calls = [];
+  destination = origin + '/account?passkey=offer&next=%2F';
+  dismissed = false;
+  checkoutReached = new Error('checkout boundary reached');
+  url() {return this.current;}
+  async goto(path) {this.calls.push(['goto', path]); if(path === '/login') this.current = origin + path; else assert.equal(this.current, origin + '/', 'root must settle before supporter navigation');}
+  getByLabel() {return {fill: async()=>{}};}
+  getByRole(role, {name}) {
+    if(name === 'Sign in') return {click: async()=>{this.calls.push(['submit']);}};
+    if(name === 'Not now') return {isVisible: async()=>this.current.includes('/account?'), click: async()=>{this.calls.push(['dismiss']);this.dismissed=true;}};
+    if(name === 'Contribution frequency') return {checkoutReached:this.checkoutReached};
+    throw new Error('unexpected sign-in control');
+  }
+  async waitForURL(predicate, options) {
+    this.calls.push(['wait']);
+    assert.ok(options.timeout > 0 && options.timeout <= 10000);
+    if(this.current === origin + '/login') {
+      await new Promise(resolve=>setTimeout(resolve,20));
+      this.current = this.destination;
+    }
+    if(this.dismissed && this.current.includes('/account?')) {
+      await new Promise(resolve=>setTimeout(resolve,20));
+      this.current=origin+'/';
+    }
+    assert.equal(predicate(new URL(this.current)),true,'unaccepted sign-in destination');
+  }
+  async setViewportSize() {assert.equal(this.current,origin+'/','root must settle before viewport');this.calls.push(['viewport']);}
+  locator() {return {};}
+}
+check('actual checkout callback waits delayed optional offer and Home before viewport/navigation', async()=>{
+  const page=new CheckoutSignInPage();
+  // The real callback uses the shared expect export; its first checkout assertion
+  // intentionally ends this boundary control after all navigation prerequisites.
+  await assert.rejects(checkoutCase({page,baseURL:origin}), error=>error===page.checkoutReached);
+  assert.deepEqual(page.calls,[['goto','/login'],['submit'],['wait'],['dismiss'],['wait'],['viewport'],['goto','/supporter']]);
+});
+for(const destination of [origin+'/unrecognized', 'https://foreign.fixture/', origin+'/account?passkey=offer&next=%2F&unknown=1'])
+  check('actual checkout rejects unaccepted destination before viewport or supporter navigation '+destination.split('/').at(-1),async()=>{
+    const page=new CheckoutSignInPage();page.destination=destination;
+    await assert.rejects(checkoutCase({page,baseURL:origin}), /unaccepted sign-in destination/);
+    assert.equal(page.calls.some(([kind])=>kind==='viewport'),false);
+    assert.equal(page.calls.some(([kind,path])=>kind==='goto'&&path==='/supporter'),false);
+    assert.equal(page.calls.some(([kind])=>kind==='dismiss'),false);
+  });

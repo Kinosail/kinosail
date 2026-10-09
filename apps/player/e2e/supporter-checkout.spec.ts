@@ -1,12 +1,13 @@
 import { configureProviderProfile, providerRoute } from "./provider-profile-fixture";
 import { createHmac } from "node:crypto";
+import { finishRootSignIn } from "./test-instance-helpers";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 configureProviderProfile();
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
-test("Owner can switch Player checkout cadence without losing levels or accessibility", async ({ page }) => {
+test("Owner can switch Player checkout cadence without losing levels or accessibility", async ({ page, baseURL }) => {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 	const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
 	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
@@ -20,7 +21,7 @@ test("Owner can switch Player checkout cadence without losing levels or accessib
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
 	await page.getByLabel("Authentication or recovery code").fill(code);
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await finishRootSignIn(page, new URL(baseURL!).origin);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/supporter");
 	const checkout = page.locator("[data-supporter-checkout]");
