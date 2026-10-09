@@ -59,7 +59,7 @@ async function observe(id,request,label){
   const row={request,label,result:'observation-failed',http:[],failureClass:undefined};
   const expected=config.cases.find(v=>v.request===request);
   const mediaPending=[];
-  row.observedSelectedAssets={};
+  row.observedSelectedAssets={};row.unexpectedSelectedAssets=[];
   const page=await context.newPage();
   page.on('response',response=>{
     const url=new URL(response.url());
@@ -70,11 +70,19 @@ async function observe(id,request,label){
     if(label!=='source-reference' && path.startsWith('/hls/')){
       const prefix=expected.selectedSource.slice(0,expected.selectedSource.lastIndexOf('/')+1);
       if(!path.startsWith(prefix))row.wrongHLSRecipe=true;
-      const name=path.slice(prefix.length);
-      if(Object.hasOwn(expected.publicAssetSHA256,name)){
+      const name=path.slice(prefix.length),known=Object.hasOwn(expected.publicAssetSHA256,name);
+      if(response.status()>=400)row.selectedHLSError=true;
+      const selectedMedia=path.startsWith(prefix) && (path.endsWith('.m4s') || path.endsWith('init.mp4'));
+      if(selectedMedia && !known)row.unexpectedSelectedAsset=true;
+      if(known || selectedMedia){
         mediaPending.push(response.body().then(bytes=>{
           if(bytes.length>2<<20)throw Error('public_browser_asset_bound');
-          const actual={status:response.status(),sha256:sha(bytes),expectedSHA256:expected.publicAssetSHA256[name]};
+          const actual={status:response.status(),sha256:sha(bytes),bytes:bytes.length,
+            expectedSHA256:known?expected.publicAssetSHA256[name]:null};
+          if(!known){
+            if(row.unexpectedSelectedAssets.length>=32)throw Error('unexpected_asset_bound');
+            row.unexpectedSelectedAssets.push(actual);return;
+          }
           if(actual.status!==200 || actual.sha256!==actual.expectedSHA256)row.publicAssetHashMismatch=true;
           if(!row.observedSelectedAssets[name])row.observedSelectedAssets[name]=[];
           row.observedSelectedAssets[name].push(actual);

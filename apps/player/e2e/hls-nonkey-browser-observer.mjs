@@ -16,7 +16,8 @@ export function consumerQualification(row, reference, expected) {
   const frame=frameQualification(phase,reference,expected);
   const healthy=row.result==='observed' && !row.pageErrors && !row.snapshotFailure &&
     !row.httpOverflow && !row.httpBodyFailure && !row.publicAssetHashMismatch &&
-    !row.directMediaRequested && !row.wrongHLSRecipe && row.selectedPublicHLSObserved===true;
+    !row.directMediaRequested && !row.wrongHLSRecipe && !row.unexpectedSelectedAsset &&
+    !row.selectedHLSError && row.selectedPublicHLSObserved===true;
   const actualQuality=phase.quality && phase.quality.droppedVideoFrames===0 &&
     phase.firstCallbackGap===0;
   const seek=row.label!=='forced-source-coordinate-seek' || row.forceSeek?.seeking && row.forceSeek?.seeked;
