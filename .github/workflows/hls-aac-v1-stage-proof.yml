@@ -43,10 +43,12 @@ jobs:
           fi
           timeout --kill-after=5s 180s sudo apt-get "${apt_options[@]}" install -y --no-install-recommends "$RUNNER_TEMP/hls-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Retain source-file cap
+        run: make max-loc
       - name: Private Version1 old-profile stage feasibility
         timeout-minutes: 19
         run: |
-          python3 -m py_compile apps/player/scripts/test-hls-aac-v1-stage-public.py
+          python3 -m py_compile apps/player/scripts/hls_aac_v1_stage_public.py apps/player/scripts/test-hls-aac-v1-stage-public.py
           timeout --signal=TERM --kill-after=90s 990s python3 apps/player/scripts/test-hls-aac-v1-stage-public.py
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()

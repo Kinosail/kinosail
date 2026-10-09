@@ -100,6 +100,8 @@ finally:
                 receipt.update(result='failed', sourceGuardFailureClass='v1_stage_source_changed')
         except Exception:
             receipt.update(result='failed', sourceGuardFailureClass='v1_stage_source_guard_failed')
+        if receipt['result'] != 'observed':
+            receipt['stageFeasibilityAcceptance'] = False
         files = [Path(__file__), *[Path(__file__).with_name(name) for name in [
             'hls_aac_v1_stage_public.py', 'hls_aac_v2_lazy_public.py', 'hls_aac_v2_compat_public.py',
             'hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',

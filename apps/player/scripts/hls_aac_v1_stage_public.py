@@ -80,11 +80,36 @@ def inventory(directory, number):
     return {'files': len(paths), 'bytes': total}
 
 
+def settle(process, row):
+    failures = []
+    def observe():
+        try:
+            return group_members(process.pid)
+        except (OSError, subprocess.SubprocessError):
+            failures.append('v1_stage_group_observation_failed')
+            return None
+    try:
+        if process.poll() is None or observe() != []:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    finally:
+        process.wait(timeout=5)
+    zeros, deadline = 0, time.monotonic() + 3
+    while zeros < 2 and time.monotonic() < deadline:
+        zeros = zeros + 1 if observe() == [] else 0
+        time.sleep(0.05)
+    row.update(joinedGroupZeroSamples=zeros, groupQualificationFailures=failures)
+    check(zeros == 2 and not failures, 'v1_stage_owned_group_not_joined')
+
+
 def execute(binary, args, directory, number, guard, row):
+    end = time.monotonic() + min(30, guard.check(20))
     with (directory.parent / (directory.name + '-private.log')).open('wb') as error:
         process = subprocess.Popen([binary, *args], stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=error, start_new_session=True)
-        end = time.monotonic() + min(30, guard.check(20))
+        row['commandStarted'] = True
         try:
             while process.poll() is None:
                 inventory(directory, number)
@@ -92,21 +117,8 @@ def execute(binary, args, directory, number, guard, row):
                 time.sleep(0.01)
             check(process.returncode == 0, 'v1_stage_command_failed')
         finally:
-            # Stop only this command's owned session, including any surviving children.
-            if process.poll() is None or group_members(process.pid):
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-            process.wait(timeout=5)
-            zeros, deadline = 0, time.monotonic() + 3
-            while zeros < 2 and time.monotonic() < deadline:
-                zeros = zeros + 1 if group_members(process.pid) == [] else 0
-                time.sleep(0.05)
-            row['joinedGroupZeroSamples'] = zeros
-            check(zeros == 2, 'v1_stage_owned_group_not_joined')
+            settle(process, row)
     row['joinedStageInventory'] = inventory(directory, number)
-
 
 def projected(rows):
     fields = ['stream_index', 'pts', 'dts', 'duration', 'size', 'flags', 'data_hash', 'side_data_list']
@@ -171,6 +183,8 @@ def prove(binary, source, media, rows, timeline, run, guard, receipt):
                 media_evidence(source_frames, media, directory, timeline, number, row)
             except Exception as error:
                 row['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+                check(not row.get('commandStarted') or row.get('joinedGroupZeroSamples') == 2,
+                    'v1_stage_unknown_owned_command')
             check(identity(os.fstat(retained.fileno())) == identity(witness)
                 and identity(source.stat()) == identity(witness) and source_state(source) == before,
                 'v1_stage_source_changed')
