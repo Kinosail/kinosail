@@ -21,12 +21,16 @@ class ClockTests(unittest.TestCase):
         self.assertEqual(result['firstClipPTSSeconds'],-0.5)
         self.assertEqual(result['firstSourcePTSSeconds'],12)
         self.assertEqual(result['sampleCount'],2)
+        self.assertEqual(result['firstChromiumRawDTSSeconds'],0)
+        self.assertEqual(result['firstFFprobeLogicalDTSSeconds'],-1.5)
         self.assertTrue(result['qualified'])
         self.assertEqual(value,before)
     def test_unknown_geometry_signedness_or_clock_never_guessed(self):
-        for change in ['edit','rate','scale','count','composition','duration','nan','request']:
+        for change in ['edit','leading-empty','multiple','rate','scale','count','composition','duration','nan','request']:
             value=self.facts();request=12.5
             if change=='edit':value['initialization']['tracks'][0]['edits']=[]
+            if change=='leading-empty':value['initialization']['tracks'][0]['edits'].insert(0,{'mediaTime':-1,'duration':0,'rateInteger':1,'rateFraction':0})
+            if change=='multiple':value['initialization']['tracks'][0]['edits'].append(dict(value['initialization']['tracks'][0]['edits'][0]))
             if change=='rate':value['initialization']['tracks'][0]['edits'][0]['rateInteger']=0
             if change=='scale':value['initialization']['tracks'][0]['mediaTimescale']=0
             if change=='count':value['physicalFragments'][0]['tracks'][0]['samples'].pop()
