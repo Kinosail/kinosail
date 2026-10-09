@@ -20,6 +20,9 @@ func restrictNetwork() error {
 		arch = unix.AUDIT_ARCH_AARCH64
 	}
 	filter := networkFilter(arch)
+	if len(filter) == 0 || len(filter) > 65535 {
+		return errors.New("invalid public gateway network filter")
+	}
 	program := unix.SockFprog{Len: uint16(len(filter)), Filter: &filter[0]}
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()

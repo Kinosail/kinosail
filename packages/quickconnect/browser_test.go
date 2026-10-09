@@ -99,9 +99,11 @@ func TestBrowserQuickConnectRejectsBadRequestsBeforeSideEffects(t *testing.T) {
 		"unknown content type": func(r *http.Request) { r.Header.Set("Content-Type", "application/json") },
 		"body":                 func(r *http.Request) { r.Body = io.NopCloser(strings.NewReader(`{"secret":"chosen"}`)) },
 		"oversized body":       func(r *http.Request) { r.Body = io.NopCloser(strings.NewReader(strings.Repeat("x", 2048))) },
-		"duplicate cookie":     func(r *http.Request) { r.AddCookie(&http.Cookie{Name: browserCookieName, Value: "other"}) },
-		"oversized cookie":     func(r *http.Request) { r.Header.Set("Cookie", browserCookieName+"="+strings.Repeat("x", 129)) },
-		"empty cookie":         func(r *http.Request) { r.Header.Set("Cookie", browserCookieName+"=") },
+		"duplicate cookie": func(r *http.Request) {
+			r.AddCookie(&http.Cookie{Name: browserCookieName, Value: "other", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+		},
+		"oversized cookie": func(r *http.Request) { r.Header.Set("Cookie", browserCookieName+"="+strings.Repeat("x", 129)) },
+		"empty cookie":     func(r *http.Request) { r.Header.Set("Cookie", browserCookieName+"=") },
 	}
 	for name, change := range cases {
 		t.Run(name, func(t *testing.T) {
@@ -246,5 +248,14 @@ func TestBrowserQuickConnectRateLimitsCreationAndPolling(t *testing.T) {
 	response = browserCall(t, f.application.PollBrowser, browserCookie(secret, 60), nil)
 	if response.Code != http.StatusTooManyRequests || f.writes != 0 || response.Header().Get("Set-Cookie") != "" {
 		t.Fatalf("poll rate limit = %d", response.Code)
+	}
+}
+
+func TestDuplicateRequestCookieSecurityFlagsPreserveWireValue(t *testing.T) {
+	t.Parallel()
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "https://family.duckdns.org/auth/quick-connect", nil)
+	request.AddCookie(&http.Cookie{Name: browserCookieName, Value: "other", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode})
+	if got := request.Header.Get("Cookie"); got != browserCookieName+"=other" {
+		t.Fatalf("request cookie changed: %q", got)
 	}
 }
