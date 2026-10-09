@@ -24,9 +24,14 @@ type copiedAACGeneration struct {
 	certificate                   copiedHLSClockCertificate
 	timelineData, certificateData []byte
 	release                       func()
+	legacy                        *copiedHLSLegacyRead
 }
 
 func (value *copiedAACGeneration) close() {
+	if value.legacy != nil && value.legacy.source != nil {
+		_ = value.legacy.source.Close()
+		value.legacy.source = nil
+	}
 	if value.media != nil {
 		_ = value.media.Close()
 		value.media = nil
@@ -69,7 +74,10 @@ func (value *copiedAACGeneration) open(ctx context.Context) error {
 	var err error
 	value.media, err = value.root.OpenRoot(value.certificate.Rendition)
 	if err != nil || verifyCopiedHLSRenditionAssets(ctx, value.media, value.certificate) != nil ||
-		verifyCopiedAACAssets(ctx, value.media, value.timeline) != nil || !value.current() {
+		verifyCopiedAACAssets(ctx, value.media, value.timeline) != nil {
+		return errCopiedHLSIndex
+	}
+	if value.legacy != nil && value.legacy.bind(value) != nil || !value.current() {
 		return errCopiedHLSIndex
 	}
 	return nil
@@ -81,7 +89,16 @@ func (value *copiedAACGeneration) openTimeline(ctx context.Context) error {
 	if err == nil {
 		value.timeline, err = value.manager.readCopiedHLSTimelineRoot(ctx, value.directory, value.policy, value.root)
 	}
-	if err != nil || value.timeline.Clock == nil || value.timeline.AudioOrigin == nil {
+	if err != nil || value.timeline.Clock == nil {
+		return errCopiedHLSIndex
+	}
+	if value.legacy != nil {
+		if value.timeline.AudioOrigin != nil || value.timeline.Presentation != nil || value.timeline.Strategy != "h264-idr-keys-1" || value.timeline.point(0) != value.recipe.offset {
+			return errCopiedHLSIndex
+		}
+		return nil
+	}
+	if value.timeline.AudioOrigin == nil {
 		return errCopiedHLSIndex
 	}
 	return nil
@@ -97,7 +114,7 @@ func (value *copiedAACGeneration) openCertificate() error {
 		return errCopiedHLSIndex
 	}
 	value.certificate, err = decodeCopiedHLSCertificate(value.certificateData, value.timelineData)
-	if err != nil || value.certificate.Version != 2 {
+	if err != nil || value.certificate.Version != copiedHLSCertificateVersion(value.timeline) {
 		return errCopiedHLSIndex
 	}
 	return nil
@@ -105,6 +122,9 @@ func (value *copiedAACGeneration) openCertificate() error {
 
 func (value *copiedAACGeneration) current() bool {
 	data, err := json.Marshal(value.timeline)
+	if value.legacy != nil {
+		return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 1 && value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil && value.legacy.current(value)
+	}
 	return err == nil && bytes.Equal(data, value.timelineData) && value.certificate.Version == 2 && value.certificate.Timeline == sha256.Sum256(value.timelineData) && value.ctx.Err() == nil &&
 		value.manager.validateHLSPolicy(value.ctx, value.item, value.recipe, value.policy) == nil &&
 		copiedHLSBoundMetadata(value.root, value.timelineData, value.certificateData, value.policy) &&

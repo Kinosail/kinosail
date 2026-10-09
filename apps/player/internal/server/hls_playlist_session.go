@@ -24,6 +24,9 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		localizedNotFound(writer, request)
 		return
 	}
+	if manager.serveCopiedHLSLegacy(writer, request, item, recipe, localName) {
+		return
+	}
 	if err := manager.qualifyCopiedAAC(request.Context(), item, recipe, false); err != nil {
 		localizedNotFound(writer, request)
 		return
