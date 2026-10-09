@@ -47,7 +47,7 @@ test('only actual exact init and complete ordered known native append outcomes q
 });
 test('combined init and first media append still binds the exact counterfactual and every cut',()=>{
   const plan=prepareAppColor(item,joined,pieces),value=witness(plan),combined=plan.appendPlans.find(v=>v.combined);
-  value.appends=[{...value.appends[0],sha256:combined.sha256,bytes:combined.bytes,payloadBase64:combined.data.toString('base64')},value.appends[2]];
+  value.appends=[{...value.appends[0],sha256:combined.sha256,bytes:combined.bytes,payloadBase64:combined.data.toString('base64')},{...value.appends[2],ordinal:1}];
   assert.equal(appColorAppendFacts(value,plan,pieces).qualified,true);
 });
 test('setup failures retain new failure evidence after original cases without invoking app playback',async()=>{
@@ -82,6 +82,9 @@ test('native wrappers preserve offset views, receiver, return values and native 
     assert.equal(rows[0].payloadBase64,Buffer.from(view.buffer,view.byteOffset,view.byteLength).toString('base64'));
     assert.equal(rows[0].outcome,'updateend');assert.equal(rows[1].outcome,'exception');
     assert.equal(rows[1].mime,'audio/mp4; codecs="mp4a.40.2"');
+    window.nonkeyAppColorAppend.appends.length=128;
+    const before=calls.length;assert.throws(()=>buffer.appendBuffer(view),error=>error===nativeFailure);
+    assert.equal(calls.length,before+1);
   }finally{Object.assign(globalThis,saved);}
 });
 test('error or abort followed by updateend cannot qualify and buffers never share outcome state',async()=>{
@@ -103,4 +106,12 @@ test('error or abort followed by updateend cannot qualify and buffers never shar
     await Promise.all(window.nonkeyAppColorAppend.pending);
     assert.deepEqual(window.nonkeyAppColorAppend.appends.map(v=>v.outcome),['error','abort']);
   }finally{Object.assign(globalThis,saved);}
+});
+
+test('contiguous media append groups preserve complete order without equating HTTP cuts to calls',()=>{
+  const plan=prepareAppColor(item,joined,pieces),value=witness(plan),
+    group=plan.appendPlans.find(v=>!v.init && v.fragmentIndices.length===2);
+  value.appends=[value.appends[0],{...value.appends[1],sha256:group.sha256,bytes:group.bytes,
+    payloadBase64:group.data.toString('base64')}];
+  assert.equal(appColorAppendFacts(value,plan,pieces).qualified,true);
 });
