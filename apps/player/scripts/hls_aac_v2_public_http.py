@@ -42,6 +42,7 @@ class ActualServer:
             KINOSAIL_FFPROBE=probe, V2_ARGV_CAPTURE=str(self.invocations), V2_REAL_FFMPEG=real)
         self.process, self.log, self.sampler = None, None, None
         self.sessions = []
+        self.owned_pids = set()
         self.before = source_state(source)
 
     def start(self, authorize=False, binary=None):
@@ -49,6 +50,7 @@ class ActualServer:
         self.log = self.log_path.open('a')
         self.process = subprocess.Popen([str(binary or self.binary)], cwd=self.root, env=self.env,
             stdout=self.log, stderr=self.log, start_new_session=True)
+        self.owned_pids.add(self.process.pid)
         self.stop_event = threading.Event()
         self.resources = {'samples': 0, 'peakOwnedFFmpeg': 0, 'samplingErrors': 0}
         self.sampler = threading.Thread(target=sample_resources,
@@ -97,7 +99,7 @@ class ActualServer:
         if not self.invocations.exists():
             return []
         rows = [json.loads(row) for row in bounded_bytes(self.invocations, 65536, 'v2_argv_bound').splitlines()]
-        check(len(rows) <= 16, 'v2_encoder_invocation_bound')
+        check(len(rows) <= 64, 'v2_all_hls_invocation_bound')
         for row in rows:
             args = row.get('args')
             check(type(args) is list and 0 < len(args) <= 128
@@ -105,14 +107,39 @@ class ActualServer:
                   'v2_actual_argv_shape')
         return rows
 
+    def source_invocation_rows(self):
+        return source_invocations(self.invocation_rows(), self.source, self.owned_pids)
 
 
-def diagnostic_producer_rows(rows, source, parent):
+def source_invocations(rows, source, owned_pids):
+    """Keep every actual source call; allow only the identified bounded codec fixture."""
+    selected = []
+    for row in rows:
+        check(type(row.get('parent')) is int and row['parent'] in owned_pids, 'v2_argv_foreign_parent')
+        args = row['args']
+        inputs = [args[n + 1] for n, value in enumerate(args[:-1]) if value == '-i']
+        check(len(inputs) == 1, 'v2_argv_single_input_required')
+        if inputs == [str(source)]:
+            selected.append(row)
+            continue
+        path = Path(inputs[0])
+        check(path.is_absolute() and path.parent.parent == Path('/tmp')
+              and re.fullmatch(r'kinosail-transcoder-check-[a-zA-Z0-9_-]{1,64}', path.parent.name)
+              and path.name in ['source.mp4', 'source.mkv']
+              and args[-1] == str(path.parent / 'index.m3u8')
+              and option(args, '-hls_time') == '1' and option(args, '-frames:v') == '24'
+              and option(args, '-c:a') == 'aac' and '-shortest' in args,
+              'v2_unknown_non_source_hls_invocation')
+    check(len(selected) <= 16, 'v2_encoder_invocation_bound')
+    return selected
+
+
+def diagnostic_producer_rows(rows, source, owned_pids):
     """Non-throwing whitelist projection keeps a failed counter's cause."""
     output = []
     for row in rows:
         args = row['args']
-        fields = {'ownedParent': row['parent'] == parent,
+        fields = {'ownedParent': row['parent'] in owned_pids,
                   'exactSourceInputs': sum(args[n + 1] == str(source)
                       for n, value in enumerate(args[:-1]) if value == '-i')}
         for name in ['-ss', '-start_number', '-output_ts_offset', '-hls_time']:

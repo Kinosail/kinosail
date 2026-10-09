@@ -56,7 +56,7 @@ def case(label, selected, metadata, original):
           and all(after['assetSHA256'].get(name) == digest for name, digest in original['assetSHA256'].items()),
           'v2_canonical_prefix_changed')
     row.update(result='observed', canonicalPrefixUnchanged=True, cacheAfter=after,
-        actualProducerRows=actual_producer_rows(owner.invocation_rows()[getattr(owner, 'producer_start', 0):]))
+        actualProducerRows=actual_producer_rows(owner.source_invocation_rows()[getattr(owner, 'producer_start', 0):]))
 
 
 try:
@@ -101,16 +101,18 @@ try:
     check(origin['InitialSeekMicros'] == 12000000 and origin['FirstPTS'] == 571400
           and origin['Physical'] == -571400 and origin['Edit'] == 4600 and origin['SourceTrack'] == 1,
           'v2_actual_packet_origin')
-    rows = owner.invocation_rows()
+    all_rows = owner.invocation_rows()
     private = bounded_bytes(owner.log_path, 2 << 20, 'v2_private_lifecycle_bound').decode()
     receipt.update(preparation=prepared, initialCache=prefix,
-        producerCapture={'records': len(rows), 'fileExists': owner.invocations.exists(),
-            'rows': diagnostic_producer_rows(rows, source, owner.process.pid)},
+        producerCapture={'records': len(all_rows), 'fileExists': owner.invocations.exists(),
+            'rows': diagnostic_producer_rows(all_rows, source, owner.owned_pids)},
         encoderLifecycle=safe_encoder_lifecycle(private), encoderSeekPhases=safe_seek_phases(private))
+    rows = owner.source_invocation_rows()
+    receipt['producerCapture']['sourceRecords'] = len(rows)
     check(len(rows) == 1, 'v2_prepare_encoder_count')
     receipt['stage'] = 'causal-public-refill4'
     case('causal-refill4', selected, metadata, prefix)
-    producer = actual_producer_rows(owner.invocation_rows())
+    producer = actual_producer_rows(owner.source_invocation_rows())
     check(len(producer) == 2 and producer[0]['seek'] == '12.000000'
           and producer[0]['startNumber'] == '0' and producer[1]['seek'] == '20.000000'
           and producer[1]['startNumber'] == '4' and producer[1]['muxOffset'] == '8.000000'
@@ -124,7 +126,7 @@ try:
     receipt['cases'].append(row)
     joined, manifest, assets, idle = cached_media(owner, selected, RUN / 'cold-reopen')
     qualify(source, joined, assets, metadata, row)
-    check(len(owner.invocation_rows()) == 2, 'v2_reopen_started_encoder')
+    check(len(owner.source_invocation_rows()) == 2, 'v2_reopen_started_encoder')
     _, _, reopened = cache_state(directory / 'cache')
     check(reopened == complete, 'v2_reopen_changed_generation')
     value = owner.api.call(prepare, 'POST', {'source': selected}, status=202)
@@ -133,7 +135,7 @@ try:
     receipt['stage'] = 'missing-zero-staged-regeneration'
     (media_cache / 'segment-00000.m4s').unlink()
     case('missing-zero', selected, metadata, prefix)
-    check(len(owner.invocation_rows()) == 3, 'v2_zero_regeneration_encoder_count')
+    check(len(owner.source_invocation_rows()) == 3, 'v2_zero_regeneration_encoder_count')
     owner.stop()
     receipt['stage'] = 'cold-server-missing-zero'
     (media_cache / 'segment-00000.m4s').unlink()
@@ -141,9 +143,9 @@ try:
     status, initialization, _ = owner.api.http(selected.removesuffix('index.m3u8') + '360p/init.mp4')
     check(status == 200 and __import__('hashlib').sha256(initialization).hexdigest() == prefix['assetSHA256']['init.mp4'],
           'v2_cold_zero_changed_initialization')
-    check(len(owner.invocation_rows()) == 3, 'v2_cold_zero_initialization_started_encoder')
+    check(len(owner.source_invocation_rows()) == 3, 'v2_cold_zero_initialization_started_encoder')
     case('cold-missing-zero', selected, metadata, prefix)
-    check(len(owner.invocation_rows()) == 4, 'v2_cold_zero_regeneration_encoder_count')
+    check(len(owner.source_invocation_rows()) == 4, 'v2_cold_zero_regeneration_encoder_count')
     owner.stop()
     receipt['stage'] = 'legacy-version1-generation'
     baseline = RUN / 'baseline-source'
@@ -156,6 +158,7 @@ try:
     legacy_source = legacy_media / 'Fixture.mp4'
     shutil.copy2(source, legacy_source)
     receipt['sessions'].extend(owner.sessions)
+    receipt['completedSourceAudit'] = diagnostic_producer_rows(owner.invocation_rows(), source, owner.owned_pids)
     owner = ActualServer(ROOT, legacy_directory, legacy_source, binary)
     source, before = legacy_source, source_state(legacy_source)
     owner.start(authorize=True, binary=old_binary)
@@ -173,7 +176,7 @@ try:
     old_metadata = {name: sha(legacy_clock.with_name(name)) for name in ['.source', '.copy-timeline', '.copy-clock']}
     owner.stop()
     receipt['stage'] = 'version1-direct-rejection-and-migration'
-    owner.producer_start = len(owner.invocation_rows())
+    owner.producer_start = len(owner.source_invocation_rows())
     owner.start()
     asset = selected.removesuffix('index.m3u8') + '360p/init.mp4'
     check(owner.api.http(asset)[0] == 404, 'v2_version1_direct_asset_bypass')
@@ -199,6 +202,12 @@ finally:
             except Exception:
                 receipt.update(result='failed', cleanupFailureClass='v2_owned_server_join_failed')
             receipt['sessions'].extend(owner.sessions)
+            try:
+                receipt['finalSourceAudit'] = diagnostic_producer_rows(owner.invocation_rows(), source, owner.owned_pids)
+                receipt['finalSourceInvocationCount'] = len(owner.source_invocation_rows())
+            except Exception as error:
+                receipt.update(result='failed', invocationAuditFailureClass=str(error)
+                    if isinstance(error, RuntimeError) else type(error).__name__)
         try:
             receipt['sourceUnchanged'] = source_state(source) == before if source is not None and before is not None else None
         except Exception:
