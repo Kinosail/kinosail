@@ -15,6 +15,18 @@ test("player shows and switches its playback method without crowding actions", a
 		await page.evaluate(() => localStorage.removeItem("kinosail.playback-policy-v2"));
 		await attachPlaybackState(page, testInfo, watch, "before-method");
 		await page.goto(watch);
+		const video = page.locator("video");
+		const stage = page.locator(".media-stage");
+		const activePlayback = (media: HTMLVideoElement) =>
+			!media.paused && !media.ended && !media.seeking && !media.error && media.readyState >= 2 &&
+			Number.isFinite(media.currentTime) && Number.isFinite(media.duration) && media.duration > 0 &&
+			media.currentTime >= 0 && media.currentTime < media.duration;
+		await stage.focus();
+		await expect(stage).toBeFocused();
+		if (await video.evaluate((media: HTMLVideoElement) => media.paused)) await page.keyboard.press("Space");
+		await expect.poll(() => video.evaluate(activePlayback)).toBe(true);
+		await page.keyboard.press("Space");
+		await expect(video).toHaveJSProperty("paused", true);
 		const actions = page.locator(".primary-player-actions:not([data-progress-notice])");
 		const method = page.locator("[data-playback-mode-status]");
 		await expect(method).toHaveText("Direct Play");
@@ -84,6 +96,13 @@ test("player shows and switches its playback method without crowding actions", a
 			path: testInfo.outputPath(`${viewport.width}-player-actions-open.png`),
 			fullPage: true,
 		});
+		await stage.focus();
+		await expect(stage).toBeFocused();
+		await expect(video).toHaveJSProperty("paused", true);
+		const beforePlay = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
+		await page.keyboard.press("Space");
+		await expect.poll(() => video.evaluate(activePlayback)).toBe(true);
+		await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(beforePlay);
 		await attachResponsiveFailure(page, testInfo, "player-method-before-switch");
 		await attachPlaybackState(page, testInfo, watch, "at-method-switch");
 		await actions.getByRole("link", { name: compatibleLabel }).click();

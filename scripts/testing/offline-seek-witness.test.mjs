@@ -45,13 +45,62 @@ function mediaPeer(){
  return {scope,video,listeners,callbacks,events,call,frame:mediaTime=>{const [id,fn]=callbacks.entries().next().value;callbacks.delete(id);fn(0,{mediaTime,presentedFrames:mediaTime*10});}};
 }
 function networkPeer(){
- const listeners=new Map(),attachments=[],media=mediaPeer();
+ const listeners=new Map(),attachments=[],checkpoints=[],media=mediaPeer();
  const page={url:()=>origin+'/offline?job='+jobID,on:(name,fn)=>listeners.set(name,fn),off:(name,fn)=>{assert.equal(listeners.get(name),fn);listeners.delete(name);},
   evaluate:async(fn,input)=>fn===offlineSeekStorage?{available:false,backend:'unavailable',size:null,bytes:null,chunks:null,opfsSize:null}
    :runInNewContext('('+fn.toString()+')(input)',Object.assign(media.scope,{input}))};
- const info={attach:async(name,{body})=>{assert.equal(name,'offline-seek-failure');attachments.push(JSON.parse(body));}};
- return {page,listeners,attachments,media,info};
+ const info={attach:async(name,{body})=>{if(name==='offline-seek-checkpoints')checkpoints.push(JSON.parse(body));
+  else {assert.equal(name,'offline-seek-failure');attachments.push(JSON.parse(body));}}};
+ return {page,listeners,attachments,checkpoints,media,info};
 }
+test('early native seek callbacks retain real setter facts before late evaluation becomes unavailable',async()=>{
+ const peer=networkPeer(),witness=offlineSeekWitness(peer.page,origin,jobID),messages=[];
+ peer.media.scope.console={debug:text=>{messages.push(text);peer.listeners.get('console')?.({type:()=> 'debug',text:()=>text});}};
+ let time=.25;peer.media.video.tagName='VIDEO';peer.media.video.currentSrc=origin+'/offline-media/1123456789abcdef/'+jobID;
+ Object.defineProperty(peer.media.video,'currentTime',{get:()=>time,set:value=>{time=value;peer.media.video.seeking=true;}});
+ await witness.arm();
+ await witness.seek({evaluate:async(fn,input)=>runInNewContext('('+fn.toString()+')(video,input)',Object.assign(peer.media.scope,{input}))});
+ peer.media.listeners.get('seeking')({type:'seeking'});peer.media.video.seeking=false;
+ peer.media.listeners.get('seeked')({type:'seeked'});peer.media.frame(4);
+ const evaluate=peer.page.evaluate;peer.page.evaluate=()=>new Promise(()=>{});
+ await witness.attachFailure(peer.info);
+ assert.deepEqual(peer.attachments[0].observations,{setup:'available',media:'deadline',storage:'deadline'});
+ assert.ok(peer.checkpoints[0],'early seek checkpoints must survive unavailable late evaluation');
+ const rows=peer.checkpoints[0].records;
+ assert.deepEqual(rows.map(row=>row.phase),['before-seek','after-seek','seeking','seeked','frame']);
+ assert.equal(rows[0].facts.currentTime,.25);assert.equal(rows[0].facts.seeking,false);
+ assert.equal(rows[1].facts.currentTime,4);assert.equal(rows[1].facts.seeking,true);
+ assert.equal(rows[3].facts.seeking,false);assert.equal(rows[1].facts.sourceKind,'offline-range');
+ assert.deepEqual(rows[0].facts.buffered,[{start:0,end:12}]);assert.equal(peer.checkpoints[0].source,'unverified-console');
+ assert.ok(!JSON.stringify(peer.checkpoints).includes(origin));assert.ok(!JSON.stringify(peer.checkpoints).includes(jobID));
+ assert.ok(messages.length<=10);peer.page.evaluate=evaluate;await witness.stop();assert.equal(peer.listeners.size,0);
+});
+test('early console checkpoints reject malformed private or foreign records without extra evaluation',async()=>{
+ const peer=networkPeer(),witness=offlineSeekWitness(peer.page,origin,jobID);let evaluations=0;
+ const evaluate=peer.page.evaluate;peer.page.evaluate=async(...args)=>{evaluations++;return evaluate(...args);};
+ const facts={timeMs:1,currentTime:.25,duration:12,readyState:4,networkState:1,errorCode:0,paused:false,seeking:false,
+  buffered:[{start:0,end:12}],rangesUnavailable:false,sourceKind:'offline-range'};
+ const valid={schemaVersion:1,kind:'offline-seek-checkpoint',phase:'before-seek',facts};
+ const send=(value,type='debug')=>peer.listeners.get('console')?.({type:()=>type,text:()=> 'KINOSAIL_OFFLINE_SEEK '+(typeof value==='string'?value:JSON.stringify(value))});
+ for(const value of [{...valid,phase:'private-secret'},{...valid,unknown:'private-secret'}, {...valid,facts:{...facts,unknown:'private-secret'}},
+  {...valid,facts:{...facts,currentTime:-1}}, {...valid,facts:{...facts,currentTime:1e12+1}}, {...valid,facts:{...facts,readyState:5}},
+  {...valid,facts:{...facts,paused:'false'}}, {...valid,facts:{...facts,sourceKind:'https://private-secret/'}},
+  {...valid,facts:{...facts,buffered:[{start:4,end:3}]}}, {...valid,facts:{...facts,buffered:Array(9).fill({start:0,end:12})}},
+  {...valid,facts:{...facts,timeMs:600001}}, 'private-secret'.repeat(1000), '{'])send(value);
+ send(valid,'error');peer.listeners.get('console')?.({type:()=> 'debug',text:()=>{throw Error('private-secret');}});
+ peer.page.url=()=> 'https://foreign.example/';send(valid);peer.page.url=()=>origin+'/offline?job='+jobID;
+ assert.equal(evaluations,0);send(valid);for(let index=0;index<20;index++)send({...valid,phase:'frame'});
+ await witness.attachFailure(peer.info);const receipt=peer.checkpoints[0];
+ assert.deepEqual(receipt.records.map(row=>row.phase),['before-seek','frame','frame','frame']);
+ assert.equal(receipt.overflow,true);assert.ok(!JSON.stringify(receipt).includes('private-secret'));
+ await witness.stop();assert.equal(peer.listeners.size,0);
+});
+test('throwing checkpoint transport preserves the original media assignment error',()=>{
+ const peer=mediaPeer(),original=Error('real setter failure');peer.scope.console={debug:()=>{throw Error('diagnostic failure');}};
+ peer.video.tagName='VIDEO';Object.defineProperty(peer.video,'currentTime',{get:()=>.25,set:()=>{throw original;}});
+ peer.call('arm');assert.throws(()=>runInNewContext('('+offlineSeekAction.toString()+')(video,origin)',{...peer.scope,video:peer.video,origin}),error=>error===original);
+ peer.call('stop');assert.equal(peer.listeners.size,0);assert.equal(peer.callbacks.size,0);
+});
 test('untrusted authority and canonical IDs reject with zero listeners, evaluation or writes',()=>{
  for(const baseURL of [undefined,'','foreign','https://foreign.example','http://user@localhost:38127','http://localhost:0',
   origin+'/private',origin+'/?unknown','x'.repeat(2049)]){

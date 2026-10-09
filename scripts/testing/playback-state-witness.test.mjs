@@ -1,3 +1,6 @@
+import {readFileSync} from 'node:fs';
+import {stripTypeScriptTypes} from 'node:module';
+import {runInNewContext} from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {attachPlaybackState} from '../../apps/player/e2e/playback-state-witness.mjs';
@@ -73,5 +76,41 @@ test('fresh method-switch stages retain closed current progress without public p
   const value=await attachPlaybackState(f.page,f.info,'/watch/item',stage);
   assert.deepEqual(value,{schemaVersion:1,stage,status:200,progress:{seconds:12,watched:true}});
   assert.equal(f.calls.length,1);assert.equal(f.rows.length,1);
+ }
+});
+
+test('registered responsive method scenarios hold short media during geometry and switch only during actual playback',async()=>{
+ const source=stripTypeScriptTypes(readFileSync(new URL('../../apps/player/e2e/layout-audit-player.spec.ts',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
+ for(const scenario of ['progressing','watched','seeking','error','nonfinite','zero duration']){
+  let run,focused=false,method='Direct Play',switches=0,plays=0,pauses=0;
+  const media={paused:scenario==='watched',ended:false,seeking:false,currentTime:scenario==='watched'?0:3,duration:12,readyState:scenario==='watched'?0:4,error:null};
+  const rejected=Error('active playback required');
+  const advance=amount=>{if(!media.paused){media.currentTime=Math.min(12,media.currentTime+amount);if(media.currentTime===12){media.ended=true;media.paused=true;}}};
+  const box={left:0,right:400,top:500,bottom:544,height:44};
+  const node={getBoundingClientRect:()=>box,parentElement:{getBoundingClientRect:()=>box}};
+  const evaluate=(fn,arg)=>runInNewContext('('+fn.toString()+')(element,arg)',{element:node,arg,document:{querySelector:()=>node},getComputedStyle:()=>({backgroundColor:'rgb(1, 1, 1)'})});
+  const panel={evaluate:async fn=>evaluate(fn)};node.getBoundingClientRect=()=>({...box,bottom:300,height:250});
+  const stage={focus:async()=>{focused=true;}};
+  const video={getAttribute:async()=> 'Compatibility',evaluate:async(fn,arg)=>{advance(.25);return fn(media,arg);}};
+  const compatible={click:async()=>{if(media.paused||media.ended||media.seeking||!Number.isFinite(media.currentTime)||!Number.isFinite(media.duration)||media.duration<=0||media.error)throw rejected;
+    switches++;method='Compatibility';media.currentTime=.25;}};
+  const actions={getByRole:(role)=>role==='link'?compatible:{},getByText:()=>({click:async()=>{}})};
+  const badge={evaluate:async fn=>evaluate(fn),click:async()=>{}};
+  const page={goto:async path=>{if(path.startsWith('/watch')){method='Direct Play';if(media.ended){media.currentTime=0;media.readyState=0;}}},
+   setViewportSize:async()=>{},evaluate:async()=>{},locator:selector=>selector==='video'?video:selector==='.media-stage'?stage:selector==='[data-playback-mode-status]'?badge:selector==='.player-settings'?panel:actions,
+   keyboard:{press:async key=>{if(key==='Escape')return;assert.equal(key,'Space');assert(focused);if(media.paused){plays++;media.paused=false;media.ended=false;media.readyState=4;}else{pauses++;media.paused=true;}
+    if(scenario==='seeking')media.seeking=true;if(scenario==='error')media.error={code:3};if(scenario==='nonfinite')media.duration=Infinity;if(scenario==='zero duration')media.duration=0;}},
+   waitForTimeout:async()=>{},screenshot:async()=>advance(4)};
+  const expect=value=>({toHaveText:async text=>assert.equal(method,text),toBeVisible:async()=>{},toBeHidden:async()=>{},toBeFocused:async()=>assert(focused),
+   toHaveJSProperty:async(key,wanted)=>assert.equal(media[key],wanted),toBeGreaterThanOrEqual:minimum=>assert(value>=minimum),toBeTruthy:()=>assert(value),
+   toBe: wanted=>assert.equal(value,wanted),not:{toBe:wanted=>assert.notEqual(value,wanted)},toEqual:wanted=>assert.equal(JSON.stringify(value),JSON.stringify(wanted))});
+  expect.poll=callback=>({toBe:async wanted=>{if(await callback()!==wanted)throw rejected;},toBeTruthy:async()=>{if(!await callback())throw rejected;},toBeGreaterThan:async minimum=>{if(!(await callback()>minimum))throw rejected;}});
+  const register=(title,callback)=>{if(title.startsWith('player shows and switches'))run=callback;};register.skip=()=>{};
+  class AxeBuilder{async analyze(){advance(3);return {violations:[]};}}
+  runInNewContext(source,{test:register,expect,AxeBuilder,configureLayoutAudit:()=>{},login:async()=>{},firstPlayable:async()=>'/watch/item',
+   attachPlaybackState:async()=>advance(1),attachResponsiveFailure:async()=>{},layoutProblems:async()=>({documentOverflow:0,outside:[],tinyControls:[],distortedChecks:[],clippedControls:[],overlappingStatuses:[]}),
+   viewports:[{width:1440,height:900},{width:390,height:844}],process:{env:{KINOSAIL_TEST_INSTANCE:'1'}}});
+  if(['progressing','watched'].includes(scenario)){await run({page},{outputPath:name=>name});assert.equal(switches,2,scenario);assert.equal(pauses,2,scenario);assert(plays>=2,scenario);}
+  else {await assert.rejects(run({page},{outputPath:name=>name}),error=>error===rejected,scenario);assert.equal(switches,0,scenario);}
  }
 });

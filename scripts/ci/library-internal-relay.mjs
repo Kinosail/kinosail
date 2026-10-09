@@ -148,8 +148,8 @@ export function startRelay(target, deadline = Date.now() + 2000) {
       const stop = () => { client.destroy(); peer.destroy(); sockets.delete(client); sockets.delete(peer); };
       client.on('error', failure => { error('client', failure); stop(); });
       peer.on('error', failure => { error('upstream', failure); stop(); });
-      client.on('close', () => { count(transport, 'clientClosed'); sockets.delete(client); });
-      peer.on('close', () => { count(transport, 'upstreamClosed'); sockets.delete(peer); });
+      client.on('close', () => { count(transport, 'clientClosed'); stop(); });
+      peer.on('close', () => { count(transport, 'upstreamClosed'); stop(); });
       client.on('data', chunk => { if (Buffer.isBuffer(chunk)) count(transport, 'clientBytes', chunk.length); });
       peer.on('data', chunk => { if (Buffer.isBuffer(chunk)) count(transport, 'upstreamBytes', chunk.length); });
       peer.setTimeout(5000, () => { count(transport, 'connectDeadline'); stop(); });

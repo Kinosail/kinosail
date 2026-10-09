@@ -22,10 +22,15 @@ test("@smoke native playback seeks and retains controls on a populated title", a
     const settled = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
     await attachNativePlaybackState(video, testInfo, "before-play");
     await video.evaluate((media: HTMLVideoElement) => media.play());
-    await expect.poll(() => video.evaluate((media: HTMLVideoElement) =>
-      !media.paused && !media.ended ? media.currentTime : 0)).toBeGreaterThan(settled);
+    const playbackPosition = (media: HTMLVideoElement) =>
+      Number.isFinite(media.currentTime) && Number.isFinite(media.duration) && media.duration > 0 &&
+      media.currentTime >= 0 && media.currentTime <= media.duration && !media.seeking && !media.error && media.readyState >= 2 &&
+      (media.ended ? media.currentTime === media.duration : !media.paused) ? media.currentTime : 0;
+    await expect.poll(() => video.evaluate(playbackPosition)).toBeGreaterThan(settled);
     await video.dispatchEvent("click");
-    await expect(video).toHaveJSProperty("paused", false);
+    if (await video.evaluate((media: HTMLVideoElement) => media.ended))
+      await expect.poll(() => video.evaluate(playbackPosition)).toBeGreaterThan(settled);
+    else await expect(video).toHaveJSProperty("paused", false);
     await attachNativePlaybackState(video, testInfo, "after-click");
   } catch (error) {
     await attachNativePlaybackState(video, testInfo, "failure");

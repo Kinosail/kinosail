@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 export const tvCaptureCodes=Object.freeze(['INVALID_ARGS','DEVICE_NOT_FOUND','DEVICE_IN_USE','TOOL_MISSING','APP_NOT_INSTALLED',
   'UNSUPPORTED_PLATFORM','UNSUPPORTED_OPERATION','NOT_IMPLEMENTED','COMMAND_FAILED','SESSION_NOT_FOUND','UNAUTHORIZED',
   'AMBIGUOUS_MATCH','REPLAY_DIVERGENCE','REPAIR_SESSION_EXPIRED','REPAIR_COMMIT_FAILED','unqualified']);
+/** @param {unknown} error */
 function captureCode(error) {
   try {const code=Object.getOwnPropertyDescriptor(error,'code')?.value;return tvCaptureCodes.includes(code)?code:'unqualified';}
   catch {return 'unqualified';}
