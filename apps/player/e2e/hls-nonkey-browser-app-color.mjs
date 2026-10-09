@@ -1,6 +1,7 @@
 // Fixed-fixture Hls.js metadata transfer only; no product bytes, cache or color policy edits.
 import {createHash} from 'node:crypto';
 import {colorArm,colorFacts} from './hls-nonkey-browser-color.mjs';
+import {consumerQualification} from './hls-nonkey-browser-observer.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 export function prepareAppColor(item,joined,pieces){
   const entries=Object.entries(item.publicAssetSHA256||{});
@@ -180,4 +181,9 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
     row.colorComponentQualified=row.frameConsumerQualified===true && row.appendWitness.qualified;
     retained.push(row);
   }
+}
+
+export function appColorConsumerQualification(row,reference,expected,complete){
+  return consumerQualification({...row,referenceComplete:complete,
+    label:row.label==='app-color-601-forced-source-coordinate-seek'?'forced-source-coordinate-seek':row.label},reference,expected);
 }

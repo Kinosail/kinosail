@@ -6,7 +6,7 @@ import {chromium} from '@playwright/test';
 import {installBrowserObserver,frameQualification,consumerQualification,browserAudioDecode,completeAudioQualification,directReferenceQualification} from './hls-nonkey-browser-observer.mjs';
 import {observeJoinedPublic} from './hls-nonkey-browser-joined.mjs';
 import {observeMSEColors} from './hls-nonkey-browser-mse.mjs';
-import {observeAppColor} from './hls-nonkey-browser-app-color.mjs';
+import {observeAppColor,appColorConsumerQualification} from './hls-nonkey-browser-app-color.mjs';
 import {directReferenceBodyFacts,safeBrowserProjection} from './hls-nonkey-browser-reference.mjs';
 const input=await readFile(process.argv[2]);if(input.length>65536)throw Error('private_input_bound');
 const config=JSON.parse(input), result={cases:[],productionAcceptance:false,clientSourceChanged:false,
@@ -228,9 +228,7 @@ try{
       const selected=row.observer?.phases?.at(-1);
       if(selected && reference)row.frameQualification=frameQualification(selected,reference.rows,item.expectedSourceIndices);
       row.referenceComplete=result.referenceComplete;
-      row.referenceComplete=result.referenceComplete;
-        row.consumerQualification=consumerQualification({...row,label:label==='app-color-601-forced-source-coordinate-seek'?
-          'forced-source-coordinate-seek':label},reference?.rows||[],item.expectedSourceIndices);
+      row.consumerQualification=consumerQualification(row,reference?.rows||[],item.expectedSourceIndices);
       row.frameConsumerQualified=row.consumerQualification.qualified;
       result.cases.push(row);
       console.log(JSON.stringify({actualBrowser:safeBrowserProjection(row)}));
@@ -251,7 +249,8 @@ try{
     await observeAppColor(context,config.origin,item,joinedBytes,reference?.rows||[],result.referenceComplete,result.cases,
       async(request,label,diagnostic)=>{
         const row=await observe(config.itemID,request,label,diagnostic);
-        row.consumerQualification=consumerQualification(row,reference?.rows||[],item.expectedSourceIndices);
+        row.referenceComplete=result.referenceComplete;
+        row.consumerQualification=appColorConsumerQualification(row,reference?.rows||[],item.expectedSourceIndices,result.referenceComplete);
         row.frameQualification=row.consumerQualification;row.frameConsumerQualified=row.consumerQualification.qualified;
         return row;
       });
