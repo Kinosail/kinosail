@@ -117,7 +117,7 @@ def diagnostic_producer_rows(rows, source, parent):
                       for n, value in enumerate(args[:-1]) if value == '-i')}
         for name in ['-ss', '-start_number', '-output_ts_offset', '-hls_time']:
             values = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
-            fields[name.removeprefix('-')] = [value if re.fullmatch(r'-?[0-9]{1,12}(?:\\.[0-9]{1,9})?', value)
+            fields[name.removeprefix('-')] = [value if re.fullmatch(r'-?[0-9]{1,12}(?:\.[0-9]{1,9})?', value)
                                               else 'other' for value in values]
         for name in ['-c:a', '-c:v']:
             values = [args[n + 1] for n, value in enumerate(args[:-1]) if value == name]
