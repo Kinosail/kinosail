@@ -159,7 +159,8 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
     return;
   }
   for(const label of ['app-color-601-unchanged-client','app-color-601-forced-source-coordinate-seek']){
-    const routeFailures=[];
+    const routeFailures=[],row={request:item.request,label,result:'observation-failed'};
+    retained.push(row);
     const diagnostic={item:plan.item,install:async page=>{
       await page.addInitScript(installAppColorAppendObserver);
       await page.route(origin+plan.initPath,async route=>{
@@ -171,7 +172,8 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
         }catch{routeFailures.push('init_route_binding');await route.abort();}
       });
     },snapshot:async page=>{const value=await page.evaluate(snapshotAppColor);value.failures.push(...routeFailures);return value;}};
-    const row=await observe(item.request,label,diagnostic);
+    try{Object.assign(row,await observe(item.request,label,diagnostic));}
+    catch(error){row.failureClass=error.message?.match(/^[a-z_]+$/)?.[0]||error.name||'app_color_observation';}
     row.referenceComplete=referenceComplete;row.colorMetadata=plan.facts;
     row.originalHTTPInitSHA256=sha(pieces[0]);row.counterfactualHTTPInitSHA256=sha(plan.init);
     row.colorScope='Actual unchanged app with page-scoped sealed601 init; no automatic-seek/color-policy/audio/native acceptance';
@@ -179,7 +181,6 @@ export async function observeAppColor(context,origin,item,joined,reference,refer
     row.appends=row.appendWitness.appends;row.appendedMetadata=row.appendWitness.actualInitFacts;
     row.appendedBytesVerified=row.appendWitness.qualified;
     row.colorComponentQualified=row.frameConsumerQualified===true && row.appendWitness.qualified;
-    retained.push(row);
   }
 }
 

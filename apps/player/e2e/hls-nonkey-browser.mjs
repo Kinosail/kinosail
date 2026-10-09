@@ -65,7 +65,6 @@ async function observe(id,request,label,diagnostic){
   const mediaPending=[];
   row.observedSelectedAssets={};row.unexpectedSelectedAssets=[];row.directReferenceBodies=[];
   const page=await context.newPage();
-  if(diagnostic)await diagnostic.install(page);
   page.on('response',response=>{
     const url=new URL(response.url());
     if(url.origin!==config.origin)return;
@@ -109,6 +108,7 @@ async function observe(id,request,label,diagnostic){
   });
   page.on('pageerror',()=>{row.pageErrors=(row.pageErrors||0)+1;});
   try{
+    if(diagnostic)await diagnostic.install(page);
     await api('/api/v1/items/'+id+'/progress','PUT',{seconds:request});
     const destination=config.origin+'/watch/'+id+(label==='source-reference'?'?direct=1':'?compatible=1');
     const response=await page.goto(destination,{waitUntil:'domcontentloaded',timeout:15000});
