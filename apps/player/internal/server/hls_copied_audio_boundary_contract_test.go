@@ -39,7 +39,10 @@ func TestCopiedHLSRefillAudioRejectsInvalidDTSMetadata(t *testing.T) {
 	mutations := []func(*copiedHLSTimeline){
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = v.Keys[1].PTS + 1 },
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = v.Keys[0].DTS },
-		func(v *copiedHLSTimeline) { v.Keys[1].PTS = v.Keys[0].PTS - 1; v.Keys[1].DTS = v.Keys[0].DTS + 1 },
+		func(v *copiedHLSTimeline) {
+			v.Keys[1].PTS = v.Keys[0].PTS - 1
+			v.Keys[1].DTS = v.Keys[0].DTS + 1
+		},
 		func(v *copiedHLSTimeline) { v.Keys[1].DTS = -(1 << 52) - 1 },
 		func(v *copiedHLSTimeline) { v.Keys[1].PTS = (1 << 52) + 1 },
 		func(v *copiedHLSTimeline) { v.Numerator = 0 },
@@ -75,8 +78,11 @@ func TestCopiedHLSRefillAudioRetainsPrefixAndEncodedAudio(t *testing.T) {
 func copiedHLSAudioBoundaryTimeline(key copiedHLSKey) *copiedHLSTimeline {
 	clock := 0.095833
 	return &copiedHLSTimeline{
-		Numerator: 1, Denominator: 48000, TimeBase: 1.0 / 48000,
-		Keys: []copiedHLSKey{{PTS: 576000, DTS: 572000}, key}, Clock: &clock,
+		Numerator:   1,
+		Denominator: 48000,
+		TimeBase:    1.0 / 48000,
+		Keys:        []copiedHLSKey{{PTS: 576000, DTS: 572000}, key},
+		Clock:       &clock,
 	}
 }
 

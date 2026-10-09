@@ -10,9 +10,11 @@ import (
 func TestCopiedHLSVideoPrerollDoesNotSuppressCopiedAudio(t *testing.T) {
 	clock := 0.083333
 	timeline := &copiedHLSTimeline{
-		Numerator: 1, Denominator: 16000, TimeBase: 1.0 / 16000,
-		Keys:     []copiedHLSKey{{PTS: 0, DTS: -1333}, {PTS: 48000, DTS: 46667}, {PTS: 96000, DTS: 94667}, {PTS: 144000, DTS: 142667}, {PTS: 192000, DTS: 190667}},
-		Clock:    &clock,
+		Numerator:   1,
+		Denominator: 16000,
+		TimeBase:    1.0 / 16000,
+		Keys:        []copiedHLSKey{{PTS: 0, DTS: -1333}, {PTS: 48000, DTS: 46667}, {PTS: 96000, DTS: 94667}, {PTS: 144000, DTS: 142667}, {PTS: 192000, DTS: 190667}},
+		Clock:       &clock,
 	}
 	for _, number := range []int{0, 4} {
 		arguments, err := copiedHLSSeekArguments([]string{"-c:v", "copy", "-c:a", "copy"}, timeline, number)

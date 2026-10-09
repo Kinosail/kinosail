@@ -1,5 +1,7 @@
 name: Bounded actual-browser non-key observation
 on:
+  push:
+    branches: [codex/hls-copied-audio-boundary-r15-20261009]
   workflow_dispatch:
     inputs:
       phase: {type: choice, options: [browser], default: browser}
