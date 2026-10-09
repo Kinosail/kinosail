@@ -48,8 +48,8 @@ def older_marker_controls(cache, baseline, candidate, source, selected, referenc
     shutil.copytree(cache, template)
     path = master_path(template)
     original = path.read_bytes()
-    check(original.count(b'#KINOSAIL-BANDWIDTH:2\\n') == 1, 'master_older_marker_fixture')
-    changed = original.replace(b'#KINOSAIL-BANDWIDTH:2\\n', b'', 1)
+    check(original.count(b'#KINOSAIL-BANDWIDTH:2\n') == 1, 'master_older_marker_fixture')
+    changed = original.replace(b'#KINOSAIL-BANDWIDTH:2\n', b'', 1)
     path.write_bytes(changed)
     expected = None
     for label, binary in [('baseline', baseline), ('candidate', candidate)]:
