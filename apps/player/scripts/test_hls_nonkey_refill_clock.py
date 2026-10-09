@@ -3,7 +3,7 @@ Failure matrix: ambiguous first payload, absent/inexact clocks, foreign timebase
 unbounded packet rows, integer rescale ties and distinct canonical track origins.
 """
 import unittest
-from hls_nonkey_refill_clock import audio_origin, rescale_us, refill_shift, matrix_failure
+from hls_nonkey_refill_clock import audio_origin, rescale_us, refill_shift, matrix_failure, fixed_streams
 
 HASH = 'SHA256:' + 'a' * 64
 OTHER = 'SHA256:' + 'b' * 64
@@ -54,6 +54,28 @@ class RefillClockTests(unittest.TestCase):
     def test_refill_shift_does_not_choose_against_pcm(self):
         self.assertEqual(refill_shift(-571400, 20000000, 8095833, 48000), 0)
         self.assertEqual(refill_shift(-571400, 20000020, 8095833, 48000), 1)
+
+def streams():
+    return {'streams':[
+        {'index':0,'codec_type':'video','codec_name':'h264','time_base':'1/16000'},
+        {'index':1,'codec_type':'audio','codec_name':'aac','time_base':'1/48000',
+         'sample_rate':'48000','channels':2}]}
+
+class FixedStreamTests(unittest.TestCase):
+    def test_fixed_stream_grid_is_explicit(self):
+        self.assertIsNone(fixed_streams(streams()))
+
+    def test_foreign_or_missing_audio_and_video_grid_is_rejected(self):
+        for index, key, value in [(0,'time_base','1/1000'),(0,'codec_name','hevc'),
+                (1,'time_base','1/1000'),(1,'sample_rate','44100'),(1,'channels',1),
+                (1,'index',2),(1,'codec_type','video'),(0,'index',True)]:
+            facts=streams()
+            facts['streams'][index][key]=value
+            with self.assertRaises(RuntimeError):
+                fixed_streams(facts)
+        for facts in [{}, {'streams':[]}, {'streams':[{}]}, {'streams':[{},{}]}]:
+            with self.assertRaises(RuntimeError):
+                fixed_streams(facts)
 
 class MatrixFailureTests(unittest.TestCase):
     def test_failed_cell_keeps_only_a_safe_class(self):
