@@ -74,7 +74,12 @@ func TestCopiedAACMalformedPolicySuffixCannotBecomeLegacy(t *testing.T) {
 			t.Fatal("noncanonical or unknown AAC suffix bypassed shared validation")
 		}
 	}
-	if err:=playback.ValidateHLSSource(item.Path,strings.Replace(base.Cache,":hls=15",":hls=14",1)+":copied-source=1.2:copied-aac=2");err==nil {
+	if runtime.GOOS!="linux" { return }
+	info,err:=os.Stat(item.Path)
+	if err!=nil { t.Fatal(err) }
+	token,err:=copiedAACSourceToken(info)
+	if err!=nil { t.Fatal(err) }
+	if err:=playback.ValidateHLSSource(item.Path,strings.Replace(base.Cache,":hls=15",":hls=14",1)+":copied-source="+token+":copied-aac=2");err==nil {
 		t.Fatal("Version2 suffix acquired an older producer policy")
 	}
 }

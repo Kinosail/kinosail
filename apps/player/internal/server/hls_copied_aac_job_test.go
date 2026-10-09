@@ -17,7 +17,9 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
 	copiedAACSourceRoots(manager, item)
 	copiedRecoveryProbe(t, manager, "")
-	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil { t.Fatal(err) }
+	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil {
+		t.Fatal(err)
+	}
 	before := copiedRecoveryPreserved(t, directory)
 	info, err := os.Stat(item.Path)
 	if err != nil {
@@ -37,7 +39,9 @@ func TestCopiedAACReplacementCancelsAndJoinsBeforeCacheMutation(t *testing.T) {
 	defer func() {
 		old.cancel(context.Canceled)
 		manager.mu.Lock()
-		if manager.jobs[key] == old { delete(manager.jobs, key) }
+		if manager.jobs[key] == old {
+			delete(manager.jobs, key)
+		}
 		manager.mu.Unlock()
 		close(old.done)
 	}()
