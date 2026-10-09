@@ -13,7 +13,7 @@ test('address failure uses the existing two action events and owned private rece
   const actions=createTvActions(f.project),client={capture:{snapshot:async()=>{throw original;}}};
   await assert.rejects(actions.step('server_address',()=>enterServerAddress(client,{platform:'ios',target:'tv',udid:uuid},'18769')),error=>error===original);
   const record=JSON.parse(readFileSync(join(f.root,'tv-actions.private.json'),'utf8'));assert.equal(record.events.length,2);
-  assert.deepEqual(record.events[1].failure.address,{substage:'capture',candidateCount:null,focusedPropertyPresent:null,inheritedLabel:null});
+  assert.deepEqual(record.events[1].failure.address,{substage:'capture',candidateCount:null,focusedPropertyPresent:null,inheritedLabel:null,sdkCode:'unqualified'});
   assert.ok(!JSON.stringify(record).includes('PRIVATE-SENTINEL'));
  }finally{f.dispose();}
 });

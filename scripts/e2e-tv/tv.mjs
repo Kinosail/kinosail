@@ -1,5 +1,13 @@
 // @ts-check
 import { resolve } from 'node:path';
+// agent-device v0.21.22 known codes; arbitrary daemon-originated strings stay unqualified.
+export const tvCaptureCodes=Object.freeze(['INVALID_ARGS','DEVICE_NOT_FOUND','DEVICE_IN_USE','TOOL_MISSING','APP_NOT_INSTALLED',
+  'UNSUPPORTED_PLATFORM','UNSUPPORTED_OPERATION','NOT_IMPLEMENTED','COMMAND_FAILED','SESSION_NOT_FOUND','UNAUTHORIZED',
+  'AMBIGUOUS_MATCH','REPLAY_DIVERGENCE','REPAIR_SESSION_EXPIRED','REPAIR_COMMIT_FAILED','unqualified']);
+function captureCode(error) {
+  try {const code=Object.getOwnPropertyDescriptor(error,'code')?.value;return tvCaptureCodes.includes(code)?code:'unqualified';}
+  catch {return 'unqualified';}
+}
 const addressFailures = new WeakMap();
 /** @param {unknown} error */
 export function tvAddressFailure(error) {
@@ -119,7 +127,7 @@ export async function enterServerAddress(client, input, port) {
   }
   throw Error('TV address focus not reached');
   } catch(error) {
-    if(error && typeof error==='object')addressFailures.set(error,Object.freeze({...facts}));
+    if(error && typeof error==='object')addressFailures.set(error,Object.freeze({...facts,...(facts.substage==='capture'?{sdkCode:captureCode(error)}:{})}));
     throw error;
   }
 }

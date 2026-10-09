@@ -34,3 +34,27 @@ test('address schema rejects unknown/missing/malformed/oversized/conflicting val
  for(const value of [{...address,substage:'capture'}, {...address,substage:'focus',candidateCount:2}, {...address,candidateCount:0}, {...address,focusedPropertyPresent:false}])assert.throws(()=>validateTvActions(record(value)));
  const foreign=record(address);foreign.events.forEach(event=>event.stage='open');assert.throws(()=>validateTvActions(foreign));
 });
+
+test('capture failure reports only own pinned SDK data codes and preserves frozen error',async()=>{
+ for(const code of ['COMMAND_FAILED','UNSUPPORTED_OPERATION','DEVICE_NOT_FOUND','PRIVATE-SENTINEL',null,42,'x'.repeat(2049)]) {
+  const original=Object.freeze(Object.assign(new Error('PRIVATE-SENTINEL'),{code}));let calls=0;
+  await assert.rejects(tv.enterServerAddress({capture:{snapshot:async()=>{calls++;throw original;}}},selection,'18769'),error=>error===original);
+  const facts=tv.tvAddressFailure(original);assert.equal(facts.sdkCode,['COMMAND_FAILED','UNSUPPORTED_OPERATION','DEVICE_NOT_FOUND'].includes(code)?code:'unqualified');
+  assert.equal(calls,1);assert.ok(!JSON.stringify(facts).includes('PRIVATE-SENTINEL'));
+ }
+ for(const mode of ['accessor','inherited','proxy']) {
+  let reads=0;let original=new Error('PRIVATE-SENTINEL');
+  if(mode==='accessor')Object.defineProperty(original,'code',{get(){reads++;throw Error('PRIVATE-SENTINEL')}});
+  else if(mode==='inherited')Object.setPrototypeOf(original,{code:'COMMAND_FAILED'});
+  else original=new Proxy(original,{getOwnPropertyDescriptor(){throw Error('PRIVATE-SENTINEL')}});
+  await assert.rejects(tv.enterServerAddress({capture:{snapshot:async()=>{throw original;}}},selection,'18769'),error=>error===original);
+  assert.equal(tv.tvAddressFailure(original).sdkCode,'unqualified');assert.equal(reads,0);
+ }
+});
+test('capture SDK code schema stays finite and phase-bound',()=>{
+ const capture={substage:'capture',candidateCount:null,focusedPropertyPresent:null,inheritedLabel:null,sdkCode:'COMMAND_FAILED'};
+ const record=address=>({version:1,events:[{stage:'server_address',status:'started'},{stage:'server_address',status:'failed',failure:{category:'unqualified',ownKeyCount:1,recognizedKeyMask:1,address}}]});
+ assert.deepEqual(validateTvActions(record(capture)),record(capture));
+ for(const code of ['PRIVATE-SENTINEL','x'.repeat(2049),null,42,{},'UNKNOWN'])assert.throws(()=>validateTvActions(record({...capture,sdkCode:code})));
+ assert.throws(()=>validateTvActions(record({...capture,substage:'snapshot_validation'})));
+});
