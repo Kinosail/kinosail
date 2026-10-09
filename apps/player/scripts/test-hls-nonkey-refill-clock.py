@@ -240,7 +240,9 @@ finally:
                 receipt['sourceUnchanged']=False
                 receipt['sourceGuardFailureClass']=matrix_failure(error)
             if not receipt['sourceUnchanged']:
-                receipt.update(result='failed',failureClass='refill_matrix_source_changed')
+                receipt['result']='failed'
+                receipt['sourceIdentityFailureClass']='refill_matrix_source_changed'
+                receipt.setdefault('failureClass','refill_matrix_source_changed')
         files = [Path(__file__),ROOT/'.github/workflows/layout-stability.yml',*(ROOT/'apps/player/scripts'/name for name in [
             'hls_nonkey_refill_clock.py','test_hls_nonkey_refill_clock.py','hls_timeline_fixture.py',
             'hls_timeline_http.py','hls_timeline_packets.py','hls_followon_frames.py',
