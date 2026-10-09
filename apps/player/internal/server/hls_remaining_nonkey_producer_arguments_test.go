@@ -101,3 +101,19 @@ func TestRemainingNonKeyProducerRecipeScope(t *testing.T) {
 		t.Fatal("pending producer scope changed ordinary transcode")
 	}
 }
+
+func TestRemainingNonKeyProducerWindowScope(t *testing.T) {
+	pending := remainingNonKeyContractTimeline(t, 12.5, false)
+	source := hlsRecipe{mode: "remux", offset: 12.5}
+	if !copiedHLSPendingProducerWindow(pending, source, hlsRecipe{mode: "remux"}) {
+		t.Fatal("pending producer rejected its resolved Remux window")
+	}
+	for _, mode := range []string{"audio-transcode", "transcode", "direct", ""} {
+		if copiedHLSPendingProducerWindow(pending, source, hlsRecipe{mode: mode}) {
+			t.Errorf("pending producer copied clock acquired mismatched resolved window: %s", mode)
+		}
+	}
+	if !copiedHLSPendingProducerWindow(nil, hlsRecipe{mode: "transcode"}, hlsRecipe{mode: "audio-transcode"}) {
+		t.Fatal("pending producer window guard changed an ordinary producer")
+	}
+}
