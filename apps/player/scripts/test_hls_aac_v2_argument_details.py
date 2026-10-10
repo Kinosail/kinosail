@@ -58,6 +58,22 @@ class ArgumentDetailControls(unittest.TestCase):
         self.assertNotIn('synthetic_private_target', json.dumps(resources))
         return resources
 
+    def test_safe_details_survive_inner_and_outer_normalization(self):
+        error = RuntimeError('synthetic_private_target_must_not_escape')
+        error.observer_before_state = 'S'
+        error.observer_after_state = 'R'
+        error.observer_argument_bytes = 0
+        error.observer_argument_shape = 'empty'
+        normalized = live.qualified_failure('child', live.qualified_failure('arguments_before', error))
+        self.assertEqual(str(normalized), live.FAILURE)
+        self.assertEqual(normalized.observer_stage, 'arguments_before')
+        self.assertEqual(normalized.observer_exception_class, 'RuntimeError')
+        self.assertEqual(getattr(normalized, 'observer_before_state', None), 'S')
+        self.assertEqual(getattr(normalized, 'observer_after_state', None), 'R')
+        self.assertEqual(getattr(normalized, 'observer_argument_bytes', None), 0)
+        self.assertEqual(getattr(normalized, 'observer_argument_shape', None), 'empty')
+        self.assertNotIn('synthetic_private_target', str(normalized))
+
     def test_sampler_retains_safe_process_and_argument_details(self):
         resources = self.sample({'observer_before_state': 'S', 'observer_after_state': 'R',
             'observer_argument_bytes': 0, 'observer_argument_shape': 'empty'})
