@@ -173,7 +173,7 @@ test("restricted browser storage does not stop playback", async ({ page }) => {
 	expect(errors).toEqual([]);
 });
 
-test("failed progress save does not stop playback flow", async ({ page }) => {
+test("failed progress save lets the Viewer continue without saving", async ({ page }) => {
 	await login(page);
 	await page.getByRole("link", { name: "Movies", exact: true }).click();
 	await page.getByRole("link", { name: /Example Movie/ }).click();
@@ -182,6 +182,8 @@ test("failed progress save does not stop playback flow", async ({ page }) => {
 		video.dataset.next = "/?view=movies&after=failed-save";
 		video.dispatchEvent(new Event("ended"));
 	});
+	await expect(page.getByRole("status")).toContainText("Watched status is not saved");
+	await page.getByRole("button", { name: "Continue without saving", exact: true }).click();
 	await page.waitForURL("**/?view=movies&after=failed-save");
 });
 
@@ -198,6 +200,8 @@ test("selecting compatibility playback starts without a second play click", asyn
 	await page.getByText("Playback & downloads", { exact: true }).click();
 	await page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }).click();
 	const video = page.locator("video");
+	// Restored progress can be positive before the decoder starts playing.
+	await expect.poll(() => page.evaluate(() => (window as Window & { mediaEvents: Array<{ name: string }> }).mediaEvents.some(({ name }) => name === "playing")), { timeout: 20_000 }).toBe(true);
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 	const state = await video.evaluate((element: HTMLVideoElement) => ({ paused: element.paused, seconds: element.currentTime }));
 	const playing = await page.evaluate((click) => (window as Window & { mediaEvents: Array<{ name: string; at: number }> }).mediaEvents.find(({ name }) => name === "playing")!.at - click, started);
