@@ -40,24 +40,24 @@ fun KinoTheme(content: @Composable () -> Unit) {
         onSurfaceVariant = KinoColor.muted,
         outline = KinoColor.muted,
         outlineVariant = KinoColor.raised,
-    )) {
-        CompositionLocalProvider(LocalContentColor provides KinoColor.text, content = content)
-    }
+    )) { CompositionLocalProvider(LocalContentColor provides KinoColor.text, content = content) }
 }
 
 @Composable
 fun TvKinoTheme(content: @Composable () -> Unit) {
-    TvMaterialTheme(
-        colorScheme = tvDarkColorScheme(
-            primary = KinoColor.signal,
-            onPrimary = KinoColor.signalInk,
-            background = KinoColor.background,
-            onBackground = KinoColor.text,
-            surface = KinoColor.surface,
-            onSurface = KinoColor.text,
-            surfaceVariant = KinoColor.raised,
-            onSurfaceVariant = KinoColor.muted,
-        ),
-        content = content,
-    )
+    KinoTheme {
+        TvMaterialTheme(
+            colorScheme = tvDarkColorScheme(
+                primary = KinoColor.signal,
+                onPrimary = KinoColor.signalInk,
+                background = KinoColor.background,
+                onBackground = KinoColor.text,
+                surface = KinoColor.surface,
+                onSurface = KinoColor.text,
+                surfaceVariant = KinoColor.raised,
+                onSurfaceVariant = KinoColor.muted,
+            ),
+            content = content,
+        )
+    }
 }
