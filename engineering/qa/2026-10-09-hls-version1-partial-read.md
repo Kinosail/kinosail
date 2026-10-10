@@ -113,3 +113,5 @@ A recovered wrong byte-identical FD must still reject after actual argv was re-r
 Persistent live empty observations must reject within at most32 additional argument attempts; a changed start must reject.
 All prior tests, source seals, two-zero joins,120-second suite/30-second command bounds and post-join descriptor closure remain unchanged.
 No retry, observer, Server, workflow or admission behavior changes are included in this written-first commit.
+
+The seven bounded re-observation controls are supplied by a non-TestCase mixin to the single actual-FD fixture. The live receipt seals both the executed test script and helper SHA-256. The original nine controls and their fixture/owner cleanup remain unchanged; both Python files remain below the unchanged 300-line gate. A second-read baseline error can occur before the injected intermediate state is consumed, and does not establish that state was observed.
