@@ -2,7 +2,6 @@ package server
 
 import (
 	"crypto/sha256"
-	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -41,30 +40,7 @@ func copiedAACPartialShape(t *testing.T, directory, shape string) {
 
 func copiedAACPartialSnapshot(t *testing.T, directory string) map[string]copiedAACLegacyEntry {
 	t.Helper()
-	root, err := os.OpenRoot(directory)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer root.Close()
-	result := map[string]copiedAACLegacyEntry{}
-	err = fs.WalkDir(root.FS(), ".", func(name string, _ fs.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if len(result) >= 128 {
-			t.Fatal("partial read inventory exceeded fixture bound")
-		}
-		entry, err := copiedAACPartialInventoryEntry(root, name)
-		if err != nil {
-			return err
-		}
-		result[name] = entry
-		return nil
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	return result
+	return copiedAACLegacyInventoryWith(t, directory, copiedAACPartialInventoryEntry)
 }
 
 func copiedAACPartialInventoryEntry(root *os.Root, name string) (copiedAACLegacyEntry, error) {

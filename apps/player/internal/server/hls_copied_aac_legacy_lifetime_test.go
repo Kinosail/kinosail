@@ -22,6 +22,11 @@ type copiedAACLegacyEntry struct {
 // Gap: the old limited content map cannot detect new entries or equal-byte writes.
 func copiedAACLegacyInventory(t *testing.T, directory string) map[string]copiedAACLegacyEntry {
 	t.Helper()
+	return copiedAACLegacyInventoryWith(t, directory, copiedAACLegacyInventoryEntry)
+}
+
+func copiedAACLegacyInventoryWith(t *testing.T, directory string, entry func(*os.Root, string) (copiedAACLegacyEntry, error)) map[string]copiedAACLegacyEntry {
+	t.Helper()
 	root, err := os.OpenRoot(directory)
 	if err != nil {
 		t.Fatal(err)
@@ -35,7 +40,7 @@ func copiedAACLegacyInventory(t *testing.T, directory string) map[string]copiedA
 		if len(result) >= 128 {
 			t.Fatal("legacy test inventory exceeded its bounded fixture")
 		}
-		value, err := copiedAACLegacyInventoryEntry(root, name)
+		value, err := entry(root, name)
 		if err != nil {
 			return err
 		}
