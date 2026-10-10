@@ -83,7 +83,7 @@ for (const scenario of ["cancelled", "denied", "redirected", "different-item", "
       if (path === "/favicon.ico") {response.writeHead(204); response.end(); return;}
       if (path.startsWith("/hls/")) {
         if (scenario === "redirected" && path.endsWith("segment-00001.m4s")) {
-          response.writeHead(302, {Location: request.url!.replace("00001", "00002")}); response.end(); return;
+          response.writeHead(302, {Location: new URL(url).pathname.replace("00001", "00002") + new URL(url).search}); response.end(); return;
         }
         started = true;
         if (scenario === "denied") {response.writeHead(403); response.end("Denied");}
@@ -118,6 +118,12 @@ for (const scenario of ["cancelled", "denied", "redirected", "different-item", "
     if (!address || typeof address === "string") throw new Error("HTTP control did not bind");
     const monitor = captureHappyPathErrors(page, browserName);
     try {
+      if (scenario === "redirected") {
+        const fragment = new URL(url);
+        const probe = await fetch(`http://127.0.0.1:${address.port}//untrusted.invalid${fragment.pathname}${fragment.search}`, {redirect: "manual"});
+        expect(probe.status).toBe(302);
+        expect(probe.headers.get("Location")).toBe(fragment.pathname.replace("00001", "00002") + fragment.search);
+      }
       await page.goto(`http://127.0.0.1:${address.port}/watch/${item}`);
       await expect.poll(() => started).toBe(true);
       await monitor.beginWatched();
