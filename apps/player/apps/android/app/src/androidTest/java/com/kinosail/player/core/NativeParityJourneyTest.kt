@@ -266,7 +266,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
             while (running.get()) try {
                 val socket = server.accept()
                 workers.execute {
-                    socket.use {
+                    try { socket.use {
                         val input = it.getInputStream().bufferedReader()
                         val request = input.readLine() ?: return@use
                         var line = input.readLine()
@@ -334,6 +334,10 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                             write("HTTP/1.1 $code OK\r\nContent-Type: $type\r\nContent-Length: ${body.size}\r\nConnection: close\r\n\r\n".toByteArray())
                             write(body); flush()
                         }
+                    } } catch (_: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                    } catch (_: java.io.IOException) {
+                        // A cancelled request or fixture shutdown can close the client socket.
                     }
                 }
             } catch (_: Exception) { }
