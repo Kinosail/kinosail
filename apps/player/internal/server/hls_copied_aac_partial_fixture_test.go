@@ -54,23 +54,9 @@ func copiedAACPartialSnapshot(t *testing.T, directory string) map[string]copiedA
 		if len(result) >= 128 {
 			t.Fatal("partial read inventory exceeded fixture bound")
 		}
-		info, err := root.Lstat(name)
+		entry, err := copiedAACPartialInventoryEntry(root, name)
 		if err != nil {
 			return err
-		}
-		entry := copiedAACLegacyEntry{info: info}
-		if info.Mode().IsRegular() {
-			data, err := copiedAACLegacyInventoryContent(root, name, info)
-			if err != nil {
-				return err
-			}
-			entry.hash = sha256.Sum256(data)
-		} else if info.Mode()&os.ModeSymlink != 0 {
-			target, err := root.Readlink(name)
-			if err != nil {
-				return err
-			}
-			entry.hash = sha256.Sum256([]byte(target))
 		}
 		result[name] = entry
 		return nil
@@ -81,6 +67,35 @@ func copiedAACPartialSnapshot(t *testing.T, directory string) map[string]copiedA
 	return result
 }
 
+func copiedAACPartialInventoryEntry(root *os.Root, name string) (copiedAACLegacyEntry, error) {
+	info, err := root.Lstat(name)
+	if err != nil {
+		return copiedAACLegacyEntry{}, err
+	}
+	entry := copiedAACLegacyEntry{info: info}
+	if info.Mode().IsRegular() {
+		data, err := copiedAACLegacyInventoryContent(root, name, info)
+		if err != nil {
+			return entry, err
+		}
+		entry.hash = sha256.Sum256(data)
+	} else if info.Mode()&os.ModeSymlink != 0 {
+		target, err := root.Readlink(name)
+		if err != nil {
+			return entry, err
+		}
+		entry.hash = sha256.Sum256([]byte(target))
+	}
+	return entry, nil
+}
+
+type copiedAACPartialHeadWriter struct{ *httptest.ResponseRecorder }
+
+func (writer copiedAACPartialHeadWriter) Write(data []byte) (int, error) {
+	writer.WriteHeader(http.StatusOK)
+	return len(data), nil
+}
+
 func copiedAACPartialResponse(t *testing.T, manager *hlsManager, item library.Item, recipe hlsRecipe, name, method, rangeValue string) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), method, "/"+name, nil)
@@ -88,7 +103,11 @@ func copiedAACPartialResponse(t *testing.T, manager *hlsManager, item library.It
 		request.Header.Set("Range", rangeValue)
 	}
 	writer := httptest.NewRecorder()
-	if !manager.serveCopiedHLSLegacy(writer, request, item, recipe, name) {
+	var response http.ResponseWriter = writer
+	if method == http.MethodHead {
+		response = copiedAACPartialHeadWriter{writer}
+	}
+	if !manager.serveCopiedHLSLegacy(response, request, item, recipe, name) {
 		t.Error("present partial Version1 binding fell through to preparation")
 	}
 	return writer

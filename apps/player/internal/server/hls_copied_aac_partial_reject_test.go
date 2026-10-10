@@ -19,9 +19,11 @@ func TestCopiedAACPartialReadRejectsDamageWithoutPreparation(t *testing.T) {
 	if runtime.GOOS != "linux" {
 		t.Skip("retained Version1 reader is Linux-only")
 	}
-	for _, damage := range []string{"first-cut", "init", "binding", "timeline", "certificate", "master",
+	for _, damage := range []string{
+		"first-cut", "init-missing", "init", "binding", "timeline", "certificate", "master",
 		"source-root", "startup-value", "startup-empty", "startup-overflow", "startup-directory",
-		"startup-symlink", "later-directory", "later-symlink"} {
+		"startup-symlink", "later-directory", "later-symlink",
+	} {
 		t.Run(damage, func(t *testing.T) { requireCopiedAACPartialReject(t, damage) })
 	}
 }

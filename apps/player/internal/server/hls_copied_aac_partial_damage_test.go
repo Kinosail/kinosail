@@ -27,8 +27,9 @@ func damageCopiedAACPartial(t *testing.T, manager *hlsManager, source, directory
 		manager.index.SetRoots(nil)
 		return
 	}
-	if damage == "first-cut" {
-		if err := os.Remove(filepath.Join(directory, "360p/segment-00000.m4s")); err != nil {
+	missing := map[string]string{"first-cut": "360p/segment-00000.m4s", "init-missing": "360p/init.mp4"}
+	if name, ok := missing[damage]; ok {
+		if err := os.Remove(filepath.Join(directory, name)); err != nil {
 			t.Fatal(err)
 		}
 		return

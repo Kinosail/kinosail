@@ -26,3 +26,15 @@ It records both imported observer helper hashes.
 A passing partial read slice can restore HEAD and existing bytes while missing-cut GETs remain explicitly failed.
 Typed source/job/governor ownership, absent-cut-only staged publication, P2 migration and transient process/generation races remain required before worker acceptance.
 No missing0 regression admission, complete four-journey repair, PR, merge, native50 or deployment follows from this slice.
+
+## Preserved initial execution and additional fences
+
+Exact914 run38006827462 compiles and qualifies thirty partial response failures; six playlistHEAD rows fail the recorder prerequisite.
+The attempt is preserved by contract artifact11651108866, API archive digest d18822dc64cccfc922228af352b0d514d5ce93895cb142485c4f90b0126185a7.
+The HEAD fixture now suppresses bodies while retaining status and headers, matching actual net/http behavior.
+The exact comparison, empty-HEAD requirement and all prior assertions remain unchanged.
+The inventory callback and damage slice are mechanically repaired for quality; no production change is included.
+Additional written-first controls require complete-only rejection of all three partial shapes and absent init rejection.
+Thirteen admitted-state controls cover late regular/symlink/directory arrivals, marker presence/inode/value changes, source/root/generation/rendition replacement and present later-cut removal/replacement.
+The partial opener is discovered through a private test interface; its initial absence is a prerequisite failure, separate from qualified HTTP response RED.
+Every admitted-state rejection must preserve cache/source and create no job; this deterministic boundary is isolated evidence.
