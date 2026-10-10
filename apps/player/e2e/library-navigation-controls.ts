@@ -4,6 +4,9 @@ import {gotoPaginationCatalog} from "./library-navigation";
 export function registerLibraryNavigationControls(origin: string | undefined) {
   for (const scenario of ["ready", "ready-shows", "missing-catalog", "missing-bootstrap", "wrong-query", "wrong-url", "invalid-card", "invalid-next", "skipped-offset", "busy", "failed", "pending-resource", "http-error", "redirect", "slow-response", "other-error", "repeated-timeout", "multiple-documents", "unchanged-document"] as const) {
     test(`catalog navigation recovery preserves original evidence: ${scenario}`, async ({page, browser}, info) => {
+      // Four phone-width cards keep the continuation outside the observer margin.
+      // Inject a bookkeeping fault into a settled first page, rather than racing normal paging.
+      await page.setViewportSize({width: 390, height: 844});
       const target = `${origin}/${scenario === "ready-shows" ? "?view=shows&limit=4" : "?q=Pagination&limit=4"}`;
       let gets = 0, posts = 0, calls = 0, redirects = 0, requested = false, release!: () => void;
       const held = new Promise<void>(resolve => {release = resolve;});
@@ -45,6 +48,14 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
         const response = await original(...args);
         if (scenario === "pending-resource") await expect.poll(() => requested).toBe(true);
         else await page.waitForFunction(() => document.readyState === "complete");
+        if (!["missing-bootstrap", "pending-resource", "http-error", "redirect"].includes(scenario)) {
+          await page.waitForFunction(() => {
+            const next = document.querySelector<HTMLAnchorElement>("[data-library-next]");
+            const status = document.querySelector<HTMLElement>("[data-library-status]");
+            return status && !status.dataset.failure && document.querySelector("[data-library-pagination]")?.getAttribute("aria-busy") !== "true" &&
+              !next?.dataset.loading && (next?.hidden || status.textContent === "All titles are loaded.");
+          }, undefined, {timeout: 10_000});
+        }
         if (calls === 1 || scenario === "repeated-timeout") {
           if (scenario === "multiple-documents") await original(...args);
           await page.evaluate(({scenario, previousDocument}) => {
