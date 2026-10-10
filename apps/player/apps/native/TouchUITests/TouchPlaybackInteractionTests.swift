@@ -82,10 +82,6 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         try await Task.sleep(for: .seconds(5))
         background(app, x: 0.75, y: 0.3).tap()
         XCTAssertTrue(pause.waitForExistence(timeout: 5))
-        for _ in 0..<50 {
-            if pause.isHittable { break }
-            try await Task.sleep(for: .milliseconds(100))
-        }
         XCTAssertTrue(pause.isHittable, app.debugDescription)
         pause.tap()
         XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5))
