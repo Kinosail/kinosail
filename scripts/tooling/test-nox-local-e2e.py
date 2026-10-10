@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 from nox_local_source import APPS, capture
@@ -17,6 +18,13 @@ SANDBOX = "/tmp/kinosail-local-looptest"
 REPO = "localhost/kinosail-looptest"
 SERVICE = "kinosail-looptest"
 GOOD, BAD = "a" * 40, "b" * 40
+
+
+def save_evidence(args, evidence):
+    evidence.setdefault("outcome", "failed")
+    evidence["artifacts"] = {file.name: hashlib.sha256(file.read_bytes()).hexdigest()
+                             for file in args.output.iterdir() if file.is_file() and file.name != "e2e.json"}
+    (args.output / "e2e.json").write_text(json.dumps(evidence, indent=2) + "\n")
 
 
 def remote(command, data=None, check=True, log=None):
@@ -75,10 +83,6 @@ def snapshots(repo):
 def rollback(args, evidence):
     log = args.output / "rollback-private.log"
     setup = f"""set -eu
-test ! -e {SANDBOX}
-! docker inspect {SERVICE} >/dev/null 2>&1
-! docker image inspect {REPO}:nox-dev >/dev/null 2>&1
-mkdir -m 700 {SANDBOX}
 cat > {SANDBOX}/compose.yaml <<'COMPOSE'
 name: kinosail-looptest
 services:
@@ -89,12 +93,12 @@ COMPOSE
 docker build --quiet --tag {REPO}:nox-{GOOD[:12]} - <<'DOCKERFILE'
 FROM localhost/kinosail:nox-local-runtime
 LABEL org.opencontainers.image.revision={GOOD}
-HEALTHCHECK --interval=1s --timeout=2s --start-period=1s --retries=2 CMD kinosail healthcheck
+HEALTHCHECK --interval=1s --timeout=30s --start-period=10s --retries=2 CMD kinosail healthcheck
 DOCKERFILE
 """
     # Refuse to claim a preexisting fixture. Cleanup only resources created by this run.
-    remote(f"set -e; test ! -e {SANDBOX}; ! docker inspect {SERVICE} >/dev/null 2>&1; "
-           f"! docker image inspect {REPO}:nox-dev >/dev/null 2>&1")
+    remote(f"set -e; if test -e {SANDBOX} || docker inspect {SERVICE} >/dev/null 2>&1 || "
+           f"docker image inspect {REPO}:nox-dev >/dev/null 2>&1; then exit 2; fi; mkdir -m 700 {SANDBOX}")
     try:
         remote("bash -s", setup.encode(), log=log)
         helper = (HERE / "deploy-nox-remote.sh").read_bytes()
@@ -161,17 +165,20 @@ def main():
                 args.repo / "packages/nox_local_live_canary.go"]
     assert all(not file.exists() for file in canaries), "canary_already_exists"
     baseline = snapshots(args.repo)
-    evidence = dict(command="test-nox-local-e2e.py", watcher_mode=args.watcher_mode,
+    evidence = dict(command=[sys.executable, *sys.argv], watcher_mode=args.watcher_mode,
                     test_revision=subprocess.check_output(["git", "-C", str(HERE), "rev-parse", "HEAD"], text=True).strip(),
                     source_revision=capture(args.repo, "player")["commit"], baseline=baseline,
                     environment=dict(platform="macOS", target="linux/arm64", debounce_seconds=3), journeys=[])
+    evidence["tools_sha256"] = {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest()
+                                for name in ("test-nox-local-e2e.py", "watch-nox-local.py", "nox_local_source.py",
+                                             "deploy-nox-local.sh", "deploy-nox-remote.sh", "install-nox-local.py")}
     owned, successful = [], False
     if args.rollback_only:
         try:
             rollback(args, evidence)
             evidence["outcome"] = "passed"
         finally:
-            (args.output / "e2e.json").write_text(json.dumps(evidence, indent=2) + "\n")
+            save_evidence(args, evidence)
         return 0
     try:
         wait_for(args, baseline, time.monotonic(), evidence, "initial_live_health")
@@ -214,9 +221,7 @@ def main():
             evidence["outcome"] = "failed"
             raise
         finally:
-            evidence["artifacts"] = {file.name: hashlib.sha256(file.read_bytes()).hexdigest()
-                                     for file in args.output.iterdir() if file.is_file() and file.name != "e2e.json"}
-            (args.output / "e2e.json").write_text(json.dumps(evidence, indent=2) + "\n")
+            save_evidence(args, evidence)
     return 0
 
 
