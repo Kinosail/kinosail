@@ -7,6 +7,35 @@ from hls_aac_v2_source_identity import option, regular_identity, startup_fixture
 
 FAILURE = 'v2_live_input_identity_unqualified'
 
+OBSERVATION_STAGES = (
+    'parent', 'source_before', 'children', 'child', 'identity_before', 'arguments_before',
+    'input_before', 'arguments_after', 'input_after', 'identity_after', 'source_after',
+    'disappearance_check', 'other',
+)
+OBSERVATION_EXCEPTIONS = (
+    'RuntimeError', 'FileNotFoundError', 'OSError', 'SubprocessError', 'TimeoutExpired',
+    'CalledProcessError', 'ValueError', 'IndexError', 'UnicodeError', 'UnicodeDecodeError',
+    'PermissionError', 'other',
+)
+
+
+def observation_fields(error, stage='other'):
+    stage = getattr(error, 'observer_stage', stage)
+    exception_class = getattr(error, 'observer_exception_class', type(error).__name__)
+    return {
+        'stage': stage if type(stage) is str and stage in OBSERVATION_STAGES else 'other',
+        'exceptionClass': exception_class if type(exception_class) is str
+            and exception_class in OBSERVATION_EXCEPTIONS else 'other',
+    }
+
+
+def qualified_failure(stage, error):
+    fields = observation_fields(error, stage)
+    failure = RuntimeError(FAILURE)
+    failure.observer_stage = fields['stage']
+    failure.observer_exception_class = fields['exceptionClass']
+    return failure
+
 
 def owned_children(parent):
     data = subprocess.check_output(['ps', '-eo', 'pid=,ppid='], timeout=3)
@@ -53,36 +82,54 @@ def input_classification(args, parent, source, expected):
 
 
 def observe_child(pid, parent, source, expected):
+    stage = 'identity_before'
     try:
         before = process_identity(pid, parent)
         if before[0] in ['Z', 'X', 'x']:
             return 0
+        stage = 'arguments_before'
         args = actual_arguments(pid)
         if '-hls_time' not in args:
             return 0
+        stage = 'input_before'
         first = input_classification(args, parent, source, expected)
+        stage = 'arguments_after'
         after_args = actual_arguments(pid)
+        stage = 'input_after'
         check('-hls_time' in after_args
             and input_classification(after_args, parent, source, expected) == first, FAILURE)
+        stage = 'identity_after'
         after = process_identity(pid, parent)
         check(after[1] == before[1], FAILURE)
         if after[0] in ['Z', 'X', 'x']:
             return 0
+        stage = 'source_after'
         check(regular_identity(source) == expected, FAILURE)
         return 1
     except FileNotFoundError:
-        check(pid not in owned_children(parent), FAILURE)
-        return 0
+        try:
+            check(pid not in owned_children(parent), FAILURE)
+            return 0
+        except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
+            raise qualified_failure('disappearance_check', error) from None
+    except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
+        raise qualified_failure(stage, error) from None
 
 
 def owned_hls_count(server, source):
+    stage = 'parent'
     try:
         parent = server.pid
         check(type(parent) is int and 0 < parent < (1 << 31), FAILURE)
+        stage = 'source_before'
         expected = validate_identity(getattr(server, '_copiedSourceWitness', regular_identity(source)))
         check(regular_identity(source) == expected, FAILURE)
-        count = sum(observe_child(pid, parent, source, expected) for pid in owned_children(parent))
+        stage = 'children'
+        children = owned_children(parent)
+        stage = 'child'
+        count = sum(observe_child(pid, parent, source, expected) for pid in children)
+        stage = 'source_after'
         check(regular_identity(source) == expected, FAILURE)
         return count
-    except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError):
-        raise RuntimeError(FAILURE) from None
+    except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
+        raise qualified_failure(stage, error) from None

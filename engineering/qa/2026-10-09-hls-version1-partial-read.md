@@ -48,3 +48,9 @@ The receipts do not identify the actual exception stage, so a transient exit cau
 New isolated diagnostic controls are written before enrichment: exact rejection text and error counts stay unchanged; safe stage/exception enums survive normalization.
 Untrusted metadata names fall back to other; source paths, argv, exception messages and error bodies never enter the projection.
 These controls qualify diagnostic retention only, not transient-process settlement, worker ownership or actual lazy compatibility.
+
+Exacta96 run38008928517 executed48 Python controls: the old44 passed and exactly four new stage/retention controls failed.
+Go and all six public jobs remained unexecuted; quality38008928509 passed.
+Artifact11652441689 has API archive digest738e9c6909a50e1235b31e41fa71f0d9e561cb3ba02d58464bb51ae867a01732.
+The enrichment preserves every error/rejection and resource join; it adds only bounded unique stage/exception enum rows.
+This is a diagnostic change, with no transient exit or lazy worker acceptance.

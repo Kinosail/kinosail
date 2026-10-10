@@ -31,9 +31,14 @@ def sample_resources(server, source, stop, resources):
         try:
             resources['peakOwnedFFmpeg'] = max(resources['peakOwnedFFmpeg'], encoder_count(server, source))
             resources['samples'] += 1
-        except (OSError, subprocess.SubprocessError, RuntimeError):
+        except (OSError, subprocess.SubprocessError, RuntimeError) as error:
+            from hls_aac_v2_live_observer import observation_fields
             resources['samplingErrors'] += 1
             resources.setdefault('samplingQualificationFailures', ['owned_encoder_observation_failed'])
+            failures = resources.setdefault('samplingObservationFailures', [])
+            failure = observation_fields(error)
+            if len(failures) < 16 and failure not in failures:
+                failures.append(failure)
         stop.wait(0.05)
 
 
