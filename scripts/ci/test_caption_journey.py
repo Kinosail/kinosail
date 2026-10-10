@@ -51,7 +51,7 @@ class CaptionJourneyTest(unittest.TestCase):
         smoke = source.index('pnpm --dir e2e test "${browser_args[@]}"')
         self.assertLess(caption, smoke)
         self.assertIn('source "$app/scripts/test-browser-journeys.sh"', source)
-        self.assertIn('run_library_pagination_journey "$project"', source)
+        self.assertIn('run_local_player_journeys "$project"', source)
         self.assertIn('run_populated_player_journeys "$project"', source)
 
 

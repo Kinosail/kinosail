@@ -43,6 +43,17 @@ run_library_pagination_journey() {
     ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestLibraryPaginationBrowserJourney$' -count=1 -timeout=6m
 }
 
+run_queue_loading_journey() {
+  GOMAXPROCS=2 KINOSAIL_QUEUE_LOADING_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
+    KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
+    ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestQueueLoadingBrowserJourney$' -count=1 -timeout=6m
+}
+
+run_local_player_journeys() {
+  run_library_pagination_journey "$@"
+  run_queue_loading_journey "$1" "$2-queue-loading" "$3/queue-loading"
+}
+
 run_subtitle_recovery_journey() {
   GOMAXPROCS=2 KINOSAIL_CAPTION_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
     KINOSAIL_CAPTION_MEDIA_FIXTURE="$2" KINOSAIL_E2E_OUTPUT_DIR="$3" KINOSAIL_E2E_ARTIFACT_DIR="$4" \
@@ -89,9 +100,5 @@ run_populated_player_journeys() {
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    --required-title 'real queued track preserves seek arriving before actual metadata' \
-    --required-title 'real queued track preserves stop arriving before actual metadata' \
-    --required-title 'real queued saved35 track preserves seek arriving before actual metadata' \
-    --required-title 'real queued saved35 track preserves stop arriving before actual metadata' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-queue-loading-intent.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }

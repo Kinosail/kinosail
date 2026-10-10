@@ -1,11 +1,10 @@
 import {expect, type Page, type TestInfo} from "@playwright/test";
-import {login} from "./test-instance-helpers";
 
 type Track = {id: string; stream: string};
 type Observation = {position: number; paused: boolean; readyState: number; sourcePath: string; duration: number; clockMs: number};
 type IntentWindow = Window & {queueLoadingMetadata?: Observation};
 
-export async function write(page: Page, path: string, body: unknown, method = "PUT") {
+export async function write(page: Page, path: string, body: Record<string, string | number | boolean>, method = "PUT") {
   return page.evaluate(async ({path, body, method}) => {
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')?.content || "";
     return (await fetch(path, {method, headers: {"Content-Type": "application/json", "X-Kinosail-CSRF": csrf},
@@ -28,7 +27,7 @@ export async function tracks(page: Page, albumTitle = "R08 Fictional Session"): 
 // Only delay the real Server media request. Media, authorization, state,
 // commands, browser events and progress acknowledgements remain genuine.
 export async function runLoadingIntent(page: Page, info: TestInfo, command: "seek" | "stop", albumTitle = "R08 Fictional Session", savedPosition = 5) {
-  await login(page);
+  await page.goto("/");
   const [first, second] = await tracks(page, albumTitle);
   for (const [track, seconds] of [[first, 0], [second, savedPosition]] as const) {
     expect(await write(page, `/api/v1/items/${track.id}/progress`, {seconds, watched: false})).toBe(200);
@@ -40,21 +39,21 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     const body = new URLSearchParams(response.request().postData() || "");
     if (accepted.length < 100) accepted.push({seconds: Number(body.get("seconds")), revision: Number(body.get("revision")), status: response.status()});
   });
-  let unblock!: () => void, held = 0;
-  const barrier = new Promise<void>(resolve => unblock = resolve);
-  const mediaRoute = `**${second.stream}*`;
-  await page.route(mediaRoute, async route => {
-    if (new URL(route.request().url()).pathname !== second.stream) return route.continue();
-    held++;
-    await barrier;
-    await route.continue().catch(() => {});
-  });
+  const control = `/__queue-media${second.stream}`;
+  expect((await page.request.put(control)).status()).toBe(204);
+  let released = false;
+  const unblock = async () => {
+    if (released) return;
+    expect((await page.request.delete(control)).status()).toBe(204);
+    released = true;
+  };
   try {
     await page.goto(`/watch/${first.id}`, {waitUntil: "domcontentloaded"});
     const media = page.locator("audio");
     await expect(media).toHaveAttribute("data-home-assistant", "true");
+    await media.evaluate(async (audio: HTMLAudioElement) => {audio.muted = true; await audio.play();});
     await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
-    await media.evaluate((audio: HTMLAudioElement) => {audio.muted = true; audio.pause();});
+    await media.evaluate((audio: HTMLAudioElement) => audio.pause());
     await page.waitForFunction("audioQueue.length === 1");
     let target: {id: string; itemId: string} | undefined;
     await expect.poll(async () => {
@@ -66,7 +65,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     await page.getByRole("button", {name: "Next track", exact: true}).click();
     await expect(media).toHaveAttribute("data-progress", `/progress/${second.id}`);
     await expect(media).toHaveAttribute("data-start", String(savedPosition));
-    await expect.poll(() => held).toBeGreaterThan(0);
+    await expect.poll(async () => (await (await page.request.get("/__queue-media")).json()).held).toBeGreaterThan(0);
     expect(await media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBe(0);
     await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(false);
     const queueBefore = await page.evaluate("({sourceChanging: queueSourceChanging, progressReady: queueProgressReady, progressRevision})");
@@ -94,7 +93,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
         duration: audio.duration, clockMs: performance.now()};
       audio.pause();
     }, {once: true}));
-    unblock();
+    await unblock();
     await expect.poll(() => page.evaluate(() => Boolean((window as IntentWindow).queueLoadingMetadata))).toBe(true);
     const afterMetadata = await page.evaluate(() => (window as IntentWindow).queueLoadingMetadata!);
     const publicState = await page.request.get(`/api/v1/items/${second.id}`);
@@ -135,8 +134,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
     await info.attach("accepted-current-public-progress", {body: JSON.stringify({command, position, savedPosition,
       accepted, publicProgressStatus: 200, publicPosition: publicReadback}), contentType: "application/json"});
   } finally {
-    unblock();
-    await page.unroute(mediaRoute);
+    await unblock();
     if (new URL(page.url()).pathname.startsWith("/watch/")) await page.goto("/");
     expect(await write(page, "/api/v1/settings/home-assistant", {enabled: false})).toBe(200);
   }

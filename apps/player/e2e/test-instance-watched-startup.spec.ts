@@ -37,14 +37,15 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await expect(page.getByRole("button", {name: "Mark unwatched", exact: true})).toBeVisible();
   }
   const media = page.locator("video");
-  await expect.poll(() => page.evaluate(() => (window as unknown as {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
   // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
   await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
+  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   await startPlaying(media);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   await expect(media).toHaveJSProperty("paused", true);
   await startPlaying(media);
-  await expect.poll(() => page.evaluate(() => (window as unknown as {watchedStartup: {pending: unknown[]}}).watchedStartup.pending.length)).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
   const progress = async () => {
     const response = await page.request.get(`/api/v1/items/${id}`);
     expect(response.status()).toBe(200);
@@ -64,7 +65,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     });
   }, origin);
   await page.evaluate(({watched, cancelledAgain}) => {
-    const relay = (window as unknown as {qaWatchedRelay: Window}).qaWatchedRelay;
+    const relay = (window as Window & {qaWatchedRelay: Window}).qaWatchedRelay;
     addEventListener("message", async event => {
       if (event.source !== relay || event.origin !== location.origin || event.data !== "qa-watched-commit") return;
       const video = document.querySelector("video")!;
@@ -88,7 +89,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
         await new Promise(resolve => setTimeout(resolve, 20));
       }
       const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
-      (window as unknown as {watchedStartup: {release(): void}}).watchedStartup.release();
+      (window as Window & {watchedStartup: {release(): void}}).watchedStartup.release();
       const report = (event: Event) => relay.postMessage({kind: "qa-watched-paused", event: event.type, paused: video.paused,
         before, seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames}, location.origin);
       if (watched) {video.addEventListener("pause", report, {once: true}); return video.pause();}
@@ -115,7 +116,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await expect.poll(() => committed).toBe(true);
     expect(await progress()).toMatchObject({watched, seconds: 0});
     await relay.evaluate(origin => opener!.postMessage("qa-watched-commit", origin), origin);
-    const observation = () => relay.evaluate(() => (window as unknown as {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number}; seconds: number; frames: number}}).qaWatchedObserved);
+    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number}; seconds: number; frames: number}}).qaWatchedObserved);
     await expect.poll(() => observation().then(value => value?.failure || value?.paused)).toBe(true);
     const paused = (await observation())!;
     expect(paused.event).toBe(watched ? "pause" : "ended");
