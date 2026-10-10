@@ -199,6 +199,15 @@ class ActualFDObserverControls(unittest.TestCase):
     def test_actual_empty_arguments_then_reaped_child_certify_zero(self):
         self.terminal_argument_count(True)
 
+    def test_actual_terminal_argument_failure_retains_safe_shape(self):
+        process = self.spawn(self.alias(self.retained[0]))
+        with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$') as caught:
+            self.ending_arguments(process)(process.pid)
+        self.qualified_terminal_transition(False)
+        self.assertEqual(getattr(caught.exception, 'observer_argument_bytes', None), 0)
+        self.assertEqual(getattr(caught.exception, 'observer_argument_shape', None), 'empty')
+        self.row.update(actualTerminalArgumentShapeRetained=True, result='observed')
+
     def test_argument_failure_of_still_live_owned_child_is_rejected(self):
         process = self.spawn(self.alias(self.retained[0]))
         self.assertEqual(self.observe(process), 1)

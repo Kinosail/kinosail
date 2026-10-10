@@ -75,3 +75,14 @@ The repair requalifies only an arguments_before RuntimeError against the retaine
 Two terminal observations must retain the same start and owned parent, or repeated proc absence and owned-child absence must qualify disappearance.
 Live, malformed, reused, changed-parent/start and unknown observations still reject; every source fence and resource error/join requirement remains unchanged.
 Future contract artifacts also retain the live-receipt JSON; proof deadlines, commands, assertions and gates remain unchanged.
+
+## Remaining initial-argument qualification gap
+
+Exact3601 run38010342206 passed52 Python,45 Go and all eight live controls; quality38010342250 passed.
+Its six actual public jobs still failed resource qualification; master and lazy retain arguments_before/RuntimeError.
+Their recorded groups had two zero samples, no remaining actors, no qualification/cleanup failures and unchanged source.
+The prior terminal repair is insufficient to qualify these actual errors; no new partial-read or worker acceptance follows.
+New controls precede further diagnostic enrichment: empty/oversized/nonterminated/count/length/decode rejections retain only safe counts and shape enums.
+A real same-terminal child independently proves the empty-record diagnostic path.
+Separate bounded process-state/argument-detail rows sanitize untrusted values without changing the existing stage rows, error counts or joins.
+Raw command contents, paths and exception messages remain excluded.
