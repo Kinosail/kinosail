@@ -162,8 +162,9 @@ class _EmptyArgumentFailure(RuntimeError):
 
 def empty_argument_record(error):
     size = getattr(error, 'observer_argument_bytes', None)
+    shape = getattr(error, 'observer_argument_shape', None)
     return (type(error) is RuntimeError and type(size) is int and size == 0
-        and getattr(error, 'observer_argument_shape', None) == 'empty')
+        and type(shape) is str and shape == 'empty')
 
 
 def reobserve_arguments(pid, parent, before, error):
@@ -180,7 +181,9 @@ def reobserve_arguments(pid, parent, before, error):
                 return None
             attempts += 1
             try:
-                return actual_arguments(pid)
+                args = actual_arguments(pid)
+                check(time.monotonic() < deadline, FAILURE)
+                return args
             except RuntimeError as fresh:
                 if not empty_argument_record(fresh):
                     raise
