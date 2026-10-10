@@ -226,7 +226,9 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
     let enqueued = ContinuousClock.now
     var lastPoll = enqueued, longestGap = Duration.zero
     var polls = 0
-    for _ in 0..<200 where probe.fixture.requests.isEmpty {
+    // Protocol delivery is asynchronous; bound elapsed time rather than poll count.
+    let readinessDeadline = enqueued.advanced(by: .seconds(10))
+    while probe.fixture.requests.isEmpty && ContinuousClock.now < readinessDeadline {
         try await Task.sleep(for: .milliseconds(5))
         let now = ContinuousClock.now
         longestGap = max(longestGap, lastPoll.duration(to: now))
@@ -258,7 +260,7 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
         && diagnosticRequest?.value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == access.profileID
     let diagnostic: [String: Any] = ["enqueueFinishedMs": milliseconds(began.duration(to: enqueued)),
         "readinessFinishedMs": milliseconds(began.duration(to: readinessFinished)),
-        "polls": polls, "iterationBound": 200, "longestPollGapMs": milliseconds(longestGap),
+        "polls": polls, "readinessDeadlineAfterEnqueueMs": 10_000, "longestPollGapMs": milliseconds(longestGap),
         "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count,
         "diagnosticDeadlineMs": 10_000, "diagnosticFinishedMs": milliseconds(began.duration(to: diagnosticFinished)),
         "diagnosticInterrupted": diagnosticInterrupted,

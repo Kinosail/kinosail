@@ -2,7 +2,7 @@ import {expect, test, type Request as PlaywrightRequest} from "@playwright/test"
 import {startPlaying} from "./checkpoint-setup-cases";
 import type {NavigationCheckpointFlows} from "./checkpoint-navigation-cases";
 
-declare const progressNavigation: unknown;
+declare const progressNavigation: object | undefined;
 
 export function registerNewerDestinationCheckpoint(flows: NavigationCheckpointFlows) {
   const {phase, browsePath, checkpoint, openMovie} = flows;

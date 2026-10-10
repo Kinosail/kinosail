@@ -2,9 +2,10 @@ import { expect, type Page, type Request, type TestInfo } from "@playwright/test
 import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 import { holdNextLibraryPage, holdNextMainRequest } from "./request-holds";
 import { expectAccessible, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
+import {captureHappyPathErrors} from "./happy-path-errors";
 
 export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<HappyPathState> {
-	const errors: string[] = [];
+	const monitor = captureHappyPathErrors(page, testInfo.project.name);
 	let passkeyCreated = false;
 	let authenticatorSecret = "";
 	if (testInfo.project.name === "chromium") {
@@ -13,25 +14,7 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 		await client.send("WebAuthn.enable");
 		await client.send("WebAuthn.addVirtualAuthenticator", { options: { protocol: "ctap2", transport: "internal", hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } });
 	}
-	let captureErrors = true;
-	page.on("console", (message) => {
-		if (!captureErrors || message.type() !== "error") return;
-		// An unauthenticated login page probes its session before offering WebAuthn.
-		// Keep every other 401, script error, and unexpected resource failure fatal.
-		try {
-			const source = new URL(message.location().url);
-			const current = new URL(page.url());
-			if (source.origin === current.origin && source.pathname === "/api/v1/me" && source.search === "" &&
-				current.pathname === "/login" && /^Failed to load resource: the server responded with a status of 401 \([^)]*\)$/.test(message.text())) return;
-		} catch { /* Console messages without a URL remain failures. */ }
-		errors.push(message.text());
-	});
-	page.on("pageerror", (error) => {
-		if (captureErrors) errors.push(error.message);
-	});
-	const capture = (enabled: boolean) => {
-		captureErrors = enabled;
-	};
+	const capture = monitor.capture;
 
   await gotoAuthForm(page, "/setup", testInfo);
   if (await page.getByRole("heading", { name: "Set up your Server." }).isVisible()) {
@@ -190,5 +173,5 @@ export async function startHappyPath(page: Page, testInfo: TestInfo): Promise<Ha
 	await expect(page.getByRole("heading", { name: "Gamma" })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Arrival" })).toHaveCount(0);
 	await expectAccessible(page, capture);
-  return { capture, errors, passkeyCreated };
+  return {...monitor, passkeyCreated};
 }

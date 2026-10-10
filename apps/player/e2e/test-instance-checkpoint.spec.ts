@@ -1,3 +1,4 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import { expect, test, type Page, type Request as PlaywrightRequest, type TestInfo } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
@@ -6,11 +7,11 @@ import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
 import { registerCheckpointSetup, startPlaying } from "./checkpoint-setup-cases";
 
 // Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
-declare const playbackPreparation: unknown;
-declare const progressFlight: unknown;
+declare const playbackPreparation: object | undefined;
+declare const progressFlight: object | undefined;
 declare const pendingProgress: {watched?: boolean} | undefined;
 declare const progressFailure: string;
-declare const ownsProgress: (pending: unknown) => boolean;
+declare const ownsProgress: (pending: object | undefined) => boolean;
 
 configureTestInstance();
 const browsePath = "/?q=Checkpoint%20Example&view=movies";
@@ -46,8 +47,8 @@ async function checkpoint(page: Page, id: string, session?: string) {
 async function observeExit(page: Page, id: string, key: string) {
   await page.evaluate(({item, key}) => {
     const video = document.querySelector("video")!;
-    const observations: Array<Record<string, unknown>> = [];
-    const record = (stage: string, detail: Record<string, unknown> = {}) => {
+    const observations: Array<JSONObject> = [];
+    const record = (stage: string, detail: JSONObject = {}) => {
       try {
         observations.push({stage, sequence: observations.length + 1, elapsedMs: Math.round(performance.now()),
           seconds: video.currentTime, readyState: video.readyState, paused: video.paused, ended: video.ended,

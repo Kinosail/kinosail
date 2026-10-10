@@ -1,9 +1,10 @@
+import type {JSONValue} from "../../../scripts/testing/json-value";
 import type { Page, Request, Response } from "@playwright/test";
 import type { SafeCase } from "./subtitle-restore-recovery-helpers";
 
 export const FAILURE_CODES = ["none", "aborted", "content-length", "decoding", "connection-reset", "connection-closed", "empty-response", "unclassified"] as const;
 export type FailureCode = typeof FAILURE_CODES[number];
-export function requestFailureCode(value: unknown): FailureCode {
+export function requestFailureCode(value: JSONValue | undefined): FailureCode {
   switch (value) {
     case "net::ERR_ABORTED": return "aborted";
     case "net::ERR_CONTENT_LENGTH_MISMATCH": return "content-length";

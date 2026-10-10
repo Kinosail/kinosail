@@ -22,7 +22,7 @@ for(const replacementClock of [0,3]) test(`unplayed source replacement clock ${r
     Object.assign(window,{Hls:FakeHls});
   },replacementClock);
   await page.addScriptTag({content:playerSource});
-  await page.waitForFunction(()=>Boolean((window as Window & {instance?:unknown}).instance));
+  await page.waitForFunction(()=>Boolean((window as Window & {instance?: object}).instance));
   await page.evaluate(()=>(window as Window & {instance:{manifest():void}}).instance.manifest());
   await page.getByLabel('Stream quality').selectOption('original');
   await page.locator('video').dispatchEvent('loadedmetadata');

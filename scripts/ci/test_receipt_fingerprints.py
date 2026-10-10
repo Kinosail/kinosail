@@ -27,14 +27,28 @@ API_BLOB_APPROVED = tuple(
     for line in (86, 92, 98)
 )
 
+WORKFLOW_BLOB_APPROVED = {
+    "869de5a5131d38bbed12584d8057be795790f1b9:.github/workflows/r18-canonical-metadata-reconcile.yml:generic-api-key:33",
+}
+
+
+ARTIFACT_DIGEST_APPROVED = {
+    '0e98cf9e5bc2cc7722ba2f6b11a34594a9ecab20:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:147',
+    '80c3eba5fa052fdd609e3eb7b84084a2ce8e91ac:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:133',
+    'c13394050e8a2c220d18f431199f9496cd84bc96:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:127',
+    'a27a554bf3fc371c2ed17cbbcaccc9fba3bb3ea7:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:123',
+    '4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:284',
+    '4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:288',
+}
+
 
 def fingerprints():
     return {f"{commit}:engineering/qa/2026-10-04-{group}/{file}:generic-api-key:{line}"
-            for commit, group, file, line in APPROVED} | set(API_BLOB_APPROVED)
+            for commit, group, file, line in APPROVED} | set(API_BLOB_APPROVED) | WORKFLOW_BLOB_APPROVED | ARTIFACT_DIGEST_APPROVED
 
 
 class ReceiptFingerprintPolicy(unittest.TestCase):
-    def test_fourteen_approved_metadata_locations_are_exact(self):
+    def test_approved_metadata_locations_are_exact(self):
         actual = set((ROOT / ".gitleaksignore").read_text().splitlines())
         self.assertTrue(fingerprints().issubset(actual))
 
@@ -168,6 +182,28 @@ class RealReceiptScanner(unittest.TestCase):
         code, findings = self.scan()
         self.assertEqual(code, 1)
         self.assertEqual(findings, [self.original])
+
+    def test_workflow_blob_exception_retains_detection_in_later_commits(self):
+        self.path = Path(".github/workflows/r18-canonical-metadata-reconcile.yml")
+        (self.repo / self.path).parent.mkdir(parents=True)
+        blob = subprocess.check_output(["git", "hash-object", "-w", "--stdin"],
+            input=b"disposable workflow source metadata control\n", cwd=self.repo,
+            env=self.env).decode().strip()
+        self.write({"expected": {"auth-navigation.ts": blob}})
+        self.commit("Record workflow source blob metadata")
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        workflow = next(row for row in findings if row["File"] == str(self.path))
+        (self.repo / ".gitleaksignore").write_text(
+            self.fingerprint(self.original) + "\n" + self.fingerprint(workflow) + "\n")
+        self.assertEqual(self.scan(), (0, []))
+        self.write({"expected": {"auth-navigation.ts": blob},
+                    "api_key": hashlib.sha256(b"synthetic workflow credential control").hexdigest()})
+        head = self.commit("Add synthetic credential at the same workflow path")
+        code, findings = self.scan()
+        self.assertEqual(code, 1)
+        self.assertTrue(any(row["Commit"] == head and row["File"] == str(self.path)
+                            for row in findings))
 
 
 if __name__ == "__main__":

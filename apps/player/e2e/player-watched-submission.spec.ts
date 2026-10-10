@@ -46,7 +46,7 @@ for (const mode of ["cancelled", "late-cancelled", "form-target", "form-method",
       if (mode === "submitter-invalid-action") button.setAttribute("formaction", "http://[");
       if (mode === "cancelled") document.addEventListener("submit", event => event.preventDefault(), {capture: true});
       if (mode === "late-cancelled") document.addEventListener("submit", event => event.preventDefault());
-      const control = window as unknown as {pauseFixture(seconds: number): void; watchedSubmissionReplays: number};
+      const control = window as Window & {pauseFixture(seconds: number): void; watchedSubmissionReplays: number};
       form.addEventListener("submit", () => {control.watchedSubmissionReplays++;});
       if (playedBefore) document.querySelector("video")!.dispatchEvent(new Event("playing"));
       // Exercise delivered submit listeners without an unrelated browser form
@@ -59,10 +59,10 @@ for (const mode of ["cancelled", "late-cancelled", "form-target", "form-method",
     }, {mode, playedBefore});
     await expect.poll(() => positions.length).toBeGreaterThan(0);
     await page.waitForTimeout(150);
-    await page.evaluate(() => (window as unknown as {pauseFixture(seconds: number): void}).pauseFixture(60));
+    await page.evaluate(() => (window as Window & {pauseFixture(seconds: number): void}).pauseFixture(60));
     await expect.poll(() => new URLSearchParams(positions.at(-1)).get("seconds")).toBe("60");
     expect(new URLSearchParams(positions.at(-1)).get("watched")).toBe("false");
-    const replayed = await page.evaluate(() => (window as unknown as {watchedSubmissionReplays: number}).watchedSubmissionReplays);
+    const replayed = await page.evaluate(() => (window as Window & {watchedSubmissionReplays: number}).watchedSubmissionReplays);
     if (mode === "late-cancelled" && playedBefore) expect(replayed).toBe(1);
     else expect(replayed).toBe(0);
     expect(errors).toEqual([]);

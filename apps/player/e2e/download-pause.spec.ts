@@ -119,8 +119,8 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
       throw error;
     } finally {
       const cleanupFailures: string[] = [];
-      let firstCleanupError: unknown;
-      const cleanup = async (stage: string, action: () => Promise<unknown>) => {
+      let firstCleanupError: Error | undefined;
+      const cleanup = async (stage: string, action: () => Promise<void>) => {
         try { await action(); }
         catch (error) { if (!cleanupFailures.length) firstCleanupError = error; cleanupFailures.push(stage); }
       };

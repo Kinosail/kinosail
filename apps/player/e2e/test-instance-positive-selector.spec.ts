@@ -154,10 +154,10 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
   if (explicitZero) {
     try {
       await expect.poll(() => negotiationHeld, {timeout: 5000, intervals: [20, 50, 100]}).toBe(true);
-      expect(await page.evaluate(() => (window as unknown as {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length)).toBe(0);
+      expect(await page.evaluate(() => (window as Window & {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length)).toBe(0);
       await page.keyboard.press('ArrowLeft');
       const afterKey = await page.locator('video').evaluate(element => ({position: (element as HTMLVideoElement).currentTime,
-        intents: (window as unknown as {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length}));
+        intents: (window as Window & {selectorMediaEvents: {event: string}[]}).selectorMediaEvents.filter(value => value.event === 'kinosail:seek-intent').length}));
       explicitZeroAdmitted = negotiationHeld && !negotiationBudgetReleased && afterKey.position === 0 && afterKey.intents === 1;
       releaseNegotiation();
       expect(explicitZeroAdmitted).toBe(true);
@@ -178,7 +178,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
   }
   await expect.poll(() => page.locator('video').evaluate(video => (video as HTMLVideoElement).readyState), {timeout: 30_000}).toBeGreaterThanOrEqual(2);
   await record({phase: 'isolated-item-initial-metadata', public: await publicPosition(),
-    events: await page.evaluate(() => (window as unknown as {selectorMediaEvents: object[]}).selectorMediaEvents),
+    events: await page.evaluate(() => (window as Window & {selectorMediaEvents: object[]}).selectorMediaEvents),
     separateProgressKey: true});
   if (!explicitZero) {
     phase = 'reload-before-any-Play';
@@ -199,7 +199,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
       nativeHLS: video.canPlayType('application/vnd.apple.mpegurl')};
   });
   await record({phase: 'selected-source-before-any-Play', state, selected, public: await publicPosition(),
-    events: await page.evaluate(() => (window as unknown as {selectorMediaEvents: object[]}).selectorMediaEvents)});
+    events: await page.evaluate(() => (window as Window & {selectorMediaEvents: object[]}).selectorMediaEvents)});
   expect(state.paused).toBe(true);
   expect(state.directType).toBe('video/x-matroska'); expect(state.compatibilityMode).toBe('transcode');
   expect(state.policy).toBe('direct-first'); expect(state.nativeHLS).not.toBe('');
@@ -245,8 +245,8 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
     }, selectedURL);
     const started = Date.now();
     await decoderPage.getByRole('button', {name: 'Decode observed source inline', exact: true}).click();
-    await expect.poll(() => decoderPage.evaluate(() => (window as unknown as {inlineDecoderControl: {frames: object[]}}).inlineDecoderControl.frames.length), {timeout: 30_000}).toBe(2);
-    const frames = await decoderPage.evaluate(() => (window as unknown as {inlineDecoderControl: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).inlineDecoderControl.frames);
+    await expect.poll(() => decoderPage.evaluate(() => (window as Window & {inlineDecoderControl: {frames: object[]}}).inlineDecoderControl.frames.length), {timeout: 30_000}).toBe(2);
+    const frames = await decoderPage.evaluate(() => (window as Window & {inlineDecoderControl: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).inlineDecoderControl.frames);
     await writeFile(info.outputPath('inline-control-first-frame.png'), Buffer.from(frames[0].png.split(',')[1], 'base64'));
     await record({phase: 'separate-inline-control-frame-samples', elapsedObservationMS: Date.now() - started,
       selected, frames: frames.map(({png: _png, ...value}) => value), controlWrites, public: await publicPosition()});
@@ -274,7 +274,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
     try {
       const decoder = inline && await inline.evaluate(() => {
         const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen?: boolean};
-        const value = (window as unknown as {inlineDecoderControl?: {callbacks: number, frames: object[], playFailure: string}}).inlineDecoderControl;
+        const value = (window as Window & {inlineDecoderControl?: {callbacks: number, frames: object[], playFailure: string}}).inlineDecoderControl;
         return {paused: video.paused, readyState: video.readyState, errorCode: video.error?.code || 0,
           rawTime: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime')!.get!.call(video),
           fullscreen: video.webkitDisplayingFullscreen === true, callbacks: value?.callbacks ?? null,

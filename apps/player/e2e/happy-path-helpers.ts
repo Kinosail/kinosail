@@ -1,10 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
 import { createHmac } from "node:crypto";
 import { expect, type Page } from "@playwright/test";
+import type {captureHappyPathErrors} from "./happy-path-errors";
 
-export type HappyPathState = {
-  capture: (enabled: boolean) => void;
-  errors: string[];
+export type HappyPathState = ReturnType<typeof captureHappyPathErrors> & {
   passkeyCreated: boolean;
 };
 

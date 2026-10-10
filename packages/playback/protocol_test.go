@@ -177,7 +177,7 @@ func (session testJellyfinSession) JellyfinExpires() time.Time { return session.
 func (session testJellyfinSession) JellyfinPublic() bool       { return session.public }
 
 func TestSubtitlesAndTrickplay(t *testing.T) { //nolint:cyclop // Presentation-time helpers are tested together.
-	t.Parallel()
+	// Keep script write/exec away from parallel forks: golang.org/issue/22315.
 	timeline := Timeline{SourceDuration: 20, Duration: 10, Omitted: []Range{{Start: 5, End: 15}}}
 	input := []byte("WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nkeep\n\n00:00:06.000 --> 00:00:08.000\ndrop\n\n00:00:16.000 --> 00:00:18.000 line:0\nshift")
 	output := string(MapWebVTT(input, timeline))

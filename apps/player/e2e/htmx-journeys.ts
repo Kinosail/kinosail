@@ -97,7 +97,7 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await open(page);
-      expect(await page.evaluate(() => (window as any).htmx.version)).toBe("4.0.0");
+      expect(await page.evaluate(() => (window as Window & {htmx: {version: string; config: {timeout: number}; trigger: (element: Element | null, name: string) => void}}).htmx.version)).toBe("4.0.0");
       for (const [label, body] of [["Loaded", content("Loaded")], ["Empty", '<main id="main" class="library-shell"><p role="status">No results</p></main>']]) {
         let release!: () => void;
         const held = new Promise<void>(resolve => { release = resolve; });
@@ -130,11 +130,11 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
         if (typeof failure === "number") await route.fulfill({ status: failure, contentType: "text/html", body: failure === 204 ? "" : content("Error response") });
         else await route.abort("failed");
       });
-      if (failure === "timeout") await page.evaluate(() => { (window as any).htmx.config.defaultTimeout = 1000; });
+      if (failure === "timeout") await page.evaluate(() => { (window as Window & {htmx: {version: string; config: {timeout: number}; trigger: (element: Element | null, name: string) => void}}).htmx.config.defaultTimeout = 1000; });
       await page.getByRole("button", { name: "First" }).click();
       await expect(page.locator("#main")).toHaveAttribute("aria-busy", "true");
       await expect(page.locator("#main")).toHaveClass(/request-skeleton/);
-      if (failure === "abort") await page.evaluate(() => { (window as any).htmx.trigger(document.querySelector('button[hx-get="/first"]'), "htmx:abort"); });
+      if (failure === "abort") await page.evaluate(() => { (window as Window & {htmx: {version: string; config: {timeout: number}; trigger: (element: Element | null, name: string) => void}}).htmx.trigger(document.querySelector('button[hx-get="/first"]'), "htmx:abort"); });
       if (failure !== "abort" && failure !== "timeout") release();
       await ready(page);
       await expect(page.locator("#main")).toContainText("Original");

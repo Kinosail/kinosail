@@ -18,7 +18,7 @@ async function cacheDiagnostic(page: import("@playwright/test").Page) {
   const unavailable = { schemaVersion: 1, supported: false, present: false, frameCount: 0, reasons: [] as string[], truncated: false, navigationType: "unknown" };
   try {
     return await page.evaluate(allowed => {
-      type Frame = { reasons?: { reason?: unknown }[]; children?: Frame[] };
+      type Frame = { reasons?: { reason?: string }[]; children?: Frame[] };
       const entry = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming & { notRestoredReasons?: Frame | null };
       const supported = Boolean(entry && "notRestoredReasons" in entry), root = entry?.notRestoredReasons;
       const present = Boolean(root && typeof root === "object"), reasons = new Set<string>();

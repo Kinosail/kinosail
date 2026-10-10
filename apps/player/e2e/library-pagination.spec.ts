@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
+import {registerLibraryNavigationControls} from "./library-navigation-controls";
+import {gotoPaginationCatalog} from "./library-navigation";
 
 const origin = process.env.KINOSAIL_LIBRARY_BROWSER_URL;
 test.skip(!origin, "requires TestLibraryPaginationBrowserJourney disposable Go Server");
 test.use({ serviceWorkers: "block" });
+registerLibraryNavigationControls(origin);
 
 const showTitles = Array.from({ length: 30 }, (_, position) => `Pagination Show ${String(position + 1).padStart(2, "0")}`);
 const movieTitles = Array.from({ length: 6 }, (_, position) => `Pagination Movie ${String(position + 1).padStart(2, "0")}`);
@@ -22,7 +25,7 @@ for (const width of [390, 1440]) {
 		const api = await response.json();
 		expect(api.total).toBe(30);
 		expect(api.items).toHaveLength(4);
-		await page.goto(`${origin}/?view=shows&limit=4`, {waitUntil: "commit"});
+		await gotoPaginationCatalog(page, `${origin}/?view=shows&limit=4`, info);
 		const bundle = await page.locator('script[src^="/static/main.kinosail.bundle.js"]').getAttribute("src");
 		expect(new URL(bundle!, origin).searchParams.get("v")).not.toBe("34-htmx4");
 		await loadAll(page);
@@ -36,7 +39,7 @@ for (const width of [390, 1440]) {
 }
 
 test("real Server mixed pages keep both Show and Movie cards", async ({ page }, info) => {
-	await page.goto(`${origin}/?q=Pagination&limit=4`, {waitUntil: "commit"});
+	await gotoPaginationCatalog(page, `${origin}/?q=Pagination&limit=4`, info);
 	await loadAll(page);
 	expect((await page.locator('[data-library-group="shows"] .card h2').allTextContents()).sort()).toEqual(showTitles);
 	expect((await page.locator('[data-library-group="movies"] .card h2').allTextContents()).sort()).toEqual(movieTitles);

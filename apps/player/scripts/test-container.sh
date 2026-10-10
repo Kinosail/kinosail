@@ -203,7 +203,7 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   while IFS= read -r project; do
-    run_library_pagination_journey "$project" \
+    run_local_player_journeys "$project" \
       "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
     run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \

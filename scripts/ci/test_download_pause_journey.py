@@ -53,7 +53,7 @@ class DownloadPauseJourneyTest(unittest.TestCase):
         pause = source.index('run_download_pause_journeys "$project"')
         smoke = source.index('pnpm --dir e2e test "${browser_args[@]}"')
         self.assertLess(pause, smoke)
-        self.assertIn('run_library_pagination_journey "$project"', source)
+        self.assertIn('run_local_player_journeys "$project"', source)
         self.assertIn('run_subtitle_recovery_journey "$project"', source)
         self.assertIn('run_populated_player_journeys "$project"', source)
         # This clean Q09 branch starts at main; R08's unmerged fixture remains

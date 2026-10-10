@@ -1,3 +1,4 @@
+import type {JSONValue} from "../../../scripts/testing/json-value";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -17,7 +18,7 @@ async function actionFixture(page: Page, testInfo: TestInfo, action: "save" | "r
   const history = JSON.parse(await readFile(`${dir}/${completed ? "history" : "before-history"}.json`, "utf8"));
   const preview = action === "save" ? JSON.parse(await readFile(`${dir}/preview.json`, "utf8")) : null;
   const release: Array<() => void> = [];
-  const requests = { preparations: [] as unknown[], mutations: [] as Array<{ path: string; input: unknown }>, statuses: 0, drafts: 0, inspections: 0, histories: 0, pages: 0 };
+  const requests = { preparations: [] as JSONValue[], mutations: [] as Array<{ path: string; input: JSONValue }>, statuses: 0, drafts: 0, inspections: 0, histories: 0, pages: 0 };
   const operation = { id: "a".repeat(64), action: action === "save" ? "apply" : "restore", item: before.id, state: "prepared", statusURL: `/api/v1/subtitle-operations/${"a".repeat(64)}` };
   const scripts = { inspector: await readFile(`${dir}/subtitle-inspector.js`), dashboard: await readFile(`${dir}/subtitle-status.js`) };
   await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, action, surface, completed, width: page.viewportSize()?.width, command: "playwright test subtitle-action-recovery.spec.ts --workers=1", browserVersion: page.context().browser()?.version(), boundary: "isolated browser transport using actual public Go HTML/assets/Save/Restore reads; prepared/running/completed receipts are simulated at the transport boundary; POST completion is represented by captured reads, not executed in this browser fixture; media aborted", sourceSHA256: createHash("sha256").update(scripts[surface]).digest("hex"), beforeFingerprint: before.fingerprint, afterFingerprint: after.fingerprint }) });

@@ -1,3 +1,4 @@
+import type {JSONValue} from "../../../scripts/testing/json-value";
 import { readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { reviewSubtitlePairing } from "./subtitle-pairing-journey";
@@ -16,7 +17,7 @@ for (const width of [390, 1440]) {
     const current = JSON.parse(await readFile(`${fixtureDir}/subtitle-pairing.json`, "utf8"));
     const cleanup = JSON.parse(await readFile(`${fixtureDir}/subtitle-pairing-cleanup.json`, "utf8"));
     const imported = JSON.parse(await readFile(`${fixtureDir}/subtitle-pairing-import.json`, "utf8"));
-    const previews: unknown[] = [];
+    const previews: JSONValue[] = [];
     await testInfo.attach("verification-context", { contentType: "application/json", body: JSON.stringify({ revision, width, command: "playwright test subtitle-pairing.spec.ts --workers=1", environment: testInfo.project.name, browserVersion: page.context().browser()?.version(), data: "actual rendered inspector and API preview outputs for synthetic credit/repeated/later dialogue and unrelated import", boundary: "isolated browser transport/render fixture; no playable media or populated Server" }) });
     await page.setViewportSize({ width, height: 900 });
     await page.route("http://pairing.test/**", async route => {

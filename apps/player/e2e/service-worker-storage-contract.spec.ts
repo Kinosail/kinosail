@@ -1,3 +1,4 @@
+type WorkerMessage = {origin: string; source: {type: string; url: string}; data: {type: string; profile: string; revision: number}; waitUntil: () => void};
 import { expect, test } from "@playwright/test";
 import { downloadsSource, serviceWorkerSource } from "./static-sources";
 
@@ -5,8 +6,8 @@ test("uncached private artwork is delivered before cache maintenance finishes", 
 	await page.route("https://kinosail.test/", route => route.fulfill({contentType: "text/html", body: "<!doctype html><title>Artwork cache timing</title>"}));
 	await page.goto("https://kinosail.test/");
 	const result = await page.evaluate(async source => {
-		type WorkerEvent = {request: Request; respondWith: (value: Promise<Response>) => void; waitUntil: (value: Promise<unknown>) => void};
-		const handlers = new Map<string, (event: WorkerEvent) => void>();
+		type WorkerEvent = {request: Request; respondWith: (value: Promise<Response>) => void; waitUntil: (value: Promise<void>) => void};
+		const handlers = new Map<string, (event: WorkerEvent | WorkerMessage) => void>();
 		let releaseWrite!: () => void;
 		const slowWrite = new Promise<void>(resolve => { releaseWrite = resolve; });
 		let writes = 0;
@@ -16,15 +17,15 @@ test("uncached private artwork is delivered before cache maintenance finishes", 
 			keys: async () => [],
 			delete: async () => true,
 		};
-		const scope = {addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), location: {origin: "https://kinosail.test"}};
+		const scope = {addEventListener: (name: string, handler: (event: WorkerEvent | WorkerMessage) => void) => handlers.set(name, handler), location: {origin: "https://kinosail.test"}};
 		new Function("self", "caches", "fetch", "indexedDB", source + "\nviewerProfile = 'viewer';")(
 			scope, {open: async () => cache}, async () => new Response("image", {headers: {"Content-Type": "image/png"}}), indexedDB);
 		let response: Promise<Response> | undefined;
-		const maintenance: Promise<unknown>[] = [];
+		const maintenance: Promise<void>[] = [];
 		handlers.get("fetch")?.({
 			request: new Request("https://kinosail.test/art/movie"),
 			respondWith: (value: Promise<Response>) => { response = value; },
-			waitUntil: (value: Promise<unknown>) => { maintenance.push(value); },
+			waitUntil: (value: Promise<void>) => { maintenance.push(value); },
 		});
 		const first = await Promise.race([response!.then(() => "image"), new Promise<string>(resolve => setTimeout(() => resolve("cache"), 1_000))]);
 		releaseWrite();
@@ -81,8 +82,8 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 			return originalGetAll.apply(this, args);
 		};
 		try {
-			const handlers = new Map<string, (event: WorkerEvent) => void>();
-			const scope = { addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), clients: { matchAll: async () => [] }, location: { origin: "https://kinosail.test" } };
+			const handlers = new Map<string, (event: WorkerEvent | WorkerMessage) => void>();
+			const scope = { addEventListener: (name: string, handler: (event: WorkerEvent | WorkerMessage) => void) => handlers.set(name, handler), clients: { matchAll: async () => [] }, location: { origin: "https://kinosail.test" } };
 			new Function("self", "caches", "fetch", "indexedDB", source.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 2;"))(scope, { keys: async () => [] }, async () => { throw new TypeError("offline"); }, indexedDB);
 			const requestMedia = async () => {
 				let responsePromise: Promise<Response | undefined> | undefined;
@@ -104,9 +105,9 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 			});
 			// Registration and readiness can identify the same page while its first media request waits.
 			const revision = Date.now();
-			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision }, waitUntil: () => {} } as unknown as WorkerEvent);
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision }, waitUntil: () => {} } as WorkerMessage);
 			const firstMedia = requestMedia();
-			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision: revision + 1 }, waitUntil: () => {} } as unknown as WorkerEvent);
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision: revision + 1 }, waitUntil: () => {} } as WorkerMessage);
 			const response = await firstMedia;
 			await new Promise((resolve) => setTimeout(resolve, 25));
 			const readsBeforeConsumption = [...reads];
@@ -136,7 +137,7 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 			await cancelled?.body?.cancel();
 			const cancelReads = [...reads];
 			reads.length = 0;
-			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "other", revision: Date.now() + 1 }, waitUntil: () => {} } as unknown as WorkerEvent);
+			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "other", revision: Date.now() + 1 }, waitUntil: () => {} } as WorkerMessage);
 			const wrongProfile = await requestMedia();
 			const wrongProfileReads = [...reads];
 			const databaseClosed = await new Promise<boolean>((resolve, reject) => {
@@ -205,8 +206,8 @@ test("service worker streams verified OPFS chunks before later verification", as
 			} }),
 		};
 		const mockNavigator = { storage: { getDirectory: async () => ({ getFileHandle: async () => ({ getFile: async () => file }) }) } };
-		const handlers = new Map<string, (event: WorkerEvent) => void>();
-		const scope = { addEventListener: (name: string, handler: (event: WorkerEvent) => void) => handlers.set(name, handler), location: { origin: "https://kinosail.test" } };
+		const handlers = new Map<string, (event: WorkerEvent | WorkerMessage) => void>();
+		const scope = { addEventListener: (name: string, handler: (event: WorkerEvent | WorkerMessage) => void) => handlers.set(name, handler), location: { origin: "https://kinosail.test" } };
 		new Function("self", "caches", "fetch", "indexedDB", "navigator", source.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 2;"))(scope, {}, async () => { throw new TypeError("offline"); }, indexedDB, mockNavigator);
 		let responsePromise: Promise<Response | undefined> | undefined;
 		handlers.get("fetch")?.({ request: new Request("https://kinosail.test/offline-media/profile/bbbbbbbbbbbbbbbb"), respondWith: (value) => { responsePromise = value; } });

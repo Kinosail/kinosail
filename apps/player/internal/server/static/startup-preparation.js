@@ -3,11 +3,12 @@
   let timer;
   let controller;
   let signingOut = false;
+  let departing = false;
   const prepared = new Set();
   const active = new Set();
   const idFor = (link) => /^\/watch\/([a-f0-9]{16})$/.exec(link?.getAttribute("href") || "")?.[1];
   const headers = () => ({"Content-Type": "application/json", "X-Kinosail-CSRF": document.querySelector('meta[name="kinosail-csrf"]')?.content || ""});
-  const eligible = () => !signingOut && !document.hidden && !document.querySelector("video,audio") && navigator.onLine && !navigator.connection?.saveData;
+  const eligible = () => !signingOut && !departing && !document.hidden && !document.querySelector("video,audio") && navigator.onLine && !navigator.connection?.saveData;
   async function boundedJSON(response) {
     if (!response.ok || !response.body) return;
     const reader = response.body.getReader();
@@ -26,13 +27,14 @@
     return JSON.parse(new TextDecoder().decode(bytes));
   }
   async function prepare(id, current, signal) {
-    if (!eligible() || prepared.has(id) || prepared.size >= 3) return;
+    if (!eligible() || current !== generation || signal.aborted || prepared.has(id) || prepared.size >= 3) return;
     prepared.add(id);
     const video = document.createElement("video");
     const capabilities = window.kinosailPlaybackCapabilities;
     try {
       const api = `/api/v1/items/${id}/playback`;
       let result = await boundedJSON(await fetch(api, {signal, credentials: "same-origin", redirect: "error"}));
+      if (!eligible() || current !== generation || signal.aborted) return;
       let savedPolicy;
       try { savedPolicy = localStorage.getItem("kinosail.playback-policy-v2"); } catch {}
       const policy = capabilities.policy(savedPolicy, result?.policy, Boolean(result?.compatible));
@@ -56,7 +58,7 @@
         } catch { /* Use the same default rendition as playback after its deadline. */ }
         finally { clearTimeout(expire); signal.removeEventListener("abort", abort); }
       }
-      if (!eligible() || current !== generation || !result?.plan?.allowed) return;
+      if (!eligible() || current !== generation || signal.aborted || !result?.plan?.allowed) return;
       let source = compatible ? result.compatible : result.direct;
       if (typeof source !== "string" || source.length > 2048) return;
       const url = new URL(source, location.href);
@@ -83,10 +85,13 @@
       finally { clearTimeout(expire); }
     }, 600);
   }
-  function cancel(notify = true) {
+  function stop() {
     generation++;
     clearTimeout(timer);
     controller?.abort();
+  }
+  function cancel(notify = true) {
+    stop();
     if (notify) for (const id of active) fetch(`/api/v1/items/${id}/playback-prepare`, {method: "DELETE", headers: headers(), credentials: "same-origin", keepalive: true, redirect: "error"}).catch(() => {});
     active.clear();
     prepared.clear();
@@ -100,6 +105,19 @@
     const id = idFor(link);
     if (id) schedule([id]);
   }, {passive: true});
+  document.addEventListener("click", event => {
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const link = event.target instanceof Element ? event.target.closest("a") : null;
+    if (!(link instanceof HTMLAnchorElement) || !idFor(link) || link.origin !== location.origin || link.username || link.password || link.hasAttribute("download")) return;
+    const target = link.getAttribute("target") ?? document.querySelector("base[target]")?.getAttribute("target") ?? "";
+    if (target && target.toLowerCase() !== "_self") return;
+    departing = true;
+    stop();
+    const current = generation;
+    setTimeout(() => {
+      if (event.defaultPrevented && current === generation) { departing = false; prepared.clear(); bind(); }
+    }, 0);
+  });
   document.addEventListener("visibilitychange", () => { if (document.hidden) cancel(); else bind(); });
   document.addEventListener("submit", ({target}) => {
     if (!(target instanceof HTMLFormElement)) return;
@@ -109,7 +127,11 @@
     signingOut = true;
     cancel(false);
   }, true);
-  window.addEventListener("pageshow", ({persisted}) => { if (persisted && signingOut) location.reload(); });
+  window.addEventListener("pageshow", ({persisted}) => {
+    if (!persisted) return;
+    if (signingOut) location.reload();
+    else { departing = false; bind(); }
+  });
   window.addEventListener("pagehide", cancel);
   document.addEventListener("htmx:before:swap", () => { cancel(); prepared.clear(); });
   document.addEventListener("htmx:after:swap", bind);

@@ -70,24 +70,17 @@ test("Twenty long language choices remain usable at the preference limit", { tag
 });
 
 test("Local-only languages do not advertise unavailable item actions", async ({ page }, testInfo) => {
-  let addedAfar = false;
-  let removedEnglish = false;
   try {
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto("/settings#language");
     const languageSection = page.locator("#language");
+    const languages = languageSection.getByRole("list", { name: "Preferred subtitle languages" }).locator("li strong");
+    await expect(languages).toHaveText(["English"]);
     await languageSection.getByLabel("Add a language").selectOption("aa");
-    await Promise.all([
-      page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
-      languageSection.getByRole("button", { name: "Add language" }).click(),
-    ]);
-    addedAfar = true;
-    await page.goto("/settings#language");
-    await Promise.all([
-      page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
-      page.getByRole("button", { name: "Remove English" }).click(),
-    ]);
-    removedEnglish = true;
+    await languageSection.getByRole("button", { name: "Add language" }).click();
+    await expect(languages).toHaveText(["English", "Afar"]);
+    await page.getByRole("button", { name: "Remove English" }).click();
+    await expect(languages).toHaveText(["Afar"]);
 
     await page.goto("/?view=wanted");
     const file = page.locator(".subtitle-file").first();
@@ -98,24 +91,9 @@ test("Local-only languages do not advertise unavailable item actions", async ({ 
     await page.screenshot({ path: testInfo.outputPath("320-local-only-language.png"), fullPage: true });
   } finally {
     await page.goto("/settings#language");
-    if (removedEnglish) {
-      const languageSection = page.locator("#language");
-      await languageSection.getByLabel("Add a language").selectOption("en");
-      await Promise.all([
-        page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
-        languageSection.getByRole("button", { name: "Add language" }).click(),
-      ]);
-    }
-    if (addedAfar) {
-      await page.goto("/settings#language");
-      const removeAfar = page.getByRole("button", { name: "Remove Afar" });
-      if (await removeAfar.isEnabled().catch(() => false)) {
-        await Promise.all([
-          page.waitForURL((url) => url.pathname === "/settings" && url.hash === "#language"),
-          removeAfar.click(),
-        ]);
-      }
-    }
+    expect(await setSubtitleLanguages(page, ["en"])).toBe(200);
+    await page.reload();
+    await expect(page.locator("#language li strong")).toHaveText(["English"]);
   }
 });
 
