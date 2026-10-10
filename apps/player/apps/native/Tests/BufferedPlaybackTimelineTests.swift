@@ -54,6 +54,53 @@ import SwiftUI
 
 @Suite(.serialized) @MainActor
 struct BufferedPlaybackSliderTests {
+    // Native playback journeys do not assert UIKit target/action ordering. These
+    // checks protect seek commits if actor isolation introduces deferred callbacks.
+    @Test func nontrackingValueChangeFinishesEditingSynchronouslyAfterUpdatingTheBinding() async throws {
+        var position = 20.0
+        var events: [String] = []
+        let scene = try #require(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previous = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: BufferedPlaybackSlider(
+            value: Binding(get: { position }, set: { position = $0; events.append("value:\($0)") }),
+            duration: 100, buffered: [],
+            onEditingChanged: { events.append("\($0 ? "begin" : "end"):\(position)") }))
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previous?.makeKey() }
+        window.layoutIfNeeded()
+        try await Task.sleep(for: .milliseconds(100))
+        let slider = try #require(findSlider(window))
+        #expect(!slider.isTracking)
+        slider.value = 35
+        slider.sendActions(for: .valueChanged)
+        #expect(position == 35)
+        #expect(events == ["begin:20.0", "value:35.0", "end:35.0"])
+    }
+
+    @Test(arguments: [UIControl.Event.touchUpInside.rawValue, UIControl.Event.touchUpOutside.rawValue,
+                      UIControl.Event.touchCancel.rawValue])
+    func touchCompletionAndCancellationEndEditingSynchronouslyWithoutChangingPosition(_ event: UInt) async throws {
+        var position = 20.0
+        var editing: [Bool] = []
+        let scene = try #require(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previous = scene.windows.first { $0.isKeyWindow }
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: BufferedPlaybackSlider(
+            value: Binding(get: { position }, set: { position = $0 }), duration: 100, buffered: [],
+            onEditingChanged: { editing.append($0) }))
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previous?.makeKey() }
+        window.layoutIfNeeded()
+        try await Task.sleep(for: .milliseconds(100))
+        let slider = try #require(findSlider(window))
+        slider.sendActions(for: .touchDown)
+        #expect(editing == [true])
+        slider.sendActions(for: UIControl.Event(rawValue: event))
+        #expect(editing == [true, false])
+        #expect(position == 20)
+    }
+
     @Test func accessibilitySeekingCommitsThroughTheExistingEditingCallbacks() async throws {
         var position = 20.0
         var editing: [Bool] = []
