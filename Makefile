@@ -1,6 +1,6 @@
 APPS := player subtitles
 
-.PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish
+.PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish nox-live nox-live-install nox-live-stop
 
 hooks:
 	@hooks="$$(git rev-parse --git-common-dir)/hooks"; \
@@ -47,6 +47,7 @@ tooling-check:
 	@./scripts/tooling/test-deploy-nox-app.sh
 	@./scripts/tooling/test-deploy-nox-remote.sh
 	@./scripts/tooling/test-nox-autodeploy.sh
+	@python3 scripts/tooling/test-nox-local.py
 	@python3 scripts/tooling/test-deploy-apple-devices.py
 	@./scripts/ci/validate-workflows.sh
 
@@ -86,6 +87,15 @@ worktree-cleanup:
 
 agent-finish:
 	@./scripts/tooling/worktree_guard.py finish --task "$(TASK)"
+
+nox-live:
+	@python3 scripts/tooling/watch-nox-local.py --repo "$(CURDIR)"
+
+nox-live-install:
+	@python3 scripts/tooling/install-nox-local.py --repo "$(CURDIR)"
+
+nox-live-stop:
+	@python3 scripts/tooling/install-nox-local.py --stop
 
 # The file cap is enabled; preserve the pause for all other gates.
 packages-check tooling-check check verify-changed quality-static quality container-test test-instance-check: SHELL := $(abspath scripts/tooling/gate-shell.sh)
