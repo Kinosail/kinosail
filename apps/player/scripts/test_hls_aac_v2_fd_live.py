@@ -174,16 +174,23 @@ class ActualFDObserverControls(unittest.TestCase):
                 if reap:
                     process.wait(timeout=1)
                 self.row.update(actualLiveToTerminalTransition=True, actualEmptyArguments=True,
-                    reapedAfterEmptyRead=reap)
+                    sameTerminalParentAndStart=True, reapedAfterEmptyRead=reap)
                 raise
             raise RuntimeError('fd_live_transition_empty_must_fail_arguments')
 
         return ended
 
+    def qualified_terminal_transition(self, reap):
+        self.assertIs(self.row.get('actualLiveToTerminalTransition'), True)
+        self.assertIs(self.row.get('actualEmptyArguments'), True)
+        self.assertIs(self.row.get('sameTerminalParentAndStart'), True)
+        self.assertIs(self.row.get('reapedAfterEmptyRead'), reap)
+
     def terminal_argument_count(self, reap):
         process = self.spawn(self.alias(self.retained[0]))
         with patch.object(live, 'actual_arguments', side_effect=self.ending_arguments(process, reap)):
             self.assertEqual(encoder_count(self.server, self.source), 0)
+        self.qualified_terminal_transition(reap)
         self.row.update(observedOwnedHLSCount=0, result='observed')
 
     def test_actual_empty_arguments_of_same_terminal_child_certify_zero(self):
@@ -213,6 +220,7 @@ class ActualFDObserverControls(unittest.TestCase):
             with patch.object(live, 'process_identity', side_effect=changed):
                 with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$'):
                     encoder_count(self.server, self.source)
+        self.qualified_terminal_transition(False)
         self.row.update(changedTerminalStartRejected=True, result='observed')
 
     def tearDown(self):
