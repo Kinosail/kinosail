@@ -65,3 +65,13 @@ At the argument read, a bounded SIGTERM produces the same unreaped terminal iden
 The real empty read must qualify zero both before and after reaping; a still-live argument failure and changed start remain strict rejections.
 Scheduling is isolated to reproduce the E2E observation gap; complete owned groups, source seals and descriptor closure remain required.
 No observer, Server behavior, join, workflow or prior test is changed by this written-first commit.
+
+Exactb458 run38009976017 executed52 Python controls: only the two terminal-zero positives errored.
+Both witnessed the real initially-live-to-terminal same parent/start transition and empty kernel arguments.
+All eight live groups joined with two zero samples and no qualification failures; sources and post-join descriptor closure passed.
+Quality38009976079 passed; artifact11652907915 has API digest7b45c6357b661773b34de33ec9f71d790a64c89ec9a51084d0eec6753e3fc84a.
+The live witnesses are preserved in job114087480302's bounded JSON projection; that historical contract artifact contains metadata only.
+The repair requalifies only an arguments_before RuntimeError against the retained initial process identity.
+Two terminal observations must retain the same start and owned parent, or repeated proc absence and owned-child absence must qualify disappearance.
+Live, malformed, reused, changed-parent/start and unknown observations still reject; every source fence and resource error/join requirement remains unchanged.
+Future contract artifacts also retain the live-receipt JSON; proof deadlines, commands, assertions and gates remain unchanged.

@@ -10,7 +10,7 @@ FAILURE = 'v2_live_input_identity_unqualified'
 OBSERVATION_STAGES = (
     'parent', 'source_before', 'children', 'child', 'identity_before', 'arguments_before',
     'input_before', 'arguments_after', 'input_after', 'identity_after', 'source_after',
-    'disappearance_check', 'other',
+    'disappearance_check', 'terminal_check', 'other',
 )
 OBSERVATION_EXCEPTIONS = (
     'RuntimeError', 'FileNotFoundError', 'OSError', 'SubprocessError', 'TimeoutExpired',
@@ -81,6 +81,29 @@ def input_classification(args, parent, source, expected):
     return 'startup', value, witness
 
 
+def child_absent(pid, parent):
+    check(pid not in owned_children(parent), FAILURE)
+    try:
+        process_identity(pid, parent)
+    except FileNotFoundError:
+        check(pid not in owned_children(parent), FAILURE)
+        return True
+    return False
+
+
+def child_ended(pid, parent, before):
+    try:
+        after = process_identity(pid, parent)
+        check(after[1] == before[1], FAILURE)
+        if after[0] not in ['Z', 'X', 'x']:
+            return False
+        final = process_identity(pid, parent)
+        check(final[1] == before[1], FAILURE)
+        return final[0] in ['Z', 'X', 'x']
+    except FileNotFoundError:
+        return child_absent(pid, parent)
+
+
 def observe_child(pid, parent, source, expected):
     stage = 'identity_before'
     try:
@@ -113,6 +136,12 @@ def observe_child(pid, parent, source, expected):
         except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
             raise qualified_failure('disappearance_check', error) from None
     except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
+        if stage == 'arguments_before' and isinstance(error, RuntimeError):
+            try:
+                if child_ended(pid, parent, before):
+                    return 0
+            except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as terminal_error:
+                raise qualified_failure('terminal_check', terminal_error) from None
         raise qualified_failure(stage, error) from None
 
 

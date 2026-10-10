@@ -87,7 +87,9 @@ jobs:
         timeout-minutes: 2
         with:
           name: aac-v2-contracts-${{ github.sha }}
-          path: .verification/hls-aac-v2
+          path: |
+            .verification/hls-aac-v2
+            .verification/hls-aac-fd-observer/live-receipt.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
