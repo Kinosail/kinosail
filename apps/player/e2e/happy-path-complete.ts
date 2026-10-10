@@ -2,7 +2,7 @@ import { expect, type Page, type TestInfo } from "@playwright/test";
 import { verifyAuthenticatedDirectRetryWidths } from "./direct-retry-journey";
 import { expectAccessible, openQuickConnect, openSettings, signOut, totp, type HappyPathState } from "./happy-path-helpers";
 
-export async function completeHappyPath(page: Page, testInfo: TestInfo, { capture, errors, passkeyCreated }: HappyPathState) {
+export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture, beginWatched, finishWatched, errors, cancellations, evidence, passkeyCreated}: HappyPathState) {
 	await page.getByText("More", { exact: true }).click();
 	await expectAccessible(page, capture);
 	await page.getByRole("link", { name: "Home", exact: true }).filter({ visible: true }).first().click();
@@ -117,8 +117,10 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
   await page.locator('a[href^="/watch/"]').first().click();
   const markUnwatched = page.getByRole("button", { name: "Mark unwatched" });
   if (await markUnwatched.isVisible()) await markUnwatched.click();
+  await beginWatched();
   await page.getByRole("button", { name: "Mark watched" }).click();
   await expect(page.getByRole("button", { name: "Mark unwatched" })).toBeVisible();
+  await finishWatched();
   await page.locator("a[data-browse-return]").click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
@@ -167,5 +169,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, { captur
 			await page.context().setOffline(false);
 		}
 	}
-	expect(errors.filter((error) => !error.includes("blob:http://") && !(testInfo.project.name === "firefox" && error.includes("NS_BINDING_ABORTED") && error.includes("WorkerMain.js")))).toEqual([]);
+	const unexpected = errors();
+	await testInfo.attach("watched-navigation-cancellations", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+		browser: testInfo.project.name, cancellations: cancellations(), evidence: evidence(), unexpected, boundary: "Only exact canceled HLS XHRs correlated with committed watched POST303/GET200 navigation"}), contentType: "application/json"});
+	expect(unexpected.filter((error) => !error.includes("blob:http://") && !(testInfo.project.name === "firefox" && error.includes("NS_BINDING_ABORTED") && error.includes("WorkerMain.js")))).toEqual([]);
 }
