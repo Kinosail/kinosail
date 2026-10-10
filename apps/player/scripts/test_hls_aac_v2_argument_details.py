@@ -77,12 +77,13 @@ class ArgumentDetailControls(unittest.TestCase):
     def test_sampler_retains_safe_process_and_argument_details(self):
         resources = self.sample({'observer_before_state': 'S', 'observer_after_state': 'R',
             'observer_argument_bytes': 0, 'observer_argument_shape': 'empty',
-            'observer_argument_attempts': 33})
+            'observer_argument_attempts': 33, 'observer_retry_outcome': 'read-limit',
+            'observer_terminal_proof_completed': False})
         self.assertEqual(resources.get('samplingObservationDetails'), [{
             'stage': 'arguments_before', 'exceptionClass': 'RuntimeError',
             'beforeState': 'S', 'afterState': 'R', 'argumentShape': 'empty',
             'argumentBytes': 0, 'argumentCount': None, 'maximumArgumentBytes': None,
-            'argumentAttempts': 33,
+            'argumentAttempts': 33, 'retryOutcome': 'read-limit', 'terminalProofCompleted': False,
         }])
 
     def test_sampler_rejects_untrusted_argument_detail_values(self):
@@ -90,12 +91,14 @@ class ArgumentDetailControls(unittest.TestCase):
             'observer_after_state': ['synthetic_private_target'],
             'observer_argument_shape': 'synthetic_private_target',
             'observer_argument_bytes': True, 'observer_argument_count': -1,
-            'observer_maximum_argument_bytes': 65538, 'observer_argument_attempts': True})
+            'observer_maximum_argument_bytes': 65538, 'observer_argument_attempts': True,
+            'observer_retry_outcome': 'synthetic_private_target',
+            'observer_terminal_proof_completed': 1})
         self.assertEqual(resources.get('samplingObservationDetails'), [{
             'stage': 'arguments_before', 'exceptionClass': 'RuntimeError',
             'beforeState': 'other', 'afterState': 'other', 'argumentShape': 'other',
             'argumentBytes': None, 'argumentCount': None, 'maximumArgumentBytes': None,
-            'argumentAttempts': None,
+            'argumentAttempts': None, 'retryOutcome': 'other', 'terminalProofCompleted': None,
         }])
 
 

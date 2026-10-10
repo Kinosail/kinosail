@@ -1,4 +1,5 @@
 """Bounded empty-record controls sharing the actual owned codec fixture."""
+import time
 from unittest.mock import patch
 import hls_aac_v2_live_observer as live
 from hls_followon_public import check, encoder_count
@@ -124,3 +125,28 @@ class EmptyArgumentObserverControls:
         self.assertIs(self.row.get('injectedChangedStartObserved'), True)
         self.alive(process)
         self.row.update(changedReobservationStartRejected=True, result='observed')
+
+    def test_completed_actual_absence_after_deadline_remains_rejected(self):
+        process = self.spawn(self.alias(self.retained[0]))
+        ending, terminal = self.ending_arguments(process, True), live.child_ended
+        now = 0.0
+
+        def ended(*args):
+            nonlocal now
+            completed = terminal(*args)
+            if completed:
+                self.row['actualAbsenceProofCompleted'] = True
+                now = 0.021
+            return completed
+
+        with patch.object(live, 'actual_arguments', side_effect=ending):
+            with patch.object(live, 'child_ended', side_effect=ended):
+                with patch.object(time, 'monotonic', side_effect=lambda: now):
+                    with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$') as caught:
+                        encoder_count(self.server, self.source)
+        self.qualified_terminal_transition(True)
+        self.assertIs(self.row.get('actualAbsenceProofCompleted'), True)
+        details = live.observation_details(caught.exception)
+        self.assertEqual(details.get('retryOutcome'), 'deadline-after-terminal')
+        self.assertIs(details.get('terminalProofCompleted'), True)
+        self.row.update(lateActualAbsenceProofStrictlyRejected=True, result='observed')
