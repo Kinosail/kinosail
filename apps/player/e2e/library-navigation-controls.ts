@@ -5,7 +5,7 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
   for (const scenario of ["ready", "ready-shows", "missing-catalog", "missing-bootstrap", "wrong-query", "wrong-url", "invalid-card", "invalid-next", "skipped-offset", "busy", "failed", "pending-resource", "http-error", "redirect", "slow-response", "other-error", "repeated-timeout", "multiple-documents", "unchanged-document"] as const) {
     test(`catalog navigation recovery preserves original evidence: ${scenario}`, async ({page, browser}, info) => {
       const target = `${origin}/${scenario === "ready-shows" ? "?view=shows&limit=4" : "?q=Pagination&limit=4"}`;
-      let gets = 0, posts = 0, calls = 0, requested = false, release!: () => void;
+      let gets = 0, posts = 0, calls = 0, redirects = 0, requested = false, release!: () => void;
       const held = new Promise<void>(resolve => {release = resolve;});
       const previousDocument = await page.evaluate(() => performance.timeOrigin);
       page.on("request", request => {
@@ -14,9 +14,15 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
           else posts++;
         }
       });
+      page.on("response", response => {
+        if (response.request().isNavigationRequest() && response.request().frame() === page.mainFrame() &&
+            response.status() >= 300 && response.status() < 400) redirects++;
+      });
       if (["http-error", "redirect", "slow-response"].includes(scenario)) await page.route(target, async route => {
         if (scenario === "http-error") return route.fulfill({status: 500, body: "Unavailable"});
-        if (scenario === "redirect") return route.fulfill({status: 302, headers: {location: "/?view=shows&limit=4"}});
+        // WebKit cannot fulfill synthetic redirects. The Go Server canonicalizes
+        // this real HTTP path, preserving an actual redirect response and chain.
+        if (scenario === "redirect") return route.continue({url: `${origin}//?view=shows&limit=4`});
         await new Promise(resolve => setTimeout(resolve, 2100));
         return route.continue();
       });
@@ -71,13 +77,14 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
         expect(calls).toBe(1 + recoveries);
         expect(gets).toBe(1 + recoveries + Number(scenario === "redirect" || scenario === "multiple-documents"));
         expect(posts).toBe(0);
+        expect(redirects).toBe(Number(scenario === "redirect"));
         if (eligible) {
           expect(result.status).toBe(200);
           await expect(page.locator("#library .card").first()).toBeVisible();
           await expect(page.locator("#library-search")).toHaveValue(scenario === "ready-shows" ? "" : "Pagination");
         }
         await info.attach("catalog-navigation-control", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-          scenario, browser: browser.browserType().name(), version: browser.version(), calls, gets, posts, result,
+          scenario, browser: browser.browserType().name(), version: browser.version(), calls, gets, posts, redirects, result,
           data: "Disposable real Go Server catalog; injected automation timeout and documented original-document faults", outcome: "passed"}), contentType: "application/json"});
       } finally {
         release();
