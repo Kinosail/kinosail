@@ -134,10 +134,14 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
   await page.setViewportSize({width: 390, height: 844});
   await page.goto(`/watch/${first.id}`);
   const media = page.locator("audio"), notice = page.locator("[data-progress-notice]");
-  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.readyState)).toBeGreaterThanOrEqual(2);
-  const saved = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${first.id}` && response.request().method() === "POST");
-  await media.evaluate(async (audio: HTMLAudioElement) => {audio.muted = true; audio.currentTime = 1; await audio.play();});
+  await media.evaluate(async (audio: HTMLAudioElement) => {audio.muted = true; await audio.play();});
+  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThan(0.1);
+  await media.evaluate((audio: HTMLAudioElement) => audio.pause());
+  await media.evaluate((audio: HTMLAudioElement) => {audio.muted = true; audio.currentTime = 1;});
+  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => !audio.seeking && audio.readyState >= 3)).toBe(true);
+  await media.evaluate((audio: HTMLAudioElement) => audio.play());
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThan(1.1);
+  const saved = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${first.id}` && response.request().method() === "POST");
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
   const acknowledgement = await saved;
   expect(acknowledgement.status()).toBe(204);
@@ -148,7 +152,9 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
   await expect(notice).toBeHidden({timeout: 1500});
   const failureRoute = `**/progress/${first.id}`;
   await page.route(failureRoute, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-mobile-progress-failure"}}));
-  await media.evaluate(async (audio: HTMLAudioElement) => {audio.currentTime = 2; await audio.play();});
+  await media.evaluate((audio: HTMLAudioElement) => {audio.currentTime = 2;});
+  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => !audio.seeking && audio.readyState >= 3)).toBe(true);
+  await media.evaluate((audio: HTMLAudioElement) => audio.play());
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThan(2.1);
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
   await expect(notice).toBeVisible();

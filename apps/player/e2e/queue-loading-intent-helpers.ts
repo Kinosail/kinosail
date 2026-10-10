@@ -27,7 +27,7 @@ export async function tracks(page: Page, albumTitle = "R08 Fictional Session"): 
 // Only delay the real Server media request. Media, authorization, state,
 // commands, browser events and progress acknowledgements remain genuine.
 export async function runLoadingIntent(page: Page, info: TestInfo, command: "seek" | "stop", albumTitle = "R08 Fictional Session", savedPosition = 5) {
-  await page.goto("/");
+  await page.goto("/", {waitUntil: "domcontentloaded"});
   const [first, second] = await tracks(page, albumTitle);
   for (const [track, seconds] of [[first, 0], [second, savedPosition]] as const) {
     expect(await write(page, `/api/v1/items/${track.id}/progress`, {seconds, watched: false})).toBe(200);
@@ -135,7 +135,7 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
       accepted, publicProgressStatus: 200, publicPosition: publicReadback}), contentType: "application/json"});
   } finally {
     await unblock();
-    if (new URL(page.url()).pathname.startsWith("/watch/")) await page.goto("/");
+    if (new URL(page.url()).pathname.startsWith("/watch/")) await page.goto("/", {waitUntil: "domcontentloaded"});
     expect(await write(page, "/api/v1/settings/home-assistant", {enabled: false})).toBe(200);
   }
 }

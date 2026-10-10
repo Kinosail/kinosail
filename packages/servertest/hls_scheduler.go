@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -25,8 +26,12 @@ type HLSSchedulerFixture struct {
 }
 
 // HLSScheduler checks scheduling, complete publication, and hardware recovery through the app handler.
+// Call it from a nonparallel test because it temporarily changes the process CPU budget.
 func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler, playableHLS string) {
 	t.Helper()
+	// This fixture requires three rendition encoders and one reserved CPU.
+	previous := runtime.GOMAXPROCS(4)
+	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
 	fixture := HLSSchedulerFixture{New: func(config HLSSchedulerConfig) http.Handler {
 		config.FFprobe = HLSSchedulerProbe(t)
 		return newHandler(config)
