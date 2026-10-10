@@ -57,7 +57,7 @@ struct BufferedPlaybackSlider: UIViewRepresentable {
         slider.setNeedsDisplay()
     }
 
-    final class Coordinator: NSObject {
+    @MainActor final class Coordinator: NSObject {
         var parent: BufferedPlaybackSlider
         init(_ parent: BufferedPlaybackSlider) { self.parent = parent }
         @objc func began() { parent.onEditingChanged(true) }

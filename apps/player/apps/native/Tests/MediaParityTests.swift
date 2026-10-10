@@ -17,7 +17,7 @@ struct MediaParityTests {
         #expect(olderEpisode.landscapeArtwork == "/backdrop/older")
     }
 
-    @Test func foregroundArtworkStaysContainedUnlessExplicitlyFilled() {
+    @Test @MainActor func foregroundArtworkStaysContainedUnlessExplicitlyFilled() {
         #expect(Artwork.contentMode(fillsFrame: false) == .fit)
         #expect(Artwork.contentMode(fillsFrame: true) == .fill)
     }
