@@ -107,6 +107,9 @@ No local files/builds/media, credentials, original-media changes, Library writes
 
 ### Qualified partial-read and retry checkpoint: 10 October
 
+Earlier exact-blob statements describe the original472/13c3 checkpoint, including its21+26 source blobs.
+The evolved maintained tree preserves those originals in ancestry and carries the later reviewed changes recorded below.
+
 Main remains `922e7fa65cb3752d4a204b6e14782f58c6133fd7`.
 The lazy-read branch preserves maintained13c3, observerd619 and main922 through `b1132e4434a945feab00c8252a1b12010db721ec`.
 Incoming native files and the normal layout workflow are preserved.
