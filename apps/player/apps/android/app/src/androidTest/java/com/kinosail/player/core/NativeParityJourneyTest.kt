@@ -148,6 +148,7 @@ class NativeParityJourneyTest {
         else compose.onNodeWithText("Movies").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("catalog-pending")
+        if (!tv) assertReadableHeading(compose.onNode(hasText("Movies") and !hasClickAction()))
         fixture.mode = "failed"
         waitText("Could not load your library. Try again.")
         capture("catalog-failed")

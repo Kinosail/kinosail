@@ -53,7 +53,7 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 	// Exercise WebKit's native HLS adapter, as mobile Safari does for automatic compatibility.
 	if (browserName === "webkit") await page.route("**/static/hls.min.js*", (route) => route.fulfill({ contentType: "application/javascript", body: "" }));
 	await page.addInitScript(() => {
-		Object.defineProperty(navigator, "userAgent", { configurable: true, value: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" });
+		// Keep this browser's real capabilities. Apple launcher journeys cover Safari.
 		const nativePlay = HTMLMediaElement.prototype.play;
 		let blocked = true;
 		const observer = new MutationObserver(() => {

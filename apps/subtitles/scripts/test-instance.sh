@@ -94,6 +94,14 @@ case "$action" in
     "${compose[@]}" down --volumes --remove-orphans
     "${compose[@]}" up --detach
     wait_ready
+    if [[ -z "${KINOSAIL_AUTH_URL:-}" ]]; then
+      # Advertise the mapped port, including when Compose selected it with 0.
+      test_base="$(url)"
+      export KINOSAIL_PORT="${test_base##*:}"
+      export KINOSAIL_AUTH_URL="https://localhost:$KINOSAIL_PORT"
+      "${compose[@]}" up --detach --force-recreate --no-build
+      wait_ready
+    fi
     setup_owner
     printf 'Kinosail test instance: %s\nOwner: Owner\nPassword: test-instance-password\n' "$(url)"
     ;;
