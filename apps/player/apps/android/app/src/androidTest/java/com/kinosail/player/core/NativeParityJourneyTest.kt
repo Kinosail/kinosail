@@ -50,12 +50,12 @@ class NativeParityJourneyTest {
             useUnmergedTree = true).assertExists()
         capture("home-continuation")
         if (tv) {
-            compose.onNodeWithText("Unwatched movies").performScrollTo()
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
             compose.onNodeWithText("Search").assertIsDisplayed().activate()
             waitText("Search library")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitText("Continue watching")
-            compose.onNodeWithText("Unwatched movies").performScrollTo()
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
             compose.onNodeWithText("Settings").assertIsDisplayed().activate()
             waitText("Sign out")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
@@ -185,10 +185,11 @@ class NativeParityJourneyTest {
         waitText("Nothing in your library yet.")
         capture("catalog-empty")
         fixture.mode = "ready"
-        compose.onNodeWithText("Home").activate()
-        waitText(if (tv) "Continue watching" else "Watching")
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
-        else compose.onNodeWithText("Movies").activate()
+        // Reopening the same destination intentionally retains its cached empty page.
+        // Explicit search refresh verifies recovery after the fixture changes its data.
+        compose.onNodeWithText("Search").activate()
+        waitText("Search library")
+        compose.onNodeWithText("Clear search").activate()
         waitText("New Film")
         capture("catalog-loaded")
     }
@@ -210,7 +211,12 @@ class NativeParityJourneyTest {
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
             SessionStore(context).save(SavedSession(ServerAddress("http://127.0.0.1:${fixture.port}"), "synthetic-token", fixture.viewer))
             val intent = Intent(context, if (tv) TvActivity::class.java else MobileActivity::class.java)
-            try { ActivityScenario.launch<android.app.Activity>(intent).use { check(fixture) } }
+            try { ActivityScenario.launch<android.app.Activity>(intent).use {
+                try { check(fixture) } catch (error: Throwable) {
+                    runCatching { capture("diagnostic") }
+                    throw error
+                }
+            } }
             finally { SessionStore(context).clear() }
         }
     }
