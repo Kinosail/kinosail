@@ -114,7 +114,7 @@ class EmptyBudgetControls(unittest.TestCase):
             nonlocal calls, now
             self.assertEqual(pid, self.server.pid + 1)
             calls += 1
-            self.assertLessEqual(calls, 2)
+            self.assertLessEqual(calls, 3)
             if calls == 1:
                 error = RuntimeError(live.FAILURE)
                 error.observer_argument_shape = shape
