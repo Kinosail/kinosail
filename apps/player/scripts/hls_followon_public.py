@@ -39,6 +39,11 @@ def sample_resources(server, source, stop, resources):
             failure = observation_fields(error)
             if len(failures) < 16 and failure not in failures:
                 failures.append(failure)
+            from hls_aac_v2_live_observer import observation_details
+            details = resources.setdefault('samplingObservationDetails', [])
+            detail = observation_details(error)
+            if len(details) < 16 and detail not in details:
+                details.append(detail)
         stop.wait(0.05)
 
 

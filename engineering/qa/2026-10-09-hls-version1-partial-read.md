@@ -86,3 +86,11 @@ New controls precede further diagnostic enrichment: empty/oversized/nonterminate
 A real same-terminal child independently proves the empty-record diagnostic path.
 Separate bounded process-state/argument-detail rows sanitize untrusted values without changing the existing stage rows, error counts or joins.
 Raw command contents, paths and exception messages remain excluded.
+
+Exactb72 run38010998571 executed62 Python tests: old52 passed and precisely ten new diagnostic-retention assertions failed.
+The real empty-argument row retained its kernel transition witnesses, two group-zero samples, unchanged source and post-join descriptor closure.
+Go and all six public jobs remained unexecuted.
+Artifact11652849830 has API digest4e6eb59a5ded21751d9e1f237afe18de64cf95adf0d4dffb3e260f1f40c66e48.
+Diagnostic enrichment keeps the original bounded read and rejection semantics while adding sanitized shape/count/state fields through both wrappers.
+It records at most sixteen unique detail rows alongside the unchanged stage rows.
+No retry, new terminal admission, birth classification, Server behavior or resource-join relaxation is included.
