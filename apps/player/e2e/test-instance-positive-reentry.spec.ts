@@ -1,3 +1,4 @@
+import type {JSONValue} from "../../../scripts/testing/json-value";
 import {devices, expect, test} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
@@ -63,7 +64,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
       nativeHLS: video.canPlayType('application/vnd.apple.mpegurl'),
       phonePolicy: /iPhone/.test(navigator.userAgent), touchContext: navigator.maxTouchPoints > 0,
       hasInitialAutoplay: video.hasAttribute('autoplay') || video.hasAttribute('data-autoplay'),
-      nativeFullscreenCapability: typeof (video as HTMLVideoElement & {webkitEnterFullscreen?: unknown}).webkitEnterFullscreen === 'function',
+      nativeFullscreenCapability: typeof (video as HTMLVideoElement & {webkitEnterFullscreen?: () => void}).webkitEnterFullscreen === 'function',
       sourceIsHLS: new URL(video.currentSrc || video.src, location.href).pathname.startsWith('/hls/'),
       directType: video.dataset.directType, compatibilityMode: video.dataset.compatibilityMode};
   });
@@ -114,7 +115,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
       const value = JSON.parse(body);
       if (!['error', 'play-request', 'play-rejected'].includes(value.event)) return;
       const namedFailure = /^(?:fullscreen:(?:NotAllowedError|InvalidStateError|NotSupportedError|TypeError|Error):(?:paused-for-retry|playback-retained)|apple-play:(?:NotAllowedError|InvalidStateError|NotSupportedError|AbortError|TypeError|Error))$/;
-      const bounded = (number: unknown, maximum: number) => typeof number === 'number' && Number.isFinite(number) && number >= 0 && number <= maximum ? number : null;
+      const bounded = (number: JSONValue | undefined, maximum: number) => typeof number === 'number' && Number.isFinite(number) && number >= 0 && number <= maximum ? number : null;
       launchTelemetry.push({event: value.event,
         detail: typeof value.detail === 'string' && namedFailure.test(value.detail) ? value.detail : 'unreported',
         elapsedMS: bounded(value.elapsedMs, 31622400000), positionMS: bounded(value.positionMs, 31622400000),
@@ -156,8 +157,8 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   await page.getByRole('button', {name: 'Play', exact: true}).first().click();
   await record({phase: 'Play-click-complete', ...await snapshot()});
   try {
-    await expect.poll(() => page.evaluate(() => (window as unknown as {positiveReentryFrames: {frames: object[]}}).positiveReentryFrames.frames.length), {timeout: 30_000}).toBe(2);
-    const frames = await page.evaluate(() => (window as unknown as {positiveReentryFrames: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).positiveReentryFrames.frames);
+    await expect.poll(() => page.evaluate(() => (window as Window & {positiveReentryFrames: {frames: object[]}}).positiveReentryFrames.frames.length), {timeout: 30_000}).toBe(2);
+    const frames = await page.evaluate(() => (window as Window & {positiveReentryFrames: {frames: {mediaTime: number, rawTime: number, rgb: number[], png: string}[]}}).positiveReentryFrames.frames);
     await writeFile(info.outputPath('first-decoded-frame.png'), Buffer.from(frames[0].png.split(',')[1], 'base64'));
     await record({phase: 'first-real-frames', elapsedObservationMS: Date.now() - playPosted,
       frames: frames.map(({png: _png, ...value}) => value), ...await snapshot()});
@@ -189,7 +190,7 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     const pageIsWatch = new URL(page.url()).pathname.startsWith('/watch/');
     const nativeState = pageIsWatch ? await page.evaluate(() => {
       const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen?: boolean, webkitPresentationMode?: string, webkitDecodedFrameCount?: number};
-      const state = (window as unknown as {positiveReentryFrames?: {callbacks: number, frames: object[], events: object[]}}).positiveReentryFrames;
+      const state = (window as Window & {positiveReentryFrames?: {callbacks: number, frames: object[], events: object[]}}).positiveReentryFrames;
       return {fullscreen: video.webkitDisplayingFullscreen === true,
         presentation: ['inline', 'fullscreen', 'picture-in-picture'].includes(video.webkitPresentationMode || '') ? video.webkitPresentationMode : 'unreported',
         decodedVideoFrames: video.getVideoPlaybackQuality?.().totalVideoFrames ?? null,

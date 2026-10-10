@@ -65,13 +65,13 @@ test('bounded startup preparation preserves the exact stream and playback priori
 
   async function moving(name: string) {
     await page.addInitScript(() => {
-      (window as unknown as {startupFrames: number[]}).startupFrames = [];
+      (window as Window & {startupFrames: number[]}).startupFrames = [];
       document.addEventListener('DOMContentLoaded', () => {
         const media = document.querySelector('video');
         if (!media) return;
         let last = -1;
         const frame = (now: number, metadata: VideoFrameCallbackMetadata) => {
-          if (last >= 0 && metadata.mediaTime > last) (window as unknown as {startupFrames: number[]}).startupFrames.push(now);
+          if (last >= 0 && metadata.mediaTime > last) (window as Window & {startupFrames: number[]}).startupFrames.push(now);
           last = metadata.mediaTime;
           media.requestVideoFrameCallback(frame);
         };
@@ -93,7 +93,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
     await link.click();
     const video = page.locator('video');
     try {
-      await expect.poll(() => page.evaluate(() => (window as unknown as {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
+      await expect.poll(() => page.evaluate(() => (window as Window & {startupFrames: number[]}).startupFrames.length)).toBeGreaterThan(0);
     } catch (error) {
       const readiness = await page.evaluate(() => {
         const media = document.querySelector('video');
@@ -106,7 +106,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
       throw error;
     }
     const frame = await page.evaluate(() => {
-      const navigationMS = (window as unknown as {startupFrames: number[]}).startupFrames[0];
+      const navigationMS = (window as Window & {startupFrames: number[]}).startupFrames[0];
       return {navigationMS, epochMS: performance.timeOrigin + navigationMS};
     });
     const firstMovingMs = frame.epochMS - started;

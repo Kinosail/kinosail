@@ -55,7 +55,7 @@ async function nativeTimelineWindow(page: Page, duration: number, start: number)
     Object.assign(window, {nativeTimeline: state});
   });
   await page.addScriptTag({content: playerSource});
-  await expect.poll(() => page.evaluate(() => (window as unknown as {nativeTimeline: {loads: number}}).nativeTimeline.loads)).toBe(1);
+  await expect.poll(() => page.evaluate(() => (window as Window & {nativeTimeline: {loads: number}}).nativeTimeline.loads)).toBe(1);
   return writes;
 }
 
@@ -65,7 +65,7 @@ test("native HLS keeps a saved source window when the full duration is unknown @
   await writeFile(info.outputPath("unknown-duration-window.json"), JSON.stringify({path, expectedOffset: 22, fullDuration: "unknown"}));
   expect(path).toMatch(/-o22000\/index\.m3u8$/);
   await page.evaluate(() => {
-    const state = (window as unknown as {nativeTimeline: {raw: number; duration: number; ready: number}}).nativeTimeline;
+    const state = (window as Window & {nativeTimeline: {raw: number; duration: number; ready: number}}).nativeTimeline;
     state.raw = 0; state.duration = 10; state.ready = 2;
     document.querySelector("video")!.dispatchEvent(new Event("loadedmetadata"));
     document.querySelector("video")!.dispatchEvent(new Event("pause"));
@@ -77,7 +77,7 @@ test("native HLS keeps a saved source window when the full duration is unknown @
   await expect.poll(() => writes).toEqual([22]);
   await page.locator("video").evaluate(video => video.play());
   await page.evaluate(() => {
-    (window as unknown as {nativeTimeline: {raw: number}}).nativeTimeline.raw = 1.25;
+    (window as Window & {nativeTimeline: {raw: number}}).nativeTimeline.raw = 1.25;
     document.querySelector("video")!.dispatchEvent(new Event("timeupdate"));
   });
   await expect(page.locator("video")).toHaveJSProperty("currentTime", 23.25);
@@ -89,21 +89,21 @@ test("native HLS keeps a saved source window when the full duration is unknown @
 test("native HLS replacement checkpoints the requested source position while old decoder metadata remains @smoke", async ({page}, info) => {
   const writes = await nativeTimelineWindow(page, 70, 0);
   await page.evaluate(() => {
-    const state = (window as unknown as {nativeTimeline: {raw: number; duration: number; ready: number}}).nativeTimeline;
+    const state = (window as Window & {nativeTimeline: {raw: number; duration: number; ready: number}}).nativeTimeline;
     state.raw = 12; state.ready = 2;
     const video = document.querySelector("video")!;
     video.dispatchEvent(new Event("loadedmetadata"));
     video.currentTime = 22;
     video.dispatchEvent(new Event("seeking"));
   });
-  await expect.poll(() => page.evaluate(() => (window as unknown as {nativeTimeline: {loads: number}}).nativeTimeline.loads)).toBe(2);
+  await expect.poll(() => page.evaluate(() => (window as Window & {nativeTimeline: {loads: number}}).nativeTimeline.loads)).toBe(2);
   await expect.poll(() => writes.length).toBeGreaterThan(0);
-  const snapshot = await page.evaluate(() => (window as unknown as {nativeTimeline: {lastLoad: {position: number; duration: number}}}).nativeTimeline.lastLoad);
+  const snapshot = await page.evaluate(() => (window as Window & {nativeTimeline: {lastLoad: {position: number; duration: number}}}).nativeTimeline.lastLoad);
   await writeFile(info.outputPath("replacement-window-checkpoint.json"), JSON.stringify({snapshot, writes, expectedPosition: 22, fullDuration: 70}));
   await expect.poll(() => writes).toEqual([22, 22]);
   expect(snapshot).toEqual({position: 22, duration: 70});
   await page.evaluate(() => {
-    const state = (window as unknown as {nativeTimeline: {raw: number; duration: number}}).nativeTimeline;
+    const state = (window as Window & {nativeTimeline: {raw: number; duration: number}}).nativeTimeline;
     state.raw = 1.25; state.duration = 10;
     const video = document.querySelector("video")!;
     video.dispatchEvent(new Event("loadedmetadata"));

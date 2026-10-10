@@ -6,7 +6,7 @@ export function observeStartupPlaybackExits(page: Page, id: (name: string) => st
   const sequences = new Map<string, number>();
   const observations = new Map<string, object[]>();
   const events = new Set(['play', 'playing', 'first-moving-frame', 'pause', 'session-end', 'heartbeat', 'waiting', 'stalled', 'canplay', 'seeking', 'seeked']);
-  const observe = (path: string, body: {session: string; sequence: number; event?: unknown; paused?: unknown}, status?: number) => {
+  const observe = (path: string, body: {session: string; sequence: number; event?: string; paused?: boolean}, status?: number) => {
     const key = `${path}:${body.session}`, history = observations.get(key) || [];
     history.push({event: typeof body.event === 'string' && events.has(body.event) ? body.event : 'other', sequence: body.sequence, paused: body.paused === true, ...(status === undefined ? {} : {status})});
     observations.set(key, history.slice(-32));

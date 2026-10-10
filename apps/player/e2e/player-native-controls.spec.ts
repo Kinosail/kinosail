@@ -1,3 +1,4 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import {readFile} from "node:fs/promises";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
@@ -118,7 +119,7 @@ test("touch Play enters native fullscreen in the same gesture without pausing", 
 });
 
 test("rejected fullscreen leaves playback usable", async ({page}) => {
-  const failures: unknown[] = [];
+  const failures: JSONObject[] = [];
   page.on("request", request => {
     if (request.url().endsWith("/playback-events") && request.method() === "POST" && request.postDataJSON().event === "error") failures.push(request.postDataJSON());
   });

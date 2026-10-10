@@ -1,3 +1,4 @@
+import type {JSONValue, JSONObject} from "../../../scripts/testing/json-value";
 import { createHash } from "node:crypto";
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult } from "@playwright/test/reporter";
 
@@ -31,16 +32,16 @@ const titles: Record<string, string[]> = {
 const attachmentNames = ["before-state", "player-state", "returned-state", "served-browse-asset", "original-url-state", "letter-state", "cold-boundary-state", "native-cache-boundary-state", "htmx-boundary-state", "home-before-state", "home-player-state", "home-cold-boundary-state", "home-returned-state", "safe-rejection"];
 const navigationTypes = ["navigate", "reload", "back_forward", "prerender"];
 const digest = (value: Buffer) => createHash("sha256").update(value).digest("hex");
-const object = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
-const exact = (value: unknown, fields: string[]): value is Record<string, unknown> => object(value) && Object.keys(value).sort().join(",") === [...fields].sort().join(",");
-const link = (value: unknown) => typeof value === "string" && /^\/(?:watch|show)\/[a-f0-9]{16}$/.test(value) ? value : null;
-const number = (value: unknown) => typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= 10_000_000 ? value : null;
-const integer = (value: unknown, low: number, high: number): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= low && value <= high;
+const object = (value: JSONValue | undefined): value is JSONObject => Boolean(value) && typeof value === "object" && !Array.isArray(value);
+const exact = (value: JSONValue | undefined, fields: string[]): value is JSONObject => object(value) && Object.keys(value).sort().join(",") === [...fields].sort().join(",");
+const link = (value: JSONValue | undefined) => typeof value === "string" && /^\/(?:watch|show)\/[a-f0-9]{16}$/.test(value) ? value : null;
+const number = (value: JSONValue | undefined) => typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= 10_000_000 ? value : null;
+const integer = (value: JSONValue | undefined, low: number, high: number): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= low && value <= high;
 const basename = (value: string) => value.split(/[\\/]/).at(-1)!;
 const known = (file: string, title: string) => Boolean(titles[file]?.includes(title));
 type SelectedObservation = { href: string | null; browse: Record<string, string> | null; top: number | null; bottom: number | null };
 
-function query(input: unknown): Record<string, string> | null {
+function query(input: JSONValue | undefined): Record<string, string> | null {
   if (!object(input)) return null;
   const output: Record<string, string> = {};
   const allowed: Record<string, RegExp> = { view: /^(all|movies|shows)$/, q: /^Return (Movie|Show)$/, sort: /^title$/, offset: /^\d{1,7}$/, limit: /^\d{1,4}$/, letter: /^[A-Z]$/, lang: /^[a-z]{2}(?:-[A-Z]{2})?$/ };
@@ -51,7 +52,7 @@ function query(input: unknown): Record<string, string> | null {
   }
   return output;
 }
-function browse(value: unknown) {
+function browse(value: JSONValue | undefined) {
   if (typeof value !== "string" || value.length > 2048 || !/^\/(?:\?|$)/.test(value) || /[\\#\x00-\x20]/.test(value)) return null;
   try {
     const url = new URL(value, "https://fictional.invalid");
@@ -61,13 +62,13 @@ function browse(value: unknown) {
     return query(Object.fromEntries(url.searchParams));
   } catch { return null; }
 }
-function documentObservation(value: unknown) {
+function documentObservation(value: JSONValue | undefined) {
   if (!exact(value, ["document", "shows", "histories"]) || !Array.isArray(value.shows) || value.shows.length > 16 || !integer(value.histories, 0, 256)) return null;
   if (!value.shows.every(show => exact(show, ["persisted"]) && typeof show.persisted === "boolean")) return null;
   const id = typeof value.document === "string" && /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value.document) ? value.document : null;
   return { idSHA256: id ? digest(Buffer.from(id, "utf8")) : null, shows: value.shows.map(show => ({ persisted: show.persisted as boolean })), histories: value.histories };
 }
-function stateObservation(input: unknown) {
+function stateObservation(input: JSONValue | undefined) {
   if (!exact(input, ["path", "values", "profile", "document", "navigation", "titles", "hrefs", "focused", "scroll", "selected"])) return null;
   const values = query(input.values), document = documentObservation(input.document);
   if (values === null || document === null || input.path !== "/" && !link(input.path)) return null;
@@ -90,7 +91,7 @@ function stateObservation(input: unknown) {
     scroll: { x: number(input.scroll.x), y: number(input.scroll.y) }, selected,
   };
 }
-function observation(input: unknown, name: string) {
+function observation(input: JSONValue | undefined, name: string) {
   if (name === "served-browse-asset") {
     if (!exact(input, ["src", "bytes", "sha256"]) || typeof input.src !== "string" || !/^\/static\/main\.kinosail\.bundle\.js\?v=[a-zA-Z0-9._-]{1,80}$/.test(input.src) || !integer(input.bytes, 1, 10_000_000) || typeof input.sha256 !== "string" || !/^[a-f0-9]{64}$/.test(input.sha256)) return null;
     return { src: input.src, bytes: input.bytes, sha256: input.sha256 };
@@ -112,7 +113,7 @@ function observation(input: unknown, name: string) {
   return { state, peer };
 }
 
-function cacheDiagnosticObservation(value: unknown) {
+function cacheDiagnosticObservation(value: JSONValue | undefined) {
   const allowed = ["unload-listener","unload-handler","response-cache-control-no-store","response-cache-control-no-store-with-cookie-modification","related-active-contents","masked","websocket","outstanding-network-request","other"];
   if (!exact(value, ["schemaVersion", "supported", "present", "frameCount", "reasons", "truncated", "navigationType"])) return null;
   if (value.schemaVersion !== 1 || typeof value.supported !== "boolean" || typeof value.present !== "boolean" || typeof value.truncated !== "boolean" || !integer(value.frameCount, 0, 64)) return null;
@@ -132,8 +133,8 @@ function failure(error: TestError) {
 }
 export default class BrowseReturnProofReporter implements Reporter {
   private collected: { file: string; title: string }[] = [];
-  private cases: Record<string, unknown>[] = [];
-  private errors: Record<string, unknown>[] = [];
+  private cases: JSONObject[] = [];
+  private errors: JSONObject[] = [];
   private invalid() { if (this.errors.length < 16) this.errors.push({ phase: "unclassified", label: null, location: null }); }
   onBegin(_config: FullConfig, suite: Suite) {
     const tests = suite.allTests();

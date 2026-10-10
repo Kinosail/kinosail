@@ -133,7 +133,7 @@ for (const owner of ["profile", "item", "cast", "offline"]) test(`pending local 
 test("preparation and cast never emit local progress; offline uses its own journal", async ({ page }) => {
   await page.evaluate(() => (window as Window & {prepare(value: object): void}).prepare({}));
   await pauseAt(page, 42);
-  await page.evaluate(() => { (window as Window & {prepare(value: unknown): void}).prepare(undefined); document.querySelector("video")!.dataset.castActive = "true"; });
+  await page.evaluate(() => { (window as Window & {prepare(value: undefined): void}).prepare(undefined); document.querySelector("video")!.dataset.castActive = "true"; });
   await pauseAt(page, 42);
   expect(requests.length).toBe(0);
   await page.evaluate(() => {

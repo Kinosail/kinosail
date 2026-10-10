@@ -51,7 +51,7 @@ for (const scenario of scenarios) test(`download navigation preserves original $
         if (scenario === "oversized-title") button.dataset.title = "x".repeat(513);
         if (scenario === "missing-quality") delete button.dataset.quality;
         if (scenario === "unknown-quality") button.dataset.quality = "unknown";
-        if (scenario === "missing-api") delete (window as Window & {KinosailOfflineMedia?: unknown}).KinosailOfflineMedia;
+        if (scenario === "missing-api") delete (window as Window & {KinosailOfflineMedia?: object}).KinosailOfflineMedia;
         if (scenario === "bootstrap-error") setTimeout(() => {throw new Error("Controlled bootstrap failure");}, 0);
         if (scenario === "unexpected-transfer") await fetch("/api/v1/downloads/aaaaaaaaaaaaaaaa/file", {headers: {range: "bytes=0-0"}});
         if (scenario === "unexpected-removal") await fetch("/offline-downloads/aaaaaaaaaaaaaaaa/remove", {method: "POST"});

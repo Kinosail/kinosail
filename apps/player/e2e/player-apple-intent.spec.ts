@@ -1,3 +1,4 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import {writeFile} from 'node:fs/promises';
 import {expect, test} from '@playwright/test';
 import {installPlayerExperienceFixture} from './player-experience-fixture';
@@ -51,7 +52,7 @@ test('an obsolete Apple Play rejection respects later fullscreen dismissal @smok
 // Native Pause is an Apple platform action unavailable in populated Chromium.
 // This existing simulated-Apple fixture isolates the event seam; physical/Toy Story attribution stays separate.
 for (const delivery of ['immediate', 'queued pause']) test(`simulated native Apple Pause cancels pending Play without a startup failure with ${delivery} @smoke`, async ({page}, info) => {
-  const observations: Array<Record<string, unknown>> = [];
+  const observations: Array<JSONObject> = [];
   const observe = async (stage: string) => observations.push(await page.evaluate(label => {
     const video = document.querySelector('video') as HTMLVideoElement & {webkitDisplayingFullscreen: boolean};
     const feedback = document.querySelector('.player-control-feedback') as HTMLElement | null;

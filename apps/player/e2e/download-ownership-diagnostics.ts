@@ -1,8 +1,9 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import type { BrowserContext, TestInfo } from "@playwright/test";
 
 export async function observeDownloadOwnership(context: BrowserContext) {
   await context.addInitScript(() => {
-    const events: unknown[] = [];
+    const events: JSONObject[] = [];
     const identities = new WeakMap<Element, number>();
     let nextIdentity = 0;
     const labels = new Set(["Download to this device", "Resume on this device", "Pause download", "Pausing download…"]);
@@ -48,7 +49,7 @@ export async function observeDownloadOwnership(context: BrowserContext) {
 export async function attachDownloadOwnership(context: BrowserContext, info: TestInfo) {
   for (const [index, page] of context.pages().entries()) {
     const events = await page.evaluate(() => {
-      const observed = window as Window & {downloadOwnershipEvents?: unknown[]; snapshotDownloadOwnership?: () => void};
+      const observed = window as Window & {downloadOwnershipEvents?: JSONObject[]; snapshotDownloadOwnership?: () => void};
       observed.snapshotDownloadOwnership?.();
       return observed.downloadOwnershipEvents || [];
     }).catch(() => []);

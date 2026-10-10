@@ -1,3 +1,4 @@
+import type {JSONValue} from "../../../scripts/testing/json-value";
 import { expect, test } from "@playwright/test";
 import { readStaticSource } from "./static-sources";
 
@@ -5,7 +6,7 @@ const source = await readStaticSource([
   "../../../packages/webassets/static/supporter.js",
   "../internal/server/static/supporter.js",
 ]);
-type Collection = { badges: unknown[]; display: string };
+type Collection = { badges: JSONValue[]; display: string };
 type SupporterWindow = Window & {
   requests: string[];
   signals: Array<AbortSignal | undefined>;

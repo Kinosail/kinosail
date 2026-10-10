@@ -1,3 +1,4 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import { expect, test } from "@playwright/test";
 import { observe, origin, selectMovie } from "./browse-return-helpers";
 
@@ -9,7 +10,7 @@ test.setTimeout(25_000);
 test.beforeEach(async ({ page }) => observe(page));
 const key = "kinosail:browse-return:v1";
 
-const corruptions: [string, Record<string, unknown>][] = [
+const corruptions: [string, JSONObject][] = [
   ["external origin", { url: "https://untrusted.invalid/?view=movies" }],
   ["protocol-relative origin", { url: "//untrusted.invalid/?view=movies" }],
   ["non-browse route", { url: "/settings" }],

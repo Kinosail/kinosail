@@ -1,3 +1,4 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import {expect, test} from '@playwright/test';
 import {readFile, writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
@@ -40,7 +41,7 @@ for (const scenario of [
 test('browsing prepares the audible rendition when automatic skipping masks its audio mode @smoke', async ({page}) => {
   const id = '0123456789abcdef';
   const source = `/hls/${id}/p/t-a0-s0-none-t0-b0/index.m3u8`;
-  const preparation: unknown[] = [];
+  const preparation: JSONObject[] = [];
   await page.route('https://audio.test/', route => route.fulfill({contentType: 'text/html', body: `<a href="/watch/${id}">Episode</a>`}));
   await page.route(`https://audio.test/api/v1/items/${id}/playback`, route => route.fulfill({json: {
     policy: 'automatic', plan: {allowed: true, mode: 'direct', audioCompatibilityRequired: true},

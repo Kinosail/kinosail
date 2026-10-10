@@ -44,7 +44,7 @@ export async function gotoDownloadPage(page: Page, origin: string, info: TestInf
       const visible = (element?: HTMLElement | null) => Boolean(element && !element.closest("[inert]") &&
         element.getBoundingClientRect().width && element.getBoundingClientRect().height && getComputedStyle(element).visibility === "visible");
       const profile = document.body.dataset.viewerProfile || document.querySelector<HTMLElement>("#downloads")?.dataset.viewerProfile;
-      const api = (window as Window & {KinosailOfflineMedia?: {source?: unknown; remove?: unknown}}).KinosailOfflineMedia;
+      const api = (window as Window & {KinosailOfflineMedia?: {source?: (id: string) => Promise<string>; remove?: (id: string) => Promise<boolean>}}).KinosailOfflineMedia;
       const registration = await navigator.serviceWorker.getRegistration(), controller = navigator.serviceWorker.controller;
       const articleJob = button?.closest<HTMLElement>("[data-download-job]")?.dataset.downloadJob;
       const title = button?.dataset.title, quality = button?.dataset.quality;

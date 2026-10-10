@@ -1,10 +1,11 @@
+import type {JSONObject} from "../../../scripts/testing/json-value";
 import {expect, test} from "@playwright/test";
 import {installPlayerExperienceFixture} from "./player-experience-fixture";
 
 installPlayerExperienceFixture();
 
 for (const prefix of ["", "WebKit "]) test(`${prefix}Picture-in-Picture retains its session until playback departs @smoke`, async ({page}, info) => {
-  const ended: unknown[] = [];
+  const ended: JSONObject[] = [];
   page.on("request", request => {
     if (request.url().includes("/playback-events") && request.postDataJSON().event === "session-end") ended.push(request.postDataJSON());
   });
