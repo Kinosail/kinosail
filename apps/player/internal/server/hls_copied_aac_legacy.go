@@ -11,6 +11,14 @@ import (
 
 // Legacy reads keep the full base contract without changing producer eligibility.
 func (manager *hlsManager) openCopiedHLSLegacyGeneration(parent context.Context, item library.Item, recipe hlsRecipe, directory string) (*copiedAACGeneration, error) {
+	return manager.openCopiedHLSLegacyRead(parent, item, recipe, directory, nil)
+}
+
+func (manager *hlsManager) openCopiedHLSLegacyPartialGeneration(parent context.Context, item library.Item, recipe hlsRecipe, directory string) (*copiedAACGeneration, error) {
+	return manager.openCopiedHLSLegacyRead(parent, item, recipe, directory, &copiedHLSLegacyPartial{})
+}
+
+func (manager *hlsManager) openCopiedHLSLegacyRead(parent context.Context, item library.Item, recipe hlsRecipe, directory string, partial *copiedHLSLegacyPartial) (*copiedAACGeneration, error) {
 	base, before, err := manager.copiedAACQualificationSource(parent, item, recipe)
 	if err != nil || !copiedAACRecipeSupported(item, recipe) {
 		return nil, errCopiedHLSIndex
@@ -30,7 +38,11 @@ func (manager *hlsManager) openCopiedHLSLegacyGeneration(parent context.Context,
 		directory: directory,
 		policy:    base.Cache,
 		release:   release,
-		legacy:    &copiedHLSLegacyRead{sourceInfo: before, entries: make(map[string]os.FileInfo)},
+		legacy: &copiedHLSLegacyRead{
+			sourceInfo: before,
+			entries:    make(map[string]os.FileInfo),
+			partial:    partial,
+		},
 	}
 	value.legacy.source, _, err = openCopiedHLSSourceAudio(ctx, item.Path, before)
 	if err == nil {
@@ -103,7 +115,7 @@ func (manager *hlsManager) serveCopiedHLSLegacy(writer http.ResponseWriter, requ
 	if failure != "" {
 		return rejectCopiedAACPlaylistClass(writer, request, failure)
 	}
-	held, err := manager.openCopiedHLSLegacyGeneration(request.Context(), item, recipe, directory)
+	held, err := manager.openCopiedHLSLegacyPartialGeneration(request.Context(), item, recipe, directory)
 	if err != nil {
 		return rejectCopiedAACPlaylistClass(writer, request, "invalid-legacy-generation")
 	}

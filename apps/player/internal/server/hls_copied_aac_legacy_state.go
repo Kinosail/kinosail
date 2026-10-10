@@ -14,11 +14,15 @@ type copiedHLSLegacyRead struct {
 	entries    map[string]os.FileInfo
 	master     []byte
 	manifest   []byte
+	partial    *copiedHLSLegacyPartial
 }
 
 func (legacy *copiedHLSLegacyRead) bind(held *copiedAACGeneration) error {
 	if legacy.bindMetadata(held) != nil || legacy.bindManifests(held) != nil {
 		return errCopiedHLSIndex
+	}
+	if legacy.partial != nil {
+		return legacy.partial.bind(held)
 	}
 	return legacy.completeAssets(held)
 }
@@ -48,7 +52,7 @@ func (legacy *copiedHLSLegacyRead) bindManifests(held *copiedAACGeneration) erro
 	if err != nil {
 		return errCopiedHLSIndex
 	}
-	// The certified timeline can project a prefix; completeAssets checks every physical cut.
+	// The certified timeline can project a prefix; the selected asset inventory binds physical cuts.
 	if _, valid := copiedHLSManifest(legacy.manifest, held.timeline); !valid {
 		return errCopiedHLSIndex
 	}
@@ -90,8 +94,7 @@ func (legacy *copiedHLSLegacyRead) completeAssets(held *copiedAACGeneration) err
 }
 
 func (legacy *copiedHLSLegacyRead) current(held *copiedAACGeneration) bool {
-	_, startupErr := held.root.Lstat(".startup")
-	return legacy.sourceCurrent(held) && os.IsNotExist(startupErr) &&
+	return legacy.sourceCurrent(held) && legacy.startupCurrent(held) &&
 		copiedHLSBoundMetadata(held.root, held.timelineData, held.certificateData, held.policy) &&
 		held.manager.copiedHLSCanonicalGeneration(held.directory, held.certificate.Rendition, held.root, held.media) &&
 		legacy.entriesCurrent(held.ctx, held.root) && legacy.manifestsCurrent(held)
