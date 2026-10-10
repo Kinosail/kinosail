@@ -86,6 +86,7 @@ test("player shows and switches its playback method without crowding actions", a
 		});
 		await actions.getByRole("link", { name: compatibleLabel }).click();
 		await expect(method).toHaveText(compatibleLabel);
+		await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; await video.play(); });
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 	}
 });

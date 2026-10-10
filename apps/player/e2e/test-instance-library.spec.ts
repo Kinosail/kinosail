@@ -14,9 +14,7 @@ test("a stale login page redirects passkey sign-in to the canonical origin", asy
   await page.getByRole("button", { name: "Sign in with passkey" }).click();
   const begin = await response;
   expect(begin.status()).toBe(421);
-  const canonical = new URL(process.env.KINOSAIL_E2E_URL ?? "https://localhost:38127");
-  canonical.hostname = "localhost";
-  expect(begin.headers().location).toBe(new URL("/login", canonical).toString());
+  expect(begin.headers().location).toBe("https://localhost:38127/login");
 });
 
 test("public test instance exercises every media section and local TMDB metadata", async ({ page }) => {
