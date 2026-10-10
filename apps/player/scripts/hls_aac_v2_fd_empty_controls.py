@@ -1,7 +1,7 @@
 """Bounded empty-record controls sharing the actual owned codec fixture."""
 from unittest.mock import patch
 import hls_aac_v2_live_observer as live
-from hls_followon_public import check
+from hls_followon_public import check, encoder_count
 
 
 class EmptyArgumentObserverControls:
