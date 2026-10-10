@@ -20,7 +20,7 @@ import org.robolectric.annotation.LooperMode
 /**
  * Public playback/journal callers and a gated HTTP server reproduce late progress replies.
  * Existing browser and native journeys do not hold an Android progress reply across stop/restart.
- * Cover late conflict, late failure, and a restart of the same title; keep active conflict feedback.
+ * Cover late conflict, late failure, and same-title restart; keep active conflict and failure feedback.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
@@ -37,6 +37,15 @@ class PlaybackProgressOwnershipTest {
             model.progressNotice == "Watch position changed again on another device." }
         assertFalse("Resolution must complete without cancellation", resolution.isCancelled)
         assertTrue(model.progressConflict)
+    }
+
+    @Test fun activeResolutionStillReportsTheSyncFailure() = journey(503) { model, _, journal, reply, resolution ->
+        reply.release.countDown()
+        await { resolution.isCompleted }
+        assertFalse("Resolution must complete without cancellation", resolution.isCancelled)
+        assertEquals("Could not resolve watch position. Try again.", model.progressNotice)
+        assertEquals("Failed sync must retain the saved position", local, journal.pending().single().progress)
+        assertNull(journal.pending().single().conflict)
     }
 
     @Test fun stoppedResolutionCannotRestoreConflict() = journey(409) { model, _, journal, reply, resolution ->
