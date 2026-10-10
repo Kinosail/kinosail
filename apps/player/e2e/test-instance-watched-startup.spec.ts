@@ -109,6 +109,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     // Abort this owned transport barrier after the proof, then reopen the real page.
     await route.abort("aborted");
   });
+  let bodyFailed = false;
   try {
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
@@ -126,6 +127,9 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await page.waitForTimeout(500);
     expect(await progress()).toMatchObject({watched, seconds: 0});
     expect(latePositions).toEqual([]);
+    // The relay's proof is complete; remove this artificial auxiliary window
+    // before reopening real pages with Cross-Origin-Opener-Policy isolation.
+    await relay.close();
     release();
     await page.unrouteAll({behavior: "wait"});
     await page.goto(watch);
@@ -137,7 +141,14 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await info.attach("accepted-watched-late-native-notification", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
       browser: info.project.name, cancelledAgain, stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
-  } finally {release(); await page.unrouteAll({behavior: "wait"}); await relay.close();}
+  } catch (error) {bodyFailed = true; throw error;}
+  finally {
+    release();
+    const cleanup = await Promise.allSettled([page.unrouteAll({behavior: "wait"}), relay.close()]);
+    const failures = cleanup.filter(result => result.status === "rejected");
+    for (const failure of failures) info.annotations.push({type: "cleanup-error", description: String(failure.reason).slice(0, 1000)});
+    if (!bodyFailed && failures.length) throw new AggregateError(failures.map(failure => failure.reason), "Watched fixture cleanup failed");
+  }
 });
 }
 }

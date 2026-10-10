@@ -3,22 +3,21 @@ import {createServer} from 'node:http';
 import {readFile, writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 
-for (const scenario of ['pending', 'probing', 'ready']) {
+for (const scenario of ['pending', 'probing', 'negotiating', 'empty-target', 'self-target', 'superseded', 'restored', 'ready']) {
   test(`startup speculation stops during ${scenario} watch navigation @smoke`, async ({page}, info) => {
     const script = await readFile(new URL('../internal/server/static/startup-preparation.js', import.meta.url));
     const journal: {method: string, path: string, afterNavigation: boolean}[] = [];
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     let navigationStarted = false;
-    let observed = false;
+    let observed = false, controlAfterNavigation = false;
+    page.on('console', message => {if (message.text() === 'qa-startup-control-released') {observed = true; controlAfterNavigation = navigationStarted;}});
     let releaseNavigation = () => {};
     const heldNavigation = new Promise<void>(resolve => {releaseNavigation = resolve;});
     const server = createServer(async (request, response) => {
       const path = new URL(request.url!, 'http://localhost').pathname;
       if (path === '/startup.js') {response.setHeader('Content-Type', 'text/javascript'); response.end(script); return;}
       if (path === '/favicon.ico') {response.writeHead(204); response.end(); return;}
-      if (path === '/control/navigation') {response.end(JSON.stringify(navigationStarted)); return;}
-      if (path === '/control/observed') {observed = true; response.end(); return;}
       if (path === '/watch/0123456789abcdef') {
         navigationStarted = true;
         await heldNavigation;
@@ -37,7 +36,7 @@ for (const scenario of ['pending', 'probing', 'ready']) {
       response.end(`<!doctype html><h1>Library</h1><meta name="kinosail-csrf" content="fixture-csrf">
         <div class="home-feature"><a data-feature-action href="/watch/0123456789abcdef">Play</a></div>
         <script>window.kinosailPlaybackCapabilities={policy:()=>"compatible",initialCompatible:()=>true,needsAdapter:()=>true,
-          codecs:[["h264"]],supports:()=>new Promise(resolve=>{window.releaseCodec=()=>resolve(true);})};</script><script src="/startup.js"></script>`);
+          codecs:[[${JSON.stringify(scenario === 'negotiating' ? 'hevc' : 'h264')}]],supports:()=>new Promise(resolve=>{window.releaseCodec=()=>resolve(true);})};</script><script src="/startup.js"></script>`);
     });
     await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
     const address = server.address();
@@ -46,25 +45,53 @@ for (const scenario of ['pending', 'probing', 'ready']) {
     let clicked: Promise<void> | undefined;
     try {
       await page.goto(`http://127.0.0.1:${address.port}`);
+      if (scenario === 'empty-target' || scenario === 'self-target') await page.evaluate(empty => {
+        const base = document.createElement('base'); base.target = empty ? '_self' : '_blank'; document.head.append(base);
+        document.querySelector('a')!.target = empty ? '' : '_SELF';
+      }, scenario === 'empty-target');
       if (scenario !== 'pending') await page.waitForFunction(() => typeof Reflect.get(window, 'releaseCodec') === 'function');
       if (scenario === 'ready') {
         await page.evaluate(() => Reflect.get(window, 'releaseCodec')());
         await expect.poll(() => journal.filter(row => row.method === 'POST').length).toBe(1);
       }
-      // Keep the control inside the departing document: automation evaluation can
-      // wait for a held native navigation in Firefox instead of reaching that document.
-      await page.evaluate(() => {
-        void (async () => {
-          while (!await fetch('/control/navigation').then(response => response.json())) await new Promise(resolve => setTimeout(resolve, 10));
+      // Signal through the console: WebKit blocks even fixture fetches once
+      // native navigation starts. Node checks the actual server accepted it.
+      await page.evaluate(restored => {
+        window.addEventListener('click', () => {setTimeout(() => {void (async () => {
+          if (restored) {
+            // Model a persisted return after stopping the actual held departure.
+            // This exercises departing=true; it is not native BFcache proof.
+            window.stop();
+            window.dispatchEvent(new PageTransitionEvent('pagehide', {persisted: true}));
+            window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
+            await new Promise(resolve => setTimeout(resolve, 750));
+          }
           Reflect.get(window, 'releaseCodec')?.();
           document.querySelector('a')!.dispatchEvent(new Event('focusin', {bubbles: true}));
-          // Observe one complete 600ms scheduling window after releasing the probe.
-          setTimeout(() => {void fetch('/control/observed');}, 900);
-        })();
+          console.info('qa-startup-control-released');
+        })();}, 100);}, {once: true});
+      }, scenario === 'restored');
+      if (scenario === 'superseded') await page.evaluate(() => {
+        const link = document.querySelector('a')!;
+        link.addEventListener('click', () => {
+          window.addEventListener('click', event => event.preventDefault(), {once: true});
+          link.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true}));
+        }, {once: true});
       });
-      clicked = page.getByRole('link', {name: 'Play', exact: true}).click();
+      clicked = page.getByRole('link', {name: 'Play', exact: true}).click({noWaitAfter: scenario === 'restored'});
       await expect.poll(() => observed).toBe(true);
       expect(navigationStarted).toBe(true);
+      expect(controlAfterNavigation).toBe(true);
+      // Observe one complete 600ms scheduling window after releasing the probe.
+      await new Promise(resolve => setTimeout(resolve, 900));
+      if (scenario === 'restored') {
+        await clicked;
+        await expect.poll(() => journal.filter(row => row.afterNavigation && row.method === 'POST').length).toBe(1);
+        await expect(page.getByRole('heading', {name: 'Library', exact: true})).toBeVisible();
+        expect(errors).toEqual([]);
+        result = 'passed';
+        return;
+      }
       expect(journal.filter(row => row.afterNavigation)).toEqual([]);
       expect(journal.filter(row => row.method === 'DELETE')).toHaveLength(0);
       releaseNavigation();
@@ -83,8 +110,8 @@ for (const scenario of ['pending', 'probing', 'ready']) {
     } finally {
       releaseNavigation();
       await writeFile(info.outputPath('startup-navigation-receipt.json'), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION || process.env.GITHUB_SHA,
-        command: 'playwright test startup-navigation.spec.ts', scenario, result, scriptSHA256: createHash('sha256').update(script).digest('hex'), journal, errors,
-        boundary: 'Actual production startup script and delayed native HTTP navigation; synthetic capability response, no decoder or real authentication proof.'}, null, 2));
+        command: 'playwright test startup-navigation.spec.ts', scenario, result, navigationStarted, controlAfterNavigation, observationMs: 900, scriptSHA256: createHash('sha256').update(script).digest('hex'), journal, errors,
+        boundary: 'Actual production startup script and delayed native HTTP navigation; synthetic capability and persisted-return events, no native BFcache, decoder or real authentication proof.'}, null, 2));
       server.closeAllConnections();
       await new Promise<void>(resolve => server.close(() => resolve()));
       await clicked?.catch(() => {});
@@ -92,7 +119,7 @@ for (const scenario of ['pending', 'probing', 'ready']) {
   });
 }
 
-for (const control of ['prevented', 'prevented-late', 'foreign', 'query', 'hash', 'malformed', 'oversized', 'credentials', 'download', 'target', 'base-target', 'ctrl', 'meta', 'shift', 'alt', 'middle']) {
+for (const control of ['prevented', 'prevented-late', 'persisted', 'missing', 'base-origin', 'base-credentials', 'foreign', 'query', 'hash', 'malformed', 'oversized', 'credentials', 'download', 'target', 'base-target', 'ctrl', 'meta', 'shift', 'alt', 'middle']) {
   test(`startup remains usable after ${control} watch click @smoke`, async ({page}, info) => {
     const script = await readFile(new URL('../internal/server/static/startup-preparation.js', import.meta.url));
     const journal: {method: string, path: string}[] = [];
@@ -119,6 +146,18 @@ for (const control of ['prevented', 'prevented-late', 'foreign', 'query', 'hash'
       await page.waitForFunction(() => typeof Reflect.get(window, 'releaseCodec') === 'function');
       await page.evaluate(control => {
         const link = document.querySelector('a')!;
+        if (control === 'persisted') {
+          window.dispatchEvent(new PageTransitionEvent('pagehide', {persisted: true}));
+          window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
+          Reflect.get(window, 'releaseCodec')();
+          return;
+        }
+        if (control === 'missing') link.removeAttribute('href');
+        if (control === 'base-origin' || control === 'base-credentials') {
+          const base = document.createElement('base');
+          base.href = control === 'base-origin' ? 'https://untrusted.invalid/' : location.origin.replace('://', '://user:pass@') + '/';
+          document.head.append(base);
+        }
         const paths: Record<string, string> = {foreign: 'https://untrusted.invalid/watch/0123456789abcdef', query: '/watch/0123456789abcdef?extra=1',
           hash: '/watch/0123456789abcdef#extra', malformed: '/watch/no-item', oversized: '/watch/' + 'a'.repeat(4096), credentials: 'https://user:pass@untrusted.invalid/watch/0123456789abcdef'};
         if (paths[control]) link.href = paths[control];
@@ -132,21 +171,22 @@ for (const control of ['prevented', 'prevented-late', 'foreign', 'query', 'hash'
         // Other-tab, download and malformed inputs must leave this job running.
         window.addEventListener('click', event => event.preventDefault(), {once: true});
         link.dispatchEvent(event);
+        if (control === 'base-origin' || control === 'base-credentials') document.querySelector('base')!.remove();
         Reflect.get(window, 'releaseCodec')();
       }, control);
-      if (control === 'prevented-late') {
+      if (control === 'prevented-late' || control === 'persisted') {
         // Allow a cancelled ordinary click to restart the existing 600ms scheduler.
         await page.waitForTimeout(750);
         await page.evaluate(() => Reflect.get(window, 'releaseCodec')());
       }
       await expect.poll(() => journal.filter(row => row.method === 'POST').length).toBe(1);
       expect(journal.filter(row => row.method === 'DELETE')).toEqual([]);
-      if (control !== 'prevented-late') expect(journal.filter(row => row.path.endsWith('/playback'))).toHaveLength(1);
+      if (control !== 'prevented-late' && control !== 'persisted') expect(journal.filter(row => row.path.endsWith('/playback'))).toHaveLength(1);
       result = 'passed';
     } finally {
       await writeFile(info.outputPath('startup-click-control.json'), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION || process.env.GITHUB_SHA,
         command: 'playwright test startup-navigation.spec.ts', control, result, scriptSHA256: createHash('sha256').update(script).digest('hex'), journal,
-        boundary: 'Production startup script, actual HTTP, synthetic capability and click events; no external URL is followed.'}, null, 2));
+        boundary: 'Production startup script, actual HTTP, synthetic capability, click and persisted lifecycle events; no external URL is followed. Persisted event control is not a real BFcache claim.'}, null, 2));
       server.closeAllConnections();
       await new Promise<void>(resolve => server.close(() => resolve()));
     }
