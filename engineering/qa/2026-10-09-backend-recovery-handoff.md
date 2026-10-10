@@ -104,3 +104,85 @@ No replacement PR or merge is admitted until full compatibility, current-main re
 All14 scanner holds, historical AAC failures and preserved50 simulator baselines remain unchanged.
 Native50 retesting and pairing remain with the native owner; no simulator action or complete50-retest claim follows.
 No local files/builds/media, credentials, original-media changes, Library writes, cleanup, Nox update or manual deployment occurred.
+
+### Qualified partial-read and retry checkpoint: 10 October
+
+Main remains `922e7fa65cb3752d4a204b6e14782f58c6133fd7`.
+The lazy-read branch preserves maintained13c3, observerd619 and main922 through `b1132e4434a945feab00c8252a1b12010db721ec`.
+Incoming native files and the normal layout workflow are preserved.
+Original490 remote preservation remains triage-owned; this recovery did not touch its branch or PR.
+
+Partial-read production source is `c295ed28b0232054616d74e6d9fa970e59d60d51`.
+GET/HEAD retain certified existing bytes while only later cuts may be absent.
+Mutation paths retain complete-only admission.
+The read path starts no worker and changes no cache bytes.
+Its written-first GET/HEAD/range, lease-release and fence controls passed in38007959190; quality38007959295 passed.
+The Lstat-to-open identity gap remains unresolved.
+The missing-cut worker is not implemented.
+
+Exact `80c3eba5fa052fdd609e3eb7b84084a2ce8e91ac`, tree `feddb3c41cff0510742313c89520ff3a4478d134`, passed77 Python and45 Go controls.
+Quality38013491052 passed.
+Proof38013491061 passed interrupted cold H264/HEVC reopen but failed five other public jobs.
+Its missing4 candidate was qualified: retained reads passed, absent cut404, no encoder calls, unchanged cache/source and clean joins.
+Other lazy arms had observer failures.
+Their failed receipts remain preserved.
+
+Written-first `82f4c3c42f09ded6223df9965921ad568aba0b09`, tree `50336ba8f6177b335afbead5f5f50f8d72386216`, ran86 tests.
+The75 unchanged controls passed; eleven methods failed only new diagnostic requirements.
+All17 actual codec groups had clean source, joins and retained-FD closure.
+The new actual reaped-child absence proof completed before its missing-diagnostic assertion.
+Proof38014818808/job114102644963 preserves the diagnostic RED.
+Quality38014818829 passed.
+Artifact11654614113 has API archive digest `sha256:dd3d048db469dc63718941658630a62e08f19c73a735ec3ef6999cb871b42c1f`.
+
+Independent review admitted diagnostic source `0e98cf9e5bc2cc7722ba2f6b11a34594a9ecab20`.
+Its tree is `c32b3c1cb8d2d8520bfafc6c0e25b44a5a9db350`.
+Retry extraction preserves the20ms deadline,33-read cap, source/parent/start checks and rejection decisions.
+Fixed retryOutcome and exact bool-or-None terminalProofCompleted survive both normalization layers.
+Receipts explicitly hash the observer and retry helper.
+Proof38015123698/job114103574842 passed86 Python and45 top-level Go controls; no failures or skips.
+All17 actual codec rows passed, with two zero joins each and no qualification errors.
+Source stayed unchanged; final owners were0 and all retained descriptors closed.
+Quality38015123742 passed.
+All six public jobs failed, so full compatibility remains unqualified.
+
+Master receipt `f21936897655591eb7f0052a88299d8ae876644c5282a3befbd9f1305e3eb1a9` identifies one concrete observer failure.
+It records arguments_before, R-to-absent, empty0, attempts6, deadline-after-terminal and terminalProofCompleted=true.
+Final joins had two zeros, no remaining owners, qualification failures or cleanup failures, and unchanged source.
+This proves a completed late proof was rejected.
+It does not measure either global ps call individually or explain other jobs.
+A PID-specific query experiment was proposed; no query optimization was implemented.
+
+Lazy receipt `2693bc19c265cd5df8cafc46c0cac85a6c0c7f1094348cc4e2744fbc80ba1aed` supplies four independently reviewed worker REDs.
+Adopted lazy, speculative lazy, missing4 and missing9 baselines each pass13 GETs and480 exact source frames.
+Each baseline has one legacy refill.
+Candidates pass both HEADs and every retained GET with response hashes equal to baseline.
+Absent cuts return404:4–9,4–9,4 and9 respectively.
+Candidate encoder calls are0; source, cache and retained files stay unchanged.
+Every baseline/candidate sampler has0 errors.
+Every group has two zeros, no remaining owners, qualification errors or cleanup errors.
+Seed and global owner sessions are also clean.
+The full-completion predicate remains false because missing additions and adoption have not occurred.
+Missing0 remains baseline-unqualified and its candidate was not executed.
+These four arms qualify read/HEAD behavior and missing-cut failure only.
+
+| Proof38015123698 artifact | ID | API archive SHA256 |
+| --- | --- | --- |
+| Contracts |11656385073|b7678e36de47243eab944129959fc116922bf38474b7ad9e6bd1db5ea72240e4|
+| Master |11656200357|61695b5864d980e96a6ce7f81c903925f08532fa547fc61d6bac902b32192187|
+| Compatibility |11655845633|68bfdc63f2f65cf18d8ad60f3c414e5e22c162d446d6a92145408eaed085c76f|
+| Binding |11655805624|84aee737f472a15703ab0f7a20a4fd6cf51862ab8046a6e6cb8c049df49900ea|
+| Lazy |11654764752|a6f998fa68b34980a62472302831810050333960a67231daebdffebd511cc762|
+| Public |11654699805|0b0342f58e4c694ece192d6bba52f0df118627e427062766156f2d1e0dacc996|
+| Cold |11654524953|77042232cfec0ea2bca42ee058a3c0381d78fea67e700304311c30d4a84ff813|
+
+Archive digests above come from GitHub API metadata; ZIP archives were not downloaded or independently rehashed.
+Detailed prior REDs and observer corrections remain in engineering/qa/2026-10-09-hls-version1-partial-read.md and branch ancestry.
+
+Next production admission requires written-first Server job/governor/group-join and cancellation/migration/race controls.
+The worker must use an owned private stage and publish only absent certified cuts.
+Retained init, manifests, source, certificate, startup and foreign files need explicit preservation fences.
+Do not widen observer budgets, weaken assertions, scanner holds or gates.
+Full compatibility, exact-main reconciliation, independent source review and protected checks remain prerequisites for a PR merge.
+No PR, merge, release, native or complete50-retest admission is claimed.
+No local files/builds/media, credentials, original-media changes, Library writes, cleanup, Nox update or manual deployment occurred.
