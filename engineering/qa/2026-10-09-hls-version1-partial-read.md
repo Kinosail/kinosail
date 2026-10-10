@@ -38,3 +38,13 @@ Additional written-first controls require complete-only rejection of all three p
 Thirteen admitted-state controls cover late regular/symlink/directory arrivals, marker presence/inode/value changes, source/root/generation/rendition replacement and present later-cut removal/replacement.
 The partial opener is discovered through a private test interface; its initial absence is a prerequisite failure, separate from qualified HTTP response RED.
 Every admitted-state rejection must preserve cache/source and create no job; this deterministic boundary is isolated evidence.
+
+## Actual Server qualification diagnostic gap
+
+Exactc295 contracts and quality passed:36 response leaves,13 admitted-state fences,15 damaged-cache rejections,3 complete-only rows and lifetime checks.
+All six actual Server jobs in38007959190 failed resource qualification; lazy/master/binding stopped before candidate cases.
+Several recorded groups settled with two zero samples and no remaining actors, but the sampler retained generic observation errors.
+The receipts do not identify the actual exception stage, so a transient exit cause is unproved.
+New isolated diagnostic controls are written before enrichment: exact rejection text and error counts stay unchanged; safe stage/exception enums survive normalization.
+Untrusted metadata names fall back to other; source paths, argv, exception messages and error bodies never enter the projection.
+These controls qualify diagnostic retention only, not transient-process settlement, worker ownership or actual lazy compatibility.
