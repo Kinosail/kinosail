@@ -5,11 +5,14 @@ import os
 from pathlib import Path
 import re
 import shutil
+import signal
 import subprocess
 import tempfile
 import time
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
+import hls_aac_v2_live_observer as live
 from hls_aac_v1_stage_public import settle
 from hls_aac_v2_public_http import ActualServer
 from hls_aac_v2_source_identity import regular_identity
@@ -144,6 +147,73 @@ class ActualFDObserverControls(unittest.TestCase):
         self.assertNotEqual(rows[0]['inputWitness'], self.expected)
         self.assertNotIn('inputWitnessFailureClass', rows[0])
         self.row.update(wrapperActualTargetWitnessed=True, result='observed')
+
+    def ending_arguments(self, process, reap=False):
+        actual = live.actual_arguments
+        identity = live.process_identity
+
+        def ended(pid):
+            check(pid == process.pid, 'fd_live_transition_exact_child')
+            self.alive(process)
+            before = identity(pid, os.getpid())
+            check(before[0] not in ['Z', 'X', 'x'], 'fd_live_transition_initially_alive')
+            process.send_signal(signal.SIGTERM)
+            deadline = time.monotonic() + min(2, self.guard.check(20))
+            while os.waitid(os.P_PID, pid, os.WEXITED | os.WNOHANG | os.WNOWAIT) is None:
+                check(time.monotonic() < deadline, 'fd_live_transition_exit_bound')
+                time.sleep(0.01)
+            after = identity(pid, os.getpid())
+            check(after[0] in ['Z', 'X', 'x'] and after[1] == before[1],
+                'fd_live_transition_same_terminal_identity')
+            with (Path('/proc') / str(pid) / 'cmdline').open('rb') as stream:
+                check(stream.read(65537) == b'', 'fd_live_transition_actual_empty_cmdline')
+            try:
+                actual(pid)
+            except RuntimeError as error:
+                check(str(error) == live.FAILURE, 'fd_live_transition_actual_failure')
+                if reap:
+                    process.wait(timeout=1)
+                self.row.update(actualLiveToTerminalTransition=True, actualEmptyArguments=True,
+                    reapedAfterEmptyRead=reap)
+                raise
+            raise RuntimeError('fd_live_transition_empty_must_fail_arguments')
+
+        return ended
+
+    def terminal_argument_count(self, reap):
+        process = self.spawn(self.alias(self.retained[0]))
+        with patch.object(live, 'actual_arguments', side_effect=self.ending_arguments(process, reap)):
+            self.assertEqual(encoder_count(self.server, self.source), 0)
+        self.row.update(observedOwnedHLSCount=0, result='observed')
+
+    def test_actual_empty_arguments_of_same_terminal_child_certify_zero(self):
+        self.terminal_argument_count(False)
+
+    def test_actual_empty_arguments_then_reaped_child_certify_zero(self):
+        self.terminal_argument_count(True)
+
+    def test_argument_failure_of_still_live_owned_child_is_rejected(self):
+        process = self.spawn(self.alias(self.retained[0]))
+        self.assertEqual(self.observe(process), 1)
+        with patch.object(live, 'actual_arguments', side_effect=RuntimeError(live.FAILURE)):
+            with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$'):
+                encoder_count(self.server, self.source)
+        self.assertEqual(self.observe(process), 1)
+        self.row.update(actualAliveFailureRejected=True, result='observed')
+
+    def test_terminal_identity_with_changed_start_is_rejected(self):
+        process = self.spawn(self.alias(self.retained[0]))
+        identity = live.process_identity
+
+        def changed(pid, parent):
+            state, start = identity(pid, parent)
+            return state, start + 1 if state in ['Z', 'X', 'x'] else start
+
+        with patch.object(live, 'actual_arguments', side_effect=self.ending_arguments(process)):
+            with patch.object(live, 'process_identity', side_effect=changed):
+                with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$'):
+                    encoder_count(self.server, self.source)
+        self.row.update(changedTerminalStartRejected=True, result='observed')
 
     def tearDown(self):
         with self.guard.cleanup():

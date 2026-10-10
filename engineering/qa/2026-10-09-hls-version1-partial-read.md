@@ -54,3 +54,14 @@ Go and all six public jobs remained unexecuted; quality38008928509 passed.
 Artifact11652441689 has API archive digest738e9c6909a50e1235b31e41fa71f0d9e561cb3ba02d58464bb51ae867a01732.
 The enrichment preserves every error/rejection and resource join; it adds only bounded unique stage/exception enum rows.
 This is a diagnostic change, with no transient exit or lazy worker acceptance.
+
+## Written-first live process-exit controls
+
+Exact742 diagnostics38009303706 identify arguments_before/RuntimeError in the master and lazy sampler receipts.
+Their groups joined with two zero samples, no remaining actors and unchanged source; lazy executed no candidate cases.
+The actual cause is not inferred from that exception class alone.
+New Linux controls keep the pinned real FFmpeg/retained source and read an actual initially-live parent/start witness.
+At the argument read, a bounded SIGTERM produces the same unreaped terminal identity and the kernel's empty cmdline.
+The real empty read must qualify zero both before and after reaping; a still-live argument failure and changed start remain strict rejections.
+Scheduling is isolated to reproduce the E2E observation gap; complete owned groups, source seals and descriptor closure remain required.
+No observer, Server behavior, join, workflow or prior test is changed by this written-first commit.
