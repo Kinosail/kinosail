@@ -192,7 +192,8 @@ finally:
                 owner.stop()
             except Exception:
                 receipt.update(result='failed', cleanupFailureClass='cold_owned_join_failed')
-        names = ['hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',
+        names = ['hls_aac_v2_argument_retry.py', 'hls_aac_v2_source_identity.py', 'hls_aac_v2_live_observer.py',
+            'hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',
             'hls_remaining_nonkey_deadline.py', 'hls_remaining_process.py', 'hls_timeline_http.py',
             'hls_timeline_fixture.py', 'hls_timeline_packets.py', 'hls_timeline_seek_diagnostics.py',
             'hls_remaining_nonkey_evidence.py', 'hls_remaining_nonkey_boundary.py',

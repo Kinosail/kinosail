@@ -115,6 +115,7 @@ finally:
         if receipt['sourceUnchanged'] is False:
             receipt.update(result='failed', sourceGuardFailureClass='lazy_source_changed')
         names = ['hls_aac_v2_source_identity.py', 'hls_aac_v2_live_observer.py',
+            'hls_aac_v2_argument_retry.py',
             'hls_aac_v2_lazy_public.py', 'hls_aac_v2_compat_public.py',
             'hls_aac_v2_public_http.py', 'hls_aac_v2_public_evidence.py', 'hls_followon_public.py',
             'hls_remaining_nonkey_deadline.py', 'hls_remaining_process.py', 'hls_timeline_http.py',

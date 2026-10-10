@@ -277,7 +277,9 @@ class ActualFDObserverControls(empty_controls.EmptyArgumentObserverControls, uni
                 'retainedSourcesClosedAfterJoin': all(v.closed for v in cls.retained),
                 'cases': cls.cases, 'workerAcceptance': False, 'publicGETAcceptance': False,
                 'executedScriptSHA256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                'executedHelperSHA256': hashlib.sha256(Path(empty_controls.__file__).read_bytes()).hexdigest()}
+                'executedHelperSHA256': hashlib.sha256(Path(empty_controls.__file__).read_bytes()).hexdigest(),
+                'executedObserverSHA256': hashlib.sha256(Path(live.__file__).read_bytes()).hexdigest(),
+                'executedRetryHelperSHA256': hashlib.sha256(Path(live.__file__).with_name('hls_aac_v2_argument_retry.py').read_bytes()).hexdigest()}
             (cls.fixture_directory.parent / 'live-receipt.json').write_text(json.dumps(evidence, sort_keys=True) + chr(10))
             print(json.dumps({'liveContractProjection': evidence}, sort_keys=True), flush=True)
         cls.guard.__exit__()

@@ -1,7 +1,11 @@
 """Read-only actual owned HLS activity; unknown live input never certifies zero."""
 from pathlib import Path
 import subprocess
+import sys
 import time
+from hls_aac_v2_argument_retry import _EmptyArgumentFailure, empty_argument_record
+from hls_aac_v2_argument_retry import read_arguments as retry_read_arguments
+from hls_aac_v2_argument_retry import reobserve_arguments as retry_reobserve_arguments
 from hls_followon_public import bounded_bytes, check
 from hls_aac_v2_source_identity import captured_input_identity, matches_source_input
 from hls_aac_v2_source_identity import option, regular_identity, startup_fixture, validate_identity
@@ -22,12 +26,17 @@ OBSERVATION_EXCEPTIONS = (
 PROCESS_STATES = ('R', 'S', 'D', 'Z', 'T', 't', 'X', 'x', 'K', 'W', 'I', 'P', 'absent', 'other')
 ARGUMENT_SHAPES = ('empty', 'byte_bound', 'nonterminated', 'argument_decode',
     'argument_count', 'argument_length', 'other')
+RETRY_OUTCOMES = ('deadline-before-terminal', 'deadline-after-terminal',
+    'deadline-after-arguments', 'deadline-before-sleep', 'read-limit',
+    'terminal-check-error', 'fresh-argument-error', 'other')
 DETAIL_ATTRIBUTES = (
     ('observer_before_state', 'beforeState'), ('observer_after_state', 'afterState'),
     ('observer_argument_shape', 'argumentShape'), ('observer_argument_bytes', 'argumentBytes'),
     ('observer_argument_count', 'argumentCount'),
     ('observer_maximum_argument_bytes', 'maximumArgumentBytes'),
     ('observer_argument_attempts', 'argumentAttempts'),
+    ('observer_retry_outcome', 'retryOutcome'),
+    ('observer_terminal_proof_completed', 'terminalProofCompleted'),
 )
 
 
@@ -45,9 +54,11 @@ def observation_details(error):
     fields = observation_fields(error)
     for attribute, key in DETAIL_ATTRIBUTES:
         value = getattr(error, attribute, None)
-        if key in ['beforeState', 'afterState', 'argumentShape']:
-            allowed = ARGUMENT_SHAPES if key == 'argumentShape' else PROCESS_STATES
+        if key in ['beforeState', 'afterState', 'argumentShape', 'retryOutcome']:
+            allowed = {'argumentShape': ARGUMENT_SHAPES, 'retryOutcome': RETRY_OUTCOMES}.get(key, PROCESS_STATES)
             fields[key] = value if type(value) is str and value in allowed else 'other'
+        elif key == 'terminalProofCompleted':
+            fields[key] = value if type(value) is bool else None
         else:
             bound = 33 if key == 'argumentAttempts' else 65537
             fields[key] = value if type(value) is int and 0 <= value <= bound else None
@@ -156,64 +167,12 @@ def child_ended(pid, parent, before, observation):
         return child_absent(pid, parent)
 
 
-class _EmptyArgumentFailure(RuntimeError):
-    """Internal marker for rejection after a bounded retry episode."""
-
-
-def empty_argument_record(error):
-    size = getattr(error, 'observer_argument_bytes', None)
-    shape = getattr(error, 'observer_argument_shape', None)
-    return (type(error) is RuntimeError and type(size) is int and size == 0
-        and type(shape) is str and shape == 'empty')
-
-
 def reobserve_arguments(pid, parent, before, error):
-    attempts = 1
-    deadline = time.monotonic() + 0.02
-    try:
-        for retry in range(32):
-            if time.monotonic() >= deadline:
-                break
-            ended = child_ended(pid, parent, before, error)
-            if time.monotonic() >= deadline:
-                break
-            if ended:
-                return None
-            attempts += 1
-            try:
-                args = actual_arguments(pid)
-                check(time.monotonic() < deadline, FAILURE)
-                return args
-            except RuntimeError as fresh:
-                if not empty_argument_record(fresh):
-                    raise
-                fresh.observer_after_state = getattr(error, 'observer_after_state', 'other')
-                error = fresh
-            if retry < 31:
-                if time.monotonic() >= deadline:
-                    break
-                time.sleep(0.001)
-        raise error
-    except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as failure:
-        if not hasattr(failure, 'observer_argument_shape'):
-            copy_observation_details(failure, error)
-        failure.observer_after_state = getattr(error, 'observer_after_state', 'other')
-        failure.observer_argument_attempts = attempts
-        raise
+    return retry_reobserve_arguments(sys.modules[__name__], pid, parent, before, error)
 
 
 def read_arguments(pid, parent, before, stage):
-    try:
-        return actual_arguments(pid)
-    except RuntimeError as error:
-        if not empty_argument_record(error):
-            raise
-        try:
-            return reobserve_arguments(pid, parent, before, error)
-        except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as failure:
-            handled = _EmptyArgumentFailure(FAILURE)
-            handled.__dict__.update(qualified_failure(stage, failure).__dict__)
-            raise handled from None
+    return retry_read_arguments(sys.modules[__name__], pid, parent, before, stage)
 
 
 def observe_child(pid, parent, source, expected):
