@@ -6,6 +6,36 @@ import UIKit
 @testable import KinosailPlayer
 
 struct PlaybackChapterTests {
+    // The real Nox Resume journey rejected this additive server plan field.
+    // Retain this isolated HTTP-contract regression because the remote fixture
+    // has no incompatible audio and cannot emit or vary this field reliably.
+    private func audioRequirementBody(_ requirement: String, compatiblePlan: Bool) -> String {
+        let evidence = "\"audioCompatibilityRequired\":\(requirement),"
+        return """
+        {"media":{"duration":60},"plan":{\(compatiblePlan ? "" : evidence)"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":29.5,"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","compatibleDuration":60,"compatible":"/hls/movie/index.m3u8","compatiblePlan":{\(compatiblePlan ? evidence : "")"allowed":true,"mode":"audio-transcode","reason":"audio-codec-unsupported"},"chapters":[]}
+        """
+    }
+
+    @Test(arguments: ["true", "false"], [false, true])
+    func acceptsServerAudioCompatibilityEvidence(_ requirement: String, _ compatiblePlan: Bool) async throws {
+        let fixture = try HTTPFixture(body: audioRequirementBody(requirement, compatiblePlan: compatiblePlan))
+        defer { fixture.remove() }
+        let result = try await fixture.client.playback(itemID: "movie")
+        #expect(result.direct?.path == "/media/movie")
+        #expect(result.compatible?.url.path == "/hls/movie/index.m3u8")
+        #expect(result.start == 29.5)
+        #expect(fixture.requests.count == 1)
+        #expect(fixture.requests.first?.url?.path == "/api/v1/items/movie/playback")
+    }
+
+    @Test(arguments: ["null", "1", "\"true\"", "{}", "[]"], [false, true])
+    func rejectsMalformedAudioCompatibilityEvidence(_ requirement: String, _ compatiblePlan: Bool) async throws {
+        let fixture = try HTTPFixture(body: audioRequirementBody(requirement, compatiblePlan: compatiblePlan))
+        defer { fixture.remove() }
+        await #expect(throws: ClientError.invalidResponse) { try await fixture.client.playback(itemID: "movie") }
+        #expect(fixture.requests.count == 1)
+    }
+
     private func sourceWithSubtitlePolicy(_ policy: String) throws -> PlaybackSource {
         let body = """
         {"media":{"duration":60},"plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"duration":60,"start":0,"directAllowed":true,"direct":"/media/movie","directType":"video/mp4","chapters":[],\(policy)}
