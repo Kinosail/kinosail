@@ -27,15 +27,19 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   });
   await login(page);
   const watch = await firstPlayable(page), id = watch.split("/").at(-1)!;
+  const progress = async () => {
+    const response = await page.request.get(`/api/v1/items/${id}`);
+    expect(response.status()).toBe(200);
+    const stored = (await response.json()).item.progress;
+    return {...stored, seconds: stored.seconds ?? 0, watched: stored.watched ?? false};
+  };
+  // Establish state before the watch page installs the delayed native-callback fixture.
+  const setup = await page.request.put(`/api/v1/items/${id}/progress`, {headers: {Origin: new URL(page.url()).origin,
+    "X-Kinosail-CSRF": await page.locator('meta[name="kinosail-csrf"]').getAttribute("content") || ""}, data: {seconds: 0, watched: !watched}});
+  expect(setup.status()).toBe(200);
+  expect(await progress()).toMatchObject({seconds: 0, watched: !watched});
   await page.goto(watch);
-  if (await page.getByRole("button", {name: "Mark unwatched", exact: true}).isVisible()) {
-    await page.getByRole("button", {name: "Mark unwatched", exact: true}).click();
-    await expect(page.getByRole("button", {name: "Mark watched", exact: true})).toBeVisible();
-  }
-  if (!watched) {
-    await page.getByRole("button", {name: "Mark watched", exact: true}).click();
-    await expect(page.getByRole("button", {name: "Mark unwatched", exact: true})).toBeVisible();
-  }
+  await expect(page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true})).toBeVisible();
   const media = page.locator("video");
   await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
   // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
@@ -46,12 +50,6 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   await expect(media).toHaveJSProperty("paused", true);
   await startPlaying(media);
   await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
-  const progress = async () => {
-    const response = await page.request.get(`/api/v1/items/${id}`);
-    expect(response.status()).toBe(200);
-    const stored = (await response.json()).item.progress;
-    return {...stored, seconds: stored.seconds ?? 0, watched: stored.watched ?? false};
-  };
   let release!: () => void, committed = false;
   const pending = new Promise<void>(resolve => {release = resolve;});
   const latePositions: string[] = [];
@@ -143,3 +141,37 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
 });
 }
 }
+
+// Keep ordinary form navigation covered without the delayed-callback injection.
+test("watched controls navigate and persist both states during decoded playback", {tag: "@smoke"}, async ({page}, info) => {
+  await login(page);
+  const watch = await firstPlayable(page), id = watch.split("/").at(-1)!;
+  const origin = new URL(page.url()).origin;
+  const setup = await page.request.put(`/api/v1/items/${id}/progress`, {headers: {Origin: origin,
+    "X-Kinosail-CSRF": await page.locator('meta[name="kinosail-csrf"]').getAttribute("content") || ""}, data: {seconds: 0, watched: false}});
+  expect(setup.status()).toBe(200);
+  await page.goto(watch);
+  const observations: {watched: boolean; status: number; redirectedStatus: number}[] = [];
+  for (const watched of [true, false]) {
+    const media = page.locator("video");
+    await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
+    await startPlaying(media);
+    const [saved, redirected] = await Promise.all([
+      page.waitForResponse(response => response.url() === `${origin}/watched/${id}` && response.request().method() === "POST"),
+      page.waitForResponse(response => response.url() === `${origin}${watch}` && response.request().redirectedFrom()?.url() === `${origin}/watched/${id}`),
+      page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click(),
+    ]);
+    expect(saved.status()).toBe(303);
+    expect(redirected.status()).toBe(200);
+    await expect(page.getByRole("button", {name: `Mark ${watched ? "unwatched" : "watched"}`, exact: true})).toBeVisible();
+    await expect.poll(async () => {
+      const response = await page.request.get(`/api/v1/items/${id}`);
+      expect(response.status()).toBe(200);
+      return Boolean((await response.json()).item.progress.watched);
+    }).toBe(watched);
+    observations.push({watched, status: saved.status(), redirectedStatus: redirected.status()});
+  }
+  await info.attach("ordinary-watched-form-navigation", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+    observations, data: "Real decoded media and native form navigation; no deferred callbacks or mocked transport", result: "passed"}), contentType: "application/json"});
+});
