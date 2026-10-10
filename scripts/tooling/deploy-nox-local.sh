@@ -38,6 +38,7 @@ if [[ "$runtime" == "$runtime_hash|arm64" ]]; then
   CGO_ENABLED=0 GOOS=linux GOARCH=arm64 GOWORK=off go -C "$snapshot/$app_path" build -mod=readonly -trimpath \
     -ldflags="-s -w -X main.version=local-${sha:0:12}" -o "$payload/kinosail" ./cmd/kinosail
   still_current
+  chmod 0555 "$payload/kinosail"
   cat >"$payload/Dockerfile" <<DOCKERFILE
 FROM $base
 USER root
@@ -46,6 +47,7 @@ LABEL org.opencontainers.image.version=local-${sha:0:12}
 LABEL org.opencontainers.image.revision=$sha
 LABEL io.kinosail.source.commit=$commit
 USER kinosail
+HEALTHCHECK --interval=2s --timeout=30s --start-period=10s --retries=3 CMD kinosail healthcheck
 DOCKERFILE
   tar -C "$payload" -czf "$snapshot/payload.tar.gz" Dockerfile kinosail
   ssh "${ssh_options[@]}" "$nox_host" "docker build --quiet --tag $image -" <"$snapshot/payload.tar.gz"

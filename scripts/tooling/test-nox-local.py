@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Isolated source/race checks; live Nox cannot safely exercise these failures."""
 import importlib.util
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -8,6 +9,7 @@ import tempfile
 import time
 import unittest
 import plistlib
+import sys
 
 HERE = Path(__file__).resolve().parent
 
@@ -52,6 +54,13 @@ class LocalWatchTests(unittest.TestCase):
         changed = source.capture(self.repo, "player", snapshot)
         self.assertNotEqual(initial["snapshot"], changed["snapshot"])
         self.assertFalse((snapshot / "apps/player/internal/.env").exists())
+        child_snapshot = self.root / "child-snapshot"
+        child = subprocess.run([sys.executable, str(HERE / "nox_local_source.py"), str(self.repo),
+                                "player", "--json", "--destination", str(child_snapshot)],
+                               check=True, capture_output=True, text=True)
+        self.assertRegex(json.loads(child.stdout)["snapshot"], r"^[0-9a-f]{40}$")
+        self.assertEqual((child_snapshot / "apps/player/internal/new.go").read_text(), "package main\n")
+        self.assertFalse((child_snapshot / "apps/player/internal/secret.go").exists())
         (self.repo / "apps/player/internal/main.go").unlink()
         self.assertNotEqual(changed["snapshot"], source.capture(self.repo, "player")["snapshot"])
 
@@ -85,6 +94,7 @@ class LocalWatchTests(unittest.TestCase):
         environment = dict(os.environ, TEST_DEPLOY_LOG=str(log))
         process = subprocess.Popen(["python3", str(copied / runtime.name), "--repo", str(self.repo),
                                     "--cache", str(self.root / "cache"), "--apps", "player",
+                                    "--source-python", sys.executable,
                                     "--debounce", "0.3", "--poll", "0.05"], env=environment,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.addCleanup(lambda: self.stop(process))
@@ -147,6 +157,29 @@ class LocalWatchTests(unittest.TestCase):
         self.until(lambda: len(log.read_text().splitlines()) == 2)
         self.stop(process)
 
+    def test_private_local_umask_does_not_make_the_container_binary_inexecutable(self):
+        snapshot = self.root / "snapshot"
+        metadata = self.source().capture(self.repo, "player", snapshot)
+        tools = self.root / "bin"
+        tools.mkdir()
+        mode = self.root / "mode"
+        for name, body in {
+            "ssh": 'case "$*" in *"docker info"*) echo aarch64;; *"docker image inspect"*) printf "%s|arm64\\n" "$TEST_RUNTIME";; esac\n',
+            "go": 'while [ "$#" -gt 0 ]; do if [ "$1" = -o ]; then shift; printf binary > "$1"; chmod 700 "$1"; exit; fi; shift; done\n',
+            "tar": 'python3 -c "import pathlib,sys; print(oct(pathlib.Path(sys.argv[1]).stat().st_mode & 0o777))" "$2/kinosail" > "$TEST_MODE"\ntouch "$4"\n',
+        }.items():
+            file = tools / name
+            file.write_text("#!/bin/sh\n" + body)
+            file.chmod(0o755)
+        env = dict(os.environ, PATH=f"{tools}:{os.environ['PATH']}", TEST_MODE=str(mode),
+                   TEST_RUNTIME=metadata["runtime"])
+        subprocess.run([str(HERE / "deploy-nox-local.sh"), "player", str(snapshot),
+                        metadata["snapshot"], metadata["runtime"], metadata["commit"], str(self.repo)],
+                       env=env, check=True, capture_output=True)
+        permissions = int(mode.read_text().strip(), 8)
+        self.assertEqual(permissions & 0o005, 0o005, "Container user must read and execute the binary")
+        self.assertFalse(permissions & 0o002, "Container user must not rewrite the binary")
+
     def test_installer_records_the_selected_checkout_and_copies_runtime_tools(self):
         tools = self.root / "bin"
         tools.mkdir()
@@ -162,6 +195,9 @@ class LocalWatchTests(unittest.TestCase):
         home = self.root / "home"
         plist = home / "Library/LaunchAgents/com.kinosail.nox-local-live.plist"
         config = plistlib.loads(plist.read_bytes())
+        if sys.platform == "darwin":
+            self.assertEqual(config["ProgramArguments"][0], "/usr/bin/python3")
+            self.assertIn("--source-python", config["ProgramArguments"])
         self.assertIn(str(self.repo.resolve()), config["ProgramArguments"])
         self.assertTrue(config["RunAtLoad"])
         self.assertTrue(config["KeepAlive"])

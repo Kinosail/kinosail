@@ -22,6 +22,15 @@ def report(level, app, snapshot, outcome, **fields):
                           snapshot=snapshot, outcome=outcome, **fields)), flush=True)
 
 
+def source(args, app, destination=None):
+    if not args.source_python:
+        return capture(args.repo, app, destination)
+    command = [str(args.source_python), str(HERE / "nox_local_source.py"), str(args.repo), app, "--json"]
+    if destination is not None:
+        command += ["--destination", str(destination)]
+    return json.loads(subprocess.check_output(command, stderr=subprocess.DEVNULL))
+
+
 def run(args):
     args.cache.mkdir(parents=True, exist_ok=True, mode=0o700)
     os.chmod(args.cache, 0o700)
@@ -43,8 +52,8 @@ def watch(args):
         for app in args.apps:
             now = time.monotonic()
             try:
-                source = capture(args.repo, app)
-                sha = source["snapshot"]
+                inputs = source(args, app)
+                sha = inputs["snapshot"]
                 if pending.get(app, (None,))[0] != sha:
                     pending[app] = (sha, now)
                     retry_after[app] = 0
@@ -55,8 +64,8 @@ def watch(args):
                 started = time.monotonic()
                 with tempfile.TemporaryDirectory(prefix=f"{app}-", dir=args.cache) as folder:
                     snapshot = Path(folder)
-                    captured = capture(args.repo, app, snapshot)
-                    if captured != source or capture(args.repo, app) != source:
+                    captured = source(args, app, snapshot)
+                    if captured != inputs or source(args, app) != inputs:
                         report("info", app, sha, "superseded")
                         failed = True
                         continue
@@ -64,7 +73,7 @@ def watch(args):
                     report("info", app, sha, "building")
                     with log.open("wb") as output:
                         process = subprocess.Popen([str(HERE / "deploy-nox-local.sh"), app, str(snapshot),
-                                                    sha, source["runtime"], source["commit"], str(args.repo)],
+                                                    sha, inputs["runtime"], inputs["commit"], str(args.repo)],
                                                    stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
                         try:
                             code = process.wait()
@@ -82,7 +91,7 @@ def watch(args):
                         failed = True
                         retry_after[app] = time.monotonic() + (0 if code == 75 else 30)
                         continue
-                    evidence = dict(source, app=app, outcome="healthy", seconds=seconds,
+                    evidence = dict(inputs, app=app, outcome="healthy", seconds=seconds,
                                     build_log_sha256=hashlib.sha256(log.read_bytes()).hexdigest())
                     (args.cache / f"{app}-latest.json").write_text(json.dumps(evidence, indent=2) + "\n")
                     deployed[app] = sha
@@ -109,6 +118,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--repo", type=Path, default=HERE.parents[1])
     parser.add_argument("--cache", type=Path, default=Path.home() / "Library/Caches/KinosailNoxLocal")
+    parser.add_argument("--source-python", type=Path, help="Runtime with permission to read the watched checkout")
     parser.add_argument("--apps", nargs="+", choices=APPS, default=list(APPS))
     parser.add_argument("--debounce", type=duration, default=3)
     parser.add_argument("--poll", type=duration, default=1)

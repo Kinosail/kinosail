@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Capture the bounded, nonignored build inputs of one local application."""
+import argparse
 import hashlib
+import json
 import os
 from pathlib import Path
 import stat
@@ -65,8 +67,15 @@ def capture(repo, app, destination=None):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    parser.add_argument("repo", type=Path)
+    parser.add_argument("app", choices=APPS)
+    parser.add_argument("--json", action="store_true")
+    parser.add_argument("--destination", type=Path)
+    args = parser.parse_args()
     try:
-        print(capture(Path(sys.argv[1]), sys.argv[2])["snapshot"])
+        source = capture(args.repo, args.app, args.destination)
+        print(json.dumps(source) if args.json else source["snapshot"])
     except (OSError, ValueError, subprocess.CalledProcessError, IndexError):
         print("level=warn operation=nox_source outcome=invalid_source", file=sys.stderr)
         sys.exit(2)

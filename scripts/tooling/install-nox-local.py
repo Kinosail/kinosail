@@ -28,7 +28,9 @@ def main():
         return 0
     repo = args.repo.resolve(strict=True)
     subprocess.run(["git", "-C", str(repo), "rev-parse", "--git-dir"], check=True, capture_output=True)
-    python = shutil.which("python3")
+    # Apple's runtime gives launchd a stable platform identity for Local Network access.
+    # The Homebrew runtime can be denied here even when its GUI permission is enabled.
+    python = "/usr/bin/python3" if sys.platform == "darwin" else shutil.which("python3")
     for tool in ("go", "podman", "ssh"):
         if not shutil.which(tool):
             raise ValueError(f"missing tool: {tool}")
@@ -45,6 +47,8 @@ def main():
                   EnvironmentVariables=dict(PATH="/opt/homebrew/bin:/opt/podman/bin:/usr/local/bin:/usr/bin:/bin"),
                   RunAtLoad=True, KeepAlive=True, ThrottleInterval=10,
                   StandardOutPath=str(cache / "watcher.log"), StandardErrorPath=str(cache / "watcher-error.log"))
+    if sys.platform == "darwin":
+        config["ProgramArguments"] += ["--source-python", shutil.which("python3")]
     # Stop the hosted-main watchers so they cannot overwrite a local development snapshot.
     for label in ("com.kinosail.deploy-nox", "com.kinosail.subtitles.deploy-nox", LABEL):
         subprocess.run(["launchctl", "bootout", f"{domain}/{label}"], capture_output=True)

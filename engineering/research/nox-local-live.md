@@ -15,6 +15,8 @@ This development path intentionally accepts uncommitted source. It does not chan
 - Logs must identify the app, snapshot, and failure class without printing source, credentials, or remote logs.
 - The updater must restart at login and recover from temporary SSH failures.
 - Reinstalling must tolerate the short delay between unloading and restarting the macOS agent.
+- A private local umask must still produce a binary executable by the container's unprivileged user.
+- The login agent must use the existing runtime permissions for source reads and local network access.
 
 ## Isolated coverage gap
 
@@ -22,6 +24,7 @@ The local watcher process tests cover save timing, exclusion of ignored credenti
 symlink rejection, and superseded builds. A normal live deployment cannot reliably reproduce
 those races or deliberately break the shared Nox service. The existing remote deployment
 tests protect health-check rollback. These checks are isolated evidence, not populated-server E2E proof.
+The executable-mode regression protects the image payload in CI, which cannot access the owner's Nox host.
 
 ## Operation
 
@@ -39,6 +42,12 @@ Other updates compile the Go binary locally, transfer it over SSH, and assemble 
 The binary includes embedded web assets. Nox checks container health and rolls back a failed update.
 Each update can briefly interrupt playback or an active Subtitles operation.
 
+The macOS login agent uses `/usr/bin/python3` for deployment and the installer's `python3`
+for source capture. On the verified Mac, Homebrew Python could read Documents but could not
+reach Nox as an agent. Apple's Python could reach Nox but could not read this Documents checkout.
+The source helper and deployment process use those existing permissions. No broader disk grant was added.
+[Apple describes the different privacy rules for agents and terminal tools](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy).
+
 The source snapshot ID appears in the container revision label. The separate
 `io.kinosail.source.commit` label identifies its base Git commit. These development snapshots
 have not passed hosted CI, image scanning, signing, browser checks, or release promotion.
@@ -46,3 +55,18 @@ They do not update GHCR. The Mac must be awake and connected to Nox.
 
 Private build logs and snapshot evidence stay under `~/Library/Caches/KinosailNoxLocal`.
 Do not share raw logs. Inspect only a bounded safe projection when reporting status.
+
+## Live verification
+
+With the watcher running, use this manual test from the implementation checkout:
+
+```sh
+python3 scripts/tooling/test-nox-local-e2e.py --repo /path/to/watched/kinosail \
+  --watcher-mode login-agent --output /private/path/to/evidence
+```
+
+The test saves temporary source canaries, verifies deployed snapshot IDs and binary versions,
+and removes the canaries. It then restores the original source snapshot.
+It tests failed-image rollback in a disposable Compose project with separate volumes and no host ports.
+The JSON report records revisions, environment, timings, results, and private log checksums.
+This test restarts the live apps. Run it when brief interruptions are acceptable.
