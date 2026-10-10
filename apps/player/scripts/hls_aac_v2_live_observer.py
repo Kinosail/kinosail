@@ -1,6 +1,7 @@
 """Read-only actual owned HLS activity; unknown live input never certifies zero."""
 from pathlib import Path
 import subprocess
+import time
 from hls_followon_public import bounded_bytes, check
 from hls_aac_v2_source_identity import captured_input_identity, matches_source_input
 from hls_aac_v2_source_identity import option, regular_identity, startup_fixture, validate_identity
@@ -26,6 +27,7 @@ DETAIL_ATTRIBUTES = (
     ('observer_argument_shape', 'argumentShape'), ('observer_argument_bytes', 'argumentBytes'),
     ('observer_argument_count', 'argumentCount'),
     ('observer_maximum_argument_bytes', 'maximumArgumentBytes'),
+    ('observer_argument_attempts', 'argumentAttempts'),
 )
 
 
@@ -47,7 +49,8 @@ def observation_details(error):
             allowed = ARGUMENT_SHAPES if key == 'argumentShape' else PROCESS_STATES
             fields[key] = value if type(value) is str and value in allowed else 'other'
         else:
-            fields[key] = value if type(value) is int and 0 <= value <= 65537 else None
+            bound = 33 if key == 'argumentAttempts' else 65537
+            fields[key] = value if type(value) is int and 0 <= value <= bound else None
     return fields
 
 
@@ -153,6 +156,57 @@ def child_ended(pid, parent, before, observation):
         return child_absent(pid, parent)
 
 
+def empty_argument_record(error):
+    size = getattr(error, 'observer_argument_bytes', None)
+    return (type(error) is RuntimeError and type(size) is int and size == 0
+        and getattr(error, 'observer_argument_shape', None) == 'empty')
+
+
+def reobserve_arguments(pid, parent, before, error):
+    attempts = 1
+    deadline = time.monotonic() + 0.02
+    try:
+        for retry in range(32):
+            if time.monotonic() >= deadline:
+                break
+            ended = child_ended(pid, parent, before, error)
+            if time.monotonic() >= deadline:
+                break
+            if ended:
+                return None
+            attempts += 1
+            try:
+                return actual_arguments(pid)
+            except RuntimeError as fresh:
+                if not empty_argument_record(fresh):
+                    raise
+                fresh.observer_after_state = getattr(error, 'observer_after_state', 'other')
+                error = fresh
+            if retry < 31:
+                if time.monotonic() >= deadline:
+                    break
+                time.sleep(0.001)
+        raise error
+    except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as failure:
+        if not hasattr(failure, 'observer_argument_shape'):
+            copy_observation_details(failure, error)
+        failure.observer_after_state = getattr(error, 'observer_after_state', 'other')
+        failure.observer_argument_attempts = attempts
+        raise
+
+
+def read_arguments(pid, parent, before, stage):
+    try:
+        return actual_arguments(pid)
+    except RuntimeError as error:
+        if not empty_argument_record(error):
+            raise
+        try:
+            return reobserve_arguments(pid, parent, before, error)
+        except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as failure:
+            raise qualified_failure(stage, failure) from None
+
+
 def observe_child(pid, parent, source, expected):
     stage = 'identity_before'
     before = None
@@ -161,13 +215,17 @@ def observe_child(pid, parent, source, expected):
         if before[0] in ['Z', 'X', 'x']:
             return 0
         stage = 'arguments_before'
-        args = actual_arguments(pid)
+        args = read_arguments(pid, parent, before, stage)
+        if args is None:
+            return 0
         if '-hls_time' not in args:
             return 0
         stage = 'input_before'
         first = input_classification(args, parent, source, expected)
         stage = 'arguments_after'
-        after_args = actual_arguments(pid)
+        after_args = read_arguments(pid, parent, before, stage)
+        if after_args is None:
+            return 0
         stage = 'input_after'
         check('-hls_time' in after_args
             and input_classification(after_args, parent, source, expected) == first, FAILURE)
@@ -188,7 +246,8 @@ def observe_child(pid, parent, source, expected):
     except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as error:
         if before is not None:
             error.observer_before_state = before[0]
-        if stage == 'arguments_before' and isinstance(error, RuntimeError):
+        if (stage == 'arguments_before' and isinstance(error, RuntimeError)
+                and not getattr(error, 'observer_stage', None)):
             try:
                 if child_ended(pid, parent, before, error):
                     return 0
