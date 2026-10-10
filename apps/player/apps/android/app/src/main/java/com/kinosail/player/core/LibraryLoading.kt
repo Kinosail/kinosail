@@ -81,7 +81,8 @@ private fun HomeLoading(tv: Boolean) {
                 val information: @Composable () -> Unit = {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Placeholder(Modifier.fillMaxWidth(0.8f).height(40.dp))
-                        Placeholder(Modifier.fillMaxWidth(0.7f).height(20.dp))
+                        Placeholder(Modifier.fillMaxWidth(0.7f).height(24.dp))
+                        Placeholder(Modifier.fillMaxWidth(0.5f).height(24.dp))
                         Placeholder(Modifier.width(120.dp).height(48.dp))
                     }
                 }
@@ -110,17 +111,21 @@ private fun LoadingShelf(tv: Boolean, landscape: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Placeholder(Modifier.width(180.dp).height(28.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
-            items(4) { LoadingCard(homeCardWidth(tv, landscape), if (landscape) 16f / 9f else 2f / 3f, metadata = true) }
+            items(4) { LoadingCard(homeCardWidth(tv, landscape), if (landscape) 16f / 9f else 2f / 3f,
+                metadata = true, position = landscape) }
         }
     }
 }
 
 @Composable
-private fun LoadingCard(width: androidx.compose.ui.unit.Dp, ratio: Float, metadata: Boolean = false) {
+private fun LoadingCard(width: androidx.compose.ui.unit.Dp, ratio: Float, metadata: Boolean = false, position: Boolean = false) {
     Column(Modifier.width(width), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Placeholder(Modifier.fillMaxWidth().aspectRatio(ratio))
-        Placeholder(Modifier.fillMaxWidth().height(18.dp))
-        if (metadata) Placeholder(Modifier.fillMaxWidth(0.7f).height(16.dp))
+        if (metadata) Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Placeholder(Modifier.fillMaxWidth().height(24.dp))
+            Placeholder(Modifier.fillMaxWidth(0.7f).height(16.dp))
+            if (position) Placeholder(Modifier.fillMaxWidth(0.5f).height(16.dp))
+        } else Placeholder(Modifier.fillMaxWidth().height(18.dp))
     }
 }
 
