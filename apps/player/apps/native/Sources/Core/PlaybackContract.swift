@@ -121,7 +121,8 @@ extension PlaybackSource {
 
     private static func plan(_ raw: JSONValue) throws -> [String: JSONValue] {
         let value = try raw.object(allowing: ["allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode", "colorMode", "audioIndex", "subtitleIndex",
-                                            "subtitleSourceIndex", "subtitleText", "subtitleExternal", "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline"])
+                                            "subtitleSourceIndex", "subtitleText", "subtitleExternal", "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline", "audioCompatibilityRequired"])
+        _ = try value.flag("audioCompatibilityRequired", fallback: false)
         let mode = try value.text("mode", max: 32, required: true)
         guard ["direct", "remux", "audio-transcode", "transcode", "denied"].contains(mode) else { throw ClientError.invalidResponse }
         let allowed = try value.flag("allowed")
