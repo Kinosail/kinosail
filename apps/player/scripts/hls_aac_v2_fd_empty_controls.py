@@ -1,5 +1,6 @@
 """Bounded empty-record controls sharing the actual owned codec fixture."""
 import time
+from types import SimpleNamespace
 from unittest.mock import patch
 import hls_aac_v2_live_observer as live
 from hls_followon_public import check, encoder_count
@@ -141,7 +142,8 @@ class EmptyArgumentObserverControls:
 
         with patch.object(live, 'actual_arguments', side_effect=ending):
             with patch.object(live, 'child_ended', side_effect=ended):
-                with patch.object(time, 'monotonic', side_effect=lambda: now):
+                with patch.object(live, 'time',
+                        SimpleNamespace(monotonic=lambda: now, sleep=time.sleep)):
                     with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$') as caught:
                         encoder_count(self.server, self.source)
         self.qualified_terminal_transition(True)
