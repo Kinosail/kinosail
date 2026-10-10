@@ -106,6 +106,52 @@ class EmptyBudgetControls(unittest.TestCase):
         self.assertEqual(classify.call_count, 1)
         self.assertEqual(caught.exception.observer_stage, 'input_before')
 
+    def fresh_read_rejection(self, shape, late):
+        args = ['-i', str(self.source), '-hls_time', '0.1']
+        calls, now = 0, 0.0
+
+        def arguments(pid):
+            nonlocal calls, now
+            self.assertEqual(pid, self.server.pid + 1)
+            calls += 1
+            self.assertLessEqual(calls, 2)
+            if calls == 1:
+                error = RuntimeError(live.FAILURE)
+                error.observer_argument_shape = shape
+                error.observer_argument_bytes = 0
+                raise error
+            if late:
+                now = 0.021
+            return args
+
+        with ExitStack() as stack:
+            stack.enter_context(patch.object(live, 'owned_children',
+                return_value=[self.server.pid + 1]))
+            stack.enter_context(patch.object(live, 'process_identity', return_value=('R', 7)))
+            stack.enter_context(patch.object(time, 'monotonic', side_effect=lambda: now))
+            stack.enter_context(patch.object(time, 'sleep', return_value=None))
+            with patch.object(live, 'actual_arguments', return_value=args):
+                self.assertEqual(live.owned_hls_count(self.server, self.source), 1)
+            classify = stack.enter_context(patch.object(live, 'input_classification',
+                wraps=live.input_classification))
+            stack.enter_context(patch.object(live, 'actual_arguments', side_effect=arguments))
+            with self.assertRaisesRegex(RuntimeError, '^' + live.FAILURE + '$') as caught:
+                live.owned_hls_count(self.server, self.source)
+        self.assertEqual(calls, 2 if late else 1)
+        self.assertEqual(classify.call_count, 0)
+        self.assertEqual(caught.exception.observer_stage, 'arguments_before')
+        if late:
+            self.assertEqual(caught.exception.observer_argument_attempts, 2)
+
+    def test_successful_fresh_read_after_deadline_is_rejected(self):
+        self.fresh_read_rejection('empty', True)
+
+    def test_nonexact_empty_shape_does_not_enter_retry(self):
+        class EmptyShape(str):
+            pass
+
+        self.fresh_read_rejection(EmptyShape('empty'), False)
+
     def test_retry_attempt_details_preserve_exact_bounded_integer(self):
         for attempts in [0, 1, 33]:
             with self.subTest(attempts=attempts):
