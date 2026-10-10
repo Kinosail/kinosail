@@ -30,26 +30,7 @@ func TestQueueLoadingBrowserJourney(t *testing.T) {
 		}
 	}
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir()})
-	peer := &queueLoadingPeer{handler: handler, allowed: map[string]bool{}}
-	read := func(path string, value interface{}) {
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
-		if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), value) != nil {
-			t.Fatal("real audio catalog unavailable")
-		}
-	}
-	var catalog struct{ Albums []struct{ ID string } }
-	read("/api/v1/albums", &catalog)
-	for _, album := range catalog.Albums {
-		var detail struct{ Tracks []struct{ Stream string } }
-		read("/api/v1/albums/"+album.ID, &detail)
-		for _, track := range detail.Tracks {
-			peer.allowed[track.Stream] = true
-		}
-	}
-	if len(peer.allowed) != 4 {
-		t.Fatal("expected four real fictional tracks")
-	}
+	peer := &queueLoadingPeer{handler: handler, allowed: queueLoadingStreams(t, handler)}
 	web := httptest.NewServer(peer)
 	t.Cleanup(web.Close)
 	t.Cleanup(peer.release)
@@ -64,6 +45,31 @@ func TestQueueLoadingBrowserJourney(t *testing.T) {
 	if err := command.Run(); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func queueLoadingStreams(t *testing.T, handler http.Handler) map[string]bool {
+	t.Helper()
+	allowed := map[string]bool{}
+	read := func(path string, value interface{}) {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
+		if response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), value) != nil {
+			t.Fatal("real audio catalog unavailable")
+		}
+	}
+	var catalog struct{ Albums []struct{ ID string } }
+	read("/api/v1/albums", &catalog)
+	for _, album := range catalog.Albums {
+		var detail struct{ Tracks []struct{ Stream string } }
+		read("/api/v1/albums/"+album.ID, &detail)
+		for _, track := range detail.Tracks {
+			allowed[track.Stream] = true
+		}
+	}
+	if len(allowed) != 4 {
+		t.Fatal("expected four real fictional tracks")
+	}
+	return allowed
 }
 
 type queueLoadingPeer struct {
@@ -87,24 +93,7 @@ func (peer *queueLoadingPeer) release() {
 func (peer *queueLoadingPeer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	const control = "/__queue-media"
 	if strings.HasPrefix(request.URL.Path, control) {
-		peer.mutex.Lock()
-		defer peer.mutex.Unlock()
-		path := strings.TrimPrefix(request.URL.Path, control)
-		if len(request.URL.Path) > 256 || request.URL.RawPath != "" || request.URL.RawQuery != "" || request.ContentLength != 0 || (path != "" && !peer.allowed[path]) {
-			writer.WriteHeader(http.StatusBadRequest)
-		} else if request.Method == http.MethodGet && path == "" {
-			writer.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(writer).Encode(map[string]interface{}{"path": peer.path, "held": peer.held})
-		} else if request.Method == http.MethodPut && path != "" && peer.gate == nil {
-			peer.path, peer.gate, peer.held = path, make(chan struct{}), 0
-			writer.WriteHeader(http.StatusNoContent)
-		} else if request.Method == http.MethodDelete && path == peer.path && peer.gate != nil {
-			close(peer.gate)
-			peer.path, peer.gate = "", nil
-			writer.WriteHeader(http.StatusNoContent)
-		} else {
-			writer.WriteHeader(http.StatusConflict)
-		}
+		peer.control(writer, request, strings.TrimPrefix(request.URL.Path, control))
 		return
 	}
 	peer.mutex.Lock()
@@ -123,4 +112,34 @@ func (peer *queueLoadingPeer) ServeHTTP(writer http.ResponseWriter, request *htt
 		}
 	}
 	peer.handler.ServeHTTP(writer, request)
+}
+
+func (peer *queueLoadingPeer) control(writer http.ResponseWriter, request *http.Request, path string) {
+	peer.mutex.Lock()
+	defer peer.mutex.Unlock()
+	if len(request.URL.Path) > 256 || request.URL.RawPath != "" || request.URL.RawQuery != "" || request.ContentLength != 0 || (path != "" && !peer.allowed[path]) {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if request.Method == http.MethodGet && path == "" {
+		writer.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(writer).Encode(map[string]interface{}{"path": peer.path, "held": peer.held})
+		return
+	}
+	writer.WriteHeader(peer.change(request.Method, path))
+}
+
+// change runs with the control request's mutex held.
+func (peer *queueLoadingPeer) change(method, path string) int {
+	switch {
+	case method == http.MethodPut && path != "" && peer.gate == nil:
+		peer.path, peer.gate, peer.held = path, make(chan struct{}), 0
+		return http.StatusNoContent
+	case method == http.MethodDelete && path == peer.path && peer.gate != nil:
+		close(peer.gate)
+		peer.path, peer.gate = "", nil
+		return http.StatusNoContent
+	default:
+		return http.StatusConflict
+	}
 }
