@@ -32,9 +32,19 @@ WORKFLOW_BLOB_APPROVED = {
 }
 
 
+ARTIFACT_DIGEST_APPROVED = {
+    '0e98cf9e5bc2cc7722ba2f6b11a34594a9ecab20:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:147',
+    '80c3eba5fa052fdd609e3eb7b84084a2ce8e91ac:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:133',
+    'c13394050e8a2c220d18f431199f9496cd84bc96:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:127',
+    'a27a554bf3fc371c2ed17cbbcaccc9fba3bb3ea7:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:123',
+    '4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:284',
+    '4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:288',
+}
+
+
 def fingerprints():
     return {f"{commit}:engineering/qa/2026-10-04-{group}/{file}:generic-api-key:{line}"
-            for commit, group, file, line in APPROVED} | set(API_BLOB_APPROVED) | WORKFLOW_BLOB_APPROVED
+            for commit, group, file, line in APPROVED} | set(API_BLOB_APPROVED) | WORKFLOW_BLOB_APPROVED | ARTIFACT_DIGEST_APPROVED
 
 
 class ReceiptFingerprintPolicy(unittest.TestCase):

@@ -79,3 +79,12 @@ d02c9534d2e4a67e34de979f6bfb443d7553b0e5:engineering/qa/2026-10-04-r08-now-playi
 # Historical workflow source pins: all 152 values are Git blob SHA1 identifiers
 # verified against this commit's parent. New commits remain fully scanned.
 869de5a5131d38bbed12584d8057be795790f1b9:.github/workflows/r18-canonical-metadata-reconcile.yml:generic-api-key:33
+
+# Historical artifact archive SHA256 values verified against GitHub artifact metadata.
+# Only these commit and line fingerprints are exempt; later credentials are scanned.
+0e98cf9e5bc2cc7722ba2f6b11a34594a9ecab20:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:147
+80c3eba5fa052fdd609e3eb7b84084a2ce8e91ac:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:133
+c13394050e8a2c220d18f431199f9496cd84bc96:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:127
+a27a554bf3fc371c2ed17cbbcaccc9fba3bb3ea7:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:123
+4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:284
+4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:288
