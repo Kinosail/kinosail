@@ -94,3 +94,22 @@ Artifact11652849830 has API digest4e6eb59a5ded21751d9e1f237afe18de64cf95adf0d4df
 Diagnostic enrichment keeps the original bounded read and rejection semantics while adding sanitized shape/count/state fields through both wrappers.
 It records at most sixteen unique detail rows alongside the unchanged stage rows.
 No retry, new terminal admission, birth classification, Server behavior or resource-join relaxation is included.
+
+## Written-first bounded empty-record re-observation
+
+Exact8e7 run38011283959 passed62 Python and45 Go; quality38011283884 passed.
+Actual master and lazy still fail resource qualification before candidate cases.
+Master receipt117c67615dbc584e59e0015ea067de9e7e749ed25796a8c637d8071221930e4b records arguments_before, R/R, empty, zero bytes.
+Lazy receipta24541aa0e38a701f60b99012c541bd2db15cab953017217bfa11f0a0a99eb08 adds an arguments_after empty record.
+Those groups settled with two zero samples and no remaining actors or qualification/cleanup failures; source stayed unchanged.
+An R/R empty record alone cannot certify zero or qualify live input.
+
+New controls precede retry code.
+Initial and second empty reads retain the real same-terminal Linux witness while injecting one intermediate nonterminal observation.
+A second empty read also covers reaping after the actual empty record.
+The injected state is isolated scheduling evidence, separate from the actual parent/start, empty-kernel-record, source and group witnesses.
+An injected empty observation can recover a still-live actual pinned source argv and must count one.
+A recovered wrong byte-identical FD must still reject after actual argv was re-read.
+Persistent live empty observations must reject within at most32 additional argument attempts; a changed start must reject.
+All prior tests, source seals, two-zero joins,120-second suite/30-second command bounds and post-join descriptor closure remain unchanged.
+No retry, observer, Server, workflow or admission behavior changes are included in this written-first commit.
