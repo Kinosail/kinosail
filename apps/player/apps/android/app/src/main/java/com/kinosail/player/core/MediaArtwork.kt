@@ -39,7 +39,7 @@ internal fun mediaClock(seconds: Double): String {
 internal fun MediaArtwork(item: CatalogItem, catalog: CatalogModel, modifier: Modifier = Modifier,
                           landscape: Boolean = false, dimension: Int = 400, progress: Boolean = true) {
     val path = if (landscape) item.landscapePath else item.artwork
-    val ratio = if (landscape && item.backdrop.isNotEmpty()) 16f / 9f else item.artworkRatio
+    val ratio = if (landscape) 16f / 9f else item.artworkRatio
     val image by produceState<android.graphics.Bitmap?>(null, path, catalog, dimension) {
         value = null
         value = catalog.artwork(path, dimension)
@@ -65,7 +65,7 @@ internal fun MediaHero(item: CatalogItem, catalog: CatalogModel, tv: Boolean,
         val picture: @Composable () -> Unit = {
             MediaArtwork(item, catalog, if (wide) Modifier.width(if (item.backdrop.isNotEmpty()) maxWidth * 0.46f else 200.dp) else
                 if (item.backdrop.isNotEmpty()) Modifier.fillMaxWidth() else Modifier.width(200.dp),
-                landscape = true, dimension = 800, progress = false)
+                landscape = item.backdrop.isNotEmpty(), dimension = 800, progress = false)
         }
         val information: @Composable () -> Unit = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

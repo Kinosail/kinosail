@@ -35,6 +35,35 @@ class NativeParityJourneyTest {
     private val context get() = instrumentation.targetContext
     private val tv get() = InstrumentationRegistry.getArguments().getString("tv") == "true"
 
+    // The populated Go Server browser journeys cannot inspect Compose geometry or remote focus.
+    // Keep this device journey for portrait-only continuation artwork and fixed TV navigation.
+    @Test fun homeMatchesAppleLandscapeShelvesAndPersistentTvNavigation() = journey {
+        waitText(if (tv) "Continue watching" else "Watching")
+        compose.onNodeWithText("Continue watching").performScrollTo()
+        val card = compose.onNodeWithContentDescription("Next Film")
+        card.performScrollTo().assertIsDisplayed()
+        val bounds = card.fetchSemanticsNode().boundsInRoot
+        assertTrue("Landscape fallback must keep a wide card: $bounds", bounds.height < bounds.width)
+        compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
+            useUnmergedTree = true).assertExists()
+        compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),
+            useUnmergedTree = true).assertExists()
+        capture("home-continuation")
+        if (tv) {
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
+            compose.onNodeWithText("Search").assertIsDisplayed().activate()
+            waitText("Search library")
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitText("Continue watching")
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
+            compose.onNodeWithText("Settings").assertIsDisplayed().activate()
+            waitText("Sign out")
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitText("Continue watching")
+            capture("home-navigation-return")
+        }
+    }
+
     @Test fun populatedNavigationDetailsAndMyList() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         capture("home")
@@ -156,10 +185,11 @@ class NativeParityJourneyTest {
         waitText("Nothing in your library yet.")
         capture("catalog-empty")
         fixture.mode = "ready"
-        compose.onNodeWithText("Home").activate()
-        waitText(if (tv) "Continue watching" else "Watching")
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
-        else compose.onNodeWithText("Movies").activate()
+        // Reopening the same destination intentionally retains its cached empty page.
+        // Explicit search refresh verifies recovery after the fixture changes its data.
+        compose.onNodeWithText("Search").activate()
+        waitText("Search library")
+        compose.onNodeWithText("Clear search").activate()
         waitText("New Film")
         capture("catalog-loaded")
     }
@@ -181,7 +211,12 @@ class NativeParityJourneyTest {
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
             SessionStore(context).save(SavedSession(ServerAddress("http://127.0.0.1:${fixture.port}"), "synthetic-token", fixture.viewer))
             val intent = Intent(context, if (tv) TvActivity::class.java else MobileActivity::class.java)
-            try { ActivityScenario.launch<android.app.Activity>(intent).use { check(fixture) } }
+            try { ActivityScenario.launch<android.app.Activity>(intent).use {
+                try { check(fixture) } catch (error: Throwable) {
+                    runCatching { capture("diagnostic") }
+                    throw error
+                }
+            } }
             finally { SessionStore(context).clear() }
         }
     }
@@ -219,6 +254,8 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     private var listed = false
     private val movie = item("film", "Continuing Film", progress = 90)
     private val newMovie = item("new-film", "New Film")
+    private val nextMovie = item("next-film", "Next Film", progress = 30)
+        .replace("\"backdrop\":\"/backdrop/next-film\"", "\"backdrop\":\"\"")
     private val series = item("0123456789abcdef", "Fixture Series", kind = "show")
         .replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"genres\"")
     private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
@@ -229,7 +266,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
             while (running.get()) try {
                 val socket = server.accept()
                 workers.execute {
-                    socket.use {
+                    try { socket.use {
                         val input = it.getInputStream().bufferedReader()
                         val request = input.readLine() ?: return@use
                         var line = input.readLine()
@@ -256,7 +293,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                     val query = uri.query.split('&').associate { val p = it.split('=', limit = 2); p[0] to p.getOrElse(1) { "" } }
                                     val view = query["view"] ?: "all"
                                     val items = if (mode == "empty") emptyList() else when (view) {
-                                        "history" -> listOf(movie, song)
+                                        "history" -> listOf(movie, nextMovie, song)
                                         "movies" -> listOf(newMovie, movie)
                                         "shows" -> listOf(series)
                                         "music" -> listOf(song)
@@ -297,6 +334,10 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                             write("HTTP/1.1 $code OK\r\nContent-Type: $type\r\nContent-Length: ${body.size}\r\nConnection: close\r\n\r\n".toByteArray())
                             write(body); flush()
                         }
+                    } } catch (_: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                    } catch (_: java.io.IOException) {
+                        // A cancelled request or fixture shutdown can close the client socket.
                     }
                 }
             } catch (_: Exception) { }
