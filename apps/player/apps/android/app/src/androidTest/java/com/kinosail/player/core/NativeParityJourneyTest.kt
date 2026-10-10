@@ -35,6 +35,35 @@ class NativeParityJourneyTest {
     private val context get() = instrumentation.targetContext
     private val tv get() = InstrumentationRegistry.getArguments().getString("tv") == "true"
 
+    // The populated Go Server browser journeys cannot inspect Compose geometry or remote focus.
+    // Keep this device journey for portrait-only continuation artwork and fixed TV navigation.
+    @Test fun homeMatchesAppleLandscapeShelvesAndPersistentTvNavigation() = journey {
+        waitText(if (tv) "Continue watching" else "Watching")
+        compose.onNodeWithText("Continue watching").performScrollTo()
+        val card = compose.onNodeWithContentDescription("Next Film")
+        card.performScrollTo().assertIsDisplayed()
+        val bounds = card.fetchSemanticsNode().boundsInRoot
+        assertTrue("Landscape fallback must keep a wide card: $bounds", bounds.height < bounds.width)
+        compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
+            useUnmergedTree = true).assertExists()
+        compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),
+            useUnmergedTree = true).assertExists()
+        capture("home-continuation")
+        if (tv) {
+            compose.onNodeWithText("Unwatched movies").performScrollTo()
+            compose.onNodeWithText("Search").assertIsDisplayed().activate()
+            waitText("Search library")
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitText("Continue watching")
+            compose.onNodeWithText("Unwatched movies").performScrollTo()
+            compose.onNodeWithText("Settings").assertIsDisplayed().activate()
+            waitText("Sign out")
+            instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitText("Continue watching")
+            capture("home-navigation-return")
+        }
+    }
+
     @Test fun populatedNavigationDetailsAndMyList() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         capture("home")
@@ -219,6 +248,8 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     private var listed = false
     private val movie = item("film", "Continuing Film", progress = 90)
     private val newMovie = item("new-film", "New Film")
+    private val nextMovie = item("next-film", "Next Film", progress = 30)
+        .replace("\"backdrop\":\"/backdrop/next-film\"", "\"backdrop\":\"\"")
     private val series = item("0123456789abcdef", "Fixture Series", kind = "show")
         .replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"genres\"")
     private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
@@ -256,7 +287,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                     val query = uri.query.split('&').associate { val p = it.split('=', limit = 2); p[0] to p.getOrElse(1) { "" } }
                                     val view = query["view"] ?: "all"
                                     val items = if (mode == "empty") emptyList() else when (view) {
-                                        "history" -> listOf(movie, song)
+                                        "history" -> listOf(movie, nextMovie, song)
                                         "movies" -> listOf(newMovie, movie)
                                         "shows" -> listOf(series)
                                         "music" -> listOf(song)

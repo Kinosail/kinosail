@@ -16,9 +16,9 @@ import com.kinosail.player.design.KinoColor
 
 @Composable
 internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Boolean = false, view: String = "") {
+    if (home && !show) { HomeLoading(tv); return }
     Column(Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = "Loading library" },
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        if (home && !show) Placeholder(Modifier.width(180.dp).height(28.dp))
         if (home && (!tv || show)) BoxWithConstraints {
             val artworkWidth = maxWidth * 0.46f
             if (maxWidth >= 600.dp && androidx.compose.ui.platform.LocalDensity.current.fontScale < 1.5f) Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
@@ -56,8 +56,6 @@ internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Bo
                     }
                 }
             }
-        } else if (home) LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
-            items(4) { LoadingCard(if (tv) 320.dp else 144.dp, if (tv) 16f / 9f else 2f / 3f) }
         } else BoxWithConstraints(Modifier.padding(if (tv) 12.dp else 0.dp)) {
             val spacing = if (tv) 20.dp else 18.dp
             val minimum = if (view == "photos") if (tv) 280.dp else 240.dp else if (tv) 160.dp else 144.dp
@@ -72,10 +70,57 @@ internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Bo
 }
 
 @Composable
-private fun LoadingCard(width: androidx.compose.ui.unit.Dp, ratio: Float) {
+private fun HomeLoading(tv: Boolean) {
+    Column(Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = "Loading library" },
+        verticalArrangement = Arrangement.spacedBy(32.dp)) {
+        if (!tv) Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Placeholder(Modifier.width(180.dp).height(28.dp))
+            BoxWithConstraints {
+                val wide = maxWidth >= 600.dp && androidx.compose.ui.platform.LocalDensity.current.fontScale < 1.5f
+                val artworkWidth = maxWidth * 0.46f
+                val information: @Composable () -> Unit = {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Placeholder(Modifier.fillMaxWidth(0.8f).height(40.dp))
+                        Placeholder(Modifier.fillMaxWidth(0.7f).height(20.dp))
+                        Placeholder(Modifier.width(120.dp).height(48.dp))
+                    }
+                }
+                if (wide) Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+                    Placeholder(Modifier.width(artworkWidth).aspectRatio(16f / 9f))
+                    Box(Modifier.weight(1f)) { information() }
+                } else Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Placeholder(Modifier.fillMaxWidth().aspectRatio(16f / 9f))
+                    information()
+                }
+            }
+        }
+        LoadingShelf(tv, landscape = true)
+        if (tv) Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Placeholder(Modifier.width(180.dp).height(28.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(8.dp)) {
+                items(4) { Placeholder(Modifier.width(140.dp).height(48.dp)) }
+            }
+        }
+        LoadingShelf(tv, landscape = false)
+    }
+}
+
+@Composable
+private fun LoadingShelf(tv: Boolean, landscape: Boolean) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Placeholder(Modifier.width(180.dp).height(28.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
+            items(4) { LoadingCard(homeCardWidth(tv, landscape), if (landscape) 16f / 9f else 2f / 3f, metadata = true) }
+        }
+    }
+}
+
+@Composable
+private fun LoadingCard(width: androidx.compose.ui.unit.Dp, ratio: Float, metadata: Boolean = false) {
     Column(Modifier.width(width), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Placeholder(Modifier.fillMaxWidth().aspectRatio(ratio))
         Placeholder(Modifier.fillMaxWidth().height(18.dp))
+        if (metadata) Placeholder(Modifier.fillMaxWidth(0.7f).height(16.dp))
     }
 }
 

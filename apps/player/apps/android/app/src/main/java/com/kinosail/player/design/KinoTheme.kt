@@ -1,8 +1,10 @@
 package com.kinosail.player.design
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 import androidx.tv.material3.darkColorScheme as tvDarkColorScheme
@@ -38,22 +40,24 @@ fun KinoTheme(content: @Composable () -> Unit) {
         onSurfaceVariant = KinoColor.muted,
         outline = KinoColor.muted,
         outlineVariant = KinoColor.raised,
-    ), content = content)
+    )) { CompositionLocalProvider(LocalContentColor provides KinoColor.text, content = content) }
 }
 
 @Composable
 fun TvKinoTheme(content: @Composable () -> Unit) {
-    TvMaterialTheme(
-        colorScheme = tvDarkColorScheme(
-            primary = KinoColor.signal,
-            onPrimary = KinoColor.signalInk,
-            background = KinoColor.background,
-            onBackground = KinoColor.text,
-            surface = KinoColor.surface,
-            onSurface = KinoColor.text,
-            surfaceVariant = KinoColor.raised,
-            onSurfaceVariant = KinoColor.muted,
-        ),
-        content = content,
-    )
+    KinoTheme {
+        TvMaterialTheme(
+            colorScheme = tvDarkColorScheme(
+                primary = KinoColor.signal,
+                onPrimary = KinoColor.signalInk,
+                background = KinoColor.background,
+                onBackground = KinoColor.text,
+                surface = KinoColor.surface,
+                onSurface = KinoColor.text,
+                surfaceVariant = KinoColor.raised,
+                onSurfaceVariant = KinoColor.muted,
+            ),
+            content = content,
+        )
+    }
 }
