@@ -156,6 +156,10 @@ def child_ended(pid, parent, before, observation):
         return child_absent(pid, parent)
 
 
+class _EmptyArgumentFailure(RuntimeError):
+    """Internal marker for rejection after a bounded retry episode."""
+
+
 def empty_argument_record(error):
     size = getattr(error, 'observer_argument_bytes', None)
     return (type(error) is RuntimeError and type(size) is int and size == 0
@@ -204,7 +208,9 @@ def read_arguments(pid, parent, before, stage):
         try:
             return reobserve_arguments(pid, parent, before, error)
         except (OSError, subprocess.SubprocessError, RuntimeError, ValueError, IndexError, UnicodeError) as failure:
-            raise qualified_failure(stage, failure) from None
+            handled = _EmptyArgumentFailure(FAILURE)
+            handled.__dict__.update(qualified_failure(stage, failure).__dict__)
+            raise handled from None
 
 
 def observe_child(pid, parent, source, expected):
@@ -247,7 +253,7 @@ def observe_child(pid, parent, source, expected):
         if before is not None:
             error.observer_before_state = before[0]
         if (stage == 'arguments_before' and isinstance(error, RuntimeError)
-                and not getattr(error, 'observer_stage', None)):
+                and not isinstance(error, _EmptyArgumentFailure)):
             try:
                 if child_ended(pid, parent, before, error):
                     return 0
