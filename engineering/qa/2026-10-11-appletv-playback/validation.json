@@ -253,5 +253,57 @@
     ],
     "automatedInput": "button presses and holds only",
     "crashStillUnresolved": true
+  },
+  "ciTimingCorrection": {
+    "failedCI": {
+      "run": 38112474868,
+      "job": 114390877930,
+      "assertion": "The native pending-to-enabled transition must be observed",
+      "received": 0
+    },
+    "cause": "The SSR status retains Current subtitle loaded while the initial inspect request is pending. The trace shows aria-busy=true and disabled controls at the loaded capture. The test waited on already-present text.",
+    "correction": "Wait for aria-busy to clear and Preview changes to be enabled; retain the transition and accessibility assertions.",
+    "sha256": {
+      "subtitles-ci-artifact.zip": "b940cd52d69cfb9ef7f24b56cdc24b30719660a04795d8a6d0826051679012cb",
+      "fourth-tv-crash.ips": "6557141a71b6204f27872ee74f046adf7287654f0c73f34dd47d7bb6fceef5b3",
+      "physical-deeplink-before-cleanup-safe.json": "00597dc61b3a2605004ac33f45824aa71b55469a995c849842d1f75514cb20b3"
+    },
+    "localVerification": {
+      "exit": 0,
+      "seconds": 123.59,
+      "command": "make -C apps/subtitles browser-test",
+      "scope": "Chromium populated smoke",
+      "source": "working tree after 39632d48 + pending-request wait",
+      "passed": 38,
+      "failed": 0,
+      "logSha256": "f2f9d1f5781311491d28a4dd6d8e63a1b30afbd41a9e295c5842c577b9f175af",
+      "sourceSha256": "ce27b5955350b57937328fab3fe614a3df2762374006331112442ac6fb982690"
+    }
+  },
+  "physicalLatestMainInstall": {
+    "revision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "tree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a",
+    "build": "3671",
+    "requestedMain": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "requestedTree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a"
+  },
+  "physicalDeepLinkAttempt": {
+    "exit": 65,
+    "seconds": 79.94,
+    "startedUTC": "2026-10-11T04:59:40.450021+00:00",
+    "app": {
+      "revision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+      "tree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a",
+      "build": "3671",
+      "requestedMain": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+      "requestedTree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a"
+    },
+    "usedDestinationArtifacts": true,
+    "commandPrivate": true
+  },
+  "additionalCrash": {
+    "build": "3666",
+    "sameUIKitRemoteGestureException": true,
+    "sha256": "6557141a71b6204f27872ee74f046adf7287654f0c73f34dd47d7bb6fceef5b3"
   }
 }

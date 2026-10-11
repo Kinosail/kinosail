@@ -2,8 +2,8 @@
 
 The user reported Raya playback failures and a crash when playing Shrinking.
 The physical Apple TV received main `4fee16403237b22018f354372ab981f101820170`, build 3666.
-Three physical crash reports from that build show the same UIKit remote gesture exception stack.
-Neither report identifies an application callback as the cause. This change does not claim to fix that crash.
+Four physical crash reports from that build show the same UIKit remote gesture exception stack.
+None of these reports identifies an application callback as the cause. This change does not claim to fix that crash.
 
 ## Confirmed stream departure defect
 
@@ -29,6 +29,9 @@ Crashes and forced termination can still require that fallback.
 - The physical Apple TV passed a Raya button-input journey covering card Play/Pause, card Select, detail Select, held seeking, and return home. The installed baseline app was used without replacement.
 - Main `5711a736c43787ffad0625068f09a5e89d7bba9f` was reconciled. The 35 selected native checks and the separate endpoint/completion suite passed with the combined production changes.
 - `make max-loc`, post-commit `make -C apps/player verify-changed`, and `make tooling-check` passed. Both native app builds passed.
+- The latest already-merged native main, build 3671, was installed and its device bundle version was verified.
+- Direct physical Shrinking URL automation timed out in the system open operation, before a playback assertion. No new crash report came from that attempt.
+- A later CI run found a Subtitles request-state test racing its real inspect response. Its loaded capture ran while `aria-busy=true`; the test now waits for request completion and enabled controls. The transition assertion remains. All 38 populated Chromium smoke tests passed locally after this correction.
 - The first CI run found a stale generated architecture snapshot. Regeneration and the full local tooling suite passed before retrying CI.
 
 The native HTTP fixture isolates the upstream server. It verifies the Swift adapter's actual HTTP traffic, not populated-server E2E playback.
