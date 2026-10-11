@@ -75,8 +75,17 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Read book").performScrollTo().activate()
         waitText("Could not open this book. Check your Server connection and try again.")
         assertEquals(0, fixture.chapterReads)
-        fixture.bookMode = "failed"
+        fixture.bookMode = "empty"
         compose.onNodeWithText("Try again").activate()
+        waitText("Could not open this book. Check your Server connection and try again.")
+        assertEquals(0, fixture.chapterReads)
+        capture("epub-empty")
+        fixture.bookMode = "pending"
+        compose.onNodeWithText("Try again").activate()
+        compose.waitUntil(20_000) { fixture.chapterReads > 0 }
+        compose.onNodeWithContentDescription("Opening your book").assertExists()
+        capture("epub-pending")
+        fixture.bookMode = "failed"
         waitText("Could not load this chapter. Try again.")
         capture("epub-failed")
         fixture.bookMode = "ready"
@@ -165,6 +174,10 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Refresh").activate()
         waitText("Family & friends")
         capture("collections-loaded")
+        if (tv) {
+            compose.onNodeWithText("Family & friends").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
+            capture("collections-focused")
+        }
         compose.onNodeWithText("Family & friends").activate()
         waitText("New Film")
         capture("collection-titles")
@@ -488,7 +501,8 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                             }
                             path == "/api/v1/books/book/reader" -> {
                                 val first = if (bookMode == "invalid") "/read/book/asset/../../private" else "/read/book/asset/first.xhtml"
-                                """{"id":"book","title":"A quiet crossing","type":"epub","pages":[{"number":1,"title":"Departure","url":"$first"},{"number":2,"title":"Arrival","url":"/read/book/asset/second.xhtml"}]}""".toByteArray()
+                                if (bookMode == "empty") """{"id":"book","title":"A quiet crossing","type":"epub","pages":[]}""".toByteArray()
+                                else """{"id":"book","title":"A quiet crossing","type":"epub","pages":[{"number":1,"title":"Departure","url":"$first"},{"number":2,"title":"Arrival","url":"/read/book/asset/second.xhtml"}]}""".toByteArray()
                             }
                             path == "/api/v1/books/book/reader/progress" -> {
                                 if (parts[0] == "PUT") {
@@ -503,6 +517,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                             }
                             path.startsWith("/read/book/asset/") -> {
                                 chapterReads++
+                                while (bookMode == "pending" && running.get()) Thread.sleep(20)
                                 type = "application/xhtml+xml"
                                 if (bookMode == "failed") { code = 503; "unavailable".toByteArray() }
                                 else ("<html><body><h1>" + if (path.endsWith("first.xhtml")) "Departure" else "Harbor lights")

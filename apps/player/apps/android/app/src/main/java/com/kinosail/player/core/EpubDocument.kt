@@ -18,13 +18,14 @@ internal fun EpubDocument(book: EpubBook, saved: SavedSession, viewer: Viewer, p
     val initialOffset = remember { position.offset }
     AndroidView(modifier = modifier.clipToBounds(), factory = { context ->
         val resources = EpubResources(book.id, saved, viewer, fontSize, light)
-        ChapterWebView(context).apply {
+        val chapterView = ChapterWebView(context)
+        chapterView.settings.setAllowContentAccess(false)
+        with(chapterView) {
             contentDescription = "Book chapter"
             setBackgroundColor(if (light) Color.rgb(244, 248, 239) else Color.rgb(11, 13, 11))
             settings.javaScriptEnabled = false
             settings.domStorageEnabled = false
             settings.allowFileAccess = false
-            settings.allowContentAccess = false
             settings.blockNetworkLoads = true
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             settings.cacheMode = WebSettings.LOAD_NO_CACHE
@@ -71,7 +72,7 @@ internal fun EpubDocument(book: EpubBook, saved: SavedSession, viewer: Viewer, p
                 }
                 override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
                     android.util.Log.e("KinosailReader", "Renderer stopped operation=reader-render kind=terminated outcome=retryable")
-                    (parent as? android.view.ViewGroup)?.removeView(this@apply)
+                    (parent as? android.view.ViewGroup)?.removeView(chapterView)
                     release()
                     currentResult(false)
                     return true
@@ -80,6 +81,7 @@ internal fun EpubDocument(book: EpubBook, saved: SavedSession, viewer: Viewer, p
             changed = { currentOffset(it) }
             loadUrl(EpubResources.ORIGIN + book.chapters[position.page - 1].path)
         }
+        chapterView
     }, onRelease = { it.release() })
 }
 
