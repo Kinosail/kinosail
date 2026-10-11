@@ -39,6 +39,7 @@ The first pass checks observable outcomes and persistence. The second checks rej
 - After reconciliation, all 174 Android app, watchcore, and Wear unit tests passed, including the six progress ownership tests. These Robolectric/JVM checks are isolated checks, not emulator interaction.
 - `make -C apps/player performance-test` passed all three existing benchmark repetitions. Scan took about 11.3–11.7 ms; 10,000-item search took 3.4–6.7 ms; progress operations took 0.26–0.59 ms. These measurements are not a playback or UI performance SLA.
 - Route inventory and script duplication checks passed. `make max-loc`, `git diff --check`, and the committed native change's `make -C apps/player verify-changed` passed. The latter selected source cap, diff checks, and native compilation. After the CSS commit, `make -C apps/player verify-changed` also passed, including affected Go compilation and native checks.
+- The repaired isolated offline hash-recovery owner and its mismatched-manifest neighbor pass, two of two. They verify three-chunk corruption rejection, the visible Resume action, successful retry, and rejection before file requests or storage changes. They use a populated Server for setup and preparation, then synthetic transfer responses.
 
 ### Hosted deep run
 
@@ -163,17 +164,21 @@ The next expansion completed 87 passes, five failures, and 68 unrun cases. One f
 
 These failures do not establish keyboard or static-compression product defects. The original traces, failure results, fixture health probe, copy receipt, and successful repeat are preserved. The expansion receipts record the checkout revision; the running pre-fix image is explicitly tied to `6dfdf8dafff0f7f1d6c449efd375802ef03104a7`.
 
-### QA-013 [P2, open; product impact unverified] — Synthetic chunk download misses its range assertion
+### QA-013 [P2, repaired fixture] — Hash-recovery test follows an obsolete button name
 
-`test-instance-large-offline-a.spec.ts` fails its “offline download stores and verifies every transfer chunk” case. It expects 16, 16, and one-byte transfers, but its observed range counter remains empty at the assertion deadline. The focused repeat fails the same assertion. That repeat’s network trace contains three HTTP 206 range responses. The counter failure does not establish that no HTTP ranges were requested. This test uses a populated Server for sign-in and preparation, then replaces the transfer script's chunk size and intercepts the manifest and file responses. It is isolated transfer proof, not a real large-file transfer.
+Both preserved runs of “offline download stores and verifies every transfer chunk” pass the first three range assertions and the verification-error assertion. They fail at line 105 while checking that the original “Download to this device” locator is enabled. The screenshot shows the enabled action has changed to “Resume on this device.” The focused trace contains all three expected HTTP 206 transfers before the final assertion. The earlier range-counter diagnosis was incorrect.
 
-The result does not establish why the transfer is rejected or whether production downloads fail. The hosted real-Server download batches pass. No production transfer logic, assertion, or deadline was changed. Keep the original trace and the focused repeat for diagnosis.
+Before changing the test, the authoring gate recorded its observable contract and isolation gap. The existing owner must reject a known whole-file hash mismatch, expose Resume, retry every chunk, and produce a verified offline source. Real-Server batches do not inject that precise corruption. Commit `e15d4e47` follows the public Resume action. All range, hash, persistence, and deadline assertions remain. No production transfer logic changes.
+
+The full repaired case and its mismatched-manifest neighbor pass on Linux ARM64 Chromium, using the final production Server source and a private-CA SPKI pin. The latter verifies rejection causes no file request or storage change. Positive traces, results, source hashes, and cleanup receipts remain private. This uses a populated Server for sign-in and preparation, then replaces the transfer script's chunk size and intercepts the manifest and file responses. It is isolated transfer proof, not a real large-file transfer.
 
 ### QA-014 [P2, open; cause unverified] — Hosted Firefox Home movement with delayed assets
 
 On commit `740fbe99`, the native-layout Firefox job fails its enforced movement check for the Player Home page at 1440×900. Its 35 rendered-fixture cases pass. The real-Server measurement records multiple moved Home nodes after the initial baseline. Other page invariants and all measured asynchronous flows pass. Subtitles measurements pass. The matching WebKit job passes its 33 fixtures, with two skips, plus both real-Server measurements.
 
 The changed CSS only affects Quick Connect below 900×600. Home rules are unchanged. This does not establish a task-caused regression. The delayed asset measurement requires a focused baseline comparison before changing Home. Preserve the hosted failure and subsequent PR checks separately.
+
+The complete layout workflow on `6905726e` passes all three engines. Its Firefox and WebKit measurements each cover 40 Player pages, 46 Subtitles pages, and 37 asynchronous flows. They record zero moved nodes, unstable pending layouts, or lost focus. This passing repeat does not establish the earlier failure's cause.
 
 ## Visual and accessibility review
 
@@ -194,9 +199,9 @@ Quick Connect adds 22 inspected state captures and eight actual-theme viewport c
 
 ## Verification boundaries
 
-- The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts. The repaired Quick Connect live-Server replay passes in Chromium and Linux WebKit. The WebKit replay uses revision `fa6a30b4`, with unchanged production source from the final dependency reconciliation. It passes both focused owners, including eight actual-theme viewport combinations, axe contrast, and scroll-aware actionability. Firefox's exact repaired journey remains unproved because of the certificate boundary above.
-- Public expansion stages completed 75 passes before interruption, then 87 passes, five failures and 68 unrun cases. After the fixture corrections and spacing repair, the remaining-file replay passed 71, failed three, and skipped three. The two Supporter cases pass after supplying their explicit context base URL. QA-013 repeats. Stage counts overlap and must not be summed as unique journeys.
-- A separate worktree audit finds an unrelated expired `nox-local-live` lease with clean, unique commits. Its checkout, commits, and lease were preserved. The primary checkout retains unrelated Xcode project and localization edits; these prevent automatic local-main cleanup.
+- The public-instance expansion and repaired hash-recovery owner add 234 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 24 collected cases without a passing execution in these artifacts. The repaired Quick Connect live-Server replay passes in Chromium and Linux WebKit. The WebKit replay uses revision `fa6a30b4`, with unchanged production source from the final dependency reconciliation. It passes both focused owners, including eight actual-theme viewport combinations, axe contrast, and scroll-aware actionability. Firefox's exact repaired journey remains unproved because of the certificate boundary above.
+- Public expansion stages completed 75 passes before interruption, then 87 passes, five failures and 68 unrun cases. After the fixture corrections and spacing repair, the remaining-file replay passed 71, failed three, and skipped three. The two Supporter cases pass after supplying their explicit context base URL. QA-013 then passes after its locator repair. Stage counts overlap and must not be summed as unique journeys.
+- A separate worktree audit finds unrelated expired `nox-local-live` and `kinosail-concurrency` leases with clean, unique commits. Their checkouts, commits, and leases were preserved. The primary checkout retains unrelated Xcode project and localization edits; these prevent automatic local-main cleanup.
 - Full local package lint, complexity, Halstead loading, and dead-code gates fail as recorded above. No required gate, lint rule, source cap, or security threshold was bypassed.
 - CRAP diagnostics were attempted with hosted Linux coverage against local Darwin source. Those platform-mismatched results are excluded from canonical gate evidence.
 - The earlier audit's Android phone/tablet/TV/Wear emulator journeys and enlarged-font cases were integrity-checked, not rerun here. JVM replay and unit proof do not replace them.

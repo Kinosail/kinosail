@@ -11,6 +11,7 @@ Native repair: `5e2443f8f1f6928306bc56fdc35f4a8b97bf44a9`.
 Reconciled source: `6dfdf8dafff0f7f1d6c449efd375802ef03104a7`.
 Quick Connect repair image: `740fbe99f39a4542f6e11775988d7175d2290741`.
 Final dependency reconciliation: `17192f58a0ac004da27d161e7722d6ae6f601587`. Its rebuild and final replay receipts remain private.
+Hash-recovery fixture repair: `e15d4e47e07c03efea2b82d24196db66f0fea608`.
 The final theme test is included in the audit delivery commit; its source and run are preserved privately.
 Environment versions are in `environment-final.json`; native media hashes are in `native-media.json`.
 `source-equivalence.json` applies to the baseline and reconciliation, before the CSS repair.
@@ -26,6 +27,7 @@ Environment versions are in `environment-final.json`; native media hashes are in
 - Public browser: the private `public-player` receipts record exact commands, image IDs, source revisions, TLS pins, synthetic data and fixture corrections. Recreate disposable credentials; do not reuse session artifacts.
 - Quick Connect regression: run `layout-audit-library.spec.ts`, `mobile-quick-connect.spec.ts`, and `quick-connect-scan.spec.ts` against the populated disposable Server.
 - Linux WebKit replay: `cross-browser/run-tests.sh webkit` inside the recorded Playwright 1.63.0 ARM64 container. The private inputs, initialization script, CA setup, configuration, exact commands, and source receipt recreate the populated fixture. Firefox repeats remain failed certificate prerequisites; no TLS bypass is used.
+- Hash recovery: `chunk-recovery/run-chunk-tests.sh` replays both existing cases in the recorded disposable Linux Chromium fixture. The private setup receipt records its CA pin, synthetic inputs, missing-import correction, and source revision.
 - Download gap: use the exact opt-in commands in the download and expansion receipts. Do not replace their failing assertions with synthetic completion.
 - Final local gates: `make max-loc`, `git diff --check`, and `make -C apps/player verify-changed` after committing app changes.
 
@@ -73,6 +75,17 @@ Environment versions are in `environment-final.json`; native media hashes are in
 | `cross-browser/final-results/webkit/results-webkit.json` | `984397f98c35f1d6bd3a5aecd0eba53181fdbf07cd48b272c98c3b91e4aa51ee` |
 | `cross-browser/firefox-trusted-receipt.json` | `18a41be282cc97932ceb528635331b537d24e885e8f848cf44acd04575b921c0` |
 | `cross-browser/cleanup.json` | `ae1d2623ee6ec8dce7654e3a72a4a618f0f96d5afdfee7df16cc5952d7ccd048` |
+| `chunk-recovery/authoring-gate.json` | `9cb6b6d079de3e00613f1890cdf4d9685ae09eb15731062cb5d792f01dbdd92e` |
+| `chunk-recovery/summary.json` | `5d555afddafcc5ca4e277281bdd1cb2a436b984f9332d806ce44e05a2d5391d3` |
+| `chunk-recovery/replay.json` | `9333f96e2393f1c7d3ce65c6ce7f3a0107397a152a8242a9524e4f10c62f78f3` |
+| `chunk-recovery/results/results-chromium.json` | `f92844284d692af4cac755049153b20f9fb36ec1284386b9d41a414cd0a8a4b7` |
+| `chunk-recovery/verify-changed.json` | `90de4a5ee6fade2451704b0a9f750aa549104a38c98e1137b2eb6d9e84390d7e` |
+| `chunk-recovery/cleanup.json` | `65a9c82df9b93cece49bb2f0d7a30ada8e217cbdc8260c70964132d581e164b2` |
+| `remaining-browser-cases-delivery.json` | `86dfc393c18a53631d105cb193ff9d202c2c24b5de036c32e43937ffb8e8e9ff` |
+| `chunk-recovery/results/browser-results/test-instance-large-offlin-f008f-fest-before-storage-changes-chromium/trace.zip` | `281b05c56f649f5ac47430fca80b73871f491aba146ff81d58a05a5b087f2efe` |
+| `chunk-recovery/results/browser-results/test-instance-large-offlin-d0b81-rifies-every-transfer-chunk-chromium/trace.zip` | `258e8fbd232c712a07fb14259b6ffad12edfa0281ea7e55fdb4bb1e248722092` |
+
+The earlier `remaining-browser-cases-final.json` preserves the 25-case expansion snapshot. `remaining-browser-cases-delivery.json` records the final 24 cases after hash recovery passes.
 
 The full private manifest excludes its own digest. Build directories are omitted; native result bundles, media, logs, screenshots and traces are retained.
 CI, container validation, publication, deployment, TLS and physical interaction remain separate evidence.

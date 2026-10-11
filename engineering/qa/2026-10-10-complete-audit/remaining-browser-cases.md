@@ -4,7 +4,7 @@ This index lists collected cases without a passing execution in the hosted deep 
 Inherited #542 evidence is not subtracted. Other opt-in cases omitted from collection remain environment boundaries.
 A skipped or interrupted case is not a pass. Engine-specific gaps remain even when another engine passes.
 
-25 collected cases remain without a pass in these artifacts. Exact suite contexts and per-engine statuses are private.
+24 collected cases remain without a pass in these artifacts. Exact suite contexts and per-engine statuses are private.
 
 ## browse-return-bfcache.spec.ts
 
@@ -51,10 +51,6 @@ A skipped or interrupted case is not a pass. Engine-specific gaps remain even wh
 ## test-instance-first-install.spec.ts
 
 - fresh install protects the Owner and reaches playback and a new sign-in — requires a dedicated empty Server
-
-## test-instance-large-offline-a.spec.ts
-
-- offline download stores and verifies every transfer chunk — failed and repeated; see QA-013
 
 ## test-instance-launch.spec.ts
 
