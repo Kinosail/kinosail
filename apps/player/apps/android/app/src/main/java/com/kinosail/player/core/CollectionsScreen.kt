@@ -41,7 +41,8 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
             }
             if (state.loading && (if (state.name == null) state.names.isEmpty() else state.items.isEmpty())) {
                 if (state.name != null) LibraryLoading(tv = tv)
-                else Column(Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = "Loading collections" },
+                else Column(Modifier.fillMaxWidth().padding(if (tv) 12.dp else 0.dp)
+                    .clearAndSetSemantics { contentDescription = "Loading collections" },
                     verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     repeat(4) { Box(Modifier.fillMaxWidth().height(64.dp).clip(RoundedCornerShape(12.dp)).background(KinoColor.raised)) }
                 }

@@ -34,6 +34,7 @@ class NativeParityJourneyTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context get() = instrumentation.targetContext
     private val tv get() = InstrumentationRegistry.getArguments().getString("tv") == "true"
+    private var automationFlags = 0
 
     // Only a native journey can interleave a rendered chapter change with the device's durable journal.
     @Test fun epubKeepsLatestPositionWhilePreviousSaveFinishes() = journey { fixture ->
@@ -148,7 +149,11 @@ class NativeParityJourneyTest {
             if (node.text?.toString() == text) return true
             return (0 until node.childCount).any { contains(node.getChild(it)) }
         }
-        compose.waitUntil(20_000) { contains(automation.rootInActiveWindow) }
+        try { compose.waitUntil(20_000) { contains(automation.rootInActiveWindow) } }
+        catch (failure: Throwable) {
+            runCatching { capture("epub-chapter-missing") }
+            throw failure
+        }
     }
 
     // Native navigation, D-pad focus, and stale-detail recovery are not covered by web E2E.
@@ -159,6 +164,7 @@ class NativeParityJourneyTest {
         if (!tv) compose.onNodeWithText("More").activate()
         compose.onNodeWithText("Collections").performScrollTo().activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading collections").fetchSemanticsNodes().isNotEmpty() }
+        val pendingCollections = compose.onNodeWithContentDescription("Loading collections").fetchSemanticsNode().boundsInRoot
         capture("collections-pending")
         fixture.collectionMode = "failed"
         waitText("Could not load collections. Try again.")
@@ -176,6 +182,10 @@ class NativeParityJourneyTest {
         waitText("Family & friends")
         capture("collections-loaded")
         if (tv) {
+            val loadedCollection = compose.onNodeWithText("Family & friends").fetchSemanticsNode().boundsInRoot
+            assertEquals("Pending collections must reserve the loaded row's left edge", pendingCollections.left, loadedCollection.left, 1f)
+            assertEquals("Pending collections must reserve the loaded row's top edge", pendingCollections.top, loadedCollection.top, 1f)
+            assertEquals("Pending collections must reserve the loaded row's width", pendingCollections.width, loadedCollection.width, 1f)
             compose.onNodeWithText("Family & friends").performSemanticsAction(SemanticsActions.RequestFocus) { it() }
             capture("collections-focused")
         }
@@ -280,7 +290,7 @@ class NativeParityJourneyTest {
         capture("recovered")
     }
 
-    @Test fun playbackChromeHidesTogetherAndReturnsWithInput() = journey { fixture ->
+    @Test fun playbackChromeHidesTogetherAndReturnsWithInput() = journey(accessibility = false) { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) compose.onAllNodesWithContentDescription("Continuing Film")[0].activate()
         else compose.onNodeWithText("Resume").performScrollTo().activate()
@@ -294,6 +304,20 @@ class NativeParityJourneyTest {
         else compose.onRoot().performTouchInput { click(center) }
         waitText("Speed 1×")
         capture("playback-controls")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitText(if (tv) "Continue watching" else "Watching")
+    }
+
+    // The native player must retain accessible controls while a service is active.
+    @Test fun playbackChromeRemainsVisibleToAccessibilityServices() = journey {
+        waitText(if (tv) "Continue watching" else "Watching")
+        if (tv) compose.onAllNodesWithContentDescription("Continuing Film")[0].activate()
+        else compose.onNodeWithText("Resume").performScrollTo().activate()
+        waitText("Speed 1×")
+        Thread.sleep(6000)
+        capture("playback-accessibility")
+        compose.onNodeWithText("Speed 1×").assertIsDisplayed()
+        compose.onNodeWithText("Continuing Film").assertIsDisplayed()
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Continue watching" else "Watching")
     }
@@ -360,8 +384,12 @@ class NativeParityJourneyTest {
         } else performClick()
     }
 
-    private fun journey(mode: String = "ready", check: (ParityFixture) -> Unit) {
-        instrumentation.getUiAutomation()
+    private fun journey(mode: String = "ready", accessibility: Boolean = true, check: (ParityFixture) -> Unit) {
+        automationFlags = if (accessibility) 0 else android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY
+        instrumentation.getUiAutomation(automationFlags)
+        val manager = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE)
+            as android.view.accessibility.AccessibilityManager
+        compose.waitUntil(10_000) { manager.isEnabled == accessibility }
         ParityFixture(mode).use { fixture ->
             context.getSharedPreferences("kinosail_session", 0).edit().clear().commit()
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
@@ -393,7 +421,7 @@ class NativeParityJourneyTest {
             compose.onRoot().tryPerformAccessibilityChecks()
             compose.disableAccessibilityChecks()
         }
-        instrumentation.getUiAutomation().takeScreenshot().let { bitmap ->
+        instrumentation.getUiAutomation(automationFlags).takeScreenshot().let { bitmap ->
             File(directory, "$prefix-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             if (name == "epub-loaded") {
                 val done = compose.onNodeWithText("Done").fetchSemanticsNode().boundsInRoot
