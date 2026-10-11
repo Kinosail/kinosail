@@ -3,21 +3,40 @@ import Network
 
 actor MediaTransport {
     private var gateway: MediaGateway?
+    private var departure: (session: String, itemID: String, client: ServerClient)?
 
     func open(url: URL, itemID: String, client: ServerClient) async throws -> URL {
         let id = try Input.id(itemID)
-        let request = try await client.authorizedRequest(url.absoluteString)
+        var request = try await client.authorizedRequest(url.absoluteString)
         guard url.path == "/media/\(id)" || url.path.hasPrefix("/hls/\(id)/") else { throw ClientError.invalidResponse }
-        gateway?.close()
+        let session = url.path.hasPrefix("/hls/") ? UUID().uuidString : nil
+        request.setValue(session, forHTTPHeaderField: "X-Playback-Session")
         let next = try MediaGateway(request: request, server: client.server, itemID: id)
+        close()
         gateway = next
+        if let session { departure = (session, id, client) }
         do { return try await next.start() }
-        catch { next.close(); throw error }
+        catch {
+            if gateway === next { close() } else { next.close() }
+            throw error
+        }
     }
 
     func failure() async -> Error? { await gateway?.failure() }
 
-    func close() { gateway?.close(); gateway = nil }
+    func close() {
+        gateway?.close(); gateway = nil
+        guard let previous = departure else { return }
+        departure = nil
+        // Release only this viewer's departed stream. Local closure must not wait
+        // for a Server outage; its idle timeout remains the cleanup fallback.
+        // ServerClient records bounded request diagnostics if delivery fails.
+        Task {
+            _ = try? await previous.client.request("/api/v1/items/\(previous.itemID)/playback-events", method: .post,
+                body: .object(["session": .string(previous.session), "event": .string("session-end"), "sequence": .number(1)]),
+                expected: [204])
+        }
+    }
 }
 
 /// All mutable state and delegate callbacks belong to this serial queue.

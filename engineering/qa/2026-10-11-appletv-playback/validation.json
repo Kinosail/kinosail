@@ -1,0 +1,125 @@
+{
+  "baselineRevision": "4fee16403237b22018f354372ab981f101820170",
+  "sourceSHA256": {
+    "apps/player/apps/native/Sources/Platform/MediaTransport.swift": "28bde84cefe41d0f31d3eacc7e409a90a39a90609d9d5bc2cc634174df3a6b72",
+    "apps/player/apps/native/Sources/Services/ServerClient.swift": "b7d0c57f5465e4a5c20347b6db9111de3e71fd2b2d599ac031578b9a26266934",
+    "apps/player/apps/native/Tests/MediaDepartureJourneys.swift": "55bc74609d06e26a9119f0dd7874515e62b86d6a6a8b556d447644cb0b3543c9"
+  },
+  "privateEvidenceSHA256": {
+    "native-departure-red2-private.log": "1a0c1659c8538f6b83d0e889a5c801a4d9546417c316ec852308c3cc5910f71b",
+    "native-departure-green-private.log": "b8a717d362dce18dae0d7fcb6d150877899dfe27235c912b6db24ebebac6873f",
+    "native-playback-final-private.log": "613e821bdb190f88bc3f8a09e69c8d351a24cd9f650cf12998254b8c3474eaa3",
+    "latest-tv-crash.ips": "39464e70f47642c7b641ab036abe17a50006b0498721560d2dc09ec4a0b6b7b4",
+    "second-tv-crash.ips": "3f88b6c4580caad7a37c46357d9529996c1c4e36e9435474f6ad7ca0d57479ba",
+    "remote-transitions-replay-private.log": "df43bb6dddf6a88f162c6a6a6d1500ba4f52a33da8b18b66a54fecd97ec3b6a4"
+  },
+  "nativeRuns": {
+    "native-departure-red2-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-departure-red2.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 65,
+      "seconds": 11.94,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    },
+    "native-departure-green-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-departure-green.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 10.15,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    },
+    "native-playback-final-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-playback-final.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackStartupJourneys",
+        "-only-testing:Kinosail-tvOSTests/HTTPTests",
+        "-only-testing:Kinosail-tvOSTests/TVPlayerInputTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackPresentationTests",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 14.52,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    }
+  },
+  "nativeFinal": {
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0
+  },
+  "serverDeparture": {
+    "command": "go test ./internal/server -run TestHLSPhasePublicHTTP/page_departure_releases_admission_for_the_next_movie -count=1",
+    "workingDirectory": "apps/player",
+    "result": "passed"
+  }
+}
