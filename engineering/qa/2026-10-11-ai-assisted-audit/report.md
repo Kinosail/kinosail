@@ -335,6 +335,13 @@ The task-owned Compose project had zero containers and zero volumes after cleanu
 The private receipt is `subtitle-nav/test-instance-receipt.json`, SHA-256 `11141efdd155c99f3a60dcfb32b13b4e87ce1d34b6a10593e13ef46a15993e52`.
 These passing fixture cases do not establish populated container-browser acceptance.
 
+The reproduced public-command failure precedes the transport change.
+The automated Subtitles fixture now selects the app's existing HTTP mode on its fixed loopback bind.
+Its URL helper follows the supported TLS environment setting. Manual instances retain their HTTPS default.
+Explicit TLS remains available; no browser trust bypass or host CA installation was added.
+The rerun must establish browser behavior, including the two history failures, before accepting this repair.
+Local HTTP evidence cannot establish TLS or WebKit cookie behavior; hosted WebKit retains disposable-runner certificate trust.
+
 ## Additional private artifact checksums
 
 The archives below are retained under `.verification/ai-qa-campaign/hosted/`.

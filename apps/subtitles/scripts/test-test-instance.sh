@@ -7,6 +7,8 @@ test_root="$(mktemp -d "$repo/.kinosail-test/run.XXXXXX")"
 export KINOSAIL_TEST_ROOT="$test_root"
 export KINOSAIL_TEST_PROJECT="kinosail-test-$$-$RANDOM"
 export KINOSAIL_PORT=0
+# Keep the disposable loopback browser fixture independent of host CA trust.
+export KINOSAIL_TLS_ENABLED="${KINOSAIL_TLS_ENABLED:-false}"
 
 cleanup() {
   ./scripts/test-instance.sh down --volumes >/dev/null 2>&1 || true

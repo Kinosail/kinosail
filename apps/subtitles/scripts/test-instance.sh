@@ -14,9 +14,10 @@ export KINOSAIL_PORT="${KINOSAIL_PORT:-38128}"
 compose=("$engine" compose --project-name "${KINOSAIL_TEST_PROJECT:-kinosail-test}" --file compose.yaml --file compose.test.yaml)
 
 url() {
-  local address
+  local address scheme=https
   address="$("${compose[@]}" port kinosail 38128)"
-  printf 'https://127.0.0.1:%s\n' "${address##*:}"
+  case "${KINOSAIL_TLS_ENABLED:-true}" in 0|f|F|false|False|FALSE) scheme=http ;; esac
+  printf '%s://127.0.0.1:%s\n' "$scheme" "${address##*:}"
 }
 
 wait_ready() {
