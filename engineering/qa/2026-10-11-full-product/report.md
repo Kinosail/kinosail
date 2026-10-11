@@ -15,7 +15,8 @@ Their Kinosail integration boundaries remain in scope.
 - Local web environment: macOS ARM64, pinned Playwright 1.63.0,
   Chromium, Firefox, and WebKit. Browser versions appear in runner attachments.
 - Hosted baseline: [deep run 38151255345](https://github.com/Kinosail/kinosail/actions/runs/38151255345).
-  Its result is pending at this checkpoint.
+  It passed after one unchanged rerun of the failed native snapshot job.
+  The original native failure remains retained below.
 
 The primary checkout's two unrelated Apple edits remain untouched. Eight
 unrelated inactive worktrees contain dirty or unique work and remain preserved.
@@ -30,18 +31,18 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Domain | Required scope | Current status |
 | --- | --- | --- |
 | Installation and identity | First install, Owner protection, MFA/passkeys, sign-in/out, recovery, sessions | Fresh Chromium, Firefox, and WebKit journeys passed; broader identity review remains |
-| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Hosted baseline pending; additional review remains |
-| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Hosted baseline pending; responsive shell checks below passed in two engines |
+| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Hosted baseline passed; additional review remains |
+| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Hosted baseline passed; responsive shell checks below passed in two engines |
 | Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | Caption transport/lifecycle checks below passed; complete decoded-media and device review remains |
-| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Hosted baseline pending; platform review remains |
-| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Hosted baseline pending; platform review remains |
+| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Hosted baseline passed; platform review remains |
+| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Hosted baseline passed; platform review remains |
 | Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | All 27 ownership executions passed; large-file and hardware boundaries remain |
-| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted baseline pending; expanded local review remains |
+| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted baseline passed; expanded local review remains |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration and session settings passed in two engines; remaining operations pending |
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Native inventory refreshed; current interaction review pending |
-| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Hosted compilation/unit/lint proof pending; emulator and hardware review remain |
+| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Hosted Android job passed; emulator and hardware review remain |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Hosted baseline pending; publication and deployment are separate boundaries |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Hosted validation passed; publication and deployment remain separate boundaries |
 
 ## Iteration 1 results
 
@@ -123,6 +124,7 @@ No generator, template, or validation rule changed.
 The baseline deep run records a native snapshot failure in
 `MediaCardRatingTests`: PNG encoding returns no data on hosted Xcode 27.1 beta.
 Its Swift Testing contracts pass, but the complete native job is failed.
+The unchanged rerun passes, including the complete iPhone orientation suite.
 The cause and product impact remain unverified. Retain that first result.
 
 The focused iPad orientation run reproduces all three phone-only contract
@@ -135,6 +137,9 @@ compiler scheduler. The loaded case failed while querying accessibility;
 the remaining run was interrupted after preserving its stack and artifacts.
 This is not yet attributed to application code. A simulator restart and
 focused replay are required.
+The simulator restart replay stalled before XCTest launched. Its Xcode build
+stack is preserved, and that task-owned run was interrupted. No product
+interaction assertion executed in the restart replay.
 
 ## QA-003 — Router contract probe sometimes executes no source (P2; repaired)
 
@@ -160,6 +165,58 @@ The journey now waits until it leaves `/login` before opening settings,
 matching the existing layout helper. Its settings, accessibility, and
 viewport assertions remain unchanged. Cross-browser verification is pending
 at this checkpoint.
+
+## QA-005 — Eager translation work delays all process commands (P2; repaired)
+
+An initial Player `version` command took 52.23 seconds. A process sample
+places startup work in localized template construction, before command
+dispatch. Both disposable browser Servers missed their readiness deadlines.
+A new process-level regression reproduces the failure at its 15-second limit.
+
+The authoring gate established these requirements before the final repair:
+
+- Contract: the actual built application's `version` command must return the
+  expected version within 15 seconds, using disposable empty configuration.
+- Failure: eager template construction repeats every message lookup for every
+  text fragment and supported language before any command can execute.
+- Coverage gap: browser journeys cannot begin before process initialization.
+  Existing localization checks do not bound actual process startup time.
+- An additional isolated contract protects semantic message IDs,
+  unknown-language fallback, and ordered replacement cascades.
+  Real app catalogs cannot reach every one of those input combinations.
+- Seam: none. The process regression builds and runs each actual application.
+
+The catalog now resolves its ordered phrase replacements once per supported
+language. Template translation reuses immutable lists. It preserves fallback,
+phrase order, markup handling, and eager template validation. The added lists
+use memory proportional to the fixed catalog, with no request-driven growth.
+
+The localization race suite passes. The process regression passes for Player
+in 9.44 seconds and Subtitles in 7.88 seconds on this Mac. These are recorded
+observations, not a universal latency guarantee. Subsequent output and
+public-interface checks remain pending at this checkpoint.
+The final root command also passes, measuring 13.25 and 9.24 seconds,
+respectively. CI contracts, workflow validation, and `make max-loc` pass.
+
+`make cli-startup-test` runs both real-process regressions sequentially. Set
+`KINOSAIL_CLI_STARTUP_ARTIFACT_DIR` to choose a new private evidence directory.
+Each receipt records source and binary checksums, build and execution commands,
+environment, timing, and log checksums. Deep hosted Go jobs run the same check
+and retain its JSON and logs on success or failure.
+
+## Visual review checkpoint
+
+Twelve hosted images were inspected: Player phone pagination states, phone
+and desktop shelves, fullscreen settings, Subtitles phone review states, and
+the desktop dashboard. Their checksums and review limits are recorded in
+`visual-review.json` in private evidence. These images include rendered and
+isolated fixtures; their journey provenance remains authoritative.
+
+No additional product defect was confirmed from this sample. A suspected
+fullscreen Close-button contrast problem belongs to simplified fixture markup;
+the real template uses a header and quiet button. Full-page screenshots taken
+after scrolling also place fixed navigation within the image. Those positions
+do not establish ordinary viewport behavior.
 
 ## Evidence and remaining work
 

@@ -1,6 +1,6 @@
 APPS := player subtitles
 
-.PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish nox-live nox-live-install nox-live-stop
+.PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check cli-startup-test worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish nox-live nox-live-install nox-live-stop
 
 hooks:
 	@hooks="$$(git rev-parse --git-common-dir)/hooks"; \
@@ -16,6 +16,12 @@ endef
 
 packages-check:
 	@$(MAKE) -C packages check
+
+cli-startup-test:
+	@set -eu; cli_startup_output="$${KINOSAIL_CLI_STARTUP_ARTIFACT_DIR:-.verification/cli-startup/$$(date -u +%Y%m%dT%H%M%SZ)}"; cli_startup_status=0; \
+	for app in $(APPS); do \
+		python3 scripts/testing/test-cli-startup.py --app "$$app" --output "$$cli_startup_output/$$app" || cli_startup_status=1; \
+	done; exit "$$cli_startup_status"
 
 tooling-check:
 	@python3 -m unittest discover -s scripts/ci -p 'test_*.py'

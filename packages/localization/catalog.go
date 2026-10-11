@@ -12,11 +12,16 @@ type Message struct {
 	ID, Other string
 }
 
+type phraseTranslation struct {
+	source, translated string
+}
+
 // Catalog applies one product's translated messages through Player's locale rules.
 type Catalog struct {
 	languages    []Language
 	messages     []Message
 	translations map[string]map[string]string
+	phrases      map[string][]phraseTranslation
 }
 
 // NewCatalog compiles one product's bundle for the shared Player locale engine.
@@ -36,7 +41,12 @@ func NewCatalog(bundle *i18n.Bundle, languages []Language, messages []Message) *
 		}
 		translations[supported.Tag] = translated
 	}
-	return &Catalog{languages: languages, messages: messages, translations: translations}
+	catalog := &Catalog{languages: languages, messages: messages, translations: translations,
+		phrases: make(map[string][]phraseTranslation, len(languages))}
+	for _, supported := range languages {
+		catalog.phrases[supported.Tag] = catalog.translationPhrases(supported.Tag)
+	}
+	return catalog
 }
 
 // Direction returns the writing direction for a supported tag.
@@ -132,11 +142,25 @@ func (catalog *Catalog) TranslateSource(source, tag string) string { //nolint:go
 	return strings.Replace(localized, `<html lang="en"`, `<html lang="`+tag+`" dir="`+catalog.Direction(tag)+`"`, 1)
 }
 
-func (catalog *Catalog) translateText(source, tag string) string {
+func (catalog *Catalog) translationPhrases(tag string) []phraseTranslation {
+	var phrases []phraseTranslation
 	for _, message := range catalog.messages {
 		if translated := catalog.Localize(tag, message.ID); translated != message.Other {
-			source = replaceLocalizedPhrase(source, message.Other, translated)
+			phrases = append(phrases, phraseTranslation{message.Other, translated})
 		}
+	}
+	return phrases
+}
+
+func (catalog *Catalog) translateText(source, tag string) string {
+	// Resolve ordered replacements once per supported language, rather than
+	// looking up every message again for each text node in every template.
+	phrases, known := catalog.phrases[tag]
+	if !known {
+		phrases = catalog.translationPhrases(tag)
+	}
+	for _, phrase := range phrases {
+		source = replaceLocalizedPhrase(source, phrase.source, phrase.translated)
 	}
 	return source
 }
