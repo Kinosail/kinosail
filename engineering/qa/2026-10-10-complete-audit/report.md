@@ -161,9 +161,9 @@ The next expansion completed 87 passes, five failures, and 68 unrun cases. One f
 
 These failures do not establish keyboard or static-compression product defects. The original traces, failure results, fixture health probe, copy receipt, and successful repeat are preserved. The expansion receipts record the checkout revision; the running pre-fix image is explicitly tied to `6dfdf8dafff0f7f1d6c449efd375802ef03104a7`.
 
-### QA-013 [P2, open; product impact unverified] — Synthetic chunk download makes no range requests
+### QA-013 [P2, open; product impact unverified] — Synthetic chunk download misses its range assertion
 
-`test-instance-large-offline-a.spec.ts` fails its “offline download stores and verifies every transfer chunk” case. It expects 16, 16, and one-byte transfers but observes no file ranges. The focused repeat fails the same assertion. This test uses a populated Server for sign-in and preparation, then replaces the transfer script's chunk size and intercepts the manifest and file responses. It is isolated transfer proof, not a real large-file transfer.
+`test-instance-large-offline-a.spec.ts` fails its “offline download stores and verifies every transfer chunk” case. It expects 16, 16, and one-byte transfers, but its observed range counter remains empty at the assertion deadline. The focused repeat fails the same assertion. That repeat’s network trace contains three HTTP 206 range responses. The counter failure does not establish that no HTTP ranges were requested. This test uses a populated Server for sign-in and preparation, then replaces the transfer script's chunk size and intercepts the manifest and file responses. It is isolated transfer proof, not a real large-file transfer.
 
 The result does not establish why the transfer is rejected or whether production downloads fail. The hosted real-Server download batches pass. No production transfer logic, assertion, or deadline was changed. Keep the original trace and the focused repeat for diagnosis.
 
@@ -192,7 +192,7 @@ Quick Connect adds 22 inspected state captures and eight actual-theme viewport c
 
 ## Verification boundaries
 
-- The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts.
+- The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts. The final repaired Quick Connect live-Server replay is Chromium-only. General Firefox and WebKit layout checks do not establish that exact journey.
 - Public expansion stages completed 75 passes before interruption, then 87 passes, five failures and 68 unrun cases. After the fixture corrections and spacing repair, the remaining-file replay passed 71, failed three, and skipped three. The two Supporter cases pass after supplying their explicit context base URL. QA-013 repeats. Stage counts overlap and must not be summed as unique journeys.
 - A separate worktree audit finds an unrelated expired `nox-local-live` lease with clean, unique commits. Its checkout, commits, and lease were preserved. The primary checkout retains unrelated Xcode project and localization edits; these prevent automatic local-main cleanup.
 - Full local package lint, complexity, Halstead loading, and dead-code gates fail as recorded above. No required gate, lint rule, source cap, or security threshold was bypassed.
