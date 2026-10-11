@@ -166,14 +166,14 @@ matching the existing layout helper. Its settings, accessibility, and
 viewport assertions remain unchanged. Cross-browser verification is pending
 at this checkpoint.
 
-## QA-005 — Eager translation work delays all process commands (P2; repaired)
+## QA-005 — Eager translation work delays all process commands (P2; resolved)
 
 An initial Player `version` command took 52.23 seconds. A process sample
 places startup work in localized template construction, before command
 dispatch. Both disposable browser Servers missed their readiness deadlines.
 A new process-level regression reproduces the failure at its 15-second limit.
 
-The authoring gate established these requirements before the final repair:
+The process regression's authoring gate established these requirements:
 
 - Contract: the actual built application's `version` command must return the
   expected version within 15 seconds, using disposable empty configuration.
@@ -181,22 +181,24 @@ The authoring gate established these requirements before the final repair:
   text fragment and supported language before any command can execute.
 - Coverage gap: browser journeys cannot begin before process initialization.
   Existing localization checks do not bound actual process startup time.
-- An additional isolated contract protects semantic message IDs,
-  unknown-language fallback, and ordered replacement cascades.
-  Real app catalogs cannot reach every one of those input combinations.
 - Seam: none. The process regression builds and runs each actual application.
 
-The catalog now resolves its ordered phrase replacements once per supported
-language. Template translation reuses immutable lists. It preserves fallback,
-phrase order, markup handling, and eager template validation. The added lists
-use memory proportional to the fixed catalog, with no request-driven growth.
+Main advanced to `8e937334` with [PR #551](https://github.com/Kinosail/kinosail/pull/551).
+Its simpler repair skips catalog lookups for absent source phrases. A real
+Player process using that exact catalog source passes in 9.92 seconds.
+The additional precomputation candidate showed no useful advantage against
+this current baseline. It was removed, along with its extra isolated tests.
+The final change retains main's production repair and adds the process check.
 
-The localization race suite passes. The process regression passes for Player
-in 9.44 seconds and Subtitles in 7.88 seconds on this Mac. These are recorded
-observations, not a universal latency guarantee. Subsequent output and
-public-interface checks remain pending at this checkpoint.
-The final root command also passes, measuring 13.25 and 9.24 seconds,
-respectively. CI contracts, workflow validation, and `make max-loc` pass.
+The integration comparison preserves all 3,780 sampled template translations
+across 108 languages. Its output SHA-256 remains
+`7cd9ca4c56b2baa1e43cc2cccb8773ab474621bf86ab7286cfb89bfeb35fc142`.
+Language suites passed 157 Player and 228 Subtitles cases during comparison.
+Final-source localization race checks and all 157 Player and 228 Subtitles
+language cases pass. Subtitles process startup passes in 9.19 seconds.
+The final architecture and source-size checks pass. Browser replays remain.
+Timing observations do not establish a universal latency guarantee.
+CI contracts, workflow validation, and `make max-loc` pass.
 
 `make cli-startup-test` runs both real-process regressions sequentially. Set
 `KINOSAIL_CLI_STARTUP_ARTIFACT_DIR` to choose a new private evidence directory.
