@@ -40,6 +40,7 @@ let hls;
 let adaptiveActive = false;
 let adaptiveStarting = false;
 let adaptiveGeneration = 0;
+let adaptiveOriginController;
 let adaptiveOffset = 0;
 let adaptiveSeekSwitch = false;
 let mediaRecoveries = 0;

@@ -5,6 +5,7 @@ const clearRecovery = () => {
 };
 let recoveryAction;
 const showFailure = (message, action = "", recover) => {
+  const compatible = adaptiveActive || adaptiveStarting;
   playbackTrace("fallback-offered", action ? "action-available" : "no-action");
   const state = document.querySelector("[data-player-status]");
   const playerMessage = document.querySelector("[data-player-message]");
@@ -18,13 +19,18 @@ const showFailure = (message, action = "", recover) => {
   }
   if (playerMessage) playerMessage.textContent = message;
   if (playbackModeStatus) {
-    playbackModeStatus.textContent = adaptiveActive ? "Playback interrupted" : "Direct Play stopped";
+    playbackModeStatus.textContent = compatible ? "Playback interrupted" : "Direct Play stopped";
     playbackModeStatus.setAttribute("aria-label", `${playbackModeStatus.textContent}. Open playback settings.`);
   }
-  if (playbackReason) playbackReason.textContent = adaptiveActive ? "Playback was interrupted. You can retry from this position." : "The original file stopped playing. No conversion is running.";
+  if (playbackDetail) playbackDetail.textContent = compatible ? "Playback interrupted" : "Direct Play stopped";
+  if (playbackReason) playbackReason.textContent = compatible ? "Playback was interrupted. You can retry from this position." : "The original file stopped playing. No conversion is running.";
   if (!action) return;
   recoveryAction = recover;
-  if (playbackRecovery) playbackRecovery.hidden = false;
+  if (playbackRecovery) {
+    playbackRecovery.hidden = false;
+    const title = playbackRecovery.querySelector("strong");
+    if (title) title.textContent = compatible ? "Playback interrupted" : "Direct Play stopped";
+  }
   if (recoveryMessage) recoveryMessage.textContent = message;
   fallbackButtons.forEach((button) => { button.hidden = false; button.textContent = action; });
 };

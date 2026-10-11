@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"math"
 	"os/exec"
 	"strconv"
@@ -37,10 +38,15 @@ func (timeline *copiedHLSTimeline) point(number int) float64 {
 }
 
 func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item, recipe hlsRecipe, preparation *startupEncoding) (*copiedHLSTimeline, error) {
+	phase := "eligibility"
+	defer func() {
+		slog.DebugContext(ctx, "HLS copied index", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "phase", phase, "canceled", ctx.Err() != nil)
+	}()
 	facts := manager.probe.facts(ctx, item)
 	if !manager.copiedHLSVideo(ctx, item, recipe) || facts.Video.Codec != "h264" || len(recipe.omitted) != 0 || !manager.index.Safe(item.Path) {
 		return nil, errCopiedHLSIndex
 	}
+	phase = "settings"
 	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		return nil, err
@@ -49,21 +55,28 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 	defer cancel()
 	stopWatching := watchCopiedHLSAdoption(scan, preparation, cancel)
 	defer stopWatching()
+
+	phase = "admission"
 	release, err := manager.workloads.Acquire(scan, workload.Background)
 	if err != nil {
 		return nil, err
 	}
 	defer release()
+
+	phase = "packets"
 	timeline, err := manager.scanCopiedHLSPackets(scan, item, options.Cache, facts.Duration)
 	if err != nil {
 		return nil, err
 	}
+	phase = "idr"
 	if err = manager.certifyCopiedHLS(scan, item, timeline); err != nil {
 		return nil, err
 	}
+	phase = "configuration"
 	if err = manager.certifyCopiedHLSConfiguration(scan, item, timeline); err != nil {
 		return nil, err
 	}
+	phase = "selection"
 	return manager.selectCopiedHLSTimeline(scan, item, recipe, preparation, timeline)
 }
 
@@ -136,15 +149,24 @@ func copiedHLSLines(parent context.Context, executable string, arguments []strin
 func (manager *hlsManager) scanCopiedHLSPackets(ctx context.Context, item library.Item, policy string, duration float64) (*copiedHLSTimeline, error) {
 	timeline := &copiedHLSTimeline{Policy: policy, Strategy: "h264-idr-keys-1"}
 	var end int64
+	originKnown := false
 	arguments := []string{
-		"-v", "error", "-threads", "1", "-select_streams", "v:0", "-show_packets", "-show_streams",
-		"-show_entries", "packet=pts,dts,duration,flags:stream=time_base", "-of", "compact=p=0", item.Path,
+		"-v", "error", "-threads", "1", "-select_streams", "v:0", "-show_packets", "-show_streams", "-show_format",
+		"-show_entries", "packet=pts,dts,duration,flags:stream=time_base:format=start_time:format_tags=:stream_tags=:stream_disposition=", "-of", "compact=p=0", item.Path,
 	}
 	err := copiedHLSLines(ctx, manager.probe.executable, arguments, 128<<20, 2_000_010, func(line string) error {
+		if value, ok := copiedHLSFields(line)["start_time"]; ok {
+			origin, err := strconv.ParseFloat(value, 64)
+			originKnown = err == nil && origin == 0
+			if !originKnown {
+				return errCopiedHLSIndex
+			}
+			return nil
+		}
 		return timeline.packet(line, &end)
 	})
 	timeline.End = float64(end) * timeline.TimeBase
-	if err != nil || !validCopiedHLSTimeline(timeline) {
+	if err != nil || !originKnown || !validCopiedHLSTimeline(timeline) {
 		return nil, errCopiedHLSIndex
 	}
 	if timeline.End <= timeline.point(len(timeline.Keys)-1) || math.Abs(timeline.End-duration) > 0.1 {

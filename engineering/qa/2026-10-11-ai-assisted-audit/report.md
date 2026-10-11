@@ -259,7 +259,7 @@ The corrected run passed all four required gates; [PR #553](https://github.com/K
 A fetched ancestry check placed reviewed head `595d2a0cbcaaffc07ed7396b79c47a187bd59891` in remote main `6f8bfa60d46d5c53621d5590ace3e943669d53ad`.
 Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
-### AQA-008 — Repaired locally: executable-fixture launch race
+### AQA-008 — Merged: executable-fixture launch race
 
 The main-push shared-package job failed `TestFingerprintCacheAndToolFailuresAreDeterministic` before its first fingerprint assertion.
 Linux returned `text file busy` while launching its newly written, test-owned shell executable.
@@ -410,6 +410,66 @@ It still reported a buffer-progress error; parsed fragment times differed from t
 Therefore this mux-only candidate remains experimental. It does not establish correct segment scheduling or native playback.
 The playback receipt is `preroll-hls-audio-play-probe.json`, SHA-256 `0619ab672ca00642a6e249c48f32d5105e1a1f69d4d996e0f4976e3ed2369d8e`.
 [HLS start offsets](https://www.rfc-editor.org/rfc/rfc8216.html#section-4.3.5.2) may express preroll suppression, but client behavior still requires independent proof.
+
+### Prepared copied-resume repair
+
+The retained real-browser baseline confirms AQA-006 on `c5fd62edfd3201fbc15795d3073a658ba1f61c62`.
+Chromium and WebKit each display incorrect images at all seven requested positions after a cold 12.5-second resume.
+Both also expose the wrong duration. These cold-stream failures remain open.
+
+The prepared repair selects the preceding certified source key while retaining the requested recipe identity.
+`X-Kinosail-HLS-Origin` gives the web adapter the actual key origin.
+Hls.js reads it before loading the manifest; native HLS reads it through an abortable HEAD request.
+Malformed or future origins stop loading before media requests and offer a retry at the retained position.
+Native metadata completion clears its temporary clock before applying the real resume seek.
+Prepared indexing declines sources whose demux origin is unknown or nonzero.
+Cold streams retain their existing behavior; this repair adds no foreground whole-file scan.
+
+Native failure injection reproduced two additional problems: Retry restarted at zero, and the temporary clock suppressed the actual seek.
+The corrected native journey passes invalid metadata, a future origin, HTTP 503, a pending seek, and switching to Direct Play.
+Failure and loaded screenshots cover 390, 1440, and 1920-pixel widths.
+Failure clears pending skeletons and identifies compatible playback correctly.
+These are actual Player controls with injected HTTP metadata failures, not unmodified-network E2E proof.
+
+### AQA-013 — Copied refill discards audio preroll and shifts its clock
+
+An independently generated uninterrupted tail passed all seven native frame comparisons.
+A regenerated tail retained the preceding image when seeking near EOF, although normal playback reached the correct final frame.
+Packet inspection found that the existing refill discarded leading AAC packets, then shifted remaining audio earlier than video.
+Removing only that shift repaired EOF but left an 85.334 ms audio gap at a refill boundary.
+The independent review caught that gap; passing video images alone did not qualify the candidate.
+
+The repair limits `-copypriorss` to video and keeps both tracks on the common mux clock.
+The retained regression populates all ten fragments, verifies audio continuity, deletes the existing final fragment, then plays the real watch page.
+It requires exact original-frame images, correct startup position and duration, unchanged initialization bytes, and a restored tail.
+It also checks every audio boundary within the existing 50 ms tolerance and compares final audio and video endpoints.
+Native WebKit passes all seven images. The largest boundary overlap is 21.333 ms; the final endpoints differ by 8 microseconds.
+This uses real native WebKit decoding with MSE capability disabled, not physical Safari acceptance.
+WebKit's paused native HLS path emits no frame callbacks; the native oracle uses seek completion and render turns with unchanged image assertions.
+The MSE oracle retains timestamp-qualified frame callbacks.
+
+The exact commands are `python3 apps/player/scripts/test-hls-resume-browser.py --engines webkit-native --prepared --tail-recovery` and the same command with `--controls` instead of `--tail-recovery`.
+Each uses the outer `scripts/ci/e2e-artifact.py` wrapper.
+Receipts below are under `.verification/hls-resume-browser/`; each retains the revision, environment, binary hash, source state, and artifact hashes.
+
+| Receipt directory | Result | Receipt SHA-256 |
+| --- | --- | --- |
+| `20261011T193629Z` | cold baseline: both MSE engines fail all seven images | `9e48e51abe700123703a744e825c2b8d0082b27900e38e27e80f2ac2fca9eeec` |
+| `20261011T200924Z` | native Retry loses the saved position | `70e51623cc26b375e8b8dd7a42bc0b9b6cc6b1c99456a1ecc8b335fca6925faf` |
+| `20261011T202716Z` | native frames, existing-tail eviction, and audio continuity pass | `ca0b818efdbf210de9ebe1d5a937817eac033809571b472de67558ae6aa781ed` |
+| `20261011T202913Z` | all five native recovery and cancellation cases pass | `70e20c3bf10e22ac9ad18db91f659a1b856aa534ed637ad17f640d73188797ce` |
+
+The new Chromium frame and metadata-recovery journeys are added to the required Player browser job.
+Current local CI contracts pass 169 tests with five environment-dependent skips.
+The repository's selected actionlint fork, version 1.17.0, accepts the changed workflow.
+The final MSE, existing audio-conversion, prepared-timeline, and publication checks remain pending at this checkpoint.
+
+### Seventh delivery checkpoint
+
+[PR #557](https://github.com/Kinosail/kinosail/pull/557) merged the executable-fixture repair after all required checks passed.
+Fetched ancestry proves task commit `5b0adeba9e60d0bd2f8dfb2ac4259a24d2ba01e8` in main `c5fd62edfd3201fbc15795d3073a658ba1f61c62`.
+[Main run 38168058630](https://github.com/Kinosail/kinosail/actions/runs/38168058630) passed selected checks, published both apps for AMD64 and ARM64, and advanced their production image tags.
+This is publication evidence, not Nox deployment or physical-device acceptance.
 
 ## Additional private artifact checksums
 

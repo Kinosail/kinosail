@@ -150,15 +150,17 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		return err
 	}
 	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
+	playable := hlsPlaybackDuration(recipe, duration)
 	if timeline, mapErr := manager.readCopiedHLSTimeline(directory, options.Cache); mapErr == nil {
 		valid = timeline.Clock != nil && segment < len(timeline.Keys)
 		if valid {
 			offset = timeline.point(segment) - timeline.point(0)
+			playable = timeline.End - timeline.point(0)
 		}
 	} else if manager.copiedHLSTimelinePresent(directory) {
 		return errCopiedHLSIndex
 	}
-	if !valid || offset >= hlsPlaybackDuration(recipe, duration) {
+	if !valid || offset >= playable {
 		return errors.New("HLS segment is outside the playable duration")
 	}
 	seekRecipe := recipe
