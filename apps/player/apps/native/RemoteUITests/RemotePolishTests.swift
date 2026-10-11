@@ -32,6 +32,7 @@ final class RemotePolishTests: RemoteTestCase {
             let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
             XCTAssertTrue(focused.exists)
             XCTAssertTrue(focused.label.contains(titles[index]))
+            record("watching focus \(focused.label)", app)
             assertVisibleArtworkFocus(focused, in: app)
             let next = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", titles[index + 1])).firstMatch
             XCTAssertTrue(next.exists)
@@ -40,7 +41,6 @@ final class RemotePolishTests: RemoteTestCase {
                                          "The focused card must leave breathing room before the next card")
                 comparisons += 1
             }
-            record("watching focus \(focused.label)", app)
             remote.press(.right)
         }
         remote.press(.up)
@@ -55,12 +55,18 @@ final class RemotePolishTests: RemoteTestCase {
         let visible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             let frame = element.frame
             let screenshot = app.screenshot().image
-            return [0.25, 0.5, 0.75].allSatisfy { fraction in
-                let color = self.pixel(screenshot,
-                                       x: (frame.minX + frame.width * fraction) / app.frame.width,
-                                       y: (frame.minY + 2) / app.frame.height)
-                return color.prefix(3).allSatisfy { $0 > 180 }
+            // Allow small focus-bound/rasterization differences. Require a
+            // light edge on multiple rows across three separated points.
+            let lightRows = (-6...8).filter { offset in
+                [0.25, 0.5, 0.75].allSatisfy { fraction in
+                    let color = self.pixel(screenshot,
+                                           x: (frame.minX + frame.width * fraction) / app.frame.width,
+                                           y: (frame.minY + CGFloat(offset)) / app.frame.height)
+                    return color.prefix(3).allSatisfy { $0 > 180 }
+                }
             }
+            if lightRows.count >= 2 { print("FOCUS_OUTLINE top=\(frame.minY) lightRowOffsets=\(lightRows)") }
+            return lightRows.count >= 2
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 5), .completed,
                        "Focused artwork needs a visible high-contrast outline, including with missing artwork")

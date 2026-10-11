@@ -136,7 +136,8 @@ with (output / 'fixture.log').open('w') as log:
                           'failed': 'testFailedHomeBackAndRetryRemainUsable',
                           'pending': 'testPendingHomeKeepsNavigationReachableAndRemovesSkeleton'}[args.mode]
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/RemoteHomeStateTests/' + method]
-            code = run('remote', 'Kinosail-tvOS-Remote', selection, 1800 if args.mode == 'loaded' else 300)
+            # The 4K run's 100-return case takes about twelve minutes on its own.
+            code = run('remote', 'Kinosail-tvOS-Remote', selection, 2400 if args.mode == 'loaded' else 300)
     finally:
         try:
             settle(fixture)
