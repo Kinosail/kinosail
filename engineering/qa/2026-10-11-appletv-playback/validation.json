@@ -1,0 +1,309 @@
+{
+  "baselineRevision": "4fee16403237b22018f354372ab981f101820170",
+  "sourceSHA256": {
+    "apps/player/apps/native/Sources/Platform/MediaTransport.swift": "28bde84cefe41d0f31d3eacc7e409a90a39a90609d9d5bc2cc634174df3a6b72",
+    "apps/player/apps/native/Sources/Services/ServerClient.swift": "b7d0c57f5465e4a5c20347b6db9111de3e71fd2b2d599ac031578b9a26266934",
+    "apps/player/apps/native/Tests/MediaDepartureJourneys.swift": "55bc74609d06e26a9119f0dd7874515e62b86d6a6a8b556d447644cb0b3543c9"
+  },
+  "privateEvidenceSHA256": {
+    "native-departure-red2-private.log": "1a0c1659c8538f6b83d0e889a5c801a4d9546417c316ec852308c3cc5910f71b",
+    "native-departure-green-private.log": "b8a717d362dce18dae0d7fcb6d150877899dfe27235c912b6db24ebebac6873f",
+    "native-playback-final-private.log": "613e821bdb190f88bc3f8a09e69c8d351a24cd9f650cf12998254b8c3474eaa3",
+    "latest-tv-crash.ips": "39464e70f47642c7b641ab036abe17a50006b0498721560d2dc09ec4a0b6b7b4",
+    "second-tv-crash.ips": "3f88b6c4580caad7a37c46357d9529996c1c4e36e9435474f6ad7ca0d57479ba",
+    "remote-transitions-replay-private.log": "df43bb6dddf6a88f162c6a6a6d1500ba4f52a33da8b18b66a54fecd97ec3b6a4",
+    "tooling-final-private.log": "f347c4cb8cdc5d888fc457c4e9c6c5e0af13e7360f6fcca541e8a6a03b5e36b7",
+    "native-cleanup-oslog-safe.json": "bdbbd03bea19838bc6b8bef93982800f13655412442941d2d451eec8af7510f3",
+    "native-reconciled-final-private.log": "45cf7fe1afb533192c93e2afc3c5beffa82b1aec77d5b82349379efdbf9b950c",
+    "physical-remote-baseline-private.log": "3e6a3cfbd389f78fa812571c8e63fda171ad7e38e52e2ddfa7ed6e91023cc7af",
+    "third-tv-crash.ips": "3b9bc1a888bf43cfef28020d9326b1276420b55d0d529610312ce49de1bdbcf0",
+    "native-reconciled-endpoints-private.log": "fcb084204d7042e75d0b3a4c9357ccbc0a409ade4e9b41e85f275246af591834"
+  },
+  "nativeRuns": {
+    "native-departure-red2-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-departure-red2.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 65,
+      "seconds": 11.94,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    },
+    "native-departure-green-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-departure-green.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 10.15,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    },
+    "native-playback-final-receipt.json": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=075A8405-735B-492C-B5D5-EB74BF7E1432",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-playback-final.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackStartupJourneys",
+        "-only-testing:Kinosail-tvOSTests/HTTPTests",
+        "-only-testing:Kinosail-tvOSTests/TVPlayerInputTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackPresentationTests",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 14.52,
+      "revision": "4fee16403237b22018f354372ab981f101820170"
+    }
+  },
+  "nativeFinal": {
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0
+  },
+  "serverDeparture": {
+    "command": "go test ./internal/server -run TestHLSPhasePublicHTTP/page_departure_releases_admission_for_the_next_movie -count=1",
+    "workingDirectory": "apps/player",
+    "result": "passed"
+  },
+  "localPublicationChecks": {
+    "tooling": {
+      "command": [
+        "make",
+        "tooling-check"
+      ],
+      "exit": 0,
+      "seconds": 69.51
+    },
+    "maxLOC": "passed",
+    "postCommitVerifyChanged": {
+      "result": "passed",
+      "nativeClientSeconds": 16,
+      "targets": [
+        "iOS",
+        "tvOS"
+      ]
+    },
+    "architectureSnapshot": "regenerated and checked"
+  },
+  "reconciliation": {
+    "mainRevision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "mergeRevision": "2ef91be13baa3267174dd5a16e395ca09326562d",
+    "nativeRun": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=F796C548-6341-4C15-AA9C-BCEA29CAE09C",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-reconciled-final.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackStartupJourneys",
+        "-only-testing:Kinosail-tvOSTests/HTTPTests",
+        "-only-testing:Kinosail-tvOSTests/TVPlayerInputTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackPresentationTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackHLSEndpointJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackCompletionSafetyJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 45.23,
+      "revision": "2ef91be13baa3267174dd5a16e395ca09326562d"
+    },
+    "nativeResult": {
+      "result": "Passed",
+      "totalTestCount": 35,
+      "passedTests": 35,
+      "failedTests": 0,
+      "skippedTests": 0
+    },
+    "architectureCheck": "passed",
+    "maxLOC": "passed",
+    "endpointRun": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=F796C548-6341-4C15-AA9C-BCEA29CAE09C",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-reconciled-endpoints.xcresult",
+        "-only-testing:Kinosail-tvOSTests/PlaybackEndpointJourneys",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 15.8,
+      "revision": "2ef91be13baa3267174dd5a16e395ca09326562d"
+    },
+    "endpointResult": {
+      "result": "Passed",
+      "totalTestCount": 8,
+      "passedTests": 8,
+      "failedTests": 0,
+      "skippedTests": 0
+    }
+  },
+  "physicalBaseline": {
+    "build": 3666,
+    "revision": "4fee16403237b22018f354372ab981f101820170",
+    "test": "PhysicalPlaybackProbe/testRequestedTitleRemoteTransitions",
+    "result": "passed",
+    "seconds": 52.35,
+    "title": "Raya",
+    "actions": [
+      "card Play/Pause",
+      "card Select",
+      "detail Select",
+      "held seeking",
+      "return home"
+    ],
+    "automatedInput": "button presses and holds only",
+    "crashStillUnresolved": true
+  },
+  "ciTimingCorrection": {
+    "failedCI": {
+      "run": 38112474868,
+      "job": 114390877930,
+      "assertion": "The native pending-to-enabled transition must be observed",
+      "received": 0
+    },
+    "cause": "The SSR status retains Current subtitle loaded while the initial inspect request is pending. The trace shows aria-busy=true and disabled controls at the loaded capture. The test waited on already-present text.",
+    "correction": "Wait for aria-busy to clear and Preview changes to be enabled; retain the transition and accessibility assertions.",
+    "sha256": {
+      "subtitles-ci-artifact.zip": "b940cd52d69cfb9ef7f24b56cdc24b30719660a04795d8a6d0826051679012cb",
+      "fourth-tv-crash.ips": "6557141a71b6204f27872ee74f046adf7287654f0c73f34dd47d7bb6fceef5b3",
+      "physical-deeplink-before-cleanup-safe.json": "00597dc61b3a2605004ac33f45824aa71b55469a995c849842d1f75514cb20b3"
+    },
+    "localVerification": {
+      "exit": 0,
+      "seconds": 123.59,
+      "command": "make -C apps/subtitles browser-test",
+      "scope": "Chromium populated smoke",
+      "source": "working tree after 39632d48 + pending-request wait",
+      "passed": 38,
+      "failed": 0,
+      "logSha256": "f2f9d1f5781311491d28a4dd6d8e63a1b30afbd41a9e295c5842c577b9f175af",
+      "sourceSha256": "ce27b5955350b57937328fab3fe614a3df2762374006331112442ac6fb982690"
+    }
+  },
+  "physicalLatestMainInstall": {
+    "revision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "tree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a",
+    "build": "3671",
+    "requestedMain": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "requestedTree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a"
+  },
+  "physicalDeepLinkAttempt": {
+    "exit": 65,
+    "seconds": 79.94,
+    "startedUTC": "2026-10-11T04:59:40.450021+00:00",
+    "app": {
+      "revision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+      "tree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a",
+      "build": "3671",
+      "requestedMain": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+      "requestedTree": "e87a481821bf7bdae85c6f11ff0f111b90b71a1a"
+    },
+    "usedDestinationArtifacts": true,
+    "commandPrivate": true
+  },
+  "additionalCrash": {
+    "build": "3666",
+    "sameUIKitRemoteGestureException": true,
+    "sha256": "6557141a71b6204f27872ee74f046adf7287654f0c73f34dd47d7bb6fceef5b3"
+  }
+}
