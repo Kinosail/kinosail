@@ -44,6 +44,7 @@ final class RemoteArtworkControlRouteTests: RemoteTestCase {
         XCTAssertEqual(loadedResult, .completed, "Require loaded pixels and stable initial controls")
         XCTAssertEqual(title.frame.minX, 184, accuracy: 2)
         XCTAssertTrue(app.buttons["Resume"].hasFocus)
+        let initialResumeFrame = app.buttons["Resume"].frame
 
         remote.press(.down)
         record("route first Down before settling", app)
@@ -83,6 +84,44 @@ final class RemoteArtworkControlRouteTests: RemoteTestCase {
         XCTAssertLessThanOrEqual(destination.frame.maxX, app.frame.maxX - 78)
         XCTAssertGreaterThanOrEqual(destination.frame.minY, app.frame.minY + 58)
         XCTAssertLessThanOrEqual(destination.frame.maxY, app.frame.maxY - 58)
+
+        // Preserve first-Down observations above before testing secondary reachability.
+        let myList = app.buttons["My List"]
+        for attempt in 1...2 where !myList.hasFocus {
+            remote.press(.left)
+            try observeSettledControls("Left \(attempt) toward My List", app)
+        }
+        try observeSettledControls("My List reachability", app)
+        XCTAssertTrue(myList.hasFocus, "My List must remain reachable within this three-action row")
+        XCTAssertTrue(myList.isHittable)
+        remote.press(.right)
+        try observeSettledControls("Right from My List to Bookmarks", app)
+        XCTAssertTrue(app.buttons["Bookmarks"].hasFocus)
+        XCTAssertTrue(app.buttons["Bookmarks"].isHittable)
+        remote.press(.up)
+        try observeSettledControls("Up from Bookmarks to Resume", app)
+        XCTAssertTrue(app.buttons["Resume"].hasFocus)
+        XCTAssertTrue(app.buttons["Resume"].isHittable)
+        XCTAssertEqual(app.buttons["Resume"].frame.minX, initialResumeFrame.minX, accuracy: 2)
+        XCTAssertEqual(app.buttons["Resume"].frame.minY, initialResumeFrame.minY, accuracy: 2)
+    }
+
+    @MainActor private func observeSettledControls(_ stage: String, _ app: XCUIApplication) throws {
+        var previous = ""
+        var stable = 0
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let current = self.signature(app)
+            stable = current == previous ? stable + 1 : 0
+            previous = current
+            return stable >= 2
+        }, object: nil)
+        let result = XCTWaiter.wait(for: [settled], timeout: 5)
+        record("route reachability \(stage) before assertions", app)
+        let data = try JSONSerialization.data(withJSONObject:
+            ["stage": stage, "settled": result == .completed, "observation": snapshot(app)],
+            options: [.sortedKeys])
+        print("ARTWORK_CONTROL_REACHABILITY_SAMPLE_JSON \(String(decoding: data, as: UTF8.self))")
+        XCTAssertEqual(result, .completed, "Require settled controls at \(stage)")
     }
 
     @MainActor private func controls(_ app: XCUIApplication) -> [(String, XCUIElement)] {
