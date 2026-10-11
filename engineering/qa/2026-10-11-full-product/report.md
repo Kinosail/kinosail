@@ -500,7 +500,8 @@ The pending row begins 24 pixels above and left of the loaded collection row.
 Its width is 48 pixels greater. A geometry assertion added to the existing
 native recovery journey fails before the production edit. Matching the TV
 list's 12-dp content padding fixes the pending geometry. Phone padding stays
-zero. The full TV replay passes, including the new assertion. Current pending,
+zero. The full TV replay and the cleaned final instrumentation replay each pass nine
+applicable tests, with two EPUB skips. Both include the new assertion. Pending,
 loaded, empty, and failed captures were inspected. Focus and recovery pass.
 
 The earlier idle-controls failure was a test prerequisite problem. Its
@@ -510,16 +511,24 @@ without that service. A complementary journey verifies controls remain visible
 with accessibility enabled. Both pass during decoded TV playback. Production
 accessibility behavior is unchanged. Older Android API levels remain unproved.
 
-## QA-011 — EPUB chapter text is unavailable after reopening (unverified)
+## QA-011 — EPUB accessibility text is missing after reopening (unverified)
 
 The phone reading journey restores the chapter-2 indicator, but cannot find
 its text after reopening. The tablet save-interleaving journey similarly fails
 to find chapter-1 text after reopening. Both first renders and intervening
 chapter navigation pass. Another reading journey passes on each device.
-Failure-only captures are being collected to distinguish blank rendering from
-stale accessibility data. Both unchanged focused replays pass, so this remains intermittent. A full phone
-replay with failure captures is in progress. No production cause or repair is
-claimed yet.
+Both unchanged focused replays pass. The full phone replay also passes all ten
+tests with the same assertions and failure-only capture instrumentation. The
+final tablet replay again passes nine and fails one. Its failure capture shows
+the expected chapter-2 text rendered correctly; automation cannot find that
+text in the accessibility tree. This is an accessibility or observer issue,
+not blank rendering. The initial failures remain retained. Temporary tree
+logging was removed; chapter failures retain a screenshot. No production cause
+or repair is claimed yet. A failure-only cache-clearing control also reproduces
+the failure: the expected text is absent before and after clearing the
+automation accessibility cache. A further full tablet replay passes all ten journeys, so its failure-only
+accessibility-focus probe does not execute and cannot establish a cause. The
+private probe was removed. These controls preserve the original assertion.
 
 ## Complete-tree lint inventory
 
@@ -527,3 +536,36 @@ Shared-package lint retains 95 findings. Player retains 50. The newly refreshed
 Subtitles inventory reports 101 findings, including complexity, formatting,
 unused code, and other checks. These complete-tree gates remain failed.
 Changed-code CI checks pass. No rule, threshold, or required check is bypassed.
+
+## Firefox settings follow-up
+
+The exact settings-discovery journey passes three consecutive Firefox runs
+against a real HTTPS Server with editable settings. An earlier private fixture
+locked Server name through an environment override. Those three setup failures
+never reached the hosted navigation failure and are excluded from product
+proof. The hosted malformed-fragment timeout remains unexplained. The focused
+success does not turn the original deep job green.
+
+## Playback startup follow-up
+
+The fresh canonical startup journey passes at `d8399829`. Its receipt records
+12 measurements, including cold and warm moving frames, preparation adoption,
+rejected recipe values, Direct First, playback-exit acknowledgements, and
+resource bounds. Invalidation and spanning-fragment decoding assertions pass.
+Peak speculative and total FFmpeg workers are both one. Burn-in subtitle
+coverage is explicitly unrun because this host FFmpeg lacks the subtitles
+filter. This remains one Chromium journey with several internal assertions,
+not twelve independent tests. The earlier queued-preparation failure remains
+retained; no production cause or repair is claimed from this successful replay.
+The binary, generated media, logs, measurements, and checksums were copied to
+private evidence, excluding configuration, backups, and cache state.
+
+## Web delivery and native checkpoint
+
+PR #559 merged with a merge commit after required CI `38179788646` passed.
+Final layout run `38179788404` passes Chromium, Firefox, and WebKit. Fetched
+ancestry confirms reviewed head `d83998297d2a697b9fb4dee7742f2c0589aae0d5`
+is included in remote main `8047e689b22d3c2c210bf85594baae5bb9c1f2ae`.
+The native branch reconciles that main before publication. Its fixes remain
+pending protected delivery. The primary checkout has unrelated Apple edits;
+its files and local main were preserved.
