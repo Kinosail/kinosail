@@ -108,6 +108,7 @@ try:
                                                             encoder_count, check, bounded_bytes, False)
             for engine in engines:
                 case = {'engine': engine}
+                receipt['cases'].append(case)
                 if args.tail_recovery:
                     rendition = next(prepared_root.glob('*p/index.m3u8')).parent
                     base = hls.removesuffix('index.m3u8') + rendition.name + '/'
@@ -136,10 +137,10 @@ try:
                 case['exitCode'] = result.returncode
                 if args.tail_recovery:
                     case.update(tailRestored=tail.exists(), initializationUnchanged=(rendition / 'init.mp4').read_bytes() == prepared_init)
-                    case['audioAfterRecovery'] = audio_boundaries(rendition)
+                    if case['tailRestored']:
+                        case['audioAfterRecovery'] = audio_boundaries(rendition)
                     if not case['tailRestored'] or not case['initializationUnchanged']:
                         case['exitCode'] = 1
-                receipt['cases'].append(case)
                 print(json.dumps({k: v for k, v in case.items() if not k.startswith('audio')}), flush=True)
         finally:
             server.terminate()

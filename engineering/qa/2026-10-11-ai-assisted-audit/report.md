@@ -501,6 +501,73 @@ The generated Player architecture snapshot was refreshed after the first hosted 
 Architecture contracts, source limits, whitespace, and post-commit Player verification pass.
 [PR #560](https://github.com/Kinosail/kinosail/pull/560) carries this repair; hosted checks and publication remain pending.
 
+### Hosted resume failures and native startup correction
+
+[CI run 38177651743](https://github.com/Kinosail/kinosail/actions/runs/38177651743) failed two Player browser checks on `abf740ac`.
+The retained native-window test expected replacement playback at 23.25 seconds, but restoration rewound it to 22 seconds.
+The native metadata handler now preserves forward decoder progress only when the pending replacement target is still the captured target.
+Initial restoration and newer explicit targets retain their own positions.
+
+The hosted Chromium resume test presented the correct seven timestamps, but every RGBA hash differed from the original.
+A disposable Linux ARM64 Playwright container reproduced this result.
+All seven decoded I420 hashes were identical; the original used SMPTE170M while MSE used BT.709.
+The generated source lacked explicit color metadata.
+Chromium's [original-file demuxer infers a color space from resolution](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/media/ffmpeg/ffmpeg_common.cc), which explains this diagnostic result.
+The fixture now declares and verifies limited-range SMPTE170M on generated frames with FFmpeg `setparams`.
+Codec output flags alone failed the new metadata assertion on the Mac; that failed attempt remains recorded.
+The same Linux decoder then matched all seven RGBA images without changing the image oracle.
+This defines the synthetic fixture's interpretation. It does not repair or certify untagged-media color parity in production.
+
+A subsequent native control replay still exposed an intermittent 10-to-20-second jump during metadata loading.
+The browser retained a source-clock seek as the new decoder's default playback start position.
+This follows the [HTML media initialization behavior](https://html.spec.whatwg.org/multipage/media.html#dom-media-currenttime).
+Player now clears that default only while the decoder has no metadata, then restores the retained source target after metadata loads.
+Player also removes its competing saved-progress listener once its native adapter owns restoration.
+The shared listener remains available to Subtitles, whose initial native restore depends on it.
+The native first-buffer recovery and its outstanding-seek guard remain in place.
+All ten retained native window/gap tests pass, including paused fractional gaps and initialized replacement progress.
+Real native controls, seven frame comparisons, and a positive resume with certified origin zero also pass.
+
+The browser driver now retains a case before risky work and preserves a browser launch failure when its evicted tail is absent.
+An intentionally unavailable Chromium channel leaves the case failed, with `tailRestored=false` and unchanged initialization recorded.
+It no longer masks that failure with a secondary packet-count exception.
+Mac Firefox still exits before navigation with a missing-profile error, consistent with [upstream Playwright issue 42768](https://github.com/microsoft/playwright/issues/42768).
+The upstream explanation is not a locally proven TCC diagnosis, and no browser permissions were changed.
+A separate Linux Firefox diagnostic passes all seven prepared-resume frame comparisons, tail recovery, and audio checks.
+That diagnostic uses the real cross-compiled Player and an instrumented copy of the browser driver; it is not physical-device proof.
+The disposable Linux container was removed after verification.
+
+The final code checks use the commands above and these retained receipts.
+Outer `scripts/ci/e2e-artifact.py` manifests record `abf740ac`, the exact uncommitted patch hash, and unchanged source throughout each command.
+They establish source-bound local evidence, not a clean-commit or hosted acceptance claim.
+The existing timeline and audio suites were rerun after changing their shared fixture; all nine and six cases pass respectively.
+
+| Receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261011T221330Z/receipt.json` | Linux untagged diagnostic: seven identical I420 frames, seven different RGBA frames | `3b68aa04eb0df21d08eedb020a35d27a11d0568a2f150545fbbb69d231a2804f` |
+| `hls-resume-browser/20261011T221650Z/receipt.json` | Linux Chromium with FFmpeg 8.1.3: seven RGBA images, tail recovery, and audio pass | `bb11e11a4b4df5b663ea310cf8b8c9180dafccfad4c0b7241822398dd4e70149` |
+| `hls-resume-linux/20261011T221807Z/receipt.json` | Linux Firefox diagnostic: seven images, tail recovery, and audio pass | `0b9df2e93761c75471d597dc58298d7ea65f6777ef08f940f73f9a9096a4a3e9` |
+| `hls-resume-browser/20261011T221712Z/receipt.json` | Mac Chromium and WebKit MSE: fourteen images, tail recovery, and audio pass | `67508520e784cda4b8bf5b4709965c165ab07e7e2286646a17a269a7b2255292` |
+| `hls-resume-browser/20261011T221827Z/receipt.json` | retained failure: native pending seek jumps to 20 seconds | `e55e487e75bae0ea20a8e2653f92548763bbd13fe2536e3e504091d595d5926d` |
+| `hls-resume-browser/20261011T222616Z/receipt.json` | final native correction: all five recovery and cancellation cases pass | `318749a8d533ab6dacebb8d054f8f6544cb03d576efa65adbe5c9d149e2ad814` |
+| `hls-resume-browser/20261011T222637Z/receipt.json` | final native correction: seven images, tail recovery, and audio pass | `5e1a3146dedb4314c901552e163e88f5890c9205712db66b3aced9b6c6ccd380` |
+| `hls-resume-browser/20261011T222651Z/receipt.json` | native origin-zero diagnostic: first playback at 0.5 seconds and seven images pass | `56cbbca97cb8bf528622d10dffdead7e404fb79aafcce898b980fc1297e3a3b7` |
+| `hls-resume-browser/20261011T221351Z/receipt.json` | expected browser launch failure retained with missing-tail evidence | `1192afbb927234fdb4db31a002df47f4b0f987c18b0dc3a15963080b9f8a387d` |
+| `hls-prepared-timeline/20261011T221925Z/receipt.json` | all nine existing timeline cases pass | `a4ff3132c1fce0bdeb85c310214ba30eeb8b13c826217138fdd648d759b7bddb` |
+| `hls-followon/20261011T222154Z/receipt.json` | all six existing audio/legacy cases pass | `55759e1a757c8b97bb99ed9975141e3f1519166454ad909ed66d0e41e4beba5b` |
+
+Receipt paths in this table are relative to `.verification/`.
+The native retained-suite manifest is `ai-qa-campaign/native-single-owner-retained/manifest.json` under the same root.
+Its SHA-256 is `d308df35c6e97733d185e204bbf5a54aba683899a44498557a48bc2b7787223f`.
+The Linux probes and origin-zero diagnostic remain private scripts under `.verification/ai-qa-campaign/`.
+The Linux binary, generated source, and result hashes remain recorded separately from the hosted AMD64 job.
+
+Fresh unmodified-server baselines still reproduce cold non-keyframe resume and Mac HEVC fractional-tail failures.
+The cold receipt `hls-resume-browser/20261011T214557Z/receipt.json` has SHA-256 `28308557040ce0d2a325d89190f9286404399b09118a13d8bafa1e64a4f2826e`.
+The HEVC receipt `hls-hevc-startup/20261011T214713Z/receipt.json` has SHA-256 `1e77b81b23b9ebf50e5f8c20eb2eaf77b4374e9bcb866e8e6107433633dacd57`.
+Private clock-header and EVENT-playlist experiments are diagnostics only; neither changes production or closes those findings.
+Hosted verification of the corrected PR remains required before merge.
+
 ### Seventh delivery checkpoint
 
 [PR #557](https://github.com/Kinosail/kinosail/pull/557) merged the executable-fixture repair after all required checks passed.

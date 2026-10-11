@@ -225,10 +225,18 @@ const startAdaptive = async (resume = false) => {
         player.addEventListener("loadedmetadata", () => {
           if (generation !== adaptiveGeneration) return;
           adaptiveSeekSwitch = false; playbackTimelineSeek = undefined;
+          const current = player.currentTime;
+          if (resume && pendingResume?.seconds === position && Number.isFinite(current))
+            pendingResume.seconds = Math.max(position, current);
         }, {once: true});
         // Expose the new decoder's clock before the resume listener compares it
         // with the requested position. The temporary latch is not a real seek.
         resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
+        // This adapter owns saved and explicit targets once the origin is known.
+        player.removeEventListener("loadedmetadata", resumeFromSavedProgress);
+        // A pre-metadata seek belongs to the source clock, not this new window.
+        // Clear its decoder default; the retained target is restored above.
+        if (player.readyState === HTMLMediaElement.HAVE_NOTHING) mediaTime.set.call(player, 0);
         player.src = selected.source;
         player.load();
       } else {
