@@ -1,37 +1,5 @@
 import SwiftUI
 
-private enum AudioNowPlayingGeometry {
-    static var transportSpacing: CGFloat {
-        #if os(tvOS)
-        28
-        #else
-        12
-        #endif
-    }
-    static func transportSize(_ index: Int) -> CGFloat {
-        #if os(tvOS)
-        index == 1 ? 112 : 128
-        #else
-        52
-        #endif
-    }
-    static func width(accessibility: Bool) -> CGFloat {
-        #if os(tvOS)
-        accessibility ? 900 : 1400
-        #else
-        700
-        #endif
-    }
-    static func layout(accessibility: Bool) -> AnyLayout {
-        #if os(tvOS)
-        accessibility ? AnyLayout(VStackLayout(spacing: 28))
-                      : AnyLayout(HStackLayout(alignment: .top, spacing: 64))
-        #else
-        AnyLayout(VStackLayout(spacing: 28))
-        #endif
-    }
-}
-
 struct AudioPlayerScreen: View {
     let itemID: String
     var hidesMiniPlayer = true
@@ -52,8 +20,8 @@ struct AudioPlayerScreen: View {
     private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
     var body: some View {
         ScrollView {
-            if let failure { RetryState(message: failure) { revision += 1 } }
-            else if let message = session.player.message { RetryState(message: message) { revision += 1 } }
+            if let failure { RetryState(message: failure, focusesRetry: true) { revision += 1 } }
+            else if let message = session.player.message { RetryState(message: message, focusesRetry: true) { revision += 1 } }
             else if let item = session.player.currentItem, item.isAudio, session.player.player != nil {
                 nowPlayingLayout {
                     Artwork(path: item.artwork, symbol: "music.note", ratio: 1).frame(maxWidth: 440).clipShape(.rect(cornerRadius: 24))
@@ -104,10 +72,13 @@ struct AudioPlayerScreen: View {
                             Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                         }.font(.title2).disabled(session.player.player == nil)
                         if item.kind == .music {
-                            HStack(spacing: 24) {
+                            HStack(spacing: AudioNowPlayingGeometry.trackSpacing) {
                                 Button("Previous", systemImage: "backward.end.fill") { perform { try await session.player.previousTrack() } }.secondaryControlForeground()
                                 Button("Next", systemImage: "forward.end.fill") { perform { try await session.player.nextTrack() } }.secondaryControlForeground()
                             }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).controlSize(.large).disabled(session.player.player == nil)
+                            #if os(tvOS)
+                            .frame(maxWidth: .infinity).focusSection()
+                            #endif
                         }
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: 12) { audioOptions(item) }
@@ -127,7 +98,7 @@ struct AudioPlayerScreen: View {
                         }
                     }
                 }.frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
-            } else { AudioLoadingState().padding(KinoTheme.contentPadding) }
+            } else { AudioLoadingState(showsTrackControls: session.player.currentItem?.kind == .music).padding(KinoTheme.contentPadding) }
         }
         #if os(tvOS)
         .cinemaBackground()
@@ -157,7 +128,7 @@ struct AudioPlayerScreen: View {
             #endif
         } }
         #if os(tvOS)
-        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #endif
         .task(id: "\(itemID):\(revision)") { await load() }
         .onChange(of: session.player.seconds, initial: true) { _, position in if !seeking { seekValue = position } }
@@ -210,38 +181,6 @@ struct AudioPlayerScreen: View {
     }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         Task { do { try await action() } catch { failure = AppSession.message(error) } }
-    }
-}
-
-struct AudioLoadingState: View {
-    var title = "Opening audio…"
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
-    var body: some View {
-        nowPlayingLayout {
-            RoundedRectangle(cornerRadius: 24).fill(KinoTheme.surface).aspectRatio(1, contentMode: .fit).frame(maxWidth: 440)
-            VStack(spacing: 28) {
-                VStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 260, height: 36)
-                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 160, height: 16)
-                }
-                Capsule().fill(KinoTheme.raised).frame(height: 5)
-                HStack(spacing: AudioNowPlayingGeometry.transportSpacing) {
-                    ForEach(0..<3) { index in Circle().fill(KinoTheme.surface)
-                        .frame(width: AudioNowPlayingGeometry.transportSize(index), height: AudioNowPlayingGeometry.transportSize(index)) }
-                }
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 12) {
-                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
-                    }
-                    VStack(spacing: 12) {
-                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity)
-        .skeletonLoading(title)
     }
 }
 

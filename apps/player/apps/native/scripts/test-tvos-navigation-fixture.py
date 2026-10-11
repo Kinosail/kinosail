@@ -56,7 +56,8 @@ class NavigationFixtureTests(unittest.TestCase):
 
     def test_invalid_state_preserves_mode_and_viewer(self):
         for query in ["mode=unknown", "mode=failed&mode=loaded", "delay=-1", "delay=inf",
-                      "delay=31", "profile=production", "target=unknown", "extra=1", "mode=%GG"]:
+                      "delay=31", "profile=production", "target=unknown", "extra=1", "mode=%GG",
+                      "target=connection&mode=empty", "target=connection&delay=1"]:
             before = dict(self.fixture.STATE), dict(self.fixture.VIEWER["viewer"])
             with self.subTest(query=query):
                 self.assertEqual(self.request("GET", "/qa/state?" + query)[0][0], 400)
