@@ -390,10 +390,31 @@ lets an installed worker refresh the changed download script. The existing
 asset and localization contracts pass for Player. Both Subtitles registration
 and local-playback contracts pass after the shared version update.
 
-The new populated journey passes in Chromium. All seven populated Firefox
+The final CI-selected regression fails against the original binary and passes
+in Chromium, Firefox, and WebKit without retries. All seven populated Firefox
 journeys pass, including offline playback and seeking. The new regression
 is selected by the existing populated CI runner with retries disabled.
 Retained storage, worker, and ownership checks pass all 54 executions across
 Chromium, Firefox, and WebKit. Those retained checks use isolated fixtures;
-they are not populated-Server proof. The remaining final-source browser
-replays and publication are pending.
+they are not populated-Server proof.
+
+The broader WebKit batch passes five cases and fails two. The existing offline
+seek assertion still fails. The library accessibility review reaches all six
+desktop screenshots, then exceeds its test deadline before phone coverage.
+Neither failure is waived or described as a passing batch.
+
+Both apps' `make verify-changed` stop at the full shared-package lint stage.
+Its 95 findings match the initial baseline after normalizing source locations.
+One localization finding moved three lines in an earlier main repair. Full
+Player lint also reports 50 findings; none is in a file changed by this task.
+These complete-tree gates remain failed. The repository's CI changed-code
+lint and module tidy checks pass for packages, Player, and Subtitles. All 169
+CI contracts pass, including five documented environment skips. Shell syntax,
+shellcheck, and source-size checks pass. Required hosted checks and publication
+remain pending.
+
+The focused tvOS completion replay also fails the watched-progress assertion
+at the exact movie endpoint. The 24-millisecond-before-end argument passes.
+The test retains its original timing and media prerequisites. The task-created
+simulator was deleted after collecting the result bundle and receipt. The root
+cause remains under investigation; no native repair is claimed.
