@@ -5,13 +5,29 @@ struct DetailScreen: View {
     @Environment(AppSession.self) private var session
 
     var body: some View {
+        #if os(tvOS)
+        ScrollViewReader { scroll in
+            page { scroll.scrollTo("detail.top.\(itemID)", anchor: .top) }
+        }
+        #else
+        page {}
+        #endif
+    }
+
+    private func page(onPrimaryFocus: @escaping @MainActor () -> Void) -> some View {
         ScrollView {
             ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
-            }) { detail in DetailContent(detail: detail).id(itemID) }
+            }) { detail in DetailContent(detail: detail, onPrimaryFocus: onPrimaryFocus).id(itemID) }
             .padding(KinoTheme.contentPadding)
+            #if os(tvOS)
+            .id("detail.top.\(itemID)")
+            #endif
         }
+        #if os(tvOS)
+        .tvMovieHeroViewport()
+        #endif
         .cinemaBackground()
         .navigationTitle("")
         #if os(iOS)
@@ -22,6 +38,7 @@ struct DetailScreen: View {
 
 private struct DetailContent: View {
     let detail: ItemDetail
+    var onPrimaryFocus: @MainActor () -> Void = {}
     @Environment(AppSession.self) private var session
     @State private var listed: Bool?
     @State private var busy = false
@@ -29,8 +46,7 @@ private struct DetailContent: View {
     @State private var showsDownloads = false
     #if os(tvOS)
     @Namespace private var detailFocus
-    @Environment(\.colorSchemeContrast) private var contrast
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @FocusState private var primaryFocused: Bool
     @Environment(\.dynamicTypeSize) private var dynamicType
     #endif
     private var item: MediaItem { detail.item }
@@ -69,7 +85,7 @@ private struct DetailContent: View {
     #if os(tvOS)
     private var tvMovieHero: some View {
         let metadata = TVMovieDetail(item: item).metadata
-        return VStack(alignment: .leading, spacing: 14) {
+        return TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
             Text(item.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
@@ -86,26 +102,10 @@ private struct DetailContent: View {
                 VStack(alignment: .leading, spacing: 12) { secondaryActions }
             }
             .controlSize(.large)
-        }
-        .frame(maxWidth: 740, alignment: .leading)
-        .padding(40)
-        .frame(maxWidth: .infinity, minHeight: 520, alignment: .bottomLeading)
-        .background {
-            ZStack {
-                KinoTheme.surface
-                if contrast != .increased && !reduceTransparency {
-                    GeometryReader { geometry in
-                        Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 1600,
-                                fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
-                    }
-                    LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
-                                   startPoint: .leading, endPoint: .trailing)
-                    LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
-                }
-            }
-        }
-        .clipShape(.rect(cornerRadius: 12))
+        } }
+        .tvMovieHeroArtwork(item.backdrop)
         .foregroundStyle(KinoTheme.text)
+        .tvMovieHeroBleed()
         .focusSection()
     }
     #endif
@@ -196,6 +196,10 @@ private struct DetailContent: View {
         #endif
         #if os(tvOS)
         .tvOSDefaultPlayFocus(in: detailFocus, id: "detail.play.\(item.id)", enabled: item.kind == .video || item.isAudio)
+        .focused($primaryFocused)
+        .onChange(of: primaryFocused) { _, focused in
+            if focused && TVMovieDetail(item: item).usesBackdrop { onPrimaryFocus() }
+        }
         #endif
     }
     private func change(_ operation: @escaping @MainActor (ServerClient) async throws -> Void) {

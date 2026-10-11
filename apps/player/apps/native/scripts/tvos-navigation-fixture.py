@@ -1,5 +1,5 @@
 """Disposable loopback TV QA: large catalog and loaded/pending/empty/failed states."""
-import json, math, re, sys, time
+import json, math, os, re, sys, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -31,6 +31,12 @@ ITEMS = []
 for n in range(160):
     title = TITLES[n] if n < len(TITLES) else f'Journey {n:03d}'
     ITEMS.append(dict(id=f'movie-{n:03d}',kind='video',title=title,year='2026',rating='PG',genres=['Adventure','Drama','Nature','Mystery'][n%4],plot='A quiet journey through unfamiliar landscapes. An ordinary evening turns into an extraordinary adventure.',artwork=f'/art/movie-{n:03d}',backdrop=f'/backdrop/movie-{n:03d}',stream=f'/media/movie-{n:03d}',container='mp4',progress={**PROGRESS,'seconds':3 if n<6 else 0,'session':'qa' if n<6 else '', 'revision':1 if n<6 else 0}))
+# Opt in only for artwork scrolling QA; other fixture consumers retain their data.
+if os.environ.get('KINOSAIL_TV_ARTWORK_CAST_FIXTURE') == '1':
+    next(item for item in ITEMS if item['id'] == 'movie-004')['cast'] = [
+        dict(name=f'Artwork QA Actor {n:02d}', role=f'Fixture role {n:02d}', image=f'/art/artwork-cast-{n:02d}')
+        for n in range(1, 13)
+    ]
 ITEMS.append(dict(id='0123456789abcdef',kind='show',title='Into the Wild',artwork='/art/show',backdrop='/backdrop/show',genres='Nature',plot='A journey into the natural world.',progress=PROGRESS))
 for n in range(4):
     ITEMS.append(dict(id=f'episode-{n}',kind='video',title=['First Light','The Long Way Home','A Quiet Evening','The Last Horizon'][n],show='Into the Wild',showId='0123456789abcdef',season=1 if n<2 else 2,episode=n%2+1,rating='PG',artwork=f'/episode-art/episode-{n}',backdrop='/backdrop/show',stream=f'/media/episode-{n}',container='mp4',progress=PROGRESS))
@@ -55,7 +61,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type',kind); self.send_header('Content-Length',str(len(data))); self.send_header('Cache-Control','no-store')
         for key,val in (headers or {}).items(): self.send_header(key,val)
         self.end_headers()
-        try: self.wfile.write(data)
+        try:
+            self.wfile.write(data)
+            if code==404 and urlsplit(self.path).path=='/backdrop/movie-005':
+                print('ARTWORK_FIXTURE_RESPONSE',json.dumps(dict(route='missing-backdrop',status=404,completed=True,unixTime=time.time())),flush=True)
         except (BrokenPipeError,ConnectionResetError): pass
     def do_GET(self):
         if len(self.path) > 4096: return self.send(400, {'error':'invalid fixture target'})
@@ -100,13 +109,18 @@ class Handler(BaseHTTPRequestHandler):
         if path=='/api/v1/albums/evening': return self.send(200,dict(id='evening',title='Evening Light',artist='Signal Lab',tracks=[next(i for i in ITEMS if i['id']=='music')]))
         if path=='/api/v1/collections': return self.send(200,{'collections':['Weekend']})
         if path=='/api/v1/collections/Weekend': return self.send(200,dict(name='Weekend',items=ITEMS[:6]))
+        if path=='/api/v1/actor' and os.environ.get('KINOSAIL_TV_ARTWORK_CAST_FIXTURE') == '1':
+            name=q.get('name',[''])[0]
+            person=next((p for p in ITEMS[4].get('cast',[]) if p['name']==name),None)
+            if not person: return self.send(404,{'error':'missing fixture actor'})
+            return self.send(200,dict(name=name,image=person['image'],movies=[],shows=[]))
         if path=='/api/v1/shows/0123456789abcdef': return self.send(200,dict(id='0123456789abcdef',title='Into the Wild',backdrop='/backdrop/show',plot='A journey into the natural world.',episodes=[i for i in ITEMS if i.get('showId')],genres='Nature',cast=[]))
         if path=='/api/v1/me/media-preferences': return self.send(200,dict(playback=PLAY,autoDownloadNext=0,removeWatched=False,downloadLimitGiB=20,wifiOnly=True,readerFontSize=20,readerTheme='auto'))
         match=re.fullmatch(r'/api/v1/items/([^/]+)(.*)',path)
         if match:
             ident,suffix=match.groups(); item=next((i for i in ITEMS if i['id']==ident),None)
             if not item: return self.send(404,{'error':'missing title'})
-            if not suffix: return self.send(200,dict(item=item,listed=False,profileId='qa'))
+            if not suffix: return self.send(200,dict(item={**item,'backdrop':''} if active and mode=='empty' else item,listed=False,profileId='qa'))
             if suffix=='/playback': return self.send(200,dict(media=dict(kind=item['kind'],duration=30),plan=dict(allowed=True,mode='direct',reason='compatible'),directAllowed=True,direct='/media/'+ident,directType='video/mp4',duration=30,start=item['progress']['seconds'],chapters=[],subtitles=[]))
             if suffix=='/playback-preferences': return self.send(200,dict(playback=PLAY,overridden=False))
             if suffix=='/watch-progress': return self.send(200,dict(seconds=item['progress']['seconds'],duration=30))
