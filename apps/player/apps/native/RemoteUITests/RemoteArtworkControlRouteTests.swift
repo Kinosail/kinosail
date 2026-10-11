@@ -137,10 +137,10 @@ final class RemoteArtworkControlRouteTests: RemoteTestCase {
     @MainActor private func snapshot(_ app: XCUIApplication) throws -> [String: Any] {
         let actions = controls(app).map { name, element -> [String: Any] in
             ["name": name, "identifier": element.identifier, "label": element.label,
-             "frame": NSStringFromCGRect(element.frame), "hasFocus": element.hasFocus,
+             "frame": NSCoder.string(for: element.frame), "hasFocus": element.hasFocus,
              "exists": element.exists, "isHittable": element.isHittable]
         }
-        return ["actions": actions, "titleFrame": NSStringFromCGRect(app.staticTexts["After the Rain"].frame),
+        return ["actions": actions, "titleFrame": NSCoder.string(for: app.staticTexts["After the Rain"].frame),
                 "focusedLabels": focusedLabels(app)]
     }
 
