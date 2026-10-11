@@ -53,6 +53,9 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 		return false
 	}
 	if !manager.copiedHLSVideo(ctx, item, recipe) || !manager.copiedHLSTimelinePresent(directory) {
+		if manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
+			return false
+		}
 		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}

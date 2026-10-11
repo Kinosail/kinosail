@@ -19,12 +19,13 @@ ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
+parser.add_argument('--audio-mode', choices=['aac', 'ac3', 'none'], default='aac')
 parser.add_argument('--tail-recovery', action='store_true')
 parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
 args = parser.parse_args()
 recovery = args.tail_recovery or args.first_recovery
-if recovery and not args.prepared or args.tail_recovery and args.first_recovery:
+if recovery and (not args.prepared or args.audio_mode != 'aac') or args.tail_recovery and args.first_recovery:
     parser.error('choose one recovery target, with --prepared')
 run = ROOT / '.verification/hls-resume-browser' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
@@ -33,8 +34,8 @@ engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
 build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
            'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else ''),
-           'prepared': args.prepared,
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-mode ' + args.audio_mode,
+           'prepared': args.prepared, 'audioMode': args.audio_mode,
            'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
 
 
@@ -68,6 +69,15 @@ def audio_boundaries(rendition):
 try:
     source, metadata = fixture(media, 'Resume Sample', 48, ','.join(str(n) for n in range(0, 32, 2)),
                                frames=732 if args.tail_recovery else 768, extension='.mp4')
+    if args.audio_mode != 'aac':
+        converted = run / source.name
+        conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy']
+        conversion += ['-map', '0:a:0', '-c:a', 'ac3'] if args.audio_mode == 'ac3' else ['-an']
+        conversion += [str(converted)]
+        subprocess.run(conversion, check=True, capture_output=True, timeout=60)
+        converted.replace(source)
+        metadata['audioConversionCommand'] = conversion
+        metadata['sha256'] = sha(source)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
     with (run / 'build-private.log').open('w') as log:
@@ -139,7 +149,7 @@ try:
                         case['tailMissingBeforePlayback'] = case['fragmentMissingBeforePlayback']
                 child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token,
                              QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
-                             QA_RESUME_ENGINE=engine, QA_RESUME_DURATION=str(metadata['durationSeconds']))
+                             QA_RESUME_ENGINE=engine, QA_RESUME_EXPECTED_MODE='audio-transcode,remux' if args.audio_mode == 'ac3' else 'remux', QA_RESUME_DURATION=str(metadata['durationSeconds']))
                 with (run / f'{engine}-private.log').open('w') as output:
                     script = 'hls-resume-controls.mjs' if args.controls else 'hls-resume-browser.mjs'
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],

@@ -8,6 +8,7 @@ const origin = process.env.QA_RESUME_ORIGIN, token = process.env.QA_RESUME_TOKEN
 const id = process.env.QA_RESUME_ITEM, output = process.env.QA_RESUME_OUTPUT;
 const engine = process.env.QA_RESUME_ENGINE || 'chromium';
 const native = engine === 'webkit-native';
+const expectedMode = process.env.QA_RESUME_EXPECTED_MODE || 'remux';
 const duration = Number(process.env.QA_RESUME_DURATION || 32);
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
@@ -125,7 +126,7 @@ finally {
 }
 const matches = (rows[0]?.samples || []).map((sample, index) => sample.digest === rows[1]?.samples[index]?.digest);
 const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error)
-  && matches.length === 7 && matches.every(Boolean) && rows[1].mode === 'remux'
+  && matches.length === 7 && matches.every(Boolean) && expectedMode.split(',').includes(rows[1].mode)
   && Math.abs(rows[1].duration - rows[0].duration) < .1
   && rows[1].firstPlaying >= 12.45 && rows[1].firstPlaying < 13
   && (!native || rows[1].adapter === 'native')

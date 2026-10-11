@@ -2,13 +2,10 @@ package server
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"sync"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -87,60 +84,6 @@ func hlsInvalidSeek(writer http.ResponseWriter, request *http.Request) {
 	localizedError(writer, request, "seek is outside the playable duration", http.StatusBadRequest)
 }
 
-func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error { //nolint:cyclop // Final cache, active job, and restart recovery are distinct playback states.
-	if manager.cache == "" {
-		return errors.New("compatible playback is not configured")
-	}
-	facts := mediaFactsFor(item, manager.probe.facts(ctx, item))
-	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), facts, item.Subtitles)
-	if sourceErr != nil {
-		return sourceErr
-	}
-	recipe = localHLSRecipe(resolved)
-	key := hlsRecipeKey(item.ID, recipe)
-	playlist := filepath.Join(manager.cache, key, "index.m3u8")
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		return err
-	}
-	if startupActualPlayback(ctx) {
-		manager.startup.playback(key)
-		manager.keepHLSAlive(key, ctx)
-	}
-	if manager.reusableCopiedHLS(ctx, item, filepath.Dir(playlist), options.Cache, recipe) {
-		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-			return err
-		}
-		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
-	}
-	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
-	if err != nil {
-		return err
-	}
-
-	ticker := time.NewTicker(25 * time.Millisecond)
-	defer ticker.Stop()
-	complete := ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe)
-	for {
-		if masterFresh(playlist, item.Path, options.Cache) && (!complete || manager.shortHEVCOutputReady(ctx, item, filepath.Dir(playlist), options.Cache)) {
-			if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-				return err
-			}
-			return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache)
-		}
-		select {
-		case <-ctx.Done():
-			return observedHLSReadinessError(ctx.Err(), job)
-		case <-job.done:
-			if job.err != nil {
-				return observedHLSReadinessError(job.err, job)
-			}
-			return errHLSIdentityChanged
-		case <-ticker.C:
-		}
-	}
-}
-
 func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int) error {
 	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
 		return err
@@ -148,7 +91,7 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if err := manager.bindStartupCompletion(ctx, directory, options.Cache); err != nil {
 		return err
 	}
-	if err := manager.bindCopiedHLSTimeline(ctx, directory, startNumber); err != nil {
+	if err := manager.bindCopiedHLSIndex(ctx, item, recipe, directory, options.Cache, startNumber); err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -224,7 +167,10 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	defer output.close()
-	timeline, _ := manager.readCopiedHLSTimeline(root, options.Cache)
+	timeline, timelineErr := manager.readCopiedHLSTimelineContext(ctx, root, options.Cache)
+	if timelineErr != nil && (copiedHLSIndexRequired(ctx) || manager.copiedHLSTimelinePresent(root) || manager.coldCopiedHLSNeedsIndex(ctx, item, sourceRecipe)) {
+		return errCopiedHLSIndex
+	}
 	if timeline != nil {
 		if startNumber < 0 || startNumber >= len(timeline.Keys) {
 			return errCopiedHLSIndex

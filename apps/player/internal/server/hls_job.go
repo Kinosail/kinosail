@@ -52,6 +52,19 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			continue
 		}
 		if job == nil {
+			directory := filepath.Join(manager.cache, key)
+			if cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) || seekCacheFresh(directory, item.Path, options.Cache) {
+				if _, err := manager.readCopiedHLSTimelineContext(ctx, directory, options.Cache); err == nil {
+					// Publication or clock binding may have finished after admission
+					// inspected this cache. Never delete that valid new generation.
+					manager.mu.Unlock()
+					return nil, errHLSIdentityChanged
+				}
+			}
+			if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
+				manager.mu.Unlock()
+				return nil, err
+			}
 			//nolint:gosec // Key is a scanned ID plus a validated recipe.
 			if err := os.RemoveAll(filepath.Join(manager.cache, key)); err != nil {
 				manager.mu.Unlock()
@@ -116,6 +129,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	}
 	if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-origin=1"
+		if recipe.mode == "remux" && recipe.offset > 0 {
+			options.Cache += ":copied-resume=1"
+		}
 	}
 	if recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-completion=1"

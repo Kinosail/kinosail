@@ -151,13 +151,15 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	}
 	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
 	playable := hlsPlaybackDuration(recipe, duration)
+	indexed := false
 	if timeline, mapErr := manager.readCopiedHLSTimeline(directory, options.Cache); mapErr == nil {
+		indexed = true
 		valid = timeline.Clock != nil && segment < len(timeline.Keys)
 		if valid {
 			offset = timeline.point(segment) - timeline.point(0)
 			playable = timeline.End - timeline.point(0)
 		}
-	} else if manager.copiedHLSTimelinePresent(directory) {
+	} else if manager.copiedHLSTimelinePresent(directory) || manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
 		return errCopiedHLSIndex
 	}
 	if !valid || offset >= playable {
@@ -214,6 +216,9 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			return err
 		}
 		jobContext, created := manager.newHLSJob(ctx, segment)
+		if indexed {
+			jobContext = context.WithValue(jobContext, copiedHLSRequiredKey{}, true)
+		}
 		job = created
 		job.cachePolicy = options.Cache
 		manager.jobs[key] = job

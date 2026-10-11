@@ -429,6 +429,9 @@ jobs:
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --tail-recovery
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --first-recovery
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --controls
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode none
+          python3 apps/player/scripts/test-hls-cold-suffix.py
       - name: Keep safe prepared timeline evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -440,6 +443,7 @@ jobs:
             .verification/hls-prepared-timeline/*/SHA256SUMS
             .verification/hls-resume-browser/*/receipt.json
             .verification/hls-resume-browser/*/chromium.json
+            .verification/hls-cold-suffix/*/receipt.json
           retention-days: 14
           if-no-files-found: error
       - name: Verify copied-video audio and legacy preparation

@@ -682,3 +682,79 @@ Its first run hit a process-permission error in the unchanged Q09 descendant-cle
 Source limits, whitespace, the architecture snapshot, and the repository-selected actionlint 1.17.0 pass.
 PR #560's current CI encountered an artifact-service `ETIMEDOUT` during the AMD64 container evidence upload.
 That infrastructure failure is retained separately from the short-HEVC repair and still requires hosted reconciliation.
+
+
+### Cold H264 remux resume: bounded source indexing and shared readiness
+
+A cold saved position of 12.5 seconds failed all seven Chromium reference-frame comparisons.
+The copied video started at the preceding source key, but playback still used the requested offset as its origin.
+The new path certifies the complete remaining packet and key map before encoding.
+It applies to plain H264 remux with a positive offset and at most 30 seconds from the actual source key through EOF.
+Copied audio conversion is excluded from this repair.
+
+Packet, IDR, and decoder-configuration probes share one eight-second deadline, including workload admission.
+Decimal packet timestamps enforce the window while reading; rational timestamps validate the completed map.
+A demux seek before the permitted window is rejected before waiting for EOF.
+The source and playback policy are checked again before binding and publication.
+Failed, incomplete, changed, or timed-out probes do not start a media encoder or publish a certificate.
+
+The source origin and existing mux-clock certificate drive the public playlist and browser timeline.
+Concurrent requests share one index and encoder.
+A finished encoder can beat the readiness ticker, so completion now preserves valid output for clock binding.
+New requests join pending clock certification before deciding to rebuild a cache.
+The final job-creation check preserves completed or seekable indexed output under the existing manager lock.
+It rechecks cancellation and source policy after metadata verification.
+A failed producer's incomplete prefix remains recoverable through a fresh encoding attempt.
+
+Refill jobs retain the original requirement for certified cuts after their seek recipe changes.
+Missing or invalid required metadata cannot fall back to legacy mux arguments.
+First-fragment recovery is byte-identical; tail recovery preserves decoded video and timestamps, audio continuity, initialization, and metadata.
+Whole-file equality is not required for nonzero fragments because container sequence fields may differ.
+
+The private offline matrix passes 41 cases: 34 certified suffixes and seven expected window rejections.
+It compares suffix cuts with independently scanned whole-file cuts across MP4, Matroska, AAC, AC3, and video-only fixtures.
+It includes irregular keys, near-zero and near-EOF positions, and the tail of a longer file.
+A real 95-second source at B=65.1, with preceding A=64, is rejected in 0.079 seconds without encoding.
+Its requested remainder fits 30 seconds, but its actual key-to-EOF window does not.
+
+The public fault harness passes twelve cases before the final failed-producer recovery addition.
+Those cases cover concurrent requests, held clock certification, whole and fractional-tail recovery, early bounds, non-key packets, source changes, late probe failures, and individual/aggregate deadlines.
+The added producer failure first reproduced a persistent 503 after a playable prefix; its corrected replay returns 200 with one fresh producer.
+The clock-race replay still passes after that correction.
+All recorded Servers and probe wrappers settle. Failure logs retain request/session correlation without authentication tokens.
+
+Chromium, WebKit MSE, and native WebKit match all seven original-file frames for both AAC and video-only sources: 42 comparisons pass.
+The retained prepared first-fragment Chromium journey also passes with unchanged initialization, playlists, timeline, and clock certificate.
+These browser observations precede the final cancellation and failed-prefix guard refinements; clean-revision replays follow the implementation checkpoint.
+Native WebKit uses a capability simulation and does not certify physical Safari or devices.
+
+An experimental extension to cold AC3-to-AAC conversion still mismatched all seven Chromium frames despite reporting source origin 12.
+Its displayed timestamps had an approximately 0.021-second shift. The root cause is not yet established.
+WebKit chose remux for that source and matched all seven frames; the initial harness incorrectly required conversion in that engine.
+The harness now permits either supported mode while retaining the exact frame oracle.
+Longer cold suffixes, cold audio conversion, long/nonzero HEVC, physical devices, and production deployment remain open.
+
+The required Chromium workflow includes cold AAC/video-only journeys and the public fault harness.
+Local CI contracts pass 169 tests with five environment-dependent skips.
+The repository-selected actionlint, source limits, architecture snapshot, whitespace check, and focused retained Go tests pass.
+Post-commit affected verification and hosted checks remain required before delivery.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261011T233337Z/receipt.json` | cold Chromium failure before repair | `1e3dd830c6d4acaca00e4079ac538048859ffdf8be66187041acd7a5a9cbf0ae` |
+| `hls-cold-suffix/20261011T233548Z/receipt.json` | probe-failure control exposes uncertified legacy output | `c8799ccdc3bec2fd3c5098b3019505f7e7c6507b5684dbdb74b9518163bed5c0` |
+| `ai-qa-campaign/cold-suffix-matrix-20261011T233806Z/receipt.json` | 41-case offline index matrix | `5ecf0bced3435f943d06ff58ef2c4110a8bedbca60e73123cd695e482685ca64` |
+| `hls-cold-suffix/20261011T234306Z/receipt.json` | clock race: 503/200 and duplicate encoding | `8989e2b54f9efbc6ed67c04d5ea0daaa7b08f4ef218f354afc6d2b5a758320c9` |
+| `hls-cold-suffix/20261011T234914Z/receipt.json` | twelve public success/fault cases pass | `21eb1fdbe68f37b71406d9f1761558029dd217e18d5e38e5c61c1fc4120aeb48` |
+| `hls-cold-suffix/20261011T235310Z/receipt.json` | failed prefix cannot recover before guard correction | `a6214f5b7c54b4a7e8be269644cedbdbe86d1e7d7fc181c25e4de2aee708c3b2` |
+| `hls-cold-suffix/20261011T235344Z/receipt.json` | failed prefix recovers with one fresh producer | `418faeaf40da852f244a85c0471444ff5e3645533da1b39c4f872902c82308ad` |
+| `hls-cold-suffix/20261011T235358Z/receipt.json` | clock race and zero/tail recovery remain correct | `58ab8ae3dd23c1f04ec49d139a53680d3b214f252bf6b59118eee895fe134e9d` |
+| `hls-resume-browser/20261011T235003Z/receipt.json` | AAC Chromium/WebKit: fourteen exact frames | `109e3541f6abb3a28ec50c31597040792eb5e10821a8a8bc24cd42f31b77e84f` |
+| `hls-resume-browser/20261011T235124Z/receipt.json` | AAC native WebKit: seven exact frames | `16dc43735a8bd82ad7d381c70dc718e02cc2507d59f024a8c8979dc871978784` |
+| `hls-resume-browser/20261011T234914Z/receipt.json` | video-only Chromium/WebKit: fourteen exact frames | `284c713a7d79d1de130d904ccb06f9da1d2039d90a19dc3d80a89aac932eaee2` |
+| `hls-resume-browser/20261011T235016Z/receipt.json` | video-only native WebKit: seven exact frames | `0cd45def675af0ebcb3518059e9217ece668462d34fc8212b809bd247d13189a` |
+| `hls-resume-browser/20261011T235135Z/receipt.json` | prepared first-fragment regression passes | `b23c7c9d3281365ddb953aa0276eed6d49fa50fdede4e5ac96c48016e3450797` |
+| `hls-resume-browser/20261011T234724Z/receipt.json` | retained AC3 conversion timing failure and mode-control correction | `725e711bd1023201603fe96f1f0e51eafce955d60f5cd8b0bdea5ebe6de16a06` |
+
+These runs use base `2a32e9b43826e2d22239a473181cb2bf94f6afb4` with the recorded candidate patches and binary hashes.
+The public fault receipts include the patch and harness hashes. Clean-revision browser evidence will replace the candidate boundary for delivery.
