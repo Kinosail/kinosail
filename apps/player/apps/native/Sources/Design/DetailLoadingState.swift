@@ -14,7 +14,7 @@ struct DetailLoadingState: View {
                 .tvMovieHeroArtwork()
                 .tvMovieHeroBleed()
             line(140, 28)
-            HStack(spacing: KinoTheme.shelfSpacing) {
+            HStack(spacing: 18) {
                 ForEach(0..<4) { _ in
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
                         .aspectRatio(2 / 3, contentMode: .fit).frame(width: 230)

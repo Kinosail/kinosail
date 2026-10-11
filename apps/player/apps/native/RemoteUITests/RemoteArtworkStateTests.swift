@@ -84,6 +84,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         XCTAssertEqual(item["backdrop"] as? String, "/backdrop/movie-005")
         let app = openMovie(next: true)
         waitForDetail(app, title: "Before Dawn")
+        print("ARTWORK_STATE screenshotBeginUnix=\(Date().timeIntervalSince1970)")
         record("artwork-detail-backdrop-404", app)
         XCTAssertFalse(app.buttons["Try again"].exists, "Artwork404 is separate from detail failure")
         verifyPrimaryVisible(app)
@@ -130,6 +131,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
+        if next { print("ARTWORK_STATE appLaunchCompletedUnix=\(Date().timeIntervalSince1970)") }
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)
