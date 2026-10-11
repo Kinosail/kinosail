@@ -296,7 +296,11 @@ Those failures remain retained. [Hosted run 38160404212](https://github.com/Kino
 A diagnostic using the container's DejaVu Sans Bold fallback reproduced the narrow label.
 Reducing outer horizontal padding to `.25rem` then kept every label on one line in all four width/text-scale combinations.
 Four fresh inspector cases at 320/390 pixels and both themes passed with that production CSS.
-The final Linux rerun remains a separate delivery gate; the container run's trust failure is recorded below.
+The final Linux Firefox and WebKit runs passed on `78d8fbb06aeb68646afc5c08bb4c8d2c36e52a1b`.
+Each passed 40 Player and 46 Subtitles layout cases, plus 11 Player and 26 Subtitles flows.
+Neither reported split dock labels, covered bookmark headings, overflow, or another enforced geometry failure.
+The 320-pixel settings screenshots were inspected in both engines. Chromium remains pending in this checkpoint.
+The container run's separate trust failure is recorded below.
 Private screenshots under `hosted/visual-review/` have these SHA-256 values:
 
 - `subtitles-firefox-390-library.png`: `95c3f6a427aad88a48d62e59ae3bb0541935cbcaa4a83ab85b2b7a9c71881313`.
@@ -341,6 +345,33 @@ Its URL helper follows the supported TLS environment setting. Manual instances r
 Explicit TLS remains available; no browser trust bypass or host CA installation was added.
 The rerun must establish browser behavior, including the two history failures, before accepting this repair.
 Local HTTP evidence cannot establish TLS or WebKit cookie behavior; hosted WebKit retains disposable-runner certificate trust.
+
+The first HTTP run on `12c5208e` passed 36 cases, skipped 27 serial dependents, and failed three.
+The history stylesheet cases passed. The API client rejected Secure cookies on `127.0.0.1`, unlike its supported HTTP `localhost` exception.
+A passkey redirect also used the internal port instead of the assigned host port.
+Changing the browser origin to `localhost` cleared the first seven dashboard cases on `3c8fe374`.
+That run was stopped before the known redirect failure to correct its startup configuration; its 59 unexecuted cases are not acceptance.
+Both task-owned Compose projects had zero containers and volumes after cleanup.
+The fixture now pins its assigned port and sets its canonical login URL before Owner setup.
+Browser assertions, deadlines, and certificate validation remain unchanged. The complete rerun is pending.
+
+### AQA-012 — Open: intermittent prompt-return bound on main
+
+Main CI on `6f8bfa60d46d5c53621d5590ace3e943669d53ad` observed a legacy admission request taking 336.731493 ms against its existing 250 ms assertion.
+The failed test was `TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects`.
+Ten focused local repetitions passed with unchanged test and production code; the failed hosted job also passed on retry.
+Neither result establishes a root-cause repair. The original failure and a bounded diagnostic receipt remain private.
+
+### Further copied-resume diagnosis
+
+The direct MediaSource probe buffered only 2.5–17.5 seconds when negative preroll was shifted to zero.
+Keeping its timestamps positive restored all four sampled reference images.
+This is consistent with [MSE coded-frame processing](https://www.w3.org/TR/media-source-2/#sourcebuffer-coded-frame-processing), which can drop frames before the append window and require a new random-access point.
+The actual Hls.js configuration still failed with the experimental edit list.
+A separate Hls.js probe using the true 10-second keyframe origin, a 2.5-second relative start, and a 12.5-second global seek matched all four reference images and the 30-second source duration.
+The existing requested-offset mapping matched none and exposed 32.5 seconds.
+These synthetic probes do not qualify full-frame/audio output, a production repair, or native-client behavior.
+[HLS start offsets](https://www.rfc-editor.org/rfc/rfc8216.html#section-4.3.5.2) may express preroll suppression, but client behavior still requires independent proof.
 
 ## Additional private artifact checksums
 

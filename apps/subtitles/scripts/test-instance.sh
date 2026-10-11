@@ -95,6 +95,14 @@ case "$action" in
     prepare
     "${compose[@]}" down --volumes --remove-orphans
     "${compose[@]}" up --detach
+    if [[ -z "${KINOSAIL_AUTH_URL:-}" ]]; then
+      # Pin Compose's assigned port before configuring the canonical login URL.
+      KINOSAIL_AUTH_URL="$(url)"
+      KINOSAIL_PORT="${KINOSAIL_AUTH_URL##*:}"
+      KINOSAIL_AUTH_URL="${KINOSAIL_AUTH_URL/127.0.0.1/localhost}"
+      export KINOSAIL_AUTH_URL KINOSAIL_PORT
+      "${compose[@]}" up --detach
+    fi
     wait_ready
     setup_owner
     printf 'Kinosail test instance: %s\nOwner: Owner\nPassword: test-instance-password\n' "$(url)"

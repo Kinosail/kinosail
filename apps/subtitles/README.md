@@ -178,6 +178,7 @@ make test-instance-check
 ```
 
 The automated instance uses HTTP on loopback and leaves browser certificate checks enabled.
+It configures the canonical login URL with the assigned test port.
 Manual `./scripts/test-instance.sh up` keeps HTTPS as its default.
 Set `KINOSAIL_TLS_ENABLED=true` only when the browser already trusts the fixture certificate.
 
