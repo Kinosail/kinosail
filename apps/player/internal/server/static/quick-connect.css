@@ -1,0 +1,6 @@
+/* Quick Connect manual entry and camera preview. */
+@media(max-width:900px) and (max-height:600px){
+  body.library-page.auth main:has(.quick-connect-code) .brand-mark{display:none}
+  body.library-page.auth main:has(.quick-connect-code)>form{gap:.5rem;padding-block:1rem}
+}
+[data-qr-video]{display:block;width:100%;max-height:45dvh;object-fit:contain;background:var(--surface-2);border-radius:var(--radius,12px);margin-bottom:.75rem}

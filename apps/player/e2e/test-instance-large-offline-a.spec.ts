@@ -102,9 +102,10 @@ test.describe("large offline transfers", () => {
   await expect.poll(() => manifests).toBe(1);
   await expect.poll(() => ranges).toEqual([chunk, chunk, 1]);
   await expect(page.getByText("The download could not be verified", { exact: true })).toBeVisible();
-  await expect(button).toBeEnabled();
+  const resume = page.getByRole("button", { name: "Resume on this device", exact: true });
+  await expect(resume).toBeEnabled();
   manifestHash = sha256;
-  await button.click();
+  await resume.click();
   await expect.poll(() => manifests).toBe(2);
   await expect.poll(() => ranges).toEqual([chunk, chunk, 1, chunk, chunk, 1]);
   await expect.poll(() => page.evaluate((id) => (window as Window & OfflineClient).KinosailOfflineMedia.source(id), itemID!), { timeout: 20_000 }).toBe(`/offline-media/${profileID}/${syntheticID}`);
