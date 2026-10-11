@@ -93,6 +93,35 @@ The synthetic catalog previously returned an empty letter index even with 160
 movies. Its new index reports each title group's actual offset and count so the
 A–Z navigation can be exercised. Four existing fixture safety checks passed.
 
+### NAV-04: Library top-row Up is trapped (P2, confirmed twice)
+
+From Sort, press Down and Right five times to Journey 008. Up leaves focus on
+Journey 008. The test records this mismatch in `focus-library.log` before the
+test runner stalls while reporting failure. A separate manual walkthrough
+reproduces it. Five Left presses and one Up are required to reach Sort.
+The filter row now has a full-width focus section. Its regression requires
+one Up from the sixth column and also traverses both grid rows.
+
+### NAV-05: The selected A–Z letter is unreadable (P2, confirmed)
+
+Right from Sort reaches A. Down twice reaches J and loads Journey 006 onward.
+Both selected letters render pale text on a pale native focus fill. The J
+highlight also overlaps its neighboring letters. See `library-index-j.png`.
+The letter-index journey now checks the rendered glyph as well as its focus,
+letter jump, adjacent-card return, and originating-card restoration.
+
+### Host and reconciliation notes
+
+The `detail-green` run stalled before test launch and was stopped. The
+`focus-library` run reached the grid mismatch but timed out while reporting it;
+it is observation evidence, not a completed test suite. Only this task's test
+processes and simulator were restarted. Later runs disable optional Xcode
+diagnostic collection and retain their explicit test attachments.
+
+Checkpoint `3d1eef0b` preserves the initial fixes and audit. Merge `3cece51e`
+reconciles current main, including the movie hero artwork/layout changes from
+PR #548. Final acceptance must use that integrated layout.
+
 Focus-section reference: [Apple's SwiftUI focusSection documentation](https://developer.apple.com/documentation/swiftui/view/focussection()).
 The app retains native directional navigation and uses focus sections to bridge
 visible gaps between control rows.

@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 // Covers real tvOS grid and index focus. Browser and paging unit tests cannot
@@ -42,6 +43,7 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         remote.press(.down)
         assertFocus("J, 154 titles", app)
         record("library J index", app)
+        assertReadableLetter(app.buttons["J, 154 titles"], app)
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS 'Journey 006'"))
             .firstMatch.waitForExistence(timeout: 10))
         remote.press(.left)
@@ -57,6 +59,32 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         remote.press(.menu)
         XCTAssertTrue(app.buttons[label].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons[label].hasFocus, "Back should keep the letter jump and originating title")
+    }
+
+    // The native plain button can report focus while rendering its letter in
+    // white on a white focus fill. Inspect the central glyph, away from edges.
+    @MainActor private func assertReadableLetter(_ letter: XCUIElement, _ app: XCUIApplication) {
+        let readable = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let screenshot = app.screenshot().image.cgImage else { return false }
+            let scale = CGFloat(screenshot.width) / app.frame.width
+            let frame = letter.frame
+            let center = frame.insetBy(dx: frame.width * 0.3, dy: frame.height * 0.25)
+            guard let glyph = screenshot.cropping(to: CGRect(
+                x: center.minX * scale, y: center.minY * scale,
+                width: center.width * scale, height: center.height * scale)),
+                  let context = CGContext(data: nil, width: glyph.width, height: glyph.height,
+                    bitsPerComponent: 8, bytesPerRow: glyph.width * 4,
+                    space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+                  let pixels = context.data?.assumingMemoryBound(to: UInt8.self) else { return false }
+            context.draw(glyph, in: CGRect(x: 0, y: 0, width: glyph.width, height: glyph.height))
+            let dark = (0..<(glyph.width * glyph.height)).filter { index in
+                (0..<3).allSatisfy { pixels[index * 4 + $0] < 100 }
+            }.count
+            return dark > 12
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [readable], timeout: 5), .completed,
+                       "The focused letter must have a readable dark glyph inside its light fill")
     }
 
     @MainActor private func openMovies(_ app: XCUIApplication) {

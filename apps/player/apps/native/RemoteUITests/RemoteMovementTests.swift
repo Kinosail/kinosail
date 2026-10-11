@@ -110,7 +110,7 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Movies"].hasFocus)
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10), app.debugDescription)
-        let card = app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'After the Rain'")).firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10), "Movies should load a card")
         if !card.hasFocus { remote.press(.down) }
         XCTAssertTrue(card.hasFocus)
@@ -163,7 +163,7 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Movies"].hasFocus)
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10), app.debugDescription)
-        let card = app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'After the Rain'")).firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         if !card.hasFocus { remote.press(.down) }
         XCTAssertTrue(card.hasFocus)
@@ -194,7 +194,7 @@ final class RemoteMovementTests: RemoteTestCase {
         }
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Photos"].waitForExistence(timeout: 10), app.debugDescription)
-        let card = app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Color Study'")).firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10), "Photos should load a card")
         if !card.hasFocus { remote.press(.down) }
         XCTAssertTrue(card.hasFocus)
@@ -209,7 +209,7 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(app.staticTexts["Select to zoom"].waitForExistence(timeout: 5))
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch.hasFocus)
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS 'Color Study'")).firstMatch.hasFocus)
         remote.press(.menu)
         XCTAssertTrue(app.buttons["Photos"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Photos"].hasFocus)
@@ -228,7 +228,7 @@ final class RemoteMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Shows"].hasFocus)
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
-        let card = app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Into the Wild'")).firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         if !card.hasFocus { remote.press(.down) }
         XCTAssertTrue(card.hasFocus)

@@ -3,6 +3,7 @@ import XCTest
 final class RemoteDetailMovementTests: RemoteTestCase {
     @MainActor
     func testAlbumAndBackRestoreMusicFocus() {
+        continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -32,6 +33,20 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         )).firstMatch
         XCTAssertTrue(focusedPlayerControl.waitForExistence(timeout: 10), "Audio player should receive focus")
         record("audio player", app)
+        if app.buttons["Pause"].hasFocus { remote.press(.select) }
+        XCTAssertTrue(app.buttons["Play"].hasFocus)
+        let path: [(XCUIRemote.Button, String)] = [
+            (.left, "Back 15 seconds"), (.right, "Play"), (.right, "Forward 30 seconds"),
+            (.down, "Next"), (.left, "Previous"), (.down, "Repeat: off"),
+            (.right, "Sleep timer"), (.left, "Repeat: off"), (.left, "Shuffle off"),
+            (.up, "Previous")
+        ]
+        for (arrow, expected) in path {
+            remote.press(arrow)
+            record("audio arrow to \(expected)", app)
+            XCTAssertTrue(focusedLabels(app).contains(expected),
+                          "Expected \(expected); actual: \(focusedLabels(app))")
+        }
         remote.press(.menu)
         XCTAssertTrue(app.buttons["Back 15 seconds"].waitForNonExistence(timeout: 10),
                       "Back should close the audio player")

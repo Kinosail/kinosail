@@ -75,11 +75,11 @@ struct TVLetterIndex: View {
             LazyVStack(spacing: 2) {
                 ForEach(letters) { letter in
                     Button(letter.label) { onBrowse(letter) }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.plain).focusEffectDisabled()
                         .font(.callout.weight(.semibold))
                         .frame(width: 56, height: 44)
-                        .foregroundStyle(focusedLetter == letter.label ? KinoTheme.signalInk : KinoTheme.text)
-                        .background(focusedLetter == letter.label ? KinoTheme.signal : .clear,
+                        .foregroundStyle(focusedLetter == letter.label ? KinoTheme.tvOSPrimaryInk : KinoTheme.text)
+                        .background(focusedLetter == letter.label ? KinoTheme.tvOSPrimaryFill : .clear,
                                     in: RoundedRectangle(cornerRadius: 10))
                         .focused($focusedLetter, equals: letter.label)
                         .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
