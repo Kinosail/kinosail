@@ -129,6 +129,8 @@ The first local browse command also lacked this worktree's Playwright installati
 
 Extra local Firefox journeys stop before reaching the app: Firefox reports that it cannot find its profile folder. Reinstall verification and a repeat using a task-owned temporary directory do not resolve startup. Hosted Firefox proof remains valid; the extra local Firefox groups are unproved.
 
+A disposable Linux ARM64 browser container avoids the macOS profile failure. WebKit passes the exact compact-layout and both-theme Quick Connect owners against the final production Server source. Firefox stops before app navigation with `SEC_ERROR_UNKNOWN_ISSUER`, including after a private CA installation policy. Certificate validation remains enabled. Trust changes and the synthetic Server stay inside the disposable container, which was removed after evidence capture.
+
 ### QA-009 [P3, design metadata] — Design sidecar is stale
 
 The impeccable context check reports that `.impeccable/design.json` is stale relative to `DESIGN.md`. This affects detector calibration. Refresh it through `impeccable document` in a separate design maintenance pass.
@@ -192,7 +194,7 @@ Quick Connect adds 22 inspected state captures and eight actual-theme viewport c
 
 ## Verification boundaries
 
-- The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts. The final repaired Quick Connect live-Server replay is Chromium-only. General Firefox and WebKit layout checks do not establish that exact journey.
+- The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts. The repaired Quick Connect live-Server replay passes in Chromium and Linux WebKit. The WebKit replay uses revision `fa6a30b4`, with unchanged production source from the final dependency reconciliation. It passes both focused owners, including eight actual-theme viewport combinations, axe contrast, and scroll-aware actionability. Firefox's exact repaired journey remains unproved because of the certificate boundary above.
 - Public expansion stages completed 75 passes before interruption, then 87 passes, five failures and 68 unrun cases. After the fixture corrections and spacing repair, the remaining-file replay passed 71, failed three, and skipped three. The two Supporter cases pass after supplying their explicit context base URL. QA-013 repeats. Stage counts overlap and must not be summed as unique journeys.
 - A separate worktree audit finds an unrelated expired `nox-local-live` lease with clean, unique commits. Its checkout, commits, and lease were preserved. The primary checkout retains unrelated Xcode project and localization edits; these prevent automatic local-main cleanup.
 - Full local package lint, complexity, Halstead loading, and dead-code gates fail as recorded above. No required gate, lint rule, source cap, or security threshold was bypassed.

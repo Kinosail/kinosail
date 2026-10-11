@@ -25,6 +25,7 @@ Environment versions are in `environment-final.json`; native media hashes are in
 - Hosted matrix: CI run `38099145590`, with coverage and scan diagnostics enabled. Retain attempt one and the unchanged Swift retry.
 - Public browser: the private `public-player` receipts record exact commands, image IDs, source revisions, TLS pins, synthetic data and fixture corrections. Recreate disposable credentials; do not reuse session artifacts.
 - Quick Connect regression: run `layout-audit-library.spec.ts`, `mobile-quick-connect.spec.ts`, and `quick-connect-scan.spec.ts` against the populated disposable Server.
+- Linux WebKit replay: `cross-browser/run-tests.sh webkit` inside the recorded Playwright 1.63.0 ARM64 container. The private inputs, initialization script, CA setup, configuration, exact commands, and source receipt recreate the populated fixture. Firefox repeats remain failed certificate prerequisites; no TLS bypass is used.
 - Download gap: use the exact opt-in commands in the download and expansion receipts. Do not replace their failing assertions with synthetic completion.
 - Final local gates: `make max-loc`, `git diff --check`, and `make -C apps/player verify-changed` after committing app changes.
 
@@ -67,6 +68,11 @@ Environment versions are in `environment-final.json`; native media hashes are in
 | `remaining-browser-cases-final.json` | `596d9378f485c240065cca93f0e9d3f12716408b593e56f0b742965bd5ae63a6` |
 | `source-equivalence.json` | `b85455ee23f2aeade2d970402803d44369b279be031bb4deab0f69cbfd9e095d` |
 | `local-resource-cleanup.json` | `2e5274c315cc4c449aa654ca9beca97bb4de675556f1e09d5e01bf422787e465` |
+| `cross-browser/summary.json` | `a08981327266bffe58aa8de3050f70f88712a6eba4c82c86bdf7556abaf9a66a` |
+| `cross-browser/webkit-receipt.json` | `be324c436b5dd30383471f72df0d530b638648a827021213d9dd5b109ae7a8b6` |
+| `cross-browser/final-results/webkit/results-webkit.json` | `984397f98c35f1d6bd3a5aecd0eba53181fdbf07cd48b272c98c3b91e4aa51ee` |
+| `cross-browser/firefox-trusted-receipt.json` | `18a41be282cc97932ceb528635331b537d24e885e8f848cf44acd04575b921c0` |
+| `cross-browser/cleanup.json` | `ae1d2623ee6ec8dce7654e3a72a4a618f0f96d5afdfee7df16cc5952d7ccd048` |
 
 The full private manifest excludes its own digest. Build directories are omitted; native result bundles, media, logs, screenshots and traces are retained.
 CI, container validation, publication, deployment, TLS and physical interaction remain separate evidence.
