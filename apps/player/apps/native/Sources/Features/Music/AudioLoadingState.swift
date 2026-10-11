@@ -67,4 +67,3 @@ struct AudioLoadingState: View {
         .skeletonLoading(title)
     }
 }
-
