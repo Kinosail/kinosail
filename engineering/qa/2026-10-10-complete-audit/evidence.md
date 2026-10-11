@@ -9,7 +9,8 @@ Each selected artifact below has a SHA-256 digest. The private full manifest cov
 Baseline: `2f62453888c3707587de0875709772290a728106`.
 Native repair: `5e2443f8f1f6928306bc56fdc35f4a8b97bf44a9`.
 Reconciled source: `6dfdf8dafff0f7f1d6c449efd375802ef03104a7`.
-Quick Connect image: `740fbe99f39a4542f6e11775988d7175d2290741`.
+Quick Connect repair image: `740fbe99f39a4542f6e11775988d7175d2290741`.
+Final dependency reconciliation: `17192f58a0ac004da27d161e7722d6ae6f601587`. Its rebuild and final replay receipts remain private.
 The final theme test is included in the audit delivery commit; its source and run are preserved privately.
 Environment versions are in `environment-final.json`; native media hashes are in `native-media.json`.
 `source-equivalence.json` applies to the baseline and reconciliation, before the CSS repair.

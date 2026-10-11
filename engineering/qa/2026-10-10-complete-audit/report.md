@@ -8,6 +8,8 @@ Baseline: `2f62453888c3707587de0875709772290a728106`. The audit crosses midnight
 
 The branch reconciled main at `d25a605134fa11ec35954a1b73851386bb9b58a6`, which adds Android progress-session ownership checks. The reconciliation commit is `6dfdf8dafff0f7f1d6c449efd375802ef03104a7`. Android unit checks were rerun after reconciliation. Web, Go Server, and Apple production source did not change during that reconciliation.
 
+Final reconciliation incorporates dependency update #543 from main `e9f7ae98` in commit `17192f58a0ac004da27d161e7722d6ae6f601587`. The earlier matrix retains its original dependency versions. Focused compilation, Quick Connect replay, and required PR gates validate the reconciled delivery separately. Container rebuild receipts identify the exact source used.
+
 Private evidence is preserved at `/Users/mikeo/Documents/Codex/complete-qa-20261010/`. Raw logs, traces, native results, session data, and device identifiers are not committed. [The evidence index](evidence.md) records commands and checksums. This audit establishes bounded evidence and an explicit backlog; it does not establish that every possible device or journey works.
 
 ## Audit plan
@@ -192,6 +194,7 @@ Quick Connect adds 22 inspected state captures and eight actual-theme viewport c
 
 - The public-instance expansion adds 233 formerly unproved collected cases with at least one passing local execution. This does not close each engine's gap. The final index contains 25 collected cases without a passing execution in these artifacts.
 - Public expansion stages completed 75 passes before interruption, then 87 passes, five failures and 68 unrun cases. After the fixture corrections and spacing repair, the remaining-file replay passed 71, failed three, and skipped three. The two Supporter cases pass after supplying their explicit context base URL. QA-013 repeats. Stage counts overlap and must not be summed as unique journeys.
+- A separate worktree audit finds an unrelated expired `nox-local-live` lease with clean, unique commits. Its checkout, commits, and lease were preserved. The primary checkout retains unrelated Xcode project and localization edits; these prevent automatic local-main cleanup.
 - Full local package lint, complexity, Halstead loading, and dead-code gates fail as recorded above. No required gate, lint rule, source cap, or security threshold was bypassed.
 - CRAP diagnostics were attempted with hosted Linux coverage against local Darwin source. Those platform-mismatched results are excluded from canonical gate evidence.
 - The earlier audit's Android phone/tablet/TV/Wear emulator journeys and enlarged-font cases were integrity-checked, not rerun here. JVM replay and unit proof do not replace them.
