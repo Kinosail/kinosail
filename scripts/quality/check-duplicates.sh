@@ -23,6 +23,6 @@ if [[ ! -s "$changed" ]]; then
 	exit 0
 fi
 
-GOBIN="$tools" go install github.com/mibk/dupl@v1.0.0
+GOBIN="$tools" go install github.com/mibk/dupl@v1.1.0
 output="$(cd "$repo" && "$tools/dupl" -t 100 -plumbing packages apps/player/internal apps/subtitles/internal)"
 printf '%s\n' "$output" | python3 "$repo/scripts/quality/filter-duplicates.py" "$changed"

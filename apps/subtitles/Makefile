@@ -28,7 +28,7 @@ coverage:
 	@../../scripts/tooling/test-go-coverage.sh apps/subtitles "$${KINOSAIL_MIN_COVERAGE:-89.0}"
 
 deadcode:
-	@../../scripts/tooling/with-go-module.sh go run golang.org/x/tools/cmd/deadcode@v0.49.1-0.20260904150557-664b13f4863b -filter='github.com/MikeO7/kinosail-subtitles' ./...
+	@../../scripts/tooling/with-go-module.sh go run golang.org/x/tools/cmd/deadcode@v0.52.0 -filter='github.com/MikeO7/kinosail-subtitles' ./...
 
 installer-test:
 	@./scripts/test-installer.sh

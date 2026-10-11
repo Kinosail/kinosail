@@ -71,7 +71,7 @@ jobs:
         run: go tool cover -func=.verification/coverage.out > .verification/coverage-functions.txt
       - name: Keep exact deep coverage profiles
         if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ inputs.app }}-go-coverage-${{ github.sha }}
           path: |
@@ -96,7 +96,7 @@ jobs:
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
-      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
+      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
 
   tooling:
     name: ${{ inputs.app }} installer and local pipeline
@@ -116,12 +116,12 @@ jobs:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.22.0
+          version: 11.28.5
           install: false
           node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           cache: pnpm
@@ -227,7 +227,7 @@ jobs:
           exit "$status"
       - name: Retain native test results
         if: always() && fromJSON(inputs.plan).deep
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-native-contracts-${{ github.sha }}
           path: |
@@ -287,6 +287,7 @@ jobs:
       # Trivy mutates checkout files; finish it before exact-revision evidence.
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
+          version: v0.75.0
           image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
           severity: CRITICAL,HIGH
@@ -301,7 +302,7 @@ jobs:
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
       - name: Keep verifiable system E2E artifact
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ inputs.app }}-${{ matrix.runner }}-system-e2e-${{ github.sha }}
           path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact
@@ -321,12 +322,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.22.0
+          version: 11.28.5
           install: false
           node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           package-manager-cache: false
@@ -361,8 +362,8 @@ jobs:
       - name: Install startup fixture codecs
         if: inputs.app == 'player'
         run: |
-          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.2-5/jellyfin-ffmpeg8_8.1.2-5-noble_amd64.deb
-          printf '%s  %s\n' b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
+          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
@@ -393,7 +394,7 @@ jobs:
         run: python3 apps/player/scripts/test-hls-cache-reopen.py
       - name: Keep safe HLS cache reopen evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-hls-cache-reopen-evidence
           include-hidden-files: true
@@ -411,7 +412,7 @@ jobs:
           python3 apps/player/scripts/test-hls-prepared-timeline.py
       - name: Keep safe prepared timeline evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-prepared-timeline-evidence
           include-hidden-files: true
@@ -430,7 +431,7 @@ jobs:
           python3 apps/player/scripts/test-hls-followon.py --suite audio
       - name: Keep safe copied-video audio evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-hls-audio-conversion-evidence
           include-hidden-files: true
@@ -447,7 +448,7 @@ jobs:
         run: python3 apps/player/scripts/test-hls-followon.py --suite hevc
       - name: Keep safe complete HEVC preparation evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-hls-hevc-preparation-evidence
           include-hidden-files: true
@@ -463,7 +464,7 @@ jobs:
         run: python3 apps/player/scripts/test-hls-source-version.py
       - name: Keep safe HLS source-version evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-hls-source-version-evidence
           include-hidden-files: true
@@ -483,7 +484,7 @@ jobs:
         run: python3 apps/player/scripts/hls-phase-evidence.py
       - name: Keep safe startup evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-startup-boundary-evidence
           include-hidden-files: true
@@ -498,7 +499,7 @@ jobs:
           if-no-files-found: error
       - name: Keep verifiable E2E artifact
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ inputs.app }}-${{ matrix.engine }}-e2e-${{ github.sha }}
           path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact

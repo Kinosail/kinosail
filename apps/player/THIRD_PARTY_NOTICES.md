@@ -5,13 +5,13 @@ listed license files control. Kinosail's license does not replace them.
 
 | Component | Version | License or terms | Notice |
 | --- | --- | --- | --- |
-| hls.js | 1.7.1 | Apache License 2.0 | [`third_party/hls.js/LICENSE`](third_party/hls.js/LICENSE) |
+| hls.js | 1.7.3 | Apache License 2.0 | [`third_party/hls.js/LICENSE`](third_party/hls.js/LICENSE) |
 | HTMX | 4.0.0 | Zero-Clause BSD | [`third_party/htmx/LICENSE`](third_party/htmx/LICENSE) |
 | jsQR | Bundled browser decoder | Apache License 2.0 | [`internal/server/static/third_party/jsqr/LICENSE`](internal/server/static/third_party/jsqr/LICENSE) |
 | Manrope | Bundled web font | SIL Open Font License 1.1 | [`../../packages/webassets/static/fonts/OFL-Manrope.txt`](../../packages/webassets/static/fonts/OFL-Manrope.txt) |
 | TMDB logo | Approved logo by Travis Bell, converted to PNG for Android clients | CC BY-SA 4.0 and TMDB brand rules | [Logo source and credit](https://commons.wikimedia.org/wiki/File:Tmdb.new.logo.svg), [license](https://creativecommons.org/licenses/by-sa/4.0/), [TMDB rules](https://developer.themoviedb.org/docs/faq) |
 | SecLists test fixture | Pinned repository revision | MIT | [`third_party/seclists.LICENSE`](third_party/seclists.LICENSE) |
-| Jellyfin FFmpeg runtime | 8.1.2-5 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.2-5) |
+| Jellyfin FFmpeg runtime | 8.1.3-1 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-1) |
 | FDK AAC stripped library in Jellyfin FFmpeg | stripped5 | Fraunhofer FDK AAC terms | [NOTICE](third_party/fdk-aac-stripped.NOTICE), [source](https://gitlab.freedesktop.org/wtaymans/fdk-aac-stripped/-/tree/stripped5) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
 
@@ -36,7 +36,7 @@ are included in the shared third-party notices directory in the container.
 
 | Component | Version | License | Notice |
 | --- | --- | --- | --- |
-| wireguard-go | ecfc5a8d5446 (2026-05-22) | MIT | [LICENSE](../../packages/third_party/wireguard/LICENSE) |
+| wireguard-go | 2631ce99a06f (2026-10-06) | MIT | [LICENSE](../../packages/third_party/wireguard/LICENSE) |
 | gVisor userspace network stack | 39ed1f5ac29c (2025-05-03) | Apache-2.0 | [LICENSE](../../packages/third_party/gvisor/LICENSE) |
-| Google B-tree | 1.1.2 | Apache-2.0 | [LICENSE](../../packages/third_party/btree/LICENSE) |
+| Google B-tree | 1.1.3 | Apache-2.0 | [LICENSE](../../packages/third_party/btree/LICENSE) |
 | Wintun Go adapter (Windows builds) | 0fa3db229ce2 (2023-01-26) | MIT | [LICENSE](../../packages/third_party/wintun/LICENSE) |

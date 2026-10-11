@@ -12,7 +12,7 @@ import sys
 
 GOVAD_VERSION = "v0.0.0-20260330155402-74750eabf3a4"
 BROWSER_HASHES = {
-    "hls.min.js": "6cfad701a61fb8a99add5e84449e64661169b0652bf44ceb2a28465c8817b5f1",
+    "hls.min.js": "a12e7ee1cd64a69dcdb314157e45dafcba705bfb0b1440b7935cb265d374423e",
     "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
 }
 MODEL_HASHES = {

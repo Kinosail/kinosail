@@ -12,7 +12,7 @@ lint:
 	@golangci-lint run
 
 deadcode:
-	@cd .. && go run golang.org/x/tools/cmd/deadcode@v0.49.1-0.20260904150557-664b13f4863b -filter='github.com/MikeO7/kinosail/packages' ./apps/player/... ./apps/subtitles/...
+	@cd .. && go run golang.org/x/tools/cmd/deadcode@v0.52.0 -filter='github.com/MikeO7/kinosail/packages' ./apps/player/... ./apps/subtitles/...
 
 coverage:
 	@../scripts/tooling/test-go-coverage.sh packages "$${KINOSAIL_PACKAGES_MIN_COVERAGE:-85.0}"

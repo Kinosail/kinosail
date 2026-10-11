@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.2-alpine@sha256:85dc1069ac644ea3c527b177303a406eb3358192816cd7f9e5848eb658851673 AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d AS build
 WORKDIR /src
 COPY packages/go.mod ./packages/go.mod
 COPY apps/player/go.mod apps/player/go.sum ./apps/player/
@@ -11,8 +11,8 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN cd apps/player && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
 
-FROM docker.io/library/debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
-ARG JELLYFIN_FFMPEG_VERSION=8.1.2-5
+FROM docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+ARG JELLYFIN_FFMPEG_VERSION=8.1.3-1
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends ca-certificates libaom3 libarchive-tools libchromaprint-tools mesa-va-drivers mesa-vulkan-drivers socat tzdata wget \
@@ -20,8 +20,8 @@ RUN apt-get update \
     && for package in libssl3t64 openssl openssl-provider-legacy; do dpkg --compare-versions "$(dpkg-query -W -f='${Version}' "$package")" ge '3.5.7-1~deb13u3' || exit 1; done \
     && arch="$(dpkg --print-architecture)" \
     && case "$arch" in \
-      amd64) checksum=30d9957e80051dd45740d4d4509941fdf2babf5a29c79bee109310b31dae0f6f; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
-      arm64) checksum=f3af50c1fdd76197867b9cd812fe8a3a1c671829a3f626a0ddc58a8e48654740 ;; \
+      amd64) checksum=fbef9f81a53e175194e3f67832618a86111f7bd37197df21a5d748c34289f9c0; apt-get install -y --no-install-recommends i965-va-driver intel-media-va-driver ;; \
+      arm64) checksum=4af743bd776eda082d40c851a4201e51a77a258145dd6ebe164dade39b35b2d0 ;; \
       *) echo "unsupported architecture: $arch" >&2; exit 1 ;; \
     esac \
     && wget -q -O /tmp/jellyfin-ffmpeg.deb "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${JELLYFIN_FFMPEG_VERSION}/jellyfin-ffmpeg8_${JELLYFIN_FFMPEG_VERSION}-trixie_${arch}.deb" \

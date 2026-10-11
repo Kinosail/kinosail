@@ -6,7 +6,7 @@ set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 tools="${TMPDIR:-/tmp}/kinosail-quality-tools"
 mkdir -p "$tools"
-GOBIN="$tools" go install golang.org/x/tools/cmd/deadcode@v0.49.1-0.20260903194427-2b98ca46aac4
+GOBIN="$tools" go install golang.org/x/tools/cmd/deadcode@v0.52.0
 status=0
 targets=("$@")
 if (( ${#targets[@]} == 0 )); then
