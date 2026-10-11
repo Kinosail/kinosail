@@ -299,7 +299,10 @@ Four fresh inspector cases at 320/390 pixels and both themes passed with that pr
 The final Linux Firefox and WebKit runs passed on `78d8fbb06aeb68646afc5c08bb4c8d2c36e52a1b`.
 Each passed 40 Player and 46 Subtitles layout cases, plus 11 Player and 26 Subtitles flows.
 Neither reported split dock labels, covered bookmark headings, overflow, or another enforced geometry failure.
-The 320-pixel settings screenshots were inspected in both engines. Chromium remains pending in this checkpoint.
+The 320-pixel settings screenshots were inspected in both engines.
+Chromium also passed 95 Player and 111 Subtitles cases plus the same 37 combined flows.
+[PR #554](https://github.com/Kinosail/kinosail/pull/554) merged after all four required checks and all three layout jobs passed.
+Fetched ancestry proves the reviewed commit is included in `b38a31a651d0b4c4549799ee8fc5080eb401d84c`.
 The container run's separate trust failure is recorded below.
 Private screenshots under `hosted/visual-review/` have these SHA-256 values:
 
@@ -324,12 +327,14 @@ The corrected [hosted run 38160742860](https://github.com/Kinosail/kinosail/acti
 Its 60 executions comprise 12 isolated controls, nine real-server cases plus 38 isolated controls, and one populated phone-viewport case.
 This does not establish media decoding, other engines, or physical-device behavior.
 The corrected archive is `q09-download-fixed.zip`, SHA-256 `420a7616450105329be4a6d7d7ad25d02e10de14fb679506b792465698594c1c`.
+PR #555 then merged with all four required checks passing.
+Fetched ancestry proves its final reviewed head `747166202d3edd17096cd646df1ab0c08414e503` is included in `53d2a6981119be691fbc576ec15d15a7d3b11232`.
 
 The original rejected run remains preserved:
 [Hosted run 38159857532](https://github.com/Kinosail/kinosail/actions/runs/38159857532).
 The archive is `q09-download.zip`, SHA-256 `788808aa9b969a61fea2772d7f0703340466cdea06004c6d863580db70bcd3ac`.
 
-### AQA-011 — Open: automated container test instance has untrusted fixture HTTPS
+### AQA-011 — Repaired locally: automated container browser fixture transport
 
 `make -C apps/subtitles test-instance-check` built its ARM64 image and isolated populated Compose instance.
 The browser run passed 19 cases, skipped 27, and failed 20. Eighteen failures explicitly report certificate trust errors.
@@ -353,7 +358,15 @@ Changing the browser origin to `localhost` cleared the first seven dashboard cas
 That run was stopped before the known redirect failure to correct its startup configuration; its 59 unexecuted cases are not acceptance.
 Both task-owned Compose projects had zero containers and volumes after cleanup.
 The fixture now pins its assigned port and sets its canonical login URL before Owner setup.
-Browser assertions, deadlines, and certificate validation remain unchanged. The complete rerun is pending.
+Browser assertions, deadlines, and certificate validation remain unchanged.
+The complete run on `e39981f01d8d54af4eb75a25a654e44ff174c075` passed all 66 browser cases, with zero failures, skips, or flaky results.
+This suite combines populated journeys with controlled rendered fixtures; it is not 66 independent populated-server proofs.
+The command was `KINOSAIL_TEST_IMAGE_READY=1 KINOSAIL_E2E_ARTIFACT_DIR=<private-artifacts>/canonical-browser GOMAXPROCS=2 make -C apps/subtitles test-instance-check`.
+It reused the verified ARM64 image built earlier in this repair; the app and shared Go sources were unchanged.
+The working tree was clean, and cleanup left zero task-owned containers and volumes.
+The private receipt is `fixture-transport/canonical-receipt.json`, SHA-256 `cdaa05fe3879bd877d0d0aa9a9f8851be6d41819a57899d31a8888986f031530`.
+[PR #556](https://github.com/Kinosail/kinosail/pull/556) remains pending required hosted checks.
+Reconciliation with current main added only the already reviewed Q09 validator and contract changes; Subtitles runtime and fixture inputs were unchanged.
 
 ### AQA-012 — Open: intermittent prompt-return bound on main
 
@@ -388,6 +401,9 @@ Hosted artifacts contain the bounded receipts; raw local process logs remain pri
 | `layout-firefox.zip` | `080f0c3ce2f6b4c102c9a07c81aacdc29f00bd49edc3c7f831d4fcf1e46040f7` |
 | `layout-webkit.zip` | `7b6f8f4617a82f7daa1fbb0a0d45b91a79d6980db5bf2832e1c9a143d926c882` |
 | `layout-chromium.zip` | `3fb64ec269a79cf1f085863cf06c59e59a4c1af3df1d1b7f1eb388859afe6807` |
+| `nav-final-firefox.zip` | `5368938a1f9b8275e2c2a29e87dbf76893bd4c3c4ff0d93a578af5de5b3d542b` |
+| `nav-final-webkit.zip` | `93ab33817d874f85dd3dece0597eea96a9839713782c3d6840f4c174c9c6a46f` |
+| `nav-final-chromium.zip` | `7607188bd2328b410afb75f0cf5352c3d386650e59c348d557a4196c7a99da04` |
 
 ## Remaining coverage
 
