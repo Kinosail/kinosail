@@ -34,7 +34,7 @@ class Graph:
             label = name.replace("/", "+")
             root = self.app / "node_modules" / name
             if isolated:
-                root = self.app / "node_modules/.pnpm" / (label + "@1.63.0") / "node_modules" / name
+                root = self.app / "node_modules/.pnpm" / (label + "@1.64.0") / "node_modules" / name
             self.package(root, name); self.roots[name] = root
         if isolated:
             self.link(self.app / "node_modules/@playwright/test", self.roots[NAMES[0]])
@@ -53,7 +53,7 @@ class Graph:
     def file(self, path, data):
         self.directory(path.parent)
         self.entries[str(path)] = (stat.S_IFREG, None); self.data[str(path)] = data
-    def package(self, path, name, version="1.63.0"):
+    def package(self, path, name, version="1.64.0"):
         self.directory(path)
         self.file(path / "package.json", json.dumps({"name": name, "version": version}).encode())
     def link(self, path, target):
@@ -157,7 +157,7 @@ class PackageResolutionControls(unittest.TestCase):
                 graph.package(candidate, "playwright")
                 if defect in ("version", "name"):
                     graph.package(candidate, "wrong" if defect == "name" else "playwright",
-                                  "1.64.0" if defect == "version" else "1.63.0")
+                                  "1.65.0" if defect == "version" else "1.64.0")
                 elif defect == "malformed": graph.data[str(candidate / "package.json")] = b"{"
                 elif defect == "shape": graph.data[str(candidate / "package.json")] = b"[]"
                 elif defect == "oversize": graph.data[str(candidate / "package.json")] = b" " * 524289

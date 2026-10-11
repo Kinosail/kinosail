@@ -77,12 +77,12 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.22.0
+          version: 12.11.2
           install: false
           node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           package-manager-cache: false
@@ -112,7 +112,7 @@ jobs:
       - env:
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(needs.plan.outputs.plan).deep && 'deep' || 'quick' }}
         run: ./scripts/ci/test-go.sh packages
-      - run: go -C packages run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
+      - run: go -C packages run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
       - run: go -C apps/subtitles mod download && python3 scripts/quality/check-dependency-integrity.py
 
   web:
@@ -124,12 +124,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.22.0
+          version: 12.11.2
           install: false
           node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           package-manager-cache: false
@@ -145,12 +145,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8
+      - uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83
         with:
           ruby-version: '3.4'
           bundler-cache: true
           working-directory: engineering/documentation
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           package-manager-cache: false
@@ -254,7 +254,7 @@ jobs:
         run: python3 scripts/ci/scan-diagnostic.py --output "$RUNNER_TEMP/scan-safe.json"
       - name: Upload only validated finding locations
         if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: full-history-scan-metadata-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/scan-safe.json
@@ -297,7 +297,7 @@ jobs:
           node scripts/ci/prepare-codeql-js.mjs
           echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
           echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
-      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
         with:
           languages: ${{ matrix.language }}
           config-file: .github/codeql-config.yml
@@ -308,7 +308,7 @@ jobs:
       - if: matrix.language == 'java-kotlin'
         run: ./gradlew :app:assembleDebug :wear:assembleDebug
         working-directory: apps/player/apps/android
-      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
 
   supply-chain:
     needs: plan
@@ -440,12 +440,12 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
-      - uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.22.0
+          version: 12.11.2
           install: false
           node-version-file: false
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
           package-manager-cache: false
@@ -465,7 +465,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
         with:
           languages: swift
           config-file: .github/codeql-config.yml
@@ -478,4 +478,4 @@ jobs:
             'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
           DEVELOPER_DIR=/Applications/Xcode_27.1_beta.app/Contents/Developer \
             XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
-      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d

@@ -36,7 +36,7 @@ def package_roots(value, repository):
         root = Path(row["root"])
         if not root.is_relative_to(base) or Path(row["manifest"]) != root / "package.json": raise ValueError("package-path")
         package = row["package"]
-        if type(package) is not dict or package.get("name") != name or package.get("version") != "1.63.0":
+        if type(package) is not dict or package.get("name") != name or package.get("version") != "1.64.0":
             raise ValueError("package-version")
         roots[name] = root
     return roots

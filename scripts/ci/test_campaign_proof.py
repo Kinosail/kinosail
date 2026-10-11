@@ -55,7 +55,7 @@ class CampaignProofTests(unittest.TestCase):
         proof = source.split('  hls-followon:\n')[1]
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'", proof)
         self.assertIn('timeout-minutes: 15', proof)
-        self.assertIn('b4e72894ad26c809ed0104805f5415a97be75212b9fcf9d60b89ad25bb3d43e3', proof)
+        self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', proof)
         self.assertIn('python3 apps/player/scripts/test-hls-followon.py', proof)
         self.assertIn('.verification/hls-followon/*/receipt.json', proof)
         self.assertIn('.verification/hls-followon/*/SHA256SUMS', proof)

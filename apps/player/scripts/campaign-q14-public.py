@@ -199,14 +199,14 @@ def main():
         node, go = shutil.which("node"), shutil.which("go")
         cli = ROOT / "apps/player/e2e/node_modules/@playwright/test/cli.js"
         package = cli.parent / "package.json"
-        if not node or not go or not cli.is_file() or json.loads(package.read_text()).get("version") != "1.63.0":
+        if not node or not go or not cli.is_file() or json.loads(package.read_text()).get("version") != "1.64.0":
             raise ValueError("installed dependency prerequisite")
         clip = ROOT / CLIP
         if clip.stat().st_size != 53073 or sha(clip.read_bytes()) != CLIP_SHA:
             raise ValueError("fictional fixture prerequisite")
         playwright = cli.resolve().parents[2] / "playwright"
         core = playwright.resolve().parent / "playwright-core"
-        if any(json.loads((path / "package.json").read_text()).get("version") != "1.63.0" for path in (playwright, core)):
+        if any(json.loads((path / "package.json").read_text()).get("version") != "1.64.0" for path in (playwright, core)):
             raise ValueError("pinned Playwright prerequisite")
         browser_description = json.loads((core / "browsers.json").read_text())
         browser_name = "chromium" if suite == "bfcache" else "chromium-headless-shell"

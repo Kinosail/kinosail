@@ -197,7 +197,7 @@ def dependencies():
         if not root.is_relative_to(APP / "node_modules"):
             raise ValueError("dependency_root")
         metadata = json.loads(read_bounded(root / "package.json", 512 * 1024).decode("utf-8"))
-        if metadata["name"] != name or metadata["version"] != "1.63.0":
+        if metadata["name"] != name or metadata["version"] != "1.64.0":
             raise ValueError("dependency_version")
         diagnostics.record_stage(label + "-tree")
         packages[name] = {**installed_tree(root), "resolvedFrom": selected["resolvedFrom"], "layout": selected["layout"]}
@@ -214,7 +214,7 @@ def dependencies():
     diagnostics.record_stage("cache-validation")
     if str(cache) == "/" or not cache.is_dir():
         raise ValueError("browser_cache")
-    # Pinned Playwright 1.63.0 registry, Linux x64; no guessed legacy executable names.
+    # Pinned Playwright 1.64.0 registry, Linux x64; no guessed legacy executable names.
     for name, suffix, executable in (("chromium", "chrome-linux64", "chrome"),
                                      ("chromium-headless-shell", "chrome-headless-shell-linux64", "chrome-headless-shell")):
         label = "chromium" if name == "chromium" else "headless"
