@@ -605,3 +605,40 @@ reviewed ref was restored. Failed jobs must be replayed after the run finishes.
 Physical discovery currently finds one connected Apple TV. Other remembered
 Apple devices are disconnected. Installed-app inventory is read-only and does
 not establish physical interaction or current-revision acceptance.
+
+## QA-012 — Native cast-pitch check omits scroll content (P2; repair pending)
+
+Deep CI passes 332 iOS tests and skips one platform-inapplicable case. tvOS
+passes 311, fails the cast-placeholder pitch test, and skips one. The same
+cast check fails locally twice. Its 1792-by-1042-pixel diagnostic contains the
+hero but no cast cards. The current shelf uses a UIKit-backed ScrollView;
+[ImageRenderer only exports content SwiftUI rasterizes directly](https://developer.apple.com/documentation/swiftui/imagerenderer).
+The test also retains a four-card expectation from before the pending shelf
+was expanded to six in `3a22cb06`. This is a stale test harness, not a proven
+missing-card defect in the app.
+
+The repair hosts the current view in a native window and captures its UIKit
+hierarchy. It asserts all six current cards, their 230-pixel widths, and
+248-pixel pitch. All four detail tests pass. A temporary negative control
+restoring 40-point spacing fails the pitch check; production spacing was
+restored afterward. No UI behavior changes. Private command, source-diff,
+xcresult, and cleanup receipts retain both results.
+
+The independent plain-video service-worker control reproduces the WebKit seek
+failure with no Player UI scripts. Its blob-video counterpart seeks the same
+saved bytes successfully. A bounded single-chunk Blob response candidate
+does not repair the original assertion and was removed. No offline playback
+repair is claimed from these controls.
+
+A further EPUB control finds a visible WebView accessibility node but its focus
+action returns false; the expected text remains absent. Earlier label-based
+focus attempts had no matching Book chapter label in the tree. The current
+view is visible, attached, window-focused, and has an accessibility provider.
+The provider reports a child. The native accessibility issue remains open.
+
+Main-push run `38181332045` succeeds for web merge `8047e689`, including both
+apps' AMD64 and ARM64 production-image builds, scans, publication, and
+production-tag advancement. Native-only main `85b6714d` passes its selected CI
+run `38181968929`. Publication at the older web merge is not exact-current-main
+Nox deployment proof. No physical interaction or production deployment is
+claimed. The CodeQL replay runs after restoring the deleted deep-run ref.
