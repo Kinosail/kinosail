@@ -3,12 +3,20 @@ import SwiftUI
 struct RetryState: View {
     var title = "Couldn’t load this content"
     let message: String
+    var focusesRetry = false
     let retry: () -> Void
+    #if os(tvOS)
+    @FocusState private var retryFocused: Bool
+    #endif
     var body: some View {
         VStack(spacing: 16) {
             Label(title, systemImage: "exclamationmark.circle").font(.headline)
             Text(message).foregroundStyle(KinoTheme.muted).multilineTextAlignment(.center)
             Button("Try again", action: retry).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                #if os(tvOS)
+                .focused($retryFocused)
+                .onAppear { if focusesRetry { retryFocused = true } }
+                #endif
         }
         .padding(32).frame(maxWidth: .infinity, minHeight: 220)
         #if os(tvOS)
@@ -23,6 +31,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
     var loadingLayout = LoadingLayout.shelf
     var allowsPullToRefresh = true
     var revalidates = true
+    var focusesRetry = false
     let load: (CatalogPolicy) async throws -> Value
     @ViewBuilder let content: (Value) -> Content
     @Environment(AppSession.self) private var session
@@ -67,7 +76,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                     }
                     content(value)
                 }
-            } else if loadedIdentity == identity, let failure { RetryState(message: failure) { revision += 1 } }
+            } else if loadedIdentity == identity, let failure { RetryState(message: failure, focusesRetry: focusesRetry) { revision += 1 } }
             else { LoadingState(layout: loadingLayout) }
         }
     }

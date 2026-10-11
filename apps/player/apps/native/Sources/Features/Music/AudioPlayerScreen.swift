@@ -20,8 +20,8 @@ struct AudioPlayerScreen: View {
     private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
     var body: some View {
         ScrollView {
-            if let failure { RetryState(message: failure) { revision += 1 } }
-            else if let message = session.player.message { RetryState(message: message) { revision += 1 } }
+            if let failure { RetryState(message: failure, focusesRetry: true) { revision += 1 } }
+            else if let message = session.player.message { RetryState(message: message, focusesRetry: true) { revision += 1 } }
             else if let item = session.player.currentItem, item.isAudio, session.player.player != nil {
                 nowPlayingLayout {
                     Artwork(path: item.artwork, symbol: "music.note", ratio: 1).frame(maxWidth: 440).clipShape(.rect(cornerRadius: 24))

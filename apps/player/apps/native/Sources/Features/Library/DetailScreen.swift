@@ -16,7 +16,7 @@ struct DetailScreen: View {
 
     private func page(onPrimaryFocus: @escaping @MainActor () -> Void) -> some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, focusesRetry: true, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
             }) { detail in DetailContent(detail: detail, onPrimaryFocus: onPrimaryFocus).id(itemID) }
