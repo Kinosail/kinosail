@@ -427,6 +427,7 @@ jobs:
           python3 -B apps/player/scripts/test_hls_timeline_packets.py
           python3 apps/player/scripts/test-hls-prepared-timeline.py
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --tail-recovery
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --first-recovery
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --controls
       - name: Keep safe prepared timeline evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
