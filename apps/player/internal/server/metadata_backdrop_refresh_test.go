@@ -31,11 +31,7 @@ func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *test
 	provider := refreshedBackdropProvider(&phase, &providerRequests, poster, legacy, sharp)
 	t.Cleanup(provider.Close)
 	mediaDir := t.TempDir()
-	originalPath := filepath.Join(mediaDir, "Arrival.mp4")
-	original := []byte("opaque original media; artwork refresh must not rewrite it")
-	if err := os.WriteFile(originalPath, original, 0o600); err != nil {
-		t.Fatal(err)
-	}
+	originalPath, original := writeRefreshedBackdropOriginal(t, mediaDir)
 	cacheDir := t.TempDir()
 	handler := server.New(server.Config{
 		MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, RequireAuth: true,
@@ -88,6 +84,16 @@ func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *test
 			journey.assertRefresh(t, test.phase, test.status, test.image, test.width)
 		})
 	}
+}
+
+func writeRefreshedBackdropOriginal(t *testing.T, directory string) (string, []byte) {
+	t.Helper()
+	path := filepath.Join(directory, "Arrival.mp4")
+	data := []byte("opaque original media; artwork refresh must not rewrite it")
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return path, data
 }
 
 func refreshedBackdropItem(t *testing.T, handler http.Handler, token string) landscapeLibraryItem {
