@@ -44,8 +44,13 @@ func TestRestoreStoppedCausalProbeRejectsPublicControl(t *testing.T) {
 	}
 	waitCausalProbeControl(t, f, deadline, true)
 	state := f.causalSnapshot()[2]
-	if !state.Settled || state.Delivered || state.Cancelled || !state.TimedOut {
-		t.Fatal("stopped diagnostic lost its non-delivery witness")
+	for name, valid := range map[string]bool{
+		"settled": state.Settled, "not delivered": !state.Delivered,
+		"not client-cancelled": !state.Cancelled, "lifecycle ended": state.TimedOut,
+	} {
+		if !valid {
+			t.Errorf("stopped diagnostic lost its non-delivery witness: %s", name)
+		}
 	}
 	if f.snapshot() != before {
 		t.Fatal("diagnostic termination changed Restore state")

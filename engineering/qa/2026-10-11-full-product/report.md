@@ -256,10 +256,17 @@ The phone runner suffered a startup ANR before any test assertions. Its first
 crash result and safe lifecycle projection remain retained. Original APKs and
 application data were restored. A previous single journey on the TV emulator
 omitted the `tv=true` argument and therefore exercised MobileActivity. That
-pass does not prove TV activity focus or navigation. The private runner now
-passes the correct argument; full TV verification remains open.
+pass does not prove TV activity focus or navigation. The corrected runner passes `tv=true`. All seven TV journeys pass, including
+focus, Back, playback controls, and pending, failed, empty, and loaded states.
+These journeys use an in-process synthetic API, not a production Go Server.
 Both Wear accessibility journeys passed. Original Wear APKs and application
 data were restored after the run.
+
+ART compilation allowed phone instrumentation to reach all twelve selected
+checks. Seven passed, three navigation checks timed out, and two real-playback
+checks skipped because their private Server seed was absent. The failure
+screenshot shows a System UI ANR dialog over the app. App navigation remains
+unproved until a clean emulator replay. The tablet replay remains pending.
 
 ## QA-006 — Held Restore diagnostic can return implicit success (P2; repaired)
 
@@ -281,13 +288,40 @@ the lifecycle control reaches it through the real owned TLS endpoint.
 The handler now records its existing witness and aborts the HTTP exchange with
 `http.ErrAbortHandler`. The original control and new regression pass 20 race
 repetitions each. All 16 controls in the complete fixture pass with the race
-detector. The hosted deep replay remains pending.
+detector. The hosted deep replay passes the Subtitles suite. A later required
+run found complexity 11 in the new test, above the limit of 10. The witness
+assertions now check each named condition in a loop. Their behavior and the
+limit remain unchanged. Focused fixture lint passes.
 
 The runtime campaign initially stopped before compilation because two reviewed
 source records were stale. One reflects an earlier erased TypeScript type edit;
 the other reflects this diagnostic repair. Their checksum records were refreshed
 after reviewing both diffs. Existing exact-input admission rejects the old records
 and accepts the refreshed records. No admission rule or threshold changed.
+
+## Additional browser and playback evidence
+
+The current populated layout campaign passes in Chromium, Firefox, and WebKit.
+Restore runtime controls and browser header diagnostics pass at `6c1b01f7`.
+The Restore inspection-body replay also passes.
+
+All six trusted-HTTPS production journeys pass in Chromium and Firefox.
+WebKit passes five, but saved offline video seeking times out. The unchanged
+focused replay also fails. The saved file is a valid twelve-second H.264/AAC
+MP4, and its small range probe returns the expected bytes. This does not yet
+identify the failure in the app, WebKit, or the Linux media pipeline. A further
+diagnostic attempt failed HTTPS readiness before browser execution and is
+excluded from behavior results.
+
+The canonical Apple playback launch journey passes at `6c1b01f7`. The canonical
+startup preparation journey reaches transcoder-setting invalidation, then
+remains queued beyond its thirty-second deadline. Its generated codec fixture,
+resource samples, commands, and failure are retained. No startup acceptance is
+claimed. The deep Swift run again fails the existing rating-card PNG encoding
+assertion. The image encoder reports a zlib error. The test now compares
+canonical rendered RGBA pixels and image dimensions directly, retaining its
+visual assertion without requiring PNG compression. Simulator replay is pending.
+This changes test evidence only; the card UI is unchanged.
 
 ## Evidence and remaining work
 
