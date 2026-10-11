@@ -51,7 +51,10 @@ func listPackages(dir string, patterns []string, exports bool) ([]packageInfo, e
 	arguments = append(arguments, patterns...)
 	command := exec.Command("go", arguments...)
 	command.Dir = dir
-	command.Env = append(os.Environ(), "GOWORK=off")
+	command.Env = os.Environ()
+	if len(patterns) != 1 || !strings.HasSuffix(patterns[0], ".go") {
+		command.Env = append(command.Env, "GOWORK=off")
+	}
 	stdout, stderr := &boundedBuffer{remaining: 64 << 20}, &boundedBuffer{remaining: 1 << 20}
 	command.Stdout, command.Stderr = stdout, stderr
 	if err := command.Run(); err != nil {
@@ -115,7 +118,12 @@ func typedPackage(path string) (*token.FileSet, []*ast.File, *types.Info, error)
 	if _, err := parseSource(token.NewFileSet(), path); err != nil {
 		return nil, nil, nil, err
 	}
-	packages, err := listPackages(filepath.Dir(path), []string{"."}, true)
+	patterns := []string{"."}
+	if !hasModule(filepath.Dir(path)) {
+		// Standalone repository commands use the workspace, like `go run FILE`.
+		patterns = []string{path}
+	}
+	packages, err := listPackages(filepath.Dir(path), patterns, true)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -155,6 +163,19 @@ func typedPackage(path string) (*token.FileSet, []*ast.File, *types.Info, error)
 		return nil, nil, nil, err
 	}
 	return set, files, info, nil
+}
+
+func hasModule(directory string) bool {
+	for {
+		if _, err := os.Stat(filepath.Join(directory, "go.mod")); err == nil {
+			return true
+		}
+		parent := filepath.Dir(directory)
+		if parent == directory {
+			return false
+		}
+		directory = parent
+	}
 }
 
 func typedFile(path string) (*token.FileSet, *ast.File, *types.Info, error) {
