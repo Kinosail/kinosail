@@ -134,6 +134,9 @@ func (catalog *Catalog) TranslateSource(source, tag string) string { //nolint:go
 
 func (catalog *Catalog) translateText(source, tag string) string {
 	for _, message := range catalog.messages {
+		if message.Other == "" || !strings.Contains(source, message.Other) {
+			continue
+		}
 		if translated := catalog.Localize(tag, message.ID); translated != message.Other {
 			source = replaceLocalizedPhrase(source, message.Other, translated)
 		}

@@ -102,6 +102,46 @@ Hosted Linux passes all four HEVC cases, but its container duration is exactly 1
 That result does not disprove the fractional-duration failure.
 A repair needs a valid media timeline; blindly rounding away a real final fragment or increasing the fragment timeout would hide the defect.
 
+### AQA-005 — Avoid catalog lookups for absent text
+
+Two ordinary HEVC runs exceeded the existing 30-second Server-readiness limit before producing a log line.
+A private process sample located CPU work in `Catalog.translateText` during template initialization.
+The host was also running other native builds and simulators, so these observations do not establish a general startup-time guarantee.
+
+The repair checks whether the current text contains the source phrase before looking up its translation.
+It preserves message order, word boundaries, fallback rules, and replacements that introduce another cataloged phrase.
+Existing localization contracts own these behaviors; no duplicate unit test or production seam was added.
+
+A separate private probe applies all 108 supported languages to 35 real Player template literals.
+Its 3,780 outputs have the same SHA-256 before and after the change: `7cd9ca4c56b2baa1e43cc2cccb8773ab474621bf86ab7286cfb89bfeb35fc142`.
+The measured translation phase changed from 2,512 ms to 531 ms on this host.
+The probe is `.verification/ai-qa-campaign/localization-probe.go`, run with `go run .verification/ai-qa-campaign/localization-probe.go "$PWD"`.
+This isolated translation probe is not an end-to-end startup benchmark.
+
+`go -C packages test ./localization -count=1` passed.
+Both apps passed `go test ./internal/server -run '^Test.*(Lang|Localiz|Spanish|Arabic)' -count=1 -json`: 157 Player cases and 228 Subtitles cases, including subtests.
+The real startup journey passed after the repair with unchanged playback deadlines and assertions.
+Its outer receipt is `startup-localization/manifest.json` under the private campaign directory, SHA-256 `d2d56b4f76ee4335f10b7a4147c8fefdcf2afb00f57c8173c7951aa7aaa83f84`.
+A later ordinary HEVC run timed out before any cases began under extreme concurrent host load. It provides no additional playback result.
+The broad local Player `verify-changed` was stopped during input hashing after maximum-line and diff checks passed. Its shared-package stages remain unverified locally. Hosted required checks remain mandatory.
+
+### Additional layout and native evidence
+
+The existing `TestWriteShowActionFixtures` exporter and `show-action-layout.spec.ts` passed 12 cases across Chromium and WebKit.
+They cover six widths from 320 to 1920 pixels and long, unbroken, watched, and empty states.
+Keyboard focus and accessibility assertions passed. The 320-pixel WebKit and 1920-pixel Chromium screenshots were inspected.
+These are rendered-fixture checks, not populated-server E2E evidence. Firefox remains a local launch boundary.
+
+The hosted iOS failure is `MediaCardRatingTests/testVideoCardsRenderIdenticallyWithAndWithoutRatings`: rated-image PNG encoding returned nil.
+The local focused retry on the reusable Kinosail iPhone failed before tests because simulator boot exceeded 60 seconds.
+That infrastructure failure neither reproduces nor resolves the hosted assertion. No native code was changed.
+
+## Delivery checkpoints
+
+[PR #550](https://github.com/Kinosail/kinosail/pull/550) merged the two QA journey repairs after Player, Subtitles, Repository, and Security checks passed.
+A fetched ancestry check confirmed reviewed commit `07d4f5fe528a7bdca19353b3e796c6a4aad764a2` in `origin/main`.
+The localization optimization is a separate follow-up; its local focused results do not establish protected-main delivery.
+
 ## Remaining coverage
 
 The campaign remains active.
