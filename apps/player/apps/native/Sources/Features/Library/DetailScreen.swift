@@ -89,19 +89,19 @@ private struct DetailContent: View {
             .controlSize(.large)
         } }
         .background {
-            ZStack {
-                KinoTheme.surface
-                if colorScheme == .dark && contrast != .increased && !reduceTransparency {
-                    GeometryReader { geometry in
+            TVMovieHeroBackdrop { canvasSize in
+                ZStack {
+                    KinoTheme.surface
+                    if colorScheme == .dark && contrast != .increased && !reduceTransparency {
                         ZStack(alignment: .leading) {
                             Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 4096,
-                                    fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
+                                    fillsFrame: true, isBackdrop: true, canvasSize: canvasSize)
                             LinearGradient(stops: [
                                 .init(color: .black.opacity(0.92), location: 0),
                                 .init(color: .black.opacity(0.84), location: 0.75),
                                 .init(color: .clear, location: 1)
                             ], startPoint: .leading, endPoint: .trailing)
-                            .frame(width: min(geometry.size.width, 1120))
+                            .frame(width: min(canvasSize.width, 1120))
                             LinearGradient(stops: [
                                 .init(color: .clear, location: 0),
                                 .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
@@ -111,7 +111,6 @@ private struct DetailContent: View {
                     }
                 }
             }
-            .clipped().allowsHitTesting(false).accessibilityHidden(true)
         }
         .foregroundStyle(KinoTheme.text)
         .tvMovieHeroBleed()

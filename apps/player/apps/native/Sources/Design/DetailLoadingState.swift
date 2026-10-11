@@ -4,16 +4,14 @@ struct DetailLoadingState: View {
     var body: some View {
         VStack(alignment: .leading, spacing: sectionSpacing) {
             #if os(tvOS)
-            Rectangle().fill(KinoTheme.surface).frame(height: 600)
-                .overlay(alignment: .bottomLeading) {
-                    TVMovieHeroLayout { VStack(alignment: .leading, spacing: 16) {
-                        line(340, 52)
-                        line(360, 20)
-                        line(580, 22)
-                        line(500, 22)
-                        Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
-                    } }
-                }
+            TVMovieHeroLayout { VStack(alignment: .leading, spacing: 16) {
+                line(340, 52)
+                line(360, 20)
+                line(580, 22)
+                line(500, 22)
+                Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
+            } }
+                .background { TVMovieHeroBackdrop { _ in KinoTheme.surface } }
                 .tvMovieHeroBleed()
             line(140, 28)
             HStack(spacing: KinoTheme.shelfSpacing) {
