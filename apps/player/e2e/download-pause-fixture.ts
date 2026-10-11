@@ -99,7 +99,7 @@ export async function downloadPeer(forceIsolated = false, documentResponse?: () 
 export async function openDownloadPage(page: Page, origin: string, storage: "opfs" | "indexeddb", info: TestInfo, timeout = 10_000) {
   if (storage === "indexeddb") await page.addInitScript(() => Object.defineProperty(navigator.storage, "getDirectory", {configurable: true, value: undefined}));
   await gotoDownloadPage(page, origin, info, timeout);
-  await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toBe(`${origin}/service-worker.js?v=55`);
+  await expect.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toBe(`${origin}/service-worker.js?v=56`);
   await page.reload({waitUntil: "commit"});
   const button = page.locator("[data-download-device]");
   await expect(button).toHaveAttribute("data-bound", "true");

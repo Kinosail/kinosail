@@ -5,7 +5,7 @@ import {downloadsSource} from "./static-sources";
 // A usable Firefox document can be missing its automation commit notification.
 // Preserve direct native bootstrap proof before permitting one replacement GET.
 export async function gotoDownloadPage(page: Page, origin: string, info: TestInfo, timeout = 10_000) {
-  const url = `${origin}/offline-downloads`, workerURL = `${origin}/service-worker.js?v=55`;
+  const url = `${origin}/offline-downloads`, workerURL = `${origin}/service-worker.js?v=56`;
   const previousDocument = await page.evaluate(() => performance.timeOrigin);
   const started = Date.now();
   let observed: Response | undefined, bundle: Response | undefined, responseAfter = Infinity;
