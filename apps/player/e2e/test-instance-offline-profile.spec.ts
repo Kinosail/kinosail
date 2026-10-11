@@ -25,8 +25,10 @@ test('opening the current Viewer Profile in another tab keeps saved video playin
     await page.goto(`/offline?job=${id}`);
     await page.bringToFront();
     const video = page.locator('video');
+    await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState >= 2 && !media.seeking)).toBeTruthy();
+    const restored = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
     await video.evaluate((media: HTMLVideoElement) => media.play());
-    await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(0.2);
+    await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.currentTime)).toBeGreaterThan(restored + 0.2);
     const position = await video.evaluate((media: HTMLVideoElement) => media.currentTime);
     await other.reload();
     await expect(other.locator('.card').first()).toBeVisible();

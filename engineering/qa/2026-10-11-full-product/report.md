@@ -390,7 +390,7 @@ lets an installed worker refresh the changed download script. The existing
 asset and localization contracts pass for Player. Both Subtitles registration
 and local-playback contracts pass after the shared version update.
 
-The final CI-selected regression fails against the original binary and passes
+The earlier CI-selected regression fails against the original binary and passes
 in Chromium, Firefox, and WebKit without retries. All seven populated Firefox
 journeys pass, including offline playback and seeking. The new regression
 is selected by the existing populated CI runner with retries disabled.
@@ -410,14 +410,14 @@ Player lint also reports 50 findings; none is in a file changed by this task.
 These complete-tree gates remain failed. The repository's CI changed-code
 lint and module tidy checks pass for packages, Player, and Subtitles. All 169
 CI contracts pass, including five documented environment skips. Shell syntax,
-shellcheck, and source-size checks pass. Required hosted checks and publication
-remain pending.
+shellcheck, and source-size checks pass. Required hosted checks pass at
+`003d6af90012016d95d50483c8a64853327b8dc8`. Publication remains separate.
 
 The focused tvOS completion replay also fails the watched-progress assertion
 at the exact movie endpoint. The 24-millisecond-before-end argument passes.
 The test retains its original timing and media prerequisites. The task-created
-simulator was deleted after collecting the result bundle and receipt. The root
-cause remains under investigation; no native repair is claimed.
+simulator was deleted after collecting the result bundle and receipt. The
+subsequent diagnosis and pending native repair are recorded in QA-008.
 
 Main reconciliation now includes the Android collection/EPUB and tvOS navigation
 changes through `0d3fd1d6292992b30afbc75adcc86bf06a506a56`. The offline fix's
@@ -432,6 +432,15 @@ exact revised Chromium execution passes against the real HTTPS Server. Two
 earlier local commands used the wrong selection variable and ran the broader
 production suite instead. Both suites pass, but they do not verify this revised
 test. Their receipts are excluded from the regression claim.
+
+The revised Library-driven test passes in Chromium and Firefox. Its WebKit
+replays stall before the cross-tab action while starting saved media. A private
+probe passes after the saved position finishes restoring. The regression now
+waits for decoded data and completed seeking before Play, then requires time
+to advance beyond the restored position. Its profile and sign-out assertions
+remain unchanged. This stronger prerequisite passes in Chromium, Firefox, and WebKit. Its
+unfixed-binary control still fails at the intended cross-tab assertion. Failed
+runs remain retained. The hosted checks are being refreshed for this test edit.
 
 ## QA-008 — Final native watched update remains queued (P2; repair pending)
 
@@ -450,8 +459,9 @@ The original completion case passes after repair. The broader TV replay passes
 duplicate completion, stale callbacks, seeking, persistence, profile isolation,
 transport validation, and missing titles. The corresponding iPhone selection
 passes 12 tests with no skips. These use native simulators and retained synthetic
-HTTP fixtures, not the production Go Server or physical devices. Temporary TV
-simulators were deleted; the reusable iPhone simulator and its data remain.
+HTTP fixtures, not the production Go Server or physical devices. After removing
+the temporary journal diagnostic, the original TV completion test still passes.
+Temporary TV simulators were deleted; the reusable iPhone simulator and its data remain.
 
 ## QA-009 — Continue Watching grows when progress appears (P2; repair pending)
 
@@ -460,17 +470,60 @@ Watching card after delayed scripts initialize its progress bar. Later shelves
 move by the same amount. The initial and settled measurement frames establish
 the change; the audit fails its existing geometry assertion.
 
-The pending repair reserves the progress bar's four-pixel grid row before the
+The repair reserves the progress bar's four-pixel grid row before the
 bar is shown. It adds no loading placeholder. Local Firefox currently exits
 before opening a page with `Could not find profile folder`. That launch failure
-is excluded from product evidence. Verification continues in isolated Linux
-and the hosted layout matrix. No layout threshold or assertion changed.
+is excluded from product evidence. The isolated Linux Firefox audit passes
+39 measurements and 11 flows without moved geometry or overflow. Its populated
+desktop Home includes Continue Watching. The hosted layout matrix passes in
+Chromium, Firefox, and WebKit at `003d6af9`. No threshold or assertion changed.
 
 ## Native verification refresh
 
-The current Android debug, instrumentation, and release builds pass. App unit
-tests and lint also pass. A real-Server/Kotlin contract replay first fails to
+The current Android debug, instrumentation, and release builds pass. All 161
+app unit tests pass without skips; lint also passes. Earlier Watch/Wear evidence
+remains tied to its recorded source. A real-Server/Kotlin contract replay fails to
 compile because its explicit source list omits the newly added `CollectionsApi`.
 Adding that production source to the verification tool restores the contract
 run: both its retained JVM checks and real HTTP journey pass. This tool repair
-is still pending delivery. Current emulator UI journeys remain in progress.
+is still pending delivery.
+
+The refreshed Android TV run passes nine applicable tests and skips two EPUB
+journeys. TV reading is unsupported. The phone and tablet runs each pass nine
+tests and fail one EPUB reopen assertion, without skips. Their app packages
+and data are restored or task-installed packages are removed after each run.
+These emulator journeys use synthetic HTTP fixtures, not the Go Server.
+
+## QA-010 — TV Collections pending rows have different insets (P2; repair pending)
+
+The pending row begins 24 pixels above and left of the loaded collection row.
+Its width is 48 pixels greater. A geometry assertion added to the existing
+native recovery journey fails before the production edit. Matching the TV
+list's 12-dp content padding fixes the pending geometry. Phone padding stays
+zero. The full TV replay passes, including the new assertion. Current pending,
+loaded, empty, and failed captures were inspected. Focus and recovery pass.
+
+The earlier idle-controls failure was a test prerequisite problem. Its
+UiAutomation connection enables an accessibility service, and the player
+correctly keeps controls visible. The idle journey now requests automation
+without that service. A complementary journey verifies controls remain visible
+with accessibility enabled. Both pass during decoded TV playback. Production
+accessibility behavior is unchanged. Older Android API levels remain unproved.
+
+## QA-011 — EPUB chapter text is unavailable after reopening (unverified)
+
+The phone reading journey restores the chapter-2 indicator, but cannot find
+its text after reopening. The tablet save-interleaving journey similarly fails
+to find chapter-1 text after reopening. Both first renders and intervening
+chapter navigation pass. Another reading journey passes on each device.
+Failure-only captures are being collected to distinguish blank rendering from
+stale accessibility data. Both unchanged focused replays pass, so this remains intermittent. A full phone
+replay with failure captures is in progress. No production cause or repair is
+claimed yet.
+
+## Complete-tree lint inventory
+
+Shared-package lint retains 95 findings. Player retains 50. The newly refreshed
+Subtitles inventory reports 101 findings, including complexity, formatting,
+unused code, and other checks. These complete-tree gates remain failed.
+Changed-code CI checks pass. No rule, threshold, or required check is bypassed.
