@@ -655,7 +655,8 @@ It then waits for Home while leaving that offer open.
 The helper now waits until navigation leaves `/login` before inspecting the
 optional offer. This matches the existing populated-instance helper. Both
 shortcut cases pass three consecutive WebKit repetitions after the change.
-No product authentication or shortcut behavior changes. Required CI and delivery
+No product authentication or shortcut behavior changes. The final complete WebKit batch also passes all 29 checks. Player
+`make verify-changed` passes after commit `9cb3dab4`. Required CI and delivery
 for this test repair remain pending.
 
 These five files cover password reveal, repeated navigation, keyboard shortcuts,
@@ -696,3 +697,57 @@ The earlier deep run `38181434746` finishes with its original Swift cast-test
 failure. Its CodeQL Java replay passes after restoration of the exact source ref.
 The repaired cast test is awaiting full native execution in run `38183570454`.
 The required quick checks for PR #563 pass at `4621d625`.
+
+
+## Updated platform boundaries at `4621d625`
+
+The exact prepared offline MP4 is 289,666 bytes with SHA-256
+`8edf2095459752d3e3cc2491d985b2fdc6c61fed01afbc25ef341b85c1a61c5c`.
+Before the failed Linux WebKit seek it has readyState 4, no media error, and
+buffered and seekable ranges covering its complete 12.011-second duration.
+No new media request appears during the failed seek. The same exact clip fails
+in the standalone Linux WebKit control over ordinary HTTP and all three worker
+body variants. This reproduces without Kinosail or IndexedDB.
+
+The prepared clip contains three mov_text subtitle tracks. Private remuxes keep
+the same encoded audio and video. Removing subtitles or retaining one subtitle
+track passes both HTTP and worker-stream seeks. A complete remux retaining all
+three subtitle tracks still fails both. These controls narrow the Linux media
+failure; they do not justify dropping supported subtitle tracks from downloads.
+The exact unchanged prepared clip passes all four controls in macOS WebKit,
+including worker playback after the origin stops. This is browser-engine proof,
+not physical Safari or the complete populated app journey. Relevant scripts,
+clip hashes, results, observations, and cleanup receipts are checksummed in
+`offline-seek-control-evidence.json`. No production offline change is retained.
+
+The EPUB provider diagnostic passes its first two full tablet runs and fails
+one case in its third. At failure, one WebView is visible and attached. Clearing
+the system accessibility cache and sending a content-change event do not restore
+the expected text. The provider's text search returns zero matches, but
+[Chromium implements that search as an empty result](https://chromium.googlesource.com/chromium/src/+/69dee7ad12a0b795f60dcf3c7fc42a4a132983fb/content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java).
+That search is therefore not evidence that the provider lost its document.
+The root cause remains unconfirmed; no reader production change is retained.
+
+Deep run `38183570454` passes all 312 applicable tvOS tests and skips one
+platform case. The cast geometry repair passes in that complete suite. iOS
+passes 331, fails the first large poster comparison in MediaCardRatingTests,
+and skips one platform case. Five fresh local launches of that comparison pass;
+this does not resolve its hosted failure. The paired-image diagnostic passes the full local iOS suite: 329 passed,
+zero failed, four skipped. Local paired images match, but this does not resolve
+the hosted Xcode/runtime boundary. The hosted WebKit settings batch also fails two
+late-ended-notification fixture cases; ordinary watched controls and the other
+batches pass. These remaining failures prevent a complete QA claim.
+
+
+The five selected watched-startup cases pass unchanged in the disposable local
+Linux ARM64 WebKit replay. This includes both late-ended-notification cases that
+failed on hosted Linux AMD64. The initial hosted failures remain unresolved;
+ordinary navigation and the held native-notification fixture are distinct proofs.
+
+A static Android API analysis now includes instrumentation sources. It identifies
+unguarded `getUiAutomation(int)` calls in the new parity harness despite minSdk
+23. That method requires API 24; disabling accessibility through its flag requires
+API 31. The same expanded analysis finds older unguarded accessibility scanner
+and renderer-control calls. These checks need explicit platform prerequisites
+or supported older-API paths. Only API 36 system images are installed locally;
+static analysis is not old-device runtime proof.
