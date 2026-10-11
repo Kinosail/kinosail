@@ -40,7 +40,7 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted baseline passed; expanded local review remains |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration and session settings passed in two engines; remaining operations pending |
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Native inventory refreshed; current interaction review pending |
-| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Hosted Android job passed; emulator and hardware review remain |
+| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Debug/release builds, lint, 174 unit checks, and real Server/Kotlin compatibility passed; emulator and hardware review remain |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
 | Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Hosted validation passed; publication and deployment remain separate boundaries |
 
@@ -225,6 +225,57 @@ fullscreen Close-button contrast problem belongs to simplified fixture markup;
 the real template uses a header and quiet button. Full-page screenshots taken
 after scrolling also place fixed navigation within the image. Those positions
 do not establish ordinary viewport behavior.
+
+## Expanded verification checkpoint
+
+Required [PR checks at `3ec52268`](https://github.com/Kinosail/kinosail/actions/runs/38160668581)
+passed. The [three-browser layout run](https://github.com/Kinosail/kinosail/actions/runs/38160820234)
+also passed. It combines rendered keyboard and pending-state fixtures with
+disposable real Player and Subtitles Servers. These proofs remain distinct.
+Q14 primary, cold, and HTMX browse-return proofs passed at the same revision.
+Main then advanced through PR #553. Its verifier regression and the architecture
+contracts passed after reconciliation.
+
+An additional local populated Chromium batch passed 42 cases and failed three.
+The library API request used a loopback HTTP proxy and sent no session cookie;
+its response was 401. The suite needs a trusted-HTTPS replay. Trusted HTTPS
+setup correctly returned 409 because this disposable Server disables TLS and
+fixes a different sign-in address. That replay needs compatible deployment
+configuration. A loading-review case using synthetic media events also failed;
+its relationship to actual playback remains under investigation.
+
+Android app and Wear debug APKs, instrumentation APKs, release bundles, lint,
+and all 174 unit checks passed. Real production Kotlin decoders and clients
+also passed against a disposable Go Server. This JVM contract does not prove
+emulator playback, device interaction, signing, or store acceptance.
+The phone runner suffered a startup ANR before any test assertions. Its first
+crash result and safe lifecycle projection remain retained. Original APKs and
+application data were restored. A previous single journey on the TV emulator
+omitted the `tv=true` argument and therefore exercised MobileActivity. That
+pass does not prove TV activity focus or navigation. The private runner now
+passes the correct argument; full TV verification remains open.
+
+## QA-006 — Held Restore diagnostic can return implicit success (P2; repaired)
+
+The fresh deep run failed `TestRestoreCausalProbePublicControl` with
+“intentional abort did not reject.” The unchanged control then passed 120 local
+race repetitions. Its original hosted failure remains retained and its exact
+cause remains unverified.
+
+Before repair, a new real TLS control deterministically stops the fixture's
+lifecycle after the held witness arms, while keeping the client context live.
+It fails because the handler returns without writing a response. Go's HTTP
+Server then emits an implicit successful response for an undelivered probe.
+This is a diagnostic endpoint defect, not a confirmed production Restore defect.
+
+The authoring gate requires transport rejection on held non-delivery, a settled
+witness, unchanged Restore state, and unchanged direct/captured 204 framing.
+Ordinary request cancellation cannot force the response race deterministically;
+the lifecycle control reaches it through the real owned TLS endpoint.
+The handler now records its existing witness and aborts the HTTP exchange with
+`http.ErrAbortHandler`. The original control and new regression pass 20 race
+repetitions each. All 16 controls in the complete fixture pass with the race
+detector. The hosted deep replay remains pending.
 
 ## Evidence and remaining work
 
