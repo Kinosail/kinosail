@@ -266,7 +266,10 @@ ART compilation allowed phone instrumentation to reach all twelve selected
 checks. Seven passed, three navigation checks timed out, and two real-playback
 checks skipped because their private Server seed was absent. The failure
 screenshot shows a System UI ANR dialog over the app. App navigation remains
-unproved until a clean emulator replay. The tablet replay remains pending.
+unproved until a clean emulator replay. The tablet replay reaches all twelve checks: six pass, four fail, and two
+real-playback checks skip for the missing Server seed. Task-installed packages
+are removed after the run. These failures remain open; no device acceptance
+is claimed.
 
 ## QA-006 — Held Restore diagnostic can return implicit success (P2; repaired)
 
@@ -317,10 +320,12 @@ The canonical Apple playback launch journey passes at `6c1b01f7`. The canonical
 startup preparation journey reaches transcoder-setting invalidation, then
 remains queued beyond its thirty-second deadline. Its generated codec fixture,
 resource samples, commands, and failure are retained. No startup acceptance is
-claimed. The deep Swift run again fails the existing rating-card PNG encoding
+claimed. The decoded scrubbing journey passes in Chromium and WebKit; Firefox
+times out during a media action. That Firefox failure remains open. The deep Swift run again fails the existing rating-card PNG encoding
 assertion. The image encoder reports a zlib error. The test now compares
 canonical rendered RGBA pixels and image dimensions directly, retaining its
-visual assertion without requiring PNG compression. Simulator replay is pending.
+visual assertion without requiring PNG compression. The focused iPhone simulator replay passes: one test covers all eight card
+variants, with no skipped tests.
 This changes test evidence only; the card UI is unchanged.
 
 ## Evidence and remaining work
