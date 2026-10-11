@@ -14,9 +14,11 @@ export KINOSAIL_PORT="${KINOSAIL_PORT:-38128}"
 compose=("$engine" compose --project-name "${KINOSAIL_TEST_PROJECT:-kinosail-test}" --file compose.yaml --file compose.test.yaml)
 
 url() {
-  local address
+  local address scheme=https host=127.0.0.1
   address="$("${compose[@]}" port kinosail 38128)"
-  printf 'https://127.0.0.1:%s\n' "${address##*:}"
+  # Playwright's API client permits Secure cookies on HTTP localhost only.
+  case "${KINOSAIL_TLS_ENABLED:-true}" in 0|f|F|false|False|FALSE) scheme=http; host=localhost ;; esac
+  printf '%s://%s:%s\n' "$scheme" "$host" "${address##*:}"
 }
 
 wait_ready() {
@@ -93,6 +95,14 @@ case "$action" in
     prepare
     "${compose[@]}" down --volumes --remove-orphans
     "${compose[@]}" up --detach
+    if [[ -z "${KINOSAIL_AUTH_URL:-}" ]]; then
+      # Pin Compose's assigned port before configuring the canonical login URL.
+      KINOSAIL_AUTH_URL="$(url)"
+      KINOSAIL_PORT="${KINOSAIL_AUTH_URL##*:}"
+      KINOSAIL_AUTH_URL="${KINOSAIL_AUTH_URL/127.0.0.1/localhost}"
+      export KINOSAIL_AUTH_URL KINOSAIL_PORT
+      "${compose[@]}" up --detach
+    fi
     wait_ready
     setup_owner
     printf 'Kinosail test instance: %s\nOwner: Owner\nPassword: test-instance-password\n' "$(url)"

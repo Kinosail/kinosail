@@ -212,6 +212,15 @@ The reference contains 420 frames. All four mux variants retained 480 frames.
 Disabling timestamp shifting, enabling edit lists, and enabling negative composition offsets did not establish correct presentation.
 Those variants retained 60 negative-timestamp frames; the oracle did not silently discard them.
 No production playback change was made from this experiment.
+A follow-up compared ordinary and fragmented MP4 using the same edit-list option.
+Ordinary MP4 decoded the exact 420-frame suffix. Fragmented MP4 retained 480 frames, including 60 negative-timestamp frames.
+In a private Chrome probe, direct fragmented MP4 matched four independently requested reference images but reported 20 seconds instead of 17.5 seconds.
+The production Hls.js library stalled before displaying a frame from the edit-list HLS candidate.
+The unchanged HLS baseline displayed different images at all four requested times.
+This rules out adopting that mux-option change from decoder output alone; native-client acceptance also remains open.
+A direct MediaSource append without Hls.js also timed out before displaying its first frame, even with the duration set to 17.5 seconds.
+The byte-stream specification describes single-entry edit-list support, but this candidate did not establish working presentation. [W3C ISO BMFF initialization segments](https://www.w3.org/TR/mse-byte-stream-format-isobmff/#iso-init-segments)
+The browser experiment receipt is `.verification/ai-qa-campaign/preroll-browser-probe.json`, SHA-256 `15a04357465a87fc31ebb7a04c4cd0e0375b7c400586a7d1c47d39ce400f43e8`.
 The receipt is `.verification/ai-qa-campaign/preroll-probe/receipt.json`, SHA-256 `c1b2332c740d4a7ada6daa1df1ab350a67d8eee2665a23d0e78a54dae8475f7c`.
 
 A separate private interactive timeline prototype compared container-duration rounding, video-duration rounding, and actual segment starts.
@@ -246,6 +255,8 @@ The implementation checkpoint is `6937787141c50461dc6adbe68d564a85c0fc654e`; hos
 The first PR run passed the new verifier regression and failed later on stale Code Atlas snapshots.
 Both snapshots were regenerated from the current source, including localization and previously merged metadata changes.
 The generator's input rejection, canonical platform, and snapshot checks then passed locally.
+The corrected run passed all four required gates; [PR #553](https://github.com/Kinosail/kinosail/pull/553) merged.
+A fetched ancestry check placed reviewed head `595d2a0cbcaaffc07ed7396b79c47a187bd59891` in remote main `6f8bfa60d46d5c53621d5590ace3e943669d53ad`.
 Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
 ### AQA-008 — Open: intermittent executable-fixture launch failure
@@ -258,16 +269,122 @@ Run: [38156244208](https://github.com/Kinosail/kinosail/actions/runs/38156244208
 A retry passed without a source change. Main CI and both production-image promotions subsequently completed successfully.
 That establishes publication of `8e937334fbbc0f79915f6f093d8aed268481de64`, not a repair of the intermittent fixture failure or proof of deployment.
 
-### AQA-009 — Open: Subtitles phone navigation splits an English word
+### AQA-009 — Subtitles phone navigation splits an English word
 
 Independent populated Firefox and WebKit screenshots at 390 pixels show the bottom navigation rendering `Overview` as `Overvie` and `w`.
 The other three destinations fit on one line. This remained visible despite passing overflow and geometry assertions.
 The Player detail and Subtitles inspector screenshots were also inspected at 390 pixels.
-This finding needs a navigation layout repair and responsive regression at the rendered public boundary.
+The populated audit gained a text-line assertion before the production change.
+Its unchanged-source baseline failed five 320-pixel cases with split navigation labels.
+Removing horizontal link padding leaves room for each English label while preserving the existing 48-pixel touch target.
+The repaired populated run passed 45 layout cases and 26 interaction flows, including doubled text, delayed assets, search failures, background discovery, and keyboard focus.
+It recorded zero unreadable labels and no source drift.
+The source was `595d2a0cbcaaffc07ed7396b79c47a187bd59891` plus the recorded navigation assertion and CSS patch.
+The command was `KINOSAIL_LAYOUT_APPS=subtitles KINOSAIL_LAYOUT_QUICK=1 KINOSAIL_LAYOUT_ENFORCE=1 KINOSAIL_LAYOUT_VARIANTS=1 KINOSAIL_LAYOUT_FLOWS=1 python3 scripts/testing/test-layout-stability-local.py`.
+Its private receipt is `.verification/layout/20261011T172259Z/receipt.json`, SHA-256 `f93cadb57941e6a43d37fa72ad9488008080bca0159e3e61d099e13edcc9c0ee`.
+The measurements hash is `423f1702795b6453b4af55d75480de07de535220379fee9602feb8447439d470`.
+
+The existing inspector fixture separately exercised pending, loaded, empty, and failed states across seven widths and two themes.
+WebKit passed all 14 cases. Chromium passed 13 and timed out reloading the 390-pixel light case.
+A focused rerun passed with unchanged source and the original timeout. The first failure remains retained.
+Both fixture runs include accessibility assertions at 390 and 1440 pixels. These use rendered production assets with controlled API responses, not a populated Server.
+All four 320-pixel dark-state screenshots were inspected; navigation stayed readable in each state.
+The first hosted Linux rerun passed all 95 Player and 111 Subtitles Chromium layout cases plus 37 combined flows.
+Firefox and WebKit still split `Overview` at 320 pixels with doubled text; the taller dock also obscured settings headings.
+The same Firefox run separately recorded Player home movement and a Subtitles background-discovery navigation timeout.
+Those failures remain retained. [Hosted run 38160404212](https://github.com/Kinosail/kinosail/actions/runs/38160404212).
+A diagnostic using the container's DejaVu Sans Bold fallback reproduced the narrow label.
+Reducing outer horizontal padding to `.25rem` then kept every label on one line in all four width/text-scale combinations.
+Four fresh inspector cases at 320/390 pixels and both themes passed with that production CSS.
+The final Linux Firefox and WebKit runs passed on `78d8fbb06aeb68646afc5c08bb4c8d2c36e52a1b`.
+Each passed 40 Player and 46 Subtitles layout cases, plus 11 Player and 26 Subtitles flows.
+Neither reported split dock labels, covered bookmark headings, overflow, or another enforced geometry failure.
+The 320-pixel settings screenshots were inspected in both engines.
+Chromium also passed 95 Player and 111 Subtitles cases plus the same 37 combined flows.
+[PR #554](https://github.com/Kinosail/kinosail/pull/554) merged after all four required checks and all three layout jobs passed.
+Fetched ancestry proves the reviewed commit is included in `b38a31a651d0b4c4549799ee8fc5080eb401d84c`.
+The container run's separate trust failure is recorded below.
 Private screenshots under `hosted/visual-review/` have these SHA-256 values:
 
 - `subtitles-firefox-390-library.png`: `95c3f6a427aad88a48d62e59ae3bb0541935cbcaa4a83ab85b2b7a9c71881313`.
 - `subtitles-390-default--view-library-settled.png`: `bb6324ce459fdc90e73f7734411e595ae586ef0e5258e6acad58b92896d42844`.
+
+### Additional bounded campaign execution
+
+Q47's two primary generated-docs deadline cases passed twice on `595d2a0cbcaaffc07ed7396b79c47a187bd59891`.
+The proof retained source, dependency, binary, generated-output, and process-cleanup checks.
+Its other fixed suites remain unrun. [Hosted run 38159857883](https://github.com/Kinosail/kinosail/actions/runs/38159857883).
+The archive is `q47-primary.zip`, SHA-256 `7c8a3d07e3b3e933b53437295cf96192250d61d423403de5a7b0a7237c8426ab`.
+
+Q09 compiled successfully and its isolated browser command exited zero, but result admission failed with `ValueError`.
+No group was accepted, and its real Server and phone groups did not run.
+### AQA-010 — Download proof rejects its expanded case selection
+
+Fresh collection found 12 isolated cases where the validator expected five, and 47 mixed-group cases where it expected eight.
+The existing count contract failed before the title-list repair. Exact collection reconciliation, nine admission checks, and 19 routing contracts then passed.
+[PR #555](https://github.com/Kinosail/kinosail/pull/555) preserves strict rejection of missing, duplicate, unknown, skipped, retried, flaky, and malformed results.
+The corrected [hosted run 38160742860](https://github.com/Kinosail/kinosail/actions/runs/38160742860) passed all groups on `8989a927cbb763f7c985088d936c600e36a5e9e0` with unchanged source and settled processes.
+Its 60 executions comprise 12 isolated controls, nine real-server cases plus 38 isolated controls, and one populated phone-viewport case.
+This does not establish media decoding, other engines, or physical-device behavior.
+The corrected archive is `q09-download-fixed.zip`, SHA-256 `420a7616450105329be4a6d7d7ad25d02e10de14fb679506b792465698594c1c`.
+PR #555 then merged with all four required checks passing.
+Fetched ancestry proves its final reviewed head `747166202d3edd17096cd646df1ab0c08414e503` is included in `53d2a6981119be691fbc576ec15d15a7d3b11232`.
+
+The original rejected run remains preserved:
+[Hosted run 38159857532](https://github.com/Kinosail/kinosail/actions/runs/38159857532).
+The archive is `q09-download.zip`, SHA-256 `788808aa9b969a61fea2772d7f0703340466cdea06004c6d863580db70bcd3ac`.
+
+### AQA-011 — Repaired locally: automated container browser fixture transport
+
+`make -C apps/subtitles test-instance-check` built its ARM64 image and isolated populated Compose instance.
+The browser run passed 19 cases, skipped 27, and failed 20. Eighteen failures explicitly report certificate trust errors.
+The other two history cases observed missing stylesheet layout; their exact cause remains separate until the transport is repaired and rerun.
+Browser certificate validation remained enabled. No host trust or personal browser settings were changed.
+The task-owned Compose project had zero containers and zero volumes after cleanup.
+The private receipt is `subtitle-nav/test-instance-receipt.json`, SHA-256 `11141efdd155c99f3a60dcfb32b13b4e87ce1d34b6a10593e13ef46a15993e52`.
+These passing fixture cases do not establish populated container-browser acceptance.
+
+The reproduced public-command failure precedes the transport change.
+The automated Subtitles fixture now selects the app's existing HTTP mode on its fixed loopback bind.
+Its URL helper follows the supported TLS environment setting. Manual instances retain their HTTPS default.
+Explicit TLS remains available; no browser trust bypass or host CA installation was added.
+The rerun must establish browser behavior, including the two history failures, before accepting this repair.
+Local HTTP evidence cannot establish TLS or WebKit cookie behavior; hosted WebKit retains disposable-runner certificate trust.
+
+The first HTTP run on `12c5208e` passed 36 cases, skipped 27 serial dependents, and failed three.
+The history stylesheet cases passed. The API client rejected Secure cookies on `127.0.0.1`, unlike its supported HTTP `localhost` exception.
+A passkey redirect also used the internal port instead of the assigned host port.
+Changing the browser origin to `localhost` cleared the first seven dashboard cases on `3c8fe374`.
+That run was stopped before the known redirect failure to correct its startup configuration; its 59 unexecuted cases are not acceptance.
+Both task-owned Compose projects had zero containers and volumes after cleanup.
+The fixture now pins its assigned port and sets its canonical login URL before Owner setup.
+Browser assertions, deadlines, and certificate validation remain unchanged.
+The complete run on `e39981f01d8d54af4eb75a25a654e44ff174c075` passed all 66 browser cases, with zero failures, skips, or flaky results.
+This suite combines populated journeys with controlled rendered fixtures; it is not 66 independent populated-server proofs.
+The command was `KINOSAIL_TEST_IMAGE_READY=1 KINOSAIL_E2E_ARTIFACT_DIR=<private-artifacts>/canonical-browser GOMAXPROCS=2 make -C apps/subtitles test-instance-check`.
+It reused the verified ARM64 image built earlier in this repair; the app and shared Go sources were unchanged.
+The working tree was clean, and cleanup left zero task-owned containers and volumes.
+The private receipt is `fixture-transport/canonical-receipt.json`, SHA-256 `cdaa05fe3879bd877d0d0aa9a9f8851be6d41819a57899d31a8888986f031530`.
+[PR #556](https://github.com/Kinosail/kinosail/pull/556) remains pending required hosted checks.
+Reconciliation with current main added only the already reviewed Q09 validator and contract changes; Subtitles runtime and fixture inputs were unchanged.
+
+### AQA-012 — Open: intermittent prompt-return bound on main
+
+Main CI on `6f8bfa60d46d5c53621d5590ace3e943669d53ad` observed a legacy admission request taking 336.731493 ms against its existing 250 ms assertion.
+The failed test was `TestSubtitleExclusiveOperationBlocksAllLegacyWriteAndAudioPathsWithoutEffects`.
+Ten focused local repetitions passed with unchanged test and production code; the failed hosted job also passed on retry.
+Neither result establishes a root-cause repair. The original failure and a bounded diagnostic receipt remain private.
+
+### Further copied-resume diagnosis
+
+The direct MediaSource probe buffered only 2.5–17.5 seconds when negative preroll was shifted to zero.
+Keeping its timestamps positive restored all four sampled reference images.
+This is consistent with [MSE coded-frame processing](https://www.w3.org/TR/media-source-2/#sourcebuffer-coded-frame-processing), which can drop frames before the append window and require a new random-access point.
+The actual Hls.js configuration still failed with the experimental edit list.
+A separate Hls.js probe using the true 10-second keyframe origin, a 2.5-second relative start, and a 12.5-second global seek matched all four reference images and the 30-second source duration.
+The existing requested-offset mapping matched none and exposed 32.5 seconds.
+These synthetic probes do not qualify full-frame/audio output, a production repair, or native-client behavior.
+[HLS start offsets](https://www.rfc-editor.org/rfc/rfc8216.html#section-4.3.5.2) may express preroll suppression, but client behavior still requires independent proof.
 
 ## Additional private artifact checksums
 
@@ -284,6 +401,9 @@ Hosted artifacts contain the bounded receipts; raw local process logs remain pri
 | `layout-firefox.zip` | `080f0c3ce2f6b4c102c9a07c81aacdc29f00bd49edc3c7f831d4fcf1e46040f7` |
 | `layout-webkit.zip` | `7b6f8f4617a82f7daa1fbb0a0d45b91a79d6980db5bf2832e1c9a143d926c882` |
 | `layout-chromium.zip` | `3fb64ec269a79cf1f085863cf06c59e59a4c1af3df1d1b7f1eb388859afe6807` |
+| `nav-final-firefox.zip` | `5368938a1f9b8275e2c2a29e87dbf76893bd4c3c4ff0d93a578af5de5b3d542b` |
+| `nav-final-webkit.zip` | `93ab33817d874f85dd3dece0597eea96a9839713782c3d6840f4c174c9c6a46f` |
+| `nav-final-chromium.zip` | `7607188bd2328b410afb75f0cf5352c3d386650e59c348d557a4196c7a99da04` |
 
 ## Remaining coverage
 

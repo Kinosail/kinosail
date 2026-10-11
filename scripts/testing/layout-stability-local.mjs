@@ -132,6 +132,7 @@ function cls(shifts) {
 }
 const boxesChanged=(a,b)=>a.filter(first=>{const last=b.find(v=>v.id===first.id);return last&&["x",first.pinned&&last.pinned?"y":"documentY","width","height"].some(key=>Math.abs(first[key]-last[key])>1);});
 const inspect = () => ({rootFontSize: getComputedStyle(document.documentElement).fontSize, rootScale:document.documentElement.style.fontSize, ready: document.querySelector(".settings-shell")?.hasAttribute("data-settings-ready"), category: document.documentElement.dataset.settingsCategory, scrollX, scrollY,
+  navigationLabels: [...document.querySelectorAll("[data-subtitle-dock]>a")].map(link=>{const range=document.createRange();range.selectNodeContents(link);return {label:link.textContent.trim(),lines:new Set([...range.getClientRects()].filter(rect=>rect.height>0).map(rect=>Math.round(rect.top))).size};}),
   timeouts: ["#session-timeouts","#security"].includes(location.hash)?(()=>{const anchor=document.getElementById(location.hash.slice(1)),target=document.getElementById("session-timeouts");return {anchorPresent:Boolean(anchor),visible:Boolean(target&&target.getBoundingClientRect().height&&(!target.checkVisibility||target.checkVisibility())),access:[...target?.querySelectorAll("form[data-timeout-access]")||[]].map(n=>n.dataset.timeoutAccess).sort()};})():undefined,
   sections: [...document.querySelectorAll(".settings-flow>section")].filter(n=>n.getBoundingClientRect().height).map(n=>({id:n.id,category:n.dataset.settingsCategory,heading:n.querySelector("h2")?.textContent})),
   nativeOptions: document.querySelectorAll(".player-native-options").length, settingsButtons: document.querySelectorAll("[data-player-settings]").length,
@@ -248,7 +249,8 @@ try {
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
     const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
-    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,initialState,finalState,...audit});
+    const navigationLabelsReadable=[initialState,finalState].every(state=>state.navigationLabels.every(label=>label.lines===1));
+    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,navigationLabelsReadable,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -274,5 +276,5 @@ try {
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
 }
 await browser.close();
-if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || report.moved.length>0)) process.exitCode = 1;
+if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || !report.navigationLabelsReadable || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.caretPreserved===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
