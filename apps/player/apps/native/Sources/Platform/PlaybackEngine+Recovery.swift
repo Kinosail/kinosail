@@ -1,6 +1,7 @@
 import AVFoundation
 import AVKit
 import Foundation
+import Synchronization
 
 extension PlaybackEngine {
     func install(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, failure: Error? = nil) async throws {
@@ -107,22 +108,38 @@ extension PlaybackEngine {
         try await loadTracks(nextItem, attempt: attempt)
         try await applyPreferences(preferences)
         try check(attempt)
+        // An endpoint restore can emit EOF before its awaited seek returns.
+        // Capture synchronously, then publish only after the final seek commits.
+        let completion = Mutex((restoring: true, ended: false))
+        if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
+        endObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nextItem, queue: nil) { [weak self, weak next, weak nextItem] _ in
+            let deferred = completion.withLock { state in
+                if state.restoring { state.ended = true; return true }
+                return false
+            }
+            guard !deferred else { return }
+            Task { @MainActor in
+                guard let self, let next, let nextItem else { return }
+                await self.didEnd(attempt: attempt, player: next, nativeItem: nextItem)
+            }
+        }
         var target = recoveryPosition ?? nativeRecoveryPosition ?? retainedPosition
         while true {
             try await seekPlayer(to: min(target, duration > 0 ? duration : target))
             try check(attempt)
+            guard player === next, next.currentItem === nextItem else { throw CancellationError() }
             guard let requested = recoveryPosition ?? nativeRecoveryPosition, abs(requested - target) >= 0.01 else { break }
+            // A native scrub superseded the endpoint that emitted EOF.
+            completion.withLock { $0.ended = false }
             target = requested
         }
         try check(attempt)
         timeObserver = next.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self] time in
             Task { @MainActor in self?.tick(time: time, attempt: attempt) }
         }
-        if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
-        endObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { [weak self] _ in
-            Task { @MainActor in guard let self, self.generation == attempt else { return }; await self.didEnd() }
-        }
         message = nil
+        let ended = completion.withLock { state in state.restoring = false; return state.ended }
+        if ended { await didEnd(attempt: attempt, player: next, nativeItem: nextItem, restored: true) }
     }
 
     func beginMonitoring(attempt: UUID) {
@@ -143,6 +160,7 @@ extension PlaybackEngine {
                             try await self.install(details: source, compatible: true, at: self.seconds, attempt: attempt)
                         } else { self.message = Self.playbackMessage(failure); return }
                         try self.check(attempt)
+                        guard !self.completed else { return }
                         if self.nativeIntent.playing.withLock({ $0 }) ?? self.wantsPlayback { self.player?.play() }
                     } catch {
                         if self.generation == attempt, !(error is CancellationError) { self.message = Self.playbackMessage(error) }

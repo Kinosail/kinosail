@@ -188,6 +188,7 @@ final class PlaybackEngine {
                 try await install(details: details, compatible: true, at: start, attempt: attempt)
             }
             try check(attempt)
+            guard !completed else { return }
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt)
             observeAudioSession()
@@ -225,6 +226,7 @@ final class PlaybackEngine {
             let position = pending?.progress.seconds ?? (item.progress.watched ? 0 : item.progress.seconds)
             try await installPlayer(url: file, item: item, position: position, attempt: attempt)
             try check(attempt)
+            guard !completed else { return }
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt); observeAudioSession()
             if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }

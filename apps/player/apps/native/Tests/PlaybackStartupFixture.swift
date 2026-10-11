@@ -7,7 +7,15 @@ import Testing
 // An isolated HTTP listener exercises the production client and playback
 // coordinator. Only fictional identity and bounded JSON cross this interface.
 final class PlaybackStartupFixture: @unchecked Sendable {
-    struct State { var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?; var savedSeconds: Double?; var holdPreferences = false; var denialStatus = 403 }
+    struct ProgressReceipt: Sendable {
+        let itemID: String; let seconds: Double; let watched: Bool; let revision: Int
+    }
+    struct State {
+        var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?
+        var savedSeconds: Double?; var holdPreferences = false; var denialStatus = 403
+        var hlsResources: [String: Data] = [:]; var playbackResponse: Data?
+        var progressReceipts: [ProgressReceipt] = []
+    }
     let state = Mutex(State())
     let listener: NWListener
     let server: ServerAddress
@@ -29,8 +37,11 @@ final class PlaybackStartupFixture: @unchecked Sendable {
     var delayed: Bool { get { state.withLock { $0.delayed } } set { state.withLock { $0.delayed = newValue } } }
     var denied: Bool { get { state.withLock { $0.denied } } set { state.withLock { $0.denied = newValue } } }
     var media: Data? { get { state.withLock { $0.media } } set { state.withLock { $0.media = newValue } } }
+    var hlsResources: [String: Data] { get { state.withLock { $0.hlsResources } } set { state.withLock { $0.hlsResources = newValue } } }
+    var playbackResponse: Data? { get { state.withLock { $0.playbackResponse } } set { state.withLock { $0.playbackResponse = newValue } } }
     func count(_ path: String) -> Int { state.withLock { $0.counts[path] ?? 0 } }
     var savedSeconds: Double? { state.withLock { $0.savedSeconds } }
+    var progressReceipts: [ProgressReceipt] { state.withLock { $0.progressReceipts } }
 
     init() async throws {
         let parameters = NWParameters.tcp
@@ -57,8 +68,9 @@ final class PlaybackStartupFixture: @unchecked Sendable {
     func item(_ id: String) throws -> MediaItem {
         try MediaItem(.object(["id": .string(id), "kind": .string("video"), "title": .string("Fixture")]), server: server)
     }
-    private func send(_ data: Data, type: String, connection: NWConnection) {
-        let response = Data("HTTP/1.1 200 OK\r\nContent-Type: \(type)\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n".utf8) + data
+    private func send(_ data: Data, type: String, head: Bool = false, connection: NWConnection) {
+        var response = Data("HTTP/1.1 200 OK\r\nContent-Type: \(type)\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n".utf8)
+        if !head { response.append(data) }
         connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
     }
     private func sendMedia(_ media: Data, header: String, head: Bool, connection: NWConnection) {
@@ -102,6 +114,13 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 state.counts[path, default: 0] += 1
                 return (state.counts[path]!, state.delayed, state.denied)
             }
+            if let resource = self.hlsResources[path] {
+                // Whole-segment fixture: a Range may receive 200/full content;
+                // this playlist contains no byte-range resources.
+                self.send(resource, type: path.hasSuffix(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp2t",
+                          head: parts[0] == "HEAD", connection: connection)
+                return
+            }
             if path.hasPrefix("/media/"), let media = self.media {
                 self.sendMedia(media, header: header, head: parts[0] == "HEAD", connection: connection)
                 return
@@ -114,8 +133,20 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 guard let raw = try? StrictJSON.decode(Data(next[boundary.upperBound..<(boundary.upperBound + length)])),
                       let body = try? raw.object(allowing: ["progress", "expected", "playbackToken"]),
                       let progress = body["progress"], let data = try? JSONEncoder().encode(progress) else { connection.cancel(); return }
-                if let saved = try? WatchProgress(progress) { self.state.withLock { $0.savedSeconds = saved.seconds } }
+                guard let saved = try? WatchProgress(progress),
+                      let itemID = try? Input.id(String(path.split(separator: "/").dropFirst(3).first ?? "")) else { connection.cancel(); return }
+                let accepted = self.state.withLock { state in
+                    guard state.progressReceipts.count < 64 else { return false }
+                    state.savedSeconds = saved.seconds
+                    state.progressReceipts.append(ProgressReceipt(itemID: itemID, seconds: saved.seconds, watched: saved.watched, revision: saved.revision))
+                    return true
+                }
+                guard accepted else { connection.cancel(); return }
                 self.send(data, type: "application/json", connection: connection)
+                return
+            }
+            if path.hasSuffix("/playback"), !denied, let response = self.playbackResponse {
+                self.send(response, type: "application/json", connection: connection)
                 return
             }
             let id = path.split(separator: "/").dropFirst(3).first.map(String.init) ?? "movie"
