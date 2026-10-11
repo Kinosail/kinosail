@@ -184,28 +184,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             String(format: "Artwork QA Actor %02d", index))).firstMatch
     }
 
-    @MainActor private func waitForFocus(_ element: XCUIElement,
-                                         diagnosticApp: XCUIApplication? = nil) throws {
-        var previous = CGRect.null
-        var stableSamples = 0
-        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            guard element.exists else { return false }
-            let frame = element.frame
-            stableSamples = frame == previous ? stableSamples + 1 : 0
-            previous = frame
-            let hasFocus = element.hasFocus
-            if diagnosticApp != nil {
-                print("ARTWORK_FOCUS_WAIT label=\(element.label) focused=\(hasFocus) frame=\(frame) stable=\(stableSamples)")
-            }
-            return hasFocus && stableSamples >= 2
-        }, object: nil)
-        let result = XCTWaiter.wait(for: [focused], timeout: 5)
-        if result != .completed, let diagnosticApp {
-            record("artwork My List focus wait failure before assertion", diagnosticApp)
-        }
-        XCTAssertEqual(result, .completed)
-    }
-
     @MainActor private func waitForLoadedHero(_ title: XCUIElement, _ resume: XCUIElement,
                                              _ app: XCUIApplication) throws {
         var previousTitle = CGRect.null
