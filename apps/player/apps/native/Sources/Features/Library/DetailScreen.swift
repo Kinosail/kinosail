@@ -12,6 +12,9 @@ struct DetailScreen: View {
             }) { detail in DetailContent(detail: detail).id(itemID) }
             .padding(KinoTheme.contentPadding)
         }
+        #if os(tvOS)
+        .scrollClipDisabled()
+        #endif
         .cinemaBackground()
         .navigationTitle("")
         #if os(iOS)
