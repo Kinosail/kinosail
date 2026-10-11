@@ -1,6 +1,7 @@
 # tvOS navigation audit
 
-Status: in progress. Results below are added only after observation.
+Status: simulator audit and fixes complete.
+Eleven confirmed navigation or presentation findings are fixed.
 
 ## Scope and method
 
@@ -41,7 +42,7 @@ gap before adding a new case. No production-only test hook is authorized.
 - Worktree: `codex/tvos-navigation-audit-20261011`.
 - Xcode 27.0 (27A266a), tvOS 27.0 simulator.
 - Disposable 1080p simulator: `5ECCEA70-5605-4192-80B9-36F91EDCC156`.
-- Local evidence: `/tmp/kinosail-tvos-navigation-20261011`.
+- Private evidence archive: `/Users/mikeo/.codex/artifacts/tvos-navigation-20261011`.
 - Local main had unrelated changes to the Xcode project and string catalog.
   They are preserved. The worktree audit also reported eight unrelated inactive
   checkouts, including one dirty checkout; their files and leases are unchanged.
@@ -241,7 +242,7 @@ The first state batch passes detail pending removal, failed-detail retry, empty
 backdrop, missing artwork, and audio pending removal. Audio retry initially
 asserted focus during presentation. Waiting for settled focus confirms Try again
 is selected and recovery returns to Play (20.931 seconds in the repeated run).
-No production retry change was needed.
+That early run did not expose the later intermittent focus failure in NAV-11.
 
 `detail-pending-aligned-1080` passes the new pixel regression (33.234 seconds).
 The title placeholder now starts at y186, within seven points of the loaded
@@ -287,7 +288,7 @@ without corrective input. Observed focus settlement takes 1.237 and 1.175 second
 The stress case records all 100 successful detail returns, then reaches its
 600-second limit during final held-input checks. Only that case now requests
 900 seconds; the runner permits a 930-second per-test maximum. The failed
-receipt is retained and a complete accepted stress run is still required.
+receipt is retained. The complete 4K stress acceptance is recorded below.
 
 The tvOS app explicitly uses `.preferredColorScheme(.dark)`. Unsupported
 simulator appearance commands are not proof of accessibility variants.
@@ -301,5 +302,108 @@ now drops authenticated GET and PUT requests; those intermediate bundles are
 not outage acceptance. The banner reserves its intrinsic height in the TV stack.
 
 The loaded Home and movie-detail journeys also pass after the stack change in
-`disconnected-detail-green-4k` (14.526 and 30.942 seconds). Its incomplete outage
+`disconnected-detail-green-4k` (14.528 and 30.942 seconds). Its incomplete outage
 simulation failed, so only those individual cases count as accepted evidence.
+
+
+### Final combined 4K run and harness corrections
+
+The `accepted-loaded-4k` directory name does not imply an aggregate pass.
+At `ca03f21e`, its result contains 22 passes and two failures across 24 started
+journeys. The last nested Settings journey never starts. One failure is the
+card-outline pixel probe; the other is cancellation at the runner's 30-minute
+wall limit. Fixture health has no failures, and both Xcode and the fixture join.
+
+The complete 100-return case passes in 695.608 seconds, including held-arrow
+reversal and the Home shortcut. Search also passes in 34.164 seconds. The stress
+screenshots at returns 20, 40, 60, 80, and 100 preserve the originating card and
+scroll position. The final return screenshot was inspected.
+
+The outline failure video's final frame clearly shows the continuous light
+border on the long-title card. The test now requires the edge across three
+separated points on at least two rows within a narrow band. It captures each
+focused card before measuring. This avoids relying on one exact raster row.
+The first follow-up passes all four cards (33.792 seconds), reporting light
+rows at offsets 0 through 3. No production rendering change was needed.
+
+The retained runner now permits 40 minutes for the loaded suite. Its per-test
+limits, timeout rejection, health checks, and bounded child cleanup stay intact.
+Both process-settlement checks pass after this change. The focused 4K follow-up
+passes the outline, all Settings rows, nested Settings returns, and detail pending
+geometry. Their durations are 33.792, 33.531, 34.709, and 32.680 seconds.
+The outline also passes at 1080p in 29.731 seconds.
+
+### NAV-11: A new detail error can focus the banner (P2, intermittent)
+
+`accepted-states-1080` shows the error heading clearly but focuses Reconnect
+instead of the detail's Try again action. That costs an extra Down press.
+The screenshot and five-second focus wait confirm the stable wrong destination.
+A second fresh run passes without changes, confirming that initial focus depends
+on which asynchronous view appears first. The existing outage journey exposes
+this case; its expectation stays unchanged.
+
+The audio failure check also captures an error with no focused element in
+`accepted-audio-retry-1080`; its screenshot shows an unfocused Try again button.
+The detail and audio resources now request Retry focus when their errors appear.
+The request runs once on appearance. Subsequent Up and Down movements remain
+native. Other resource and retry screens keep their existing default behavior.
+The 1080p detail outage recovery passes in 21.912 seconds. After applying the
+same opt-in focus behavior to audio errors, audio retry passes in 18.691 seconds.
+The final 4K detail outage passes in 24.076 seconds; audio retry passes in
+26.984 seconds. Both failed and recovered screens were inspected.
+`2707f1f5` commits the retry focus change; `f52619fd` reconciles main PR #549
+without changing native production source.
+
+### Manual library state acceptance
+
+The final 1080p walkthrough uses Device Hub remote buttons and the isolated
+library fixture. Empty content leaves Sort focused and shows no placeholder.
+A delayed Year sort displays six columns of placeholders in the loaded grid's
+positions. Success removes them and retains Sort. A failed Recently added sort
+shows a clear error with a reachable Try again action. Down reaches Try again;
+Up returns to Sort; Down returns to Try again. Each path takes one press.
+Restoring the fixture and selecting Retry loads 160 titles and focuses Sort.
+Back restores the Home Movies entry. Every resulting screen was inspected.
+
+`manual-library-states/receipt.json` records predictions, observations, source
+input hashes, and screenshot checksums. Two earlier captures contain cached
+Title results and do not count as empty-state evidence.
+
+### Accepted coverage and limits
+
+The combined 4K run supplies 22 passing loaded journeys. The focused follow-up
+adds the corrected outline assertion and both Settings journeys. Together they
+cover all 25 distinct loaded journeys. This is not a single aggregate passing
+bundle: the original wall-clock timeout and failed pixel assertion remain in
+the evidence. The complete 100-return stress case, including held-input reversal
+and the Home shortcut, passes in 695.608 seconds.
+
+The final recovery focus change affects only initial detail and audio error
+focus. Loaded rendering and navigation are unchanged from those accepted runs.
+The focused state journeys cover the changed failure paths separately.
+
+Six fixture safety checks and two process-settlement checks pass. The fixture
+accepts only bounded QA modes and rejects invalid combinations. No production
+API or failure classification changed. Existing native request diagnostics
+identified the incomplete outage simulation; raw diagnostics remain private.
+Server, browser, physical-device, and deployment logs were not verified.
+
+See [evidence.md](evidence.md) for exact environment, reproduction commands,
+result counts, source revisions, and local artifact checksums. Physical Apple
+TV, Siri Remote, VoiceOver, accessibility variants, production-server behavior,
+and production deployment remain outside this simulator audit.
+
+### Final local verification and cleanup
+
+At `5f09978e36a8330698be017476e2836182fbd6ed`,
+`source ~/.zprofile; make -C apps/player verify-changed` passes max-loc,
+diff-check, and both native client builds. The build stage takes 128 seconds.
+The preceding attempt rejected two trailing blank lines; that receipt is retained.
+The final cleanup changes whitespace only and has no semantic source difference
+from the accepted recovery runs. `make max-loc` also passed at the repository root.
+
+The loopback fixture was stopped and joined. Both task-created simulators were
+deleted after their evidence was saved. Other simulators and physical devices
+were not changed. Local main remains at `dd420717` with unrelated Xcode project
+and string-catalog edits. Those edits prevent the normal main/worktree cleanup.
+The task checkout will remain clean after publication.
