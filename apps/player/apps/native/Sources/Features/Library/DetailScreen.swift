@@ -29,6 +29,7 @@ private struct DetailContent: View {
     @State private var showsDownloads = false
     #if os(tvOS)
     @Namespace private var detailFocus
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.dynamicTypeSize) private var dynamicType
@@ -69,7 +70,7 @@ private struct DetailContent: View {
     #if os(tvOS)
     private var tvMovieHero: some View {
         let metadata = TVMovieDetail(item: item).metadata
-        return VStack(alignment: .leading, spacing: 14) {
+        return TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
             Text(item.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
@@ -86,26 +87,34 @@ private struct DetailContent: View {
                 VStack(alignment: .leading, spacing: 12) { secondaryActions }
             }
             .controlSize(.large)
-        }
-        .frame(maxWidth: 740, alignment: .leading)
-        .padding(40)
-        .frame(maxWidth: .infinity, minHeight: 520, alignment: .bottomLeading)
+        } }
         .background {
             ZStack {
                 KinoTheme.surface
-                if contrast != .increased && !reduceTransparency {
+                if colorScheme == .dark && contrast != .increased && !reduceTransparency {
                     GeometryReader { geometry in
-                        Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 1600,
-                                fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
+                        ZStack(alignment: .leading) {
+                            Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 4096,
+                                    fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
+                            LinearGradient(stops: [
+                                .init(color: .black.opacity(0.92), location: 0),
+                                .init(color: .black.opacity(0.84), location: 0.75),
+                                .init(color: .clear, location: 1)
+                            ], startPoint: .leading, endPoint: .trailing)
+                            .frame(width: min(geometry.size.width, 1120))
+                            LinearGradient(stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
+                                .init(color: KinoTheme.background, location: 1)
+                            ], startPoint: .top, endPoint: .bottom)
+                        }
                     }
-                    LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
-                                   startPoint: .leading, endPoint: .trailing)
-                    LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
                 }
             }
+            .clipped().allowsHitTesting(false).accessibilityHidden(true)
         }
-        .clipShape(.rect(cornerRadius: 12))
         .foregroundStyle(KinoTheme.text)
+        .tvMovieHeroBleed()
         .focusSection()
     }
     #endif

@@ -30,6 +30,10 @@ func GetProviderJSON(ctx context.Context, client *http.Client, endpoint, token s
 
 // DownloadProviderImage validates a bounded image response before replacing its cache file.
 func DownloadProviderImage(ctx context.Context, client *http.Client, baseURL, path, target string) error {
+	return downloadProviderImage(ctx, client, baseURL, path, target, nil)
+}
+
+func downloadProviderImage(ctx context.Context, client *http.Client, baseURL, path, target string, validate func(context.Context, []byte) error) error {
 	endpoint := strings.TrimRight(baseURL, "/") + "/" + strings.TrimLeft(path, "/")
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
@@ -43,6 +47,14 @@ func DownloadProviderImage(ctx context.Context, client *http.Client, baseURL, pa
 	data, err := io.ReadAll(io.LimitReader(response.Body, (8<<20)+1))
 	if err != nil || len(data) > 8<<20 || response.StatusCode != http.StatusOK || !strings.HasPrefix(response.Header.Get("Content-Type"), "image/") {
 		return errors.New("metadata artwork is invalid")
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if validate != nil {
+		if err := validate(ctx, data); err != nil {
+			return err
+		}
 	}
 	if err := ctx.Err(); err != nil {
 		return err

@@ -76,7 +76,8 @@ actor ArtworkLoader {
                 try Task.checkCancellation()
                 let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
                 let store = persist ? try await client.cacheStore() : nil
-                let saved = await store?.read(url.absoluteString, kind: .artwork)
+                let storageKey = Self.artworkStorageKey(url: url, dimension: dimension)
+                let saved = await store?.read(storageKey, kind: .artwork)
                 if let saved {
                     do {
                         let image = try await Self.decode(saved.data, dimension: dimension)
@@ -85,10 +86,17 @@ actor ArtworkLoader {
                         remember(image, key: key, saved: saved.saved, background: background && visible[key] == nil)
                         return Loaded(image: image, stale: !saved.fresh)
                     } catch is CancellationError { throw CancellationError() }
-                    catch { await store?.remove(url.absoluteString, kind: .artwork) }
+                    catch { await store?.remove(storageKey, kind: .artwork) }
                 }
                 // Local hits must not queue behind slow network artwork requests.
-                let (data, type) = try await download(url: url, client: client, background: background)
+                let (data, type): (Data, String)
+                do { (data, type) = try await download(url: url, client: client, background: background) }
+                catch {
+                    if let image = try await Self.legacyBackdropImage(after: error, url: url, dimension: dimension, store: store) {
+                        return Loaded(image: image, stale: false)
+                    }
+                    throw error
+                }
                 guard type.hasPrefix("image/") else { throw ClientError.invalidResponse }
                 let image = try await Self.decode(data, dimension: dimension)
                 try Task.checkCancellation()
@@ -96,7 +104,7 @@ actor ArtworkLoader {
                 guard generation == attempt else { throw CancellationError() }
                 remember(image, key: key, saved: savedAt, background: background && visible[key] == nil)
                 if let store {
-                    await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
+                    await store.enqueueWrite(data, key: storageKey, kind: .artwork)
                 }
                 return Loaded(image: image, stale: false)
             }
@@ -141,7 +149,7 @@ actor ArtworkLoader {
         return image
     }
 
-    private static func decode(_ data: Data, dimension: Int) async throws -> CGImage {
+    static func decode(_ data: Data, dimension: Int) async throws -> CGImage {
         let work = Task.detached(priority: Task.currentPriority) {
             try Task.checkCancellation()
             return try decodedThumbnail(data, dimension: dimension)
@@ -206,9 +214,10 @@ actor ArtworkLoader {
             let savedAt = Date()
             let persist = URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true
             let store = persist ? try await client.cacheStore() : nil
+            let storageKey = Self.artworkStorageKey(url: url, dimension: dimension)
             remember(image, key: key, saved: savedAt, background: true)
             if let store {
-                await store.enqueueWrite(data, key: url.absoluteString, kind: .artwork)
+                await store.enqueueWrite(data, key: storageKey, kind: .artwork)
             }
         } catch is CancellationError {} catch {}
     }

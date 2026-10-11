@@ -2,21 +2,21 @@ import SwiftUI
 
 struct DetailLoadingState: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: sectionSpacing) {
             #if os(tvOS)
-            RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(height: 520)
+            Rectangle().fill(KinoTheme.surface).frame(height: 600)
                 .overlay(alignment: .bottomLeading) {
-                    VStack(alignment: .leading, spacing: 16) {
+                    TVMovieHeroLayout { VStack(alignment: .leading, spacing: 16) {
                         line(340, 52)
                         line(360, 20)
                         line(580, 22)
                         line(500, 22)
                         Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
-                    }
-                    .padding(40)
+                    } }
                 }
+                .tvMovieHeroBleed()
             line(140, 28)
-            HStack(spacing: 18) {
+            HStack(spacing: KinoTheme.shelfSpacing) {
                 ForEach(0..<4) { _ in
                     RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
                         .aspectRatio(2 / 3, contentMode: .fit).frame(width: 230)
@@ -43,6 +43,14 @@ struct DetailLoadingState: View {
             .padding(.top, 8)
             #endif
         }
+    }
+
+    private var sectionSpacing: CGFloat {
+        #if os(tvOS)
+        28
+        #else
+        20
+        #endif
     }
 
     private func line(_ width: CGFloat, _ height: CGFloat) -> some View {
