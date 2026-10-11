@@ -76,6 +76,8 @@ extension PlaybackEngine {
             playbackPreparation = nil
             playbackPreparationRequest?.cancel(); playbackPreparationRequest = nil
             try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
+            try check(attempt)
+            guard !completed else { return }
             beginMonitoring(attempt: attempt)
             if shouldResume { player?.play() }
             return
@@ -260,16 +262,6 @@ extension PlaybackEngine {
         if seconds > 3 { try await seek(to: 0); return }
         guard let previous = queue.previous(), let client, let store else { return }
         try await play(previous, client: client, store: store)
-    }
-
-    func didEnd() async {
-        completed = true
-        if let currentItem { onCompleted?(currentItem, source?.nextItemID) }
-        saveProgress(watched: true)
-        isPlaying = false
-        guard let next = queue.next(automatic: true), let client, let store else { return }
-        do { try await play(next, client: client, store: store) }
-        catch { message = Self.playbackMessage(error) }
     }
 
     func saveProgress(watched: Bool) {

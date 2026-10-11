@@ -21,7 +21,7 @@ browser-test:
 	@CI=1 KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh
 
 client-check:
-	@$(MAKE) -j2 client-build-ios client-build-tvos
+	@$(MAKE) -j1 client-build-ios client-build-tvos
 
 client-build-ios:
 	@./apps/native/scripts/build-apple.sh ios
