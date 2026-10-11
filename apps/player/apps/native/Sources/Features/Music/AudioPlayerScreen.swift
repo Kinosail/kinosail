@@ -1,37 +1,5 @@
 import SwiftUI
 
-private enum AudioNowPlayingGeometry {
-    static var transportSpacing: CGFloat {
-        #if os(tvOS)
-        28
-        #else
-        12
-        #endif
-    }
-    static func transportSize(_ index: Int) -> CGFloat {
-        #if os(tvOS)
-        index == 1 ? 112 : 128
-        #else
-        52
-        #endif
-    }
-    static func width(accessibility: Bool) -> CGFloat {
-        #if os(tvOS)
-        accessibility ? 900 : 1400
-        #else
-        700
-        #endif
-    }
-    static func layout(accessibility: Bool) -> AnyLayout {
-        #if os(tvOS)
-        accessibility ? AnyLayout(VStackLayout(spacing: 28))
-                      : AnyLayout(HStackLayout(alignment: .top, spacing: 64))
-        #else
-        AnyLayout(VStackLayout(spacing: 28))
-        #endif
-    }
-}
-
 struct AudioPlayerScreen: View {
     let itemID: String
     var hidesMiniPlayer = true
@@ -104,7 +72,7 @@ struct AudioPlayerScreen: View {
                             Button("Forward 30 seconds", systemImage: "goforward.30") { perform { try await session.player.seek(to: min(session.player.duration, session.player.seconds + 30)) } }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large)
                         }.font(.title2).disabled(session.player.player == nil)
                         if item.kind == .music {
-                            HStack(spacing: 24) {
+                            HStack(spacing: AudioNowPlayingGeometry.trackSpacing) {
                                 Button("Previous", systemImage: "backward.end.fill") { perform { try await session.player.previousTrack() } }.secondaryControlForeground()
                                 Button("Next", systemImage: "forward.end.fill") { perform { try await session.player.nextTrack() } }.secondaryControlForeground()
                             }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).controlSize(.large).disabled(session.player.player == nil)
@@ -160,7 +128,7 @@ struct AudioPlayerScreen: View {
             #endif
         } }
         #if os(tvOS)
-        .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #endif
         .task(id: "\(itemID):\(revision)") { await load() }
         .onChange(of: session.player.seconds, initial: true) { _, position in if !seeking { seekValue = position } }

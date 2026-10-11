@@ -47,7 +47,9 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 5))
         remote.press(.select)
+        XCTAssertTrue(app.descendants(matching: .any)["Recently added"].waitForExistence(timeout: 5))
         remote.press(.menu)
+        record("library Sort after cancelling menu", app)
         assertFocus("Sort: Title", app)
     }
 
@@ -129,7 +131,10 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
 
     @MainActor private func assertFocus(_ title: String, _ app: XCUIApplication,
                                         file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertTrue(focusedLabels(app).contains(where: { $0.contains(title) }),
-                      "Expected \(title); actual: \(focusedLabels(app))", file: file, line: line)
+        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.focusedLabels(app).contains(where: { $0.contains(title) })
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [focused], timeout: 5), .completed,
+                       "Expected \(title); actual: \(focusedLabels(app))", file: file, line: line)
     }
 }

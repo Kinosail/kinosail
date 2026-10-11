@@ -71,7 +71,7 @@ Open the first movie from Movies. Resume appears directly above My List.
 Down focuses Bookmarks instead; both automated pre-fix trials fail. A manual
 walkthrough confirms Bookmarks, Right to Remove, and Up remaining on Remove.
 Measured control frames show Bookmarks starts two pixels above My List. Align
-the secondary row's top edges so Down reaches My List. Give the primary row a
+the secondary row's focus regions so Down reaches My List. Give the primary row a
 full-width focus section so secondary actions can return upward without a Left
 detour. The primary control keeps its native size.
 
@@ -132,7 +132,10 @@ With audio paused, move to Shuffle in the options row. Previous is the closest
 control above it. Up instead jumps past the Previous/Next row to Back 15 seconds.
 Both `paths-4k.xcresult` and `audio-red-repeat-4k.xcresult` reproduce the mismatch.
 The Previous/Next row now spans its available width as a tvOS focus section.
-Its controls retain their native centered layout and horizontal spacing.
+The control sizes stay native. A later Up-from-Next check also returns to Play
+instead of the expected Forward 30 seconds. Manual and automated runs confirm
+that ambiguity. Previous and Next now align beneath the corresponding backward
+and forward transport buttons; the journey checks both column geometry and arrows.
 
 ### 4K observations
 
@@ -141,7 +144,7 @@ The nested Settings journey passed all six destinations and restored each
 originating row. Search passed keyboard entry, result activation, result return,
 empty results, and Back to Search. The A–Z journey passed its readable-glyph
 check and restored Journey 011 after detail Back. More spacing keeps the native
-letter highlight clear of its neighbors; final width verification remains open.
+letter highlight clear of its neighbors; the final 88-point rail also passes.
 
 Native menus and the system keyboard do not consistently expose their selected
 child through `hasFocus`. Their expanded-menu assertions therefore use visible
@@ -152,3 +155,51 @@ expose their visible title through static-text descendants of the focused view.
 `make -C apps/player verify-changed` passed max-loc, diff-check, and both native
 client builds at `e82c49e7` plus the then-pending test edits. Subsequent production
 changes require the final committed verification below.
+
+The final 4K index screenshot shows the complete highlight without clipping or
+neighbor overlap. All six letters were reached with single arrows. Home's
+pending and empty journeys passed with fresh identities. Pending and loaded
+screens keep the same card positions and Search frame; placeholders disappear
+when loading succeeds.
+
+A reused manual audio session reached `0:30 of 0:30`. It is not a valid starting
+state for a long paused-control walkthrough. The retained journey now waits for
+the focused Pause control and pauses before recording screenshots. Final suites
+use fresh seeded identities. The failure-state runner also exhausted its old
+120-second wall allowance during Xcode preparation. The single-state allowance
+is now 300 seconds; a timed-out receipt remains rejected even if Xcode exits zero.
+The two existing child-process settlement checks still pass.
+
+### NAV-07: Audio Playback options is clipped (P1, confirmed twice)
+
+The 4K manual walk reaches Playback options with Up from the transport row.
+Opening it presents the full TV settings design in a narrow sheet. Text and the
+selected preferences row extend beyond its right edge. Both manual openings
+reproduce the defect; `audio-options-clipped-4k.png` preserves the guest screen.
+Use the same full-screen presentation as the video options. The audio journey
+checks the preferences bounds, Done position, and Back restoration.
+
+### Cast return and additional music paths
+
+The 4K cast walkthrough finds Up from Actor 01 landing on Bookmarks, although
+My List is directly above the card. Two manual traversals reproduce it. The
+previous artwork regression encoded this detour as Up, Left, Up. Its expectation
+now requires Up to My List and Up to Resume. A shared scaled minimum label height preserves native button shapes and gives
+the row consistent focus bounds. An intermediate per-button focus-section
+approach trapped Down before Cast in `audio-cast-1080`; it was rejected.
+
+Manual 4K music coverage also reaches All music tracks with one Up from the
+first album, then moves between Sort and the Albums toolbar with single arrows.
+Back restores All music tracks. The paused mini player exposes its title, Play,
+and Stop with successive Right presses. Opening its full player and pressing
+Back restores the mini-player title. NAV-06 now returns Shuffle Up to Previous
+in the manual walkthrough. Automated final acceptance remains below.
+
+`audio-sort-cover-4k` passes the complete grid/sort journey, including all three
+sort choices and cancellation focus restoration (74.663 seconds). The same run
+passes Shuffle Up to Previous, then exposes the Next-to-Play mismatch above.
+It does not count as a complete audio pass.
+
+The tvOS simulator reports `unsupported` for `simctl ui appearance` and
+`increase_contrast`. These calls changed no settings and are not accessibility
+variant evidence.
