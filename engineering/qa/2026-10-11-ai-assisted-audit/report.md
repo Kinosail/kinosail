@@ -600,3 +600,60 @@ The campaign remains active.
 Retain the earlier audit's unverified journeys until a new passing execution establishes their behavior.
 Inspect the deep-run artifacts, repair confirmed failures, and record the final revision and each remaining platform boundary.
 Physical devices, real media/receivers, production deployment, store distribution, and unsupported external environments are not certified by these local runs.
+
+### AQA-004 follow-up — complete short HEVC output before publication
+
+The repair covers plain HEVC audio conversion at source offset zero, with a probed duration greater than zero and at most 30 seconds.
+Foreground playlist readiness now waits for the actual encoder to finish successfully.
+Background preparation keeps its existing size monitoring, but reports ready only after successful completion.
+The final playlist therefore lists actual fragments instead of a speculative fractional tail.
+
+A source/policy-bound `.hevc-complete` receipt records successful completion.
+Every writer revokes an existing receipt before changing media, including preserved refills.
+Admission rejects active producers and requires a matching receipt, an explicit source binding, and all final assets.
+An absent `.source` cannot use the older timestamp-only fallback for these short streams.
+Old copied-audio cache policies are invalidated once.
+
+The first completion candidate still accepted a failed producer's leftover playlist on retry.
+Deleting `.source` did not fix it because the legacy freshness fallback accepted that missing file.
+The retained failure returned 503 first and 200 on retry.
+The positive receipt repair returns 503 on both attempts and publishes no failed playlist.
+An independent review found no remaining concrete blocker after this change.
+
+`python3 apps/player/scripts/test-hls-short-completion.py` uses a real authenticated Server and real FFmpeg media.
+A task-owned wrapper holds the producer after actual EOF or returns a controlled failure.
+It checks success, repeated failure, the existing 30-second deadline, background readiness, and invalid-cache recovery.
+Missing, mismatched, and symlinked completion receipts each start a new encoder.
+Removing `.source` while retaining the receipt also starts a new encoder.
+The symlink's external sentinel stays unchanged.
+Every tested Server and recorded wrapper process settles during cleanup.
+Failure responses have matching ERROR records with request and playback-session IDs; the authentication token is absent from logs.
+Receipts retain the revision, patch hash, fixture/build commands, source hashes, wrapper hashes, and private-log hashes.
+
+All four existing HEVC journeys pass with five actual fragments, unchanged initialization, complete decoded video, audio content, and packet continuity.
+The new completion cases are added to the required Chromium Player job beside those existing media checks.
+Only safe receipts are uploaded; raw logs and generated media remain private.
+Focused retained startup, cancellation, and policy checks pass locally.
+
+The 29.9-second low-resolution fixture returns its cold playlist in 0.746 seconds on this Mac, including the artificial hold.
+Background preparation takes 7.83 seconds and reuses its one producer after release.
+These measurements do not establish a speed guarantee for high-bitrate media or other hardware.
+Waiting for completion increases startup work for this bounded short-clip path.
+Long HEVC, nonzero HEVC resumes, general HEVC refill, and cold non-keyframe H264 resume remain open.
+There is no new browser, physical-device, deployment, or publication proof from these HTTP/media cases.
+
+| Private receipt under `.verification/` | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-short-completion/20261011T225701Z/receipt.json` | retained failure: missing-source fallback accepts failed output | `1203b9398bd9feac643fd9ebbdc4eb330d81defdb774f8bc829c598f5c42f295` |
+| `hls-short-completion/20261011T230157Z/receipt.json` | success, repeated failure, timeout, and background completion pass | `7f82a57a6af5a14e6062b279af307af9eaccf957f463dfe392813970d25684e3` |
+| `hls-short-completion/20261011T230459Z/receipt.json` | four metadata corruptions force regeneration; sentinel unchanged | `93067dbc70a114952988cb06c73c24217c2f6b027e37c2aa48959e8603aee679` |
+| `hls-short-completion/20261011T230516Z/receipt.json` | 29.9-second cold fixture passes | `68afe0540ebfebce43ec2587718a41a81dc29a495df798d3c65e10fce863e48d` |
+| `hls-short-completion/20261011T230531Z/receipt.json` | 29.9-second background fixture passes | `005c7897b6af1399bdada18c52ffcd23ba7ad0e80dfd5e1eff8627974647f02f` |
+| `hls-hevc-startup/20261011T230327Z/receipt.json` | complete, cold, interrupted, and adopted HEVC media pass | `f50e0c85f44ec1a0758066a4876640e3c050d7296b17e74437d1718dbc7fc515` |
+
+These runs use base `31a061845470b105dabfe9969d3708259b229c32` with the recorded task patch.
+The final CI-contract replay passes 169 tests with five environment-dependent skips.
+Its first run hit a process-permission error in the unchanged Q09 descendant-cleanup test; the focused retry and full replay pass.
+Source limits, whitespace, the architecture snapshot, and the repository-selected actionlint 1.17.0 pass.
+PR #560's current CI encountered an artifact-service `ETIMEDOUT` during the AMD64 container evidence upload.
+That infrastructure failure is retained separately from the short-HEVC repair and still requires hosted reconciliation.

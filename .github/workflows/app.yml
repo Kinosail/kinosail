@@ -465,7 +465,9 @@ jobs:
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
-        run: python3 apps/player/scripts/test-hls-followon.py --suite hevc
+        run: |
+          python3 apps/player/scripts/test-hls-followon.py --suite hevc
+          python3 apps/player/scripts/test-hls-short-completion.py
       - name: Keep safe complete HEVC preparation evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -475,6 +477,7 @@ jobs:
           path: |
             .verification/hls-hevc-startup/*/receipt.json
             .verification/hls-hevc-startup/*/SHA256SUMS
+            .verification/hls-short-completion/*/receipt.json
           retention-days: 14
           if-no-files-found: error
       - name: Verify HLS source-version freshness
