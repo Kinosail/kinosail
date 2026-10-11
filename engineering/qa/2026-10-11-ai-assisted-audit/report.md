@@ -439,11 +439,15 @@ Packet inspection found that the existing refill discarded leading AAC packets, 
 Removing only that shift repaired EOF but left an 85.334 ms audio gap at a refill boundary.
 The independent review caught that gap; passing video images alone did not qualify the candidate.
 
-The repair limits `-copypriorss` to video and keeps both tracks on the common mux clock.
+Refills limit `-copypriorss` to video and keep both tracks on the common mux clock.
+Initial preparation still trims both tracks so earlier audio does not redefine the browser's timeline origin.
+Applying video-only trimming to initial preparation made both MSE engines display seven incorrect images.
+The retained failed receipt records that rejected candidate; the initial/refill distinction repairs it.
 The retained regression populates all ten fragments, verifies audio continuity, deletes the existing final fragment, then plays the real watch page.
 It requires exact original-frame images, correct startup position and duration, unchanged initialization bytes, and a restored tail.
 It also checks every audio boundary within the existing 50 ms tolerance and compares final audio and video endpoints.
-Native WebKit passes all seven images. The largest boundary overlap is 21.333 ms; the final endpoints differ by 8 microseconds.
+Chromium, WebKit MSE, and native WebKit each pass all seven images after that correction.
+The largest boundary overlap is 21.333 ms; final audio and video endpoints match at the recorded microsecond precision.
 This uses real native WebKit decoding with MSE capability disabled, not physical Safari acceptance.
 WebKit's paused native HLS path emits no frame callbacks; the native oracle uses seek completion and render turns with unchanged image assertions.
 The MSE oracle retains timestamp-qualified frame callbacks.
@@ -458,11 +462,14 @@ Receipts below are under `.verification/hls-resume-browser/`; each retains the r
 | `20261011T200924Z` | native Retry loses the saved position | `70e51623cc26b375e8b8dd7a42bc0b9b6cc6b1c99456a1ecc8b335fca6925faf` |
 | `20261011T202716Z` | native frames, existing-tail eviction, and audio continuity pass | `ca0b818efdbf210de9ebe1d5a937817eac033809571b472de67558ae6aa781ed` |
 | `20261011T202913Z` | all five native recovery and cancellation cases pass | `70e20c3bf10e22ac9ad18db91f659a1b856aa534ed637ad17f640d73188797ce` |
+| `20261011T203144Z` | rejected initial audio-preroll candidate: both MSE engines fail all seven images | `ecccfec4b8aff7c8ede61aac8f37966a6557b2374de5e2a92e05aa84cf88c487` |
+| `20261011T212810Z` | corrected initial/refill trimming: both MSE engines, tail replacement, and audio continuity pass | `20258279df626c3d3385c43c9b941065d00ffdaf17e67ac1f8cb1071f796f433` |
+| `20261011T212832Z` | corrected initial/refill trimming: native frames, tail replacement, and audio continuity pass | `caa5bcf64c03d704895ee77f250f9466c1c49eed0e8b866080b4620da184b1e6` |
 
 The new Chromium frame and metadata-recovery journeys are added to the required Player browser job.
 Current local CI contracts pass 169 tests with five environment-dependent skips.
 The repository's selected actionlint fork, version 1.17.0, accepts the changed workflow.
-The final MSE, existing audio-conversion, prepared-timeline, and publication checks remain pending at this checkpoint.
+The existing audio-conversion, prepared-timeline, and publication checks remain pending at this checkpoint.
 
 ### Seventh delivery checkpoint
 

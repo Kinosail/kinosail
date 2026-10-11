@@ -76,8 +76,13 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 	if number < 0 || number >= len(timeline.Keys) {
 		return nil, errCopiedHLSIndex
 	}
-	// FFmpeg can demux an earlier key for input -ss. Do not copy that preroll.
-	arguments = append(arguments, "-copypriorss:v", "0")
+	// Trim the initial audio preroll so the first retained video frame defines
+	// the decoder origin. Refills retain overlapping audio to avoid a gap.
+	trim := "-copypriorss"
+	if number > 0 {
+		trim = "-copypriorss:v"
+	}
+	arguments = append(arguments, trim, "0")
 	if number > 0 {
 		if timeline.Clock == nil {
 			return nil, errCopiedHLSIndex
