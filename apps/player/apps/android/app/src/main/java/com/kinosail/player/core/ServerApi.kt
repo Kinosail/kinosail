@@ -91,6 +91,13 @@ class ServerApi(
         requestWithStatus("/api/v1/session", "DELETE", token = checkedCredential(token, 512), expected = setOf(204))
     }
 
+    internal fun collections(name: String?, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
+        require(viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid collection request." }
+        val path = "/api/v1/collections" + if (name == null) "" else "/${CollectionsApi.segment(name)}"
+        return requestWithStatus(path, "GET", token = checkedCredential(token, 512),
+            viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
+    }
+
     internal fun catalog(path: String, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
         require(path.startsWith("/api/v1/library?") && path.length <= 2048 &&
             viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid catalog request." }

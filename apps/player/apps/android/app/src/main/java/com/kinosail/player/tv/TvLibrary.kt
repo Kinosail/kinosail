@@ -41,16 +41,16 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val keyboard = LocalSoftwareKeyboardController.current
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail(); destination = chosen
-        if (chosen !in setOf("home", "listen", "settings"))
+        if (chosen !in setOf("home", "listen", "settings", "collections"))
             catalog.changeView(if (chosen == "search") "all" else chosen, refreshIfEmpty = true)
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     LaunchedEffect(destination, state.loading) {
-        if (!state.loading && destination !in setOf("home", "listen", "settings"))
+        if (!state.loading && destination !in setOf("home", "listen", "settings", "collections"))
             catalog.changeView(if (destination == "search") "all" else destination)
     }
     LaunchedEffect(grid, destination, state.selected, state.items.size, state.loading, state.notice) {
-        if (destination !in setOf("home", "listen", "settings") && state.selected == null && !state.loading &&
+        if (destination !in setOf("home", "listen", "settings", "collections") && state.selected == null && !state.loading &&
             state.notice == null && state.items.size < state.total) {
             snapshotFlow { grid.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
                 if (last >= state.items.size - 8) catalog.loadMore()
@@ -64,6 +64,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
         PlaybackScreen(requireNotNull(playingItem), viewer, true, close = { playingItem = null }, onNext = { playingItem = it }); return
     }
     if (photoItem != null) { PhotoScreen(requireNotNull(photoItem), catalog, true) { photoItem = null }; return }
+    if (destination == "collections" && state.selected == null) {
+        CollectionsScreen(viewer, catalog, true) { navigate("home") }; return
+    }
     if (state.selected?.showId?.isNotEmpty() == true) {
         ShowScreen(state.selected.showId, viewer, catalog, true, catalog::closeDetail) { playingItem = it }; return
     }
