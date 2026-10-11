@@ -365,7 +365,7 @@ Q09 reports an accepted result. The reconciled layout campaign passes in
 all three engines without source drift. These receipts cover their named
 contracts and revisions; they do not establish complete QA.
 
-## QA-007 — A second tab interrupts saved video (P2; repair under verification)
+## QA-007 — A second tab interrupts saved video (P2; repaired)
 
 Reloading the current Viewer Profile in another tab sends an identity
 notification. The offline player handles every notification by pausing its
@@ -486,7 +486,7 @@ remains tied to its recorded source. A real-Server/Kotlin contract replay fails 
 compile because its explicit source list omits the newly added `CollectionsApi`.
 Adding that production source to the verification tool restores the contract
 run: both its retained JVM checks and real HTTP journey pass. This tool repair
-is still pending delivery.
+is delivered through PR #561.
 
 The refreshed Android TV run passes nine applicable tests and skips two EPUB
 journeys. TV reading is unsupported. The phone and tablet runs each pass nine
@@ -494,7 +494,7 @@ tests and fail one EPUB reopen assertion, without skips. Their app packages
 and data are restored or task-installed packages are removed after each run.
 These emulator journeys use synthetic HTTP fixtures, not the Go Server.
 
-## QA-010 — TV Collections pending rows have different insets (P2; repair pending)
+## QA-010 — TV Collections pending rows have different insets (P2; repaired)
 
 The pending row begins 24 pixels above and left of the loaded collection row.
 Its width is 48 pixels greater. A geometry assertion added to the existing
@@ -569,3 +569,39 @@ is included in remote main `8047e689b22d3c2c210bf85594baae5bb9c1f2ae`.
 The native branch reconciles that main before publication. Its fixes remain
 pending protected delivery. The primary checkout has unrelated Apple edits;
 its files and local main were preserved.
+
+## Native delivery and continued failure investigation
+
+PR #561 merged after required CI `38181412353` passed. Fetched ancestry
+confirms reviewed head `d0efff30861ec805ee69b94edf2787016743b78d` is included
+in main `85b6714db40238af99494fc008006969b8dd976e`. Post-commit Player
+`verify-changed` passes its selected native-client checks in 42 seconds. The
+earlier web verification stopped at shared lint; complete-tree findings remain.
+
+The fresh canonical decoded scrub journey passes three browser executions at
+`d0efff30`. It verifies previews, caching, seeking, responsive geometry, and
+control accessibility in Chromium, Firefox, and WebKit. The previous Firefox
+failure remains retained without a confirmed cause. Private retained artifacts
+include the generated video, binary, measurements, logs, and checksums.
+
+Additional failure-only EPUB focus controls produce eight passes and two
+failures in one tablet run, nine passes and one failure in another, and ten
+passes in a third. In each reproduced failure, clearing the cache and attempting
+accessibility focus do not reveal chapter text. Rendered chapter content remains
+visible. The original assertion always fails; diagnostics never convert that
+result into a pass. Probe APKs are frozen and checksummed separately from
+delivery builds. Repository production and test sources contain no probe.
+
+The exact older WebKit offline-seek journey fails again at its seek assertion.
+A subsequent failure-only state read also times out. A plain blob-video control
+is being moved before the original seek so it can run while the page responds.
+An earlier selection used the wrong title and executed no matching test; it is
+excluded from behavior evidence.
+
+Deep run `38181434746` continues at reviewed head `d0efff30`. Its CodeQL Java
+upload fails after the merged PR branch is automatically deleted. The annotation
+identifies a missing ref, not a compiler or source-analysis finding. The exact
+reviewed ref was restored. Failed jobs must be replayed after the run finishes.
+Physical discovery currently finds one connected Apple TV. Other remembered
+Apple devices are disconnected. Installed-app inventory is read-only and does
+not establish physical interaction or current-revision acceptance.
