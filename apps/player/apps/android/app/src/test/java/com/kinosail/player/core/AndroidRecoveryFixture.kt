@@ -33,6 +33,14 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
     @Volatile var playbackFailure = true
     @Volatile var duplicatePage = false
     @Volatile var catalogGate = CountDownLatch(0)
+    @Volatile var playbackGate = CountDownLatch(0)
+    @Volatile var progressResponse: ProgressResponse? = null
+
+    class ProgressResponse(val status: Int, val remote: WatchProgress? = null) {
+        val entered = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val written = CountDownLatch(1)
+    }
     private val executor = Executors.newFixedThreadPool(2) { task -> Thread(task).apply { isDaemon = true } }
     private val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
         executor = this@AndroidRecoveryFixture.executor
@@ -54,6 +62,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                 (path == "/api/v1/me" || request.requestHeaders.getFirst("X-Kinosail-Viewer-Profile") == viewer.id)
             var status = if (authorized) 200 else 401
             var catalogQuery: String? = null
+            var progressReply: ProgressResponse? = null
             val body = when {
                 path == "/api/v1/me" ->
                     """{"server":"${viewer.server}","serverId":"${viewer.serverId}","viewer":{"id":"${viewer.id}","name":"${viewer.name}"}}"""
@@ -78,6 +87,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                 }
                 path.endsWith("/playback") -> {
                     playbackRequests.incrementAndGet()
+                    check(playbackGate.await(10, TimeUnit.SECONDS))
                     if (playbackFailure) status = 400
                     """{"policy":"automatic","plan":{"allowed":true,"mode":"direct","reason":"direct-preferred"},"directAllowed":true,"direct":"/media/film-1","directType":"video/mp4","duration":120}"""
                 }
@@ -86,7 +96,18 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                     remoteUpdates += path.substringAfterLast('/') to (value["itemId"] as JsonPrimitive).content
                     """{"command":null}"""
                 }
-                path.endsWith("/progress/sync") -> (StrictJson.parse(input) as JsonObject).getValue("progress").toString()
+                path.endsWith("/progress/sync") -> {
+                    val reply = progressResponse
+                    progressReply = reply
+                    reply?.entered?.countDown()
+                    check(reply == null || reply.release.await(10, TimeUnit.SECONDS))
+                    if (reply != null) status = reply.status
+                    when (reply?.status) {
+                        409 -> """{"error":"Changed elsewhere","progress":${requireNotNull(reply.remote).json()}}"""
+                        503 -> "{}"
+                        else -> (StrictJson.parse(input) as JsonObject).getValue("progress").toString()
+                    }
+                }
                 path.endsWith("/playback-preferences") -> "{}"
                 path == "/api/v1/items/film-1" -> """{"item":${item(1)},"listed":false,"profileId":"${viewer.id}"}"""
                 else -> { status = 404; "{}" }
@@ -94,6 +115,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
             request.responseHeaders.set("Content-Type", "application/json")
             request.sendResponseHeaders(status, body.size.toLong())
             request.responseBody.use { it.write(body) }
+            progressReply?.written?.countDown()
             catalogQuery?.let { completedCatalogQueries += it }
         }
         server.start()
@@ -107,6 +129,8 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
     override fun close() {
         catalogGate.countDown()
         catalogGates.values.forEach { it.countDown() }
+        playbackGate.countDown()
+        progressResponse?.release?.countDown()
         server.stop(0)
         executor.shutdownNow()
         SessionStore(application).clear()

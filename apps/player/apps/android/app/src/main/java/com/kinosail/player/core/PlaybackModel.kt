@@ -121,7 +121,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     require(identity.id == viewer.id && identity.serverId == viewer.serverId) {
                         "The Viewer Profile changed. Reconnect to continue."
                     }
-                    try { syncPending(savedJournal, saved, viewer) }
+                    try { syncPending(savedJournal, saved, viewer, attempt) }
                     catch (error: CancellationException) { throw error }
                     catch (error: Exception) { if (!isTransientRequestFailure(error)) throw error }
                     try { progressApi.current(item.id, saved.token, viewer.id) }
@@ -301,6 +301,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         val savedJournal = journal ?: return
         val saved = activeSession ?: return
         val viewer = activeViewer ?: return
+        val attempt = generation
         if (engine.currentPosition <= 0 || progressConflict || progressRevision >= 9_007_199_254_740_991) return
         val seconds = plan.sourceTime(engine.currentPosition / 1000.0, usingCompatible)
             .coerceIn(0.0, 31_536_000.0)
@@ -316,9 +317,10 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
             progressRevision = update.revision
             lastRecorded = seconds to watched
             viewModelScope.launch(Dispatchers.IO) {
-                try { syncPending(savedJournal, saved, viewer) }
+                try { syncPending(savedJournal, saved, viewer, attempt) }
                 catch (_: Exception) { withContext(Dispatchers.Main) {
-                    if (source?.itemId == plan.itemId) progressNotice = "Watch position saved on this device; sync is pending."
+                    if (attempt == generation && source?.itemId == plan.itemId)
+                        progressNotice = "Watch position saved on this device; sync is pending."
                 } }
             }
         } catch (_: Exception) { progressNotice = "Could not save watch position on this device." }
@@ -344,7 +346,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private suspend fun syncPending(savedJournal: ProgressJournal, saved: SavedSession, viewer: Viewer) {
+    private suspend fun syncPending(savedJournal: ProgressJournal, saved: SavedSession, viewer: Viewer,
+                                    attempt: Int) {
         syncLock.withLock {
             val api = ProgressApi(saved.server)
             for (entry in savedJournal.pending().filter { it.conflict == null }) {
@@ -354,7 +357,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     if (error.status == 404 || error.status == 410) continue else throw error
                 }
                 savedJournal.apply(entry.itemId, entry.progress, result)
-                if (entry.itemId == source?.itemId) withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
+                    if (attempt != generation || entry.itemId != source?.itemId) return@withContext
                     if (result.conflict) {
                         progressConflict = true
                         progressNotice = "Watch position changed on another device."
@@ -369,13 +373,15 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         val itemId = source?.itemId ?: return
         val saved = activeSession ?: return
         val viewer = activeViewer ?: return
+        val attempt = generation
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val remote = savedJournal.pending().firstOrNull { it.itemId == itemId }?.conflict
                 syncLock.withLock { savedJournal.resolve(itemId, useDevice) }
-                if (useDevice) syncPending(savedJournal, saved, viewer)
+                if (useDevice) syncPending(savedJournal, saved, viewer, attempt)
                 val conflicted = savedJournal.pending().any { it.itemId == itemId && it.conflict != null }
                 withContext(Dispatchers.Main) {
+                    if (attempt != generation || itemId != source?.itemId) return@withContext
                     progressConflict = conflicted
                     progressNotice = if (conflicted) "Watch position changed again on another device." else null
                     if (!useDevice) {
@@ -386,7 +392,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     }
                 }
             } catch (_: Exception) { withContext(Dispatchers.Main) {
-                progressNotice = "Could not resolve watch position. Try again."
+                if (attempt == generation && itemId == source?.itemId)
+                    progressNotice = "Could not resolve watch position. Try again."
             } }
         }
     }
