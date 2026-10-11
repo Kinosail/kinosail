@@ -61,7 +61,7 @@ test("real Server media supports Apple launch, seek, pause, captions and repeat 
     await expect(video).toHaveJSProperty("paused", false);
   }
   const receipt = info.outputPath("real-server-apple-launch.json");
-  expect(state.errors).toEqual([]);
+  expect(state.errors()).toEqual([]);
   await writeFile(receipt, JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
     command: "python3 apps/player/scripts/test-apple-playback-local.py", result: "passed", startupMs,
     environment: "macOS ARM64 Chrome; native Go Server on loopback HTTP with disposable state",
