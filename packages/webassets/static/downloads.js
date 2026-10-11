@@ -3,7 +3,7 @@ const chunkSize = 8 * 1024 * 1024;
 const offlineIntegrityVersion = 2;
 const hasOfflineStorage = "indexedDB" in window && "crypto" in window && Boolean(window.crypto.subtle);
 let offlineChannel;
-const offlineWorkerPath = "/service-worker.js?v=55";
+const offlineWorkerPath = "/service-worker.js?v=56";
 const offlineWorkerURL = new URL(offlineWorkerPath, location.href).href;
 const isExactOfflineWorker = (worker) => worker?.scriptURL === offlineWorkerURL && worker.state === "activated";
 const currentOfflineServiceWorker = async () => {
@@ -212,10 +212,14 @@ async function removeOfflineJobSafely(id, explicit = false, afterRemove) {
   } finally { offlineSourceTransfers.delete(id); }
 }
 
+let offlineLibraryProfile = activeOfflineProfile();
 window.addEventListener("kinosail:offline-profile", () => {
+  const profile = activeOfflineProfile();
   for (const transfer of offlineTransfers.values()) {
-    if (transfer.profileID !== activeOfflineProfile()) transfer.controller.abort();
+    if (transfer.profileID !== profile) transfer.controller.abort();
   }
+  if (profile === offlineLibraryProfile) return;
+  offlineLibraryProfile = profile;
   for (const media of document.querySelectorAll('[data-offline-library] video, [data-offline-library] audio')) {
     media.pause(); media.removeAttribute("src"); media.load();
   }

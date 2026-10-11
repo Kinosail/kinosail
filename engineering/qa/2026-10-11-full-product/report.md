@@ -341,3 +341,59 @@ devices, external receivers and services, long playback, codec/HDR diversity,
 assistive technologies, and release/store acceptance. Source, browser,
 simulator, physical-device, CI, publication, deployment, health, and TLS
 evidence must remain separate. This checkpoint does not certify full QA.
+
+## Iteration 1 delivery
+
+[PR #549](https://github.com/Kinosail/kinosail/pull/549) merged with all required
+checks passing. Fetched remote main is
+`be9458cfe2e4fb97cb2df9ad4955041c3f8f9388`. A fetched ancestry check confirms
+that reviewed task commit `3ee08a1e7424025f5220b992c7d9a05d2ed2ffaa` is included.
+The primary checkout still contains unrelated Apple edits. Its cleanup
+preconditions are unmet, so those files and the checkout remain untouched.
+This task reuses its leased worktree for the next iteration.
+
+The current optional deep run confirms the changed rating-card test passes
+on both iOS and tvOS. It also exposes two independent failures: Firefox times
+out on a settings navigation, and the tvOS near-end completion journey does
+not receive its watched-progress update. Both remain open. Their original
+artifacts are retained. The latter is being replayed with its existing native
+media fixture. A passing card assertion does not make that native job green.
+
+All three Save and all three Restore R06 diagnostic campaigns now pass.
+Q47 primary, recovery, supersession, and contract campaigns report green.
+Q09 reports an accepted result. The reconciled layout campaign passes in
+all three engines without source drift. These receipts cover their named
+contracts and revisions; they do not establish complete QA.
+
+## QA-007 — A second tab interrupts saved video (P2; repair under verification)
+
+Reloading the current Viewer Profile in another tab sends an identity
+notification. The offline player handles every notification by pausing its
+media, clearing the source, and rebuilding the download view. A notification
+that retains the same Viewer Profile therefore interrupts active playback.
+
+A real-Server journey reproduces the defect before repair. The retained
+media state is paused at 0.41 seconds of a 12.01-second video, with `ended`
+false. The clean baseline fails the assertion that playback keeps advancing.
+Earlier attempts contained test callback and menu-helper errors. Those runs
+are retained, but they are excluded from the authoritative regression proof.
+
+The repair keeps transfer ownership checks on every notification. It resets
+the offline view only when the active Viewer Profile changes. Identity
+notification behavior stays intact. Sign-out still clears the player and
+shows the Viewer Profile selection message. The public HTTP API is unchanged.
+No new error path or diagnostic log is introduced.
+
+Both shell cache versions advance to 56 because both apps serve shared PWA
+assets. Registration URLs and existing fixtures use that same version. This
+lets an installed worker refresh the changed download script. The existing
+asset and localization contracts pass for Player. Both Subtitles registration
+and local-playback contracts pass after the shared version update.
+
+The new populated journey passes in Chromium. All seven populated Firefox
+journeys pass, including offline playback and seeking. The new regression
+is selected by the existing populated CI runner with retries disabled.
+Retained storage, worker, and ownership checks pass all 54 executions across
+Chromium, Firefox, and WebKit. Those retained checks use isolated fixtures;
+they are not populated-Server proof. The remaining final-source browser
+replays and publication are pending.
