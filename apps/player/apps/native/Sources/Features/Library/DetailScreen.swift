@@ -80,9 +80,13 @@ private struct DetailContent: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
-            playAction
+            HStack {
+                playAction
+                Spacer(minLength: 0)
+            }
+            .focusSection()
             ViewThatFits(in: .horizontal) {
-                HStack(spacing: 16) { secondaryActions.fixedSize() }
+                HStack(alignment: .top, spacing: 16) { secondaryActions.fixedSize() }
                 VStack(alignment: .leading, spacing: 12) { secondaryActions }
             }
             .controlSize(.large)

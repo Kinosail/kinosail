@@ -19,6 +19,7 @@ final class RemotePolishTests: RemoteTestCase {
 
     @MainActor
     func testFocusedContinueWatchingCardsKeepTheirNeighborsClear() {
+        continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -31,6 +32,7 @@ final class RemotePolishTests: RemoteTestCase {
             let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
             XCTAssertTrue(focused.exists)
             XCTAssertTrue(focused.label.contains(titles[index]))
+            assertVisibleArtworkFocus(focused, in: app)
             let next = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", titles[index + 1])).firstMatch
             XCTAssertTrue(next.exists)
             if next.isHittable && abs(next.frame.midY - focused.frame.midY) < 60 && next.frame.minX > focused.frame.minX {
@@ -42,8 +44,26 @@ final class RemotePolishTests: RemoteTestCase {
             remote.press(.right)
         }
         remote.press(.up)
-        XCTAssertTrue(app.buttons["Search"].hasFocus)
+        XCTAssertTrue(app.buttons["Settings"].hasFocus)
         XCTAssertGreaterThanOrEqual(comparisons, 2)
+    }
+
+    // A label query can report focus while the rendered card only zooms its
+    // already-clipped artwork. The TV design requires a visible light outline.
+    @MainActor
+    private func assertVisibleArtworkFocus(_ element: XCUIElement, in app: XCUIApplication) {
+        let visible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let frame = element.frame
+            let screenshot = app.screenshot().image
+            return [0.25, 0.5, 0.75].allSatisfy { fraction in
+                let color = self.pixel(screenshot,
+                                       x: (frame.minX + frame.width * fraction) / app.frame.width,
+                                       y: (frame.minY + 2) / app.frame.height)
+                return color.prefix(3).allSatisfy { $0 > 180 }
+            }
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 5), .completed,
+                       "Focused artwork needs a visible high-contrast outline, including with missing artwork")
     }
 
     @MainActor

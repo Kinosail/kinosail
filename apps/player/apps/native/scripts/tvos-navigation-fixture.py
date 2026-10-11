@@ -91,8 +91,15 @@ class Handler(BaseHTTPRequestHandler):
             elif view=='list': entries=[]
             entries=[i for i in entries if query.lower() in i['title'].lower()]
             if sort=='title': entries=sorted(entries,key=lambda i:i['title'])
+            letters=[]
+            if sort=='title' and not query:
+                for index,item in enumerate(entries):
+                    label=item['title'][0].upper()
+                    if not letters or letters[-1]['label']!=label:
+                        letters.append(dict(label=label,offset=index,count=0))
+                    letters[-1]['count']+=1
             offset=int(q.get('offset',['0'])[0]); limit=int(q.get('limit',['60'])[0])
-            return self.send(200,dict(items=entries[offset:offset+limit],total=len(entries),offset=offset,limit=limit,letters=[],view=view,sort=sort,query=query))
+            return self.send(200,dict(items=entries[offset:offset+limit],total=len(entries),offset=offset,limit=limit,letters=letters,view=view,sort=sort,query=query))
         if path.startswith(('/art/','/backdrop/','/episode-art/')):
             if path.endswith('movie-005'): return self.send(404,{'error':'missing image'})
             time.sleep(.1); return self.send(200,artwork(path),'image/jpeg')
