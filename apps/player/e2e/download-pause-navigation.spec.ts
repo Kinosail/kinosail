@@ -31,7 +31,7 @@ for (const scenario of scenarios) test(`download navigation preserves original $
     if (calls === 1) {
       if (scenario === "wrong-worker" || scenario === "wrong-scope") {
         await page.evaluate(async scenario => {
-          await navigator.serviceWorker.register(scenario === "wrong-worker" ? "/service-worker.js?v=wrong" : "/service-worker.js?v=55", scenario === "wrong-scope" ? {scope: "/offline-downloads"} : {});
+          await navigator.serviceWorker.register(scenario === "wrong-worker" ? "/service-worker.js?v=wrong" : "/service-worker.js?v=56", scenario === "wrong-scope" ? {scope: "/offline-downloads"} : {});
         }, scenario);
         await page.waitForFunction(async scenario => scenario === "wrong-worker"
           ? navigator.serviceWorker.controller?.scriptURL.endsWith("?v=wrong")
