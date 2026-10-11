@@ -418,3 +418,9 @@ at the exact movie endpoint. The 24-millisecond-before-end argument passes.
 The test retains its original timing and media prerequisites. The task-created
 simulator was deleted after collecting the result bundle and receipt. The root
 cause remains under investigation; no native repair is claimed.
+
+Main reconciliation now includes the Android collection/EPUB and tvOS navigation
+changes through `0d3fd1d6292992b30afbc75adcc86bf06a506a56`. The offline fix's
+Go and browser inputs are unchanged. Earlier native build, render, and emulator
+receipts describe the preceding native UI. The new native surfaces require
+refreshed verification before extending those claims to this revision.
