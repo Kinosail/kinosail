@@ -48,6 +48,13 @@ func downloadProviderImage(ctx context.Context, client *http.Client, baseURL, pa
 	if err != nil || len(data) > 8<<20 || response.StatusCode != http.StatusOK || !strings.HasPrefix(response.Header.Get("Content-Type"), "image/") {
 		return errors.New("metadata artwork is invalid")
 	}
+	if err := validateProviderImage(ctx, data, validate); err != nil {
+		return err
+	}
+	return privatefile.WriteCache(target, data)
+}
+
+func validateProviderImage(ctx context.Context, data []byte, validate func(context.Context, []byte) error) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -56,8 +63,5 @@ func downloadProviderImage(ctx context.Context, client *http.Client, baseURL, pa
 			return err
 		}
 	}
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-	return privatefile.WriteCache(target, data)
+	return ctx.Err()
 }

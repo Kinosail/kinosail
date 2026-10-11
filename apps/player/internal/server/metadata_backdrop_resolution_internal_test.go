@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -35,10 +34,7 @@ func TestMetadataBackdropsUseOriginalVariantWithoutChangingPostersOrCustomBases(
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			store := newMetadataStore(MetadataConfig{ImageURL: test.base}, "", t.TempDir())
-			base, err := url.Parse(test.base)
-			if err != nil {
-				t.Fatal(err)
-			}
+			base := backdropResolutionBase(t, test.base)
 			requests := 0
 			store.client = &http.Client{Transport: backdropResolutionTransport(func(request *http.Request) (*http.Response, error) {
 				requests++
@@ -48,9 +44,7 @@ func TestMetadataBackdropsUseOriginalVariantWithoutChangingPostersOrCustomBases(
 				}
 				wantURL := *base
 				wantURL.Path = want
-				if request.Method != http.MethodGet || request.URL.String() != wantURL.String() || request.Header.Get("Authorization") != "" {
-					t.Errorf("artwork request method/path/credential presence = %s %q %t", request.Method, request.URL.Path, request.Header.Get("Authorization") != "")
-				}
+				assertBackdropResolutionRequest(t, request, &wantURL)
 				return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(bytes.NewReader(data))}, nil
 			})}
 			record := metadataRecord{Title: "Movie", Artwork: store.artworkPath("movie"), Backdrop: store.artworkPath("movie-backdrop"), BackdropChecked: true}
@@ -63,10 +57,7 @@ func TestMetadataBackdropsUseOriginalVariantWithoutChangingPostersOrCustomBases(
 				t.Fatalf("artwork result = %#v, requests=%d, err=%v", updated, requests, err)
 			}
 			for path, want := range map[string][]byte{record.Artwork: poster, record.Backdrop: backdrop} {
-				got, err := os.ReadFile(path)
-				if err != nil || !bytes.Equal(got, want) {
-					t.Fatalf("cached artwork changed downloaded bytes: %v", err)
-				}
+				assertBackdropResolutionBytes(t, path, want)
 			}
 		})
 	}
@@ -97,18 +88,14 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 	for _, test := range []struct {
 		name string
 		data []byte
-	}{{"malformed", []byte("not an image")}, {"truncated after header", truncated},
+	}{
+		{"malformed", []byte("not an image")}, {"truncated after header", truncated},
 		{"unsupported format with image MIME", unsupportedPNG.Bytes()},
 		{"oversized pixel dimensions", oversizedDimensions}} {
 		t.Run(test.name, func(t *testing.T) {
 			store := newMetadataStore(MetadataConfig{}, "", t.TempDir())
 			target := store.artworkPath("movie-backdrop")
-			if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(target, prior, 0o600); err != nil {
-				t.Fatal(err)
-			}
+			writePreservedBackdrop(t, target, prior)
 			store.client = &http.Client{Transport: backdropResolutionTransport(func(*http.Request) (*http.Response, error) {
 				return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(bytes.NewReader(test.data))}, nil
 			})}
@@ -121,10 +108,7 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 			if updated.Backdrop != target || updated.BackdropChecked {
 				t.Error("rejected replacement lost the existing backdrop or stopped retries")
 			}
-			got, err := os.ReadFile(target)
-			if err != nil || !bytes.Equal(got, prior) {
-				t.Fatalf("invalid replacement changed prior derived artwork: %v", err)
-			}
+			assertBackdropResolutionBytes(t, target, prior)
 		})
 	}
 }
@@ -140,12 +124,7 @@ func TestCanonicalBackdropPixelBudgetBoundariesPreserveExistingBytes(t *testing.
 			data := backdropResolutionJPEG(t, 4000, test.height)
 			store := newMetadataStore(MetadataConfig{}, "", t.TempDir())
 			target := store.artworkPath("movie-backdrop")
-			if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(target, prior, 0o600); err != nil {
-				t.Fatal(err)
-			}
+			writePreservedBackdrop(t, target, prior)
 			store.client = &http.Client{Transport: backdropResolutionTransport(func(*http.Request) (*http.Response, error) {
 				return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(bytes.NewReader(data))}, nil
 			})}
@@ -159,10 +138,7 @@ func TestCanonicalBackdropPixelBudgetBoundariesPreserveExistingBytes(t *testing.
 			if test.accept {
 				want = data
 			}
-			got, err := os.ReadFile(target)
-			if err != nil || !bytes.Equal(got, want) {
-				t.Fatalf("pixel-boundary replacement changed expected bytes: %v", err)
-			}
+			assertBackdropResolutionBytes(t, target, want)
 		})
 	}
 }
@@ -210,4 +186,28 @@ func backdropResolutionJPEG(t *testing.T, width, height int) []byte {
 		t.Fatal(err)
 	}
 	return data.Bytes()
+}
+
+func backdropResolutionBase(t *testing.T, address string) *url.URL {
+	t.Helper()
+	base, err := url.Parse(address)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return base
+}
+
+func assertBackdropResolutionRequest(t *testing.T, request *http.Request, want *url.URL) {
+	t.Helper()
+	if request.Method != http.MethodGet || request.URL.String() != want.String() || request.Header.Get("Authorization") != "" {
+		t.Errorf("artwork request method/path/credential presence = %s %q %t", request.Method, request.URL.Path, request.Header.Get("Authorization") != "")
+	}
+}
+
+func assertBackdropResolutionBytes(t *testing.T, path string, want []byte) {
+	t.Helper()
+	got, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(got, want) {
+		t.Fatalf("cached artwork changed expected derivative bytes: %v", err)
+	}
 }

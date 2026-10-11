@@ -54,8 +54,7 @@ func validateBackdropJPEG(ctx context.Context, data []byte) error {
 	if err != nil {
 		return &BackdropValidationError{class: "jpeg-header"}
 	}
-	if config.Width <= 0 || config.Height <= 0 || config.Width > 32_768 || config.Height > 32_768 ||
-		int64(config.Width)*int64(config.Height) > 10_000_000 {
+	if !validBackdropDimensions(config.Width, config.Height) {
 		return &BackdropValidationError{class: "dimensions"}
 	}
 	select {
@@ -71,4 +70,9 @@ func validateBackdropJPEG(ctx context.Context, data []byte) error {
 		return &BackdropValidationError{class: "jpeg-decode"}
 	}
 	return ctx.Err()
+}
+
+func validBackdropDimensions(width, height int) bool {
+	return width > 0 && height > 0 && width <= 32_768 && height <= 32_768 &&
+		int64(width)*int64(height) <= 10_000_000
 }
