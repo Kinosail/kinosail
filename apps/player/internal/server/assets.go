@@ -38,6 +38,8 @@ var (
 	settingsInitialSource []byte
 	//go:embed static/home.css
 	homeCSS []byte
+	//go:embed static/quick-connect.css
+	quickConnectCSS []byte
 	//go:embed static/connect.js
 	connectJS []byte
 	//go:embed static/third_party/jsqr/jsQR.js
@@ -123,7 +125,7 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, settingsCSS}, nil)
+var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, quickConnectCSS, settingsCSS}, nil)
 
 var serveStyle = compressedAsset(applicationStyle, "text/css; charset=utf-8")
 
