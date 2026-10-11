@@ -129,7 +129,37 @@ The focused iPad orientation run reproduces all three phone-only contract
 failures. One applicable detached-window case passes. A first touch-suite
 attempt lacked its required fixture and failed before product interaction.
 That setup failure is excluded from product defects. The documented touch
-fixture is running for the corrected replay.
+fixture replay passed two cases before loaded playback stalled. A process
+sample places the blocked main thread inside Apple's RenderBox and Metal
+compiler scheduler. The loaded case failed while querying accessibility;
+the remaining run was interrupted after preserving its stack and artifacts.
+This is not yet attributed to application code. A simulator restart and
+focused replay are required.
+
+## QA-003 — Router contract probe sometimes executes no source (P2; repaired)
+
+`make tooling-check` intermittently reports that Q09 accepts an incompatible
+suite. The production router already rejects this combination. Its isolated
+shell probe sources `/dev/stdin` from a subprocess pipe on Darwin Bash.
+Three of 16 focused repetitions returned success with empty output, without
+executing the router's dispatch or rejection paths.
+
+The probe now includes the unchanged router in its shell command string.
+It still overrides `exec`, so no application driver runs. All rejection and
+dispatch assertions remain intact. The focused suite and 200 repetitions
+pass after repair. This is test infrastructure evidence, not product E2E.
+
+## QA-004 — Session settings journey aborts sign-in (P2; repaired)
+
+The trusted-HTTPS WebKit shell batch passed ten cases and failed session
+settings. Its trace records an aborted sign-in POST followed by an anonymous
+settings request. The test navigates immediately after clicking Sign in.
+An unchanged focused repetition passes, confirming intermittent setup.
+
+The journey now waits until it leaves `/login` before opening settings,
+matching the existing layout helper. Its settings, accessibility, and
+viewport assertions remain unchanged. Cross-browser verification is pending
+at this checkpoint.
 
 ## Evidence and remaining work
 

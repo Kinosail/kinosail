@@ -17,12 +17,14 @@ def probe_router(source, proof, suite=None, extra=()):
     # Override exec in this isolated shell: no selected driver is launched.
     shell = 'exec() { printf "%s\\n" "$@"; }\nset -- '
     shell += " ".join(shlex.quote(value) for value in (proof, *extra))
-    shell += "\nsource /dev/stdin\n"
+    # Keep the router in the command string: Darwin Bash can read an empty
+    # /dev/stdin when sourcing a subprocess pipe, silently skipping the probe.
+    shell += "\n" + source
     environment = {"PATH": "/usr/bin:/bin", "LC_ALL": "C"}
     if suite is not None:
         environment["CAMPAIGN_R06_SUITE"] = suite
     return subprocess.run(["bash", "--noprofile", "--norc", "-c", shell],
-                          input=source, env=environment, capture_output=True,
+                          env=environment, capture_output=True,
                           text=True, timeout=3)
 
 
