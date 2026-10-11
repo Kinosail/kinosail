@@ -31,7 +31,7 @@ Raw logs, authentication state, and traces remain private.
 - Firefox failed before navigation. Two standalone launcher probes reproduced the missing-profile error. Separate temporary directories did not resolve it.
 - Baseline Apple-policy runs failed twice at the same final error-collector assertion after the playback actions completed.
 - Baseline startup runs failed twice at the source-invalidation preparation assertion.
-- [Hosted deep CI 38151255345](https://github.com/Kinosail/kinosail/actions/runs/38151255345) is an independent current-main run. The current artifacts confirm all three Subtitles engines passed 99 tests each without skips or retries. Player Firefox passed 857 executed cases and WebKit passed 855 across the main and focused reports. Their main reports also list 355 and 357 skipped cases; those do not count as coverage. The iOS contract job failed one image-encoding check; tvOS passed 300 tests with one skip. Remaining terminal status needs inspection.
+- [Hosted deep CI 38151255345](https://github.com/Kinosail/kinosail/actions/runs/38151255345) passed on the baseline after the native job was rerun. The coverage reconciliation below separates distinct cases, repeat executions, skips, and the original native failure.
 
 ## Findings and regression ownership
 
@@ -140,7 +140,150 @@ That infrastructure failure neither reproduces nor resolves the hosted assertion
 
 [PR #550](https://github.com/Kinosail/kinosail/pull/550) merged the two QA journey repairs after Player, Subtitles, Repository, and Security checks passed.
 A fetched ancestry check confirmed reviewed commit `07d4f5fe528a7bdca19353b3e796c6a4aad764a2` in `origin/main`.
-The localization optimization is a separate follow-up; its local focused results do not establish protected-main delivery.
+[PR #551](https://github.com/Kinosail/kinosail/pull/551) merged the localization optimization after all four required checks passed.
+A fetched ancestry check confirmed reviewed commit `f64bb55a5b1a3c60b7e528381a61425f6de4f65e` in main `8e937334fbbc0f79915f6f093d8aed268481de64`.
+The main-push run then encountered the separate executable-fixture failure described below. Merge and publication remain separate facts.
+
+## Hosted coverage reconciliation
+
+[Deep baseline run 38151255345](https://github.com/Kinosail/kinosail/actions/runs/38151255345) completed successfully after the failed native job was rerun.
+Its exact source is `655b7d6db39028db19cad3a1e8dd84dbd77fb936`.
+The original iOS failure remains recorded; a passing retry does not prove that intermittent PNG failure is repaired.
+The retry passed 323 iOS cases with one skip, and 300 tvOS cases with one skip.
+Android application assembly and JVM tests passed. These are not Android emulator or hardware interaction results.
+Both apps passed AMD64 and ARM64 production-container checks and scans on this baseline.
+Scheduled-only checks were not selected by the manual deep run.
+
+The browser artifact reconciliation deduplicates `(spec file, test title)` across the main and focused reports.
+Repeated executions are not additional coverage. The numbers below apply only to this hosted baseline:
+
+| Application / engine | Distinct observed cases | Passed at least once | No passing execution |
+| --- | ---: | ---: | ---: |
+| Player / Chromium | 1,069 | 791 | 278 |
+| Player / Firefox | 1,069 | 787 | 282 |
+| Player / WebKit | 1,069 | 785 | 284 |
+| Subtitles / each of the three engines | 99 | 99 | 0 |
+
+The Player remainder includes opt-in populated journeys and layout audits, not observed failures for every case.
+The private reconciliation is `.verification/ai-qa-campaign/hosted/player-coverage.json`.
+Later focused executions must be reconciled separately before reducing these gaps.
+
+[Layout run 38155749187](https://github.com/Kinosail/kinosail/actions/runs/38155749187) uses exact source `f64bb55a5b1a3c60b7e528381a61425f6de4f65e`.
+Firefox and WebKit passed their quick populated Player and Subtitles journeys with no source drift.
+Firefox used loopback HTTP. WebKit used trusted fixture HTTPS inside the disposable Linux runner.
+The separate rendered-fixture layer passed 35 Firefox cases and 33 WebKit cases; WebKit skipped two.
+Chromium also passed: 95 Player and 111 Subtitles page measurements, plus 11 Player and 26 Subtitles flows.
+Its separate rendered-fixture layer passed 33 cases and skipped two.
+The narrower Firefox and WebKit runs each recorded 40 Player and 46 Subtitles page measurements with the same flow counts.
+These synthetic accounts and media do not prove production TLS, deployment, or physical-device behavior.
+
+Additional authenticated browser evidence on the same source passed ten browse-return safety cases and three Home-return cases.
+The safety cases reject external origins, malformed destinations, invalid query state, excessive extents, and cross-profile or cross-tab state reuse.
+The Home cases restore the selected action, focus, and scroll after visible or native Back navigation.
+Their runs are [38155212904](https://github.com/Kinosail/kinosail/actions/runs/38155212904) and [38155635822](https://github.com/Kinosail/kinosail/actions/runs/38155635822).
+
+The historical Subtitles protocol driver stopped at source preflight before compiling or running tests.
+Its pinned protocol inputs no longer match the current source. This is an unexecuted proof, not a product failure.
+Current-source Save controls, headers, and body suites passed on `8e937334fbbc0f79915f6f093d8aed268481de64`.
+Browse-return primary, cold, HTMX, Shows, and Search suites also passed on that revision without source drift.
+All three Restore drivers stopped during checkout preflight before compiling or running their public contracts.
+[The bounded run ledger](hosted-gaps.json) records each exact revision, run, outcome, artifact ID, and archive checksum.
+Those twelve runs contain eight passing suites and four blocked proofs; blocked prerequisites are not passing coverage.
+
+The BFCache proof reached browser navigation but reported `prerequisite-blocked`.
+Chromium reported `response-cache-control-no-store`, `masked`, and `other` reasons for not retaining the page.
+The requested persisted-document path was not established. The authenticated response's cache policy was not weakened.
+Run: [38156964354](https://github.com/Kinosail/kinosail/actions/runs/38156964354).
+
+### AQA-006 — Open: copied-video resume starts before the requested frame
+
+Two complete authenticated HLS runs on `f64bb55a5b1a3c60b7e528381a61425f6de4f65e` each passed ten of twelve cases.
+The MKV and MP4 non-keyframe resume cases both failed `public_full_timeline`, `presented_source_frames`, and `presentation_duration`.
+Their requested source offset is 12.5 seconds. The delivered video starts at the preceding 12-second keyframe.
+The public timeline is about 20 seconds instead of the expected 19.521 seconds.
+The existing frame-identity and presentation-time assertions remain unchanged.
+Runs: [38155215927](https://github.com/Kinosail/kinosail/actions/runs/38155215927) and [38155904315](https://github.com/Kinosail/kinosail/actions/runs/38155904315).
+
+FFmpeg documents that input seeking with stream copy preserves frames between the earlier seek point and the requested position.
+Its automatic timestamp shifting can then make that earlier content appear at zero. [FFmpeg seeking](https://www.ffmpeg.org/ffmpeg.html), [timestamp shifting](https://www.ffmpeg.org/ffmpeg-formats.html)
+
+A private mux experiment used the existing 30-second scrub fixture and independently decoded its requested 12.5-second suffix.
+The reference contains 420 frames. All four mux variants retained 480 frames.
+Disabling timestamp shifting, enabling edit lists, and enabling negative composition offsets did not establish correct presentation.
+Those variants retained 60 negative-timestamp frames; the oracle did not silently discard them.
+No production playback change was made from this experiment.
+The receipt is `.verification/ai-qa-campaign/preroll-probe/receipt.json`, SHA-256 `c1b2332c740d4a7ada6daa1df1ab350a67d8eee2665a23d0e78a54dae8475f7c`.
+
+A separate private interactive timeline prototype compared container-duration rounding, video-duration rounding, and actual segment starts.
+Its fractional-tail and uneven-keyframe counterexamples rule out blindly rounding HEVC duration as a general repair.
+The HTML was opened in Codex but was not visually verified. It is a design experiment, not playback acceptance.
+
+### AQA-007 — Live browser verification must not reuse a source-only cache hit
+
+The public command `verify-changed.sh` cached `e2e-changed` using source files and command arguments.
+An already-running Server can change independently of those inputs, so the next command could report success without running its browser journey.
+The new command-level regression reproduced this false success twice before the repair.
+It runs the real verifier in a disposable Git repository and changes the stand-in browser target's outcome between invocations.
+This is isolated tooling evidence, not a populated product E2E journey.
+
+Live browser journeys now use the required-stage path on every invocation.
+Source-only test collection retains content-based caching, including invalidation when bytes change but size and modification time stay unchanged.
+The input hasher now reads all stage inputs in one Python process, rather than launching one `shasum` process per file.
+The new key format also separates command arguments and starts a new cache namespace.
+
+A bounded local measurement hashed the same first 100 shared inputs before and after the optimization.
+The old process-per-file loop took 10.982 seconds; the new process took 0.225 seconds.
+All 1,251 shared inputs took 0.720 seconds with the new hasher.
+These measurements describe this loaded Mac, not a universal performance guarantee.
+The regression passed after the fix; deleted-spec planning and shell lint passed too.
+The complete tooling check remains a separate delivery gate.
+Its first local attempt failed an unrelated R06 shell-routing probe with empty output.
+Fifty direct repetitions of that probe passed without a source change; the original failure is retained.
+The second attempt passed all 169 CI contracts with five environment skips, then timed out starting Node in an unrelated gate-pause fixture.
+Neither full local tooling attempt is reported as passing.
+The final verifier regression passed after the hashing format was finalized. `make max-loc` and `git diff --check` passed.
+The implementation checkpoint is `6937787141c50461dc6adbe68d564a85c0fc654e`; hosted required checks remain mandatory.
+The first PR run passed the new verifier regression and failed later on stale Code Atlas snapshots.
+Both snapshots were regenerated from the current source, including localization and previously merged metadata changes.
+The generator's input rejection, canonical platform, and snapshot checks then passed locally.
+Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
+
+### AQA-008 — Open: intermittent executable-fixture launch failure
+
+The main-push shared-package job failed `TestFingerprintCacheAndToolFailuresAreDeterministic` before its first fingerprint assertion.
+Linux returned `text file busy` while launching its newly written, test-owned shell executable.
+The required PR checks had passed on the reviewed source. No marker production source changed in this delivery.
+The failure is retained as an environment or fixture-lifecycle finding pending reproduction; it is not attributed to localization.
+Run: [38156244208](https://github.com/Kinosail/kinosail/actions/runs/38156244208), job `114519746603`.
+A retry passed without a source change. Main CI and both production-image promotions subsequently completed successfully.
+That establishes publication of `8e937334fbbc0f79915f6f093d8aed268481de64`, not a repair of the intermittent fixture failure or proof of deployment.
+
+### AQA-009 — Open: Subtitles phone navigation splits an English word
+
+Independent populated Firefox and WebKit screenshots at 390 pixels show the bottom navigation rendering `Overview` as `Overvie` and `w`.
+The other three destinations fit on one line. This remained visible despite passing overflow and geometry assertions.
+The Player detail and Subtitles inspector screenshots were also inspected at 390 pixels.
+This finding needs a navigation layout repair and responsive regression at the rendered public boundary.
+Private screenshots under `hosted/visual-review/` have these SHA-256 values:
+
+- `subtitles-firefox-390-library.png`: `95c3f6a427aad88a48d62e59ae3bb0541935cbcaa4a83ab85b2b7a9c71881313`.
+- `subtitles-390-default--view-library-settled.png`: `bb6324ce459fdc90e73f7734411e595ae586ef0e5258e6acad58b92896d42844`.
+
+## Additional private artifact checksums
+
+The archives below are retained under `.verification/ai-qa-campaign/hosted/`.
+Hosted artifacts contain the bounded receipts; raw local process logs remain private.
+
+| Archive | SHA-256 |
+| --- | --- |
+| `hls-all.zip` | `fa9897b02bba7a8fa7bea57177a5893959c37082c04818193612b1286b4cbcfc` |
+| `hls-all-repeat.zip` | `b900b6d48b8811451c55b03c10d43d799fd2435722ad2c0bfc383ad989c06395` |
+| `browse-safety.zip` | `220fdcabcb3fd76fb642b1ddf1e1cc644ccf7d63164142dd48d52ccc3e149749` |
+| `browse-home.zip` | `998853f20c7e500cb8ed29c86237f39282317b099034980785736d041be38c1f` |
+| `subtitles-protocol.zip` | `19a40ac27f6bed4355d2a08ee536dc3835d1ebdb32a030dc0bd2a5052b4cfcc8` |
+| `layout-firefox.zip` | `080f0c3ce2f6b4c102c9a07c81aacdc29f00bd49edc3c7f831d4fcf1e46040f7` |
+| `layout-webkit.zip` | `7b6f8f4617a82f7daa1fbb0a0d45b91a79d6980db5bf2832e1c9a143d926c882` |
+| `layout-chromium.zip` | `3fb64ec269a79cf1f085863cf06c59e59a4c1af3df1d1b7f1eb388859afe6807` |
 
 ## Remaining coverage
 

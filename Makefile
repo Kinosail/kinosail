@@ -43,6 +43,7 @@ tooling-check:
 	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-operation.test.cjs
 	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-attachment-reader.test.cjs
 	@python3 scripts/tooling/test-verify-deleted-e2e.py
+	@python3 scripts/tooling/test-verify-live-e2e.py
 	@./scripts/tooling/test-architecture-explorer.py
 	@./scripts/tooling/test-deploy-nox-app.sh
 	@./scripts/tooling/test-deploy-nox-remote.sh
