@@ -524,7 +524,11 @@ the expected chapter-2 text rendered correctly; automation cannot find that
 text in the accessibility tree. This is an accessibility or observer issue,
 not blank rendering. The initial failures remain retained. Temporary tree
 logging was removed; chapter failures retain a screenshot. No production cause
-or repair is claimed yet.
+or repair is claimed yet. A failure-only cache-clearing control also reproduces
+the failure: the expected text is absent before and after clearing the
+automation accessibility cache. A further full tablet replay passes all ten journeys, so its failure-only
+accessibility-focus probe does not execute and cannot establish a cause. The
+private probe was removed. These controls preserve the original assertion.
 
 ## Complete-tree lint inventory
 
@@ -541,3 +545,27 @@ locked Server name through an environment override. Those three setup failures
 never reached the hosted navigation failure and are excluded from product
 proof. The hosted malformed-fragment timeout remains unexplained. The focused
 success does not turn the original deep job green.
+
+## Playback startup follow-up
+
+The fresh canonical startup journey passes at `d8399829`. Its receipt records
+12 measurements, including cold and warm moving frames, preparation adoption,
+rejected recipe values, Direct First, playback-exit acknowledgements, and
+resource bounds. Invalidation and spanning-fragment decoding assertions pass.
+Peak speculative and total FFmpeg workers are both one. Burn-in subtitle
+coverage is explicitly unrun because this host FFmpeg lacks the subtitles
+filter. This remains one Chromium journey with several internal assertions,
+not twelve independent tests. The earlier queued-preparation failure remains
+retained; no production cause or repair is claimed from this successful replay.
+The binary, generated media, logs, measurements, and checksums were copied to
+private evidence, excluding configuration, backups, and cache state.
+
+## Web delivery and native checkpoint
+
+PR #559 merged with a merge commit after required CI `38179788646` passed.
+Final layout run `38179788404` passes Chromium, Firefox, and WebKit. Fetched
+ancestry confirms reviewed head `d83998297d2a697b9fb4dee7742f2c0589aae0d5`
+is included in remote main `8047e689b22d3c2c210bf85594baae5bb9c1f2ae`.
+The native branch reconciles that main before publication. Its fixes remain
+pending protected delivery. The primary checkout has unrelated Apple edits;
+its files and local main were preserved.
