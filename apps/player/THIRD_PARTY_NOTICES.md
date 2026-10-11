@@ -36,7 +36,7 @@ are included in the shared third-party notices directory in the container.
 
 | Component | Version | License | Notice |
 | --- | --- | --- | --- |
-| wireguard-go | ecfc5a8d5446 (2026-05-22) | MIT | [LICENSE](../../packages/third_party/wireguard/LICENSE) |
+| wireguard-go | 2631ce99a06f (2026-10-06) | MIT | [LICENSE](../../packages/third_party/wireguard/LICENSE) |
 | gVisor userspace network stack | 39ed1f5ac29c (2025-05-03) | Apache-2.0 | [LICENSE](../../packages/third_party/gvisor/LICENSE) |
 | Google B-tree | 1.1.3 | Apache-2.0 | [LICENSE](../../packages/third_party/btree/LICENSE) |
 | Wintun Go adapter (Windows builds) | 0fa3db229ce2 (2023-01-26) | MIT | [LICENSE](../../packages/third_party/wintun/LICENSE) |

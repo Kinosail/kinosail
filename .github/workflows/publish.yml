@@ -92,6 +92,7 @@ jobs:
           - name: Scan candidate image
             uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
             with:
+              version: v0.75.0
               image-ref: ghcr.io/kinosail/kinosail-${{ matrix.app }}@${{ steps.build.outputs.digest }}
               severity: CRITICAL,HIGH
               ignore-unfixed: true

@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: '**/go.sum'
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1

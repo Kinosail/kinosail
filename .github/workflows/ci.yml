@@ -79,7 +79,7 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
@@ -126,7 +126,7 @@ jobs:
           persist-credentials: false
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
@@ -323,6 +323,7 @@ jobs:
           persist-credentials: false
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
+          version: v0.75.0
           scan-type: fs
           scanners: vuln,misconfig
           severity: HIGH,CRITICAL
@@ -442,7 +443,7 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1

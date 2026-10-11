@@ -41,12 +41,12 @@ BASE_BLOBS = {
     "engineering/documentation/build.py": "c082c9cad2fd630c4c381c15878e8f7217d905bd",
     "engineering/documentation/test-install-builder.cjs": "9c0664f9b6ac2648cb162b591ef7824b682e38af",
     "scripts/tooling/test-platform-install-kits.py": "6a9adaa557b2964e0bb08630399e2679ffe4bdb7",
-    "apps/player/e2e/package.json": "c4b2a5258bbc83cc96bdd6feb01ad55e70ca8cf2",
-    "apps/player/e2e/pnpm-lock.yaml": "d5d8c670227b0a8d3d71b95027e4afe5c34477ed",
-    "engineering/documentation/package.json": "33d89eb9243f49686a20570803658bfd8f5d1de8",
-    "engineering/documentation/package-lock.json": "59a9ebe3ee5d9ea96e656015e3e5b2374207f2d9",
+    "apps/player/e2e/package.json": "c1a5fcfa96f77854d0893488932daa2eda21066f",
+    "apps/player/e2e/pnpm-lock.yaml": "677b4dd1f584b87dd3ef342a6a29ddf72c334d56",
+    "engineering/documentation/package.json": "d768aece4f566002a75a54ffa53770b5af7dff21",
+    "engineering/documentation/package-lock.json": "6c6efac48f74db0aee7622acaacf60ad0e1664d4",
     "engineering/documentation/Gemfile": "322b9c581f4414877b559941d937e0904abbff47",
-    "engineering/documentation/Gemfile.lock": "c7237722aaef72bc0cbeb4d82642244a6d87a76d"
+    "engineering/documentation/Gemfile.lock": "991232992cbbc7e34ef60b1c7cf1de06405526ed"
 }
 TEMPLATES = {"player": "apps/player/packaging/platform-compose.yaml",
              "subtitles": "apps/subtitles/packaging/platform-compose.yaml",

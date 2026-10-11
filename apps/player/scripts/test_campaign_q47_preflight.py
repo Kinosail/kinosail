@@ -17,8 +17,8 @@ SPEC.loader.exec_module(driver)
 TOOLS = {name: PurePosixPath("/fictional/bin") / name for name in ("go", "node", "ruby", "bundle")}
 OUTPUTS = {"go": b"go version go1.27.0 linux/amd64\n", "node": b"v26.0.0\n",
            "ruby": b"ruby 3.4.0 (fictional)\n"}
-PREFIXED = b"Bundler version 4.0.16\n"
-PLAIN = b"4.0.16\n"
+PREFIXED = b"Bundler version 4.0.22\n"
+PLAIN = b"4.0.22\n"
 
 
 def terminal(output):
@@ -44,7 +44,7 @@ def commands(bundle_output=PREFIXED, changes=None, probe="bundle", check_changes
 
 class PreflightControls(unittest.TestCase):
     def test_plain_pinned_bundler_output_reaches_unchanged_locked_check(self):
-        for output in (PLAIN, b"4.0.16", b"4.0.16\r\n"):
+        for output in (PLAIN, b"4.0.22", b"4.0.22\r\n"):
             with self.subTest(form=len(output)):
                 context, calls = commands(output)
                 with context: driver.preflight(TOOLS)
@@ -67,11 +67,11 @@ class PreflightControls(unittest.TestCase):
                                        str(driver.ROOT / "engineering/documentation/Gemfile")})
 
     def test_wrong_versions_extra_text_and_simulation_are_rejected(self):
-        values = (b"4.0.15\n", b"4.0.17\n", b"4.0.160\n", b"4.0.16.pre\n", b"v4.0.16\n",
-                  b"Bundler version 4.0.15\n", b"bundler version 4.0.16\n",
-                  b"warning\n4.0.16\n", b"4.0.16\nextra\n", b"4.0.16 (simulating Bundler 5)\n",
-                  b"4.0.16 (build data)\n", b"Bundler version 4.0.16 extra\n", b"",
-                  b"\x1b[32m4.0.16\x1b[0m\n", b"4x0x16\n", b"4.0.16\x00\n")
+        values = (b"4.0.15\n", b"4.0.17\n", b"4.0.220\n", b"4.0.22.pre\n", b"v4.0.22\n",
+                  b"Bundler version 4.0.15\n", b"bundler version 4.0.22\n",
+                  b"warning\n4.0.22\n", b"4.0.22\nextra\n", b"4.0.22 (simulating Bundler 5)\n",
+                  b"4.0.22 (build data)\n", b"Bundler version 4.0.22 extra\n", b"",
+                  b"\x1b[32m4.0.22\x1b[0m\n", b"4x0x22\n", b"4.0.22\x00\n")
         for output in values:
             with self.subTest(form=len(output)):
                 context, calls = commands(output)

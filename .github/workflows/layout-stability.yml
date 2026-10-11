@@ -88,7 +88,7 @@ jobs:
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
@@ -198,7 +198,7 @@ jobs:
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         if: (steps.selection.outputs.app == 'player' && (env.CAMPAIGN_PROOF != 'Q47' || env.CAMPAIGN_Q47_SUITE != 'source-format')) || (env.CAMPAIGN_PROOF == 'R06' && (env.CAMPAIGN_R06_SUITE == 'save-controls' || env.CAMPAIGN_R06_SUITE == 'save-headers' || env.CAMPAIGN_R06_SUITE == 'save-body' || env.CAMPAIGN_R06_SUITE == 'restore-headers' || env.CAMPAIGN_R06_SUITE == 'restore-inspect-body'))
         with:
-          version: 12.11.2
+          version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1

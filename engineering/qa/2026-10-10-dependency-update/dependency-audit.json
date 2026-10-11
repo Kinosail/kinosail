@@ -113,7 +113,9 @@
       "path": "",
       "latest": "12.11.2",
       "status": "update",
-      "decision": "update"
+      "decision": "update-compatible",
+      "selected": "11.28.5",
+      "reason": "Latest stable 11.x. GitHub dependency graph at commit 88dc098b reads only the env document of pnpm 12 lockfiles and loses the project dependencies. Retain normal version enforcement and single-document lockfiles."
     },
     {
       "kind": "browser",
@@ -1131,6 +1133,8 @@
     "golang.org/x/vuln": "v1.8.0",
     "golang.org/x/tools/cmd/deadcode": "v0.52.0",
     "github.com/mibk/dupl": "v1.1.0",
-    "github.com/uudashr/gocognit": "v1.3.0"
-  }
+    "github.com/uudashr/gocognit": "v1.3.0",
+    "aquasecurity/trivy": "v0.75.0"
+  },
+  "scannerCompatibility": "Trivy 0.75.0 is current stable and supports pnpm multi-document parsing; pnpm remains on 11.x until GitHub dependency review also supports that format."
 }
