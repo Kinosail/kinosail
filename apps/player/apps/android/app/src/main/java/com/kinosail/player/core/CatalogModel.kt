@@ -97,9 +97,13 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
 
     fun clearSearch() { searchInput = ""; search() }
 
-    fun changeView(view: String) {
+    fun changeView(view: String, refreshIfEmpty: Boolean = false) {
         require(LIBRARY_VIEWS.any { it.first == view }) { "Invalid library view." }
-        if (view == activeView || session == null) return
+        if (session == null) return
+        if (view == activeView) {
+            if (refreshIfEmpty && state.items.isEmpty()) retry()
+            return
+        }
         activeView = view
         activeQuery = ""
         searchInput = ""

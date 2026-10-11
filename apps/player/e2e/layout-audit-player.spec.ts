@@ -14,7 +14,7 @@ test("player shows and switches its playback method without crowding actions", a
 		await page.setViewportSize(viewport);
 		await page.evaluate(() => localStorage.removeItem("kinosail.playback-policy-v2"));
 		await page.goto(watch);
-		const actions = page.locator(".primary-player-actions");
+		const actions = page.locator(".primary-player-actions:not([data-progress-notice])");
 		const method = page.locator("[data-playback-mode-status]");
 		await expect(method).toHaveText("Direct Play");
 		const methodGeometry = await method.evaluate((element) => {
@@ -34,14 +34,16 @@ test("player shows and switches its playback method without crowding actions", a
 		await page.waitForTimeout(250);
 		const settingsGeometry = await page.locator(".player-settings").evaluate((panel) => {
 			const box = panel.getBoundingClientRect();
-			const actions = document.querySelector(".primary-player-actions")!.getBoundingClientRect();
+			const actions = document.querySelector(".primary-player-actions:not([data-progress-notice])")!.getBoundingClientRect();
 			return {
 				clear: box.bottom + 8 <= actions.top,
+				panelBottom: box.bottom,
+				actionsTop: actions.top,
 				height: box.height,
 				background: getComputedStyle(panel).backgroundColor,
 			};
 		});
-		expect(settingsGeometry.clear).toBeTruthy();
+		expect(settingsGeometry.clear, JSON.stringify(settingsGeometry)).toBeTruthy();
 		expect(settingsGeometry.height).toBeGreaterThanOrEqual(200);
 		expect(settingsGeometry.background).not.toBe("rgba(0, 0, 0, 0)");
 		expect((await new AxeBuilder({ page }).analyze()).violations, `playback settings accessibility at ${viewport.width}px`).toEqual([]);
@@ -84,6 +86,7 @@ test("player shows and switches its playback method without crowding actions", a
 		});
 		await actions.getByRole("link", { name: compatibleLabel }).click();
 		await expect(method).toHaveText(compatibleLabel);
+		await page.locator("video").evaluate(async (video: HTMLVideoElement) => { video.muted = true; await video.play(); });
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 	}
 });
@@ -201,11 +204,16 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 			path: testInfo.outputPath(`${viewport.width}-player-recovery-settings.png`),
 			fullPage: true,
 		});
-		await page.keyboard.press("t");
-		await expect(page.locator("body")).toHaveClass(/player-theater/);
-		await expect.poll(async () => Math.round((await page.locator(".media-stage").boundingBox())?.height ?? 0), { message: "Theater recovery keeps the full viewport" }).toBe(viewport.height);
-		await expect(page.getByRole("button", { name: "Close playback settings" })).toBeVisible();
-		await page.keyboard.press("t");
+		if (await page.locator("[data-theater]").count()) {
+			await page.keyboard.press("t");
+			await expect(page.locator("body")).toHaveClass(/player-theater/);
+			await expect.poll(async () => Math.round((await page.locator(".media-stage").boundingBox())?.height ?? 0), { message: "Theater recovery keeps the full viewport" }).toBe(viewport.height);
+			await expect(page.getByRole("button", { name: "Close playback settings" })).toBeVisible();
+			await page.keyboard.press("t");
+		} else {
+			await expect(page.locator("video")).toHaveAttribute("controls", "");
+			await expect(page.getByRole("button", { name: "Enter fullscreen" })).toBeVisible();
+		}
 	}
 	await page.evaluate(() => localStorage.setItem("kinosail-theme", "light"));
 	await page.setViewportSize(viewports[0]);

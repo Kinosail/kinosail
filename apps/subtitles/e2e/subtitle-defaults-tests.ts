@@ -42,6 +42,9 @@ export function registerSubtitleDefaultTests() {
       const original = await readFile(containerMedia ? path : join(media, "Example Movie.vtt"));
       if (!containerMedia) await writeFile(path, original);
       try {
+        // Host writes can reach a container mount after the local write completes.
+        await expect.poll(async () => (await page.request.get(`${base}/inspect?language=en`)).status(),
+          { message: "Wait for the written subtitle to be readable by the Server" }).toBe(200);
         const capture = async (state: string) => {
           for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
             await page.setViewportSize(viewport);

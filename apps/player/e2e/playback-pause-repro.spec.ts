@@ -25,6 +25,12 @@ for (const compatible of [false, true]) test(`one play request does not immediat
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
   await page.getByRole("link", { name: "Movies", exact: true }).click();
   const watch = await firstPlayable(page);
+  await page.evaluate(async (id) => {
+    const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
+    const response = await fetch(`/api/v1/items/${id}/progress`, { method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Kinosail-CSRF": csrf }, body: JSON.stringify({ seconds: 0, watched: false }) });
+    if (!response.ok) throw new Error(`reset playback progress: ${response.status}`);
+  }, watch.split("/").at(-1)!);
   await page.goto(`${watch}${compatible ? "?compatible=1" : ""}`);
   const video = page.locator("video");
   const result = await video.evaluate(async (element: HTMLVideoElement) => {
