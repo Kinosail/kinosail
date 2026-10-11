@@ -238,7 +238,11 @@ contracts passed after reconciliation.
 
 An additional local populated Chromium batch passed 42 cases and failed three.
 The library API request used a loopback HTTP proxy and sent no session cookie;
-its response was 401. The suite needs a trusted-HTTPS replay. Trusted HTTPS
+its response was 401. All six production-suite cases then passed over trusted
+HTTPS in Chromium. They include decoded audio, offline video playback and
+seeking, Home Assistant state, receiver focus, and responsive accessibility.
+The disposable container alone trusts the CA; certificate checks remain enabled.
+Trusted HTTPS
 setup correctly returned 409 because this disposable Server disables TLS and
 fixes a different sign-in address. That replay needs compatible deployment
 configuration. A loading-review case using synthetic media events also failed;
@@ -254,6 +258,8 @@ application data were restored. A previous single journey on the TV emulator
 omitted the `tv=true` argument and therefore exercised MobileActivity. That
 pass does not prove TV activity focus or navigation. The private runner now
 passes the correct argument; full TV verification remains open.
+Both Wear accessibility journeys passed. Original Wear APKs and application
+data were restored after the run.
 
 ## QA-006 — Held Restore diagnostic can return implicit success (P2; repaired)
 
