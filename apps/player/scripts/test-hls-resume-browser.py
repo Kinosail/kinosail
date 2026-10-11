@@ -20,10 +20,12 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
 parser.add_argument('--tail-recovery', action='store_true')
+parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
 args = parser.parse_args()
-if args.tail_recovery and not args.prepared:
-    parser.error('--tail-recovery requires --prepared')
+recovery = args.tail_recovery or args.first_recovery
+if recovery and not args.prepared or args.tail_recovery and args.first_recovery:
+    parser.error('choose one recovery target, with --prepared')
 run = ROOT / '.verification/hls-resume-browser' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
 media.mkdir(parents=True)
@@ -31,7 +33,7 @@ engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
 build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
            'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --controls' if args.controls else ''),
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else ''),
            'prepared': args.prepared,
            'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
 
@@ -109,7 +111,7 @@ try:
             for engine in engines:
                 case = {'engine': engine}
                 receipt['cases'].append(case)
-                if args.tail_recovery:
+                if recovery:
                     rendition = next(prepared_root.glob('*p/index.m3u8')).parent
                     base = hls.removesuffix('index.m3u8') + rendition.name + '/'
                     for number in range(10):
@@ -119,14 +121,22 @@ try:
                     while encoder_count(server, source) and time.monotonic() < limit:
                         time.sleep(.05)
                     check(encoder_count(server, source) == 0, 'tail_recovery_worker_not_joined')
-                    # The synthetic source independently defines ten keys from
-                    # 12 through 30; its half-second tail is shorter than preroll.
-                    tail = rendition / 'segment-00009.m4s'
-                    case['tailPresentBeforeEviction'] = tail.exists()
-                    check(case['tailPresentBeforeEviction'], 'tail_eviction_requires_existing_fragment')
+                    # The source independently defines ten keys from 12 through
+                    # 30. Tail recovery uses a final half-second fragment.
+                    fragment = rendition / ('segment-00000.m4s' if args.first_recovery else 'segment-00009.m4s')
+                    case['evictedFragment'] = fragment.name
+                    case['fragmentPresentBeforeEviction'] = fragment.exists()
+                    check(case['fragmentPresentBeforeEviction'], 'eviction_requires_existing_fragment')
+                    previous_fragment = sha(fragment)
+                    stable_paths = [prepared_root / name for name in ['index.m3u8', '.copy-timeline', '.copy-clock']]
+                    stable_paths.append(rendition / 'index.m3u8')
+                    previous_metadata = [sha(path) for path in stable_paths]
                     case['audioBeforeEviction'] = audio_boundaries(rendition)
-                    tail.unlink(missing_ok=True)  # Only this run's disposable cache.
-                    case['tailMissingBeforePlayback'] = not tail.exists()
+                    fragment.unlink()  # Only this run's disposable cache.
+                    case['fragmentMissingBeforePlayback'] = not fragment.exists()
+                    if args.tail_recovery:
+                        case['tailPresentBeforeEviction'] = case['fragmentPresentBeforeEviction']
+                        case['tailMissingBeforePlayback'] = case['fragmentMissingBeforePlayback']
                 child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token,
                              QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
                              QA_RESUME_ENGINE=engine, QA_RESUME_DURATION=str(metadata['durationSeconds']))
@@ -135,11 +145,18 @@ try:
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],
                                             cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=300)
                 case['exitCode'] = result.returncode
-                if args.tail_recovery:
-                    case.update(tailRestored=tail.exists(), initializationUnchanged=(rendition / 'init.mp4').read_bytes() == prepared_init)
-                    if case['tailRestored']:
+                if recovery:
+                    case.update(fragmentRestored=fragment.exists(), initializationUnchanged=(rendition / 'init.mp4').read_bytes() == prepared_init)
+                    if case['fragmentRestored']:
                         case['audioAfterRecovery'] = audio_boundaries(rendition)
-                    if not case['tailRestored'] or not case['initializationUnchanged']:
+                    if args.first_recovery:
+                        case['firstFragmentIdentical'] = fragment.exists() and sha(fragment) == previous_fragment
+                        case['metadataUnchanged'] = [sha(path) for path in stable_paths] == previous_metadata
+                        if not case['firstFragmentIdentical'] or not case['metadataUnchanged']:
+                            case['exitCode'] = 1
+                    else:
+                        case['tailRestored'] = case['fragmentRestored']
+                    if not case['fragmentRestored'] or not case['initializationUnchanged']:
                         case['exitCode'] = 1
                 print(json.dumps({k: v for k, v in case.items() if not k.startswith('audio')}), flush=True)
         finally:

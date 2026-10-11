@@ -596,6 +596,31 @@ Hosted artifacts contain the bounded receipts; raw local process logs remain pri
 
 ## Remaining coverage
 
+### Prepared resume: first-fragment recovery retains the original recipe
+
+The public first-fragment eviction case exposed a second prepared-resume boundary.
+At a saved position of 12.5 seconds, deleting the existing first fragment left playback unable to restore it.
+The staged encoder used the correct media window, but publication validated that window's zeroed recipe against the original offset-bound policy.
+Publication now validates the original source recipe. Encoding still uses the same media window.
+
+The new `--prepared --first-recovery` browser case populates all ten fragments, deletes the actual first fragment, and loads the unchanged watch page.
+Chromium MSE, WebKit MSE, and native WebKit each match all seven original-file frames after recovery.
+The recovered fragment is byte-identical. Initialization, both playlists, the timeline, and its clock certificate remain unchanged.
+Audio continuity checks pass before eviction and after recovery. The synthetic source remains unchanged and the Server settles.
+The new case joins the required Chromium workflow; the existing tail-recovery command remains in place.
+
+| Private receipt under `.verification/hls-resume-browser/` | Result | SHA-256 |
+| --- | --- | --- |
+| `20261011T231725Z/receipt.json` | retained failure: first fragment is not restored | `fa4d3fd0d05415b957043977330504e63f7ea2b964ac4b4953005f69824c8969` |
+| `20261011T231843Z/receipt.json` | Chromium and WebKit MSE: fourteen frames and complete first-fragment recovery pass | `da506034a97cd03d99d14a39759ed652a5d7a0a4ecc4b639d22d2751a0a8434d` |
+| `20261011T231903Z/receipt.json` | native WebKit: seven frames and complete first-fragment recovery pass | `9d84cbe5917028945851381a6c14af8fc53a9b843c14df4b3102372db3e83cd2` |
+
+Outer manifests under `.verification/ai-qa-campaign/resume-first-{red,green,native-green}/` bind the exact task patch and unchanged source.
+These checks use base `45a6c6faa293e525e88986a86c537ad30ba43ed5`.
+An independent review accepted the original-recipe publication correction.
+Cold resume remains separate: the current unprepared Chromium run still fails its frame oracle.
+That receipt is `.verification/hls-resume-browser/20261011T231221Z/receipt.json`, SHA-256 `78246610866ac85213a10dccef015c49f12b773d457238c7730627d41f6f0ad7`.
+
 The campaign remains active.
 Retain the earlier audit's unverified journeys until a new passing execution establishes their behavior.
 Inspect the deep-run artifacts, repair confirmed failures, and record the final revision and each remaining platform boundary.
