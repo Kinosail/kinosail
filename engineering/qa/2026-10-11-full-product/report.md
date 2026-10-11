@@ -442,7 +442,7 @@ remain unchanged. This stronger prerequisite passes in Chromium, Firefox, and We
 unfixed-binary control still fails at the intended cross-tab assertion. Failed
 runs remain retained. The hosted checks are being refreshed for this test edit.
 
-## QA-008 — Final native watched update remains queued (P2; repair pending)
+## QA-008 — Final native watched update remains queued (P2; repaired)
 
 The exact tvOS endpoint failure reproduces twice before repair. A bounded
 diagnostic shows an acknowledged unwatched revision and a newer watched
@@ -463,7 +463,7 @@ HTTP fixtures, not the production Go Server or physical devices. After removing
 the temporary journal diagnostic, the original TV completion test still passes.
 Temporary TV simulators were deleted; the reusable iPhone simulator and its data remain.
 
-## QA-009 — Continue Watching grows when progress appears (P2; repair pending)
+## QA-009 — Continue Watching grows when progress appears (P2; repaired)
 
 The hosted Firefox layout audit records a four-pixel increase in a Continue
 Watching card after delayed scripts initialize its progress bar. Later shelves
@@ -642,3 +642,57 @@ production-tag advancement. Native-only main `85b6714d` passes its selected CI
 run `38181968929`. Publication at the older web merge is not exact-current-main
 Nox deployment proof. No physical interaction or production deployment is
 claimed. The CodeQL replay runs after restoring the deleted deep-run ref.
+
+
+## QA-013 — Shortcut sign-in checks a prompt before navigation (P2; repaired locally)
+
+At `4621d625`, the additional populated HTTPS UI batch passes all 29 checks in
+Chromium and Firefox. WebKit passes 28 and fails the second shortcut case during
+sign-in. The retained screenshot shows the optional passkey offer. The helper
+checks whether its Not now link is visible before sign-in navigation finishes.
+It then waits for Home while leaving that offer open.
+
+The helper now waits until navigation leaves `/login` before inspecting the
+optional offer. This matches the existing populated-instance helper. Both
+shortcut cases pass three consecutive WebKit repetitions after the change.
+No product authentication or shortcut behavior changes. Required CI and delivery
+for this test repair remain pending.
+
+These five files cover password reveal, repeated navigation, keyboard shortcuts,
+and Quick Connect UI. QR scan cases substitute camera streams and decoder
+responses; some also substitute confirmation responses. They prove isolated
+browser behavior, not physical-camera scanning or a complete public pairing
+flow. Other cases use the disposable Go Server. The private
+`navigation-additional-evidence.json` retains checksums for source attestations,
+commands, JSON results, failure screenshots, and cleanup receipts.
+
+Additional browse-return runs select ordinary, cold, Home, safety, and watch
+navigation against the unmodified disposable Go Server. All selected Home,
+safety, and navigation runs pass in Chromium, Firefox, and WebKit. The combined
+ordinary/cold batch passes eight cases in each browser. Its ninth BFCache case
+fails: Chromium does not observe persisted pageshow; the other projects cannot
+use that file's Chromium-only launch configuration. These are prerequisite
+failures and do not prove native BFCache admission. No assertion was relaxed.
+The fixture uses fictional media and unavailable FFmpeg/FFprobe paths; it is
+not production codec or TLS acceptance.
+
+## Further offline-seek controls
+
+A standalone local browser control contains no Kinosail application code,
+authentication, storage, or external target. It serves the fictional MP4 over
+HTTP, or from a service worker with bytes, Blob, or stream response bodies.
+The worker cases stop the origin before navigation and playback. All twelve
+cases pass playback and a four-second seek across Chromium, Firefox, and WebKit.
+This rules out an unconditional service-worker seek failure for this clip and
+configuration. It does not establish why the original saved-download case fails;
+that case uses a different prepared MP4 and the application worker.
+
+The exact script, clip digest, bounded request/response observations, results,
+and container cleanup are retained in `minimal-sw-seek-control-v2`. The isolated
+control is not a replacement for the failing public download journey. No offline
+production change is retained from these experiments.
+
+The earlier deep run `38181434746` finishes with its original Swift cast-test
+failure. Its CodeQL Java replay passes after restoration of the exact source ref.
+The repaired cast test is awaiting full native execution in run `38183570454`.
+The required quick checks for PR #563 pass at `4621d625`.
