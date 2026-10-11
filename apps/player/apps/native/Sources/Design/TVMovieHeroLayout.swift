@@ -87,9 +87,12 @@ extension View {
     }
 
     func tvMovieHeroViewport() -> some View {
-        backgroundPreferenceValue(TVMovieHeroAnchorKey.self) { anchor in
-            TVMovieHeroBackdrop(anchor: anchor)
-        }
+        // Clip scrolling foreground before adding the decorative plane, whose
+        // safe-area expansion must not let text or controls bleed with it.
+        clipped()
+            .backgroundPreferenceValue(TVMovieHeroAnchorKey.self) { anchor in
+                TVMovieHeroBackdrop(anchor: anchor)
+            }
     }
 
     func tvMovieHeroBleed() -> some View {
