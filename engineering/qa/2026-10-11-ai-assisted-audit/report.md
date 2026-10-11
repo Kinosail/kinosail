@@ -259,7 +259,7 @@ The corrected run passed all four required gates; [PR #553](https://github.com/K
 A fetched ancestry check placed reviewed head `595d2a0cbcaaffc07ed7396b79c47a187bd59891` in remote main `6f8bfa60d46d5c53621d5590ace3e943669d53ad`.
 Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
-### AQA-008 — Open: intermittent executable-fixture launch failure
+### AQA-008 — Repaired locally: executable-fixture launch race
 
 The main-push shared-package job failed `TestFingerprintCacheAndToolFailuresAreDeterministic` before its first fingerprint assertion.
 Linux returned `text file busy` while launching its newly written, test-owned shell executable.
@@ -268,6 +268,21 @@ The failure is retained as an environment or fixture-lifecycle finding pending r
 Run: [38156244208](https://github.com/Kinosail/kinosail/actions/runs/38156244208), job `114519746603`.
 A retry passed without a source change. Main CI and both production-image promotions subsequently completed successfully.
 That establishes publication of `8e937334fbbc0f79915f6f093d8aed268481de64`, not a repair of the intermittent fixture failure or proof of deployment.
+
+The focused Linux ARM64 reproduction ran the three fingerprint fixture tests 200 times each on `ad990e35c166aeacc254a37b9457f2ab6a28d072`.
+It passed 593 executions and failed seven, including the original `text file busy` error.
+The other six failures occurred at the first visual-tool invocation, whose production boundary hides the underlying process error.
+These tests write executables while parallel tests launch processes. This exposes the descriptor inheritance race documented by [Go issue #22315](https://github.com/golang/go/issues/22315).
+The repair uses checked-in executable fixtures. Each test retains its own temporary media, cache, and argument log.
+The identical Linux command then passed all 600 executions. The full local markers package also passed with the Go race detector.
+No assertion, retry, deadline, or production code changed.
+These isolated tests retain dependency-error coverage: empty fingerprint output, malformed visual output, cache reuse, extraction failure, and bounded background-tool arguments.
+Populated-server journeys cannot deterministically force each external tool output or filesystem failure.
+The private receipt is `marker-fixture-receipt.json`, SHA-256 `759cbfd66ed2314fe19657042ba240bff2254fcf2bf6d0f73d4c06efcd74e4fe`.
+It records both binaries, exact commands, immutable image identity, source hashes, and private log hashes.
+ShellCheck, the source-file cap, and lint for the changed lines passed.
+Full markers lint reports six pre-existing complexity findings in unchanged files; these remain outside this fixture repair.
+Hosted CI uses its existing change-based lint policy and remains required.
 
 ### AQA-009 — Subtitles phone navigation splits an English word
 
@@ -334,7 +349,7 @@ The original rejected run remains preserved:
 [Hosted run 38159857532](https://github.com/Kinosail/kinosail/actions/runs/38159857532).
 The archive is `q09-download.zip`, SHA-256 `788808aa9b969a61fea2772d7f0703340466cdea06004c6d863580db70bcd3ac`.
 
-### AQA-011 — Repaired locally: automated container browser fixture transport
+### AQA-011 — Merged: automated container browser fixture transport
 
 `make -C apps/subtitles test-instance-check` built its ARM64 image and isolated populated Compose instance.
 The browser run passed 19 cases, skipped 27, and failed 20. Eighteen failures explicitly report certificate trust errors.
@@ -365,7 +380,8 @@ The command was `KINOSAIL_TEST_IMAGE_READY=1 KINOSAIL_E2E_ARTIFACT_DIR=<private-
 It reused the verified ARM64 image built earlier in this repair; the app and shared Go sources were unchanged.
 The working tree was clean, and cleanup left zero task-owned containers and volumes.
 The private receipt is `fixture-transport/canonical-receipt.json`, SHA-256 `cdaa05fe3879bd877d0d0aa9a9f8851be6d41819a57899d31a8888986f031530`.
-[PR #556](https://github.com/Kinosail/kinosail/pull/556) remains pending required hosted checks.
+[PR #556](https://github.com/Kinosail/kinosail/pull/556) merged after required hosted checks passed in [run 38164934817](https://github.com/Kinosail/kinosail/actions/runs/38164934817).
+Fetched ancestry proves task head `6889ff9f2e44ae5ebf0140fb44cf591265655ceb` is included in remote main `ad990e35c166aeacc254a37b9457f2ab6a28d072`.
 Reconciliation with current main added only the already reviewed Q09 validator and contract changes; Subtitles runtime and fixture inputs were unchanged.
 
 ### AQA-012 — Open: intermittent prompt-return bound on main
@@ -383,7 +399,16 @@ This is consistent with [MSE coded-frame processing](https://www.w3.org/TR/media
 The actual Hls.js configuration still failed with the experimental edit list.
 A separate Hls.js probe using the true 10-second keyframe origin, a 2.5-second relative start, and a 12.5-second global seek matched all four reference images and the 30-second source duration.
 The existing requested-offset mapping matched none and exposed 32.5 seconds.
-These synthetic probes do not qualify full-frame/audio output, a production repair, or native-client behavior.
+A subsequent probe compared all 420 independently requested reference images; every image matched with the true keyframe origin.
+Its receipt is `preroll-hls-full-frame-probe.json`, SHA-256 `20acf22922b55e6a3201f512cd00cde5b2cf242a1ce5b39513ad5bb0bd32fb5c`.
+This is private synthetic browser evidence, not a production repair or native-client acceptance.
+
+The failed edit-list candidate contained an unsigned negative decode timestamp in its first `tfdt` box.
+Removing `frag_discont` produced a zero decode timestamp and matched all 420 reference images, but Hls.js reported `bufferAppendNoProgress`.
+A separate 32-second fixture with B-frames and changing AAC tones matched seven sampled reference images and played through its end.
+It still reported a buffer-progress error; parsed fragment times differed from the browser's actual buffered ranges.
+Therefore this mux-only candidate remains experimental. It does not establish correct segment scheduling or native playback.
+The playback receipt is `preroll-hls-audio-play-probe.json`, SHA-256 `0619ab672ca00642a6e249c48f32d5105e1a1f69d4d996e0f4976e3ed2369d8e`.
 [HLS start offsets](https://www.rfc-editor.org/rfc/rfc8216.html#section-4.3.5.2) may express preroll suppression, but client behavior still requires independent proof.
 
 ## Additional private artifact checksums
