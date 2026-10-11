@@ -61,7 +61,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code); self.send_header('Content-Type',kind); self.send_header('Content-Length',str(len(data))); self.send_header('Cache-Control','no-store')
         for key,val in (headers or {}).items(): self.send_header(key,val)
         self.end_headers()
-        try: self.wfile.write(data)
+        try:
+            self.wfile.write(data)
+            if code==404 and urlsplit(self.path).path=='/backdrop/movie-005':
+                print('ARTWORK_FIXTURE_RESPONSE',json.dumps(dict(route='missing-backdrop',status=404,completed=True,unixTime=time.time())),flush=True)
         except (BrokenPipeError,ConnectionResetError): pass
     def do_GET(self):
         if len(self.path) > 4096: return self.send(400, {'error':'invalid fixture target'})
@@ -117,7 +120,7 @@ class Handler(BaseHTTPRequestHandler):
         if match:
             ident,suffix=match.groups(); item=next((i for i in ITEMS if i['id']==ident),None)
             if not item: return self.send(404,{'error':'missing title'})
-            if not suffix: return self.send(200,dict(item=item,listed=False,profileId='qa'))
+            if not suffix: return self.send(200,dict(item={**item,'backdrop':''} if active and mode=='empty' else item,listed=False,profileId='qa'))
             if suffix=='/playback': return self.send(200,dict(media=dict(kind=item['kind'],duration=30),plan=dict(allowed=True,mode='direct',reason='compatible'),directAllowed=True,direct='/media/'+ident,directType='video/mp4',duration=30,start=item['progress']['seconds'],chapters=[],subtitles=[]))
             if suffix=='/playback-preferences': return self.send(200,dict(playback=PLAY,overridden=False))
             if suffix=='/watch-progress': return self.send(200,dict(seconds=item['progress']['seconds'],duration=30))
