@@ -64,7 +64,7 @@ func (store *metadataStore) resolveTMDBEpisodeRecord(ctx context.Context, item l
 func (store *metadataStore) downloadMetadataImages(ctx context.Context, result metadataResult) (metadataRecord, error) {
 	failed := false
 	for _, image := range result.Images {
-		if store.downloadImage(ctx, image.Source, image.Target) == nil {
+		if store.downloadImage(ctx, image.Source, image.Target, image.Backdrop) == nil {
 			continue
 		}
 		if image.Person {
@@ -73,10 +73,14 @@ func (store *metadataStore) downloadMetadataImages(ctx context.Context, result m
 		failed = true
 		switch {
 		case image.Backdrop && image.Show:
-			result.Record.ShowBackdrop = ""
+			if result.Record.ShowBackdrop != image.Target || !sharedmetadata.RetainProviderBackdrop(ctx, store.config.ImageURL, store.cache, image.Target) {
+				result.Record.ShowBackdrop = ""
+			}
 			result.Record.BackdropChecked = false
 		case image.Backdrop:
-			result.Record.Backdrop = ""
+			if result.Record.Backdrop != image.Target || !sharedmetadata.RetainProviderBackdrop(ctx, store.config.ImageURL, store.cache, image.Target) {
+				result.Record.Backdrop = ""
+			}
 			result.Record.BackdropChecked = false
 		case image.Show:
 			result.Record.ShowArtwork = ""
