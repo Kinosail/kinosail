@@ -42,17 +42,17 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCUIDevice.shared.orientation = .landscapeLeft
         defer { XCUIDevice.shared.orientation = .portrait }
         for _ in 0..<50 {
-            let frame = app.windows.firstMatch.frame
+            let frame = app.frame
             if frame.width > frame.height { break }
             try await Task.sleep(for: .milliseconds(100))
         }
-        XCTAssertGreaterThan(app.windows.firstMatch.frame.width, app.windows.firstMatch.frame.height)
+        XCTAssertGreaterThan(app.frame.width, app.frame.height)
         for _ in 0..<50 {
-            if app.buttons["Playback options"].frame.minX > app.windows.firstMatch.frame.width * 0.7 { break }
+            if app.buttons["Playback options"].frame.minX > app.frame.width * 0.7 { break }
             try await Task.sleep(for: .milliseconds(100))
         }
         XCTAssertGreaterThan(app.buttons["Playback options"].frame.minX,
-                             app.windows.firstMatch.frame.width * 0.7)
+                             app.frame.width * 0.7)
         XCTAssertTrue(app.staticTexts["Opening video…"].waitForExistence(timeout: 5))
         record("landscape opening video", app)
         background(app, x: 0.01, y: 0.3).press(forDuration: 0.05,
@@ -143,7 +143,8 @@ final class TouchPlaybackInteractionTests: XCTestCase {
     }
 
     @MainActor private func background(_ app: XCUIApplication, x: CGFloat, y: CGFloat) -> XCUICoordinate {
-        app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y))
+        // iPad can expose a zero-size window before its full-screen content.
+        app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y))
     }
 
     @MainActor private func assertCloseHittable(_ app: XCUIApplication) async throws {
