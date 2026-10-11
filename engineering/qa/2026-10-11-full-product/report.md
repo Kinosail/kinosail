@@ -163,8 +163,11 @@ An unchanged focused repetition passes, confirming intermittent setup.
 
 The journey now waits until it leaves `/login` before opening settings,
 matching the existing layout helper. Its settings, accessibility, and
-viewport assertions remain unchanged. Cross-browser verification is pending
-at this checkpoint.
+viewport assertions remain unchanged. The focused Chromium and Firefox
+replays pass. The trusted-HTTPS WebKit shell batch passes all 11 cases,
+including session settings. Earlier HTTP replays exceeded their helper
+readiness window before browser interaction; the private helper now allows
+120 seconds for setup. The retained CLI regression keeps its 15-second limit.
 
 ## QA-005 — Eager translation work delays all process commands (P2; resolved)
 
@@ -204,7 +207,10 @@ CI contracts, workflow validation, and `make max-loc` pass.
 `KINOSAIL_CLI_STARTUP_ARTIFACT_DIR` to choose a new private evidence directory.
 Each receipt records source and binary checksums, build and execution commands,
 environment, timing, and log checksums. Deep hosted Go jobs run the same check
-and retain its JSON and logs on success or failure.
+and retain its JSON and logs on success or failure. If an earlier Go step
+fails before the startup check runs, artifact upload is skipped. The first
+new deep run exposed that missing guard as a secondary upload failure. Its
+original Go failure remains under investigation.
 
 ## Visual review checkpoint
 

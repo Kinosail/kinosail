@@ -66,12 +66,13 @@ jobs:
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
         run: ./scripts/ci/test-go.sh "$APP"
       - name: Verify CLI startup latency
+        id: cli_startup
         if: fromJSON(inputs.plan).deep
         env:
           APP: ${{ inputs.app }}
         run: python3 scripts/testing/test-cli-startup.py --app "$APP" --output "$RUNNER_TEMP/cli-startup"
       - name: Keep CLI startup evidence
-        if: always() && fromJSON(inputs.plan).deep
+        if: always() && fromJSON(inputs.plan).deep && (steps.cli_startup.outcome == 'success' || steps.cli_startup.outcome == 'failure')
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: ${{ inputs.app }}-cli-startup-${{ github.sha }}
