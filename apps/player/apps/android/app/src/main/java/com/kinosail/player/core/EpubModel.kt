@@ -127,14 +127,14 @@ internal class EpubModel(application: Application) : AndroidViewModel(applicatio
         val identity = viewer ?: return
         val book = state.book ?: return
         val store = journal ?: return
-        if (!debounce) { stageDisplayed(); if (changed && !state.chapterLoading) return }
+        if (!debounce) { stageDisplayed(); if (changed && !state.chapterLoading && state.notice == null) return }
         val attempt = generation
         val choice = decision
         save?.cancel()
         save = viewModelScope.launch scheduling@ {
             if (debounce) delay(600)
             if (attempt != generation || choice != decision) return@scheduling
-            if (debounce) { stageDisplayed(); if (changed && !state.chapterLoading) return@scheduling }
+            if (debounce) { stageDisplayed(); if (changed && !state.chapterLoading && state.notice == null) return@scheduling }
             viewModelScope.launch {
             try {
                 writer.withLock {

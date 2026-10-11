@@ -129,12 +129,13 @@ class NativeParityJourneyTest {
         waitText("Chapter 1 of 2")
         waitChapter("Departure")
         waitText("Reading position was not saved.")
-        fixture.failReaderSaves = false
-        compose.onNodeWithText("Retry sync").activate()
-        compose.waitUntil(20_000) { fixture.readerPage == 1 }
         fixture.bookMode = "failed"
         compose.onNodeWithText("Next").activate()
         waitText("Could not load this chapter. Try again.")
+        waitText("Reading position was not saved.")
+        fixture.failReaderSaves = false
+        compose.onNodeWithText("Retry sync").activate()
+        compose.waitUntil(20_000) { fixture.readerPage == 1 }
         compose.onNodeWithText("Done").activate()
         assertEquals("A failed chapter must not advance saved progress", 1, fixture.readerPage)
     }
