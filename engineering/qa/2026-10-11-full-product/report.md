@@ -283,6 +283,12 @@ The handler now records its existing witness and aborts the HTTP exchange with
 repetitions each. All 16 controls in the complete fixture pass with the race
 detector. The hosted deep replay remains pending.
 
+The runtime campaign initially stopped before compilation because two reviewed
+source records were stale. One reflects an earlier erased TypeScript type edit;
+the other reflects this diagnostic repair. Their checksum records were refreshed
+after reviewing both diffs. Existing exact-input admission rejects the old records
+and accepts the refreshed records. No admission rule or threshold changed.
+
 ## Evidence and remaining work
 
 Private command receipts record revision, command, duration, result, log path,
