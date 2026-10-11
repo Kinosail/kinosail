@@ -75,6 +75,9 @@ struct LibraryScreen: View {
                     HStack(spacing: 16) { filters }
                     VStack(alignment: .leading, spacing: 16) { filters }
                 }
+                #if os(tvOS)
+                .frame(maxWidth: .infinity, alignment: .leading).focusSection()
+                #endif
                 if visibleItems.isEmpty {
                     if visiblePage == nil && (loading || loadedKey == nil && failure == nil) {
                         #if os(iOS)

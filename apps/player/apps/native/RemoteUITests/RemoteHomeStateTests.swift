@@ -45,6 +45,14 @@ final class RemoteHomeStateTests: RemoteTestCase {
         XCUIRemote.shared.press(.down)
         XCTAssertTrue(app.buttons["Movies"].hasFocus)
         record("quality-home-empty", app)
+        for title in ["Shows", "Music", "Audiobooks", "Photos"] {
+            XCUIRemote.shared.press(.right)
+            XCTAssertTrue(app.buttons[title].hasFocus)
+        }
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(app.buttons["Settings"].hasFocus)
+        XCUIRemote.shared.press(.down)
+        XCTAssertTrue(app.buttons["Photos"].hasFocus)
         XCUIRemote.shared.press(.menu)
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         record("quality-home-empty-back", app)
@@ -58,6 +66,8 @@ final class RemoteHomeStateTests: RemoteTestCase {
         app.launch()
         XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 15))
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(app.buttons["Settings"].hasFocus)
         XCUIRemote.shared.press(.down)
         XCTAssertTrue(app.buttons["Try again"].hasFocus)
         record("quality-home-failed", app)
