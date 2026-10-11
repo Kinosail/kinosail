@@ -44,7 +44,7 @@ base = ['xcodebuild', '-project', 'Kinosail.xcodeproj', '-configuration', 'Debug
         '-destination', 'platform=tvOS Simulator,id=' + device,
         '-derivedDataPath', '.build/tvos-simulator', '-parallel-testing-enabled', 'NO',
         '-maximum-concurrent-test-simulator-destinations', '1', '-test-timeouts-enabled', 'YES',
-        '-default-test-execution-time-allowance', '600', '-maximum-test-execution-time-allowance', '630',
+        '-default-test-execution-time-allowance', '600', '-maximum-test-execution-time-allowance', '930',
         '-collect-test-diagnostics', 'never', 'CODE_SIGNING_ALLOWED=YES', 'CODE_SIGN_IDENTITY=-',
         'KINOSAIL_SOURCE_REVISION=' + revision]
 receipt = {'startedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),

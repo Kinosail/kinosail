@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 // Real tvOS loading and retry focus cannot be established by player unit tests.
@@ -24,6 +25,7 @@ final class RemoteAudioStateTests: RemoteTestCase {
         let loading = app.descendants(matching: .any).matching(identifier: "Opening audio…").firstMatch
         XCTAssertTrue(loading.waitForExistence(timeout: 5))
         record("audio pending", app)
+        let pendingImage = app.screenshot().image
         XCTAssertFalse(app.buttons["More"].exists)
         XCTAssertFalse(app.buttons["Playback options"].exists)
         try await state("loaded")
@@ -33,6 +35,13 @@ final class RemoteAudioStateTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5))
         XCTAssertFalse(loading.exists)
         record("audio loaded after pending", app)
+        let play = app.buttons["Play"]
+        let notice = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Progress is saved on this device.'")).firstMatch
+        let noticeHeight = notice.exists ? notice.frame.height + 28 : 0
+        let pendingY = try pendingTransportCenter(pendingImage, x: play.frame.midX, viewport: app.frame)
+        print("AUDIO_GEOMETRY pendingTransportY=\(pendingY) loadedTransportY=\(play.frame.midY) conditionalNoticeHeight=\(noticeHeight)")
+        XCTAssertEqual(pendingY, play.frame.midY - noticeHeight, accuracy: 20,
+                       "The pending transport must reserve the loaded controls' geometry, excluding a new failure notice")
     }
 
     @MainActor func testFailedAudioExposesRetryAndRecoversTransport() async throws {
@@ -74,6 +83,29 @@ final class RemoteAudioStateTests: RemoteTestCase {
         XCTAssertTrue(app.staticTexts["Tracks"].waitForExistence(timeout: 10))
         remote.press(.select)
         return app
+    }
+
+    // Decorative skeletons are intentionally absent from the accessibility tree.
+    // Measure the tall center circle in rendered pixels, not a production test hook.
+    private func pendingTransportCenter(_ image: UIImage, x: CGFloat, viewport: CGRect) throws -> CGFloat {
+        let cg = try XCTUnwrap(image.cgImage)
+        let scale = CGFloat(cg.width) / viewport.width
+        let column = try XCTUnwrap(cg.cropping(to: CGRect(x: x * scale, y: 0, width: 1, height: CGFloat(cg.height))))
+        let context = try XCTUnwrap(CGContext(data: nil, width: 1, height: column.height,
+            bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        context.draw(column, in: CGRect(x: 0, y: 0, width: 1, height: column.height))
+        let pixels = try XCTUnwrap(context.data?.assumingMemoryBound(to: UInt8.self))
+        var start: Int?
+        for row in Int(300 * scale)..<Int(750 * scale) {
+            let color = [21, 25, 20].enumerated().allSatisfy { abs(Int(pixels[row * 4 + $0.offset]) - $0.element) <= 2 }
+            if color { if start == nil { start = row } }
+            else if let first = start {
+                if CGFloat(row - first) > 80 * scale { return CGFloat(first + row) / (2 * scale) }
+                start = nil
+            }
+        }
+        throw NSError(domain: "Pending transport circle was not rendered", code: 1)
     }
 
     private func state(_ mode: String, delay: Int = 0) async throws {

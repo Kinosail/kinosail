@@ -98,7 +98,7 @@ struct AudioPlayerScreen: View {
                         }
                     }
                 }.frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity).padding(KinoTheme.contentPadding)
-            } else { AudioLoadingState().padding(KinoTheme.contentPadding) }
+            } else { AudioLoadingState(showsTrackControls: session.player.currentItem?.kind == .music).padding(KinoTheme.contentPadding) }
         }
         #if os(tvOS)
         .cinemaBackground()
@@ -181,38 +181,6 @@ struct AudioPlayerScreen: View {
     }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         Task { do { try await action() } catch { failure = AppSession.message(error) } }
-    }
-}
-
-struct AudioLoadingState: View {
-    var title = "Opening audio…"
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    private var nowPlayingLayout: AnyLayout { AudioNowPlayingGeometry.layout(accessibility: dynamicTypeSize.isAccessibilitySize) }
-    var body: some View {
-        nowPlayingLayout {
-            RoundedRectangle(cornerRadius: 24).fill(KinoTheme.surface).aspectRatio(1, contentMode: .fit).frame(maxWidth: 440)
-            VStack(spacing: 28) {
-                VStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 260, height: 36)
-                    RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(width: 160, height: 16)
-                }
-                Capsule().fill(KinoTheme.raised).frame(height: 5)
-                HStack(spacing: AudioNowPlayingGeometry.transportSpacing) {
-                    ForEach(0..<3) { index in Circle().fill(KinoTheme.surface)
-                        .frame(width: AudioNowPlayingGeometry.transportSize(index), height: AudioNowPlayingGeometry.transportSize(index)) }
-                }
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 12) {
-                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
-                    }
-                    VStack(spacing: 12) {
-                        ForEach(0..<3) { _ in Capsule().fill(KinoTheme.surface).frame(width: 94, height: 44) }
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: AudioNowPlayingGeometry.width(accessibility: dynamicTypeSize.isAccessibilitySize)).frame(maxWidth: .infinity)
-        .skeletonLoading(title)
     }
 }
 

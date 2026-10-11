@@ -49,8 +49,25 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         let app = openMovie()
         let retry = app.buttons["Try again"]
         let retrySeen = retry.waitForExistence(timeout: 10)
-        record("artwork-detail-failed-before-retry", app)
         XCTAssertTrue(retrySeen)
+        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in retry.hasFocus }, object: nil)
+        let focusResult = await XCTWaiter.fulfillment(of: [focused], timeout: 5)
+        XCTAssertEqual(focusResult, .completed)
+        let heading = app.staticTexts["Couldn’t load this content"]
+        let banner = app.staticTexts["Check your network and that your Server is running. Apple TV needs a connection to play."]
+        if banner.exists {
+            let clear = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                heading.frame.minY > banner.frame.maxY + 12
+            }, object: nil)
+            let clearResult = await XCTWaiter.fulfillment(of: [clear], timeout: 5)
+            record("artwork-detail-failed-settled", app)
+            XCTAssertEqual(clearResult, .completed, "The connection banner must not cover the detail error heading")
+            XCUIRemote.shared.press(.up)
+            XCTAssertTrue(app.buttons["Reconnect"].hasFocus)
+            XCUIRemote.shared.press(.down)
+            XCTAssertTrue(retry.hasFocus, "Down from Reconnect must return to the visible retry action")
+        }
+        record("artwork-detail-failed-before-retry", app)
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
         XCTAssertFalse(app.buttons["Resume"].exists)
         XCTAssertTrue(retry.hasFocus, "Detail failure must expose reachable retry focus")
@@ -61,6 +78,35 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         XCTAssertFalse(retry.exists)
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
         verifyPrimaryVisible(app)
+    }
+
+    @MainActor
+    func testUnavailableServerKeepsDetailRetryBelowBanner() async throws {
+        try requireCase("offline")
+        try await state("loaded")
+        let app = openMovie(select: false)
+        try await state("failed", target: "connection")
+        XCUIRemote.shared.press(.select)
+        let retry = app.buttons["Try again"]
+        let reconnect = app.buttons["Reconnect"]
+        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        XCTAssertTrue(reconnect.waitForExistence(timeout: 10))
+        let heading = app.staticTexts["Couldn’t load this content"]
+        let banner = app.staticTexts["Check your network and that your Server is running. Apple TV needs a connection to play."]
+        let clear = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            heading.frame.minY > banner.frame.maxY + 12 && retry.hasFocus
+        }, object: nil)
+        let result = await XCTWaiter.fulfillment(of: [clear], timeout: 5)
+        record("offline detail settled retry and banner", app)
+        XCTAssertEqual(result, .completed, "Server outage must leave the error heading visible and Retry focused")
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(reconnect.hasFocus)
+        XCUIRemote.shared.press(.down)
+        XCTAssertTrue(retry.hasFocus)
+        try await state("loaded")
+        XCUIRemote.shared.press(.select)
+        waitForDetail(app, title: "After the Rain")
+        record("offline detail recovered", app)
     }
 
     @MainActor
@@ -152,7 +198,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
     }
 
     @MainActor
-    private func openMovie(next: Bool = false) -> XCUIApplication {
+    private func openMovie(next: Bool = false, select: Bool = true) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -169,7 +215,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
             remote.press(.right)
         }
         XCTAssertTrue(focusedLabels(app).joined().contains(next ? "Before Dawn" : "After the Rain"))
-        remote.press(.select)
+        if select { remote.press(.select) }
         return app
     }
 
@@ -219,11 +265,11 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         fixtureEnabled = true
     }
 
-    private func state(_ mode: String, delay: Int = 0) async throws {
+    private func state(_ mode: String, delay: Int = 0, target: String = "details") async throws {
         let identity = try XCTUnwrap(ProcessInfo.processInfo.environment["KINOSAIL_TV_QUALITY_FIXTURE_ID"])
         XCTAssertNotNil(identity.range(of: "^tv-polish-qa-[a-z0-9-]{1,64}$", options: .regularExpression),
                         "A unique freshly seeded identity is required; the bare fallback is rejected")
-        let url = URL(string: "http://127.0.0.1:38359/qa/state?mode=\(mode)&delay=\(delay)&target=details&identity=\(identity)")!
+        let url = URL(string: "http://127.0.0.1:38359/qa/state?mode=\(mode)&delay=\(delay)&target=\(target)&identity=\(identity)")!
         let (_, response) = try await URLSession.shared.data(from: url)
         XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
     }

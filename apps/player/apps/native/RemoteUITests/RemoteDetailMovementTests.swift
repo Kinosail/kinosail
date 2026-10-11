@@ -52,6 +52,7 @@ final class RemoteDetailMovementTests: RemoteTestCase {
             XCTAssertTrue(focusedLabels(app).contains(expected),
                           "Expected \(expected); actual: \(focusedLabels(app))")
         }
+        verifyAudioMenus(app, remote)
         remote.press(.right)
         XCTAssertTrue(app.buttons["Next"].hasFocus)
         remote.press(.up)
@@ -103,6 +104,58 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Music"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Music"].hasFocus)
         record("back to Music tile", app)
+    }
+
+    // Native expanded menus do not expose their focused child through hasFocus.
+    // Select each visible choice with arrows and verify the resulting public state.
+    @MainActor private func verifyAudioMenus(_ app: XCUIApplication, _ remote: XCUIRemote) {
+        remote.press(.down)
+        XCTAssertTrue(app.buttons["Shuffle off"].hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(app.buttons["Shuffle on"].waitForExistence(timeout: 5))
+        remote.press(.select)
+        XCTAssertTrue(app.buttons["Shuffle off"].waitForExistence(timeout: 5))
+        remote.press(.right)
+        for (mode, downs) in [("all", 1), ("one", 2), ("off", 0)] {
+            remote.press(.select)
+            XCTAssertTrue(app.descendants(matching: .any)["All"].waitForExistence(timeout: 5))
+            for _ in 0..<downs { remote.press(.down) }
+            record("audio Repeat menu to \(mode)", app)
+            remote.press(.select)
+            let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.focusedLabels(app).contains("Repeat: \(mode)")
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 5), .completed)
+        }
+        remote.press(.right)
+        let deadline = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Pauses at '")).firstMatch
+        for (index, choice) in ["15 minutes", "30 minutes", "45 minutes", "60 minutes", "90 minutes", "Turn off"].enumerated() {
+            remote.press(.select)
+            XCTAssertTrue(app.descendants(matching: .any)["15 minutes"].waitForExistence(timeout: 5))
+            for _ in 0..<index { remote.press(.down) }
+            record("audio Sleep timer menu to \(choice)", app)
+            let beforeSelection = Date()
+            remote.press(.select)
+            if choice == "Turn off" { XCTAssertTrue(deadline.waitForNonExistence(timeout: 5)) }
+            else {
+                let minutes = [15, 30, 45, 60, 90][index]
+                let expected = [beforeSelection, Date()].map {
+                    "Pauses at \($0.addingTimeInterval(Double(minutes) * 60).formatted(date: .omitted, time: .shortened))"
+                }
+                let applied = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                    deadline.exists && expected.contains(deadline.label)
+                }, object: nil)
+                XCTAssertEqual(XCTWaiter.wait(for: [applied], timeout: 5), .completed)
+            }
+            let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.focusedLabels(app).contains("Sleep timer")
+            }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [settled], timeout: 5), .completed)
+        }
+        remote.press(.left)
+        remote.press(.left)
+        remote.press(.up)
+        XCTAssertTrue(app.buttons["Previous"].hasFocus)
     }
 
     @MainActor

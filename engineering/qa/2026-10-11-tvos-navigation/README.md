@@ -247,3 +247,59 @@ No production retry change was needed.
 The title placeholder now starts at y186, within seven points of the loaded
 title at y179. Visual inspection confirms aligned action rows and cast insets.
 The pending and loaded screenshots were exported from the accepted result.
+
+### NAV-09: Audio loading controls jump downward (P2, confirmed)
+
+The 4K pending journey measures the transport placeholder at y394. Loaded
+controls need y499 after excluding a new 99-point progress-failure notice.
+The new pixel assertion fails before the change. The loading view now reserves
+the actual text, timeline, track-control, and options geometry.
+`offline-audio-aligned-4k` passes the audio case with y506 versus y499
+(30.015 seconds). Its other case failed before reaching the intended outage;
+the aggregate bundle is not a pass. Both audio screenshots were inspected.
+
+The expanded audio journey passes all Repeat choices, Shuffle on/off, all five
+Sleep timer durations, and Turn off in `recovery-geometry-red-4k`
+(117.807 seconds). Each duration checks the displayed deadline. Native menu
+screenshots show readable selection and no clipped choices.
+
+### NAV-10: Connection banner covers the detail error heading (P2, confirmed)
+
+An early 1080p error screenshot shows the overlap. A partial HTTP failure can
+clear its banner after another successful request, so it cannot prove a
+persistent outage. The disposable fixture now supports a bounded connection
+failure mode that closes authenticated requests without a response. Its QA
+health and reset routes stay available. Invalid state combinations are rejected.
+`disconnected-detail-red-4k` confirms the heading remains covered after five
+seconds with Try again focused. tvOS now reserves layout space for the banner
+above the navigation stack. Recovery and loaded-navigation acceptance follows.
+
+### Combined-run timing and focus observations
+
+At `3a22cb068bdd018585dc02c58a267f72cb930c42`, `final-loaded-1080` executes
+25 journeys: 23 pass and two fail. Fixture health stays ready and every child
+joins. This bundle is not an overall pass. Playback-to-Home focus was queried
+during its return transition. The captured video already shows the originating
+card's focus outline before ending. A bounded settled-focus check passes both
+Select and Play/Pause returns in `recovery-geometry-red-4k` (25.266 seconds),
+without corrective input. Observed focus settlement takes 1.237 and 1.175 seconds.
+
+The stress case records all 100 successful detail returns, then reaches its
+600-second limit during final held-input checks. Only that case now requests
+900 seconds; the runner permits a 930-second per-test maximum. The failed
+receipt is retained and a complete accepted stress run is still required.
+
+The tvOS app explicitly uses `.preferredColorScheme(.dark)`. Unsupported
+simulator appearance commands are not proof of accessibility variants.
+
+`sustained-outage-detail-4k` passes the complete outage journey (22.289
+seconds): visible error heading, focused Try again, Up to Reconnect, Down to
+Try again, and recovery to Resume. Earlier fixture attempts still answered
+background remote-player PUT requests with 404. Native request diagnostics
+identified those responses restoring reachability. Connection fault injection
+now drops authenticated GET and PUT requests; those intermediate bundles are
+not outage acceptance. The banner reserves its intrinsic height in the TV stack.
+
+The loaded Home and movie-detail journeys also pass after the stack change in
+`disconnected-detail-green-4k` (14.526 and 30.942 seconds). Its incomplete outage
+simulation failed, so only those individual cases count as accepted evidence.
