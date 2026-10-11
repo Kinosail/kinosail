@@ -44,9 +44,18 @@ The reviewed security heuristics include intentional public gateway binding, pri
 
 `make quality-static` passes reviewed dependency hashes, changed-revision Go lint, source caps, TypeScript checks, and browser-script lint. It then fails at Go complexity limits. Later commands in that aggregate target did not run. No threshold was changed.
 
-### QA-003 — iPad loaded Pause interaction
+### QA-003 — iPad reveal gesture targets a zero-size XCTest window
 
-The earlier audit repeatedly found Pause through accessibility but reported it as not hittable. Manual pause/resume passed. A fresh simulator reproduction is in progress. No production defect or repair is claimed yet.
+The unchanged loaded playback journey failed twice at the Pause hittability assertion. A diagnostic run measured the application frame as `1032×1376` while `app.windows.firstMatch` was `0×0`. The reveal control covered `1032×1356`. The helper calculated its tap from the zero-size window, so it tapped the screen origin instead of revealing the controls.
+
+Before changing the helper, the test authoring gate established:
+
+- Observable contract: a real background tap restores playback controls, then Pause, Play, and Close work through touch.
+- Credible regression: hidden controls fail to return, or a control stops accepting input. All existing functional assertions remain.
+- Coverage gap: the current UI journey is the primary owner. No duplicate test is needed. Its coordinate helper, also used by swipe and rotation journeys, must use the application frame.
+- Production seam: none. Only XCTest coordinates and frame observations change.
+
+The correction and affected phone/tablet journeys are pending. No production defect or repair is claimed.
 
 An initial focused command used a nonexistent target selector. Xcode rejected it before testing. That command is excluded from passing evidence; the corrected command selects `Kinosail-iOSTouchUITests`.
 
