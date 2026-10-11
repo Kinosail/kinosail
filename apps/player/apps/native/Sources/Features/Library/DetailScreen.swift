@@ -13,7 +13,7 @@ struct DetailScreen: View {
             .padding(KinoTheme.contentPadding)
         }
         #if os(tvOS)
-        .scrollClipDisabled()
+        .tvMovieHeroViewport()
         #endif
         .cinemaBackground()
         .navigationTitle("")
@@ -32,9 +32,6 @@ private struct DetailContent: View {
     @State private var showsDownloads = false
     #if os(tvOS)
     @Namespace private var detailFocus
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.colorSchemeContrast) private var contrast
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.dynamicTypeSize) private var dynamicType
     #endif
     private var item: MediaItem { detail.item }
@@ -91,30 +88,7 @@ private struct DetailContent: View {
             }
             .controlSize(.large)
         } }
-        .background {
-            TVMovieHeroBackdrop { canvasSize in
-                ZStack {
-                    KinoTheme.surface
-                    if colorScheme == .dark && contrast != .increased && !reduceTransparency {
-                        ZStack(alignment: .leading) {
-                            Artwork(path: item.backdrop, ratio: 16 / 9, dimension: 4096,
-                                    fillsFrame: true, isBackdrop: true, canvasSize: canvasSize)
-                            LinearGradient(stops: [
-                                .init(color: .black.opacity(0.92), location: 0),
-                                .init(color: .black.opacity(0.84), location: 0.75),
-                                .init(color: .clear, location: 1)
-                            ], startPoint: .leading, endPoint: .trailing)
-                            .frame(width: min(canvasSize.width, 1120))
-                            LinearGradient(stops: [
-                                .init(color: .clear, location: 0),
-                                .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
-                                .init(color: KinoTheme.background, location: 1)
-                            ], startPoint: .top, endPoint: .bottom)
-                        }
-                    }
-                }
-            }
-        }
+        .tvMovieHeroArtwork(item.backdrop)
         .foregroundStyle(KinoTheme.text)
         .tvMovieHeroBleed()
         .focusSection()

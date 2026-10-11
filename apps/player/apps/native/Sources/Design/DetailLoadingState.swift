@@ -11,7 +11,7 @@ struct DetailLoadingState: View {
                 line(500, 22)
                 Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
             } }
-                .background { TVMovieHeroBackdrop { _ in KinoTheme.surface } }
+                .tvMovieHeroArtwork()
                 .tvMovieHeroBleed()
             line(140, 28)
             HStack(spacing: KinoTheme.shelfSpacing) {

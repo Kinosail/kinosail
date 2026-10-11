@@ -13,24 +13,85 @@ struct TVMovieHeroLayout<Content: View>: View {
     }
 }
 
-// Safe-area expansion belongs to the decorative plane. Its measured canvas
-// and clipping expand together; foreground layout and focus retain their inset.
-struct TVMovieHeroBackdrop<Backdrop: View>: View {
-    @ViewBuilder let backdrop: (CGSize) -> Backdrop
+private struct TVMovieHeroAnchor {
+    let bounds: Anchor<CGRect>
+    let path: String?
+}
+
+private struct TVMovieHeroAnchorKey: PreferenceKey {
+    static var defaultValue: TVMovieHeroAnchor? { nil }
+    static func reduce(value: inout TVMovieHeroAnchor?, nextValue: () -> TVMovieHeroAnchor?) {
+        value = nextValue() ?? value
+    }
+}
+
+// Resolve the content's bounds at the viewport, outside the ScrollView clip.
+// Only this decorative plane expands into the inherited TV safe area.
+private struct TVMovieHeroBackdrop: View {
+    let anchor: TVMovieHeroAnchor?
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     var body: some View {
         GeometryReader { geometry in
-            backdrop(geometry.size)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .clipped()
+            ZStack(alignment: .topLeading) {
+                if let anchor {
+                    let frame = geometry[anchor.bounds]
+                    let top = min(frame.minY, 0)
+                    let canvas = CGSize(width: geometry.size.width, height: max(0, frame.maxY - top))
+                    backdrop(path: anchor.path, canvas: canvas)
+                        .frame(width: canvas.width, height: canvas.height)
+                        .clipped()
+                        .position(x: canvas.width / 2, y: top + canvas.height / 2)
+                }
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
+            .clipped()
         }
         .ignoresSafeArea(.container, edges: [.top, .horizontal])
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
+
+    private func backdrop(path: String?, canvas: CGSize) -> some View {
+        ZStack {
+            KinoTheme.surface
+            if let path, colorScheme == .dark && contrast != .increased && !reduceTransparency {
+                ZStack(alignment: .leading) {
+                    Artwork(path: path, ratio: 16 / 9, dimension: 4096,
+                            fillsFrame: true, isBackdrop: true, canvasSize: canvas)
+                    LinearGradient(stops: [
+                        .init(color: .black.opacity(0.92), location: 0),
+                        .init(color: .black.opacity(0.84), location: 0.75),
+                        .init(color: .clear, location: 1)
+                    ], startPoint: .leading, endPoint: .trailing)
+                    .frame(width: min(canvas.width, 1120))
+                    LinearGradient(stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
+                        .init(color: KinoTheme.background, location: 1)
+                    ], startPoint: .top, endPoint: .bottom)
+                }
+            }
+        }
+    }
 }
 
 extension View {
+    func tvMovieHeroArtwork(_ path: String? = nil) -> some View {
+        // Capture before negative padding changes the hero's reported bounds.
+        anchorPreference(key: TVMovieHeroAnchorKey.self, value: .bounds) {
+            TVMovieHeroAnchor(bounds: $0, path: path)
+        }
+    }
+
+    func tvMovieHeroViewport() -> some View {
+        backgroundPreferenceValue(TVMovieHeroAnchorKey.self) { anchor in
+            TVMovieHeroBackdrop(anchor: anchor)
+        }
+    }
+
     func tvMovieHeroBleed() -> some View {
         // Expand only the decorative hero; the surrounding shelves keep the
         // screen inset. The shared layout retains the previous 104pt text inset.
