@@ -218,6 +218,8 @@ In a private Chrome probe, direct fragmented MP4 matched four independently requ
 The production Hls.js library stalled before displaying a frame from the edit-list HLS candidate.
 The unchanged HLS baseline displayed different images at all four requested times.
 This rules out adopting that mux-option change from decoder output alone; native-client acceptance also remains open.
+A direct MediaSource append without Hls.js also timed out before displaying its first frame, even with the duration set to 17.5 seconds.
+The byte-stream specification describes single-entry edit-list support, but this candidate did not establish working presentation. [W3C ISO BMFF initialization segments](https://www.w3.org/TR/mse-byte-stream-format-isobmff/#iso-init-segments)
 The browser experiment receipt is `.verification/ai-qa-campaign/preroll-browser-probe.json`, SHA-256 `15a04357465a87fc31ebb7a04c4cd0e0375b7c400586a7d1c47d39ce400f43e8`.
 The receipt is `.verification/ai-qa-campaign/preroll-probe/receipt.json`, SHA-256 `c1b2332c740d4a7ada6daa1df1ab350a67d8eee2665a23d0e78a54dae8475f7c`.
 
@@ -253,6 +255,8 @@ The implementation checkpoint is `6937787141c50461dc6adbe68d564a85c0fc654e`; hos
 The first PR run passed the new verifier regression and failed later on stale Code Atlas snapshots.
 Both snapshots were regenerated from the current source, including localization and previously merged metadata changes.
 The generator's input rejection, canonical platform, and snapshot checks then passed locally.
+The corrected run passed all four required gates; [PR #553](https://github.com/Kinosail/kinosail/pull/553) merged.
+A fetched ancestry check placed reviewed head `595d2a0cbcaaffc07ed7396b79c47a187bd59891` in remote main `6f8bfa60d46d5c53621d5590ace3e943669d53ad`.
 Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
 ### AQA-008 — Open: intermittent executable-fixture launch failure
@@ -285,7 +289,14 @@ WebKit passed all 14 cases. Chromium passed 13 and timed out reloading the 390-p
 A focused rerun passed with unchanged source and the original timeout. The first failure remains retained.
 Both fixture runs include accessibility assertions at 390 and 1440 pixels. These use rendered production assets with controlled API responses, not a populated Server.
 All four 320-pixel dark-state screenshots were inspected; navigation stayed readable in each state.
-Hosted Linux navigation checks and the populated container command remain separate delivery boundaries.
+The first hosted Linux rerun passed all 95 Player and 111 Subtitles Chromium layout cases plus 37 combined flows.
+Firefox and WebKit still split `Overview` at 320 pixels with doubled text; the taller dock also obscured settings headings.
+The same Firefox run separately recorded Player home movement and a Subtitles background-discovery navigation timeout.
+Those failures remain retained. [Hosted run 38160404212](https://github.com/Kinosail/kinosail/actions/runs/38160404212).
+A diagnostic using the container's DejaVu Sans Bold fallback reproduced the narrow label.
+Reducing outer horizontal padding to `.25rem` then kept every label on one line in all four width/text-scale combinations.
+Four fresh inspector cases at 320/390 pixels and both themes passed with that production CSS.
+The final Linux rerun remains a separate delivery gate; the container run's trust failure is recorded below.
 Private screenshots under `hosted/visual-review/` have these SHA-256 values:
 
 - `subtitles-firefox-390-library.png`: `95c3f6a427aad88a48d62e59ae3bb0541935cbcaa4a83ab85b2b7a9c71881313`.
@@ -300,10 +311,29 @@ The archive is `q47-primary.zip`, SHA-256 `7c8a3d07e3b3e933b53437295cf96192250d6
 
 Q09 compiled successfully and its isolated browser command exited zero, but result admission failed with `ValueError`.
 No group was accepted, and its real Server and phone groups did not run.
-The validator still lists five isolated cases while the selected test files now declare additional cases.
-This remains a proof-tooling finding pending exact collection reconciliation, not passing download E2E evidence.
+### AQA-010 — Download proof rejects its expanded case selection
+
+Fresh collection found 12 isolated cases where the validator expected five, and 47 mixed-group cases where it expected eight.
+The existing count contract failed before the title-list repair. Exact collection reconciliation, nine admission checks, and 19 routing contracts then passed.
+[PR #555](https://github.com/Kinosail/kinosail/pull/555) preserves strict rejection of missing, duplicate, unknown, skipped, retried, flaky, and malformed results.
+The corrected [hosted run 38160742860](https://github.com/Kinosail/kinosail/actions/runs/38160742860) passed all groups on `8989a927cbb763f7c985088d936c600e36a5e9e0` with unchanged source and settled processes.
+Its 60 executions comprise 12 isolated controls, nine real-server cases plus 38 isolated controls, and one populated phone-viewport case.
+This does not establish media decoding, other engines, or physical-device behavior.
+The corrected archive is `q09-download-fixed.zip`, SHA-256 `420a7616450105329be4a6d7d7ad25d02e10de14fb679506b792465698594c1c`.
+
+The original rejected run remains preserved:
 [Hosted run 38159857532](https://github.com/Kinosail/kinosail/actions/runs/38159857532).
 The archive is `q09-download.zip`, SHA-256 `788808aa9b969a61fea2772d7f0703340466cdea06004c6d863580db70bcd3ac`.
+
+### AQA-011 — Open: automated container test instance has untrusted fixture HTTPS
+
+`make -C apps/subtitles test-instance-check` built its ARM64 image and isolated populated Compose instance.
+The browser run passed 19 cases, skipped 27, and failed 20. Eighteen failures explicitly report certificate trust errors.
+The other two history cases observed missing stylesheet layout; their exact cause remains separate until the transport is repaired and rerun.
+Browser certificate validation remained enabled. No host trust or personal browser settings were changed.
+The task-owned Compose project had zero containers and zero volumes after cleanup.
+The private receipt is `subtitle-nav/test-instance-receipt.json`, SHA-256 `11141efdd155c99f3a60dcfb32b13b4e87ce1d34b6a10593e13ef46a15993e52`.
+These passing fixture cases do not establish populated container-browser acceptance.
 
 ## Additional private artifact checksums
 
