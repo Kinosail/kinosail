@@ -61,11 +61,17 @@ extension RemoteArtworkScrollTests {
 
     @MainActor func waitForFocus(_ element: XCUIElement,
                                          diagnosticApp: XCUIApplication? = nil) throws {
+        let deadline = ProcessInfo.processInfo.systemUptime + 5
+        var stableSince = ProcessInfo.processInfo.systemUptime
         var previous = CGRect.null
         var stableSamples = 0
-        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            guard element.exists else { return false }
+        let predicate = NSPredicate { _, _ in
+            guard ProcessInfo.processInfo.systemUptime < deadline,
+                  element.exists else { return false }
             let frame = element.frame
+            if frame != previous {
+                stableSince = ProcessInfo.processInfo.systemUptime
+            }
             stableSamples = frame == previous ? stableSamples + 1 : 0
             previous = frame
             let hasFocus = element.hasFocus
@@ -73,8 +79,15 @@ extension RemoteArtworkScrollTests {
                 print("ARTWORK_FOCUS_WAIT label=\(element.label) focused=\(hasFocus) frame=\(frame) stable=\(stableSamples)")
             }
             return hasFocus && stableSamples >= 2
-        }, object: nil)
-        let result = XCTWaiter.wait(for: [focused], timeout: 5)
+                && ProcessInfo.processInfo.systemUptime - stableSince >= 2
+                && ProcessInfo.processInfo.systemUptime < deadline
+        }
+        // Capture the first sample now; keep three samples over at least two seconds.
+        _ = predicate.evaluate(with: nil)
+        let focused = XCTNSPredicateExpectation(predicate: predicate, object: nil)
+        let remaining = max(0, deadline - ProcessInfo.processInfo.systemUptime)
+        let result: XCTWaiter.Result = remaining > 0
+            ? XCTWaiter.wait(for: [focused], timeout: remaining) : .timedOut
         if result != .completed, let diagnosticApp {
             record("artwork My List focus wait failure before assertion", diagnosticApp)
         }
