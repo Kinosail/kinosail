@@ -37,11 +37,9 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
 
         remote.press(.down)
         record("artwork first Down focus before My List validation", app)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"], diagnosticApp: app)
         remote.press(.down)
-        try waitForFocus(actor(1, app))
+        try waitForFocus(actor(1, app), diagnosticApp: app)
         let scrolled = app.screenshot()
         let attachment = XCTAttachment(screenshot: scrolled)
         attachment.name = "artwork cast vertical scroll and clipped controls"
@@ -65,7 +63,7 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         XCTAssertTrue(app.staticTexts["Artwork QA Actor 01"].exists)
         record("artwork actor screen removes the detail decorative plane", app)
         remote.press(.menu)
-        try waitForFocus(actor(1, app))
+        try waitForFocus(actor(1, app), diagnosticApp: app)
         record("artwork Menu restores the selected cast card", app)
 
         for index in 2...12 {
@@ -85,8 +83,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             try waitForFocus(actor(index, app))
         }
         remote.press(.up)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"])
         remote.press(.up)
         try waitForFocus(resume)
@@ -134,11 +130,9 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         record("focused artwork restoration initial hero", app)
 
         remote.press(.down)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"])
         remote.press(.down)
-        try waitForFocus(actor(1, app))
+        try waitForFocus(actor(1, app), diagnosticApp: app)
         let scrolled = app.screenshot()
         let attachment = XCTAttachment(screenshot: scrolled)
         attachment.name = "focused artwork restoration scrolled Cast"
@@ -152,8 +146,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             rect: CGRect(x: 140, y: 0, width: 800, height: 60)), 0)
 
         remote.press(.up)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"])
         remote.press(.up)
         try waitForFocus(resume)

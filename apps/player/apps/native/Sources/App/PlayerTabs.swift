@@ -51,31 +51,24 @@ struct PlayerTabs: View {
     var body: some View {
         Group {
             #if os(tvOS)
-            stack(tab: .home) {
-                VStack(spacing: 0) {
-                    TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
-                    PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
-                                    changeMode: changeMode, selectTab: selectBrowseTab,
-                                    focusTopBar: { topFocus = .search })
+            // An outer safe-area inset can cover a pushed tvOS destination.
+            // Reserve the banner's actual height before laying out navigation.
+            VStack(spacing: 0) {
+                connectionBanner.fixedSize(horizontal: false, vertical: true)
+                stack(tab: .home) {
+                    VStack(spacing: 0) {
+                        TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
+                        PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
+                                        changeMode: changeMode, selectTab: selectBrowseTab,
+                                        focusTopBar: { topFocus = .search })
+                    }
+                    .cinemaBackground()
                 }
-                .cinemaBackground()
             }
             #else
             tabs
+                .safeAreaInset(edge: .top, spacing: 0) { connectionBanner }
             #endif
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            ConnectionBanner {
-                #if os(tvOS)
-                selectBrowseTab(.downloads)
-                #else
-                let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
-                var path = NavigationPath()
-                if tab == .more { path.append(PlayerTab.downloads) }
-                paths[tab] = path
-                selection = tab
-                #endif
-            }
         }
         .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
         .onChange(of: pinned) { _, _ in
@@ -85,6 +78,19 @@ struct PlayerTabs: View {
             #if os(iOS)
             if selection != pinned[0] { selection = pinned[0] }
             if !paths.isEmpty { paths = [:] }
+            #endif
+        }
+    }
+    private var connectionBanner: some View {
+        ConnectionBanner {
+            #if os(tvOS)
+            selectBrowseTab(.downloads)
+            #else
+            let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
+            var path = NavigationPath()
+            if tab == .more { path.append(PlayerTab.downloads) }
+            paths[tab] = path
+            selection = tab
             #endif
         }
     }

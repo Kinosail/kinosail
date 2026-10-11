@@ -12,14 +12,15 @@ import sys
 
 
 LIMIT = 80.0
-TARGETS = {"darwin", "linux", "windows"}
+TARGETS = {"darwin", "linux", "windows", "freebsd"}
+BUILD_TAGS = {"apps/player/e2e": "q47proof"}
 
 
 def target_for(path: str) -> str | None:
     stem = Path(path).stem
     suffix = stem.rsplit("_", 1)[-1]
     if suffix == "other":
-        return "windows"
+        return "freebsd"
     return suffix if suffix in TARGETS else None
 
 
@@ -42,6 +43,9 @@ def report(tool: str, repo: Path, paths: list[str]) -> dict:
     target = target_for(path)
     if target:
         environment.update({"CGO_ENABLED": "0", "GOARCH": "amd64", "GOOS": target})
+    tags = BUILD_TAGS.get(str(Path(path).parent))
+    if tags:
+        environment["GOFLAGS"] = f"{environment.get('GOFLAGS', '')} -tags={tags}".strip()
     result = subprocess.run(
         [tool, "halstead-package", *paths],
         cwd=repo,

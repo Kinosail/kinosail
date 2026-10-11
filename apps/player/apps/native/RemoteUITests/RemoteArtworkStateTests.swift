@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 // Opt-in disposable-fixture journeys. Each selected case needs a fresh unique
@@ -30,8 +31,11 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         XCTAssertTrue(pendingSeen)
         XCTAssertFalse(app.buttons["Resume"].exists)
         let pendingFrame = loading.frame
+        let pendingTitleY = try firstPlaceholderY(app.screenshot().image, viewport: app.frame)
         waitForDetail(app, title: "After the Rain", timeout: 30)
         record("artwork-detail-pending-loaded", app)
+        XCTAssertEqual(pendingTitleY, app.staticTexts["After the Rain"].frame.minY, accuracy: 64,
+                       "The title placeholder must reserve the loaded hero's content position")
         XCTAssertFalse(loading.exists)
         XCTAssertFalse(app.buttons["Try again"].exists)
         print("ARTWORK_STATE pendingFrame=\(pendingFrame) title=\(app.staticTexts["After the Rain"].frame) resume=\(app.buttons["Resume"].frame)")
@@ -45,8 +49,25 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         let app = openMovie()
         let retry = app.buttons["Try again"]
         let retrySeen = retry.waitForExistence(timeout: 10)
-        record("artwork-detail-failed-before-retry", app)
         XCTAssertTrue(retrySeen)
+        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in retry.hasFocus }, object: nil)
+        let focusResult = await XCTWaiter.fulfillment(of: [focused], timeout: 5)
+        XCTAssertEqual(focusResult, .completed)
+        let heading = app.staticTexts["Couldn’t load this content"]
+        let banner = app.staticTexts["Check your network and that your Server is running. Apple TV needs a connection to play."]
+        if banner.exists {
+            let clear = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                heading.frame.minY > banner.frame.maxY + 12
+            }, object: nil)
+            let clearResult = await XCTWaiter.fulfillment(of: [clear], timeout: 5)
+            record("artwork-detail-failed-settled", app)
+            XCTAssertEqual(clearResult, .completed, "The connection banner must not cover the detail error heading")
+            XCUIRemote.shared.press(.up)
+            XCTAssertTrue(app.buttons["Reconnect"].hasFocus)
+            XCUIRemote.shared.press(.down)
+            XCTAssertTrue(retry.hasFocus, "Down from Reconnect must return to the visible retry action")
+        }
+        record("artwork-detail-failed-before-retry", app)
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
         XCTAssertFalse(app.buttons["Resume"].exists)
         XCTAssertTrue(retry.hasFocus, "Detail failure must expose reachable retry focus")
@@ -57,6 +78,35 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         XCTAssertFalse(retry.exists)
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
         verifyPrimaryVisible(app)
+    }
+
+    @MainActor
+    func testUnavailableServerKeepsDetailRetryBelowBanner() async throws {
+        try requireCase("offline")
+        try await state("loaded")
+        let app = openMovie(select: false)
+        try await state("failed", target: "connection")
+        XCUIRemote.shared.press(.select)
+        let retry = app.buttons["Try again"]
+        let reconnect = app.buttons["Reconnect"]
+        XCTAssertTrue(retry.waitForExistence(timeout: 10))
+        XCTAssertTrue(reconnect.waitForExistence(timeout: 10))
+        let heading = app.staticTexts["Couldn’t load this content"]
+        let banner = app.staticTexts["Check your network and that your Server is running. Apple TV needs a connection to play."]
+        let clear = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            heading.frame.minY > banner.frame.maxY + 12 && retry.hasFocus
+        }, object: nil)
+        let result = await XCTWaiter.fulfillment(of: [clear], timeout: 5)
+        record("offline detail settled retry and banner", app)
+        XCTAssertEqual(result, .completed, "Server outage must leave the error heading visible and Retry focused")
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(reconnect.hasFocus)
+        XCUIRemote.shared.press(.down)
+        XCTAssertTrue(retry.hasFocus)
+        try await state("loaded")
+        XCUIRemote.shared.press(.select)
+        waitForDetail(app, title: "After the Rain")
+        record("offline detail recovered", app)
     }
 
     @MainActor
@@ -107,13 +157,14 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         record("artwork-detail-appearance-\(variant)-first-down", app)
         let bookmarks = app.buttons["Bookmarks"]
         let myList = app.buttons["My List"]
+        waitForFocus(myList, in: app)
         if abs(bookmarks.frame.midY - myList.frame.midY) <= 8 {
+            XCUIRemote.shared.press(.right)
             waitForFocus(bookmarks, in: app)
             XCUIRemote.shared.press(.left)
             waitForFocus(myList, in: app)
         } else {
             XCTAssertLessThan(myList.frame.minY, bookmarks.frame.minY)
-            waitForFocus(myList, in: app)
             XCUIRemote.shared.press(.down)
             waitForFocus(bookmarks, in: app)
             XCUIRemote.shared.press(.up)
@@ -126,8 +177,28 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         verifyPrimaryVisible(app)
     }
 
+    // The placeholder intentionally hides its decorative children from accessibility.
+    // Inspect actual pixels at the shared text inset, without a production test hook.
+    private func firstPlaceholderY(_ image: UIImage, viewport: CGRect) throws -> CGFloat {
+        let cg = try XCTUnwrap(image.cgImage)
+        let scale = CGFloat(cg.width) / viewport.width
+        let column = try XCTUnwrap(cg.cropping(to: CGRect(x: 204 * scale, y: 0, width: 1, height: CGFloat(cg.height))))
+        let context = try XCTUnwrap(CGContext(data: nil, width: 1, height: column.height,
+            bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        context.draw(column, in: CGRect(x: 0, y: 0, width: 1, height: column.height))
+        let pixels = try XCTUnwrap(context.data?.assumingMemoryBound(to: UInt8.self))
+        let rows = Int(100 * scale)..<Int(600 * scale)
+        let y = try XCTUnwrap(rows.first { row in
+            let offset = row * 4
+            return pixels[offset] >= 28 && pixels[offset + 1] >= 34
+                && pixels[offset + 1] > pixels[offset + 2]
+        }, "The pending screen must contain a visible title placeholder")
+        return CGFloat(y) / scale
+    }
+
     @MainActor
-    private func openMovie(next: Bool = false) -> XCUIApplication {
+    private func openMovie(next: Bool = false, select: Bool = true) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -144,7 +215,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
             remote.press(.right)
         }
         XCTAssertTrue(focusedLabels(app).joined().contains(next ? "Before Dawn" : "After the Rain"))
-        remote.press(.select)
+        if select { remote.press(.select) }
         return app
     }
 
@@ -194,11 +265,11 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         fixtureEnabled = true
     }
 
-    private func state(_ mode: String, delay: Int = 0) async throws {
+    private func state(_ mode: String, delay: Int = 0, target: String = "details") async throws {
         let identity = try XCTUnwrap(ProcessInfo.processInfo.environment["KINOSAIL_TV_QUALITY_FIXTURE_ID"])
         XCTAssertNotNil(identity.range(of: "^tv-polish-qa-[a-z0-9-]{1,64}$", options: .regularExpression),
                         "A unique freshly seeded identity is required; the bare fallback is rejected")
-        let url = URL(string: "http://127.0.0.1:38359/qa/state?mode=\(mode)&delay=\(delay)&target=details&identity=\(identity)")!
+        let url = URL(string: "http://127.0.0.1:38359/qa/state?mode=\(mode)&delay=\(delay)&target=\(target)&identity=\(identity)")!
         let (_, response) = try await URLSession.shared.data(from: url)
         XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
     }

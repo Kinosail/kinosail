@@ -19,6 +19,7 @@ final class RemotePolishTests: RemoteTestCase {
 
     @MainActor
     func testFocusedContinueWatchingCardsKeepTheirNeighborsClear() {
+        continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -31,6 +32,8 @@ final class RemotePolishTests: RemoteTestCase {
             let focused = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
             XCTAssertTrue(focused.exists)
             XCTAssertTrue(focused.label.contains(titles[index]))
+            record("watching focus \(focused.label)", app)
+            assertVisibleArtworkFocus(focused, in: app)
             let next = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", titles[index + 1])).firstMatch
             XCTAssertTrue(next.exists)
             if next.isHittable && abs(next.frame.midY - focused.frame.midY) < 60 && next.frame.minX > focused.frame.minX {
@@ -38,12 +41,35 @@ final class RemotePolishTests: RemoteTestCase {
                                          "The focused card must leave breathing room before the next card")
                 comparisons += 1
             }
-            record("watching focus \(focused.label)", app)
             remote.press(.right)
         }
         remote.press(.up)
-        XCTAssertTrue(app.buttons["Search"].hasFocus)
+        XCTAssertTrue(app.buttons["Settings"].hasFocus)
         XCTAssertGreaterThanOrEqual(comparisons, 2)
+    }
+
+    // A label query can report focus while the rendered card only zooms its
+    // already-clipped artwork. The TV design requires a visible light outline.
+    @MainActor
+    private func assertVisibleArtworkFocus(_ element: XCUIElement, in app: XCUIApplication) {
+        let visible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let frame = element.frame
+            let screenshot = app.screenshot().image
+            // Allow small focus-bound/rasterization differences. Require a
+            // light edge on multiple rows across three separated points.
+            let lightRows = (-6...8).filter { offset in
+                [0.25, 0.5, 0.75].allSatisfy { fraction in
+                    let color = self.pixel(screenshot,
+                                           x: (frame.minX + frame.width * fraction) / app.frame.width,
+                                           y: (frame.minY + CGFloat(offset)) / app.frame.height)
+                    return color.prefix(3).allSatisfy { $0 > 180 }
+                }
+            }
+            if lightRows.count >= 2 { print("FOCUS_OUTLINE top=\(frame.minY) lightRowOffsets=\(lightRows)") }
+            return lightRows.count >= 2
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 5), .completed,
+                       "Focused artwork needs a visible high-contrast outline, including with missing artwork")
     }
 
     @MainActor
@@ -65,7 +91,7 @@ final class RemotePolishTests: RemoteTestCase {
         for _ in 0..<5 {
             let focused = app.descendants(matching: .any).matching(NSPredicate(format: "hasFocus == true")).firstMatch
             XCTAssertTrue(focused.waitForExistence(timeout: 5), "Focus should settle after the player transition")
-            if focused.label == "Shuffle off" || focused.label == "Repeat: off" { break }
+            if focusedLabels(app).contains("Shuffle off") || focusedLabels(app).contains("Repeat: off") { break }
             remote.press(.down)
         }
         let sleep = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sleep timer'")).firstMatch

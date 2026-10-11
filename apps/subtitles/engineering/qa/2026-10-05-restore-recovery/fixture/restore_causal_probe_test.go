@@ -108,7 +108,9 @@ func (f *restoreRig) serveCausalPOST(writer http.ResponseWriter, request *http.R
 	}
 	if index == 2 {
 		f.serveHeldCausalProbe(request.Context())
-		return
+		// Returning would let net/http emit an implicit 200 for an undelivered
+		// diagnostic. Keep the settled witness, then abort the exchange.
+		panic(http.ErrAbortHandler)
 	}
 	delivered := true
 	if index == 0 {

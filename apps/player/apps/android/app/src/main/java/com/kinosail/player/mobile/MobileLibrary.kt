@@ -47,16 +47,16 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail()
         destination = chosen
-        if (chosen !in setOf("home", "listen", "more"))
+        if (chosen !in setOf("home", "listen", "more", "collections"))
             catalog.changeView(if (chosen == "search") "all" else chosen, refreshIfEmpty = true)
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     LaunchedEffect(destination, state.loading) {
-        if (!state.loading && destination !in setOf("home", "listen", "more"))
+        if (!state.loading && destination !in setOf("home", "listen", "more", "collections"))
             catalog.changeView(if (destination == "search") "all" else destination)
     }
     LaunchedEffect(grid, destination, state.selected, state.items.size, state.loading, state.notice) {
-        if (destination !in setOf("home", "listen", "more") && state.selected == null &&
+        if (destination !in setOf("home", "listen", "more", "collections") && state.selected == null &&
             !state.loading && state.notice == null && state.items.size < state.total) {
             snapshotFlow { grid.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1 }.collect { last ->
                 if (last >= state.items.size - 8) catalog.loadMore()
@@ -85,6 +85,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     viewPhoto = { photoItem = state.selected }, readBook = { bookItem = state.selected })
             }
         } else when (destination) {
+            "collections" -> CollectionsScreen(viewer, catalog, false) { navigate(tabs.first()) }
             "home", "listen" -> HomeScreen(viewer, catalog, false, nowPlaying, browse = navigate,
                 open = catalog::selectHomeItem, play = { playingItem = it }, listening = destination == "listen")
             "more" -> Column {

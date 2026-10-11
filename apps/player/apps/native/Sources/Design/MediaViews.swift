@@ -38,6 +38,15 @@ struct MediaCard: View {
                         }
                     }
                     .clipShape(.rect(cornerRadius: 12))
+                    #if os(tvOS)
+                    .overlay {
+                        if focused {
+                            RoundedRectangle(cornerRadius: 12)
+                                .strokeBorder(KinoTheme.text, lineWidth: 4)
+                                .allowsHitTesting(false)
+                        }
+                    }
+                    #endif
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)

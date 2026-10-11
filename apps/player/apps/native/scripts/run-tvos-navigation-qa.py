@@ -44,7 +44,7 @@ base = ['xcodebuild', '-project', 'Kinosail.xcodeproj', '-configuration', 'Debug
         '-destination', 'platform=tvOS Simulator,id=' + device,
         '-derivedDataPath', '.build/tvos-simulator', '-parallel-testing-enabled', 'NO',
         '-maximum-concurrent-test-simulator-destinations', '1', '-test-timeouts-enabled', 'YES',
-        '-default-test-execution-time-allowance', '600', '-maximum-test-execution-time-allowance', '630',
+        '-default-test-execution-time-allowance', '600', '-maximum-test-execution-time-allowance', '930',
         '-collect-test-diagnostics', 'never', 'CODE_SIGNING_ALLOWED=YES', 'CODE_SIGN_IDENTITY=-',
         'KINOSAIL_SOURCE_REVISION=' + revision]
 receipt = {'startedAt': datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -128,14 +128,16 @@ with (output / 'fixture.log').open('w') as log:
             if args.mode == 'loaded':
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/' + case for case in [
                     'RemoteQualityBaselineTests', 'RemoteHomeScrollingTests',
-                    'RemoteDetailMovementTests/testHomeDirectionalRowsAndLeftEdge',
-                    'RemoteMovementTests/testTopBarAndBrowseReturnPaths', 'RemotePlaybackOptionsTests']]
+                    'RemoteDetailMovementTests', 'RemoteMovementTests',
+                    'RemotePolishTests', 'RemoteLibraryNavigationTests', 'RemoteSearchNavigationTests',
+                    'RemoteSettingsNavigationTests', 'RemotePlaybackOptionsTests', 'RemotePlaybackCrashTests']]
             else:
                 method = {'empty': 'testEmptyHomeBackReachesNavigation',
                           'failed': 'testFailedHomeBackAndRetryRemainUsable',
                           'pending': 'testPendingHomeKeepsNavigationReachableAndRemovesSkeleton'}[args.mode]
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/RemoteHomeStateTests/' + method]
-            code = run('remote', 'Kinosail-tvOS-Remote', selection, 780 if args.mode == 'loaded' else 120)
+            # The 4K run's 100-return case takes about twelve minutes on its own.
+            code = run('remote', 'Kinosail-tvOS-Remote', selection, 2400 if args.mode == 'loaded' else 300)
     finally:
         try:
             settle(fixture)
