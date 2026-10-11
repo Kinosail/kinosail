@@ -34,7 +34,7 @@ class Q09ProofTests(unittest.TestCase):
             return self.driver.verify_results(path, mode)
 
     def test_exact_three_groups_and_safe_projection(self):
-        for mode, count in [('isolated', 5), ('server', 8), ('phone', 1)]:
+        for mode, count in [('isolated', 12), ('server', 47), ('phone', 1)]:
             data = self.result(mode)
             data['config'] = {'cookie': 'PRIVATE-FAKE'}
             data['suites'][0]['specs'][0]['tests'][0]['results'][0]['attachments'] = [{'body': 'PRIVATE-FAKE'}]
