@@ -27,9 +27,23 @@ def titles(mode):
             for storage in ('opfs', 'indexeddb')
             for width in ([390, 1440, 1920] if mode == 'server' else [390 if storage == 'opfs' else 1440])]
     rows += ['same Viewer Profile in another tab preserves the transfer owner until explicit Pause',
-             'navigation interrupts the transfer and reload offers explicit Resume with verified data']
+             'navigation interrupts the transfer and reload offers explicit Resume with verified data',
+             'a paused peer offers Resume when the native job lock releases without another status',
+             'bound download controls and their native service worker do not wait for an unrelated image']
     if mode == 'isolated':
         rows += ['isolated native profile boundary: changing Viewer Profile still cancels the old owner']
+        rows += [f'a pending Resume wait preserves the {boundary} boundary'
+                 for boundary in ('new-owner', 'replaced-button', 'profile', 'pagehide', 'same-profile')]
+    else:
+        scenarios = ('ready', 'http-error', 'normal-http-error', 'redirect', 'normal-redirect',
+                     'slow-response', 'missing-script', 'changed-script', 'missing-api', 'missing-worker',
+                     'wrong-worker', 'wrong-scope', 'missing-control', 'disabled-control', 'unbound-control',
+                     'invalid-job', 'invalid-item', 'mismatched-article', 'missing-profile', 'invalid-profile',
+                     'missing-title', 'oversized-title', 'missing-quality', 'unknown-quality', 'bootstrap-error',
+                     'unexpected-transfer', 'unexpected-removal', 'late-error', 'late-transfer', 'late-document',
+                     'late-control', 'late-title', 'late-quality', 'other-error', 'repeated-timeout',
+                     'replacement-http-error', 'replacement-redirect')
+        rows += [f'download navigation preserves original {scenario} evidence' for scenario in scenarios]
     return rows
 
 
@@ -162,7 +176,7 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     private.mkdir(parents=True, exist_ok=False)
     receipt = {'schemaVersion': 1, 'item': 'Q09', 'startedUTC': datetime.now(timezone.utc).isoformat(),
-               'scope': '5 isolated storage + 8 real Go Server + 1 real phone hit-target; no media decoding',
+               'scope': '12 isolated controls; Server group: 9 real Go Server + 38 isolated controls; 1 real phone hit-target; no media decoding',
                'normalProtectedValidation': 'separate, required before merge', 'groups': [],
                'privateEvidenceLimit': 'Raw logs/reports/PNG/traces remain on ephemeral runner disk; hashes support reruns, not later visual/private-log inspection. Only fixed error source locations are exported.'}
     results, inputs = [], {}
