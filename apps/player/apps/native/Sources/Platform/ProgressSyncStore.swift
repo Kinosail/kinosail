@@ -35,6 +35,7 @@ actor ProgressSyncStore {
     private var entries: [PendingProgress] = []
     private var loaded = false
     private var syncing = false
+    private var syncRequested = false
 
     init(scope: String, directory: URL? = nil) throws {
         self.scope = try Input.hex(scope, count: 64)
@@ -67,26 +68,29 @@ actor ProgressSyncStore {
     func synchronize(client: ServerClient) async throws -> [String: ProgressSyncResult] {
         guard try await client.profileScope() == scope else { throw ClientError.http(403) }
         try load()
-        guard !syncing else { return [:] }
+        guard !syncing else { syncRequested = true; return [:] }
         syncing = true
         defer { syncing = false }
         var results: [String: ProgressSyncResult] = [:]
-        for entry in entries where entry.conflict == nil {
-            try Task.checkCancellation()
-            let result: ProgressSyncResult
-            do { result = try await client.syncProgress(itemID: entry.itemID, progress: entry.progress, expected: entry.expected, playbackToken: "") }
-            catch ClientError.http(404) { continue }
-            catch ClientError.http(410) { continue }
-            // Keep unavailable titles on disk, but let other titles synchronize.
-            // Authentication, transport and persistence errors still stop this attempt.
-            guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { continue }
-            var next = entries
-            if result.conflict { next[index].conflict = result.progress }
-            else if next[index].progress == entry.progress { next.remove(at: index) }
-            else { next[index].expected = result.progress }
-            try persist(next)
-            results[entry.itemID] = result
-        }
+        repeat {
+            syncRequested = false
+            for entry in entries where entry.conflict == nil {
+                try Task.checkCancellation()
+                let result: ProgressSyncResult
+                do { result = try await client.syncProgress(itemID: entry.itemID, progress: entry.progress, expected: entry.expected, playbackToken: "") }
+                catch ClientError.http(404) { continue }
+                catch ClientError.http(410) { continue }
+                // Keep unavailable titles on disk, but let other titles synchronize.
+                // Authentication, transport and persistence errors still stop this attempt.
+                guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { continue }
+                var next = entries
+                if result.conflict { next[index].conflict = result.progress }
+                else if next[index].progress == entry.progress { next.remove(at: index) }
+                else { next[index].expected = result.progress }
+                try persist(next)
+                results[entry.itemID] = result
+            }
+        } while syncRequested
         return results
     }
 
