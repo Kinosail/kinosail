@@ -185,8 +185,10 @@ Their runs are [38155212904](https://github.com/Kinosail/kinosail/actions/runs/3
 The historical Subtitles protocol driver stopped at source preflight before compiling or running tests.
 Its pinned protocol inputs no longer match the current source. This is an unexecuted proof, not a product failure.
 Current-source Save controls, headers, and body suites passed on `8e937334fbbc0f79915f6f093d8aed268481de64`.
-The Restore controls driver stopped during checkout preflight before compiling or running its public contracts.
-Other bounded browser suites are still being reconciled.
+Browse-return primary, cold, HTMX, Shows, and Search suites also passed on that revision without source drift.
+All three Restore drivers stopped during checkout preflight before compiling or running their public contracts.
+[The bounded run ledger](hosted-gaps.json) records each exact revision, run, outcome, artifact ID, and archive checksum.
+Those twelve runs contain eight passing suites and four blocked proofs; blocked prerequisites are not passing coverage.
 
 The BFCache proof reached browser navigation but reported `prerequisite-blocked`.
 Chromium reported `response-cache-control-no-store`, `masked`, and `other` reasons for not retaining the page.
@@ -237,6 +239,10 @@ The regression passed after the fix; deleted-spec planning and shell lint passed
 The complete tooling check remains a separate delivery gate.
 Its first local attempt failed an unrelated R06 shell-routing probe with empty output.
 Fifty direct repetitions of that probe passed without a source change; the original failure is retained.
+The second attempt passed all 169 CI contracts with five environment skips, then timed out starting Node in an unrelated gate-pause fixture.
+Neither full local tooling attempt is reported as passing.
+The final verifier regression passed after the hashing format was finalized. `make max-loc` and `git diff --check` passed.
+The implementation checkpoint is `6937787141c50461dc6adbe68d564a85c0fc654e`; hosted required checks remain mandatory.
 
 ### AQA-008 — Open: intermittent executable-fixture launch failure
 
