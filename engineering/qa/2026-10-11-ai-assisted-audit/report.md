@@ -121,7 +121,9 @@ This isolated translation probe is not an end-to-end startup benchmark.
 `go -C packages test ./localization -count=1` passed.
 Both apps passed `go test ./internal/server -run '^Test.*(Lang|Localiz|Spanish|Arabic)' -count=1 -json`: 157 Player cases and 228 Subtitles cases, including subtests.
 The real startup journey passed after the repair with unchanged playback deadlines and assertions.
-Its outer receipt is `startup-localization/manifest.json` under the private campaign directory.
+Its outer receipt is `startup-localization/manifest.json` under the private campaign directory, SHA-256 `d2d56b4f76ee4335f10b7a4147c8fefdcf2afb00f57c8173c7951aa7aaa83f84`.
+A later ordinary HEVC run timed out before any cases began under extreme concurrent host load. It provides no additional playback result.
+The broad local Player `verify-changed` was stopped during input hashing after maximum-line and diff checks passed. Its shared-package stages remain unverified locally. Hosted required checks remain mandatory.
 
 ### Additional layout and native evidence
 
@@ -133,6 +135,12 @@ These are rendered-fixture checks, not populated-server E2E evidence. Firefox re
 The hosted iOS failure is `MediaCardRatingTests/testVideoCardsRenderIdenticallyWithAndWithoutRatings`: rated-image PNG encoding returned nil.
 The local focused retry on the reusable Kinosail iPhone failed before tests because simulator boot exceeded 60 seconds.
 That infrastructure failure neither reproduces nor resolves the hosted assertion. No native code was changed.
+
+## Delivery checkpoints
+
+[PR #550](https://github.com/Kinosail/kinosail/pull/550) merged the two QA journey repairs after Player, Subtitles, Repository, and Security checks passed.
+A fetched ancestry check confirmed reviewed commit `07d4f5fe528a7bdca19353b3e796c6a4aad764a2` in `origin/main`.
+The localization optimization is a separate follow-up; its local focused results do not establish protected-main delivery.
 
 ## Remaining coverage
 
