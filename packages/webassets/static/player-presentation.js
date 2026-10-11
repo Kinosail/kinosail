@@ -55,6 +55,7 @@ const setSettings = (open) => {
   settingsPanel.hidden = !open;
   settingsButton.setAttribute("aria-expanded", String(open));
   settingsPanel.closest(".media-stage,.player-native-options")?.classList.toggle("has-settings", open);
+  player.closest(".media-stage")?.classList.toggle("has-settings", open);
   if (open) settingsPanel.querySelector("input:not([type=hidden]),select,button")?.focus();
 };
 settingsButton?.addEventListener("click", () => setSettings(settingsPanel.hidden));

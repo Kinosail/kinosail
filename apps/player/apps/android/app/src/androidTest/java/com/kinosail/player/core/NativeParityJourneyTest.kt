@@ -177,6 +177,7 @@ class NativeParityJourneyTest {
         else compose.onNodeWithText("Movies").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("catalog-pending")
+        if (!tv) assertReadableHeading(compose.onNode(hasText("Movies") and !hasClickAction()))
         fixture.mode = "failed"
         waitText("Could not load your library. Try again.")
         capture("catalog-failed")
@@ -185,11 +186,10 @@ class NativeParityJourneyTest {
         waitText("Nothing in your library yet.")
         capture("catalog-empty")
         fixture.mode = "ready"
-        // Reopening the same destination intentionally retains its cached empty page.
-        // Explicit search refresh verifies recovery after the fixture changes its data.
-        compose.onNodeWithText("Search").activate()
-        waitText("Search library")
-        compose.onNodeWithText("Clear search").activate()
+        compose.onNodeWithText("Home").activate()
+        waitText(if (tv) "Continue watching" else "Watching")
+        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
+        else compose.onNodeWithText("Movies").activate()
         waitText("New Film")
         capture("catalog-loaded")
     }

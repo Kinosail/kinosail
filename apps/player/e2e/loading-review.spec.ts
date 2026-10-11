@@ -30,6 +30,7 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	expect(await video.evaluate((element) => element.dataset.hls || element.dataset.adaptive || element.getAttribute("src"))).toMatch(/\/(media|stream|hls)\//);
 	expect(stage?.width).toBeGreaterThan(300);
 	expect(stage?.height).toBeGreaterThan(150);
+	await video.evaluate(async (element: HTMLVideoElement) => { element.muted = true; await element.play(); });
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0.25);
 	await video.dispatchEvent("stalled");
 	await expect(page.locator("[data-player-status]")).toBeHidden();

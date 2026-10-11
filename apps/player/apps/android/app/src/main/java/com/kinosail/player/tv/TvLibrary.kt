@@ -41,7 +41,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     val keyboard = LocalSoftwareKeyboardController.current
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail(); destination = chosen
-        if (chosen !in setOf("home", "listen", "settings")) catalog.changeView(if (chosen == "search") "all" else chosen)
+        if (chosen !in setOf("home", "listen", "settings"))
+            catalog.changeView(if (chosen == "search") "all" else chosen, refreshIfEmpty = true)
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
     LaunchedEffect(destination, state.loading) {
