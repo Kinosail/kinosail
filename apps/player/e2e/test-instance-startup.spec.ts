@@ -35,7 +35,7 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.route('**/playback-prepare', route => route.abort());
   const prepare = (name: string, source: string) => page.request.post(`/api/v1/items/${id(name)}/playback-prepare`, {headers, data: {source}});
   let negotiatedQuery = '';
-  const plan = async (name: string) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback${negotiatedQuery}`)).json());
+  const plan = async (name: string, query = negotiatedQuery) => (await (await page.request.get(`/api/v1/items/${id(name)}/playback${query}`)).json());
   const source = (value: {compatible: string}, resume = 0) => value.compatible.replace('/index.m3u8', `${resume ? '-o' + Math.floor(resume * 10) * 100 : ''}/index.m3u8`);
   const receipts: object[] = [];
   async function record(value: object) {
@@ -207,7 +207,10 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await queueTrace(2, 'pause', true)).status()).toBe(204);
   await page.goto('/?q=Invalidation');
   await page.route('**/playback-prepare', route => route.abort());
-  const staleSource = source(await plan('Invalidation'));
+  // This case owns bounded conversion invalidation. A host that can copy HEVC
+  // otherwise needs all 64 seconds before readiness, beyond the work budget.
+  // Whole copied-HEVC completion/cancellation has its own public follow-on suite.
+  const staleSource = source(await plan('Invalidation', '?videoCodecs=h264'));
   expect((await prepare('Invalidation', staleSource)).status()).toBe(202);
   await expect.poll(async () => (await prepare('Invalidation', staleSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   const staleDirectory = await cacheDirectory('Invalidation');

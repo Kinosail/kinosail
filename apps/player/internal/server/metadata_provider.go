@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -155,8 +157,21 @@ func (store *metadataStore) getJSON(ctx context.Context, endpoint string, target
 	return sharedmetadata.GetProviderJSON(ctx, store.client, endpoint, store.config.Token, target)
 }
 
-func (store *metadataStore) downloadImage(ctx context.Context, path, target string) error {
-	return sharedmetadata.DownloadProviderImage(ctx, store.client, store.config.ImageURL, path, target)
+func (store *metadataStore) downloadImage(ctx context.Context, path, target string, backdrop bool) error {
+	if !backdrop {
+		return sharedmetadata.DownloadProviderImage(ctx, store.client, store.config.ImageURL, path, target)
+	}
+	err := sharedmetadata.DownloadProviderBackdrop(ctx, store.client, store.config.ImageURL, path, target)
+	if err != nil && ctx.Err() == nil && store.config.ImageURL == sharedmetadata.NormalizeConfig(MetadataConfig{}).ImageURL {
+		failureClass := "response-or-transport"
+		var validation *sharedmetadata.BackdropValidationError
+		if errors.As(err, &validation) {
+			failureClass = validation.FailureClass()
+		}
+		slog.WarnContext(ctx, "Metadata backdrop rejected", "request_id", requestActivityID(ctx),
+			"operation", "metadata.backdrop", "failure_class", failureClass, "outcome", "cache-not-replaced")
+	}
+	return err
 }
 
 func (store *metadataStore) artworkPath(id string) string {

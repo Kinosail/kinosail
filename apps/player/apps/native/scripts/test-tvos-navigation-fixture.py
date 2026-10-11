@@ -4,12 +4,13 @@ state, framing or Range inputs. Rejections must preserve the disposable state.
 from email.message import Message
 import importlib.util
 import io
+import json
 from pathlib import Path
 import runpy
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 class NavigationFixtureTests(unittest.TestCase):
@@ -61,6 +62,29 @@ class NavigationFixtureTests(unittest.TestCase):
                 self.assertEqual(self.request("GET", "/qa/state?" + query)[0][0], 400)
                 self.assertEqual((self.fixture.STATE, self.fixture.VIEWER["viewer"]), before)
 
+    def test_empty_details_remove_only_response_backdrop(self):
+        original_state = dict(self.fixture.STATE)
+        original_items = [dict(item) for item in self.fixture.ITEMS]
+        try:
+            self.assertEqual(self.request("GET", "/qa/state?mode=empty&target=details")[0][0], 200)
+            status, detail = self.request("GET", "/api/v1/items/movie-004", authorized=True)[0]
+            self.assertEqual(status, 200)
+            expected = dict(original_items[4], backdrop="")
+            self.assertEqual(detail, dict(item=expected, listed=False, profileId="qa"))
+            self.assertEqual(self.fixture.ITEMS, original_items)
+            status, library = self.request("GET", "/api/v1/library", authorized=True)[0]
+            self.assertEqual(status, 200)
+            movie = next(item for item in library["items"] if item["id"] == "movie-004")
+            self.assertEqual(movie["backdrop"], original_items[4]["backdrop"])
+            self.assertEqual(self.request("GET", "/qa/state?mode=loaded&target=details")[0][0], 200)
+            status, restored = self.request("GET", "/api/v1/items/movie-004", authorized=True)[0]
+            self.assertEqual(status, 200)
+            self.assertEqual(restored["item"], original_items[4])
+            self.assertEqual(self.fixture.ITEMS, original_items)
+        finally:
+            self.fixture.STATE.clear()
+            self.fixture.STATE.update(original_state)
+
     def test_unauthorized_and_unknown_writes_are_rejected_before_reading(self):
         path = "/api/v1/items/movie-000/progress/sync"
         (status, _), handler = self.request("PUT", path, b"{}")
@@ -69,6 +93,32 @@ class NavigationFixtureTests(unittest.TestCase):
         (status, _), handler = self.request("PUT", "/unsupported", b"{}", authorized=True)
         self.assertEqual(status, 404)
         self.assertEqual(handler.rfile.tell(), 0)
+
+    def test_missing_backdrop_receipt_requires_successful_response_write(self):
+        cases = [("/backdrop/movie-005", 404, None),
+                 ("/backdrop/movie-005", 401, None),
+                 ("/backdrop/movie-004", 404, None),
+                 ("/backdrop/movie-005", 404, BrokenPipeError()),
+                 ("/backdrop/movie-005", 404, ConnectionResetError())]
+        for path, status, error in cases:
+            with self.subTest(path=path, status=status, error=type(error).__name__):
+                handler = object.__new__(self.fixture.Handler)
+                handler.path = path
+                handler.send_response = Mock()
+                handler.send_header = Mock()
+                handler.end_headers = Mock()
+                handler.wfile = Mock()
+                handler.wfile.write.side_effect = error
+                output = io.StringIO()
+                with patch.object(sys, "stdout", output), patch.object(self.fixture.time, "time", return_value=123.25):
+                    handler.send(status, {"error": "missing image"})
+                if path == "/backdrop/movie-005" and status == 404 and error is None:
+                    prefix, payload = output.getvalue().strip().split(" ", 1)
+                    self.assertEqual(prefix, "ARTWORK_FIXTURE_RESPONSE")
+                    self.assertEqual(json.loads(payload), dict(route="missing-backdrop", status=404,
+                                                               completed=True, unixTime=123.25))
+                else:
+                    self.assertEqual(output.getvalue(), "")
 
     def test_invalid_ranges_never_return_media(self):
         for value in ["bytes=99999999999999999999-", "bytes=5-2", "bytes=--", "bytes=-0"]:
