@@ -31,6 +31,7 @@ test("Owner can understand and customize automatic sign-out", async ({ page }, t
 	await page.getByLabel("Password").fill(password);
 	await page.getByLabel("Authentication or recovery code").fill(totp());
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await page.waitForURL(url => url.pathname !== "/login");
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 
 	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {

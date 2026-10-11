@@ -39,15 +39,6 @@ shared_changed="$({
   fi
 } | LC_ALL=C sort -u)"
 
-digest() {
-  local file
-  while IFS= read -r file; do
-    printf '%s\0' "$file"
-    if [[ -f "$file" ]]; then shasum -a 256 "$file"; else printf 'missing\n'; fi
-  done <<<"$1"
-  return 0
-}
-
 run_stage() {
   local name="$1" inputs="$2" key log started elapsed
   shift 2
@@ -55,7 +46,7 @@ run_stage() {
     printf 'PLAN %s: %s\n' "$name" "$*"
     return
   fi
-  key="$( { printf '%s\0%s\0' "$name" "$*"; digest "$inputs"; } | shasum -a 256 | awk '{print $1}')"
+  key="$(python3 "$repo/scripts/tooling/verify-input-digest.py" "$name" "$@" <<<"$inputs")"
   log="$logs/$key.log"
   if [[ -z "$working" && -f "$cache/$key" ]]; then
     printf 'CACHED %s\n' "$name"
@@ -189,7 +180,8 @@ if [[ -n "$e2e_files" ]]; then
   while IFS= read -r file; do [[ -z "$file" ]] || e2e_args+=("$file"); done <<<"$e2e_files"
   run_stage e2e-list "$(git ls-files 'e2e/*')" pnpm --dir e2e exec playwright test --list "${e2e_args[@]}"
   if [[ -n "${KINOSAIL_E2E_URL:-}" ]]; then
-    run_stage e2e-changed "$(git ls-files 'e2e/*')" pnpm --dir e2e exec playwright test "${e2e_args[@]}" --project=chromium
+    # A live target can change without any source input changing.
+    run_required e2e-changed pnpm --dir e2e exec playwright test "${e2e_args[@]}" --project=chromium
   fi
 fi
 

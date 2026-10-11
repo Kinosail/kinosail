@@ -177,7 +177,13 @@ Visible changes also require the populated browser gate:
 make test-instance-check
 ```
 
-Use `KINOSAIL_BROWSER_MATRIX=full` when shared CSS, navigation, authentication, or another cross-browser boundary changes.
+The automated instance uses HTTP on loopback and leaves browser certificate checks enabled.
+It configures the canonical login URL with the assigned test port.
+Manual `./scripts/test-instance.sh up` keeps HTTPS as its default.
+Set `KINOSAIL_TLS_ENABLED=true` only when the browser already trusts the fixture certificate.
+
+Use the hosted full browser matrix when shared CSS, navigation, authentication, or another cross-browser boundary changes.
+Hosted WebKit checks use a trusted certificate on a disposable Linux runner.
 
 ## Privacy and safety
 
