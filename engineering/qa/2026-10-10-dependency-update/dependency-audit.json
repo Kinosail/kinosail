@@ -22,7 +22,9 @@
       "path": "apps/player/e2e/package.json",
       "latest": "1.64.0",
       "status": "update",
-      "decision": "update"
+      "decision": "hold-204-navigation-regression",
+      "selected": "1.63.0",
+      "reason": "Playwright 1.64.0 fails the existing HTTP 204 PiP navigation assertion on both macOS and hosted Linux; the same minimal no-HLS HTTP 204 probe passes with 1.63.0. Preserve the existing assertion and known-good browser pair until a stable fix is available."
     },
     {
       "kind": "npm",
@@ -42,7 +44,9 @@
       "path": "apps/subtitles/e2e/package.json",
       "latest": "1.64.0",
       "status": "update",
-      "decision": "update"
+      "decision": "hold-204-navigation-regression",
+      "selected": "1.63.0",
+      "reason": "Playwright 1.64.0 fails the existing HTTP 204 PiP navigation assertion on both macOS and hosted Linux; the same minimal no-HLS HTTP 204 probe passes with 1.63.0. Preserve the existing assertion and known-good browser pair until a stable fix is available."
     },
     {
       "kind": "npm",
@@ -1118,6 +1122,73 @@
       "name": "eslint-plugin-import",
       "selected": "2.32.0",
       "reason": "Latest stable package; its peer range does not declare ESLint 10 support. Existing ESLint 10.12.0 pin is unchanged; verification must report this upstream boundary."
+    },
+    {
+      "name": "@playwright/test",
+      "selected": "1.63.0",
+      "latest": "1.64.0",
+      "reason": "Retain Playwright 1.63.0: 1.64.0 reports an empty asserted URL after HTTP 204, although the committed URL and main-world document remain intact. Cross-version probes reproduce the failure with either Chromium version only under driver 1.64.0. No stable patch exists as of 2026-10-10. Existing assertions remain unchanged.",
+      "reproduction": {
+        "test": "apps/player/e2e/player-hls-navigation.spec.ts:133",
+        "hostedRun": "https://github.com/Kinosail/kinosail/actions/runs/38100311275",
+        "probeSHA256": "8dbaa8b6c1a5144d79a796a1aadfb72dc962f96f2f6aded749aaa1d94debd5cb",
+        "testData": "A local disposable HTTP page with a link returning HTTP 204; no HLS, account, credentials, or application server.",
+        "observations": {
+          "204-navigation-probe-1.63.json": {
+            "result": {
+              "playwright": "1.63.0",
+              "browser": "153.0.8010.12",
+              "pageURLRetained": true,
+              "urlAssertion": true,
+              "mainWorld": {
+                "pathname": "/watch",
+                "bodyRetained": true
+              }
+            },
+            "sha256": "244e34d4fb51acad327828c329423e58f86b8f5fdd600b2efaa50384444a0bb0"
+          },
+          "204-navigation-probe-1.64.json": {
+            "result": {
+              "playwright": "1.64.0",
+              "browser": "156.0.8078.4",
+              "pageURLRetained": true,
+              "urlAssertion": false,
+              "mainWorld": {
+                "pathname": "/watch",
+                "bodyRetained": true
+              }
+            },
+            "sha256": "22f5e4faa7b5d6dc5d936361e6384878fef26e98014f566bf6500a414166680d"
+          },
+          "204-navigation-probe-driver-1.64-browser-1.63.json": {
+            "result": {
+              "playwright": "1.64.0",
+              "browser": "153.0.8010.12",
+              "pageURLRetained": true,
+              "urlAssertion": false,
+              "mainWorld": {
+                "pathname": "/watch",
+                "bodyRetained": true
+              }
+            },
+            "sha256": "a555fa6ebe89df2cb931f3768120a67baa77b533149fae20bb0e96d4f20f41d9"
+          },
+          "204-navigation-probe-driver-1.63-browser-1.64.json": {
+            "result": {
+              "playwright": "1.63.0",
+              "browser": "156.0.8078.4",
+              "pageURLRetained": true,
+              "urlAssertion": true,
+              "mainWorld": {
+                "pathname": "/watch",
+                "bodyRetained": true
+              }
+            },
+            "sha256": "b3e59d1019b1d8aaf2b3185f1173c2dfa931de9011c58dd94dc6944fdfce3c22"
+          }
+        },
+        "crossProbeSHA256": "58528f56404a1bee2de80b8feccbc12245627e07d40efb302aab8e24cb8b45c9"
+      }
     }
   ],
   "gradleDistribution": {

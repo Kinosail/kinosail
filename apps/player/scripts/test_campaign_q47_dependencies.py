@@ -34,7 +34,7 @@ def graph():
     app = FictionalPath("/fictional/e2e")
     packages = ["@playwright/test", "playwright", "playwright-core"]
     data = {str(app / "node_modules" / name / "package.json"):
-            json.dumps({"name": name, "version": "1.64.0"}).encode() for name in packages}
+            json.dumps({"name": name, "version": "1.63.0"}).encode() for name in packages}
     data[str(app / "node_modules/playwright-core/browsers.json")] = json.dumps({
         "browsers": [{"name": "chromium", "revision": "1243"},
                      {"name": "chromium-headless-shell", "revision": "1243"}]}).encode()

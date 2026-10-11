@@ -58,7 +58,7 @@ class RestoreToolControls(unittest.TestCase):
 
     def package_candidate(self, path, name):
         return {"manifest": path+"/package.json", "root": path,
-                "package": {"name": name, "version": "1.64.0"}}
+                "package": {"name": name, "version": "1.63.0"}}
 
     def resolved(self, layout):
         base="/owned/repo/apps/subtitles/e2e"
@@ -66,9 +66,9 @@ class RestoreToolControls(unittest.TestCase):
             test=base+"/node_modules/@playwright/test"; playwright=base+"/node_modules/playwright"; core=base+"/node_modules/playwright-core"
         elif layout=="pnpm":
             store="/owned/repo/node_modules/.pnpm"
-            test=store+"/@playwright+test@1.64.0/node_modules/@playwright/test"
-            playwright=store+"/playwright@1.64.0/node_modules/playwright"
-            core=store+"/playwright-core@1.64.0/node_modules/playwright-core"
+            test=store+"/@playwright+test@1.63.0/node_modules/@playwright/test"
+            playwright=store+"/playwright@1.63.0/node_modules/playwright"
+            core=store+"/playwright-core@1.63.0/node_modules/playwright-core"
         else:
             test=base+"/node_modules/@playwright/test"
             playwright=test+"/node_modules/playwright"; core=playwright+"/node_modules/playwright-core"
@@ -86,7 +86,7 @@ class RestoreToolControls(unittest.TestCase):
         for label in ("@playwright/test","playwright","playwright-core"):
             for change in ({"root":"/outside"}, {"manifest":"/outside/package.json"},
                            {"root":"relative"}, {"root":"/owned/repo/../outside"},
-                           {"package":{"name":"foreign","version":"1.64.0"}},
+                           {"package":{"name":"foreign","version":"1.63.0"}},
                            {"package":{"name":label,"version":"1.62.0"}}, {"extra":"private"}):
                 value=self.resolved("pnpm");value[label].update(change)
                 with self.assertRaises(ValueError): tools.package_roots(value,"/owned/repo")
@@ -216,7 +216,7 @@ class RestoreDependencyDiagnosticControls(unittest.TestCase):
 
 class RestoreRegistryNamespaceControls(unittest.TestCase):
     def test_selected_registry_program_handles_packaged_namespace_export(self):
-        # Actual 1.64.0 coreBundle exports the registry module namespace; that
+        # Actual 1.63.0 coreBundle exports the registry module namespace; that
         # namespace exports the instance. Prior hosted browserResolution failed
         # before browser/control launch; literal-path checks missed this boundary.
         import json

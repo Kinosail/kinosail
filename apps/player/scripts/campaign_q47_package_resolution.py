@@ -5,7 +5,7 @@ import stat
 from campaign_q47_execution import check_budget
 from campaign_q47_io import read_bounded
 
-VERSION = "1.64.0"
+VERSION = "1.63.0"
 METADATA_LIMIT = 512 * 1024
 MAX_ANCESTORS = 32
 MAX_CANDIDATES = 16
