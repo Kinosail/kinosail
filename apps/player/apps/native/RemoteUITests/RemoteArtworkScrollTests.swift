@@ -85,6 +85,9 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         try waitForFocus(app.buttons["My List"])
         remote.press(.up)
         try waitForFocus(resume)
+        record("artwork return to Resume before loaded validation", app)
+        try waitForLoadedHero(title, resume, app)
+        record("artwork Resume focus and inset restored after cast scrolling", app)
         let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             abs(title.frame.minY - initialTitle.minY) <= 2
                 && abs(resume.frame.minY - initialResume.minY) <= 2
@@ -92,7 +95,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 5), .completed)
         XCTAssertEqual(title.frame.minX, 184, accuracy: 2)
-        record("artwork Resume focus and inset restored after cast scrolling", app)
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
         let card = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "After the Rain")).firstMatch
