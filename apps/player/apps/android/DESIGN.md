@@ -12,6 +12,8 @@ changing Android screens. Translate controls into Android conventions.
 | Personal tabs | Phone and tablet tabs | Home, TV Shows, Movies, Search, and persistent More; save choices per Viewer Profile |
 | CinemaHero and MediaCard | MediaHero and HomeShelf | Contained artwork, separate title and metadata, truthful saved position |
 | LoadingState | LibraryLoading | Pending placeholders follow the loaded artwork sizes, spacing, and shelf structure |
+| Collections | Collections | Named collections open a title grid; returning from details preserves the collection |
+| EPUB reader | Phone and tablet reader | Chapter contents, readable text width, appearance controls, and recoverable saved position |
 | Apple Watch Remote | Wear OS Remote | Current player, title, playback position, seek, and playback controls |
 | Apple Watch Heart | Wear OS Heart | Explicit opt-in, local readings, movie-time graph, and gaps for missing readings |
 
@@ -51,6 +53,6 @@ Check enlarged text, Android Back, and TV D-pad focus. Device-side synthetic
 HTTP journeys verify Android presentation and transport together. They do not
 prove compatibility with a populated Go Server, physical input, or codecs.
 
-This design mapping does not establish complete feature parity. Collections,
-offline downloads, and EPUB reading still need Android implementation. Wear
-Health Services and Apple Health remain separate platform integrations.
+This design mapping does not establish complete feature parity. Offline downloads,
+playback bookmarks, and some advanced Settings capabilities still need Android
+implementation. Wear Health Services and Apple Health remain separate platform integrations.

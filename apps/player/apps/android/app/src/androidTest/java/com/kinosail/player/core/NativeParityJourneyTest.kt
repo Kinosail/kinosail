@@ -35,6 +35,148 @@ class NativeParityJourneyTest {
     private val context get() = instrumentation.targetContext
     private val tv get() = InstrumentationRegistry.getArguments().getString("tv") == "true"
 
+    // Only a native journey can interleave a rendered chapter change with the device's durable journal.
+    @Test fun epubKeepsLatestPositionWhilePreviousSaveFinishes() = journey { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.onNodeWithText("More").activate()
+        compose.onNodeWithText("Books").performScrollTo().activate()
+        waitText("A quiet crossing")
+        compose.onNodeWithText("A quiet crossing").activate()
+        waitText("Read book")
+        compose.onNodeWithText("Read book").performScrollTo().activate()
+        waitChapter("Departure")
+        fixture.holdReaderSave = true
+        compose.onNodeWithText("Next").activate()
+        waitChapter("Harbor lights")
+        compose.waitUntil(20_000) { fixture.readerSaveInFlight }
+        compose.onNodeWithText("Previous").activate()
+        waitChapter("Departure")
+        fixture.holdReaderSave = false
+        compose.waitUntil(20_000) { fixture.readerWrites >= 2 && fixture.readerPage == 1 }
+        capture("epub-latest-position")
+        compose.onNodeWithText("Done").activate()
+        compose.onNodeWithText("Read book").performScrollTo().activate()
+        waitChapter("Departure")
+        waitText("Chapter 1 of 2")
+    }
+
+    // Native WebView rendering, script isolation, and chapter navigation have no browser E2E owner.
+    // Exercise malformed manifests, failed chapters, escaped resources, and persisted progress.
+    @Test fun epubReadsChaptersSafelyAndRestoresSavedPosition() = journey { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.onNodeWithText("More").activate()
+        compose.onNodeWithText("Books").performScrollTo().activate()
+        waitText("A quiet crossing")
+        compose.onNodeWithText("A quiet crossing").activate()
+        waitText("Read book")
+        fixture.bookMode = "invalid"
+        compose.onNodeWithText("Read book").performScrollTo().activate()
+        waitText("Could not open this book. Check your Server connection and try again.")
+        assertEquals(0, fixture.chapterReads)
+        fixture.bookMode = "failed"
+        compose.onNodeWithText("Try again").activate()
+        waitText("Could not load this chapter. Try again.")
+        capture("epub-failed")
+        fixture.bookMode = "ready"
+        compose.onNodeWithText("Try again").activate()
+        waitText("Chapter 1 of 2")
+        waitChapter("Departure")
+        capture("epub-loaded")
+        instrumentation.runOnMainSync {
+            val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).first()
+            fun find(view: android.view.View): android.webkit.WebView? {
+                if (view is android.webkit.WebView) return view
+                if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                    find(view.getChildAt(index))?.let { return it }
+                }
+                return null
+            }
+            val web = requireNotNull(find(activity.window.decorView))
+            assertTrue(requireNotNull(web.webViewRenderProcess).terminate())
+        }
+        waitText("Could not load this chapter. Try again.")
+        capture("epub-renderer-stopped")
+        compose.onNodeWithText("Try again").activate()
+        waitChapter("Departure")
+        compose.onNodeWithText("Next").activate()
+        waitText("Chapter 2 of 2")
+        waitChapter("Harbor lights")
+        compose.waitUntil(20_000) { fixture.readerPage == 2 }
+        capture("epub-next")
+        compose.onNodeWithText("Done").activate()
+        compose.onNodeWithText("Read book").performScrollTo().activate()
+        waitText("Chapter 2 of 2")
+        waitChapter("Harbor lights")
+        assertEquals(0, fixture.escapedResourceReads)
+        capture("epub-restored")
+        fixture.failReaderSaves = true
+        compose.onNodeWithText("Previous").activate()
+        waitText("Reading position was not saved.")
+        compose.onNodeWithText("Done").activate()
+        compose.onNodeWithText("Read book").performScrollTo().activate()
+        waitText("Chapter 1 of 2")
+        waitChapter("Departure")
+        waitText("Reading position was not saved.")
+        fixture.failReaderSaves = false
+        compose.onNodeWithText("Retry sync").activate()
+        compose.waitUntil(20_000) { fixture.readerPage == 1 }
+        fixture.bookMode = "failed"
+        compose.onNodeWithText("Next").activate()
+        waitText("Could not load this chapter. Try again.")
+        compose.onNodeWithText("Done").activate()
+        assertEquals("A failed chapter must not advance saved progress", 1, fixture.readerPage)
+    }
+
+    private fun waitChapter(text: String) {
+        compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Opening your book").fetchSemanticsNodes().isEmpty() }
+        val automation = instrumentation.getUiAutomation()
+        fun contains(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
+            if (node == null) return false
+            if (node.text?.toString() == text) return true
+            return (0 until node.childCount).any { contains(node.getChild(it)) }
+        }
+        compose.waitUntil(20_000) { contains(automation.rootInActiveWindow) }
+    }
+
+    // Native navigation, D-pad focus, and stale-detail recovery are not covered by web E2E.
+    // The fixture also rejects unsafe collection names before any detail request can occur.
+    @Test fun collectionsRecoverAndReturnFromDetailsWithoutLosingTheirPlace() = journey { fixture ->
+        waitText(if (tv) "Continue watching" else "Watching")
+        fixture.collectionMode = "pending"
+        if (!tv) compose.onNodeWithText("More").activate()
+        compose.onNodeWithText("Collections").performScrollTo().activate()
+        compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading collections").fetchSemanticsNodes().isNotEmpty() }
+        capture("collections-pending")
+        fixture.collectionMode = "failed"
+        waitText("Could not load collections. Try again.")
+        capture("collections-failed")
+        fixture.collectionMode = "invalid"
+        compose.onNodeWithText("Try again").activate()
+        waitText("Could not load collections. Try again.")
+        assertEquals(0, fixture.collectionDetailReads)
+        fixture.collectionMode = "empty"
+        compose.onNodeWithText("Try again").activate()
+        waitText("No collections yet")
+        capture("collections-empty")
+        fixture.collectionMode = "ready"
+        compose.onNodeWithText("Refresh").activate()
+        waitText("Family & friends")
+        capture("collections-loaded")
+        compose.onNodeWithText("Family & friends").activate()
+        waitText("New Film")
+        capture("collection-titles")
+        compose.onNodeWithText("New Film").activate()
+        waitText("Add to My List")
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        compose.waitUntil(20_000) { compose.onAllNodes(hasText("New Film") and hasClickAction()).fetchSemanticsNodes().isNotEmpty() }
+        assertEquals(1, fixture.collectionDetailReads)
+        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        waitText("Family & friends")
+    }
+
     // The populated Go Server browser journeys cannot inspect Compose geometry or remote focus.
     // Keep this device journey for portrait-only continuation artwork and fixed TV navigation.
     @Test fun homeMatchesAppleLandscapeShelvesAndPersistentTvNavigation() = journey {
@@ -205,10 +347,11 @@ class NativeParityJourneyTest {
     }
 
     private fun journey(mode: String = "ready", check: (ParityFixture) -> Unit) {
-        instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY)
+        instrumentation.getUiAutomation()
         ParityFixture(mode).use { fixture ->
             context.getSharedPreferences("kinosail_session", 0).edit().clear().commit()
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
+            context.getSharedPreferences("kinosail_reading_pending", 0).edit().clear().commit()
             SessionStore(context).save(SavedSession(ServerAddress("http://127.0.0.1:${fixture.port}"), "synthetic-token", fixture.viewer))
             val intent = Intent(context, if (tv) TvActivity::class.java else MobileActivity::class.java)
             try { ActivityScenario.launch<android.app.Activity>(intent).use {
@@ -236,8 +379,16 @@ class NativeParityJourneyTest {
             compose.onRoot().tryPerformAccessibilityChecks()
             compose.disableAccessibilityChecks()
         }
-        instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY).takeScreenshot().let { bitmap ->
+        instrumentation.getUiAutomation().takeScreenshot().let { bitmap ->
             File(directory, "$prefix-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            if (name == "epub-loaded") {
+                val done = compose.onNodeWithText("Done").fetchSemanticsNode().boundsInRoot
+                var foreground = 0
+                for (y in done.top.toInt() until done.bottom.toInt()) for (x in done.left.toInt() until done.right.toInt()) {
+                    if (Color.green(bitmap.getPixel(x, y)) > 150) foreground++
+                }
+                assertTrue("The rendered chapter must not cover Done", foreground > 10)
+            }
             bitmap.recycle()
         }
     }
@@ -250,6 +401,16 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     private val workers = Executors.newCachedThreadPool()
     private val running = AtomicBoolean(true)
     @Volatile var showMode = "ready"
+    @Volatile var collectionMode = "ready"
+    @Volatile var collectionDetailReads = 0
+    @Volatile var bookMode = "ready"
+    @Volatile var chapterReads = 0
+    @Volatile var escapedResourceReads = 0
+    @Volatile var readerPage = 1
+    @Volatile var failReaderSaves = false
+    @Volatile var holdReaderSave = false
+    @Volatile var readerSaveInFlight = false
+    @Volatile var readerWrites = 0
     @Volatile var listWrites = 0
     private var listed = false
     private val movie = item("film", "Continuing Film", progress = 90)
@@ -261,6 +422,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
         .mapIndexed { index, item -> item.replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"season\":${index+1},\"episode\":1,\"genres\"") }
     private val song = item("song", "Night Drive", kind = "music", progress = 45)
+    private val book = item("book", "A quiet crossing", kind = "book")
     init {
         workers.execute {
             while (running.get()) try {
@@ -285,6 +447,20 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                         var code = 200
                         var type = "application/json"
                         val body: ByteArray = when {
+                            path == "/api/v1/collections" -> {
+                                while (collectionMode == "pending" && running.get()) Thread.sleep(20)
+                                when (collectionMode) {
+                                    "failed" -> { code = 503; "{}" }
+                                    "invalid" -> """{"collections":["../private"]}"""
+                                    "empty" -> """{"collections":[]}"""
+                                    else -> """{"collections":["Family & friends"]}"""
+                                }.toByteArray()
+                            }
+                            path.startsWith("/api/v1/collections/") -> {
+                                collectionDetailReads++
+                                assertEquals("/api/v1/collections/Family%20%26%20friends", uri.rawPath)
+                                """{"name":"Family & friends","items":[$newMovie,$movie]}""".toByteArray()
+                            }
                             path == "/api/v1/me" -> """{"server":"Fixture library","serverId":"parity-fixture","viewer":{"id":"viewer","name":"Alex"}}""".toByteArray()
                             path == "/api/v1/library" -> {
                                 while (mode == "pending" && running.get()) Thread.sleep(20)
@@ -297,6 +473,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                         "movies" -> listOf(newMovie, movie)
                                         "shows" -> listOf(series)
                                         "music" -> listOf(song)
+                                        "books" -> listOf(book)
                                         "list" -> if (listed) listOf(movie) else emptyList()
                                         "all" -> listOf(movie, newMovie, song)
                                         else -> emptyList()
@@ -308,6 +485,34 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                 while (showMode == "pending" && running.get()) Thread.sleep(20)
                                 if (showMode == "failed") { code = 503; "{}".toByteArray() }
                                 else """{"id":"0123456789abcdef","title":"Fixture Series","year":"2026","plot":"A synthetic series.","episodes":[${if (showMode == "empty") "" else episodes.joinToString(",")}]}""".toByteArray()
+                            }
+                            path == "/api/v1/books/book/reader" -> {
+                                val first = if (bookMode == "invalid") "/read/book/asset/../../private" else "/read/book/asset/first.xhtml"
+                                """{"id":"book","title":"A quiet crossing","type":"epub","pages":[{"number":1,"title":"Departure","url":"$first"},{"number":2,"title":"Arrival","url":"/read/book/asset/second.xhtml"}]}""".toByteArray()
+                            }
+                            path == "/api/v1/books/book/reader/progress" -> {
+                                if (parts[0] == "PUT") {
+                                    readerSaveInFlight = true
+                                    while (holdReaderSave && running.get()) Thread.sleep(20)
+                                }
+                                if (parts[0] == "PUT" && failReaderSaves) { code = 503; "{}".toByteArray() }
+                                else {
+                                    if (parts[0] == "PUT") { readerPage = JSONObject(requestBody).getInt("page"); readerWrites++ }
+                                    """{"page":$readerPage,"total":2,"offset":0}""".toByteArray()
+                                }
+                            }
+                            path.startsWith("/read/book/asset/") -> {
+                                chapterReads++
+                                type = "application/xhtml+xml"
+                                if (bookMode == "failed") { code = 503; "unavailable".toByteArray() }
+                                else ("<html><body><h1>" + if (path.endsWith("first.xhtml")) "Departure" else "Harbor lights")
+                                    .let { heading -> (heading + "</h1><p>A synthetic chapter for a private reading journey.</p>" +
+                                        "<script>document.body.innerHTML='Script ran';fetch('/escape')</script>" +
+                                        "<img src='/read/other/asset/private.png'><img src='http://127.0.0.1:$port/escape'>" +
+                                        "</body></html>").toByteArray() }
+                            }
+                            path == "/escape" || path.startsWith("/read/other/") -> {
+                                escapedResourceReads++; "blocked".toByteArray()
                             }
                             path.startsWith("/api/v1/items/") && path.endsWith("/list") -> {
                                 listed = JSONObject(requestBody).getBoolean("listed"); listWrites++
@@ -321,7 +526,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                 InstrumentationRegistry.getInstrumentation().context.assets.open("parity-video.mp4").use { it.readBytes() }
                             }
                             path.startsWith("/api/v1/items/") -> {
-                                val selected = if (path.endsWith("new-film")) newMovie else movie
+                                val selected = if (path.endsWith("new-film")) newMovie else if (path.endsWith("/book")) book else movie
                                 """{"item":$selected,"listed":$listed,"profileId":"viewer"}""".toByteArray()
                             }
                             path.startsWith("/art/") || path.startsWith("/backdrop/") -> {
