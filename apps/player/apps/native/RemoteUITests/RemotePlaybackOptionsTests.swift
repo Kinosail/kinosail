@@ -11,7 +11,7 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Movies"].hasFocus)
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
-        let card = app.buttons.matching(NSPredicate(format: "label != '' AND NOT label ENDSWITH 'titles'")).firstMatch
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'After the Rain'")).firstMatch
         XCTAssertTrue(card.waitForExistence(timeout: 10))
         if !card.hasFocus { remote.press(.down) }
         remote.press(.select)

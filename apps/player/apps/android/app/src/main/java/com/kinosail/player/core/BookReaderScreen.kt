@@ -35,8 +35,9 @@ internal fun BookReaderScreen(item: CatalogItem, viewer: Viewer, close: () -> Un
     when (format) {
         "pdf" -> PdfReaderScreen(item, viewer, close)
         "comic" -> ComicReaderScreen(item, viewer, close)
+        "epub" -> EpubReaderScreen(item, viewer, close)
         else -> ReaderPageView(item.title, null, 0, 0,
-            if (format == "epub") "This book format is not available on Android yet." else notice,
+            notice,
             null, close, previous = {}, next = {}, retry = { revision++ }, retrySync = {})
     }
 }

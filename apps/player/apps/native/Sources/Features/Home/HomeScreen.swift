@@ -26,12 +26,10 @@ struct HomeScreen: View {
                     if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
                         MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
                                    resumesPlayback: true, onQuickPlay: { quickPlay = $0 })
-                            .onMoveCommand { if $0 == .up { focusTopBar?() } }
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
                     TVHomeBrowse(selectTab: selectTab)
-                        .onMoveCommand { if $0 == .up && selection.tvWatchingRail.isEmpty { focusTopBar?() } }
                     #else
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 28) {
@@ -101,6 +99,7 @@ struct HomeScreen: View {
         }
         #if os(tvOS)
         .focusScope(homeFocus)
+        .focusSection()
         .onExitCommand { focusTopBar?() }
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }

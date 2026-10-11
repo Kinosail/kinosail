@@ -16,7 +16,7 @@ struct DetailScreen: View {
 
     private func page(onPrimaryFocus: @escaping @MainActor () -> Void) -> some View {
         ScrollView {
-            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, load: { policy in
+            ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, focusesRetry: true, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
             }) { detail in DetailContent(detail: detail, onPrimaryFocus: onPrimaryFocus).id(itemID) }
@@ -48,6 +48,7 @@ private struct DetailContent: View {
     @Namespace private var detailFocus
     @FocusState private var primaryFocused: Bool
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @ScaledMetric(relativeTo: .body) private var secondaryActionHeight = 44
     #endif
     private var item: MediaItem { detail.item }
 
@@ -96,9 +97,13 @@ private struct DetailContent: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if item.progress.seconds > 0 && !item.progress.watched { WatchPosition(item: item) }
-            playAction
+            HStack {
+                playAction
+                Spacer(minLength: 0)
+            }
+            .focusSection()
             ViewThatFits(in: .horizontal) {
-                HStack(spacing: 16) { secondaryActions.fixedSize() }
+                HStack(alignment: .top, spacing: 16) { secondaryActions.fixedSize() }
                 VStack(alignment: .leading, spacing: 12) { secondaryActions }
             }
             .controlSize(.large)
@@ -152,22 +157,31 @@ private struct DetailContent: View {
     @ViewBuilder private var secondaryActions: some View {
         Button {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
-        } label: { Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus") }
+        } label: {
+            Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus")
+                #if os(tvOS)
+                .frame(minHeight: secondaryActionHeight)
+                #endif
+        }
             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
         #if os(tvOS)
         if item.kind == .video || item.isAudio {
-            NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
+            NavigationLink(value: ScreenDestination.bookmarks(item.id)) {
+                Label("Bookmarks", systemImage: "bookmark").frame(minHeight: secondaryActionHeight)
+            }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         if !item.showID.isEmpty {
-            NavigationLink("All episodes", value: ScreenDestination.show(item.showID))
+            NavigationLink(value: ScreenDestination.show(item.showID)) {
+                Text("All episodes").frame(minHeight: secondaryActionHeight)
+            }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         if item.progress.seconds > 0 || item.progress.watched {
             Button { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
-                label: { Label("Remove", systemImage: "minus.circle") }
+                label: { Label("Remove", systemImage: "minus.circle").frame(minHeight: secondaryActionHeight) }
                 .accessibilityLabel("Remove from Continue watching")
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)

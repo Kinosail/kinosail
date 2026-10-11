@@ -73,7 +73,15 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
             record("quality-continue-watching-\(input)-player", app)
             remote.press(.menu)
             XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 10))
-            XCTAssertEqual(focusedLabels(app).first, origin,
+            let restoreStarted = Date()
+            let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                self.focusedLabels(app).first == origin
+            }, object: nil)
+            let restoration = XCTWaiter.wait(for: [restored], timeout: 3)
+            let settlementSeconds = Date().timeIntervalSince(restoreStarted)
+            record("quality-continue-watching-\(input)-settled-return", app)
+            print("QUALITY playback return settlement seconds: \(settlementSeconds)")
+            XCTAssertEqual(restoration, .completed,
                            "Player Back must restore the card without corrective movement")
             record("quality-continue-watching-\(input)-restored", app)
         }
@@ -89,6 +97,8 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
     }
 
     @MainActor func testOneHundredDetailReturnsPreserveOriginatingShelf() {
+        // A measured 100-return run takes ten minutes before its final held-input checks.
+        executionTimeAllowance = 900
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared

@@ -117,7 +117,8 @@ private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolea
         Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
         val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
-            else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list", "all") }
+            else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
+                listOf("collections" to "Collections", "all" to "Library")
         LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(8.dp)) {
             items(views, key = { it.first }) { (view, title) ->
                 HomeAction(interfaceText(if (view == "all") "Library" else title), tv) { browse(view) }

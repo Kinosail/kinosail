@@ -77,13 +77,17 @@ class Handler(BaseHTTPRequestHandler):
                 if not set(q) <= {'mode','delay','target','profile','identity'} or any(len(v)!=1 for v in q.values()): raise ValueError()
                 mode=q.get('mode',['loaded'])[0]; delay=float(q.get('delay',['0'])[0]); target=q.get('target',['library'])[0]
                 identity=q.get('identity',[VIEWER['serverId']])[0]
-                if mode not in ['loaded','empty','failed'] or target not in ['library','details','shows','playback','media']: raise ValueError()
+                if mode not in ['loaded','empty','failed'] or target not in ['library','details','shows','playback','media','connection']: raise ValueError()
+                if target=='connection' and (mode=='empty' or delay!=0): raise ValueError()
                 if not math.isfinite(delay) or not 0 <= delay <= 30 or q.get('profile',['qa'])[0] != 'qa': raise ValueError()
                 if not re.fullmatch(r'tv-polish-qa(?:-[a-z0-9-]{1,64})?',identity): raise ValueError()
             except (ValueError, UnicodeError): return self.send(400,{'error':'invalid fixture state'})
             STATE.update(mode=mode,delay=delay,target=target); VIEWER['serverId']=identity
             return self.send(200,STATE)
         if self.headers.get('Authorization')!='Bearer tv-polish-fixture-token': return self.send(401,{'error':'fixture token required'})
+        if STATE['target']=='connection' and STATE['mode']=='failed':
+            self.close_connection=True
+            return
         if path=='/api/v1/me': return self.send(200,VIEWER)
         active=(STATE['target']=='library' and path=='/api/v1/library') or (STATE['target']=='details' and re.fullmatch(r'/api/v1/items/[^/]+',path)) or (STATE['target']=='shows' and path.startswith('/api/v1/shows/')) or (STATE['target']=='playback' and path.endswith('/playback'))
         mode,delay=STATE['mode'],STATE['delay']
@@ -100,8 +104,15 @@ class Handler(BaseHTTPRequestHandler):
             elif view=='list': entries=[]
             entries=[i for i in entries if query.lower() in i['title'].lower()]
             if sort=='title': entries=sorted(entries,key=lambda i:i['title'])
+            letters=[]
+            if sort=='title' and not query:
+                for index,item in enumerate(entries):
+                    label=item['title'][0].upper()
+                    if not letters or letters[-1]['label']!=label:
+                        letters.append(dict(label=label,offset=index,count=0))
+                    letters[-1]['count']+=1
             offset=int(q.get('offset',['0'])[0]); limit=int(q.get('limit',['60'])[0])
-            return self.send(200,dict(items=entries[offset:offset+limit],total=len(entries),offset=offset,limit=limit,letters=[],view=view,sort=sort,query=query))
+            return self.send(200,dict(items=entries[offset:offset+limit],total=len(entries),offset=offset,limit=limit,letters=letters,view=view,sort=sort,query=query))
         if path.startswith(('/art/','/backdrop/','/episode-art/')):
             if path.endswith('movie-005'): return self.send(404,{'error':'missing image'})
             time.sleep(.1); return self.send(200,artwork(path),'image/jpeg')
@@ -144,6 +155,9 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(code,data,'video/mp4',headers)
         return self.send(404,{'error':'unsupported fixture operation'})
     def do_PUT(self):
+        if STATE['target']=='connection' and STATE['mode']=='failed' and self.headers.get_all('Authorization',[])==['Bearer tv-polish-fixture-token']:
+            self.close_connection=True
+            return
         if not re.fullmatch(r'/api/v1/items/movie-[0-9]{3}/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
         if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
         try:
