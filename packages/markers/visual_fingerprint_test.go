@@ -2,7 +2,6 @@ package markers
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"os"
 	"path/filepath"
@@ -17,12 +16,8 @@ import (
 func TestVisualFingerprintCacheAndMalformedOutput(t *testing.T) { //nolint:cyclop // The assertions cover one fingerprint cache workflow.
 	t.Parallel()
 	directory := t.TempDir()
-	tool := filepath.Join(directory, "visual-tool")
+	tool := filepath.Join("testdata", "visual-tool.sh")
 	arguments := filepath.Join(directory, "arguments")
-	fixture := fmt.Sprintf("#!/bin/sh\nprintf '%%s\\n' \"$*\" >> %q\ncase \"$*\" in *scale=160:90*) head -c 14400 /dev/zero;; *) head -c 144 /dev/zero;; esac\n", arguments)
-	if err := os.WriteFile(tool, []byte(fixture), 0o700); err != nil { //nolint:gosec // This private fixture must be executable.
-		t.Fatal(err)
-	}
 	item := library.Item{ID: "item", Path: filepath.Join(directory, "media.mp4")}
 	analyzer := &Analyzer{cache: filepath.Join(directory, "cache"), ffmpeg: tool}
 	points, err := analyzer.visualFingerprint(t.Context(), item, "opening", 0, 10)
@@ -45,11 +40,7 @@ func TestVisualFingerprintCacheAndMalformedOutput(t *testing.T) { //nolint:cyclo
 	if cached, cacheErr := analyzer.visualFingerprint(t.Context(), item, "opening", 0, 10); cacheErr != nil || !reflect.DeepEqual(cached, points) {
 		t.Fatalf("cached visual fingerprint = %#v, %v", cached, cacheErr)
 	}
-	bad := filepath.Join(directory, "bad-visual-tool")
-	if err = os.WriteFile(bad, []byte("#!/bin/sh\nhead -c 73 /dev/zero\n"), 0o700); err != nil { //nolint:gosec // This private fixture must be executable.
-		t.Fatal(err)
-	}
-	analyzer.ffmpeg = bad
+	analyzer.ffmpeg = filepath.Join("testdata", "malformed-visual-tool.sh")
 	if _, err = analyzer.visualFingerprint(t.Context(), item, "tail", 0, 10); err == nil {
 		t.Fatal("malformed visual fingerprint was accepted")
 	}

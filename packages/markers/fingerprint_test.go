@@ -17,10 +17,8 @@ func TestFingerprintCacheAndToolFailuresAreDeterministic(t *testing.T) { //nolin
 	if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	tool := filepath.Join(directory, "fingerprint-tool")
-	if err := os.WriteFile(tool, []byte("#!/bin/sh\nprintf '{\"fingerprint\":[1,2,3]}'\n"), 0o700); err != nil { //nolint:gosec // Test-owned executable fixture.
-		t.Fatal(err)
-	}
+	// Never write executables while parallel tests can fork with their open FDs.
+	tool := filepath.Join("testdata", "fingerprint-tool.sh")
 	item := library.Item{ID: "item", Path: media}
 	analyzer := &Analyzer{cache: filepath.Join(directory, "cache"), tool: tool}
 	points, err := analyzer.fingerprint(t.Context(), item, "head", 0, 10)
@@ -34,11 +32,7 @@ func TestFingerprintCacheAndToolFailuresAreDeterministic(t *testing.T) { //nolin
 	if _, err = (&Analyzer{}).fingerprint(t.Context(), item, "head", 0, 10); err == nil {
 		t.Fatal("missing cache configuration accepted")
 	}
-	badTool := filepath.Join(directory, "bad-tool")
-	if err = os.WriteFile(badTool, []byte("#!/bin/sh\nprintf '{}'\n"), 0o700); err != nil { //nolint:gosec // Test-owned executable fixture.
-		t.Fatal(err)
-	}
-	analyzer.tool = badTool
+	analyzer.tool = filepath.Join("testdata", "empty-fingerprint-tool.sh")
 	if _, err = analyzer.fingerprint(t.Context(), item, "tail", 0, 10); err == nil {
 		t.Fatal("empty fingerprint accepted")
 	}

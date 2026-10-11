@@ -26,10 +26,7 @@ func TestFingerprintTemporaryFileCreationFailure(t *testing.T) {
 func TestVisualFingerprintSetsComparisonBits(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
-	tool := filepath.Join(directory, "visual-tool")
-	if err := os.WriteFile(tool, []byte("#!/bin/sh\nprintf '\\377\\000'\nhead -c 70 /dev/zero\n"), 0o700); err != nil { //nolint:gosec // Test-owned executable fixture.
-		t.Fatal(err)
-	}
+	tool := filepath.Join("testdata", "visual-bits-tool.sh")
 	analyzer := &Analyzer{cache: filepath.Join(directory, "cache"), ffmpeg: tool}
 	points, err := analyzer.visualFingerprint(t.Context(), library.Item{ID: "item", Path: "media.mp4"}, "opening", 0, 10)
 	if err != nil || len(points) != 1 || points[0] == 0 {
