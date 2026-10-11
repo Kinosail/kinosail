@@ -40,7 +40,10 @@ final class RemoteAudioStateTests: RemoteTestCase {
         let app = openTrack()
         let retry = app.buttons["Try again"]
         XCTAssertTrue(retry.waitForExistence(timeout: 15))
-        XCTAssertTrue(retry.hasFocus)
+        let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in retry.hasFocus }, object: nil)
+        let focusResult = await XCTWaiter.fulfillment(of: [focused], timeout: 5)
+        record("audio failure settled focus", app)
+        XCTAssertEqual(focusResult, .completed)
         XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "Opening audio…").firstMatch.exists)
         record("audio failed with reachable retry", app)
         try await state("loaded")

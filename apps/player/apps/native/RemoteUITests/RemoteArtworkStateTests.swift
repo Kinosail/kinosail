@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 // Opt-in disposable-fixture journeys. Each selected case needs a fresh unique
@@ -30,8 +31,11 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         XCTAssertTrue(pendingSeen)
         XCTAssertFalse(app.buttons["Resume"].exists)
         let pendingFrame = loading.frame
+        let pendingTitleY = try firstPlaceholderY(app.screenshot().image, viewport: app.frame)
         waitForDetail(app, title: "After the Rain", timeout: 30)
         record("artwork-detail-pending-loaded", app)
+        XCTAssertEqual(pendingTitleY, app.staticTexts["After the Rain"].frame.minY, accuracy: 64,
+                       "The title placeholder must reserve the loaded hero's content position")
         XCTAssertFalse(loading.exists)
         XCTAssertFalse(app.buttons["Try again"].exists)
         print("ARTWORK_STATE pendingFrame=\(pendingFrame) title=\(app.staticTexts["After the Rain"].frame) resume=\(app.buttons["Resume"].frame)")
@@ -125,6 +129,26 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         waitForFocus(app.buttons["Resume"], in: app)
         record("artwork-detail-appearance-\(variant)-return", app)
         verifyPrimaryVisible(app)
+    }
+
+    // The placeholder intentionally hides its decorative children from accessibility.
+    // Inspect actual pixels at the shared text inset, without a production test hook.
+    private func firstPlaceholderY(_ image: UIImage, viewport: CGRect) throws -> CGFloat {
+        let cg = try XCTUnwrap(image.cgImage)
+        let scale = CGFloat(cg.width) / viewport.width
+        let column = try XCTUnwrap(cg.cropping(to: CGRect(x: 204 * scale, y: 0, width: 1, height: CGFloat(cg.height))))
+        let context = try XCTUnwrap(CGContext(data: nil, width: 1, height: column.height,
+            bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
+        context.draw(column, in: CGRect(x: 0, y: 0, width: 1, height: column.height))
+        let pixels = try XCTUnwrap(context.data?.assumingMemoryBound(to: UInt8.self))
+        let rows = Int(100 * scale)..<Int(600 * scale)
+        let y = try XCTUnwrap(rows.first { row in
+            let offset = row * 4
+            return pixels[offset] >= 28 && pixels[offset + 1] >= 34
+                && pixels[offset + 1] > pixels[offset + 2]
+        }, "The pending screen must contain a visible title placeholder")
+        return CGFloat(y) / scale
     }
 
     @MainActor

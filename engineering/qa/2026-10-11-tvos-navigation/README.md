@@ -203,3 +203,47 @@ It does not count as a complete audio pass.
 The tvOS simulator reports `unsupported` for `simctl ui appearance` and
 `increase_contrast`. These calls changed no settings and are not accessibility
 variant evidence.
+
+### Accepted final control journeys
+
+`aligned-controls-1080/remote.xcresult` passes three selected journeys with no
+failures: full Cast traversal and return (138.788 seconds), album/audio/options/
+mini-player return (64.851 seconds), and every Playback preferences row with
+return to Settings (42.994 seconds). The extra movie selector in that exploratory
+command did not match a test; movie navigation remains required in the full run.
+
+The audio test confirms Previous/Back 15 and Next/Forward 30 share columns.
+Options now fits the full TV viewport. Its toolbar uses tvOS 27’s native “More”
+accessibility name. Save preferences exposes focus on its containing Form cell,
+so the settings check uses the focused element’s visible label.
+
+Merge `631104c7` incorporates main’s verification-cache repair and QA report
+updates from PR #553. It changes no native app or UI-test source.
+
+| Path | Before | After |
+| --- | --- | --- |
+| Moonrise to Settings | Up, Right | Up |
+| Sixth library column to Sort | Five Left, Up | Up |
+| Resume to My List | Down, Left | Down |
+| First cast card to Resume | Up, Left, Up | Up, Up |
+| Next to Forward 30 seconds | Up, Right | Up |
+| Shuffle to Previous | Up skipped the row | Up reaches Previous |
+
+### NAV-08: Detail loading reserves the wrong content geometry (P2, confirmed)
+
+The first pending screenshot places its title at y382; loaded content starts at
+y179. It omits the progress and secondary-action rows. A pixel assertion added
+to the existing pending journey reproduces the 203-point jump in
+`pending-retry-red-1080-retry`. The TV placeholder now reserves those rows and
+uses matching title/body heights and cast insets. Final green evidence follows.
+
+The first state batch passes detail pending removal, failed-detail retry, empty
+backdrop, missing artwork, and audio pending removal. Audio retry initially
+asserted focus during presentation. Waiting for settled focus confirms Try again
+is selected and recovery returns to Play (20.931 seconds in the repeated run).
+No production retry change was needed.
+
+`detail-pending-aligned-1080` passes the new pixel regression (33.234 seconds).
+The title placeholder now starts at y186, within seven points of the loaded
+title at y179. Visual inspection confirms aligned action rows and cast insets.
+The pending and loaded screenshots were exported from the accepted result.
