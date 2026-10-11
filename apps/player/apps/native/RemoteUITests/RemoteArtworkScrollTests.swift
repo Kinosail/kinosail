@@ -109,6 +109,76 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         record("artwork cast journey returns to the Movies Browse focus", app)
     }
 
+    // Isolate vertical restoration before the longer horizontal Cast journey.
+    // The full journey above remains required for artwork acceptance.
+    @MainActor
+    func testCastReturnRestoresInitialHeroFrames() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        let remote = XCUIRemote.shared
+        app.launch()
+        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
+        remote.press(.down)
+        remote.press(.down)
+        XCTAssertTrue(app.buttons["Movies"].hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
+        remote.press(.down)
+        remote.press(.select)
+        let title = app.staticTexts["After the Rain"]
+        let resume = app.buttons["Resume"]
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        try waitForLoadedHero(title, resume, app)
+        let initialTitle = title.frame
+        let initialResume = resume.frame
+        record("focused artwork restoration initial hero", app)
+
+        remote.press(.down)
+        try waitForFocus(app.buttons["Bookmarks"])
+        remote.press(.left)
+        try waitForFocus(app.buttons["My List"])
+        remote.press(.down)
+        try waitForFocus(actor(1, app))
+        let scrolled = app.screenshot()
+        let attachment = XCTAttachment(screenshot: scrolled)
+        attachment.name = "focused artwork restoration scrolled Cast"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertEqual(app.frame, CGRect(x: 0, y: 0, width: 1920, height: 1080))
+        XCTAssertLessThan(title.frame.minY, initialTitle.minY - 20,
+                          "The restoration check must exercise vertical scrolling")
+        try assertInsideVerticalSafeArea(actor(1, app), app)
+        XCTAssertEqual(try foregroundPixels(scrolled.image,
+            rect: CGRect(x: 140, y: 0, width: 800, height: 60)), 0)
+
+        remote.press(.up)
+        try waitForFocus(app.buttons["Bookmarks"])
+        remote.press(.left)
+        try waitForFocus(app.buttons["My List"])
+        remote.press(.up)
+        try waitForFocus(resume)
+        try waitForLoadedHero(title, resume, app)
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            abs(title.frame.minY - initialTitle.minY) <= 2
+                && abs(resume.frame.minY - initialResume.minY) <= 2
+                && resume.hasFocus
+        }, object: nil)
+        let result = XCTWaiter.wait(for: [restored], timeout: 5)
+        let observedTitle = title.frame
+        let observedResume = resume.frame
+        print("ARTWORK_RESTORE expectedTitle=\(initialTitle) expectedResume=\(initialResume) observedTitle=\(observedTitle) observedResume=\(observedResume) resumeFocused=\(resume.hasFocus) completed=\(result == .completed)")
+        record("focused artwork restoration returned hero before assertion", app)
+        XCTAssertEqual(result, .completed)
+        XCTAssertEqual(title.frame.minX, 184, accuracy: 2)
+        remote.press(.menu)
+        XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "After the Rain")).firstMatch
+        try waitForFocus(card)
+        remote.press(.menu)
+        try waitForFocus(app.buttons["Movies"])
+        record("focused artwork restoration returns to Movies Browse focus", app)
+    }
+
     @MainActor private func actor(_ index: Int, _ app: XCUIApplication) -> XCUIElement {
         app.buttons.matching(NSPredicate(format: "label CONTAINS %@",
             String(format: "Artwork QA Actor %02d", index))).firstMatch
