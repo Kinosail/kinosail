@@ -11,7 +11,9 @@
     "native-playback-final-private.log": "613e821bdb190f88bc3f8a09e69c8d351a24cd9f650cf12998254b8c3474eaa3",
     "latest-tv-crash.ips": "39464e70f47642c7b641ab036abe17a50006b0498721560d2dc09ec4a0b6b7b4",
     "second-tv-crash.ips": "3f88b6c4580caad7a37c46357d9529996c1c4e36e9435474f6ad7ca0d57479ba",
-    "remote-transitions-replay-private.log": "df43bb6dddf6a88f162c6a6a6d1500ba4f52a33da8b18b66a54fecd97ec3b6a4"
+    "remote-transitions-replay-private.log": "df43bb6dddf6a88f162c6a6a6d1500ba4f52a33da8b18b66a54fecd97ec3b6a4",
+    "tooling-final-private.log": "f347c4cb8cdc5d888fc457c4e9c6c5e0af13e7360f6fcca541e8a6a03b5e36b7",
+    "native-cleanup-oslog-safe.json": "bdbbd03bea19838bc6b8bef93982800f13655412442941d2d451eec8af7510f3"
   },
   "nativeRuns": {
     "native-departure-red2-receipt.json": {
@@ -121,5 +123,25 @@
     "command": "go test ./internal/server -run TestHLSPhasePublicHTTP/page_departure_releases_admission_for_the_next_movie -count=1",
     "workingDirectory": "apps/player",
     "result": "passed"
+  },
+  "localPublicationChecks": {
+    "tooling": {
+      "command": [
+        "make",
+        "tooling-check"
+      ],
+      "exit": 0,
+      "seconds": 69.51
+    },
+    "maxLOC": "passed",
+    "postCommitVerifyChanged": {
+      "result": "passed",
+      "nativeClientSeconds": 16,
+      "targets": [
+        "iOS",
+        "tvOS"
+      ]
+    },
+    "architectureSnapshot": "regenerated and checked"
   }
 }

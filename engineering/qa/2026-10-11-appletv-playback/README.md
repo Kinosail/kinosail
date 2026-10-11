@@ -26,7 +26,8 @@ Crashes and forced termination can still require that fallback.
 - All 35 selected native tests passed on tvOS 27.0 Simulator, build 24J360.
 - `TestHLSPhasePublicHTTP/page_departure_releases_admission_for_the_next_movie` passed. It preserves shared viewers and releases admission after the final departure.
 - Two simulator remote journeys passed against generated media, including repeated playback and failed-start retries. They did not reproduce the physical crash.
-- `make max-loc` passed before publication. The delivery receipt records subsequent build and CI results.
+- `make max-loc`, post-commit `make -C apps/player verify-changed`, and `make tooling-check` passed. Both native app builds passed.
+- The first CI run found a stale generated architecture snapshot. Regeneration and the full local tooling suite passed before retrying CI.
 
 The native HTTP fixture isolates the upstream server. It verifies the Swift adapter's actual HTTP traffic, not populated-server E2E playback.
 The server departure journey uses controlled encoders. It proves admission behavior, not media decoding.
