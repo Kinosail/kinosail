@@ -93,6 +93,9 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		// Keep copied video and audio on the same mux clock. Shifting only audio
 		// makes it end early and native HLS can stop seeking before the last frame.
 		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
+		// A container seek can return an entire earlier audio cluster. Keep only
+		// the preroll inside the certified mux delay, without changing timestamps.
+		arguments = append(arguments, "-bsf:a", "noise=amount=0:drop=lt(pts*tb\\,-"+copiedHLSTime(*timeline.Clock)+")")
 	}
 	return arguments, nil
 }

@@ -443,11 +443,16 @@ Refills limit `-copypriorss` to video and keep both tracks on the common mux clo
 Initial preparation still trims both tracks so earlier audio does not redefine the browser's timeline origin.
 Applying video-only trimming to initial preparation made both MSE engines display seven incorrect images.
 The retained failed receipt records that rejected candidate; the initial/refill distinction repairs it.
+The existing prepared suite then exposed a second limit: MKV seeks can return an entire earlier audio cluster.
+Unbounded preroll duplicated about two seconds of audio at a refill boundary.
+Later fragments now discard only packets before the certified mux delay using an audio bitstream filter.
+Retained packets keep their timestamps and payloads; the filter does not shift audio independently.
 The retained regression populates all ten fragments, verifies audio continuity, deletes the existing final fragment, then plays the real watch page.
 It requires exact original-frame images, correct startup position and duration, unchanged initialization bytes, and a restored tail.
 It also checks every audio boundary within the existing 50 ms tolerance and compares final audio and video endpoints.
 Chromium, WebKit MSE, and native WebKit each pass all seven images after that correction.
-The largest boundary overlap is 21.333 ms; final audio and video endpoints match at the recorded microsecond precision.
+The final remux fixture's boundaries agree within approximately one microsecond, and its final audio and video endpoints match.
+The broader conversion suite uses its existing 50 ms tolerance; these results do not establish sample-exact audio continuity.
 This uses real native WebKit decoding with MSE capability disabled, not physical Safari acceptance.
 WebKit's paused native HLS path emits no frame callbacks; the native oracle uses seek completion and render turns with unchanged image assertions.
 The MSE oracle retains timestamp-qualified frame callbacks.
@@ -465,11 +470,25 @@ Receipts below are under `.verification/hls-resume-browser/`; each retains the r
 | `20261011T203144Z` | rejected initial audio-preroll candidate: both MSE engines fail all seven images | `ecccfec4b8aff7c8ede61aac8f37966a6557b2374de5e2a92e05aa84cf88c487` |
 | `20261011T212810Z` | corrected initial/refill trimming: both MSE engines, tail replacement, and audio continuity pass | `20258279df626c3d3385c43c9b941065d00ffdaf17e67ac1f8cb1071f796f433` |
 | `20261011T212832Z` | corrected initial/refill trimming: native frames, tail replacement, and audio continuity pass | `caa5bcf64c03d704895ee77f250f9466c1c49eed0e8b866080b4620da184b1e6` |
+| `20261011T213124Z` | native pending seek exposes a second seek to a transient buffered position | `b54cd3966a3cce99f679ab8d0e69c259d99f2467a932fdab8a9c9edb5f839240` |
+| `20261011T213524Z` | bounded preroll: both MSE engines, tail replacement, and audio continuity pass | `ec613cda4af8507e058e2fef65091b2197d0ec7dcb5be32121be7a27fb731515` |
+| `20261011T213545Z` | bounded preroll: native frames, tail replacement, and audio continuity pass | `ba2406b867b3637bb97421b23983bb6a9ff470776e521aad2ceea1ecd6ebc095` |
+| `20261011T213601Z` | all five native recovery and cancellation cases pass with the seek guard | `1fce5117b5307622df8536a8744d24f81a4e858c449f6410386d218689351eb8` |
+
+The native pending-seek failure was reproducible with a bounded lifecycle trace.
+A `canplay` handler clamped to a transient later buffer while the requested seek was still outstanding.
+It now leaves an outstanding seek unchanged. The real control journey and diagnostic replay pass without relaxed assertions.
+
+The existing prepared suite's unbounded-preroll failure is retained at `.verification/hls-prepared-timeline/20261011T213034Z/receipt.json`.
+Its SHA-256 is `ead617dda9866e4f5577a9f2a3b646e90883835736c42bd0602d142fa5cb0d13`.
+The bounded-preroll replay passes eight cases; one stops before preparation with a process-inspection timeout.
+That aggregate remains failed. An unchanged serial replay is pending.
+All six existing audio-conversion and legacy controls pass on the bounded-preroll patch.
 
 The new Chromium frame and metadata-recovery journeys are added to the required Player browser job.
 Current local CI contracts pass 169 tests with five environment-dependent skips.
 The repository's selected actionlint fork, version 1.17.0, accepts the changed workflow.
-The existing audio-conversion, prepared-timeline, and publication checks remain pending at this checkpoint.
+The complete prepared-timeline replay and hosted publication checks remain pending at this checkpoint.
 
 ### Seventh delivery checkpoint
 

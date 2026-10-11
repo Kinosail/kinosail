@@ -70,7 +70,7 @@ player.addEventListener("seeking", () => {
   }
 });
 const showReadyPlaybackMode = () => {
-  if (adaptiveActive && !hls && player.buffered.length) {
+  if (adaptiveActive && !hls && !player.seeking && player.buffered.length) {
     const start = player.buffered.start(0) + playbackTimelineOffset;
     if (player.currentTime < start) setPlayerTime(start);
   }
