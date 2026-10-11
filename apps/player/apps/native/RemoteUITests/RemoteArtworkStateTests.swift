@@ -107,13 +107,14 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         record("artwork-detail-appearance-\(variant)-first-down", app)
         let bookmarks = app.buttons["Bookmarks"]
         let myList = app.buttons["My List"]
+        waitForFocus(myList, in: app)
         if abs(bookmarks.frame.midY - myList.frame.midY) <= 8 {
+            XCUIRemote.shared.press(.right)
             waitForFocus(bookmarks, in: app)
             XCUIRemote.shared.press(.left)
             waitForFocus(myList, in: app)
         } else {
             XCTAssertLessThan(myList.frame.minY, bookmarks.frame.minY)
-            waitForFocus(myList, in: app)
             XCUIRemote.shared.press(.down)
             waitForFocus(bookmarks, in: app)
             XCUIRemote.shared.press(.up)

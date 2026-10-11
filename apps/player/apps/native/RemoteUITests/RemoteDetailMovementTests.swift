@@ -28,12 +28,13 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         record("album tracks", app)
         remote.press(.select)
         XCTAssertTrue(app.buttons["Back 15 seconds"].waitForExistence(timeout: 20), "Audio player should open")
+        remote.press(.playPause)
+        XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5))
         let focusedPlayerControl = app.buttons.matching(NSPredicate(
-            format: "hasFocus == true AND (label == 'Back 15 seconds' OR label == 'Pause' OR label == 'Forward 30 seconds')"
+            format: "hasFocus == true AND (label == 'Back 15 seconds' OR label == 'Play' OR label == 'Forward 30 seconds')"
         )).firstMatch
         XCTAssertTrue(focusedPlayerControl.waitForExistence(timeout: 10), "Audio player should receive focus")
         record("audio player", app)
-        if app.buttons["Pause"].hasFocus { remote.press(.select) }
         XCTAssertTrue(app.buttons["Play"].hasFocus)
         let path: [(XCUIRemote.Button, String)] = [
             (.left, "Back 15 seconds"), (.right, "Play"), (.right, "Forward 30 seconds"),
@@ -47,11 +48,44 @@ final class RemoteDetailMovementTests: RemoteTestCase {
             XCTAssertTrue(focusedLabels(app).contains(expected),
                           "Expected \(expected); actual: \(focusedLabels(app))")
         }
+        remote.press(.right)
+        XCTAssertTrue(app.buttons["Next"].hasFocus)
+        remote.press(.up)
+        XCTAssertTrue(app.buttons["Forward 30 seconds"].hasFocus)
+        remote.press(.up)
+        record("audio Up to Playback options", app)
+        XCTAssertTrue(app.buttons["Playback options"].hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(app.cells["This title’s preferences"].waitForExistence(timeout: 10))
+        remote.press(.menu)
+        XCTAssertTrue(app.buttons["Playback options"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Playback options"].hasFocus)
         remote.press(.menu)
         XCTAssertTrue(app.buttons["Back 15 seconds"].waitForNonExistence(timeout: 10),
                       "Back should close the audio player")
         XCTAssertTrue(app.staticTexts["Tracks"].waitForExistence(timeout: 10), "Back should return to the album")
         record("back from audio player", app)
+        remote.press(.down)
+        let mini = app.buttons["Now playing: Evening Light"]
+        XCTAssertTrue(mini.hasFocus)
+        remote.press(.right)
+        XCTAssertTrue(app.buttons["Play"].hasFocus)
+        remote.press(.right)
+        XCTAssertTrue(app.buttons["Stop"].hasFocus)
+        remote.press(.left)
+        remote.press(.left)
+        XCTAssertTrue(mini.hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(app.buttons["Back 15 seconds"].waitForExistence(timeout: 10))
+        remote.press(.menu)
+        XCTAssertTrue(mini.waitForExistence(timeout: 10))
+        XCTAssertTrue(mini.hasFocus)
+        record("mini player return focus", app)
+        remote.press(.right)
+        remote.press(.right)
+        XCTAssertTrue(app.buttons["Stop"].hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(mini.waitForNonExistence(timeout: 5))
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Albums"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons[albumLabel].hasFocus)

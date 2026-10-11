@@ -85,7 +85,7 @@ final class RemotePolishTests: RemoteTestCase {
         for _ in 0..<5 {
             let focused = app.descendants(matching: .any).matching(NSPredicate(format: "hasFocus == true")).firstMatch
             XCTAssertTrue(focused.waitForExistence(timeout: 5), "Focus should settle after the player transition")
-            if focused.label == "Shuffle off" || focused.label == "Repeat: off" { break }
+            if focusedLabels(app).contains("Shuffle off") || focusedLabels(app).contains("Repeat: off") { break }
             remote.press(.down)
         }
         let sleep = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Sleep timer'")).firstMatch

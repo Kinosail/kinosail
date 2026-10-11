@@ -28,6 +28,27 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         remote.press(.up)
         record("library top right Up to Sort", app)
         assertFocus("Sort: Title", app)
+        remote.press(.select)
+        XCTAssertTrue(app.descendants(matching: .any)["Recently added"].waitForExistence(timeout: 5))
+        remote.press(.down)
+        record("library sort Down to Recently added", app)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Sort: Recently added"].waitForExistence(timeout: 5))
+        assertFocus("Sort: Recently added", app)
+        remote.press(.select)
+        remote.press(.down)
+        remote.press(.down)
+        record("library sort Down to Year", app)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Sort: Year"].waitForExistence(timeout: 5))
+        assertFocus("Sort: Year", app)
+        remote.press(.select)
+        record("library sort reopens on Title", app)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 5))
+        remote.press(.select)
+        remote.press(.menu)
+        assertFocus("Sort: Title", app)
     }
 
     @MainActor func testLetterIndexSkipsPagesAndReturnsToAdjacentTitle() {
@@ -44,6 +65,14 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         assertFocus("J, 154 titles", app)
         record("library J index", app)
         assertReadableLetter(app.buttons["J, 154 titles"], app)
+        for letter in ["M", "N", "T"] {
+            remote.press(.down)
+            assertFocus("\(letter), 1 title", app)
+        }
+        for letter in ["N", "M", "J"] {
+            remote.press(.up)
+            assertFocus("\(letter),", app)
+        }
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS 'Journey 006'"))
             .firstMatch.waitForExistence(timeout: 10))
         remote.press(.left)

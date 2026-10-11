@@ -129,14 +129,14 @@ with (output / 'fixture.log').open('w') as log:
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/' + case for case in [
                     'RemoteQualityBaselineTests', 'RemoteHomeScrollingTests',
                     'RemoteDetailMovementTests', 'RemoteMovementTests',
-                    'RemotePolishTests/testFocusedContinueWatchingCardsKeepTheirNeighborsClear',
-                    'RemoteSettingsNavigationTests', 'RemotePlaybackOptionsTests']]
+                    'RemotePolishTests', 'RemoteLibraryNavigationTests', 'RemoteSearchNavigationTests',
+                    'RemoteSettingsNavigationTests', 'RemotePlaybackOptionsTests', 'RemotePlaybackCrashTests']]
             else:
                 method = {'empty': 'testEmptyHomeBackReachesNavigation',
                           'failed': 'testFailedHomeBackAndRetryRemainUsable',
                           'pending': 'testPendingHomeKeepsNavigationReachableAndRemovesSkeleton'}[args.mode]
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/RemoteHomeStateTests/' + method]
-            code = run('remote', 'Kinosail-tvOS-Remote', selection, 1200 if args.mode == 'loaded' else 120)
+            code = run('remote', 'Kinosail-tvOS-Remote', selection, 1800 if args.mode == 'loaded' else 120)
     finally:
         try:
             settle(fixture)

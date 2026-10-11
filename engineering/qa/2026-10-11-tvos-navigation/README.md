@@ -125,3 +125,30 @@ PR #548. Final acceptance must use that integrated layout.
 Focus-section reference: [Apple's SwiftUI focusSection documentation](https://developer.apple.com/documentation/swiftui/view/focussection()).
 The app retains native directional navigation and uses focus sections to bridge
 visible gaps between control rows.
+
+### NAV-06: Audio Up skips the adjacent control row (P2, confirmed twice)
+
+With audio paused, move to Shuffle in the options row. Previous is the closest
+control above it. Up instead jumps past the Previous/Next row to Back 15 seconds.
+Both `paths-4k.xcresult` and `audio-red-repeat-4k.xcresult` reproduce the mismatch.
+The Previous/Next row now spans its available width as a tvOS focus section.
+Its controls retain their native centered layout and horizontal spacing.
+
+### 4K observations
+
+The disposable 4K simulator is `EEDDB21C-EA99-4EC1-B773-424FB129CCEC`.
+The nested Settings journey passed all six destinations and restored each
+originating row. Search passed keyboard entry, result activation, result return,
+empty results, and Back to Search. The A–Z journey passed its readable-glyph
+check and restored Journey 011 after detail Back. More spacing keeps the native
+letter highlight clear of its neighbors; final width verification remains open.
+
+Native menus and the system keyboard do not consistently expose their selected
+child through `hasFocus`. Their expanded-menu assertions therefore use visible
+screenshots and the selected value after a directional input. This distinguishes
+an accessibility-query limitation from an actual focus defect. Collapsed menus
+expose their visible title through static-text descendants of the focused view.
+
+`make -C apps/player verify-changed` passed max-loc, diff-check, and both native
+client builds at `e82c49e7` plus the then-pending test edits. Subsequent production
+changes require the final committed verification below.

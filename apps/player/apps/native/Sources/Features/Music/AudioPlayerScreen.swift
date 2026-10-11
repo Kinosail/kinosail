@@ -108,6 +108,9 @@ struct AudioPlayerScreen: View {
                                 Button("Previous", systemImage: "backward.end.fill") { perform { try await session.player.previousTrack() } }.secondaryControlForeground()
                                 Button("Next", systemImage: "forward.end.fill") { perform { try await session.player.nextTrack() } }.secondaryControlForeground()
                             }.labelStyle(.iconOnly).font(.title2).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).controlSize(.large).disabled(session.player.player == nil)
+                            #if os(tvOS)
+                            .frame(maxWidth: .infinity).focusSection()
+                            #endif
                         }
                         ViewThatFits(in: .horizontal) {
                             HStack(spacing: 12) { audioOptions(item) }

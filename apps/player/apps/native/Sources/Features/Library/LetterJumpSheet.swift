@@ -72,7 +72,7 @@ struct TVLetterIndex: View {
 
     var body: some View {
         ScrollView(.vertical) {
-            LazyVStack(spacing: 2) {
+            LazyVStack(spacing: 14) {
                 ForEach(letters) { letter in
                     Button(letter.label) { onBrowse(letter) }
                         .buttonStyle(.plain).focusEffectDisabled()
@@ -89,7 +89,7 @@ struct TVLetterIndex: View {
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)
-        .frame(width: 68)
+        .frame(width: 88)
         .frame(maxHeight: 680)
         .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 14))
         .focusSection()

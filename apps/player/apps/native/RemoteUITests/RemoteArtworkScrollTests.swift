@@ -37,8 +37,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
 
         remote.press(.down)
         record("artwork first Down focus before My List validation", app)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"], diagnosticApp: app)
         remote.press(.down)
         try waitForFocus(actor(1, app))
@@ -134,8 +132,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         record("focused artwork restoration initial hero", app)
 
         remote.press(.down)
-        try waitForFocus(app.buttons["Bookmarks"])
-        remote.press(.left)
         try waitForFocus(app.buttons["My List"])
         remote.press(.down)
         try waitForFocus(actor(1, app))
