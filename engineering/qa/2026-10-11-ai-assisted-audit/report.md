@@ -243,6 +243,10 @@ The second attempt passed all 169 CI contracts with five environment skips, then
 Neither full local tooling attempt is reported as passing.
 The final verifier regression passed after the hashing format was finalized. `make max-loc` and `git diff --check` passed.
 The implementation checkpoint is `6937787141c50461dc6adbe68d564a85c0fc654e`; hosted required checks remain mandatory.
+The first PR run passed the new verifier regression and failed later on stale Code Atlas snapshots.
+Both snapshots were regenerated from the current source, including localization and previously merged metadata changes.
+The generator's input rejection, canonical platform, and snapshot checks then passed locally.
+Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
 ### AQA-008 — Open: intermittent executable-fixture launch failure
 
@@ -251,6 +255,8 @@ Linux returned `text file busy` while launching its newly written, test-owned sh
 The required PR checks had passed on the reviewed source. No marker production source changed in this delivery.
 The failure is retained as an environment or fixture-lifecycle finding pending reproduction; it is not attributed to localization.
 Run: [38156244208](https://github.com/Kinosail/kinosail/actions/runs/38156244208), job `114519746603`.
+A retry passed without a source change. Main CI and both production-image promotions subsequently completed successfully.
+That establishes publication of `8e937334fbbc0f79915f6f093d8aed268481de64`, not a repair of the intermittent fixture failure or proof of deployment.
 
 ### AQA-009 — Open: Subtitles phone navigation splits an English word
 
