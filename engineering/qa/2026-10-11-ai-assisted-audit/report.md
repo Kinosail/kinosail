@@ -482,13 +482,24 @@ It now leaves an outstanding seek unchanged. The real control journey and diagno
 The existing prepared suite's unbounded-preroll failure is retained at `.verification/hls-prepared-timeline/20261011T213034Z/receipt.json`.
 Its SHA-256 is `ead617dda9866e4f5577a9f2a3b646e90883835736c42bd0602d142fa5cb0d13`.
 The bounded-preroll replay passes eight cases; one stops before preparation with a process-inspection timeout.
-That aggregate remains failed. An unchanged serial replay is pending.
+That aggregate remains failed. The unchanged serial replay passes all nine cases.
 All six existing audio-conversion and legacy controls pass on the bounded-preroll patch.
+
+| Final existing suite receipt | Result | Receipt SHA-256 |
+| --- | --- | --- |
+| `.verification/hls-prepared-timeline/20261011T214137Z/receipt.json` | nine of nine pass, including sparse, fractional, and resumed timelines | `3d48ddfb06ba60d571caf03a92d15a4e2772d9529163c7180a79d9c3b158309a` |
+| `.verification/hls-followon/20261011T213850Z/receipt.json` | six of six audio-conversion and legacy controls pass | `2d4da113d39b010faa5367881cca43a2ba2e10fd2c533131b7419317b321c0fb` |
+
+Phone failure/loaded and desktop pending/failure renders were inspected directly.
+Recovery text and controls remain readable, and pending indicators disappear after failure or successful recovery.
+These renders do not establish physical-device or assistive-technology acceptance.
 
 The new Chromium frame and metadata-recovery journeys are added to the required Player browser job.
 Current local CI contracts pass 169 tests with five environment-dependent skips.
 The repository's selected actionlint fork, version 1.17.0, accepts the changed workflow.
-The complete prepared-timeline replay and hosted publication checks remain pending at this checkpoint.
+The generated Player architecture snapshot was refreshed after the first hosted check identified it as stale.
+Architecture contracts, source limits, whitespace, and post-commit Player verification pass.
+[PR #560](https://github.com/Kinosail/kinosail/pull/560) carries this repair; hosted checks and publication remain pending.
 
 ### Seventh delivery checkpoint
 
