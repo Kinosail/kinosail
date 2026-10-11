@@ -85,6 +85,8 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             try waitForFocus(actor(index, app))
         }
         remote.press(.up)
+        try waitForFocus(app.buttons["Bookmarks"])
+        remote.press(.left)
         try waitForFocus(app.buttons["My List"])
         remote.press(.up)
         try waitForFocus(resume)
