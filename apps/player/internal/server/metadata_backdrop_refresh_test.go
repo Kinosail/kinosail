@@ -39,7 +39,8 @@ func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *test
 	cacheDir := t.TempDir()
 	handler := server.New(server.Config{
 		MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, RequireAuth: true,
-		Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
+		Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"},
+	})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	item := refreshedBackdropItem(t, handler, owner.Value)
 	refreshPath := "/api/v1/items/" + item.ID + "/metadata/refresh"
@@ -62,8 +63,11 @@ func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *test
 	for _, test := range []struct {
 		name, token string
 		status      int
-	}{{"unauthenticated", "", http.StatusUnauthorized}, {"invalid session", "invalid-session", http.StatusUnauthorized},
-		{"Viewer", viewer.Value, http.StatusForbidden}} {
+	}{
+		{"unauthenticated", "", http.StatusUnauthorized},
+		{"invalid session", "invalid-session", http.StatusUnauthorized},
+		{"Viewer", viewer.Value, http.StatusForbidden},
+	} {
 		t.Run(test.name, func(t *testing.T) {
 			journey.assertDenied(t, test.token, test.status)
 		})
@@ -74,8 +78,12 @@ func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *test
 		status int
 		image  []byte
 		width  int
-	}{{"legacy seed", 0, http.StatusNoContent, legacy, 780}, {"sharp replacement", 1, http.StatusNoContent, sharp, 3840},
-		{"provider failure", 2, http.StatusBadGateway, sharp, 3840}, {"oversized response", 3, http.StatusBadGateway, sharp, 3840}} {
+	}{
+		{"legacy seed", 0, http.StatusNoContent, legacy, 780},
+		{"sharp replacement", 1, http.StatusNoContent, sharp, 3840},
+		{"provider failure", 2, http.StatusBadGateway, sharp, 3840},
+		{"oversized response", 3, http.StatusBadGateway, sharp, 3840},
+	} {
 		t.Run(test.name, func(t *testing.T) {
 			journey.assertRefresh(t, test.phase, test.status, test.image, test.width)
 		})

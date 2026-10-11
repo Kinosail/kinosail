@@ -89,9 +89,11 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 		name string
 		data []byte
 	}{
-		{"malformed", []byte("not an image")}, {"truncated after header", truncated},
+		{"malformed", []byte("not an image")},
+		{"truncated after header", truncated},
 		{"unsupported format with image MIME", unsupportedPNG.Bytes()},
-		{"oversized pixel dimensions", oversizedDimensions}} {
+		{"oversized pixel dimensions", oversizedDimensions},
+	} {
 		t.Run(test.name, func(t *testing.T) {
 			store := newMetadataStore(MetadataConfig{}, "", t.TempDir())
 			target := store.artworkPath("movie-backdrop")
@@ -99,8 +101,10 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 			store.client = &http.Client{Transport: backdropResolutionTransport(func(*http.Request) (*http.Response, error) {
 				return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(bytes.NewReader(test.data))}, nil
 			})}
-			result := metadata.Result{Record: metadataRecord{Title: "Movie", Backdrop: target, BackdropChecked: true},
-				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}}}
+			result := metadata.Result{
+				Record: metadataRecord{Title: "Movie", Backdrop: target, BackdropChecked: true},
+				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}},
+			}
 			updated, err := store.downloadMetadataImages(t.Context(), result)
 			if err == nil {
 				t.Error("invalid canonical backdrop was accepted")
@@ -128,8 +132,10 @@ func TestCanonicalBackdropPixelBudgetBoundariesPreserveExistingBytes(t *testing.
 			store.client = &http.Client{Transport: backdropResolutionTransport(func(*http.Request) (*http.Response, error) {
 				return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(bytes.NewReader(data))}, nil
 			})}
-			result := metadata.Result{Record: metadataRecord{Backdrop: target, BackdropChecked: true},
-				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}}}
+			result := metadata.Result{
+				Record: metadataRecord{Backdrop: target, BackdropChecked: true},
+				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}},
+			}
 			_, err := store.downloadMetadataImages(t.Context(), result)
 			if (err == nil) != test.accept {
 				t.Fatalf("pixel-boundary acceptance = %t, want %t", err == nil, test.accept)
@@ -153,8 +159,10 @@ func TestCanonicalBackdropRejectionLogsOnlySafeBoundedContext(t *testing.T) {
 		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(strings.NewReader("fixture-secret"))}, nil
 	})}
 	ctx := context.WithValue(t.Context(), requestActivityKey{}, &requestActivity{id: "0123456789abcdef01234567"})
-	result := metadata.Result{Record: metadataRecord{Title: "Private title", Backdrop: store.artworkPath("movie-backdrop")},
-		Images: []metadata.Image{{Source: "/private-art.jpg?credential=fixture-secret", Target: store.artworkPath("movie-backdrop"), Backdrop: true}}}
+	result := metadata.Result{
+		Record: metadataRecord{Title: "Private title", Backdrop: store.artworkPath("movie-backdrop")},
+		Images: []metadata.Image{{Source: "/private-art.jpg?credential=fixture-secret", Target: store.artworkPath("movie-backdrop"), Backdrop: true}},
+	}
 	if _, err := store.downloadMetadataImages(ctx, result); err == nil {
 		t.Fatal("invalid canonical backdrop was accepted")
 	}

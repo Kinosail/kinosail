@@ -164,7 +164,8 @@ func TestCanonicalBackdropFailureDoesNotRetainUnusableCacheOrChangeCustomPolicy(
 			})}
 			result := metadata.Result{
 				Record: metadata.Record{Backdrop: target, BackdropChecked: true},
-				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}}}
+				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}},
+			}
 			updated, err := store.downloadMetadataImages(t.Context(), result)
 			if err == nil || updated.Backdrop != "" || updated.BackdropChecked {
 				t.Fatal("failed refresh retained unusable artwork or changed custom-provider policy")
