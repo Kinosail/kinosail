@@ -73,6 +73,10 @@ export function registerSubtitleDefaultTests() {
         await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
         await capture("pending");
         release();
+        // The server-rendered status already says loaded during the refresh.
+        // Wait for the real request to release its controls before capturing it.
+        await expect(page.locator("#inspector-status")).not.toHaveAttribute("aria-busy", "true");
+        await expect(page.getByRole("button", { name: "Preview changes" })).toBeEnabled();
         await expect(page.locator("#inspector-status")).toContainText("Current subtitle loaded");
         await page.unroute(`**${base}/inspect?*`);
         await page.getByText("Timing anchors and cleanup", { exact: true }).click();

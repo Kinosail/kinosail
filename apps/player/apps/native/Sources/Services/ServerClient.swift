@@ -10,7 +10,7 @@ func diagnosticOperation(_ rawPath: String) -> String {
     guard let first = parts.first else { return "other" }
     if parts.count >= 3, first == "api", parts[1] == "v1" {
         if parts[2] == "items", parts.count >= 5,
-           ["playback", "playback-preferences", "progress", "list", "reader"].contains(parts[4]) {
+           ["playback", "playback-preferences", "playback-events", "progress", "list", "reader"].contains(parts[4]) {
             return "items-\(parts[4])"
         }
         if ["items", "library", "me", "session", "quick-connect", "shows", "albums", "collections",
@@ -151,7 +151,9 @@ actor ServerClient {
         catch let error as ClientError {
             if case .http(let status) = error {
                 recordConnection(status >= 500 ? .unreachable : .reachable, sequence: sequence)
-                if status >= 500 {
+                // Playback event delivery is best effort; the Server's idle
+                // cleanup still releases a stream when departure is unavailable.
+                if status >= 500, operation != "items-playback-events" {
                     networkLog.error("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")
                 } else {
                     networkLog.warning("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")
