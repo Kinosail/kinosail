@@ -2,14 +2,18 @@ package server
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"image"
 	"image/jpeg"
 	"image/png"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail/packages/metadata"
@@ -110,8 +114,12 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 			})}
 			result := metadata.Result{Record: metadataRecord{Title: "Movie", Backdrop: target, BackdropChecked: true},
 				Images: []metadata.Image{{Source: "/backdrop.jpg", Target: target, Backdrop: true}}}
-			if _, err := store.downloadMetadataImages(t.Context(), result); err == nil {
+			updated, err := store.downloadMetadataImages(t.Context(), result)
+			if err == nil {
 				t.Error("invalid canonical backdrop was accepted")
+			}
+			if updated.Backdrop != target || updated.BackdropChecked {
+				t.Error("rejected replacement lost the existing backdrop or stopped retries")
 			}
 			got, err := os.ReadFile(target)
 			if err != nil || !bytes.Equal(got, prior) {
@@ -156,6 +164,36 @@ func TestCanonicalBackdropPixelBudgetBoundariesPreserveExistingBytes(t *testing.
 				t.Fatalf("pixel-boundary replacement changed expected bytes: %v", err)
 			}
 		})
+	}
+}
+
+func TestCanonicalBackdropRejectionLogsOnlySafeBoundedContext(t *testing.T) {
+	var output bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&output, nil)))
+	defer slog.SetDefault(previous)
+	store := newMetadataStore(MetadataConfig{}, "", t.TempDir())
+	store.client = &http.Client{Transport: backdropResolutionTransport(func(*http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: http.StatusOK, Header: http.Header{"Content-Type": {"image/jpeg"}}, Body: io.NopCloser(strings.NewReader("fixture-secret"))}, nil
+	})}
+	ctx := context.WithValue(t.Context(), requestActivityKey{}, &requestActivity{id: "0123456789abcdef01234567"})
+	result := metadata.Result{Record: metadataRecord{Title: "Private title", Backdrop: store.artworkPath("movie-backdrop")},
+		Images: []metadata.Image{{Source: "/private-art.jpg?credential=fixture-secret", Target: store.artworkPath("movie-backdrop"), Backdrop: true}}}
+	if _, err := store.downloadMetadataImages(ctx, result); err == nil {
+		t.Fatal("invalid canonical backdrop was accepted")
+	}
+	var event map[string]any
+	if err := json.Unmarshal(bytes.TrimSpace(output.Bytes()), &event); err != nil {
+		t.Fatalf("expected one structured rejection event: %v", err)
+	}
+	if event["level"] != "WARN" || event["request_id"] != "0123456789abcdef01234567" || event["operation"] != "metadata.backdrop" ||
+		event["failure_class"] != "jpeg-header" || event["outcome"] != "cache-not-replaced" {
+		t.Fatal("backdrop rejection lacks bounded diagnostic context")
+	}
+	for _, private := range []string{"Private title", "fixture-secret", "private-art", "credential", "https://", store.cache} {
+		if bytes.Contains(output.Bytes(), []byte(private)) {
+			t.Fatal("backdrop rejection exposed private source data")
+		}
 	}
 }
 
