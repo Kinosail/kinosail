@@ -36,7 +36,8 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         record("artwork controls before cast scrolling", app)
 
         remote.press(.down)
-        try waitForFocus(app.buttons["My List"])
+        record("artwork first Down focus before My List validation", app)
+        try waitForFocus(app.buttons["My List"], diagnosticApp: app)
         remote.press(.down)
         try waitForFocus(actor(1, app))
         let scrolled = app.screenshot()
@@ -109,7 +110,8 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             String(format: "Artwork QA Actor %02d", index))).firstMatch
     }
 
-    @MainActor private func waitForFocus(_ element: XCUIElement) throws {
+    @MainActor private func waitForFocus(_ element: XCUIElement,
+                                         diagnosticApp: XCUIApplication? = nil) throws {
         var previous = CGRect.null
         var stableSamples = 0
         let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
@@ -117,9 +119,17 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
             let frame = element.frame
             stableSamples = frame == previous ? stableSamples + 1 : 0
             previous = frame
-            return element.hasFocus && stableSamples >= 2
+            let hasFocus = element.hasFocus
+            if diagnosticApp != nil {
+                print("ARTWORK_FOCUS_WAIT label=\(element.label) focused=\(hasFocus) frame=\(frame) stable=\(stableSamples)")
+            }
+            return hasFocus && stableSamples >= 2
         }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [focused], timeout: 5), .completed)
+        let result = XCTWaiter.wait(for: [focused], timeout: 5)
+        if result != .completed, let diagnosticApp {
+            record("artwork My List focus wait failure before assertion", diagnosticApp)
+        }
+        XCTAssertEqual(result, .completed)
     }
 
     @MainActor private func waitForLoadedHero(_ title: XCUIElement, _ resume: XCUIElement,
