@@ -2,7 +2,7 @@
 
 The user reported Raya playback failures and a crash when playing Shrinking.
 The physical Apple TV received main `4fee16403237b22018f354372ab981f101820170`, build 3666.
-Two physical crash reports from that build show the same UIKit remote gesture exception stack.
+Three physical crash reports from that build show the same UIKit remote gesture exception stack.
 Neither report identifies an application callback as the cause. This change does not claim to fix that crash.
 
 ## Confirmed stream departure defect
@@ -26,6 +26,8 @@ Crashes and forced termination can still require that fallback.
 - All 35 selected native tests passed on tvOS 27.0 Simulator, build 24J360.
 - `TestHLSPhasePublicHTTP/page_departure_releases_admission_for_the_next_movie` passed. It preserves shared viewers and releases admission after the final departure.
 - Two simulator remote journeys passed against generated media, including repeated playback and failed-start retries. They did not reproduce the physical crash.
+- The physical Apple TV passed a Raya button-input journey covering card Play/Pause, card Select, detail Select, held seeking, and return home. The installed baseline app was used without replacement.
+- Main `5711a736c43787ffad0625068f09a5e89d7bba9f` was reconciled. The 35 selected native checks and the separate endpoint/completion suite passed with the combined production changes.
 - `make max-loc`, post-commit `make -C apps/player verify-changed`, and `make tooling-check` passed. Both native app builds passed.
 - The first CI run found a stale generated architecture snapshot. Regeneration and the full local tooling suite passed before retrying CI.
 
@@ -37,6 +39,6 @@ The separate real Raya browser attempt played with advancing time and no media e
 
 `validation.json` records the baseline, exact native commands, source hashes, and checksums for private evidence.
 Raw device crashes, authenticated process logs, server targets, and media screenshots remain outside the repository.
-Physical tvOS is build 24J361; simulator evidence cannot establish the physical remote touch path.
+Physical tvOS is build 24J361. Automated hardware input used `XCUIRemote` button presses and holds; its public SDK header exposes no clickpad touch or swipe API.
 The exact remote action that triggers the Shrinking crash still needs reproduction on the physical device.
 The deployed server remains a separate older local snapshot. This native fix uses its existing playback event API.

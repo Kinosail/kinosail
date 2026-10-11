@@ -13,7 +13,11 @@
     "second-tv-crash.ips": "3f88b6c4580caad7a37c46357d9529996c1c4e36e9435474f6ad7ca0d57479ba",
     "remote-transitions-replay-private.log": "df43bb6dddf6a88f162c6a6a6d1500ba4f52a33da8b18b66a54fecd97ec3b6a4",
     "tooling-final-private.log": "f347c4cb8cdc5d888fc457c4e9c6c5e0af13e7360f6fcca541e8a6a03b5e36b7",
-    "native-cleanup-oslog-safe.json": "bdbbd03bea19838bc6b8bef93982800f13655412442941d2d451eec8af7510f3"
+    "native-cleanup-oslog-safe.json": "bdbbd03bea19838bc6b8bef93982800f13655412442941d2d451eec8af7510f3",
+    "native-reconciled-final-private.log": "45cf7fe1afb533192c93e2afc3c5beffa82b1aec77d5b82349379efdbf9b950c",
+    "physical-remote-baseline-private.log": "3e6a3cfbd389f78fa812571c8e63fda171ad7e38e52e2ddfa7ed6e91023cc7af",
+    "third-tv-crash.ips": "3b9bc1a888bf43cfef28020d9326b1276420b55d0d529610312ce49de1bdbcf0",
+    "native-reconciled-endpoints-private.log": "fcb084204d7042e75d0b3a4c9357ccbc0a409ade4e9b41e85f275246af591834"
   },
   "nativeRuns": {
     "native-departure-red2-receipt.json": {
@@ -143,5 +147,111 @@
       ]
     },
     "architectureSnapshot": "regenerated and checked"
+  },
+  "reconciliation": {
+    "mainRevision": "5711a736c43787ffad0625068f09a5e89d7bba9f",
+    "mergeRevision": "2ef91be13baa3267174dd5a16e395ca09326562d",
+    "nativeRun": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=F796C548-6341-4C15-AA9C-BCEA29CAE09C",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-reconciled-final.xcresult",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackStartupJourneys",
+        "-only-testing:Kinosail-tvOSTests/HTTPTests",
+        "-only-testing:Kinosail-tvOSTests/TVPlayerInputTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackPresentationTests",
+        "-only-testing:Kinosail-tvOSTests/PlaybackHLSEndpointJourneys",
+        "-only-testing:Kinosail-tvOSTests/PlaybackCompletionSafetyJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 45.23,
+      "revision": "2ef91be13baa3267174dd5a16e395ca09326562d"
+    },
+    "nativeResult": {
+      "result": "Passed",
+      "totalTestCount": 35,
+      "passedTests": 35,
+      "failedTests": 0,
+      "skippedTests": 0
+    },
+    "architectureCheck": "passed",
+    "maxLOC": "passed",
+    "endpointRun": {
+      "command": [
+        "xcodebuild",
+        "-project",
+        "Kinosail.xcodeproj",
+        "-scheme",
+        "Kinosail-tvOS",
+        "-configuration",
+        "Debug",
+        "-destination",
+        "platform=tvOS Simulator,id=F796C548-6341-4C15-AA9C-BCEA29CAE09C",
+        "-derivedDataPath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/sim-derived",
+        "-jobs",
+        "2",
+        "-parallel-testing-enabled",
+        "NO",
+        "-collect-test-diagnostics",
+        "never",
+        "CODE_SIGNING_ALLOWED=YES",
+        "CODE_SIGN_IDENTITY=-",
+        "ONLY_ACTIVE_ARCH=YES",
+        "-resultBundlePath",
+        "/Users/mikeo/Documents/Codex/appletv-raya-20261010/native-reconciled-endpoints.xcresult",
+        "-only-testing:Kinosail-tvOSTests/PlaybackEndpointJourneys",
+        "-only-testing:Kinosail-tvOSTests/MediaDepartureJourneys",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 15.8,
+      "revision": "2ef91be13baa3267174dd5a16e395ca09326562d"
+    },
+    "endpointResult": {
+      "result": "Passed",
+      "totalTestCount": 8,
+      "passedTests": 8,
+      "failedTests": 0,
+      "skippedTests": 0
+    }
+  },
+  "physicalBaseline": {
+    "build": 3666,
+    "revision": "4fee16403237b22018f354372ab981f101820170",
+    "test": "PhysicalPlaybackProbe/testRequestedTitleRemoteTransitions",
+    "result": "passed",
+    "seconds": 52.35,
+    "title": "Raya",
+    "actions": [
+      "card Play/Pause",
+      "card Select",
+      "detail Select",
+      "held seeking",
+      "return home"
+    ],
+    "automatedInput": "button presses and holds only",
+    "crashStillUnresolved": true
   }
 }
