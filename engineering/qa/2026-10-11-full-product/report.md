@@ -424,3 +424,53 @@ changes through `0d3fd1d6292992b30afbc75adcc86bf06a506a56`. The offline fix's
 Go and browser inputs are unchanged. Earlier native build, render, and emulator
 receipts describe the preceding native UI. The new native surfaces require
 refreshed verification before extending those claims to this revision.
+
+The first hosted attempt for PR 559 fails before media preparation. Its trace
+records HTTP 401 from the new test's direct library API request. The regression
+now selects a movie and its title through the authenticated Library UI. Its
+exact revised Chromium execution passes against the real HTTPS Server. Two
+earlier local commands used the wrong selection variable and ran the broader
+production suite instead. Both suites pass, but they do not verify this revised
+test. Their receipts are excluded from the regression claim.
+
+## QA-008 — Final native watched update remains queued (P2; repair pending)
+
+The exact tvOS endpoint failure reproduces twice before repair. A bounded
+diagnostic shows an acknowledged unwatched revision and a newer watched
+revision still in the durable local journal. Local progress is retained, but
+the Server's watched status remains stale after playback stops.
+
+`ProgressSyncStore.synchronize` returns immediately when another synchronization
+owns the request. That owner processes its earlier snapshot and does not drain
+the newer request. The pending repair coalesces another requested pass into the
+current owner. Existing conflict and journal persistence handling remain intact.
+
+The original completion case passes after repair. The broader TV replay passes
+18 selected tests with no skips. It covers actual MP4/HLS endpoint playback,
+duplicate completion, stale callbacks, seeking, persistence, profile isolation,
+transport validation, and missing titles. The corresponding iPhone selection
+passes 12 tests with no skips. These use native simulators and retained synthetic
+HTTP fixtures, not the production Go Server or physical devices. Temporary TV
+simulators were deleted; the reusable iPhone simulator and its data remain.
+
+## QA-009 — Continue Watching grows when progress appears (P2; repair pending)
+
+The hosted Firefox layout audit records a four-pixel increase in a Continue
+Watching card after delayed scripts initialize its progress bar. Later shelves
+move by the same amount. The initial and settled measurement frames establish
+the change; the audit fails its existing geometry assertion.
+
+The pending repair reserves the progress bar's four-pixel grid row before the
+bar is shown. It adds no loading placeholder. Local Firefox currently exits
+before opening a page with `Could not find profile folder`. That launch failure
+is excluded from product evidence. Verification continues in isolated Linux
+and the hosted layout matrix. No layout threshold or assertion changed.
+
+## Native verification refresh
+
+The current Android debug, instrumentation, and release builds pass. App unit
+tests and lint also pass. A real-Server/Kotlin contract replay first fails to
+compile because its explicit source list omits the newly added `CollectionsApi`.
+Adding that production source to the verification tool restores the contract
+run: both its retained JVM checks and real HTTP journey pass. This tool repair
+is still pending delivery. Current emulator UI journeys remain in progress.

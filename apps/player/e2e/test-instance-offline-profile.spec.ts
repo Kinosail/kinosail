@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test';
 import {test} from './test-instance-network';
-import {configureTestInstance, login} from './test-instance-helpers';
+import {configureTestInstance, firstPlayable, login} from './test-instance-helpers';
 
 configureTestInstance();
 test.describe.configure({retries: 0});
@@ -8,13 +8,12 @@ test.describe.configure({retries: 0});
 test('opening the current Viewer Profile in another tab keeps saved video playing, while sign-out stops it', {tag: '@smoke'}, async ({page, context}, testInfo) => {
   test.setTimeout(120_000);
   await login(page);
-  const library = await (await context.request.get('/api/v1/library')).json();
-  const item = library.items.find((candidate: {kind: string}) => candidate.kind === 'video');
-  expect(item).toBeTruthy();
-  await page.goto(`/watch/${item.id}`);
+  const watch = await firstPlayable(page);
+  const title = await page.locator(`a.card[href="${watch}"]`).first().getByRole('heading').innerText();
+  await page.goto(watch);
   await page.getByText('Playback & downloads', {exact: true}).click();
   await page.getByRole('button', {name: 'Prepare 720p offline', exact: true}).click();
-  const job = page.locator('[data-download-job]').filter({has: page.getByRole('heading', {name: item.title, exact: true})});
+  const job = page.locator('[data-download-job]').filter({has: page.getByRole('heading', {name: title, exact: true})});
   await expect(job.getByText('720p · Ready to download', {exact: true})).toBeVisible({timeout: 30_000});
   await job.getByRole('button', {name: 'Download to this device', exact: true}).click();
   await expect(job.locator('[data-download-device-status]')).toHaveText('Saved and verified. Play to check compatibility.', {timeout: 30_000});
