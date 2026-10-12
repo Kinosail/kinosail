@@ -189,23 +189,25 @@ Restore validates the manifest and every entry before writing. It rejects unknow
 
 ## Try the synthetic test Server
 
-These fixture commands are for development after quality gates are explicitly enabled. Do not run disabled suites while the root `.gates-disabled` marker exists.
+Use these commands from `apps/player` to keep a test Server available for manual inspection.
 
 The public test fixture creates original synthetic movies, Shows, music, an audiobook, a book, photos, and a local TMDB-compatible catalogue without downloading third-party creative media.
 
 ```sh
 ./scripts/test-instance.sh up
 ./scripts/test-instance.sh verify
-# Optional after `make bootstrap`:
+# Requires `make bootstrap` and a browser-trusted HTTPS certificate:
 ./scripts/test-instance.sh browser
 ./scripts/test-instance.sh down --volumes
 ```
 
 Open `https://localhost:38127` and sign in as `Owner` with password `test-instance-password`; obtain the rotating test code with `./scripts/test-instance.sh totp`. The fixture remains bound to localhost.
 
+Run `make test-instance-check` for automated populated browser checks and cleanup. Browser and API clients must trust the test Server's CA certificate. Keep that trust inside a disposable test environment. Production TLS needs separate verification.
+
 ## Development and verification
 
-Follow the root [contribution guide](../../CONTRIBUTING.md). While `.gates-disabled` exists, do not run the suites below or count skipped results as passes. GitHub Actions is disabled. When gates are enabled, the app gate is:
+Follow the root [contribution guide](../../CONTRIBUTING.md). GitHub Actions runs complete quality and security gates. Use focused local checks while editing. The app gate is:
 
 ```sh
 make check
