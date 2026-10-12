@@ -84,8 +84,9 @@ extension RemoteArtworkStateTests {
         }
         focused(resume, "resume-return")
         verifyPrimaryVisible(app)
+        let restingHeight = myList.frame.height
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))
-        print("LARGE_TEXT_FIXTURE accepted=\(expected) stacked=\(stacked) restingHeight=\(myList.frame.height)")
+        print("LARGE_TEXT_FIXTURE accepted=\(expected) stacked=\(stacked) restingHeight=\(restingHeight)")
     }
 }
