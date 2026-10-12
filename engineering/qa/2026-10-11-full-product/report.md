@@ -1466,7 +1466,25 @@ PR #576 merges the deep codec dependency repair as
 `87539b43ae425208416639eabe7dc1fa4429f1ba`. Required run `38211720643` passes for
 reviewed head `523b5863ebe31d933fb4c0cf2898a98af2dff4af`; a fresh fetched ancestry
 check proves both the reviewed commit and merge in remote main. Its manual deep
-run remains failed in Player Go and Firefox; the collected Player coverage is
-88.7%, with failure cause pending the complete log. Required protection remains
+run fails its Player coverage gate at 88.7%, below the unchanged 89% requirement.
+The final log contains no failing Go test, race warning or panic. All three former
+codec failures pass. Firefox reports one flaky late-callback settings case;
+WebKit reports two unexpected failures in that flow. Required protection remains
 intact. Previous main run `38209590154` succeeds, including Player publication at
 `1560949f`. Current-main publication is tracked separately.
+
+The native build entry point now requires the existing catalog check before iOS
+or tvOS compilation. A retained command regression uses the real Makefile,
+generator and gate shell with a synthetic source key and compiler stub. Corrected
+baseline controls fail for all three stale catalogs; fresh catalogs compile both
+targets. After the one-line prerequisite change, all controls pass. Rejection
+invokes no compiler and changes no catalog bytes. This is build-contract evidence,
+separate from app UI and Swift compilation.
+
+The first setup omitted the gate shell and is excluded. A second setup selected
+an untranslated Spanish entry, so its empty Android/Wear files were valid. That
+three-platform baseline claim is withdrawn. The corrected fixture uses the
+translated “Library” entry and asserts nonempty catalogs before introducing drift.
+Exact command receipts, source and log hashes remain in the private evidence
+directory under `native-copy-build-guard-*-v3`. The complete CI contract suite
+passes after this repair.
