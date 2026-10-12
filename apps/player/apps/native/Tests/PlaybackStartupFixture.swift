@@ -15,6 +15,9 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         var savedSeconds: Double?; var holdPreferences = false; var denialStatus = 403
         var hlsResources: [String: Data] = [:]; var playbackResponse: Data?
         var progressReceipts: [ProgressReceipt] = []
+        var progressSafetyMediaStatus: Int?
+        var progressSafetyHTTPReceipts: [PlaybackFailureHTTPReceipt] = []
+        var progressSafetyDroppedHTTPReceipts = 0
     }
     let state = Mutex(State())
     let listener: NWListener
@@ -22,7 +25,33 @@ final class PlaybackStartupFixture: @unchecked Sendable {
     let client: ServerClient
     let viewer: Viewer
     private let queue = DispatchQueue(label: "playback-startup-fixture")
+    private let heldMedia = Mutex<(holding: Bool, pending: [(NWConnection, Data)])>((false, []))
     private let heldPreferences = Mutex<[(NWConnection, Data)]>([])
+    private let progressSafetyConnections = Mutex<[ObjectIdentifier: NWConnection]>([:])
+    private let progressSafetyListenerCancelled = Mutex(false)
+    private let progressSafetyOrigin = ProcessInfo.processInfo.systemUptime
+    var progressSafetyMediaStatus: Int? { get { state.withLock { $0.progressSafetyMediaStatus } } set { state.withLock { $0.progressSafetyMediaStatus = newValue } } }
+    var progressSafetyHTTPReceipts: [PlaybackFailureHTTPReceipt] { state.withLock { $0.progressSafetyHTTPReceipts } }
+    var progressSafetyDroppedHTTPReceipts: Int { state.withLock { $0.progressSafetyDroppedHTTPReceipts } }
+    var holdMedia: Bool { get { heldMedia.withLock { $0.holding } } set { heldMedia.withLock { $0.holding = newValue } } }
+    var heldMediaCount: Int { heldMedia.withLock { $0.pending.count } }
+    func releaseMedia() {
+        let held = heldMedia.withLock { gate in
+            gate.holding = false
+            let result = gate.pending; gate.pending.removeAll(); return result
+        }
+        for (connection, response) in held {
+            connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+        }
+    }
+    private func deliverMedia(_ response: Data, connection: NWConnection) {
+        let held = heldMedia.withLock { gate in
+            guard gate.holding else { return false }
+            gate.pending.append((connection, response)); return true
+        }
+        guard !held else { return }
+        connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+    }
     var holdPreferences: Bool { get { state.withLock { $0.holdPreferences } } set { state.withLock { $0.holdPreferences = newValue } } }
     var denialStatus: Int { get { state.withLock { $0.denialStatus } } set { state.withLock { $0.denialStatus = newValue } } }
     var heldPreferenceCount: Int { heldPreferences.withLock { $0.count } }
@@ -58,13 +87,35 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             "viewer": .object(["id": .string("fixture"), "name": .string("Fixture"), "owner": .bool(false),
                                "downloads": .bool(false), "transcode": .bool(false), "remote": .bool(false)])]))
         client = try ServerClient(server: server, token: "fictional-startup-token", viewer: viewer)
+        listener.stateUpdateHandler = { [weak self] state in
+            if case .cancelled = state { self?.progressSafetyListenerCancelled.withLock { $0 = true } }
+        }
         listener.newConnectionHandler = { [weak self] connection in
             guard let self else { connection.cancel(); return }
+            let identity = ObjectIdentifier(connection)
+            self.progressSafetyConnections.withLock { $0[identity] = connection }
+            connection.stateUpdateHandler = { [weak self] state in
+                if case .cancelled = state { self?.progressSafetyConnections.withLock { $0.removeValue(forKey: identity) } }
+            }
             connection.start(queue: self.queue)
             self.receive(connection, data: Data())
         }
     }
     func close() { listener.cancel() }
+    func progressSafetyCloseAndJoin() async throws {
+        close()
+        let connections = progressSafetyConnections.withLock { Array($0.values) }
+        connections.forEach { $0.cancel() }
+        let deadline = ContinuousClock.now.advanced(by: .seconds(3))
+        while ContinuousClock.now < deadline {
+            if progressSafetyListenerCancelled.withLock({ $0 }) && progressSafetyConnections.withLock({ $0.isEmpty }) {
+                print("PLAYBACK_PROGRESS_SAFETY_FIXTURE_CLEANUP listenerCancelled=true activeConnections=0")
+                return
+            }
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        try #require(false, "Fixture listener/connections did not close inside3s")
+    }
     func item(_ id: String) throws -> MediaItem {
         try MediaItem(.object(["id": .string(id), "kind": .string("video"), "title": .string("Fixture")]), server: server)
     }
@@ -72,6 +123,29 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         var response = Data("HTTP/1.1 200 OK\r\nContent-Type: \(type)\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n".utf8)
         if !head { response.append(data) }
         connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+    }
+    // Capture only bounded scalar fields at the actual HTTP response boundary.
+    // Media requests need not carry X-Request-ID; null is not invented correlation.
+    private func recordProgressSafety(_ operation: PlaybackFailureHTTPReceipt.Operation, status: Int, header: String) {
+        let values = header.components(separatedBy: "\r\n").dropFirst().compactMap { line -> String? in
+            guard let colon = line.firstIndex(of: ":"),
+                  line[..<colon].lowercased() == "x-request-id" else { return nil }
+            return String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespaces)
+        }
+        guard values.count <= 1,
+              values.first.map({ PlaybackFailureHTTPReceipt.requestUUID($0) != nil }) ?? true,
+              operation == .media || values.count == 1 else {
+            state.withLock { $0.progressSafetyDroppedHTTPReceipts += 1 }; return
+        }
+        let requestID = values.first
+        let receipt = PlaybackFailureHTTPReceipt(operation: operation, requestID: requestID,
+            status: status, elapsed: ProcessInfo.processInfo.systemUptime - progressSafetyOrigin)
+        state.withLock { state in
+            guard let receipt, state.progressSafetyHTTPReceipts.count < 64 else {
+                state.progressSafetyDroppedHTTPReceipts += 1; return
+            }
+            state.progressSafetyHTTPReceipts.append(receipt)
+        }
     }
     private func sendMedia(_ media: Data, header: String, head: Bool, connection: NWConnection) {
         let range = header.components(separatedBy: "\r\n").first { $0.lowercased().hasPrefix("range:") }
@@ -86,10 +160,11 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         guard lower <= upper, upper < media.count else { connection.cancel(); return }
         let body = media.subdata(in: lower..<(upper + 1))
         let status = range == nil ? "200 OK" : "206 Partial Content"
+        recordProgressSafety(.media, status: range == nil ? 200 : 206, header: header)
         let contentRange = range == nil ? "" : "Content-Range: bytes \(lower)-\(upper)/\(media.count)\r\n"
         var response = Data("HTTP/1.1 \(status)\r\nContent-Type: video/mp4\r\nAccept-Ranges: bytes\r\nContent-Length: \(body.count)\r\n\(contentRange)Connection: close\r\n\r\n".utf8)
         if !head { response.append(body) }
-        connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+        deliverMedia(response, connection: connection)
     }
     private func receive(_ connection: NWConnection, data: Data) {
         connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { [weak self] chunk, _, complete, error in
@@ -121,6 +196,15 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                           head: parts[0] == "HEAD", connection: connection)
                 return
             }
+            if path.hasPrefix("/media/"), let status = self.progressSafetyMediaStatus {
+                // A real origin denial after successful API negotiation. Never inject
+                // an AVPlayer completion result or assign the transport failure.
+                guard status == 403 else { connection.cancel(); return }
+                self.recordProgressSafety(.media, status: status, header: header)
+                let response = Data("HTTP/1.1 403 Fixture denial\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".utf8)
+                self.deliverMedia(response, connection: connection)
+                return
+            }
             if path.hasPrefix("/media/"), let media = self.media {
                 self.sendMedia(media, header: header, head: parts[0] == "HEAD", connection: connection)
                 return
@@ -142,10 +226,12 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                     return true
                 }
                 guard accepted else { connection.cancel(); return }
+                self.recordProgressSafety(.progressSync, status: 200, header: header)
                 self.send(data, type: "application/json", connection: connection)
                 return
             }
             if path.hasSuffix("/playback"), !denied, let response = self.playbackResponse {
+                self.recordProgressSafety(.itemsPlayback, status: 200, header: header)
                 self.send(response, type: "application/json", connection: connection)
                 return
             }
@@ -157,6 +243,10 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             let body = preferences ? preferencesBody : "{\"media\":{\"duration\":\(duration)},\"plan\":{\"allowed\":true,\"mode\":\"direct\",\"reason\":\"direct-preferred\"},\"duration\":\(duration),\"start\":\(start),\"directAllowed\":true,\"direct\":\"/media/\(id)\",\"directType\":\"video/mp4\"}"
             let payload = Data((denied ? "{\"error\":\"denied\"}" : body).utf8)
             let status = denied ? "\(self.denialStatus) Fixture denial" : "200 OK"
+            if preferences || path.hasSuffix("/playback") {
+                self.recordProgressSafety(preferences ? .playbackPreferences : .itemsPlayback,
+                    status: denied ? self.denialStatus : 200, header: header)
+            }
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(payload.count)\r\nConnection: close\r\n\r\n".utf8) + payload
             if preferences && self.holdPreferences {
                 self.heldPreferences.withLock { $0.append((connection, response)) }
