@@ -1510,3 +1510,11 @@ The Firefox native-layout job in [run 38211141937](https://github.com/Kinosail/k
 The original 844-by-390 navigation timeout remains an intermittent observation with its trace retained.
 No timeout, layout assertion, or navigation behavior was changed for that retry.
 Protected delivery and current-main deployment remain pending.
+
+At commit `72ed3bda`, the final guarded Linux 11.075-second-origin journey passes all four audio captures, both grids, video, EOF, and ten metadata controls.
+Its maximum absolute lag is one 48 kHz sample; minimum correlation is 0.94446.
+The receipt is `hls-audio-splice/20261012T064719Z/receipt.json`, SHA-256 `ec5bfd4ebe367f0e0d86d80a3ddf73f2fbac187da42e5c3512ca0ae30919d545`.
+The final Mac coarse-origin regression also passes, including all four captures and the same checks.
+Its receipt is `hls-audio-splice/20261012T064823Z/receipt.json`, SHA-256 `7fc84f81f12c994b89373dbdde5fbddaf92fc79bca73ef1ffb764d73af79db1d`.
+Player `make verify-changed` passes compilation, affected Server tests, source limits, and diff checks at that commit.
+The regenerated Player architecture snapshot and source limits pass. The final independent review reports no concrete blocker.
