@@ -62,7 +62,9 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     const library = await response.json();
     expect(library.items).toHaveLength(1);
     expect(library.items[0].title).toBe("Caption Recovery");
-    await page.goto(`${origin}/watch/${library.items[0].id}?playback=direct`);
+    // The caption body is deliberately held. Admit the document before waiting
+    // on the media and recovery controls below; window load can wait on that body.
+    await page.goto(`${origin}/watch/${library.items[0].id}?playback=direct`, {waitUntil: "domcontentloaded"});
     const bundle = await page.locator('script[src^="/static/player.js"]').getAttribute("src");
     const asset = new URL(bundle!, origin);
     expect(asset.origin).toBe(origin);
