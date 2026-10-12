@@ -779,3 +779,23 @@ Hosted checks and protected integration remain pending. The audio-conversion and
 | `hls-resume-browser/20261011T235639Z/receipt.json` | AAC native WebKit: seven exact frames | `17f0dd4fbb27e87b0585b428ee84fd1975d5f265346f91696513e3d1922df75a` |
 | `hls-resume-browser/20261011T235649Z/receipt.json` | video-only Chromium and WebKit: fourteen exact frames | `d93b8581db4169d854aeb208755252772366e327b8ed73d583fc0aeeda421cb4` |
 | `hls-resume-browser/20261011T235700Z/receipt.json` | video-only native WebKit: seven exact frames | `e90e09704c86c051689c15d82730e4e881e1bc85133e0900e7c59ba1bcc147ad` |
+
+
+### Cold-resume hosted complexity findings
+
+The refreshed #565 checks rejected four functions for cyclomatic complexity and one readiness function for cognitive complexity.
+These are task-caused findings, not the historical lint baseline.
+The repair extracts recipe eligibility, untouched-cache validation, suffix bounds, and readiness waiting into focused functions.
+It preserves the existing source-policy checks, certification order, cancellation errors, and probe deadline.
+Independent review found no admission or certificate defect, and requested preserving the one-time HEVC completion decision.
+The final extraction retains that decision once per readiness wait, as before.
+
+The initial candidate passes all thirteen public cold-suffix cases and both browser engines' seven-frame resume journeys.
+The public suite covers source replacement, invalid key/configuration proofs, lookback bounds, producer failure, timeout, aggregate deadline, clock race, and fractional recovery.
+The branch reconciles current `origin/main` at `a695f71a9b78971559dadd6d355b2338fa219e90`; only the unrelated merged native changes arrive from main.
+Focused verification and clean readiness replays follow the checkpoint.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-cold-suffix/20261012T012547Z/receipt.json` | thirteen public suffix cases with source patch receipt | `11d7a7fe867c1fa74feb9622dc97badc0492de0d464cfc6d06023a141dd9b0d2` |
+| `hls-resume-browser/20261012T012557Z/receipt.json` | both MSE engines: fourteen frames and ended | `a63605315f52ac75bf7e3be0041e0c1231ef8d30a4cb9d6788c3f860c734171e` |

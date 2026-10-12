@@ -50,19 +50,15 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 		return err
 	}
 
+	return manager.waitHLSReadiness(ctx, item, recipe, playlist, options.Cache, job)
+}
+
+func (manager *hlsManager) waitHLSReadiness(ctx context.Context, item library.Item, recipe hlsRecipe, playlist, policy string, job *hlsJob) error {
 	ticker := time.NewTicker(25 * time.Millisecond)
 	defer ticker.Stop()
 	complete := ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe)
-	ready := func() bool {
-		return masterFresh(playlist, item.Path, options.Cache) && (!complete || manager.shortHEVCOutputReady(ctx, item, filepath.Dir(playlist), options.Cache))
-	}
-	for {
-		if ready() {
-			if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-				return err
-			}
-			return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache)
-		}
+	ready := func() bool { return manager.hlsPlaybackOutputReady(ctx, item, playlist, policy, complete) }
+	for !ready() {
 		select {
 		case <-ctx.Done():
 			return observedHLSReadinessError(ctx.Err(), job)
@@ -74,8 +70,22 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 				return errHLSIdentityChanged
 			}
 			// Completion can beat the readiness ticker. Keep this output and
-			// bind its clock on the next iteration instead of restarting it.
+			// bind its clock after the loop instead of restarting it.
 		case <-ticker.C:
 		}
 	}
+	if err := manager.validateHLSPolicy(ctx, item, recipe, policy); err != nil {
+		return err
+	}
+	return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), policy)
+}
+
+func (manager *hlsManager) hlsPlaybackOutputReady(ctx context.Context, item library.Item, playlist, policy string, complete bool) bool {
+	if !masterFresh(playlist, item.Path, policy) {
+		return false
+	}
+	if !complete {
+		return true
+	}
+	return manager.shortHEVCOutputReady(ctx, item, filepath.Dir(playlist), policy)
 }

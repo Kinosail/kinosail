@@ -43,9 +43,7 @@ func (manager *hlsManager) scanCopiedHLSSuffix(ctx context.Context, item library
 	if err != nil || !originKnown || !validCopiedHLSTimeline(timeline) {
 		return nil, errCopiedHLSIndex
 	}
-	first := timeline.point(0)
-	if first > requested || requested >= timeline.End || math.Abs(first-origin) > 0.000001 ||
-		math.Abs(timeline.End-duration) > 0.1 || timeline.End-first > maximumCopiedHLSSuffix || duration-first > maximumCopiedHLSSuffix {
+	if !validCopiedHLSSuffixEnd(timeline, origin, requested, duration) {
 		return nil, errCopiedHLSIndex
 	}
 	return timeline, nil
@@ -58,10 +56,20 @@ func boundedCopiedHLSSuffixPacket(fields map[string]string, origin *float64, req
 		return false
 	}
 	if *origin < 0 {
-		if !strings.Contains(fields["flags"], "K") || pts > requested || duration-pts > maximumCopiedHLSSuffix {
+		if !validCopiedHLSSuffixOrigin(fields, pts, requested, duration) {
 			return false
 		}
 		*origin = pts
 	}
 	return pts >= *origin && pts+length-*origin <= maximumCopiedHLSSuffix+0.000001
+}
+
+func validCopiedHLSSuffixEnd(timeline *copiedHLSTimeline, origin, requested, duration float64) bool {
+	first := timeline.point(0)
+	return !(first > requested || requested >= timeline.End || math.Abs(first-origin) > 0.000001 ||
+		math.Abs(timeline.End-duration) > 0.1 || timeline.End-first > maximumCopiedHLSSuffix || duration-first > maximumCopiedHLSSuffix)
+}
+
+func validCopiedHLSSuffixOrigin(fields map[string]string, pts, requested, duration float64) bool {
+	return strings.Contains(fields["flags"], "K") && pts <= requested && duration-pts <= maximumCopiedHLSSuffix
 }
