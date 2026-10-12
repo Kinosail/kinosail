@@ -1313,3 +1313,38 @@ A fresh read-only Nox inspection finds both apps running and healthy.
 Player reports `394736cb740fc6873aa6e94b41e22dc797155529`; Subtitles reports local snapshot `6f41117dfa618ad65479f91463d431ab2f500996`.
 Neither proves deployment of current main. Historical local-watcher receipts also do not establish current remote state.
 The safe receipt is `nox-readonly-20261012.json`, SHA-256 `d4d691056d7fe7fe3447686720ecfe4602abe381e6737085c6b1e157933c72c9`.
+
+### AQA-015 expansion — Source timestamps and fragment interleaving
+
+The first production candidate passes 48 kHz tail recovery and 44.1 kHz MP4 middle recovery.
+It fails the 44.1 kHz Matroska case with a 130 ms video offset. The candidate remains unpublished.
+The retained journey now selects sample rate, early or middle recovery, and the fractional video offset.
+Its middle and early cases restore the old neighboring fragments after recovery, representing an already buffered client.
+The source and disposable Server settle after every completed run.
+
+A private counterfactual regenerates identical AC3 packet payloads in MP4 and Matroska.
+Both containers retain the same 256-sample priming information. Their audio clocks differ in precision.
+Before AAC encoding, MP4 seeks have zero sample error. Matroska seeks have errors of 1, 10, and -4 samples.
+The errors persist through each five-second decode. This separates source sample selection from the output AAC packet grid.
+The exact commands and packet hashes are retained in `long-audio-exploration/input-clock/receipt.json`.
+
+A fixture-specific prototype disables timestamp trimming and reconstructs the AC3 sample clock before trimming.
+It accounts for 1,536-sample packets, first-frame priming, and the final partial frame.
+The real watch page then passes initial population, middle recovery, and both retained-neighbor joins.
+All four captures have zero sample lag; minimum correlation is 0.9584. Packet grids, seven video references, and EOF also pass.
+The passing receipt is `.verification/hls-audio-splice/20261012T045910Z/receipt.json`, SHA-256 `5c4cc4802b1f8c15f4b07265782d2d7e57df25d0d697672950c9998ef3f8e767`.
+This wrapper assumes known synthetic input properties. It is not a general production repair.
+A production implementation must validate packet continuity, priming, clock precision, and genuine gaps before correcting sample selection.
+
+The 8 kHz ALAC case exposes a separate fragment partitioning defect during early recovery.
+Audio timestamps remain contiguous, but audio needed for one video fragment appears in the following fragment.
+The browser jumps from source 16.46947 to 18.1 seconds. The missing capture duration correctly fails the journey.
+An earlier attempt to create 8 kHz MP3 in MP4 fails before Player starts; that run provides no product evidence.
+
+A private outer-muxer interleaving experiment removes the 8 kHz jump.
+All four watch-page captures pass with one sample of initial lag and minimum correlation 0.9847.
+The passing receipt is `.verification/hls-audio-splice/20261012T050004Z/receipt.json`, SHA-256 `2117d485b147834ce0adb6aa38ecbc3d91f362f3872f6be830ee3c3231c9828b`.
+Unbounded buffering with sparse or delayed audio remains a production design concern.
+The private experiment bundle includes the candidate patch, wrapper sources, exact commands, and checksummed passing and failing receipts.
+Its index is `long-audio-exploration/counterfactual-checkpoint/index.json`, SHA-256 `ee3ee53d980b7da94d1d9c0d074bdb90ff1f74e0ae91416375a61179cc28317c`.
+Neither prototype establishes physical-device playback or perceptual audibility.

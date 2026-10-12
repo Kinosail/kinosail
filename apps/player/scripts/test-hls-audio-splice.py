@@ -19,8 +19,9 @@ from hls_timeline_preparation import prepare_scene
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--audio-sample-rate', type=int, choices=[32000, 44100, 48000], default=48000)
-parser.add_argument('--recovery', choices=['tail', 'middle'], default='tail')
+parser.add_argument('--audio-sample-rate', type=int, choices=[8000, 32000, 44100, 48000], default=48000)
+parser.add_argument('--recovery', choices=['tail', 'middle', 'early'], default='tail')
+parser.add_argument('--video-offset', type=float, choices=[0, .13], default=0)
 args = parser.parse_args()
 run = ROOT / '.verification/hls-audio-splice' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
@@ -30,7 +31,8 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
            'environment': platform.platform(), 'result': 'failed', 'captures': [], 'build': build,
            'command': shlex.join([sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]]),
            'audioSampleRate': args.audio_sample_rate, 'recovery': args.recovery,
-           'boundary': 'Real disposable Go Player, generated AC3 source, original watch page and Chromium AAC decode. Recorder uses a CSP exception; no security, native or perceptual-audibility claim.'}
+           'videoOffset': args.video_offset,
+           'boundary': 'Real disposable Go Player, generated AC3 or ALAC source, original watch page and Chromium AAC decode. Recorder uses a CSP exception; no security, native or perceptual-audibility claim.'}
 
 
 def settled(server, source):
@@ -41,14 +43,23 @@ def settled(server, source):
 
 
 try:
-    source, metadata = fixture(media, 'Resume Sample', 144, ','.join(map(str, LONG_RESUME_KEYS)),
-                               frames=1788, extension='.mp4', noise=True)
+    frame_rate, frames = (25, 1862) if args.video_offset else (24, 1788)
+    source, metadata = fixture(media, 'Resume Sample', frame_rate * 6, ','.join(map(str, LONG_RESUME_KEYS)),
+                               rate=str(frame_rate), frames=frames, extension='.mp4', noise=True)
     converted = run / source.name
     conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy',
-                  '-map', '0:a:0', '-c:a', 'ac3', '-ar', str(args.audio_sample_rate), str(converted)]
+                  '-map', '0:a:0', '-c:a', 'alac' if args.audio_sample_rate == 8000 else 'ac3', '-ar', str(args.audio_sample_rate), str(converted)]
     subprocess.run(conversion, check=True, capture_output=True, timeout=60)
     converted.replace(source)
     metadata.update(audioConversionCommand=conversion, sha256=sha(source))
+    if args.video_offset:
+        shifted = source.with_suffix('.mkv')
+        command = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-itsoffset', str(args.video_offset),
+                   '-i', str(source), '-map', '1:v:0', '-map', '0:a:0', '-c', 'copy', str(shifted)]
+        subprocess.run(command, check=True, capture_output=True, timeout=60)
+        source.unlink()  # Replace only this owned synthetic input before startup.
+        source = shifted
+        metadata.update(shiftCommand=command, sha256=sha(source), durationSeconds=frames / frame_rate + args.video_offset)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
     source_pcm, receipt['decodeCommand'] = decode_source(source)
@@ -87,15 +98,15 @@ try:
             prepared, initialization = prepare_scene(api, '/api/v1/items/' + item['id'] + '/playback-prepare', hls,
                 run / 'cache', item['id'], server, source, receipt['preparation'], encoder_count, check, bounded_bytes, False)
             rendition = next(prepared.glob('*p/index.m3u8')).parent
-            keys = [key for key in LONG_RESUME_KEYS if key >= 12]
+            keys = [key + args.video_offset for key in LONG_RESUME_KEYS if key >= 12]
             base = hls.removesuffix('index.m3u8') + rendition.name + '/'
             for number in range(len(keys)):
                 check(api.http(base + f'segment-{number:05d}.m4s')[0] == 200, 'population_status')
             settled(server, source)
             receipt['initialGrid'] = packet_grid(rendition)
-            target = len(keys) - 1 if args.recovery == 'tail' else 10
+            target = len(keys) - 1 if args.recovery == 'tail' else 1 if args.recovery == 'early' else 10
             point, span = keys[target] - 1, 3 if args.recovery == 'tail' else keys[target + 1] - keys[target] + 2
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20, 3, source_pcm))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm))
             receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm))
             fragment = rendition / f'segment-{target:05d}.m4s'
             check(fragment.exists(), 'eviction_requires_existing_fragment')
@@ -109,7 +120,7 @@ try:
             receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm))
             settled(server, source)
             receipt['neighborHashesAfterRecovery'] = {p.name: sha(p) for p in neighbors}
-            if args.recovery == 'middle':
+            if args.recovery != 'tail':
                 # A client may already hold the old following fragment. Restore
                 # only these owned fixture bytes to test both old/new joins.
                 for p in neighbors:
@@ -126,7 +137,7 @@ try:
             child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token, QA_RESUME_ITEM=item['id'],
                          QA_RESUME_OUTPUT=str(run / 'video.json'), QA_RESUME_ENGINE='chromium', QA_RESUME_SECONDS='12.5',
                          QA_RESUME_FORCE_AUDIO_CONVERSION='true', QA_RESUME_EXPECTED_MODE='audio-transcode',
-                         QA_RESUME_FRAME_RATE='24', QA_RESUME_DURATION='74.5')
+                         QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
             with (run / 'video-private.log').open('w') as output:
                 video = subprocess.run(['node', str(ROOT / 'apps/player/scripts/hls-resume-browser.mjs')],
                                        cwd=ROOT, env=child, stdout=output, stderr=output, timeout=300)
