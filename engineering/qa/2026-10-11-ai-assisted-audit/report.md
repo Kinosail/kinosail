@@ -682,3 +682,28 @@ Its first run hit a process-permission error in the unchanged Q09 descendant-cle
 Source limits, whitespace, the architecture snapshot, and the repository-selected actionlint 1.17.0 pass.
 PR #560's current CI encountered an artifact-service `ETIMEDOUT` during the AMD64 container evidence upload.
 That infrastructure failure is retained separately from the short-HEVC repair and still requires hosted reconciliation.
+
+### Canonical Player fixture inventory and sign-in pacing
+
+The canonical cleanup check still expected six retired media names. The generated Example media files are present and nonempty.
+The assertions now name those actual fixtures. The test Server continues to use HTTPS.
+A disposable Linux browser trusts only the validated public fixture CA; Mac trust remains unchanged.
+Both browser and API requests reject that CA before installation and succeed after installation.
+The first trusted run has 82 passes and five failures. Four failures come from unavailable Git metadata while saving evidence.
+A read-only mount of the worktree's common Git directory repairs those receipt failures.
+The fifth trace records `POST /login` returning HTTP 429 with `Retry-After: 60`.
+The suite shares one IP and can exceed the production limit of 30 credential attempts per minute.
+
+An unchanged assertion rerun passes all 87 tests, with zero retries, skips, or failures.
+It also verifies all eight expected fixture files and removes its owned containers, volumes, temporary fixture root, and environment file.
+This rerun confirms the Git evidence repair, but does not resolve the timing-dependent sign-in collision.
+The private receipt is `player-fixture-trusted-final/receipt.json`, SHA-256 `87494e9a9ec0aff3c97a98e9b10265b59ae2d583a6fab5ac1f62d32f08d3e507`.
+
+The proposed test repair waits 2.1 seconds before each ordinary populated-fixture credential submission.
+It generates rotating codes after waiting, submits once, records the status, and requires the real HTTP 303 response.
+All selected local and shared Owner/Viewer helpers use that operation. Existing destination and form assertions remain.
+The canonical runner rejects multiple workers; parallel runs require separate fixture instances.
+Production rate limits and dedicated negative-authentication checks remain unchanged.
+Independent review identifies an isolated readiness control that returned HTTP 200 with a meta refresh.
+That control now uses the production HTTP 303 redirect contract. Pacing applies only to populated-instance tests.
+The full paced run remains pending at this checkpoint.

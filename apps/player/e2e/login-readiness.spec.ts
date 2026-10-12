@@ -18,7 +18,7 @@ for (const scriptState of ["delayed", "missing"]) {
         else await route.fulfill({status: 404, body: "Missing script"});
       } else if (url.pathname === "/login" && route.request().method() === "POST") {
         posts++;
-        await route.fulfill({contentType: "text/html", body: '<meta http-equiv="refresh" content="0;url=/">'});
+        await route.fulfill({status: 303, headers: {Location: "/"}, body: ""});
       } else if (url.pathname === "/login") {
         await route.fulfill({contentType: "text/html", body: '<!doctype html><head><script defer src="/theme-readiness.js"></script></head><body><form action="/login" method="post"><label>Name<input name="name"></label><label>Password<input name="password" type="password"></label><label>Authentication or recovery code<input name="factor"></label><button>Sign in</button></form></body>'});
       } else await route.fulfill({contentType: "text/html", body: "<h1>Fixture home</h1>"});

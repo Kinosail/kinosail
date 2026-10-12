@@ -203,7 +203,7 @@ The public test fixture creates original synthetic movies, Shows, music, an audi
 
 Open `https://localhost:38127` and sign in as `Owner` with password `test-instance-password`; obtain the rotating test code with `./scripts/test-instance.sh totp`. The fixture remains bound to localhost.
 
-Run `make test-instance-check` for automated populated browser checks and cleanup. Browser and API clients must trust the test Server's CA certificate. Keep that trust inside a disposable test environment. Production TLS needs separate verification.
+Run `make test-instance-check` for automated populated browser checks and cleanup. Browser and API clients must trust the test Server's CA certificate. Keep that trust inside a disposable test environment. Production TLS needs separate verification. Run one browser worker per instance. The tests pace successful sign-ins to respect the Server's rate limit. Use separate instances for parallel runs.
 
 ## Development and verification
 
