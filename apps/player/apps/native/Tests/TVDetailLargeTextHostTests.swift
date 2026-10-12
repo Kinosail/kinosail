@@ -20,7 +20,8 @@ import XCTest
         await session.restore()
         let client = try XCTUnwrap(session.client)
         do {
-            guard client.server == (try ServerAddress("http://127.0.0.1:38359")),
+            let server = await client.server
+            guard server == (try ServerAddress("http://127.0.0.1:38359")),
                   session.viewer?.id == "qa", session.viewer?.serverID == identity else {
                 throw ClientError.invalidResponse
             }
