@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -53,16 +51,4 @@ func (manager *hlsManager) selectCopiedHLSTimeline(ctx context.Context, item lib
 		return nil, errCopiedHLSIndex
 	}
 	return timeline, nil
-}
-
-func (timeline *copiedHLSTimeline) setTimeBase(value string) error {
-	numerator, denominator, found := strings.Cut(value, "/")
-	a, aErr := strconv.ParseInt(numerator, 10, 32)
-	b, bErr := strconv.ParseInt(denominator, 10, 32)
-	if !found || aErr != nil || bErr != nil || a <= 0 || b <= 0 {
-		return errCopiedHLSIndex
-	}
-	timeline.Numerator, timeline.Denominator = a, b
-	timeline.TimeBase = float64(a) / float64(b)
-	return nil
 }
