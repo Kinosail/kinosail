@@ -1348,3 +1348,9 @@ Unbounded buffering with sparse or delayed audio remains a production design con
 The private experiment bundle includes the candidate patch, wrapper sources, exact commands, and checksummed passing and failing receipts.
 Its index is `long-audio-exploration/counterfactual-checkpoint/index.json`, SHA-256 `ee3ee53d980b7da94d1d9c0d074bdb90ff1f74e0ae91416375a61179cc28317c`.
 Neither prototype establishes physical-device playback or perceptual audibility.
+
+The retained packet oracle now checks fragment assignment as well as continuous timestamps and AAC phase.
+Each fragment must contain audio through the following video's decode boundary, within one AAC packet.
+A retrospective check rejects the preserved failing 8 kHz cache and accepts the interleaving prototype and both 44.1 kHz controls.
+This prevents later preloaded fragments from hiding misplaced audio. The PCM oracle also requires contiguous render blocks.
+The private projection is `long-audio-exploration/fragment-partition-counterfactual.json`, SHA-256 `07766a823d17c0f218e8894155e239dad03faf134d8af84ed6b8c32c4d6d688f`.
