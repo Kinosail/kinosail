@@ -11,13 +11,13 @@ def check(condition, failure):
         raise RuntimeError(failure)
 
 
-def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv", noise=False, video_options=()):
+def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv", noise=False, video_options=(), size="640x360"):
     numerator, _, denominator = rate.partition("/")
     frame_rate = float(numerator) / float(denominator or "1")
     expected_duration = frames / frame_rate
     path = directory / (name + extension)
     audio = f"anoisesrc=color=white:amplitude=0.12:seed=872:sample_rate=48000:duration={expected_duration}" if noise else f"sine=frequency=440:sample_rate=48000:duration={expected_duration}"
-    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=640x360:r={rate}:d={expected_duration}",
+    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s={size}:r={rate}:d={expected_duration}",
         "-f", "lavfi", "-i", audio,
         "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
         # Define the generated SD fixture's color interpretation. Chromium's

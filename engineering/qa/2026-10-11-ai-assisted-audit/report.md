@@ -1469,3 +1469,15 @@ Independent review finds no remaining blocker in the eight changed production Go
 At revision `159e5c14`, affected Player verification, focused Server lint, source limits, and both architecture snapshots pass.
 All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
 Protected PR checks and delivery remain pending.
+
+### AQA-016 regression owner and reproduced boundary
+
+The existing resumed-playback browser journey now accepts a bounded 32-by-32 synthetic fixture.
+It checks unchanged source dimensions, original-frame equality, saved position, EOF, and invalid quality-path rejection without cache writes or encoders.
+Existing fixtures are at least 180 pixels high, so they miss the lower-bound mismatch. No production seam is added.
+The new fixture reproduces the earlier two-hour failure before browser playback: preparation never becomes ready.
+The Server records `HLS quality is invalid`; source files and owned processes settle unchanged.
+Its private receipt is `hls-resume-browser/20261012T061029Z/receipt.json`.
+The public interface is the HLS master and rendition path. Valid small source dimensions must retain their original dimensions.
+The current path validator rejects every quality below 144p although rendition generation uses the source's actual height.
+The intended repair admits positive heights while preserving the existing 2160p ceiling and file/path checks.

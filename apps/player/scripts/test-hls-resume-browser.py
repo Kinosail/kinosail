@@ -29,6 +29,7 @@ parser.add_argument('--audio-reference', action='store_true', help='Compare conv
 parser.add_argument('--tail-recovery', action='store_true')
 parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
+parser.add_argument('--small-video', action='store_true', help='Verify original 32-by-32 video and bounded HLS quality paths')
 args = parser.parse_args()
 recovery = args.tail_recovery or args.first_recovery
 if recovery and (not args.prepared or args.audio_mode == 'none') or args.tail_recovery and args.first_recovery:
@@ -53,8 +54,8 @@ engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
 build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
            'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else ''),
-           'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion,
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else '') + (' --small-video' if args.small_video else ''),
+           'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion, 'smallVideo': args.small_video,
            'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
 
 
@@ -91,7 +92,8 @@ def audio_boundaries(rendition):
 
 try:
     source, metadata = fixture(media, 'Resume Sample', gop, ','.join(map(str, keys)),
-                               rate=str(frame_rate), frames=round(duration * frame_rate), extension='.mp4')
+                               rate=str(frame_rate), frames=round(duration * frame_rate), extension='.mp4',
+                               size='32x32' if args.small_video else '640x360')
     if args.audio_mode != 'aac':
         converted = run / source.name
         conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy']
@@ -190,6 +192,11 @@ try:
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],
                                             cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=300)
                 case['exitCode'] = result.returncode
+                if args.small_video:
+                    facts = json.loads((run / f'{engine}.json').read_text())
+                    case['originalDimensionsPreserved'] = len(facts['rows']) == 2 and all(
+                        row['width'] == 32 and row['height'] == 32 for row in facts['rows'])
+                    check(case['originalDimensionsPreserved'], 'small_video_dimensions')
                 if recovery:
                     case.update(fragmentRestored=fragment.exists(), initializationUnchanged=(rendition / 'init.mp4').read_bytes() == prepared_init)
                     if case['fragmentRestored']:
@@ -204,6 +211,20 @@ try:
                     if not case['fragmentRestored'] or not case['initializationUnchanged']:
                         case['exitCode'] = 1
                 print(json.dumps({k: v for k, v in case.items() if not k.startswith('audio')}), flush=True)
+            if args.small_video and args.prepared:
+                limit = time.monotonic() + 15
+                while encoder_count(server, source) and time.monotonic() < limit:
+                    time.sleep(.05)
+                check(encoder_count(server, source) == 0, 'quality_workers_not_joined')
+                baseline = {str(p.relative_to(prepared_root)): sha(p) for p in prepared_root.rglob('*') if p.is_file()}
+                receipt['qualityPathControls'] = []
+                for quality in ['0p', '-1p', '2161p', 'x32p', '32px', '999999999999999999999999p']:
+                    status = api.http(hls.removesuffix('index.m3u8') + quality + '/segment-00000.m4s')[0]
+                    current = {str(p.relative_to(prepared_root)): sha(p) for p in prepared_root.rglob('*') if p.is_file()}
+                    check(status == 404 and encoder_count(server, source) == 0 and current == baseline,
+                          'invalid_quality_path_side_effect')
+                    receipt['qualityPathControls'].append({'quality': quality, 'status': status,
+                        'assetsUnchanged': True, 'encoderCount': 0})
         finally:
             server.terminate()
             try:
