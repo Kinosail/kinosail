@@ -827,3 +827,11 @@ Each matches all seven original-file frames, reaches EOF, preserves its source, 
 `make max-loc` and `make -C apps/player verify-changed` pass after reconciliation.
 The private command manifest is `cold-reconciled-20261012T0200/receipt.json`, SHA-256 `927ff83f9ae6fb04a36aafe582f53c1c5df541a180df9c6b7386a66fac1fdff3`.
 Required hosted checks must pass again for the reconciled head; no protection was bypassed.
+
+### Reconciled tooling repair: refresh the architecture snapshot
+
+The reconciled cold-resume hosted run rejects a stale generated Player architecture snapshot.
+The newly merged recovery-stage source file changed that snapshot. The affected-app check alone did not catch it.
+Regenerating the Player architecture page repairs the mismatch without a runtime change.
+`python3 scripts/tooling/test-architecture-explorer.py` passes for Player and Subtitles; source limits and whitespace also pass.
+The original failed tooling job is retained privately from run `38194183334`, job `114633193650`.
