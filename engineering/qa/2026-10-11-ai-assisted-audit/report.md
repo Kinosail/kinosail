@@ -1031,3 +1031,30 @@ Focused Server tests pass in 82 seconds. Required hosted checks and the separate
 | --- | --- | --- |
 | `hls-resume-browser/20261012T013141Z/receipt.json` | cold converted-audio resume, both MSE engines | `c3e1b5e6f09c187cc37436471d05b6687c8e6012873171da730751835fb528ab` |
 | `hls-resume-browser/20261012T013200Z/receipt.json` | prepared converted-audio recovery and packet oracle, both engines | `af9a1171bfaaba5798c320e027a052a91a9eeb987e146731e33949625b9fc68e` |
+
+
+### Audio diagnostic closure: main-thread recorder lost render quanta
+
+The earlier 128-sample transition is a recording artifact, not a changed media splice.
+A simultaneous diagnostic taps the same `MediaElementAudioSourceNode` with both the old `ScriptProcessorNode` and an `AudioWorkletProcessor`.
+The worklet records every render-frame index. Its two captures have zero frame gaps and zero source alignment shift.
+Their minimum source correlations are 0.95299 around the intermediate boundary and 0.96596 around the recovered tail.
+The old recorder diverges after 44,032 and 35,840 identical samples, then loses multiples of 128 samples.
+All 129 measured windows are byte-identical between recorders after accounting for those discrete missing samples.
+There are no playback seeks, stalls, or rate changes during the measured transitions; only the initial diagnostic seeks are recorded.
+The [Web Audio rendering model](https://www.w3.org/TR/webaudio-1.0/#rendering-loop) defines 128-sample render quanta, consistent with the measured losses.
+The simultaneous capture provides the evidence for this diagnosis; the specification alone would not establish it.
+
+This private diagnostic uses a browser-context CSP override solely to load its local AudioWorklet module.
+It does not verify security policy or physical audibility. The retained populated packet and browser journeys use the normal policy.
+Two attempted intercepted module loads and a CSP-rejected blob load are instrumentation failures, not product playback defects.
+Their private receipts are retained separately. No production change is needed for this recording artifact.
+
+The bounded audio repair is ready for required hosted checks. Long converted windows, physical devices, and current deployment remain separate boundaries.
+
+| Private receipt under `.verification/hls-resume-browser/20261012T014019Z/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `receipt.json` | exact revision, driver hashes, public packet/frame result | `aa9bc37659efd57afcdc632b103b82d5dc99ca02ad77e61124d26286fb70d74e` |
+| `decoded-worklet-splice-comparison.json` | continuous audio-thread capture at both boundaries | `dd18d9ba48f77d7d0344fbd8e1142a6463feadb1adc78b62013f778aedb31db6` |
+| `decoded-splice-wide-comparison.json` | simultaneous old recorder loses samples | `9660a1f615413852ef6e986ceb181d91f07894f0cafcf121407444535d54c631` |
+| `simultaneous-capture-audit.json` | byte-exact windows and continuous render-frame indices | `639160ab0dbee00f579a707c03c1a6110102bd9c5aa205102f32f3b8092fdc56` |
