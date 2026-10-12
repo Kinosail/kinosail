@@ -34,6 +34,7 @@ func TestCopiedRecoveryRefillRejectsUncertifiedOutput(t *testing.T) {
 
 func TestCopiedRecoveryRefillRejectsStageResourceAndFileViolations(t *testing.T) {
 	for _, action := range []string{
+		"printf x > \"$directory/unexpected\"",
 		"i=0; while [ \"$i\" -lt 9 ]; do printf x > \"$directory/unexpected-$i\"; i=$((i+1)); done",
 		"trap 'rm \"$directory/segment-00000.m4s\"; ln -s init.mp4 \"$directory/segment-00000.m4s\"' EXIT",
 		"trap 'python3 -c '\"'\"'import os,sys; os.truncate(sys.argv[1],67108865)'\"'\"' \"$directory/segment-00000.m4s\"' EXIT",
