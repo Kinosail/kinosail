@@ -1609,3 +1609,11 @@ PR [#578](https://github.com/Kinosail/kinosail/pull/578) merges after every requ
 check passes. A fetched ancestry check proves reviewed head `ae711016` is in
 remote main `a2d5f2b1`. Watch relay replies, physical Watch controls and VoiceOver
 remain separate acceptance boundaries.
+
+
+The complete tooling check then finds one stale Code Atlas value: the Server
+package has 376 test files, while its snapshot still records 375. Regeneration
+changes only that count. The Subtitles snapshot remains byte-identical, and the
+architecture contract passes. Deep run `38226919051` at `9d4bca82` is cancelled
+after its tooling failure; it provides no complete acceptance result. A fresh
+exact-revision deep run follows the snapshot checkpoint.
