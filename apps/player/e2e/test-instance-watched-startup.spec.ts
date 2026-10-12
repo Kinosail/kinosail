@@ -102,17 +102,25 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       // Establish fresh decoded motion inside the held request before releasing
       // the page's queued real notifications and requesting the late native pause.
       const start = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
+      // WebKit can reset its quality counter when resuming. Count freshly
+      // presented frames instead of treating totalVideoFrames as monotonic.
+      const frameTimes: number[] = [];
+      let frame = video.requestVideoFrameCallback(function presented(_now, metadata) {
+        if (metadata.mediaTime > (frameTimes.at(-1) ?? start.seconds)) frameTimes.push(metadata.mediaTime);
+        if (frameTimes.length < 3) frame = video.requestVideoFrameCallback(presented);
+      });
       let rejected = false;
       void video.play().catch(() => {rejected = true;});
       const deadline = performance.now() + 8000;
-      while (video.paused || video.getVideoPlaybackQuality().totalVideoFrames <= start.frames + 2 || video.currentTime <= start.seconds + 0.2) {
+      while (video.paused || frameTimes.length < 3 || video.currentTime <= start.seconds + 0.2) {
         if (rejected || performance.now() >= deadline) {
+          video.cancelVideoFrameCallback(frame);
           relay.postMessage({kind: "qa-watched-paused", failure: "native motion did not resume during held transport"}, location.origin);
           return;
         }
         await new Promise(resolve => setTimeout(resolve, 20));
       }
-      const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
+      const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames, startSeconds: start.seconds, frameTimes};
       (window as Window & {watchedStartup: {release(): void}}).watchedStartup.release();
       const report = (event: Event) => relay.postMessage({kind: "qa-watched-paused", event: event.type, paused: video.paused,
         before, seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames}, location.origin);
@@ -143,12 +151,14 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     expect(preAcceptancePositions).toEqual([]);
     expect(await progress()).toMatchObject({watched, seconds: 0});
     await relay.evaluate(origin => opener!.postMessage("qa-watched-commit", origin), origin);
-    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number}; seconds: number; frames: number}}).qaWatchedObserved);
+    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number; startSeconds: number; frameTimes: number[]}; seconds: number; frames: number}}).qaWatchedObserved);
     await expect.poll(() => observation().then(value => value?.failure || value?.paused)).toBe(true);
     const paused = (await observation())!;
     expect(paused.event).toBe(watched ? "pause" : "ended");
     expect(paused.before.seconds).toBeGreaterThan(0.2);
     expect(paused.before.frames).toBeGreaterThan(2);
+    expect(paused.before.frameTimes).toHaveLength(3);
+    expect(paused.before.frameTimes.every((seconds, index, times) => seconds > (times[index - 1] ?? paused.before.startSeconds))).toBe(true);
     expect(paused.seconds).toBeGreaterThan(0.2);
     // Keep the accepted real form's transport pending while the native pause and
     // page-owned progress callbacks finish; media time and Server state stay real.
