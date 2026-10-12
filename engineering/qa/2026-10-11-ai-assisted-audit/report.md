@@ -1761,3 +1761,21 @@ It restored segments 0 and 8 before the final missing fragment failed; process j
 The unchanged Player production code passes that case locally in `hls-cold-suffix/20261012T100144Z`.
 The failed hosted jobs were restarted once. The original evidence remains retained, and the intermittent failure remains open.
 Container promotion and deployment for `5f169ee2` are not confirmed.
+
+### Final terminal-state verification
+
+At `76a7696204dd73ecaa0d0e7227f277d32b8489d2`, fractional converted-audio playback passes Chromium and WebKit, including decoded PCM comparison.
+The retained malformed-init journey passes both engines at all three viewport sizes.
+Late readiness and Play events leave playback paused, the error visible, the skeleton hidden, and `aria-busy` false.
+The harness blocks service workers only for these isolated malformed-response cases.
+The canonical Subtitles container suite passes all 66 checks again.
+Both apps' affected verification passes; unchanged Go checks use the validated input cache.
+The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers and volumes.
+
+| Exact-revision manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `mse-terminal-browser-proof/manifest.json` | Pass; source unchanged | `d0606ef32aa37a126658e1b2e18349711ed61f685d0bfd3440b4c52552b0aedd` |
+| `mse-terminal-container-proof/manifest.json` | Pass; source unchanged | `bf68a9f5c80a3f538007b6cbb562d105a6f2a2644e7abcb6f17d2fce8da35575` |
+
+These results supplement the fourteen successful playback cases at `25f34f76`.
+Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.
