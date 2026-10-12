@@ -934,3 +934,26 @@ The remaining five local lint findings belong to the stacked cold-resume change 
 | `hls-resume-browser/20261012T011125Z/receipt.json` | final candidate: resume 12.5s, 44100 Hz | `bfd248a196432ed040b0c439dd12e6fbffcf72f876f7138c08ec5eccfcf5d073` |
 | `hls-resume-browser/20261012T011148Z/receipt.json` | final candidate: resume 12.5s, 32000 Hz | `1ca2ff44fa6f6aeeeabb7fca35e7469ca27a328a2fbec9bbffa47605c979f56b` |
 | `hls-resume-browser/20261012T011208Z/receipt.json` | final candidate: resume 12.5s, 48000 Hz | `496c3a003fb8bb74e6499d139ac7bd40fe05fdb3cb63421afb2cfcb4fe420dde` |
+
+
+### Fractional copied-video cutoff
+
+Checkpoint `583355bb` passes `make -C apps/player verify-changed`, including focused Server tests (81 seconds).
+Further independent review found the equivalent video cutoff defect in a Matroska source with a 130 ms video offset.
+At source origin 2.05 seconds, flooring the input seek creates a fractional remainder.
+Comparing seconds then drops the next copied keyframe. The retained public regression reproduces the resulting incorrect tail video clock.
+Copied video now compares its original packet ticks and rounds that remainder to the video time base.
+The independent counterfactual restores every audio/video packet timestamp, duration, payload, and initialization.
+
+The public candidate passes Chromium's seven exact frames and playback-ended check, including recovered tail and exact AAC reference packets.
+WebKit compatible playback ends and preserves the audio reference, but its original Matroska reference cannot load.
+That WebKit comparison remains incomplete; it is not counted as a passing full journey.
+The Chromium fractional-origin case joins the required hosted workflow.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `ai-qa-campaign/review-aac-residual-ticks-20261012T011136Z/receipt.json` | sample-tick AAC counterfactual | `bf09597b1c1927015f0e0f6614b9f33472ba20640f5a75e6171e700a10788bca` |
+| `ai-qa-campaign/review-video-cut-20261012T011220Z/receipt.json` | fractional video-key loss | `b1a057b3e69a33bf9231569a4819f0a6e145d126d34405accfd4ea8b84d04e65` |
+| `ai-qa-campaign/review-video-cut-ticks-20261012T011352Z/receipt.json` | exact audio/video packet counterfactual | `62a5a7fc994b6f274483637038156438f354202ec3baf4cee4afab6bc41bf995` |
+| `hls-resume-browser/20261012T011717Z/receipt.json` | public pre-fix tail clock failure | `dfdcf433204406ed3146ebd59698ab1ce2fa64ecea0e1c3de32b071cf2cdccc4` |
+| `hls-resume-browser/20261012T011748Z/receipt.json` | Chromium passes; WebKit original reference cannot load | `77bd6d16c9564dd9967149f5c351eecc67ddaaacfcbe66ff622c3a31da380ed2` |

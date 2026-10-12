@@ -34,11 +34,12 @@ func copiedHLSAudioSeekArguments(arguments []string, timeline *copiedHLSTimeline
 	cut := func(value float64) string { return strconv.FormatFloat(value, 'g', -1, 64) }
 	// Compare in AAC sample ticks. Multiplying packet PTS by a floating time
 	// base can move exact boundaries. FFmpeg rounds the input seek to samples.
+	videoCut := strconv.FormatInt(key.PTS-first.PTS, 10) + "+round(" + cut(origin-input) + "/tb)"
 	audioCut := cut(ticks) + "*round(1/tb)/" + strconv.FormatInt(timeline.Denominator, 10) +
 		"+round(" + cut(origin-input) + "/tb)"
 	return append(arguments, "-copypriorss", "0", "-avoid_negative_ts", "disabled",
 		"-output_ts_offset", copiedHLSTime(*timeline.Clock-(origin-input)),
-		"-bsf:v", "noise=amount=0:drop=lt(pts*tb\\,"+cut(math.Floor(video*1_000_000)/1_000_000)+")",
+		"-bsf:v", "noise=amount=0:drop=lt(pts\\,"+videoCut+")",
 		"-bsf:a", "noise=amount=0:drop=lt(pts\\,"+audioCut+")"), nil
 }
 

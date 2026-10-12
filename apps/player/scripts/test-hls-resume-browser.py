@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
-parser.add_argument('--resume-seconds', type=float, choices=[.5, 12, 12.5, 64.5], default=12.5)
+parser.add_argument('--resume-seconds', type=float, choices=[.5, 2.5, 12, 12.5, 64.5], default=12.5)
 parser.add_argument('--force-audio-conversion', action='store_true')
 parser.add_argument('--audio-sample-rate', type=int, choices=[32000, 44100, 48000], default=48000)
 parser.add_argument('--audio-mode', choices=['aac', 'ac3', 'none'], default='aac')
@@ -35,10 +35,14 @@ if recovery and (not args.prepared or args.audio_mode == 'none') or args.tail_re
 if args.audio_reference and (not recovery or args.audio_mode != 'ac3' or not args.force_audio_conversion):
     parser.error('--audio-reference requires converted-audio recovery')
 reference_audio = None
-frame_rate = 25 if args.resume_seconds == 64.5 else 24
-duration = 84 if args.resume_seconds == 64.5 else 18 if args.resume_seconds < 2 else 30.5 if args.tail_recovery else 32
-keys = list(range(0, math.ceil(duration), 2))
-fragment_count = sum(point >= math.floor(args.resume_seconds / 2) * 2 for point in keys)
+fractional = args.resume_seconds == 2.5
+frame_rate = 25 if fractional or args.resume_seconds == 64.5 else 24
+duration = 22.4 if fractional else 84 if args.resume_seconds == 64.5 else 18 if args.resume_seconds < 2 else 30.5 if args.tail_recovery else 32
+gop = 16 if fractional else frame_rate * 2
+keys = [n / frame_rate for n in range(0, round(duration * frame_rate), gop)]
+source_keys = [point + (.13 if fractional else 0) for point in keys]
+source_origin = max(point for point in source_keys if point <= args.resume_seconds)
+fragment_count = sum(point >= source_origin for point in source_keys)
 run = ROOT / '.verification/hls-resume-browser' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
 media.mkdir(parents=True)
@@ -78,12 +82,12 @@ def audio_boundaries(rendition):
     check(all(r['gapSeconds'] is None or abs(r['gapSeconds']) <= .05 for r in rows), 'fragment_audio_discontinuity')
     if args.audio_mode == 'ac3':
         check(all(r['gapSeconds'] is None or r['gapSeconds'] <= .000002 for r in rows), 'converted_audio_gap')
-    check(abs(rows[-1]['audioEnd'] - rows[-1]['videoEnd']) <= .05, 'tail_audio_video_end')
+    check(abs(rows[-1]['audioEnd'] - rows[-1]['videoEnd'] + (.13 if fractional else 0)) <= .05, 'tail_audio_video_end')
     return rows
 
 
 try:
-    source, metadata = fixture(media, 'Resume Sample', frame_rate * 2, ','.join(map(str, keys)),
+    source, metadata = fixture(media, 'Resume Sample', gop, ','.join(map(str, keys)),
                                rate=str(frame_rate), frames=round(duration * frame_rate), extension='.mp4')
     if args.audio_mode != 'aac':
         converted = run / source.name
@@ -94,6 +98,15 @@ try:
         converted.replace(source)
         metadata['audioConversionCommand'] = conversion
         metadata['sha256'] = sha(source)
+    if fractional:
+        shifted = source.with_suffix('.mkv')
+        shift = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-itsoffset', '0.130',
+                 '-i', str(source), '-map', '1:v:0', '-map', '0:a:0', '-c', 'copy', str(shifted)]
+        subprocess.run(shift, check=True, capture_output=True, timeout=60)
+        source.unlink()  # Only this run's generated input before Server startup.
+        source = shifted
+        metadata.update(shiftCommand=shift, sha256=sha(source), keyframesSeconds=source_keys,
+                        durationSeconds=duration + .13, videoDurationSeconds=duration + .13)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
     with (run / 'build-private.log').open('w') as log:
