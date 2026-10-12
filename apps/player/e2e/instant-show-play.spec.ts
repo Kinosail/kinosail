@@ -1,54 +1,92 @@
 import { expect, test } from "@playwright/test";
-import { createHmac } from "node:crypto";
+import { login } from "./test-instance-helpers";
 
 test.skip(!process.env.KINOSAIL_TEST_INSTANCE, "requires the populated test instance");
 
-function totp(): string {
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
-	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
-	const counter = Buffer.alloc(8);
-	counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));
-	const digest = createHmac("sha1", secret).update(counter).digest();
-	const offset = digest[19] & 15;
-	return ((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0");
-}
-
 test("a show card keeps Details and plays the next episode with one click", async ({ page }, testInfo) => {
 	await page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false }));
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password").fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await page.getByRole("link", { name: "Shows", exact: true }).click();
-	for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
-		await page.setViewportSize(viewport);
-		const cardActions = await page.locator(".show-card").evaluateAll((cards) => cards.map((card) => {
-			const cardBox = card.getBoundingClientRect();
-			const action = card.querySelector(".show-play")?.getBoundingClientRect();
-			return { cardTop: Math.round(cardBox.top), actionTop: action ? Math.round(action.top) : null };
-		}));
-		for (const row of new Set(cardActions.map(({ cardTop }) => cardTop))) {
-			const actions = cardActions.filter(({ cardTop }) => cardTop === row).map(({ actionTop }) => actionTop);
-			expect(new Set(actions).size, `show actions align at ${viewport.width}px row ${row}`).toBe(1);
-		}
-		await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-shows.png`), fullPage: true });
-	}
+	const csrf = await page.locator('meta[name="kinosail-csrf"]').getAttribute("content");
+	expect(csrf).toBeTruthy();
+	const headers = { Origin: new URL(page.url()).origin, "X-Kinosail-CSRF": csrf! };
 	const card = page.locator(".show-card").filter({ hasText: "Example Show" });
-	await expect(card.getByRole("link", { name: "Example Show", exact: true })).toHaveAttribute("href", /^\/show\//);
-	await expect(card.getByRole("link", { name: /^(?:Resume|Play next|Play again)/ })).toHaveAttribute("href", /^\/watch\//);
+	await card.getByRole("link", { name: "Example Show", exact: true }).click();
+	const episodes = await page.locator("[data-episode-row]").evaluateAll(rows => rows.map(row => row.getAttribute("href")!));
+	expect(episodes).toHaveLength(2);
+	const previous: Array<{ watch: string; seconds: number; watched: boolean }> = [];
+	for (const watch of episodes) {
+		expect(watch).toMatch(/^\/watch\/[a-f0-9]+$/);
+		const response = await page.request.get(`/api/v1/items/${watch.split("/").at(-1)}`);
+		expect(response.ok()).toBe(true);
+		const { item } = await response.json();
+		previous.push({ watch, seconds: item.progress.seconds ?? 0, watched: item.progress.watched ?? false });
+	}
+	try {
+		for (const [index, watch] of episodes.entries()) {
+			const response = await page.request.put(`/api/v1/items/${watch.split("/").at(-1)}/progress`, {
+				headers, data: { seconds: 0, watched: index === 0 },
+			});
+			expect(response.ok()).toBe(true);
+		}
+		await page.reload();
+		await expect(page.locator("[data-episode-row].is-next")).toHaveAttribute("href", episodes[1]);
+		await page.locator("a.back").click();
+		for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }, { width: 390, height: 844 }, { width: 320, height: 800 }]) {
+			await page.setViewportSize(viewport);
+			const cardActions = await page.locator(".show-card").evaluateAll((cards) => cards.map((card) => {
+				const cardBox = card.getBoundingClientRect();
+				const action = card.querySelector(".show-play")?.getBoundingClientRect();
+				return { cardTop: Math.round(cardBox.top), actionTop: action ? Math.round(action.top) : null };
+			}));
+			for (const row of new Set(cardActions.map(({ cardTop }) => cardTop))) {
+				const actions = cardActions.filter(({ cardTop }) => cardTop === row).map(({ actionTop }) => actionTop);
+				expect(new Set(actions).size, `show actions align at ${viewport.width}px row ${row}`).toBe(1);
+			}
+			await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-shows.png`), fullPage: true });
+		}
+		await expect(card.getByRole("link", { name: "Example Show", exact: true })).toHaveAttribute("href", /^\/show\//);
+		const play = card.getByRole("link", { name: /^Play next/ });
+		await expect(play).toHaveAttribute("href", episodes[1]);
+		await play.click();
+		await page.waitForURL(url => url.pathname === episodes[1]);
+		const video = page.locator("video");
+		await expect(video).toBeVisible();
+		const before = await video.evaluate((media: HTMLVideoElement) => ({ seconds: media.currentTime, frames: media.getVideoPlaybackQuality().totalVideoFrames }));
+		await expect.poll(() => video.evaluate((media: HTMLVideoElement, start) => !media.paused && !media.ended && !media.error
+			&& media.currentTime > start.seconds + 0.2 && media.getVideoPlaybackQuality().totalVideoFrames > start.frames + 2, before), { timeout: 15_000 }).toBe(true);
+		const after = await video.evaluate((media: HTMLVideoElement) => ({ seconds: media.currentTime, frames: media.getVideoPlaybackQuality().totalVideoFrames }));
+		await video.screenshot({ path: testInfo.outputPath("show-card-moving-episode.png") });
+		await testInfo.attach("show-card-playback.json", { contentType: "application/json", body: JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION,
+			data: "Episode one watched; episode two unwatched; real Server with synthetic media", selectedEpisode: episodes[1].split("/").at(-1), before, after,
+			result: "One card click opened the next episode and advanced decoded frames and media time without another play call" }) });
+		await page.goto("/?view=shows");
+		for (const state of [
+			{ label: "Resume", firstWatched: true, secondWatched: false, seconds: 3, selected: episodes[1] },
+			{ label: "Play again", firstWatched: true, secondWatched: true, seconds: 0, selected: episodes[0] },
+			{ label: "Play next", firstWatched: false, secondWatched: false, seconds: 0, selected: episodes[0] },
+		]) {
+			for (const [index, watch] of episodes.entries()) {
+				const response = await page.request.put(`/api/v1/items/${watch.split("/").at(-1)}/progress`, { headers,
+					data: { seconds: index === 1 ? state.seconds : 0, watched: index === 0 ? state.firstWatched : state.secondWatched } });
+				expect(response.status()).toBe(200);
+			}
+			await page.reload();
+			await expect(card.getByRole("link", { name: new RegExp(`^${state.label}`) })).toHaveAttribute("href", state.selected);
+			await card.screenshot({ path: testInfo.outputPath(`show-card-${state.label.toLowerCase().replace(" ", "-")}.png`) });
+		}
+	} finally {
+		await page.goto("/?view=shows");
+		for (const { watch, seconds, watched } of previous) {
+			const response = await page.request.put(`/api/v1/items/${watch.split("/").at(-1)}/progress`, { headers, data: { seconds, watched } });
+			expect.soft(response.status()).toBe(200);
+		}
+	}
 });
 
 test("collection and playlist actions share a baseline when titles wrap", async ({ page }) => {
 	await page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false }));
-	await page.goto("/login");
-	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Password").fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	await login(page);
 	await expect(page.locator('meta[name="kinosail-csrf"]')).toHaveAttribute("content", /.+/);
 
 	const suffix = `${Date.now()}`;

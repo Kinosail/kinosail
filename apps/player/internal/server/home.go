@@ -25,7 +25,7 @@ func (source homeSource) Browse(request *http.Request) (catalog.Result, error) {
 }
 
 func (source homeSource) Catalog(request *http.Request, shows []library.Show, page catalog.Result, fragment bool) homeview.CatalogProjection[showCard, playlistSummary, collectionSummary] {
-	projection := homeview.CatalogProjection[showCard, playlistSummary, collectionSummary]{Shows: showCards(request, source.progress, shows)}
+	projection := homeview.CatalogProjection[showCard, playlistSummary, collectionSummary]{Shows: showCards(request, source.index, source.progress, shows)}
 	if fragment || page.View != "collections" && page.View != "playlists" {
 		return projection
 	}
