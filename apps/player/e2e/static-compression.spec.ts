@@ -46,7 +46,7 @@ for (const viewport of [{ width: 390, height: 650 }, { width: 1440, height: 900 
     await page.screenshot({ path: testInfo.outputPath("loaded-library.png") });
     const evidence = {
       revision: process.env.KINOSAIL_E2E_REVISION ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
-      command: "pnpm --dir e2e exec playwright test static-compression.spec.ts --project=chromium --workers=1",
+      command: `pnpm --dir e2e exec playwright test static-compression.spec.ts --project=${testInfo.project.name} --workers=1`,
       fixture: { populatedMovies: cards, serviceWorkers: "blocked" },
       environment: { viewport, browser: testInfo.project.name, version: page.context().browser()?.version() },
       result: "passed", plainBytes, compressedBytes, resources,

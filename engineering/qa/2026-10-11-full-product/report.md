@@ -753,7 +753,7 @@ and renderer-control calls. These checks need explicit platform prerequisites
 or supported older-API paths. The additional API 23 and API 30 runtime results are recorded below.
 
 
-## QA-014 — Native QA uses APIs newer than supported devices (P2; open PR #566)
+## QA-014 — Native QA uses APIs newer than supported devices (P2; merged PR #566)
 
 Expanded NewApi lint finds eleven Android instrumentation violations. It also
 finds nineteen separate JVM-test violations. After repair, instrumentation has
@@ -853,3 +853,133 @@ race is silently classified as resolved. Required CI run `38190828542` and all
 three layout engines in run `38190828548` pass at `bf220c9e`. PR #567 merges
 with merge commit `8307ea47fbc51408548e8e50b996b75ad7a0b561`. A fresh fetch and
 ancestry checks prove both the reviewed head and task commit are in remote main.
+
+
+## QA-016 — Show card repeats a watched episode (P2; repair pending delivery)
+
+The previous show-card journey checks link patterns and alignment. It never
+clicks Play or observes moving media. Its expanded real-Server journey marks
+episode one watched and episode two unwatched through the public API.
+Show Details correctly selects episode two, but the Shows card says Play again.
+The journey fails before the production change, at its next-episode assertion.
+
+Catalog paging collapses Shows into representative items. Home organizes those
+representatives and computes playback from only one episode. The repair expands
+only the selected Shows with Viewer-visible episodes before computing their
+card actions. It preserves the selected card set and canonical episode order.
+The page, query, and Viewer access policy still select the visible Shows.
+The follow-on projection uses stable read-only catalog references and copies
+only selected, permitted episodes. Its final candidate replay passes below.
+No layout, placeholder, Direct First, or playback policy changes.
+
+The expanded Chromium journey passes after repair. One card click opens episode
+two without another native play call. Decoded frames advance from 4 to 13;
+media time advances from 0.004769 to 0.356429 seconds. Resume selects episode
+two, all-watched Play again selects episode one, and reset Play next selects
+episode one. The journey restores prior viewing state. It retains responsive
+captures, moving-video evidence, state captures, and exact source attestations.
+Existing public Show, Viewer policy, and pagination contract checks pass.
+The source cap, diff check, and post-commit Player verification pass at
+`2ee56f5eb2c616ac58086cb66f39e99c80372e65`.
+
+The first expanded attempt is excluded from playback proof. An ambiguous Shows
+locator fails on Details. Cleanup then omits untouched zero/false progress
+fields and masks that failure with HTTP 400. The corrected journey uses the
+Details Back link and normalized public progress defaults. The original logs
+and safe projections remain retained.
+
+The broader media interaction sweep passes 11 cases each in Chromium and
+Firefox at `2ee56f5e`. Each skips 23 dedicated-pagination cases because their
+canonical Go fixture is absent from this generic fixture. Those skips are
+not product passes. WebKit passes nine and fails the focus and synthetic loading
+reviews. Both Show cases pass in all three engines. The dedicated catalog replay
+passes below.
+The loading review combines decoded initial playback with synthetic media
+state events; it does not prove a real bandwidth interruption.
+
+
+## QA-017 — Layout sign-in navigation retains an unguarded Firefox boundary
+
+The Firefox replay of deep run `38186878855` passes 703 root cases and skips
+356. Settings passes 63 with one flaky sign-in navigation, so the strict flake
+gate remains failed. The initial login response is HTTP 200; the screenshot
+shows the complete sign-in form. The trace only retains its earlier blank
+document snapshot. This does not prove a blank product page.
+
+The layout helper still uses raw `page.goto`, unlike the shared populated-instance
+helper. A private control throws `TimeoutError` after the actual Firefox login
+form completes. The unchanged settings journey fails before credentials. Reusing
+the existing guarded navigation helper passes this same control. The guard
+requires one successful, prompt, nonredirected navigation and a complete, usable
+form before admitting one replacement GET. Explicit response, URL and redirect
+checks remain before credential entry. No authentication product behavior changes.
+
+The control is an isolated browser-automation fault with the real HTTPS backend.
+It does not reproduce the original browser internals. Real settings repetitions
+and existing rejection controls now pass below. Both original attempts, traces,
+source-overlay hashes, results and safe projections remain private.
+
+
+## Final candidate browser and catalog verification at `d2713764`
+
+Three repetitions pass in each engine for Show card playback and states,
+settings persistence, asset caching, and existing rejected-login controls.
+Chromium and WebKit each pass 18 and skip six Firefox-only controls. Firefox
+passes all 24. No failures or flaky cases occur. This checks the reference-based
+Show projection and guarded layout login at the committed, clean revision.
+Private `auth-show-candidate-evidence.json` records source and report checksums.
+
+The canonical Go pagination fixture passes all 30 browser checks in each engine,
+with zero skips or flakes. It covers real catalog paging and isolated navigation
+fault controls using the real disposable Go HTTP Server. Its synthetic media
+files are empty, authentication is disabled, and it does not prove decoded media
+or TLS. The fixture archives the clean candidate once, builds its matching
+Linux ARM64 test binary, and removes its owned container. Exact dispatch, data,
+commands, receipts and checksums remain in `canonical-library-browser-current`.
+
+Two diagnostic repetitions each of WebKit focus and synthetic loading reviews
+pass without reproducing the earlier failures. The focus diagnostic records
+connection and active-element categories. The loading diagnostic records bounded
+media event/state observations. All original assertions stay unchanged. Neither
+root cause is confirmed, and no production repair is claimed. Private overlays
+and their original and modified test hashes remain retained.
+
+A further real-Server check for mixed permitted and restricted Show episodes is
+prepared. Existing Show handler coverage contains one episode without Viewer
+restrictions, while the moving-card regression runs as Owner. The new public-API
+journey will verify maturity, Library exclusion, action selection and route
+rejection with a disposable Viewer, then restore ratings and remove the Viewer.
+
+
+PR #566 merges reviewed native candidate `26e1682d` with merge commit
+`013d52472504b7d4309ba123b08808af3b8edea8`. Required CI `38193469566` passes.
+A fresh fetch and ancestry checks prove inclusion of that head and Wear commit
+`a21534c1`. The focused iOS comparison passes on the reconciled source. A complete
+iOS suite now runs against its unchanged native tree.
+
+The first mixed-episode Viewer attempt is excluded from policy proof: it stops
+at required MFA enrollment. Its cleanup also expects 200 instead of the specified
+204 for profile deletion. The corrected journey retains required MFA, completes
+real authenticator enrollment, and checks the proper deletion response. Chromium
+passes family episode selection, excluded-Library action and route rejection,
+and restored next-episode access. All three repetitions pass in Chromium, Firefox and WebKit at `cfc884bf`: 12
+applicable checks per engine, zero skips, failures or flakes. This includes the
+Viewer policy journey, actual Show card playback and states, and settings
+persistence. No production change follows the Viewer check.
+
+
+The reconciled complete native suites use tree
+`c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`. iOS passes 329, fails zero and
+skips four. tvOS passes 311, fails zero and skips three. Three iOS skips and two
+tvOS skips require optional decoded-media files; focused executions with the
+documented fixture remain pending. The other iOS skip is the inapplicable picture-in-picture callback case.
+The other tvOS skip is optional `TVQualitySessionSeed`, which requires a
+disposable public Server session. Neither skip is a product pass.
+
+The tvOS result bundle confirms the existing QA All Apps TV simulator. Xcode
+leaves it shut down. A preflight error was incorrectly interpreted as app absence;
+that receipt is explicitly invalid for absence proof. Post-run app removal and
+shutdown both return a state error and change nothing. The shared simulator,
+installed app and data are preserved. No successful uninstall or restoration of
+a prior app version is claimed. A corrected inspection must distinguish device
+state failures before any later cleanup. Raw diagnostics remain private.
