@@ -1835,3 +1835,27 @@ All eight search journeys pass with the delay. Without it, the complete Android 
 Local proof: `ai-qa-campaign/android-search-clear-proof.json`, SHA-256 `2a77981bf1839226b1ccb3640563af9f95a121b72ac03edb446eeb7e5e50aded`.
 The proof records main `9e8d3bbc` plus the exact uncommitted test patch; it is not an exact committed-revision claim.
 These JVM journeys use an HTTP stand-in and do not prove populated production Server or physical-device behavior.
+
+
+### Recovered-audio recorder boundary
+
+PR 581 hosted run `38239833223` found a 575-sample starting offset in the 96 kHz coarse-video-clock recovered capture.
+At 48 kHz capture rate, this is about 12 milliseconds. Correlation stays above 0.965 and render blocks remain contiguous.
+The offset appears before the missing fragment's boundary; the preceding fragment is unchanged.
+This suggests recorder startup timing, but the hosted AMD64 failure is not reproduced or dismissed.
+
+The unchanged local macOS and Linux ARM64 journeys pass.
+A paired Linux experiment on identical source/cache bytes passes four original-start and four settled-start captures.
+The recorder now requires advancing initial presentation and an exact paused seek before recording post-startup recovery.
+It retains bounded playback/audio checkpoints in the already-uploaded receipts and comparisons.
+The first worklet checkpoint records main-thread message receipt and the reported render frame; it does not retime PCM.
+The 1-millisecond starting-offset, correlation, and continuous-block checks remain unchanged, with no discarded samples or automatic retries.
+
+A fresh settled-start recovery passes all four captures, both grids, video, EOF, and metadata rejection controls.
+A premature unrelated `seeked` event is ignored in all four captures until the requested target settles.
+A 576-sample shift injected at the splice lowers minimum correlation from 0.9657 to -0.1097 and is rejected with the original pre-splice anchor.
+Proof: `ai-qa-campaign/pr581-recorder-controls/proof.json`, SHA-256 `9160a4b355e32f00c9ed8ce87946c4e886f95f9521fb45bba137b6fdb86aa4c3`.
+These are Linux ARM64 and isolated recorder controls. Immediate-start seek timing and the hosted AMD64 failure remain open audit boundaries.
+
+PR 583 merged through protected checks into `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
+Fetched ancestry confirms reviewed Android test commit `3ae56d24` is included.
