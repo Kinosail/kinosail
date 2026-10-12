@@ -1188,7 +1188,12 @@ Their quota values, orphaned bytes, corrupt chunk, manifest hashes, exact
 Three executions of both cases pass in Chromium, Firefox and WebKit: six passes
 per engine, zero skips, failures, flakes or retries. Nine profile receipts confirm
 removal. The owned browser containers are removed and host trust is unchanged.
-The final artifact-cleanup adjustment receives a separate committed replay.
+The first committed artifact-cleanup replay exposes a teardown error in all
+three engines: calling `video.delete()` after a persistent context closes uses a
+closed browser connection. Quota assertions pass, but those executions remain
+failed. The fixture now closes pages, handles their finished videos while the
+browser is open, then closes the context and removes its profile. A further
+committed replay and intentional failure-artifact control verify this path.
 
 These are retained isolated fault checks with synthetic chunks, mocked manifests,
 quota and service-worker state. Real Go sign-in and preparation do not turn the

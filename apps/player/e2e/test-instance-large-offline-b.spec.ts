@@ -22,19 +22,25 @@ const opfsTest = test.extend({
       });
       await use(context);
     } finally {
-      const recordings = context?.pages().map((page) => page.video()).filter((recording) => recording !== null) ?? [];
-      try { await context?.close(); }
-      finally {
-        await rm(profile, { recursive: true, force: true });
-        await testInfo.attach("opfs-profile", { body: JSON.stringify({ mode: "fresh-persistent", removed: true }), contentType: "application/json" });
-      }
-      if (videoMode === "on" || testInfo.status !== testInfo.expectedStatus) {
-        for (const [index, recording] of recordings.entries()) {
-          const path = testInfo.outputPath(`opfs-video-${index}.webm`);
-          await recording.saveAs(path);
-          await testInfo.attach("video", { path, contentType: "video/webm" });
+      const pages = context?.pages() ?? [];
+      const recordings = pages.map((page) => page.video()).filter((recording) => recording !== null);
+      try {
+        // Finish recordings while the persistent browser connection is still open.
+        await Promise.all(pages.map((page) => page.close()));
+        if (videoMode === "on" || testInfo.status !== testInfo.expectedStatus) {
+          for (const [index, recording] of recordings.entries()) {
+            const path = testInfo.outputPath(`opfs-video-${index}.webm`);
+            await recording.saveAs(path);
+            await testInfo.attach("video", { path, contentType: "video/webm" });
+          }
+        } else await Promise.all(recordings.map((recording) => recording.delete()));
+      } finally {
+        try { await context?.close(); }
+        finally {
+          await rm(profile, { recursive: true, force: true });
+          await testInfo.attach("opfs-profile", { body: JSON.stringify({ mode: "fresh-persistent", removed: true }), contentType: "application/json" });
         }
-      } else await Promise.all(recordings.map((recording) => recording.delete()));
+      }
     }
   },
 });
