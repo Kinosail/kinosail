@@ -606,7 +606,7 @@ Physical discovery currently finds one connected Apple TV. Other remembered
 Apple devices are disconnected. Installed-app inventory is read-only and does
 not establish physical interaction or current-revision acceptance.
 
-## QA-012 — Native cast-pitch check omits scroll content (P2; repair pending)
+## QA-012 — Native cast-pitch check omits scroll content (P2; repaired in PR #563)
 
 Deep CI passes 332 iOS tests and skips one platform-inapplicable case. tvOS
 passes 311, fails the cast-placeholder pitch test, and skips one. The same
@@ -656,8 +656,8 @@ The helper now waits until navigation leaves `/login` before inspecting the
 optional offer. This matches the existing populated-instance helper. Both
 shortcut cases pass three consecutive WebKit repetitions after the change.
 No product authentication or shortcut behavior changes. The final complete WebKit batch also passes all 29 checks. Player
-`make verify-changed` passes after commit `9cb3dab4`. Required CI and delivery
-for this test repair remain pending.
+`make verify-changed` passes after commit `9cb3dab4`. Required CI run `38185815124` fails its earlier public HLS regeneration step,
+before Chromium starts. The shortcut repair remains in open PR #564.
 
 These five files cover password reveal, repeated navigation, keyboard shortcuts,
 and Quick Connect UI. QR scan cases substitute camera streams and decoder
@@ -695,8 +695,9 @@ production change is retained from these experiments.
 
 The earlier deep run `38181434746` finishes with its original Swift cast-test
 failure. Its CodeQL Java replay passes after restoration of the exact source ref.
-The repaired cast test is awaiting full native execution in run `38183570454`.
-The required quick checks for PR #563 pass at `4621d625`.
+The repaired cast test passes the complete tvOS suite in run `38183570454`.
+PR #563 merges reviewed commit `4621d625` into main `e20532f5`. Fetched ancestry
+confirms inclusion. The separate iOS comparison and WebKit failures remain open.
 
 
 ## Updated platform boundaries at `4621d625`
@@ -749,5 +750,78 @@ unguarded `getUiAutomation(int)` calls in the new parity harness despite minSdk
 23. That method requires API 24; disabling accessibility through its flag requires
 API 31. The same expanded analysis finds older unguarded accessibility scanner
 and renderer-control calls. These checks need explicit platform prerequisites
-or supported older-API paths. Only API 36 system images are installed locally;
-static analysis is not old-device runtime proof.
+or supported older-API paths. The additional API 23 and API 30 runtime results are recorded below.
+
+
+## QA-014 — Native QA uses APIs newer than supported devices (P2; open PR #566)
+
+Expanded NewApi lint finds eleven Android instrumentation violations. It also
+finds nineteen separate JVM-test violations. After repair, instrumentation has
+zero findings; the expanded scan still fails on those JVM-test findings.
+Standard lint and both debug APK builds pass.
+
+The parity journey uses the older UiAutomation API on older systems. It keeps
+semantic and screenshot evidence there. Renderer termination requires API 29;
+pixel capture requires API 26; accessibility scanners require API 34. Testing
+with UiAutomation accessibility disabled requires API 31. These prerequisites
+are explicit and do not change supported-device product behavior.
+
+The API 23 catalog journey passes pending, failed, empty, and loaded states.
+The complete stock API 23 run passes eight, fails two EPUB accessibility checks,
+and skips three prerequisite cases. Its retained failure screenshot shows the
+chapter rendered while its expected accessibility text is absent. API 30 passes
+ten and skips three. API 36 phone passes twelve and fails two EPUB reopen checks.
+API 36 TV passes nine and skips two EPUB cases. The API 23 and API 30 temporary
+AVDs are deleted after receipt-verified cleanup. SDK images and existing AVDs
+are preserved. No physical Android or real TalkBack acceptance is claimed.
+
+The iOS rating comparison now retains both images and exact compared RGBA data
+when dimensions or pixels differ. Its equality criteria remain unchanged.
+The focused comparison passes. A temporary one-byte negative control fails and
+retains both images and both raw buffers. The control is removed. The original
+hosted pixel mismatch remains unresolved; this change supplies diagnostic proof.
+
+PR #566 has green required checks at `7971d07f`. Deep run `38186878855` continues.
+Its Firefox queue-loading batch passes five and times out during the sixth
+case's initial page navigation. That failure precedes queue or command operations.
+The remaining browser and native results must be reviewed before a full claim.
+Private receipts, source attestations, screenshots, and cleanup are retained.
+
+## QA-015 — Valid HLS temporary-file replacement rejects the stage (P2; repaired locally)
+
+Required run `38185815124` returns 404 while regenerating a deleted first HLS
+fragment in the audio-transcode case. Its safe warning class is
+`generation-assets-or-stage`. An unchanged local AMD64 replay passes nineteen
+codec cases and fails one remux refill. ARM64 passes all six. A private
+classification build passes twenty AMD64 cases without reproducing the failure.
+The original 404 therefore lacks a more specific captured root-cause class.
+
+A focused concurrent-file control confirms a concrete stage-scan defect.
+FFmpeg can rename `index.m3u8.tmp` after directory enumeration and before stat.
+The monitor treats that retired valid entry as a violation and cancels refill.
+The control fails with the original implementation, including a source-overlay
+negative control. The real-codec journey cannot deterministically schedule this
+filesystem window, which is the retained isolated check's coverage gap.
+
+The repair tolerates disappearance only for recognized temporary names. It
+keeps rejecting unknown names, missing final files, nonregular files, excessive
+counts, and oversized output. Final media certification, initialization hashes,
+committed metadata, and source identity checks remain unchanged. A new single
+unknown-file rejection case preserves committed cache data and publishes no media.
+
+Three repetitions of the rename and resource-rejection checks pass. The complete
+related copied-recovery test family passes. Changed-code lint passes. The strict
+public-route lifecycle then passes all twenty AMD64 and six ARM64 codec cases.
+It uses real pinned Jellyfin FFmpeg 8.1.3-1 and synthetic twelve-second media.
+It deletes and regenerates segment zero, cold-reopens the cache, joins owned
+codec processes, and verifies unchanged source, metadata, initialization, and
+retained-fragment identities and bytes. These are direct public-handler tests,
+not external TCP/TLS or physical playback acceptance.
+
+A private logging control observes 477 retired-entry events at debug level.
+Each has fixed synthetic request/session correlation and the scan outcome.
+Default-level runs omit routine events; invalid stages retain their warning.
+No credential, cookie, bearer, or raw-URL markers appear in the logging control.
+Private `hls-stage-evidence.json` records source, command, codec, binary, log,
+result, and container-cleanup checksums. No historical 404 beyond this reproduced
+race is silently classified as resolved. Required hosted delivery remains pending.
