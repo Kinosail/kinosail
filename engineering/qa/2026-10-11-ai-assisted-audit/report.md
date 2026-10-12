@@ -1970,3 +1970,70 @@ The combined proof binds revision `5921a073` and the exact uncommitted harness h
 Proof: `ai-qa-campaign/pr582-harness-proof.json`, SHA-256 `20c957e11d51e78adc482872bddf3a583f6541324ba15819a0055c6b09952d9c`.
 Independent review found no blocker. Both generated architecture snapshots were refreshed and their contract passes.
 Script checks, TypeScript quality controls, source limits, and whitespace pass. Fresh hosted checks remain required.
+
+### Native campaign follow-up on 2026-10-12
+
+The Android production tree is unchanged between `e9baa35a`, `51a5fcc2`, and PR 582 head `8b6011b2`.
+Phone, TV, and tablet runs used API 36 read-only emulator overlays. Shared AVD data was preserved.
+The test APK added private, failure-only EPUB diagnostics. No product assertion or timeout was weakened.
+
+| Surface | Evidence | Boundary |
+| --- | --- | --- |
+| Phone native journeys | 14 passed in the full follow-up; four focused EPUB repetitions also passed | Earlier intermittent EPUB failure remains open |
+| Phone real Server playback | Two portrait and two landscape journeys passed | Actual Media3 decoder and isolated main `51a5fcc2` Go Server; generated media and HTTP media-fault bridge |
+| Android TV native journeys | 11 passed; two EPUB assumptions skipped | Native focus and D-pad against in-process synthetic data |
+| Tablet native journeys | First 11 checks passed before a 600-second outer timeout; remaining three passed separately | Incomplete original run retained; not represented as one green suite |
+| Tablet real Server playback | Two journeys passed in 98.075 seconds | Loading, failed media, retry, recovered frame, captions, speed, and action contrast |
+| Wear | Application and instrumentation APK builds passed | Emulator execution deferred during coordinated physical tvOS playback |
+
+Phone proof: `android-phone-diagnostic3-proof.json`, SHA-256 `78562325e264ebdc598f7d21e48cf3b812d758d3b960d014f97ad611ce91da14`.
+Phone portrait proof: `android-phone-live-proof.json`, SHA-256 `a15b934f2dbb8e0735c2ffaa7a4bd113376255deeec987d6162cc45bb187bcde`.
+Phone landscape proof: `android-phone-landscape-live-proof.json`, SHA-256 `04b756836cccdd3068219fd1327a6a1e8650bfd4f5cac6d2fd08f284a42cd3cb`.
+Tablet proof: `android-tablet-proof.json`, SHA-256 `84461e0c2b3f39d999593be202504d3d2950045c9baf44a44c3c429dc031a828`.
+Tablet real Server proof: `android-tablet-live-proof.json`, SHA-256 `f03c1881c3a7b13f9b5cd0aca13fc9485f610285838032395d6939e50c0fefa8`.
+These files are private under `.verification/ai-qa-campaign`; raw logs and credentials are not publication artifacts.
+
+Tablet review confirms matching pending and loaded catalog geometry, readable controls, and visible EPUB chapters.
+The recovered video screenshot also shows captions intersecting the gesture area. Existing action checks do not assert caption placement.
+That finding needs an observable failing check before a production repair.
+No Cast receiver, physical Android device, native TLS, deployment, or paired Watch acceptance is claimed.
+All task-started phone, TV, and tablet emulators were shut down normally. The isolated Server and HTTP bridge also stopped.
+
+### EPUB accessibility reproduction remains open
+
+A validated diagnostic control deliberately waits for an absent heading and retains the original 20-second failure.
+Its service and direct WebView trees both contain the real chapter, proving both observation paths work on a loaded document.
+The following normal tablet journey fails after reopening saved Chapter 2. `Harbor lights` is visibly rendered.
+Both the service tree and the direct app query contain an empty WebView virtual child.
+The WebView remains attached, shown, and important for accessibility; system accessibility is enabled.
+Clearing the service cache and ten bounded refreshes do not recover the text.
+The runtime is WebView `133.0.6943.137`. No newer-runtime or real screen-reader comparison has run.
+Both queries still use Chromium's node cache. They do not distinguish stale Chromium cache from an empty renderer accessibility tree.
+This narrows the investigation beyond a framework-only cache problem; it does not establish an application lifecycle defect or TalkBack failure.
+The existing assertion still fails. Diagnostics are preserved privately, and tracked source was restored unchanged.
+Proof: `android-epub-diagnostic5-proof.json`, SHA-256 `0a2d0079a74b9fea766b7c187f539ac1db16fe86def81acb7cd2cbdbf840c61c`.
+
+### Protected publication and shared probe diagnostics
+
+PR 581 merged with reviewed commit `b8b9de74` included in fetched main `51a5fcc28f84e84c8c651529fe6416353c802149`.
+Main run `38250393619` passed its selected checks and both Player container architectures.
+It published and promoted `sha256:ab5036e417b3749d47bbe3847e59b38e1ba72b213946feeb5e39235b941989da`.
+This is GHCR publication proof; no Nox deployment or physical acceptance is inferred.
+Publication proof: `player-51a5-publication-proof.json`, SHA-256 `52ecebd2b280007516722b38719f9f204fe9d7fc6da4c24fb7df8f9e2274d06d`.
+
+PR 582 head `8b6011b2` preserved the exact source tree tested at `18602`.
+Its three layout engines passed. The Player browser gate then found a shared probe logging regression.
+All ten strict converted-audio splice cases passed. The injected exit-23 source-probe case failed its required ERROR assertion.
+Safe fallback, source preservation, correlated fallback WARN, and process settlement still passed.
+The extracted probe code logged lifecycle failures but omitted ordinary nonzero exits after a successful scan.
+One condition now restores that ERROR while keeping expected metadata rejection, cancellation, and optional timeout quiet.
+Return values and fallback eligibility are unchanged. Independent review found no blocker.
+The original hosted failure remains recorded; no assertion was weakened and auto-merge was disabled during repair.
+The failed receipt has SHA-256 `bc4e9291f2cae991bc08d16a64818fbf293313e1f36f4e98ab3a8ed73dfc7566`.
+
+The focused Player source-error, timeout, cancellation, and coarse-metadata controls pass after repair.
+The Subtitles unsupported-index fallback control and the shared mediaprobe package checks also pass.
+Error logging remains correlated and bounded; the existing checks reject secrets in diagnostics.
+All fixture Servers settled and source media remained unchanged. Source limits and whitespace pass.
+These local runs bind the changed source hash over base `8b6011b2`; fresh hosted Linux verification is still required.
+Proof: `pr582-probe-diagnostic-repair-proof.json`, SHA-256 `2e85efefb90838878178c8cd4618d264c19d531145e6bbbdfcafcca7df513bdd`.
