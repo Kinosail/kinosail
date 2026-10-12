@@ -9,6 +9,7 @@ const id = process.env.QA_RESUME_ITEM, output = process.env.QA_RESUME_OUTPUT;
 const engine = process.env.QA_RESUME_ENGINE || 'chromium';
 const native = engine === 'webkit-native';
 const expectedMode = process.env.QA_RESUME_EXPECTED_MODE || 'remux';
+const frameRate = Number(process.env.QA_RESUME_FRAME_RATE || 24);
 const duration = Number(process.env.QA_RESUME_DURATION || 32);
 const resume = Number(process.env.QA_RESUME_SECONDS || 12.5);
 const forceConversion = process.env.QA_RESUME_FORCE_AUDIO_CONVERSION === 'true';
@@ -61,7 +62,7 @@ try {
       await stage.press('k');
       await page.waitForFunction(() => document.querySelector('video').paused);
     }
-    const row = await page.evaluate(async ({variant, duration, native, resume}) => {
+    const row = await page.evaluate(async ({variant, duration, native, resume, frameRate}) => {
       const video = document.querySelector('video'), samples = [], presentations = [];
       if (!video) return {variant, error: 'video_missing', samples};
       const wait = (event, action) => new Promise((resolve, reject) => {
@@ -77,7 +78,9 @@ try {
       try {
         if (video.readyState < 2) await wait('loadeddata');
         video.pause();
-        for (const point of [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, Math.min(31.55, duration - .05)]) {
+        const points = resume >= 60 ? [resume + .05, resume + .55, resume + 1.55, resume + 2.55, resume + 3.55, resume + 4.55, duration - .05]
+          : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, Math.min(31.55, duration - .05)];
+        for (const point of points) {
           // A seeked event can precede compositor presentation in WebKit.
           // Wait for the requested timestamp, never for an expected pixel hash.
           // Native WebKit HLS does not emit frame callbacks for paused seeks.
@@ -94,7 +97,7 @@ try {
               const presentedTime = metadata.mediaTime + video.currentTime - decodedTime;
               if (presentations.length < 64) presentations.push({point, mediaTime: metadata.mediaTime, presentedTime,
                 currentTime: video.currentTime, decodedTime, paused: video.paused});
-              if (presentedTime >= point - 1 / 24 - .002 && presentedTime <= point + .002) {
+              if (presentedTime >= point - 1 / frameRate - .002 && presentedTime <= point + .002) {
                 clearTimeout(timer); resolve({presentedTime, mediaTime: metadata.mediaTime});
               } else callback = video.requestVideoFrameCallback(frame);
             };
@@ -119,7 +122,7 @@ try {
         firstPlaying: window.qaResumeFirstPlaying,
         start: Number(video.dataset.start), mode: video.dataset.compatibilityMode,
         adapter: video.currentSrc.startsWith('blob:') ? 'mse' : 'native', currentTime: video.currentTime, samples, presentations};
-    }, {variant, duration, native, resume});
+    }, {variant, duration, native, resume, frameRate});
     rows.push(row);
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await page.close();

@@ -880,3 +880,57 @@ The [MSE audio splice algorithms](https://www.w3.org/TR/media-source-2/#audio-sp
 | `hls-resume-browser/20261012T004133Z/receipt.json` | Chromium PCM diagnostic and frame journey | `e8f168e88ed887e68094a3146181d327feb842d5c9df6a952720b0aad2c78129` |
 | `ai-qa-campaign/review-low-rate-preroll-20261012T003437Z/verification-summary.json` | isolated low-rate video counterfactual | `08f7b8ebbeb9a0d2ad723f5067162375143f6413ea640a0f48b6f386118f681a` |
 | `hls-resume-browser/20261012T004133Z/decoded-splice-comparison.json` | clean decoded-splice diagnostic; boundary open | `dd379853afe755dddfe78b5d61d5bc41db16e606f6be64c4772c0fccf6de1988` |
+
+
+### Short converted-audio recovery: preserve the original encoded content
+
+PR [#562](https://github.com/Kinosail/kinosail/pull/562) merged as `87428823d71d43f612319511377f154795d1ebf3`.
+A fetched ancestry check proves task commit `2a32e9b43826e2d22239a473181cb2bf94f6afb4` is included.
+Required checks passed; latest container publication and deployed revision remain separate, unverified boundaries.
+
+The copied-audio checkpoint had a real decoded-content defect.
+The same deterministic noise source gives minimum tail correlation 0.22353 after eviction, versus 0.98544 without eviction.
+These measurements establish waveform damage; they do not measure audibility.
+Independent packet analysis also confirms a changed AAC grid and encoder history after the old refill seek.
+
+For indexed converted-audio windows up to 30 seconds, recovery now replays the original encoder history from the certified source origin.
+Bitstream filters discard packets before the requested video key and its decode timestamp.
+Only the requested suffix is written. The original AAC payloads, timing, and initialization remain identical to uninterrupted encoding.
+The cache policy invalidates earlier converted-audio output. Longer windows retain their existing path and remain outside this repair's proof.
+
+A new populated public journey compares every AAC packet's PTS, DTS, duration, and payload hash with an independent uninterrupted encode.
+The oracle fails before this repair and passes the repaired tail in Chromium and WebKit.
+A Chromium watch-page PCM capture improves the recovered-tail minimum correlation to 0.975704 with zero sample shift throughout the measured window.
+It also preserves startup and intermediate refill audio. Physical listening and WebKit waveform proof remain open.
+
+Independent review caught a later-origin rounding error, and the expanded public journey caught the same class at the final fragment.
+A strict floating-point seconds comparison discarded one 21.333 ms AAC packet at an exact boundary.
+The repair compares integer audio sample ticks with the relative source decode time.
+It rounds the submicrosecond input-seek remainder to the encoder's sample clock.
+The retained 25 fps journey resumes at 64.5 seconds and exercises the earlier numbered refill and evicted tail.
+Near-zero recovery and 32/44.1/48 kHz inputs expand the boundary matrix.
+Candidate receipts below are based on `205871963ba445806a241fdcfbdb5bcec60336db` plus the recorded implementation changes; clean checkpoint replay follows.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T004133Z/decoded-splice-comparison.json` | evicted-tail Chromium PCM counterexample | `dd379853afe755dddfe78b5d61d5bc41db16e606f6be64c4772c0fccf6de1988` |
+| `hls-resume-browser/20261012T004631Z/decoded-splice-comparison.json` | same-source uninterrupted Chromium PCM control | `209b47b75d33b42e4d9ab22c02da5ee1b9c65098f1b05154678d8a20f9e557c9` |
+| `ai-qa-campaign/review-aac-splice-20261012T004712Z/verification-summary.json` | independent AAC encoder-grid diagnosis | `4065d9bfa7908b6daecfe1d7e03c84fd0d7a48a72fb03d32768b100ae96d2b8d` |
+| `hls-resume-browser/20261012T005837Z/receipt.json` | new public exact-AAC oracle fails before repair | `ba876b38ef806bd7cb8ac6d925952b62fa2875fb72333931ee657f9ab5dec9bf` |
+| `hls-resume-browser/20261012T005932Z/receipt.json` | candidate exact-AAC tail recovery in both MSE engines | `b1a42646fc6d6881df9dc18cd6bab96d736f314bb39f73c4cfbb8750d05d971d` |
+| `hls-resume-browser/20261012T005955Z/decoded-splice-comparison.json` | candidate actual-watch Chromium decoded audio | `7bca32d50aceaefde99f2f6667fba0bbd43adb31cf11bbeabb07cd27c95f0b4e` |
+| `ai-qa-campaign/review-aac-rounding-20261012T010314Z/receipt.json` | 25 fps absolute-clock rounding counterexample | `4d18a35c9e22101462a3adbe7fd37cd0101cd55e4a4c50ba533f4f1e68313597` |
+| `ai-qa-campaign/review-aac-residual-20261012T010854Z/receipt.json` | Matroska input-residual counterexample | `d18f62490f18b121d3aab4f8d6d4ac7543e94800133572502c05153c78a7b050` |
+| `hls-resume-browser/20261012T010758Z/receipt.json` | 25 fps late-tail floating comparison counterexample | `7ddfa7eab2b229328f190f22ec2f7d652b74db8aa755ade5eb3db9c9f7a989a1` |
+
+The final sample-tick candidate passes the following populated journeys.
+Source limits, whitespace, architecture generation, actionlint, and 169 CI contract tests also pass (five environment skips).
+The remaining five local lint findings belong to the stacked cold-resume change and will be repaired before integration.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T011041Z/receipt.json` | final candidate: resume 64.5s, 48000 Hz | `174afe6b753c10d743b08e145184df6deda37f76ec10967a4429b4b60c193f6c` |
+| `hls-resume-browser/20261012T011103Z/receipt.json` | final candidate: resume 0.5s, 48000 Hz | `ec2271ce974870b83cac2da198b4e6d1da6cabaddf39dd883b480cb5605a3de5` |
+| `hls-resume-browser/20261012T011125Z/receipt.json` | final candidate: resume 12.5s, 44100 Hz | `bfd248a196432ed040b0c439dd12e6fbffcf72f876f7138c08ec5eccfcf5d073` |
+| `hls-resume-browser/20261012T011148Z/receipt.json` | final candidate: resume 12.5s, 32000 Hz | `1ca2ff44fa6f6aeeeabb7fca35e7469ca27a328a2fbec9bbffa47605c979f56b` |
+| `hls-resume-browser/20261012T011208Z/receipt.json` | final candidate: resume 12.5s, 48000 Hz | `496c3a003fb8bb74e6499d139ac7bd40fe05fdb3cb63421afb2cfcb4fe420dde` |

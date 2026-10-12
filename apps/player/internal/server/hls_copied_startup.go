@@ -83,6 +83,9 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 	if number < 0 || number >= len(timeline.Keys) {
 		return nil, errCopiedHLSIndex
 	}
+	if copiedHLSAudioFromOrigin(timeline, number, mode) {
+		return copiedHLSAudioSeekArguments(arguments, timeline, number)
+	}
 	// Trim the initial audio preroll so the first retained video frame defines
 	// the decoder origin. Refills retain overlapping audio to avoid a gap.
 	trim := "-copypriorss"
