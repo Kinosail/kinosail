@@ -1229,5 +1229,53 @@ PR #570 merges into main `e0a9536c6a04198a2eff9f5306c7c658fcdf9406` after its re
 A fresh fetch and four ancestry checks prove that the cold-resume, audio-clock, longer-remux, and final reviewed checkpoints are included.
 GitHub also marks the earlier PRs #565 and #569 merged. No protection was bypassed.
 The private ancestry receipt SHA-256 is `7c9774543ea3c121fac670bea95b2bfd162eda1b9be9094c1dc72fd12d529e52`.
-The fixture repair now incorporates that main revision. A fresh production-container run will verify the combined source.
+The fixture repair now incorporates that main revision. The fresh production-container result follows below.
 Hosted main publication, deployed-image acceptance, and physical devices remain separate boundaries.
+
+### Fresh integrated container and native Core verification
+
+Clean checkpoint `09bc16a7cdcee188ec55fcc6f82816e0163cf945` builds a fresh production image containing the merged resume repairs.
+Its image revision label matches that exact checkpoint. The canonical trusted-HTTPS Chromium suite passes all 87 tests.
+There are no retries, skips, or failures. All 78 credential submissions return HTTP 303.
+Both CA controls and all eight fixture checks pass. Owned containers, volumes, fixture directories, and private environment files are removed.
+The private integrated receipt is `player-fixture-integrated/receipt.json`, SHA-256 `9a578c5e8bf4e56016867a6fd749fd981d1ca1b24e9c27585d6849e3d6880083`.
+
+The existing Swift Core journey also passes all sixteen response-validation cases against a real loopback Player handler.
+It fetches media after successful validation. This is native Core and Server compatibility evidence, not AVPlayer or device interaction.
+Its outer receipt is `native-core-integration/evidence/manifest.json`, SHA-256 `9dcdcad22e8e5600479045a7da9bd6a235dfcbcda085e0e0beee3b25c2ee1bea`.
+
+### Login-readiness fixture: contain the complete redirect chain
+
+Hosted run `38200899240` passes 345 smoke cases but fails the delayed-script readiness control twice.
+The intercepted `POST /login` returns HTTP 303. Its redirected `GET /` reaches the unrelated configured Server.
+That Server redirects back to `/login`, so the helper correctly refuses to complete the sign-in journey.
+The missing-script case passes. The fresh populated-container result above remains a separate passing boundary.
+
+A disposable Linux peer reproduces the unexpected redirect before the fixture repair.
+The readiness fixture now serves its complete same-origin HTTP redirect chain and the actual production theme script.
+It retains empty credentials and zero submissions while initialization is pending, one successful submission afterward,
+and zero submissions when the script is missing. Cleanup closes the peer even if page creation or closure fails.
+Independent review finds no concrete blocker. Both cases pass in Linux Chromium, Firefox, and WebKit at the normal timeout.
+Every outer-peer request count is zero, and all owned browser containers and peers close.
+This is an isolated native-form fixture; it does not establish populated Server authentication or TLS behavior.
+The private receipt is `login-readiness-redirect-receipt.json`, SHA-256 `1f24d60d0bff7a0c1129a98c0c64c8768316f221a278230c78325156bd1ff2d9`.
+
+### Longer converted audio: repeatable decoded splice difference
+
+Two fresh 74.5-second H264/AC3 experiments pass all seven Chromium video-frame comparisons and reach EOF after tail regeneration.
+Both use deterministic nonperiodic audio and retain actual watch-page AudioWorklet captures before and after eviction.
+Render blocks are contiguous, and source alignment shows no sample-clock shift.
+The captures are identical through sample 42,495, then differ at source 72.885333 seconds, matching the regenerated audio onset.
+Two short windows have markedly lower correlation with the control before recovering. A second run repeats the same result.
+This establishes a localized decoded difference; audibility and the precise encoder/decoder cause remain unproven.
+AAC packet identity is recorded diagnostically because the longer path restarts the encoder. Different bytes alone are not a failure.
+No production audio behavior changes in this checkpoint. A bounded warm-up experiment remains the next investigation.
+The first successful capture receipt is `.verification/hls-resume-browser/20261012T035748Z/receipt.json`, SHA-256 `cb97bd7ff35e3c0daf99a27a588b568691409a7a9266b8c2b9822f98cb6ca030`.
+Its decoded comparison SHA-256 is `a416029719a52f5550f81a67d6a1e459f554028b0b18002f5905661b180869d0`.
+An earlier private recorder syntax failure is retained separately and provides no audio acceptance.
+
+### Architecture selection reaches protected main
+
+PR #574 merges after all required checks pass. A fresh fetch proves both reviewed selector checkpoints in main `a95f2cbb2ed8a1a27eb39e311be1c8f71a95c50d`.
+The selector includes architecture-generating Go sources, module inputs, and architecture documentation without losing app isolation.
+The private ancestry receipt SHA-256 is `ec4fb4879d0b94cfc3d7df7c1db5a3265f16ec525690e8953c0f1f32e2a978a7`.

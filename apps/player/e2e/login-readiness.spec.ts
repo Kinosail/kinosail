@@ -1,31 +1,38 @@
-import {expect, test} from "@playwright/test";
+import {expect, test, type Page} from "@playwright/test";
 import {readFile} from "node:fs/promises";
 import {createHash} from "node:crypto";
+import {createServer} from "node:http";
 import {login} from "./test-instance-helpers";
 
 const theme = await readFile(new URL("../../../packages/webassets/static/theme.js", import.meta.url), "utf8");
-test.use({serviceWorkers: "block"});
-
 for (const scriptState of ["delayed", "missing"]) {
-  test(`login waits for initialized password controls when its script is ${scriptState}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}, info) => {
+  test(`login waits for initialized password controls when its script is ${scriptState}`, {tag: ["@smoke", "@routed-fault"]}, async ({browser}, info) => {
     let release!: () => void, requested = false, posts = 0;
     const barrier = new Promise<void>(resolve => release = resolve);
-    await page.route("**/*", async route => {
-      const url = new URL(route.request().url());
+    // Serve the complete redirect chain: intercepted redirects can reach the
+    // unrelated configured Server before Playwright routes the next document.
+    const server = createServer(async (request, response) => {
+      const url = new URL(request.url!, "http://fixture");
       if (url.pathname === "/theme-readiness.js") {
         requested = true;
-        if (scriptState === "delayed") { await barrier; await route.fulfill({contentType: "text/javascript", body: theme}); }
-        else await route.fulfill({status: 404, body: "Missing script"});
-      } else if (url.pathname === "/login" && route.request().method() === "POST") {
+        if (scriptState === "delayed") { await barrier; response.writeHead(200, {"Content-Type": "text/javascript"}); response.end(theme); }
+        else { response.writeHead(404); response.end("Missing script"); }
+      } else if (url.pathname === "/login" && request.method === "POST") {
         posts++;
-        await route.fulfill({status: 303, headers: {Location: "/"}, body: ""});
+        response.writeHead(303, {Location: "/"}); response.end();
       } else if (url.pathname === "/login") {
-        await route.fulfill({contentType: "text/html", body: '<!doctype html><head><script defer src="/theme-readiness.js"></script></head><body><form action="/login" method="post"><label>Name<input name="name"></label><label>Password<input name="password" type="password"></label><label>Authentication or recovery code<input name="factor"></label><button>Sign in</button></form></body>'});
-      } else await route.fulfill({contentType: "text/html", body: "<h1>Fixture home</h1>"});
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.end('<!doctype html><head><script defer src="/theme-readiness.js"></script></head><body><form action="/login" method="post"><label>Name<input name="name"></label><label>Password<input name="password" type="password"></label><label>Authentication or recovery code<input name="factor"></label><button>Sign in</button></form></body>');
+      } else { response.writeHead(200, {"Content-Type": "text/html"}); response.end("<h1>Fixture home</h1>"); }
     });
-    // Attach the rejection handler immediately so a missing-script failure is observed.
-    const attempt = login(page).then(() => ({ok: true, error: ""}), error => ({ok: false, error: String(error)}));
+    await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
+    const origin = `http://127.0.0.1:${(server.address() as {port: number}).port}`;
+    let page: Page | undefined;
+    let attempt: Promise<{ok: boolean; error: string}> | undefined;
     try {
+      page = await browser.newPage({baseURL: origin, serviceWorkers: "block"});
+      // Observe missing-script failures immediately, before checking controls.
+      attempt = login(page).then(() => ({ok: true, error: ""}), error => ({ok: false, error: String(error)}));
       await expect.poll(() => requested).toBe(true);
       if (scriptState === "delayed") {
         await expect(page.getByLabel("Name", {exact: true})).toBeVisible();
@@ -47,7 +54,13 @@ for (const scriptState of ["delayed", "missing"]) {
       }
       await info.attach("native-login-script-readiness", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
         scriptState, posts, browser: info.project.name, themeSHA256: createHash("sha256").update(theme).digest("hex"),
-        data: "Synthetic native form and actual production theme; delayed/missing response", result: "passed"}), contentType: "application/json"});
-    } finally { release(); await attempt; if (!page.isClosed()) await page.unrouteAll({behavior: "ignoreErrors"}); }
+        data: "Disposable HTTP peer with native form, real redirects, and production theme; delayed/missing script", result: "passed"}), contentType: "application/json"});
+    } finally {
+      release(); await attempt;
+      try { await page?.close(); } finally {
+        server.closeAllConnections();
+        await new Promise<void>(resolve => server.close(() => resolve()));
+      }
+    }
   });
 }
