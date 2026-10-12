@@ -36,13 +36,13 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | HLS lifecycle and Show playback repairs delivered; native decoded follow-ups passed; WebKit watched-startup and physical media boundaries remain |
 | Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Decoded queue and media actions checked; physical interruption and receiver acceptance remain |
 | Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Platform and reading evidence is recorded below; Android EPUB accessibility and physical acceptance remain |
-| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real multi-gigabyte restart/verification journey is next; hardware remains |
+| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; prior publication gates passed; current main publication and exact deployed revision remain pending |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; Subtitles deployment and gateway TLS remain |
 
 ## Iteration 1 results
 
@@ -602,9 +602,11 @@ Deep run `38181434746` continues at reviewed head `d0efff30`. Its CodeQL Java
 upload fails after the merged PR branch is automatically deleted. The annotation
 identifies a missing ref, not a compiler or source-analysis finding. The exact
 reviewed ref was restored. Failed jobs must be replayed after the run finishes.
-Physical discovery currently finds one connected Apple TV. Other remembered
-Apple devices are disconnected. Installed-app inventory is read-only and does
-not establish physical interaction or current-revision acceptance.
+The earlier connected Apple TV entry was not filtered by hardware reality.
+A later inspection confirms that entry is simulated. Its installed-app inventory
+is simulator evidence. No physical interaction or current-revision hardware
+acceptance was established. The October 12 refresh finds two connected simulated
+TV entries and no connected physical devices.
 
 ## QA-012 — Native cast-pitch check omits scroll content (P2; repaired in PR #563)
 
@@ -1084,3 +1086,67 @@ restart, range, independent hash and disconnected decode assertions remain.
 This is a test-harness repair; no application authentication behavior changes.
 The failure model and failing attempt were recorded before the test edit.
 `make max-loc` and post-commit Player `make verify-changed` pass.
+
+
+## Continued diagnostics and Nox acceptance — October 12
+
+The unchanged single sign-on configuration journey runs three focused Firefox
+executions at `ece703614a59171883330306183f86b2f6506941`. Two pass and one times
+out at its first 1440×900 resize. Private protocol capture pairs request IDs
+with session IDs: the failed resize receives no protocol response. Fourteen
+resize calls in the passing executions return without protocol errors. An
+initial projection paired IDs without their session IDs; its apparent error
+response belongs to a different command and is excluded. Six later executions
+with read-only pending-resize telemetry pass without triggering the telemetry.
+These diagnostic passes do not clear the unchanged journey's failures.
+
+The pinned [Firefox Juggler implementation](https://raw.githubusercontent.com/microsoft/playwright/v1.63.0/browser_patches/firefox/juggler/TargetRegistry.js)
+waits for viewport dimensions after setting browser size. Upstream
+[issue #43028](https://github.com/microsoft/playwright/issues/43028) describes
+resize hangs under other versions and window environments. It does not prove
+the same cause here. Test timeouts and assertions remain unchanged.
+
+A failure-only EPUB control runs five fresh API 36 tablet executions. Four pass;
+one retains the original chapter assertion failure. The complete bounded
+accessibility tree has 32 nodes, with two WebView nodes and no chapter heading
+in text or content description. The rendered chapter is visible. Moving the
+same WebView into a plain native container without reloading does not expose
+the heading. The original parent is restored and the failure remains a failure.
+A separate private control that would create a fresh plain WebView passes three
+journeys before reaching that failure path, so it provides no comparison result.
+Neither private class changes tracked application or test source. Production APK
+hashes remain identical. Task-installed emulator packages are removed and the
+reusable AVD remains. Physical TalkBack acceptance is unavailable.
+
+Main `394736cb740fc6873aa6e94b41e22dc797155529` publishes Player manifest
+`sha256:e2f3799d296dc0c2d9914ec98f8ec6e61e86c4aa603a1a0232973d23985638cb`.
+The raw manifest hash matches the registry digest header. All four child
+descriptors match the two tested and scanned architecture candidate indexes.
+Independent GitHub provenance verification requires that exact source commit,
+`refs/heads/main`, the publication workflow and GitHub-hosted runners; it passes.
+CI separately verifies the image signature and promotes production tags.
+
+The repository deployment script rebuilds Player for ARM64, scans its archive,
+deploys it to Nox and verifies its revision and health. Nox reports that exact
+main revision, running and healthy, and its in-container health check passes.
+Its local image ID is
+`sha256:28fe2e962881de9e92d118ee95a1e4a4eddf7b091cd2dd382961a1801313de0d`.
+This image is separate from the published manifest. The saved-source watcher
+is preserved and may deploy later primary-checkout saves. Subtitles is unchanged.
+No authenticated production journey, external gateway TLS or physical playback
+acceptance is claimed from container health.
+
+Trivy 0.75.0 and Syft 1.54.1 run from a task-private directory after official
+release checksum verification. The Nox scan records 168 Low, 181 Medium,
+133 High, one Critical and 23 Unknown findings. No High or Critical finding
+has a fixed package version in the configured distribution, so the existing
+release-policy gate passes. This is not a vulnerability-free result.
+
+The Critical scanner entry is `CVE-2026-6653` in
+`libxml2 2.12.7+dfsg+really2.9.14-2.1+deb13u3`.
+The [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653)
+marks that exact stable package vulnerable, records it as a minor issue without
+a stable security advisory, and lists a fix in unstable. Runtime reachability
+and exploit reproduction are not established. No suppression, release-gate
+change or unsupported distribution upgrade is applied. Full scan and SBOM
+receipts remain private and checksummed.
