@@ -6,6 +6,7 @@ window.KinosailOfflineMedia?.source(itemID).then(async (source) => {
   if (destroyed) { detach(); return; }
   detachOfflineProgress = detach;
   cancelNetworkRecovery();
+  adaptiveOriginController?.abort();
   adaptiveGeneration += 1;
   adaptiveStarting = false;
   const fallbackUsedHls = Boolean(hls);
@@ -91,6 +92,7 @@ player.addEventListener("kinosail:navigation", () => {
   if (isPictureInPicture()) return;
   adaptiveGeneration += 1;
   cancelNetworkRecovery();
+  adaptiveOriginController?.abort();
   clearBufferingRecovery();
   pendingResume?.cancel();
   hls?.stopLoad();
@@ -99,6 +101,7 @@ const streaming = {destroy: () => {
   if (player.dataset.offline === "true") void window.KinosailOfflineMedia?.saveProgress(player, player.ended);
   detachOfflineProgress?.();
   destroyed = true;
+  adaptiveOriginController?.abort();
   adaptiveGeneration += 1;
   adaptiveStarting = false;
   pendingResume?.cancel();

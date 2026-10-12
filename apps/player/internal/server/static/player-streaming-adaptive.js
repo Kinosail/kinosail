@@ -25,6 +25,7 @@ const showQuality = (level) => {
 const useOriginal = (forcePlay = false, retainedTime) => {
   if (!direct) return;
   cancelNetworkRecovery();
+  adaptiveOriginController?.abort();
   adaptiveGeneration += 1;
   adaptiveStarting = false;
   resumeAfterSourceChange(forcePlay, Number.isFinite(retainedTime), retainedTime);
@@ -51,8 +52,35 @@ const streamAt = (seconds) => {
   if (offset) source.pathname = source.pathname.replace(/\/index\.m3u8$/, `-o${Math.round(offset * 1000)}/index.m3u8`);
   return {offset, source: `${source.pathname}${source.search}${source.hash}`};
 };
+const streamOrigin = (value, requested) => {
+  if (value === null) return requested;
+  if (!/^\d{1,6}(?:\.\d{1,9})?$/.test(value)) throw new Error("invalid-stream-origin");
+  const origin = Number(value);
+  if (!Number.isFinite(origin) || origin < 0 || origin > requested + .000001 || origin > 604800) throw new Error("invalid-stream-origin");
+  return origin;
+};
+const nativeStreamAt = async (position, generation) => {
+  const selected = streamAt(position);
+  if (!selected.offset || !["remux", "audio-transcode"].includes(player.dataset.compatibilityMode)) return selected;
+  adaptiveOriginController?.abort();
+  const controller = new AbortController();
+  adaptiveOriginController = controller;
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const response = await fetch(selected.source, {method: "HEAD", signal: controller.signal,
+      headers: {"X-Playback-Session": playbackSession}});
+    if (generation !== adaptiveGeneration || destroyed) return undefined;
+    if (!response.ok) throw new Error("stream-origin-unavailable");
+    selected.offset = streamOrigin(response.headers.get("X-Kinosail-HLS-Origin"), selected.offset);
+    return selected;
+  } finally {
+    clearTimeout(timeout);
+    if (adaptiveOriginController === controller) adaptiveOriginController = undefined;
+  }
+};
 const useAdaptive = (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0) => {
   cancelNetworkRecovery();
+  adaptiveOriginController?.abort();
   // A direct source may publish metadata while the adapter is loading. Retain
   // the intended position/play state for the compatible source's metadata too.
   resumeAfterSourceChange(!resume && networkWantsPlay, true, target);
@@ -74,7 +102,24 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
     capLevelToPlayerSize: true,
     capLevelOnFPSDrop: true,
     abrMaxWithRealBitrate: true,
-    xhrSetup: (xhr) => xhr.setRequestHeader("X-Playback-Session", playbackSession),
+    xhrSetup: (xhr, url) => {
+      xhr.setRequestHeader("X-Playback-Session", playbackSession);
+      if (new URL(url, playbackURLBase).pathname !== new URL(selected.source, playbackURLBase).pathname) return;
+      xhr.addEventListener("readystatechange", () => {
+        if (xhr.readyState !== 2 || hls !== activeHls) return;
+        try {
+          const origin = streamOrigin(xhr.getResponseHeader("X-Kinosail-HLS-Origin"), selected.offset);
+          adaptiveOffset = origin;
+          activeHls.config.timelineOffset = origin;
+          activeHls.config.startPosition = target - origin;
+        } catch (_) {
+          const retained = pendingResume?.seconds ?? target;
+          playbackTrace("hls-error", "invalid-stream-origin");
+          activeHls.destroy();
+          showFailure("Playback is unavailable. You can retry from this position.", "Retry playback", () => retryStalledPlayback(retained));
+        }
+      });
+    },
     ...(selected.offset ? {startPosition: target - selected.offset, timelineOffset: selected.offset} : {}),
   });
   const activeHls = hls;
@@ -163,9 +208,13 @@ const startAdaptive = async (resume = false) => {
     } else {
       if (typeof Hls !== "undefined" && Hls.isSupported()) useAdaptive(preference === "original" ? "auto" : preference, resume, target());
       else if (player.canPlayType("application/vnd.apple.mpegurl")) {
-        const position = target();
-        resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
-        const selected = streamAt(position);
+        let position, selected;
+        do {
+          position = target();
+          selected = await nativeStreamAt(position, generation);
+          if (!selected || generation !== adaptiveGeneration || destroyed) return;
+        } while (streamOffset(position) !== streamOffset(target()));
+        position = target();
         adaptiveActive = true;
         adaptiveSeekSwitch = resume;
         playbackTimelineOffset = selected.offset;
@@ -176,7 +225,18 @@ const startAdaptive = async (resume = false) => {
         player.addEventListener("loadedmetadata", () => {
           if (generation !== adaptiveGeneration) return;
           adaptiveSeekSwitch = false; playbackTimelineSeek = undefined;
+          const current = player.currentTime;
+          if (resume && pendingResume?.seconds === position && Number.isFinite(current))
+            pendingResume.seconds = Math.max(position, current);
         }, {once: true});
+        // Expose the new decoder's clock before the resume listener compares it
+        // with the requested position. The temporary latch is not a real seek.
+        resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
+        // This adapter owns saved and explicit targets once the origin is known.
+        player.removeEventListener("loadedmetadata", resumeFromSavedProgress);
+        // A pre-metadata seek belongs to the source clock, not this new window.
+        // Clear its decoder default; the retained target is restored above.
+        if (player.readyState === HTMLMediaElement.HAVE_NOTHING) mediaTime.set.call(player, 0);
         player.src = selected.source;
         player.load();
       } else {
@@ -186,6 +246,16 @@ const startAdaptive = async (resume = false) => {
         else if (player.dataset.fallback) location.replace(player.dataset.fallback);
         else qualityState.textContent = "Playback unavailable";
       }
+    }
+  } catch (_) {
+    if (generation === adaptiveGeneration && !destroyed) {
+      const retained = target();
+      playbackTrace("hls-error", "stream-origin-unavailable");
+      showFailure("Playback is unavailable. You can retry from this position.", "Retry playback", () => {
+        clearRecovery();
+        resumeAfterSourceChange(true, true, retained);
+        startAdaptive(true);
+      });
     }
   } finally {
     player.removeEventListener("kinosail:seek-intent", retainInitialSeek);
