@@ -143,17 +143,8 @@ const streaming = (() => {
     const selected = streamAt(target);
     adaptiveOffset = selected.offset;
     const copiedClock = stream.startsWith("/hls/") && ["remux", "audio-transcode"].includes(player.dataset.compatibilityMode);
-    // Local copied streams retain their source timestamps, including priming.
-    // Keep the append queue while mapping this window to its requested origin.
-    const bufferController = class extends Hls.DefaultConfig.bufferController {
-      onBufferAppending(event, data) {
-        if (copiedClock && data.offset !== undefined && ["video", "audiovideo"].includes(data.type))
-          data = {...data, offset: selected.offset};
-        return super.onBufferAppending(event, data);
-      }
-    };
     hls = new Hls({
-      bufferController,
+      ...(copiedClock ? {streamController: copiedHLSClock(Hls, selected.offset)} : {}),
       startLevel: -1,
       testBandwidth: true,
       startFragPrefetch: true,

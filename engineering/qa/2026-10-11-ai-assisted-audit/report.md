@@ -1646,6 +1646,8 @@ The prefix regression also supports `--native`. It releases the held source enco
 
 Before changing probe behavior, the failure inventory is: unsupported or bounded-out metadata, ordinary nonzero exit after cleanup, cancellation or deadline, failed process observation, rejected termination, and failed or over-budget settlement. An optional caller may fall back only after proven cleanup and while its own job and source policy remain valid. It must stop on ownership failure. Existing Player callers continue rejecting every failed index.
 
+Before implementing the MSE clock adapter, its failure inventory is: malformed or oversized boxes, unsupported edit versions, negative or multiple edits, nonunit playback rate, duplicate tracks or edits, missing video/timing tracks, invalid timescales, nonfinite anchors, stale initialization after retry, and media without its timing initialization. The existing real-browser irregular-resume regression is red. An isolated pre-consumer test covers malformed initialization that real FFmpeg cannot generate and deterministic selection of either timing track. It must reject before calling the media consumer and leave bytes unchanged. This test is not populated-server E2E proof.
+
 The retained completion-certificate seam checks OS failures that real-media E2E cannot reliably induce. Its new pre-change assertions require a distinct lifecycle error. Existing real configured-process tests now require cancellation to survive both pre-start rejection and joined-descendant cleanup. This closes a concrete E2E gap without introducing a test-only production hook.
 
 PR 575 now combines the reviewed audio and small-video repairs at `f7b4688f`, including current main `a2d5f2b1`. Fresh required checks are running. PR 577 remains open until inclusion is proved. The unaccepted Subtitles candidate is excluded from that delivery branch. Local combined-head source limits and whitespace checks pass; affected verification stops at the established 95 shared-package lint findings before later stages run.
@@ -1656,3 +1658,19 @@ The new pre-change classification checks fail as expected, including cancellatio
 - Private `probe-phase-red-private.log` SHA-256: `9a84c42ec8f49d1580e9dcf55a037e29c322eae794953496a5c155249a6b27c8`.
 - Private `probe-classification-green-private.log` SHA-256: `8895d38be6a6f948538496826ec282b7c7537c5aff8ae14e9f61556d547fdf6a`.
 - Private `probe-classification-focused-private.log` SHA-256: `1ac7b848e61d02a0a6b1ce20d67156eafc6ad8ddb6b62ff42afc4827483702d4`.
+
+### AQA-017 production MSE adapter checkpoint
+
+The production adapter now parses bounded per-track MP4 edits before Hls consumes fragment timing. It changes metadata only; initialization and media bytes remain unchanged. It applies only to local copied-HLS modes. The normal buffer controller retains append ordering. The parser supports one nonnegative, unit-rate edit per track; unsupported timing fails before the media consumer and enters the existing fatal media-error path. Native HLS remains unfixed.
+
+The pinned Hls callback review found stale-context handling, init-only callbacks, and a keyframe field containing video DTS ticks divided by the selected timing track scale. Each failure was reproduced before correction. The adapter now delegates discarded callbacks before changing cached edits, accepts valid initialization before samples, and restores keyframe units using the video timescale. A follow-up empty-initialization check also failed before correction. Present-empty data rejects even when earlier edits are cached. All 20 retained controls pass, including both fresh and cached malformed inputs. Final read-only review reports no remaining concrete blocker in this path.
+
+The initial production-browser candidate passes irregular 64.5-second resume and converted AC3 with strict browser PCM in Chromium and WebKit. These runs preceded the final callback fixes; final clean-revision browser proof is pending.
+
+- Private `hls-resume-browser/20261012T090229Z/receipt.json`: passed; SHA-256 `fa9fcea474968258c31a91f3cf5f7c18b3e3eec29a18e9a62e13edd229650b42`.
+- Private `hls-resume-browser/20261012T090318Z/receipt.json`: passed; SHA-256 `dc5a1a10c0073d055f8675f28f4bd2058459a64abc972ea37209dd3a7ec765c1`.
+- Private `hls-resume-browser/20261012T090624Z/receipt.json`: passed; SHA-256 `855c1e2f00f6f727cad6857d49ab279da6bc461cafd94569315540790c2e02cd`.
+
+The existing projection fixture built an outdated cache policy by hand and panicked after the copied-clock policy change. It now uses the actual settings operation for that fixture identity. No production cancellation guard was weakened.
+
+Primary references: [pinned Hls stream controller](https://github.com/video-dev/hls.js/blob/v1.7.3/src/controller/stream-controller.ts), [pinned passthrough remuxer](https://github.com/video-dev/hls.js/blob/v1.7.3/src/remux/passthrough-remuxer.ts), and [MSE ISO BMFF edit-list requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/). This version-specific adapter requires replaying the retained browser and parser checks on Hls upgrades.
