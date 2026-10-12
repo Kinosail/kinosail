@@ -1,7 +1,7 @@
 import {createRequire} from 'node:module';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
-const require = createRequire(join(process.cwd(), 'apps/player/e2e/package.json'));
+const require = createRequire(join(process.cwd(), `apps/${process.env.QA_RESUME_APP || 'player'}/e2e/package.json`));
 const {chromium} = require('@playwright/test');
 const origin = process.env.QA_RESUME_ORIGIN, token = process.env.QA_RESUME_TOKEN;
 const id = process.env.QA_RESUME_ITEM, output = process.env.QA_AUDIO_OUTPUT;
