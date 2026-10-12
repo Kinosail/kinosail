@@ -1279,3 +1279,583 @@ An earlier private recorder syntax failure is retained separately and provides n
 PR #574 merges after all required checks pass. A fresh fetch proves both reviewed selector checkpoints in main `a95f2cbb2ed8a1a27eb39e311be1c8f71a95c50d`.
 The selector includes architecture-generating Go sources, module inputs, and architecture documentation without losing app isolation.
 The private ancestry receipt SHA-256 is `ec4fb4879d0b94cfc3d7df7c1db5a3265f16ec525690e8953c0f1f32e2a978a7`.
+
+### AQA-015 — Long converted-audio refill changes its packet grid
+
+The retained `test-hls-audio-splice.py` journey confirms decoded damage before any production repair.
+It uses a real disposable Player, a 74.5-second nonperiodic AC3 source, and the unchanged watch page.
+An AudioWorklet records render-thread samples. One source alignment remains fixed across each capture.
+The initial refill reaches correlation 0.7395; tail recovery reaches 0.7013. The untouched tail control remains above 0.9797.
+All three captures have contiguous render blocks and zero sample lag. Seven video reference checks and EOF pass.
+The source remains unchanged and the Server settles. Perceptual audibility and physical devices remain separate.
+The recorder's CSP exception permits instrumentation; this journey does not establish CSP security.
+
+The failing receipt is `.verification/hls-audio-splice/20261012T043453Z/receipt.json`, SHA-256 `581b619c061e6f398d2e106bc7dba04fe015842ce1fd3d3ddbd55055c678eb40`.
+The outer manifest is `long-audio-retained-red/manifest.json`, SHA-256 `9d9909c2d1f745f3e8b4fbcf9fb581bfb5fe7ac96ab6b7537a41de80b98b8133`.
+Both bind production base `a7623d3335e95ab86157218f5c78f77cab2b6242` and the test patch.
+
+Private experiments separate encoder warm-up from packet alignment.
+Warm-up alone either leaves a mismatch or introduces a 5.3 ms gap. Those variants were rejected.
+Warm-up aligned to the cached packet grid removes the tail mismatch without shifting source content.
+A second experiment uses the initial fragment's grid for population and middle-fragment recovery.
+Both decoded joins pass with the old neighboring fragments preserved; minimum source correlation is 0.9804.
+That experiment is `.verification/hls-resume-browser/20261012T042906Z/`, with helper snapshots and exact environment in its receipt.
+These are bounded generated-media experiments. The production repair is still pending.
+
+### Publication and deployed-revision boundary
+
+Main CI `38200496460` passes for `e0a9536c6a04198a2eff9f5306c7c658fcdf9406`.
+Both immutable app images are published, scanned, signed, attested, and verified.
+The green production-tag jobs explicitly retain existing tags because newer main changes affect the apps.
+They do not prove promotion of that revision. The private receipt is `e0-publication-receipt.json`.
+
+A fresh read-only Nox inspection finds both apps running and healthy.
+Player reports `394736cb740fc6873aa6e94b41e22dc797155529`; Subtitles reports local snapshot `6f41117dfa618ad65479f91463d431ab2f500996`.
+Neither proves deployment of current main. Historical local-watcher receipts also do not establish current remote state.
+The safe receipt is `nox-readonly-20261012.json`, SHA-256 `d4d691056d7fe7fe3447686720ecfe4602abe381e6737085c6b1e157933c72c9`.
+
+### AQA-015 expansion — Source timestamps and fragment interleaving
+
+The first production candidate passes 48 kHz tail recovery and 44.1 kHz MP4 middle recovery.
+It fails the 44.1 kHz Matroska case with a 130 ms video offset. The candidate remains unpublished.
+The retained journey now selects sample rate, early or middle recovery, and the fractional video offset.
+Its middle and early cases restore the old neighboring fragments after recovery, representing an already buffered client.
+The source and disposable Server settle after every completed run.
+
+A private counterfactual regenerates identical AC3 packet payloads in MP4 and Matroska.
+Both containers retain the same 256-sample priming information. Their audio clocks differ in precision.
+Before AAC encoding, MP4 seeks have zero sample error. Matroska seeks have errors of 1, 10, and -4 samples.
+The errors persist through each five-second decode. This separates source sample selection from the output AAC packet grid.
+The exact commands and packet hashes are retained in `long-audio-exploration/input-clock/receipt.json`.
+
+A fixture-specific prototype disables timestamp trimming and reconstructs the AC3 sample clock before trimming.
+It accounts for 1,536-sample packets, first-frame priming, and the final partial frame.
+The real watch page then passes initial population, middle recovery, and both retained-neighbor joins.
+All four captures have zero sample lag; minimum correlation is 0.9584. Packet grids, seven video references, and EOF also pass.
+The passing receipt is `.verification/hls-audio-splice/20261012T045910Z/receipt.json`, SHA-256 `5c4cc4802b1f8c15f4b07265782d2d7e57df25d0d697672950c9998ef3f8e767`.
+This wrapper assumes known synthetic input properties. It is not a general production repair.
+A production implementation must validate packet continuity, priming, clock precision, and genuine gaps before correcting sample selection.
+
+The 8 kHz ALAC case exposes a separate fragment partitioning defect during early recovery.
+Audio timestamps remain contiguous, but audio needed for one video fragment appears in the following fragment.
+The browser jumps from source 16.46947 to 18.1 seconds. The missing capture duration correctly fails the journey.
+An earlier attempt to create 8 kHz MP3 in MP4 fails before Player starts; that run provides no product evidence.
+
+A private outer-muxer interleaving experiment removes the 8 kHz jump.
+All four watch-page captures pass with one sample of initial lag and minimum correlation 0.9847.
+The passing receipt is `.verification/hls-audio-splice/20261012T050004Z/receipt.json`, SHA-256 `2117d485b147834ce0adb6aa38ecbc3d91f362f3872f6be830ee3c3231c9828b`.
+Unbounded buffering with sparse or delayed audio remains a production design concern.
+The private experiment bundle includes the candidate patch, wrapper sources, exact commands, and checksummed passing and failing receipts.
+Its index is `long-audio-exploration/counterfactual-checkpoint/index.json`, SHA-256 `ee3ee53d980b7da94d1d9c0d074bdb90ff1f74e0ae91416375a61179cc28317c`.
+Neither prototype establishes physical-device playback or perceptual audibility.
+
+The retained packet oracle now checks fragment assignment as well as continuous timestamps and AAC phase.
+Each fragment must contain audio through the following video's decode boundary, within one AAC packet.
+A retrospective check rejects the preserved failing 8 kHz cache and accepts the interleaving prototype and both 44.1 kHz controls.
+This prevents later preloaded fragments from hiding misplaced audio. The PCM oracle also requires contiguous render blocks.
+The private projection is `long-audio-exploration/fragment-partition-counterfactual.json`, SHA-256 `07766a823d17c0f218e8894155e239dad03faf134d8af84ed6b8c32c4d6d688f`.
+
+Independent full-suffix replay confirms the interleaving cause without changing encoded audio.
+The default and inner-muxer-zero variants retain identical init and all 474 AAC packets but assign them to the wrong fragments.
+Outer 20-second, 30-second, and zero variants produce identical corrected fragments for this fixture.
+A debug replay records 1,211 forced flushes just above the default ten-second threshold.
+Output queue sizes of eight and sixteen packets leave the defect unchanged.
+These measurements do not establish a general safe interleaving buffer limit.
+The private full-suffix receipt SHA-256 is `1f38dc5b04ad239092860e483728a4a569d019029bd1feed06d872d208ae5bc6`.
+The output-queue counterfactual receipt SHA-256 is `0adfbd36dbae561866bdf4258b4c0ec4541f4fb2832c529fbb695f730fee1c51`.
+
+A separate two-hour synthetic AC3 scan decodes 206,719 frames and exactly 317,520,000 samples.
+Every frame matches one continuous sample clock under nearest-millisecond quantization; channel configuration remains stable.
+The local scan takes 3.95 seconds and peaks at 17,219,584 resident bytes.
+This makes decoded-frame validation worth testing within the existing preparation budget.
+It does not establish end-to-end preparation time, high-bitrate behavior, Linux performance, or encoder buffer limits.
+Its exact generation and probe commands, source checksum, and measured limits are in `long-audio-exploration/movie-clock-probe/receipt.json`.
+
+### Current main publication after the fixture repair
+
+Main `4d8ddd2b3e64279ee41f58db90ba0ebf393e9914` passes all required checks in run `38204654259`.
+Player's AMD64 and ARM64 builds pass testing and scanning; publication and production-tag advancement complete successfully.
+Both publication and promotion push digest `sha256:abb3c637fcabe1a05314f4f862bbf94659917daddaf706f8379766e17506bfb8`.
+A fresh fetch also proves reviewed fixture commit `a7623d3335e95ab86157218f5c78f77cab2b6242` is in that exact main revision.
+The safe evidence is `main-4d-publication-receipt.json`. This does not establish Nox deployment or include the pending audio candidate.
+
+### AQA-015 production candidate — Certified audio clocks and bounded refill
+
+The candidate now validates the complete decoded audio clock before correcting coarse timestamps or warming an AAC refill.
+It checks one timestamp quantizer, channel configuration, sample counts, priming, and final-frame boundaries.
+The optional proof has a six-second budget and reserves two seconds of the existing preparation deadline.
+Unsupported or discontinuous sources keep the legacy seek behavior. Incomplete proof never certifies a clock.
+Expected opt-outs produce one correlated warning. Genuine process failures retain their error evidence.
+The shared probe ownership and settlement checks remain intact.
+
+Certified refill aligns input samples with the observed initial AAC packet grid.
+It reconstructs coarse AC3 timestamps before trimming and uses a finite 30-second interleave window.
+Independent review found two rounding boundaries in fractional-frame-rate sources.
+Input trimming and mux shifts require separate rounding; input time must first match FFmpeg's microsecond seek.
+Both boundaries have retained real watch-page failures and passing repairs.
+The submicrosecond case improves minimum initial-join correlation from 0.7282 to 0.9868 without relaxing the oracle.
+Its four captures retain one fixed sample lag. Packet placement, seven video references, and EOF pass.
+Nine forged clock records also return 404 without encoding, source changes, or cache asset changes.
+Their diagnostics contain one bounded, correlated warning without fixture credentials or source paths.
+
+The real HTTP source controls cover a gap, delayed audio, optional timeout, parent cancellation, and a genuine probe failure.
+The timeout previously consumed 12.23 seconds and left preparation unavailable.
+It now falls back to ready playback in 9.35 seconds. Cancellation settles all owned children in 0.46 seconds.
+Gap and delayed sources remain uncertified and ready. The genuine probe failure retains an error and a fallback outcome.
+
+A two-hour, 180p source reaches ready playback in 9.17 seconds and certifies exactly 7,200 seconds of audio.
+Sampled peak resident memory for the Server and its process tree is 576,815,104 bytes.
+This is local preparation evidence, not full-movie browser playback, high-bitrate buffering, Linux, or physical-device proof.
+Long cold converted-audio behavior and current-main deployment remain separate boundaries.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T053126Z/receipt.json` | Fractional frame rate, middle refill, old neighbors and nine corruption controls pass | `1c72a0e20d29b87ddbff8ac617b52d707340c1005326e233d188e3598f613c45` |
+| `hls-audio-splice/20261012T053728Z/receipt.json` | Submicrosecond origin and the same complete checks pass | `9a7ca8a4327529520d022146cd7a18a0cec963f0c5fb7560455dc4124ba71e18` |
+| `hls-audio-source/20261012T053502Z/receipt.json` | Five real HTTP source controls pass | `ebf7c3511e54d6149f40cb96a47d37e3c2be89adbc88b78f41d51ae2c0fa3653` |
+| `hls-audio-source/20261012T054025Z/receipt.json` | Two-hour preparation and owned process settlement pass | `799ac75da2e1f02eefbdb796329c129149931db624a3b5cc97a64005e426b82e` |
+
+These candidate receipts bind their dirty patch and binary. Final revision checks and protected delivery remain pending.
+
+### AQA-016 — Small video dimensions produce an invalid HLS quality label
+
+The original two-hour fixture uses valid 32-by-32 H.264 video and continuous 44.1 kHz AC3 audio.
+Player certifies its source clock, then fails preparation with `HLS quality is invalid`.
+The source and owned processes settle unchanged. This is a distinct open defect in rendition naming or validation.
+The failing receipt is `.verification/hls-audio-source/20261012T053815Z/receipt.json`.
+Resizing only its video to 320-by-180 produces the passing preparation above; the audio packets are copied.
+The exact fixture conversion and hashes are retained in `long-audio-exploration/movie-clock-probe/supported-generation.json`.
+
+### AQA-015 precision review follow-up
+
+The source filter now shares the integer microsecond-to-sample conversion used by refill alignment.
+At a coarse 11.075-second origin, the retained failure has minimum initial correlation 0.6579.
+The repaired journey reaches 0.9590; all four captures have zero lag, and video, EOF, and packet placement pass.
+Its receipt is `.verification/hls-audio-splice/20261012T055221Z/receipt.json`.
+
+Refill now derives the initial audio shift from the measured AAC phase.
+The correction must fit the source video quantum plus bounded timestamp rounding.
+This handles independent mux rescaling and precision lost in the printed video clock.
+A real 96 kHz source with a 1000 Hz video track confirms the two-sample boundary identified by review.
+The reported video clock is 0.010688 seconds; the AAC phase identifies an exact 1,024-sample shift.
+Four captures, both fragment grids, seven video references, EOF, and ten corrupt-metadata controls pass.
+The added control rejects an otherwise well-formed phase shifted by half an AAC packet.
+Its receipt is `.verification/hls-audio-splice/20261012T055409Z/receipt.json`.
+
+A separate 400/29 fps diagnostic does not reproduce the proposed audio-clock rounding failure.
+All four decoded-audio captures and both packet grids pass before phase calibration.
+Its compatible HLS reaches EOF and all seven video hashes match, but the original-file reference times out near 30 seconds.
+This remains an unresolved reference-playback boundary, not evidence that the audio repair passed the whole journey.
+The complete failed receipt is `.verification/hls-audio-splice/20261012T054923Z/receipt.json`.
+
+The worktree audit also reports ten unrelated inactive checkouts: nine contain unique commits and one is dirty.
+Their files and leases remain unchanged. The active campaign checkout has a renewed lease.
+
+### AQA-015 final recorder boundary and revision checks
+
+At committed revision `159e5c14b2a248c3f358e6621200b9a7d7d4db28`, the quantized mux-clock journey passes.
+The 32 kHz first-fragment journey exposes a recorder startup gap before playback begins.
+Its recovered and retained-neighbor captures have identical PCM hashes and zero alignment lag.
+The retained capture records one 128-sample paused block, then a 1,280-frame gap before continuous playback.
+All decoded correlations exceed 0.985; video, EOF, both packet grids, and ten metadata controls pass.
+
+The recorder now suspends its audio clock during setup and resumes only after the media element accepts play.
+The continuity assertion still checks every recorded render block, with no gap exemption or PCM realignment.
+The complete 32 kHz journey then passes all four captures with zero lag and no render gaps.
+The failed receipt is `hls-audio-splice/20261012T055854Z/receipt.json`.
+The passing receipts are `hls-audio-splice/20261012T060030Z/receipt.json` and `hls-audio-splice/20261012T060442Z/receipt.json`.
+
+Independent review finds no remaining blocker in the eight changed production Go files.
+At revision `159e5c14`, affected Player verification, focused Server lint, source limits, and both architecture snapshots pass.
+All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
+Protected PR checks and delivery remain pending.
+
+### AQA-016 regression owner and reproduced boundary
+
+The existing resumed-playback browser journey now accepts a bounded 32-by-32 synthetic fixture.
+It checks unchanged source dimensions, original-frame equality, saved position, EOF, and invalid quality-path rejection without cache writes or encoders.
+Existing fixtures are at least 180 pixels high, so they miss the lower-bound mismatch. No production seam is added.
+The new fixture reproduces the earlier two-hour failure before browser playback: preparation never becomes ready.
+The Server records `HLS quality is invalid`; source files and owned processes settle unchanged.
+Its private receipt is `hls-resume-browser/20261012T061029Z/receipt.json`.
+The public interface is the HLS master and rendition path. Valid small source dimensions must retain their original dimensions.
+The current path validator rejects every quality below 144p although rendition generation uses the source's actual height.
+The intended repair admits positive heights while preserving the existing 2160p ceiling and file/path checks.
+
+The one-line lower-bound repair passes the complete small-video journey in Chromium and WebKit.
+Each engine preserves 32-by-32 dimensions, matches all seven reference frames, resumes at the saved position, and reaches EOF.
+Six malformed or out-of-range quality paths return 404 without starting encoders or changing cache assets.
+The source remains unchanged and the Server settles. The passing Server log contains no HLS warning or error.
+Receipt `hls-resume-browser/20261012T061139Z/receipt.json` retains the browser results and checksums.
+The required Chromium workflow now retains this case with the existing prepared-timeline artifacts.
+The production change only lowers the allowed positive rendition height; the upper bound and path confinement remain intact.
+
+### Original-file EOF observation resolved
+
+An isolated Chromium reference probe reproduces the earlier 400/29 fps behavior using the same synthetic media bytes.
+After the final paused seek, `currentTime` is 74.48 seconds and `ended` is already true, despite a 74.53-second duration.
+Calling `play()` then restarts at zero. This explains the earlier 30-second timeout without a Player change.
+The private source-bound probe is `reference-eof-diagnostic/receipt.json`; it is isolated browser evidence.
+
+After collecting the seven frame references, the browser oracle now seeks half a second before the end.
+It requires `ended` to be false before playing and still waits for the real `ended` event.
+The complete 400/29 fps public journey passes all four audio captures, packet grids, video comparisons, EOF, and ten metadata controls.
+Its receipt is `hls-audio-splice/20261012T061514Z/receipt.json`. The workflow retains this low-frame-rate case.
+
+Independent review finds no blocker in the small-video repair or its regression coverage.
+Focused playback package tests and changed-code lint pass. CI contracts pass 170 tests with five existing skips.
+The required Player local verification stops at the existing 95-issue shared-package lint baseline.
+That failure does not establish a passing complete local verification suite; hosted checks remain required.
+
+The final small-video browser repetition passes Chromium and WebKit at revision `e195724b`.
+Receipt `hls-resume-browser/20261012T061651Z/receipt.json` binds the completed EOF correction.
+Subtitles local `verify-changed` encounters the same 95-issue package-lint baseline.
+One later CI-contract run encounters an intermittent permission error while polling an owned process group.
+The unchanged nine-test Q09 subset passes immediately afterward; the original error remains retained for diagnosis.
+
+### AQA-017 — Subtitles compatible playback differs from the original frame clock
+
+A separate real Subtitles process plays the 32-by-32 source at the saved position and reaches EOF.
+Both Chromium and WebKit preserve dimensions, but only one of seven paused frame references matches the original.
+Chromium repeats the same six mismatches in a second fresh process. This is separate from the repaired quality-label rejection.
+Compatible duration is 32.083332 seconds in Chromium and 32.166667 seconds in WebKit; original duration is 32 seconds.
+The exact timing cause remains unverified. The strict browser comparison stays failed.
+Six invalid quality paths still return 404 without encoders or changed cache files. Sources and Servers settle unchanged.
+The private receipts are `subtitles-small-video-2/receipt.json` and `subtitles-small-video-3/receipt.json` in the campaign directory.
+An earlier harness attempt called a Player-only settings endpoint and received 404 before browser playback; it is not product evidence.
+
+### AQA-015 Linux rounding phase and coarse-clock boundary
+
+[PR 575 CI](https://github.com/Kinosail/kinosail/actions/runs/38211142029) rejects the 44.1 kHz Matroska source clock.
+The 48 kHz and 32 kHz journeys pass before that failure.
+A disposable Linux Noble ARM64 Server and Chromium reproduce the failed audio with Jellyfin FFmpeg 8.1.3.
+Hosted CI uses the same media-tool version on AMD64; these are separate execution environments.
+The reproduction retains the exact fixture, binary, commands, browser data, source hashes, and patch in private receipts.
+
+Every one of the 2,139 decoded AC3 frames fits one fixed timestamp quantizer.
+Its rounding phase differs from the nearest-to-zero rule after the container normalizes negative encoder priming.
+The full-frame intersection is `[30600,30899]` in units of 1/44100 of a container tick.
+The certificate now intersects that one phase across the entire source.
+It never assigns a separate tolerance to each frame. Sample-clock streams retain their existing exact check.
+The integer comparison bounds untrusted timestamps before arithmetic.
+
+Independent review also identifies an ambiguous-clock boundary: a one-second timestamp cannot identify an AC3 block after seeking.
+Coarse certification now requires a timestamp quantum no larger than one millisecond.
+A selected-probe metadata fault reproduces the previous incorrect certification before this guard.
+This fault is an isolated proof boundary; it is not a real one-second source or browser acceptance result.
+The cache policy changes so retained generations must obtain the current certificate.
+
+On Linux, the repaired browser journey improves initial minimum correlation from 0.7178 to 0.9897.
+Recovered and retained-neighbor captures improve from -0.0621 to 0.9804.
+All four captures have zero sample lag and uninterrupted render blocks.
+Both packet grids, seven reference frames, EOF, and ten metadata rejection controls pass.
+Seven source controls also pass: gap, delay, a real one-millisecond gap, ambiguous metadata, timeout, cancellation, and probe failure.
+Rejected clocks retain one correlated warning and ready playback without a guessed clock.
+The source and owned Server processes settle after every case.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T064047Z/receipt.json` | Linux browser reproduction fails | `34083254128c3a6738001e296e89ac7da9345262a62be0cc9bc7ed0851aac7b0` |
+| `hls-audio-splice/20261012T064324Z/receipt.json` | Fixed quantizer: four captures, grids, video and ten metadata controls pass | `dba88aefb6c51f114066f7408c87034141f61ddf1ab1dd4cfb73fd3f12da60cc` |
+| `hls-audio-source/20261012T064448Z/receipt.json` | Ambiguous one-second metadata is incorrectly certified before the guard | `b64b7af70f8f1526a8b87b388476ffa9a8aadc8385295da605d80b59e8ff03b5` |
+| `hls-audio-source/20261012T064529Z/receipt.json` | Seven source and fault controls pass after the guard | `3e04c11cd9cf45f9654fb2d204aa7e387e91b68f6832c4347eeb0cd13c4aa6e1` |
+
+The Firefox native-layout job in [run 38211141937](https://github.com/Kinosail/kinosail/actions/runs/38211141937) passes one unchanged retry.
+The original 844-by-390 navigation timeout remains an intermittent observation with its trace retained.
+No timeout, layout assertion, or navigation behavior was changed for that retry.
+Protected delivery and current-main deployment remain pending.
+
+At commit `72ed3bda`, the final guarded Linux 11.075-second-origin journey passes all four audio captures, both grids, video, EOF, and ten metadata controls.
+Its maximum absolute lag is one 48 kHz sample; minimum correlation is 0.94446.
+The receipt is `hls-audio-splice/20261012T064719Z/receipt.json`, SHA-256 `ec5bfd4ebe367f0e0d86d80a3ddf73f2fbac187da42e5c3512ca0ae30919d545`.
+The final Mac coarse-origin regression also passes, including all four captures and the same checks.
+Its receipt is `hls-audio-splice/20261012T064823Z/receipt.json`, SHA-256 `7fc84f81f12c994b89373dbdde5fbddaf92fc79bca73ef1ffb764d73af79db1d`.
+Player `make verify-changed` passes compilation, affected Server tests, source limits, and diff checks at that commit.
+The regenerated Player architecture snapshot and source limits pass. The final independent review reports no concrete blocker.
+
+
+### AQA-017 copied-clock investigation checkpoint (not accepted)
+
+The retained Subtitles watch-page regression now covers Chromium and WebKit frame hashes, converted AC3 audio PCM, and an explicit Direct First to Compatibility switch. The local candidate fixes initial source-clock normalization. Receipt `20261012T071404Z` passed both browsers and both strict decoded-audio captures. This is not a completed repair.
+
+A keyframe-cut prototype passed completed-file frame checks but introduced invalid speculative VOD timelines while encoding. A held real encoder had one four-second fragment; the HTTP playlist advertised eight. Completed real cuts were 4, 6, 4, 7, 6, 4, and 1 seconds. The keyframe-cut production change was removed. Its rejected harness remains private under `.verification/ai-qa-campaign/subtitles-mux-probe/rejected-keyframe-prefix.py`.
+
+An offline packet matrix identified FFmpeg fragment-index PTS adjustment. With fixed-time cuts, 600 copied packets had only 594 distinct PTS. `movflags=+skip_sidx` preserved all 600 timestamps; `frag_every_frame` did not preserve composition offsets. FFmpeg documents the relevant adjustment in [movenc.c](https://github.com/FFmpeg/FFmpeg/blob/n8.1.3/libavformat/movenc.c#L6581-L6597). Independent review confirmed that HLS does not require SIDX, and Player already omits it.
+
+The remaining real-browser boundary still fails: receipt `20261012T072647Z` matches six of seven samples in both browsers but times out seeking the reordered final frames after an irregular 64.5-second resume. The raw window starts at source keyframe 58 while the requested window is 60 seconds. Native WebKit capability simulation `20261012T072740Z` starts at 67 rather than saved 64.5 and matches four of seven samples. Do not publish this candidate or claim native acceptance. The exact runs, source patches, media, packet probes, and private logs remain in `.verification`.
+
+The explicit MSE direct-switch case passed at `20261012T072447Z`; no red proof is claimed for that adapter branch. On this Mac, native HLS must be capability-disabled to reach lazy Hls.js loading. The first direct-switch probes timed out because the test did not open Playback behavior or incorrectly assumed native HLS could not be selected.
+
+The workflow contract suite currently identifies a recurring macOS `killpg(...,0)` EPERM in Q09 owned-descendant cleanup. This is retained as an environment or harness investigation; assertions and cleanup boundaries remain unchanged.
+
+
+### Hosted audio regression proof and bounded CI runtime
+
+PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases and the source rejection controls successfully on Ubuntu. The job then reached its 30-minute job deadline during source-version verification. That cancellation also prevented its final proof and upload steps from completing; the required Player check remains failed.
+
+The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.
+
+### AQA-018 completed refill leaves a missing segment waiting
+
+Main run `38229443046` returned a missing tail fragment after recovering the first and middle fragments.
+A controlled real-Server replay at `4e0fbb21` reproduces the failure by holding the middle-refill process after its media output finishes.
+The final fragment is removed and requested while that producer still appears active.
+The request returns 404 after waiting; no replacement encoder starts.
+Source preservation and process joining pass. The receipt is `hls-refill-race/20261012T101415Z/receipt.json`.
+
+Before implementation, the retained `refill-completion` public journey covers this timing boundary.
+Failure inventory: an active producer may still create the file, may finish without it, may fail, or may be canceled.
+A replacement must preserve the original initialization and timeline, source frames, audio continuity, source identity, and shared encoder ownership.
+The successful producer-completion case must retry admission under the existing lock; canceled or failed requests must remain bounded.
+This process-lifetime injection is isolated timing evidence around a real Server and real media.
+The ordinary cold-suffix cases cover unmodified encoder execution.
+
+The first candidate passed the public regression but failed review: waiting inside `prepareSegment` also blocks background preparation monitoring.
+An existing live-producer adoption control hung, confirming that contract violation. That placement was withdrawn.
+Review also identified canceled-producer readmission and permanent-filesystem-error risks.
+The next candidate must keep background admission nonblocking and limit retries to successfully joined producers after a missing-file result.
+
+The revised HTTP wait keeps the exact producer selected under the existing admission lock.
+It permits at most one new admission after successful producer completion leaves the fragment missing.
+A distinct completion cause preserves prior cancellation atomically. Failed, canceled, or unobserved producers do not authorize another refill.
+The original nonblocking preparation operation remains available to background monitoring.
+Permanent filesystem errors do not enter recovery. Re-admission checks the current source and policy again.
+Independent review found no remaining concrete blockers in this version.
+
+Four retained public-handler controls prove inactive, seek-replaced, identity-replaced, and context-canceled producers do not start another encoder.
+Their E2E gap is precise ownership ordering while the producer join is held. The real-media suite does not deterministically arrange that ordering.
+The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
+The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
+Credentials do not appear in its private log.
+
+The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
+`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
+A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
+The HTTP helper now waits under the request deadline when no producer was selected.
+This path cannot authorize another admission. Permanent errors and cancellation still stop it.
+The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
+A second independent review found no concrete blocker. Hosted checks must pass again after publication.
+### AQA-017 edit-list and early-playlist reproduction
+
+Linux Chromium also fails the retained 64.5-second Subtitles resume at `hls-resume-subtitles-linux/20261012T073619Z`. Its first two reference frames match; the next seek presents the following IDR instead. This is separate from the Mac browser result.
+
+The bounded private Hls probe at `hls-resume-browser/20261012T073551Z` shows actual buffered media ending at 74.48 seconds while fragment metadata ends at 76.56. The initialization has a 2.08-second MP4 edit in both tracks. The browser applies it; the pinned Hls sample timing does not. An append-only offset cannot reconcile these two clocks.
+
+A private pre-consumer experiment accounts for that measured edit in all track PTS/DTS, keyframe timing, initialization timing, and append timing. Both browsers pass seven reference frames and EOF at `hls-edit-list-complete-prototype/20261012T074833Z`. Its edit value is fixture-specific. It is diagnostic evidence, not a general implementation or native acceptance.
+
+The new retained `test-subtitles-copied-prefix.py` fails before the planned keyframe repair. Receipt `hls-copied-prefix/20261012T075127Z` proves the real encoder is stopped with one fragment while HTTP advertises eight. Future cuts differ from the source keys and from the eventual completed playlist. The source remains unchanged, the owned encoder joins, and the Server exits. This assertion requires a stable, accurate full-duration playlist during progressive encoding; removing future seeking would not pass it.
+
+The native repair needs certified source cuts and generated-media clock evidence. Independent design review identifies the existing Player H264 packet, IDR, configuration, and joined-process scanner as the reusable boundary. Player cache admission, recovery, and audio replay policy must remain app-owned. Full-source scanning cost and distant-segment delivery still require verification.
+
+
+### Shared media proof and per-track clock controls
+
+Commits `3e1e295e` and `83150af9` extract the existing joined probe runner and immutable H264 source index into `packages/mediaprobe`. Player retains source validation, cache certificates, workload admission, audio policy, and recovery. The process tests move with their standalone fixture. Independent review found no concrete blocker in either extraction.
+
+Focused ownership, copied-HLS, and recovery checks pass. The moved process tests compile for Linux ARM64 and Windows AMD64; they were not run on those systems. New-code mediaprobe lint and source limits pass. Player's populated prepared irregular-resume journey passes Chromium and WebKit at `83150af9`.
+
+`make -C apps/player verify-changed` passes all selected Go tests, vulnerability checks, source limits, and whitespace checks. Its shared-packages stage still reports the established 95 lint findings, with no mediaprobe findings. Later verification stages were not reached. This is not a fully passing local gate or hosted proof for the extraction.
+
+The source-cut manifest renderer and prefix validation are now shared through `packages/hlsmanifest`. Player still requires its source and generated-clock certificate before calling them. The helper validates bounded, sequential observed cuts and preserves the existing final-GOP tolerance. It does not certify source identity, media bytes, or future-segment readiness.
+
+The private per-track experiment replaces the fixture-specific 2.08-second adjustment with bounded initialization parsing. It uses the selected timing track's edit for PTS/DTS and the video edit for first-keyframe timing. The real bytes are unchanged. This is still an injected, version-specific Hls controller, not a production repair.
+
+The later-first control proves a materially different case: the first media request is segment 3 and Hls selects audio track 2 (`-2560/48000` initial timing). The video and audio edits are 83.333 and 21.333 milliseconds. Seven reference frames, backward seeks, and EOF pass in both browsers. The earlier `082042Z` attempt had an incorrectly serialized test variable and never reached transmuxing; it is a harness failure, not a product regression.
+
+| Private receipt | Result and scope | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T080401Z/receipt.json` | Player prepared irregular resume after shared source-index extraction; Chromium and WebKit pass | `d22ba363c76f433c0215da9c4441bff605e72aef8de2fceb1652d076eed1b07a` |
+| `hls-track-edit-prototype/20261012T081732Z/receipt.json` | Per-track edit diagnostic; irregular 64.5-second resume passes both browsers | `4f12890870d769a7ea31373db472a8c23c01ebeb5e97a375824b62e2d4366d3f` |
+| `hls-track-edit-prototype/20261012T081825Z/receipt.json` | Per-track edit diagnostic; converted AC3 video, EOF, and strict PCM pass both browsers | `3bc1f093f89b7fac134b3f1f58a2c349b1206644a28e4bf2e59205e4ab9f175c` |
+| `hls-track-edit-prototype/20261012T081948Z/receipt.json` | Per-track edit diagnostic; video-only passes both browsers | `90e70ea939ebae88958b6bcbb873aca80c196d184476abf8377dfdd94c7d1d4e` |
+| `hls-track-edit-late-prototype/20261012T082248Z/receipt.json` | Per-track edit diagnostic; first media request is fragment 3, audio timing anchor, backward seeks and EOF pass both browsers | `40ea5f8ffe65d372514c250dcd5939332e81b31cc45acfc8a9dce2243c23bc05` |
+
+The prospective native repair is limited to certified, unedited H264 streams starting at source zero. It requires one generation-bound cut map throughout each response and identical early, completed, and warm playlists. Partial encoding must not fall back to fixed four-second guesses when its producer exits. Long-source indexing cost and distant segment delivery remain open. Partial transmux results, retry behavior, physical Safari, and deployment acceptance remain separate boundaries.
+
+PR 575 passed every required check at `5de9428e`, but strict protection blocked its merge after PR 571 advanced main. GitHub updated it to `7aea60a4`; its new checks are running. PR 577 passes required checks at `c67fb0a4` and awaits base reconciliation and protected delivery. Neither repair is claimed merged by this checkpoint.
+
+The shared cut-helper review found two extraction regressions before commit: malformed trailing `EXTINF` could be ignored, and the observed final-cut bound rejected a previously allowed 60.083333-second value. Both are corrected. Parse errors are rejected immediately, and the certified expected cut retains its 60-second bound while observed final durations keep the existing tolerance. Exact generated media names are now checked directly. The final focused copied-HLS/recovery checks, new-code hlsmanifest lint, source limits, and whitespace checks pass.
+
+The retained prefix regression now also checks exact warm and restarted VOD bodies and absence of another source encoder. At `hls-copied-prefix/20261012T083342Z`, the early map still changes after completion and after restart. No source re-encode occurs; source preservation, both Server exits, and encoder joining pass. SHA-256: `b3637ec133b387e9bd021ce295f0f91dddd3a112db3ca0142269f8a06ba7e401`. The prior `083137Z` encoder-count control included installation capability probes; the wrapper now targets only the generated test source.
+
+The shared-cut extraction at `05af4d28` passes the real Player prepared irregular-resume journey in Chromium and WebKit. The clean-revision artifact is under `ai-qa-campaign/shared-cuts-browser`; the browser receipt is `hls-resume-browser/20261012T083500Z/receipt.json`.
+
+The prefix regression also supports `--native`. It releases the held source encoder only after native WebKit requests a future segment. The browser still uses the real Server and media; MSE is capability-disabled to select native HLS. The run at `hls-copied-prefix/20261012T083817Z` remains red before the repair. Its source is unchanged, both Server processes settle, and the source encoder joins. Receipt SHA-256: `b1b9e6cf67d8dade08009e01d40ecc603f381fba570acf7dc5dd690b444e3ca8`. This is simulator-browser evidence, not physical Safari acceptance.
+
+### Probe failure classification before optional Subtitles indexing
+
+Before changing probe behavior, the failure inventory is: unsupported or bounded-out metadata, ordinary nonzero exit after cleanup, cancellation or deadline, failed process observation, rejected termination, and failed or over-budget settlement. An optional caller may fall back only after proven cleanup and while its own job and source policy remain valid. It must stop on ownership failure. Existing Player callers continue rejecting every failed index.
+
+Before implementing the MSE clock adapter, its failure inventory is: malformed or oversized boxes, unsupported edit versions, negative or multiple edits, nonunit playback rate, duplicate tracks or edits, missing video/timing tracks, invalid timescales, nonfinite anchors, stale initialization after retry, and media without its timing initialization. The existing real-browser irregular-resume regression is red. An isolated pre-consumer test covers malformed initialization that real FFmpeg cannot generate and deterministic selection of either timing track. It must reject before calling the media consumer and leave bytes unchanged. This test is not populated-server E2E proof.
+
+The retained completion-certificate seam checks OS failures that real-media E2E cannot reliably induce. Its new pre-change assertions require a distinct lifecycle error. Existing real configured-process tests now require cancellation to survive both pre-start rejection and joined-descendant cleanup. This closes a concrete E2E gap without introducing a test-only production hook.
+
+PR 575 now combines the reviewed audio and small-video repairs at `f7b4688f`, including current main `a2d5f2b1`. Fresh required checks are running. PR 577 remains open until inclusion is proved. The unaccepted Subtitles candidate is excluded from that delivery branch. Local combined-head source limits and whitespace checks pass; affected verification stops at the established 95 shared-package lint findings before later stages run.
+
+The new pre-change classification checks fail as expected, including cancellation in all five index entry points. After the repair, focused ownership, copied-HLS, recovery, and manifest checks pass. New mediaprobe code has zero lint findings. Source limits and whitespace checks pass. Linux ARM64 and Windows AMD64 test binaries compile; no runtime proof is claimed for those platforms. The independent read-only review found no concrete blocker.
+
+- Private `probe-classification-red-private.log` SHA-256: `5ccfe5d6987085895a8522c835f663a52c9ae5a61dae4759c3626f46e351bc0b`.
+- Private `probe-phase-red-private.log` SHA-256: `9a84c42ec8f49d1580e9dcf55a037e29c322eae794953496a5c155249a6b27c8`.
+- Private `probe-classification-green-private.log` SHA-256: `8895d38be6a6f948538496826ec282b7c7537c5aff8ae14e9f61556d547fdf6a`.
+- Private `probe-classification-focused-private.log` SHA-256: `1ac7b848e61d02a0a6b1ce20d67156eafc6ad8ddb6b62ff42afc4827483702d4`.
+
+### AQA-017 production MSE adapter checkpoint
+
+The production adapter now parses bounded per-track MP4 edits before Hls consumes fragment timing. It changes metadata only; initialization and media bytes remain unchanged. It applies only to local copied-HLS modes. The normal buffer controller retains append ordering. The parser supports one nonnegative, unit-rate edit per track; unsupported timing fails before the media consumer and enters the existing fatal media-error path. Native HLS remains unfixed.
+
+The pinned Hls callback review found stale-context handling, init-only callbacks, and a keyframe field containing video DTS ticks divided by the selected timing track scale. Each failure was reproduced before correction. The adapter now delegates discarded callbacks before changing cached edits, accepts valid initialization before samples, and restores keyframe units using the video timescale. A follow-up empty-initialization check also failed before correction. Present-empty data rejects even when earlier edits are cached. All 20 retained controls pass, including both fresh and cached malformed inputs. Final read-only review reports no remaining concrete blocker in this path.
+
+The initial production-browser candidate passes irregular 64.5-second resume and converted AC3 with strict browser PCM in Chromium and WebKit. These runs preceded the final callback fixes; final clean-revision browser proof is pending.
+
+- Private `hls-resume-browser/20261012T090229Z/receipt.json`: passed; SHA-256 `fa9fcea474968258c31a91f3cf5f7c18b3e3eec29a18e9a62e13edd229650b42`.
+- Private `hls-resume-browser/20261012T090318Z/receipt.json`: passed; SHA-256 `dc5a1a10c0073d055f8675f28f4bd2058459a64abc972ea37209dd3a7ec765c1`.
+- Private `hls-resume-browser/20261012T090624Z/receipt.json`: passed; SHA-256 `855c1e2f00f6f727cad6857d49ab279da6bc461cafd94569315540790c2e02cd`.
+
+The existing projection fixture built an outdated cache policy by hand and panicked after the copied-clock policy change. It now uses the actual settings operation for that fixture identity. No production cancellation guard was weakened.
+
+Primary references: [pinned Hls stream controller](https://github.com/video-dev/hls.js/blob/v1.7.3/src/controller/stream-controller.ts), [pinned passthrough remuxer](https://github.com/video-dev/hls.js/blob/v1.7.3/src/remux/passthrough-remuxer.ts), and [MSE ISO BMFF edit-list requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/). This version-specific adapter requires replaying the retained browser and parser checks on Hls upgrades.
+
+### AQA-017 clean-revision MSE verification
+
+At `641498c1eeb1c9e76b3d94db8e358fa03d83af2d`, all five final runs pass with clean, unchanged source receipts. Chromium and WebKit pass the irregular 64.5-second resume, converted AC3 strict PCM, and Direct First to Compatibility journeys. Linux Chromium independently passes the irregular resume with the cross-built ARM64 binary and Jellyfin FFmpeg. The retained Linux driver only substitutes the prebuilt binary and container paths. It does not inject a browser controller or change media assertions.
+
+The canonical Subtitles container command passes all 66 Chromium cases, with zero failures, skips, or flakes. The suite combines populated journeys and controlled rendered fixtures; it is not 66 independent populated-server proofs. Its production and fixture images use task-specific tags. The image revision labels match the tested commit. The Compose project has zero remaining containers and volumes. The older task-owned Linux browser container is removed after its successful final run.
+
+| Private artifact manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `copied-clock-final-long/manifest.json` | Pass; exact revision | `60880d543da4e2cb6dfaeb19f76325a73a059f4f5def3ff04d85d2f00d880d4d` |
+| `copied-clock-final-audio/manifest.json` | Pass; exact revision | `4f71f6e9a4dfb595206ea21ec76944d7f56362ec6a708d6e5048f5165412c648` |
+| `copied-clock-final-linux/manifest.json` | Pass; exact revision | `34d9adc1aa61911c397d60744eddcf818059598c916dcee36c975377efefe64a` |
+| `copied-clock-final-switch/manifest.json` | Pass; exact revision | `779b138b90f37552f4bdef53a4352927f02165f5b1152f6cd885a0352832eaeb` |
+| `copied-clock-container/manifest.json` | Pass; exact revision | `b0a569a4201023d6d35f8a315d995a91144a6b3e1edba233d3c0042b4280da0f` |
+
+The combined private receipt is `copied-clock-final-receipt.json`, SHA-256 `d2abdbf3334ad3843c559205d83f998f4636a69ba56bbbffcfa1c710cdd84f46`. It records private image IDs, wrapper hashes, the Linux driver/binary hashes, and cleanup. These local images are not GHCR publication or Nox deployment proof.
+
+Subtitles affected verification passes source limits, whitespace, compilation, and focused Server checks. Full shared-package lint found two new test-complexity findings above the established 95-finding baseline. The assertions were reorganized without changing production code; focused ownership and cancellation checks pass afterward. No assertion was removed or weakened.
+
+Native HLS still fails the retained irregular prefix/seek journey. Its source-cut and generation-lifetime repair remains open, along with physical devices and production acceptance. The MSE passes do not close those boundaries or establish 100 percent QA.
+
+### Protected delivery and remaining Subtitles clocks, 2026-10-12
+
+PR 575 merged at `5f169ee28472b99c416f0b7376641cefc835f573` after required run `38225253679` passed.
+PR 577 was included and GitHub marked it merged. Fetched ancestry checks prove both reviewed heads, `f7b4688f` and `c67fb0a4`, belong to remote main.
+Main run `38229443046` was still running at the last observation. This does not prove container promotion or deployment.
+The primary checkout remains dirty with unrelated Apple project and localization edits; it was not fast-forwarded or cleaned.
+
+Native WebKit HLS remains open. The unmodified `a2d5f2b1` binary fails all seven long-resume comparisons in `hls-subtitles-native-baseline/20261012T092127Z`.
+Candidate `5ed82339` matches four in `hls-resume-browser/20261012T092222Z`; both reach EOF. This is a pre-existing native boundary, not native acceptance.
+The exact `5ed82339` long Direct First-to-Compatibility journey passes both MSE engines (`copied-clock-final-long-switch/manifest.json`).
+
+The fractional 2.5-second case exposed a separate leading-empty-edit failure.
+Chromium falls back to the original; WebKit cannot decode the original Matroska reference. The tightened oracle now requires the selected decoder adapter.
+A separate MP4 reference is certified against every source video packet hash and presentation timestamp; it makes WebKit's reference playable.
+With that correction, both compatibility journeys still fail before the repair.
+
+A leading empty edit supplies a per-track delay. Chromium MSE ignores it rather than applying the following media edit.
+The adapter now copies initialization and fragment buffers, replaces the leading empty edit with equivalent `tfdt` offsets, and keeps one media edit.
+It preserves parent box sizes with a `free` box, every sample payload, and the original cached Hls inputs.
+Exact integer conversion, bounded boxes, duplicate timing fields, and version-specific overflow are checked before consumption.
+Native HLS still receives the original server bytes.
+Primary references: [Chromium edit handling](https://raw.githubusercontent.com/chromium/chromium/main/media/formats/mp4/track_run_iterator.cc) and [MSE single-edit requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/#iso-init-segments).
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T093446Z/receipt.json` | Corrected reference; both compatibility cases fail | `ca2e4064d47cd32068d13e22d8a316d350db51ad3b0bafd9df0c61d09789bcc2` |
+| `hls-empty-edit-prototype/20261012T093632Z/receipt.json` | Fixture-specific byte-normalization prototype passes both engines | `7fb883f0fb83115300820f2d5dce2e88cdacd3c3ea3b94f5fdf4f076dd9f308d` |
+| `hls-resume-browser/20261012T094124Z/receipt.json` | Bounded production candidate passes both engines, all seven frames and EOF | `9dee26c703de20968dc9889af934db477ebf3f8cb65d64073036d989b055d3ca` |
+
+These three runs include an uncommitted patch and are not exact committed-revision proof.
+Thirty-three isolated controls pass after reproducing cached-input mutation and leading-edit failures before implementation.
+Independent review found a caption clock mismatch when audio supplies the Hls anchor. A retained control failed before changing text cues to the video edit.
+Malformed init data also exposed a recovery loop. A retained browser control fails before terminal rejection handling and passes afterward.
+The error path uses the bounded `copied-media-timing` diagnostic class, makes no automatic direct retry, and retains its visible error through late readiness events.
+Fifteen rendered direct-playback controls pass. They are isolated fixture evidence, not populated-server proof.
+
+The shared-probe package now has zero local lint findings. Whole shared-package lint still has 95 established findings.
+One retained Mac process-ownership check failed with EPERM during settlement; an unchanged retry passed. Its assertion remains strict.
+This remains an intermittent ownership boundary; cross-compilation is not Linux or Windows runtime proof.
+
+### Isolated MSE delivery verification
+
+Commit `25f34f766ad16c2bd07e31e9118fda5fab1e0dfc` contains the MSE repair without the unfinished shared-index/native-HLS work.
+Both apps' `make verify-changed` commands pass. Subtitles Go compilation and focused checks use their validated input cache.
+All seven real-server browser scenarios pass Chromium and WebKit: default and fractional resume, long resume, long direct-to-compatible switch, video-only, converted audio, and fractional converted audio.
+All fourteen browser cases match seven reference frames, resume correctly, and reach EOF. Four decoded-audio captures report zero sample lag.
+Every source remains unchanged and every Server process settles.
+The exact-revision manifest is `mse-delivery-browser-proof/manifest.json`, SHA-256 `328494a99e830582aac4b047da8b68f3da33e0ccfa07913bb852530d028a459c`.
+
+The exact-revision canonical `test-instance-check` also passes all 66 selected checks at `25f34f76`.
+Its receipt is `mse-delivery-container-proof/manifest.json`; the suite mixes populated journeys and rendered fixtures.
+The task-owned Compose project `kinosail-test-78590-27681` leaves no containers or volumes.
+A fresh worktree audit reports eleven unrelated inactive worktrees: nine clean with unique commits and two dirty. They were left untouched.
+
+A malformed-response rendering probe exposed queued autoplay after terminal rejection. The retained test fails before adding the Play-event guard.
+With that guard, rejection remains paused and visible after late readiness events. Both engines pass at 390×844, 1440×900, and 1920×1080.
+The probe uses separate contexts with service workers blocked so the deliberately malformed network response reaches each browser.
+Earlier reused-context probes sometimes played an unmodified response; those are unsuccessful fault-injection attempts, not passing rejection proof.
+Phone, desktop, and TV-sized pending/error screenshots were inspected. Failure removes the loading skeleton and clears `aria-busy`.
+This is isolated network-fault evidence using the production page, not unmodified-media E2E or physical-device acceptance.
+
+Post-merge main run `38229443046` failed Player's long-lookback tail restoration with `fragment_not_restored`.
+It restored segments 0 and 8 before the final missing fragment failed; process joining and source preservation passed.
+The unchanged Player production code passes that case locally in `hls-cold-suffix/20261012T100144Z`.
+The failed hosted jobs were restarted once. The original evidence remains retained, and the intermittent failure remains open.
+Container promotion and deployment for `5f169ee2` are not confirmed.
+
+### Final terminal-state verification
+
+At `76a7696204dd73ecaa0d0e7227f277d32b8489d2`, fractional converted-audio playback passes Chromium and WebKit, including decoded PCM comparison.
+The retained malformed-init journey passes both engines at all three viewport sizes.
+Late readiness and Play events leave playback paused, the error visible, the skeleton hidden, and `aria-busy` false.
+The harness blocks service workers only for these isolated malformed-response cases.
+The canonical Subtitles container suite passes all 66 checks again.
+Both apps' affected verification passes; unchanged Go checks use the validated input cache.
+The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers and volumes.
+
+| Exact-revision manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `mse-terminal-browser-proof/manifest.json` | Pass; source unchanged | `d0606ef32aa37a126658e1b2e18349711ed61f685d0bfd3440b4c52552b0aedd` |
+| `mse-terminal-container-proof/manifest.json` | Pass; source unchanged | `bf68a9f5c80a3f538007b6cbb562d105a6f2a2644e7abcb6f17d2fce8da35575` |
+
+These results supplement the fourteen successful playback cases at `25f34f76`.
+Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.
+
+
+### Android clear-search synchronization repair
+
+Main CI run `38238653057` failed `phoneHasOneExplicitClearActionAfterSubmission` at `SearchFeedbackJourneyTest.kt:50`.
+The unchanged local search suite passes, confirming the failure depends on scheduling.
+A temporary fixture delay before accepting the clear request reproduces the same assertion on both phone and TV: expected an empty query, observed `Fictional`.
+Cached rows can make the screen idle before the fresh network response completes.
+The two retained journeys now wait for the response-backed empty `resultQuery`, while preserving clear-input, outgoing-query, and TV-focus assertions.
+This follows [Android's guidance for conditions that depend on external work](https://developer.android.com/develop/ui/compose/testing/synchronization).
+No production behavior changes, retries, or sleeps were added. The temporary delay was removed after red/green proof.
+
+All eight search journeys pass with the delay. Without it, the complete Android gate passes: 161 app, 8 watchcore, and 5 wear tests, plus both debug builds.
+Local proof: `ai-qa-campaign/android-search-clear-proof.json`, SHA-256 `2a77981bf1839226b1ccb3640563af9f95a121b72ac03edb446eeb7e5e50aded`.
+The proof records main `9e8d3bbc` plus the exact uncommitted test patch; it is not an exact committed-revision claim.
+These JVM journeys use an HTTP stand-in and do not prove populated production Server or physical-device behavior.
+
+
+### Recovered-audio recorder boundary
+
+PR 581 hosted run `38239833223` found a 575-sample starting offset in the 96 kHz coarse-video-clock recovered capture.
+At 48 kHz capture rate, this is about 12 milliseconds. Correlation stays above 0.965 and render blocks remain contiguous.
+The offset appears before the missing fragment's boundary; the preceding fragment is unchanged.
+This suggests recorder startup timing, but the hosted AMD64 failure is not reproduced or dismissed.
+
+The unchanged local macOS and Linux ARM64 journeys pass.
+A paired Linux experiment on identical source/cache bytes passes four original-start and four settled-start captures.
+The recorder now requires advancing initial presentation and an exact paused seek before recording post-startup recovery.
+It retains bounded playback/audio checkpoints in the already-uploaded receipts and comparisons.
+The first worklet checkpoint records main-thread message receipt and the reported render frame; it does not retime PCM.
+The 1-millisecond starting-offset, correlation, and continuous-block checks remain unchanged, with no discarded samples or automatic retries.
+
+A fresh settled-start recovery passes all four captures, both grids, video, EOF, and metadata rejection controls.
+A premature unrelated `seeked` event is ignored in all four captures until the requested target settles.
+A 576-sample shift injected at the splice lowers minimum correlation from 0.9657 to -0.1097 and is rejected with the original pre-splice anchor.
+Proof: `ai-qa-campaign/pr581-recorder-controls/proof.json`, SHA-256 `9160a4b355e32f00c9ed8ce87946c4e886f95f9521fb45bba137b6fdb86aa4c3`.
+These are Linux ARM64 and isolated recorder controls. Immediate-start seek timing and the hosted AMD64 failure remain open audit boundaries.
+
+PR 583 merged through protected checks into `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
+Fetched ancestry confirms reviewed Android test commit `3ae56d24` is included.

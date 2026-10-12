@@ -83,16 +83,26 @@ func AutomaticStart(current, duration float64, values []markers.Marker, enabled 
 // RemainingMarkers maps non-omitted markers onto one presentation timeline.
 func RemainingMarkers(values []markers.Marker, enabled []string, timeline Timeline) []markers.Marker {
 	result := make([]markers.Marker, 0, len(values))
+	if !finiteTimelineValue(timeline.SourceDuration) || !finiteTimelineValue(timeline.Duration) || timeline.SourceDuration <= 0 || timeline.Duration <= 0 {
+		return result
+	}
 	for _, marker := range values {
+		if !validMarkerRange(marker) {
+			continue
+		}
 		if slices.Contains(enabled, marker.Type) && automaticallySkippable(marker) {
 			continue
 		}
-		marker.Start, marker.End = timeline.PresentationTime(marker.Start), timeline.PresentationTime(marker.End)
+		marker.Start, marker.End = min(timeline.Duration, timeline.PresentationTime(marker.Start)), min(timeline.Duration, timeline.PresentationTime(marker.End))
 		if marker.End > marker.Start {
 			result = append(result, marker)
 		}
 	}
 	return result
+}
+
+func validMarkerRange(marker markers.Marker) bool {
+	return finiteTimelineValue(marker.Start) && finiteTimelineValue(marker.End) && marker.Start >= 0 && marker.End > marker.Start
 }
 
 // TimelineChapters maps chapters onto one presentation timeline.
@@ -162,12 +172,16 @@ type TimelineResponse interface {
 }
 
 // ApplyAPIPlaybackTimeline projects source media onto the timeline returned to API clients.
-func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, start, duration float64, chapters []metadata.Chapter, values []markers.Marker, enabled, autoSkip []string, progressToken func() string) {
+// It reports whether malformed source marker bounds required normalization.
+func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, start, duration float64, chapters []metadata.Chapter, values []markers.Marker, enabled, autoSkip []string, progressToken func() string) bool {
+	bounded := RemainingMarkers(values, nil, Timeline{SourceDuration: duration, Duration: duration})
+	normalized := !slices.Equal(values, bounded)
 	if plan.MarkerMode == "server" {
-		response.SetPlaybackTimeline(plan.Timeline.Duration, plan.Timeline.PresentationTime(start), TimelineChapters(plan.Timeline, chapters), RemainingMarkers(values, enabled, plan.Timeline), []string{}, progressToken())
-		return
+		response.SetPlaybackTimeline(plan.Timeline.Duration, plan.Timeline.PresentationTime(start), TimelineChapters(plan.Timeline, chapters), RemainingMarkers(bounded, enabled, plan.Timeline), []string{}, progressToken())
+		return normalized
 	}
-	response.SetPlaybackTimeline(duration, AutomaticStart(start, duration, values, enabled), chapters, values, autoSkip, "")
+	response.SetPlaybackTimeline(duration, AutomaticStart(start, duration, values, enabled), chapters, bounded, autoSkip, "")
+	return normalized
 }
 
 func automaticallySkippable(marker markers.Marker) bool {

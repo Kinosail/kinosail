@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"errors"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -147,7 +148,9 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain), SubtitleLanguage: api.settings.subtitleLanguage(), SubtitlePickerLimited: api.settings.subtitlePickerLimited()}
 		result.Media = facts
 		result.Policy = api.settings.playbackMode()
-		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
+		if sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() }) {
+			slog.WarnContext(request.Context(), "Playback marker bounds normalized", "request_id", activityRequestID(request), "operation", "playback-response", "failure_class", "marker_bounds", "input_count", len(media.Markers), "emitted_count", len(result.Markers))
+		}
 		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, preferences, canStream, canTranscode)
 		if result.Download != "" {
 			result.DownloadNext = nextEpisode(request, api.index, item)

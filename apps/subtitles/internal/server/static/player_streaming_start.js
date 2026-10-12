@@ -26,6 +26,7 @@ const streaming = (() => {
   setPlaybackMode(playbackPolicy);
   let hls;
   let adaptiveActive = false;
+  let copiedClockFailed = false;
   let adaptiveStarting = false;
   let adaptiveOffset = 0;
   let adaptiveSeekSwitch = false;
@@ -114,6 +115,7 @@ const streaming = (() => {
   };
   const useOriginal = (forcePlay = false) => {
     if (!direct) return;
+    copiedClockFailed = false;
     resumeAfterSourceChange(forcePlay);
     hls?.destroy();
     hls = undefined;
@@ -134,6 +136,7 @@ const streaming = (() => {
     return {offset, source: `${source.pathname}${source.search}${source.hash}`};
   };
   const useAdaptive = (preference = "auto", resume = false, target = resume ? player.currentTime : Number(player.dataset.start) || 0) => {
+    copiedClockFailed = false;
     if (resume) resumeAfterSourceChange();
     hls?.destroy();
     adaptiveActive = true;
@@ -142,7 +145,9 @@ const streaming = (() => {
     showPlaybackMode(true, true);
     const selected = streamAt(target);
     adaptiveOffset = selected.offset;
+    const copiedClock = stream.startsWith("/hls/") && ["remux", "audio-transcode"].includes(player.dataset.compatibilityMode);
     hls = new Hls({
+      ...(copiedClock ? {streamController: copiedHLSClock(Hls, selected.offset)} : {}),
       startLevel: -1,
       testBandwidth: true,
       startFragPrefetch: true,
@@ -175,8 +180,14 @@ const streaming = (() => {
       playbackTrace("hls-level", "switched", qualityLabel(hls.levels[level]));
     });
     hls.on(Hls.Events.ERROR, (_, data) => {
-      playbackTrace("hls-error", `${data.type || "unknown"}:${data.details || "unknown"}`);
+      playbackTrace("hls-error", `${data.type || "unknown"}:${data.details || "unknown"}`, data.reason === "copied-media-timing" ? data.reason : "");
       if (!data.fatal) return;
+      if (data.reason === "copied-media-timing") {
+        copiedClockFailed = true;
+        requestPause();
+        qualityState.textContent = "Playback unavailable";
+        return showFailure("Compatibility playback is unavailable for this file.");
+      }
       if (!hls.autoLevelEnabled) {
         hls.loadLevel = -1;
         quality.value = "auto";

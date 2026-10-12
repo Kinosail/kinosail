@@ -10,7 +10,8 @@ import socket
 import subprocess
 import time
 
-from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
+from hls_timeline_fixture import LONG_RESUME_KEYS, browser_reference, fixture
+from hls_audio_capture import capture_audio, decode_source
 from hls_resume_audio import audio_packets, uninterrupted_audio_reference
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_preparation import prepare_scene
@@ -18,6 +19,7 @@ from hls_followon_public import bounded_bytes, check, encoder_count
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--app', choices=['player', 'subtitles'], default='player')
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
 parser.add_argument('--long-remux', action='store_true', help='Use a 74.5-second source with irregular source keyframes')
@@ -25,18 +27,32 @@ parser.add_argument('--resume-seconds', type=float, choices=[.5, 2.5, 12, 12.5, 
 parser.add_argument('--force-audio-conversion', action='store_true')
 parser.add_argument('--audio-sample-rate', type=int, choices=[32000, 44100, 48000], default=48000)
 parser.add_argument('--audio-mode', choices=['aac', 'ac3', 'none'], default='aac')
+parser.add_argument('--decoded-audio', action='store_true', help='Compare browser PCM with the nonperiodic source audio')
+parser.add_argument('--copied-clock-errors', action='store_true', help='Inject malformed Subtitles init data and verify terminal failure rendering')
+parser.add_argument('--direct-switch', action='store_true', help='Start direct playback, then select Compatibility in the real player')
 parser.add_argument('--audio-reference', action='store_true', help='Compare converted AAC with uninterrupted encoding')
 parser.add_argument('--tail-recovery', action='store_true')
 parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
+parser.add_argument('--small-video', action='store_true', help='Verify original 32-by-32 video and bounded HLS quality paths')
 args = parser.parse_args()
+if args.copied_clock_errors and (args.app != 'subtitles' or args.engines == 'webkit-native'):
+    parser.error('--copied-clock-errors requires Subtitles MSE playback')
+if args.direct_switch and args.app != 'subtitles':
+    parser.error('--direct-switch currently exercises the Subtitles playback control')
+if args.decoded_audio and (args.audio_mode != 'ac3' or not args.force_audio_conversion):
+    parser.error('--decoded-audio requires AC3 and forced audio conversion')
+if args.app == 'subtitles' and (args.prepared or args.controls):
+    parser.error('prepared and metadata-control modes require Player')
+if args.small_video and (not args.prepared or args.controls):
+    parser.error('--small-video requires --prepared without --controls')
 recovery = args.tail_recovery or args.first_recovery
 if recovery and (not args.prepared or args.audio_mode == 'none') or args.tail_recovery and args.first_recovery:
     parser.error('choose one recovery target, with --prepared')
 if args.audio_reference and (not recovery or args.audio_mode != 'ac3' or not args.force_audio_conversion):
     parser.error('--audio-reference requires converted-audio recovery')
-if args.long_remux and (args.audio_mode != 'aac' or args.force_audio_conversion or args.resume_seconds != 12.5):
-    parser.error('--long-remux uses AAC copied audio and the 12.5-second saved position')
+if args.long_remux and (args.audio_mode != 'aac' or args.force_audio_conversion or args.resume_seconds not in [12.5, 64.5]):
+    parser.error('--long-remux uses AAC copied audio and a 12.5- or 64.5-second saved position')
 reference_audio = None
 fractional = args.resume_seconds == 2.5
 frame_rate = 25 if fractional or args.resume_seconds == 64.5 else 24
@@ -50,12 +66,19 @@ run = ROOT / '.verification/hls-resume-browser' / time.strftime('%Y%m%dT%H%M%SZ'
 media = run / 'media'
 media.mkdir(parents=True)
 engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
-build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
+build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), f'./apps/{args.app}/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-           'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else ''),
-           'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion,
-           'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
+           'app': args.app, 'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --app ' + args.app + ' --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else '') + (' --small-video' if args.small_video else '') + (' --decoded-audio' if args.decoded_audio else ''),
+           'decodedAudio': args.decoded_audio, 'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion, 'smallVideo': args.small_video,
+           'boundary': f'Real loopback {args.app} Server, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
+receipt['copiedClockErrors'] = args.copied_clock_errors
+if args.copied_clock_errors:
+    receipt['command'] += ' --copied-clock-errors'
+    receipt['boundary'] += ' Isolated malformed-init response injection; not unmodified-media E2E.'
+receipt['directSwitch'] = args.direct_switch
+if args.direct_switch:
+    receipt['command'] += ' --direct-switch'
 
 
 def audio_boundaries(rendition):
@@ -91,7 +114,8 @@ def audio_boundaries(rendition):
 
 try:
     source, metadata = fixture(media, 'Resume Sample', gop, ','.join(map(str, keys)),
-                               rate=str(frame_rate), frames=round(duration * frame_rate), extension='.mp4')
+                               rate=str(frame_rate), frames=round(duration * frame_rate), extension='.mp4',
+                               size='32x32' if args.small_video else '640x360', noise=args.decoded_audio)
     if args.audio_mode != 'aac':
         converted = run / source.name
         conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy']
@@ -110,6 +134,10 @@ try:
         source = shifted
         metadata.update(shiftCommand=shift, sha256=sha(source), keyframesSeconds=source_keys,
                         durationSeconds=duration + .13, videoDurationSeconds=duration + .13)
+    if fractional:
+        receipt['browserReference'] = browser_reference(source)
+    if args.decoded_audio:
+        source_pcm, receipt['decodeCommand'] = decode_source(source)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
     with (run / 'build-private.log').open('w') as log:
@@ -141,8 +169,11 @@ try:
                 raise RuntimeError('fixture_boot_timeout')
             receipt['bootSeconds'] = time.monotonic() - boot
             api.authorize()
-            api.call('/api/v1/settings/subtitle-picker', 'PUT', {'limited': True})
-            item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Resume Sample')
+            if args.app == 'player':
+                api.call('/api/v1/settings/subtitle-picker', 'PUT', {'limited': True})
+            items = api.call('/api/v1/library')['items']
+            item = next(i for i in items if i['title'] == 'Resume Sample')
+            reference_item = next(i for i in items if i['title'] == 'Resume Reference') if fractional else item
             if args.prepared:
                 plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
                 hls = plan['compatible'].replace('/index.m3u8', f'-o{round(args.resume_seconds * 1000)}/index.m3u8')
@@ -183,13 +214,19 @@ try:
                         case['tailPresentBeforeEviction'] = case['fragmentPresentBeforeEviction']
                         case['tailMissingBeforePlayback'] = case['fragmentMissingBeforePlayback']
                 child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token,
-                             QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
-                             QA_RESUME_ENGINE=engine, QA_RESUME_SECONDS=str(args.resume_seconds), QA_RESUME_FORCE_AUDIO_CONVERSION=str(args.force_audio_conversion).lower(), QA_RESUME_EXPECTED_MODE=('audio-transcode' if args.force_audio_conversion else 'audio-transcode,remux') if args.audio_mode == 'ac3' else 'remux', QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
+                             QA_RESUME_ITEM=item['id'], QA_RESUME_REFERENCE_ITEM=reference_item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
+                             QA_RESUME_ENGINE=engine, QA_RESUME_APP=args.app, QA_RESUME_SECONDS=str(args.resume_seconds), QA_RESUME_FORCE_AUDIO_CONVERSION=str(args.force_audio_conversion).lower(), QA_RESUME_EXPECTED_MODE=('audio-transcode' if args.force_audio_conversion else 'audio-transcode,remux') if args.audio_mode == 'ac3' else 'remux', QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
+                child['QA_RESUME_DIRECT_SWITCH'] = str(args.direct_switch).lower()
                 with (run / f'{engine}-private.log').open('w') as output:
-                    script = 'hls-resume-controls.mjs' if args.controls else 'hls-resume-browser.mjs'
+                    script = 'hls-copied-rejection-browser.mjs' if args.copied_clock_errors else 'hls-resume-controls.mjs' if args.controls else 'hls-resume-browser.mjs'
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],
                                             cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=300)
                 case['exitCode'] = result.returncode
+                if args.small_video:
+                    facts = json.loads((run / f'{engine}.json').read_text())
+                    case['originalDimensionsPreserved'] = len(facts['rows']) == 2 and all(
+                        row['width'] == 32 and row['height'] == 32 for row in facts['rows'])
+                    check(case['originalDimensionsPreserved'], 'small_video_dimensions')
                 if recovery:
                     case.update(fragmentRestored=fragment.exists(), initializationUnchanged=(rendition / 'init.mp4').read_bytes() == prepared_init)
                     if case['fragmentRestored']:
@@ -204,6 +241,25 @@ try:
                     if not case['fragmentRestored'] or not case['initializationUnchanged']:
                         case['exitCode'] = 1
                 print(json.dumps({k: v for k, v in case.items() if not k.startswith('audio')}), flush=True)
+            if args.decoded_audio:
+                receipt['audioCaptures'] = [capture_audio(ROOT, run, api, item, label, point, 3, source_pcm, app=args.app)
+                    for label, point in [('decoded-initial', min(duration - 5, args.resume_seconds + 5)),
+                                         ('decoded-later', duration - 4)]]
+                check(all(row['passed'] for row in receipt['audioCaptures']), 'decoded_audio_clock')
+            if args.small_video and args.prepared:
+                limit = time.monotonic() + 15
+                while encoder_count(server, source) and time.monotonic() < limit:
+                    time.sleep(.05)
+                check(encoder_count(server, source) == 0, 'quality_workers_not_joined')
+                baseline = {str(p.relative_to(prepared_root)): sha(p) for p in prepared_root.rglob('*') if p.is_file()}
+                receipt['qualityPathControls'] = []
+                for quality in ['0p', '-1p', '2161p', 'x32p', '32px', '999999999999999999999999p']:
+                    status = api.http(hls.removesuffix('index.m3u8') + quality + '/segment-00000.m4s')[0]
+                    current = {str(p.relative_to(prepared_root)): sha(p) for p in prepared_root.rglob('*') if p.is_file()}
+                    check(status == 404 and encoder_count(server, source) == 0 and current == baseline,
+                          'invalid_quality_path_side_effect')
+                    receipt['qualityPathControls'].append({'quality': quality, 'status': status,
+                        'assetsUnchanged': True, 'encoderCount': 0})
         finally:
             server.terminate()
             try:

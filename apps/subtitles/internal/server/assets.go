@@ -11,6 +11,8 @@ import (
 var (
 	//go:embed static/htmx.min.js
 	htmx []byte
+	//go:embed static/player_streaming_clock.js
+	playerStreamingClockJS []byte
 	//go:embed static/player_streaming_start.js
 	playerStreamingStartJS []byte
 	//go:embed static/player_streaming_end.js
@@ -94,7 +96,7 @@ var (
 	shortcutsJS         = webassets.Shortcuts
 	themeJS             = joinScripts(subtitleDockInitialJS, webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS)
-	playerJS            = joinScripts(playerCoreJS, playerStreamingStartJS, playerStreamingEndJS, playerControlsJS, playerDevicesJS, playerProgressJS)
+	playerJS            = joinScripts(playerCoreJS, playerStreamingClockJS, playerStreamingStartJS, playerStreamingEndJS, playerControlsJS, playerDevicesJS, playerProgressJS)
 	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
 	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
