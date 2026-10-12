@@ -74,7 +74,7 @@ try {
         video.addEventListener(event, done, {once: true});
         action?.();
       });
-      let error, ended = false;
+      let error, ended = false, eofStart;
       try {
         if (video.readyState < 2) await wait('loadeddata');
         video.pause();
@@ -115,11 +115,16 @@ try {
           samples.push({point, currentTime: video.currentTime, ...frame, digest});
         }
         video.muted = true;
+        // Seeking to the final decoded frame can already set ended, in which
+        // case play() correctly restarts at zero. Exercise actual tail playback.
+        await wait('seeked', () => video.currentTime = Math.max(0, video.duration - .5));
+        eofStart = {currentTime: video.currentTime, ended: video.ended};
+        if (video.ended) throw new Error('eof_start_ended');
         await wait('ended', () => video.play());
         ended = video.ended;
       } catch (caught) { error = caught.message; }
       return {variant, error, ended, duration: video.duration, width: video.videoWidth, height: video.videoHeight,
-        firstPlaying: window.qaResumeFirstPlaying,
+        firstPlaying: window.qaResumeFirstPlaying, eofStart,
         start: Number(video.dataset.start), mode: video.dataset.compatibilityMode,
         adapter: video.currentSrc.startsWith('blob:') ? 'mse' : 'native', currentTime: video.currentTime, samples, presentations};
     }, {variant, duration, native, resume, frameRate});

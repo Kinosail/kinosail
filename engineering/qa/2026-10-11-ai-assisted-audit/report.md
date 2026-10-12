@@ -1489,3 +1489,20 @@ The source remains unchanged and the Server settles. The passing Server log cont
 Receipt `hls-resume-browser/20261012T061139Z/receipt.json` retains the browser results and checksums.
 The required Chromium workflow now retains this case with the existing prepared-timeline artifacts.
 The production change only lowers the allowed positive rendition height; the upper bound and path confinement remain intact.
+
+### Original-file EOF observation resolved
+
+An isolated Chromium reference probe reproduces the earlier 400/29 fps behavior using the same synthetic media bytes.
+After the final paused seek, `currentTime` is 74.48 seconds and `ended` is already true, despite a 74.53-second duration.
+Calling `play()` then restarts at zero. This explains the earlier 30-second timeout without a Player change.
+The private source-bound probe is `reference-eof-diagnostic/receipt.json`; it is isolated browser evidence.
+
+After collecting the seven frame references, the browser oracle now seeks half a second before the end.
+It requires `ended` to be false before playing and still waits for the real `ended` event.
+The complete 400/29 fps public journey passes all four audio captures, packet grids, video comparisons, EOF, and ten metadata controls.
+Its receipt is `hls-audio-splice/20261012T061514Z/receipt.json`. The workflow retains this low-frame-rate case.
+
+Independent review finds no blocker in the small-video repair or its regression coverage.
+Focused playback package tests and changed-code lint pass. CI contracts pass 170 tests with five existing skips.
+The required Player local verification stops at the existing 95-issue shared-package lint baseline.
+That failure does not establish a passing complete local verification suite; hosted checks remain required.
