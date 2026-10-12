@@ -10,7 +10,7 @@ import (
 
 var playbackAPIContracts = servertest.PlaybackAPIFixture{
 	New: func(config servertest.PlaybackAPIConfig) http.Handler {
-		return server.New(server.Config{MediaDir: config.MediaDir, DataDir: config.DataDir, FFprobe: config.FFprobe, FFmpeg: config.FFmpeg, RequireAuth: config.RequireAuth, ProbeHardware: config.ProbeHardware, HardwareDevices: config.HardwareDevices, HardwareOS: config.HardwareOS, HardwareArch: config.HardwareArch})
+		return server.New(server.Config{Lifecycle: config.Lifecycle, CacheDir: config.CacheDir, MediaDir: config.MediaDir, DataDir: config.DataDir, FFprobe: config.FFprobe, FFmpeg: config.FFmpeg, RequireAuth: config.RequireAuth, ProbeHardware: config.ProbeHardware, HardwareDevices: config.HardwareDevices, HardwareOS: config.HardwareOS, HardwareArch: config.HardwareArch})
 	},
 	SignIn: signInTestProfile,
 }

@@ -2008,3 +2008,24 @@ That skeleton geometry repair is queued for the next native UI change.
 Fresh physical discovery still finds no connected iPhone or Watch.
 The physical Apple TV preview remains at its system profile chooser.
 No profile is selected during this refresh. The existing human handoff remains pending.
+
+## Follow-up hosted and decoder observations
+
+Main advances to `a615e769` with the independently reviewed marker-bounds repair.
+Reconciliation preserves both source changes and regenerates the Player architecture page.
+The preceding deep run at `0cb41055` reports canonical Player Go coverage of 89.7%.
+Its WebKit report has one flaky compact-toolbar case and no unexpected final result.
+The first attempt passes the button geometry assertions, then fails during screenshot capture.
+Its retry passes; the first failure remains retained and is not accepted as a clean pass.
+The original watched-state failures do not recur in that report.
+The artifact SHA-256 is `edbde696f982ee241ee47c7f1c49d8b2f33a91b5899d9cae7cf554a676077882`.
+
+A separate native-decoder observation keeps the original loopback server, media and playback predicate.
+All six Linux WebKit contexts stall near 0.16 seconds, with no native media error.
+Each receives the complete HTTP 200 media body with the exact expected SHA-256.
+Both silent and AAC files match their original bytes. Incomplete transfer is excluded for these six observations.
+Response-body instrumentation remains a diagnostic timing boundary.
+The result SHA-256 is `49cd4fc4e0d9bea9ac1cf197e1ac282383826be89fffba7c4bc573b1df6d9220`.
+Earlier GStreamer warnings report temporary-file removal, not file creation failure.
+They do not establish the playback-stall cause. No production workaround is introduced.
+The owned diagnostic container is removed. Physical Safari behavior remains unproved.
