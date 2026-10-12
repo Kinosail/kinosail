@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
@@ -162,4 +163,28 @@ func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.I
 		return errHLSIdentityChanged
 	}
 	return nil
+}
+
+func (job *hlsJob) coversSegment(rendition string, segment int) bool {
+	if job == nil || segment < job.startNumber {
+		return false
+	}
+	if segment <= job.startNumber+2 {
+		return true
+	}
+	playlist := filepath.Join(rendition, "index.m3u8")
+	if job.startNumber > 0 {
+		playlist = filepath.Join(filepath.Dir(rendition), hlsSeekDirectory(job.startNumber), filepath.Base(rendition), "index.m3u8")
+	}
+	manifest, err := os.ReadFile(playlist) //nolint:gosec // Rendition and seek paths use generated cache names only.
+	if err != nil {
+		return false
+	}
+	latest := -1
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if number, valid := hlsSegmentNumber(strings.TrimSpace(line)); valid {
+			latest = max(latest, number)
+		}
+	}
+	return latest >= job.startNumber && segment <= latest+2
 }

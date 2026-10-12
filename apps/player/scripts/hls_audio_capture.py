@@ -66,9 +66,10 @@ def capture_audio(root, run, api, item, label, point, span, source_pcm, app='pla
                   'lagSamples': lag, 'minimumCorrelation': minimum, 'rows': rows,
                   'renderGapFrames': [gap for gap in gaps if gap], 'passed': verdict,
                   'pcmSHA256': sha(run / (label + '.f32')),
+                  'startup': {key: facts['capture'][key] for key in ['checkpoints', 'events']},
                   'oracle': 'One fixed source alignment; all 2048-sample windows at least .90 correlation; initial offset at most 1ms; contiguous render blocks.'}
     (run / (label + '-comparison.json')).write_text(json.dumps(comparison, indent=2) + '\n')
-    return {key: comparison[key] for key in ['label', 'point', 'span', 'lagSamples', 'minimumCorrelation', 'renderGapFrames', 'passed', 'pcmSHA256']}
+    return {key: comparison[key] for key in ['label', 'point', 'span', 'lagSamples', 'minimumCorrelation', 'renderGapFrames', 'passed', 'pcmSHA256', 'startup']}
 
 
 def packet_grid(rendition):

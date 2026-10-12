@@ -1595,6 +1595,46 @@ PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases
 
 The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.
 
+### AQA-018 completed refill leaves a missing segment waiting
+
+Main run `38229443046` returned a missing tail fragment after recovering the first and middle fragments.
+A controlled real-Server replay at `4e0fbb21` reproduces the failure by holding the middle-refill process after its media output finishes.
+The final fragment is removed and requested while that producer still appears active.
+The request returns 404 after waiting; no replacement encoder starts.
+Source preservation and process joining pass. The receipt is `hls-refill-race/20261012T101415Z/receipt.json`.
+
+Before implementation, the retained `refill-completion` public journey covers this timing boundary.
+Failure inventory: an active producer may still create the file, may finish without it, may fail, or may be canceled.
+A replacement must preserve the original initialization and timeline, source frames, audio continuity, source identity, and shared encoder ownership.
+The successful producer-completion case must retry admission under the existing lock; canceled or failed requests must remain bounded.
+This process-lifetime injection is isolated timing evidence around a real Server and real media.
+The ordinary cold-suffix cases cover unmodified encoder execution.
+
+The first candidate passed the public regression but failed review: waiting inside `prepareSegment` also blocks background preparation monitoring.
+An existing live-producer adoption control hung, confirming that contract violation. That placement was withdrawn.
+Review also identified canceled-producer readmission and permanent-filesystem-error risks.
+The next candidate must keep background admission nonblocking and limit retries to successfully joined producers after a missing-file result.
+
+The revised HTTP wait keeps the exact producer selected under the existing admission lock.
+It permits at most one new admission after successful producer completion leaves the fragment missing.
+A distinct completion cause preserves prior cancellation atomically. Failed, canceled, or unobserved producers do not authorize another refill.
+The original nonblocking preparation operation remains available to background monitoring.
+Permanent filesystem errors do not enter recovery. Re-admission checks the current source and policy again.
+Independent review found no remaining concrete blockers in this version.
+
+Four retained public-handler controls prove inactive, seek-replaced, identity-replaced, and context-canceled producers do not start another encoder.
+Their E2E gap is precise ownership ordering while the producer join is held. The real-media suite does not deterministically arrange that ordering.
+The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
+The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
+Credentials do not appear in its private log.
+
+The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
+`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
+A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
+The HTTP helper now waits under the request deadline when no producer was selected.
+This path cannot authorize another admission. Permanent errors and cancellation still stop it.
+The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
+A second independent review found no concrete blocker. Hosted checks must pass again after publication.
 ### AQA-017 edit-list and early-playlist reproduction
 
 Linux Chromium also fails the retained 64.5-second Subtitles resume at `hls-resume-subtitles-linux/20261012T073619Z`. Its first two reference frames match; the next seek presents the following IDR instead. This is separate from the Mac browser result.
@@ -1795,3 +1835,27 @@ All eight search journeys pass with the delay. Without it, the complete Android 
 Local proof: `ai-qa-campaign/android-search-clear-proof.json`, SHA-256 `2a77981bf1839226b1ccb3640563af9f95a121b72ac03edb446eeb7e5e50aded`.
 The proof records main `9e8d3bbc` plus the exact uncommitted test patch; it is not an exact committed-revision claim.
 These JVM journeys use an HTTP stand-in and do not prove populated production Server or physical-device behavior.
+
+
+### Recovered-audio recorder boundary
+
+PR 581 hosted run `38239833223` found a 575-sample starting offset in the 96 kHz coarse-video-clock recovered capture.
+At 48 kHz capture rate, this is about 12 milliseconds. Correlation stays above 0.965 and render blocks remain contiguous.
+The offset appears before the missing fragment's boundary; the preceding fragment is unchanged.
+This suggests recorder startup timing, but the hosted AMD64 failure is not reproduced or dismissed.
+
+The unchanged local macOS and Linux ARM64 journeys pass.
+A paired Linux experiment on identical source/cache bytes passes four original-start and four settled-start captures.
+The recorder now requires advancing initial presentation and an exact paused seek before recording post-startup recovery.
+It retains bounded playback/audio checkpoints in the already-uploaded receipts and comparisons.
+The first worklet checkpoint records main-thread message receipt and the reported render frame; it does not retime PCM.
+The 1-millisecond starting-offset, correlation, and continuous-block checks remain unchanged, with no discarded samples or automatic retries.
+
+A fresh settled-start recovery passes all four captures, both grids, video, EOF, and metadata rejection controls.
+A premature unrelated `seeked` event is ignored in all four captures until the requested target settles.
+A 576-sample shift injected at the splice lowers minimum correlation from 0.9657 to -0.1097 and is rejected with the original pre-splice anchor.
+Proof: `ai-qa-campaign/pr581-recorder-controls/proof.json`, SHA-256 `9160a4b355e32f00c9ed8ce87946c4e886f95f9521fb45bba137b6fdb86aa4c3`.
+These are Linux ARM64 and isolated recorder controls. Immediate-start seek timing and the hosted AMD64 failure remain open audit boundaries.
+
+PR 583 merged through protected checks into `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
+Fetched ancestry confirms reviewed Android test commit `3ae56d24` is included.

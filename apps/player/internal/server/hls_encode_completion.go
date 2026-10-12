@@ -50,7 +50,7 @@ func (manager *hlsManager) finishHLSEncode(job *hlsJob, key, directory string, s
 	if preserve {
 		_ = os.RemoveAll(filepath.Join(directory, hlsSeekDirectory(startNumber))) //nolint:gosec // The directory uses a validated segment number.
 	}
-	job.cancel(nil)
+	job.cancel(errHLSEncodeComplete)
 	manager.mu.Lock()
 	if manager.jobs[key] == job {
 		delete(manager.jobs, key)
