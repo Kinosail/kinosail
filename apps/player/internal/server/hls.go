@@ -276,7 +276,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	if err := output.run(command, item.Path, root); err != nil {
 		return err
 	}
-	return output.publish(manager, ctx, item, recipe, options.Cache)
+	return output.publish(manager, ctx, item, sourceRecipe, options.Cache)
 }
 
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {
