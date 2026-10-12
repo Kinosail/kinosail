@@ -39,7 +39,8 @@ test("actual Go phone: fictional download controls and ready Play link remain re
   let refreshHeld = false;
   const releaseRefresh = async () => {
     if (!refreshHeld) return;
-    expect((await page.request.post(`${peer.origin}/__download-pause?refresh=release`)).ok()).toBe(true);
+    // Cleanup must still reach the peer after Playwright cancels its context.
+    expect((await fetch(`${peer.origin}/__download-pause?refresh=release`, {method: "POST", signal: AbortSignal.timeout(2_000)})).ok).toBe(true);
     refreshHeld = false;
   };
   try {
@@ -74,8 +75,10 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     // The Server cannot know device storage and returns this link hidden.
     expect((await page.request.post(`${peer.origin}/__download-pause?refresh=hold`)).ok()).toBe(true);
     refreshHeld = true;
-    // Reload the public Server page; this does not claim actual BFCache admission.
-    await page.goto(`${peer.origin}/offline-downloads`);
+    // Mark only the document request; service-worker fetches can change its destination header.
+    // The live refresh still fetches the canonical URL and real Server markup.
+    const reloaded = await page.goto(`${peer.origin}/offline-downloads?refreshDocument=1`, {waitUntil: "domcontentloaded"});
+    expect(reloaded?.status()).toBe(200);
     const again = page.locator("[data-download-play]");
     await expect(again).toBeVisible();
     try {

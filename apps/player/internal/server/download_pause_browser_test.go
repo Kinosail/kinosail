@@ -20,7 +20,7 @@ import (
 )
 
 // Opt-in: public original-quality preparation and Go-rendered Downloads use real
-// native-size blocks. A disposable outer peer holds one partial response only.
+// native-size blocks. A disposable outer peer controls partial media and page responses.
 func TestDownloadPauseBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_DOWNLOAD_PAUSE_BROWSER") != "1" {
 		t.Skip("KINOSAIL_DOWNLOAD_PAUSE_BROWSER is not set")
@@ -156,7 +156,7 @@ func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *ht
 }
 
 func (peer *downloadPausePeer) waitRefresh(request *http.Request) bool {
-	if request.URL.Path != "/offline-downloads" || request.Header.Get("Sec-Fetch-Dest") != "empty" {
+	if request.URL.Path != "/offline-downloads" || request.URL.Query().Get("refreshDocument") == "1" {
 		return true
 	}
 	peer.mutex.Lock()
