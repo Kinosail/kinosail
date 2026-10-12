@@ -203,11 +203,9 @@ func copiedRecoveryWarmRefill(t *testing.T, ctx context.Context, ffmpeg string, 
 	after := speedTestGET(t, ctx, handler, base+segment)
 	var frames [][]byte
 	for index, media := range [][]byte{before, after} {
-		path := filepath.Join(t.TempDir(), "middle.mp4")
-		if err := os.WriteFile(path, bytes.Join([][]byte{initialization, media}, nil), 0o600); err != nil {
-			t.Fatal(err)
-		}
-		output, err := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-copyts", "-i", path, "-map", "0:v:0", "-f", "framehash", "-hash", "sha256", "-").Output() //nolint:gosec // Fixed codec arguments and owned synthetic fragment.
+		command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0", "-f", "framehash", "-hash", "sha256", "-") //nolint:gosec // Fixed codec arguments and owned synthetic fragment.
+		command.Stdin = bytes.NewReader(bytes.Join([][]byte{initialization, media}, nil))
+		output, err := command.Output()
 		if err != nil || !bytes.Contains(output, []byte("SHA256")) {
 			t.Fatalf("middle fragment decode %d failed", index)
 		}

@@ -1799,3 +1799,31 @@ startup callbacks creates extra resume work before the intended navigation race.
 Private `long-copied-clock-*` receipts retain exact source, commands, profiles,
 logs and checksums. Browser audio waveform proof and physical-device proof remain
 separate from the Go video-frame and lifecycle checks.
+
+
+## Required-check repair after the HLS push
+
+The hosted tooling check rejects a stale generated Player Code Atlas snapshot.
+The hosted new-code lint also rejects complexity in the HTTP timing fixture
+and a temporary MP4 write in the long-source comparison. These are retained failures.
+The fixture now separates adoption, outcome publication and request settlement.
+It preserves all five response outcomes, cancellation and retained-file assertions.
+The frame comparison streams owned fragment bytes to FFmpeg through standard input.
+It keeps original timestamps and compares every decoded video frame.
+No production code or lint setting changes in this repair.
+
+The focused startup and native recovery journeys pass again with race detection.
+New-code Player lint passes. The generated Code Atlas snapshot is refreshed.
+The complete local tooling check passes after the first snapshot refresh;
+the focused architecture contract passes on the final refreshed snapshot.
+Private receipts retain the hosted failures and successive local controls.
+Final race log SHA-256: `cc2bfa012328453b19d1767f5bfa0e5121a21365956ec2983e572dce9835558b`.
+Final new-code lint log SHA-256: `e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47`.
+Complete tooling log SHA-256: `2f2625f866eba8d6ec7fd2f7456627cb1b1dc0ba8b1fb3086a2865e0163a6563`.
+
+The preceding deep browser artifacts confirm Player Chromium 862 passes and
+Firefox 858 passes, with 353 and 357 skipped cases respectively.
+Subtitles has 99 passes in each browser and no skips or flakes.
+The actual native result bundles report iOS 332 passes and one skip,
+and tvOS 313 passes and one skip. They do not prove physical-device behavior.
+WebKit startup remains open; a successful local repetition does not clear it.

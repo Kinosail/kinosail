@@ -186,32 +186,28 @@ func copiedStartupLiveHTTP(t *testing.T, outcome string) {
 	}()
 	t.Cleanup(func() {
 		cancel()
-		select {
-		case <-done:
-		case <-time.After(time.Second):
-			t.Error("live producer request did not settle after cancellation")
-		}
+		copiedStartupAwaitRequest(t, done, "cancellation")
 	})
-	until := time.Now().Add(time.Second)
-	for !job.preparation.adopted.Load() && time.Now().Before(until) {
-		time.Sleep(time.Millisecond)
-	}
-	if !job.preparation.adopted.Load() {
-		t.Fatal("live copied producer was not adopted")
-	}
 	fragment := filepath.Join(directory, "1080p/segment-00000.m4s")
-	if _, err := os.Stat(fragment); !os.IsNotExist(err) {
-		t.Fatal("adopting live output invented a fragment")
+	copiedStartupAwaitAdoption(t, job, fragment, marker, done)
+	check()
+	status, check := copiedStartupPublishOutcome(t, outcome, directory, item.Path, join, cancel)
+	copiedStartupAwaitRequest(t, done, "publication, join or cancellation")
+	if response.Code != status || status == http.StatusOK && response.Body.String() != "first fragment" {
+		t.Fatalf("live fragment = %d; expected %d with retained bytes", response.Code, status)
 	}
-	if _, err := os.Stat(marker); !os.IsNotExist(err) {
-		t.Fatal("adopting live output started a replacement")
-	}
-	select {
-	case <-done:
-		t.Fatal("live missing fragment completed before publication or join")
-	default:
+	if outcome == "completed" {
+		copiedStartupRefillSettled(t, ctx, manager, key, marker)
+	} else if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("live publication or rejected request started a replacement")
 	}
 	check()
+}
+
+func copiedStartupPublishOutcome(t *testing.T, outcome, directory, source string, join, cancel func()) (int, func()) {
+	t.Helper()
+	fragment := filepath.Join(directory, "1080p/segment-00000.m4s")
+	check := copiedStartupRetained(t, directory, source)
 	status := http.StatusOK
 	switch outcome {
 	case "published":
@@ -223,28 +219,46 @@ func copiedStartupLiveHTTP(t *testing.T, outcome string) {
 		cancel()
 	case "source-changed", "source-changed-published":
 		status = http.StatusNotFound
-		writeHLSLoadingFile(t, item.Path, "changed source")
-		check = copiedStartupRetained(t, directory, item.Path)
+		writeHLSLoadingFile(t, source, "changed source")
+		check = copiedStartupRetained(t, directory, source)
 		if outcome == "source-changed-published" {
 			writeHLSLoadingFile(t, fragment, "first fragment")
 		} else {
 			join()
 		}
 	}
+	return status, check
+}
+
+func copiedStartupAwaitRequest(t *testing.T, done <-chan struct{}, action string) {
+	t.Helper()
 	select {
 	case <-done:
 	case <-time.After(time.Second):
-		t.Fatal("live producer request failed to settle after publication, join or cancellation")
+		t.Fatalf("live producer request failed to settle after %s", action)
 	}
-	if response.Code != status || status == http.StatusOK && response.Body.String() != "first fragment" {
-		t.Fatalf("live fragment = %d; expected %d with retained bytes", response.Code, status)
+}
+
+func copiedStartupAwaitAdoption(t *testing.T, job *hlsJob, fragment, marker string, done <-chan struct{}) {
+	t.Helper()
+	until := time.Now().Add(time.Second)
+	for !job.preparation.adopted.Load() && time.Now().Before(until) {
+		time.Sleep(time.Millisecond)
 	}
-	if outcome == "completed" {
-		copiedStartupRefillSettled(t, ctx, manager, key, marker)
-	} else if _, err := os.Stat(marker); !os.IsNotExist(err) {
-		t.Fatal("live publication or rejected request started a replacement")
+	if !job.preparation.adopted.Load() {
+		t.Fatal("live copied producer was not adopted")
 	}
-	check()
+	if _, err := os.Stat(fragment); !os.IsNotExist(err) {
+		t.Fatal("adopting live output invented a fragment")
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("adopting live output started a replacement")
+	}
+	select {
+	case <-done:
+		t.Fatal("live missing fragment completed before publication or join")
+	default:
+	}
 }
 
 func TestCopiedStartupChangedPolicyRejectsBeforeAdoption(t *testing.T) {
