@@ -48,7 +48,7 @@ test("real large transfer survives browser restart and plays with the Server dis
     revision?: string; command: string; environment: string; testData: string;
     expected: { bytes: number; sha256: string }; result: string; interruptedBytes?: number;
     saved?: Pick<OfflineRecord, "bytes" | "size" | "sha256" | "storage">;
-    independentStoredFileHash?: string; rangeRequests?: number; ranges?: string[];
+    independentStoredFileHash?: string; rangeRequests?: number; ranges?: string[]; restoredViewerChecks?: number;
     playback?: { time: number; width: number; height: number; error: string | null };
   } = { revision: process.env.KINOSAIL_TEST_REVISION,
     command: "KINOSAIL_LAUNCH_READINESS=1 pnpm exec playwright test test-instance-launch.spec.ts --project=chromium --workers=1",
@@ -58,6 +58,8 @@ test("real large transfer survives browser restart and plays with the Server dis
     let page = await reopen();
     await login(page);
     await page.goto("/offline-downloads");
+    const viewer = await page.locator("#downloads").getAttribute("data-viewer-profile");
+    expect(viewer).toBeTruthy();
     const job = await page.evaluate(async () => {
       const csrf = document.querySelector<HTMLMetaElement>('meta[name="kinosail-csrf"]')!.content;
       const library = await fetch("/api/v1/library?view=movies").then(response => response.json());
@@ -68,6 +70,15 @@ test("real large transfer survives browser restart and plays with the Server dis
       if (response.status !== 202) throw new Error(`prepare original: ${response.status}`);
       return response.json();
     });
+    expect(job.profileId).toBe(viewer);
+    const restoreViewer = async (page: import("@playwright/test").Page) => {
+      await page.goto("/offline-downloads");
+      await expect(page.locator("#downloads")).toHaveAttribute("data-viewer-profile", viewer!);
+      const response = await page.request.get(`/api/v1/downloads/${job.id}`);
+      expect(response.status()).toBe(200);
+      expect(await response.json()).toMatchObject({ id: job.id, profileId: viewer });
+      receipt.restoredViewerChecks = (receipt.restoredViewerChecks ?? 0) + 1;
+    };
     await expect.poll(async () => (await page.request.get(`/api/v1/downloads/${job.id}`)).json(), { timeout: 120_000 })
       .toMatchObject({ state: "ready", size: expected.bytes, sha256: expected.sha256, readyOffline: true });
     await page.reload();
@@ -80,8 +91,7 @@ test("real large transfer survives browser restart and plays with the Server dis
     await context!.close(); context = undefined;
 
     page = await reopen();
-    await login(page);
-    await page.goto("/offline-downloads");
+    await restoreViewer(page);
     article = page.locator(`[data-download-job="${job.id}"]`);
     await expect(article.getByRole("button", { name: "Resume on this device", exact: true })).toBeVisible();
     expect((await record(page, job.id)).bytes).toBeGreaterThanOrEqual(partial.bytes);
@@ -110,7 +120,7 @@ test("real large transfer survives browser restart and plays with the Server dis
     receipt.independentStoredFileHash = independentHash;
 
     page = await reopen();
-    await login(page);
+    await restoreViewer(page);
     await page.goto("/offline");
     await expect(page.getByRole("link").filter({ hasText: "Launch Large Transfer" })).toBeVisible();
     await connection.disconnect();
