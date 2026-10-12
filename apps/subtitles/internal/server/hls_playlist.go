@@ -6,8 +6,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func publishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool) error {
-	return playback.PublishVariants(ctx, source, directory, transcoder, qualities, results, expected, independent, writeAtomicFile)
+func publishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, plan *copiedHLSPlan) error {
+	return playback.PublishVariants(ctx, source, directory, transcoder, qualities, results, expected, independent, plan.bindMaster)
 }
 
 func masterFresh(playlist, source, transcoder string) bool {

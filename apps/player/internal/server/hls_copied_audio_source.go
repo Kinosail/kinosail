@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/mediaprobe"
 )
 
 // The complete decoded source must have one sample clock before a seek may
@@ -92,7 +93,7 @@ func copiedHLSAudioProofContext(parent context.Context) (context.Context, contex
 }
 
 func (scan *copiedHLSAudioScan) header(line string) error {
-	fields := copiedHLSFields(line)
+	fields := mediaprobe.CompactFields(line)
 	rate, base, valid := copiedHLSAudioSourceHeader(fields)
 	if scan.clock != nil || !valid {
 		scan.clock, scan.rejected = nil, true
@@ -127,7 +128,7 @@ func (scan *copiedHLSAudioScan) frame(line string) error {
 	if scan.rejected {
 		return nil
 	}
-	fields := copiedHLSFields(line)
+	fields := mediaprobe.CompactFields(line)
 	pts, ptsErr := strconv.ParseInt(fields["pts"], 10, 64)
 	samples, samplesErr := strconv.ParseInt(fields["nb_samples"], 10, 32)
 	if ptsErr != nil || samplesErr != nil || samples <= 0 || samples > 65536 || scan.samples > math.MaxUint32-samples {

@@ -154,18 +154,20 @@ Android application assembly and JVM tests passed. These are not Android emulato
 Both apps passed AMD64 and ARM64 production-container checks and scans on this baseline.
 Scheduled-only checks were not selected by the manual deep run.
 
-The browser artifact reconciliation deduplicates `(spec file, test title)` across the main and focused reports.
+The browser artifact reconciliation deduplicates `(spec file, full suite/title path, browser project)` across the main and focused reports.
 Repeated executions are not additional coverage. The numbers below apply only to this hosted baseline:
 
 | Application / engine | Distinct observed cases | Passed at least once | No passing execution |
 | --- | ---: | ---: | ---: |
-| Player / Chromium | 1,069 | 791 | 278 |
-| Player / Firefox | 1,069 | 787 | 282 |
-| Player / WebKit | 1,069 | 785 | 284 |
+| Player / Chromium | 1,070 | 791 | 279 |
+| Player / Firefox | 1,070 | 787 | 283 |
+| Player / WebKit | 1,070 | 785 | 285 |
 | Subtitles / each of the three engines | 99 | 99 | 0 |
 
 The Player remainder includes opt-in populated journeys and layout audits, not observed failures for every case.
-The private reconciliation is `.verification/ai-qa-campaign/hosted/player-coverage.json`.
+The corrected private reconciliation is `.verification/ai-qa-campaign/hosted/player-coverage-v2.json`.
+The original leaf-title key collapsed phone and desktop direct-retry cases. Both were skipped in this baseline.
+The correction adds one unpassed case per engine; passing counts do not change.
 Later focused executions must be reconciled separately before reducing these gaps.
 
 [Layout run 38155749187](https://github.com/Kinosail/kinosail/actions/runs/38155749187) uses exact source `f64bb55a5b1a3c60b7e528381a61425f6de4f65e`.
@@ -1595,46 +1597,6 @@ PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases
 
 The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.
 
-### AQA-018 completed refill leaves a missing segment waiting
-
-Main run `38229443046` returned a missing tail fragment after recovering the first and middle fragments.
-A controlled real-Server replay at `4e0fbb21` reproduces the failure by holding the middle-refill process after its media output finishes.
-The final fragment is removed and requested while that producer still appears active.
-The request returns 404 after waiting; no replacement encoder starts.
-Source preservation and process joining pass. The receipt is `hls-refill-race/20261012T101415Z/receipt.json`.
-
-Before implementation, the retained `refill-completion` public journey covers this timing boundary.
-Failure inventory: an active producer may still create the file, may finish without it, may fail, or may be canceled.
-A replacement must preserve the original initialization and timeline, source frames, audio continuity, source identity, and shared encoder ownership.
-The successful producer-completion case must retry admission under the existing lock; canceled or failed requests must remain bounded.
-This process-lifetime injection is isolated timing evidence around a real Server and real media.
-The ordinary cold-suffix cases cover unmodified encoder execution.
-
-The first candidate passed the public regression but failed review: waiting inside `prepareSegment` also blocks background preparation monitoring.
-An existing live-producer adoption control hung, confirming that contract violation. That placement was withdrawn.
-Review also identified canceled-producer readmission and permanent-filesystem-error risks.
-The next candidate must keep background admission nonblocking and limit retries to successfully joined producers after a missing-file result.
-
-The revised HTTP wait keeps the exact producer selected under the existing admission lock.
-It permits at most one new admission after successful producer completion leaves the fragment missing.
-A distinct completion cause preserves prior cancellation atomically. Failed, canceled, or unobserved producers do not authorize another refill.
-The original nonblocking preparation operation remains available to background monitoring.
-Permanent filesystem errors do not enter recovery. Re-admission checks the current source and policy again.
-Independent review found no remaining concrete blockers in this version.
-
-Four retained public-handler controls prove inactive, seek-replaced, identity-replaced, and context-canceled producers do not start another encoder.
-Their E2E gap is precise ownership ordering while the producer join is held. The real-media suite does not deterministically arrange that ordering.
-The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
-The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
-Credentials do not appear in its private log.
-
-The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
-`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
-A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
-The HTTP helper now waits under the request deadline when no producer was selected.
-This path cannot authorize another admission. Permanent errors and cancellation still stop it.
-The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
-A second independent review found no concrete blocker. Hosted checks must pass again after publication.
 ### AQA-017 edit-list and early-playlist reproduction
 
 Linux Chromium also fails the retained 64.5-second Subtitles resume at `hls-resume-subtitles-linux/20261012T073619Z`. Its first two reference frames match; the next seek presents the following IDR instead. This is separate from the Mac browser result.
@@ -1819,6 +1781,136 @@ The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers
 
 These results supplement the fourteen successful playback cases at `25f34f76`.
 Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.
+### AQA-018 completed refill leaves a missing segment waiting
+
+Main run `38229443046` returned a missing tail fragment after recovering the first and middle fragments.
+A controlled real-Server replay at `4e0fbb21` reproduces the failure by holding the middle-refill process after its media output finishes.
+The final fragment is removed and requested while that producer still appears active.
+The request returns 404 after waiting; no replacement encoder starts.
+Source preservation and process joining pass. The receipt is `hls-refill-race/20261012T101415Z/receipt.json`.
+
+Before implementation, the retained `refill-completion` public journey covers this timing boundary.
+Failure inventory: an active producer may still create the file, may finish without it, may fail, or may be canceled.
+A replacement must preserve the original initialization and timeline, source frames, audio continuity, source identity, and shared encoder ownership.
+The successful producer-completion case must retry admission under the existing lock; canceled or failed requests must remain bounded.
+This process-lifetime injection is isolated timing evidence around a real Server and real media.
+The ordinary cold-suffix cases cover unmodified encoder execution.
+
+The first candidate passed the public regression but failed review: waiting inside `prepareSegment` also blocks background preparation monitoring.
+An existing live-producer adoption control hung, confirming that contract violation. That placement was withdrawn.
+Review also identified canceled-producer readmission and permanent-filesystem-error risks.
+The next candidate must keep background admission nonblocking and limit retries to successfully joined producers after a missing-file result.
+
+The revised HTTP wait keeps the exact producer selected under the existing admission lock.
+It permits at most one new admission after successful producer completion leaves the fragment missing.
+A distinct completion cause preserves prior cancellation atomically. Failed, canceled, or unobserved producers do not authorize another refill.
+The original nonblocking preparation operation remains available to background monitoring.
+Permanent filesystem errors do not enter recovery. Re-admission checks the current source and policy again.
+Independent review found no remaining concrete blockers in this version.
+
+Four retained public-handler controls prove inactive, seek-replaced, identity-replaced, and context-canceled producers do not start another encoder.
+Their E2E gap is precise ownership ordering while the producer join is held. The real-media suite does not deterministically arrange that ordering.
+The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
+The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
+Credentials do not appear in its private log.
+
+At clean commit `5398b5a4647ba41cb7f3598d755cb206465deede`, all nineteen public cold-suffix cases pass.
+The exact-revision manifest is `refill-completion-exact-proof/manifest.json`, SHA-256 `268ac49f2e63d3e9ceb30f775169bb5fe3fbfff9eeb2a0d0f14995eca80d2275`.
+Source remains unchanged. Affected Player compilation and focused Server verification pass.
+The Player repair is in PR 581; the separate Subtitles MSE repair is in PR 580.
+At this checkpoint, required hosted checks are still running. Neither pending PR is main or deployment acceptance.
+
+### Native cut-map and frame-oracle investigation
+
+At `e96ef3de`, native long resume and the held-prefix test still fail.
+The prefix exposes inaccurate future cuts and changes its map across completion, warm reads, and restart.
+Receipts are `hls-copied-prefix/20261012T103455Z` and `hls-resume-browser/20261012T103455Z`.
+
+A throwaway Go overlay uses known fixture keyframe cuts and independent fragments.
+It passes native long resume and produces an accurate immutable prefix, including warm reads and restart.
+This hard-coded overlay is not production code or certified source-index proof.
+Its configuration and source hashes are in `ai-qa-campaign/native-cut-prototype/configuration.json`.
+
+The paused native frame oracle was unreliable: it could pause before `playing` and sample the preceding frame after `seeked`.
+The driver now waits for initial playback and a timestamped video-frame callback at every sample.
+Native seeks briefly play muted, then pause at the requested frame timestamp. Expected pixel hashes do not control the wait.
+With the overlay, this stronger oracle matches all seven frames and resumes at 12.500001 seconds while the initial producer was held.
+Receipt: `hls-native-frame-prototype-prefix/20261012T103849Z`.
+The callback semantics follow the [WICG video-frame callback specification](https://wicg.github.io/video-rvfc/).
+The retained driver is replayed against unmodified production behavior before implementing the cut-map repair.
+The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
+`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
+A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
+The HTTP helper now waits under the request deadline when no producer was selected.
+This path cannot authorize another admission. Permanent errors and cancellation still stop it.
+The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
+A second independent review found no concrete blocker. Hosted checks must pass again after publication.
+
+### Native generation-plan failure inventory
+
+The stronger native frame oracle fails both baseline journeys at `e96ef3de`.
+Receipts `hls-copied-prefix/20261012T104033Z` and `hls-resume-browser/20261012T104034Z` retain unchanged-source and joined-process evidence.
+The production repair will persist one source-bound generation plan before encoding.
+Eligible source-zero H264 streams use certified keyframe cuts; unsupported sources retain an explicit legacy plan.
+Cancellation, unsettled probes, changed source or policy, and invalid persisted records must stop generation or delivery.
+A certified prefix must match its immutable plan during active, completed, warm, and restarted delivery.
+Public malformed, missing, mismatched-policy, and mismatched-cut controls are added before implementation.
+These inject private-cache damage around real media; they are isolated fault evidence.
+The plan cannot exceed 4,095 segments because the playlist also references initialization data.
+
+PR 580 merged through protected checks into `9e8d3bbc8a00cca88ab8a9dc6ec000586597c2ae`.
+Fetched ancestry confirms reviewed commit `4e0fbb21` is included.
+Main `5f169ee2` passed its unchanged hosted retry and both production promotions.
+Player published digest: `sha256:decb7e5d26a1df423921fc5fd85469367a564020b73c4fddef4e14cdecd3de21`.
+Subtitles published digest: `sha256:eb0a7ebfb316077900b56807d0d4a25cfc1c98c91d02b9f430f30910dc1fcfbd`.
+Those digests precede PR 580 and are not current-main deployment acceptance.
+
+The first production candidate passes held-prefix native playback, all seven presented frames, far seek, warm reuse, and restart.
+Receipt: `hls-copied-prefix/20261012T105259Z/receipt.json`.
+Long native resume also passes in `hls-resume-browser/20261012T105431Z/receipt.json`.
+The malformed-plan control changes from HTTP 200/200 before implementation to 503/404 afterward.
+
+Independent review found two further gaps, each reproduced before its repair.
+A canonical certified-to-legacy downgrade returned 200/200 (`hls-copied-prefix/20261012T105523Z`).
+A source-version change during a held fragment wait still returned 200 (`hls-copied-prefix/20261012T105606Z`).
+The published master now binds the exact plan bytes by SHA-256.
+Delivery revalidates the captured source and policy after waiting and opening the requested asset.
+Both controls then pass: downgrade at `20261012T105735Z`, held source replacement at `20261012T105733Z`.
+The source-change fixture intentionally changes source modification time; content remains unchanged and all owned processes join.
+The affected Go controls pass. Final lint, complete fault matrix, MSE regression, and exact-revision browser proof remain pending at this checkpoint.
+
+At `1635c0ac`, nine real-Server browser/fault cases pass with unchanged tracked source.
+The manifest `native-generation-browser-proof/manifest.json` has SHA-256 `13e87d9b826f19e906fbdd87b7959e6d3b0ebcec5451cafbca80246c7f430dd8`.
+It includes native prefix/far seek, long resume, both MSE engines with decoded audio, five persisted-plan faults, and held source replacement.
+The canonical Subtitles container suite passes 66 checks; its disposable project `kinosail-test-42482-23307` leaves zero containers and volumes.
+The shared mediaprobe and hlsmanifest race suites pass. Whole shared-package lint still stops affected verification at 95 established findings.
+
+The complete Subtitles Server suite then exposed three existing compatibility regressions on Darwin.
+A rejected probe response exited successfully, with successful observation, Wait, and group settlement.
+Darwin's zombie-group EPERM was still incorrectly promoted to an uncertified lifecycle because metadata parsing failed.
+Existing public-handler controls reproduce the regression; a retained failure-class control fails before repair.
+Independent safety review confirmed metadata rejection and process settlement must be evaluated separately.
+The exception remains Darwin-only and requires an active context, successful exit observation and Wait, and proven settlement.
+Metadata remains rejected. Cancellation, uncertain observation, failed Wait or settlement, and other termination failures remain fatal.
+The three affected public-handler controls and the complete mediaprobe race suite pass after this distinction.
+
+A real-Server unsupported-index fault additionally exposed a false ERROR after safe fallback (`hls-copied-prefix/20261012T111030Z`).
+The source remains on an explicit legacy plan and its probe is settled, but completion logging incorrectly reports a lifecycle failure.
+Probe completion now emits that ERROR only for an actual `ErrProbeLifecycle`.
+The parent retains one correlated WARN with the bounded `legacy-before-encoding` outcome.
+Final fallback, full-Server, and refreshed exact-revision evidence remain pending for this final adjustment.
+
+The complete Subtitles Server suite passes at `e5414ae5` in 143.278 seconds.
+Unsupported metadata and bounded probe timeout both retain a settled legacy plan with one correlated WARN and no false lifecycle ERROR.
+Timeout receipt: `hls-copied-prefix/20261012T111259Z/receipt.json`.
+Two additional real-Server faults hold a future-fragment request while changing transcoder settings or killing the fixture encoder.
+Both reject delivery with HTTP 404, start no replacement encoder, and preserve the source and process ownership.
+The policy fault records one correlated WARN; the producer fault records one correlated ERROR.
+Receipts: `hls-copied-prefix/20261012T111801Z` and `hls-copied-prefix/20261012T111826Z`.
+These are injected-fault controls with real media and HTTP, not physical-device acceptance.
+CI now retains the immutable-map, source and policy changes, producer failure, optional-index fallback, and persisted-plan fault controls.
+The artifact upload includes safe receipts only. Native WebKit capability simulation remains separate local evidence.
+
 
 
 ### Android clear-search synchronization repair
@@ -1859,3 +1951,189 @@ These are Linux ARM64 and isolated recorder controls. Immediate-start seek timin
 
 PR 583 merged through protected checks into `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
 Fetched ancestry confirms reviewed Android test commit `3ae56d24` is included.
+
+### Hosted verification follow-up: login and fixture shutdown
+
+Hosted WebKit layout run `38243395191` completed Subtitles login with HTTP 303, then timed out filling the previous document's authentication field.
+A controlled native WebKit commit reproduces the same `layout-stability-local.mjs:115` failure before repair.
+Subtitles submits the password and second factor together. The audit now submits once and waits for the existing redirect condition.
+The retained delayed-redirect and rejected-factor controls require exactly one POST and no library access after rejection.
+Linux ARM64 passes all 11 applicable controls across Chromium, Firefox, and WebKit; four Firefox-specific controls are skipped on other engines.
+Native macOS Chromium and WebKit pass. Firefox fails before browser launch on this workstation and is not counted as local coverage.
+A real Subtitles Server with populated synthetic data passes login and six responsive WebKit views over trusted fixture HTTPS.
+
+Hosted source-change rejection returned 404 with the correct diagnostic and no replacement encoder, but failed the fixture's join assertion.
+Linux ARM64 reproduces that result: immediate Server shutdown kills the wrapper before it can reap FFmpeg.
+The fault harness now waits, within its existing bounded deadline, for the exact child's join receipt before stopping the Server.
+Source change, settings change, and encoder failure all pass with the strict rejection, diagnostic, unchanged-content, and join assertions intact.
+This verifies settled faults. Early Server shutdown with an installation wrapper that spawns descendants remains a separate ownership boundary.
+
+The combined proof binds revision `5921a073` and the exact uncommitted harness hashes, not an exact clean-commit run.
+Proof: `ai-qa-campaign/pr582-harness-proof.json`, SHA-256 `20c957e11d51e78adc482872bddf3a583f6541324ba15819a0055c6b09952d9c`.
+Independent review found no blocker. Both generated architecture snapshots were refreshed and their contract passes.
+Script checks, TypeScript quality controls, source limits, and whitespace pass. Fresh hosted checks remain required.
+
+### Native campaign follow-up on 2026-10-12
+
+The Android production tree is unchanged between `e9baa35a`, `51a5fcc2`, and PR 582 head `8b6011b2`.
+Phone, TV, and tablet runs used API 36 read-only emulator overlays. Shared AVD data was preserved.
+The test APK added private, failure-only EPUB diagnostics. No product assertion or timeout was weakened.
+
+| Surface | Evidence | Boundary |
+| --- | --- | --- |
+| Phone native journeys | 14 passed in the full follow-up; four focused EPUB repetitions also passed | Earlier intermittent EPUB failure remains open |
+| Phone real Server playback | Two portrait and two landscape journeys passed | Actual Media3 decoder and isolated main `51a5fcc2` Go Server; generated media and HTTP media-fault bridge |
+| Android TV native journeys | 11 passed; two EPUB assumptions skipped | Native focus and D-pad against in-process synthetic data |
+| Tablet native journeys | First 11 checks passed before a 600-second outer timeout; remaining three passed separately | Incomplete original run retained; not represented as one green suite |
+| Tablet real Server playback | Two journeys passed in 98.075 seconds | Loading, failed media, retry, recovered frame, captions, speed, and action contrast |
+| Wear | Application and instrumentation APK builds passed | Emulator execution deferred during coordinated physical tvOS playback |
+
+Phone proof: `android-phone-diagnostic3-proof.json`, SHA-256 `78562325e264ebdc598f7d21e48cf3b812d758d3b960d014f97ad611ce91da14`.
+Phone portrait proof: `android-phone-live-proof.json`, SHA-256 `a15b934f2dbb8e0735c2ffaa7a4bd113376255deeec987d6162cc45bb187bcde`.
+Phone landscape proof: `android-phone-landscape-live-proof.json`, SHA-256 `04b756836cccdd3068219fd1327a6a1e8650bfd4f5cac6d2fd08f284a42cd3cb`.
+Tablet proof: `android-tablet-proof.json`, SHA-256 `84461e0c2b3f39d999593be202504d3d2950045c9baf44a44c3c429dc031a828`.
+Tablet real Server proof: `android-tablet-live-proof.json`, SHA-256 `f03c1881c3a7b13f9b5cd0aca13fc9485f610285838032395d6939e50c0fefa8`.
+These files are private under `.verification/ai-qa-campaign`; raw logs and credentials are not publication artifacts.
+
+Tablet review confirms matching pending and loaded catalog geometry, readable controls, and visible EPUB chapters.
+The recovered video screenshot also shows captions intersecting the gesture area. Existing action checks do not assert caption placement.
+That finding needs an observable failing check before a production repair.
+No Cast receiver, physical Android device, native TLS, deployment, or paired Watch acceptance is claimed.
+All task-started phone, TV, and tablet emulators were shut down normally. The isolated Server and HTTP bridge also stopped.
+
+### EPUB accessibility reproduction remains open
+
+A validated diagnostic control deliberately waits for an absent heading and retains the original 20-second failure.
+Its service and direct WebView trees both contain the real chapter, proving both observation paths work on a loaded document.
+The following normal tablet journey fails after reopening saved Chapter 2. `Harbor lights` is visibly rendered.
+Both the service tree and the direct app query contain an empty WebView virtual child.
+The WebView remains attached, shown, and important for accessibility; system accessibility is enabled.
+Clearing the service cache and ten bounded refreshes do not recover the text.
+The runtime is WebView `133.0.6943.137`. No newer-runtime or real screen-reader comparison has run.
+Both queries still use Chromium's node cache. They do not distinguish stale Chromium cache from an empty renderer accessibility tree.
+This narrows the investigation beyond a framework-only cache problem; it does not establish an application lifecycle defect or TalkBack failure.
+The existing assertion still fails. Diagnostics are preserved privately, and tracked source was restored unchanged.
+Proof: `android-epub-diagnostic5-proof.json`, SHA-256 `0a2d0079a74b9fea766b7c187f539ac1db16fe86def81acb7cd2cbdbf840c61c`.
+
+### Protected publication and shared probe diagnostics
+
+PR 581 merged with reviewed commit `b8b9de74` included in fetched main `51a5fcc28f84e84c8c651529fe6416353c802149`.
+Main run `38250393619` passed its selected checks and both Player container architectures.
+It published and promoted `sha256:ab5036e417b3749d47bbe3847e59b38e1ba72b213946feeb5e39235b941989da`.
+This is GHCR publication proof; no Nox deployment or physical acceptance is inferred.
+Publication proof: `player-51a5-publication-proof.json`, SHA-256 `52ecebd2b280007516722b38719f9f204fe9d7fc6da4c24fb7df8f9e2274d06d`.
+
+PR 582 head `8b6011b2` preserved the exact source tree tested at `18602`.
+Its three layout engines passed. The Player browser gate then found a shared probe logging regression.
+All ten strict converted-audio splice cases passed. The injected exit-23 source-probe case failed its required ERROR assertion.
+Safe fallback, source preservation, correlated fallback WARN, and process settlement still passed.
+The extracted probe code logged lifecycle failures but omitted ordinary nonzero exits after a successful scan.
+One condition now restores that ERROR while keeping expected metadata rejection, cancellation, and optional timeout quiet.
+Return values and fallback eligibility are unchanged. Independent review found no blocker.
+The original hosted failure remains recorded; no assertion was weakened and auto-merge was disabled during repair.
+The failed receipt has SHA-256 `bc4e9291f2cae991bc08d16a64818fbf293313e1f36f4e98ab3a8ed73dfc7566`.
+
+The focused Player source-error, timeout, cancellation, and coarse-metadata controls pass after repair.
+The Subtitles unsupported-index fallback control and the shared mediaprobe package checks also pass.
+Error logging remains correlated and bounded; the existing checks reject secrets in diagnostics.
+All fixture Servers settled and source media remained unchanged. Source limits and whitespace pass.
+These local runs bind the changed source hash over base `8b6011b2`; fresh hosted Linux verification is still required.
+Proof: `pr582-probe-diagnostic-repair-proof.json`, SHA-256 `2e85efefb90838878178c8cd4618d264c19d531145e6bbbdfcafcca7df513bdd`.
+
+The first diagnostic condition introduced one new complexity finding during post-commit verification.
+The equivalent guard now lives in the existing reporting helper and receives the probe deadline context.
+Independent review found no blocker. Player four-case fault replay, Subtitles unsupported-index replay,
+mediaprobe checks (44.912 seconds), changed-package lint, source limits, and whitespace pass again.
+Final local proof binds both changed source hashes over `e14406b9`; hosted verification is pending.
+Proof: `pr582-probe-final-proof.json`, SHA-256 `7ab72c6f460e36e5252d81aa951f3c58c2b5a87d944b94f40d692c83cd2bdbf8`.
+
+Fresh head `52e7886a` passed changed app lint but exposed stale generated Code Atlas metadata in tooling.
+Both snapshots now reflect the three added mediaprobe lines; dependency, symbol, and file counts are unchanged.
+The complete local `make tooling-check`, architecture checks, source limits, and whitespace pass.
+The source repair is unchanged. Both post-commit app wrappers stopped at the established 95 shared lint findings.
+Snapshot proof: `pr582-architecture-refresh-proof.json`, SHA-256 `35f1ca1f1420cf8c42f6cc79ddc571792a9b61a9b783a1752751632e95191465`.
+
+### Merged main publication and fresh deep verification
+
+PR 582 merged reviewed commit `8e816c7187fb08669b80638e78d3052223a33965` into main `b1b2c00e961519b193dbef546683422d4bc5186a`.
+A fetched ancestry check proves inclusion. Required main run `38266522591` passed and published both applications.
+Each app passed AMD64 and ARM64 build, production tests, and scans. Hosted signature and provenance verification passed.
+At verification on October 12, the commit, `main`, and `latest` tags resolved to the same manifest for each app:
+
+| App | Published digest |
+| --- | --- |
+| Player | `sha256:4f17925107fb0c76cb82707851797d02a16e3361c36216225094c90c12e6c05b` |
+| Subtitles | `sha256:323bb62a7b0fd96f8787544ecb0dd66118e0e820182515dca60ef127baa8ff8d` |
+
+Both architecture configurations contain the exact main revision. This does not prove a Nox deployment or physical-device acceptance.
+Publication proof: `main-b1b2-publication-proof.json`, SHA-256 `e414db5d686b95f469273cf6d6d7d62114579be90b1f375146860ac9a8c8d266`.
+
+Manual deep run `38266559451` tested the same revision and failed. Original failures remain retained.
+All six browser archives prove unchanged exact source. Their 2,215 listed artifact hashes match.
+Counts below reconcile full suite/title/project identities across the base and focused reports.
+They include isolated browser fixtures and populated Server journeys; they are not all populated E2E cases.
+
+| Application / engine | Observed cases | Passed at least once | No passing execution |
+| --- | ---: | ---: | ---: |
+| Player / Chromium | 1,074 | 794 | 280 |
+| Player / Firefox | 1,074 | 790 | 284 |
+| Player / WebKit | 1,074 | 786 | 288 |
+| Subtitles / each engine | 99 | 99 | 0 |
+
+Subtitles has no skipped, failed, or flaky cases in these reports.
+Player has two WebKit failures. Its other unpassed cases need explicit runners or have browser-specific exclusions.
+Proof: `deep-b1b2-hosted/browser-artifacts-proof.json`, SHA-256 `9f1ab45554cb69d895330a3f542e8c027a2cc86fd786c31c14d209b1bc702bbb`.
+Coverage reconciliation: `deep-b1b2-hosted/player-coverage-v2.json`, SHA-256 `2c63ac0ed125cb33c4d5cfdce466471272f5f9470055ffdceb8e9a1f6a07d25c`.
+
+The Player Go job rejected 86.7% coverage against its unchanged 89% threshold.
+Its terminal log contains no test failure or race report. Unmerged PR 579 uses different coverage accounting and reports 89.5% separately.
+The deep iOS run passed 331 cases, failed one, and skipped one. The failed card comparison captured a blank raw pixel buffer.
+Its rated and unrated PNG attachments are byte-for-byte identical and visibly nonblank. The raster comparison needs diagnosis; no visible rating defect is proved.
+The deep tvOS run passed 312 cases, failed one, and skipped one.
+Its endpoint-scrub test did not establish the required EOF, loading, and attached-AVKit prerequisite. Later scrub and watched-state assertions did not execute.
+These Xcode case counts differ from Swift Testing's parameterized console counts.
+
+Both WebKit failures accepted the real Mark unwatched response, then waited for a native ended event during held navigation.
+All four attempts sought to 11.9 seconds of a 12-second clip with no buffered media at the target and readyState 1.
+The accepted-departure handler intentionally stops HLS loading. The fixture therefore needs to buffer the ending before accepting departure.
+A private candidate preserves real EOF, the real 303 response, and all no-overwrite assertions. It has not run or been published.
+The ordinary watched/unwatched navigation journey and both late-pause variants passed.
+
+Local builds, tests, and emulators remain held for the coordinated physical Apple TV window.
+Caption placement, EPUB accessibility, Wear execution, BFCache admission, scheduled-only checks, shared lint, and device/deployment boundaries remain open.
+No 100% product or platform acceptance is claimed.
+
+### Compose recovery, supersession, and input contracts
+
+Three additional hosted Q47 suites tested exact revision `b1b2c00e961519b193dbef546683422d4bc5186a`.
+These close the previously unrun Q47 recovery, supersession, and contracts suites.
+Each fixed case passed twice without a retry. All eight distinct cases passed across 16 executions; none failed or skipped.
+
+| Suite | Hosted run | Distinct cases | Passing executions |
+| --- | --- | ---: | ---: |
+| Recovery | [38273036654](https://github.com/Kinosail/kinosail/actions/runs/38273036654) | 2 | 4 |
+| Supersession | [38273252807](https://github.com/Kinosail/kinosail/actions/runs/38273252807) | 2 | 4 |
+| Contracts | [38273786454](https://github.com/Kinosail/kinosail/actions/runs/38273786454) | 4 | 8 |
+
+Recovery proves that a lost request and an HTTP error preserve inputs, show recovery actions, and accept a successful retry.
+Both cases complete exactly one new request after the failed request. The resulting download and clipboard contents match the expected Compose output.
+Supersession proves that changed inputs cancel held requests. Late headers or body data do not replace the current output.
+Contracts verify preview, browser download, and clipboard contents for Player, Subtitles, and Both.
+Each validation execution rejects seven invalid path inputs and four invalid port inputs with zero template requests and no output.
+The disposable peer observes no credentials, cookies, request bodies, or query strings in these requests.
+
+Each artifact contains a receipt, results, source manifest, and artifact manifest. All nine listed file hashes match.
+All 7,463 tracked source records match the tested Git tree. Before and after source fingerprints match in all three runs.
+The receipts confirm unchanged binary, dependencies, and generated files. All owned processes settled.
+
+| Suite | Downloaded archive SHA-256 |
+| --- | --- |
+| Recovery | `cf1bed29bb4b2fc112b1cb5fd35a08fb5a7dd5534777da530890ae59d0922a91` |
+| Supersession | `7b3d480a1fdb019f91109d25e92cf8a7cb2425aedbe40d9d4fd26459a92b782b` |
+| Contracts | `723021ca64342569ab706cb27e610c98f0e7cc875f0a4214ccb988777079acca` |
+
+The private ledger is `.verification/ai-qa-campaign/q47-supplementary-hosted-ledger.json`.
+Per-suite receipts and reconciliation proofs are in `.verification/ai-qa-campaign/q47-supplementary-hosted/`.
+These are Chromium journeys against generated documentation and disposable HTTP peers.
+They do not prove a production installation, populated app Server behavior, Nox deployment, or physical-device acceptance.
+The separate Player browser totals above remain unchanged.

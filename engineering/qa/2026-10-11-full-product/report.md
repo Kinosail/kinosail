@@ -2030,6 +2030,47 @@ Earlier GStreamer warnings report temporary-file removal, not file creation fail
 They do not establish the playback-stall cause. No production workaround is introduced.
 The owned diagnostic container is removed. Physical Safari behavior remains unproved.
 
+## Resolved subtitle-policy follow-up
+
+The deep run at `c0e38f59` retains 862 Chromium, 856 WebKit and 858 Firefox passing browser executions.
+Those browser reports have no unexpected or flaky results. Player Go coverage is 89.5%.
+The complete run fails the separate startup boundary and a tvOS endpoint-restore prerequisite.
+The tvOS failure occurs before its native scrub assertion; no product cause is established.
+
+Two hosted startup executions fail the fragment-success assertion after subtitle burn-in invalidation.
+The pinned Linux ARM64 reproduction fails at that same assertion.
+The wait-time policy check compares the URL recipe with a policy captured after source resolution.
+The URL recipe lacks the external subtitle path included in the captured policy.
+A valid subtitle-burned continuation can therefore return 404 after successful publication.
+
+The check now resolves the source recipe before comparing policies.
+Source inspection stays outside the HLS manager lock. The existing complete policy check remains under that lock.
+The unchanged startup journey passes with this candidate, including continuation decoding and retained initialization bytes.
+Its Linux runner copies an attested cross-built binary instead of rebuilding inside the browser image.
+The Mac replay passes while explicitly skipping burn-in because its FFmpeg lacks the subtitles filter.
+It does not establish the hosted failure's acceptance.
+
+The candidate diff SHA-256 is `b2b704f2eec757bd32485ffb3fc5f52428d5acbaa21d1cee440bae1a9101b2c5`.
+The passing candidate binary SHA-256 is `76dde0cd2396ce0fc63645725123c645b8474b9d54b4e673bfb3bf812fa0f8a8`.
+Main's shared copied-generation plans and native progress repair are then reconciled.
+The generated Player architecture page is rebuilt from the combined source.
+On that reconciled source, 42 focused HLS tests and 60 subcases pass with race detection and no skips.
+The stale-source and canceled-producer rejection controls remain intact.
+The broader pre-reconciliation lint check, complete tooling suite, workflow contracts and architecture contracts pass.
+The pinned actionlint fork passes; the Homebrew upstream validator lacks the repository's native parallel-step syntax.
+
+The controlled log observation repeats the five existing HTTP outcomes with synthetic request and session correlation.
+The source-changed publication emits one WARN. Successful publication emits no preparation warning.
+The synthetic private query and source path remain absent from the diagnostic projection.
+These are controlled handler logs, not deployed Server or browser log proof.
+The exact commands, patches, binaries and private logs remain in `linux-startup-continuation-*` and `hls-ae91-*` evidence.
+Fresh hosted checks are still required for the final committed revision.
+
+The original startup journey also passes on the fully reconciled source with the integrated repair.
+Its production-source snapshot is base `c0e38f59` plus patch SHA-256 `e5f51acb995e23f0faa93475e2dbc62080fa82891d7fb5946096984dc0cedcff`.
+The reconciled Linux binary SHA-256 is `dbfe66a5d0366a863cfdc13e2dc4c7d6a0cafff769d3c4e1978ab07f8e161a30`.
+The owned container is removed. This remains Linux ARM64 proof; exact-head hosted AMD64 checks follow the commit.
+
 ## QA-024 — Native verifier skips catalog inputs and reuses stale success
 
 The native stage selects only changes under `apps/native`. It can skip commits
@@ -2109,3 +2150,22 @@ The final tablet artifact SHA-256 is `5f14e7f2776a96a2f9642e215c7b69bff7fbf79761
 The original geometry failure artifact SHA-256 is `c4f38a78cb224b68ce1b9d819f97f8df74742f17ade9683e2398540144b403c3`.
 The original overflow failure artifact SHA-256 is `9a9906a12ee6b95bfb8aa8ff61a6457d6e1e93d97e97d9b9dae52f7986c570f8`.
 Private `epub-column-*` and `epub-overflow-*` receipts retain exact APK hashes, source patches, commands and environment.
+
+All four final configurations use the same frozen APK pair.
+Normal phone and tablet use a dark page. Font-scale 2.0 phone and tablet use a light page.
+Every execution passes the complete chapter journey with text zoom 100% and no horizontal overflow.
+Phone pending and loaded left edges are pixel 42. The enlarged tablet left edge is pixel 32.
+The Android source tree is `62625979b9ad55fd13a227558ed1646b4e579525`.
+Reconciliation preserves that exact tree, so it preserves the tested production and test sources.
+The app APK SHA-256 is `2984a5122d4989f7f940fd9ac25b7ae91dc391e231e09c663f3814e7a801fe2c`.
+The test APK SHA-256 is `f6d9bda776c17399ddd7ae2a86c7f20f5d4dcce238ca482b9e02218561dbc213`.
+The final matrix log SHA-256 is `5e6c916eea637b5aa2a0ad7c5cd06d8f6d58abf626c16d6c71acd14067805d8c`.
+
+A separate cold-boot audit reads each existing AVD's settings and installed packages.
+Both font settings equal their original 1.0 value. Both task package pairs are absent.
+Process and ADB checks confirm that each task emulator is off.
+Two earlier audits saw ADB's brief disconnect delay after process exit; those failures remain retained.
+The corrected bounded disconnect observation passes without changing product assertions.
+Its log SHA-256 is `859ce8cda45781d2a9c1cfa5fbaf579695e37e0714f6de7d61c6ef072579a3ba`.
+Private `epub-final-all-configurations-safe.json` and `epub-emulator-cleanup-verified-safe.json`
+retain all four artifact hashes, geometry, exact APK provenance and cleanup observations.

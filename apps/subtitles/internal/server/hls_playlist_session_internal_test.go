@@ -44,7 +44,7 @@ func TestSessionPlaylistRejectsUnsafeOrExcessiveMediaReferences(t *testing.T) {
 			t.Cleanup(func() { _ = file.Close() })
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8?playSessionId=playback-session", nil)
 			response := httptest.NewRecorder()
-			serveHLSPlaylistWithSession(response, request, file, 0)
+			serveHLSPlaylistWithSession(response, request, file, 0, nil)
 			if response.Code != http.StatusServiceUnavailable || strings.Contains(response.Body.String(), "outside.example") {
 				t.Fatalf("unsafe session playlist = %d %q", response.Code, response.Body.String())
 			}
@@ -64,7 +64,7 @@ func TestSessionlessPlaylistStillRejectsUnsafeMediaReference(t *testing.T) {
 	t.Cleanup(func() { _ = file.Close() })
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8", nil)
-	serveHLSPlaylistWithSession(response, request, file, 0)
+	serveHLSPlaylistWithSession(response, request, file, 0, nil)
 	if response.Code != http.StatusServiceUnavailable || strings.Contains(response.Body.String(), "outside.example") {
 		t.Fatalf("unsafe sessionless playlist = %d %q", response.Code, response.Body.String())
 	}
@@ -82,7 +82,7 @@ func TestSessionPlaylistRejectsOversizedManifest(t *testing.T) {
 	t.Cleanup(func() { _ = file.Close() })
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/index.m3u8?playSessionId=playback-session", nil)
 	response := httptest.NewRecorder()
-	serveHLSPlaylistWithSession(response, request, file, 0)
+	serveHLSPlaylistWithSession(response, request, file, 0, nil)
 	if response.Code != http.StatusServiceUnavailable || strings.Contains(response.Body.String(), strings.Repeat("x", 100)) {
 		t.Fatalf("oversized session playlist = %d %q", response.Code, response.Body.String())
 	}

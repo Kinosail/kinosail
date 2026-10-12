@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
+func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, plan *copiedHLSPlan) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
 	release, err := manager.workloads.Acquire(ctx, workload.Playback)
 	if err != nil {
 		return err
@@ -53,11 +53,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		// rewrites the first packet after a fixed-time cut through a GOP.
 		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-hls_segment_options", "movflags=+skip_sidx")
 	}
-	arguments = append(arguments, hlsSegmentArguments(recipe.mode, directory, playlist)...)
+	arguments = append(arguments, hlsSegmentArguments(plan.segmentMode(recipe.mode), directory, playlist)...)
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	command := exec.CommandContext(ctx, manager.ffmpeg, arguments...)
 	if err := runHLSCommand(command, item.Path, root); err != nil {
 		return err
 	}
-	return finalizePlaylist(playlist)
+	return plan.finalizeOutput(root, name, playlist)
 }
