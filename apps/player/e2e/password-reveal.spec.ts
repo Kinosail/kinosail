@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { createHmac } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -39,8 +40,7 @@ test("passwords can be shown and hidden without changing their value", async ({ 
 	expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
 	await page.getByLabel("Name").fill("Owner");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await submitFixtureLogin(page, totp);
 	await expect(page.getByRole("heading", { name: "Make the next sign-in easier" })).toBeVisible();
 	await expect(page.getByText("Add one directly on another device")).toBeVisible();
 	for (const viewport of [{ width: 390, height: 844 }, { width: 320, height: 800 }]) {
@@ -63,8 +63,7 @@ test("the password reveal control stays aligned across responsive settings", asy
 	await page.goto("/login");
 	await page.getByLabel("Name").fill("Owner");
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await submitFixtureLogin(page, totp);
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await expect(page).toHaveURL("/");
 
