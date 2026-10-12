@@ -1469,3 +1469,44 @@ Independent review finds no remaining blocker in the eight changed production Go
 At revision `159e5c14`, affected Player verification, focused Server lint, source limits, and both architecture snapshots pass.
 All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
 Protected PR checks and delivery remain pending.
+
+### AQA-015 Linux rounding phase and coarse-clock boundary
+
+[PR 575 CI](https://github.com/Kinosail/kinosail/actions/runs/38211142029) rejects the 44.1 kHz Matroska source clock.
+The 48 kHz and 32 kHz journeys pass before that failure.
+A disposable Linux Noble ARM64 Server and Chromium reproduce the failed audio with Jellyfin FFmpeg 8.1.3.
+Hosted CI uses the same media-tool version on AMD64; these are separate execution environments.
+The reproduction retains the exact fixture, binary, commands, browser data, source hashes, and patch in private receipts.
+
+Every one of the 2,139 decoded AC3 frames fits one fixed timestamp quantizer.
+Its rounding phase differs from the nearest-to-zero rule after the container normalizes negative encoder priming.
+The full-frame intersection is `[30600,30899]` in units of 1/44100 of a container tick.
+The certificate now intersects that one phase across the entire source.
+It never assigns a separate tolerance to each frame. Sample-clock streams retain their existing exact check.
+The integer comparison bounds untrusted timestamps before arithmetic.
+
+Independent review also identifies an ambiguous-clock boundary: a one-second timestamp cannot identify an AC3 block after seeking.
+Coarse certification now requires a timestamp quantum no larger than one millisecond.
+A selected-probe metadata fault reproduces the previous incorrect certification before this guard.
+This fault is an isolated proof boundary; it is not a real one-second source or browser acceptance result.
+The cache policy changes so retained generations must obtain the current certificate.
+
+On Linux, the repaired browser journey improves initial minimum correlation from 0.7178 to 0.9897.
+Recovered and retained-neighbor captures improve from -0.0621 to 0.9804.
+All four captures have zero sample lag and uninterrupted render blocks.
+Both packet grids, seven reference frames, EOF, and ten metadata rejection controls pass.
+Seven source controls also pass: gap, delay, a real one-millisecond gap, ambiguous metadata, timeout, cancellation, and probe failure.
+Rejected clocks retain one correlated warning and ready playback without a guessed clock.
+The source and owned Server processes settle after every case.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T064047Z/receipt.json` | Linux browser reproduction fails | `34083254128c3a6738001e296e89ac7da9345262a62be0cc9bc7ed0851aac7b0` |
+| `hls-audio-splice/20261012T064324Z/receipt.json` | Fixed quantizer: four captures, grids, video and ten metadata controls pass | `dba88aefb6c51f114066f7408c87034141f61ddf1ab1dd4cfb73fd3f12da60cc` |
+| `hls-audio-source/20261012T064448Z/receipt.json` | Ambiguous one-second metadata is incorrectly certified before the guard | `b64b7af70f8f1526a8b87b388476ffa9a8aadc8385295da605d80b59e8ff03b5` |
+| `hls-audio-source/20261012T064529Z/receipt.json` | Seven source and fault controls pass after the guard | `3e04c11cd9cf45f9654fb2d204aa7e387e91b68f6832c4347eeb0cd13c4aa6e1` |
+
+The Firefox native-layout job in [run 38211141937](https://github.com/Kinosail/kinosail/actions/runs/38211141937) passes one unchanged retry.
+The original 844-by-390 navigation timeout remains an intermittent observation with its trace retained.
+No timeout, layout assertion, or navigation behavior was changed for that retry.
+Protected delivery and current-main deployment remain pending.

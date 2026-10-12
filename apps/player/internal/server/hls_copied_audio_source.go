@@ -27,6 +27,8 @@ type copiedHLSAudioScan struct {
 	samples     int64
 	previous    int64
 	format      string
+	phaseLow    int64
+	phaseHigh   int64
 	rejected    bool
 }
 
@@ -99,11 +101,13 @@ func (scan *copiedHLSAudioScan) header(line string) error {
 	scan.clock = &copiedHLSSourceAudio{Rate: rate}
 	scan.denominator = base
 	if base%rate != 0 {
-		if fields["codec_name"] != "ac3" || !copiedHLSAC3Rate(rate) {
+		// Coarser clocks cannot identify a unique AC3 block after seeking.
+		if base < 1000 || fields["codec_name"] != "ac3" || !copiedHLSAC3Rate(rate) {
 			scan.clock, scan.rejected = nil, true
 			return nil
 		}
 		scan.clock.Quantum = 1536
+		scan.phaseHigh = rate - 1
 	}
 	return nil
 }
@@ -130,10 +134,7 @@ func (scan *copiedHLSAudioScan) frame(line string) error {
 		scan.rejected = true
 		return nil //nolint:nilerr // Invalid source metadata opts out while the owned scanner drains.
 	}
-	// One quantizer applies to every frame; an independent per-frame error
-	// allowance could normalize away a genuine source timestamp jump.
-	expected := (scan.samples*scan.denominator + scan.clock.Rate/2) / scan.clock.Rate
-	if pts != expected || !scan.frameShape(fields, samples) {
+	if !scan.framePTS(pts) || !scan.frameShape(fields, samples) {
 		scan.rejected = true
 		return nil
 	}
@@ -141,6 +142,24 @@ func (scan *copiedHLSAudioScan) frame(line string) error {
 	scan.previous = samples
 	scan.frames++
 	return nil
+}
+
+func (scan *copiedHLSAudioScan) framePTS(pts int64) bool {
+	rate, ticks := scan.clock.Rate, scan.samples*scan.denominator
+	if scan.clock.Quantum == 0 {
+		return pts == (ticks+rate/2)/rate
+	}
+	// A remux can round before shifting the first timestamp to zero. Keep
+	// one quantizer phase for the ENTIRE source, never a per-frame allowance.
+	// Subtract the bounded whole part before multiplying untrusted PTS.
+	whole, remainder := ticks/rate, ticks%rate
+	if pts < whole || pts > whole+1 {
+		return false
+	}
+	lower := (pts-whole)*rate - remainder
+	scan.phaseLow = max(scan.phaseLow, lower)
+	scan.phaseHigh = min(scan.phaseHigh, lower+rate-1)
+	return scan.phaseLow <= scan.phaseHigh
 }
 
 func (scan *copiedHLSAudioScan) frameShape(fields map[string]string, samples int64) bool {
