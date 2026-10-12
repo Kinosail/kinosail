@@ -1168,3 +1168,18 @@ Browser requests then reject the fixture's self-signed certificate with `ERR_CER
 No TLS check is disabled. These failures do not count as UI coverage or a passing canonical container journey.
 The separate authenticated HTTP media regressions above retain their own passing evidence.
 Private evidence is under `long-remux-test-instance/`; the canonical browser failure remains under investigation.
+The completed run has five passes and 82 failures, all classified as certificate trust failures.
+Its private receipt SHA-256 is `6bd6a6b4a5aee978bb097821ccfae190379c438bf8302f2e6c0f43b9d5c6e124`.
+The canonical cleanup removes its isolated container and volumes; unrelated running containers remain intact.
+
+### Longer-remux delivery checkpoint
+
+Implementation checkpoint `3c2d803127ab98a3ccb9ddf75280af9ffdea9e09` contains the reviewed repair and retained regressions.
+Checkpoint `3e5d1731` removes one trailing blank line caught by the post-commit whitespace gate.
+`make -C apps/player verify-changed` then passes, including compilation and 85 seconds of focused Server checks.
+All 169 CI contract tests complete successfully, with five existing skips. Local actionlint passes.
+Main advances only in native test coverage and its separate report during this checkpoint.
+PR #565 incorporates main `013d5247` with merge `13099b04`; PR #569 incorporates that base with merge `07ba1885`.
+Longer-remux merge checkpoint `9f8d2facc0d77e03602ebb501bd9928a44849975` includes both updates.
+The affected-app verification passes again after reconciliation, reusing unchanged source-check results.
+Required hosted checks still control integration. No branch protection or certificate verification was bypassed.
