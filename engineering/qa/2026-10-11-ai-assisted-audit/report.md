@@ -1817,3 +1817,22 @@ The exact-revision manifest is `refill-completion-exact-proof/manifest.json`, SH
 Source remains unchanged. Affected Player compilation and focused Server verification pass.
 The Player repair is in PR 581; the separate Subtitles MSE repair is in PR 580.
 At this checkpoint, required hosted checks are still running. Neither pending PR is main or deployment acceptance.
+
+### Native cut-map and frame-oracle investigation
+
+At `e96ef3de`, native long resume and the held-prefix test still fail.
+The prefix exposes inaccurate future cuts and changes its map across completion, warm reads, and restart.
+Receipts are `hls-copied-prefix/20261012T103455Z` and `hls-resume-browser/20261012T103455Z`.
+
+A throwaway Go overlay uses known fixture keyframe cuts and independent fragments.
+It passes native long resume and produces an accurate immutable prefix, including warm reads and restart.
+This hard-coded overlay is not production code or certified source-index proof.
+Its configuration and source hashes are in `ai-qa-campaign/native-cut-prototype/configuration.json`.
+
+The paused native frame oracle was unreliable: it could pause before `playing` and sample the preceding frame after `seeked`.
+The driver now waits for initial playback and a timestamped video-frame callback at every sample.
+Native seeks briefly play muted, then pause at the requested frame timestamp. Expected pixel hashes do not control the wait.
+With the overlay, this stronger oracle matches all seven frames and resumes at 12.500001 seconds while the initial producer was held.
+Receipt: `hls-native-frame-prototype-prefix/20261012T103849Z`.
+The callback semantics follow the [WICG video-frame callback specification](https://wicg.github.io/video-rvfc/).
+The retained driver is replayed against unmodified production behavior before implementing the cut-map repair.
