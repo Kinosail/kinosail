@@ -431,6 +431,9 @@ jobs:
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --controls
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode none
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --resume-seconds .5
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --prepared --tail-recovery
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --prepared --first-recovery
           python3 apps/player/scripts/test-hls-cold-suffix.py
       - name: Keep safe prepared timeline evidence
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'

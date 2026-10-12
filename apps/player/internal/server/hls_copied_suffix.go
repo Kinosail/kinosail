@@ -21,7 +21,7 @@ func copiedHLSIndexRequired(ctx context.Context) bool {
 }
 
 func (manager *hlsManager) coldCopiedHLSNeedsIndex(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
-	if recipe.mode != "remux" || recipe.offset <= 0 || len(recipe.omitted) != 0 || recipe.dialogueBoost || recipe.normalizeLoudness ||
+	if recipe.mode != "remux" && recipe.mode != "audio-transcode" || recipe.offset <= 0 || len(recipe.omitted) != 0 || recipe.dialogueBoost || recipe.normalizeLoudness ||
 		item.Kind == "audio" || item.Kind == "audiobook" {
 		return false
 	}

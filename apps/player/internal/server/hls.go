@@ -199,6 +199,11 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		}
 		arguments = append(arguments, "-ss", seek)
 	}
+	if timeline != nil && startNumber > 0 && recipe.mode == "audio-transcode" {
+		// Decode audio preroll for a continuous splice; copied video is still
+		// trimmed at its certified key and the output filter bounds the overlap.
+		arguments = append(arguments, "-noaccurate_seek")
+	}
 	arguments = append(arguments, "-i", item.Path)
 	copyInput := "0"
 	if recipe.mode != "transcode" && len(sourceRecipe.omitted) > 0 {
@@ -218,7 +223,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
 		}
 	}
-	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber)
+	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber, recipe.mode)
 	if err != nil {
 		return err
 	}

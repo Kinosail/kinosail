@@ -59,6 +59,11 @@ const streamOrigin = (value, requested) => {
   if (!Number.isFinite(origin) || origin < 0 || origin > requested + .000001 || origin > 604800) throw new Error("invalid-stream-origin");
   return origin;
 };
+const streamClock = value => {
+  if (value === null) return undefined;
+  if (!/^\d(?:\.\d{1,9})?$/.test(value) || Number(value) > 1) throw new Error("invalid-stream-clock");
+  return Number(value);
+};
 const nativeStreamAt = async (position, generation) => {
   const selected = streamAt(position);
   if (!selected.offset || !["remux", "audio-transcode"].includes(player.dataset.compatibilityMode)) return selected;
@@ -95,7 +100,18 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
   const selected = streamAt(target);
   adaptiveOffset = selected.offset;
   playbackTimelineSeek = undefined;
+  let certifiedOffset;
+  // The pinned adapter otherwise anchors muxed streams to earlier AAC priming.
+  // Preserve its append queue and all media bytes, using the certified video clock.
+  const bufferController = class extends Hls.DefaultConfig.bufferController {
+    onBufferAppending(event, data) {
+      if (certifiedOffset !== undefined && data.offset !== undefined && ["video", "audiovideo"].includes(data.type))
+        data = {...data, offset: certifiedOffset};
+      return super.onBufferAppending(event, data);
+    }
+  };
   hls = new Hls({
+    bufferController,
     startLevel: -1,
     testBandwidth: true,
     startFragPrefetch: true,
@@ -108,13 +124,17 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
       xhr.addEventListener("readystatechange", () => {
         if (xhr.readyState !== 2 || hls !== activeHls) return;
         try {
-          const origin = streamOrigin(xhr.getResponseHeader("X-Kinosail-HLS-Origin"), selected.offset);
+          const sourceOrigin = xhr.getResponseHeader("X-Kinosail-HLS-Origin");
+          const origin = streamOrigin(sourceOrigin, selected.offset);
+          const clock = streamClock(xhr.getResponseHeader("X-Kinosail-HLS-Clock"));
+          if ((clock === undefined) !== (sourceOrigin === null)) throw new Error("incomplete-stream-clock");
+          certifiedOffset = clock === undefined ? undefined : origin - clock;
           adaptiveOffset = origin;
           activeHls.config.timelineOffset = origin;
           activeHls.config.startPosition = target - origin;
         } catch (_) {
           const retained = pendingResume?.seconds ?? target;
-          playbackTrace("hls-error", "invalid-stream-origin");
+          playbackTrace("hls-error", "invalid-stream-metadata");
           activeHls.destroy();
           showFailure("Playback is unavailable. You can retry from this position.", "Retry playback", () => retryStalledPlayback(retained));
         }

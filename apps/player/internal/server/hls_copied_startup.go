@@ -39,6 +39,7 @@ func (manager *hlsManager) preparedHLSOrigin(writer http.ResponseWriter, request
 	// The requested position remains in the recipe. This header identifies
 	// the certified source key from which the copied decoder timeline starts.
 	writer.Header().Set("X-Kinosail-HLS-Origin", copiedHLSTime(timeline.point(0)))
+	writer.Header().Set("X-Kinosail-HLS-Clock", copiedHLSTime(*timeline.Clock))
 	return true
 }
 
@@ -75,7 +76,7 @@ func (manager *hlsManager) bindCopiedHLSTimeline(ctx context.Context, directory 
 	return manager.writeCopiedHLSTimeline(directory, preparation.timeline)
 }
 
-func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, number int) ([]string, error) {
+func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, number int, mode string) ([]string, error) {
 	if timeline == nil {
 		return arguments, nil
 	}
@@ -99,9 +100,13 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		// Keep copied video and audio on the same mux clock. Shifting only audio
 		// makes it end early and native HLS can stop seeking before the last frame.
 		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
-		// A container seek can return an entire earlier audio cluster. Keep only
-		// the preroll inside the certified mux delay, without changing timestamps.
-		arguments = append(arguments, "-bsf:a", "noise=amount=0:drop=lt(pts*tb\\,-"+copiedHLSTime(*timeline.Clock)+")")
+		// Bound container preroll without changing timestamps. Converted AAC
+		// also needs a frame for decoder warm-up and one for its new packet grid.
+		threshold := "-" + copiedHLSTime(*timeline.Clock)
+		if mode == "audio-transcode" {
+			threshold = "max(" + threshold + "-2*duration*tb\\,-" + copiedHLSTime(offset) + ")"
+		}
+		arguments = append(arguments, "-bsf:a", "noise=amount=0:drop=lt(pts*tb\\,"+threshold+")")
 	}
 	return arguments, nil
 }

@@ -129,12 +129,15 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	}
 	if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-origin=1"
-		if recipe.mode == "remux" && recipe.offset > 0 {
+		if recipe.offset > 0 {
 			options.Cache += ":copied-resume=1"
 		}
 	}
 	if recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-completion=1"
+		if item.Kind != "audio" && item.Kind != "audiobook" {
+			options.Cache += ":copied-audio-preroll=1"
+		}
 	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {

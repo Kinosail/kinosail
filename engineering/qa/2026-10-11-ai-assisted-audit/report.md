@@ -779,3 +779,69 @@ Hosted checks and protected integration remain pending. The audio-conversion and
 | `hls-resume-browser/20261011T235639Z/receipt.json` | AAC native WebKit: seven exact frames | `17f0dd4fbb27e87b0585b428ee84fd1975d5f265346f91696513e3d1922df75a` |
 | `hls-resume-browser/20261011T235649Z/receipt.json` | video-only Chromium and WebKit: fourteen exact frames | `d93b8581db4169d854aeb208755252772366e327b8ed73d583fc0aeeda421cb4` |
 | `hls-resume-browser/20261011T235700Z/receipt.json` | video-only native WebKit: seven exact frames | `e90e09704c86c051689c15d82730e4e881e1bc85133e0900e7c59ba1bcc147ad` |
+
+
+### Prepared-resume delivery and copied-audio clock checkpoint
+
+PR #560 merged through protected main as `e25f2a116ad156d7f4fe35d4cb9606ab87f0d5f1`.
+A fetched ancestry check confirms task commit `145fce2207ea72904b451da2d62324f47f0fffe2` is included.
+Required hosted checks passed. Publication and deployment for that revision remain separate, unverified boundaries.
+PR #562 now targets main. Its reconciliation changed an unrelated native test and QA report, with no change to its production repair.
+PR #565 contains the bounded cold-remux repair and remains a draft stacked on #562.
+
+The converted-audio frame mismatch has a confirmed cause.
+Hls.js 1.7.3 anchors muxed media to the earlier AAC priming timestamp.
+For the reproduced source, that shifts copied video by 21.333 milliseconds.
+Dropping the first AAC packet repaired video but removed approximately 16 milliseconds of decoded startup audio; that candidate was rejected.
+The implementation preserves every startup packet and supplies the certified video clock with the certified source origin.
+Its buffer-controller subclass changes the append offset while preserving the pinned adapter's append queue.
+This uses the pinned adapter's internal append handler and requires real-browser regression proof when that dependency changes.
+See the upstream [buffer controller](https://github.com/video-dev/hls.js/blob/v1.7.3/src/controller/buffer-controller.ts) and [passthrough remuxer](https://github.com/video-dev/hls.js/blob/v1.7.3/src/remux/passthrough-remuxer.ts).
+
+Both certification headers must be present together or absent together.
+Malformed, negative, excessive, duplicate, or incomplete clock metadata settles into the existing retry state before requesting media.
+The failure trace uses a fixed safe class and retains the requested playback position.
+Eight injected controls pass in both MSE engines. These malformed-header controls are isolated because the valid Server cannot emit those responses.
+Real watch-page journeys force AAC conversion through a documented user-agent capability simulation.
+Near-zero playback, exact-key playback, and first/tail recovery match every reference frame and reach the ended state.
+Native WebKit remains a capability simulation, not physical Safari acceptance.
+
+Refill verification found an additional 58.667-millisecond audio gap.
+Disabling accurate input seek reduced it to 10.667 milliseconds, which was still incorrect.
+The strengthened oracle rejects every positive converted-audio gap beyond two microseconds of timestamp rounding.
+Retaining two AAC packet durations covers decoder warm-up and the new packet grid without changing packet timestamps.
+Independent low-rate review then reproduced mux clock shifts of 3, 5, and 24.938 milliseconds when that allowance admitted negative output audio.
+The final filter also bounds output audio to nonnegative timestamps; all sixteen reviewed low-rate/phase cases preserve the video clock and initialization.
+A cache-policy tag invalidates earlier converted-video refill output, including zero-offset recipes.
+The [FFmpeg seek documentation](https://ffmpeg.org/ffmpeg.html#Advanced-options) and [noise bitstream-filter variables](https://ffmpeg.org/ffmpeg-bitstream-filters.html#noise) define the relevant behavior.
+
+Chromium PCM capture independently confirms that retaining the startup priming packet avoids the silence introduced by the rejected packet-drop candidate.
+Actual watch-page noise captures also retain audio energy across startup/refill and regenerated-tail boundaries.
+However, the regenerated-tail overlap contains a brief low-correlation waveform transition; seamless decoded splicing is not yet certified.
+A 44.1 kHz Matroska probe matches all seven video frames and compatible playback ends, but its synthetic direct-file reference times out at EOF.
+That probe is retained as incomplete evidence, not a passing full journey or a confirmed product defect.
+The separate WebKit PCM control produced silence even for its baseline, so it provides no WebKit waveform proof.
+These limits remain open; packet continuity and video-frame equality do not close them.
+
+The retained Chromium playback suite passes 101 tests.
+Extracting the pending-HLS-loader fixture preserves the source-file limit; its focused replay passes.
+CI contracts pass 169 tests with five environment-dependent skips after a process-group permission failure on the initial local attempt.
+Source limits, whitespace, architecture snapshot, and repository-selected actionlint pass.
+The required Chromium workflow adds converted-audio near-zero, first-fragment, and tail-recovery journeys.
+These are candidate observations on base `a2ad2bea`; post-commit verification and clean-revision replay follow this checkpoint.
+The final candidate patch is private at `ai-qa-campaign/audio-clock-final-candidate.patch`, SHA-256 `a44b73df2f4df17e7ee6c6a8e46cddd81ed3c49a2ed60d2b04f6f1f9449a2e1e`.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T002320Z/receipt.json` | stricter positive-gap rejection before overlap repair | `48204878556ef0302df64d91f775eff055daab7e4d731bf5c003e9f8e9cb1d7f` |
+| `hls-resume-browser/20261012T003047Z/receipt.json` | near-zero converted audio: fourteen frames and ended | `1a8b042d8dfd2c560cce39d7fa59a8f6783b2d6a70978d804959eb8eb71d7050` |
+| `hls-resume-browser/20261012T003102Z/receipt.json` | exact-key converted audio: fourteen frames and ended | `ad54704286521f4ea61c211e2f59164bace43ea6bfbf98fb720ad9fcf023b659` |
+| `hls-resume-browser/20261012T003125Z/receipt.json` | native WebKit converted tail: seven frames and ended | `8713891597fe4fab0fe4efd4cba932c184218a9dc0219c2642955582a0e8f467` |
+| `hls-resume-browser/20261012T002135Z/receipt.json` | eight malformed-metadata controls per MSE engine | `c5355aeae606751947e280d42ff94c7cbc56678e2c16e5b4ed4044e4f83dbc82` |
+| `hls-resume-browser/20261012T003658Z/receipt.json` | final bounded overlap: both MSE tail recoveries | `98de8391b2d490c92fb44c5b8427d8521d84f75d3c3f752f180a2b5ab7f5efa6` |
+| `hls-resume-browser/20261012T003719Z/receipt.json` | final bounded overlap: both MSE first recoveries | `5475de358ea7ba744eb34d19be5b10b9f996c40a22a947b1efe33ebd2659e455` |
+| `ai-qa-campaign/review-low-rate-preroll-20261012T003437Z/receipt.json` | low-rate clock-shift reproduction | `427a1b4daef6c7878a67336994cc73c88c30d0c9dc5957f3cbc58cd08289880f` |
+| `ai-qa-campaign/review-low-rate-preroll-20261012T003437Z/clamp-receipt.json` | sixteen nonnegative-bound counterfactuals | `1878e68308d1ff711ce72fe0c18646daa3144ec8c5ed417a8af9c871032a5e70` |
+| `ai-qa-campaign/audio-clock-noise/control-capture/warmup-comparison.json` | isolated Chromium startup PCM and packet-drop control | `d2b9ac919b5e1cad56197a62a8a784d78ffc95dd102f9f1e89e6591bfecca24a` |
+| `hls-resume-browser/20261012T003415Z/decoded-splice-comparison.json` | actual Chromium waveform; unresolved brief tail transition | `4d18366bb2f1f8ee7cad4e26ac3b375319baeb43493e6bf6cccd8c2ed0a0de0c` |
+| `hls-resume-browser/20261012T003305Z/receipt.json` | 44.1 kHz Matroska probe; reference EOF limit | `adf24109d0e332b53439bc0e47db628c23d95bafb92b435ae7150a7433292ac4` |
