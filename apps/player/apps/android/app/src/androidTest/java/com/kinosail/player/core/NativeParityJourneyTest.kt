@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
@@ -94,23 +95,25 @@ class NativeParityJourneyTest {
         waitText("Chapter 1 of 2")
         waitChapter("Departure")
         capture("epub-loaded")
-        instrumentation.runOnMainSync {
-            val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).first()
-            fun find(view: android.view.View): android.webkit.WebView? {
-                if (view is android.webkit.WebView) return view
-                if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
-                    find(view.getChildAt(index))?.let { return it }
+        if (Build.VERSION.SDK_INT >= 29) {
+            instrumentation.runOnMainSync {
+                val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                    .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).first()
+                fun find(view: android.view.View): android.webkit.WebView? {
+                    if (view is android.webkit.WebView) return view
+                    if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                        find(view.getChildAt(index))?.let { return it }
+                    }
+                    return null
                 }
-                return null
+                val web = requireNotNull(find(activity.window.decorView))
+                assertTrue(requireNotNull(web.webViewRenderProcess).terminate())
             }
-            val web = requireNotNull(find(activity.window.decorView))
-            assertTrue(requireNotNull(web.webViewRenderProcess).terminate())
+            waitText("Could not load this chapter. Try again.")
+            capture("epub-renderer-stopped")
+            compose.onNodeWithText("Try again").activate()
+            waitChapter("Departure")
         }
-        waitText("Could not load this chapter. Try again.")
-        capture("epub-renderer-stopped")
-        compose.onNodeWithText("Try again").activate()
-        waitChapter("Departure")
         compose.onNodeWithText("Next").activate()
         waitText("Chapter 2 of 2")
         waitChapter("Harbor lights")
@@ -357,7 +360,7 @@ class NativeParityJourneyTest {
         else compose.onNodeWithText("Movies").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("catalog-pending")
-        if (!tv) assertReadableHeading(compose.onNode(hasText("Movies") and !hasClickAction()))
+        if (!tv && Build.VERSION.SDK_INT >= 26) assertReadableHeading(compose.onNode(hasText("Movies") and !hasClickAction()))
         fixture.mode = "failed"
         waitText("Could not load your library. Try again.")
         capture("catalog-failed")
@@ -385,8 +388,9 @@ class NativeParityJourneyTest {
     }
 
     private fun journey(mode: String = "ready", accessibility: Boolean = true, check: (ParityFixture) -> Unit) {
+        org.junit.Assume.assumeTrue("Disabling UiAutomation accessibility requires API 31", accessibility || Build.VERSION.SDK_INT >= 31)
         automationFlags = if (accessibility) 0 else android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY
-        instrumentation.getUiAutomation(automationFlags)
+        uiAutomation()
         val manager = context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE)
             as android.view.accessibility.AccessibilityManager
         compose.waitUntil(10_000) { manager.isEnabled == accessibility }
@@ -416,12 +420,12 @@ class NativeParityJourneyTest {
         val prefix = InstrumentationRegistry.getArguments().getString("capture") ?: if (tv) "tv" else "phone"
         val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
         File(directory, "$prefix-$name-semantics.txt").writeText(compose.onRoot().printToString())
-        if (!tv && !name.startsWith("playback")) {
+        if (!tv && !name.startsWith("playback") && Build.VERSION.SDK_INT >= 34) {
             compose.enableAccessibilityChecks()
             compose.onRoot().tryPerformAccessibilityChecks()
             compose.disableAccessibilityChecks()
         }
-        instrumentation.getUiAutomation(automationFlags).takeScreenshot().let { bitmap ->
+        uiAutomation().takeScreenshot().let { bitmap ->
             File(directory, "$prefix-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             if (name == "epub-loaded") {
                 val done = compose.onNodeWithText("Done").fetchSemanticsNode().boundsInRoot
@@ -434,6 +438,10 @@ class NativeParityJourneyTest {
             bitmap.recycle()
         }
     }
+
+    private fun uiAutomation() = if (Build.VERSION.SDK_INT >= 31) {
+        instrumentation.getUiAutomation(automationFlags)
+    } else instrumentation.getUiAutomation()
 }
 
 private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
