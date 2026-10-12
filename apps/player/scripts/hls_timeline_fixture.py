@@ -44,3 +44,23 @@ def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"
         check(any(abs(v - round(v, 3)) > 0.00001 for v in times), "fixture_submillisecond_keyframe")
     return path, {"command": command, "sha256": sha(path), "durationSeconds": duration, "videoDurationSeconds": expected_duration, "frameRate": frame_rate,
         "videoFrames": frames, "keyframesSeconds": times, "color": color}
+
+
+def browser_reference(source):
+    """Rewrap generated Matroska for WebKit; certify unchanged video and clock."""
+    output = source.with_name('Resume Reference.mp4')
+    command = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0',
+               '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', str(output)]
+    subprocess.run(command, check=True, capture_output=True, timeout=60)
+    packets = []
+    for path in [source, output]:
+        probe = subprocess.check_output(['ffprobe', '-v', 'error', '-select_streams', 'v:0',
+            '-show_packets', '-show_data_hash', 'sha256', '-show_entries', 'packet=pts_time,data_hash',
+            '-of', 'json', str(path)], timeout=30)
+        check(len(probe) <= 1024 * 1024, 'reference_probe_bound')
+        packets.append(json.loads(probe)['packets'])
+    check(len(packets[0]) == len(packets[1]) and len(packets[0]) > 0, 'reference_packet_count')
+    check(all(a['data_hash'] == b['data_hash'] and abs(float(a['pts_time']) - float(b['pts_time'])) < .000001
+              for a, b in zip(*packets)), 'reference_video_or_clock_changed')
+    return {'command': command, 'sha256': sha(output), 'videoPackets': len(packets[0]),
+            'videoPayloadAndClockUnchanged': True, 'boundary': 'Independent stream-copy MP4 reference; audio not certified by this control'}
