@@ -1058,3 +1058,14 @@ The bounded audio repair is ready for required hosted checks. Long converted win
 | `decoded-worklet-splice-comparison.json` | continuous audio-thread capture at both boundaries | `dd18d9ba48f77d7d0344fbd8e1142a6463feadb1adc78b62013f778aedb31db6` |
 | `decoded-splice-wide-comparison.json` | simultaneous old recorder loses samples | `9660a1f615413852ef6e986ceb181d91f07894f0cafcf121407444535d54c631` |
 | `simultaneous-capture-audit.json` | byte-exact windows and continuous render-frame indices | `639160ab0dbee00f579a707c03c1a6110102bd9c5aa205102f32f3b8092fdc56` |
+
+### Cold-resume reconciliation with atomic recovery publication
+
+Required checks passed for cold-resume head `fcfe4e40789ce93f248c5e29373bf4c2889a0c54`.
+Main advanced before merge, adding the independently delivered temporary-file replacement repair.
+Merge checkpoint `ffbdbb8e06c47e3cbc4e8ea66ee27fe691d3c590` incorporates main `8307ea47fbc51408548e8e50b996b75ad7a0b561`.
+Both populated Chromium recovery journeys pass: first fragment and tail fragment.
+Each matches all seven original-file frames, reaches EOF, preserves its source, and settles its Server.
+`make max-loc` and `make -C apps/player verify-changed` pass after reconciliation.
+The private command manifest is `cold-reconciled-20261012T0200/receipt.json`, SHA-256 `927ff83f9ae6fb04a36aafe582f53c1c5df541a180df9c6b7386a66fac1fdff3`.
+Required hosted checks must pass again for the reconciled head; no protection was bypassed.
