@@ -86,7 +86,14 @@ case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; e
         source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
         step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
         self.assertIn('if: fromJSON(inputs.plan).deep', step)
-        self.assertIn('sudo apt-get install -y ffmpeg', step)
+        # Noble FFmpeg 6.1 rejects the real copied-HLS offset/resume fixtures.
+        # Use the supported container's codec generation with verified host bytes.
+        version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)',
+                            (ROOT / 'apps/player/Containerfile').read_text()).group(1)
+        self.assertIn(f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb', step)
+        self.assertIn('sha256sum --check', step)
+        self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', step)
+        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
         self.assertLess(source.index('Install deep media fixture codecs'), source.index('scripts/ci/test-go.sh'))
 
     def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
