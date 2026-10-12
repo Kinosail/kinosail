@@ -42,10 +42,13 @@ func TestCopiedHLSLinesCompletionCertificate(t *testing.T) {
 			if (err == nil) != accepted {
 				t.Fatal("completion accepted without its complete certificate or rejected certified completion")
 			}
-			if !accepted && test.name != "other termination" && !errors.Is(err, syscall.EPERM) {
+			if accepted {
+				return
+			}
+			if test.name != "other termination" && !errors.Is(err, syscall.EPERM) {
 				t.Fatal("incomplete completion lost its native permission error")
 			}
-			if !accepted && !errors.Is(err, ErrProbeLifecycle) {
+			if !errors.Is(err, ErrProbeLifecycle) {
 				t.Fatal("uncertified lifecycle was classified as optional metadata failure")
 			}
 		})

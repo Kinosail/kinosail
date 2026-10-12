@@ -1674,3 +1674,23 @@ The initial production-browser candidate passes irregular 64.5-second resume and
 The existing projection fixture built an outdated cache policy by hand and panicked after the copied-clock policy change. It now uses the actual settings operation for that fixture identity. No production cancellation guard was weakened.
 
 Primary references: [pinned Hls stream controller](https://github.com/video-dev/hls.js/blob/v1.7.3/src/controller/stream-controller.ts), [pinned passthrough remuxer](https://github.com/video-dev/hls.js/blob/v1.7.3/src/remux/passthrough-remuxer.ts), and [MSE ISO BMFF edit-list requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/). This version-specific adapter requires replaying the retained browser and parser checks on Hls upgrades.
+
+### AQA-017 clean-revision MSE verification
+
+At `641498c1eeb1c9e76b3d94db8e358fa03d83af2d`, all five final runs pass with clean, unchanged source receipts. Chromium and WebKit pass the irregular 64.5-second resume, converted AC3 strict PCM, and Direct First to Compatibility journeys. Linux Chromium independently passes the irregular resume with the cross-built ARM64 binary and Jellyfin FFmpeg. The retained Linux driver only substitutes the prebuilt binary and container paths. It does not inject a browser controller or change media assertions.
+
+The canonical Subtitles container command passes all 66 Chromium cases, with zero failures, skips, or flakes. The suite combines populated journeys and controlled rendered fixtures; it is not 66 independent populated-server proofs. Its production and fixture images use task-specific tags. The image revision labels match the tested commit. The Compose project has zero remaining containers and volumes. The older task-owned Linux browser container is removed after its successful final run.
+
+| Private artifact manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `copied-clock-final-long/manifest.json` | Pass; exact revision | `60880d543da4e2cb6dfaeb19f76325a73a059f4f5def3ff04d85d2f00d880d4d` |
+| `copied-clock-final-audio/manifest.json` | Pass; exact revision | `4f71f6e9a4dfb595206ea21ec76944d7f56362ec6a708d6e5048f5165412c648` |
+| `copied-clock-final-linux/manifest.json` | Pass; exact revision | `34d9adc1aa61911c397d60744eddcf818059598c916dcee36c975377efefe64a` |
+| `copied-clock-final-switch/manifest.json` | Pass; exact revision | `779b138b90f37552f4bdef53a4352927f02165f5b1152f6cd885a0352832eaeb` |
+| `copied-clock-container/manifest.json` | Pass; exact revision | `b0a569a4201023d6d35f8a315d995a91144a6b3e1edba233d3c0042b4280da0f` |
+
+The combined private receipt is `copied-clock-final-receipt.json`, SHA-256 `d2abdbf3334ad3843c559205d83f998f4636a69ba56bbbffcfa1c710cdd84f46`. It records private image IDs, wrapper hashes, the Linux driver/binary hashes, and cleanup. These local images are not GHCR publication or Nox deployment proof.
+
+Subtitles affected verification passes source limits, whitespace, compilation, and focused Server checks. Full shared-package lint found two new test-complexity findings above the established 95-finding baseline. The assertions were reorganized without changing production code; focused ownership and cancellation checks pass afterward. No assertion was removed or weakened.
+
+Native HLS still fails the retained irregular prefix/seek journey. Its source-cut and generation-lifetime repair remains open, along with physical devices and production acceptance. The MSE passes do not close those boundaries or establish 100 percent QA.

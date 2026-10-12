@@ -31,12 +31,15 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
-			verifyCopiedHLSProbeLifetime(t, executable, test.mode, test.reject, test.cancel, test.wantError)
+			err := verifyCopiedHLSProbeLifetime(t, executable, test.mode, test.reject, test.cancel, test.wantError)
+			if test.cancel && !errors.Is(err, context.Canceled) {
+				t.Fatal("configured probe lost cancellation after joining its descendants")
+			}
 		})
 	}
 }
 
-func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) {
+func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) error {
 	t.Helper()
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
@@ -62,9 +65,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
 	}
-	if cancelNow && !errors.Is(err, context.Canceled) {
-		t.Fatal("configured probe lost cancellation after joining its descendants")
-	}
+	return err
 }
 
 type copiedHLSProbeMarkers struct {
