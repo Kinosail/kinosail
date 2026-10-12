@@ -32,9 +32,9 @@ def correlation(left, right):
     return sum(a * b for a, b in zip(left, right)) / math.sqrt(energy) if energy > 1e-15 else 0
 
 
-def capture_audio(root, run, api, item, label, point, span, source_pcm):
+def capture_audio(root, run, api, item, label, point, span, source_pcm, app='player'):
     env = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,
-               QA_RESUME_ITEM=item['id'], QA_AUDIO_OUTPUT=str(run / label),
+               QA_RESUME_ITEM=item['id'], QA_RESUME_APP=app, QA_AUDIO_OUTPUT=str(run / label),
                QA_AUDIO_CAPTURE_POINT=str(point), QA_AUDIO_CAPTURE_SPAN=str(span))
     command = ['node', str(root / 'apps/player/scripts/hls-audio-capture.mjs')]
     with (run / (label + '-private.log')).open('w') as log:

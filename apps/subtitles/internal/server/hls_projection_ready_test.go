@@ -77,11 +77,11 @@ func projectionHLSFixture(t *testing.T, manifest string) (*hlsManager, library.I
 	}
 	manager.probe.inspect(t.Context(), item)
 	manager.settings = newSettingsStore(filepath.Dir(item.Path), "", "", nil)
-	options, err := manager.settings.transcodingFor(recipe.codec)
+	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		t.Fatal(err)
 	}
-	identity := options.Cache + ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=7"
+	identity := options.Cache
 	manager.jobs[hlsRecipeKey(item.ID, recipe)].cachePolicy = identity
 	master := "#EXTM3U\n#KINOSAIL-TRANSCODER:" + identity + "\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n"
 	if err := writeAtomicFile(filepath.Join(filepath.Dir(directory), "index.m3u8"), []byte(master)); err != nil {
