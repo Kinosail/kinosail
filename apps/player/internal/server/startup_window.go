@@ -80,6 +80,9 @@ func (manager *hlsManager) startupWindowReady(item library.Item, recipe hlsRecip
 		!cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) {
 		return false
 	}
+	if manager.shortHEVCNeedsCompletion(manager.ctx, item, recipe) && !manager.shortHEVCOutputReady(manager.ctx, item, directory, options.Cache) {
+		return false
+	}
 	master, err := playback.ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
 	if err != nil {
 		return false

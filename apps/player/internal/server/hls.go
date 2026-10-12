@@ -108,6 +108,9 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 		manager.keepHLSAlive(key, ctx)
 	}
 	if manager.reusableCopiedHLS(ctx, item, filepath.Dir(playlist), options.Cache, recipe) {
+		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
+			return err
+		}
 		return refreshCachedVideoHLSMaster(playlist, facts, recipe, options.Cache)
 	}
 	job, err := manager.ensureHLSJob(ctx, item, key, options, recipe)
@@ -117,8 +120,12 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 
 	ticker := time.NewTicker(25 * time.Millisecond)
 	defer ticker.Stop()
+	complete := ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe)
 	for {
-		if masterFresh(playlist, item.Path, options.Cache) {
+		if masterFresh(playlist, item.Path, options.Cache) && (!complete || manager.shortHEVCOutputReady(ctx, item, filepath.Dir(playlist), options.Cache)) {
+			if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
+				return err
+			}
 			return manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache)
 		}
 		select {

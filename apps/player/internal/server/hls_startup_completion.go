@@ -9,6 +9,7 @@ import (
 )
 
 const startupCompletionMarker = ".startup-completion"
+const shortHEVCCompletionMarker = ".hevc-complete"
 
 // Called under manager.mu; the lifecycle also covers shutdown, idle expiry,
 // seek/identity replacement and encoder completion, not just startup DELETE.
@@ -24,6 +25,56 @@ func (manager *hlsManager) completeHEVCStartup(ctx context.Context, item library
 		!recipe.dialogueBoost && !recipe.normalizeLoudness &&
 		len(recipe.omitted) == 0 && item.Kind != "audio" && item.Kind != "audiobook" &&
 		manager.probe.facts(ctx, item).Video.Codec == "hevc"
+}
+
+// Require short copied HEVC streams to finish within the readiness budget.
+// Their container duration does not certify a final segment: wait for actual
+// output instead of projecting an extra fractional tail during adoption.
+func (manager *hlsManager) shortHEVCNeedsCompletion(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
+	duration := manager.probe.duration(ctx, item)
+	return duration > 0 && duration <= 30 && manager.completeHEVCStartup(ctx, item, recipe)
+}
+
+func (manager *hlsManager) shortHEVCOutputReady(ctx context.Context, item library.Item, directory, policy string) bool {
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	// A muxer may write ENDLIST before exiting. Only a settled producer can
+	// publish its final output. Hold the lock against replacement while reading.
+	if manager.jobs[filepath.Base(directory)] != nil || ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) {
+		return false
+	}
+	root, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return false
+	}
+	defer root.Close()
+	marker, err := copiedHLSCacheFile(root, shortHEVCCompletionMarker, 16<<10)
+	return err == nil && string(marker) == policy && shortHEVCSourceMatches(root, policy)
+}
+
+func shortHEVCSourceMatches(root *os.Root, policy string) bool {
+	binding, err := copiedHLSCacheFile(root, ".source", 16<<10)
+	return err == nil && string(binding) == policy
+}
+
+// Missing or unwritable receipts fail closed, including legacy caches whose
+// missing source binding would otherwise fall back to timestamp freshness.
+func (manager *hlsManager) publishShortHEVCCompletion(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string) error {
+	if err := manager.validateHLSPolicy(ctx, item, recipe, policy); err != nil {
+		return err
+	}
+	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) {
+		return errCopiedHLSIndex
+	}
+	root, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return errCopiedHLSIndex
+	}
+	defer root.Close()
+	if !shortHEVCSourceMatches(root, policy) {
+		return errCopiedHLSIndex
+	}
+	return writeCopiedHLSMetadata(root, shortHEVCCompletionMarker, []byte(policy))
 }
 
 // Source binding precedes this atomic marker; no media has been published yet.

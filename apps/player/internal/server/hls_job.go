@@ -117,6 +117,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-origin=1"
 	}
+	if recipe.mode == "audio-transcode" {
+		options.Cache += ":copied-completion=1"
+	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err

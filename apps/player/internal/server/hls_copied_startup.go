@@ -46,6 +46,9 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
 		return false
 	}
+	if ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe) && !manager.shortHEVCOutputReady(ctx, item, directory, policy) {
+		return false
+	}
 	if !manager.startupCompletionReusable(ctx, item, directory, policy) {
 		return false
 	}
