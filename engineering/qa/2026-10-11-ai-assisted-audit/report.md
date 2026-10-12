@@ -1612,3 +1612,11 @@ Their E2E gap is precise ownership ordering while the producer join is held. The
 The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
 The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
 Credentials do not appear in its private log.
+
+The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
+`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
+A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
+The HTTP helper now waits under the request deadline when no producer was selected.
+This path cannot authorize another admission. Permanent errors and cancellation still stop it.
+The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
+A second independent review found no concrete blocker. Hosted checks must pass again after publication.

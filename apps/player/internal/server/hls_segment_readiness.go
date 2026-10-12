@@ -48,11 +48,14 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 // Only a missing file after successful producer completion permits readmission.
 // Background preparation keeps using nonblocking prepareSegment directly.
 func waitForHLSJobFile(ctx context.Context, path string, job *hlsJob) (bool, error) {
-	if job == nil {
-		_, err := os.Stat(path)
-		return err == nil, err
-	}
 	var failure error
+	if job == nil {
+		ready := playback.WaitHLSReady(ctx, func() error {
+			_, failure = os.Stat(path)
+			return failure
+		})
+		return ready, failure
+	}
 	ready := playback.WaitHLSReady(ctx, func() error {
 		_, failure = os.Stat(path)
 		if errors.Is(failure, os.ErrNotExist) {
