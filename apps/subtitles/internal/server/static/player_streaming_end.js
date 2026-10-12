@@ -51,13 +51,17 @@
     playbackTrace("fallback-offered", action ? "action-available" : "no-action");
     const state = document.querySelector("[data-player-status]");
     const playerMessage = document.querySelector("[data-player-message]");
-    if (state) { state.hidden = false; state.classList.add("is-recovery"); }
+    if (state) {
+      state.hidden = false; state.classList.add("is-recovery");
+      state.dataset.state = "error"; state.setAttribute("aria-busy", "false");
+      state.closest(".media-stage")?.classList.remove("is-busy");
+    }
     if (playerMessage) playerMessage.textContent = message;
     if (playbackModeStatus) {
-      playbackModeStatus.textContent = "Direct Play stopped";
-      playbackModeStatus.setAttribute("aria-label", "Playback method: Direct Play stopped. Open playback settings.");
+      playbackModeStatus.textContent = adaptiveActive ? "Compatibility stopped" : "Direct Play stopped";
+      playbackModeStatus.setAttribute("aria-label", `Playback method: ${playbackModeStatus.textContent}. Open playback settings.`);
     }
-    if (playbackReason) playbackReason.textContent = "The original file stopped playing. No conversion is running.";
+    if (playbackReason) playbackReason.textContent = adaptiveActive ? message : "The original file stopped playing. No conversion is running.";
     if (!action) return;
     recoveryAction = recover;
     if (playbackRecovery) playbackRecovery.hidden = false;
@@ -74,7 +78,7 @@
   let directSeeking = false;
   player.addEventListener("seeking", () => { directSeeking = true; });
   player.addEventListener("seeking", () => {
-    if (!adaptiveActive || !hls || !fullDuration || adaptiveSeekSwitch) return;
+    if (!adaptiveActive || !hls || !fullDuration || adaptiveSeekSwitch || copiedClockFailed) return;
     const details = hls.latestLevelDetails;
     const target = player.currentTime;
     const first = details?.fragments?.[0]?.start ?? adaptiveOffset;
@@ -86,6 +90,7 @@
   });
   player.addEventListener("loadedmetadata", () => { if (!adaptiveActive) showPlaybackMode(false, false); });
   const showReadyPlaybackMode = () => {
+    if (copiedClockFailed) return;
     if (directSeeking) directSeeking = false;
     clearRecovery();
     showPlaybackMode(adaptiveActive, false);
@@ -123,7 +128,7 @@
     const preference = quality.value === "auto" ? "auto" : quality.selectedOptions[0].textContent;
     playerStorage.set(qualityPreference, preference);
     qualityState.textContent = preference === "auto" ? "Auto" : preference;
-    if (!hls) return useAdaptive(preference, true);
+    if (!hls || copiedClockFailed) { clearRecovery(); return useAdaptive(preference, true); }
     if (preference === "auto") hls.loadLevel = -1;
     else hls.nextLevel = Number(quality.value.slice(6));
   });

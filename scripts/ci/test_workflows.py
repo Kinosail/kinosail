@@ -160,8 +160,7 @@ case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; e
         # Container codecs cannot satisfy a host fixture's executable dependency.
         app = (WORKFLOWS / 'app.yml').read_text()
         step = app.split('      - name: Install startup fixture codecs\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn("if: inputs.app == 'player'\n", step)
-        self.assertNotIn('matrix.engine', step)
+        self.assertIn("if: inputs.app == 'player' || matrix.engine == 'chromium'\n", step)
         self.assertIn('sha256sum --check', step)
         self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
 

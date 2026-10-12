@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
 
-const root = process.cwd(), require = createRequire(join(root, 'apps/player/e2e/package.json'));
+const root = process.cwd(), require = createRequire(join(root, `apps/${process.env.QA_RESUME_APP || 'player'}/e2e/package.json`));
 const {chromium, webkit} = require('@playwright/test');
 const origin = process.env.QA_RESUME_ORIGIN, token = process.env.QA_RESUME_TOKEN;
 const id = process.env.QA_RESUME_ITEM, output = process.env.QA_RESUME_OUTPUT;
@@ -13,14 +13,15 @@ const frameRate = Number(process.env.QA_RESUME_FRAME_RATE || 24);
 const duration = Number(process.env.QA_RESUME_DURATION || 32);
 const resume = Number(process.env.QA_RESUME_SECONDS || 12.5);
 const forceConversion = process.env.QA_RESUME_FORCE_AUDIO_CONVERSION === 'true';
+const directSwitch = process.env.QA_RESUME_DIRECT_SWITCH === 'true';
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const context = await browser.newContext({...(forceConversion ? {userAgent: 'Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36'} : {}), extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
 const rows = [], responses = [];
-let failureClass;
+let failureClass, stage = 'setup';
 
 try {
-  const planResponse = await context.request.get(`${origin}/api/v1/items/${id}/playback?videoCodecs=h264&audioCodecs=aac`);
+  const planResponse = await context.request.get(`${origin}/api/v1/items/${process.env.QA_RESUME_REFERENCE_ITEM || id}/playback?videoCodecs=h264&audioCodecs=aac`);
   if (planResponse.status() !== 200) throw new Error('playback_plan_status');
   const plan = await planResponse.json(), reference = plan.direct;
   if (!reference?.startsWith('/') || reference.startsWith('//')) throw new Error('reference_source_shape');
@@ -32,11 +33,25 @@ try {
       if (event.target instanceof HTMLVideoElement && window.qaResumeFirstPlaying === undefined)
         window.qaResumeFirstPlaying = event.target.currentTime;
     }, true));
+    if (directSwitch && !native) await page.addInitScript(() => {
+      // Mac browsers can use native HLS before lazily loading Hls.js. Exercise
+      // the same MSE fallback that browsers without native HLS actually use.
+      const canPlayType = HTMLMediaElement.prototype.canPlayType;
+      HTMLMediaElement.prototype.canPlayType = function(type) {
+        return type === 'application/vnd.apple.mpegurl' ? '' : canPlayType.call(this, type);
+      };
+    });
     if (native) await page.addInitScript(() => {
       // Exercise the real native decoder with the unsupported-MSE policy.
       // This is a capability simulation, not physical Safari acceptance.
       for (const name of ['MediaSource', 'ManagedMediaSource', 'WebKitMediaSource'])
         Object.defineProperty(window, name, {configurable: true, value: undefined});
+    });
+    if (variant === 'compatible' && process.env.QA_RESUME_RELEASE_ENCODER) page.on('request', async request => {
+      const url = new URL(request.url());
+      const segment = url.pathname.match(/^\/hls\/.*\/segment-(\d{5})\.m4s$/)?.[1];
+      if (url.origin === origin && segment && Number(segment) > 0)
+        await writeFile(process.env.QA_RESUME_RELEASE_ENCODER, segment);
     });
     page.on('response', response => {
       const path = new URL(response.url()).pathname;
@@ -53,7 +68,31 @@ try {
       await page.route(`${origin}/__qa_reference`, route => route.fulfill({contentType: 'text/html',
         body: `<video muted playsinline src="${reference.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></video>`}));
       await page.goto(`${origin}/__qa_reference`);
-    } else await page.goto(`${origin}/watch/${id}?compatible=1`);
+    } else {
+      await page.goto(`${origin}/watch/${id}${directSwitch ? '' : '?compatible=1'}`);
+      if (directSwitch) {
+        await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
+        const direct = await page.locator('video').evaluate(video => {
+          video.pause();
+          return {src: video.currentSrc, hls: video.dataset.hls, adaptive: video.dataset.adaptive};
+        });
+        if (direct.hls || !direct.adaptive?.startsWith('/hls/') || direct.src.startsWith('blob:'))
+          throw new Error('direct_switch_requires_direct_first');
+        stage = 'direct-switch-open-settings';
+        await page.locator('[data-playback-mode-status]').click();
+        stage = 'direct-switch-open-behavior';
+        await page.locator('.player-behavior > summary').click();
+        stage = 'direct-switch-select-compatible';
+        await page.locator('video').evaluate((video, resume) => {
+          video.pause(); video.currentTime = resume; window.qaResumeFirstPlaying = undefined;
+        }, resume);
+        await page.locator('[data-playback-mode] input[value="compatible"]').check();
+        stage = 'direct-switch-close-settings';
+        await page.locator('[data-player-settings-close]').click();
+        stage = 'direct-switch-media';
+        await page.waitForFunction(() => document.querySelector('video')?.currentSrc.startsWith('blob:'));
+      }
+    }
     if (variant === 'compatible') {
       await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
       const stage = page.locator('.media-stage');
@@ -132,7 +171,10 @@ try {
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await page.close();
   }
-} catch (error) { failureClass = error.message; }
+} catch (error) {
+  failureClass = error.name === 'TimeoutError' ? 'browser_action_timeout' : error.message;
+  await context.pages().at(-1)?.screenshot({path: output.replace('.json', '-failure.png')});
+}
 finally {
   await context.close();
   await browser.close();
@@ -142,11 +184,11 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
   && matches.length === 7 && matches.every(Boolean) && expectedMode.split(',').includes(rows[1].mode)
   && Math.abs(rows[1].duration - rows[0].duration) < .1
   && rows[1].firstPlaying >= resume - .05 && rows[1].firstPlaying < resume + .5
-  && (!native || rows[1].adapter === 'native')
+  && rows[1].adapter === (native ? 'native' : 'mse')
   && responses.length > 0 && responses.every(response => response.status < 400);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
-  capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
-  proofClass: 'Real authenticated Player process; synthetic source; unmodified watch page and HLS; original-file reference',
-  passed, failureClass, rows, matches, responses}, null, 2) + '\n');
+  capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', directSwitch ? 'Native HLS support disabled to exercise lazy MSE fallback' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
+  proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file or independently certified stream-copy MP4 reference',
+  directSwitch, stage, passed, failureClass, rows, matches, responses}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
 process.exitCode = passed ? 0 : 1;
