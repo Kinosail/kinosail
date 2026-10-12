@@ -428,6 +428,7 @@ jobs:
           python3 apps/player/scripts/test-hls-prepared-timeline.py
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --tail-recovery
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --first-recovery
+          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --small-video
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --controls
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium
           python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --long-remux

@@ -1481,3 +1481,11 @@ Its private receipt is `hls-resume-browser/20261012T061029Z/receipt.json`.
 The public interface is the HLS master and rendition path. Valid small source dimensions must retain their original dimensions.
 The current path validator rejects every quality below 144p although rendition generation uses the source's actual height.
 The intended repair admits positive heights while preserving the existing 2160p ceiling and file/path checks.
+
+The one-line lower-bound repair passes the complete small-video journey in Chromium and WebKit.
+Each engine preserves 32-by-32 dimensions, matches all seven reference frames, resumes at the saved position, and reaches EOF.
+Six malformed or out-of-range quality paths return 404 without starting encoders or changing cache assets.
+The source remains unchanged and the Server settles. The passing Server log contains no HLS warning or error.
+Receipt `hls-resume-browser/20261012T061139Z/receipt.json` retains the browser results and checksums.
+The required Chromium workflow now retains this case with the existing prepared-timeline artifacts.
+The production change only lowers the allowed positive rendition height; the upper bound and path confinement remain intact.

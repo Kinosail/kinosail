@@ -31,6 +31,8 @@ parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
 parser.add_argument('--small-video', action='store_true', help='Verify original 32-by-32 video and bounded HLS quality paths')
 args = parser.parse_args()
+if args.small_video and (not args.prepared or args.controls):
+    parser.error('--small-video requires --prepared without --controls')
 recovery = args.tail_recovery or args.first_recovery
 if recovery and (not args.prepared or args.audio_mode == 'none') or args.tail_recovery and args.first_recovery:
     parser.error('choose one recovery target, with --prepared')
