@@ -5,11 +5,11 @@ import (
 	"errors"
 	"log/slog"
 	"math"
-	"os/exec"
 	"strconv"
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/mediaprobe"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -123,37 +123,12 @@ func copiedHLSFields(line string) map[string]string {
 	return fields
 }
 
-func copiedHLSLines(parent context.Context, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
-	ctx, cancel, err := copiedHLSProbeContext(parent)
-	if err != nil {
-		return err
-	}
-	defer cancel()
-	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
-	command := exec.CommandContext(ctx, executable, arguments...)
-	command.Cancel = nil // The joined owner below settles the entire process group.
-	probe, output, err := startCopiedHLSProbe(ctx, command)
-	if err != nil {
+func copiedHLSLines(ctx context.Context, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
+	logger := slog.With("request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx))
+	if err := mediaprobe.ProbeLines(ctx, logger, executable, arguments, maximumBytes, maximumLines, visit); err != nil {
 		return errCopiedHLSIndex
 	}
-	defer probe.close()
-	defer output.Close()
-	scanned := make(chan error, 1)
-	watched := make(chan copiedHLSProbeWatch, 1)
-	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
-	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
-	scanned <- err
-	watch := <-watched
-	waitErr := probe.wait()
-	settleErr := settleCopiedHLSProbe(parent, probe)
-	watchErr := watch.completionError(ctx, err, waitErr, settleErr)
-	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
-		if ctx.Err() == nil {
-			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)
-		}
-		return errCopiedHLSIndex
-	}
-	return err
+	return nil
 }
 
 func (manager *hlsManager) scanCopiedHLSPackets(ctx context.Context, item library.Item, policy string, duration float64) (*copiedHLSTimeline, error) {

@@ -1,6 +1,6 @@
 //go:build linux || darwin
 
-package server
+package mediaprobe
 
 import (
 	"context"

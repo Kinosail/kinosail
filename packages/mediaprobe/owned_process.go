@@ -1,10 +1,9 @@
-package server
+package mediaprobe
 
 import (
 	"context"
 	"errors"
 	"io"
-	"log/slog"
 	"os/exec"
 	"runtime"
 	"syscall"
@@ -114,8 +113,7 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 		time.Sleep(time.Millisecond)
 	}
 	if deadline, ok := parent.Deadline(); ok && time.Now().After(deadline) {
-		slog.ErrorContext(parent, "copied probe settlement exceeded deadline",
-			"request_id", requestActivityID(parent), "playback_session", requestPlaybackSession(parent),
+		probeLogger(parent).ErrorContext(parent, "copied probe settlement exceeded deadline",
 			"failure_class", "copied_probe_settlement_overrun")
 		return errCopiedHLSIndex
 	}
@@ -130,8 +128,7 @@ func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, wait
 	if errors.As(waitErr, &exit) {
 		exitCode, exitKnown = exit.ExitCode(), true
 	}
-	slog.ErrorContext(ctx, "copied probe completion failed",
-		"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx),
+	probeLogger(ctx).ErrorContext(ctx, "copied probe completion failed",
 		"failure_class", "copied_probe_completion", "scan_failed", scanErr != nil,
 		"watch_failed", watchErr != nil, "watch_errno", int(errno), "watch_errno_known", errnoKnown,
 		"wait_failed", waitErr != nil, "wait_exit_code", exitCode, "wait_exit_known", exitKnown,

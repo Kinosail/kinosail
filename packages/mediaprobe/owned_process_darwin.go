@@ -1,4 +1,4 @@
-package server
+package mediaprobe
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 
 type copiedHLSExitObservation struct {
 	queue int
-	pid   int
+	pid   uint64
 	done  bool
 }
 
@@ -22,8 +22,11 @@ func newCopiedHLSExitObservation() (*copiedHLSExitObservation, error) {
 }
 
 func (exit *copiedHLSExitObservation) bind(pid int) error {
-	exit.pid = pid
-	change := unix.Kevent_t{Ident: uint64(pid), Filter: unix.EVFILT_PROC, Flags: unix.EV_ADD | unix.EV_ONESHOT, Fflags: unix.NOTE_EXIT}
+	if pid <= 0 || pid > 1<<31-1 {
+		return errCopiedHLSIndex
+	}
+	exit.pid = uint64(pid)
+	change := unix.Kevent_t{Ident: exit.pid, Filter: unix.EVFILT_PROC, Flags: unix.EV_ADD | unix.EV_ONESHOT, Fflags: unix.NOTE_EXIT}
 	_, err := unix.Kevent(exit.queue, []unix.Kevent_t{change}, nil, nil)
 	// This is our still-unreaped child, not a subsequently looked-up PID.
 	if errors.Is(err, unix.ESRCH) {
@@ -47,7 +50,7 @@ func (exit *copiedHLSExitObservation) exited() (bool, error) {
 		return false, err
 	}
 	event := events[0]
-	if event.Ident != uint64(exit.pid) || event.Filter != unix.EVFILT_PROC || event.Flags&unix.EV_ERROR != 0 || event.Fflags&unix.NOTE_EXIT == 0 {
+	if event.Ident != exit.pid || event.Filter != unix.EVFILT_PROC || event.Flags&unix.EV_ERROR != 0 || event.Fflags&unix.NOTE_EXIT == 0 {
 		return false, errCopiedHLSIndex
 	}
 	exit.done = true

@@ -1,9 +1,7 @@
 package server
 
 import (
-	"bufio"
 	"context"
-	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -67,27 +65,4 @@ func (timeline *copiedHLSTimeline) setTimeBase(value string) error {
 	timeline.Numerator, timeline.Denominator = a, b
 	timeline.TimeBase = float64(a) / float64(b)
 	return nil
-}
-
-func scanCopiedHLSLines(output io.Reader, maximumBytes int64, maximumLines int, visit func(string) error) error {
-	var err error
-	scanner := bufio.NewScanner(io.LimitReader(output, maximumBytes+1))
-	scanner.Buffer(make([]byte, 1024), 1024)
-	var total int64
-	count := 0
-	for scanner.Scan() {
-		total += int64(len(scanner.Bytes()) + 1)
-		count++
-		if total > maximumBytes || count > maximumLines {
-			err = errCopiedHLSIndex
-			break
-		}
-		if err = visit(scanner.Text()); err != nil {
-			break
-		}
-	}
-	if scanner.Err() != nil {
-		err = errCopiedHLSIndex
-	}
-	return err
 }
