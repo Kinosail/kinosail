@@ -1354,3 +1354,19 @@ Each fragment must contain audio through the following video's decode boundary, 
 A retrospective check rejects the preserved failing 8 kHz cache and accepts the interleaving prototype and both 44.1 kHz controls.
 This prevents later preloaded fragments from hiding misplaced audio. The PCM oracle also requires contiguous render blocks.
 The private projection is `long-audio-exploration/fragment-partition-counterfactual.json`, SHA-256 `07766a823d17c0f218e8894155e239dad03faf134d8af84ed6b8c32c4d6d688f`.
+
+Independent full-suffix replay confirms the interleaving cause without changing encoded audio.
+The default and inner-muxer-zero variants retain identical init and all 474 AAC packets but assign them to the wrong fragments.
+Outer 20-second, 30-second, and zero variants produce identical corrected fragments for this fixture.
+A debug replay records 1,211 forced flushes just above the default ten-second threshold.
+Output queue sizes of eight and sixteen packets leave the defect unchanged.
+These measurements do not establish a general safe interleaving buffer limit.
+The private full-suffix receipt SHA-256 is `1f38dc5b04ad239092860e483728a4a569d019029bd1feed06d872d208ae5bc6`.
+The output-queue counterfactual receipt SHA-256 is `0adfbd36dbae561866bdf4258b4c0ec4541f4fb2832c529fbb695f730fee1c51`.
+
+A separate two-hour synthetic AC3 scan decodes 206,719 frames and exactly 317,520,000 samples.
+Every frame matches one continuous sample clock under nearest-millisecond quantization; channel configuration remains stable.
+The local scan takes 3.95 seconds and peaks at 17,219,584 resident bytes.
+This makes decoded-frame validation worth testing within the existing preparation budget.
+It does not establish end-to-end preparation time, high-bitrate behavior, Linux performance, or encoder buffer limits.
+Its exact generation and probe commands, source checksum, and measured limits are in `long-audio-exploration/movie-clock-probe/receipt.json`.
