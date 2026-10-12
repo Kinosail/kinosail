@@ -1267,3 +1267,114 @@ Health permission, heart-rate sample or physical-device acceptance is claimed.
 Apple's [WCSession documentation](https://developer.apple.com/documentation/WatchConnectivity/WCSession)
 requires activation before messages; the captured connecting label alone does
 not identify activation status or failure cause.
+
+
+## Offline verification delivery and current deep results — October 12
+
+PR #572 merges the offline verification changes through protected main as
+`1560949fa734d0a86ef057ab4cdaa1b19f5c97df`. Required run `38206722040` passes for
+reviewed head `c7e9ac536b100ed5cd34fc0db78640373484588e`. A fresh fetch proves that
+reviewed head, the real large-transfer fix `d5efeb69`, and final quota checkpoint
+`24b9b762` are ancestors of remote main. Primary local main remains untouched
+because it contains unrelated native edits. Main CI/publication run `38209590154`
+is tracked separately from the passing PR gates.
+
+After reconciliation with the fixture sign-in pacing, both quota cases pass in
+Chromium, Firefox and WebKit at `c7e9ac53`: six passes, no skips, failures or flaky
+results. No raw successful-run videos remain. This is synthetic quota coverage;
+the independent 2,156,160,861-byte transfer retains its own earlier revision,
+source/OPFS hashes, restored Viewer and disconnected decoding evidence.
+
+Manual deep run `38206719965` fails. The final Go log identifies HTTP 503 from
+real copied-HLS AAC/AC3 offset-12700 requests and the speed suite's resume case.
+These requests fail before independent segment decoding begins. No race warning
+is found. The collected coverage is 88.6%, but failed Go tests prevent threshold
+evaluation; it is incorrect to identify coverage as the reported failure cause.
+Production Go and package trees are identical to preceding main `4d8ddd2b`.
+
+All 99 Subtitles cases pass in each browser engine, without skips or flaky
+results. Player Firefox's selected suites pass without flaky results. The broad
+Player reports also contain fixture-dependent skips; those are not completed
+journeys. WebKit's dedicated settings/Player suite reports 61 passes and three
+failed late-callback cases. Their attempts include stalled decoded-motion setup
+and timeouts after the watched form is accepted. The ordinary watched-form
+journey passes. These results do not clear the controlled race failures.
+
+## Subtitles published artifact verification — October 12
+
+Both Subtitles architecture digest artifacts remain available from successful
+main run `38181332045` at `8047e689`. Registry reads verify the raw final manifest
+hash and all four descriptors against those scanned candidate indexes. The final
+manifest is `sha256:6b36075e79217fb568828cac918731dc51a2380e9073725b2a1a2fed14927a51`.
+Independent GitHub attestation verification passes for that exact main revision,
+main ref, publication workflow and hosted runners. Subtitles and shared package
+sources remain unchanged through `c7e9ac53`. This proves that publication;
+it does not establish current-main Subtitles promotion or update Nox Subtitles.
+
+## Paired Watch controls and readiness finding — October 12
+
+Private, uniquely namespaced companion packages preserve the original apps and
+simulator pair. An early paired render shows “This iPhone” with “Nothing playing,”
+which establishes a received empty state. Its stdout instrumentation captures no
+reply line, so absence of that line cannot negate the visible reply. Later safe
+OSLog controls capture Watch activation, then a busy exchange without a reply
+through eighty seconds. Phone-first startup also captures no reply. Screenshots
+include black system frames, so those do not establish a terminal app failure.
+No actual playback command, Server session, Health permission or physical relay
+is verified. Apple's [Watch Connectivity sample](https://developer.apple.com/documentation/watchconnectivity/transferring-data-with-watch-connectivity)
+explicitly directs testing its transport on physical iPhone and Apple Watch.
+
+An early cleanup checks Watch absence before rebooting its still-installed
+companion. The next preflight detects task-owned packages again. Corrected cleanup
+removes the phone companion first, then the Watch package, and proves both absent
+together after a delay while both simulators remain booted. Both return to
+Shutdown with the original pair preserved. No original package or data is reset.
+
+QA-020: the Watch claims “Nothing playing” before receiving player state, and
+also after transport or invalid-reply failures. Actual disconnected simulator
+screenshots reproduce the initial contradictory empty/connecting state. A
+render contract fails before production edits. A separate private exchange
+fixture then executes the original Session parsing/state and RemoteView on
+watchOS Simulator: connecting, transport failure, invalid reply and first recovery
+failure each fail the render contract; valid empty, playing and recovered states
+pass. This is isolated controlled-exchange evidence, not a working paired relay.
+A proposed readiness-state repair is being checked privately before publication.
+
+## Deep codec dependency mismatch — October 12
+
+QA-021: the deep Go job installs Noble's FFmpeg 6.1, while supported containers
+and hosted browser media controls use Jellyfin FFmpeg 8.1.3. The same compiled
+public HTTP tests reproduce all three offset/resume failures with FFmpeg 6.1.1
+on Linux ARM64. They pass with pinned Jellyfin FFmpeg 8.1.3. The original hosted
+failure uses AMD64 and race instrumentation; that remains a distinct boundary.
+The matrix retains original assertions, offset-zero warmup and nonzero offsets.
+Its task container is removed. This finding does not justify a runtime fallback
+or a claim that all older codec installations work.
+
+The proposed workflow repair installs checksum-verified Jellyfin FFmpeg 8.1.3
+before deep Go tests and selects its executable directory. It retains the race
+suite, coverage thresholds and all required gates. The workflow contract fails
+before this change and passes after it. Complete selected hosted verification
+remains required before delivery.
+
+The separate static/moving movie comparison initially puts its file outside the
+configured Movies folder. Ten static executions time out before selecting any
+movie, and the next invalid comparison is interrupted. These are diagnostic setup
+failures, excluded from product evidence. Its task container is removed without
+changing host trust. A repaired comparison must verify Library admission before
+starting the unchanged watched-state tests.
+
+
+The complete CI contract suite, `make max-loc`, workflow validation, and the
+repository-pinned actionlint v1.17.0 fork pass locally. Its parallel-child and
+synchronization contract also passes. Homebrew actionlint 1.7.12 rejects existing
+parallel steps and `queue: max`; that unsupported validator result is retained
+separately. No workflow syntax or gate is weakened to accommodate it.
+
+The final Chromium artifact from deep run `38206719965` contains 707 broad-suite
+passes and 353 fixture-dependent skips. Its selected settings suite passes all
+64 cases. Caption recovery (7), Library pagination (30), queue loading (6),
+download pause (47), and download hit targets (1) also pass. All these reports
+contain zero failures and zero flaky results. The artifact SHA256 is
+`54d78b4a4820a4178a608d6a9b74c824a289993d2d0bc59b25c948e3a32f11a8`.
+Skips remain outside completed QA.
