@@ -118,3 +118,27 @@ def audio_packet_facts(packets):
         "audioPacketOrderValid": all(a < b for a, b in zip(points, points[1:])),
         "maximumAudioGapSeconds": max([0] + adjacent),
         "maximumAudioOverlapSeconds": max([0] + [-value for value in adjacent])}
+
+
+def fragment_facts(rendition, fragment):
+    media = (rendition / 'init.mp4').read_bytes() + fragment.read_bytes()
+    command = ['ffprobe', '-v', 'error', '-show_packets', '-show_entries',
+        'packet=stream_index,pts_time,duration_time', '-of', 'json', '-i', 'pipe:0']
+    data = subprocess.run(command, input=media, check=True, capture_output=True, timeout=15).stdout
+    if len(data) > 1024 * 1024:
+        raise RuntimeError('packet_output_bound')
+    packets = json.loads(data)['packets']
+    video = [p for p in packets if p['stream_index'] == 0]
+    audio = [p for p in packets if p['stream_index'] == 1]
+    if not video or not audio:
+        raise RuntimeError('fragment_track_missing')
+    decoded = subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-threads', '1', '-i', 'pipe:0',
+        '-map', '0:v:0', '-an', '-f', 'framehash', 'pipe:1'], input=media, check=True,
+        capture_output=True, timeout=15).stdout.decode()
+    if len(decoded) > 1024 * 1024:
+        raise RuntimeError('frame_output_bound')
+    return {'videoPTS': [float(p['pts_time']) for p in video],
+        'videoHashes': [line.split(',')[-1].strip() for line in decoded.splitlines() if line and not line.startswith('#')],
+        'videoEnd': max(float(p['pts_time']) + float(p['duration_time']) for p in video),
+        'audioStart': min(float(p['pts_time']) for p in audio),
+        'audioEnd': max(float(p['pts_time']) + float(p['duration_time']) for p in audio)}

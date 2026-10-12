@@ -1,13 +1,55 @@
 import { expect, test } from "@playwright/test";
 import { createHash } from "node:crypto";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { configureTestInstance, downloadsSource, firstPlayable, login } from "./test-instance-helpers";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 
+// WebKit advertises OPFS in ephemeral contexts but cannot open its directory there.
+const opfsTest = test.extend({
+  context: async ({ playwright, browserName, launchOptions, channel, headless, contextOptions, baseURL, viewport, userAgent, deviceScaleFactor, isMobile, hasTouch, colorScheme, locale, ignoreHTTPSErrors, serviceWorkers, video }, use, testInfo) => {
+    const profile = await mkdtemp(join(tmpdir(), "kinosail-opfs-quota-"));
+    const videoDirectory = testInfo.outputPath("opfs-video");
+    const videoMode = typeof video === "string" ? video : video.mode;
+    let context: import("@playwright/test").BrowserContext | undefined;
+    try {
+      context = await playwright[browserName].launchPersistentContext(profile, {
+        ...launchOptions, ...contextOptions, channel, headless, baseURL, viewport, userAgent,
+        deviceScaleFactor, isMobile, hasTouch, colorScheme, locale, ignoreHTTPSErrors, serviceWorkers,
+        ...(videoMode === "off" ? {} : { recordVideo: { dir: videoDirectory, size: typeof video === "string" ? undefined : video.size } }),
+      });
+      await use(context);
+    } finally {
+      const pages = context?.pages() ?? [];
+      const recordings = pages.map((page) => page.video()).filter((recording) => recording !== null);
+      try {
+        // Finish recordings while the persistent browser connection is still open.
+        await Promise.all(pages.map((page) => page.close()));
+        if (videoMode === "on" || testInfo.status !== testInfo.expectedStatus) {
+          for (const [index, recording] of recordings.entries()) {
+            const path = testInfo.outputPath(`opfs-video-${index}.webm`);
+            await recording.saveAs(path);
+            await testInfo.attach("video", { path, contentType: "video/webm" });
+          }
+        }
+      } finally {
+        try { await context?.close(); }
+        finally {
+          await rm(profile, { recursive: true, force: true });
+          await rm(videoDirectory, { recursive: true, force: true });
+          await testInfo.attach("opfs-profile", { body: JSON.stringify({ mode: "fresh-persistent", removed: true }), contentType: "application/json" });
+        }
+      }
+    }
+  },
+});
+
 test.describe("large offline transfers", () => {
 
-  test("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
+  opfsTest("offline resume does not count an orphaned OPFS write twice against quota", async ({ page }) => {
     await page.route((url) => url.pathname === "/static/downloads.js", (route) => route.fulfill({ contentType: "text/javascript", body: downloadsSource.replace("const chunkSize = 8 * 1024 * 1024;", "const chunkSize = 16;") }));
     await page.addInitScript(() => {
       const worker = { scriptURL: new URL("/service-worker.js?v=56", location.href).href, state: "activated" };
@@ -87,7 +129,8 @@ test.describe("large offline transfers", () => {
       request.onerror = () => reject(request.error);
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
-    await button.click();
+    await page.reload();
+    await page.getByRole("button", { name: "Resume on this device", exact: true }).click();
     await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
     expect(await page.evaluate(async (id) => (await (await (await navigator.storage.getDirectory()).getFileHandle(id)).getFile()).size, jobID!)).toBe(media.length);
@@ -153,7 +196,8 @@ test.describe("large offline transfers", () => {
       request.onerror = () => reject(request.error);
     }), { id: jobID!, itemID: itemID!, profileID: profileID!, quality: quality!, sha256, size: media.length, title: title! });
 
-    await button.click();
+    await page.reload();
+    await page.getByRole("button", { name: "Resume on this device", exact: true }).click();
     await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 20_000 });
     expect(ranges).toEqual([16, 16, 1]);
   });

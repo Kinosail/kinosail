@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { createHmac } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
@@ -40,8 +41,7 @@ export async function login(page: import("@playwright/test").Page) {
   await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
   await page.getByLabel("Name").fill(process.env.KINOSAIL_E2E_OWNER_NAME ?? "Owner");
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
-  await page.getByLabel("Authentication or recovery code").fill(totp());
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await submitFixtureLogin(page, totp);
   await page.waitForURL(url => url.pathname !== "/login");
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }
@@ -50,7 +50,7 @@ export async function loginViewer(page: Page, name: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await submitFixtureLogin(page);
   await page.waitForURL(url => url.pathname !== "/login");
 }
 

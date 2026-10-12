@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
 import AxeBuilder from "@axe-core/playwright";
@@ -29,8 +30,7 @@ test("Owner can understand and customize automatic sign-out", async ({ page }, t
 	await page.getByLabel("Name").fill("Owner");
 	const password = process.env.KINOSAIL_TEST_INSTANCE === "1" ? "test-instance-password" : "test-password";
 	await page.getByLabel("Password").fill(password);
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await submitFixtureLogin(page, totp);
 	await page.waitForURL(url => url.pathname !== "/login");
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 

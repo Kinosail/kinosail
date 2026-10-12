@@ -9,6 +9,7 @@ installPlayerExperienceFixture(false, false, 'iPhone', async page => {
     await ready;
     await route.fulfill({contentType: 'text/javascript', body: `
       window.Hls = class {
+        static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
         static isSupported = () => true;
         static Events = {MANIFEST_PARSED: 'manifest', LEVEL_SWITCHED: 'level', ERROR: 'error'};
         static ErrorTypes = {};

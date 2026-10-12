@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { totp } from "./test-instance-helpers";
@@ -7,8 +8,7 @@ async function login(page: Page) {
 	await page.goto("/login");
 	await page.getByLabel("Name").fill("Owner");
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-	await page.getByLabel("Authentication or recovery code").fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await submitFixtureLogin(page, totp);
 	await page.waitForURL(url => url.pathname === "/" || (url.pathname === "/account" && url.searchParams.get("passkey") === "offer"));
 	if (new URL(page.url()).pathname === "/account") await page.getByRole("link", { name: "Not now" }).click();
 	await expect(page).toHaveURL("/");

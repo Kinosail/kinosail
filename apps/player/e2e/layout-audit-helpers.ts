@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import { createHmac } from "node:crypto";
@@ -37,8 +38,7 @@ export async function login(page: Page, name = "Owner", password = "test-instanc
 	await page.getByLabel("Name").fill(name);
 	await page.getByLabel("Password", { exact: true }).fill(password);
 	const code = page.getByLabel("Authentication or recovery code");
-	if (await code.count()) await code.fill(totp());
-	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await submitFixtureLogin(page, await code.count() ? totp : undefined);
   await page.waitForURL(url => url.pathname !== "/login");
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 }

@@ -1,3 +1,4 @@
+import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test } from "@playwright/test";
 import { createHmac } from "node:crypto";
 import { firstPlayable } from "./test-instance-helpers";
@@ -20,8 +21,7 @@ for (const compatible of [false, true]) test(`one play request does not immediat
   await page.goto("/login");
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
-  await page.getByLabel("Authentication or recovery code").fill(totp());
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await submitFixtureLogin(page, totp);
   if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
   await page.getByRole("link", { name: "Movies", exact: true }).click();
   const watch = await firstPlayable(page);
