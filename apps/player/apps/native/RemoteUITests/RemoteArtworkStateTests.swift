@@ -198,7 +198,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
     }
 
     @MainActor
-    private func openMovie(next: Bool = false, select: Bool = true) -> XCUIApplication {
+    func openMovie(next: Bool = false, select: Bool = true) -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
@@ -220,7 +220,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
     }
 
     @MainActor
-    private func waitForDetail(_ app: XCUIApplication, title: String, timeout: TimeInterval = 10) {
+    func waitForDetail(_ app: XCUIApplication, title: String, timeout: TimeInterval = 10) {
         let titleSeen = app.staticTexts[title].waitForExistence(timeout: timeout)
         if !titleSeen { record("artwork-detail-title-wait-failure", app) }
         XCTAssertTrue(titleSeen)
@@ -231,7 +231,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
     }
 
     @MainActor
-    private func waitForFocus(_ element: XCUIElement, in app: XCUIApplication) {
+    func waitForFocus(_ element: XCUIElement, in app: XCUIApplication) {
         var previous = CGRect.null
         var stable = 0
         let focused = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
@@ -248,7 +248,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
     }
 
     @MainActor
-    private func verifyPrimaryVisible(_ app: XCUIApplication) {
+    func verifyPrimaryVisible(_ app: XCUIApplication) {
         let resume = app.buttons["Resume"]
         XCTAssertTrue(resume.hasFocus)
         XCTAssertTrue(resume.isHittable)
@@ -259,13 +259,13 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         print("ARTWORK_STATE resume=\(resume.frame) viewport=\(app.frame) focused=\(focusedLabels(app))")
     }
 
-    private func requireCase(_ name: String) throws {
+    func requireCase(_ name: String) throws {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["KINOSAIL_TV_ARTWORK_STATE_CASE"] == name,
                           "Select one case after its own unique disposable session seed.")
         fixtureEnabled = true
     }
 
-    private func state(_ mode: String, delay: Int = 0, target: String = "details") async throws {
+    func state(_ mode: String, delay: Int = 0, target: String = "details") async throws {
         let identity = try XCTUnwrap(ProcessInfo.processInfo.environment["KINOSAIL_TV_QUALITY_FIXTURE_ID"])
         XCTAssertNotNil(identity.range(of: "^tv-polish-qa-[a-z0-9-]{1,64}$", options: .regularExpression),
                         "A unique freshly seeded identity is required; the bare fallback is rejected")
