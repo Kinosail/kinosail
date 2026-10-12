@@ -1617,3 +1617,40 @@ changes only that count. The Subtitles snapshot remains byte-identical, and the
 architecture contract passes. Deep run `38226919051` at `9d4bca82` is cancelled
 after its tooling failure; it provides no complete acceptance result. A fresh
 exact-revision deep run follows the snapshot checkpoint.
+
+
+## QA-023 — Native verifier skips catalog inputs and reuses stale success
+
+The native stage selects only changes under `apps/native`. It can skip commits
+that change the Makefile, generator, translations, Android source or catalogs,
+or the shared language list. Its cache also omits those dependencies. A previous
+native-build success can therefore hide stale generated copy.
+
+The failure model and retained CLI regression precede the verifier repair.
+Sixteen source-selection and cache subcases fail before the change, with zero
+fixture errors. An unrelated documentation control passes. These isolated
+checks execute the actual verifier, Git and content hasher. Compiler, module and
+source-cap commands are explicit stand-ins. Product E2E does not invoke this
+local selection and cache boundary.
+
+The verifier now selects a catalog check for copy-only changes. Native and
+Makefile changes retain the native-build stage. Both stages hash the Makefile,
+generator, translation data, native source and catalogs, relevant Android source
+and catalogs, and shared language list. Unrelated documentation still does not
+start native verification. The regression is part of `make tooling-check`.
+
+Independent controls use the actual Makefile, generator and translation data.
+The old verifier incorrectly accepts a stale Spanish catalog through both a
+native-cache hit and a copy-only commit. The repaired verifier rejects both.
+Catalog hashes remain unchanged and no compiler runs during rejection.
+Regenerating catalogs restores success and permits both native compiler calls.
+Those controls use a compiler stand-in; the first control's incorrect expected
+stage after regeneration is corrected before the passing replay.
+
+The retained CLI suite, shellcheck and complete local tooling command pass.
+A separate actual `make -C apps/player client-check` passes iOS and tvOS Xcode
+compilation after the real freshness check. This proves compilation, not app
+interaction or physical-device behavior. A unittest discovery attempt selects
+no hyphenated files and is excluded; the root tooling command invokes the files
+explicitly. Private `native-verification-*` receipts retain commands, revisions,
+source hashes, controls and logs.
