@@ -14,7 +14,10 @@ func certifyH264(ctx context.Context, logger *slog.Logger, ffmpeg, path string, 
 	proof := copiedHLSIDRProof{timeline: timeline}
 	arguments := copiedHLSCertificationArguments(path, timeline, "filter_units=pass_types=5")
 	err := ProbeLines(ctx, logger, ffmpeg, arguments, 1<<20, maximumH264Keys+32, proof.line)
-	if err != nil || proof.count != len(timeline.Keys) {
+	if err != nil {
+		return err
+	}
+	if proof.count != len(timeline.Keys) {
 		return errCopiedHLSIndex
 	}
 	return nil
@@ -61,7 +64,10 @@ func certifyH264Configuration(ctx context.Context, logger *slog.Logger, ffmpeg, 
 	proof := copiedHLSConfigurationProof{maximum: len(timeline.Keys)}
 	arguments := copiedHLSCertificationArguments(path, timeline, "h264_mp4toannexb,filter_units=pass_types=7|8")
 	err := ProbeLines(ctx, logger, ffmpeg, arguments, 1<<20, maximumH264Keys+32, proof.line)
-	if err != nil || proof.count == 0 {
+	if err != nil {
+		return err
+	}
+	if proof.count == 0 {
 		return errCopiedHLSIndex
 	}
 	return nil

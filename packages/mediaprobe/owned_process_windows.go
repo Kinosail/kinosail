@@ -2,6 +2,7 @@ package mediaprobe
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -22,7 +23,7 @@ const copiedHLSJobListAttribute = 0x2000d
 
 func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
 	if ctx.Err() != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, ctx.Err()
 	}
 	if command.Err != nil {
 		return nil, nil, errCopiedHLSIndex
@@ -33,12 +34,12 @@ func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe
 	}
 	job, err := copiedHLSWindowsJob()
 	if err != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, errors.Join(ErrProbeLifecycle, err)
 	}
 	probe, output, err := copiedHLSWindowsLaunch(ctx, job, path, command.Args)
 	if err != nil {
 		_ = windows.CloseHandle(job)
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, errors.Join(errCopiedHLSIndex, ctx.Err())
 	}
 	return probe, output, nil
 }
@@ -132,7 +133,7 @@ func copiedHLSWindowsCreate(ctx context.Context, job windows.Handle, path string
 	startup.StdInput, startup.StdOutput, startup.StdErr = handles[1], handles[0], handles[1]
 	startup.ProcThreadAttributeList = attributes.List()
 	if ctx.Err() != nil {
-		return process, errCopiedHLSIndex
+		return process, ctx.Err()
 	}
 	// Membership is atomic with creation; no unmanaged child or breakaway fallback.
 	err = windows.CreateProcess(application, line, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT, nil, nil, &startup.StartupInfo, &process)
@@ -152,10 +153,13 @@ func (probe *copiedHLSWindowsProbe) terminate() error {
 
 func (probe *copiedHLSWindowsProbe) wait() error {
 	if _, err := windows.WaitForSingleObject(probe.process.Process, windows.INFINITE); err != nil {
-		return err
+		return errors.Join(ErrProbeLifecycle, err)
 	}
 	var code uint32
-	if windows.GetExitCodeProcess(probe.process.Process, &code) != nil || code != 0 {
+	if err := windows.GetExitCodeProcess(probe.process.Process, &code); err != nil {
+		return errors.Join(ErrProbeLifecycle, err)
+	}
+	if code != 0 {
 		return errCopiedHLSIndex
 	}
 	return nil

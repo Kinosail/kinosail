@@ -38,7 +38,10 @@ func (index H264Index) End() float64    { return index.timeline.End }
 // H264Index returns cuts only after packets, IDRs, and codec configuration have
 // each reached successful EOF. Unsupported or incomplete proof returns no index.
 func (probe *Probe) H264Index(ctx context.Context, ffmpeg string, options H264Scan) (H264Index, error) {
-	if !validH264Scan(options) || ctx.Err() != nil {
+	if ctx.Err() != nil {
+		return H264Index{}, ctx.Err()
+	}
+	if !validH264Scan(options) {
 		return H264Index{}, errCopiedHLSIndex
 	}
 	var timeline *h264Timeline
@@ -58,7 +61,7 @@ func (probe *Probe) H264Index(ctx context.Context, ffmpeg string, options H264Sc
 		return H264Index{}, fmt.Errorf("configuration: %w", err)
 	}
 	if ctx.Err() != nil {
-		return H264Index{}, errCopiedHLSIndex
+		return H264Index{}, ctx.Err()
 	}
 	return H264Index{timeline: *timeline}, nil
 }

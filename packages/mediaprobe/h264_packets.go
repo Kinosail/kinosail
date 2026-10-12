@@ -88,7 +88,10 @@ func (probe *Probe) scanH264Packets(ctx context.Context, options H264Scan) (*h26
 		return timeline.packet(line, &end)
 	})
 	timeline.End = float64(end) * timeline.TimeBase
-	if err != nil || !originKnown || !validH264Timeline(timeline) {
+	if err != nil {
+		return nil, err
+	}
+	if !originKnown || !validH264Timeline(timeline) {
 		return nil, errCopiedHLSIndex
 	}
 	if timeline.End <= timeline.point(len(timeline.Keys)-1) || math.Abs(timeline.End-options.Duration) > 0.1 || timeline.End-timeline.point(0) > options.MaximumSpan {

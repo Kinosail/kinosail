@@ -2,6 +2,7 @@ package mediaprobe
 
 import (
 	"context"
+	"errors"
 	"os"
 	"strconv"
 	"strings"
@@ -60,6 +61,9 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	}
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
+	}
+	if cancelNow && !errors.Is(err, context.Canceled) {
+		t.Fatal("configured probe lost cancellation after joining its descendants")
 	}
 }
 
@@ -142,6 +146,9 @@ func TestCopiedHLSLinesCancelledBeforeStart(t *testing.T) {
 	})
 	if err == nil || lines != 0 {
 		t.Fatal("cancelled configured probe produced accepted output or succeeded")
+	}
+	if !errors.Is(err, context.Canceled) {
+		t.Fatal("pre-start cancellation was classified as optional metadata failure")
 	}
 }
 

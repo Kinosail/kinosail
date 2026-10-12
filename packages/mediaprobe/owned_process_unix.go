@@ -20,11 +20,11 @@ type copiedHLSUnixProbe struct {
 // Keep the group leader unreaped until all group mutations and scanning finish.
 func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
 	if ctx.Err() != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, ctx.Err()
 	}
 	exit, err := newCopiedHLSExitObservation()
 	if err != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, errors.Join(ErrProbeLifecycle, err)
 	}
 	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	output, err := command.StdoutPipe()
@@ -38,13 +38,13 @@ func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe
 		return nil, nil, errCopiedHLSIndex
 	}
 	probe := &copiedHLSUnixProbe{command: command, exit: exit}
-	if exit.bind(command.Process.Pid) != nil {
-		_ = probe.terminate()
+	if err := exit.bind(command.Process.Pid); err != nil {
+		stopErr := probe.terminate()
 		_ = output.Close()
-		_ = probe.wait()
-		_ = settleCopiedHLSProbe(ctx, probe)
+		waitErr := probe.wait()
+		settleErr := settleCopiedHLSProbe(ctx, probe)
 		probe.close()
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, errors.Join(ErrProbeLifecycle, err, stopErr, waitErr, settleErr)
 	}
 	return probe, output, nil
 }

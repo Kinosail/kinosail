@@ -1641,3 +1641,18 @@ The retained prefix regression now also checks exact warm and restarted VOD bodi
 The shared-cut extraction at `05af4d28` passes the real Player prepared irregular-resume journey in Chromium and WebKit. The clean-revision artifact is under `ai-qa-campaign/shared-cuts-browser`; the browser receipt is `hls-resume-browser/20261012T083500Z/receipt.json`.
 
 The prefix regression also supports `--native`. It releases the held source encoder only after native WebKit requests a future segment. The browser still uses the real Server and media; MSE is capability-disabled to select native HLS. The run at `hls-copied-prefix/20261012T083817Z` remains red before the repair. Its source is unchanged, both Server processes settle, and the source encoder joins. Receipt SHA-256: `b1b9e6cf67d8dade08009e01d40ecc603f381fba570acf7dc5dd690b444e3ca8`. This is simulator-browser evidence, not physical Safari acceptance.
+
+### Probe failure classification before optional Subtitles indexing
+
+Before changing probe behavior, the failure inventory is: unsupported or bounded-out metadata, ordinary nonzero exit after cleanup, cancellation or deadline, failed process observation, rejected termination, and failed or over-budget settlement. An optional caller may fall back only after proven cleanup and while its own job and source policy remain valid. It must stop on ownership failure. Existing Player callers continue rejecting every failed index.
+
+The retained completion-certificate seam checks OS failures that real-media E2E cannot reliably induce. Its new pre-change assertions require a distinct lifecycle error. Existing real configured-process tests now require cancellation to survive both pre-start rejection and joined-descendant cleanup. This closes a concrete E2E gap without introducing a test-only production hook.
+
+PR 575 now combines the reviewed audio and small-video repairs at `f7b4688f`, including current main `a2d5f2b1`. Fresh required checks are running. PR 577 remains open until inclusion is proved. The unaccepted Subtitles candidate is excluded from that delivery branch. Local combined-head source limits and whitespace checks pass; affected verification stops at the established 95 shared-package lint findings before later stages run.
+
+The new pre-change classification checks fail as expected, including cancellation in all five index entry points. After the repair, focused ownership, copied-HLS, recovery, and manifest checks pass. New mediaprobe code has zero lint findings. Source limits and whitespace checks pass. Linux ARM64 and Windows AMD64 test binaries compile; no runtime proof is claimed for those platforms. The independent read-only review found no concrete blocker.
+
+- Private `probe-classification-red-private.log` SHA-256: `5ccfe5d6987085895a8522c835f663a52c9ae5a61dae4759c3626f46e351bc0b`.
+- Private `probe-phase-red-private.log` SHA-256: `9a84c42ec8f49d1580e9dcf55a037e29c322eae794953496a5c155249a6b27c8`.
+- Private `probe-classification-green-private.log` SHA-256: `8895d38be6a6f948538496826ec282b7c7537c5aff8ae14e9f61556d547fdf6a`.
+- Private `probe-classification-focused-private.log` SHA-256: `1ac7b848e61d02a0a6b1ce20d67156eafc6ad8ddb6b62ff42afc4827483702d4`.

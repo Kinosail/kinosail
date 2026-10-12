@@ -11,6 +11,10 @@ import (
 
 var errCopiedHLSIndex = errors.New("copied HLS timeline is unavailable")
 
+// ErrProbeLifecycle means probe ownership or completion could not be certified.
+// Callers must not treat it as optional, unsupported media metadata.
+var ErrProbeLifecycle = errors.New("media probe lifecycle failed")
+
 type probeLoggerKey struct{}
 
 func probeLogger(ctx context.Context) *slog.Logger {
@@ -34,7 +38,10 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	command.Cancel = nil // The joined owner below settles the entire process group.
 	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {
-		return errCopiedHLSIndex
+		if errors.Is(err, ErrProbeLifecycle) {
+			reportCopiedHLSProbeCompletion(parent, nil, err, nil, nil)
+		}
+		return errors.Join(err, ctx.Err())
 	}
 	defer probe.close()
 	defer output.Close()
@@ -48,10 +55,10 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	settleErr := settleCopiedHLSProbe(parent, probe)
 	watchErr := watch.completionError(ctx, err, waitErr, settleErr)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
-		if ctx.Err() == nil {
+		if ctx.Err() == nil || errors.Is(watchErr, ErrProbeLifecycle) {
 			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)
 		}
-		return errCopiedHLSIndex
+		return errors.Join(errCopiedHLSIndex, ctx.Err(), watchErr)
 	}
 	return err
 }

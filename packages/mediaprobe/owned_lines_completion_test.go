@@ -3,11 +3,14 @@ package mediaprobe
 import (
 	"context"
 	"errors"
+	"os/exec"
 	"runtime"
 	"syscall"
 	"testing"
 )
 
+// Real-media E2E cannot reliably cause OS observation or termination failures.
+// This retained certificate seam verifies that optional probing cannot hide them.
 func TestCopiedHLSLinesCompletionCertificate(t *testing.T) {
 	failure := errors.New("incomplete probe")
 	cases := []struct {
@@ -41,6 +44,36 @@ func TestCopiedHLSLinesCompletionCertificate(t *testing.T) {
 			}
 			if !accepted && test.name != "other termination" && !errors.Is(err, syscall.EPERM) {
 				t.Fatal("incomplete completion lost its native permission error")
+			}
+			if !accepted && !errors.Is(err, ErrProbeLifecycle) {
+				t.Fatal("uncertified lifecycle was classified as optional metadata failure")
+			}
+		})
+	}
+}
+
+func TestCopiedHLSLinesFailureClasses(t *testing.T) {
+	failure := errors.New("probe observation failed")
+	cases := []struct {
+		name      string
+		watch     copiedHLSProbeWatch
+		scanErr   error
+		settleErr error
+		waitErr   error
+		fatal     bool
+	}{
+		{name: "unsupported metadata", watch: copiedHLSProbeWatch{result: errCopiedHLSIndex}, scanErr: errCopiedHLSIndex},
+		{name: "observation failure", watch: copiedHLSProbeWatch{observeErr: failure}, fatal: true},
+		{name: "termination failure", watch: copiedHLSProbeWatch{terminateErr: failure}, fatal: true},
+		{name: "settlement failure", settleErr: failure, fatal: true},
+		{name: "unobserved wait", waitErr: failure, fatal: true},
+		{name: "ordinary nonzero exit", waitErr: &exec.ExitError{}},
+	}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			err := test.watch.completionError(t.Context(), test.scanErr, test.waitErr, test.settleErr)
+			if errors.Is(err, ErrProbeLifecycle) != test.fatal {
+				t.Fatal("optional metadata and uncertified lifecycle were not distinguished")
 			}
 		})
 	}

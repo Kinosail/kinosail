@@ -20,13 +20,13 @@ type copiedHLSProbe interface {
 
 func copiedHLSProbeContext(parent context.Context) (context.Context, context.CancelFunc, error) {
 	if parent.Err() != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, parent.Err()
 	}
 	if deadline, ok := parent.Deadline(); ok {
 		// Reserve settlement within the caller's existing deadline, exactly once.
 		deadline = deadline.Add(-100 * time.Millisecond)
 		if !time.Now().Before(deadline) {
-			return nil, nil, errCopiedHLSIndex
+			return nil, nil, context.DeadlineExceeded
 		}
 		ctx, cancel := context.WithDeadline(parent, deadline)
 		return ctx, cancel, nil
@@ -68,7 +68,12 @@ func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, 
 	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.cleanCompletion(ctx, scanErr, waitErr, settleErr) {
 		stopErr = nil
 	}
-	return errors.Join(watch.result, stopErr, watch.observeErr)
+	var exit *exec.ExitError
+	unknownWait := waitErr != nil && !errors.As(waitErr, &exit) && !errors.Is(waitErr, errCopiedHLSIndex)
+	if stopErr != nil || watch.observeErr != nil || settleErr != nil || unknownWait {
+		return errors.Join(ErrProbeLifecycle, watch.result, stopErr, watch.observeErr, settleErr, waitErr)
+	}
+	return watch.result
 }
 
 func (watch *copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
@@ -103,7 +108,7 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 	for {
 		settled, err := probe.settled()
 		if err != nil {
-			result = errCopiedHLSIndex
+			result = errors.Join(ErrProbeLifecycle, err)
 		}
 		if settled {
 			break
@@ -115,7 +120,7 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 	if deadline, ok := parent.Deadline(); ok && time.Now().After(deadline) {
 		probeLogger(parent).ErrorContext(parent, "copied probe settlement exceeded deadline",
 			"failure_class", "copied_probe_settlement_overrun")
-		return errCopiedHLSIndex
+		return errors.Join(ErrProbeLifecycle, result)
 	}
 	return result
 }
