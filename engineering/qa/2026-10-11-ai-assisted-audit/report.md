@@ -154,18 +154,20 @@ Android application assembly and JVM tests passed. These are not Android emulato
 Both apps passed AMD64 and ARM64 production-container checks and scans on this baseline.
 Scheduled-only checks were not selected by the manual deep run.
 
-The browser artifact reconciliation deduplicates `(spec file, test title)` across the main and focused reports.
+The browser artifact reconciliation deduplicates `(spec file, full suite/title path, browser project)` across the main and focused reports.
 Repeated executions are not additional coverage. The numbers below apply only to this hosted baseline:
 
 | Application / engine | Distinct observed cases | Passed at least once | No passing execution |
 | --- | ---: | ---: | ---: |
-| Player / Chromium | 1,069 | 791 | 278 |
-| Player / Firefox | 1,069 | 787 | 282 |
-| Player / WebKit | 1,069 | 785 | 284 |
+| Player / Chromium | 1,070 | 791 | 279 |
+| Player / Firefox | 1,070 | 787 | 283 |
+| Player / WebKit | 1,070 | 785 | 285 |
 | Subtitles / each of the three engines | 99 | 99 | 0 |
 
 The Player remainder includes opt-in populated journeys and layout audits, not observed failures for every case.
-The private reconciliation is `.verification/ai-qa-campaign/hosted/player-coverage.json`.
+The corrected private reconciliation is `.verification/ai-qa-campaign/hosted/player-coverage-v2.json`.
+The original leaf-title key collapsed phone and desktop direct-retry cases. Both were skipped in this baseline.
+The correction adds one unpassed case per engine; passing counts do not change.
 Later focused executions must be reconciled separately before reducing these gaps.
 
 [Layout run 38155749187](https://github.com/Kinosail/kinosail/actions/runs/38155749187) uses exact source `f64bb55a5b1a3c60b7e528381a61425f6de4f65e`.
@@ -2050,3 +2052,88 @@ Both snapshots now reflect the three added mediaprobe lines; dependency, symbol,
 The complete local `make tooling-check`, architecture checks, source limits, and whitespace pass.
 The source repair is unchanged. Both post-commit app wrappers stopped at the established 95 shared lint findings.
 Snapshot proof: `pr582-architecture-refresh-proof.json`, SHA-256 `35f1ca1f1420cf8c42f6cc79ddc571792a9b61a9b783a1752751632e95191465`.
+
+### Merged main publication and fresh deep verification
+
+PR 582 merged reviewed commit `8e816c7187fb08669b80638e78d3052223a33965` into main `b1b2c00e961519b193dbef546683422d4bc5186a`.
+A fetched ancestry check proves inclusion. Required main run `38266522591` passed and published both applications.
+Each app passed AMD64 and ARM64 build, production tests, and scans. Hosted signature and provenance verification passed.
+At verification on October 12, the commit, `main`, and `latest` tags resolved to the same manifest for each app:
+
+| App | Published digest |
+| --- | --- |
+| Player | `sha256:4f17925107fb0c76cb82707851797d02a16e3361c36216225094c90c12e6c05b` |
+| Subtitles | `sha256:323bb62a7b0fd96f8787544ecb0dd66118e0e820182515dca60ef127baa8ff8d` |
+
+Both architecture configurations contain the exact main revision. This does not prove a Nox deployment or physical-device acceptance.
+Publication proof: `main-b1b2-publication-proof.json`, SHA-256 `e414db5d686b95f469273cf6d6d7d62114579be90b1f375146860ac9a8c8d266`.
+
+Manual deep run `38266559451` tested the same revision and failed. Original failures remain retained.
+All six browser archives prove unchanged exact source. Their 2,215 listed artifact hashes match.
+Counts below reconcile full suite/title/project identities across the base and focused reports.
+They include isolated browser fixtures and populated Server journeys; they are not all populated E2E cases.
+
+| Application / engine | Observed cases | Passed at least once | No passing execution |
+| --- | ---: | ---: | ---: |
+| Player / Chromium | 1,074 | 794 | 280 |
+| Player / Firefox | 1,074 | 790 | 284 |
+| Player / WebKit | 1,074 | 786 | 288 |
+| Subtitles / each engine | 99 | 99 | 0 |
+
+Subtitles has no skipped, failed, or flaky cases in these reports.
+Player has two WebKit failures. Its other unpassed cases need explicit runners or have browser-specific exclusions.
+Proof: `deep-b1b2-hosted/browser-artifacts-proof.json`, SHA-256 `9f1ab45554cb69d895330a3f542e8c027a2cc86fd786c31c14d209b1bc702bbb`.
+Coverage reconciliation: `deep-b1b2-hosted/player-coverage-v2.json`, SHA-256 `2c63ac0ed125cb33c4d5cfdce466471272f5f9470055ffdceb8e9a1f6a07d25c`.
+
+The Player Go job rejected 86.7% coverage against its unchanged 89% threshold.
+Its terminal log contains no test failure or race report. Unmerged PR 579 uses different coverage accounting and reports 89.5% separately.
+The deep iOS run passed 331 cases, failed one, and skipped one. The failed card comparison captured a blank raw pixel buffer.
+Its rated and unrated PNG attachments are byte-for-byte identical and visibly nonblank. The raster comparison needs diagnosis; no visible rating defect is proved.
+The deep tvOS run passed 312 cases, failed one, and skipped one.
+Its endpoint-scrub test did not establish the required EOF, loading, and attached-AVKit prerequisite. Later scrub and watched-state assertions did not execute.
+These Xcode case counts differ from Swift Testing's parameterized console counts.
+
+Both WebKit failures accepted the real Mark unwatched response, then waited for a native ended event during held navigation.
+All four attempts sought to 11.9 seconds of a 12-second clip with no buffered media at the target and readyState 1.
+The accepted-departure handler intentionally stops HLS loading. The fixture therefore needs to buffer the ending before accepting departure.
+A private candidate preserves real EOF, the real 303 response, and all no-overwrite assertions. It has not run or been published.
+The ordinary watched/unwatched navigation journey and both late-pause variants passed.
+
+Local builds, tests, and emulators remain held for the coordinated physical Apple TV window.
+Caption placement, EPUB accessibility, Wear execution, BFCache admission, scheduled-only checks, shared lint, and device/deployment boundaries remain open.
+No 100% product or platform acceptance is claimed.
+
+### Compose recovery, supersession, and input contracts
+
+Three additional hosted Q47 suites tested exact revision `b1b2c00e961519b193dbef546683422d4bc5186a`.
+These close the previously unrun Q47 recovery, supersession, and contracts suites.
+Each fixed case passed twice without a retry. All eight distinct cases passed across 16 executions; none failed or skipped.
+
+| Suite | Hosted run | Distinct cases | Passing executions |
+| --- | --- | ---: | ---: |
+| Recovery | [38273036654](https://github.com/Kinosail/kinosail/actions/runs/38273036654) | 2 | 4 |
+| Supersession | [38273252807](https://github.com/Kinosail/kinosail/actions/runs/38273252807) | 2 | 4 |
+| Contracts | [38273786454](https://github.com/Kinosail/kinosail/actions/runs/38273786454) | 4 | 8 |
+
+Recovery proves that a lost request and an HTTP error preserve inputs, show recovery actions, and accept a successful retry.
+Both cases complete exactly one new request after the failed request. The resulting download and clipboard contents match the expected Compose output.
+Supersession proves that changed inputs cancel held requests. Late headers or body data do not replace the current output.
+Contracts verify preview, browser download, and clipboard contents for Player, Subtitles, and Both.
+Each validation execution rejects seven invalid path inputs and four invalid port inputs with zero template requests and no output.
+The disposable peer observes no credentials, cookies, request bodies, or query strings in these requests.
+
+Each artifact contains a receipt, results, source manifest, and artifact manifest. All nine listed file hashes match.
+All 7,463 tracked source records match the tested Git tree. Before and after source fingerprints match in all three runs.
+The receipts confirm unchanged binary, dependencies, and generated files. All owned processes settled.
+
+| Suite | Downloaded archive SHA-256 |
+| --- | --- |
+| Recovery | `cf1bed29bb4b2fc112b1cb5fd35a08fb5a7dd5534777da530890ae59d0922a91` |
+| Supersession | `7b3d480a1fdb019f91109d25e92cf8a7cb2425aedbe40d9d4fd26459a92b782b` |
+| Contracts | `723021ca64342569ab706cb27e610c98f0e7cc875f0a4214ccb988777079acca` |
+
+The private ledger is `.verification/ai-qa-campaign/q47-supplementary-hosted-ledger.json`.
+Per-suite receipts and reconciliation proofs are in `.verification/ai-qa-campaign/q47-supplementary-hosted/`.
+These are Chromium journeys against generated documentation and disposable HTTP peers.
+They do not prove a production installation, populated app Server behavior, Nox deployment, or physical-device acceptance.
+The separate Player browser totals above remain unchanged.
