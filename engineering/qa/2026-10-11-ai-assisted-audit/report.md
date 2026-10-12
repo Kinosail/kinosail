@@ -1470,6 +1470,60 @@ At revision `159e5c14`, affected Player verification, focused Server lint, sourc
 All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
 Protected PR checks and delivery remain pending.
 
+### AQA-016 regression owner and reproduced boundary
+
+The existing resumed-playback browser journey now accepts a bounded 32-by-32 synthetic fixture.
+It checks unchanged source dimensions, original-frame equality, saved position, EOF, and invalid quality-path rejection without cache writes or encoders.
+Existing fixtures are at least 180 pixels high, so they miss the lower-bound mismatch. No production seam is added.
+The new fixture reproduces the earlier two-hour failure before browser playback: preparation never becomes ready.
+The Server records `HLS quality is invalid`; source files and owned processes settle unchanged.
+Its private receipt is `hls-resume-browser/20261012T061029Z/receipt.json`.
+The public interface is the HLS master and rendition path. Valid small source dimensions must retain their original dimensions.
+The current path validator rejects every quality below 144p although rendition generation uses the source's actual height.
+The intended repair admits positive heights while preserving the existing 2160p ceiling and file/path checks.
+
+The one-line lower-bound repair passes the complete small-video journey in Chromium and WebKit.
+Each engine preserves 32-by-32 dimensions, matches all seven reference frames, resumes at the saved position, and reaches EOF.
+Six malformed or out-of-range quality paths return 404 without starting encoders or changing cache assets.
+The source remains unchanged and the Server settles. The passing Server log contains no HLS warning or error.
+Receipt `hls-resume-browser/20261012T061139Z/receipt.json` retains the browser results and checksums.
+The required Chromium workflow now retains this case with the existing prepared-timeline artifacts.
+The production change only lowers the allowed positive rendition height; the upper bound and path confinement remain intact.
+
+### Original-file EOF observation resolved
+
+An isolated Chromium reference probe reproduces the earlier 400/29 fps behavior using the same synthetic media bytes.
+After the final paused seek, `currentTime` is 74.48 seconds and `ended` is already true, despite a 74.53-second duration.
+Calling `play()` then restarts at zero. This explains the earlier 30-second timeout without a Player change.
+The private source-bound probe is `reference-eof-diagnostic/receipt.json`; it is isolated browser evidence.
+
+After collecting the seven frame references, the browser oracle now seeks half a second before the end.
+It requires `ended` to be false before playing and still waits for the real `ended` event.
+The complete 400/29 fps public journey passes all four audio captures, packet grids, video comparisons, EOF, and ten metadata controls.
+Its receipt is `hls-audio-splice/20261012T061514Z/receipt.json`. The workflow retains this low-frame-rate case.
+
+Independent review finds no blocker in the small-video repair or its regression coverage.
+Focused playback package tests and changed-code lint pass. CI contracts pass 170 tests with five existing skips.
+The required Player local verification stops at the existing 95-issue shared-package lint baseline.
+That failure does not establish a passing complete local verification suite; hosted checks remain required.
+
+The final small-video browser repetition passes Chromium and WebKit at revision `e195724b`.
+Receipt `hls-resume-browser/20261012T061651Z/receipt.json` binds the completed EOF correction.
+Subtitles local `verify-changed` encounters the same 95-issue package-lint baseline.
+One later CI-contract run encounters an intermittent permission error while polling an owned process group.
+The unchanged nine-test Q09 subset passes immediately afterward; the original error remains retained for diagnosis.
+
+### AQA-017 — Subtitles compatible playback differs from the original frame clock
+
+A separate real Subtitles process plays the 32-by-32 source at the saved position and reaches EOF.
+Both Chromium and WebKit preserve dimensions, but only one of seven paused frame references matches the original.
+Chromium repeats the same six mismatches in a second fresh process. This is separate from the repaired quality-label rejection.
+Compatible duration is 32.083332 seconds in Chromium and 32.166667 seconds in WebKit; original duration is 32 seconds.
+The exact timing cause remains unverified. The strict browser comparison stays failed.
+Six invalid quality paths still return 404 without encoders or changed cache files. Sources and Servers settle unchanged.
+The private receipts are `subtitles-small-video-2/receipt.json` and `subtitles-small-video-3/receipt.json` in the campaign directory.
+An earlier harness attempt called a Player-only settings endpoint and received 404 before browser playback; it is not product evidence.
+
 ### AQA-015 Linux rounding phase and coarse-clock boundary
 
 [PR 575 CI](https://github.com/Kinosail/kinosail/actions/runs/38211142029) rejects the 44.1 kHz Matroska source clock.
