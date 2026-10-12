@@ -40,6 +40,9 @@ try {
       video.currentTime = point;
     });
     const ac = new AudioContext({sampleRate:48000}), source = ac.createMediaElementSource(video);
+    // Start the render clock only after play is accepted. Otherwise a paused
+    // startup block can precede a gap while the media element starts playback.
+    await ac.suspend();
     const module = URL.createObjectURL(new Blob([`
       class Capture extends AudioWorkletProcessor {
         constructor() {super();this.pcm=[];this.blocks=[];this.active=true;
@@ -58,7 +61,7 @@ try {
     const done = new Promise(resolve => worklet.port.onmessage = event => resolve(event.data));
     source.connect(worklet);worklet.connect(ac.destination);
     video.muted = false;video.volume = 1;
-    await ac.resume();await video.play();
+    await video.play();await ac.resume();
     await new Promise((resolve,reject) => {
       const timer=setTimeout(()=>reject(new Error('capture_play_timeout')),15000);
       const tick=()=>{if(video.currentTime>=Math.min(point+span,video.duration)||video.ended){clearTimeout(timer);resolve();}else setTimeout(tick,20);};tick();

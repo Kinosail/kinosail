@@ -1450,3 +1450,22 @@ The complete failed receipt is `.verification/hls-audio-splice/20261012T054923Z/
 
 The worktree audit also reports ten unrelated inactive checkouts: nine contain unique commits and one is dirty.
 Their files and leases remain unchanged. The active campaign checkout has a renewed lease.
+
+### AQA-015 final recorder boundary and revision checks
+
+At committed revision `159e5c14b2a248c3f358e6621200b9a7d7d4db28`, the quantized mux-clock journey passes.
+The 32 kHz first-fragment journey exposes a recorder startup gap before playback begins.
+Its recovered and retained-neighbor captures have identical PCM hashes and zero alignment lag.
+The retained capture records one 128-sample paused block, then a 1,280-frame gap before continuous playback.
+All decoded correlations exceed 0.985; video, EOF, both packet grids, and ten metadata controls pass.
+
+The recorder now suspends its audio clock during setup and resumes only after the media element accepts play.
+The continuity assertion still checks every recorded render block, with no gap exemption or PCM realignment.
+The complete 32 kHz journey then passes all four captures with zero lag and no render gaps.
+The failed receipt is `hls-audio-splice/20261012T055854Z/receipt.json`.
+The passing receipts are `hls-audio-splice/20261012T060030Z/receipt.json` and `hls-audio-splice/20261012T060442Z/receipt.json`.
+
+Independent review finds no remaining blocker in the eight changed production Go files.
+At revision `159e5c14`, affected Player verification, focused Server lint, source limits, and both architecture snapshots pass.
+All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
+Protected PR checks and delivery remain pending.
