@@ -753,7 +753,7 @@ and renderer-control calls. These checks need explicit platform prerequisites
 or supported older-API paths. The additional API 23 and API 30 runtime results are recorded below.
 
 
-## QA-014 — Native QA uses APIs newer than supported devices (P2; open PR #566)
+## QA-014 — Native QA uses APIs newer than supported devices (P2; merged PR #566)
 
 Expanded NewApi lint finds eleven Android instrumentation violations. It also
 finds nineteen separate JVM-test violations. After repair, instrumentation has
@@ -949,3 +949,17 @@ prepared. Existing Show handler coverage contains one episode without Viewer
 restrictions, while the moving-card regression runs as Owner. The new public-API
 journey will verify maturity, Library exclusion, action selection and route
 rejection with a disposable Viewer, then restore ratings and remove the Viewer.
+
+
+PR #566 merges reviewed native candidate `26e1682d` with merge commit
+`013d52472504b7d4309ba123b08808af3b8edea8`. Required CI `38193469566` passes.
+A fresh fetch and ancestry checks prove inclusion of that head and Wear commit
+`a21534c1`. The focused iOS comparison passes on the reconciled source. A complete
+iOS suite now runs against its unchanged native tree.
+
+The first mixed-episode Viewer attempt is excluded from policy proof: it stops
+at required MFA enrollment. Its cleanup also expects 200 instead of the specified
+204 for profile deletion. The corrected journey retains required MFA, completes
+real authenticator enrollment, and checks the proper deletion response. Chromium
+passes family episode selection, excluded-Library action and route rejection,
+and restored next-episode access. Other browser repetitions remain pending.

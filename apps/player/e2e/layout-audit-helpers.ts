@@ -16,9 +16,9 @@ export function configureLayoutAudit() {
 	test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
 }
 
-export function totp(): string {
+export function totp(secretBase32 = process.env.KINOSAIL_TEST_TOTP_SECRET ?? ""): string {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
+	const bits = [...secretBase32].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
 	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
 	const counter = Buffer.alloc(8);
 	counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));

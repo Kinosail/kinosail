@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { configureTestInstance, createViewer, login, newViewerPage } from "./test-instance-helpers";
-import { login as loginWithCredentials } from "./layout-audit-helpers";
+import { login as loginWithCredentials, totp } from "./layout-audit-helpers";
 
 configureTestInstance();
 
@@ -35,6 +35,13 @@ test("Show card actions respect each Viewer's episode and Library restrictions",
     expect((await policy("family", ["Shows"])).status()).toBe(200);
     viewer = await newViewerPage(browser, origin);
     await loginWithCredentials(viewer, name, password);
+    await expect(viewer).toHaveURL(/\/account\?mfa=required$/);
+    await viewer.getByRole("button", { name: "Set up an authenticator app", exact: true }).click();
+    const secret = await viewer.locator("main code").first().textContent();
+    expect(secret).toMatch(/^[A-Z2-7]{32}$/);
+    await viewer.getByLabel("Authentication code", { exact: true }).fill(totp(secret!));
+    await viewer.getByRole("button", { name: "Turn on extra sign-in protection", exact: true }).click();
+    await expect(viewer).toHaveURL(/\/account$/);
     await viewer.goto(showPath);
     await expect(viewer.locator("[data-episode-row]")).toHaveCount(1);
     await expect(viewer.locator("[data-episode-row]")).toHaveAttribute("href", episodes[0]);
@@ -65,7 +72,7 @@ test("Show card actions respect each Viewer's episode and Library restrictions",
       browser: testInfo.project.name, fixture: "Real HTTPS Server, PG episode one and R episode two, disposable Viewer", result: "Family action stays within permitted episodes; excluded Library has no action or route access; all ratings restores next episode" }) });
   } finally {
     await viewer?.context().close();
-    if (viewerID) expect.soft((await page.request.delete(`/api/v1/profiles/${viewerID}`, { headers })).status()).toBe(200);
+    if (viewerID) expect.soft((await page.request.delete(`/api/v1/profiles/${viewerID}`, { headers })).status()).toBe(204);
     for (const item of previous) expect.soft((await rate(item.id, item.rating)).status()).toBe(200);
   }
 });
