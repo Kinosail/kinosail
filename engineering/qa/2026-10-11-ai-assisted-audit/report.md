@@ -1606,3 +1606,34 @@ A private pre-consumer experiment accounts for that measured edit in all track P
 The new retained `test-subtitles-copied-prefix.py` fails before the planned keyframe repair. Receipt `hls-copied-prefix/20261012T075127Z` proves the real encoder is stopped with one fragment while HTTP advertises eight. Future cuts differ from the source keys and from the eventual completed playlist. The source remains unchanged, the owned encoder joins, and the Server exits. This assertion requires a stable, accurate full-duration playlist during progressive encoding; removing future seeking would not pass it.
 
 The native repair needs certified source cuts and generated-media clock evidence. Independent design review identifies the existing Player H264 packet, IDR, configuration, and joined-process scanner as the reusable boundary. Player cache admission, recovery, and audio replay policy must remain app-owned. Full-source scanning cost and distant-segment delivery still require verification.
+
+
+### Shared media proof and per-track clock controls
+
+Commits `3e1e295e` and `83150af9` extract the existing joined probe runner and immutable H264 source index into `packages/mediaprobe`. Player retains source validation, cache certificates, workload admission, audio policy, and recovery. The process tests move with their standalone fixture. Independent review found no concrete blocker in either extraction.
+
+Focused ownership, copied-HLS, and recovery checks pass. The moved process tests compile for Linux ARM64 and Windows AMD64; they were not run on those systems. New-code mediaprobe lint and source limits pass. Player's populated prepared irregular-resume journey passes Chromium and WebKit at `83150af9`.
+
+`make -C apps/player verify-changed` passes all selected Go tests, vulnerability checks, source limits, and whitespace checks. Its shared-packages stage still reports the established 95 lint findings, with no mediaprobe findings. Later verification stages were not reached. This is not a fully passing local gate or hosted proof for the extraction.
+
+The source-cut manifest renderer and prefix validation are now shared through `packages/hlsmanifest`. Player still requires its source and generated-clock certificate before calling them. The helper validates bounded, sequential observed cuts and preserves the existing final-GOP tolerance. It does not certify source identity, media bytes, or future-segment readiness.
+
+The private per-track experiment replaces the fixture-specific 2.08-second adjustment with bounded initialization parsing. It uses the selected timing track's edit for PTS/DTS and the video edit for first-keyframe timing. The real bytes are unchanged. This is still an injected, version-specific Hls controller, not a production repair.
+
+The later-first control proves a materially different case: the first media request is segment 3 and Hls selects audio track 2 (`-2560/48000` initial timing). The video and audio edits are 83.333 and 21.333 milliseconds. Seven reference frames, backward seeks, and EOF pass in both browsers. The earlier `082042Z` attempt had an incorrectly serialized test variable and never reached transmuxing; it is a harness failure, not a product regression.
+
+| Private receipt | Result and scope | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T080401Z/receipt.json` | Player prepared irregular resume after shared source-index extraction; Chromium and WebKit pass | `d22ba363c76f433c0215da9c4441bff605e72aef8de2fceb1652d076eed1b07a` |
+| `hls-track-edit-prototype/20261012T081732Z/receipt.json` | Per-track edit diagnostic; irregular 64.5-second resume passes both browsers | `4f12890870d769a7ea31373db472a8c23c01ebeb5e97a375824b62e2d4366d3f` |
+| `hls-track-edit-prototype/20261012T081825Z/receipt.json` | Per-track edit diagnostic; converted AC3 video, EOF, and strict PCM pass both browsers | `3bc1f093f89b7fac134b3f1f58a2c349b1206644a28e4bf2e59205e4ab9f175c` |
+| `hls-track-edit-prototype/20261012T081948Z/receipt.json` | Per-track edit diagnostic; video-only passes both browsers | `90e70ea939ebae88958b6bcbb873aca80c196d184476abf8377dfdd94c7d1d4e` |
+| `hls-track-edit-late-prototype/20261012T082248Z/receipt.json` | Per-track edit diagnostic; first media request is fragment 3, audio timing anchor, backward seeks and EOF pass both browsers | `40ea5f8ffe65d372514c250dcd5939332e81b31cc45acfc8a9dce2243c23bc05` |
+
+The prospective native repair is limited to certified, unedited H264 streams starting at source zero. It requires one generation-bound cut map throughout each response and identical early, completed, and warm playlists. Partial encoding must not fall back to fixed four-second guesses when its producer exits. Long-source indexing cost and distant segment delivery remain open. Partial transmux results, retry behavior, physical Safari, and deployment acceptance remain separate boundaries.
+
+PR 575 passed every required check at `5de9428e`, but strict protection blocked its merge after PR 571 advanced main. GitHub updated it to `7aea60a4`; its new checks are running. PR 577 passes required checks at `c67fb0a4` and awaits base reconciliation and protected delivery. Neither repair is claimed merged by this checkpoint.
+
+The shared cut-helper review found two extraction regressions before commit: malformed trailing `EXTINF` could be ignored, and the observed final-cut bound rejected a previously allowed 60.083333-second value. Both are corrected. Parse errors are rejected immediately, and the certified expected cut retains its 60-second bound while observed final durations keep the existing tolerance. Exact generated media names are now checked directly. The final focused copied-HLS/recovery checks, new-code hlsmanifest lint, source limits, and whitespace checks pass.
+
+The retained prefix regression now also checks exact warm and restarted VOD bodies and absence of another source encoder. At `hls-copied-prefix/20261012T083342Z`, the early map still changes after completion and after restart. No source re-encode occurs; source preservation, both Server exits, and encoder joining pass. SHA-256: `b3637ec133b387e9bd021ce295f0f91dddd3a112db3ca0142269f8a06ba7e401`. The prior `083137Z` encoder-count control included installation capability probes; the wrapper now targets only the generated test source.

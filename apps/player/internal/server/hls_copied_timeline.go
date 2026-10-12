@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/httpguard"
-	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 const maximumCopiedHLSTimelineBytes = 256 << 10
@@ -170,34 +170,19 @@ func writeCopiedHLSMetadata(root *os.Root, name string, data []byte) error {
 }
 
 func copiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) ([]byte, bool) {
-	if !validCopiedHLSTimeline(timeline) || timeline.Clock == nil ||
-		!playback.PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") ||
-		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) {
+	if !validCopiedHLSTimeline(timeline) || timeline.Clock == nil {
 		return manifest, false
 	}
-	if !matchesCopiedHLSManifest(manifest, timeline) {
-		return manifest, false
-	}
-	target := 1.0
-	for number := range timeline.Keys {
-		end := timeline.segmentEnd(number)
-		target = max(target, math.Ceil(end-timeline.point(number)))
-	}
-	var output strings.Builder
-	output.WriteString("#EXTM3U\n#EXT-X-VERSION:7\n#EXT-X-TARGETDURATION:" + strconv.FormatFloat(target, 'f', 0, 64) +
-		"\n#EXT-X-MEDIA-SEQUENCE:0\n#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-MAP:URI=\"init.mp4\"\n")
-	for number := range timeline.Keys {
-		end := timeline.segmentEnd(number)
-		output.WriteString("#EXTINF:" + strconv.FormatFloat(end-timeline.point(number), 'f', 6, 64) +
-			",\nsegment-" + copiedHLSSegmentDigits(number) + ".m4s\n")
-	}
-	output.WriteString("#EXT-X-ENDLIST\n")
-	return []byte(output.String()), true
+	return hlsmanifest.CompleteCuts(manifest, copiedHLSCuts(timeline))
 }
 
-func copiedHLSSegmentDigits(number int) string {
-	value := strconv.Itoa(number)
-	return strings.Repeat("0", 5-len(value)) + value
+func copiedHLSCuts(timeline *copiedHLSTimeline) []float64 {
+	cuts := make([]float64, len(timeline.Keys)+1)
+	for number := range timeline.Keys {
+		cuts[number] = timeline.point(number)
+	}
+	cuts[len(timeline.Keys)] = timeline.End
+	return cuts
 }
 
 func copiedHLSTime(value float64) string {
@@ -205,39 +190,11 @@ func copiedHLSTime(value float64) string {
 }
 
 func matchesCopiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) bool {
-	length, observed := 0.0, 0
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if strings.HasPrefix(line, "#EXTINF:") {
-			value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
-			var err error
-			length, err = strconv.ParseFloat(value, 64)
-			if err != nil {
-				return false
-			}
-		}
-		number, ok := hlsSegmentNumber(line)
-		if !ok {
-			continue
-		}
-		if !matchesCopiedHLSSegment(timeline, number, observed, length) {
-			return false
-		}
-		observed++
-		length = 0
-	}
-	if observed == 0 || playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") && observed != len(timeline.Keys) {
-		return false
-	}
-	return true
+	return hlsmanifest.MatchesCuts(manifest, copiedHLSCuts(timeline))
 }
 
 func matchesCopiedHLSLength(timeline *copiedHLSTimeline, number int, length float64) bool {
-	expected := timeline.segmentEnd(number) - timeline.point(number)
-	tolerance := 0.002
-	if number+1 == len(timeline.Keys) {
-		tolerance = min(1, max(0.1, expected*0.05)) // Demux duration ticks can round down across the last GOP.
-	}
-	return math.Abs(length-expected) <= tolerance
+	return hlsmanifest.MatchesCutLength(timeline.segmentEnd(number)-timeline.point(number), length, number+1 == len(timeline.Keys))
 }
 
 func validCopiedHLSManifestCut(lines []string, number int, length float64) bool {
@@ -246,8 +203,4 @@ func validCopiedHLSManifestCut(lines []string, number int, length float64) bool 
 	}
 	_, valid := hlsSegmentNumber(lines[number+1])
 	return valid
-}
-
-func matchesCopiedHLSSegment(timeline *copiedHLSTimeline, number, observed int, length float64) bool {
-	return number == observed && observed < len(timeline.Keys) && length > 0 && matchesCopiedHLSLength(timeline, observed, length)
 }

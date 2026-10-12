@@ -56,7 +56,8 @@ import os,signal,subprocess,sys,time
 from pathlib import Path
 a=sys.argv[1:]
 real=''' + repr(real) + '''
-if '-hls_time' not in a: os.execv(real,[real]+a)
+source=''' + repr(str(source)) + '''
+if '-hls_time' not in a or source not in a: os.execv(real,[real]+a)
 a[a.index('-i'):a.index('-i')]=['-readrate','2']
 root=Path(__file__).parent
 child=subprocess.Popen([real]+a)
@@ -133,9 +134,32 @@ finally:
             check(status == 200 and b'#EXT-X-ENDLIST' in completed, 'completed_status')
             receipt['completedKeyframeCuts'] = [round(x, 6) for x in receipt['completedCuts']] == expected
             receipt['immutablePlaylist'] = cuts(public) == cuts(completed)
+            # A completed URI must retain its exact VOD map across warm reads
+            # and process restart, without starting another encoder.
+            encoded = len(list(RUN.glob('*.joined')))
+            status, warm, _ = api.http(path)
+            receipt['warmStable'] = status == 200 and warm == public
+            server.terminate()
+            server.wait(timeout=10)
+            receipt['firstServerSettled'] = server.poll() is not None
+            server = subprocess.Popen([str(RUN / 'server')], cwd=ROOT, env=env, stdout=log, stderr=log)
+            def restarted():
+                try:
+                    return api.http('/healthz', authenticated=False)[0] == 200
+                except OSError:
+                    return False
+            wait_for(restarted, 'restarted_server_not_ready')
+            status, restarted_master, _ = api.http(plan['compatible'])
+            check(status == 200 and restarted_master.startswith(b'#EXTM3U'), 'restarted_master_status')
+            status, restarted_manifest, _ = api.http(path)
+            receipt['restartStable'] = status == 200 and restarted_manifest == public
+            receipt['noWarmEncode'] = len(list(RUN.glob('*.joined'))) == encoded
+            (RUN / 'public-completed.m3u8').write_bytes(completed)
+            (RUN / 'public-restarted.m3u8').write_bytes(restarted_manifest)
             check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
-                  and receipt['producerHeld'] and receipt['completedMatchesCache'], 'copied_timeline_must_match_source_keys')
+                  and receipt['producerHeld'] and receipt['completedMatchesCache'] and receipt['warmStable']
+                  and receipt['restartStable'] and receipt['noWarmEncode'] and receipt['firstServerSettled'], 'copied_timeline_must_match_source_keys')
         finally:
             (RUN / 'release').touch()
             server.terminate()
