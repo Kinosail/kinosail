@@ -52,9 +52,10 @@ if encode and {fault!r}=='producer-failure' and len((directory/'encoder-starts')
  child.wait(timeout=5)
  (directory/'producer-failed').write_text('failed')
  raise SystemExit(42)
-if encode and {fault!r}=='lookback-join' and len((directory/'encoder-starts').read_text().splitlines())>=3:
+if encode and {fault!r}=='refill-completion' and len((directory/'encoder-starts').read_text().splitlines())==3:
  result=subprocess.run([real]+args)
- time.sleep(.75)
+ (directory/'refill-held').write_text('held')
+ time.sleep(3)
  raise SystemExit(result.returncode)
 if not suffix:os.execv(real,[real]+args)
 with (directory/'wrapper-pids').open('a') as f:f.write(str(os.getpid())+'\\n')

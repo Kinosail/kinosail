@@ -92,29 +92,6 @@ func (manager *hlsManager) recipePlaylistStart(writer http.ResponseWriter, reque
 	return start, duration, true
 }
 
-func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item library.Item, recipe hlsRecipe, name, key, path string) bool {
-	manager.keepHLSAlive(key, request.Context())
-	segmentContext, cancel := context.WithTimeout(request.Context(), 30*time.Second)
-	if request.Method != http.MethodGet {
-		segmentContext = context.WithValue(segmentContext, startupMetadataKey{}, true)
-	}
-	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		if err := manager.prepareSegment(segmentContext, item, recipe, name); err != nil {
-			slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "canceled", request.Context().Err() != nil, "error", hlsDiagnostic(err, item.Path))
-			if !errors.Is(err, os.ErrNotExist) {
-				cancel()
-				return false
-			}
-		}
-	}
-	ready := waitForHLSFile(segmentContext, path)
-	if !ready {
-		slog.WarnContext(request.Context(), "HLS segment unavailable", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "file", name, "mode", recipe.mode, "canceled", request.Context().Err() != nil)
-	}
-	cancel()
-	return ready
-}
-
 func hlsSegmentNumber(name string) (int, bool) {
 	if !strings.HasPrefix(name, "segment-") || !strings.HasSuffix(name, ".m4s") {
 		return 0, false
@@ -241,13 +218,6 @@ func invalidHLSSegmentDuration(duration float64) bool {
 
 func hlsPlaybackDuration(recipe hlsRecipe, duration float64) float64 {
 	return playback.HLSPlaybackDuration(sharedHLSRecipe(recipe), duration)
-}
-
-func waitForHLSFile(ctx context.Context, path string) bool {
-	return playback.WaitHLSReady(ctx, func() error {
-		_, err := os.Stat(path)
-		return err
-	})
 }
 
 func requestedHLSStart(request *http.Request) (int, error) {

@@ -115,6 +115,7 @@ func copiedStartupJoin(t *testing.T, manager *hlsManager, key string, job *hlsJo
 	t.Helper()
 	joined := false
 	join := func() {
+		job.cancel(errHLSEncodeComplete)
 		manager.mu.Lock()
 		defer manager.mu.Unlock()
 		if !joined {

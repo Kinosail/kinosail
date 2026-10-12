@@ -12,7 +12,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
+const hlsIdleTimeout = 45 * time.Second
+
 var (
+	errHLSEncodeComplete  = errors.New("HLS producer completed")
 	errHLSSeekRestart     = errors.New("HLS transcode replaced for seek")
 	errHLSInactive        = errors.New("HLS playback is inactive")
 	errHLSIdentityChanged = errors.New("HLS source or playback policy changed")
@@ -96,56 +99,37 @@ func (manager *hlsManager) stopHLSSession(session string) {
 	}
 }
 
-func (job *hlsJob) coversSegment(rendition string, segment int) bool {
-	if job == nil || segment < job.startNumber {
-		return false
-	}
-	if segment <= job.startNumber+2 {
-		return true
-	}
-	playlist := filepath.Join(rendition, "index.m3u8")
-	if job.startNumber > 0 {
-		playlist = filepath.Join(filepath.Dir(rendition), hlsSeekDirectory(job.startNumber), filepath.Base(rendition), "index.m3u8")
-	}
-	manifest, err := os.ReadFile(playlist) //nolint:gosec // Rendition and seek paths use generated cache names only.
-	if err != nil {
-		return false
-	}
-	latest := -1
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if number, valid := hlsSegmentNumber(strings.TrimSpace(line)); valid {
-			latest = max(latest, number)
-		}
-	}
-	return latest >= job.startNumber && segment <= latest+2
+func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item, recipe hlsRecipe, name string) error {
+	_, err := manager.prepareSegmentJob(ctx, item, recipe, name)
+	return err
 }
 
-func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item, recipe hlsRecipe, name string) error { //nolint:cyclop,gocognit,funlen // Replacement and joining must stay atomic for concurrent segment requests.
+func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:cyclop,gocognit,funlen // Replacement and joining must stay atomic for concurrent segment requests.
 	if err := ctx.Err(); err != nil {
-		return err
+		return nil, err
 	}
 	segment, valid := hlsSegmentNumber(filepath.Base(name))
 	if !valid {
-		return errors.New("HLS segment is invalid")
+		return nil, errors.New("HLS segment is invalid")
 	}
 	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), mediaFactsFor(item, manager.probe.facts(ctx, item)), item.Subtitles)
 	if sourceErr != nil {
-		return sourceErr
+		return nil, sourceErr
 	}
 	recipe = localHLSRecipe(resolved)
 	key, directory := hlsRecipeKey(item.ID, recipe), filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	path := filepath.Join(directory, name)
 	if _, err := os.Stat(path); err == nil {
-		return manager.remainingAACCacheAsset(ctx, item, recipe, name)
+		return nil, manager.remainingAACCacheAsset(ctx, item, recipe, name)
 	}
 	duration := manager.probe.duration(ctx, item)
 	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8")) //nolint:gosec // The path passed the HLS file allowlist.
 	if err != nil {
-		return err
+		return nil, err
 	}
 	options, err := manager.seekSettings(item, recipe, directory)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	offset, valid := hlsSegmentOffset(manifest, filepath.Base(name), duration)
 	playable := hlsPlaybackDuration(recipe, duration)
@@ -158,10 +142,10 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 			playable = timeline.End - timeline.point(0)
 		}
 	} else if manager.copiedHLSTimelinePresent(directory) || manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
-		return errCopiedHLSIndex
+		return nil, errCopiedHLSIndex
 	}
 	if !valid || offset >= playable {
-		return errors.New("HLS segment is outside the playable duration")
+		return nil, errors.New("HLS segment is outside the playable duration")
 	}
 	seekRecipe := recipe
 	seekRecipe.offset += offset
@@ -173,48 +157,45 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		manager.mu.Lock()
 		if err := ctx.Err(); err != nil {
 			manager.mu.Unlock()
-			return err
+			return nil, err
 		}
 		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
 			manager.mu.Unlock()
-			return err
+			return nil, err
 		}
 		if _, err = os.Stat(path); err == nil {
 			manager.mu.Unlock()
-			return nil
+			return nil, nil
 		}
 		job := manager.jobs[key]
 		if startupJobStopping(job) {
 			manager.mu.Unlock()
 			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return err
+				return nil, err
 			}
 			continue
 		}
 		manager.adoptStartupJob(ctx, job, key)
 		if job.coversSegment(filepath.Dir(path), segment) {
 			manager.mu.Unlock()
-			if err := waitForActiveHLSSegment(ctx, job, path); err != nil {
-				return err
-			}
-			continue
+			return job, nil
 		}
 		if job != nil && ctx.Value(startupEncodingKey{}) != nil {
 			// Preparation cannot replace a foreground seek or any shared encoder.
 			manager.mu.Unlock()
-			return nil
+			return nil, nil
 		}
 		if job != nil {
 			job.cancel(errHLSSeekRestart)
 			manager.mu.Unlock()
 			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return err
+				return nil, err
 			}
 			continue
 		}
 		if err = writeAtomicFile(filepath.Join(directory, ".seekable"), []byte(options.Cache)); err != nil {
 			manager.mu.Unlock()
-			return err
+			return nil, err
 		}
 		jobContext, created := manager.newHLSJob(ctx, segment)
 		if indexed {
@@ -226,7 +207,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		manager.mu.Unlock()
 		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected segment request does not destroy shared output.
 		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
-		return nil
+		return job, nil
 	}
 }
 

@@ -6,13 +6,11 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"time"
+	"strings"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
-
-const hlsIdleTimeout = 45 * time.Second
 
 type hlsJob struct {
 	lifecycle       context.Context
@@ -106,27 +104,6 @@ func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
 	}
 }
 
-// Admission rechecks policy after either output arrival or producer completion.
-func waitForActiveHLSSegment(ctx context.Context, job *hlsJob, path string) error {
-	ticker := time.NewTicker(25 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
-			return err
-		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-job.done:
-			return nil
-		case <-ticker.C:
-		}
-	}
-}
-
 func (manager *hlsManager) prepare(ctx context.Context, item library.Item, recipe hlsRecipe) error {
 	for attempt := 0; attempt < 3; attempt++ {
 		if err := ctx.Err(); err != nil {
@@ -186,4 +163,28 @@ func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.I
 		return errHLSIdentityChanged
 	}
 	return nil
+}
+
+func (job *hlsJob) coversSegment(rendition string, segment int) bool {
+	if job == nil || segment < job.startNumber {
+		return false
+	}
+	if segment <= job.startNumber+2 {
+		return true
+	}
+	playlist := filepath.Join(rendition, "index.m3u8")
+	if job.startNumber > 0 {
+		playlist = filepath.Join(filepath.Dir(rendition), hlsSeekDirectory(job.startNumber), filepath.Base(rendition), "index.m3u8")
+	}
+	manifest, err := os.ReadFile(playlist) //nolint:gosec // Rendition and seek paths use generated cache names only.
+	if err != nil {
+		return false
+	}
+	latest := -1
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if number, valid := hlsSegmentNumber(strings.TrimSpace(line)); valid {
+			latest = max(latest, number)
+		}
+	}
+	return latest >= job.startNumber && segment <= latest+2
 }

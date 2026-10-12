@@ -214,14 +214,15 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       if (!video) return {unavailable: true};
       const ranges = (value: TimeRanges) => Array.from({length: Math.min(value.length, 8)},
         (_, index) => [value.start(index), value.end(index)]);
-      return {seconds: video.currentTime, duration: Number.isFinite(video.duration) ? video.duration : null,
-        paused: video.paused, ended: video.ended, seeking: video.seeking,
+      return {seconds: video.currentTime, nativeSeconds: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")?.get?.call(video) ?? null,
+        duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended, seeking: video.seeking,
         readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
         decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        events: (opener as Window & {watchedNativeStartup?: unknown[]}).watchedNativeStartup ?? [],
         buffered: ranges(video.buffered), seekable: ranges(video.seekable)};
     }).catch(() => ({unavailable: true}));
     await info.attach("late-native-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-      browser: info.project.name, watched, cancelledAgain, media,
+      browser: info.project.name, watched, cancelledAgain, phase: committed ? "held-or-reopened" : "pre-submit-tail", media,
       boundary: "Native snapshot before owned transport cleanup; no source URL or error text"}), contentType: "application/json"});
     throw error;
   }

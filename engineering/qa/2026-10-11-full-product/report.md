@@ -41,8 +41,8 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS 332 and tvOS 313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
-| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go coverage passes at `6008fa77`; local lint debt, hosted WebKit startup and current-main cold-suffix failures remain open |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS verified; Subtitles runs `6f41117d`; main `5f169ee2` CI blocks the next rollout |
+| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go race/coverage passes at `6fe7a7b9` (89.5%); local lint debt and hosted WebKit playback failures remain open; HLS reconciliation needs fresh hosted checks |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Last verified: Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS; Subtitles `6f41117d`; current-main promotion and rollout need fresh proof |
 
 ## Iteration 1 results
 
@@ -1881,3 +1881,112 @@ media during that control; the failure remains the deliberately rejected own cal
 Its original error is preserved. No source URL or remote error text is retained.
 Private `watched-native-retained-final-*` and `watched-native-ordinary-denial`
 receipts record exact source, commands, results, checksums and container cleanup.
+
+
+## Hosted checkpoint at `6fe7a7b9` and HLS reconciliation
+
+[Deep run 38247019149](https://github.com/Kinosail/kinosail/actions/runs/38247019149)
+passes complete Player Go race tests with 89.5% reported coverage.
+The profile SHA-256 is
+`0b26b1d5ac87b9ff3b7e1a3c7fad5f2de38af773651cfb67fff84d1d898b72aa`.
+Chromium passes 862 cases with 353 selected skips. Firefox passes 858 with 357 skips.
+Neither browser records a flaky case. Subtitles passes all 99 cases in each engine.
+The hosted Apple artifacts contain 332 iOS passes and 313 tvOS passes.
+Each Apple platform has one skip and no failed test.
+
+WebKit passes 854 cases with 359 skips, one failed case and one flaky case.
+The flaky watched-resume journal records initial decoded motion, a frame-counter
+reset on resume, repeated source reloads, and native media decode error 3.
+A failed unwatched case remains seeking near the buffered tail without decoded frames.
+The ordinary form case passes this run. Earlier ordinary failures remain retained.
+The bounded journal now also accompanies failures after initial startup.
+No assertion, timeout, retry policy or product playback script changed for that diagnostic.
+The original tooling job fails inside `go list`; its captured subprocess error hides the cause.
+The same source passes required PR tooling. The targeted hosted tooling retry also passes.
+The deep run still fails because the retained WebKit failures remain unresolved.
+
+Main advanced to `51a5fcc2` through PR #581 with another producer-completion repair.
+Its nonblocking preparation and successful-completion-only readmission are preserved.
+The existing public HTTP source-change control fails against that implementation:
+a fragment published after its source changes returns 200 instead of 404.
+The synthetic completion fixture first adopts main's explicit completion cause.
+The reconciled path then rechecks the captured source and policy under the manager lock
+before serving a fragment that arrived during a producer wait.
+That red control passes with race detection after the check.
+Canceled producer, canceled request, published output and replacement controls also pass.
+These controlled HTTP checks do not replace fresh real-codec and hosted verification.
+
+The incoming `refill-completion` real-codec case replaces the duplicate `lookback-join` case.
+It holds the third completed encoder for three seconds and proves the request joins it.
+Initial encoder settlement, retained metadata hashes and per-recovery outcomes remain recorded.
+The safe producer-join log correlation from main remains required.
+Earlier `lookback-join` artifacts remain reproducible at their recorded revision.
+
+Reconciled focused Go race checks pass 102 named tests and subcases, without skips.
+The private log SHA-256 is
+`dff09681a671014df6ff087275d3178f89db0c1a9c08cf0b9cd95af07fa6b2ea`.
+New-code Player lint and complete repository tooling pass.
+The 19-case real-codec matrix passes 18 cases, including held producer completion.
+Its success case records a connection error during warm restart.
+That exact case passes a focused follow-up with an identical binary and source patch.
+Warm reuse and both corrupt and missing certificate regeneration pass the follow-up.
+The original failed matrix remains retained; it is not reported as a single passing run.
+These macOS codec results use FFmpeg 9.0.2. Hosted FFmpeg 8.1.3 remains a separate gate.
+
+A private observation overlay adds known request and session identifiers to the existing HTTP controls.
+The source-changed publication emits one WARN with both identifiers, mode and cancellation state.
+Successful publication emits no preparation warning. The synthetic private query and source path remain absent.
+This observes handler logs; it does not establish deployed logging behavior.
+Its private log SHA-256 is
+`02229f3be5f5c4c43ed8aeb9891fad896e1996845246864f383bb1c495508e12`.
+
+## Native decoded-frame counter reset in the browser setup helper
+
+The reconciled source reproduces three WebKit watched-journey failures without retries.
+Chromium and Firefox each pass all five journeys on that same source.
+The new late-failure journal records native frame counters resetting after pause and seek.
+The helper retains its pre-reset count and can miss advancing decoded media until the clip ends.
+One failed tail start resets from 43 frames to one and then reaches the real ended state.
+An earlier start similarly crosses the clip end before the held-navigation proof begins.
+
+The helper now tracks the lowest frame count observed during each play attempt.
+It still requires three newly decoded frames, advancing time, unpaused media and no play rejection.
+The corrected source passes 15 WebKit watched journeys, five Chromium journeys and five Firefox journeys.
+All runs use real Servers, trusted HTTPS, moving media and zero retries.
+The four existing checkpoint setup controls also pass in all three engines.
+Those controls retain delayed acknowledgements, late abort, rejected start and stored near-end resume checks.
+
+An isolated compiled binary then removes only the accepted-watched save guard.
+All three WebKit negative controls detect the original overwrite: watched becomes true after Mark unwatched.
+Each fails at the stored-state assertion, with no motion timeout.
+The actually served asset contains the negative marker and lacks the original guard.
+Its SHA-256 is `2b8a15bf808575f79c86395d2a7e2ca3ed1a19eea70a73fe7b9fd1fd19f52231`.
+This verifies that the corrected setup still detects the product regression.
+The positive WebKit result SHA-256 is
+`8fdff3bb211b186048c44c057de6d2773754e037ce68c6c97583f8e3fcb9ba25`.
+The negative result SHA-256 is
+`6d96eb4f125c1e526020e45789a14449251e38d74e225716fd599ab998478cad`.
+All disposable browser containers are removed. Host trust is unchanged.
+
+Earlier native decode errors and seeking stalls remain separate findings.
+The helper repair does not establish their complete cause or physical-device behavior.
+A fresh hosted deep run is still required on the committed reconciled source.
+
+## Further EPUB accessibility and device boundaries
+
+The byte-identical frozen Android production APK again reproduces missing chapter text.
+After the original assertion fails, a content-change event does not recover the heading.
+Clearing and restoring the WebView description also fails to recover it.
+A separate control successfully activates touch exploration through UiAutomation.
+The original heading remains absent, and the exact service flags and touch state are restored.
+This is an emulator accessibility control; actual TalkBack is not running.
+
+Two focus/reload control attempts encounter an Android System UI ANR modal.
+Their inspected screenshots and unfocused app windows exclude them from EPUB conclusions.
+Four intervening unchanged executions pass and therefore do not execute the controls.
+All task-installed packages are removed and the existing AVD is shut down after each run.
+No production EPUB repair, current localization-asset proof or physical acceptance is claimed.
+
+Fresh physical discovery still finds no connected iPhone or Watch.
+The physical Apple TV preview remains at its system profile chooser.
+No profile is selected during this refresh. The existing human handoff remains pending.

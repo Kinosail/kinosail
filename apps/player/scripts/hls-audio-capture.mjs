@@ -29,17 +29,47 @@ try {
   await page.goto(`${origin}/watch/${id}?compatible=1`);
   await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
   const capture = await page.evaluate(async ({point, span}) => {
-    const video = document.querySelector('video'), events = [];
+    const video = document.querySelector('video'), events = [], checkpoints = [];
+    const rawTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
+    let ac;
+    const checkpoint = (stage, renderFrame) => checkpoints.push({stage, renderFrame, media:video.currentTime,
+      rawMedia:rawTime.call(video), audio:ac?.currentTime, wall:performance.now(),
+      readyState:video.readyState, seeking:video.seeking, paused:video.paused});
     if (video.dataset.compatibilityMode !== 'audio-transcode') throw new Error('capture_mode');
+    checkpoint('ready');
+    // Settle initial autoplay and saved-position restoration before pausing.
+    await new Promise((resolve, reject) => {
+      let callback, previous;
+      const timer = setTimeout(() => {
+        video.cancelVideoFrameCallback(callback);
+        reject(new Error('initial_presentation_timeout'));
+      }, 15000);
+      const frame = (_now, metadata) => {
+        if (previous !== undefined && metadata.mediaTime > previous && !video.paused && !video.seeking) {
+          clearTimeout(timer); resolve();
+        } else { previous = metadata.mediaTime; callback = video.requestVideoFrameCallback(frame); }
+      };
+      callback = video.requestVideoFrameCallback(frame);
+      video.play().catch(error => { clearTimeout(timer); video.cancelVideoFrameCallback(callback); reject(error); });
+    });
+    checkpoint('initial-presenting');
     video.pause();
-    for (const name of ['seeking', 'seeked', 'waiting', 'stalled', 'ended', 'ratechange'])
+    checkpoint('paused');
+    for (const name of ['seeking', 'seeked', 'waiting', 'stalled', 'ended', 'ratechange', 'playing', 'pause', 'canplay'])
       video.addEventListener(name, event => {if(events.length < 128) events.push({type:event.type, media:video.currentTime, wall:performance.now()});});
     await new Promise((resolve,reject) => {
       const timer = setTimeout(() => reject(new Error('capture_seek_timeout')),15000);
-      video.addEventListener('seeked',() => {clearTimeout(timer);resolve();},{once:true});
+      const seeked=()=>{
+        if(video.paused && !video.seeking && Math.abs(video.currentTime-point)<=.001){
+          video.removeEventListener('seeked',seeked);clearTimeout(timer);resolve();
+        }
+      };
+      video.addEventListener('seeked',seeked);
       video.currentTime = point;
     });
-    const ac = new AudioContext({sampleRate:48000}), source = ac.createMediaElementSource(video);
+    checkpoint('seek-complete');
+    ac = new AudioContext({sampleRate:48000});
+    const source = ac.createMediaElementSource(video);
     // Start the render clock only after play is accepted. Otherwise a paused
     // startup block can precede a gap while the media element starts playback.
     await ac.suspend();
@@ -49,6 +79,7 @@ try {
           this.port.onmessage=()=>{this.active=false;this.port.postMessage({pcm:this.pcm,blocks:this.blocks});};}
         process(inputs) {const data=inputs[0]?.[0];
           if(this.active && data && this.pcm.length+data.length<=524288) {
+            if(this.blocks.length===0)this.port.postMessage({first:true,frame:currentFrame});
             this.blocks.push({frame:currentFrame,length:data.length});
             for(let i=0;i<data.length;i++)this.pcm.push(data[i]);
           }
@@ -58,17 +89,21 @@ try {
       registerProcessor('qa-long-audio',Capture);`],{type:'text/javascript'}));
     await ac.audioWorklet.addModule(module);URL.revokeObjectURL(module);
     const worklet = new AudioWorkletNode(ac,'qa-long-audio',{channelCount:1,channelCountMode:'explicit'});
-    const done = new Promise(resolve => worklet.port.onmessage = event => resolve(event.data));
+    const done = new Promise(resolve => worklet.port.onmessage = event => {
+      // This is message receipt time, not the worklet's render instant.
+      if(event.data.first)checkpoint('first-worklet-message',event.data.frame);else resolve(event.data);
+    });
     source.connect(worklet);worklet.connect(ac.destination);
     video.muted = false;video.volume = 1;
-    await video.play();await ac.resume();
+    checkpoint('play-request');await video.play();checkpoint('play-resolved');
+    await ac.resume();checkpoint('audio-resumed');
     await new Promise((resolve,reject) => {
       const timer=setTimeout(()=>reject(new Error('capture_play_timeout')),15000);
       const tick=()=>{if(video.currentTime>=Math.min(point+span,video.duration)||video.ended){clearTimeout(timer);resolve();}else setTimeout(tick,20);};tick();
     });
     video.pause();worklet.port.postMessage('stop');const recorded=await done;
     worklet.disconnect();source.disconnect();await ac.close();
-    return {...recorded,events,sampleRate:ac.sampleRate,currentTime:video.currentTime,duration:video.duration,ended:video.ended};
+    return {...recorded,events,checkpoints,sampleRate:ac.sampleRate,currentTime:video.currentTime,duration:video.duration,ended:video.ended};
   },{point,span});
   const {pcm,...facts}=capture;
   await writeFile(output+'.f32',Buffer.from(new Float32Array(pcm).buffer));
