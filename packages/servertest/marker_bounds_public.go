@@ -76,13 +76,13 @@ func (fixture PlaybackAPIFixture) markerBoundsPublicCase(t *testing.T, ctx conte
 		t.Fatal(err)
 	}
 	defer db.Close()
-	analyzer := markers.NewAnalyzer(markers.Config{DataDir: data, Database: db})
+	analyzer := markers.NewAnalyzer(markers.Config{DataDir: data, Database: db}) //nolint:contextcheck // Persisted fixture setup uses the existing synchronous analyzer/store APIs, which accept no context.
 	// Deliberately seed stale marker metadata against a longer fixture duration.
 	// The production probe must still derive 304.96 from the actual source file.
 	if err := analyzer.SetManual(item, "credits", test.start, test.end, 305); err != nil {
 		t.Fatal(err)
 	}
-	before, found, err := db.Load("playback_markers.json")
+	before, found, err := db.Load("playback_markers.json") //nolint:contextcheck // The existing synchronous store Load API accepts no context.
 	if err != nil || !found {
 		t.Fatal(err)
 	}
@@ -115,7 +115,7 @@ func (fixture PlaybackAPIFixture) markerBoundsPublicCase(t *testing.T, ctx conte
 	markerBoundsAssertResponse(t, response.StatusCode, result, test, wantDirectAllowed)
 	markerBoundsAssertLog(t, logs.String(), requestID, test.warning)
 	markerBoundsAssertDirect(t, ctx, endpoint, cookie, result.Direct, sourceBytes)
-	markerHash := markerBoundsAssertPreserved(t, db, item.ID, before, source, sourceBytes)
+	markerHash := markerBoundsAssertPreserved(t, db, item.ID, before, source, sourceBytes) //nolint:contextcheck // The assertion reads only this disposable fixture through the existing context-free store API.
 	t.Logf("HTTP=%d duration=%.2f marker=[%.3f,%.3f] normalized=%t source_sha256=%x persisted_marker_sha256=%x", response.StatusCode, result.Duration, result.Markers[0].Start, result.Markers[0].End, test.warning, sha256.Sum256(sourceBytes), markerHash)
 }
 
