@@ -29,6 +29,8 @@ def affected(paths):
         parts = PurePosixPath(path).parts
         if path.startswith(("engineering/documentation/", "apps/player/docs/", "apps/subtitles/docs/")):
             selected["docs"] = True
+            if any(path.startswith(f"apps/{app}/docs/architecture-explorer/") for app in APPS):
+                selected["tooling"] = True
             if path.endswith((".js", ".cjs", ".mjs", ".ts", ".tsx", ".html")):
                 selected["javascript-typescript"] = True
             if path.endswith(".py"):
@@ -59,6 +61,8 @@ def affected(paths):
                 return dict.fromkeys(FLAGS, True)  # Workspace MVS affects every module.
             selected[app] = selected["go"] = True
             relative = "/".join(parts[2:])
+            if relative.endswith(".go") or relative == "go.sum":
+                selected["tooling"] = True
             if relative.startswith(("internal/server/", "e2e/")):
                 selected[f"{app}_browsers"] = selected["web"] = True
                 selected["javascript-typescript"] = True
@@ -77,6 +81,8 @@ def affected(paths):
                 selected["supply"] = True
         elif path.startswith("packages/"):
             selected["packages"] = selected["go"] = True
+            if path.endswith(".go") or parts[-1] in ("go.mod", "go.sum"):
+                selected["tooling"] = True
             for app in APPS:
                 selected[app] = True
             if path.endswith(("go.mod", "go.sum")):

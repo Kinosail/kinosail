@@ -1,3 +1,4 @@
+import { installPendingHlsLoader } from "./player-hls-loader-fixture";
 import { readFile } from "node:fs/promises";
 import { test } from "@playwright/test";
 import { playerSource } from "./static-sources";
@@ -257,31 +258,11 @@ test.beforeEach(async ({ page }, testInfo) => {
       state.nativeFullscreenCalls = (state.nativeFullscreenCalls || 0) + 1;
     }});
   }, testInfo.title.includes("both fullscreen APIs"));
-  if (testInfo.title.includes("pending HLS loader")) {
-    await page.evaluate(() => {
-      const originalAppend = document.head.append.bind(document.head);
-      document.head.append = ((...nodes: (Node | string)[]) => {
-        const script = nodes.find((node): node is HTMLScriptElement => node instanceof HTMLScriptElement && node.src.includes("/static/hls.min.js"));
-        if (!script) return originalAppend(...nodes);
-        Object.assign(window, {hlsSources: [], releaseHlsLoader: () => {
-          class TestHls {
-            static Events = {MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "level", ERROR: "error"};
-            static ErrorTypes = {NETWORK_ERROR: "network", MEDIA_ERROR: "media"};
-            static isSupported() { return true; }
-            autoLevelEnabled = true; levels = [];
-            on() {} loadSource(source: string) { (window as Window & {hlsSources: string[]}).hlsSources.push(source); } destroy() {}
-            attachMedia(media: HTMLVideoElement | {media: HTMLVideoElement}) { ("media" in media ? media.media : media).src = "blob:stream"; }
-          }
-          Object.assign(window, {Hls: TestHls});
-          script.onload?.(new Event("load"));
-        }});
-        return script;
-      }) as typeof document.head.append;
-    });
-  }
+  if (testInfo.title.includes("pending HLS loader")) await installPendingHlsLoader(page);
   const hlsFixture = testInfo.title.includes("active HLS blob") || testInfo.title.includes("delayed direct probe") || testInfo.title.includes("rapid playback mode") ? `
     window.hlsSources = [];
     class TestHls {
+      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static Events = {MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "level", ERROR: "error"};
       static ErrorTypes = {NETWORK_ERROR: "network", MEDIA_ERROR: "media"};
       static isSupported() { return true; }

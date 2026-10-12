@@ -13,11 +13,7 @@ import (
 // complete demux key map in order; uncertain boundaries cannot be prepared.
 func (manager *hlsManager) certifyCopiedHLS(ctx context.Context, item library.Item, timeline *copiedHLSTimeline) error {
 	proof := copiedHLSIDRProof{timeline: timeline}
-	arguments := []string{
-		"-nostdin", "-v", "error", "-threads", "1", "-copyts", "-i", item.Path, "-map", "0:v:0",
-		"-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1", "-bsf:v", "filter_units=pass_types=5",
-		"-f", "framehash", "pipe:1",
-	}
+	arguments := copiedHLSCertificationArguments(item, timeline, "filter_units=pass_types=5")
 	err := copiedHLSLines(ctx, manager.ffmpeg, arguments, 1<<20, maximumCopiedHLSKeys+32, proof.line)
 	if err != nil || proof.count != len(timeline.Keys) {
 		return errCopiedHLSIndex
@@ -64,16 +60,24 @@ func (proof *copiedHLSIDRProof) packet(line string) error {
 
 func (manager *hlsManager) certifyCopiedHLSConfiguration(ctx context.Context, item library.Item, timeline *copiedHLSTimeline) error {
 	proof := copiedHLSConfigurationProof{maximum: len(timeline.Keys)}
-	arguments := []string{
-		"-nostdin", "-v", "error", "-threads", "1", "-copyts", "-i", item.Path,
-		"-map", "0:v:0", "-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1",
-		"-bsf:v", "h264_mp4toannexb,filter_units=pass_types=7|8", "-f", "framehash", "pipe:1",
-	}
+	arguments := copiedHLSCertificationArguments(item, timeline, "h264_mp4toannexb,filter_units=pass_types=7|8")
 	err := copiedHLSLines(ctx, manager.ffmpeg, arguments, 1<<20, maximumCopiedHLSKeys+32, proof.line)
 	if err != nil || proof.count == 0 {
 		return errCopiedHLSIndex
 	}
 	return nil
+}
+
+func copiedHLSCertificationArguments(item library.Item, timeline *copiedHLSTimeline, filter string) []string {
+	arguments := []string{"-nostdin", "-v", "error", "-threads", "1", "-copyts"}
+	if timeline.point(0) > 0 {
+		arguments = append(arguments, "-seek_timestamp", "1", "-ss", copiedHLSInputTime(timeline.point(0)))
+	}
+	arguments = append(arguments, "-i", item.Path, "-map", "0:v:0", "-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1")
+	if timeline.point(0) > 0 {
+		arguments = append(arguments, "-copypriorss", "0")
+	}
+	return append(arguments, "-bsf:v", filter, "-f", "framehash", "pipe:1")
 }
 
 type copiedHLSConfigurationProof struct {

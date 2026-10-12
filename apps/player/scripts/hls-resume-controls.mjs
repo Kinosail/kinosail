@@ -11,8 +11,12 @@ const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.pl
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const cases = [];
 const check = (condition, failure) => { if (!condition) throw new Error(failure); };
+// The Server cannot emit malformed certified clocks. Injection protects that
+// browser trust boundary; it is isolated evidence, not a Server input journey.
+const faults = [['invalid-origin', 390], ['future-origin', 1920], ...(native ? [['http-503', 1440]] :
+  [['invalid-clock', 390], ['negative-clock', 1440], ['excess-clock', 1920], ['duplicate-clock', 390], ['missing-origin', 1440], ['missing-clock', 390]])];
 try {
-  for (const [fault, width] of [['invalid-origin', 390], ['future-origin', 1920], ...(native ? [['http-503', 1440]] : [])]) {
+  for (const [fault, width] of faults) {
     const context = await browser.newContext({extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
     const progress = await context.request.put(`${origin}/api/v1/items/${id}/progress`, {data: {seconds: 12.5, watched: false}});
     check(progress.status() === 200, 'save_resume_status');
@@ -36,8 +40,12 @@ try {
       injected = true;
       if (fault === 'http-503') return route.fulfill({status: 503, body: ''});
       const response = await route.fetch();
-      await route.fulfill({response, headers: {...response.headers(),
-        'x-kinosail-hls-origin': fault === 'invalid-origin' ? 'invalid' : '99.000000'}});
+      const headers = {...response.headers()};
+      if (fault === 'invalid-origin' || fault === 'future-origin') headers['x-kinosail-hls-origin'] = fault === 'invalid-origin' ? 'invalid' : '99.000000';
+      else headers['x-kinosail-hls-clock'] = {'invalid-clock': 'NaN', 'negative-clock': '-0.1', 'excess-clock': '1.000001', 'duplicate-clock': '0.1, 0.1', 'missing-origin': '0.083333'}[fault];
+      if (fault === 'missing-origin') delete headers['x-kinosail-hls-origin'];
+      if (fault === 'missing-clock') delete headers['x-kinosail-hls-clock'];
+      await route.fulfill({response, headers});
     });
     try {
       await page.goto(`${origin}/watch/${id}?compatible=1`);
@@ -145,7 +153,7 @@ try {
 } finally {
   await browser.close();
 }
-const passed = cases.length === (native ? 5 : 2) && cases.every(row => row.passed);
+const passed = cases.length === faults.length + (native ? 2 : 0) && cases.every(row => row.passed);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(), passed,
   proofClass: 'Real authenticated Player with explicitly injected HTTP metadata failures; synthetic media; actual recovery controls',
   capabilitySimulation: native ? 'MSE disabled to exercise native WebKit HLS policy' : null, cases}, null, 2) + '\n');
