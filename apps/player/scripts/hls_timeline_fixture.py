@@ -11,19 +11,20 @@ def check(condition, failure):
         raise RuntimeError(failure)
 
 
-def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"):
+def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv", noise=False):
     numerator, _, denominator = rate.partition("/")
     frame_rate = float(numerator) / float(denominator or "1")
     expected_duration = frames / frame_rate
     path = directory / (name + extension)
+    audio = f"anoisesrc=color=white:amplitude=0.12:seed=872:sample_rate=48000:duration={expected_duration}" if noise else f"sine=frequency=440:sample_rate=48000:duration={expected_duration}"
     command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=640x360:r={rate}:d={expected_duration}",
-        "-f", "lavfi", "-i", f"sine=frequency=440:sample_rate=48000:duration={expected_duration}",
+        "-f", "lavfi", "-i", audio,
         "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
         # Define the generated SD fixture's color interpretation. Chromium's
         # original-file and MSE demuxers use different defaults when it is absent.
         "-vf", "setparams=range=limited:colorspace=smpte170m:color_primaries=smpte170m:color_trc=smpte170m",
         "-g", str(gop), "-keyint_min", "1", "-sc_threshold", "0", "-force_key_frames", keys,
-        "-frames:v", str(frames), "-c:a", "aac", "-ac", "2", str(path)]
+        "-frames:v", str(frames), *(["-af", "lowpass=f=6000"] if noise else []), "-c:a", "aac", "-ac", "2", str(path)]
     subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     probe = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey",
         "-show_entries", "frame=best_effort_timestamp_time:format=duration:stream=avg_frame_rate,color_space,color_transfer,color_primaries,color_range",

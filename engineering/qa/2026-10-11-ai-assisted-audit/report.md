@@ -1279,3 +1279,37 @@ An earlier private recorder syntax failure is retained separately and provides n
 PR #574 merges after all required checks pass. A fresh fetch proves both reviewed selector checkpoints in main `a95f2cbb2ed8a1a27eb39e311be1c8f71a95c50d`.
 The selector includes architecture-generating Go sources, module inputs, and architecture documentation without losing app isolation.
 The private ancestry receipt SHA-256 is `ec4fb4879d0b94cfc3d7df7c1db5a3265f16ec525690e8953c0f1f32e2a978a7`.
+
+### AQA-015 — Long converted-audio refill changes its packet grid
+
+The retained `test-hls-audio-splice.py` journey confirms decoded damage before any production repair.
+It uses a real disposable Player, a 74.5-second nonperiodic AC3 source, and the unchanged watch page.
+An AudioWorklet records render-thread samples. One source alignment remains fixed across each capture.
+The initial refill reaches correlation 0.7395; tail recovery reaches 0.7013. The untouched tail control remains above 0.9797.
+All three captures have contiguous render blocks and zero sample lag. Seven video reference checks and EOF pass.
+The source remains unchanged and the Server settles. Perceptual audibility and physical devices remain separate.
+The recorder's CSP exception permits instrumentation; this journey does not establish CSP security.
+
+The failing receipt is `.verification/hls-audio-splice/20261012T043453Z/receipt.json`, SHA-256 `581b619c061e6f398d2e106bc7dba04fe015842ce1fd3d3ddbd55055c678eb40`.
+The outer manifest is `long-audio-retained-red/manifest.json`, SHA-256 `9d9909c2d1f745f3e8b4fbcf9fb581bfb5fe7ac96ab6b7537a41de80b98b8133`.
+Both bind production base `a7623d3335e95ab86157218f5c78f77cab2b6242` and the test patch.
+
+Private experiments separate encoder warm-up from packet alignment.
+Warm-up alone either leaves a mismatch or introduces a 5.3 ms gap. Those variants were rejected.
+Warm-up aligned to the cached packet grid removes the tail mismatch without shifting source content.
+A second experiment uses the initial fragment's grid for population and middle-fragment recovery.
+Both decoded joins pass with the old neighboring fragments preserved; minimum source correlation is 0.9804.
+That experiment is `.verification/hls-resume-browser/20261012T042906Z/`, with helper snapshots and exact environment in its receipt.
+These are bounded generated-media experiments. The production repair is still pending.
+
+### Publication and deployed-revision boundary
+
+Main CI `38200496460` passes for `e0a9536c6a04198a2eff9f5306c7c658fcdf9406`.
+Both immutable app images are published, scanned, signed, attested, and verified.
+The green production-tag jobs explicitly retain existing tags because newer main changes affect the apps.
+They do not prove promotion of that revision. The private receipt is `e0-publication-receipt.json`.
+
+A fresh read-only Nox inspection finds both apps running and healthy.
+Player reports `394736cb740fc6873aa6e94b41e22dc797155529`; Subtitles reports local snapshot `6f41117dfa618ad65479f91463d431ab2f500996`.
+Neither proves deployment of current main. Historical local-watcher receipts also do not establish current remote state.
+The safe receipt is `nox-readonly-20261012.json`, SHA-256 `d4d691056d7fe7fe3447686720ecfe4602abe381e6737085c6b1e157933c72c9`.
