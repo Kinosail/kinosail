@@ -151,6 +151,9 @@ finally:
             (RUN / 'public-prefix.m3u8').write_bytes(public)
             if args.held_source_change or args.held_fault:
                 held_fault(api, path, RUN, source, args.held_fault or 'source', receipt)
+                # Rejection can precede encoder exit. Let the fixture wrapper
+                # reap its real child before stopping the owning Server.
+                wait_for(lambda: joined.exists(), 'fault_producer_not_joined')
                 raise HeldFaultComplete()
             if args.native:
                 child = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,

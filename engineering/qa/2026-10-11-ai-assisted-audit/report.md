@@ -1949,3 +1949,24 @@ These are Linux ARM64 and isolated recorder controls. Immediate-start seek timin
 
 PR 583 merged through protected checks into `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
 Fetched ancestry confirms reviewed Android test commit `3ae56d24` is included.
+
+### Hosted verification follow-up: login and fixture shutdown
+
+Hosted WebKit layout run `38243395191` completed Subtitles login with HTTP 303, then timed out filling the previous document's authentication field.
+A controlled native WebKit commit reproduces the same `layout-stability-local.mjs:115` failure before repair.
+Subtitles submits the password and second factor together. The audit now submits once and waits for the existing redirect condition.
+The retained delayed-redirect and rejected-factor controls require exactly one POST and no library access after rejection.
+Linux ARM64 passes all 11 applicable controls across Chromium, Firefox, and WebKit; four Firefox-specific controls are skipped on other engines.
+Native macOS Chromium and WebKit pass. Firefox fails before browser launch on this workstation and is not counted as local coverage.
+A real Subtitles Server with populated synthetic data passes login and six responsive WebKit views over trusted fixture HTTPS.
+
+Hosted source-change rejection returned 404 with the correct diagnostic and no replacement encoder, but failed the fixture's join assertion.
+Linux ARM64 reproduces that result: immediate Server shutdown kills the wrapper before it can reap FFmpeg.
+The fault harness now waits, within its existing bounded deadline, for the exact child's join receipt before stopping the Server.
+Source change, settings change, and encoder failure all pass with the strict rejection, diagnostic, unchanged-content, and join assertions intact.
+This verifies settled faults. Early Server shutdown with an installation wrapper that spawns descendants remains a separate ownership boundary.
+
+The combined proof binds revision `5921a073` and the exact uncommitted harness hashes, not an exact clean-commit run.
+Proof: `ai-qa-campaign/pr582-harness-proof.json`, SHA-256 `20c957e11d51e78adc482872bddf3a583f6541324ba15819a0055c6b09952d9c`.
+Independent review found no blocker. Both generated architecture snapshots were refreshed and their contract passes.
+Script checks, TypeScript quality controls, source limits, and whitespace pass. Fresh hosted checks remain required.
