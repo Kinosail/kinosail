@@ -758,3 +758,24 @@ Post-commit affected verification and hosted checks remain required before deliv
 
 These runs use base `2a32e9b43826e2d22239a473181cb2bf94f6afb4` with the recorded candidate patches and binary hashes.
 The public fault receipts include the patch and harness hashes. Clean-revision browser evidence will replace the candidate boundary for delivery.
+
+### Cold H264 remux: clean implementation checkpoint
+
+All final replays pass on clean revision `b66e30e71c0c7aef60f4d4fd53aa95dda856d6dc`.
+The public fault suite passes all thirteen cases, including failed-prefix regeneration and held clock certification.
+AAC and video-only sources each match seven reference frames in Chromium, WebKit MSE, and native WebKit: 42 comparisons pass.
+These replays include the final cancellation and failed-prefix guard corrections.
+Native WebKit still uses a capability simulation; physical Safari remains unverified.
+
+`make -C apps/player verify-changed` passes source limits, whitespace, server compilation, and focused server tests (94 seconds).
+Its private log is `ai-qa-campaign/cold-suffix-verify-changed-private.log`.
+Independent review found no remaining concrete blocker within the bounded remux scope.
+Hosted checks and protected integration remain pending. The audio-conversion and longer-stream boundaries remain open.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-cold-suffix/20261011T235619Z/receipt.json` | thirteen public success and fault cases | `d1cdb21ee05cd3f4761934b1186d17eed621156eba1d7deabffc64e1ca5fe675` |
+| `hls-resume-browser/20261011T235620Z/receipt.json` | AAC Chromium and WebKit: fourteen exact frames | `d77de1ec8380a7f9e82d18c5049b1f344e876ad1ccb16e164b0588eaeb717e28` |
+| `hls-resume-browser/20261011T235639Z/receipt.json` | AAC native WebKit: seven exact frames | `17f0dd4fbb27e87b0585b428ee84fd1975d5f265346f91696513e3d1922df75a` |
+| `hls-resume-browser/20261011T235649Z/receipt.json` | video-only Chromium and WebKit: fourteen exact frames | `d93b8581db4169d854aeb208755252772366e327b8ed73d583fc0aeeda421cb4` |
+| `hls-resume-browser/20261011T235700Z/receipt.json` | video-only native WebKit: seven exact frames | `e90e09704c86c051689c15d82730e4e881e1bc85133e0900e7c59ba1bcc147ad` |
