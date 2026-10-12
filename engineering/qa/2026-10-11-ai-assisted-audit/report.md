@@ -980,3 +980,39 @@ Full decoded-audio acceptance remains open while this separate diagnostic bounda
 | `hls-resume-browser/20261012T012037Z/receipt.json` | clean actual-watch PCM capture and packet oracle | `9a5063452b5ae96618dd2a2c68022ac1641627b495d8e458fe37e6f78f2dd576` |
 | `hls-resume-browser/20261012T012037Z/decoded-splice-comparison.json` | recovered tail fixed; earlier runtime transition open | `3788d31dd516d3121f7938b7aa2c2a0b553dc814e15f7de0731b8119b41f5310` |
 | `hls-resume-browser/20261012T012211Z/decoded-splice-comparison.json` | no-eviction PCM control shares earlier transition | `c0b5508ce7138d09e3e2545d58f77dd0f97b21226ca074ae09a83dc9198ffd40` |
+
+### Cold-resume hosted complexity findings
+
+The refreshed #565 checks rejected four functions for cyclomatic complexity and one readiness function for cognitive complexity.
+These are task-caused findings, not the historical lint baseline.
+The repair extracts recipe eligibility, untouched-cache validation, suffix bounds, and readiness waiting into focused functions.
+It preserves the existing source-policy checks, certification order, cancellation errors, and probe deadline.
+Independent review found no admission or certificate defect, and requested preserving the one-time HEVC completion decision.
+The final extraction retains that decision once per readiness wait, as before.
+
+The initial candidate passes all thirteen public cold-suffix cases and both browser engines' seven-frame resume journeys.
+The public suite covers source replacement, invalid key/configuration proofs, lookback bounds, producer failure, timeout, aggregate deadline, clock race, and fractional recovery.
+The branch reconciles current `origin/main` at `a695f71a9b78971559dadd6d355b2338fa219e90`; only the unrelated merged native changes arrive from main.
+Focused verification and clean readiness replays follow the checkpoint.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-cold-suffix/20261012T012547Z/receipt.json` | thirteen public suffix cases with source patch receipt | `11d7a7fe867c1fa74feb9622dc97badc0492de0d464cfc6d06023a141dd9b0d2` |
+| `hls-resume-browser/20261012T012557Z/receipt.json` | both MSE engines: fourteen frames and ended | `a63605315f52ac75bf7e3be0041e0c1231ef8d30a4cb9d6788c3f860c734171e` |
+
+
+### Cold-resume complexity repair: clean verification
+
+Clean revision `ce729cfda45cafeae0ec501aa8110c833b11f102` passes the clock-race and producer-failure public controls.
+All five short-HEVC completion controls also pass, covering the readiness path shared with the cold-resume change.
+Both MSE browser journeys match seven reference frames and reach playback ended.
+The local linter reports zero issues against current main.
+`make -C apps/player verify-changed` passes compilation and focused Server tests (83 seconds), source limits, and whitespace.
+Required hosted checks must rerun on this updated branch; protected integration remains pending.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-cold-suffix/20261012T012834Z/receipt.json` | clean clock-race | `a6e7f2e5f4ca82a3777c5b473fdc8d10aa7860b16e285e5b458b4d086eacde63` |
+| `hls-cold-suffix/20261012T012844Z/receipt.json` | clean producer-failure | `51d6c629019ed02bc55c73d15715f5aba86497a587d945e7f7634ce85bc3aacc` |
+| `hls-short-completion/20261012T012854Z/receipt.json` | clean short-completion | `e315b5a2a61f8e66d1aedb540082cacf2e5b68e716d7f0988d1b4bf893a5f6fe` |
+| `hls-resume-browser/20261012T012959Z/receipt.json` | clean browser | `f84f15fb423dace217f53c6c83f5f86ff02f0e61060283d3ecbe2056cc18a3c4` |

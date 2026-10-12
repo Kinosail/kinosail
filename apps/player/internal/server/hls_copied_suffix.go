@@ -21,13 +21,17 @@ func copiedHLSIndexRequired(ctx context.Context) bool {
 }
 
 func (manager *hlsManager) coldCopiedHLSNeedsIndex(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
-	if recipe.mode != "remux" && recipe.mode != "audio-transcode" || recipe.offset <= 0 || len(recipe.omitted) != 0 || recipe.dialogueBoost || recipe.normalizeLoudness ||
-		item.Kind == "audio" || item.Kind == "audiobook" {
+	if !coldCopiedHLSRecipe(item, recipe) {
 		return false
 	}
 	facts := manager.probe.facts(ctx, item)
 	remaining := facts.Duration - recipe.offset
 	return facts.Video.Codec == "h264" && remaining > 0 && remaining <= maximumCopiedHLSSuffix && !math.IsNaN(remaining)
+}
+
+func coldCopiedHLSRecipe(item library.Item, recipe hlsRecipe) bool {
+	return !(recipe.mode != "remux" && recipe.mode != "audio-transcode" || recipe.offset <= 0 || len(recipe.omitted) != 0 || recipe.dialogueBoost || recipe.normalizeLoudness ||
+		item.Kind == "audio" || item.Kind == "audiobook")
 }
 
 func (manager *hlsManager) bindCopiedHLSIndex(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string, number int) error {
@@ -49,15 +53,8 @@ func (manager *hlsManager) bindCopiedHLSIndex(ctx context.Context, item library.
 	if number != 0 {
 		return errCopiedHLSIndex
 	}
-	root, err := manager.openCopiedHLSRoot(directory)
-	if err != nil {
+	if !manager.copiedHLSCacheUnwritten(directory) {
 		return errCopiedHLSIndex
-	}
-	defer root.Close()
-	for _, name := range []string{"index.m3u8", ".copy-clock"} {
-		if _, err := root.Lstat(name); !os.IsNotExist(err) {
-			return errCopiedHLSIndex // A retained output cannot acquire a new origin.
-		}
 	}
 	timeline, err := manager.indexCopiedHLSSuffix(ctx, item, recipe, policy)
 	if err != nil {
@@ -111,4 +108,18 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 		return nil, err
 	}
 	return timeline, nil
+}
+
+func (manager *hlsManager) copiedHLSCacheUnwritten(directory string) bool {
+	root, err := manager.openCopiedHLSRoot(directory)
+	if err != nil {
+		return false
+	}
+	defer root.Close()
+	for _, name := range []string{"index.m3u8", ".copy-clock"} {
+		if _, err := root.Lstat(name); !os.IsNotExist(err) {
+			return false // A retained output cannot acquire a new origin.
+		}
+	}
+	return true
 }
