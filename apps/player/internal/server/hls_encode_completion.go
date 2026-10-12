@@ -9,6 +9,27 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
+func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory string, preserve bool) {
+	if !preserve {
+		job.err = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+	}
+	if job.err == nil {
+		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
+	}
+	if job.err == nil {
+		// Every writer, including a preserved refill, revokes prior completion
+		// before changing media. Failure to revoke prevents the new encoding.
+		root, err := manager.openCopiedHLSRoot(directory)
+		if err == nil {
+			err = root.Remove(shortHEVCCompletionMarker)
+			_ = root.Close()
+		}
+		if !os.IsNotExist(err) {
+			job.err = err
+		}
+	}
+}
+
 func (manager *hlsManager) reportHLSEncode(job *hlsJob, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, outcome hlsEncodeOutcome, started time.Time) {
 	if job.err != nil {
 		job.err = newHLSDiagnosticError(job.err, hlsDiagnostic(job.err, item.Path, directory), item.Path, directory)

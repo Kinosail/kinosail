@@ -10,6 +10,47 @@ import Testing
 extension PlaybackEndpointJourneys {
     @Suite
     @MainActor struct PlaybackCompletionSafetyJourneys {
+        // The populated Nox journal is intentionally not seeded or read. This
+        // fixture covers the public replay decision with real native decoding.
+        @Test(arguments: ["device-watched", "server-endpoint", "server-resumed", "device-resumed"])
+        func reopeningCompletedTitleUsesNewestPlaybackIntent(origin: String) async throws {
+            let fixture = try await mp4Fixture()
+            defer { fixture.close() }
+            var item = try fixture.item("movie")
+            if origin != "device-watched" {
+                item.progress.seconds = 12; item.progress.watched = true
+                item.progress.session = UUID().uuidString; item.progress.revision = 1
+            }
+            if origin == "server-endpoint" {
+                fixture.playbackResponse = Data("{\"media\":{\"duration\":12},\"plan\":{\"allowed\":true,\"mode\":\"direct\",\"reason\":\"direct-preferred\"},\"duration\":12,\"start\":12,\"directAllowed\":true,\"direct\":\"/media/movie\",\"directType\":\"video/mp4\"}".utf8)
+            }
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("fictional-watched-replay-" + UUID().uuidString)
+            let store = try await ProgressSyncStore(scope: fixture.client.profileScope(), directory: folder)
+            defer { try? FileManager.default.removeItem(at: folder) }
+            if origin == "device-watched" || origin == "device-resumed" {
+                var progress = WatchProgress()
+                progress.seconds = origin == "device-watched" ? 12 : 3
+                progress.watched = origin == "device-watched"
+                progress.session = UUID().uuidString; progress.revision = 1
+                try await store.record(itemID: item.id, progress: progress, expected: item.progress)
+            }
+            let coordinator = PlaybackCoordinator()
+            defer { coordinator.onCompleted = nil; coordinator.stop() }
+            var completions = 0
+            coordinator.onCompleted = { _, _ in completions += 1 }
+            try await joinedStartup(coordinator, item: item, fixture: fixture, store: store)
+            let player = try #require(coordinator.player)
+            let expected = origin.hasSuffix("resumed") ? 3.0 : 0.0
+            let initial = player.currentTime().seconds
+            #expect(initial.isFinite && initial >= expected && initial < expected + 1,
+                    "Completed progress must replay; newer server or device resume intent must survive stale item metadata")
+            #expect(completions == 0 && !coordinator.completed)
+            try await decodedProgress(player)
+            #expect(completions == 0 && !coordinator.completed)
+            print("COMPLETION_SAFETY case=watched-replay origin=\(origin) initial=\(initial) expected=\(expected) decodedAdvancing=true callbackCount=\(completions)")
+            await fixture.client.close()
+        }
+
         @Test(arguments: [0.0, 0.024])
         func naturalMP4CompletionCallbackCanStopWithoutRestarting(remaining: Double) async throws {
             let fixture = try await mp4Fixture()
@@ -168,12 +209,17 @@ extension PlaybackEndpointJourneys {
                 do { try await coordinator.play(item, client: fixture.client, store: store); result = .success(()) }
                 catch { result = .failure(error) }
             }
-            defer { task.cancel() }
-            let deadline = ContinuousClock.now.advanced(by: .seconds(12))
-            while result == nil, ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
-            let finished = try #require(result, "Native startup must return within twelve seconds")
-            await task.value
-            try finished.get()
+            do {
+                let deadline = ContinuousClock.now.advanced(by: .seconds(12))
+                while result == nil, ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
+                let finished = try #require(result, "Native startup must return within twelve seconds")
+                await task.value
+                try finished.get()
+            } catch {
+                task.cancel()
+                await task.value
+                throw error
+            }
         }
 
         private func decodedProgress(_ player: AVPlayer) async throws {

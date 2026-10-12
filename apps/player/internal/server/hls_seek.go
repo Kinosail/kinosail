@@ -245,24 +245,19 @@ type hlsEncodeOutcome struct {
 
 func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *hlsJob, key string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) {
 	started := time.Now()
+	complete := manager.shortHEVCNeedsCompletion(ctx, item, recipe)
 	job.observation.queued(recipe.mode)
 	directory := filepath.Join(manager.cache, key)
 	manager.prepareHLSEncodeDirectory(job, directory, preserve)
 	outcome := hlsEncodeOutcome{preserve: preserve}
 	if job.err == nil {
 		outcome = manager.runHLSEncode(ctx, item, job, directory, options, recipe, startNumber, preserve)
-		manager.reportHLSEncode(job, item, directory, options, recipe, outcome, started)
+		if complete && job.err == nil && !outcome.inactive && !outcome.superseded && ctx.Err() == nil {
+			job.err = manager.publishShortHEVCCompletion(ctx, item, recipe, directory, options.Cache)
+		}
 	}
+	manager.reportHLSEncode(job, item, directory, options, recipe, outcome, started)
 	manager.finishHLSEncode(job, key, directory, startNumber, outcome.preserve)
-}
-
-func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory string, preserve bool) {
-	if !preserve {
-		job.err = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
-	}
-	if job.err == nil {
-		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
-	}
 }
 
 func (manager *hlsManager) runHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) hlsEncodeOutcome {
