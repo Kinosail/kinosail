@@ -781,11 +781,36 @@ The focused comparison passes. A temporary one-byte negative control fails and
 retains both images and both raw buffers. The control is removed. The original
 hosted pixel mismatch remains unresolved; this change supplies diagnostic proof.
 
-PR #566 has green required checks at `7971d07f`. Deep run `38186878855` continues.
-Its Firefox queue-loading batch passes five and times out during the sixth
-case's initial page navigation. That failure precedes queue or command operations.
-The remaining browser and native results must be reviewed before a full claim.
+PR #566 has green required checks at `a21534c1`. Deep run `38186878855` at
+`7971d07f` passes 332 iOS and 312 tvOS tests, with one platform skip each.
+Its first Firefox attempt times out before queue or command operations. The
+replay passes 703 root cases and skips 356. Settings passes 63 with one flaky
+initial sign-in navigation, so the strict flake gate remains failed. WebKit
+passes 701 root cases and skips 358, then fails four settings watched-startup
+cases and records one separate flaky case. These browser failures remain open.
 Private receipts, source attestations, screenshots, and cleanup are retained.
+
+### Wear module compatibility and capture follow-up
+
+Wear has a separate minimum API 30. Its expanded NewApi scan reports one
+unguarded API 34 accessibility-scanner call before repair, and none afterward.
+The scanner now runs only on API 34 or newer. Both live-region checks remain
+active on API 30. Builds and expanded lint pass. Both instrumentation checks
+pass on API 30 and API 36, with actual SDK/ABI receipts.
+
+Whole-display captures initially show Hello or Starting system setup rather
+than the app. Those captures are excluded from app rendering proof. Capture
+now images the actual tested Compose root. Both unpaired and heart-permission
+state images were inspected on each API. The API 36 reusable emulator and SDK
+images are preserved. The task-owned API 30 emulator is deleted after shutdown.
+This is isolated component evidence, not foreground interaction, paired-phone
+relay, heart-sensor, real assistive-technology, or physical Wear acceptance.
+
+Wear checkpoint `a21534c1475c60322c53750537976e1751d4d5ad` passes required
+CI `38190740774`, the source cap, diff check, and post-commit verification.
+The initial invalid Java path, initial Gradle configuration error, and API 30
+ART-precompile failure happen before analysis or instrumentation and are excluded.
+
 
 ## QA-015 — Valid HLS temporary-file replacement rejects the stage (P2; merged PR #567)
 
@@ -871,28 +896,6 @@ reviews. Both Show cases pass in all three engines. The dedicated catalog replay
 passes below.
 The loading review combines decoded initial playback with synthetic media
 state events; it does not prove a real bandwidth interruption.
-
-
-### Wear module compatibility and capture follow-up
-
-Wear has a separate minimum API 30. Its expanded NewApi scan reports one
-unguarded API 34 accessibility-scanner call before repair, and none afterward.
-The scanner now runs only on API 34 or newer. Both live-region checks remain
-active on API 30. Builds and expanded lint pass. Both instrumentation checks
-pass on API 30 and API 36, with actual SDK/ABI receipts.
-
-Whole-display captures initially show Hello or Starting system setup rather
-than the app. Those captures are excluded from app rendering proof. Capture
-now images the actual tested Compose root. Both unpaired and heart-permission
-state images were inspected on each API. The API 36 reusable emulator and SDK
-images are preserved. The task-owned API 30 emulator is deleted after shutdown.
-This is isolated component evidence, not foreground interaction, paired-phone
-relay, heart-sensor, real assistive-technology, or physical Wear acceptance.
-
-Wear checkpoint `a21534c1475c60322c53750537976e1751d4d5ad` passes required
-CI `38190740774`, the source cap, diff check, and post-commit verification.
-The initial invalid Java path, initial Gradle configuration error, and API 30
-ART-precompile failure happen before analysis or instrumentation and are excluded.
 
 
 ## QA-017 — Layout sign-in navigation retains an unguarded Firefox boundary

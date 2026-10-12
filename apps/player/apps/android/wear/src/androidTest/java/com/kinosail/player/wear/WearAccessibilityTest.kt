@@ -1,12 +1,15 @@
 package com.kinosail.player.wear
 
 import android.graphics.Bitmap
+import android.os.Build
 import java.io.File
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -31,8 +34,10 @@ class WearAccessibilityTest {
         }
         compose.onNodeWithText("Allow heart rate access to make a graph.")
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
-        compose.enableAccessibilityChecks()
-        compose.onRoot().tryPerformAccessibilityChecks()
+        if (Build.VERSION.SDK_INT >= 34) {
+            compose.enableAccessibilityChecks()
+            compose.onRoot().tryPerformAccessibilityChecks()
+        }
         capture("heart-permission")
     }
 
@@ -52,7 +57,7 @@ class WearAccessibilityTest {
         Thread.sleep(300)
         val directory = File(instrumentation.targetContext.filesDir, "parity-evidence").apply { mkdirs() }
         File(directory, "wear-$name-semantics.txt").writeText(compose.onRoot().printToString())
-        val bitmap = instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY).takeScreenshot()
+        val bitmap = compose.onRoot().captureToImage().asAndroidBitmap()
         File(directory, "wear-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
         bitmap.recycle()
     }
