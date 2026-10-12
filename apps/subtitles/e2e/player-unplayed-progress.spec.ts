@@ -14,7 +14,6 @@ for(const replacementClock of [0,3]) test(`unplayed source replacement clock ${r
       src:{get:()=>src,set:(value:string)=>{src=value;position=replacementClock;}},currentSrc:{get:()=>src},load:{value:()=>{}},
     });
     class FakeHls{
-      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static isSupported=()=>true;static Events={MANIFEST_PARSED:'manifest',LEVEL_SWITCHED:'switched',ERROR:'error'};static ErrorTypes={NETWORK_ERROR:'network',MEDIA_ERROR:'media'};
       handlers=new Map();levels=[];autoLevelEnabled=true;
       constructor(){Object.assign(window,{instance:this});}on(event:string,handler:Function){this.handlers.set(event,handler);}loadSource(){}attachMedia(){}destroy(){}

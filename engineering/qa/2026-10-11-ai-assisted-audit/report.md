@@ -1694,3 +1694,43 @@ The combined private receipt is `copied-clock-final-receipt.json`, SHA-256 `d2ab
 Subtitles affected verification passes source limits, whitespace, compilation, and focused Server checks. Full shared-package lint found two new test-complexity findings above the established 95-finding baseline. The assertions were reorganized without changing production code; focused ownership and cancellation checks pass afterward. No assertion was removed or weakened.
 
 Native HLS still fails the retained irregular prefix/seek journey. Its source-cut and generation-lifetime repair remains open, along with physical devices and production acceptance. The MSE passes do not close those boundaries or establish 100 percent QA.
+
+### Protected delivery and remaining Subtitles clocks, 2026-10-12
+
+PR 575 merged at `5f169ee28472b99c416f0b7376641cefc835f573` after required run `38225253679` passed.
+PR 577 was included and GitHub marked it merged. Fetched ancestry checks prove both reviewed heads, `f7b4688f` and `c67fb0a4`, belong to remote main.
+Main run `38229443046` was still running at the last observation. This does not prove container promotion or deployment.
+The primary checkout remains dirty with unrelated Apple project and localization edits; it was not fast-forwarded or cleaned.
+
+Native WebKit HLS remains open. The unmodified `a2d5f2b1` binary fails all seven long-resume comparisons in `hls-subtitles-native-baseline/20261012T092127Z`.
+Candidate `5ed82339` matches four in `hls-resume-browser/20261012T092222Z`; both reach EOF. This is a pre-existing native boundary, not native acceptance.
+The exact `5ed82339` long Direct First-to-Compatibility journey passes both MSE engines (`copied-clock-final-long-switch/manifest.json`).
+
+The fractional 2.5-second case exposed a separate leading-empty-edit failure.
+Chromium falls back to the original; WebKit cannot decode the original Matroska reference. The tightened oracle now requires the selected decoder adapter.
+A separate MP4 reference is certified against every source video packet hash and presentation timestamp; it makes WebKit's reference playable.
+With that correction, both compatibility journeys still fail before the repair.
+
+A leading empty edit supplies a per-track delay. Chromium MSE ignores it rather than applying the following media edit.
+The adapter now copies initialization and fragment buffers, replaces the leading empty edit with equivalent `tfdt` offsets, and keeps one media edit.
+It preserves parent box sizes with a `free` box, every sample payload, and the original cached Hls inputs.
+Exact integer conversion, bounded boxes, duplicate timing fields, and version-specific overflow are checked before consumption.
+Native HLS still receives the original server bytes.
+Primary references: [Chromium edit handling](https://raw.githubusercontent.com/chromium/chromium/main/media/formats/mp4/track_run_iterator.cc) and [MSE single-edit requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/#iso-init-segments).
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T093446Z/receipt.json` | Corrected reference; both compatibility cases fail | `ca2e4064d47cd32068d13e22d8a316d350db51ad3b0bafd9df0c61d09789bcc2` |
+| `hls-empty-edit-prototype/20261012T093632Z/receipt.json` | Fixture-specific byte-normalization prototype passes both engines | `7fb883f0fb83115300820f2d5dce2e88cdacd3c3ea3b94f5fdf4f076dd9f308d` |
+| `hls-resume-browser/20261012T094124Z/receipt.json` | Bounded production candidate passes both engines, all seven frames and EOF | `9dee26c703de20968dc9889af934db477ebf3f8cb65d64073036d989b055d3ca` |
+
+These three runs include an uncommitted patch and are not exact committed-revision proof.
+Thirty-three isolated controls pass after reproducing cached-input mutation and leading-edit failures before implementation.
+Independent review found a caption clock mismatch when audio supplies the Hls anchor. A retained control failed before changing text cues to the video edit.
+Malformed init data also exposed a recovery loop. A retained browser control fails before terminal rejection handling and passes afterward.
+The error path uses the bounded `copied-media-timing` diagnostic class, makes no automatic direct retry, and retains its visible error through late readiness events.
+Fifteen rendered direct-playback controls pass. They are isolated fixture evidence, not populated-server proof.
+
+The shared-probe package now has zero local lint findings. Whole shared-package lint still has 95 established findings.
+One retained Mac process-ownership check failed with EPERM during settlement; an unchanged retry passed. Its assertion remains strict.
+This remains an intermittent ownership boundary; cross-compilation is not Linux or Windows runtime proof.

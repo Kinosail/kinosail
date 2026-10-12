@@ -21,7 +21,7 @@ const rows = [], responses = [];
 let failureClass, stage = 'setup';
 
 try {
-  const planResponse = await context.request.get(`${origin}/api/v1/items/${id}/playback?videoCodecs=h264&audioCodecs=aac`);
+  const planResponse = await context.request.get(`${origin}/api/v1/items/${process.env.QA_RESUME_REFERENCE_ITEM || id}/playback?videoCodecs=h264&audioCodecs=aac`);
   if (planResponse.status() !== 200) throw new Error('playback_plan_status');
   const plan = await planResponse.json(), reference = plan.direct;
   if (!reference?.startsWith('/') || reference.startsWith('//')) throw new Error('reference_source_shape');
@@ -184,11 +184,11 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
   && matches.length === 7 && matches.every(Boolean) && expectedMode.split(',').includes(rows[1].mode)
   && Math.abs(rows[1].duration - rows[0].duration) < .1
   && rows[1].firstPlaying >= resume - .05 && rows[1].firstPlaying < resume + .5
-  && (!native || rows[1].adapter === 'native')
+  && rows[1].adapter === (native ? 'native' : 'mse')
   && responses.length > 0 && responses.every(response => response.status < 400);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
   capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', directSwitch ? 'Native HLS support disabled to exercise lazy MSE fallback' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
-  proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file reference',
+  proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file or independently certified stream-copy MP4 reference',
   directSwitch, stage, passed, failureClass, rows, matches, responses}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
 process.exitCode = passed ? 0 : 1;

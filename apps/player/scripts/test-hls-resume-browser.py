@@ -10,7 +10,7 @@ import socket
 import subprocess
 import time
 
-from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
+from hls_timeline_fixture import LONG_RESUME_KEYS, browser_reference, fixture
 from hls_audio_capture import capture_audio, decode_source
 from hls_resume_audio import audio_packets, uninterrupted_audio_reference
 from hls_timeline_http import PublicServer, sha, source_state
@@ -127,6 +127,8 @@ try:
         source = shifted
         metadata.update(shiftCommand=shift, sha256=sha(source), keyframesSeconds=source_keys,
                         durationSeconds=duration + .13, videoDurationSeconds=duration + .13)
+    if fractional:
+        receipt['browserReference'] = browser_reference(source)
     if args.decoded_audio:
         source_pcm, receipt['decodeCommand'] = decode_source(source)
     before = source_state(source)
@@ -162,7 +164,9 @@ try:
             api.authorize()
             if args.app == 'player':
                 api.call('/api/v1/settings/subtitle-picker', 'PUT', {'limited': True})
-            item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Resume Sample')
+            items = api.call('/api/v1/library')['items']
+            item = next(i for i in items if i['title'] == 'Resume Sample')
+            reference_item = next(i for i in items if i['title'] == 'Resume Reference') if fractional else item
             if args.prepared:
                 plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
                 hls = plan['compatible'].replace('/index.m3u8', f'-o{round(args.resume_seconds * 1000)}/index.m3u8')
@@ -203,7 +207,7 @@ try:
                         case['tailPresentBeforeEviction'] = case['fragmentPresentBeforeEviction']
                         case['tailMissingBeforePlayback'] = case['fragmentMissingBeforePlayback']
                 child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token,
-                             QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
+                             QA_RESUME_ITEM=item['id'], QA_RESUME_REFERENCE_ITEM=reference_item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
                              QA_RESUME_ENGINE=engine, QA_RESUME_APP=args.app, QA_RESUME_SECONDS=str(args.resume_seconds), QA_RESUME_FORCE_AUDIO_CONVERSION=str(args.force_audio_conversion).lower(), QA_RESUME_EXPECTED_MODE=('audio-transcode' if args.force_audio_conversion else 'audio-transcode,remux') if args.audio_mode == 'ac3' else 'remux', QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
                 child['QA_RESUME_DIRECT_SWITCH'] = str(args.direct_switch).lower()
                 with (run / f'{engine}-private.log').open('w') as output:

@@ -15,7 +15,6 @@ test("cropped video uses its conventional quality tier", async ({ page }) => {
   await page.evaluate(() => {
     try { Object.defineProperty(window, "localStorage", { value: { getItem: () => null, setItem: () => {} } }); } catch {}
     class FakeHls {
-      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "switched", ERROR: "error" };
       static ErrorTypes = { NETWORK_ERROR: "network", MEDIA_ERROR: "media" };
       static isSupported = () => true;
