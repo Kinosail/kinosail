@@ -7,11 +7,13 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import com.kinosail.player.design.TvKinoTheme
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@SdkSuppress(minSdkVersion = 34)
 @RunWith(AndroidJUnit4::class)
 class PlaybackContentAccessibilityTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
