@@ -419,6 +419,7 @@ jobs:
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 2.5
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode none
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode ac3 --force-audio-conversion --decoded-audio
+          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --copied-clock-errors
       - name: Keep safe Subtitles copied-clock evidence
         if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -429,6 +430,8 @@ jobs:
             .verification/hls-resume-browser/*/receipt.json
             .verification/hls-resume-browser/*/chromium.json
             .verification/hls-resume-browser/*/*-comparison.json
+            .verification/hls-resume-browser/*/*-pending.png
+            .verification/hls-resume-browser/*/*-failed.png
           retention-days: 14
           if-no-files-found: error
       - name: Verify cold and damaged HLS cache reopen

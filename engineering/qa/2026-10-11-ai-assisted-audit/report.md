@@ -1734,3 +1734,48 @@ Fifteen rendered direct-playback controls pass. They are isolated fixture eviden
 The shared-probe package now has zero local lint findings. Whole shared-package lint still has 95 established findings.
 One retained Mac process-ownership check failed with EPERM during settlement; an unchanged retry passed. Its assertion remains strict.
 This remains an intermittent ownership boundary; cross-compilation is not Linux or Windows runtime proof.
+
+### Isolated MSE delivery verification
+
+Commit `25f34f766ad16c2bd07e31e9118fda5fab1e0dfc` contains the MSE repair without the unfinished shared-index/native-HLS work.
+Both apps' `make verify-changed` commands pass. Subtitles Go compilation and focused checks use their validated input cache.
+All seven real-server browser scenarios pass Chromium and WebKit: default and fractional resume, long resume, long direct-to-compatible switch, video-only, converted audio, and fractional converted audio.
+All fourteen browser cases match seven reference frames, resume correctly, and reach EOF. Four decoded-audio captures report zero sample lag.
+Every source remains unchanged and every Server process settles.
+The exact-revision manifest is `mse-delivery-browser-proof/manifest.json`, SHA-256 `328494a99e830582aac4b047da8b68f3da33e0ccfa07913bb852530d028a459c`.
+
+The exact-revision canonical `test-instance-check` also passes all 66 selected checks at `25f34f76`.
+Its receipt is `mse-delivery-container-proof/manifest.json`; the suite mixes populated journeys and rendered fixtures.
+The task-owned Compose project `kinosail-test-78590-27681` leaves no containers or volumes.
+A fresh worktree audit reports eleven unrelated inactive worktrees: nine clean with unique commits and two dirty. They were left untouched.
+
+A malformed-response rendering probe exposed queued autoplay after terminal rejection. The retained test fails before adding the Play-event guard.
+With that guard, rejection remains paused and visible after late readiness events. Both engines pass at 390×844, 1440×900, and 1920×1080.
+The probe uses separate contexts with service workers blocked so the deliberately malformed network response reaches each browser.
+Earlier reused-context probes sometimes played an unmodified response; those are unsuccessful fault-injection attempts, not passing rejection proof.
+Phone, desktop, and TV-sized pending/error screenshots were inspected. Failure removes the loading skeleton and clears `aria-busy`.
+This is isolated network-fault evidence using the production page, not unmodified-media E2E or physical-device acceptance.
+
+Post-merge main run `38229443046` failed Player's long-lookback tail restoration with `fragment_not_restored`.
+It restored segments 0 and 8 before the final missing fragment failed; process joining and source preservation passed.
+The unchanged Player production code passes that case locally in `hls-cold-suffix/20261012T100144Z`.
+The failed hosted jobs were restarted once. The original evidence remains retained, and the intermittent failure remains open.
+Container promotion and deployment for `5f169ee2` are not confirmed.
+
+### Final terminal-state verification
+
+At `76a7696204dd73ecaa0d0e7227f277d32b8489d2`, fractional converted-audio playback passes Chromium and WebKit, including decoded PCM comparison.
+The retained malformed-init journey passes both engines at all three viewport sizes.
+Late readiness and Play events leave playback paused, the error visible, the skeleton hidden, and `aria-busy` false.
+The harness blocks service workers only for these isolated malformed-response cases.
+The canonical Subtitles container suite passes all 66 checks again.
+Both apps' affected verification passes; unchanged Go checks use the validated input cache.
+The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers and volumes.
+
+| Exact-revision manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `mse-terminal-browser-proof/manifest.json` | Pass; source unchanged | `d0606ef32aa37a126658e1b2e18349711ed61f685d0bfd3440b4c52552b0aedd` |
+| `mse-terminal-container-proof/manifest.json` | Pass; source unchanged | `bf68a9f5c80a3f538007b6cbb562d105a6f2a2644e7abcb6f17d2fce8da35575` |
+
+These results supplement the fourteen successful playback cases at `25f34f76`.
+Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.

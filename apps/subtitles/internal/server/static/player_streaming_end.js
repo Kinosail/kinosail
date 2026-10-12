@@ -90,11 +90,12 @@
   });
   player.addEventListener("loadedmetadata", () => { if (!adaptiveActive) showPlaybackMode(false, false); });
   const showReadyPlaybackMode = () => {
-    if (copiedClockFailed) return;
+    if (copiedClockFailed) return requestPause();
     if (directSeeking) directSeeking = false;
     clearRecovery();
     showPlaybackMode(adaptiveActive, false);
   };
+  player.addEventListener("play", () => { if (copiedClockFailed) requestPause(); });
   player.addEventListener("canplay", showReadyPlaybackMode);
   player.addEventListener("playing", showReadyPlaybackMode);
   const directIsReachable = async () => {
