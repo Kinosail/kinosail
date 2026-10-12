@@ -112,6 +112,8 @@ type downloadPausePeer struct {
 	closed, removals int
 	generation       int
 	held             bool
+	refreshHold      chan struct{}
+	refreshWaits     int
 }
 
 func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -127,6 +129,9 @@ func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *ht
 		return
 	}
 	if request.URL.Path != "/api/v1/downloads/"+peer.job+"/file" {
+		if !peer.waitRefresh(request) {
+			return
+		}
 		peer.handler.ServeHTTP(writer, request)
 		return
 	}
@@ -148,6 +153,43 @@ func (peer *downloadPausePeer) ServeHTTP(writer http.ResponseWriter, request *ht
 		return
 	}
 	peer.serveHeldRange(writer, request, generation)
+}
+
+func (peer *downloadPausePeer) waitRefresh(request *http.Request) bool {
+	if request.URL.Path != "/offline-downloads" || request.Header.Get("Sec-Fetch-Dest") != "empty" {
+		return true
+	}
+	peer.mutex.Lock()
+	hold := peer.refreshHold
+	if hold != nil {
+		peer.refreshWaits++
+	}
+	peer.mutex.Unlock()
+	if hold == nil {
+		return true
+	}
+	select {
+	case <-hold:
+		return true
+	case <-request.Context().Done():
+		return false
+	}
+}
+
+func (peer *downloadPausePeer) serveRefreshControl(writer http.ResponseWriter, request *http.Request) {
+	peer.mutex.Lock()
+	defer peer.mutex.Unlock()
+	if request.Method == http.MethodPost {
+		if peer.refreshHold != nil {
+			close(peer.refreshHold)
+			peer.refreshHold = nil
+		}
+		if request.URL.Query().Get("refresh") == "hold" {
+			peer.refreshHold, peer.refreshWaits = make(chan struct{}), 0
+		}
+	}
+	writer.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(writer).Encode(map[string]int{"waiting": peer.refreshWaits})
 }
 
 func (peer *downloadPausePeer) serveHeldRange(writer http.ResponseWriter, request *http.Request, generation int) {
@@ -175,6 +217,10 @@ func (peer *downloadPausePeer) serveHeldRange(writer http.ResponseWriter, reques
 }
 
 func (peer *downloadPausePeer) serveStatus(writer http.ResponseWriter, request *http.Request) {
+	if request.URL.Query().Get("refresh") != "" {
+		peer.serveRefreshControl(writer, request)
+		return
+	}
 	peer.mutex.Lock()
 	defer peer.mutex.Unlock()
 	if request.Method == http.MethodPost {
