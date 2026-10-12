@@ -146,7 +146,7 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
   && responses.length > 0 && responses.every(response => response.status < 400);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
   capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
-  proofClass: 'Real authenticated Player process; synthetic source; unmodified watch page and HLS; original-file reference',
+  proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file reference',
   passed, failureClass, rows, matches, responses}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
 process.exitCode = passed ? 0 : 1;

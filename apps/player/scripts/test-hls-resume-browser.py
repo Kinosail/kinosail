@@ -18,6 +18,7 @@ from hls_followon_public import bounded_bytes, check, encoder_count
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--app', choices=['player', 'subtitles'], default='player')
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
 parser.add_argument('--long-remux', action='store_true', help='Use a 74.5-second source with irregular source keyframes')
@@ -31,6 +32,8 @@ parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
 parser.add_argument('--small-video', action='store_true', help='Verify original 32-by-32 video and bounded HLS quality paths')
 args = parser.parse_args()
+if args.app == 'subtitles' and (args.prepared or args.controls):
+    parser.error('prepared and metadata-control modes require Player')
 if args.small_video and (not args.prepared or args.controls):
     parser.error('--small-video requires --prepared without --controls')
 recovery = args.tail_recovery or args.first_recovery
@@ -53,12 +56,12 @@ run = ROOT / '.verification/hls-resume-browser' / time.strftime('%Y%m%dT%H%M%SZ'
 media = run / 'media'
 media.mkdir(parents=True)
 engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
-build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
+build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), f'./apps/{args.app}/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-           'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else '') + (' --small-video' if args.small_video else ''),
+           'app': args.app, 'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --app ' + args.app + ' --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else '') + (' --small-video' if args.small_video else ''),
            'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion, 'smallVideo': args.small_video,
-           'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
+           'boundary': f'Real loopback {args.app} Server, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
 
 
 def audio_boundaries(rendition):
@@ -145,7 +148,8 @@ try:
                 raise RuntimeError('fixture_boot_timeout')
             receipt['bootSeconds'] = time.monotonic() - boot
             api.authorize()
-            api.call('/api/v1/settings/subtitle-picker', 'PUT', {'limited': True})
+            if args.app == 'player':
+                api.call('/api/v1/settings/subtitle-picker', 'PUT', {'limited': True})
             item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Resume Sample')
             if args.prepared:
                 plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
