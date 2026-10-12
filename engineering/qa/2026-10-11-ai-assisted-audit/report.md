@@ -1579,3 +1579,36 @@ The regenerated Player architecture snapshot and source limits pass. The final i
 PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases and the source rejection controls successfully on Ubuntu. The job then reached its 30-minute job deadline during source-version verification. That cancellation also prevented its final proof and upload steps from completing; the required Player check remains failed.
 
 The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.
+
+### AQA-018 completed refill leaves a missing segment waiting
+
+Main run `38229443046` returned a missing tail fragment after recovering the first and middle fragments.
+A controlled real-Server replay at `4e0fbb21` reproduces the failure by holding the middle-refill process after its media output finishes.
+The final fragment is removed and requested while that producer still appears active.
+The request returns 404 after waiting; no replacement encoder starts.
+Source preservation and process joining pass. The receipt is `hls-refill-race/20261012T101415Z/receipt.json`.
+
+Before implementation, the retained `refill-completion` public journey covers this timing boundary.
+Failure inventory: an active producer may still create the file, may finish without it, may fail, or may be canceled.
+A replacement must preserve the original initialization and timeline, source frames, audio continuity, source identity, and shared encoder ownership.
+The successful producer-completion case must retry admission under the existing lock; canceled or failed requests must remain bounded.
+This process-lifetime injection is isolated timing evidence around a real Server and real media.
+The ordinary cold-suffix cases cover unmodified encoder execution.
+
+The first candidate passed the public regression but failed review: waiting inside `prepareSegment` also blocks background preparation monitoring.
+An existing live-producer adoption control hung, confirming that contract violation. That placement was withdrawn.
+Review also identified canceled-producer readmission and permanent-filesystem-error risks.
+The next candidate must keep background admission nonblocking and limit retries to successfully joined producers after a missing-file result.
+
+The revised HTTP wait keeps the exact producer selected under the existing admission lock.
+It permits at most one new admission after successful producer completion leaves the fragment missing.
+A distinct completion cause preserves prior cancellation atomically. Failed, canceled, or unobserved producers do not authorize another refill.
+The original nonblocking preparation operation remains available to background monitoring.
+Permanent filesystem errors do not enter recovery. Re-admission checks the current source and policy again.
+Independent review found no remaining concrete blockers in this version.
+
+Four retained public-handler controls prove inactive, seek-replaced, identity-replaced, and context-canceled producers do not start another encoder.
+Their E2E gap is precise ownership ordering while the producer join is held. The real-media suite does not deterministically arrange that ordering.
+The focused race run, including existing live-producer adoption checks, passes. Changed-code lint reports zero issues.
+The successful real-Server regression records one INFO recovery event with the request ID, playback session, and bounded `producer-joined` outcome.
+Credentials do not appear in its private log.
