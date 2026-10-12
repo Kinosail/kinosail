@@ -1506,3 +1506,20 @@ Independent review finds no blocker in the small-video repair or its regression 
 Focused playback package tests and changed-code lint pass. CI contracts pass 170 tests with five existing skips.
 The required Player local verification stops at the existing 95-issue shared-package lint baseline.
 That failure does not establish a passing complete local verification suite; hosted checks remain required.
+
+The final small-video browser repetition passes Chromium and WebKit at revision `e195724b`.
+Receipt `hls-resume-browser/20261012T061651Z/receipt.json` binds the completed EOF correction.
+Subtitles local `verify-changed` encounters the same 95-issue package-lint baseline.
+One later CI-contract run encounters an intermittent permission error while polling an owned process group.
+The unchanged nine-test Q09 subset passes immediately afterward; the original error remains retained for diagnosis.
+
+### AQA-017 — Subtitles compatible playback differs from the original frame clock
+
+A separate real Subtitles process plays the 32-by-32 source at the saved position and reaches EOF.
+Both Chromium and WebKit preserve dimensions, but only one of seven paused frame references matches the original.
+Chromium repeats the same six mismatches in a second fresh process. This is separate from the repaired quality-label rejection.
+Compatible duration is 32.083332 seconds in Chromium and 32.166667 seconds in WebKit; original duration is 32 seconds.
+The exact timing cause remains unverified. The strict browser comparison stays failed.
+Six invalid quality paths still return 404 without encoders or changed cache files. Sources and Servers settle unchanged.
+The private receipts are `subtitles-small-video-2/receipt.json` and `subtitles-small-video-3/receipt.json` in the campaign directory.
+An earlier harness attempt called a Player-only settings endpoint and received 404 before browser playback; it is not product evidence.
