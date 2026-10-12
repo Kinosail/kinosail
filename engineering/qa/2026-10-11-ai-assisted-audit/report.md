@@ -1594,3 +1594,15 @@ The workflow contract suite currently identifies a recurring macOS `killpg(...,0
 PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases and the source rejection controls successfully on Ubuntu. The job then reached its 30-minute job deadline during source-version verification. That cancellation also prevented its final proof and upload steps from completing; the required Player check remains failed.
 
 The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.
+
+### AQA-017 edit-list and early-playlist reproduction
+
+Linux Chromium also fails the retained 64.5-second Subtitles resume at `hls-resume-subtitles-linux/20261012T073619Z`. Its first two reference frames match; the next seek presents the following IDR instead. This is separate from the Mac browser result.
+
+The bounded private Hls probe at `hls-resume-browser/20261012T073551Z` shows actual buffered media ending at 74.48 seconds while fragment metadata ends at 76.56. The initialization has a 2.08-second MP4 edit in both tracks. The browser applies it; the pinned Hls sample timing does not. An append-only offset cannot reconcile these two clocks.
+
+A private pre-consumer experiment accounts for that measured edit in all track PTS/DTS, keyframe timing, initialization timing, and append timing. Both browsers pass seven reference frames and EOF at `hls-edit-list-complete-prototype/20261012T074833Z`. Its edit value is fixture-specific. It is diagnostic evidence, not a general implementation or native acceptance.
+
+The new retained `test-subtitles-copied-prefix.py` fails before the planned keyframe repair. Receipt `hls-copied-prefix/20261012T075127Z` proves the real encoder is stopped with one fragment while HTTP advertises eight. Future cuts differ from the source keys and from the eventual completed playlist. The source remains unchanged, the owned encoder joins, and the Server exits. This assertion requires a stable, accurate full-duration playlist during progressive encoding; removing future seeking would not pass it.
+
+The native repair needs certified source cuts and generated-media clock evidence. Independent design review identifies the existing Player H264 packet, IDR, configuration, and joined-process scanner as the reusable boundary. Player cache admission, recovery, and audio replay policy must remain app-owned. Full-source scanning cost and distant-segment delivery still require verification.

@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+"""Prove early Subtitles VOD cuts match the source keyframes and completed media.
+
+The installation FFmpeg seam paces and temporarily stops the real encoder after
+its first published fragment. No output is mocked or rewritten. Completed-file
+browser journeys miss speculative segment URLs exposed during this interval.
+"""
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import socket
+import subprocess
+import time
+from hls_timeline_fixture import check, fixture
+from hls_timeline_http import PublicServer, sha, source_state
+
+ROOT = Path(__file__).resolve().parents[3]
+RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
+RUN.mkdir(parents=True)
+receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+    'command': 'python3 apps/player/scripts/test-subtitles-copied-prefix.py', 'result': 'failed',
+    'boundary': 'Authenticated disposable Subtitles Server; real FFmpeg held at a public prefix; synthetic media.'}
+
+
+def wait_for(predicate, failure, seconds=25):
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if predicate():
+            return
+        time.sleep(.025)
+    raise RuntimeError(failure)
+
+
+def cuts(manifest):
+    return [(float(duration), name) for duration, name in re.findall(
+        rb'#EXTINF:([0-9.]+),\n(segment-[0-9]{5}\.m4s)', manifest)]
+
+
+try:
+    media = RUN / 'media'
+    media.mkdir()
+    source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
+                                         frames=24 * 32, extension='.mp4')
+    before = source_state(source)
+    build = ['go', 'build', '-p', '2', '-o', str(RUN / 'server'), './apps/subtitles/cmd/kinosail']
+    receipt['build'] = build
+    with (RUN / 'build-private.log').open('w') as log:
+        subprocess.run(build, cwd=ROOT, check=True, stdout=log, stderr=log, timeout=180)
+    real = shutil.which('ffmpeg')
+    check(real, 'ffmpeg_missing')
+    wrapper = RUN / 'held-ffmpeg'
+    wrapper.write_text('''#!/usr/bin/env python3
+import os,signal,subprocess,sys,time
+from pathlib import Path
+a=sys.argv[1:]
+real=''' + repr(real) + '''
+if '-hls_time' not in a: os.execv(real,[real]+a)
+a[a.index('-i'):a.index('-i')]=['-readrate','2']
+root=Path(__file__).parent
+child=subprocess.Popen([real]+a)
+def stop(signum,frame): raise SystemExit(1)
+signal.signal(signal.SIGTERM,stop)
+try:
+    manifest=Path(a[-1])
+    limit=time.monotonic()+90
+    while child.poll() is None and time.monotonic()<limit:
+        if manifest.exists() and b'segment-00000.m4s' in manifest.read_bytes():
+            child.send_signal(signal.SIGSTOP)
+            (root/'held').write_text(str(child.pid))
+            while not (root/'release').exists() and time.monotonic()<limit: time.sleep(.01)
+            child.send_signal(signal.SIGCONT)
+            break
+        time.sleep(.005)
+    sys.exit(child.wait(timeout=30))
+finally:
+    if child.poll() is None:
+        child.send_signal(signal.SIGCONT)
+        child.terminate()
+        try: child.wait(timeout=3)
+        except subprocess.TimeoutExpired: child.kill(); child.wait()
+    (root/(str(child.pid)+'.joined')).write_text('joined')
+''')
+    wrapper.chmod(0o700)
+    receipt['wrapperSHA256'] = sha(wrapper)
+    with socket.socket() as listener:
+        listener.bind(('127.0.0.1', 0))
+        port = listener.getsockname()[1]
+    api = PublicServer(f'http://localhost:{port}')
+    env = dict(os.environ, KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=api.url,
+        KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(RUN / 'config'),
+        KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(RUN / 'cache'),
+        KINOSAIL_BACKUP_DIR=str(RUN / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-prefix-key',
+        KINOSAIL_FFMPEG=str(wrapper))
+    with (RUN / 'server-private.log').open('w') as log:
+        server = subprocess.Popen([str(RUN / 'server')], cwd=ROOT, env=env, stdout=log, stderr=log)
+        try:
+            api.authorize()
+            item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Prefix Sample')
+            plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
+            check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_must_copy')
+            status, master, _ = api.http(plan['compatible'])
+            check(status == 200, 'master_status')
+            rendition = re.findall(rb'^([1-9][0-9]*p/index\.m3u8)$', master, re.M)
+            check(len(rendition) == 1, 'one_variant')
+            path = plan['compatible'].removesuffix('index.m3u8') + rendition[0].decode()
+            wait_for(lambda: (RUN / 'held').exists(), 'producer_not_held')
+            physical = next((RUN / 'cache').glob('*/' + rendition[0].decode()))
+            prefix = physical.read_bytes()
+            check(len(cuts(prefix)) == 1 and abs(cuts(prefix)[0][0] - 4) < .1
+                  and b'#EXT-X-ENDLIST' not in prefix, 'held_prefix_shape')
+            held_pid = (RUN / 'held').read_text()
+            joined = RUN / (held_pid + '.joined')
+            receipt['heldProcessState'] = subprocess.check_output(['ps', '-o', 'state=', '-p',
+                (RUN / 'held').read_text()], text=True).strip()
+            status, public, _ = api.http(path)
+            receipt['prefixStatus'] = status
+            receipt['prefixCounts'] = {'physical': len(cuts(prefix)), 'public': len(cuts(public))}
+            receipt['inventedEnd'] = b'#EXT-X-ENDLIST' in public
+            expected = [4, 6, 4, 7, 6, 4, 1]
+            receipt['accurateFutureCuts'] = [round(x, 6) for x, _ in cuts(public)] == expected
+            receipt['stableTargetDuration'] = b'#EXT-X-TARGETDURATION:7\n' in public
+            receipt['producerHeld'] = not joined.exists()
+            receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
+            (RUN / 'public-prefix.m3u8').write_bytes(public)
+            (RUN / 'release').touch()
+            wait_for(lambda: joined.exists(), 'producer_not_joined')
+            wait_for(lambda: b'#EXT-X-ENDLIST' in physical.read_bytes(), 'cache_not_complete')
+            status, completed, _ = api.http(path)
+            receipt['completedCuts'] = [duration for duration, _ in cuts(completed)]
+            receipt['completedMatchesCache'] = cuts(completed) == cuts(physical.read_bytes())
+            check(status == 200 and b'#EXT-X-ENDLIST' in completed, 'completed_status')
+            receipt['completedKeyframeCuts'] = [round(x, 6) for x in receipt['completedCuts']] == expected
+            receipt['immutablePlaylist'] = cuts(public) == cuts(completed)
+            check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
+                  and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
+                  and receipt['producerHeld'] and receipt['completedMatchesCache'], 'copied_timeline_must_match_source_keys')
+        finally:
+            (RUN / 'release').touch()
+            server.terminate()
+            try:
+                server.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                server.kill()
+                server.wait()
+            receipt.update(sourceUnchanged=source_state(source) == before,
+                           serverSettled=server.poll() is not None,
+                           encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
+    check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
+    receipt['result'] = 'passed'
+except Exception as error:
+    receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
+finally:
+    receipt['artifactsSHA256'] = {p.name: sha(p) for p in RUN.iterdir() if p.is_file() and p.name != 'server'}
+    (RUN / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'receipt': str(RUN / 'receipt.json'), 'result': receipt['result']}), flush=True)
+raise SystemExit(0 if receipt['result'] == 'passed' else 1)
