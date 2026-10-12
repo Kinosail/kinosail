@@ -42,14 +42,29 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   await expect(page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true})).toBeVisible();
   const media = page.locator("video");
   await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
-  // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
-  await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-  await startPlaying(media);
-  await media.evaluate((video: HTMLVideoElement) => video.pause());
-  await expect(media).toHaveJSProperty("paused", true);
-  await startPlaying(media);
-  await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
+  let startupPhase = "pending-media";
+  try {
+    // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
+    await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
+    startupPhase = "first-start";
+    await startPlaying(media);
+    await media.evaluate((video: HTMLVideoElement) => video.pause());
+    await expect(media).toHaveJSProperty("paused", true);
+    startupPhase = "resume";
+    await startPlaying(media);
+    await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
+  } catch (error) {
+    const mediaState = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+      duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended,
+      seeking: video.seeking, readyState: video.readyState, networkState: video.networkState,
+      errorCode: video.error?.code ?? null, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+      buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])})).catch(() => ({unavailable: true}));
+    await info.attach("late-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, watched, cancelledAgain, phase: startupPhase, media: mediaState,
+      boundary: "Initial decoded-start setup before held navigation; no source URL or error text"}), contentType: "application/json"});
+    throw error;
+  }
   let release!: () => void, committed = false;
   const pending = new Promise<void>(resolve => {release = resolve;});
   const latePositions: string[] = [];

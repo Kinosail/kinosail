@@ -39,10 +39,10 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS332 and tvOS313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS 332 and tvOS 313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
-| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Required tooling passes; package lint and Player deep Go remain failed; current Firefox/WebKit failures remain open |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Nine protected QA PRs merged; main156 publication passes; scanned Nox Player3947 health and private-network TLS passed; current-main publication, Subtitles deployment and public-gateway acceptance remain |
+| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go coverage passes at `6008fa77`; local lint debt, hosted WebKit startup and current-main cold-suffix failures remain open |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS verified; Subtitles runs `6f41117d`; main `5f169ee2` CI blocks the next rollout |
 
 ## Iteration 1 results
 
@@ -1617,3 +1617,106 @@ changes only that count. The Subtitles snapshot remains byte-identical, and the
 architecture contract passes. Deep run `38226919051` at `9d4bca82` is cancelled
 after its tooling failure; it provides no complete acceptance result. A fresh
 exact-revision deep run follows the snapshot checkpoint.
+
+## Deep run at `6008fa77` — coverage passes; one WebKit startup flake remains
+
+[Deep run 38227963067](https://github.com/Kinosail/kinosail/actions/runs/38227963067)
+completes at `6008fa77c6a9f7dbf8aee27e25dab224c1d0f1d3`.
+Full module coverage reports Player 89.8% and Subtitles 91.6%. Both unchanged
+coverage gates pass. Both Go jobs pass, with no race warning or panic in their
+collected logs. Passing individual tests are not named in those logs; they do
+not independently establish whether the new HEVC test executed or skipped.
+The retained local HEVC decoding receipts remain the explicit per-test proof.
+
+Player Chromium passes 862 executions and Firefox 858. WebKit passes 855, with
+one flaky case. Primary Player selections also skip 353, 357 and 359 cases,
+respectively. Subtitles passes 99 cases in each of the three engines, with no
+skips or flakes. The previously persistent WebKit Mark unwatched cases pass
+their first attempts. The remaining flaky Mark watched case passes its retry
+after timing out during decoded resume setup, before held navigation begins.
+The strict hosted flaky-test policy correctly leaves that job failed.
+
+The failed screenshot shows “Playback interrupted.” Its captured HLS requests
+return 200. The first decoded start passes; the immediate pause and second start
+fail to establish motion. The trace omits media bodies and the fixture captures
+no initial-setup media snapshot. A successful HTTP response does not establish
+valid media bytes or a working decoder. No root cause is claimed from this trace.
+
+Twelve diagnostic repetitions pass without retries on Linux ARM64. They record
+actual native events and numeric state without URLs or remote error text.
+One initial selector matches no tests and is excluded. A failure-only capture
+then records startup phase, native error code, decoded frames and buffered
+ranges. A synthetic resume denial remains failed and produces that attachment.
+The same retained capture passes 15 WebKit, five Chromium and five Firefox
+watched-control executions after reconciliation with main. Deadlines, retry counts and motion assertions remain
+unchanged. These passes do not close the hosted AMD64 interruption.
+
+The native artifact confirms iOS 332 passes with one skip, and tvOS 313 passes
+with one skip. Android compilation and both apps' AMD64/ARM64 container jobs
+also pass. Native package tests and compilation remain separate from physical
+devices, real Watch replies and production media journeys.
+
+Private `deep-6008-go`, `deep-6008-webkit`,
+`deep-6008-remaining-browsers` and `deep-6008-native-contracts` retain immutable
+archives, parsed reports and checksums. `watched-initial-*` receipts retain the
+diagnostic, rejected-start control and final test sources.
+
+## Matched native WebKit decoder controls
+
+The same silent and AAC MP4 bytes run through the same minimal Go HTTP server
+and plain video page on macOS ARM64 and Linux ARM64. Neither page includes
+Kinosail playback JavaScript, authentication or service workers.
+All six macOS attempts advance decoded frames and media time. Linux passes one
+silent attempt and fails the other five attempts, including all three AAC runs.
+Failed attempts stop near 0.16 seconds with full buffered media and no native
+error. Inspected synthetic captures confirm the visible frame difference.
+
+This narrows the direct-MP4 freeze to a browser/media environment boundary.
+It does not identify the cause or establish that the separate hosted HLS error
+has the same cause. Source, exact media hashes, browser versions, commands and
+receipts remain under private `native-decoder-matched-controls`.
+The owned server and disposable container are removed. Host trust is unchanged.
+
+## Verified Player deployment; newer main remains blocked
+
+Player main `a2d5f2b1` passes hosted CI and production-image promotion.
+The independently downloaded GHCR manifest matches its registry digest,
+`sha256:4951917f9683ab36889191f5e89889a1a82e79ded80e4e0e8611b8420efbd1aa`.
+Both platform image configurations name the exact source revision. GitHub
+attestation verification passes with the expected main source and hosted signer.
+
+The existing deployment script builds, scans and deploys its own ARM image to
+Nox. Independent inspection confirms revision `a2d5f2b1`, running and healthy,
+with a passing in-container health check. That local image is
+`sha256:5ad3b43422754b2fb3cf181e80527e5cf71fa4a176f401ca2b2ef03d2bc613fd`;
+it is distinct from the published GHCR image. The scan retains one Critical
+finding, CVE-2026-6653, and no fixable High or Critical finding under existing
+policy. Runtime linking confirms the installed libxml2 reaches the deployed
+media tools; vulnerable-function reachability remains unproven.
+
+Fresh anonymous HTTPS checks require normal CA and hostname validation and
+TLS 1.3. Root, health, Settings and settings API return 303, 200, 404 and 403.
+Their responses contain CSP and lack HSTS, as previously recorded. A system
+curl build cannot request TLS 1.3 and is excluded; the successful Python client
+uses default CA trust and hostname checks. This proves private-network transport,
+not authenticated production flows or public-gateway acceptance.
+
+Subtitles remains healthy at `6f41117d`. A proposed update stops before building
+or changing Nox because main advances to `5f169ee2`. Its main run
+[38229443046](https://github.com/Kinosail/kinosail/actions/runs/38229443046)
+fails cold-suffix lookback recovery with `fragment_not_restored`; the other 17
+fault cases pass. The focused macOS replay and three Linux ARM64 replays pass. Linux uses the
+hosted pinned Jellyfin FFmpeg 8.1.3 package and an attested host cross-compiled
+Server binary; its runtime compiler copy is explicit. Recovery diagnostics now
+record final HTTP status, fragment existence, response size and owned encoder
+completion before the existing failure check. Native hosted AMD64 diagnosis and
+current-main publication remain open. Reconciliation regenerates the single
+conflicting Code Atlas snapshot from both source changes; its contract passes.
+
+Private `main-a2d5-publication`, `nox-main-a2d5-*` and `main-5f-hls-failure`
+retain exact revision, manifests, scan evidence, health, transport and failure
+receipts. No production data, gateway policy or unrelated checkout is reset.
+
+After reconciliation, the real HEVC and copied-fragment recovery Go journeys
+pass with race detection. The full CI contract suite and source limits pass.
+The original hosted failures remain retained; no passing replay erases them.

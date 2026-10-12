@@ -158,6 +158,8 @@ def exercise(source_fixture, source_facts, fault):
                     preceding = fragment_facts(rendition, rendition / f'segment-{number-1:05d}.m4s') if number else None
                     fragment.unlink()
                     status, data, _ = api.http(base + fragment.name)
+                    case.setdefault('recoveryAttempts', []).append({'segment': number, 'status': status,
+                        'fragmentExists': fragment.exists(), 'bodyBytes': len(data), 'encoderSettled': settled(directory, 'encoder-pids')})
                     check(status == 200 and fragment.exists(), 'fragment_not_restored')
                     current = fragment_facts(rendition, fragment)
                     check(current['videoHashes'] == previous['videoHashes'] and current['videoPTS'] == previous['videoPTS'], 'fragment_video_changed')
