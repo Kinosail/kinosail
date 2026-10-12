@@ -1183,3 +1183,13 @@ PR #565 incorporates main `013d5247` with merge `13099b04`; PR #569 incorporates
 Longer-remux merge checkpoint `9f8d2facc0d77e03602ebb501bd9928a44849975` includes both updates.
 The affected-app verification passes again after reconciliation, reusing unchanged source-check results.
 Required hosted checks still control integration. No branch protection or certificate verification was bypassed.
+
+### Combined resume integration and current main reconciliation
+
+PR #570 now targets main and includes the reviewed cold-resume, audio-clock, and longer-remux commits.
+PRs #565 and #569 remain open until fetched ancestry proves those commits reached main through #570.
+Independent review of `1ba568395b41fabe4f6c285ddc7a551bc41c2fae` finds no concrete integration blocker.
+That checkpoint includes main `394736cb740fc6873aa6e94b41e22dc797155529`.
+The hosted tooling job identifies stale architecture metadata after main changed the Show handler.
+Regenerating the Player snapshot repairs the mismatch; both architecture checks, source limits, and whitespace checks pass.
+This repairs generated documentation only. Required hosted checks still control the merge.
