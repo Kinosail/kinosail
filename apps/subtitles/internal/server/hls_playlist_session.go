@@ -8,8 +8,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-
-	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 )
 
 const (
@@ -19,7 +17,7 @@ const (
 	maxHLSPlaylistOutputBytes = 2 << 20
 )
 
-func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Request, file *os.File, duration float64) {
+func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Request, file *os.File, duration float64, plan *copiedHLSPlan) {
 	playID := jellyfinPlaySessionID(request)
 	manifest, err := io.ReadAll(io.LimitReader(file, maxHLSPlaylistBytes+1))
 	if err != nil {
@@ -36,7 +34,12 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 	if playID == "" || validPlaybackSession(playID) {
-		validated, _ = hlsmanifest.CompleteVOD(validated, duration, 4)
+		validated, _, err = plan.project(validated, duration)
+		if err != nil {
+			logHLSPlanRejection(request, err)
+			localizedError(writer, request, "playlist timeline is invalid", http.StatusServiceUnavailable)
+			return
+		}
 	}
 	rewritten, err := hlsPlaylistWithSession(validated, playID)
 	if err != nil {

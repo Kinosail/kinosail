@@ -1,10 +1,9 @@
-package server
+package mediaprobe
 
 import (
 	"context"
 	"errors"
 	"io"
-	"log/slog"
 	"os/exec"
 	"runtime"
 	"syscall"
@@ -21,13 +20,13 @@ type copiedHLSProbe interface {
 
 func copiedHLSProbeContext(parent context.Context) (context.Context, context.CancelFunc, error) {
 	if parent.Err() != nil {
-		return nil, nil, errCopiedHLSIndex
+		return nil, nil, parent.Err()
 	}
 	if deadline, ok := parent.Deadline(); ok {
 		// Reserve settlement within the caller's existing deadline, exactly once.
 		deadline = deadline.Add(-100 * time.Millisecond)
 		if !time.Now().Before(deadline) {
-			return nil, nil, errCopiedHLSIndex
+			return nil, nil, context.DeadlineExceeded
 		}
 		ctx, cancel := context.WithDeadline(parent, deadline)
 		return ctx, cancel, nil
@@ -62,18 +61,24 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 	}
 }
 
-func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, waitErr, settleErr error) error {
+func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, waitErr, settleErr error) error {
 	stopErr := watch.terminateErr
 	// Darwin can report EPERM for an exited, zombie-only group. Acceptance
-	// still requires clean scanning, a successful Wait and proven settlement.
-	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.cleanCompletion(ctx, scanErr, waitErr, settleErr) {
+	// still requires an active context, successful observation and Wait, and
+	// proven settlement. Metadata rejection remains independent of ownership.
+	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.lifecycleCompleted(ctx, waitErr, settleErr) {
 		stopErr = nil
 	}
-	return errors.Join(watch.result, stopErr, watch.observeErr)
+	var exit *exec.ExitError
+	unknownWait := waitErr != nil && !errors.As(waitErr, &exit) && !errors.Is(waitErr, errCopiedHLSIndex)
+	if stopErr != nil || watch.observeErr != nil || settleErr != nil || unknownWait {
+		return errors.Join(ErrProbeLifecycle, watch.result, stopErr, watch.observeErr, settleErr, waitErr)
+	}
+	return watch.result
 }
 
-func (watch *copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
-	return ctx.Err() == nil && scanErr == nil && watch.result == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
+func (watch *copiedHLSProbeWatch) lifecycleCompleted(ctx context.Context, waitErr, settleErr error) bool {
+	return ctx.Err() == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
 }
 
 func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSProbe, output io.Closer) bool {
@@ -104,7 +109,7 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 	for {
 		settled, err := probe.settled()
 		if err != nil {
-			result = errCopiedHLSIndex
+			result = errors.Join(ErrProbeLifecycle, err)
 		}
 		if settled {
 			break
@@ -114,15 +119,19 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 		time.Sleep(time.Millisecond)
 	}
 	if deadline, ok := parent.Deadline(); ok && time.Now().After(deadline) {
-		slog.ErrorContext(parent, "copied probe settlement exceeded deadline",
-			"request_id", requestActivityID(parent), "playback_session", requestPlaybackSession(parent),
+		probeLogger(parent).ErrorContext(parent, "copied probe settlement exceeded deadline",
 			"failure_class", "copied_probe_settlement_overrun")
-		return errCopiedHLSIndex
+		return errors.Join(ErrProbeLifecycle, result)
 	}
 	return result
 }
 
 func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, waitErr, settleErr error) {
+	// Rejected metadata and cancelled optional scans can intentionally stop the
+	// process. Only unexpected exits and uncertified ownership need an error.
+	if !errors.Is(watchErr, ErrProbeLifecycle) && (ctx.Err() != nil || scanErr != nil || waitErr == nil) {
+		return
+	}
 	var errno syscall.Errno
 	errnoKnown := errors.As(watchErr, &errno)
 	exitCode, exitKnown := 0, waitErr == nil
@@ -130,8 +139,7 @@ func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, wait
 	if errors.As(waitErr, &exit) {
 		exitCode, exitKnown = exit.ExitCode(), true
 	}
-	slog.ErrorContext(ctx, "copied probe completion failed",
-		"request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx),
+	probeLogger(ctx).ErrorContext(ctx, "copied probe completion failed",
 		"failure_class", "copied_probe_completion", "scan_failed", scanErr != nil,
 		"watch_failed", watchErr != nil, "watch_errno", int(errno), "watch_errno_known", errnoKnown,
 		"wait_failed", waitErr != nil, "wait_exit_code", exitCode, "wait_exit_known", exitKnown,

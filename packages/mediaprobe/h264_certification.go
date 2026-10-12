@@ -1,36 +1,38 @@
-package server
+package mediaprobe
 
 import (
 	"context"
+	"log/slog"
 	"math"
 	"strconv"
 	"strings"
-
-	"github.com/MikeO7/kinosail/packages/library"
 )
 
 // A key flag alone may be a recovery point. Filtered IDR packets must match the
 // complete demux key map in order; uncertain boundaries cannot be prepared.
-func (manager *hlsManager) certifyCopiedHLS(ctx context.Context, item library.Item, timeline *copiedHLSTimeline) error {
+func certifyH264(ctx context.Context, logger *slog.Logger, ffmpeg, path string, timeline *h264Timeline) error {
 	proof := copiedHLSIDRProof{timeline: timeline}
-	arguments := copiedHLSCertificationArguments(item, timeline, "filter_units=pass_types=5")
-	err := copiedHLSLines(ctx, manager.ffmpeg, arguments, 1<<20, maximumCopiedHLSKeys+32, proof.line)
-	if err != nil || proof.count != len(timeline.Keys) {
+	arguments := copiedHLSCertificationArguments(path, timeline, "filter_units=pass_types=5")
+	err := ProbeLines(ctx, logger, ffmpeg, arguments, 1<<20, maximumH264Keys+32, proof.line)
+	if err != nil {
+		return err
+	}
+	if proof.count != len(timeline.Keys) {
 		return errCopiedHLSIndex
 	}
 	return nil
 }
 
 type copiedHLSIDRProof struct {
-	timeline *copiedHLSTimeline
+	timeline *h264Timeline
 	base     float64
 	count    int
 }
 
 func (proof *copiedHLSIDRProof) line(line string) error {
 	if strings.HasPrefix(line, "#tb 0: ") {
-		fields := copiedHLSFields("time_base=" + strings.TrimPrefix(line, "#tb 0: "))
-		probe := copiedHLSTimeline{}
+		fields := CompactFields("time_base=" + strings.TrimPrefix(line, "#tb 0: "))
+		probe := h264Timeline{}
 		end := int64(0)
 		if err := probe.packet("time_base="+fields["time_base"], &end); err != nil {
 			return err
@@ -58,22 +60,25 @@ func (proof *copiedHLSIDRProof) packet(line string) error {
 	return nil
 }
 
-func (manager *hlsManager) certifyCopiedHLSConfiguration(ctx context.Context, item library.Item, timeline *copiedHLSTimeline) error {
+func certifyH264Configuration(ctx context.Context, logger *slog.Logger, ffmpeg, path string, timeline *h264Timeline) error {
 	proof := copiedHLSConfigurationProof{maximum: len(timeline.Keys)}
-	arguments := copiedHLSCertificationArguments(item, timeline, "h264_mp4toannexb,filter_units=pass_types=7|8")
-	err := copiedHLSLines(ctx, manager.ffmpeg, arguments, 1<<20, maximumCopiedHLSKeys+32, proof.line)
-	if err != nil || proof.count == 0 {
+	arguments := copiedHLSCertificationArguments(path, timeline, "h264_mp4toannexb,filter_units=pass_types=7|8")
+	err := ProbeLines(ctx, logger, ffmpeg, arguments, 1<<20, maximumH264Keys+32, proof.line)
+	if err != nil {
+		return err
+	}
+	if proof.count == 0 {
 		return errCopiedHLSIndex
 	}
 	return nil
 }
 
-func copiedHLSCertificationArguments(item library.Item, timeline *copiedHLSTimeline, filter string) []string {
+func copiedHLSCertificationArguments(path string, timeline *h264Timeline, filter string) []string {
 	arguments := []string{"-nostdin", "-v", "error", "-threads", "1", "-copyts"}
 	if timeline.point(0) > 0 {
-		arguments = append(arguments, "-seek_timestamp", "1", "-ss", copiedHLSInputTime(timeline.point(0)))
+		arguments = append(arguments, "-seek_timestamp", "1", "-ss", h264Time(math.Floor(timeline.point(0)*1_000_000)/1_000_000))
 	}
-	arguments = append(arguments, "-i", item.Path, "-map", "0:v:0", "-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1")
+	arguments = append(arguments, "-i", path, "-map", "0:v:0", "-an", "-sn", "-dn", "-c:v", "copy", "-copytb", "1")
 	if timeline.point(0) > 0 {
 		arguments = append(arguments, "-copypriorss", "0")
 	}

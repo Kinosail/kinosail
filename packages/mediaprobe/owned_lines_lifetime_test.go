@@ -1,7 +1,8 @@
-package server
+package mediaprobe
 
 import (
 	"context"
+	"errors"
 	"os"
 	"strconv"
 	"strings"
@@ -30,12 +31,15 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
-			verifyCopiedHLSProbeLifetime(t, executable, test.mode, test.reject, test.cancel, test.wantError)
+			err := verifyCopiedHLSProbeLifetime(t, executable, test.mode, test.reject, test.cancel, test.wantError)
+			if test.cancel && !errors.Is(err, context.Canceled) {
+				t.Fatal("configured probe lost cancellation after joining its descendants")
+			}
 		})
 	}
 }
 
-func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) {
+func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) error {
 	t.Helper()
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
@@ -45,7 +49,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if mode == "bytes" {
 		maximumBytes, maximumLines = 64, 2
 	}
-	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
 	processes, markers, visits := marker.processes, marker.markers, marker.visits
 	t.Cleanup(func() { settleCopiedHLSProbeFixture(t, started, processes) })
 	settled := copiedHLSProbeSettled(processes)
@@ -61,6 +65,7 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
 	}
+	return err
 }
 
 type copiedHLSProbeMarkers struct {
@@ -115,7 +120,7 @@ func TestCopiedHLSLinesHealthy(t *testing.T) {
 			ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 			defer cancel()
 			lines := 0
-			err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments(mode), 1024, 1, func(line string) error {
+			err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), 1024, 1, func(line string) error {
 				if line != "probe-ready" {
 					t.Logf("nonkey owned probe healthy unexpected-line length=%d framed-prefix=%t pass-prefix=%t run-prefix=%t", len(line), strings.HasPrefix(line, string([]byte{0x16})), strings.HasPrefix(line, "PASS"), strings.HasPrefix(line, "=== "))
 					return errCopiedHLSIndex
@@ -136,12 +141,15 @@ func TestCopiedHLSLinesCancelledBeforeStart(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 	lines := 0
-	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
+	err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
 		lines++
 		return nil
 	})
 	if err == nil || lines != 0 {
 		t.Fatal("cancelled configured probe produced accepted output or succeeded")
+	}
+	if !errors.Is(err, context.Canceled) {
+		t.Fatal("pre-start cancellation was classified as optional metadata failure")
 	}
 }
 
@@ -186,7 +194,7 @@ func TestCopiedHLSLinesMissingExecutable(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
 	lines := 0
-	err = copiedHLSLines(ctx, missing, nil, 1024, 1, func(string) error {
+	err = ProbeLines(ctx, nil, missing, nil, 1024, 1, func(string) error {
 		lines++
 		return nil
 	})
@@ -200,7 +208,7 @@ func TestCopiedHLSLinesInsufficientBudget(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 	lines := 0
-	err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
+	err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(string) error {
 		lines++
 		return nil
 	})
@@ -214,7 +222,7 @@ func TestCopiedHLSLinesImmediateExit(t *testing.T) {
 	for range 16 {
 		ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 		lines := 0
-		err := copiedHLSLines(ctx, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(line string) error {
+		err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments("healthy"), 1024, 1, func(line string) error {
 			if line != "probe-ready" {
 				return errCopiedHLSIndex
 			}

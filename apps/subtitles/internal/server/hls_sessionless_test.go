@@ -17,7 +17,7 @@ func TestSessionlessHLSPlaylist(t *testing.T) {
 			t.Fatal(err)
 		}
 		defer file.Close()
-		serveHLSPlaylistWithSession(writer, request, file, duration)
+		serveHLSPlaylistWithSession(writer, request, file, duration, nil)
 		return true
 	})
 }
@@ -35,7 +35,7 @@ func TestSessionlessHLSProjectionRetainsOutputBoundsAndInvalidSessionFallback(t 
 	defer file.Close()
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/item/index.m3u8", nil)
-	serveHLSPlaylistWithSession(response, request, file, 20000)
+	serveHLSPlaylistWithSession(response, request, file, 20000, nil)
 	if response.Code != http.StatusServiceUnavailable {
 		t.Fatalf("oversized projection status = %d", response.Code)
 	}
@@ -47,7 +47,7 @@ func TestSessionlessHLSProjectionRetainsOutputBoundsAndInvalidSessionFallback(t 
 	}
 	request.URL.RawQuery = "playSessionId=invalid%20session"
 	response = httptest.NewRecorder()
-	serveHLSPlaylistWithSession(response, request, file, 20000)
+	serveHLSPlaylistWithSession(response, request, file, 20000, nil)
 	if response.Code != http.StatusOK || response.Body.String() != manifest {
 		t.Fatalf("invalid session fallback changed: %d %q", response.Code, response.Body.String())
 	}

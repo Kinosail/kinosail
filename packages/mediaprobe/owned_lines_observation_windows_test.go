@@ -1,4 +1,4 @@
-package server
+package mediaprobe
 
 import (
 	"os"
