@@ -36,6 +36,7 @@ test("actual Go phone: fictional download controls and ready Play link remain re
   test.setTimeout(45_000);
   await page.setViewportSize({width: 390, height: 844});
   const peer = await downloadPeer();
+  let releaseRefresh = () => {};
   try {
     const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await info.attach("served-hit-target-bundle", {body: JSON.stringify(served), contentType: "application/json"});
@@ -63,11 +64,35 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);
     await expect(page.locator("[data-offline-library] h2")).toHaveText("Fictional Range Fixture");
     await info.attach("phone-play-pointer-navigation", {body: JSON.stringify({pathname: new URL(page.url()).pathname, selectedJob: new URL(page.url()).searchParams.get("job"), decodingClaim: false}), contentType: "application/json"});
+    // Hold a real live refresh until the saved Play link has keyboard focus.
+    // The Server cannot know device storage and returns this link hidden.
+    let refreshReady = 0;
+    const refreshBarrier = new Promise<void>(resolve => { releaseRefresh = resolve; });
+    await page.route(`${peer.origin}/offline-downloads`, async route => {
+      if (route.request().isNavigationRequest()) return route.continue();
+      const response = await route.fetch();
+      expect(response.status()).toBe(200);
+      refreshReady++;
+      await refreshBarrier;
+      await route.fulfill({response});
+    });
     // Reload the public Server page; this does not claim actual BFCache admission.
     await page.goto(`${peer.origin}/offline-downloads`);
     const again = page.locator("[data-download-play]");
     await expect(again).toBeVisible();
-    await centerAndFocus(again);
+    try {
+      await expect.poll(() => refreshReady).toBeGreaterThan(0);
+      await centerAndFocus(again);
+      await expect(again).toBeFocused();
+      await page.screenshot({path: info.outputPath("phone-play-refresh-pending.png")});
+      const beforeRefresh = await again.elementHandle();
+      releaseRefresh();
+      await expect.poll(() => beforeRefresh!.evaluate(element => element.isConnected)).toBe(false);
+      await expect(again).toBeVisible();
+      await expect(again).toBeFocused();
+      await page.screenshot({path: info.outputPath("phone-play-refresh-loaded.png")});
+      await beforeRefresh!.dispose();
+    } finally { releaseRefresh(); }
     expect(await hitTarget(again, "phone-play-keyboard-hit-target", info)).toMatchObject({centerInViewport: true, receivesPointer: true, focused: true});
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);
@@ -75,5 +100,5 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     expect((await peer.stats()).ranges).toEqual([0, downloadChunk, downloadChunk, downloadChunk * 2]);
     expect((await peer.stats()).removals).toBe(0);
     await info.attach("phone-play-keyboard-navigation", {body: JSON.stringify({pathname: new URL(page.url()).pathname, selectedJob: new URL(page.url()).searchParams.get("job"), peer: await peer.stats(), decodingClaim: false}), contentType: "application/json"});
-  } finally { await context.close(); await peer.close(); }
+  } finally { releaseRefresh(); await context.close(); await peer.close(); }
 });
