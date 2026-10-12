@@ -1836,3 +1836,10 @@ With the overlay, this stronger oracle matches all seven frames and resumes at 1
 Receipt: `hls-native-frame-prototype-prefix/20261012T103849Z`.
 The callback semantics follow the [WICG video-frame callback specification](https://wicg.github.io/video-rvfc/).
 The retained driver is replayed against unmodified production behavior before implementing the cut-map repair.
+The full hosted Go suite at `5398b5a4` found a regression in existing rendition-publication recovery.
+`TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication` reproduces it locally before the fix.
+A temporarily missing playlist prevents producer selection; that must retain the existing bounded file wait.
+The HTTP helper now waits under the request deadline when no producer was selected.
+This path cannot authorize another admission. Permanent errors and cancellation still stop it.
+The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
+A second independent review found no concrete blocker. Hosted checks must pass again after publication.
