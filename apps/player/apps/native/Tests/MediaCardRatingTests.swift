@@ -24,7 +24,9 @@ final class MediaCardRatingTests: XCTestCase {
                     let expected = try render(unrated)
                     let actualPixels = try pixels(actual)
                     let expectedPixels = try pixels(expected)
-                    if actual.width != expected.width || actual.height != expected.height || actualPixels != expectedPixels {
+                    let actualHasPixels = stride(from: 3, to: actualPixels.count, by: 4).contains { actualPixels[$0] != 0 }
+                    let expectedHasPixels = stride(from: 3, to: expectedPixels.count, by: 4).contains { expectedPixels[$0] != 0 }
+                    if actual.width != expected.width || actual.height != expected.height || actualPixels != expectedPixels || !actualHasPixels || !expectedHasPixels {
                         for (label, image, rgba) in [("rated", actual, actualPixels), ("unrated", expected, expectedPixels)] {
                             let name = "\(kind)-\(landscape)-\(size)-\(label)-\(image.width)x\(image.height)"
                             let rendered = XCTAttachment(image: UIImage(cgImage: image))
@@ -39,6 +41,8 @@ final class MediaCardRatingTests: XCTestCase {
                     }
                     XCTAssertEqual(actual.width, expected.width)
                     XCTAssertEqual(actual.height, expected.height)
+                    XCTAssertTrue(actualHasPixels, "Rated card capture must contain visible pixels")
+                    XCTAssertTrue(expectedHasPixels, "Unrated card capture must contain visible pixels")
                     XCTAssertEqual(actualPixels, expectedPixels, "\(kind), landscape=\(landscape), \(size)")
                     XCTAssertEqual(rated.rating, "PG-13")
                     XCTAssertTrue(rated.subtitle.contains("PG-13"))
@@ -59,7 +63,10 @@ final class MediaCardRatingTests: XCTestCase {
             bitsPerComponent: 8, bytesPerRow: rowBytes, space: CGColorSpaceCreateDeviceRGB(),
             bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue))
         context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-        return Data(bytes: try XCTUnwrap(context.data), count: rowBytes * image.height)
+        // The context owns this allocation; keep it alive until Data copies every byte.
+        return try withExtendedLifetime(context) {
+            Data(bytes: try XCTUnwrap(context.data), count: rowBytes * image.height)
+        }
     }
 
     private func item(kind: String, rating: String) throws -> MediaItem {
