@@ -1113,3 +1113,11 @@ This reports a Mac developer-tool permission boundary, separate from the enabled
 Permission to enable the Mac setting was requested; the setting remains unchanged pending an answer.
 The automation session closes successfully. No physical UI or playback acceptance is claimed.
 The safe private receipt is `physical-readiness-receipt-20261012.json`, SHA-256 `d06e3d19d0778708b35199bcb024bb3d7c52ab62438e2aa0cbf931fb83564fdf`.
+
+### Reconciled tooling repair: refresh the architecture snapshot
+
+The reconciled cold-resume hosted run rejects a stale generated Player architecture snapshot.
+The newly merged recovery-stage source file changed that snapshot. The affected-app check alone did not catch it.
+Regenerating the Player architecture page repairs the mismatch without a runtime change.
+`python3 scripts/tooling/test-architecture-explorer.py` passes for Player and Subtitles; source limits and whitespace also pass.
+The original failed tooling job is retained privately from run `38194183334`, job `114633193650`.
