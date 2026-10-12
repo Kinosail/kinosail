@@ -47,6 +47,12 @@ try {
       for (const name of ['MediaSource', 'ManagedMediaSource', 'WebKitMediaSource'])
         Object.defineProperty(window, name, {configurable: true, value: undefined});
     });
+    if (variant === 'compatible' && process.env.QA_RESUME_RELEASE_ENCODER) page.on('request', async request => {
+      const url = new URL(request.url());
+      const segment = url.pathname.match(/^\/hls\/.*\/segment-(\d{5})\.m4s$/)?.[1];
+      if (url.origin === origin && segment && Number(segment) > 0)
+        await writeFile(process.env.QA_RESUME_RELEASE_ENCODER, segment);
+    });
     page.on('response', response => {
       const path = new URL(response.url()).pathname;
       if (path.startsWith('/hls/')) responses.push({

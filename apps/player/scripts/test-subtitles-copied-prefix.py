@@ -5,6 +5,7 @@ The installation FFmpeg seam paces and temporarily stops the real encoder after
 its first published fragment. No output is mocked or rewritten. Completed-file
 browser journeys miss speculative segment URLs exposed during this interval.
 """
+import argparse
 import json
 import os
 from pathlib import Path
@@ -17,10 +18,13 @@ from hls_timeline_fixture import check, fixture
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
+args = parser.parse_args()
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-    'command': 'python3 apps/player/scripts/test-subtitles-copied-prefix.py', 'result': 'failed',
+    'command': 'python3 apps/player/scripts/test-subtitles-copied-prefix.py' + (' --native' if args.native else ''), 'result': 'failed',
     'boundary': 'Authenticated disposable Subtitles Server; real FFmpeg held at a public prefix; synthetic media.'}
 
 
@@ -125,6 +129,17 @@ finally:
             receipt['producerHeld'] = not joined.exists()
             receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
             (RUN / 'public-prefix.m3u8').write_bytes(public)
+            if args.native:
+                child = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,
+                    QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(RUN / 'native.json'),
+                    QA_RESUME_ENGINE='webkit-native', QA_RESUME_APP='subtitles', QA_RESUME_SECONDS='12.5',
+                    QA_RESUME_EXPECTED_MODE='remux', QA_RESUME_FRAME_RATE='24', QA_RESUME_DURATION='32',
+                    QA_RESUME_RELEASE_ENCODER=str(RUN / 'release'))
+                with (RUN / 'native-private.log').open('w') as output:
+                    browser = subprocess.run(['node', str(ROOT / 'apps/player/scripts/hls-resume-browser.mjs')],
+                        cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=150)
+                receipt['nativePassed'] = browser.returncode == 0
+                receipt['nativeFutureFragment'] = (RUN / 'release').read_text() if (RUN / 'release').exists() else None
             (RUN / 'release').touch()
             wait_for(lambda: joined.exists(), 'producer_not_joined')
             wait_for(lambda: b'#EXT-X-ENDLIST' in physical.read_bytes(), 'cache_not_complete')
@@ -160,6 +175,7 @@ finally:
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
                   and receipt['producerHeld'] and receipt['completedMatchesCache'] and receipt['warmStable']
                   and receipt['restartStable'] and receipt['noWarmEncode'] and receipt['firstServerSettled'], 'copied_timeline_must_match_source_keys')
+            check(not args.native or receipt['nativePassed'] and receipt['nativeFutureFragment'], 'native_future_resume')
         finally:
             (RUN / 'release').touch()
             server.terminate()
