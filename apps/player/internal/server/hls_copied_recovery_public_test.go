@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"os"
@@ -32,16 +33,18 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	if err != nil {
 		t.Fatal("hosted FFprobe unavailable")
 	}
-	for _, sample := range []struct{ audio, mode string }{{"aac", "remux"}, {"ac3", "audio-transcode"}} {
-		t.Run(sample.mode, func(t *testing.T) { copiedRecoveryRealReopen(t, ffmpeg, ffprobe, sample.audio, sample.mode) })
+	for _, sample := range []struct{ audio, mode, duration string }{{"aac", "remux", "12"}, {"ac3", "audio-transcode", "12"}, {"alac", "audio-transcode", "74.5"}} {
+		t.Run(sample.audio+"-"+sample.duration, func(t *testing.T) {
+			copiedRecoveryRealReopen(t, ffmpeg, ffprobe, sample.audio, sample.mode, sample.duration)
+		})
 	}
 }
 
-func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string) { //nolint:cyclop,gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
+func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode, duration string) { //nolint:cyclop,gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
 	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
 	defer cancel()
 	media := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d=12", "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=12", "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0", "-c:a", audio, "-avoid_negative_ts", "disabled", filepath.Join(media, "Episode.S01E01.mp4")) //nolint:gosec // Fixed bounded synthetic input and discovered hosted codec.
+	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=s=320x180:r=24:d="+duration, "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration="+duration, "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-g", "48", "-keyint_min", "48", "-sc_threshold", "0", "-c:a", audio, "-avoid_negative_ts", "disabled", filepath.Join(media, "Episode.S01E01.mp4")) //nolint:gosec // Fixed bounded synthetic input and discovered hosted codec.
 	if err := command.Run(); err != nil {
 		t.Fatal("bounded source fixture failed")
 	}
@@ -108,6 +111,13 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 	if _, err := os.Stat(filepath.Join(roots[0], ".copy-timeline")); err != nil {
 		t.Fatal("public fixture did not select indexed copied preparation")
 	}
+	if duration != "12" {
+		data, err := os.ReadFile(filepath.Join(roots[0], ".copy-timeline"))
+		var clock struct{ AudioSource, AudioGrid *struct{ Rate int64 } }
+		if err != nil || json.Unmarshal(data, &clock) != nil || clock.AudioSource == nil || clock.AudioGrid == nil || clock.AudioSource.Rate != 48000 || clock.AudioGrid.Rate != 48000 {
+			t.Fatal("continuous long source did not certify matching source and AAC clocks")
+		}
+	}
 	masterPath := filepath.Join(roots[0], "index.m3u8")
 	committedMaster, err := os.ReadFile(masterPath)
 	if err != nil {
@@ -134,6 +144,14 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 	afterOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
 	if afterOwned <= beforeOwned {
 		t.Fatal("deleted segment0 did not execute a real regeneration worker")
+	}
+	if duration != "12" {
+		copiedRecoveryWarmRefill(t, ctx, ffmpeg, handler, filepath.Dir(firstPath), base, beforeInit)
+		warmOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
+		if warmOwned <= afterOwned {
+			t.Fatal("deleted middle fragment did not execute a real regeneration worker")
+		}
+		afterOwned = warmOwned
 	}
 	cancelWorkers()
 	config.Lifecycle = ctx
@@ -169,6 +187,36 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode string)
 		t.Fatal("segment0 refill changed committed metadata/init/media")
 	}
 	t.Logf("real copied segment0 delete/regenerate/cold-reopen: playlist=%x init=%x first=%x source=%x existing-fragment-retained=true owned-codecs-joined=%d", sha256.Sum256(afterPlaylist), sha256.Sum256(afterInit), sha256.Sum256(regenerated), sha256.Sum256(afterSourceBytes), afterOwned)
+}
+
+func copiedRecoveryWarmRefill(t *testing.T, ctx context.Context, ffmpeg string, handler http.Handler, rendition, base string, initialization []byte) {
+	t.Helper()
+	const segment = "segment-00020.m4s"
+	path := filepath.Join(rendition, segment)
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal("long source middle fragment missing before eviction")
+	}
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	after := speedTestGET(t, ctx, handler, base+segment)
+	var frames [][]byte
+	for index, media := range [][]byte{before, after} {
+		path := filepath.Join(t.TempDir(), "middle.mp4")
+		if err := os.WriteFile(path, bytes.Join([][]byte{initialization, media}, nil), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		output, err := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-copyts", "-i", path, "-map", "0:v:0", "-f", "framehash", "-hash", "sha256", "-").Output() //nolint:gosec // Fixed codec arguments and owned synthetic fragment.
+		if err != nil || !bytes.Contains(output, []byte("SHA256")) {
+			t.Fatalf("middle fragment decode %d failed", index)
+		}
+		frames = append(frames, output)
+	}
+	if !bytes.Equal(frames[0], frames[1]) {
+		t.Fatal("middle refill changed decoded video frames or timestamps")
+	}
+	t.Logf("long middle refill decoded video and timestamps sha256=%x", sha256.Sum256(frames[1]))
 }
 
 func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int { //nolint:cyclop,gocognit // Validate every recorded process and require three stable joined observations.

@@ -1761,3 +1761,41 @@ Private receipts: `cold-retained-join-baseline` (three expected failures),
 - `cold-retained-join-fixed` log SHA-256: `fbeb2cf100afe2f4ae277cabddd6cd719f087d80daf135e290b02ed6fa56ef3e`.
 - `cold-lookback-final-race` log SHA-256: `aae06b99ce8a7ac97646a9b7c212654d9586927e22618542580306240668a924`.
 - `cold-suffix-all-final` log SHA-256: `048f3ee385ab39d20b6fd0273b8618049b0490fc7dfae76699b700dc1434c5ec`.
+
+
+## Long-source certification in the deep Go consumer
+
+The real-codec HTTP journey now includes a 74.5-second continuous ALAC source.
+It requires matching certified source and AAC clocks, then deletes and restores
+both the first and a middle fragment. FFmpeg decodes the middle fragment before
+and after refill with original timestamps; every video frame and timestamp matches.
+Owned encoders join before cold reopen. Existing source, metadata and retained
+fragment checks remain required. This extends the existing public lifecycle proof;
+it also exercises warm seeking under Go race instrumentation.
+
+All three codec cases pass with race detection and no skipped case. The complete
+local module coverage diagnostic passes at 89.8%: 8,473 of 9,437 statements.
+Its profile SHA-256 is
+`bb027d59d51302ec1097f537663c07ee358103c017dd02b9e64c8500bd6d8306`.
+That complete local diagnostic has no race instrumentation. A separate full local
+race attempt is interrupted after 524.87 seconds to inspect runtime stacks.
+Those stacks show active asset compression during repeated test-server construction;
+the interrupted attempt is excluded from pass evidence. Its receipt is retained.
+
+The workflow now enables the existing strict media journey in deep Go runs.
+The wiring contract fails before that change and passes after it. The 89% gate
+and complete race command remain unchanged. All CI contracts, workflow lint and
+source limits pass. Hosted Linux AMD64, with pinned FFmpeg 8.1.3, must still verify
+the complete race profile on the final commit.
+
+The preceding `d69516d9` deep WebKit run retains one first-attempt startup failure;
+its retry passes. The diagnostic records resume, seeking, zero decoded frames,
+readyState 4 and no media error. All recorded HLS requests return 200. The rendered
+player remains on Seeking. This failure remains open; repeated local passes do
+not clear it. Private `deep-d695-webkit` retains its trace, screenshot and bounded
+native-state snapshot. A private scheduling control investigates whether holding
+startup callbacks creates extra resume work before the intended navigation race.
+
+Private `long-copied-clock-*` receipts retain exact source, commands, profiles,
+logs and checksums. Browser audio waveform proof and physical-device proof remain
+separate from the Go video-frame and lifecycle checks.

@@ -68,6 +68,7 @@ jobs:
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
+          KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}
         run: ./scripts/ci/test-go.sh "$APP"
       - name: Verify CLI startup latency
         id: cli_startup
