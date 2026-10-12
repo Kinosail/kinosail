@@ -87,3 +87,78 @@ await import(${JSON.stringify(root + "scripts/testing/layout-stability-local.mjs
     }
   });
 }
+
+// Populated layout runs cannot force a commit between a visibility read and its use.
+// Preserve that hosted WebKit interleaving and rejected-login isolation explicitly.
+for (const accepted of [true, false]) {
+  test(`layout CLI submits credentials once with ${accepted ? "late redirect" : "rejected factor"}`, {tag: "@smoke"}, async ({browserName}, info) => {
+    let posts = 0, libraryRequests = 0;
+    const timers = new Set<ReturnType<typeof setTimeout>>();
+    const server = createServer((request, response) => {
+      const path = new URL(request.url!, "http://fixture").pathname;
+      if (request.method === "POST" && path === "/login") {
+        posts++;
+        const timer = setTimeout(() => {
+          timers.delete(timer);
+          response.writeHead(accepted ? 303 : 401, accepted ? {Location: "/"} : {});
+          response.end(accepted ? "" : "Invalid authentication code");
+        }, 300);
+        timers.add(timer);
+      } else if (path === "/login") {
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.end('<!doctype html><form method="post" action="/login"><label>Name<input name="name"></label><label>Password<input name="password" type="password"></label><label>6-digit code<input name="code"></label><button>Sign in</button></form>');
+      } else if (path === "/api/v1/library") {
+        libraryRequests++;
+        // Stop after proving authentication; this peer is not a populated library.
+        response.writeHead(503); response.end("Controlled library boundary");
+      } else {
+        response.writeHead(200, {"Content-Type": "text/html"}); response.end("<!doctype html><p>Signed in</p>");
+      }
+    });
+    await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
+    const origin = `http://127.0.0.1:${(server.address() as {port: number}).port}`;
+    const wrapper = info.outputPath("controlled-login.mjs");
+    await writeFile(wrapper, `import {createRequire} from "node:module";
+const require=createRequire(${JSON.stringify(root + "apps/player/e2e/package.json")});
+const engine=require("@playwright/test")[${JSON.stringify(browserName)}], launch=engine.launch.bind(engine);
+engine.launch=async (...args)=>{const browser=await launch(...args), createContext=browser.newContext.bind(browser);
+browser.newContext=async (...args)=>{const context=await createContext(...args), createPage=context.newPage.bind(context);
+context.newPage=async (...args)=>{const page=await createPage(...args);page.setDefaultTimeout(2000);page.setDefaultNavigationTimeout(2000);
+const byRole=page.getByRole.bind(page),byLabel=page.getByLabel.bind(page);
+page.getByRole=(role,options)=>{const locator=byRole(role,options);
+if(role==="button"&&options?.name==="Sign in"){const click=locator.click.bind(locator);locator.click=(options)=>click({...options,noWaitAfter:true});}return locator;};
+page.getByLabel=(label,options)=>{const locator=byLabel(label,options);
+if(label instanceof RegExp){const visible=locator.isVisible.bind(locator);let reads=0;
+locator.isVisible=async()=>{const result=await visible();if(++reads===2&&result&&${accepted})await page.waitForURL(url=>url.pathname!=="/login");return result;};}return locator;};
+return page;};return context;};return browser;};
+await import(${JSON.stringify(root + "scripts/testing/layout-stability-local.mjs")});
+`);
+    const child = spawn(process.execPath, [wrapper], {cwd: root, env: {...process.env,
+      KINOSAIL_E2E_URL: origin, KINOSAIL_LAYOUT_RUN: info.outputPath("."), KINOSAIL_LAYOUT_APP: "subtitles",
+      KINOSAIL_LAYOUT_BROWSER: browserName, KINOSAIL_LAYOUT_TOTP: "JBSWY3DPEHPK3PXP"}});
+    let output = "";
+    child.stdout.on("data", data => output += data);
+    child.stderr.on("data", data => output += data);
+    const timer = setTimeout(() => child.kill("SIGKILL"), 20_000);
+    try {
+      const code = await new Promise<number | null>((resolve, reject) => {child.once("exit", resolve); child.once("error", reject);});
+      const failure = JSON.parse(await readFile(info.outputPath("failure.json"), "utf8"));
+      const receipt = {revision: process.env.KINOSAIL_TEST_REVISION, browserName, accepted, posts, libraryRequests, code, failure,
+        environment: `${process.platform} ${process.arch}; native browser; disposable HTTP peer with controlled navigation timing`,
+        command: `pnpm --dir apps/player/e2e exec playwright test --project=${browserName} --retries=0 layout-auth-navigation.spec.ts`,
+        cliSHA256: createHash("sha256").update(await readFile(root + "scripts/testing/layout-stability-local.mjs")).digest("hex"),
+        testSHA256: createHash("sha256").update(await readFile(new URL("./layout-auth-navigation.spec.ts", import.meta.url))).digest("hex")};
+      await info.attach("layout-login-submit", {body: JSON.stringify(receipt), contentType: "application/json"});
+      expect(code, output).toBe(1);
+      expect(failure.stage).toBe(accepted ? "library-request" : "login-redirect");
+      expect(posts).toBe(1);
+      expect(libraryRequests).toBe(accepted ? 1 : 0);
+      expect(failure.loginResponses).toEqual([accepted ? 303 : 401]);
+    } finally {
+      clearTimeout(timer); child.kill("SIGKILL");
+      for (const timer of timers) clearTimeout(timer);
+      server.closeAllConnections();
+      await new Promise<void>(resolve => server.close(() => resolve()));
+    }
+  });
+}

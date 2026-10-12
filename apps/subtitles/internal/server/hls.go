@@ -103,6 +103,11 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	if err != nil {
 		return err
 	}
+	if copiedHLSMode(recipe) && masterFresh(playlist, item.Path, options.Cache) {
+		if err := validateCopiedHLSCache(filepath.Dir(playlist), options.Cache); err != nil {
+			return err
+		}
+	}
 	if cacheFresh(playlist, item.Path, options.Cache) {
 		return nil
 	}
@@ -132,6 +137,7 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 
 func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *hlsJob, options transcodeSettings, recipe hlsRecipe) {
 	defer job.cancel(nil)
+	ctx = context.WithValue(ctx, requestActivityKey{}, &requestActivity{id: job.requestID, playbackSession: job.playbackSession})
 	started := time.Now()
 	slog.Info("HLS transcode started", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator)
 	softwareFallback := false
@@ -170,12 +176,15 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if err := playback.BindHLSSource(directory, item.Path, options.Cache); err != nil {
 		return err
 	}
+	plan, err := manager.createCopiedHLSPlan(ctx, item, recipe, directory, options.Cache)
+	if err != nil {
+		return err
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	facts := mediaFactsFor(item, manager.probe.inspect(ctx, item))
 	start, window := hlsWindowRecipe(recipe, facts.Duration)
 	options = playback.SourceTranscoding(options, facts, sharedHLSRecipe(recipe))
-	var err error
 	options, err = manager.settings.hardware.ColorSettings(options)
 	if err != nil {
 		return err
@@ -184,10 +193,10 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if recipe.mode != "transcode" {
 		quality := sourceQuality(facts, recipe.maxBitrate)
 		results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
-			return manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start)
+			return manager.encodeVariant(ctx, item, directory, quality.Label, strconv.Itoa(quality.Width), strconv.FormatInt((quality.Bitrate-128_000)/1000, 10)+"k", "128k", facts.Duration, options, recipe, window, start, plan)
 		})
 		defer stop()
-		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, false)
+		return publishVariants(ctx, item.Path, directory, options.Cache, []PlaybackQuality{quality}, results, 1, plan != nil && plan.Strategy == "certified", plan)
 	}
 	width, height := playback.DisplayDimensions(facts.Video)
 	width, height = playback.FitDimensions(width, height, minimumPositiveInt(1920, recipe.width), minimumPositiveInt(1080, recipe.height))
@@ -207,7 +216,7 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 		return manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start)
 	})
 	defer stop()
-	return publishVariants(ctx, item.Path, directory, options.Cache, qualities, results, 1, true)
+	return publishVariants(ctx, item.Path, directory, options.Cache, qualities, results, 1, true, nil)
 }
 
 func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
