@@ -86,7 +86,10 @@ func ownerCanManagePlaybackMarkersThroughAPI(t *testing.T, fixture APIParityFixt
 	invalidForm := WebFormCall(t, handler, token, "/markers/"+id, url.Values{"type": {"recap"}, "start": {"not-a-number"}, "end": {"43"}})
 	AssertAPIBody(t, invalidForm, http.StatusBadRequest, "playback marker is invalid")
 	playback := APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
-	AssertAPIBody(t, playback, http.StatusOK, `"type":"recap"`, `"start":2`, `"end":42`, `"source":"manual"`)
+	// This five-byte fixture has no probe duration. Saved markers remain editable,
+	// but the playback response cannot emit a range on an unknown timeline.
+	AssertAPIBody(t, playback, http.StatusOK, `"markers":[]`)
+	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/watch/"+id, nil), http.StatusOK, `value="recap" selected`, `name="start" type="number" min="0" step="0.1" value="2"`, `name="end" type="number" min="0" step="0.1" value="42"`)
 	updated := WebFormCall(t, handler, token, "/markers/"+id, url.Values{"type": {"recap"}, "start": {"3"}, "end": {"43"}})
 	if updated.Code != http.StatusSeeOther {
 		t.Fatalf("web update = %d %q", updated.Code, updated.Body.String())
@@ -104,12 +107,18 @@ func ownerCanManagePlaybackMarkersThroughAPI(t *testing.T, fixture APIParityFixt
 	if len(afterRemove.Markers) != 0 {
 		t.Fatalf("markers after web remove = %#v", afterRemove.Markers)
 	}
+	afterRemovePage := APICall(t, handler, token, http.MethodGet, "/watch/"+id, nil)
+	AssertAPIBody(t, afterRemovePage, http.StatusOK, "Add skip marker")
+	if bytes.Contains(afterRemovePage.Body.Bytes(), []byte("Remove Recap marker")) {
+		t.Fatal("saved recap remained after web removal")
+	}
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/marker-analysis", nil), http.StatusOK, `"state":`, `"items":`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodPost, "/api/v1/marker-analysis", nil), http.StatusAccepted, `"state":"queued"`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodPut, "/api/v1/items/"+id+"/markers", map[string]any{"type": "recap", "start": 4, "end": 44}), http.StatusOK, `"start":4`, `"end":44`)
 	invalid := APICall(t, handler, token, http.MethodDelete, "/api/v1/items/"+id+"/markers/unknown", nil)
 	AssertAPIBody(t, invalid, http.StatusBadRequest, `"error"`)
-	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil), http.StatusOK, `"type":"recap"`, `"start":4`, `"end":44`)
+	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil), http.StatusOK, `"markers":[]`)
+	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/watch/"+id, nil), http.StatusOK, `value="recap" selected`, `name="start" type="number" min="0" step="0.1" value="4"`, `name="end" type="number" min="0" step="0.1" value="44"`)
 	removed := APICall(t, handler, token, http.MethodDelete, "/api/v1/items/"+id+"/markers/recap", nil)
 	if removed.Code != http.StatusNoContent {
 		t.Fatalf("remove = %d %q", removed.Code, removed.Body.String())

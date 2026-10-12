@@ -1,6 +1,7 @@
 package servertest
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -9,6 +10,8 @@ import (
 
 // PlaybackAPIConfig describes the app configuration used by playback API contracts.
 type PlaybackAPIConfig struct {
+	Lifecycle                                                    context.Context
+	CacheDir                                                     string
 	MediaDir, DataDir, FFprobe, FFmpeg, HardwareOS, HardwareArch string
 	RequireAuth, ProbeHardware                                   bool
 	HardwareDevices                                              []string
