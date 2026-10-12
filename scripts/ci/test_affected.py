@@ -19,9 +19,22 @@ class SelectionTests(unittest.TestCase):
                 self.assertTrue(plan["go"])
                 self.assertFalse(plan["client"])
                 self.assertFalse(plan["android"])
-                self.assertFalse(plan["tooling"])
+                self.assertTrue(plan["tooling"])
                 self.assertFalse(plan["packages"])
                 self.assertFalse(plan[f"{app}_browsers"])
+
+    def test_architecture_inputs_select_snapshot_verification(self):
+        # Populated app journeys cannot catch a stale generated code atlas.
+        # Go source, test-file inventory, and the published atlas all feed it.
+        paths = ("apps/player/internal/server/show.go", "apps/subtitles/cmd/kinosail/main.go",
+                 "apps/player/internal/server/show_test.go", "packages/httpguard/limiter.go",
+                 "packages/httpguard/limiter_test.go", "packages/go.mod", "packages/go.sum",
+                 "apps/player/go.sum", "apps/subtitles/go.sum",
+                 "apps/player/docs/architecture-explorer/index.html",
+                 "apps/subtitles/docs/architecture-explorer/index.html")
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertTrue(affected([path])["tooling"])
 
     def test_shared_changes_select_every_consumer(self):
         for path in ("packages/catalog/item.go", "go.work", "go.work.sum", "apps/player/go.mod"):
