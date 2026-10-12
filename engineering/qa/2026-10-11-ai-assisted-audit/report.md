@@ -1016,3 +1016,18 @@ Required hosted checks must rerun on this updated branch; protected integration 
 | `hls-cold-suffix/20261012T012844Z/receipt.json` | clean producer-failure | `51d6c629019ed02bc55c73d15715f5aba86497a587d945e7f7634ce85bc3aacc` |
 | `hls-short-completion/20261012T012854Z/receipt.json` | clean short-completion | `e315b5a2a61f8e66d1aedb540082cacf2e5b68e716d7f0988d1b4bf893a5f6fe` |
 | `hls-resume-browser/20261012T012959Z/receipt.json` | clean browser | `f84f15fb423dace217f53c6c83f5f86ff02f0e61060283d3ecbe2056cc18a3c4` |
+
+
+### Stacked audio repair reconciled with the cold-resume checks
+
+Merge revision `7876881369f6ef026840b98cf0b6c778911396fa` preserves both converted-audio eligibility and the extracted cold-resume validation.
+The architecture page is regenerated, and both branches' evidence remains in this report.
+Cold converted-audio resume and prepared converted-audio tail recovery pass in Chromium and WebKit: 28 exact reference frames, EOF, unchanged source, and settled Servers.
+Prepared recovery also preserves every reference AAC packet.
+The combined branch has zero new lint issues, passes 169 CI contracts (five environment skips), and passes `make -C apps/player verify-changed`.
+Focused Server tests pass in 82 seconds. Required hosted checks and the separate decoded-audio diagnostic boundary remain open.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T013141Z/receipt.json` | cold converted-audio resume, both MSE engines | `c3e1b5e6f09c187cc37436471d05b6687c8e6012873171da730751835fb528ab` |
+| `hls-resume-browser/20261012T013200Z/receipt.json` | prepared converted-audio recovery and packet oracle, both engines | `af9a1171bfaaba5798c320e027a052a91a9eeb987e146731e33949625b9fc68e` |
