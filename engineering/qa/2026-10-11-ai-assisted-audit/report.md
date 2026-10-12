@@ -1843,3 +1843,36 @@ The HTTP helper now waits under the request deadline when no producer was select
 This path cannot authorize another admission. Permanent errors and cancellation still stop it.
 The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
 A second independent review found no concrete blocker. Hosted checks must pass again after publication.
+
+### Native generation-plan failure inventory
+
+The stronger native frame oracle fails both baseline journeys at `e96ef3de`.
+Receipts `hls-copied-prefix/20261012T104033Z` and `hls-resume-browser/20261012T104034Z` retain unchanged-source and joined-process evidence.
+The production repair will persist one source-bound generation plan before encoding.
+Eligible source-zero H264 streams use certified keyframe cuts; unsupported sources retain an explicit legacy plan.
+Cancellation, unsettled probes, changed source or policy, and invalid persisted records must stop generation or delivery.
+A certified prefix must match its immutable plan during active, completed, warm, and restarted delivery.
+Public malformed, missing, mismatched-policy, and mismatched-cut controls are added before implementation.
+These inject private-cache damage around real media; they are isolated fault evidence.
+The plan cannot exceed 4,095 segments because the playlist also references initialization data.
+
+PR 580 merged through protected checks into `9e8d3bbc8a00cca88ab8a9dc6ec000586597c2ae`.
+Fetched ancestry confirms reviewed commit `4e0fbb21` is included.
+Main `5f169ee2` passed its unchanged hosted retry and both production promotions.
+Player published digest: `sha256:decb7e5d26a1df423921fc5fd85469367a564020b73c4fddef4e14cdecd3de21`.
+Subtitles published digest: `sha256:eb0a7ebfb316077900b56807d0d4a25cfc1c98c91d02b9f430f30910dc1fcfbd`.
+Those digests precede PR 580 and are not current-main deployment acceptance.
+
+The first production candidate passes held-prefix native playback, all seven presented frames, far seek, warm reuse, and restart.
+Receipt: `hls-copied-prefix/20261012T105259Z/receipt.json`.
+Long native resume also passes in `hls-resume-browser/20261012T105431Z/receipt.json`.
+The malformed-plan control changes from HTTP 200/200 before implementation to 503/404 afterward.
+
+Independent review found two further gaps, each reproduced before its repair.
+A canonical certified-to-legacy downgrade returned 200/200 (`hls-copied-prefix/20261012T105523Z`).
+A source-version change during a held fragment wait still returned 200 (`hls-copied-prefix/20261012T105606Z`).
+The published master now binds the exact plan bytes by SHA-256.
+Delivery revalidates the captured source and policy after waiting and opening the requested asset.
+Both controls then pass: downgrade at `20261012T105735Z`, held source replacement at `20261012T105733Z`.
+The source-change fixture intentionally changes source modification time; content remains unchanged and all owned processes join.
+The affected Go controls pass. Final lint, complete fault matrix, MSE regression, and exact-revision browser proof remain pending at this checkpoint.

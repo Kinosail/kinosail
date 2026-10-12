@@ -10,11 +10,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func (manager *hlsManager) waitForHLSProjection(request *http.Request, root *os.Root, key, name string, duration float64) error {
+func (manager *hlsManager) waitForHLSProjection(request *http.Request, root *os.Root, key, name string, duration float64, plan *copiedHLSPlan) error {
 	if err := request.Context().Err(); err != nil {
 		return err
 	}
@@ -29,13 +28,13 @@ func (manager *hlsManager) waitForHLSProjection(request *http.Request, root *os.
 	}
 	ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
 	defer cancel()
-	if !playback.WaitHLSReady(ctx, func() error { return hlsProjectionReady(root, filepath.Join(key, filepath.FromSlash(name)), duration) }) {
+	if !playback.WaitHLSReady(ctx, func() error { return hlsProjectionReady(root, filepath.FromSlash(name), duration, plan) }) {
 		return errors.New("playlist timeline is not ready")
 	}
 	return nil
 }
 
-func hlsProjectionReady(root *os.Root, path string, duration float64) error {
+func hlsProjectionReady(root *os.Root, path string, duration float64, plan *copiedHLSPlan) error {
 	file, err := root.Open(path)
 	if err != nil {
 		return err
@@ -52,7 +51,10 @@ func hlsProjectionReady(root *os.Root, path string, duration float64) error {
 	if err != nil {
 		return err
 	}
-	projected, ready := hlsmanifest.CompleteVOD(validated, duration, 4)
+	projected, ready, err := plan.project(validated, duration)
+	if err != nil {
+		return err
+	}
 	if _, err := hlsPlaylistWithSession(projected, ""); err != nil {
 		return err
 	}

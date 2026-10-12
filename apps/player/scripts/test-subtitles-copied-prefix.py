@@ -11,21 +11,30 @@ import os
 from pathlib import Path
 import re
 import shutil
+import shlex
+import sys
 import socket
 import subprocess
 import time
+import threading
 from hls_timeline_fixture import check, fixture
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
+parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
+parser.add_argument('--held-source-change', action='store_true')
 args = parser.parse_args()
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-    'command': 'python3 apps/player/scripts/test-subtitles-copied-prefix.py' + (' --native' if args.native else ''), 'result': 'failed',
+    'command': shlex.join(['python3', 'apps/player/scripts/test-subtitles-copied-prefix.py', *sys.argv[1:]]), 'result': 'failed', 'planFault': args.plan_fault,
     'boundary': 'Authenticated disposable Subtitles Server; real FFmpeg held at a public prefix; synthetic media.'}
+
+
+class HeldSourceChangeComplete(Exception):
+    pass
 
 
 def wait_for(predicate, failure, seconds=25):
@@ -129,6 +138,21 @@ finally:
             receipt['producerHeld'] = not joined.exists()
             receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
             (RUN / 'public-prefix.m3u8').write_bytes(public)
+            if args.held_source_change:
+                result = []
+                thread = threading.Thread(target=lambda: result.append(api.http(path.removesuffix('index.m3u8') + 'segment-00006.m4s')[0]))
+                thread.start()
+                time.sleep(.25)
+                check(thread.is_alive(), 'future_request_must_wait')
+                stat = source.stat()
+                os.utime(source, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000))
+                receipt['intentionalSourceVersionChange'] = True
+                (RUN / 'release').touch()
+                thread.join(timeout=40)
+                check(not thread.is_alive(), 'source_change_request_unsettled')
+                receipt['sourceChangeStatus'] = result
+                check(result == [404], 'source_changed_while_waiting_must_not_deliver')
+                raise HeldSourceChangeComplete()
             if args.native:
                 child = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,
                     QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(RUN / 'native.json'),
@@ -171,7 +195,27 @@ finally:
             receipt['noWarmEncode'] = len(list(RUN.glob('*.joined'))) == encoded
             (RUN / 'public-completed.m3u8').write_bytes(completed)
             (RUN / 'public-restarted.m3u8').write_bytes(restarted_manifest)
-            check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
+            if args.plan_fault:
+                plan_file = physical.parent.parent / '.copied-cuts'
+                original = plan_file.read_bytes() if plan_file.exists() else None
+                malformed = {'Version': 1, 'Policy': 'wrong', 'Strategy': 'certified', 'Cuts': [0, 4, 32]}
+                if args.plan_fault == 'missing':
+                    plan_file.unlink(missing_ok=True)
+                elif args.plan_fault == 'malformed':
+                    plan_file.write_bytes(b'{')
+                else:
+                    record = json.loads(original) if original else malformed
+                    if args.plan_fault == 'policy': record['Policy'] = 'wrong'
+                    elif args.plan_fault == 'downgrade': record.update(Strategy='legacy', Cuts=None)
+                    else: record['Cuts'] = [0, 5, 32]
+                    plan_file.write_text(json.dumps(record, separators=(',', ':')))
+                requests = [path, path.removesuffix('index.m3u8') + 'segment-00000.m4s']
+                receipt['faultStatuses'] = [api.http(url)[0] for url in requests]
+                receipt['faultStartsNoEncoder'] = len(list(RUN.glob('*.joined'))) == encoded
+                if original is not None: plan_file.write_bytes(original)
+                check(receipt['faultStatuses'] == [503, 404] and receipt['faultStartsNoEncoder'], 'invalid_plan_must_not_deliver_media')
+            else:
+                check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
                   and receipt['producerHeld'] and receipt['completedMatchesCache'] and receipt['warmStable']
                   and receipt['restartStable'] and receipt['noWarmEncode'] and receipt['firstServerSettled'], 'copied_timeline_must_match_source_keys')
@@ -189,6 +233,12 @@ finally:
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
+except HeldSourceChangeComplete:
+    receipt['sourceContentUnchanged'] = sha(source) == before['sha256']
+    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged']:
+        receipt['result'] = 'passed'
+    else:
+        receipt['failureClass'] = 'source_change_cleanup'
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:

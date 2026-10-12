@@ -81,12 +81,10 @@ func projectionHLSFixture(t *testing.T, manifest string) (*hlsManager, library.I
 	if err != nil {
 		t.Fatal(err)
 	}
+	writeLegacyHLSPlan(t, manager, item, recipe, filepath.Dir(directory))
 	identity := options.Cache
 	manager.jobs[hlsRecipeKey(item.ID, recipe)].cachePolicy = identity
-	master := "#EXTM3U\n#KINOSAIL-TRANSCODER:" + identity + "\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n"
-	if err := writeAtomicFile(filepath.Join(filepath.Dir(directory), "index.m3u8"), []byte(master)); err != nil {
-		t.Fatal(err)
-	}
+
 	path := filepath.Join(directory, "index.m3u8")
 	if err := writeAtomicFile(path, []byte(manifest)); err != nil {
 		t.Fatal(err)
