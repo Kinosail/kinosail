@@ -39,19 +39,24 @@ func TestCopiedHLSLinesCompletionCertificate(t *testing.T) {
 			}
 			err := test.watch.completionError(ctx, test.scanErr, test.waitErr, test.settleErr)
 			accepted := runtime.GOOS == "darwin" && test.name == "clean"
-			if (err == nil) != accepted {
-				t.Fatal("completion accepted without its complete certificate or rejected certified completion")
-			}
-			if accepted {
-				return
-			}
-			if test.name != "other termination" && !errors.Is(err, syscall.EPERM) {
-				t.Fatal("incomplete completion lost its native permission error")
-			}
-			if !errors.Is(err, ErrProbeLifecycle) {
-				t.Fatal("uncertified lifecycle was classified as optional metadata failure")
-			}
+			assertCopiedHLSCompletion(t, err, accepted, test.name != "other termination")
 		})
+	}
+}
+
+func assertCopiedHLSCompletion(t *testing.T, err error, accepted, permissionError bool) {
+	t.Helper()
+	if (err == nil) != accepted {
+		t.Fatal("completion accepted without its complete certificate or rejected certified completion")
+	}
+	if accepted {
+		return
+	}
+	if permissionError && !errors.Is(err, syscall.EPERM) {
+		t.Fatal("incomplete completion lost its native permission error")
+	}
+	if !errors.Is(err, ErrProbeLifecycle) {
+		t.Fatal("uncertified lifecycle was classified as optional metadata failure")
 	}
 }
 
