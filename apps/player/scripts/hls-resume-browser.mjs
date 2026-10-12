@@ -47,11 +47,14 @@ try {
       for (const name of ['MediaSource', 'ManagedMediaSource', 'WebKitMediaSource'])
         Object.defineProperty(window, name, {configurable: true, value: undefined});
     });
+    let encoderReleased = false;
     if (variant === 'compatible' && process.env.QA_RESUME_RELEASE_ENCODER) page.on('request', async request => {
       const url = new URL(request.url());
       const segment = url.pathname.match(/^\/hls\/.*\/segment-(\d{5})\.m4s$/)?.[1];
-      if (url.origin === origin && segment && Number(segment) > 0)
+      if (!encoderReleased && url.origin === origin && segment && Number(segment) > 0) {
+        encoderReleased = true;
         await writeFile(process.env.QA_RESUME_RELEASE_ENCODER, segment);
+      }
     });
     page.on('response', response => {
       const path = new URL(response.url()).pathname;
@@ -98,6 +101,7 @@ try {
       const stage = page.locator('.media-stage');
       if (await page.locator('video').evaluate(video => video.paused)) await stage.press('k');
       await page.waitForFunction(() => !document.querySelector('video').paused);
+      await page.waitForFunction(() => Number.isFinite(window.qaResumeFirstPlaying));
       await stage.press('k');
       await page.waitForFunction(() => document.querySelector('video').paused);
     }
@@ -122,10 +126,9 @@ try {
         for (const point of points) {
           // A seeked event can precede compositor presentation in WebKit.
           // Wait for the requested timestamp, never for an expected pixel hash.
-          // Native WebKit HLS does not emit frame callbacks for paused seeks.
-          // Its seeked frame is still compared byte-for-byte with the original.
-          const nativePaused = native && variant === 'compatible';
-          const presented = nativePaused ? Promise.resolve({observation: 'native-seeked'}) : new Promise((resolve, reject) => {
+          // Native HLS needs playback to deliver a timestamped frame callback.
+          // Pause on the matching clock, independently of the expected pixels.
+          const presented = new Promise((resolve, reject) => {
             let callback;
             const timer = setTimeout(() => {
               video.cancelVideoFrameCallback(callback);
@@ -137,14 +140,16 @@ try {
               if (presentations.length < 64) presentations.push({point, mediaTime: metadata.mediaTime, presentedTime,
                 currentTime: video.currentTime, decodedTime, paused: video.paused});
               if (presentedTime >= point - 1 / frameRate - .002 && presentedTime <= point + .002) {
-                clearTimeout(timer); resolve({presentedTime, mediaTime: metadata.mediaTime});
+                video.pause(); clearTimeout(timer); resolve({presentedTime, mediaTime: metadata.mediaTime});
               } else callback = video.requestVideoFrameCallback(frame);
             };
             callback = video.requestVideoFrameCallback(frame);
           });
-          const [, frame] = await Promise.all([wait('seeked', () => video.currentTime = point), presented]);
+          const [, frame] = await Promise.all([wait('seeked', () => {
+            video.currentTime = point;
+            if (native && variant === 'compatible') { video.muted = true; video.play().catch(() => {}); }
+          }), presented]);
           video.pause();
-          if (nativePaused) await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           const canvas = document.createElement('canvas');
           canvas.width = video.videoWidth; canvas.height = video.videoHeight;
           const drawing = canvas.getContext('2d'); drawing.drawImage(video, 0, 0);

@@ -124,6 +124,7 @@ final class PlaybackEngine {
     @ObservationIgnored var client: ServerClient?
     @ObservationIgnored var store: ProgressSyncStore?
     @ObservationIgnored var writer: ProgressWriter?
+    @ObservationIgnored var committedPosition: Double?
     @ObservationIgnored var timeline: MediaTimeline?
     @ObservationIgnored var preferences = PlaybackPreferences()
     @ObservationIgnored var subtitlePolicy: SubtitleChoicePolicy?
@@ -257,7 +258,7 @@ final class PlaybackEngine {
         if let endObserver { NotificationCenter.default.removeObserver(endObserver); self.endObserver = nil }
         nowPlaying.deactivate()
         presentation.clear()
-        player = nil; currentItem = nil; source = nil; subtitlePolicy = nil; writer = nil
+        player = nil; currentItem = nil; source = nil; subtitlePolicy = nil; writer = nil; committedPosition = nil
         audioOptions = []; subtitleOptions = []; audioTracks = []; subtitleTracks = []
         audioGroup = nil; subtitleGroup = nil
         subtitleDocument = nil; subtitleGeneration = UUID(); externalCaptions = false; lastNowPlayingSecond = -1

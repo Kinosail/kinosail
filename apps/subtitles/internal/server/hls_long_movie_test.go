@@ -48,7 +48,7 @@ func assertLongMovieHLSResponse(t *testing.T, manifest, want string) {
 	defer file.Close()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/item/index.m3u8", nil)
 	response := httptest.NewRecorder()
-	serveHLSPlaylistWithSession(response, request, file, 170*60)
+	serveHLSPlaylistWithSession(response, request, file, 170*60, nil)
 	if response.Code != http.StatusOK || response.Body.String() != want {
 		t.Fatalf("170-minute playlist status=%d bytes=%d; expected exact bounded VOD timeline", response.Code, response.Body.Len())
 	}

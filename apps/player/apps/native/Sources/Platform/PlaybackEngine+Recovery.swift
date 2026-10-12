@@ -134,8 +134,12 @@ extension PlaybackEngine {
             target = requested
         }
         try check(attempt)
-        timeObserver = next.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self] time in
-            Task { @MainActor in self?.tick(time: time, attempt: attempt) }
+        timeObserver = next.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self, weak next, weak nextItem] time in
+            Task { @MainActor in
+                guard let self, let next, let nextItem, self.player === next,
+                      next.currentItem === nextItem, nextItem.status == .readyToPlay else { return }
+                self.tick(time: time, attempt: attempt)
+            }
         }
         message = nil
         let ended = completion.withLock { state in state.restoring = false; return state.ended }
@@ -177,6 +181,7 @@ extension PlaybackEngine {
         guard generation == attempt, (try? Input.position(time.seconds)) != nil else { return }
         refreshBufferedRanges()
         seconds = timeline?.sourceTime(time.seconds) ?? max(0, time.seconds)
+        committedPosition = seconds
         if !loading, !recoveringNetwork, player?.currentItem?.status == .readyToPlay {
             wantsPlayback = player?.timeControlStatus != .paused
         }

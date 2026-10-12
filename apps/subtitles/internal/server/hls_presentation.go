@@ -70,9 +70,12 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 }
 
 func hlsSegmentArguments(mode, directory, playlist string) []string {
-	flags := "temp_file+independent_segments"
+	flags, seconds := "temp_file+independent_segments", "4"
 	if mode == "remux" || mode == "audio-transcode" {
 		flags = "temp_file+split_by_time"
 	}
-	return []string{"-f", "hls", "-hls_time", "4", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4", "-hls_flags", flags, "-hls_fmp4_init_filename", "init.mp4", "-hls_segment_filename", filepath.Join(directory, "segment-%05d.m4s"), playlist}
+	if mode == "copied-keyframes" {
+		seconds = "0.1"
+	}
+	return []string{"-f", "hls", "-hls_time", seconds, "-hls_playlist_type", "event", "-hls_segment_type", "fmp4", "-hls_flags", flags, "-hls_fmp4_init_filename", "init.mp4", "-hls_segment_filename", filepath.Join(directory, "segment-%05d.m4s"), playlist}
 }

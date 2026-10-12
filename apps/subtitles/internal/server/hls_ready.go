@@ -10,39 +10,38 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/hlsmanifest"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func (manager *hlsManager) openHLSDeliveryFile(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, key, name string) (*os.File, error) {
-	file, err := root.Open(filepath.Join(key, filepath.FromSlash(name)))
-	if errors.Is(err, os.ErrNotExist) && manager.waitForPublishedHLSFile(request, root, item, recipe, key, name) {
-		return root.Open(filepath.Join(key, filepath.FromSlash(name)))
+func (manager *hlsManager) openHLSDeliveryFile(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, key, name string, plan *copiedHLSPlan) (*os.File, error) {
+	file, err := root.Open(filepath.FromSlash(name))
+	if errors.Is(err, os.ErrNotExist) && manager.waitForPublishedHLSFile(request, root, item, recipe, key, name, plan) {
+		return root.Open(filepath.FromSlash(name))
 	}
 	return file, err
 }
 
-func (manager *hlsManager) waitForPublishedHLSFile(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, key, name string) bool {
+func (manager *hlsManager) waitForPublishedHLSFile(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, key, name string, plan *copiedHLSPlan) bool {
 	if !hlsFile(name) || !strings.HasSuffix(name, ".m4s") {
 		return false
 	}
 	manager.mu.Lock()
 	active := manager.jobs[key] != nil
 	manager.mu.Unlock()
-	if !active || !manager.hlsSegmentPublished(request, root, item, recipe, key, name) {
+	if !active || !manager.hlsSegmentPublished(request, root, item, recipe, name, plan) {
 		return false
 	}
 	ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
 	defer cancel()
 	return playback.WaitHLSReady(ctx, func() error {
-		_, err := root.Stat(filepath.Join(key, filepath.FromSlash(name)))
+		_, err := root.Stat(filepath.FromSlash(name))
 		return err
 	})
 }
 
-func (manager *hlsManager) hlsSegmentPublished(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, key, name string) bool {
-	file, err := root.Open(filepath.Join(key, filepath.Dir(filepath.FromSlash(name)), "index.m3u8"))
+func (manager *hlsManager) hlsSegmentPublished(request *http.Request, root *os.Root, item library.Item, recipe hlsRecipe, name string, plan *copiedHLSPlan) bool {
+	file, err := root.Open(filepath.Join(filepath.Dir(filepath.FromSlash(name)), "index.m3u8"))
 	if err != nil {
 		return false
 	}
@@ -59,7 +58,10 @@ func (manager *hlsManager) hlsSegmentPublished(request *http.Request, root *os.R
 		return strings.Contains("\n"+string(validated), "\n"+filepath.Base(name)+"\n")
 	}
 	duration := playback.HLSPlaybackDuration(sharedHLSRecipe(recipe), manager.probe.duration(request.Context(), item))
-	completed, _ := hlsmanifest.CompleteVOD(validated, duration, 4)
+	completed, _, err := plan.project(validated, duration)
+	if err != nil {
+		return false
+	}
 	projected, err := hlsPlaylistWithSession(completed, "")
 	if err != nil {
 		return false

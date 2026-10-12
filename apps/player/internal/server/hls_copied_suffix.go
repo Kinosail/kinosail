@@ -93,17 +93,9 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 	if !manager.index.Safe(item.Path) || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 		return nil, errHLSIdentityChanged
 	}
-	phase = "packets"
-	timeline, err = manager.scanCopiedHLSSuffix(ctx, item, policy, recipe.offset, duration, recipe.mode)
+	phase = "video-index"
+	timeline, err = manager.scanCopiedHLS(ctx, item, policy, recipe.offset, duration, copiedHLSSuffixSpan(duration, recipe.mode), 8<<20, 100_010)
 	if err != nil {
-		return nil, err
-	}
-	phase = "idr"
-	if err := manager.certifyCopiedHLS(ctx, item, timeline); err != nil {
-		return nil, err
-	}
-	phase = "configuration"
-	if err := manager.certifyCopiedHLSConfiguration(ctx, item, timeline); err != nil {
 		return nil, err
 	}
 	phase = "identity"
@@ -125,4 +117,13 @@ func (manager *hlsManager) copiedHLSCacheUnwritten(directory string) bool {
 		}
 	}
 	return true
+}
+
+func copiedHLSSuffixSpan(duration float64, mode string) float64 {
+	if mode == "audio-transcode" {
+		return maximumCopiedHLSAudioReplay
+	}
+	// Remux scans retain the format/video EOF tolerance within the shared
+	// deadline and output limits. Audio replay keeps its encoder-history bound.
+	return duration + 0.1
 }

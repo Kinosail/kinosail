@@ -27,9 +27,7 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 		}
 		ready, err = waitForHLSJobFile(segmentContext, path, job)
 		if ready && job != nil {
-			manager.mu.Lock()
-			err = manager.validateHLSPolicy(segmentContext, item, recipe, job.cachePolicy)
-			manager.mu.Unlock()
+			err = manager.validateRecipeSegmentPolicy(segmentContext, item, recipe, job.cachePolicy)
 			if err != nil {
 				slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "canceled", request.Context().Err() != nil, "error", hlsDiagnostic(err, item.Path))
 				cancel()
@@ -45,6 +43,16 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	}
 	cancel()
 	return ready
+}
+
+func (manager *hlsManager) validateRecipeSegmentPolicy(ctx context.Context, item library.Item, recipe hlsRecipe, expected string) error {
+	resolved, err := playback.ResolveHLSSource(sharedHLSRecipe(recipe), mediaFactsFor(item, manager.probe.facts(ctx, item)), item.Subtitles)
+	if err != nil {
+		return err
+	}
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	return manager.validateHLSPolicy(ctx, item, localHLSRecipe(resolved), expected)
 }
 
 func (manager *hlsManager) prepareRecipeSegmentFile(ctx context.Context, item library.Item, recipe hlsRecipe, name, path string) (*hlsJob, error) {

@@ -1,6 +1,9 @@
 import AVFoundation
 import AVKit
 import Foundation
+import OSLog
+
+private let progressLog = Logger(subsystem: "com.kinosail.player", category: "playback-progress")
 
 extension PlaybackEngine {
     var selectedAudioTrackID: String? {
@@ -42,6 +45,7 @@ extension PlaybackEngine {
             throw ClientError.invalidInput("Could not skip to that position. Try again.")
         }
         self.seconds = seconds
+        committedPosition = seconds
         if duration <= 0 || seconds < duration { completed = false }
         saveProgress(watched: false)
     }
@@ -266,7 +270,12 @@ extension PlaybackEngine {
 
     func saveProgress(watched: Bool) {
         guard let writer else { return }
-        let position = seconds
+        // Loading and queued seeks can change the displayed position before
+        // AVPlayer accepts it. Keep the last position confirmed by playback.
+        guard let position = committedPosition else {
+            progressLog.debug("operation=progress-save outcome=uncommitted-position session=\(self.generation.uuidString, privacy: .public)")
+            return
+        }
         let watched = watched || completed
         lastSaved = position
         let attempt = generation

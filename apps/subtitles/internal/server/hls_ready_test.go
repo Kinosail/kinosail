@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -63,13 +64,12 @@ func TestHLSDeliveryUnknownInactiveAndCanceledSegmentsStayBounded(t *testing.T) 
 
 func TestInvalidPlaybackSessionUsesOnlyPublishedManifestSegments(t *testing.T) {
 	manager, item, recipe, directory := readyHLSFixture(t)
-	root, err := os.OpenRoot(manager.cache)
+	root, err := os.OpenRoot(filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe)))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer root.Close()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/item/360p/index.m3u8?playSessionId=invalid%20session", nil)
-	key := hlsRecipeKey(item.ID, recipe)
 	for _, test := range []struct {
 		name      string
 		published bool
@@ -77,7 +77,7 @@ func TestInvalidPlaybackSessionUsesOnlyPublishedManifestSegments(t *testing.T) {
 		{"360p/segment-00000.m4s", true},
 		{"360p/segment-00001.m4s", false},
 	} {
-		if published := manager.hlsSegmentPublished(request, root, item, recipe, key, test.name); published != test.published {
+		if published := manager.hlsSegmentPublished(request, root, item, recipe, test.name, nil); published != test.published {
 			t.Fatalf("published %q = %t, want %t", test.name, published, test.published)
 		}
 	}
@@ -90,7 +90,7 @@ func readyHLSFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string
 	t.Helper()
 	cache := t.TempDir()
 	source := filepath.Join(t.TempDir(), "source.mp4")
-	if err := os.WriteFile(source, nil, 0o600); err != nil {
+	if err := os.WriteFile(source, []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	probe := filepath.Join(t.TempDir(), "ffprobe")
@@ -104,5 +104,26 @@ func readyHLSFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string
 	if err := os.WriteFile(filepath.Join(directory, "index.m3u8"), []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:4,\nsegment-00000.m4s\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	return &hlsManager{cache: cache, probe: newMediaProbe(probe), jobs: map[string]*hlsJob{key: {done: make(chan struct{})}}}, item, recipe, directory
+	manager := &hlsManager{cache: cache, probe: newMediaProbe(probe), settings: newSettingsStore(filepath.Dir(source), "", "", nil), jobs: map[string]*hlsJob{key: {done: make(chan struct{})}}}
+	writeLegacyHLSPlan(t, manager, item, recipe, filepath.Dir(directory))
+	return manager, item, recipe, directory
+}
+
+func writeLegacyHLSPlan(t *testing.T, manager *hlsManager, item library.Item, recipe hlsRecipe, directory string) {
+	t.Helper()
+	options, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		t.Fatal(err)
+	}
+	plan, err := json.Marshal(copiedHLSPlan{Version: 1, Policy: options.Cache, Strategy: "legacy"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	master := []byte("#EXTM3U\n#KINOSAIL-TRANSCODER:" + options.Cache + "\n#EXT-X-STREAM-INF:BANDWIDTH=1\n360p/index.m3u8\n")
+	master = append(master, copiedHLSPlanBinding(plan)...)
+	for name, data := range map[string][]byte{".source": []byte(options.Cache), copiedHLSPlanFile: plan, "index.m3u8": master} {
+		if err := writeAtomicFile(filepath.Join(directory, name), data); err != nil {
+			t.Fatal(err)
+		}
+	}
 }
