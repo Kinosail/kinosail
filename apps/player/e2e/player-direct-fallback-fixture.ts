@@ -32,6 +32,7 @@ export async function startDirectPlayer(page: Page, options: { preloadHls?: bool
       play: { value: async () => { const state = window as Window & { playAttempts?: number }; state.playAttempts = (state.playAttempts || 0) + 1; } },
     });
     class FakeHls {
+      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "switched", ERROR: "error" };
       static ErrorTypes = { NETWORK_ERROR: "network", MEDIA_ERROR: "media" };
       static isSupported = () => true;

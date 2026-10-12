@@ -8,10 +8,14 @@ const origin = process.env.QA_RESUME_ORIGIN, token = process.env.QA_RESUME_TOKEN
 const id = process.env.QA_RESUME_ITEM, output = process.env.QA_RESUME_OUTPUT;
 const engine = process.env.QA_RESUME_ENGINE || 'chromium';
 const native = engine === 'webkit-native';
+const expectedMode = process.env.QA_RESUME_EXPECTED_MODE || 'remux';
+const frameRate = Number(process.env.QA_RESUME_FRAME_RATE || 24);
 const duration = Number(process.env.QA_RESUME_DURATION || 32);
+const resume = Number(process.env.QA_RESUME_SECONDS || 12.5);
+const forceConversion = process.env.QA_RESUME_FORCE_AUDIO_CONVERSION === 'true';
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
-const context = await browser.newContext({extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
+const context = await browser.newContext({...(forceConversion ? {userAgent: 'Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36'} : {}), extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
 const rows = [], responses = [];
 let failureClass;
 
@@ -21,7 +25,7 @@ try {
   const plan = await planResponse.json(), reference = plan.direct;
   if (!reference?.startsWith('/') || reference.startsWith('//')) throw new Error('reference_source_shape');
   for (const variant of ['reference', 'compatible']) {
-    const progress = await context.request.put(`${origin}/api/v1/items/${id}/progress`, {data: {seconds: 12.5, watched: false}});
+    const progress = await context.request.put(`${origin}/api/v1/items/${id}/progress`, {data: {seconds: resume, watched: false}});
     if (progress.status() !== 200) throw new Error('save_resume_status_' + progress.status());
     const page = await context.newPage();
     await page.addInitScript(() => document.addEventListener('playing', event => {
@@ -40,7 +44,7 @@ try {
         kind: path.endsWith('.m3u8') ? 'playlist' : path.endsWith('.m4s') ? 'fragment' : 'initialization',
         status: response.status(), offset: path.match(/-o(\d+)\//)?.[1],
         segment: path.match(/\/(segment-\d{5}\.m4s)$/)?.[1],
-        origin: response.headers()['x-kinosail-hls-origin'],
+        origin: response.headers()['x-kinosail-hls-origin'], clock: response.headers()['x-kinosail-hls-clock'],
       });
     });
     if (variant === 'reference') {
@@ -58,7 +62,7 @@ try {
       await stage.press('k');
       await page.waitForFunction(() => document.querySelector('video').paused);
     }
-    const row = await page.evaluate(async ({variant, duration, native}) => {
+    const row = await page.evaluate(async ({variant, duration, native, resume, frameRate}) => {
       const video = document.querySelector('video'), samples = [], presentations = [];
       if (!video) return {variant, error: 'video_missing', samples};
       const wait = (event, action) => new Promise((resolve, reject) => {
@@ -70,11 +74,13 @@ try {
         video.addEventListener(event, done, {once: true});
         action?.();
       });
-      let error;
+      let error, ended = false;
       try {
         if (video.readyState < 2) await wait('loadeddata');
         video.pause();
-        for (const point of [12.55, 13.05, 17.55, 21.55, 25.55, 29.55, Math.min(31.55, duration - .05)]) {
+        const points = resume >= 60 ? [resume + .05, resume + .55, resume + 1.55, resume + 2.55, resume + 3.55, resume + 4.55, duration - .05]
+          : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, duration > 40 ? duration - .05 : Math.min(31.55, duration - .05)];
+        for (const point of points) {
           // A seeked event can precede compositor presentation in WebKit.
           // Wait for the requested timestamp, never for an expected pixel hash.
           // Native WebKit HLS does not emit frame callbacks for paused seeks.
@@ -91,7 +97,7 @@ try {
               const presentedTime = metadata.mediaTime + video.currentTime - decodedTime;
               if (presentations.length < 64) presentations.push({point, mediaTime: metadata.mediaTime, presentedTime,
                 currentTime: video.currentTime, decodedTime, paused: video.paused});
-              if (presentedTime >= point - 1 / 24 - .002 && presentedTime <= point + .002) {
+              if (presentedTime >= point - 1 / frameRate - .002 && presentedTime <= point + .002) {
                 clearTimeout(timer); resolve({presentedTime, mediaTime: metadata.mediaTime});
               } else callback = video.requestVideoFrameCallback(frame);
             };
@@ -108,12 +114,15 @@ try {
             .map(value => value.toString(16).padStart(2, '0')).join('');
           samples.push({point, currentTime: video.currentTime, ...frame, digest});
         }
+        video.muted = true;
+        await wait('ended', () => video.play());
+        ended = video.ended;
       } catch (caught) { error = caught.message; }
-      return {variant, error, duration: video.duration, width: video.videoWidth, height: video.videoHeight,
+      return {variant, error, ended, duration: video.duration, width: video.videoWidth, height: video.videoHeight,
         firstPlaying: window.qaResumeFirstPlaying,
         start: Number(video.dataset.start), mode: video.dataset.compatibilityMode,
         adapter: video.currentSrc.startsWith('blob:') ? 'mse' : 'native', currentTime: video.currentTime, samples, presentations};
-    }, {variant, duration, native});
+    }, {variant, duration, native, resume, frameRate});
     rows.push(row);
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await page.close();
@@ -124,14 +133,14 @@ finally {
   await browser.close();
 }
 const matches = (rows[0]?.samples || []).map((sample, index) => sample.digest === rows[1]?.samples[index]?.digest);
-const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error)
-  && matches.length === 7 && matches.every(Boolean) && rows[1].mode === 'remux'
+const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error || !row.ended)
+  && matches.length === 7 && matches.every(Boolean) && expectedMode.split(',').includes(rows[1].mode)
   && Math.abs(rows[1].duration - rows[0].duration) < .1
-  && rows[1].firstPlaying >= 12.45 && rows[1].firstPlaying < 13
+  && rows[1].firstPlaying >= resume - .05 && rows[1].firstPlaying < resume + .5
   && (!native || rows[1].adapter === 'native')
   && responses.length > 0 && responses.every(response => response.status < 400);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
-  capabilitySimulation: native ? 'MSE disabled to exercise native WebKit HLS policy' : null,
+  capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
   proofClass: 'Real authenticated Player process; synthetic source; unmodified watch page and HLS; original-file reference',
   passed, failureClass, rows, matches, responses}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));

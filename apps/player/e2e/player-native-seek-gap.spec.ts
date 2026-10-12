@@ -51,6 +51,7 @@ for (const scenario of [
     });
     if (mode === "mse") {
       class FakeHls {
+        static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
         static isSupported = () => true;
         static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "level", ERROR: "error" };
         static ErrorTypes = { NETWORK_ERROR: "network", MEDIA_ERROR: "media" };
