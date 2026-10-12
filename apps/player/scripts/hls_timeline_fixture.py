@@ -11,19 +11,20 @@ def check(condition, failure):
         raise RuntimeError(failure)
 
 
-def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"):
+def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv", noise=False, video_options=(), size="640x360"):
     numerator, _, denominator = rate.partition("/")
     frame_rate = float(numerator) / float(denominator or "1")
     expected_duration = frames / frame_rate
     path = directory / (name + extension)
-    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s=640x360:r={rate}:d={expected_duration}",
-        "-f", "lavfi", "-i", f"sine=frequency=440:sample_rate=48000:duration={expected_duration}",
+    audio = f"anoisesrc=color=white:amplitude=0.12:seed=872:sample_rate=48000:duration={expected_duration}" if noise else f"sine=frequency=440:sample_rate=48000:duration={expected_duration}"
+    command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s={size}:r={rate}:d={expected_duration}",
+        "-f", "lavfi", "-i", audio,
         "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
         # Define the generated SD fixture's color interpretation. Chromium's
         # original-file and MSE demuxers use different defaults when it is absent.
         "-vf", "setparams=range=limited:colorspace=smpte170m:color_primaries=smpte170m:color_trc=smpte170m",
         "-g", str(gop), "-keyint_min", "1", "-sc_threshold", "0", "-force_key_frames", keys,
-        "-frames:v", str(frames), "-c:a", "aac", "-ac", "2", str(path)]
+        "-frames:v", str(frames), *video_options, *(["-af", "lowpass=f=6000"] if noise else []), "-c:a", "aac", "-ac", "2", str(path)]
     subprocess.run(command, check=True, timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     probe = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey",
         "-show_entries", "frame=best_effort_timestamp_time:format=duration:stream=avg_frame_rate,color_space,color_transfer,color_primaries,color_range",
@@ -36,7 +37,8 @@ def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"
     check(color == {"color_space": "smpte170m", "color_transfer": "smpte170m", "color_primaries": "smpte170m", "color_range": "tv"}, "fixture_color_metadata")
     check(abs(float(actual_rate[0]) / float(actual_rate[1]) - frame_rate) < 0.001, "fixture_frame_rate")
     expected = [float(v) for v in keys.split(",")]
-    check(len(times) == len(expected) and all(abs(a-b) < 0.05 for a, b in zip(times, expected)), "fixture_keyframes")
+    # A forced key is rounded to an available frame, including low frame rates.
+    check(len(times) == len(expected) and all(abs(a-b) < max(0.05, 1 / frame_rate) for a, b in zip(times, expected)), "fixture_keyframes")
     check(abs(duration - expected_duration) < 0.1, "fixture_duration")
     if name == "fractional15s":
         check(any(abs(v - round(v, 3)) > 0.00001 for v in times), "fixture_submillisecond_keyframe")

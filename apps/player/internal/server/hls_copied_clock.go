@@ -228,6 +228,12 @@ func (manager *hlsManager) bindCopiedHLSClock(ctx context.Context, item library.
 	}
 	bound := *timeline
 	bound.Clock = &clock
+	if recipe.mode == "audio-transcode" && timeline.AudioSource != nil {
+		bound.AudioGrid, err = manager.measureCopiedHLSAudioGrid(ctx, media)
+		if err != nil {
+			return err
+		}
+	}
 	if err := manager.commitCopiedHLSClock(ctx, item, recipe, directory, name, policy, root, media, before, &bound); err != nil {
 		return err
 	}
@@ -255,7 +261,7 @@ func (manager *hlsManager) commitCopiedHLSClock(ctx context.Context, item librar
 
 func copiedHLSClockRejected(ctx context.Context, mode string, result error) {
 	if result != nil && ctx.Err() == nil {
-		slog.WarnContext(ctx, "HLS copied clock rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", mode, "failure_class", "generation-or-assets")
+		slog.WarnContext(ctx, "HLS copied clock rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", mode, "failure_class", copiedHLSClockFailureClass(result))
 	}
 }
 

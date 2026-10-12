@@ -136,7 +136,7 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.mode == "audio-transcode" {
 		options.Cache += ":copied-completion=1"
 		if item.Kind != "audio" && item.Kind != "audiobook" {
-			options.Cache += ":copied-audio-origin=1"
+			options.Cache += ":copied-audio-origin=3"
 		}
 	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
