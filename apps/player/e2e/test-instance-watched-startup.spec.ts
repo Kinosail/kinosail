@@ -141,7 +141,26 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await info.attach("accepted-watched-late-native-notification", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
       browser: info.project.name, cancelledAgain, stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
-  } catch (error) {bodyFailed = true; throw error;}
+  } catch (error) {
+    bodyFailed = true;
+    // Read through the owned relay before aborting the pending navigation.
+    // The old document can disappear before an ordinary afterEach inspection.
+    const media = await relay.evaluate(() => {
+      const video = (opener as Window | null)?.document.querySelector<HTMLVideoElement>("video");
+      if (!video) return {unavailable: true};
+      const ranges = (value: TimeRanges) => Array.from({length: Math.min(value.length, 8)},
+        (_, index) => [value.start(index), value.end(index)]);
+      return {seconds: video.currentTime, duration: Number.isFinite(video.duration) ? video.duration : null,
+        paused: video.paused, ended: video.ended, seeking: video.seeking,
+        readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
+        decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        buffered: ranges(video.buffered), seekable: ranges(video.seekable)};
+    }).catch(() => ({unavailable: true}));
+    await info.attach("late-native-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, watched, cancelledAgain, media,
+      boundary: "Native snapshot before owned transport cleanup; no source URL or error text"}), contentType: "application/json"});
+    throw error;
+  }
   finally {
     release();
     const cleanup = await Promise.allSettled([page.unrouteAll({behavior: "wait"}), relay.close()]);

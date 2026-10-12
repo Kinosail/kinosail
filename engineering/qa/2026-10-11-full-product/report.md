@@ -1511,3 +1511,27 @@ remain unchanged. Wider instrumentation can add deep-run overhead; hosted result
 must establish its full-module coverage and execution cost. No test or assertion
 is removed to obtain coverage. Private `consumer-coverage-*` receipts retain exact
 commands, revisions, profiles and source/log hashes.
+
+## Late native callback failure evidence
+
+The final hosted failure traces select Arrival over HLS, rather than the helper's
+preferred Example Movie. WebKit's failure capture shows “Seeking…” after the
+near-end seek. Four attempts fail while waiting for the actual late `ended`
+notification. Firefox's failed first attempt reaches the later reopened-page
+control assertion; its retry passes. Neither cause is resolved by these traces.
+
+Six focused local HLS repetitions pass unchanged assertions on Linux ARM64.
+The same six pass with the retained failure-only snapshot. This does not reproduce
+the hosted AMD64 failure. Before releasing the held request, the test now reads
+native media state through its owned relay. The attachment includes bounded
+buffer/seekable ranges, time, frame count, native flags and numeric error code.
+It excludes source URLs, credentials, remote text and media identifiers.
+
+A deliberate private assertion failure retains one valid native snapshot, the
+original forced error, failure artifacts and successful container cleanup. Host
+trust remains unchanged. The first negative selector matches no cases and is
+excluded. An earlier interval probe passes six journeys but loses its successful
+snapshots after closing the relay; it provides no native-snapshot evidence.
+A final type-only cast produces byte-identical JavaScript under TypeScript 6.0.3.
+Private `watched-failure-evidence-*` receipts record the controls and hashes.
+No playback behavior, retry, timeout or product assertion changes.
