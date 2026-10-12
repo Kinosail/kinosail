@@ -66,8 +66,30 @@ func showPlay(request *http.Request, progress *progressStore, show library.Show)
 	return &showPlayAction{episode.ID, episode.Title, "Play again", "/watch/" + episode.ID}
 }
 
-func showCards(request *http.Request, progress *progressStore, shows []library.Show) []showCard {
+func showCards(request *http.Request, index *libraryIndex, progress *progressStore, shows []library.Show) []showCard {
 	result := make([]showCard, len(shows))
+	if len(shows) == 0 {
+		return result
+	}
+	positions := make(map[string]int, len(shows))
+	for position, show := range shows {
+		positions[show.ID] = position
+	}
+	episodes := make([]library.Item, 0, len(shows))
+	references, _ := index.References()
+	policy := viewerPolicy(currentViewer(request))
+	for _, item := range references {
+		if item.Kind != "video" || item.Show == "" {
+			continue
+		}
+		if _, selected := positions[library.ShowID(item.Show)]; selected && policy.Allows(*item) {
+			episodes = append(episodes, *item)
+		}
+	}
+	_, complete := library.Organize(episodes)
+	for _, show := range complete {
+		shows[positions[show.ID]] = show
+	}
 	for index, show := range shows {
 		result[index] = showCard{show, showPlay(request, progress, show)}
 	}

@@ -18,6 +18,7 @@ async function login(page: Page) {
 	await page.getByLabel("Password", { exact: true }).fill("test-instance-password");
 	await page.getByLabel("Authentication or recovery code").fill(totp());
 	await page.getByRole("button", { name: "Sign in", exact: true }).click();
+	await page.waitForURL(url => url.pathname !== "/login");
 	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
 	await expect(page).toHaveURL("/");
 }

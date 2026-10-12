@@ -1,6 +1,7 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import { createHmac } from "node:crypto";
+import { gotoAuthForm } from "../../../scripts/testing/auth-form-navigation";
 
 export const viewports = [
 	{ width: 1440, height: 900 },
@@ -15,9 +16,9 @@ export function configureLayoutAudit() {
 	test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));
 }
 
-export function totp(): string {
+export function totp(secretBase32 = process.env.KINOSAIL_TEST_TOTP_SECRET ?? ""): string {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	const bits = [...(process.env.KINOSAIL_TEST_TOTP_SECRET ?? "")].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
+	const bits = [...secretBase32].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
 	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
 	const counter = Buffer.alloc(8);
 	counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));
@@ -27,7 +28,12 @@ export function totp(): string {
 }
 
 export async function login(page: Page, name = "Owner", password = "test-instance-password") {
-	await page.goto("/login");
+	const response = await gotoAuthForm(page, "/login", test.info());
+	expect(response?.status()).toBe(200);
+	expect(response!.request().redirectedFrom()).toBeNull();
+	const loginURL = new URL(response!.url());
+	expect(loginURL.pathname + loginURL.search + loginURL.hash).toBe("/login");
+	await expect(page).toHaveURL(response!.url());
 	await page.getByLabel("Name").fill(name);
 	await page.getByLabel("Password", { exact: true }).fill(password);
 	const code = page.getByLabel("Authentication or recovery code");
