@@ -992,8 +992,10 @@ PR #564 merges reviewed head `a481eb9d2283f7c117c6b71755fcb97b8ebe525c`
 with merge commit `394736cb740fc6873aa6e94b41e22dc797155529`. Required CI
 `38194962439` and all three layout jobs in `38194962237` pass. A fresh fetch
 proves ancestry of the reviewed head, Show repair and completed Viewer journey.
-Its tree equals the merged tree. Main CI `38196658853` is queued; current
-publication, production promotion and Nox revision acceptance are not yet proved.
+Its tree equals the merged tree. Main CI `38196658853` passes, including Player AMD64 and ARM64 build,
+production-image tests, scans, publication, signing, provenance checks and
+production-tag promotion. Published digest values and Nox revision acceptance
+remain separate verification work.
 
 A clean `a481eb9d` responsive sweep runs all six `layout-audit-*` spec files
 against a disposable populated Go HTTPS Server. Chromium and WebKit each pass
@@ -1050,3 +1052,35 @@ This mislabels local runs. Its environment field now reads the actual process
 platform, architecture and Node version. Transfer, hash, restart, offline
 playback and seek assertions remain unchanged. A dedicated greater-than-2-GiB
 synthetic fixture run follows; tiny mocked chunk checks remain isolated proof.
+
+
+## Real large offline transfer — October 12
+
+At `d5efeb69399d5c71f71c6eae1b4d71f72798f6f1`, the opt-in Chromium journey
+passes against a disposable populated Go HTTPS Server with TLS validation.
+The generated file is 2,156,160,861 bytes. Its 12-second H.264/AAC video has an
+ISO `free` box; this verifies transfer size, not feature-film playback duration.
+
+The transfer is interrupted at 75,497,472 bytes by closing the browser. The
+persistent profile reopens, verifies the original Viewer and private job, and
+resumes. The completed OPFS record matches the source size and SHA-256. After
+another browser shutdown, an independent Node stream hashes the actual backing
+file to `249ab9776988313fdede264d7932891c061cda25a5b34845ed72134f0bc2736b`.
+There are 259 range responses, including starts beyond 2 GiB.
+
+A second reopen verifies the same Viewer. The fixture's network connection is
+then disconnected. Offline playback decodes 320×180 video, advances and seeks
+to seven seconds without a media error. Both retained screenshots were inspected.
+The single case passes in 61.40 seconds without retries, skips or flakes. The
+full fixture command takes 107.63 seconds. The owned container, synthetic large
+file and browser profile are removed; private receipts, screenshots and hashes
+remain. Host certificate trust is unchanged.
+
+The prior attempt reaches 72 MiB and fails because the test demands credentials
+from an already restored session. The existing session-persistence behavior
+redirects ordinary sign-in to the home page. The journey now checks the original
+Viewer and authenticated job after both reopens. The first credential sign-in,
+restart, range, independent hash and disconnected decode assertions remain.
+This is a test-harness repair; no application authentication behavior changes.
+The failure model and failing attempt were recorded before the test edit.
+`make max-loc` and post-commit Player `make verify-changed` pass.
