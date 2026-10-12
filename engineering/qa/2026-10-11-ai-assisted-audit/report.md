@@ -259,7 +259,7 @@ The corrected run passed all four required gates; [PR #553](https://github.com/K
 A fetched ancestry check placed reviewed head `595d2a0cbcaaffc07ed7396b79c47a187bd59891` in remote main `6f8bfa60d46d5c53621d5590ace3e943669d53ad`.
 Run: [38158260089](https://github.com/Kinosail/kinosail/actions/runs/38158260089).
 
-### AQA-008 — Repaired locally: executable-fixture launch race
+### AQA-008 — Merged: executable-fixture launch race
 
 The main-push shared-package job failed `TestFingerprintCacheAndToolFailuresAreDeterministic` before its first fingerprint assertion.
 Linux returned `text file busy` while launching its newly written, test-owned shell executable.
@@ -411,6 +411,170 @@ Therefore this mux-only candidate remains experimental. It does not establish co
 The playback receipt is `preroll-hls-audio-play-probe.json`, SHA-256 `0619ab672ca00642a6e249c48f32d5105e1a1f69d4d996e0f4976e3ed2369d8e`.
 [HLS start offsets](https://www.rfc-editor.org/rfc/rfc8216.html#section-4.3.5.2) may express preroll suppression, but client behavior still requires independent proof.
 
+### Prepared copied-resume repair
+
+The retained real-browser baseline confirms AQA-006 on `c5fd62edfd3201fbc15795d3073a658ba1f61c62`.
+Chromium and WebKit each display incorrect images at all seven requested positions after a cold 12.5-second resume.
+Both also expose the wrong duration. These cold-stream failures remain open.
+
+The prepared repair selects the preceding certified source key while retaining the requested recipe identity.
+`X-Kinosail-HLS-Origin` gives the web adapter the actual key origin.
+Hls.js reads it before loading the manifest; native HLS reads it through an abortable HEAD request.
+Malformed or future origins stop loading before media requests and offer a retry at the retained position.
+Native metadata completion clears its temporary clock before applying the real resume seek.
+Prepared indexing declines sources whose demux origin is unknown or nonzero.
+Cold streams retain their existing behavior; this repair adds no foreground whole-file scan.
+
+Native failure injection reproduced two additional problems: Retry restarted at zero, and the temporary clock suppressed the actual seek.
+The corrected native journey passes invalid metadata, a future origin, HTTP 503, a pending seek, and switching to Direct Play.
+Failure and loaded screenshots cover 390, 1440, and 1920-pixel widths.
+Failure clears pending skeletons and identifies compatible playback correctly.
+These are actual Player controls with injected HTTP metadata failures, not unmodified-network E2E proof.
+
+### AQA-013 — Copied refill discards audio preroll and shifts its clock
+
+An independently generated uninterrupted tail passed all seven native frame comparisons.
+A regenerated tail retained the preceding image when seeking near EOF, although normal playback reached the correct final frame.
+Packet inspection found that the existing refill discarded leading AAC packets, then shifted remaining audio earlier than video.
+Removing only that shift repaired EOF but left an 85.334 ms audio gap at a refill boundary.
+The independent review caught that gap; passing video images alone did not qualify the candidate.
+
+Refills limit `-copypriorss` to video and keep both tracks on the common mux clock.
+Initial preparation still trims both tracks so earlier audio does not redefine the browser's timeline origin.
+Applying video-only trimming to initial preparation made both MSE engines display seven incorrect images.
+The retained failed receipt records that rejected candidate; the initial/refill distinction repairs it.
+The existing prepared suite then exposed a second limit: MKV seeks can return an entire earlier audio cluster.
+Unbounded preroll duplicated about two seconds of audio at a refill boundary.
+Later fragments now discard only packets before the certified mux delay using an audio bitstream filter.
+Retained packets keep their timestamps and payloads; the filter does not shift audio independently.
+The retained regression populates all ten fragments, verifies audio continuity, deletes the existing final fragment, then plays the real watch page.
+It requires exact original-frame images, correct startup position and duration, unchanged initialization bytes, and a restored tail.
+It also checks every audio boundary within the existing 50 ms tolerance and compares final audio and video endpoints.
+Chromium, WebKit MSE, and native WebKit each pass all seven images after that correction.
+The final remux fixture's boundaries agree within approximately one microsecond, and its final audio and video endpoints match.
+The broader conversion suite uses its existing 50 ms tolerance; these results do not establish sample-exact audio continuity.
+This uses real native WebKit decoding with MSE capability disabled, not physical Safari acceptance.
+WebKit's paused native HLS path emits no frame callbacks; the native oracle uses seek completion and render turns with unchanged image assertions.
+The MSE oracle retains timestamp-qualified frame callbacks.
+
+The exact commands are `python3 apps/player/scripts/test-hls-resume-browser.py --engines webkit-native --prepared --tail-recovery` and the same command with `--controls` instead of `--tail-recovery`.
+Each uses the outer `scripts/ci/e2e-artifact.py` wrapper.
+Receipts below are under `.verification/hls-resume-browser/`; each retains the revision, environment, binary hash, source state, and artifact hashes.
+
+| Receipt directory | Result | Receipt SHA-256 |
+| --- | --- | --- |
+| `20261011T193629Z` | cold baseline: both MSE engines fail all seven images | `9e48e51abe700123703a744e825c2b8d0082b27900e38e27e80f2ac2fca9eeec` |
+| `20261011T200924Z` | native Retry loses the saved position | `70e51623cc26b375e8b8dd7a42bc0b9b6cc6b1c99456a1ecc8b335fca6925faf` |
+| `20261011T202716Z` | native frames, existing-tail eviction, and audio continuity pass | `ca0b818efdbf210de9ebe1d5a937817eac033809571b472de67558ae6aa781ed` |
+| `20261011T202913Z` | all five native recovery and cancellation cases pass | `70e20c3bf10e22ac9ad18db91f659a1b856aa534ed637ad17f640d73188797ce` |
+| `20261011T203144Z` | rejected initial audio-preroll candidate: both MSE engines fail all seven images | `ecccfec4b8aff7c8ede61aac8f37966a6557b2374de5e2a92e05aa84cf88c487` |
+| `20261011T212810Z` | corrected initial/refill trimming: both MSE engines, tail replacement, and audio continuity pass | `20258279df626c3d3385c43c9b941065d00ffdaf17e67ac1f8cb1071f796f433` |
+| `20261011T212832Z` | corrected initial/refill trimming: native frames, tail replacement, and audio continuity pass | `caa5bcf64c03d704895ee77f250f9466c1c49eed0e8b866080b4620da184b1e6` |
+| `20261011T213124Z` | native pending seek exposes a second seek to a transient buffered position | `b54cd3966a3cce99f679ab8d0e69c259d99f2467a932fdab8a9c9edb5f839240` |
+| `20261011T213524Z` | bounded preroll: both MSE engines, tail replacement, and audio continuity pass | `ec613cda4af8507e058e2fef65091b2197d0ec7dcb5be32121be7a27fb731515` |
+| `20261011T213545Z` | bounded preroll: native frames, tail replacement, and audio continuity pass | `ba2406b867b3637bb97421b23983bb6a9ff470776e521aad2ceea1ecd6ebc095` |
+| `20261011T213601Z` | all five native recovery and cancellation cases pass with the seek guard | `1fce5117b5307622df8536a8744d24f81a4e858c449f6410386d218689351eb8` |
+
+The native pending-seek failure was reproducible with a bounded lifecycle trace.
+A `canplay` handler clamped to a transient later buffer while the requested seek was still outstanding.
+It now leaves an outstanding seek unchanged. The real control journey and diagnostic replay pass without relaxed assertions.
+
+The existing prepared suite's unbounded-preroll failure is retained at `.verification/hls-prepared-timeline/20261011T213034Z/receipt.json`.
+Its SHA-256 is `ead617dda9866e4f5577a9f2a3b646e90883835736c42bd0602d142fa5cb0d13`.
+The bounded-preroll replay passes eight cases; one stops before preparation with a process-inspection timeout.
+That aggregate remains failed. The unchanged serial replay passes all nine cases.
+All six existing audio-conversion and legacy controls pass on the bounded-preroll patch.
+
+| Final existing suite receipt | Result | Receipt SHA-256 |
+| --- | --- | --- |
+| `.verification/hls-prepared-timeline/20261011T214137Z/receipt.json` | nine of nine pass, including sparse, fractional, and resumed timelines | `3d48ddfb06ba60d571caf03a92d15a4e2772d9529163c7180a79d9c3b158309a` |
+| `.verification/hls-followon/20261011T213850Z/receipt.json` | six of six audio-conversion and legacy controls pass | `2d4da113d39b010faa5367881cca43a2ba2e10fd2c533131b7419317b321c0fb` |
+
+Phone failure/loaded and desktop pending/failure renders were inspected directly.
+Recovery text and controls remain readable, and pending indicators disappear after failure or successful recovery.
+These renders do not establish physical-device or assistive-technology acceptance.
+
+The new Chromium frame and metadata-recovery journeys are added to the required Player browser job.
+Current local CI contracts pass 169 tests with five environment-dependent skips.
+The repository's selected actionlint fork, version 1.17.0, accepts the changed workflow.
+The generated Player architecture snapshot was refreshed after the first hosted check identified it as stale.
+Architecture contracts, source limits, whitespace, and post-commit Player verification pass.
+[PR #560](https://github.com/Kinosail/kinosail/pull/560) carries this repair; hosted checks and publication remain pending.
+
+### Hosted resume failures and native startup correction
+
+[CI run 38177651743](https://github.com/Kinosail/kinosail/actions/runs/38177651743) failed two Player browser checks on `abf740ac`.
+The retained native-window test expected replacement playback at 23.25 seconds, but restoration rewound it to 22 seconds.
+The native metadata handler now preserves forward decoder progress only when the pending replacement target is still the captured target.
+Initial restoration and newer explicit targets retain their own positions.
+
+The hosted Chromium resume test presented the correct seven timestamps, but every RGBA hash differed from the original.
+A disposable Linux ARM64 Playwright container reproduced this result.
+All seven decoded I420 hashes were identical; the original used SMPTE170M while MSE used BT.709.
+The generated source lacked explicit color metadata.
+Chromium's [original-file demuxer infers a color space from resolution](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/media/ffmpeg/ffmpeg_common.cc), which explains this diagnostic result.
+The fixture now declares and verifies limited-range SMPTE170M on generated frames with FFmpeg `setparams`.
+Codec output flags alone failed the new metadata assertion on the Mac; that failed attempt remains recorded.
+The same Linux decoder then matched all seven RGBA images without changing the image oracle.
+This defines the synthetic fixture's interpretation. It does not repair or certify untagged-media color parity in production.
+
+A subsequent native control replay still exposed an intermittent 10-to-20-second jump during metadata loading.
+The browser retained a source-clock seek as the new decoder's default playback start position.
+This follows the [HTML media initialization behavior](https://html.spec.whatwg.org/multipage/media.html#dom-media-currenttime).
+Player now clears that default only while the decoder has no metadata, then restores the retained source target after metadata loads.
+Player also removes its competing saved-progress listener once its native adapter owns restoration.
+The shared listener remains available to Subtitles, whose initial native restore depends on it.
+The native first-buffer recovery and its outstanding-seek guard remain in place.
+All ten retained native window/gap tests pass, including paused fractional gaps and initialized replacement progress.
+Real native controls, seven frame comparisons, and a positive resume with certified origin zero also pass.
+
+The browser driver now retains a case before risky work and preserves a browser launch failure when its evicted tail is absent.
+An intentionally unavailable Chromium channel leaves the case failed, with `tailRestored=false` and unchanged initialization recorded.
+It no longer masks that failure with a secondary packet-count exception.
+Mac Firefox still exits before navigation with a missing-profile error, consistent with [upstream Playwright issue 42768](https://github.com/microsoft/playwright/issues/42768).
+The upstream explanation is not a locally proven TCC diagnosis, and no browser permissions were changed.
+A separate Linux Firefox diagnostic passes all seven prepared-resume frame comparisons, tail recovery, and audio checks.
+That diagnostic uses the real cross-compiled Player and an instrumented copy of the browser driver; it is not physical-device proof.
+The disposable Linux container was removed after verification.
+
+The final code checks use the commands above and these retained receipts.
+Outer `scripts/ci/e2e-artifact.py` manifests record `abf740ac`, the exact uncommitted patch hash, and unchanged source throughout each command.
+They establish source-bound local evidence, not a clean-commit or hosted acceptance claim.
+The existing timeline and audio suites were rerun after changing their shared fixture; all nine and six cases pass respectively.
+
+| Receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261011T221330Z/receipt.json` | Linux untagged diagnostic: seven identical I420 frames, seven different RGBA frames | `3b68aa04eb0df21d08eedb020a35d27a11d0568a2f150545fbbb69d231a2804f` |
+| `hls-resume-browser/20261011T221650Z/receipt.json` | Linux Chromium with FFmpeg 8.1.3: seven RGBA images, tail recovery, and audio pass | `bb11e11a4b4df5b663ea310cf8b8c9180dafccfad4c0b7241822398dd4e70149` |
+| `hls-resume-linux/20261011T221807Z/receipt.json` | Linux Firefox diagnostic: seven images, tail recovery, and audio pass | `0b9df2e93761c75471d597dc58298d7ea65f6777ef08f940f73f9a9096a4a3e9` |
+| `hls-resume-browser/20261011T221712Z/receipt.json` | Mac Chromium and WebKit MSE: fourteen images, tail recovery, and audio pass | `67508520e784cda4b8bf5b4709965c165ab07e7e2286646a17a269a7b2255292` |
+| `hls-resume-browser/20261011T221827Z/receipt.json` | retained failure: native pending seek jumps to 20 seconds | `e55e487e75bae0ea20a8e2653f92548763bbd13fe2536e3e504091d595d5926d` |
+| `hls-resume-browser/20261011T222616Z/receipt.json` | final native correction: all five recovery and cancellation cases pass | `318749a8d533ab6dacebb8d054f8f6544cb03d576efa65adbe5c9d149e2ad814` |
+| `hls-resume-browser/20261011T222637Z/receipt.json` | final native correction: seven images, tail recovery, and audio pass | `5e1a3146dedb4314c901552e163e88f5890c9205712db66b3aced9b6c6ccd380` |
+| `hls-resume-browser/20261011T222651Z/receipt.json` | native origin-zero diagnostic: first playback at 0.5 seconds and seven images pass | `56cbbca97cb8bf528622d10dffdead7e404fb79aafcce898b980fc1297e3a3b7` |
+| `hls-resume-browser/20261011T221351Z/receipt.json` | expected browser launch failure retained with missing-tail evidence | `1192afbb927234fdb4db31a002df47f4b0f987c18b0dc3a15963080b9f8a387d` |
+| `hls-prepared-timeline/20261011T221925Z/receipt.json` | all nine existing timeline cases pass | `a4ff3132c1fce0bdeb85c310214ba30eeb8b13c826217138fdd648d759b7bddb` |
+| `hls-followon/20261011T222154Z/receipt.json` | all six existing audio/legacy cases pass | `55759e1a757c8b97bb99ed9975141e3f1519166454ad909ed66d0e41e4beba5b` |
+
+Receipt paths in this table are relative to `.verification/`.
+The native retained-suite manifest is `ai-qa-campaign/native-single-owner-retained/manifest.json` under the same root.
+Its SHA-256 is `d308df35c6e97733d185e204bbf5a54aba683899a44498557a48bc2b7787223f`.
+The Linux probes and origin-zero diagnostic remain private scripts under `.verification/ai-qa-campaign/`.
+The Linux binary, generated source, and result hashes remain recorded separately from the hosted AMD64 job.
+
+Fresh unmodified-server baselines still reproduce cold non-keyframe resume and Mac HEVC fractional-tail failures.
+The cold receipt `hls-resume-browser/20261011T214557Z/receipt.json` has SHA-256 `28308557040ce0d2a325d89190f9286404399b09118a13d8bafa1e64a4f2826e`.
+The HEVC receipt `hls-hevc-startup/20261011T214713Z/receipt.json` has SHA-256 `1e77b81b23b9ebf50e5f8c20eb2eaf77b4374e9bcb866e8e6107433633dacd57`.
+Private clock-header and EVENT-playlist experiments are diagnostics only; neither changes production or closes those findings.
+Hosted verification of the corrected PR remains required before merge.
+
+### Seventh delivery checkpoint
+
+[PR #557](https://github.com/Kinosail/kinosail/pull/557) merged the executable-fixture repair after all required checks passed.
+Fetched ancestry proves task commit `5b0adeba9e60d0bd2f8dfb2ac4259a24d2ba01e8` in main `c5fd62edfd3201fbc15795d3073a658ba1f61c62`.
+[Main run 38168058630](https://github.com/Kinosail/kinosail/actions/runs/38168058630) passed selected checks, published both apps for AMD64 and ARM64, and advanced their production image tags.
+This is publication evidence, not Nox deployment or physical-device acceptance.
+
 ## Additional private artifact checksums
 
 The archives below are retained under `.verification/ai-qa-campaign/hosted/`.
@@ -432,7 +596,89 @@ Hosted artifacts contain the bounded receipts; raw local process logs remain pri
 
 ## Remaining coverage
 
+### Prepared resume: first-fragment recovery retains the original recipe
+
+The public first-fragment eviction case exposed a second prepared-resume boundary.
+At a saved position of 12.5 seconds, deleting the existing first fragment left playback unable to restore it.
+The staged encoder used the correct media window, but publication validated that window's zeroed recipe against the original offset-bound policy.
+Publication now validates the original source recipe. Encoding still uses the same media window.
+
+The new `--prepared --first-recovery` browser case populates all ten fragments, deletes the actual first fragment, and loads the unchanged watch page.
+Chromium MSE, WebKit MSE, and native WebKit each match all seven original-file frames after recovery.
+The recovered fragment is byte-identical. Initialization, both playlists, the timeline, and its clock certificate remain unchanged.
+Audio continuity checks pass before eviction and after recovery. The synthetic source remains unchanged and the Server settles.
+The new case joins the required Chromium workflow; the existing tail-recovery command remains in place.
+
+| Private receipt under `.verification/hls-resume-browser/` | Result | SHA-256 |
+| --- | --- | --- |
+| `20261011T231725Z/receipt.json` | retained failure: first fragment is not restored | `fa4d3fd0d05415b957043977330504e63f7ea2b964ac4b4953005f69824c8969` |
+| `20261011T231843Z/receipt.json` | Chromium and WebKit MSE: fourteen frames and complete first-fragment recovery pass | `da506034a97cd03d99d14a39759ed652a5d7a0a4ecc4b639d22d2751a0a8434d` |
+| `20261011T231903Z/receipt.json` | native WebKit: seven frames and complete first-fragment recovery pass | `9d84cbe5917028945851381a6c14af8fc53a9b843c14df4b3102372db3e83cd2` |
+
+Outer manifests under `.verification/ai-qa-campaign/resume-first-{red,green,native-green}/` bind the exact task patch and unchanged source.
+These checks use base `45a6c6faa293e525e88986a86c537ad30ba43ed5`.
+An independent review accepted the original-recipe publication correction.
+Cold resume remains separate: the current unprepared Chromium run still fails its frame oracle.
+That receipt is `.verification/hls-resume-browser/20261011T231221Z/receipt.json`, SHA-256 `78246610866ac85213a10dccef015c49f12b773d457238c7730627d41f6f0ad7`.
+
 The campaign remains active.
 Retain the earlier audit's unverified journeys until a new passing execution establishes their behavior.
 Inspect the deep-run artifacts, repair confirmed failures, and record the final revision and each remaining platform boundary.
 Physical devices, real media/receivers, production deployment, store distribution, and unsupported external environments are not certified by these local runs.
+
+### AQA-004 follow-up — complete short HEVC output before publication
+
+The repair covers plain HEVC audio conversion at source offset zero, with a probed duration greater than zero and at most 30 seconds.
+Foreground playlist readiness now waits for the actual encoder to finish successfully.
+Background preparation keeps its existing size monitoring, but reports ready only after successful completion.
+The final playlist therefore lists actual fragments instead of a speculative fractional tail.
+
+A source/policy-bound `.hevc-complete` receipt records successful completion.
+Every writer revokes an existing receipt before changing media, including preserved refills.
+Admission rejects active producers and requires a matching receipt, an explicit source binding, and all final assets.
+An absent `.source` cannot use the older timestamp-only fallback for these short streams.
+Old copied-audio cache policies are invalidated once.
+
+The first completion candidate still accepted a failed producer's leftover playlist on retry.
+Deleting `.source` did not fix it because the legacy freshness fallback accepted that missing file.
+The retained failure returned 503 first and 200 on retry.
+The positive receipt repair returns 503 on both attempts and publishes no failed playlist.
+An independent review found no remaining concrete blocker after this change.
+
+`python3 apps/player/scripts/test-hls-short-completion.py` uses a real authenticated Server and real FFmpeg media.
+A task-owned wrapper holds the producer after actual EOF or returns a controlled failure.
+It checks success, repeated failure, the existing 30-second deadline, background readiness, and invalid-cache recovery.
+Missing, mismatched, and symlinked completion receipts each start a new encoder.
+Removing `.source` while retaining the receipt also starts a new encoder.
+The symlink's external sentinel stays unchanged.
+Every tested Server and recorded wrapper process settles during cleanup.
+Failure responses have matching ERROR records with request and playback-session IDs; the authentication token is absent from logs.
+Receipts retain the revision, patch hash, fixture/build commands, source hashes, wrapper hashes, and private-log hashes.
+
+All four existing HEVC journeys pass with five actual fragments, unchanged initialization, complete decoded video, audio content, and packet continuity.
+The new completion cases are added to the required Chromium Player job beside those existing media checks.
+Only safe receipts are uploaded; raw logs and generated media remain private.
+Focused retained startup, cancellation, and policy checks pass locally.
+
+The 29.9-second low-resolution fixture returns its cold playlist in 0.746 seconds on this Mac, including the artificial hold.
+Background preparation takes 7.83 seconds and reuses its one producer after release.
+These measurements do not establish a speed guarantee for high-bitrate media or other hardware.
+Waiting for completion increases startup work for this bounded short-clip path.
+Long HEVC, nonzero HEVC resumes, general HEVC refill, and cold non-keyframe H264 resume remain open.
+There is no new browser, physical-device, deployment, or publication proof from these HTTP/media cases.
+
+| Private receipt under `.verification/` | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-short-completion/20261011T225701Z/receipt.json` | retained failure: missing-source fallback accepts failed output | `1203b9398bd9feac643fd9ebbdc4eb330d81defdb774f8bc829c598f5c42f295` |
+| `hls-short-completion/20261011T230157Z/receipt.json` | success, repeated failure, timeout, and background completion pass | `7f82a57a6af5a14e6062b279af307af9eaccf957f463dfe392813970d25684e3` |
+| `hls-short-completion/20261011T230459Z/receipt.json` | four metadata corruptions force regeneration; sentinel unchanged | `93067dbc70a114952988cb06c73c24217c2f6b027e37c2aa48959e8603aee679` |
+| `hls-short-completion/20261011T230516Z/receipt.json` | 29.9-second cold fixture passes | `68afe0540ebfebce43ec2587718a41a81dc29a495df798d3c65e10fce863e48d` |
+| `hls-short-completion/20261011T230531Z/receipt.json` | 29.9-second background fixture passes | `005c7897b6af1399bdada18c52ffcd23ba7ad0e80dfd5e1eff8627974647f02f` |
+| `hls-hevc-startup/20261011T230327Z/receipt.json` | complete, cold, interrupted, and adopted HEVC media pass | `f50e0c85f44ec1a0758066a4876640e3c050d7296b17e74437d1718dbc7fc515` |
+
+These runs use base `31a061845470b105dabfe9969d3708259b229c32` with the recorded task patch.
+The final CI-contract replay passes 169 tests with five environment-dependent skips.
+Its first run hit a process-permission error in the unchanged Q09 descendant-cleanup test; the focused retry and full replay pass.
+Source limits, whitespace, the architecture snapshot, and the repository-selected actionlint 1.17.0 pass.
+PR #560's current CI encountered an artifact-service `ETIMEDOUT` during the AMD64 container evidence upload.
+That infrastructure failure is retained separately from the short-HEVC repair and still requires hosted reconciliation.

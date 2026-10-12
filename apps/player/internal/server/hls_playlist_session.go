@@ -276,7 +276,7 @@ func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, req
 	started := time.Now()
 	cached := manager.startupWindowReady(item, recipe)
 	if err := manager.prepare(prepareContext, item, recipe); err != nil { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
-		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "mode", recipe.mode, "encoder_phase", hlsReadinessPhase(err), "error", hlsDiagnostic(err, item.Path))
+		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "encoder_phase", hlsReadinessPhase(err), "error", hlsDiagnostic(err, item.Path))
 		status := http.StatusServiceUnavailable
 		if errors.Is(err, playback.ErrHLSSource) {
 			status = http.StatusBadRequest
@@ -289,6 +289,11 @@ func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, req
 		cacheState = "warm"
 	}
 	writer.Header().Set("X-Kinosail-Startup-Cache", cacheState)
+	if !manager.preparedHLSOrigin(writer, request, item, recipe) {
+		slog.WarnContext(request.Context(), "HLS copied origin unavailable", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "failure_class", "source-or-timeline")
+		localizedError(writer, request, "compatible playback is unavailable", http.StatusServiceUnavailable)
+		return false
+	}
 	slog.Info("HLS startup", "cache_state", cacheState, "prepare_ms", time.Since(started).Milliseconds())
 	return true
 }

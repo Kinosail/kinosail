@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"math"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -22,8 +23,30 @@ func (manager *hlsManager) copiedHLSVideo(ctx context.Context, item library.Item
 		manager.probe.facts(ctx, item).Video.Codec == "h264"
 }
 
+func (manager *hlsManager) preparedHLSOrigin(writer http.ResponseWriter, request *http.Request, item library.Item, recipe hlsRecipe) bool {
+	options, err := manager.hlsSettings(item, recipe)
+	if err != nil {
+		return false
+	}
+	directory := filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
+	timeline, err := manager.readCopiedHLSTimelineContext(request.Context(), directory, options.Cache)
+	if err != nil {
+		return !manager.copiedHLSTimelinePresent(directory)
+	}
+	if timeline.Clock == nil {
+		return false
+	}
+	// The requested position remains in the recipe. This header identifies
+	// the certified source key from which the copied decoder timeline starts.
+	writer.Header().Set("X-Kinosail-HLS-Origin", copiedHLSTime(timeline.point(0)))
+	return true
+}
+
 func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.Item, directory, policy string, recipe hlsRecipe) bool {
 	if ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) && !seekCacheFresh(directory, item.Path, policy) {
+		return false
+	}
+	if ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe) && !manager.shortHEVCOutputReady(ctx, item, directory, policy) {
 		return false
 	}
 	if !manager.startupCompletionReusable(ctx, item, directory, policy) {
@@ -56,8 +79,13 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 	if number < 0 || number >= len(timeline.Keys) {
 		return nil, errCopiedHLSIndex
 	}
-	// FFmpeg can demux an earlier key for input -ss. Do not copy that preroll.
-	arguments = append(arguments, "-copypriorss", "0")
+	// Trim the initial audio preroll so the first retained video frame defines
+	// the decoder origin. Refills retain overlapping audio to avoid a gap.
+	trim := "-copypriorss"
+	if number > 0 {
+		trim = "-copypriorss:v"
+	}
+	arguments = append(arguments, trim, "0")
 	if number > 0 {
 		if timeline.Clock == nil {
 			return nil, errCopiedHLSIndex
@@ -65,11 +93,12 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		start := timeline.point(number)
 		floor := math.Floor(start*1_000_000) / 1_000_000
 		offset := start - timeline.point(0) + *timeline.Clock - (start - floor)
+		// Keep copied video and audio on the same mux clock. Shifting only audio
+		// makes it end early and native HLS can stop seeking before the last frame.
 		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
-		// The mux clock restores copied video DTS; audio already keeps its source
-		// presentation offset. Avoid adding that clock twice at a refill boundary.
-		clock := copiedHLSTime(*timeline.Clock)
-		arguments = append(arguments, "-bsf:a", "setts=pts=PTS-"+clock+"/TB:dts=DTS-"+clock+"/TB")
+		// A container seek can return an entire earlier audio cluster. Keep only
+		// the preroll inside the certified mux delay, without changing timestamps.
+		arguments = append(arguments, "-bsf:a", "noise=amount=0:drop=lt(pts*tb\\,-"+copiedHLSTime(*timeline.Clock)+")")
 	}
 	return arguments, nil
 }
