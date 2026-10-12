@@ -1370,3 +1370,11 @@ The local scan takes 3.95 seconds and peaks at 17,219,584 resident bytes.
 This makes decoded-frame validation worth testing within the existing preparation budget.
 It does not establish end-to-end preparation time, high-bitrate behavior, Linux performance, or encoder buffer limits.
 Its exact generation and probe commands, source checksum, and measured limits are in `long-audio-exploration/movie-clock-probe/receipt.json`.
+
+### Current main publication after the fixture repair
+
+Main `4d8ddd2b3e64279ee41f58db90ba0ebf393e9914` passes all required checks in run `38204654259`.
+Player's AMD64 and ARM64 builds pass testing and scanning; publication and production-tag advancement complete successfully.
+Both publication and promotion push digest `sha256:abb3c637fcabe1a05314f4f862bbf94659917daddaf706f8379766e17506bfb8`.
+A fresh fetch also proves reviewed fixture commit `a7623d3335e95ab86157218f5c78f77cab2b6242` is in that exact main revision.
+The safe evidence is `main-4d-publication-receipt.json`. This does not establish Nox deployment or include the pending audio candidate.
