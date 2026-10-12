@@ -3,15 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"math"
 	"os"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
-
-const maximumCopiedHLSSuffix = 30.0
 
 type copiedHLSRequiredKey struct{}
 
@@ -26,7 +23,8 @@ func (manager *hlsManager) coldCopiedHLSNeedsIndex(ctx context.Context, item lib
 	}
 	facts := manager.probe.facts(ctx, item)
 	remaining := facts.Duration - recipe.offset
-	return facts.Video.Codec == "h264" && remaining > 0 && remaining <= maximumCopiedHLSSuffix && !math.IsNaN(remaining)
+	return facts.Video.Codec == "h264" && remaining > 0 &&
+		(recipe.mode == "remux" || remaining <= maximumCopiedHLSAudioReplay)
 }
 
 func coldCopiedHLSRecipe(item library.Item, recipe hlsRecipe) bool {
@@ -74,7 +72,7 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 	// owns this work; requests reuse the job instead of starting more probes.
 	ctx, cancel := context.WithTimeout(parent, 8*time.Second)
 	defer cancel()
-	phase := "admission"
+	phase := "duration"
 	defer func() {
 		if result != nil {
 			// The existing encoder boundary logs this bounded operation and phase
@@ -82,6 +80,11 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 			result = fmt.Errorf("copied HLS suffix %s: %w", phase, result)
 		}
 	}()
+	duration := manager.probe.duration(ctx, item)
+	if !validCopiedHLSEnd(duration) {
+		return nil, errCopiedHLSIndex
+	}
+	phase = "admission"
 	release, err := manager.workloads.Acquire(ctx, workload.Playback)
 	if err != nil {
 		return nil, err
@@ -91,7 +94,7 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 		return nil, errHLSIdentityChanged
 	}
 	phase = "packets"
-	timeline, err = manager.scanCopiedHLSSuffix(ctx, item, policy, recipe.offset, manager.probe.duration(ctx, item))
+	timeline, err = manager.scanCopiedHLSSuffix(ctx, item, policy, recipe.offset, duration, recipe.mode)
 	if err != nil {
 		return nil, err
 	}

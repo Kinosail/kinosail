@@ -5,11 +5,13 @@ import (
 	"strconv"
 )
 
+const maximumCopiedHLSAudioReplay = 30.0
+
 // Short indexed windows can replay the original AAC encoder history. Dropping
 // encoded packets after that replay preserves the uninterrupted packet grid.
 func copiedHLSAudioFromOrigin(timeline *copiedHLSTimeline, number int, mode string) bool {
 	return timeline != nil && mode == "audio-transcode" && number > 0 &&
-		timeline.End-timeline.point(0) <= maximumCopiedHLSSuffix
+		timeline.End-timeline.point(0) <= maximumCopiedHLSAudioReplay
 }
 
 func copiedHLSAudioSeekArguments(arguments []string, timeline *copiedHLSTimeline, number int) ([]string, error) {

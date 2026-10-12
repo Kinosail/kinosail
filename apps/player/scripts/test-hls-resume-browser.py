@@ -10,7 +10,7 @@ import socket
 import subprocess
 import time
 
-from hls_timeline_fixture import fixture
+from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
 from hls_resume_audio import audio_packets, uninterrupted_audio_reference
 from hls_timeline_http import PublicServer, sha, source_state
 from hls_timeline_preparation import prepare_scene
@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--engines', choices=['chromium', 'webkit', 'webkit-native', 'both'], default='both')
 parser.add_argument('--prepared', action='store_true')
+parser.add_argument('--long-remux', action='store_true', help='Use a 74.5-second source with irregular source keyframes')
 parser.add_argument('--resume-seconds', type=float, choices=[.5, 2.5, 12, 12.5, 64.5], default=12.5)
 parser.add_argument('--force-audio-conversion', action='store_true')
 parser.add_argument('--audio-sample-rate', type=int, choices=[32000, 44100, 48000], default=48000)
@@ -34,12 +35,14 @@ if recovery and (not args.prepared or args.audio_mode == 'none') or args.tail_re
     parser.error('choose one recovery target, with --prepared')
 if args.audio_reference and (not recovery or args.audio_mode != 'ac3' or not args.force_audio_conversion):
     parser.error('--audio-reference requires converted-audio recovery')
+if args.long_remux and (args.audio_mode != 'aac' or args.force_audio_conversion or args.resume_seconds != 12.5):
+    parser.error('--long-remux uses AAC copied audio and the 12.5-second saved position')
 reference_audio = None
 fractional = args.resume_seconds == 2.5
 frame_rate = 25 if fractional or args.resume_seconds == 64.5 else 24
-duration = 22.4 if fractional else 84 if args.resume_seconds == 64.5 else 18 if args.resume_seconds < 2 else 30.5 if args.tail_recovery else 32
-gop = 16 if fractional else frame_rate * 2
-keys = [n / frame_rate for n in range(0, round(duration * frame_rate), gop)]
+duration = 74.5 if args.long_remux else 22.4 if fractional else 84 if args.resume_seconds == 64.5 else 18 if args.resume_seconds < 2 else 30.5 if args.tail_recovery else 32
+gop = frame_rate * 6 if args.long_remux else 16 if fractional else frame_rate * 2
+keys = LONG_RESUME_KEYS if args.long_remux else [n / frame_rate for n in range(0, round(duration * frame_rate), gop)]
 source_keys = [point + (.13 if fractional else 0) for point in keys]
 source_origin = max(point for point in source_keys if point <= args.resume_seconds)
 fragment_count = sum(point >= source_origin for point in source_keys)
@@ -50,8 +53,8 @@ engines = ['chromium', 'webkit'] if args.engines == 'both' else [args.engines]
 build = ['go', 'build', '-p', '2', '-o', str(run / 'player'), './apps/player/cmd/kinosail']
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
            'environment': platform.platform(), 'result': 'failed', 'cases': [], 'build': build,
-           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else ''),
-           'prepared': args.prepared, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion,
+           'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else ''),
+           'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion,
            'boundary': 'Real loopback Player, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
 
 

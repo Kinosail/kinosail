@@ -9,7 +9,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (manager *hlsManager) scanCopiedHLSSuffix(ctx context.Context, item library.Item, policy string, requested, duration float64) (*copiedHLSTimeline, error) {
+func (manager *hlsManager) scanCopiedHLSSuffix(ctx context.Context, item library.Item, policy string, requested, duration float64, mode string) (*copiedHLSTimeline, error) {
+	maximumSpan := copiedHLSSuffixSpan(duration, mode)
 	timeline := &copiedHLSTimeline{Policy: policy, Strategy: "h264-idr-keys-1"}
 	var end int64
 	origin, originKnown := -1.0, false
@@ -33,7 +34,7 @@ func (manager *hlsManager) scanCopiedHLSSuffix(ctx context.Context, item library
 			return nil
 		}
 		if _, ok := fields["time_base"]; !ok {
-			if !boundedCopiedHLSSuffixPacket(fields, &origin, requested, duration) {
+			if !boundedCopiedHLSSuffixPacket(fields, &origin, requested, duration, maximumSpan) {
 				return errCopiedHLSIndex
 			}
 		}
@@ -43,33 +44,42 @@ func (manager *hlsManager) scanCopiedHLSSuffix(ctx context.Context, item library
 	if err != nil || !originKnown || !validCopiedHLSTimeline(timeline) {
 		return nil, errCopiedHLSIndex
 	}
-	if !validCopiedHLSSuffixEnd(timeline, origin, requested, duration) {
+	if !validCopiedHLSSuffixEnd(timeline, origin, requested, duration, maximumSpan) {
 		return nil, errCopiedHLSIndex
 	}
 	return timeline, nil
 }
 
-func boundedCopiedHLSSuffixPacket(fields map[string]string, origin *float64, requested, duration float64) bool {
+func copiedHLSSuffixSpan(duration float64, mode string) float64 {
+	if mode == "audio-transcode" {
+		return maximumCopiedHLSAudioReplay
+	}
+	// Remux scans retain the format/video EOF tolerance within the shared
+	// deadline and output limits. Audio replay keeps its encoder-history bound.
+	return duration + 0.1
+}
+
+func boundedCopiedHLSSuffixPacket(fields map[string]string, origin *float64, requested, duration, maximumSpan float64) bool {
 	pts, ptsErr := strconv.ParseFloat(fields["pts_time"], 64)
 	length, lengthErr := strconv.ParseFloat(fields["duration_time"], 64)
 	if ptsErr != nil || lengthErr != nil || pts < 0 || !validCopiedHLSEnd(pts+length) || length <= 0 || math.IsNaN(length) {
 		return false
 	}
 	if *origin < 0 {
-		if !validCopiedHLSSuffixOrigin(fields, pts, requested, duration) {
+		if !validCopiedHLSSuffixOrigin(fields, pts, requested, duration, maximumSpan) {
 			return false
 		}
 		*origin = pts
 	}
-	return pts >= *origin && pts+length-*origin <= maximumCopiedHLSSuffix+0.000001
+	return pts >= *origin && pts+length-*origin <= maximumSpan+0.000001
 }
 
-func validCopiedHLSSuffixEnd(timeline *copiedHLSTimeline, origin, requested, duration float64) bool {
+func validCopiedHLSSuffixEnd(timeline *copiedHLSTimeline, origin, requested, duration, maximumSpan float64) bool {
 	first := timeline.point(0)
 	return !(first > requested || requested >= timeline.End || math.Abs(first-origin) > 0.000001 ||
-		math.Abs(timeline.End-duration) > 0.1 || timeline.End-first > maximumCopiedHLSSuffix || duration-first > maximumCopiedHLSSuffix)
+		math.Abs(timeline.End-duration) > 0.1 || timeline.End-first > maximumSpan || duration-first > maximumSpan)
 }
 
-func validCopiedHLSSuffixOrigin(fields map[string]string, pts, requested, duration float64) bool {
-	return strings.Contains(fields["flags"], "K") && pts <= requested && duration-pts <= maximumCopiedHLSSuffix
+func validCopiedHLSSuffixOrigin(fields map[string]string, pts, requested, duration, maximumSpan float64) bool {
+	return strings.Contains(fields["flags"], "K") && pts <= requested && duration-pts <= maximumSpan
 }

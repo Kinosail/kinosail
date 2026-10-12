@@ -1121,3 +1121,50 @@ The newly merged recovery-stage source file changed that snapshot. The affected-
 Regenerating the Player architecture page repairs the mismatch without a runtime change.
 `python3 scripts/tooling/test-architecture-explorer.py` passes for Player and Subtitles; source limits and whitespace also pass.
 The original failed tooling job is retained privately from run `38194183334`, job `114633193650`.
+
+### AQA-014 candidate — certify longer cold H264 remux suffixes
+
+The retained 74.5-second irregular-keyframe fixture reproduces the defect before production changes.
+Original-file playback reaches EOF. Cold compatible playback has the wrong clock and fails the frame oracle.
+The public Server regression also fails its certified-origin assertion on the original implementation.
+
+Plain H264 remux resumes now require a complete suffix certificate within the existing aggregate eight-second deadline.
+The existing 8 MiB, 100,010-line, and 4,096-key limits still bound the scan.
+IDR, codec configuration, source identity, and rational packet timestamps must all certify before publication.
+Converted audio retains its separate 30-second encoder-history bound and exact arithmetic checks.
+Oversized or incomplete remux indexes reject safely; this change does not promise arbitrary movie-size acceptance.
+
+Independent review found two candidate regressions. Both received public red cases before correction.
+Unsupported duration metadata originally bypassed certification and returned an uncertified HTTP 200.
+It now rejects before workload admission, suffix probing, or encoding, inside the same deadline.
+The second case uses format duration 74.460 seconds and observed video EOF 74.5 seconds, with origin zero.
+It originally rejected a valid source. The repair preserves the existing 0.1-second endpoint tolerance.
+Both cases pass after repair. The reviewer reports no remaining concrete code blocker.
+
+All eighteen public Server cases pass. They cover concurrent cold requests, clock publication, fractional and later resumes,
+first/middle/tail fragment eviction, warm restart, damaged metadata, source changes, failed probes, and each resource limit.
+Warm cache reuse starts no fresh scan. Corrupt or missing metadata rebuilds with an identical verified certificate.
+Rejected indexes publish no playlist and start no media encoder. Safe failure logs retain request/session correlation.
+Every owned Server and probe settles. Sources remain unchanged except in the deliberate source-change case.
+
+Chromium and WebKit MSE match all fourteen reference frames and reach EOF.
+WebKit native HLS also matches seven reference frames and reaches EOF with MSE capability deliberately disabled.
+That last result exercises the native decoder policy; it is not physical Safari or Apple-device proof.
+The scan-span calculation was extracted without changing its policy to satisfy the existing complexity gate.
+The final extracted source passes both MSE browser journeys and the endpoint-tolerance public recovery case again.
+Local lint reports zero issues. Architecture snapshots, source limits, and whitespace checks pass.
+The shared CI workflow now retains the longer remux browser journey in the required Chromium job.
+
+The private manifest `long-remux-reviewed-receipt.json` records commands, fixture receipts, revisions, and artifact hashes.
+Its SHA-256 is `6e9460838b4abbaf391da3caf2a9e606d5e4274c8b1fb45464a7cc4a0e3c0e48`.
+Each public receipt also captures the tested patch and helper hashes, so uncommitted candidate runs remain reproducible.
+Long converted-audio recovery, physical-device acceptance, production deployment, and larger real-world sources remain open.
+
+### Canonical Player container browser check — certificate trust boundary
+
+The campaign invokes `make -C apps/player test-instance-check` with private image tags and an isolated Compose project.
+The production image, populated fixture image, health verification, and browser launch succeed.
+Browser requests then reject the fixture's self-signed certificate with `ERR_CERT_AUTHORITY_INVALID`.
+No TLS check is disabled. These failures do not count as UI coverage or a passing canonical container journey.
+The separate authenticated HTTP media regressions above retain their own passing evidence.
+Private evidence is under `long-remux-test-instance/`; the canonical browser failure remains under investigation.

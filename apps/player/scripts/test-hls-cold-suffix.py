@@ -13,13 +13,14 @@ import sys
 import time
 
 from hls_followon_public import check
-from hls_timeline_fixture import fixture
+from hls_cold_suffix_faults import wrappers
+from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
 from hls_timeline_packets import fragment_facts
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--case', choices=['all', 'success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure'], default='all')
+parser.add_argument('--case', choices=['all', 'success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'], default='all')
 args = parser.parse_args()
 run = ROOT / '.verification/hls-cold-suffix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 run.mkdir(parents=True)
@@ -30,7 +31,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
 patch = run / 'tested-source.patch'
 patch.write_bytes(subprocess.check_output(['git', 'diff', 'HEAD', '--']))
 receipt['patchSHA256'] = sha(patch)
-receipt['helpersSHA256'] = {name: sha(Path(__file__).with_name(name)) for name in ['test-hls-cold-suffix.py', 'hls_followon_public.py', 'hls_timeline_http.py', 'hls_timeline_fixture.py', 'hls_timeline_packets.py']}
+receipt['helpersSHA256'] = {name: sha(Path(__file__).with_name(name)) for name in ['test-hls-cold-suffix.py', 'hls_cold_suffix_faults.py', 'hls_followon_public.py', 'hls_timeline_http.py', 'hls_timeline_fixture.py', 'hls_timeline_packets.py']}
 binary = run / 'player'
 
 
@@ -59,74 +60,7 @@ def wait_for(condition, seconds, failure):
     raise RuntimeError(failure)
 
 
-def wrappers(directory, source, fault):
-    for kind in ['ffprobe', 'ffmpeg']:
-        path = directory / (kind + '-wrapper.py')
-        path.write_text('#!' + sys.executable + '\n' + f'''
-import os,subprocess,sys,time
-from pathlib import Path
-args=sys.argv[1:]
-real={shutil.which(kind)!r}
-directory=Path({str(directory)!r})
-source=Path({str(source)!r})
-suffix={kind!r}=='ffprobe' and str(source) in args and '-read_intervals' in args and args[args.index('-read_intervals')+1].endswith('%')
-encode={kind!r}=='ffmpeg' and str(source) in args and '-f' in args and args[args.index('-f')+1]=='hls'
-if encode:
- with (directory/'encoder-starts').open('a') as f:f.write('start\\n')
- with (directory/'encoder-pids').open('a') as f:f.write(str(os.getpid())+'\\n')
-clock={kind!r}=='ffprobe' and 'pipe:0' in args and '%+#8' in args
-if clock and {fault!r}=='clock-race':
- with (directory/'wrapper-pids').open('a') as f:f.write(str(os.getpid())+'\\n')
- with (directory/'clock-starts').open('a') as f:f.write('start\\n')
- deadline=time.monotonic()+5
- while not (directory/'clock-release').exists() and time.monotonic()<deadline:time.sleep(.01)
-cert={kind!r}=='ffmpeg' and str(source) in args and '-f' in args and args[args.index('-f')+1]=='framehash'
-if cert and {fault!r} in ['idr-failure','configuration-failure','aggregate-deadline']:
- with (directory/'wrapper-pids').open('a') as f:f.write(str(os.getpid())+'\\n')
- with (directory/'certification-starts').open('a') as f:f.write('start\\n')
- if {fault!r}=='aggregate-deadline':time.sleep(3)
- result=subprocess.run([real]+args,capture_output=True)
- sys.stdout.buffer.write(result.stdout);sys.stdout.buffer.flush()
- selected=args[args.index('-bsf:v')+1]
- fail={fault!r}=='idr-failure' and selected=='filter_units=pass_types=5' or {fault!r}=='configuration-failure' and 'pass_types=7|8' in selected
- raise SystemExit(42 if fail else result.returncode)
-if encode and {fault!r}=='producer-failure' and len((directory/'encoder-starts').read_text().splitlines())==1:
- child=subprocess.Popen([real,'-readrate','2']+args,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
- cache=Path(args[-1]).parent.parent
- deadline=time.monotonic()+12
- while child.poll() is None and time.monotonic()<deadline:
-  if (cache/'.copy-clock').exists() and (cache/'index.m3u8').exists():break
-  time.sleep(.01)
- if child.poll() is None:child.kill()
- child.wait(timeout=5)
- (directory/'producer-failed').write_text('failed')
- raise SystemExit(42)
-if not suffix:os.execv(real,[real]+args)
-with (directory/'wrapper-pids').open('a') as f:f.write(str(os.getpid())+'\\n')
-with (directory/'suffix-starts').open('a') as f:f.write('start\\n')
-if {fault!r}=='timeout':time.sleep(45)
-if {fault!r}=='aggregate-deadline':time.sleep(3)
-result=subprocess.run([real]+args,capture_output=True)
-output=result.stdout
-if {fault!r} in ['early-bound','non-key']:
- rows=output.decode().splitlines()
- for number,row in enumerate(rows):
-  if 'pts=' not in row:continue
-  fields=row.split('|')
-  if {fault!r}=='early-bound':fields=['pts_time=0.000000' if f.startswith('pts_time=') else f for f in fields]
-  else:fields=['flags=___' if f.startswith('flags=') else f for f in fields]
-  rows[number]='|'.join(fields);break
- output=('\\n'.join(rows)+'\\n').encode()
-if {fault!r}=='source-change':
- with source.open('ab') as f:f.write(b'qa-source-change')
-sys.stdout.buffer.write(output);sys.stdout.buffer.flush()
-if {fault!r}=='early-bound':time.sleep(45)
-raise SystemExit(42 if {fault!r}=='late-failure' else result.returncode)
-''')
-        path.chmod(0o700)
-
-
-def exercise(source_fixture, fault):
+def exercise(source_fixture, source_facts, fault):
     directory = run / fault
     media = directory / 'media'
     media.mkdir(parents=True)
@@ -137,13 +71,15 @@ def exercise(source_fixture, fault):
         source.unlink()
         frames = 732 if fault == 'fractional-recovery' else 2280
         source, variant = fixture(media, 'Fixture', 48, ','.join(str(n) for n in range(0, 32 if frames == 732 else 95, 2)), frames=frames, extension='.mp4')
+    expected_origin = 64.0 if fault == 'lookback' else 0.0 if fault == 'endpoint-tolerance' else 12.0
+    fragments = sum(point >= expected_origin for point in (variant or source_facts)['keyframesSeconds'])
     before = source_state(source)
     wrappers(directory, source, fault)
     case = {'fault': fault, 'result': 'failed', 'responses': [], 'sourceBefore': before}
     receipt['cases'].append(case)
     if variant:
         case['fixture'] = variant
-    successful = fault in ['success', 'clock-race', 'fractional-recovery']
+    successful = fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'endpoint-tolerance']
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -162,7 +98,8 @@ def exercise(source_fixture, fault):
             item = next(v for v in api.call('/api/v1/library')['items'] if v['title'] == 'Fixture')
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_mode')
-            path = plan['compatible'].replace('/index.m3u8', '-o65100/index.m3u8' if fault == 'lookback' else '-o12500/index.m3u8')
+            offset = 65100 if fault == 'lookback' else 500 if fault == 'endpoint-tolerance' else 12500
+            path = plan['compatible'].replace('/index.m3u8', f'-o{offset}/index.m3u8')
             started = time.monotonic()
             with ThreadPoolExecutor(max_workers=2) as pool:
                 if fault == 'clock-race':
@@ -193,26 +130,28 @@ def exercise(source_fixture, fault):
                 check(all(r['status'] == 503 and not r['playlistPublished'] for r in case['responses']), 'unsafe_suffix_published')
                 check(count(directory, 'encoder-starts') == 0, 'rejected_index_started_encoder')
                 check(not list((directory / 'cache').rglob('.copy-timeline')), 'rejected_index_bound')
+                if fault == 'unsupported-duration':
+                    check(count(directory, 'suffix-starts') == 0, 'invalid_duration_started_suffix_probe')
                 if fault in ['timeout', 'aggregate-deadline']:
                     check(7 <= case['seconds'] <= 12, 'probe_deadline_not_bounded')
-                if fault in ['early-bound', 'lookback']:
+                if fault in ['early-bound', 'packet-limit', 'byte-limit', 'key-limit']:
                     check(case['seconds'] < 4, 'early_bound_waited_for_eof')
             else:
-                check(all(r['status'] == 200 and r['origin'] == '12.000000' for r in case['responses']), 'cold_origin')
+                check(all(r['status'] == 200 and r['origin'] == f'{expected_origin:.6f}' for r in case['responses']), 'cold_origin')
                 check(count(directory, 'suffix-starts') == 1, 'concurrent_index_not_shared')
                 check(count(directory, 'encoder-starts') == 1, 'concurrent_encoder_not_shared')
                 timeline = next((directory / 'cache').rglob('.copy-timeline'))
                 cache = timeline.parent
                 rendition = next(cache.glob('*p/index.m3u8')).parent
                 base = path.removesuffix('index.m3u8') + rendition.name + '/'
-                for number in range(10):
+                for number in range(fragments):
                     check(api.http(base + f'segment-{number:05d}.m4s')[0] == 200, 'initial_fragment_status')
                 wait_for(lambda: settled(directory), 5, 'index_probe_not_settled')
                 metadata = [cache / name for name in ['.copy-timeline', '.copy-clock', '.source', 'index.m3u8']]
                 metadata += [rendition / name for name in ['init.mp4', 'index.m3u8']]
                 snapshots = [sha(p) for p in metadata]
                 case['recoveries'] = []
-                for number in [0, 9]:
+                for number in sorted({0, fragments // 2, fragments - 1}):
                     fragment = rendition / f'segment-{number:05d}.m4s'
                     digest = sha(fragment)
                     previous = fragment_facts(rendition, fragment)
@@ -222,7 +161,7 @@ def exercise(source_fixture, fault):
                     check(status == 200 and fragment.exists(), 'fragment_not_restored')
                     current = fragment_facts(rendition, fragment)
                     check(current['videoHashes'] == previous['videoHashes'] and current['videoPTS'] == previous['videoPTS'], 'fragment_video_changed')
-                    if number == 9:
+                    if number == fragments - 1:
                         check(abs(current['audioEnd'] - current['videoEnd']) <= .05, 'fragment_audio_end')
                     if preceding:
                         check(abs(current['audioStart'] - preceding['audioEnd']) <= .05, 'fragment_audio_gap')
@@ -231,6 +170,45 @@ def exercise(source_fixture, fault):
                     check([sha(p) for p in metadata] == snapshots, 'certificate_or_initialization_changed')
                     check(count(directory, 'suffix-starts') == 1, 'refill_rescanned_index')
                     case['recoveries'].append({'segment': number, 'status': status, 'binaryIdentical': sha(fragment) == digest, 'videoFramesAndTimestampsIdentical': True, 'audioGapSeconds': current['audioStart'] - preceding['audioEnd'] if preceding else None, 'metadataUnchanged': True})
+                if fault == 'success':
+                    server.terminate()
+                    server.wait(timeout=10)
+                    server = subprocess.Popen([str(binary)], env=env, stdout=log, stderr=log)
+                    deadline = time.monotonic() + 15
+                    while time.monotonic() < deadline:
+                        try:
+                            if api.http('/healthz', authenticated=False)[0] == 200:
+                                break
+                        except OSError:
+                            pass
+                        time.sleep(.05)
+                    status, _, headers = api.http(path)
+                    normalized = {k.lower(): v for k, v in headers.items()}
+                    check(status == 200 and normalized.get('x-kinosail-hls-origin') == f'{expected_origin:.6f}', 'warm_origin_changed')
+                    check([sha(p) for p in metadata] == snapshots and count(directory, 'suffix-starts') == 1, 'warm_certificate_changed')
+                    case['warmRestart'] = 'passed'
+                    case['damagedMetadata'] = []
+                    for damage in ['corrupt', 'missing']:
+                        before_encoders = count(directory, 'encoder-starts')
+                        before_probes = count(directory, 'suffix-starts')
+                        if damage == 'corrupt':
+                            timeline.write_text('{}')
+                        else:
+                            timeline.unlink()
+                        status, data, headers = api.http(path)
+                        normalized = {k.lower(): v for k, v in headers.items()}
+                        case['responses'].append({'status': status, 'requestID': normalized.get('x-request-id'), 'playlistPublished': data.startswith(b'#EXTM3U')})
+                        if status == 200:
+                            wait_for(lambda: settled(directory, 'encoder-pids'), 5, 'replacement_encoder_not_settled')
+                            check(normalized.get('x-kinosail-hls-origin') == f'{expected_origin:.6f}' and normalized.get('x-kinosail-hls-clock'), 'damaged_certificate_served_without_clock')
+                            check([sha(p) for p in metadata] == snapshots, 'replacement_certificate_changed')
+                            check(count(directory, 'encoder-starts') == before_encoders + 1 and count(directory, 'suffix-starts') == before_probes + 1, 'damaged_certificate_not_regenerated')
+                            outcome = 'verified-regeneration'
+                        else:
+                            check(status == 503 and not data.startswith(b'#EXTM3U'), 'damaged_certificate_published')
+                            check(count(directory, 'encoder-starts') == before_encoders, 'rejected_certificate_started_encoder')
+                            outcome = 'rejected'
+                        case['damagedMetadata'].append({'damage': damage, 'status': status, 'outcome': outcome})
             case['result'] = 'passed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
@@ -264,15 +242,15 @@ def exercise(source_fixture, fault):
 
 
 try:
-    source, facts = fixture(run, 'Source', 48, ','.join(str(n) for n in range(0, 32, 2)), frames=768, extension='.mp4')
+    source, facts = fixture(run, 'Source', 144, ','.join(map(str, LONG_RESUME_KEYS)), frames=1788, extension='.mp4')
     receipt['fixture'] = facts
     build = ['go', 'build', '-p', '2', '-o', str(binary), './apps/player/cmd/kinosail']
     receipt['build'] = build
     with (run / 'build-private.log').open('w') as log:
         subprocess.run(build, check=True, stdout=log, stderr=log, timeout=180)
     receipt['binarySHA256'] = sha(binary)
-    for fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure'] if args.case == 'all' else [args.case]:
-        exercise(source, fault)
+    for fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'] if args.case == 'all' else [args.case]:
+        exercise(source, facts, fault)
     if receipt['cases'] and all(case['result'] == 'passed' for case in receipt['cases']):
         receipt['result'] = 'passed'
 except Exception as error:

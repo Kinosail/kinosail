@@ -79,7 +79,7 @@ try {
         if (video.readyState < 2) await wait('loadeddata');
         video.pause();
         const points = resume >= 60 ? [resume + .05, resume + .55, resume + 1.55, resume + 2.55, resume + 3.55, resume + 4.55, duration - .05]
-          : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, Math.min(31.55, duration - .05)];
+          : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, duration > 40 ? duration - .05 : Math.min(31.55, duration - .05)];
         for (const point of points) {
           // A seeked event can precede compositor presentation in WebKit.
           // Wait for the requested timestamp, never for an expected pixel hash.
