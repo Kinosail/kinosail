@@ -844,7 +844,7 @@ only the selected Shows with Viewer-visible episodes before computing their
 card actions. It preserves the selected card set and canonical episode order.
 The page, query, and Viewer access policy still select the visible Shows.
 The follow-on projection uses stable read-only catalog references and copies
-only selected, permitted episodes. Its final candidate replay remains pending.
+only selected, permitted episodes. Its final candidate replay passes below.
 No layout, placeholder, Direct First, or playback policy changes.
 
 The expanded Chromium journey passes after repair. One card click opens episode
@@ -868,7 +868,7 @@ Firefox at `2ee56f5e`. Each skips 23 dedicated-pagination cases because their
 canonical Go fixture is absent from this generic fixture. Those skips are
 not product passes. WebKit passes nine and fails the focus and synthetic loading
 reviews. Both Show cases pass in all three engines. The dedicated catalog replay
-remains pending.
+passes below.
 The loading review combines decoded initial playback with synthetic media
 state events; it does not prove a real bandwidth interruption.
 
@@ -913,5 +913,36 @@ checks remain before credential entry. No authentication product behavior change
 
 The control is an isolated browser-automation fault with the real HTTPS backend.
 It does not reproduce the original browser internals. Real settings repetitions
-and existing rejection controls remain pending. Both original attempts, traces,
+and existing rejection controls now pass below. Both original attempts, traces,
 source-overlay hashes, results and safe projections remain private.
+
+
+## Final candidate browser and catalog verification at `d2713764`
+
+Three repetitions pass in each engine for Show card playback and states,
+settings persistence, asset caching, and existing rejected-login controls.
+Chromium and WebKit each pass 18 and skip six Firefox-only controls. Firefox
+passes all 24. No failures or flaky cases occur. This checks the reference-based
+Show projection and guarded layout login at the committed, clean revision.
+Private `auth-show-candidate-evidence.json` records source and report checksums.
+
+The canonical Go pagination fixture passes all 30 browser checks in each engine,
+with zero skips or flakes. It covers real catalog paging and isolated navigation
+fault controls using the real disposable Go HTTP Server. Its synthetic media
+files are empty, authentication is disabled, and it does not prove decoded media
+or TLS. The fixture archives the clean candidate once, builds its matching
+Linux ARM64 test binary, and removes its owned container. Exact dispatch, data,
+commands, receipts and checksums remain in `canonical-library-browser-current`.
+
+Two diagnostic repetitions each of WebKit focus and synthetic loading reviews
+pass without reproducing the earlier failures. The focus diagnostic records
+connection and active-element categories. The loading diagnostic records bounded
+media event/state observations. All original assertions stay unchanged. Neither
+root cause is confirmed, and no production repair is claimed. Private overlays
+and their original and modified test hashes remain retained.
+
+A further real-Server check for mixed permitted and restricted Show episodes is
+prepared. Existing Show handler coverage contains one episode without Viewer
+restrictions, while the moving-card regression runs as Owner. The new public-API
+journey will verify maturity, Library exclusion, action selection and route
+rejection with a disposable Viewer, then restore ratings and remove the Viewer.
