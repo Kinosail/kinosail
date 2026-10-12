@@ -22,9 +22,24 @@ final class MediaCardRatingTests: XCTestCase {
                     }
                     let actual = try render(rated)
                     let expected = try render(unrated)
+                    let actualPixels = try pixels(actual)
+                    let expectedPixels = try pixels(expected)
+                    if actual.width != expected.width || actual.height != expected.height || actualPixels != expectedPixels {
+                        for (label, image, rgba) in [("rated", actual, actualPixels), ("unrated", expected, expectedPixels)] {
+                            let name = "\(kind)-\(landscape)-\(size)-\(label)-\(image.width)x\(image.height)"
+                            let rendered = XCTAttachment(image: UIImage(cgImage: image))
+                            rendered.name = "pair-\(name)"
+                            rendered.lifetime = .keepAlways
+                            add(rendered)
+                            let raw = XCTAttachment(data: rgba, uniformTypeIdentifier: "public.data")
+                            raw.name = "rgba-\(name)"
+                            raw.lifetime = .keepAlways
+                            add(raw)
+                        }
+                    }
                     XCTAssertEqual(actual.width, expected.width)
                     XCTAssertEqual(actual.height, expected.height)
-                    XCTAssertEqual(try pixels(actual), try pixels(expected), "\(kind), landscape=\(landscape), \(size)")
+                    XCTAssertEqual(actualPixels, expectedPixels, "\(kind), landscape=\(landscape), \(size)")
                     XCTAssertEqual(rated.rating, "PG-13")
                     XCTAssertTrue(rated.subtitle.contains("PG-13"))
                     let attachment = XCTAttachment(image: UIImage(cgImage: actual))
