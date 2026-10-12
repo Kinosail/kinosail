@@ -957,3 +957,26 @@ The Chromium fractional-origin case joins the required hosted workflow.
 | `ai-qa-campaign/review-video-cut-ticks-20261012T011352Z/receipt.json` | exact audio/video packet counterfactual | `62a5a7fc994b6f274483637038156438f354202ec3baf4cee4afab6bc41bf995` |
 | `hls-resume-browser/20261012T011717Z/receipt.json` | public pre-fix tail clock failure | `dfdcf433204406ed3146ebd59698ab1ce2fa64ecea0e1c3de32b071cf2cdccc4` |
 | `hls-resume-browser/20261012T011748Z/receipt.json` | Chromium passes; WebKit original reference cannot load | `77bd6d16c9564dd9967149f5c351eecc67ddaaacfcbe66ff622c3a31da380ed2` |
+
+
+### Clean converted-audio checkpoint
+
+Revision `b8460a8192ad5b6574763c2e2d09a6a642b07a3b` passes the retained fractional-origin Chromium journey and later-origin journeys in both MSE engines.
+All 21 reference frames match, playback ends, and recovered AAC packets equal uninterrupted encoding.
+`make -C apps/player verify-changed` passes source limits, whitespace, compilation, focused Server tests (82 seconds), and cached E2E discovery.
+Independent review closes the bounded packet-tick repair with no remaining concrete implementation blocker.
+
+A clean actual-watch PCM replay preserves the repaired tail: minimum correlation 0.97349 and zero sample shift.
+Its no-eviction control gives 0.97570 and zero sample shift at that tail.
+Both captures show a separate 128-sample alignment transition around 20 seconds.
+The earlier passing candidate and this clean checkpoint produce byte-identical initialization and all ten media fragments for the same source.
+That capture/runtime transition still needs characterization; it does not establish changed encoded media or audibility.
+Full decoded-audio acceptance remains open while this separate diagnostic boundary is investigated.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T011922Z/receipt.json` | clean fractional-origin Chromium | `5f0b5d5fefad635956cdfca2f7f1c6834c6d546a60ffa08f801067dbc5e14f69` |
+| `hls-resume-browser/20261012T011941Z/receipt.json` | clean later-origin Chromium and WebKit | `31ecf7c0c78b3e45b1d3341090cf6042a9471e74d50ca18340794d82cec5c1ec` |
+| `hls-resume-browser/20261012T012037Z/receipt.json` | clean actual-watch PCM capture and packet oracle | `9a5063452b5ae96618dd2a2c68022ac1641627b495d8e458fe37e6f78f2dd576` |
+| `hls-resume-browser/20261012T012037Z/decoded-splice-comparison.json` | recovered tail fixed; earlier runtime transition open | `3788d31dd516d3121f7938b7aa2c2a0b553dc814e15f7de0731b8119b41f5310` |
+| `hls-resume-browser/20261012T012211Z/decoded-splice-comparison.json` | no-eviction PCM control shares earlier transition | `c0b5508ce7138d09e3e2545d58f77dd0f97b21226ca074ae09a83dc9198ffd40` |
