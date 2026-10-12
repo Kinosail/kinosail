@@ -21,7 +21,7 @@ func validCopiedHLSClockInput(ctx context.Context, rendition string, timeline *c
 }
 
 func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
-	if !validCopiedHLSHeader(timeline) || !validCopiedHLSTimeBase(timeline) || !validCopiedHLSEnd(timeline.End) {
+	if !validCopiedHLSHeader(timeline) || !validCopiedHLSTimeBase(timeline) || !validCopiedHLSEnd(timeline.End) || !validCopiedHLSAudioGrid(timeline.AudioGrid) || !validCopiedHLSSourceAudio(timeline.AudioSource, timeline.End) {
 		return false
 	}
 	for number := range timeline.Keys {
@@ -29,7 +29,17 @@ func validCopiedHLSTimeline(timeline *copiedHLSTimeline) bool {
 			return false
 		}
 	}
-	return timeline.Clock == nil || !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1
+	return validCopiedHLSBoundClock(timeline)
+}
+
+func validCopiedHLSBoundClock(timeline *copiedHLSTimeline) bool {
+	if timeline.Clock == nil {
+		return timeline.AudioGrid == nil
+	}
+	if timeline.AudioGrid != nil && (timeline.AudioSource == nil || timeline.AudioGrid.Rate != timeline.AudioSource.Rate) {
+		return false
+	}
+	return !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1
 }
 
 func validCopiedHLSHeader(timeline *copiedHLSTimeline) bool {

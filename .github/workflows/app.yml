@@ -471,6 +471,33 @@ jobs:
             .verification/hls-followon/*/SHA256SUMS
           retention-days: 14
           if-no-files-found: error
+      - name: Verify continuous converted-audio recovery
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        timeout-minutes: 15
+        env:
+          GOMAXPROCS: "2"
+        run: |
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 48000 --recovery tail
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 32000 --recovery first
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --video-offset .13
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --video-offset .075
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video --submicrosecond-origin
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 8000 --recovery early
+          python3 apps/player/scripts/test-hls-audio-source.py
+      - name: Keep safe converted-audio recovery evidence
+        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: player-converted-audio-recovery-evidence
+          include-hidden-files: true
+          path: |
+            .verification/hls-audio-splice/*/receipt.json
+            .verification/hls-audio-splice/*/*-comparison.json
+            .verification/hls-audio-splice/*/video.json
+            .verification/hls-audio-source/*/receipt.json
+          retention-days: 14
+          if-no-files-found: error
       - name: Verify complete HEVC preparation
         if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
         timeout-minutes: 10

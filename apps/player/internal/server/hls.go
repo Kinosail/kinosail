@@ -178,6 +178,8 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		start = timeline.point(startNumber)
 		if copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) {
 			start = timeline.point(0)
+		} else if copiedHLSWarmAudio(timeline, startNumber, recipe.mode) {
+			start = copiedHLSWarmStart(timeline, startNumber)
 		}
 	}
 	var refill *remainingAudioOrigin
@@ -202,7 +204,8 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		}
 		arguments = append(arguments, "-ss", seek)
 	}
-	if timeline != nil && startNumber > 0 && recipe.mode == "audio-transcode" && !copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) {
+	if timeline != nil && recipe.mode == "audio-transcode" && (timeline.AudioSource != nil && timeline.AudioSource.Quantum > 0 ||
+		startNumber > 0 && !copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) && !copiedHLSWarmAudio(timeline, startNumber, recipe.mode)) {
 		// Decode audio preroll for a continuous splice; copied video is still
 		// trimmed at its certified key and the output filter bounds the overlap.
 		arguments = append(arguments, "-noaccurate_seek")
@@ -226,6 +229,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
 		}
 	}
+	arguments = copiedHLSSourceAudioArguments(arguments, timeline, start, recipe.mode)
 	arguments, err = copiedHLSSeekArguments(arguments, timeline, startNumber, recipe.mode)
 	if err != nil {
 		return err

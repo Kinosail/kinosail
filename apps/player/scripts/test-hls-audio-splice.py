@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 
+from hls_audio_metadata import reject_audio_metadata
 from hls_audio_capture import capture_audio, decode_source, packet_grid
 from hls_followon_public import bounded_bytes, check, encoder_count
 from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
@@ -20,8 +21,10 @@ from hls_timeline_preparation import prepare_scene
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--audio-sample-rate', type=int, choices=[8000, 32000, 44100, 48000], default=48000)
-parser.add_argument('--recovery', choices=['tail', 'middle', 'early'], default='tail')
-parser.add_argument('--video-offset', type=float, choices=[0, .13], default=0)
+parser.add_argument('--recovery', choices=['tail', 'middle', 'early', 'first'], default='tail')
+parser.add_argument('--video-offset', type=float, choices=[0, .075, .13], default=0)
+parser.add_argument('--fractional-video', action='store_true')
+parser.add_argument('--submicrosecond-origin', action='store_true')
 args = parser.parse_args()
 run = ROOT / '.verification/hls-audio-splice' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
@@ -31,7 +34,8 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
            'environment': platform.platform(), 'result': 'failed', 'captures': [], 'build': build,
            'command': shlex.join([sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]]),
            'audioSampleRate': args.audio_sample_rate, 'recovery': args.recovery,
-           'videoOffset': args.video_offset,
+           'videoOffset': args.video_offset, 'fractionalVideo': args.fractional_video,
+           'submicrosecondOrigin': args.submicrosecond_origin,
            'boundary': 'Real disposable Go Player, generated AC3 or ALAC source, original watch page and Chromium AAC decode. Recorder uses a CSP exception; no security, native or perceptual-audibility claim.'}
 
 
@@ -44,8 +48,16 @@ def settled(server, source):
 
 try:
     frame_rate, frames = (25, 1862) if args.video_offset else (24, 1788)
-    source, metadata = fixture(media, 'Resume Sample', frame_rate * 6, ','.join(map(str, LONG_RESUME_KEYS)),
-                               rate=str(frame_rate), frames=frames, extension='.mp4', noise=True)
+    rate = '24000/1001' if args.fractional_video else str(frame_rate)
+    forced_keys = list(LONG_RESUME_KEYS)
+    if args.video_offset == .075:
+        forced_keys[5] = 11
+    if args.submicrosecond_origin:
+        check(args.fractional_video and not args.video_offset, 'submicrosecond_requires_fractional_video')
+        forced_keys[5] = 280 * 1001 / 24000
+    source, metadata = fixture(media, 'Resume Sample', frame_rate * 6, ','.join(map(str, forced_keys)),
+                               rate=rate, frames=frames, extension='.mp4', noise=True)
+    frame_rate = metadata['frameRate']
     converted = run / source.name
     conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy',
                   '-map', '0:a:0', '-c:a', 'alac' if args.audio_sample_rate == 8000 else 'ac3', '-ar', str(args.audio_sample_rate), str(converted)]
@@ -98,14 +110,18 @@ try:
             prepared, initialization = prepare_scene(api, '/api/v1/items/' + item['id'] + '/playback-prepare', hls,
                 run / 'cache', item['id'], server, source, receipt['preparation'], encoder_count, check, bounded_bytes, False)
             rendition = next(prepared.glob('*p/index.m3u8')).parent
-            keys = [key + args.video_offset for key in LONG_RESUME_KEYS if key >= 12]
+            all_keys = [key + args.video_offset for key in metadata['keyframesSeconds']]
+            origin_key = max(key for key in all_keys if key <= 12.5)
+            keys = [key for key in all_keys if key >= origin_key]
             base = hls.removesuffix('index.m3u8') + rendition.name + '/'
             for number in range(len(keys)):
                 check(api.http(base + f'segment-{number:05d}.m4s')[0] == 200, 'population_status')
             settled(server, source)
             receipt['initialGrid'] = packet_grid(rendition)
-            target = len(keys) - 1 if args.recovery == 'tail' else 1 if args.recovery == 'early' else 10
+            target = len(keys) - 1 if args.recovery == 'tail' else 0 if args.recovery == 'first' else 1 if args.recovery == 'early' else 10
             point, span = keys[target] - 1, 3 if args.recovery == 'tail' else keys[target + 1] - keys[target] + 2
+            if args.recovery == 'first':
+                point, span = keys[0] + .2, keys[1] - keys[0] + 1
             receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm))
             receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm))
             fragment = rendition / f'segment-{target:05d}.m4s'
@@ -143,6 +159,7 @@ try:
                                        cwd=ROOT, env=child, stdout=output, stderr=output, timeout=300)
             receipt['videoExitCode'] = video.returncode
             check(video.returncode == 0, 'video_or_eof_changed')
+            receipt['metadataControls'] = reject_audio_metadata(api, base, prepared, rendition, server, source, run / 'server-private.log')
             check(all(row['passed'] for row in receipt['captures']), 'decoded_audio_splice')
             check(all(row['passed'] for key in ['initialGrid', 'recoveredGrid'] for row in receipt[key]), 'audio_packet_grid')
         finally:

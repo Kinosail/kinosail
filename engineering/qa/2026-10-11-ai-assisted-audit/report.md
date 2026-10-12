@@ -1378,3 +1378,50 @@ Player's AMD64 and ARM64 builds pass testing and scanning; publication and produ
 Both publication and promotion push digest `sha256:abb3c637fcabe1a05314f4f862bbf94659917daddaf706f8379766e17506bfb8`.
 A fresh fetch also proves reviewed fixture commit `a7623d3335e95ab86157218f5c78f77cab2b6242` is in that exact main revision.
 The safe evidence is `main-4d-publication-receipt.json`. This does not establish Nox deployment or include the pending audio candidate.
+
+### AQA-015 production candidate — Certified audio clocks and bounded refill
+
+The candidate now validates the complete decoded audio clock before correcting coarse timestamps or warming an AAC refill.
+It checks one timestamp quantizer, channel configuration, sample counts, priming, and final-frame boundaries.
+The optional proof has a six-second budget and reserves two seconds of the existing preparation deadline.
+Unsupported or discontinuous sources keep the legacy seek behavior. Incomplete proof never certifies a clock.
+Expected opt-outs produce one correlated warning. Genuine process failures retain their error evidence.
+The shared probe ownership and settlement checks remain intact.
+
+Certified refill aligns input samples with the observed initial AAC packet grid.
+It reconstructs coarse AC3 timestamps before trimming and uses a finite 30-second interleave window.
+Independent review found two rounding boundaries in fractional-frame-rate sources.
+Input trimming and mux shifts require separate rounding; input time must first match FFmpeg's microsecond seek.
+Both boundaries have retained real watch-page failures and passing repairs.
+The submicrosecond case improves minimum initial-join correlation from 0.7282 to 0.9868 without relaxing the oracle.
+Its four captures retain one fixed sample lag. Packet placement, seven video references, and EOF pass.
+Nine forged clock records also return 404 without encoding, source changes, or cache asset changes.
+Their diagnostics contain one bounded, correlated warning without fixture credentials or source paths.
+
+The real HTTP source controls cover a gap, delayed audio, optional timeout, parent cancellation, and a genuine probe failure.
+The timeout previously consumed 12.23 seconds and left preparation unavailable.
+It now falls back to ready playback in 9.35 seconds. Cancellation settles all owned children in 0.46 seconds.
+Gap and delayed sources remain uncertified and ready. The genuine probe failure retains an error and a fallback outcome.
+
+A two-hour, 180p source reaches ready playback in 9.17 seconds and certifies exactly 7,200 seconds of audio.
+Sampled peak resident memory for the Server and its process tree is 576,815,104 bytes.
+This is local preparation evidence, not full-movie browser playback, high-bitrate buffering, Linux, or physical-device proof.
+Long cold converted-audio behavior and current-main deployment remain separate boundaries.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T053126Z/receipt.json` | Fractional frame rate, middle refill, old neighbors and nine corruption controls pass | `1c72a0e20d29b87ddbff8ac617b52d707340c1005326e233d188e3598f613c45` |
+| `hls-audio-splice/20261012T053728Z/receipt.json` | Submicrosecond origin and the same complete checks pass | `9a7ca8a4327529520d022146cd7a18a0cec963f0c5fb7560455dc4124ba71e18` |
+| `hls-audio-source/20261012T053502Z/receipt.json` | Five real HTTP source controls pass | `ebf7c3511e54d6149f40cb96a47d37e3c2be89adbc88b78f41d51ae2c0fa3653` |
+| `hls-audio-source/20261012T054025Z/receipt.json` | Two-hour preparation and owned process settlement pass | `799ac75da2e1f02eefbdb796329c129149931db624a3b5cc97a64005e426b82e` |
+
+These candidate receipts bind their dirty patch and binary. Final revision checks and protected delivery remain pending.
+
+### AQA-016 — Small video dimensions produce an invalid HLS quality label
+
+The original two-hour fixture uses valid 32-by-32 H.264 video and continuous 44.1 kHz AC3 audio.
+Player certifies its source clock, then fails preparation with `HLS quality is invalid`.
+The source and owned processes settle unchanged. This is a distinct open defect in rendition naming or validation.
+The failing receipt is `.verification/hls-audio-source/20261012T053815Z/receipt.json`.
+Resizing only its video to 320-by-180 produces the passing preparation above; the audio packets are copied.
+The exact fixture conversion and hashes are retained in `long-audio-exploration/movie-clock-probe/supported-generation.json`.
