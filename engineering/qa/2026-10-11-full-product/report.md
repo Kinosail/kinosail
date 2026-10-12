@@ -1192,8 +1192,15 @@ The first committed artifact-cleanup replay exposes a teardown error in all
 three engines: calling `video.delete()` after a persistent context closes uses a
 closed browser connection. Quota assertions pass, but those executions remain
 failed. The fixture now closes pages, handles their finished videos while the
-browser is open, then closes the context and removes its profile. A further
-committed replay and intentional failure-artifact control verify this path.
+browser is open, then closes the context and removes its profile. The committed replay at `c44bb1e2` passes six quota cases per engine with zero
+skips, failures, flakes or retries. A private intentional failure after the
+unchanged OPFS assertions, once per engine, retains screenshots, two videos and
+a trace, preserves that single failure, and removes its profile without a
+teardown error. These expected failures verify artifact handling; they are not
+passing product cases. An output audit then finds three tiny blank launch-page
+videos remaining after successful WebKit runs. The fixture now removes its
+known raw-video directory after closing the browser; retained failure copies
+remain outside that directory. Final replays verify both outcomes.
 
 These are retained isolated fault checks with synthetic chunks, mocked manifests,
 quota and service-worker state. Real Go sign-in and preparation do not turn the
@@ -1237,3 +1244,26 @@ Main advanced through other reviewed playback and architecture changes. The
 branch reconciles `a95f2cbb` without conflicts as `7f65fbc1`; `make max-loc` and
 post-merge Player `make verify-changed` pass. Required GitHub gates will run again
 for this reconciled offline test checkpoint before protected delivery.
+
+
+## Watch disconnected simulator render — October 12
+
+The unchanged Watch target builds successfully for watchOS Simulator at
+`6b5ee97d`; its native source tree remains `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`.
+The existing QA Watch stays paired with the same QA iPhone. Only the Watch boots;
+the iPhone remains shut down. An initial screenshot captures system launch.
+At five and fifteen seconds, the Watch renders “Nothing playing,” the instruction
+to start a title on iPhone or Apple TV, and “Connecting to paired iPhone…”.
+The screenshot fits the device width. The connection activation outcome is not
+captured, so this does not establish a terminal failure or a working relay.
+
+The preexisting Watch app and its full data container are backed up before
+installation. Cleanup reinstalls the original app, resolves its current data
+container and restores its data; every original file hash matches. The Watch
+returns to Shutdown and the paired iPhone stays Shutdown. The pair is unchanged.
+Simulator is unavailable through the native UI-control inventory and absent at
+the selected Xcode GUI path. No Watch gestures, paired-phone playback command,
+Health permission, heart-rate sample or physical-device acceptance is claimed.
+Apple's [WCSession documentation](https://developer.apple.com/documentation/WatchConnectivity/WCSession)
+requires activation before messages; the captured connecting label alone does
+not identify activation status or failure cause.

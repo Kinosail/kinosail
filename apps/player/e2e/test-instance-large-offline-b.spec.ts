@@ -12,13 +12,14 @@ test.use({ serviceWorkers: "block" });
 const opfsTest = test.extend({
   context: async ({ playwright, browserName, launchOptions, channel, headless, contextOptions, baseURL, viewport, userAgent, deviceScaleFactor, isMobile, hasTouch, colorScheme, locale, ignoreHTTPSErrors, serviceWorkers, video }, use, testInfo) => {
     const profile = await mkdtemp(join(tmpdir(), "kinosail-opfs-quota-"));
+    const videoDirectory = testInfo.outputPath("opfs-video");
     const videoMode = typeof video === "string" ? video : video.mode;
     let context: import("@playwright/test").BrowserContext | undefined;
     try {
       context = await playwright[browserName].launchPersistentContext(profile, {
         ...launchOptions, ...contextOptions, channel, headless, baseURL, viewport, userAgent,
         deviceScaleFactor, isMobile, hasTouch, colorScheme, locale, ignoreHTTPSErrors, serviceWorkers,
-        ...(videoMode === "off" ? {} : { recordVideo: { dir: testInfo.outputPath("opfs-video"), size: typeof video === "string" ? undefined : video.size } }),
+        ...(videoMode === "off" ? {} : { recordVideo: { dir: videoDirectory, size: typeof video === "string" ? undefined : video.size } }),
       });
       await use(context);
     } finally {
@@ -33,11 +34,12 @@ const opfsTest = test.extend({
             await recording.saveAs(path);
             await testInfo.attach("video", { path, contentType: "video/webm" });
           }
-        } else await Promise.all(recordings.map((recording) => recording.delete()));
+        }
       } finally {
         try { await context?.close(); }
         finally {
           await rm(profile, { recursive: true, force: true });
+          await rm(videoDirectory, { recursive: true, force: true });
           await testInfo.attach("opfs-profile", { body: JSON.stringify({ mode: "fresh-persistent", removed: true }), contentType: "application/json" });
         }
       }
