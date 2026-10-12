@@ -83,7 +83,7 @@ func QualityDirectory(name string) bool {
 		return true
 	}
 	height, err := strconv.Atoi(strings.TrimSuffix(name, "p"))
-	return err == nil && strings.HasSuffix(name, "p") && height >= 144 && height <= 2160
+	return err == nil && strings.HasSuffix(name, "p") && height >= 1 && height <= 2160
 }
 
 func VariantFile(name string) bool {

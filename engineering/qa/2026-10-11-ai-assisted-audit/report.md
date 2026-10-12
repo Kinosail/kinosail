@@ -1279,3 +1279,303 @@ An earlier private recorder syntax failure is retained separately and provides n
 PR #574 merges after all required checks pass. A fresh fetch proves both reviewed selector checkpoints in main `a95f2cbb2ed8a1a27eb39e311be1c8f71a95c50d`.
 The selector includes architecture-generating Go sources, module inputs, and architecture documentation without losing app isolation.
 The private ancestry receipt SHA-256 is `ec4fb4879d0b94cfc3d7df7c1db5a3265f16ec525690e8953c0f1f32e2a978a7`.
+
+### AQA-015 — Long converted-audio refill changes its packet grid
+
+The retained `test-hls-audio-splice.py` journey confirms decoded damage before any production repair.
+It uses a real disposable Player, a 74.5-second nonperiodic AC3 source, and the unchanged watch page.
+An AudioWorklet records render-thread samples. One source alignment remains fixed across each capture.
+The initial refill reaches correlation 0.7395; tail recovery reaches 0.7013. The untouched tail control remains above 0.9797.
+All three captures have contiguous render blocks and zero sample lag. Seven video reference checks and EOF pass.
+The source remains unchanged and the Server settles. Perceptual audibility and physical devices remain separate.
+The recorder's CSP exception permits instrumentation; this journey does not establish CSP security.
+
+The failing receipt is `.verification/hls-audio-splice/20261012T043453Z/receipt.json`, SHA-256 `581b619c061e6f398d2e106bc7dba04fe015842ce1fd3d3ddbd55055c678eb40`.
+The outer manifest is `long-audio-retained-red/manifest.json`, SHA-256 `9d9909c2d1f745f3e8b4fbcf9fb581bfb5fe7ac96ab6b7537a41de80b98b8133`.
+Both bind production base `a7623d3335e95ab86157218f5c78f77cab2b6242` and the test patch.
+
+Private experiments separate encoder warm-up from packet alignment.
+Warm-up alone either leaves a mismatch or introduces a 5.3 ms gap. Those variants were rejected.
+Warm-up aligned to the cached packet grid removes the tail mismatch without shifting source content.
+A second experiment uses the initial fragment's grid for population and middle-fragment recovery.
+Both decoded joins pass with the old neighboring fragments preserved; minimum source correlation is 0.9804.
+That experiment is `.verification/hls-resume-browser/20261012T042906Z/`, with helper snapshots and exact environment in its receipt.
+These are bounded generated-media experiments. The production repair is still pending.
+
+### Publication and deployed-revision boundary
+
+Main CI `38200496460` passes for `e0a9536c6a04198a2eff9f5306c7c658fcdf9406`.
+Both immutable app images are published, scanned, signed, attested, and verified.
+The green production-tag jobs explicitly retain existing tags because newer main changes affect the apps.
+They do not prove promotion of that revision. The private receipt is `e0-publication-receipt.json`.
+
+A fresh read-only Nox inspection finds both apps running and healthy.
+Player reports `394736cb740fc6873aa6e94b41e22dc797155529`; Subtitles reports local snapshot `6f41117dfa618ad65479f91463d431ab2f500996`.
+Neither proves deployment of current main. Historical local-watcher receipts also do not establish current remote state.
+The safe receipt is `nox-readonly-20261012.json`, SHA-256 `d4d691056d7fe7fe3447686720ecfe4602abe381e6737085c6b1e157933c72c9`.
+
+### AQA-015 expansion — Source timestamps and fragment interleaving
+
+The first production candidate passes 48 kHz tail recovery and 44.1 kHz MP4 middle recovery.
+It fails the 44.1 kHz Matroska case with a 130 ms video offset. The candidate remains unpublished.
+The retained journey now selects sample rate, early or middle recovery, and the fractional video offset.
+Its middle and early cases restore the old neighboring fragments after recovery, representing an already buffered client.
+The source and disposable Server settle after every completed run.
+
+A private counterfactual regenerates identical AC3 packet payloads in MP4 and Matroska.
+Both containers retain the same 256-sample priming information. Their audio clocks differ in precision.
+Before AAC encoding, MP4 seeks have zero sample error. Matroska seeks have errors of 1, 10, and -4 samples.
+The errors persist through each five-second decode. This separates source sample selection from the output AAC packet grid.
+The exact commands and packet hashes are retained in `long-audio-exploration/input-clock/receipt.json`.
+
+A fixture-specific prototype disables timestamp trimming and reconstructs the AC3 sample clock before trimming.
+It accounts for 1,536-sample packets, first-frame priming, and the final partial frame.
+The real watch page then passes initial population, middle recovery, and both retained-neighbor joins.
+All four captures have zero sample lag; minimum correlation is 0.9584. Packet grids, seven video references, and EOF also pass.
+The passing receipt is `.verification/hls-audio-splice/20261012T045910Z/receipt.json`, SHA-256 `5c4cc4802b1f8c15f4b07265782d2d7e57df25d0d697672950c9998ef3f8e767`.
+This wrapper assumes known synthetic input properties. It is not a general production repair.
+A production implementation must validate packet continuity, priming, clock precision, and genuine gaps before correcting sample selection.
+
+The 8 kHz ALAC case exposes a separate fragment partitioning defect during early recovery.
+Audio timestamps remain contiguous, but audio needed for one video fragment appears in the following fragment.
+The browser jumps from source 16.46947 to 18.1 seconds. The missing capture duration correctly fails the journey.
+An earlier attempt to create 8 kHz MP3 in MP4 fails before Player starts; that run provides no product evidence.
+
+A private outer-muxer interleaving experiment removes the 8 kHz jump.
+All four watch-page captures pass with one sample of initial lag and minimum correlation 0.9847.
+The passing receipt is `.verification/hls-audio-splice/20261012T050004Z/receipt.json`, SHA-256 `2117d485b147834ce0adb6aa38ecbc3d91f362f3872f6be830ee3c3231c9828b`.
+Unbounded buffering with sparse or delayed audio remains a production design concern.
+The private experiment bundle includes the candidate patch, wrapper sources, exact commands, and checksummed passing and failing receipts.
+Its index is `long-audio-exploration/counterfactual-checkpoint/index.json`, SHA-256 `ee3ee53d980b7da94d1d9c0d074bdb90ff1f74e0ae91416375a61179cc28317c`.
+Neither prototype establishes physical-device playback or perceptual audibility.
+
+The retained packet oracle now checks fragment assignment as well as continuous timestamps and AAC phase.
+Each fragment must contain audio through the following video's decode boundary, within one AAC packet.
+A retrospective check rejects the preserved failing 8 kHz cache and accepts the interleaving prototype and both 44.1 kHz controls.
+This prevents later preloaded fragments from hiding misplaced audio. The PCM oracle also requires contiguous render blocks.
+The private projection is `long-audio-exploration/fragment-partition-counterfactual.json`, SHA-256 `07766a823d17c0f218e8894155e239dad03faf134d8af84ed6b8c32c4d6d688f`.
+
+Independent full-suffix replay confirms the interleaving cause without changing encoded audio.
+The default and inner-muxer-zero variants retain identical init and all 474 AAC packets but assign them to the wrong fragments.
+Outer 20-second, 30-second, and zero variants produce identical corrected fragments for this fixture.
+A debug replay records 1,211 forced flushes just above the default ten-second threshold.
+Output queue sizes of eight and sixteen packets leave the defect unchanged.
+These measurements do not establish a general safe interleaving buffer limit.
+The private full-suffix receipt SHA-256 is `1f38dc5b04ad239092860e483728a4a569d019029bd1feed06d872d208ae5bc6`.
+The output-queue counterfactual receipt SHA-256 is `0adfbd36dbae561866bdf4258b4c0ec4541f4fb2832c529fbb695f730fee1c51`.
+
+A separate two-hour synthetic AC3 scan decodes 206,719 frames and exactly 317,520,000 samples.
+Every frame matches one continuous sample clock under nearest-millisecond quantization; channel configuration remains stable.
+The local scan takes 3.95 seconds and peaks at 17,219,584 resident bytes.
+This makes decoded-frame validation worth testing within the existing preparation budget.
+It does not establish end-to-end preparation time, high-bitrate behavior, Linux performance, or encoder buffer limits.
+Its exact generation and probe commands, source checksum, and measured limits are in `long-audio-exploration/movie-clock-probe/receipt.json`.
+
+### Current main publication after the fixture repair
+
+Main `4d8ddd2b3e64279ee41f58db90ba0ebf393e9914` passes all required checks in run `38204654259`.
+Player's AMD64 and ARM64 builds pass testing and scanning; publication and production-tag advancement complete successfully.
+Both publication and promotion push digest `sha256:abb3c637fcabe1a05314f4f862bbf94659917daddaf706f8379766e17506bfb8`.
+A fresh fetch also proves reviewed fixture commit `a7623d3335e95ab86157218f5c78f77cab2b6242` is in that exact main revision.
+The safe evidence is `main-4d-publication-receipt.json`. This does not establish Nox deployment or include the pending audio candidate.
+
+### AQA-015 production candidate — Certified audio clocks and bounded refill
+
+The candidate now validates the complete decoded audio clock before correcting coarse timestamps or warming an AAC refill.
+It checks one timestamp quantizer, channel configuration, sample counts, priming, and final-frame boundaries.
+The optional proof has a six-second budget and reserves two seconds of the existing preparation deadline.
+Unsupported or discontinuous sources keep the legacy seek behavior. Incomplete proof never certifies a clock.
+Expected opt-outs produce one correlated warning. Genuine process failures retain their error evidence.
+The shared probe ownership and settlement checks remain intact.
+
+Certified refill aligns input samples with the observed initial AAC packet grid.
+It reconstructs coarse AC3 timestamps before trimming and uses a finite 30-second interleave window.
+Independent review found two rounding boundaries in fractional-frame-rate sources.
+Input trimming and mux shifts require separate rounding; input time must first match FFmpeg's microsecond seek.
+Both boundaries have retained real watch-page failures and passing repairs.
+The submicrosecond case improves minimum initial-join correlation from 0.7282 to 0.9868 without relaxing the oracle.
+Its four captures retain one fixed sample lag. Packet placement, seven video references, and EOF pass.
+Nine forged clock records also return 404 without encoding, source changes, or cache asset changes.
+Their diagnostics contain one bounded, correlated warning without fixture credentials or source paths.
+
+The real HTTP source controls cover a gap, delayed audio, optional timeout, parent cancellation, and a genuine probe failure.
+The timeout previously consumed 12.23 seconds and left preparation unavailable.
+It now falls back to ready playback in 9.35 seconds. Cancellation settles all owned children in 0.46 seconds.
+Gap and delayed sources remain uncertified and ready. The genuine probe failure retains an error and a fallback outcome.
+
+A two-hour, 180p source reaches ready playback in 9.17 seconds and certifies exactly 7,200 seconds of audio.
+Sampled peak resident memory for the Server and its process tree is 576,815,104 bytes.
+This is local preparation evidence, not full-movie browser playback, high-bitrate buffering, Linux, or physical-device proof.
+Long cold converted-audio behavior and current-main deployment remain separate boundaries.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T053126Z/receipt.json` | Fractional frame rate, middle refill, old neighbors and nine corruption controls pass | `1c72a0e20d29b87ddbff8ac617b52d707340c1005326e233d188e3598f613c45` |
+| `hls-audio-splice/20261012T053728Z/receipt.json` | Submicrosecond origin and the same complete checks pass | `9a7ca8a4327529520d022146cd7a18a0cec963f0c5fb7560455dc4124ba71e18` |
+| `hls-audio-source/20261012T053502Z/receipt.json` | Five real HTTP source controls pass | `ebf7c3511e54d6149f40cb96a47d37e3c2be89adbc88b78f41d51ae2c0fa3653` |
+| `hls-audio-source/20261012T054025Z/receipt.json` | Two-hour preparation and owned process settlement pass | `799ac75da2e1f02eefbdb796329c129149931db624a3b5cc97a64005e426b82e` |
+
+These candidate receipts bind their dirty patch and binary. Final revision checks and protected delivery remain pending.
+
+### AQA-016 — Small video dimensions produce an invalid HLS quality label
+
+The original two-hour fixture uses valid 32-by-32 H.264 video and continuous 44.1 kHz AC3 audio.
+Player certifies its source clock, then fails preparation with `HLS quality is invalid`.
+The source and owned processes settle unchanged. This is a distinct open defect in rendition naming or validation.
+The failing receipt is `.verification/hls-audio-source/20261012T053815Z/receipt.json`.
+Resizing only its video to 320-by-180 produces the passing preparation above; the audio packets are copied.
+The exact fixture conversion and hashes are retained in `long-audio-exploration/movie-clock-probe/supported-generation.json`.
+
+### AQA-015 precision review follow-up
+
+The source filter now shares the integer microsecond-to-sample conversion used by refill alignment.
+At a coarse 11.075-second origin, the retained failure has minimum initial correlation 0.6579.
+The repaired journey reaches 0.9590; all four captures have zero lag, and video, EOF, and packet placement pass.
+Its receipt is `.verification/hls-audio-splice/20261012T055221Z/receipt.json`.
+
+Refill now derives the initial audio shift from the measured AAC phase.
+The correction must fit the source video quantum plus bounded timestamp rounding.
+This handles independent mux rescaling and precision lost in the printed video clock.
+A real 96 kHz source with a 1000 Hz video track confirms the two-sample boundary identified by review.
+The reported video clock is 0.010688 seconds; the AAC phase identifies an exact 1,024-sample shift.
+Four captures, both fragment grids, seven video references, EOF, and ten corrupt-metadata controls pass.
+The added control rejects an otherwise well-formed phase shifted by half an AAC packet.
+Its receipt is `.verification/hls-audio-splice/20261012T055409Z/receipt.json`.
+
+A separate 400/29 fps diagnostic does not reproduce the proposed audio-clock rounding failure.
+All four decoded-audio captures and both packet grids pass before phase calibration.
+Its compatible HLS reaches EOF and all seven video hashes match, but the original-file reference times out near 30 seconds.
+This remains an unresolved reference-playback boundary, not evidence that the audio repair passed the whole journey.
+The complete failed receipt is `.verification/hls-audio-splice/20261012T054923Z/receipt.json`.
+
+The worktree audit also reports ten unrelated inactive checkouts: nine contain unique commits and one is dirty.
+Their files and leases remain unchanged. The active campaign checkout has a renewed lease.
+
+### AQA-015 final recorder boundary and revision checks
+
+At committed revision `159e5c14b2a248c3f358e6621200b9a7d7d4db28`, the quantized mux-clock journey passes.
+The 32 kHz first-fragment journey exposes a recorder startup gap before playback begins.
+Its recovered and retained-neighbor captures have identical PCM hashes and zero alignment lag.
+The retained capture records one 128-sample paused block, then a 1,280-frame gap before continuous playback.
+All decoded correlations exceed 0.985; video, EOF, both packet grids, and ten metadata controls pass.
+
+The recorder now suspends its audio clock during setup and resumes only after the media element accepts play.
+The continuity assertion still checks every recorded render block, with no gap exemption or PCM realignment.
+The complete 32 kHz journey then passes all four captures with zero lag and no render gaps.
+The failed receipt is `hls-audio-splice/20261012T055854Z/receipt.json`.
+The passing receipts are `hls-audio-splice/20261012T060030Z/receipt.json` and `hls-audio-splice/20261012T060442Z/receipt.json`.
+
+Independent review finds no remaining blocker in the eight changed production Go files.
+At revision `159e5c14`, affected Player verification, focused Server lint, source limits, and both architecture snapshots pass.
+All 170 CI contract tests pass with five existing skips; pinned actionlint also passes.
+Protected PR checks and delivery remain pending.
+
+### AQA-016 regression owner and reproduced boundary
+
+The existing resumed-playback browser journey now accepts a bounded 32-by-32 synthetic fixture.
+It checks unchanged source dimensions, original-frame equality, saved position, EOF, and invalid quality-path rejection without cache writes or encoders.
+Existing fixtures are at least 180 pixels high, so they miss the lower-bound mismatch. No production seam is added.
+The new fixture reproduces the earlier two-hour failure before browser playback: preparation never becomes ready.
+The Server records `HLS quality is invalid`; source files and owned processes settle unchanged.
+Its private receipt is `hls-resume-browser/20261012T061029Z/receipt.json`.
+The public interface is the HLS master and rendition path. Valid small source dimensions must retain their original dimensions.
+The current path validator rejects every quality below 144p although rendition generation uses the source's actual height.
+The intended repair admits positive heights while preserving the existing 2160p ceiling and file/path checks.
+
+The one-line lower-bound repair passes the complete small-video journey in Chromium and WebKit.
+Each engine preserves 32-by-32 dimensions, matches all seven reference frames, resumes at the saved position, and reaches EOF.
+Six malformed or out-of-range quality paths return 404 without starting encoders or changing cache assets.
+The source remains unchanged and the Server settles. The passing Server log contains no HLS warning or error.
+Receipt `hls-resume-browser/20261012T061139Z/receipt.json` retains the browser results and checksums.
+The required Chromium workflow now retains this case with the existing prepared-timeline artifacts.
+The production change only lowers the allowed positive rendition height; the upper bound and path confinement remain intact.
+
+### Original-file EOF observation resolved
+
+An isolated Chromium reference probe reproduces the earlier 400/29 fps behavior using the same synthetic media bytes.
+After the final paused seek, `currentTime` is 74.48 seconds and `ended` is already true, despite a 74.53-second duration.
+Calling `play()` then restarts at zero. This explains the earlier 30-second timeout without a Player change.
+The private source-bound probe is `reference-eof-diagnostic/receipt.json`; it is isolated browser evidence.
+
+After collecting the seven frame references, the browser oracle now seeks half a second before the end.
+It requires `ended` to be false before playing and still waits for the real `ended` event.
+The complete 400/29 fps public journey passes all four audio captures, packet grids, video comparisons, EOF, and ten metadata controls.
+Its receipt is `hls-audio-splice/20261012T061514Z/receipt.json`. The workflow retains this low-frame-rate case.
+
+Independent review finds no blocker in the small-video repair or its regression coverage.
+Focused playback package tests and changed-code lint pass. CI contracts pass 170 tests with five existing skips.
+The required Player local verification stops at the existing 95-issue shared-package lint baseline.
+That failure does not establish a passing complete local verification suite; hosted checks remain required.
+
+The final small-video browser repetition passes Chromium and WebKit at revision `e195724b`.
+Receipt `hls-resume-browser/20261012T061651Z/receipt.json` binds the completed EOF correction.
+Subtitles local `verify-changed` encounters the same 95-issue package-lint baseline.
+One later CI-contract run encounters an intermittent permission error while polling an owned process group.
+The unchanged nine-test Q09 subset passes immediately afterward; the original error remains retained for diagnosis.
+
+### AQA-017 — Subtitles compatible playback differs from the original frame clock
+
+A separate real Subtitles process plays the 32-by-32 source at the saved position and reaches EOF.
+Both Chromium and WebKit preserve dimensions, but only one of seven paused frame references matches the original.
+Chromium repeats the same six mismatches in a second fresh process. This is separate from the repaired quality-label rejection.
+Compatible duration is 32.083332 seconds in Chromium and 32.166667 seconds in WebKit; original duration is 32 seconds.
+The exact timing cause remains unverified. The strict browser comparison stays failed.
+Six invalid quality paths still return 404 without encoders or changed cache files. Sources and Servers settle unchanged.
+The private receipts are `subtitles-small-video-2/receipt.json` and `subtitles-small-video-3/receipt.json` in the campaign directory.
+An earlier harness attempt called a Player-only settings endpoint and received 404 before browser playback; it is not product evidence.
+
+### AQA-015 Linux rounding phase and coarse-clock boundary
+
+[PR 575 CI](https://github.com/Kinosail/kinosail/actions/runs/38211142029) rejects the 44.1 kHz Matroska source clock.
+The 48 kHz and 32 kHz journeys pass before that failure.
+A disposable Linux Noble ARM64 Server and Chromium reproduce the failed audio with Jellyfin FFmpeg 8.1.3.
+Hosted CI uses the same media-tool version on AMD64; these are separate execution environments.
+The reproduction retains the exact fixture, binary, commands, browser data, source hashes, and patch in private receipts.
+
+Every one of the 2,139 decoded AC3 frames fits one fixed timestamp quantizer.
+Its rounding phase differs from the nearest-to-zero rule after the container normalizes negative encoder priming.
+The full-frame intersection is `[30600,30899]` in units of 1/44100 of a container tick.
+The certificate now intersects that one phase across the entire source.
+It never assigns a separate tolerance to each frame. Sample-clock streams retain their existing exact check.
+The integer comparison bounds untrusted timestamps before arithmetic.
+
+Independent review also identifies an ambiguous-clock boundary: a one-second timestamp cannot identify an AC3 block after seeking.
+Coarse certification now requires a timestamp quantum no larger than one millisecond.
+A selected-probe metadata fault reproduces the previous incorrect certification before this guard.
+This fault is an isolated proof boundary; it is not a real one-second source or browser acceptance result.
+The cache policy changes so retained generations must obtain the current certificate.
+
+On Linux, the repaired browser journey improves initial minimum correlation from 0.7178 to 0.9897.
+Recovered and retained-neighbor captures improve from -0.0621 to 0.9804.
+All four captures have zero sample lag and uninterrupted render blocks.
+Both packet grids, seven reference frames, EOF, and ten metadata rejection controls pass.
+Seven source controls also pass: gap, delay, a real one-millisecond gap, ambiguous metadata, timeout, cancellation, and probe failure.
+Rejected clocks retain one correlated warning and ready playback without a guessed clock.
+The source and owned Server processes settle after every case.
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-audio-splice/20261012T064047Z/receipt.json` | Linux browser reproduction fails | `34083254128c3a6738001e296e89ac7da9345262a62be0cc9bc7ed0851aac7b0` |
+| `hls-audio-splice/20261012T064324Z/receipt.json` | Fixed quantizer: four captures, grids, video and ten metadata controls pass | `dba88aefb6c51f114066f7408c87034141f61ddf1ab1dd4cfb73fd3f12da60cc` |
+| `hls-audio-source/20261012T064448Z/receipt.json` | Ambiguous one-second metadata is incorrectly certified before the guard | `b64b7af70f8f1526a8b87b388476ffa9a8aadc8385295da605d80b59e8ff03b5` |
+| `hls-audio-source/20261012T064529Z/receipt.json` | Seven source and fault controls pass after the guard | `3e04c11cd9cf45f9654fb2d204aa7e387e91b68f6832c4347eeb0cd13c4aa6e1` |
+
+The Firefox native-layout job in [run 38211141937](https://github.com/Kinosail/kinosail/actions/runs/38211141937) passes one unchanged retry.
+The original 844-by-390 navigation timeout remains an intermittent observation with its trace retained.
+No timeout, layout assertion, or navigation behavior was changed for that retry.
+Protected delivery and current-main deployment remain pending.
+
+At commit `72ed3bda`, the final guarded Linux 11.075-second-origin journey passes all four audio captures, both grids, video, EOF, and ten metadata controls.
+Its maximum absolute lag is one 48 kHz sample; minimum correlation is 0.94446.
+The receipt is `hls-audio-splice/20261012T064719Z/receipt.json`, SHA-256 `ec5bfd4ebe367f0e0d86d80a3ddf73f2fbac187da42e5c3512ca0ae30919d545`.
+The final Mac coarse-origin regression also passes, including all four captures and the same checks.
+Its receipt is `hls-audio-splice/20261012T064823Z/receipt.json`, SHA-256 `7fc84f81f12c994b89373dbdde5fbddaf92fc79bca73ef1ffb764d73af79db1d`.
+Player `make verify-changed` passes compilation, affected Server tests, source limits, and diff checks at that commit.
+The regenerated Player architecture snapshot and source limits pass. The final independent review reports no concrete blocker.
+
+
+### Hosted audio regression proof and bounded CI runtime
+
+PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases and the source rejection controls successfully on Ubuntu. The job then reached its 30-minute job deadline during source-version verification. That cancellation also prevented its final proof and upload steps from completing; the required Player check remains failed.
+
+The browser job budget is now 45 minutes. Per-test and per-step deadlines, required selections, assertion thresholds, and artifact requirements are unchanged. Local validation passed all 170 CI contract tests (five skips), pinned actionlint, source-file limits, and whitespace checks. This is a runtime allowance supported by the observed job duration, not a passing hosted result. The previous unchanged Firefox layout rerun for PR 577 passed; the original pre-document navigation timeout remains retained as intermittent evidence.

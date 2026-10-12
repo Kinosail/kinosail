@@ -31,6 +31,8 @@ type copiedHLSTimeline struct {
 	Keys        []copiedHLSKey
 	End         float64
 	Clock       *float64
+	AudioGrid   *copiedHLSAudioGrid   `json:",omitempty"`
+	AudioSource *copiedHLSSourceAudio `json:",omitempty"`
 }
 
 func (timeline *copiedHLSTimeline) point(number int) float64 {
@@ -77,7 +79,15 @@ func (manager *hlsManager) indexCopiedHLS(ctx context.Context, item library.Item
 		return nil, err
 	}
 	phase = "selection"
-	return manager.selectCopiedHLSTimeline(scan, item, recipe, preparation, timeline)
+	selected, err := manager.selectCopiedHLSTimeline(scan, item, recipe, preparation, timeline)
+	if err != nil {
+		return nil, err
+	}
+	phase = "audio-clock"
+	if err := manager.indexCopiedHLSAudio(scan, item, recipe, selected); err != nil {
+		return nil, err
+	}
+	return selected, nil
 }
 
 func (timeline *copiedHLSTimeline) packet(line string, end *int64) error {
