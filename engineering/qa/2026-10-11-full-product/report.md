@@ -2065,3 +2065,47 @@ interaction or physical-device behavior. A unittest discovery attempt selects
 no hyphenated files and is excluded; the root tooling command invokes the files
 explicitly. Private `native-verification-*` receipts retain commands, revisions,
 source hashes, controls and logs.
+
+## QA-025 — EPUB pending geometry and enlarged reading
+
+The tablet pending column starts at pixel 40; its loaded chapter starts at pixel 592.
+The native regression records both public UI bounds before the production repair.
+It fails the column assertion on the original source.
+The reader now centers pending lines within the default chapter's 68ch column and 16dp page padding.
+Pending line height and spacing use the selected, scaled reader font.
+The reading page and publisher styles remain unchanged.
+
+The first phone and tablet matrix also exposes horizontal overflow with system font scale 2.0.
+A new native viewport assertion fails before the document repair.
+Its artifact records WebView text zoom at 200% and horizontal overflow.
+Reader CSS already includes the system font scale, so the default WebView zoom applies it again.
+The document now fixes WebView text zoom at 100% while retaining scaled CSS text.
+Light-page system insets keep the dark toolbar background so white status icons remain readable.
+
+The initial width measurement rounds each zero-glyph advance before multiplying by 68.
+The correction uses fractional glyph advances with linear scaling and subpixel positioning.
+The native geometry assertion keeps its original two-density-pixel tolerance.
+The [Android implementation](https://android.googlesource.com/platform/frameworks/base/+/master/graphics/java/android/graphics/Paint.java)
+confirms that `measureText` rounds up; `getTextWidths` preserves advances.
+
+The confirmation journeys pass on normal phone and on phone and tablet at system font scale 2.0 with a light page.
+Their loaded chapters have no horizontal overflow, and pending column edges match the loaded content.
+The tablet's normal confirmation is interrupted by a visible System UI ANR dialog.
+That execution is excluded from EPUB and accessibility conclusions.
+Its failure remains retained. The quiet normal-tablet follow-up passes with both column edges exactly aligned.
+Pending and loaded left edges are both pixel 592; the pending right edge is pixel 1968.
+WebView text zoom is 100%, and no horizontal overflow is present.
+The three earlier confirmation journeys precede this final fractional-width correction.
+
+Pending, loaded, empty and failed captures are inspected in both appearances and device classes.
+The native fixture retains blocked-script and escaped-resource checks, chapter navigation, renderer recovery and saved position.
+The native checks also verify that success and failure remove the pending placeholder.
+These are device-side synthetic HTTP journeys, not populated Go Server or physical TalkBack proof.
+The separate intermittent chapter-accessibility finding remains unresolved.
+Task-installed packages are removed and original system font settings are restored after every execution.
+The task emulator is shut down; unrelated AVDs and data are preserved.
+
+The final tablet artifact SHA-256 is `5f14e7f2776a96a2f9642e215c7b69bff7fbf79761611393f742f6f5572db3de`.
+The original geometry failure artifact SHA-256 is `c4f38a78cb224b68ce1b9d819f97f8df74742f17ade9683e2398540144b403c3`.
+The original overflow failure artifact SHA-256 is `9a9906a12ee6b95bfb8aa8ff61a6457d6e1e93d97e97d9b9dae52f7986c570f8`.
+Private `epub-column-*` and `epub-overflow-*` receipts retain exact APK hashes, source patches, commands and environment.

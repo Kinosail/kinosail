@@ -77,36 +77,56 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Read book").performScrollTo().activate()
         waitText("Could not open this book. Check your Server connection and try again.")
         assertEquals(0, fixture.chapterReads)
+        if (InstrumentationRegistry.getArguments().getString("reader-light") == "true") {
+            compose.onNodeWithText("Appearance").activate()
+            compose.onNodeWithText("Light page").activate()
+        }
         fixture.bookMode = "empty"
         compose.onNodeWithText("Try again").activate()
         waitText("Could not open this book. Check your Server connection and try again.")
         assertEquals(0, fixture.chapterReads)
+        compose.onNodeWithContentDescription("Opening your book").assertDoesNotExist()
         capture("epub-empty")
         fixture.bookMode = "pending"
         compose.onNodeWithText("Try again").activate()
         compose.waitUntil(20_000) { fixture.chapterReads > 0 }
-        compose.onNodeWithContentDescription("Opening your book").assertExists()
+        val pendingColumn = compose.onNodeWithContentDescription("Opening your book").fetchSemanticsNode().boundsInRoot
         capture("epub-pending")
         fixture.bookMode = "failed"
         waitText("Could not load this chapter. Try again.")
+        compose.onNodeWithContentDescription("Opening your book").assertDoesNotExist()
         capture("epub-failed")
         fixture.bookMode = "ready"
         compose.onNodeWithText("Try again").activate()
         waitText("Chapter 1 of 2")
         waitChapter("Departure")
         capture("epub-loaded")
+        fun chapterBounds(node: android.view.accessibility.AccessibilityNodeInfo?): android.graphics.Rect? {
+            if (node == null) return null
+            if (node.text?.toString() == "Departure") return android.graphics.Rect().also(node::getBoundsInScreen)
+            for (index in 0 until node.childCount) chapterBounds(node.getChild(index))?.let { return it }
+            return null
+        }
+        val loadedColumn = requireNotNull(chapterBounds(uiAutomation().rootInActiveWindow))
+        val width = compose.onRoot().fetchSemanticsNode().boundsInRoot.width
+        val density = context.resources.displayMetrics.density
+        val geometry = JSONObject().put("pendingLeft", pendingColumn.left).put("pendingRight", pendingColumn.right)
+            .put("loadedLeft", loadedColumn.left).put("windowWidth", width).put("density", density)
+            .put("fontScale", context.resources.configuration.fontScale)
+        var horizontalOverflow = false
+        instrumentation.runOnMainSync {
+            val web = chapterWebView()
+            horizontalOverflow = web.canScrollHorizontally(1) || web.canScrollHorizontally(-1)
+            geometry.put("webTextZoom", web.settings.textZoom).put("horizontalOverflow", horizontalOverflow)
+        }
+        File(context.filesDir, "parity-evidence/epub-column-geometry.json").writeText(geometry.toString())
+        assertFalse("Large-text EPUB chapters must reflow inside the reading viewport", horizontalOverflow)
+        assertEquals("Pending EPUB lines must reserve the loaded reading column's left edge", loadedColumn.left.toFloat(), pendingColumn.left, density * 2)
+        assertEquals("Pending EPUB lines must reserve the loaded reading column's right edge", width - loadedColumn.left, pendingColumn.right, density * 2)
+        compose.onNodeWithContentDescription("Opening your book").assertDoesNotExist()
         if (Build.VERSION.SDK_INT >= 29) {
             instrumentation.runOnMainSync {
-                val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-                    .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).first()
-                fun find(view: android.view.View): android.webkit.WebView? {
-                    if (view is android.webkit.WebView) return view
-                    if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
-                        find(view.getChildAt(index))?.let { return it }
-                    }
-                    return null
-                }
-                val web = requireNotNull(find(activity.window.decorView))
+                val web = chapterWebView()
                 assertTrue(requireNotNull(web.webViewRenderProcess).terminate())
             }
             waitText("Could not load this chapter. Try again.")
@@ -142,6 +162,17 @@ class NativeParityJourneyTest {
         compose.waitUntil(20_000) { fixture.readerPage == 1 }
         compose.onNodeWithText("Done").activate()
         assertEquals("A failed chapter must not advance saved progress", 1, fixture.readerPage)
+    }
+
+    private fun chapterWebView(): android.webkit.WebView {
+        val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+            .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).first()
+        fun find(view: android.view.View): android.webkit.WebView? {
+            if (view is android.webkit.WebView) return view
+            if (view is android.view.ViewGroup) for (index in 0 until view.childCount) find(view.getChildAt(index))?.let { return it }
+            return null
+        }
+        return requireNotNull(find(activity.window.decorView))
     }
 
     private fun waitChapter(text: String) {
