@@ -25,11 +25,11 @@ from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--cases', default='gap,delay,timeout,cancel,probe-error')
+parser.add_argument('--cases', default='gap,delay,coarse-gap,timeout,cancel,probe-error')
 parser.add_argument('--movie-source', type=Path)
 args = parser.parse_args()
 cases = args.cases.split(',')
-check(all(case in ['gap', 'delay', 'timeout', 'cancel', 'probe-error', 'movie'] for case in cases), 'case_name')
+check(all(case in ['gap', 'delay', 'coarse-gap', 'timeout', 'cancel', 'probe-error', 'movie'] for case in cases), 'case_name')
 run = ROOT / '.verification/hls-audio-source' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 run.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -85,16 +85,20 @@ def perform(case, base):
     folder = run / case
     media = folder / 'media'
     media.mkdir(parents=True)
-    source = media / ('Proof Sample.mkv' if case == 'movie' else 'Proof Sample.mp4')
+    source = media / ('Proof Sample.mkv' if case in ['movie', 'coarse-gap'] else 'Proof Sample.mp4')
     row = {'case': case, 'passed': False}
     receipt['cases'].append(row)
     if case == 'movie':
         check(args.movie_source is not None and args.movie_source.is_file(), 'movie_source_required')
         shutil.copyfile(args.movie_source, source)
-    elif case in ['gap', 'delay']:
+    elif case in ['gap', 'delay', 'coarse-gap']:
         extra = ['-af', 'asetpts=PTS+if(gte(T\\,1)\\,0.5/TB\\,0)'] if case == 'gap' else ['-af', 'asetpts=PTS+0.5/TB']
+        if case == 'coarse-gap':
+            # One timestamp tick must remain a real discontinuity, even when
+            # a remux changes the phase of the container's rounding rule.
+            extra = ['-af', 'asetpts=PTS+if(gte(T\\,1)\\,0.001/TB\\,0)']
         command(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(base), '-map', '0:v:0', '-c:v', 'copy',
-                 '-map', '0:a:0', '-c:a', 'ac3', '-ar', '48000', *extra, '-t', '74.5', str(source)])
+                 '-map', '0:a:0', '-c:a', 'ac3', '-ar', '44100' if case == 'coarse-gap' else '48000', *extra, '-t', '74.5', str(source)])
     else:
         shutil.copyfile(base, source)
     before = source_state(source)
