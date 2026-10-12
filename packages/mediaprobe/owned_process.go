@@ -127,6 +127,11 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 }
 
 func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, waitErr, settleErr error) {
+	// Rejected metadata and cancelled optional scans can intentionally stop the
+	// process. Only unexpected exits and uncertified ownership need an error.
+	if !errors.Is(watchErr, ErrProbeLifecycle) && (ctx.Err() != nil || scanErr != nil || waitErr == nil) {
+		return
+	}
 	var errno syscall.Errno
 	errnoKnown := errors.As(watchErr, &errno)
 	exitCode, exitKnown := 0, waitErr == nil

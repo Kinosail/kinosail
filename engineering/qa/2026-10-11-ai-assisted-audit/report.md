@@ -2037,3 +2037,10 @@ Error logging remains correlated and bounded; the existing checks reject secrets
 All fixture Servers settled and source media remained unchanged. Source limits and whitespace pass.
 These local runs bind the changed source hash over base `8b6011b2`; fresh hosted Linux verification is still required.
 Proof: `pr582-probe-diagnostic-repair-proof.json`, SHA-256 `2e85efefb90838878178c8cd4618d264c19d531145e6bbbdfcafcca7df513bdd`.
+
+The first diagnostic condition introduced one new complexity finding during post-commit verification.
+The equivalent guard now lives in the existing reporting helper and receives the probe deadline context.
+Independent review found no blocker. Player four-case fault replay, Subtitles unsupported-index replay,
+mediaprobe checks (44.912 seconds), changed-package lint, source limits, and whitespace pass again.
+Final local proof binds both changed source hashes over `e14406b9`; hosted verification is pending.
+Proof: `pr582-probe-final-proof.json`, SHA-256 `7ab72c6f460e36e5252d81aa951f3c58c2b5a87d944b94f40d692c83cd2bdbf8`.
