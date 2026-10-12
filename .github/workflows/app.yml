@@ -411,6 +411,7 @@ jobs:
         run: |
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux
+          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 2.5
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode none
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode ac3 --force-audio-conversion --decoded-audio

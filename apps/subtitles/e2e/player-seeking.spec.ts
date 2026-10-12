@@ -22,6 +22,7 @@ test("compatible playback resumes and seeks from the requested HLS window", asyn
       play: { value: async () => {} },
     });
     class FakeHls {
+      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "switched", ERROR: "error" };
       static ErrorTypes = { NETWORK_ERROR: "network", MEDIA_ERROR: "media" };
       static isSupported = () => true;
@@ -77,6 +78,7 @@ test("seeking to the start before initial metadata does not restore the resume p
       play: { value: async () => {} },
     });
     class FakeHls {
+      static DefaultConfig = {bufferController: class { onBufferAppending() {} }};
       static Events = { MANIFEST_PARSED: "manifest", LEVEL_SWITCHED: "switched", ERROR: "error" };
       static ErrorTypes = { NETWORK_ERROR: "network", MEDIA_ERROR: "media" };
       static isSupported = () => true;

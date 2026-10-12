@@ -1572,3 +1572,18 @@ The final Mac coarse-origin regression also passes, including all four captures 
 Its receipt is `hls-audio-splice/20261012T064823Z/receipt.json`, SHA-256 `7fc84f81f12c994b89373dbdde5fbddaf92fc79bca73ef1ffb764d73af79db1d`.
 Player `make verify-changed` passes compilation, affected Server tests, source limits, and diff checks at that commit.
 The regenerated Player architecture snapshot and source limits pass. The final independent review reports no concrete blocker.
+
+
+### AQA-017 copied-clock investigation checkpoint (not accepted)
+
+The retained Subtitles watch-page regression now covers Chromium and WebKit frame hashes, converted AC3 audio PCM, and an explicit Direct First to Compatibility switch. The local candidate fixes initial source-clock normalization. Receipt `20261012T071404Z` passed both browsers and both strict decoded-audio captures. This is not a completed repair.
+
+A keyframe-cut prototype passed completed-file frame checks but introduced invalid speculative VOD timelines while encoding. A held real encoder had one four-second fragment; the HTTP playlist advertised eight. Completed real cuts were 4, 6, 4, 7, 6, 4, and 1 seconds. The keyframe-cut production change was removed. Its rejected harness remains private under `.verification/ai-qa-campaign/subtitles-mux-probe/rejected-keyframe-prefix.py`.
+
+An offline packet matrix identified FFmpeg fragment-index PTS adjustment. With fixed-time cuts, 600 copied packets had only 594 distinct PTS. `movflags=+skip_sidx` preserved all 600 timestamps; `frag_every_frame` did not preserve composition offsets. FFmpeg documents the relevant adjustment in [movenc.c](https://github.com/FFmpeg/FFmpeg/blob/n8.1.3/libavformat/movenc.c#L6581-L6597). Independent review confirmed that HLS does not require SIDX, and Player already omits it.
+
+The remaining real-browser boundary still fails: receipt `20261012T072647Z` matches six of seven samples in both browsers but times out seeking the reordered final frames after an irregular 64.5-second resume. The raw window starts at source keyframe 58 while the requested window is 60 seconds. Native WebKit capability simulation `20261012T072740Z` starts at 67 rather than saved 64.5 and matches four of seven samples. Do not publish this candidate or claim native acceptance. The exact runs, source patches, media, packet probes, and private logs remain in `.verification`.
+
+The explicit MSE direct-switch case passed at `20261012T072447Z`; no red proof is claimed for that adapter branch. On this Mac, native HLS must be capability-disabled to reach lazy Hls.js loading. The first direct-switch probes timed out because the test did not open Playback behavior or incorrectly assumed native HLS could not be selected.
+
+The workflow contract suite currently identifies a recurring macOS `killpg(...,0)` EPERM in Q09 owned-descendant cleanup. This is retained as an environment or harness investigation; assertions and cleanup boundaries remain unchanged.

@@ -13,11 +13,12 @@ const frameRate = Number(process.env.QA_RESUME_FRAME_RATE || 24);
 const duration = Number(process.env.QA_RESUME_DURATION || 32);
 const resume = Number(process.env.QA_RESUME_SECONDS || 12.5);
 const forceConversion = process.env.QA_RESUME_FORCE_AUDIO_CONVERSION === 'true';
+const directSwitch = process.env.QA_RESUME_DIRECT_SWITCH === 'true';
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const context = await browser.newContext({...(forceConversion ? {userAgent: 'Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36'} : {}), extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
 const rows = [], responses = [];
-let failureClass;
+let failureClass, stage = 'setup';
 
 try {
   const planResponse = await context.request.get(`${origin}/api/v1/items/${id}/playback?videoCodecs=h264&audioCodecs=aac`);
@@ -32,6 +33,14 @@ try {
       if (event.target instanceof HTMLVideoElement && window.qaResumeFirstPlaying === undefined)
         window.qaResumeFirstPlaying = event.target.currentTime;
     }, true));
+    if (directSwitch && !native) await page.addInitScript(() => {
+      // Mac browsers can use native HLS before lazily loading Hls.js. Exercise
+      // the same MSE fallback that browsers without native HLS actually use.
+      const canPlayType = HTMLMediaElement.prototype.canPlayType;
+      HTMLMediaElement.prototype.canPlayType = function(type) {
+        return type === 'application/vnd.apple.mpegurl' ? '' : canPlayType.call(this, type);
+      };
+    });
     if (native) await page.addInitScript(() => {
       // Exercise the real native decoder with the unsupported-MSE policy.
       // This is a capability simulation, not physical Safari acceptance.
@@ -53,7 +62,31 @@ try {
       await page.route(`${origin}/__qa_reference`, route => route.fulfill({contentType: 'text/html',
         body: `<video muted playsinline src="${reference.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></video>`}));
       await page.goto(`${origin}/__qa_reference`);
-    } else await page.goto(`${origin}/watch/${id}?compatible=1`);
+    } else {
+      await page.goto(`${origin}/watch/${id}${directSwitch ? '' : '?compatible=1'}`);
+      if (directSwitch) {
+        await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
+        const direct = await page.locator('video').evaluate(video => {
+          video.pause();
+          return {src: video.currentSrc, hls: video.dataset.hls, adaptive: video.dataset.adaptive};
+        });
+        if (direct.hls || !direct.adaptive?.startsWith('/hls/') || direct.src.startsWith('blob:'))
+          throw new Error('direct_switch_requires_direct_first');
+        stage = 'direct-switch-open-settings';
+        await page.locator('[data-playback-mode-status]').click();
+        stage = 'direct-switch-open-behavior';
+        await page.locator('.player-behavior > summary').click();
+        stage = 'direct-switch-select-compatible';
+        await page.locator('video').evaluate((video, resume) => {
+          video.pause(); video.currentTime = resume; window.qaResumeFirstPlaying = undefined;
+        }, resume);
+        await page.locator('[data-playback-mode] input[value="compatible"]').check();
+        stage = 'direct-switch-close-settings';
+        await page.locator('[data-player-settings-close]').click();
+        stage = 'direct-switch-media';
+        await page.waitForFunction(() => document.querySelector('video')?.currentSrc.startsWith('blob:'));
+      }
+    }
     if (variant === 'compatible') {
       await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
       const stage = page.locator('.media-stage');
@@ -132,7 +165,10 @@ try {
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await page.close();
   }
-} catch (error) { failureClass = error.message; }
+} catch (error) {
+  failureClass = error.name === 'TimeoutError' ? 'browser_action_timeout' : error.message;
+  await context.pages().at(-1)?.screenshot({path: output.replace('.json', '-failure.png')});
+}
 finally {
   await context.close();
   await browser.close();
@@ -145,8 +181,8 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
   && (!native || rows[1].adapter === 'native')
   && responses.length > 0 && responses.every(response => response.status < 400);
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
-  capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
+  capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', directSwitch ? 'Native HLS support disabled to exercise lazy MSE fallback' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
   proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file reference',
-  passed, failureClass, rows, matches, responses}, null, 2) + '\n');
+  directSwitch, stage, passed, failureClass, rows, matches, responses}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
 process.exitCode = passed ? 0 : 1;

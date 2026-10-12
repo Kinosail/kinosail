@@ -28,12 +28,15 @@ parser.add_argument('--force-audio-conversion', action='store_true')
 parser.add_argument('--audio-sample-rate', type=int, choices=[32000, 44100, 48000], default=48000)
 parser.add_argument('--audio-mode', choices=['aac', 'ac3', 'none'], default='aac')
 parser.add_argument('--decoded-audio', action='store_true', help='Compare browser PCM with the nonperiodic source audio')
+parser.add_argument('--direct-switch', action='store_true', help='Start direct playback, then select Compatibility in the real player')
 parser.add_argument('--audio-reference', action='store_true', help='Compare converted AAC with uninterrupted encoding')
 parser.add_argument('--tail-recovery', action='store_true')
 parser.add_argument('--first-recovery', action='store_true')
 parser.add_argument('--controls', action='store_true', help='Run injected metadata failures and recovery controls')
 parser.add_argument('--small-video', action='store_true', help='Verify original 32-by-32 video and bounded HLS quality paths')
 args = parser.parse_args()
+if args.direct_switch and args.app != 'subtitles':
+    parser.error('--direct-switch currently exercises the Subtitles playback control')
 if args.decoded_audio and (args.audio_mode != 'ac3' or not args.force_audio_conversion):
     parser.error('--decoded-audio requires AC3 and forced audio conversion')
 if args.app == 'subtitles' and (args.prepared or args.controls):
@@ -66,6 +69,9 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
            'command': 'python3 apps/player/scripts/test-hls-resume-browser.py --app ' + args.app + ' --engines ' + args.engines + (' --prepared' if args.prepared else '') + (' --long-remux' if args.long_remux else '') + (' --tail-recovery' if args.tail_recovery else '') + (' --first-recovery' if args.first_recovery else '') + (' --controls' if args.controls else '') + ' --audio-sample-rate ' + str(args.audio_sample_rate) + ' --audio-mode ' + args.audio_mode + ' --resume-seconds ' + str(args.resume_seconds) + (' --force-audio-conversion' if args.force_audio_conversion else '') + (' --audio-reference' if args.audio_reference else '') + (' --small-video' if args.small_video else '') + (' --decoded-audio' if args.decoded_audio else ''),
            'decodedAudio': args.decoded_audio, 'prepared': args.prepared, 'longRemux': args.long_remux, 'audioMode': args.audio_mode, 'audioSampleRate': args.audio_sample_rate, 'resumeSeconds': args.resume_seconds, 'forceAudioConversion': args.force_audio_conversion, 'smallVideo': args.small_video,
            'boundary': f'Real loopback {args.app} Server, generated media, saved progress and unmodified watch page; physical Safari and devices separate.'}
+receipt['directSwitch'] = args.direct_switch
+if args.direct_switch:
+    receipt['command'] += ' --direct-switch'
 
 
 def audio_boundaries(rendition):
@@ -199,6 +205,7 @@ try:
                 child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token,
                              QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(run / f'{engine}.json'),
                              QA_RESUME_ENGINE=engine, QA_RESUME_APP=args.app, QA_RESUME_SECONDS=str(args.resume_seconds), QA_RESUME_FORCE_AUDIO_CONVERSION=str(args.force_audio_conversion).lower(), QA_RESUME_EXPECTED_MODE=('audio-transcode' if args.force_audio_conversion else 'audio-transcode,remux') if args.audio_mode == 'ac3' else 'remux', QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
+                child['QA_RESUME_DIRECT_SWITCH'] = str(args.direct_switch).lower()
                 with (run / f'{engine}-private.log').open('w') as output:
                     script = 'hls-resume-controls.mjs' if args.controls else 'hls-resume-browser.mjs'
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],

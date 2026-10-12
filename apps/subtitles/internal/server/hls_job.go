@@ -79,6 +79,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
+	if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
+		options.Cache += ":copied-clock=1"
+	}
 	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=7"
 	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
 		return transcodeSettings{}, err
