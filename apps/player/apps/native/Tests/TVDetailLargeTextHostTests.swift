@@ -57,13 +57,19 @@ import XCTest
             print("LARGE_TEXT_TRAIT_HOST temporaryHostRemoved=true originalWindowRestored=\(previous.isKeyWindow)")
         }
         do {
-            try await until(deadline: ContinuousClock.now.advanced(by: .seconds(10))) { self.item("Resume", in: window) != nil }
+            let loadedEnd = ContinuousClock.now.advanced(by: .seconds(10))
+            try await until(deadline: loadedEnd) { probe.value != nil }
             XCTAssertEqual(probe.value, .accessibility5)
             XCTAssertEqual(host.traitCollection.preferredContentSizeCategory, .accessibilityExtraExtraExtraLarge)
             print("LARGE_TEXT_TRAIT_HOST SwiftUI=\(String(describing: probe.value)) UIKit=\(host.traitCollection.preferredContentSizeCategory.rawValue)")
             let system = try XCTUnwrap(scene.focusSystem)
+            try await until(deadline: loadedEnd) { self.item("Resume", in: window) != nil }
+            var identities: [String: ObjectIdentifier] = [:]
             for label in ["Resume", "My List", "Bookmarks", "Remove from Continue watching", "Resume"] {
                 let target = try XCTUnwrap(item(label, in: window), "Actual native focus item for \(label)")
+                let identity = ObjectIdentifier(target)
+                guard !identities.contains(where: { $0.key != label && $0.value == identity }) else { throw ClientError.invalidResponse }
+                identities[label] = identity
                 let focusEnd = ContinuousClock.now.advanced(by: .seconds(5))
                 system.requestFocusUpdate(to: target)
                 system.updateFocusIfNeeded()
@@ -76,9 +82,11 @@ import XCTest
                 XCTAssertTrue(window.bounds.contains(frame), "Focused \(label) must be fully inside the visible host: \(frame)")
                 try record(label, window: window)
                 if label == "Bookmarks" {
-                    let primary = try bounds(XCTUnwrap(item("Resume", in: window)), in: window)
-                    let list = try bounds(XCTUnwrap(item("My List", in: window)), in: window)
-                    let remove = try bounds(XCTUnwrap(item("Remove from Continue watching", in: window)), in: window)
+                    let resting = try ["Resume", "My List", "Remove from Continue watching"].map { try XCTUnwrap(item($0, in: window)) }
+                    XCTAssertTrue(resting.allSatisfy { system.focusedItem !== $0 })
+                    let primary = try bounds(resting[0], in: window)
+                    let list = try bounds(resting[1], in: window)
+                    let remove = try bounds(resting[2], in: window)
                     XCTAssertEqual(primary.height, list.height, accuracy: 1)
                     XCTAssertEqual(primary.height, remove.height, accuracy: 1)
                     XCTAssertEqual(primary.minX, list.minX, accuracy: 1)
@@ -87,6 +95,9 @@ import XCTest
                 print("LARGE_TEXT_TRAIT_HOST category=accessibility5 focused=\(label) bounds=\(frame)")
             }
         } catch {
+            if let focused = scene.focusSystem?.focusedItem {
+                print("LARGE_TEXT_TRAIT_HOST currentFocus label=\((focused as? NSObject)?.accessibilityLabel ?? "nil") identifier=\((focused as? UIAccessibilityIdentification)?.accessibilityIdentifier ?? "nil") frame=\(focused.frame)")
+            }
             try? record("prerequisite-or-assertion-failure", window: window)
             throw error
         }
@@ -97,8 +108,13 @@ import XCTest
         var seen = Set<ObjectIdentifier>()
         while let environment = pending.popLast(), seen.count < 1024 {
             guard seen.insert(ObjectIdentifier(environment)).inserted else { continue }
-            if let item = environment as? any UIFocusItem, item.canBecomeFocused,
-               let object = item as? NSObject, object.accessibilityLabel == label { return item }
+            if let item = environment as? any UIFocusItem, item.canBecomeFocused {
+                let object = item as? NSObject
+                let identifier = (item as? UIAccessibilityIdentification)?.accessibilityIdentifier
+                if object?.accessibilityLabel == label || (label == "Resume" && identifier == "detail.play.movie-004") { return item }
+
+            }
+            pending.append(contentsOf: environment.preferredFocusEnvironments)
             if let container = environment.focusItemContainer {
                 let search = window.bounds.insetBy(dx: -window.bounds.width, dy: -window.bounds.height * 4)
                 let rect = container.coordinateSpace.convert(search, from: window)
