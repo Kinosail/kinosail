@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
-	"io"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -177,42 +175,6 @@ func (output *copiedHLSVariantOutput) run(command *exec.Cmd, private ...string) 
 		return errCopiedHLSIndex
 	}
 	return nil
-}
-
-func (output *copiedHLSVariantOutput) boundedStage() bool {
-	file, err := output.stage.Open(".")
-	if err != nil {
-		return false
-	}
-	defer file.Close()
-	entries, err := file.ReadDir(9)
-	if err != nil && !errors.Is(err, io.EOF) || len(entries) > 8 {
-		return false
-	}
-	total := int64(0)
-	for _, entry := range entries {
-		limit := copiedHLSStagedFileLimit(entry.Name())
-		info, err := output.stage.Lstat(entry.Name())
-		if err != nil || !info.Mode().IsRegular() || limit == 0 || info.Size() > limit {
-			return false
-		}
-		total += info.Size()
-	}
-	return total <= 128<<20
-}
-
-func copiedHLSStagedFileLimit(name string) int64 {
-	name = strings.TrimSuffix(name, ".tmp")
-	switch name {
-	case "index.m3u8":
-		return maximumCopiedHLSTimelineBytes
-	case "init.mp4":
-		return 2 << 20
-	}
-	if number, valid := hlsSegmentNumber(name); valid && number <= 2 {
-		return 64 << 20
-	}
-	return 0
 }
 
 func (output *copiedHLSVariantOutput) publish(manager *hlsManager, ctx context.Context, item library.Item, recipe hlsRecipe, policy string) error {
