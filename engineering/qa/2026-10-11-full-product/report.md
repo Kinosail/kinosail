@@ -1378,3 +1378,85 @@ download pause (47), and download hit targets (1) also pass. All these reports
 contain zero failures and zero flaky results. The artifact SHA256 is
 `54d78b4a4820a4178a608d6a9b74c824a289993d2d0bc59b25c948e3a32f11a8`.
 Skips remain outside completed QA.
+
+
+## Watch readiness repair and render evidence — October 12
+
+The Watch now distinguishes pending connection, a received player state, and an
+unavailable iPhone. “Nothing playing” appears only after a valid reply establishes
+that empty state. Transport, malformed reply and activation failures show recovery
+guidance. Valid later replies restore the player controls. The pending screen has
+one connection message and the native progress indicator.
+
+Before these production edits, the original simulator render contract fails for
+pending, transport failure, malformed reply and the first recovery failure. Valid
+empty, playing and recovered controls pass. The final candidate passes all seven
+controlled-exchange contracts on the existing 46mm Watch. Every distinct checked
+state image is inspected. The test fixture replaces transport outside production
+sources; it does not establish a paired-device reply or control command.
+
+The same seven captured contracts pass on an existing 40mm Watch after correcting
+two fixed Vision OCR readings of “iPhone.” Four initial checker failures are
+retained. The pixels show correctly wrapped text; no production layout change is
+made for OCR. The corrected checker still rejects the original contradictory
+empty/connecting screen and the intermediate duplicate connecting copy. A repeated
+recovery capture is byte-identical to its already-viewed unavailable capture.
+`simctl` reports Dynamic Type control unsupported for this Watch; larger text and
+VoiceOver remain unverified.
+
+A separate namespaced build preserves the actual candidate Watch Connectivity
+transport. With its paired iPhone shut down, three captured checks remain pending
+and contain no empty-state claim. No reply or playback actuation is claimed.
+Its simulator build and unsigned watchOS device build pass. Both task companion
+packages are removed together, both simulators return to Shutdown, and their
+original pair remains. The small Watch also returns to Shutdown with its package
+removed, content-size preference unchanged, and the complete pair graph preserved.
+
+Controlled native logs contain initial connection and recovery at `Logger.info`,
+and one `Logger.warning` per outage. The unified-log capture represents warning
+as message type `Error`; these are separate recorded facts. Operation, bounded
+failure class, session UUID and request UUID remain available. Invalid JSON maps
+to `invalid_message`; arbitrary error text and the private secret sentinel are
+absent. Repeated polling during an outage produces no duplicate warning. These
+are native simulator logs, not Server, browser, deployment or physical logs.
+
+`apps/player/apps/native/scripts/check-watch-remote-render.py` retains the visible
+state assertions. Run it against a private simulator PNG with `--image`, `--state`
+and a fresh `--output` directory. Playing also requires `--title` for a known
+synthetic title. The script compiles its local Vision OCR helper when `--ocr` is
+absent. Its receipt records capture/checker hashes and per-assertion results;
+raw OCR and compiler diagnostics stay in the private output directory. A passing
+capture does not prove transport, gestures, playback commands, Health or hardware.
+
+## Direct-media WebKit isolation follow-up — October 12
+
+The corrected source comparison requires authenticated Library admission before
+testing. Static FFV1 and moving FFV1 sources each pass all five original watched
+journeys through HLS on Linux ARM64. Direct H.264 MP4 fails the decoded-motion
+prerequisite in all five cases. An AAC-audio control also fails all five. No
+application source, assertion, retry or timeout changes in these comparisons.
+
+Native observation records media time stalled near 0.16 seconds, frame callbacks
+stopped near 0.2 seconds, a fully buffered twelve-second source, and no media error.
+The same authenticated direct source stalls in a plain video element with Player
+scripts absent, both with and without AAC. Each plain control fails its decoded
+motion assertion. This narrows the local finding to browser or delivery behavior;
+it does not identify the hosted WebKit late-callback failure's root cause or prove
+physical Safari behavior. Every task browser container is removed and host trust
+is unchanged.
+
+The final native artifacts from deep run `38206719965` report 332 iOS passes and
+one skip, plus 313 tvOS passes and one skip. Neither reports failures. These execute the
+unchanged pre-repair native source tree `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`;
+they are distinct from the new Watch candidate's render evidence.
+
+
+QA-022: `make -C apps/player native-copy-check` fails against the existing source
+revision before the Watch repair. A baseline-source projection proves that missing
+“Back to Library,” “Back to library,” “TMDB,” and the existing TMDB disclaimer,
+plus the stale “Media” entry, cause the catalog drift. Neither new Watch label
+changes the generated key set. The unchanged generator refreshes Apple and
+Android/Wear catalogs from existing web translations; the exact check then passes.
+No translation text or generator policy is invented. English Watch captures do
+not establish acceptance in other locales. Primary checkout catalogs remain
+untouched.

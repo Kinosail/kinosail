@@ -1,9 +1,14 @@
 import Foundation
 import Observation
+import OSLog
 import WatchConnectivity
 
 @MainActor @Observable
 final class WatchRemoteSession: NSObject, WCSessionDelegate {
+    enum Availability { case connecting, ready, unavailable }
+    private(set) var availability = Availability.connecting
+    @ObservationIgnored private let log = Logger(subsystem: "com.kinosail.player", category: "watch-remote")
+    @ObservationIgnored private let connectionID = UUID().uuidString
     private(set) var players: [WatchPlayerState] = []
     private(set) var selectedID: String?
     private(set) var busy = false
@@ -15,11 +20,11 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
     func start() {
         guard !started else { return }
         guard WCSession.isSupported() else {
-            message = "Pair this Watch with an iPhone to control playback."
+            unavailable(operation: "activate", failure: "unsupported",
+                        message: "Pair this Watch with an iPhone to control playback.")
             return
         }
         started = true
-        message = "Connecting to paired iPhone…"
         WCSession.default.delegate = self
         WCSession.default.activate()
     }
@@ -41,20 +46,35 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
     private func send(_ request: WatchRemoteRequest) async {
         guard !busy, WCSession.default.activationState == .activated else { return }
         busy = true
+        let requestID = UUID().uuidString
         defer { busy = false }
         do {
             let payload = try request.data()
             let response = try await Self.exchange(payload)
             let reply = try WatchRemoteReply.parse(response)
+            if availability != .ready {
+                let outcome = availability == .unavailable ? "recovered" : "connected"
+                log.info("Watch remote state operation=refresh outcome=\(outcome, privacy: .public) session_id=\(self.connectionID, privacy: .public) request_id=\(requestID, privacy: .public)")
+            }
+            availability = .ready
             players = reply.players
             selectedID = players.selectedID(after: selectedID)
             let unavailable = selectedID != nil && selected == nil
             message = reply.message ?? (unavailable ? "Selected player unavailable. Choose another player."
                                        : reply.accepted ? nil : "The command could not be sent.")
         } catch {
-            players = []
-            message = "Connect the paired iPhone to control playback."
+            unavailable(operation: "exchange", failure: error is WatchRemoteError || error is DecodingError ? "invalid_message" : "transport", requestID: requestID)
         }
+    }
+
+    private func unavailable(operation: String, failure: String, requestID: String = "none",
+                             message: String = "Connect the paired iPhone to control playback.") {
+        if availability != .unavailable {
+            log.warning("Watch remote unavailable operation=\(operation, privacy: .public) failure=\(failure, privacy: .public) session_id=\(self.connectionID, privacy: .public) request_id=\(requestID, privacy: .public)")
+        }
+        availability = .unavailable
+        players = []
+        self.message = message
     }
 
     nonisolated private static func exchange(_ payload: Data) async throws -> Data {
@@ -65,6 +85,13 @@ final class WatchRemoteSession: NSObject, WCSessionDelegate {
     }
 
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        if activationState == .activated { Task { @MainActor [weak self] in await self?.refresh() } }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            guard activationState == .activated else {
+                unavailable(operation: "activate", failure: "activation")
+                return
+            }
+            await refresh()
+        }
     }
 }
