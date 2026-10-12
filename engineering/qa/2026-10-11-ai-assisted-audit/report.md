@@ -1897,3 +1897,14 @@ The source remains on an explicit legacy plan and its probe is settled, but comp
 Probe completion now emits that ERROR only for an actual `ErrProbeLifecycle`.
 The parent retains one correlated WARN with the bounded `legacy-before-encoding` outcome.
 Final fallback, full-Server, and refreshed exact-revision evidence remain pending for this final adjustment.
+
+The complete Subtitles Server suite passes at `e5414ae5` in 143.278 seconds.
+Unsupported metadata and bounded probe timeout both retain a settled legacy plan with one correlated WARN and no false lifecycle ERROR.
+Timeout receipt: `hls-copied-prefix/20261012T111259Z/receipt.json`.
+Two additional real-Server faults hold a future-fragment request while changing transcoder settings or killing the fixture encoder.
+Both reject delivery with HTTP 404, start no replacement encoder, and preserve the source and process ownership.
+The policy fault records one correlated WARN; the producer fault records one correlated ERROR.
+Receipts: `hls-copied-prefix/20261012T111801Z` and `hls-copied-prefix/20261012T111826Z`.
+These are injected-fault controls with real media and HTTP, not physical-device acceptance.
+CI now retains the immutable-map, source and policy changes, producer failure, optional-index fallback, and persisted-plan fault controls.
+The artifact upload includes safe receipts only. Native WebKit capability simulation remains separate local evidence.

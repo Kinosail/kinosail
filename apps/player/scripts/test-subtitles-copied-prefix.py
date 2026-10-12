@@ -16,7 +16,7 @@ import sys
 import socket
 import subprocess
 import time
-import threading
+from hls_copied_prefix_faults import held_fault
 from hls_timeline_fixture import check, fixture
 from hls_timeline_http import PublicServer, sha, source_state
 
@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
 parser.add_argument('--held-source-change', action='store_true')
+parser.add_argument('--held-fault', choices=['policy', 'producer'])
 parser.add_argument('--index-fault', choices=['unsupported', 'timeout'])
 args = parser.parse_args()
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
@@ -34,7 +35,7 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
     'boundary': 'Authenticated disposable Subtitles Server; real FFmpeg held at a public prefix; synthetic media.'}
 
 
-class HeldSourceChangeComplete(Exception):
+class HeldFaultComplete(Exception):
     pass
 
 
@@ -148,21 +149,9 @@ finally:
             receipt['producerHeld'] = not joined.exists()
             receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
             (RUN / 'public-prefix.m3u8').write_bytes(public)
-            if args.held_source_change:
-                result = []
-                thread = threading.Thread(target=lambda: result.append(api.http(path.removesuffix('index.m3u8') + 'segment-00006.m4s')[0]))
-                thread.start()
-                time.sleep(.25)
-                check(thread.is_alive(), 'future_request_must_wait')
-                stat = source.stat()
-                os.utime(source, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000))
-                receipt['intentionalSourceVersionChange'] = True
-                (RUN / 'release').touch()
-                thread.join(timeout=40)
-                check(not thread.is_alive(), 'source_change_request_unsettled')
-                receipt['sourceChangeStatus'] = result
-                check(result == [404], 'source_changed_while_waiting_must_not_deliver')
-                raise HeldSourceChangeComplete()
+            if args.held_source_change or args.held_fault:
+                held_fault(api, path, RUN, source, args.held_fault or 'source', receipt)
+                raise HeldFaultComplete()
             if args.native:
                 child = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,
                     QA_RESUME_ITEM=item['id'], QA_RESUME_OUTPUT=str(RUN / 'native.json'),
@@ -255,12 +244,12 @@ finally:
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
-except HeldSourceChangeComplete:
+except HeldFaultComplete:
     receipt['sourceContentUnchanged'] = sha(source) == before['sha256']
-    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged']:
+    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged'] and (args.held_source_change or receipt['sourceUnchanged']):
         receipt['result'] = 'passed'
     else:
-        receipt['failureClass'] = 'source_change_cleanup'
+        receipt['failureClass'] = 'held_fault_cleanup'
 except Exception as error:
     receipt['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
 finally:
