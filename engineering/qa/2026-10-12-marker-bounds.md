@@ -61,3 +61,22 @@ and exact committed-source checks must be reported separately.
 The source fix does not establish deployed behavior. Titles 17, 19, and 23 retain
 mandatory repair/retest obligations. Title 24 remains untouched. The frozen
 ledger remains 1 full pass, 20 partial, 1 failed, and 28 unrun.
+
+Consumer verification exposed an existing synthetic fixture with no probe
+duration. Its playback-marker assertion conflicts with the strict duration
+contract. Keep its Owner save, edit, and remove checks; expect no emitted ranges
+when duration is unknown. The real-media regression covers positive-duration
+markers through both app handlers. Before changing Subtitles diagnostics, run
+that same regression there to demonstrate the missing correlated warning.
+The shared fixture must pass bounded lifecycle configuration through both adapters.
+
+The shared real-media regression passed in Player and Subtitles after the
+Subtitles warning correction. Changed-code lint reports zero issues. The Owner
+fixture also checks preserved `2..42` after invalid input, absence after web
+removal, and preserved `4..44` after a rejected delete.
+
+The 95 broader lint diagnostics were reproduced on an untouched Git archive of
+reconciled baseline `e9baa35a14ea74e85e5a20225a88e98b940b71c1`.
+Both diagnostic sets match exactly. All 7,446 extracted files match the archive
+after lint. These findings are inherited; they are not waived or claimed green.
+The architecture snapshots were regenerated and their consistency test passed.

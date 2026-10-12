@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	_ "embed"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -124,7 +125,9 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		policy.AllowTranscode = policy.AllowTranscode && !intent.ForceDirect
 		plan := playbackWithAutomaticSkip(facts, client, policy, intent, media.Markers, api.settings.autoSkip())
 		result := apiPlayback{Plan: plan, Summary: media.Summary, Duration: media.Duration, Start: api.progress.Get(request, item.ID).Seconds, Audio: apiAudioSources(item.ID, media.Audio, canTranscode), Chapters: media.Chapters, Markers: media.Markers, AutoSkip: automaticSkipSelection(media.Markers, api.settings.autoSkip()), Next: autoNext(request, api.settings, api.index, item), ReplayGain: apiReplayGainFor(media.ReplayGain)}
-		sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() })
+		if sharedplayback.ApplyAPIPlaybackTimeline(&result, plan, result.Start, media.Duration, media.Chapters, media.Markers, api.settings.autoSkip(), result.AutoSkip, func() string { return recipeFor(plan).token() }) {
+			slog.WarnContext(request.Context(), "Playback marker bounds normalized", "request_id", activityRequestID(request), "operation", "playback-response", "failure_class", "marker_bounds", "input_count", len(media.Markers), "emitted_count", len(result.Markers))
+		}
 		api.applyPlaybackSources(&result, item, media, viewer, facts, client, plan, canStream, canTranscode)
 		writeJSON(writer, result, http.StatusOK)
 	}
