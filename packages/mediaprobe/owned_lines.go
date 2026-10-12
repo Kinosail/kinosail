@@ -53,9 +53,9 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	watch := <-watched
 	waitErr := probe.wait()
 	settleErr := settleCopiedHLSProbe(parent, probe)
-	watchErr := watch.completionError(ctx, err, waitErr, settleErr)
+	watchErr := watch.completionError(ctx, waitErr, settleErr)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
-		if ctx.Err() == nil || errors.Is(watchErr, ErrProbeLifecycle) {
+		if errors.Is(watchErr, ErrProbeLifecycle) {
 			reportCopiedHLSProbeCompletion(parent, err, watchErr, waitErr, settleErr)
 		}
 		return errors.Join(errCopiedHLSIndex, ctx.Err(), watchErr)

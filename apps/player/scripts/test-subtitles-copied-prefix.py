@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
 parser.add_argument('--held-source-change', action='store_true')
+parser.add_argument('--index-fault', choices=['unsupported', 'timeout'])
 args = parser.parse_args()
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
@@ -107,6 +108,15 @@ finally:
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(RUN / 'cache'),
         KINOSAIL_BACKUP_DIR=str(RUN / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-prefix-key',
         KINOSAIL_FFMPEG=str(wrapper))
+    if args.index_fault:
+        probe = RUN / 'fault-ffprobe'
+        probe.write_text('#!/usr/bin/env python3\nimport os,sys,time\nfrom pathlib import Path\n' +
+            'a=sys.argv[1:]\nif "-show_packets" in a:\n' +
+            ' Path(' + repr(str(RUN / 'index-probe-pid')) + ').write_text(str(os.getpid()))\n' +
+            (' time.sleep(30)\n' if args.index_fault == 'timeout' else ' print("invalid metadata",end="",flush=True)\n') +
+            ' sys.exit(0)\nos.execv(' + repr(shutil.which('ffprobe')) + ',[' + repr(shutil.which('ffprobe')) + ']+a)\n')
+        probe.chmod(0o700)
+        env['KINOSAIL_FFPROBE'] = str(probe)
     with (RUN / 'server-private.log').open('w') as log:
         server = subprocess.Popen([str(RUN / 'server')], cwd=ROOT, env=env, stdout=log, stderr=log)
         try:
@@ -214,6 +224,18 @@ finally:
                 receipt['faultStartsNoEncoder'] = len(list(RUN.glob('*.joined'))) == encoded
                 if original is not None: plan_file.write_bytes(original)
                 check(receipt['faultStatuses'] == [503, 404] and receipt['faultStartsNoEncoder'], 'invalid_plan_must_not_deliver_media')
+            elif args.index_fault:
+                saved = json.loads((physical.parent.parent / '.copied-cuts').read_text())
+                pid = (RUN / 'index-probe-pid').read_text()
+                receipt['optionalIndexFault'] = args.index_fault
+                receipt['legacyPlan'] = saved['Strategy'] == 'legacy' and saved['Cuts'] is None
+                receipt['indexProbeSettled'] = subprocess.run(['ps', '-p', pid], stdout=subprocess.DEVNULL, check=False).returncode != 0
+                check(receipt['legacyPlan'] and receipt['indexProbeSettled'] and status == 200, 'optional_index_fallback')
+                events = [json.loads(line) for line in (RUN / 'server-private.log').read_text().splitlines() if line.startswith('{')]
+                warnings = [event for event in events if event.get('msg') == 'HLS copied index unavailable']
+                receipt['fallbackDiagnostics'] = len(warnings) == 1 and warnings[0]['level'] == 'WARN' and bool(warnings[0]['request_id']) and warnings[0]['outcome'] == 'legacy-before-encoding'
+                receipt['noFalseLifecycleError'] = not any(event.get('msg') == 'copied probe completion failed' for event in events)
+                check(receipt['fallbackDiagnostics'] and receipt['noFalseLifecycleError'], 'optional_index_diagnostics')
             else:
                 check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']

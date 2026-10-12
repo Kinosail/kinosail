@@ -61,11 +61,12 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 	}
 }
 
-func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, waitErr, settleErr error) error {
+func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, waitErr, settleErr error) error {
 	stopErr := watch.terminateErr
 	// Darwin can report EPERM for an exited, zombie-only group. Acceptance
-	// still requires clean scanning, a successful Wait and proven settlement.
-	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.cleanCompletion(ctx, scanErr, waitErr, settleErr) {
+	// still requires an active context, successful observation and Wait, and
+	// proven settlement. Metadata rejection remains independent of ownership.
+	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.lifecycleCompleted(ctx, waitErr, settleErr) {
 		stopErr = nil
 	}
 	var exit *exec.ExitError
@@ -76,8 +77,8 @@ func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, scanErr, 
 	return watch.result
 }
 
-func (watch *copiedHLSProbeWatch) cleanCompletion(ctx context.Context, scanErr, waitErr, settleErr error) bool {
-	return ctx.Err() == nil && scanErr == nil && watch.result == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
+func (watch *copiedHLSProbeWatch) lifecycleCompleted(ctx context.Context, waitErr, settleErr error) bool {
+	return ctx.Err() == nil && watch.observeErr == nil && waitErr == nil && settleErr == nil
 }
 
 func (watch *copiedHLSProbeWatch) observe(ctx context.Context, probe copiedHLSProbe, output io.Closer) bool {

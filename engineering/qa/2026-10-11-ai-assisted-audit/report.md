@@ -1876,3 +1876,24 @@ Delivery revalidates the captured source and policy after waiting and opening th
 Both controls then pass: downgrade at `20261012T105735Z`, held source replacement at `20261012T105733Z`.
 The source-change fixture intentionally changes source modification time; content remains unchanged and all owned processes join.
 The affected Go controls pass. Final lint, complete fault matrix, MSE regression, and exact-revision browser proof remain pending at this checkpoint.
+
+At `1635c0ac`, nine real-Server browser/fault cases pass with unchanged tracked source.
+The manifest `native-generation-browser-proof/manifest.json` has SHA-256 `13e87d9b826f19e906fbdd87b7959e6d3b0ebcec5451cafbca80246c7f430dd8`.
+It includes native prefix/far seek, long resume, both MSE engines with decoded audio, five persisted-plan faults, and held source replacement.
+The canonical Subtitles container suite passes 66 checks; its disposable project `kinosail-test-42482-23307` leaves zero containers and volumes.
+The shared mediaprobe and hlsmanifest race suites pass. Whole shared-package lint still stops affected verification at 95 established findings.
+
+The complete Subtitles Server suite then exposed three existing compatibility regressions on Darwin.
+A rejected probe response exited successfully, with successful observation, Wait, and group settlement.
+Darwin's zombie-group EPERM was still incorrectly promoted to an uncertified lifecycle because metadata parsing failed.
+Existing public-handler controls reproduce the regression; a retained failure-class control fails before repair.
+Independent safety review confirmed metadata rejection and process settlement must be evaluated separately.
+The exception remains Darwin-only and requires an active context, successful exit observation and Wait, and proven settlement.
+Metadata remains rejected. Cancellation, uncertain observation, failed Wait or settlement, and other termination failures remain fatal.
+The three affected public-handler controls and the complete mediaprobe race suite pass after this distinction.
+
+A real-Server unsupported-index fault additionally exposed a false ERROR after safe fallback (`hls-copied-prefix/20261012T111030Z`).
+The source remains on an explicit legacy plan and its probe is settled, but completion logging incorrectly reports a lifecycle failure.
+Probe completion now emits that ERROR only for an actual `ErrProbeLifecycle`.
+The parent retains one correlated WARN with the bounded `legacy-before-encoding` outcome.
+Final fallback, full-Server, and refreshed exact-revision evidence remain pending for this final adjustment.
