@@ -483,6 +483,8 @@ jobs:
           python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --video-offset .075
           python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video
           python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video --submicrosecond-origin
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --quantized-mux-clock
+          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 96000 --recovery middle --coarse-video-clock
           python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 8000 --recovery early
           python3 apps/player/scripts/test-hls-audio-source.py
       - name: Keep safe converted-audio recovery evidence

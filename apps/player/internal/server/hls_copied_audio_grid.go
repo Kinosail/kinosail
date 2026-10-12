@@ -165,12 +165,23 @@ func copiedHLSWarmArguments(arguments []string, timeline *copiedHLSTimeline, num
 }
 
 func copiedHLSAudioClockOffset(timeline *copiedHLSTimeline) int64 {
-	// Initial input trimming and mux clock shifts are independently rescaled
-	// to samples. Match those operations in both alignment and output offset.
-	rate := float64(timeline.AudioGrid.Rate)
+	// Initial trimming and per-stream mux shifts use different rescaling.
+	// The observed AAC phase retains precision lost by the video-clock probe.
+	clock, _ := copiedHLSAudioClockSamples(timeline)
 	micros := int64(math.Floor(timeline.point(0) * 1_000_000))
 	inputSamples := copiedHLSAudioSeekSamples(micros, timeline.AudioGrid.Rate)
-	return int64(math.Round(*timeline.Clock*rate)) - inputSamples
+	return clock - inputSamples
+}
+
+func copiedHLSAudioClockSamples(timeline *copiedHLSTimeline) (int64, bool) {
+	grid := timeline.AudioGrid
+	micros := int64(math.Round(*timeline.Clock * 1_000_000))
+	clock := copiedHLSAudioSeekSamples(micros, grid.Rate)
+	delta := (grid.Phase-clock%1024+1536)%1024 - 512
+	// Video quantization and the printed microsecond clock may differ from
+	// the audio shift. The certified video quantum keeps the phase unique.
+	bound := int64(math.Ceil(timeline.TimeBase*float64(grid.Rate))) + 2
+	return clock + delta, delta >= -bound && delta <= bound
 }
 
 func copiedHLSAudioSeekSamples(micros, rate int64) int64 {

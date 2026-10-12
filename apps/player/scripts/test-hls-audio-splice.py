@@ -20,11 +20,14 @@ from hls_timeline_preparation import prepare_scene
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--audio-sample-rate', type=int, choices=[8000, 32000, 44100, 48000], default=48000)
+parser.add_argument('--audio-sample-rate', type=int, choices=[8000, 32000, 44100, 48000, 96000], default=48000)
 parser.add_argument('--recovery', choices=['tail', 'middle', 'early', 'first'], default='tail')
 parser.add_argument('--video-offset', type=float, choices=[0, .075, .13], default=0)
 parser.add_argument('--fractional-video', action='store_true')
 parser.add_argument('--submicrosecond-origin', action='store_true')
+parser.add_argument('--half-sample-clock', action='store_true')
+parser.add_argument('--quantized-mux-clock', action='store_true')
+parser.add_argument('--coarse-video-clock', action='store_true')
 args = parser.parse_args()
 run = ROOT / '.verification/hls-audio-splice' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
@@ -36,6 +39,8 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd
            'audioSampleRate': args.audio_sample_rate, 'recovery': args.recovery,
            'videoOffset': args.video_offset, 'fractionalVideo': args.fractional_video,
            'submicrosecondOrigin': args.submicrosecond_origin,
+           'halfSampleClock': args.half_sample_clock,
+           'quantizedMuxClock': args.quantized_mux_clock, 'coarseVideoClock': args.coarse_video_clock,
            'boundary': 'Real disposable Go Player, generated AC3 or ALAC source, original watch page and Chromium AAC decode. Recorder uses a CSP exception; no security, native or perceptual-audibility claim.'}
 
 
@@ -49,6 +54,13 @@ def settled(server, source):
 try:
     frame_rate, frames = (25, 1862) if args.video_offset else (24, 1788)
     rate = '24000/1001' if args.fractional_video else str(frame_rate)
+    if args.half_sample_clock:
+        check(not args.fractional_video and not args.video_offset, 'half_sample_clock_fixture')
+        rate, frames = '400/29', 1028
+    if args.quantized_mux_clock:
+        check(not args.half_sample_clock and not args.fractional_video and not args.video_offset, 'quantized_clock_fixture')
+        rate, frames = '2000/81', 1839
+    video_options = ['-bf', '0', '-video_track_timescale', '1000'] if args.coarse_video_clock else []
     forced_keys = list(LONG_RESUME_KEYS)
     if args.video_offset == .075:
         forced_keys[5] = 11
@@ -56,11 +68,12 @@ try:
         check(args.fractional_video and not args.video_offset, 'submicrosecond_requires_fractional_video')
         forced_keys[5] = 280 * 1001 / 24000
     source, metadata = fixture(media, 'Resume Sample', frame_rate * 6, ','.join(map(str, forced_keys)),
-                               rate=rate, frames=frames, extension='.mp4', noise=True)
+                               rate=rate, frames=frames, extension='.mp4', noise=True, video_options=video_options)
     frame_rate = metadata['frameRate']
     converted = run / source.name
     conversion = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-map', '0:v:0', '-c:v', 'copy',
-                  '-map', '0:a:0', '-c:a', 'alac' if args.audio_sample_rate == 8000 else 'ac3', '-ar', str(args.audio_sample_rate), str(converted)]
+                  '-map', '0:a:0', '-c:a', 'alac' if args.audio_sample_rate in [8000, 96000] else 'ac3', '-ar', str(args.audio_sample_rate),
+                  *(['-video_track_timescale', '1000'] if args.coarse_video_clock else []), str(converted)]
     subprocess.run(conversion, check=True, capture_output=True, timeout=60)
     converted.replace(source)
     metadata.update(audioConversionCommand=conversion, sha256=sha(source))
@@ -110,6 +123,8 @@ try:
             prepared, initialization = prepare_scene(api, '/api/v1/items/' + item['id'] + '/playback-prepare', hls,
                 run / 'cache', item['id'], server, source, receipt['preparation'], encoder_count, check, bounded_bytes, False)
             rendition = next(prepared.glob('*p/index.m3u8')).parent
+            timeline = json.loads((prepared / '.copy-timeline').read_text())
+            receipt['certifiedClock'] = {key: timeline.get(key) for key in ['Clock', 'TimeBase', 'AudioGrid', 'AudioSource']}
             all_keys = [key + args.video_offset for key in metadata['keyframesSeconds']]
             origin_key = max(key for key in all_keys if key <= 12.5)
             keys = [key for key in all_keys if key >= origin_key]

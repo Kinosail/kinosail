@@ -20,7 +20,8 @@ def reject_audio_metadata(api, base, root, rendition, server, source, log_path):
     cases = [('AudioSource', 'Rate', 0), ('AudioSource', 'Rate', 2**63 - 1),
              ('AudioSource', 'Quantum', 2048), ('AudioSource', 'Priming', -1),
              ('AudioSource', 'Priming', 1536), ('AudioSource', 'End', timeline['End'] + 2),
-             ('AudioGrid', 'Rate', 7350), ('AudioGrid', 'Phase', -1), ('AudioGrid', 'Phase', 1024)]
+             ('AudioGrid', 'Rate', 7350), ('AudioGrid', 'Phase', -1), ('AudioGrid', 'Phase', 1024),
+             ('AudioGrid', 'Phase', (timeline['AudioGrid']['Phase'] + 512) % 1024)]
     rows = []
     try:
         for section, field, value in cases:

@@ -1425,3 +1425,28 @@ The source and owned processes settle unchanged. This is a distinct open defect 
 The failing receipt is `.verification/hls-audio-source/20261012T053815Z/receipt.json`.
 Resizing only its video to 320-by-180 produces the passing preparation above; the audio packets are copied.
 The exact fixture conversion and hashes are retained in `long-audio-exploration/movie-clock-probe/supported-generation.json`.
+
+### AQA-015 precision review follow-up
+
+The source filter now shares the integer microsecond-to-sample conversion used by refill alignment.
+At a coarse 11.075-second origin, the retained failure has minimum initial correlation 0.6579.
+The repaired journey reaches 0.9590; all four captures have zero lag, and video, EOF, and packet placement pass.
+Its receipt is `.verification/hls-audio-splice/20261012T055221Z/receipt.json`.
+
+Refill now derives the initial audio shift from the measured AAC phase.
+The correction must fit the source video quantum plus bounded timestamp rounding.
+This handles independent mux rescaling and precision lost in the printed video clock.
+A real 96 kHz source with a 1000 Hz video track confirms the two-sample boundary identified by review.
+The reported video clock is 0.010688 seconds; the AAC phase identifies an exact 1,024-sample shift.
+Four captures, both fragment grids, seven video references, EOF, and ten corrupt-metadata controls pass.
+The added control rejects an otherwise well-formed phase shifted by half an AAC packet.
+Its receipt is `.verification/hls-audio-splice/20261012T055409Z/receipt.json`.
+
+A separate 400/29 fps diagnostic does not reproduce the proposed audio-clock rounding failure.
+All four decoded-audio captures and both packet grids pass before phase calibration.
+Its compatible HLS reaches EOF and all seven video hashes match, but the original-file reference times out near 30 seconds.
+This remains an unresolved reference-playback boundary, not evidence that the audio repair passed the whole journey.
+The complete failed receipt is `.verification/hls-audio-splice/20261012T054923Z/receipt.json`.
+
+The worktree audit also reports ten unrelated inactive checkouts: nine contain unique commits and one is dirty.
+Their files and leases remain unchanged. The active campaign checkout has a renewed lease.

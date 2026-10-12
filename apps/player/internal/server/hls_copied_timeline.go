@@ -36,10 +36,14 @@ func validCopiedHLSBoundClock(timeline *copiedHLSTimeline) bool {
 	if timeline.Clock == nil {
 		return timeline.AudioGrid == nil
 	}
-	if timeline.AudioGrid != nil && (timeline.AudioSource == nil || timeline.AudioGrid.Rate != timeline.AudioSource.Rate) {
+	if math.IsNaN(*timeline.Clock) || *timeline.Clock < 0 || *timeline.Clock > 1 {
 		return false
 	}
-	return !math.IsNaN(*timeline.Clock) && *timeline.Clock >= 0 && *timeline.Clock <= 1
+	if timeline.AudioGrid == nil {
+		return true
+	}
+	_, consistent := copiedHLSAudioClockSamples(timeline)
+	return timeline.AudioSource != nil && timeline.AudioGrid.Rate == timeline.AudioSource.Rate && consistent
 }
 
 func validCopiedHLSHeader(timeline *copiedHLSTimeline) bool {
