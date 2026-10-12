@@ -3,6 +3,8 @@ import json
 import subprocess
 from hls_timeline_http import sha
 
+LONG_RESUME_KEYS = (0, 2, 4, 7, 9, 12, 14, 18, 21, 23, 27, 30, 34, 38, 42, 47, 49, 53, 58, 62, 67, 70, 73)
+
 
 def check(condition, failure):
     if not condition:
