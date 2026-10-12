@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"io"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -37,10 +36,10 @@ func watchCopiedHLSAdoption(scan context.Context, preparation *startupEncoding, 
 func (manager *hlsManager) selectCopiedHLSTimeline(ctx context.Context, item library.Item, recipe hlsRecipe, preparation *startupEncoding, timeline *copiedHLSTimeline) (*copiedHLSTimeline, error) {
 	first := -1
 	for number := range timeline.Keys {
-		if math.Abs(timeline.point(number)-recipe.offset) <= 0.000001 {
-			first = number
+		if timeline.point(number) > recipe.offset+0.000001 {
 			break
 		}
+		first = number
 	}
 	if first < 0 {
 		return nil, errCopiedHLSIndex
