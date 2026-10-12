@@ -4,7 +4,7 @@
 Failures covered: normal gaps/delays mistaken for process errors, optional scans
 consuming the preparation budget, incomplete scans certified after cancellation,
 and genuine probe failures hidden by fallback. Fault modes wrap only the selected
-audio-frame probe; ordinary media, Server, authentication and HLS remain real.
+audio proof metadata (including an ambiguous one-second clock); ordinary media, Server, authentication and HLS remain real.
 """
 import argparse
 import json
@@ -25,17 +25,17 @@ from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--cases', default='gap,delay,coarse-gap,timeout,cancel,probe-error')
+parser.add_argument('--cases', default='gap,delay,coarse-gap,coarse-resolution,timeout,cancel,probe-error')
 parser.add_argument('--movie-source', type=Path)
 args = parser.parse_args()
 cases = args.cases.split(',')
-check(all(case in ['gap', 'delay', 'coarse-gap', 'timeout', 'cancel', 'probe-error', 'movie'] for case in cases), 'case_name')
+check(all(case in ['gap', 'delay', 'coarse-gap', 'coarse-resolution', 'timeout', 'cancel', 'probe-error', 'movie'] for case in cases), 'case_name')
 run = ROOT / '.verification/hls-audio-source' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 run.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
            'command': shlex.join([sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]]),
            'environment': platform.platform(), 'result': 'failed', 'cases': [], 'commands': [],
-           'boundary': 'Real disposable Go Server and HTTP. Gap/delay/movie use real FFmpeg. Timeout/cancel/error inject faults only at the selected audio-frame probe. No browser or physical-device claim.'}
+           'boundary': 'Real disposable Go Server and HTTP. Gap/delay/movie use real FFmpeg. Coarse-resolution/timeout/cancel/error inject faults only at the selected audio proof probe. No browser or physical-device claim.'}
 
 
 def command(argv, timeout=120):
@@ -113,13 +113,30 @@ def perform(case, base):
                KINOSAIL_BACKUP_DIR=str(folder / 'backups'), KINOSAIL_LOG_LEVEL='debug',
                KINOSAIL_BACKUP_KEY='synthetic-audio-source-key')
     marker = folder / 'audio-proof-started'
-    if case in ['timeout', 'cancel', 'probe-error']:
+    if case in ['coarse-resolution', 'timeout', 'cancel', 'probe-error']:
         wrapper = folder / 'probe-wrapper.py'
         wrapper.write_text('#!' + sys.executable + '\nimport os, sys, time\nfrom pathlib import Path\n'
             + "if '-show_frames' in sys.argv and '-select_streams' in sys.argv and sys.argv[sys.argv.index('-select_streams')+1] == 'a:0':\n"
             + f'    Path({str(marker)!r}).write_text("started")\n'
             + ('    raise SystemExit(23)\n' if case == 'probe-error' else '    time.sleep(20)\n')
             + f'os.execv({shutil.which("ffprobe")!r}, [{shutil.which("ffprobe")!r}, *sys.argv[1:]])\n')
+        if case == 'coarse-resolution':
+            # Existing E2E media uses millisecond or sample clocks. This fault
+            # protects ambiguous metadata that cannot identify an AC3 block.
+            wrapper.write_text('#!' + sys.executable + '\nimport os, re, subprocess, sys\n'
+                + f'real = {shutil.which("ffprobe")!r}\n'
+                + "selected = '-select_streams' in sys.argv and sys.argv[sys.argv.index('-select_streams')+1] == 'a:0'\n"
+                + "if selected and ('-show_streams' in sys.argv or '-show_frames' in sys.argv):\n"
+                + "    raw = subprocess.check_output([real, *sys.argv[1:]], text=True)\n"
+                + "    if '-show_streams' in sys.argv: raw = re.sub(r'time_base=[^|\\n]+', 'time_base=1/1', raw)\n"
+                + "    else:\n"
+                + "        rows, samples = [], 0\n"
+                + "        for line in raw.splitlines():\n"
+                + "            rows.append(re.sub(r'(?<![a-z_])pts=-?[0-9]+', 'pts='+str((samples+24000)//48000), line))\n"
+                + "            samples += int(re.search(r'nb_samples=([0-9]+)', line)[1])\n"
+                + "        raw = '\\n'.join(rows)+'\\n'\n"
+                + "    sys.stdout.write(raw)\n    raise SystemExit(0)\n"
+                + "os.execv(real, [real, *sys.argv[1:]])\n")
         wrapper.chmod(0o755)
         row['probeWrapperSHA256'] = sha(wrapper)
         env['KINOSAIL_FFPROBE'] = str(wrapper)
