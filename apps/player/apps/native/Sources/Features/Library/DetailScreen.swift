@@ -48,7 +48,7 @@ private struct DetailContent: View {
     @Namespace private var detailFocus
     @FocusState private var primaryFocused: Bool
     @Environment(\.dynamicTypeSize) private var dynamicType
-    @ScaledMetric(relativeTo: .body) private var secondaryActionHeight = 44
+    @ScaledMetric(relativeTo: .body) private var detailActionHeight = 44
     #endif
     private var item: MediaItem { detail.item }
 
@@ -160,28 +160,28 @@ private struct DetailContent: View {
         } label: {
             Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus")
                 #if os(tvOS)
-                .frame(minHeight: secondaryActionHeight)
+                .frame(minHeight: detailActionHeight)
                 #endif
         }
             .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
         #if os(tvOS)
         if item.kind == .video || item.isAudio {
             NavigationLink(value: ScreenDestination.bookmarks(item.id)) {
-                Label("Bookmarks", systemImage: "bookmark").frame(minHeight: secondaryActionHeight)
+                Label("Bookmarks", systemImage: "bookmark").frame(minHeight: detailActionHeight)
             }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         if !item.showID.isEmpty {
             NavigationLink(value: ScreenDestination.show(item.showID)) {
-                Text("All episodes").frame(minHeight: secondaryActionHeight)
+                Text("All episodes").frame(minHeight: detailActionHeight)
             }
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
         }
         if item.progress.seconds > 0 || item.progress.watched {
             Button { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
-                label: { Label("Remove", systemImage: "minus.circle").frame(minHeight: secondaryActionHeight) }
+                label: { Label("Remove", systemImage: "minus.circle").frame(minHeight: detailActionHeight) }
                 .accessibilityLabel("Remove from Continue watching")
                 .buttonStyle(.bordered).buttonBorderShape(.capsule)
                 .tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
@@ -198,13 +198,13 @@ private struct DetailContent: View {
         NavigationLink(value: item.playingDestination) {
             Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
                 #if os(tvOS)
-                .frame(minWidth: 240).padding(.vertical, 12)
+                .frame(minWidth: 240, minHeight: detailActionHeight)
                 .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
                 #endif
         }
         #if os(tvOS)
-        .buttonStyle(.card)
+        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
+        .controlSize(.large).tint(KinoTheme.tvOSPrimaryFill)
         #else
         .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
         #endif

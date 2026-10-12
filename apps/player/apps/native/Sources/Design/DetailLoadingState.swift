@@ -16,7 +16,7 @@ struct DetailLoadingState: View {
                     line(500, bodyHeight)
                 }
                 HStack(spacing: 12) { line(620, 6); line(70, 24) }
-                Capsule().fill(KinoTheme.raised).frame(width: 240, height: 60)
+                Capsule().fill(KinoTheme.raised).frame(width: 240, height: actionHeight)
                 HStack(spacing: 16) {
                     ForEach([206.0, 262.0, 222.0], id: \.self) { width in
                         Capsule().fill(KinoTheme.raised).frame(width: width, height: actionHeight)
