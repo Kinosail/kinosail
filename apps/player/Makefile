@@ -20,7 +20,7 @@ browser-test:
 	@pnpm --dir e2e install --frozen-lockfile
 	@CI=1 KINOSAIL_BROWSER_TEST=1 ./scripts/test-container.sh
 
-client-check:
+client-check: native-copy-check
 	@$(MAKE) -j1 client-build-ios client-build-tvos
 
 client-build-ios:

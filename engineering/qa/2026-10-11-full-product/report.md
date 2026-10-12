@@ -39,10 +39,10 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS332 and tvOS313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
-| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; validated private-network gateway TLS passed; Subtitles deployment and restricted public-gateway acceptance remain |
+| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Required tooling passes; package lint and Player deep Go remain failed; current Firefox/WebKit failures remain open |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Nine protected QA PRs merged; main156 publication passes; scanned Nox Player3947 health and private-network TLS passed; current-main publication, Subtitles deployment and public-gateway acceptance remain |
 
 ## Iteration 1 results
 
@@ -1378,3 +1378,113 @@ download pause (47), and download hit targets (1) also pass. All these reports
 contain zero failures and zero flaky results. The artifact SHA256 is
 `54d78b4a4820a4178a608d6a9b74c824a289993d2d0bc59b25c948e3a32f11a8`.
 Skips remain outside completed QA.
+
+
+## Watch readiness repair and render evidence — October 12
+
+The Watch now distinguishes pending connection, a received player state, and an
+unavailable iPhone. “Nothing playing” appears only after a valid reply establishes
+that empty state. Transport, malformed reply and activation failures show recovery
+guidance. Valid later replies restore the player controls. The pending screen has
+one connection message and the native progress indicator.
+
+Before these production edits, the original simulator render contract fails for
+pending, transport failure, malformed reply and the first recovery failure. Valid
+empty, playing and recovered controls pass. The final candidate passes all seven
+controlled-exchange contracts on the existing 46mm Watch. Every distinct checked
+state image is inspected. The test fixture replaces transport outside production
+sources; it does not establish a paired-device reply or control command.
+
+The same seven captured contracts pass on an existing 40mm Watch after correcting
+two fixed Vision OCR readings of “iPhone.” Four initial checker failures are
+retained. The pixels show correctly wrapped text; no production layout change is
+made for OCR. The corrected checker still rejects the original contradictory
+empty/connecting screen and the intermediate duplicate connecting copy. A repeated
+recovery capture is byte-identical to its already-viewed unavailable capture.
+`simctl` reports Dynamic Type control unsupported for this Watch; larger text and
+VoiceOver remain unverified.
+
+A separate namespaced build preserves the actual candidate Watch Connectivity
+transport. With its paired iPhone shut down, three captured checks remain pending
+and contain no empty-state claim. No reply or playback actuation is claimed.
+Its simulator build and unsigned watchOS device build pass. Both task companion
+packages are removed together, both simulators return to Shutdown, and their
+original pair remains. The small Watch also returns to Shutdown with its package
+removed, content-size preference unchanged, and the complete pair graph preserved.
+
+Controlled native logs contain initial connection and recovery at `Logger.info`,
+and one `Logger.warning` per outage. The unified-log capture represents warning
+as message type `Error`; these are separate recorded facts. Operation, bounded
+failure class, session UUID and request UUID remain available. Invalid JSON maps
+to `invalid_message`; arbitrary error text and the private secret sentinel are
+absent. Repeated polling during an outage produces no duplicate warning. These
+are native simulator logs, not Server, browser, deployment or physical logs.
+
+`apps/player/apps/native/scripts/check-watch-remote-render.py` retains the visible
+state assertions. Run it against a private simulator PNG with `--image`, `--state`
+and a fresh `--output` directory. Playing also requires `--title` for a known
+synthetic title. The script compiles its local Vision OCR helper when `--ocr` is
+absent. Its receipt records capture/checker hashes and per-assertion results;
+raw OCR and compiler diagnostics stay in the private output directory. A passing
+capture does not prove transport, gestures, playback commands, Health or hardware.
+
+## Direct-media WebKit isolation follow-up — October 12
+
+The corrected source comparison requires authenticated Library admission before
+testing. Static FFV1 and moving FFV1 sources each pass all five original watched
+journeys through HLS on Linux ARM64. Direct H.264 MP4 fails the decoded-motion
+prerequisite in all five cases. An AAC-audio control also fails all five. No
+application source, assertion, retry or timeout changes in these comparisons.
+
+Native observation records media time stalled near 0.16 seconds, frame callbacks
+stopped near 0.2 seconds, a fully buffered twelve-second source, and no media error.
+The same authenticated direct source stalls in a plain video element with Player
+scripts absent, both with and without AAC. Each plain control fails its decoded
+motion assertion. This narrows the local finding to browser or delivery behavior;
+it does not identify the hosted WebKit late-callback failure's root cause or prove
+physical Safari behavior. Every task browser container is removed and host trust
+is unchanged.
+
+The final native artifacts from deep run `38206719965` report 332 iOS passes and
+one skip, plus 313 tvOS passes and one skip. Neither reports failures. These execute the
+unchanged pre-repair native source tree `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`;
+they are distinct from the new Watch candidate's render evidence.
+
+
+QA-022: `make -C apps/player native-copy-check` fails against the existing source
+revision before the Watch repair. A baseline-source projection proves that missing
+“Back to Library,” “Back to library,” “TMDB,” and the existing TMDB disclaimer,
+plus the stale “Media” entry, cause the catalog drift. Neither new Watch label
+changes the generated key set. The unchanged generator refreshes Apple and
+Android/Wear catalogs from existing web translations; the exact check then passes.
+No translation text or generator policy is invented. English Watch captures do
+not establish acceptance in other locales. Primary checkout catalogs remain
+untouched.
+
+
+PR #576 merges the deep codec dependency repair as
+`87539b43ae425208416639eabe7dc1fa4429f1ba`. Required run `38211720643` passes for
+reviewed head `523b5863ebe31d933fb4c0cf2898a98af2dff4af`; a fresh fetched ancestry
+check proves both the reviewed commit and merge in remote main. Its manual deep
+run fails its Player coverage gate at 88.7%, below the unchanged 89% requirement.
+The final log contains no failing Go test, race warning or panic. All three former
+codec failures pass. Firefox reports one flaky late-callback settings case;
+WebKit reports two unexpected failures in that flow. Required protection remains
+intact. Previous main run `38209590154` succeeds, including Player publication at
+`1560949f`. Current-main publication is tracked separately.
+
+The native build entry point now requires the existing catalog check before iOS
+or tvOS compilation. A retained command regression uses the real Makefile,
+generator and gate shell with a synthetic source key and compiler stub. Corrected
+baseline controls fail for all three stale catalogs; fresh catalogs compile both
+targets. After the one-line prerequisite change, all controls pass. Rejection
+invokes no compiler and changes no catalog bytes. This is build-contract evidence,
+separate from app UI and Swift compilation.
+
+The first setup omitted the gate shell and is excluded. A second setup selected
+an untranslated Spanish entry, so its empty Android/Wear files were valid. That
+three-platform baseline claim is withdrawn. The corrected fixture uses the
+translated “Library” entry and asserts nonempty catalogs before introducing drift.
+Exact command receipts, source and log hashes remain in the private evidence
+directory under `native-copy-build-guard-*-v3`. The complete CI contract suite
+passes after this repair.

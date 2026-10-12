@@ -42,7 +42,14 @@ struct RemoteView: View {
                         .font(.caption.weight(.semibold)).foregroundStyle(electric)
                 }
 
-                if let player = remote.selected, player.active {
+                if remote.availability == .connecting {
+                    ProgressView("Connecting to iPhone")
+                        .tint(electric)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else if remote.availability == .unavailable {
+                    Label("iPhone unavailable", systemImage: "iphone.slash")
+                        .font(.headline)
+                } else if let player = remote.selected, player.active {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(player.title).font(.title3.bold()).lineLimit(2)
                         if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
