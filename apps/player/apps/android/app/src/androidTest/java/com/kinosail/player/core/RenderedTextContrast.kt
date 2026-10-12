@@ -1,5 +1,6 @@
 package com.kinosail.player.core
 
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.captureToImage
@@ -8,6 +9,7 @@ import org.junit.Assert.assertTrue
 
 // Compose accessibility checks missed black headings on the dark library background.
 // Check rendered pixels at the journey boundary instead of asserting theme tokens.
+@RequiresApi(26)
 internal fun assertReadableHeading(node: SemanticsNodeInteraction) {
     val image = node.captureToImage().asAndroidBitmap()
     val pixels = IntArray(image.width * image.height)
