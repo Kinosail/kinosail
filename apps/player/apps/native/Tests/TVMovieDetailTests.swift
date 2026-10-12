@@ -3,7 +3,7 @@ import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
-struct TVMovieDetailTests {
+@Suite(.serialized) struct TVMovieDetailTests {
     @Test func usesBackdropOnlyForMoviesWithArtwork() throws {
         let server = try ServerAddress("https://media.example")
         func item(_ fields: [String: JSONValue]) throws -> MediaItem {
@@ -36,12 +36,31 @@ struct TVMovieDetailTests {
 
     // Remote E2E owns lifecycle/focus and actual screen proof. Its loading
     // placeholders are AX-hidden, so this painted check protects card pitch.
-    @Test @MainActor func pendingCastCardsMatchPopulatedShelfPitch() throws {
-        let renderer = ImageRenderer(content: DetailLoadingState().frame(width: 1792)
-            .environment(\.colorScheme, .dark))
-        renderer.scale = 1
-        let spans = try pendingCardSpans(#require(renderer.cgImage))
-        #expect(spans.count == 4)
+    @Test @MainActor func pendingCastCardsMatchPopulatedShelfPitch() async throws {
+        // ImageRenderer omits the UIKit-backed ScrollView. Host the real view
+        // before sampling it; the current pending shelf contains six cards.
+        let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+        let window = UIWindow(windowScene: scene)
+        let controller = UIHostingController(rootView: DetailLoadingState()
+            .frame(width: 1792).environment(\.colorScheme, .dark))
+        controller.view.backgroundColor = .clear
+        controller.view.isOpaque = false
+        window.rootViewController = controller
+        window.isHidden = false
+        defer { window.isHidden = true }
+        let size = controller.sizeThatFits(in: CGSize(width: 1792, height: 2000))
+        controller.view.frame = CGRect(origin: .zero, size: size)
+        controller.view.setNeedsLayout()
+        controller.view.layoutIfNeeded()
+        try await Task.sleep(for: .milliseconds(100))
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let painted = UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            controller.view.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
+        }
+        let spans = try pendingCardSpans(#require(painted.cgImage))
+        #expect(spans.count == 6)
         for span in spans { #expect(span.width == 230) }
         for pair in zip(spans, spans.dropFirst()) {
             #expect(pair.1.start - pair.0.start == 248)
