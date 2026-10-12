@@ -39,10 +39,10 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS332 and tvOS313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
-| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; validated private-network gateway TLS passed; Subtitles deployment and restricted public-gateway acceptance remain |
+| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Required tooling passes; package lint and Player deep Go remain failed; current Firefox/WebKit failures remain open |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Nine protected QA PRs merged; main156 publication passes; scanned Nox Player3947 health and private-network TLS passed; current-main publication, Subtitles deployment and public-gateway acceptance remain |
 
 ## Iteration 1 results
 
@@ -1460,3 +1460,13 @@ Android/Wear catalogs from existing web translations; the exact check then passe
 No translation text or generator policy is invented. English Watch captures do
 not establish acceptance in other locales. Primary checkout catalogs remain
 untouched.
+
+
+PR #576 merges the deep codec dependency repair as
+`87539b43ae425208416639eabe7dc1fa4429f1ba`. Required run `38211720643` passes for
+reviewed head `523b5863ebe31d933fb4c0cf2898a98af2dff4af`; a fresh fetched ancestry
+check proves both the reviewed commit and merge in remote main. Its manual deep
+run remains failed in Player Go and Firefox; the collected Player coverage is
+88.7%, with failure cause pending the complete log. Required protection remains
+intact. Previous main run `38209590154` succeeds, including Player publication at
+`1560949f`. Current-main publication is tracked separately.
