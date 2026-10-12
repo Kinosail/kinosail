@@ -30,19 +30,19 @@ Passing executions are evidence for named contracts, not a completeness score.
 
 | Domain | Required scope | Current status |
 | --- | --- | --- |
-| Installation and identity | First install, Owner protection, MFA/passkeys, sign-in/out, recovery, sessions | Fresh Chromium, Firefox, and WebKit journeys passed; broader identity review remains |
-| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Hosted baseline passed; additional review remains |
-| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Hosted baseline passed; responsive shell checks below passed in two engines |
-| Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | Caption transport/lifecycle checks below passed; complete decoded-media and device review remains |
-| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Hosted baseline passed; platform review remains |
-| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Hosted baseline passed; platform review remains |
-| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | All 27 ownership executions passed; large-file and hardware boundaries remain |
-| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted baseline passed; expanded local review remains |
-| Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration and session settings passed in two engines; remaining operations pending |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Native inventory refreshed; current interaction review pending |
-| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Debug/release builds, lint, 174 unit checks, and real Server/Kotlin compatibility passed; emulator and hardware review remain |
+| Installation and identity | First install, Owner protection, MFA/passkeys, sign-in/out, recovery, sessions | Fresh install and required MFA journeys passed in three engines; external identity-provider and physical passkey acceptance remain |
+| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Mixed maturity, excluded Library, required Viewer MFA and Show action checks passed three times per engine; physical pairing remains |
+| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Canonical paging passed 30 cases per engine; responsive sweep passed Chromium/WebKit with one Firefox protocol timeout |
+| Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | HLS lifecycle and Show playback repairs delivered; native decoded follow-ups passed; WebKit watched-startup and physical media boundaries remain |
+| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Decoded queue and media actions checked; physical interruption and receiver acceptance remain |
+| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Platform and reading evidence is recorded below; Android EPUB accessibility and physical acceptance remain |
+| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
+| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
+| Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
+| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Hosted validation passed; publication and deployment remain separate boundaries |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; validated private-network gateway TLS passed; Subtitles deployment and restricted public-gateway acceptance remain |
 
 ## Iteration 1 results
 
@@ -602,9 +602,11 @@ Deep run `38181434746` continues at reviewed head `d0efff30`. Its CodeQL Java
 upload fails after the merged PR branch is automatically deleted. The annotation
 identifies a missing ref, not a compiler or source-analysis finding. The exact
 reviewed ref was restored. Failed jobs must be replayed after the run finishes.
-Physical discovery currently finds one connected Apple TV. Other remembered
-Apple devices are disconnected. Installed-app inventory is read-only and does
-not establish physical interaction or current-revision acceptance.
+The earlier connected Apple TV entry was not filtered by hardware reality.
+A later inspection confirms that entry is simulated. Its installed-app inventory
+is simulator evidence. No physical interaction or current-revision hardware
+acceptance was established. The October 12 refresh finds two connected simulated
+TV entries and no connected physical devices.
 
 ## QA-012 — Native cast-pitch check omits scroll content (P2; repaired in PR #563)
 
@@ -855,7 +857,7 @@ with merge commit `8307ea47fbc51408548e8e50b996b75ad7a0b561`. A fresh fetch and
 ancestry checks prove both the reviewed head and task commit are in remote main.
 
 
-## QA-016 — Show card repeats a watched episode (P2; repair pending delivery)
+## QA-016 — Show card repeats a watched episode (P2; repaired and delivered)
 
 The previous show-card journey checks link patterns and alignment. It never
 clicks Play or observes moving media. Its expanded real-Server journey marks
@@ -955,7 +957,7 @@ PR #566 merges reviewed native candidate `26e1682d` with merge commit
 `013d52472504b7d4309ba123b08808af3b8edea8`. Required CI `38193469566` passes.
 A fresh fetch and ancestry checks prove inclusion of that head and Wear commit
 `a21534c1`. The focused iOS comparison passes on the reconciled source. A complete
-iOS suite now runs against its unchanged native tree.
+iOS suite subsequently passes against its unchanged native tree.
 
 The first mixed-episode Viewer attempt is excluded from policy proof: it stops
 at required MFA enrollment. Its cleanup also expects 200 instead of the specified
@@ -971,8 +973,9 @@ persistence. No production change follows the Viewer check.
 The reconciled complete native suites use tree
 `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`. iOS passes 329, fails zero and
 skips four. tvOS passes 311, fails zero and skips three. Three iOS skips and two
-tvOS skips require optional decoded-media files; focused executions with the
-documented fixture remain pending. The other iOS skip is the inapplicable picture-in-picture callback case.
+tvOS skips require optional decoded-media files. Focused follow-ups supply those
+files and pass all five applicable cases, as recorded below. The other iOS skip
+is the inapplicable picture-in-picture callback case.
 The other tvOS skip is optional `TVQualitySessionSeed`, which requires a
 disposable public Server session. Neither skip is a product pass.
 
@@ -983,3 +986,284 @@ shutdown both return a state error and change nothing. The shared simulator,
 installed app and data are preserved. No successful uninstall or restoration of
 a prior app version is claimed. A corrected inspection must distinguish device
 state failures before any later cleanup. Raw diagnostics remain private.
+
+
+## October 12 continuation — responsive, decoded media and protected delivery
+
+PR #564 merges reviewed head `a481eb9d2283f7c117c6b71755fcb97b8ebe525c`
+with merge commit `394736cb740fc6873aa6e94b41e22dc797155529`. Required CI
+`38194962439` and all three layout jobs in `38194962237` pass. A fresh fetch
+proves ancestry of the reviewed head, Show repair and completed Viewer journey.
+Its tree equals the merged tree. Main CI `38196658853` passes, including Player AMD64 and ARM64 build,
+production-image tests, scans, publication, signing, provenance checks and
+production-tag promotion. Published digest values and Nox revision acceptance
+remain separate verification work.
+
+A clean `a481eb9d` responsive sweep runs all six `layout-audit-*` spec files
+against a disposable populated Go HTTPS Server. Chromium and WebKit each pass
+81 cases without skips or flakes. Firefox passes 80 and times out once. The
+single sign-on configuration case stalls in its first `page.setViewportSize`,
+after successful sign-in and before opening configuration. The trace has no
+completed resize call; the failure screenshot shows the loaded home page.
+This is retained as an unresolved automation failure, not an identity-provider
+failure or a complete responsive pass. All browsers validate the fixture TLS
+certificate; only the disposable container and Firefox profiles trust its CA.
+
+The sweep covers six widths from 320 through 1440 pixels, populated media and
+library routes, settings, onboarding, created playlists and collections,
+configuration persistence, forced colors and dark presentation. The 62 distinct
+Chromium 320-pixel renders were inspected in full-page contact sheets and readable
+top crops. No additional defect was confirmed in those views. The remainder of
+long pages, interactive scrolling, other engine renders and real assistive
+technology are separate review boundaries. Private commands, source identities,
+reports, screenshots, traces and hashes remain retained.
+
+The decoded native follow-up uses the workflow's generated 12-second H.264/AAC
+fixture under two task-owned temporary filenames. iOS passes three applicable
+cases and tvOS passes two; none skip. Real AVPlayer decodes, pauses, resumes,
+seeks and exposes buffered ranges through authenticated synthetic native loopback.
+Thirteen new renders cover iOS pending, loaded and failed video, loaded audio,
+and tvOS audio, seek and system video. These were inspected. The system-video
+still does not prove interactive AVKit controls, real Go Server playback or
+physical hardware. Both owned temporary links are removed after identity/hash
+checks; the pre-existing landscape fixture remains untouched.
+
+Xcode changes the active simulator data-container path during installation.
+The first follow-up helper restores its prior evidence folder into the old path.
+A corrective inspection queries the active container again, preserves all new
+renders, and restores the original `Documents/buffer-bar-proof` state there.
+Full pre-test data backups remain private. Neither simulator nor its installed
+app is removed. Both simulators return to their original shutdown state. No
+prior app-version restoration or complete app-data identity claim is made.
+
+The API 36 tablet uses WebView `133.0.6943.137`. A private extra instrumentation
+class reproduces missing chapter text with an attached, visible WebView and
+enabled accessibility. Disabling screenshot accessibility checks alone still
+fails. Comparisons with renderer termination enabled and disabled also pass,
+so neither comparison proves a unique cause. Three executions of the two
+unchanged tracked EPUB methods pass four and fail two. The latest-position
+method passes all three; the longer reader method fails on initial chapter
+load once and chapter-two reopen once, then passes. The chapter assertions
+remain unchanged. Private diagnostic classes are separately identified by
+source/APK hashes and are not production changes. Emulator packages and data
+are restored or task-installed packages removed after every run. These failures
+and the physical TalkBack boundary remain open.
+
+The opt-in real large-transfer journey's receipt hardcodes Nox and Node 26.
+This mislabels local runs. Its environment field now reads the actual process
+platform, architecture and Node version. Transfer, hash, restart, offline
+playback and seek assertions remain unchanged. A dedicated greater-than-2-GiB
+synthetic fixture run follows; tiny mocked chunk checks remain isolated proof.
+
+
+## Real large offline transfer — October 12
+
+At `d5efeb69399d5c71f71c6eae1b4d71f72798f6f1`, the opt-in Chromium journey
+passes against a disposable populated Go HTTPS Server with TLS validation.
+The generated file is 2,156,160,861 bytes. Its 12-second H.264/AAC video has an
+ISO `free` box; this verifies transfer size, not feature-film playback duration.
+
+The transfer is interrupted at 75,497,472 bytes by closing the browser. The
+persistent profile reopens, verifies the original Viewer and private job, and
+resumes. The completed OPFS record matches the source size and SHA-256. After
+another browser shutdown, an independent Node stream hashes the actual backing
+file to `249ab9776988313fdede264d7932891c061cda25a5b34845ed72134f0bc2736b`.
+There are 259 range responses, including starts beyond 2 GiB.
+
+A second reopen verifies the same Viewer. The fixture's network connection is
+then disconnected. Offline playback decodes 320×180 video, advances and seeks
+to seven seconds without a media error. Both retained screenshots were inspected.
+The single case passes in 61.40 seconds without retries, skips or flakes. The
+full fixture command takes 107.63 seconds. The owned container, synthetic large
+file and browser profile are removed; private receipts, screenshots and hashes
+remain. Host certificate trust is unchanged.
+
+The prior attempt reaches 72 MiB and fails because the test demands credentials
+from an already restored session. The existing session-persistence behavior
+redirects ordinary sign-in to the home page. The journey now checks the original
+Viewer and authenticated job after both reopens. The first credential sign-in,
+restart, range, independent hash and disconnected decode assertions remain.
+This is a test-harness repair; no application authentication behavior changes.
+The failure model and failing attempt were recorded before the test edit.
+`make max-loc` and post-commit Player `make verify-changed` pass.
+
+
+## Continued diagnostics and Nox acceptance — October 12
+
+The unchanged single sign-on configuration journey runs three focused Firefox
+executions at `ece703614a59171883330306183f86b2f6506941`. Two pass and one times
+out at its first 1440×900 resize. Private protocol capture pairs request IDs
+with session IDs: the failed resize receives no protocol response. Fourteen
+resize calls in the passing executions return without protocol errors. An
+initial projection paired IDs without their session IDs; its apparent error
+response belongs to a different command and is excluded. Six later executions
+with read-only pending-resize telemetry pass without triggering the telemetry.
+These diagnostic passes do not clear the unchanged journey's failures.
+
+The pinned [Firefox Juggler implementation](https://raw.githubusercontent.com/microsoft/playwright/v1.63.0/browser_patches/firefox/juggler/TargetRegistry.js)
+waits for viewport dimensions after setting browser size. Upstream
+[issue #43028](https://github.com/microsoft/playwright/issues/43028) describes
+resize hangs under other versions and window environments. It does not prove
+the same cause here. Test timeouts and assertions remain unchanged.
+
+A failure-only EPUB control runs five fresh API 36 tablet executions. Four pass;
+one retains the original chapter assertion failure. The complete bounded
+accessibility tree has 32 nodes, with two WebView nodes and no chapter heading
+in text or content description. The rendered chapter is visible. Moving the
+same WebView into a plain native container without reloading does not expose
+the heading. The original parent is restored and the failure remains a failure.
+A separate private control that would create a fresh plain WebView passes three
+journeys before reaching that failure path, so it provides no comparison result.
+Neither private class changes tracked application or test source. Production APK
+hashes remain identical. Task-installed emulator packages are removed and the
+reusable AVD remains. Physical TalkBack acceptance is unavailable.
+
+Main `394736cb740fc6873aa6e94b41e22dc797155529` publishes Player manifest
+`sha256:e2f3799d296dc0c2d9914ec98f8ec6e61e86c4aa603a1a0232973d23985638cb`.
+The raw manifest hash matches the registry digest header. All four child
+descriptors match the two tested and scanned architecture candidate indexes.
+Independent GitHub provenance verification requires that exact source commit,
+`refs/heads/main`, the publication workflow and GitHub-hosted runners; it passes.
+CI separately verifies the image signature and promotes production tags.
+
+The repository deployment script rebuilds Player for ARM64, scans its archive,
+deploys it to Nox and verifies its revision and health. Nox reports that exact
+main revision, running and healthy, and its in-container health check passes.
+Its local image ID is
+`sha256:28fe2e962881de9e92d118ee95a1e4a4eddf7b091cd2dd382961a1801313de0d`.
+This image is separate from the published manifest. The saved-source watcher
+is preserved and may deploy later primary-checkout saves. Subtitles is unchanged.
+No authenticated production journey, external gateway TLS or physical playback
+acceptance is claimed from container health.
+
+Trivy 0.75.0 and Syft 1.54.1 run from a task-private directory after official
+release checksum verification. The Nox scan records 168 Low, 181 Medium,
+133 High, one Critical and 23 Unknown findings. No High or Critical finding
+has a fixed package version in the configured distribution, so the existing
+release-policy gate passes. This is not a vulnerability-free result.
+
+The Critical scanner entry is `CVE-2026-6653` in
+`libxml2 2.12.7+dfsg+really2.9.14-2.1+deb13u3`.
+The [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653)
+marks that exact stable package vulnerable, records it as a minor issue without
+a stable security advisory, and lists a fix in unstable. Runtime reachability
+and exploit reproduction are not established. No suppression, release-gate
+change or unsupported distribution upgrade is applied. Full scan and SBOM
+receipts remain private and checksummed.
+
+
+## QA-018 — WebKit OPFS quota regression lacks persistent storage (test repair)
+
+The remaining offline batch at `43502d17` passes 31 Chromium and 31 Firefox
+cases. WebKit passes 30 and fails the orphaned OPFS quota case before reaching
+its quota assertions. Three unchanged focused WebKit executions also fail.
+The worker advertises the sync writer API, but `getDirectory()` rejects with
+`UnknownError`. Plain sixteen-byte controls fail at the same directory step in
+both the failing context and a fresh ephemeral context.
+
+Matched controls use pinned WebKit 26.6 on macOS ARM64 and Linux ARM64. On
+both systems, an ephemeral context cannot open the directory. A fresh persistent
+profile writes, reads and removes sixteen bytes. This isolates a browser test
+prerequisite; it does not demonstrate a product OPFS defect.
+
+Only the OPFS quota case now uses a fresh persistent profile. It retains the
+configured engine, launch options, Firefox profile CA wrapper, TLS validation
+and desktop context settings. The context closes and its owned profile is
+removed in `finally`. A bounded attachment records removal. Traces, screenshots
+and failure videos remain available; successful temporary videos are deleted.
+The IndexedDB case retains its ordinary context. No production source changes.
+
+## QA-019 — Seeded quota test retains the initial download action (test repair)
+
+The first repaired-profile repetitions pass all three OPFS cases in each engine.
+One WebKit IndexedDB case instead times out seeking “Download to this device.”
+Its screenshot shows “Resume on this device” and the interrupted-download message.
+The trace never dispatches that click. The test seeded an interrupted job after
+capturing the initial download locator; asynchronous refresh correctly changes
+the action label. The same race is possible in the OPFS case.
+
+Both seeded cases now reload the downloads page and use “Resume on this device.”
+Their quota values, orphaned bytes, corrupt chunk, manifest hashes, exact
+`[16, 16, 1]` range sequence and resulting storage assertions remain unchanged.
+Three executions of both cases pass in Chromium, Firefox and WebKit: six passes
+per engine, zero skips, failures, flakes or retries. Nine profile receipts confirm
+removal. The owned browser containers are removed and host trust is unchanged.
+The first committed artifact-cleanup replay exposes a teardown error in all
+three engines: calling `video.delete()` after a persistent context closes uses a
+closed browser connection. Quota assertions pass, but those executions remain
+failed. The fixture now closes pages, handles their finished videos while the
+browser is open, then closes the context and removes its profile. The committed replay at `c44bb1e2` passes six quota cases per engine with zero
+skips, failures, flakes or retries. A private intentional failure after the
+unchanged OPFS assertions, once per engine, retains screenshots, two videos and
+a trace, preserves that single failure, and removes its profile without a
+teardown error. These expected failures verify artifact handling; they are not
+passing product cases. An output audit then finds three tiny blank launch-page
+videos remaining after successful WebKit runs. The fixture now removes its
+known raw-video directory after closing the browser; retained failure copies
+remain outside that directory. Final replays verify both outcomes.
+
+These are retained isolated fault checks with synthetic chunks, mocked manifests,
+quota and service-worker state. Real Go sign-in and preparation do not turn the
+mocked transfer into populated-server E2E proof. The real 2.16 GB transfer,
+independent backing-file hash and disconnected decode remain separate evidence.
+Failure models, unchanged red runs, matched controls, exact commands, snapshots,
+source hashes, results and artifact checksums remain in the private evidence root.
+
+## Further Android and gateway boundaries — October 12
+
+The private plain-WebView control reaches the original EPUB failure on its fourth
+fresh tablet execution. The original reader's heading remains absent after
+reparenting. A fresh static WebView exposes its heading and finishes loading in
+the same renderer. This rules out a wholly unavailable renderer or accessibility
+service in that execution. It does not identify the reader's underlying cause.
+A later failure-only control would inspect the original heading after destroying
+the plain WebView. Four executions pass without reaching that control, so it
+provides no comparison result. Original failures remain open. Production APK
+hashes stay identical, temporary packages are removed and the shared AVD remains.
+
+Nox's configured HTTPS site passes normal system CA and hostname validation
+with TLS 1.3. Anonymous `/healthz` returns 200; `/` redirects; `/settings`
+returns 404 and `/api/v1/settings` returns 403. These responses include CSP and
+omit HSTS. A read-only `/login` request returns a password form. The separate
+Caddy wrapper proxies by network address, without the repository gateway's Unix
+transport or configured proxy-token header. Its DNS resolves only to a private
+address from this Mac. WAN forwarding and external Internet reachability are
+unproved. The intended LAN/VPN versus restricted public-access role is pending
+user clarification; no live gateway or authentication configuration is changed.
+
+The gateway shares no Player application-state mount source. Its process reports
+`NoNewPrivs=1` and seccomp filtering, but that does not prove the repository's
+process-wide IP-dial restriction. The gateway's separate `/config` destination is
+Caddy configuration, not evidence of an application-state share. A diagnostic
+initially omitted the configured nonstandard HTTPS port and hit a refused
+connection; the corrected request preserves the port and passes. This setup
+mistake is excluded from product failures. No private addresses, response bodies,
+credentials or raw configuration are published.
+
+Main advanced through other reviewed playback and architecture changes. The
+branch reconciles `a95f2cbb` without conflicts as `7f65fbc1`; `make max-loc` and
+post-merge Player `make verify-changed` pass. Required GitHub gates will run again
+for this reconciled offline test checkpoint before protected delivery.
+
+
+## Watch disconnected simulator render — October 12
+
+The unchanged Watch target builds successfully for watchOS Simulator at
+`6b5ee97d`; its native source tree remains `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`.
+The existing QA Watch stays paired with the same QA iPhone. Only the Watch boots;
+the iPhone remains shut down. An initial screenshot captures system launch.
+At five and fifteen seconds, the Watch renders “Nothing playing,” the instruction
+to start a title on iPhone or Apple TV, and “Connecting to paired iPhone…”.
+The screenshot fits the device width. The connection activation outcome is not
+captured, so this does not establish a terminal failure or a working relay.
+
+The preexisting Watch app and its full data container are backed up before
+installation. Cleanup reinstalls the original app, resolves its current data
+container and restores its data; every original file hash matches. The Watch
+returns to Shutdown and the paired iPhone stays Shutdown. The pair is unchanged.
+Simulator is unavailable through the native UI-control inventory and absent at
+the selected Xcode GUI path. No Watch gestures, paired-phone playback command,
+Health permission, heart-rate sample or physical-device acceptance is claimed.
+Apple's [WCSession documentation](https://developer.apple.com/documentation/WatchConnectivity/WCSession)
+requires activation before messages; the captured connecting label alone does
+not identify activation status or failure cause.
