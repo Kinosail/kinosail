@@ -18,7 +18,8 @@ fi
 mkdir -p .verification
 profile=.verification/coverage.out
 rm -f "$profile"
-go test -race -count=1 -covermode=atomic -coverprofile="$profile" ./...
+# Count production paths exercised by tests in another package of this module.
+go test -race -count=1 -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...
 # Test-support packages are exercised by consumers, not standalone coverage.
 if [[ "$1" == packages ]]; then
   awk 'NR == 1 || $1 !~ /\/(archivetest|commandtest|configurationtest|servertest)\//' "$profile" > "$profile.filtered"

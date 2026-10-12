@@ -1488,3 +1488,26 @@ translated “Library” entry and asserts nonempty catalogs before introducing 
 Exact command receipts, source and log hashes remain in the private evidence
 directory under `native-copy-build-guard-*-v3`. The complete CI contract suite
 passes after this repair.
+
+## QA-023 — Deep coverage misses consumer execution
+
+The final Player profile marks database opening and configuration paths uncovered,
+although Server, CLI and backup consumers call them. The deep collector uses Go's
+default per-package instrumentation. It therefore misses execution through tests
+in another package. These production functions are used and remain intact.
+
+A disposable two-package module reproduces the accounting gap with a real HTTP
+request and filesystem write. The unchanged collector passes the consumer test
+but fails coverage at 66.7%. Adding only `-coverpkg=./...` reports 100% for the same
+executed production statements. An unexecuted-function control still fails at
+37.5%, with that function at 0%. All three runs retain race detection. The first
+profile projection ran outside its module and is excluded from complete proof.
+
+Before the collector change, the retained command regression and coverage-policy
+contract both fail. After adding module-wide instrumentation, they and the full
+CI contract suite pass. The quick command, complete package selection, race mode,
+89% app requirement, 85% package requirement and existing test-helper exclusion
+remain unchanged. Wider instrumentation can add deep-run overhead; hosted results
+must establish its full-module coverage and execution cost. No test or assertion
+is removed to obtain coverage. Private `consumer-coverage-*` receipts retain exact
+commands, revisions, profiles and source/log hashes.
