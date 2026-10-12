@@ -787,7 +787,7 @@ case's initial page navigation. That failure precedes queue or command operation
 The remaining browser and native results must be reviewed before a full claim.
 Private receipts, source attestations, screenshots, and cleanup are retained.
 
-## QA-015 — Valid HLS temporary-file replacement rejects the stage (P2; repaired locally)
+## QA-015 — Valid HLS temporary-file replacement rejects the stage (P2; merged PR #567)
 
 Required run `38185815124` returns 404 while regenerating a deleted first HLS
 fragment in the audio-transcode case. Its safe warning class is
@@ -824,4 +824,94 @@ Default-level runs omit routine events; invalid stages retain their warning.
 No credential, cookie, bearer, or raw-URL markers appear in the logging control.
 Private `hls-stage-evidence.json` records source, command, codec, binary, log,
 result, and container-cleanup checksums. No historical 404 beyond this reproduced
-race is silently classified as resolved. Required hosted delivery remains pending.
+race is silently classified as resolved. Required CI run `38190828542` and all
+three layout engines in run `38190828548` pass at `bf220c9e`. PR #567 merges
+with merge commit `8307ea47fbc51408548e8e50b996b75ad7a0b561`. A fresh fetch and
+ancestry checks prove both the reviewed head and task commit are in remote main.
+
+
+## QA-016 — Show card repeats a watched episode (P2; repair pending delivery)
+
+The previous show-card journey checks link patterns and alignment. It never
+clicks Play or observes moving media. Its expanded real-Server journey marks
+episode one watched and episode two unwatched through the public API.
+Show Details correctly selects episode two, but the Shows card says Play again.
+The journey fails before the production change, at its next-episode assertion.
+
+Catalog paging collapses Shows into representative items. Home organizes those
+representatives and computes playback from only one episode. The repair expands
+only the selected Shows with Viewer-visible episodes before computing their
+card actions. It preserves the selected card set and canonical episode order.
+The page, query, and Viewer access policy still select the visible Shows.
+The follow-on projection uses stable read-only catalog references and copies
+only selected, permitted episodes. Its final candidate replay remains pending.
+No layout, placeholder, Direct First, or playback policy changes.
+
+The expanded Chromium journey passes after repair. One card click opens episode
+two without another native play call. Decoded frames advance from 4 to 13;
+media time advances from 0.004769 to 0.356429 seconds. Resume selects episode
+two, all-watched Play again selects episode one, and reset Play next selects
+episode one. The journey restores prior viewing state. It retains responsive
+captures, moving-video evidence, state captures, and exact source attestations.
+Existing public Show, Viewer policy, and pagination contract checks pass.
+The source cap, diff check, and post-commit Player verification pass at
+`2ee56f5eb2c616ac58086cb66f39e99c80372e65`.
+
+The first expanded attempt is excluded from playback proof. An ambiguous Shows
+locator fails on Details. Cleanup then omits untouched zero/false progress
+fields and masks that failure with HTTP 400. The corrected journey uses the
+Details Back link and normalized public progress defaults. The original logs
+and safe projections remain retained.
+
+The broader media interaction sweep passes 11 cases each in Chromium and
+Firefox at `2ee56f5e`. Each skips 23 dedicated-pagination cases because their
+canonical Go fixture is absent from this generic fixture. Those skips are
+not product passes. WebKit passes nine and fails the focus and synthetic loading
+reviews. Both Show cases pass in all three engines. The dedicated catalog replay
+remains pending.
+The loading review combines decoded initial playback with synthetic media
+state events; it does not prove a real bandwidth interruption.
+
+
+### Wear module compatibility and capture follow-up
+
+Wear has a separate minimum API 30. Its expanded NewApi scan reports one
+unguarded API 34 accessibility-scanner call before repair, and none afterward.
+The scanner now runs only on API 34 or newer. Both live-region checks remain
+active on API 30. Builds and expanded lint pass. Both instrumentation checks
+pass on API 30 and API 36, with actual SDK/ABI receipts.
+
+Whole-display captures initially show Hello or Starting system setup rather
+than the app. Those captures are excluded from app rendering proof. Capture
+now images the actual tested Compose root. Both unpaired and heart-permission
+state images were inspected on each API. The API 36 reusable emulator and SDK
+images are preserved. The task-owned API 30 emulator is deleted after shutdown.
+This is isolated component evidence, not foreground interaction, paired-phone
+relay, heart-sensor, real assistive-technology, or physical Wear acceptance.
+
+Wear checkpoint `a21534c1475c60322c53750537976e1751d4d5ad` passes required
+CI `38190740774`, the source cap, diff check, and post-commit verification.
+The initial invalid Java path, initial Gradle configuration error, and API 30
+ART-precompile failure happen before analysis or instrumentation and are excluded.
+
+
+## QA-017 — Layout sign-in navigation retains an unguarded Firefox boundary
+
+The Firefox replay of deep run `38186878855` passes 703 root cases and skips
+356. Settings passes 63 with one flaky sign-in navigation, so the strict flake
+gate remains failed. The initial login response is HTTP 200; the screenshot
+shows the complete sign-in form. The trace only retains its earlier blank
+document snapshot. This does not prove a blank product page.
+
+The layout helper still uses raw `page.goto`, unlike the shared populated-instance
+helper. A private control throws `TimeoutError` after the actual Firefox login
+form completes. The unchanged settings journey fails before credentials. Reusing
+the existing guarded navigation helper passes this same control. The guard
+requires one successful, prompt, nonredirected navigation and a complete, usable
+form before admitting one replacement GET. Explicit response, URL and redirect
+checks remain before credential entry. No authentication product behavior changes.
+
+The control is an isolated browser-automation fault with the real HTTPS backend.
+It does not reproduce the original browser internals. Real settings repetitions
+and existing rejection controls remain pending. Both original attempts, traces,
+source-overlay hashes, results and safe projections remain private.

@@ -1,6 +1,7 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
 import { createHmac } from "node:crypto";
+import { gotoAuthForm } from "../../../scripts/testing/auth-form-navigation";
 
 export const viewports = [
 	{ width: 1440, height: 900 },
@@ -27,7 +28,12 @@ export function totp(): string {
 }
 
 export async function login(page: Page, name = "Owner", password = "test-instance-password") {
-	await page.goto("/login");
+	const response = await gotoAuthForm(page, "/login", test.info());
+	expect(response?.status()).toBe(200);
+	expect(response!.request().redirectedFrom()).toBeNull();
+	const loginURL = new URL(response!.url());
+	expect(loginURL.pathname + loginURL.search + loginURL.hash).toBe("/login");
+	await expect(page).toHaveURL(response!.url());
 	await page.getByLabel("Name").fill(name);
 	await page.getByLabel("Password", { exact: true }).fill(password);
 	const code = page.getByLabel("Authentication or recovery code");

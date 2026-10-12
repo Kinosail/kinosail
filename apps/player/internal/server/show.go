@@ -76,12 +76,14 @@ func showCards(request *http.Request, index *libraryIndex, progress *progressSto
 		positions[show.ID] = position
 	}
 	episodes := make([]library.Item, 0, len(shows))
-	for _, item := range index.VisibleLibrary(request) {
+	references, _ := index.References()
+	policy := viewerPolicy(currentViewer(request))
+	for _, item := range references {
 		if item.Kind != "video" || item.Show == "" {
 			continue
 		}
-		if _, selected := positions[library.ShowID(item.Show)]; selected {
-			episodes = append(episodes, item)
+		if _, selected := positions[library.ShowID(item.Show)]; selected && policy.Allows(*item) {
+			episodes = append(episodes, *item)
 		}
 	}
 	_, complete := library.Organize(episodes)
