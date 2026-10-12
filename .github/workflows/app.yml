@@ -60,7 +60,11 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install deep media fixture codecs
         if: fromJSON(inputs.plan).deep
-        run: sudo apt-get install -y ffmpeg
+        run: |
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/deep-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
+          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/deep-ffmpeg.deb" | sha256sum --check
+          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/deep-ffmpeg.deb"
+          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - env:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
@@ -329,7 +333,7 @@ jobs:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
