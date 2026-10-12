@@ -816,3 +816,14 @@ Required hosted checks must rerun on this updated branch; protected integration 
 | `hls-cold-suffix/20261012T012844Z/receipt.json` | clean producer-failure | `51d6c629019ed02bc55c73d15715f5aba86497a587d945e7f7634ce85bc3aacc` |
 | `hls-short-completion/20261012T012854Z/receipt.json` | clean short-completion | `e315b5a2a61f8e66d1aedb540082cacf2e5b68e716d7f0988d1b4bf893a5f6fe` |
 | `hls-resume-browser/20261012T012959Z/receipt.json` | clean browser | `f84f15fb423dace217f53c6c83f5f86ff02f0e61060283d3ecbe2056cc18a3c4` |
+
+### Cold-resume reconciliation with atomic recovery publication
+
+Required checks passed for cold-resume head `fcfe4e40789ce93f248c5e29373bf4c2889a0c54`.
+Main advanced before merge, adding the independently delivered temporary-file replacement repair.
+Merge checkpoint `ffbdbb8e06c47e3cbc4e8ea66ee27fe691d3c590` incorporates main `8307ea47fbc51408548e8e50b996b75ad7a0b561`.
+Both populated Chromium recovery journeys pass: first fragment and tail fragment.
+Each matches all seven original-file frames, reaches EOF, preserves its source, and settles its Server.
+`make max-loc` and `make -C apps/player verify-changed` pass after reconciliation.
+The private command manifest is `cold-reconciled-20261012T0200/receipt.json`, SHA-256 `927ff83f9ae6fb04a36aafe582f53c1c5df541a180df9c6b7386a66fac1fdff3`.
+Required hosted checks must pass again for the reconciled head; no protection was bypassed.
