@@ -76,14 +76,17 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       // Establish fresh decoded motion inside the held request before releasing
       // the page's queued real notifications and requesting the late native pause.
       const start = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
-      let rejected = false;
+      let rejected = false, minimumFrames = start.frames;
       void video.play().catch(() => {rejected = true;});
       const deadline = performance.now() + 8000;
-      while (video.paused || video.getVideoPlaybackQuality().totalVideoFrames <= start.frames + 2 || video.currentTime <= start.seconds + 0.2) {
+      while (video.paused || video.getVideoPlaybackQuality().totalVideoFrames <= minimumFrames + 2 || video.currentTime <= start.seconds + 0.2) {
         if (rejected || performance.now() >= deadline) {
           relay.postMessage({kind: "qa-watched-paused", failure: "native motion did not resume during held transport"}, location.origin);
           return;
         }
+        // Native HLS may reset frame statistics after a seek. Still require
+        // three newly decoded frames and advancing time after that reset.
+        minimumFrames = Math.min(minimumFrames, video.getVideoPlaybackQuality().totalVideoFrames);
         await new Promise(resolve => setTimeout(resolve, 20));
       }
       const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
@@ -111,6 +114,30 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   });
   let bodyFailed = false;
   try {
+    if (!watched) {
+      // A departing native HLS document may stop fetching new segments. Decode
+      // and buffer the real tail before holding navigation; the late ended
+      // callback must use available media rather than require another load.
+      await media.evaluate((video: HTMLVideoElement) => {
+        video.pause();
+        if (!Number.isFinite(video.duration) || video.duration <= 3) throw new Error("Late ended fixture needs a finite video longer than three seconds");
+        video.currentTime = video.duration - 2.5;
+      });
+      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => {
+        const target = video.duration - 0.1;
+        return Array.from({length: video.buffered.length}, (_, index) =>
+          video.buffered.start(index) <= target && video.buffered.end(index) >= target).some(Boolean);
+      })).toBe(true);
+      await startPlaying(media);
+      await media.evaluate((video: HTMLVideoElement) => video.pause());
+      await expect(media).toHaveJSProperty("paused", true);
+      const tail = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+        duration: video.duration, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])}));
+      await info.attach("late-ended-buffered-precondition", {body: JSON.stringify({browser: info.project.name,
+        cancelledAgain, tail, boundary: "Actual native tail seek and decoded motion before held navigation"}), contentType: "application/json"});
+    }
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
     expect(await progress()).toMatchObject({watched, seconds: 0});

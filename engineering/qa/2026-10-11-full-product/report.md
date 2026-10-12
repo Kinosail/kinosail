@@ -1146,8 +1146,9 @@ The Critical scanner entry is `CVE-2026-6653` in
 `libxml2 2.12.7+dfsg+really2.9.14-2.1+deb13u3`.
 The [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653)
 marks that exact stable package vulnerable, records it as a minor issue without
-a stable security advisory, and lists a fix in unstable. Runtime reachability
-and exploit reproduction are not established. No suppression, release-gate
+a stable security advisory, and lists a fix in unstable. Read-only inspection of the deployed `394736cb` image confirms that FFmpeg,
+FFprobe, bsdtar and fpcalc link to this library. This proves runtime presence.
+Reachability of the vulnerable function and exploit reproduction remain unproved. No suppression, release-gate
 change or unsupported distribution upgrade is applied. Full scan and SBOM
 receipts remain private and checksummed.
 
@@ -1576,3 +1577,35 @@ retain source media, frame hashes, exact commands, revision and checksums.
 The final Linux receipt also records the test source hash and runtime versions.
 This is real API and stream decoding evidence. It does not establish browser,
 simulator, physical-device or full-module coverage acceptance.
+
+
+## Buffered tail and native frame-counter resets (test repair)
+
+The held-navigation fixture now completes a real tail seek and requires the tail
+in native buffered ranges before submitting Mark unwatched. Six initial WebKit
+attempts still fail. Their precondition snapshots show full buffering, while
+final snapshots show actual playback ending at 12 seconds. Two bounded diagnostic
+replays establish that the native decoded-frame counter resets from 50 to 1, then
+advances to 13. The fixed baseline could never observe the required newer frames.
+One diagnostic selector finds no tests and is excluded from execution proof.
+
+The fixture now tracks the lowest observed frame counter during held playback.
+It still requires three newer decoded frames, media time advancing over 0.2
+seconds, and the actual native pause or ended event. Real form submission,
+accepted Server state, zero late progress requests and persisted state remain
+required. Product playback code, deadlines, retries and assertion outcomes do
+not change.
+
+All five watched-control journeys pass three times per engine on Linux ARM64:
+15 Chromium, 15 Firefox and 15 WebKit passes, without retries, skips or flakes.
+The final test source hash is
+`92029df041f5ed3eaefdf973907fa18f33fd19ec7d9f8d8ef363c478733868e8`.
+Private `watched-buffered-tail-full-positive-safe.json` records exact source,
+report hashes and cleanup. Each disposable container is removed; host trust is
+unchanged. These local results do not close the hosted AMD64 failure, its native
+decode-error observation, the flaky album journey, or physical-device acceptance.
+
+PR [#578](https://github.com/Kinosail/kinosail/pull/578) merges after every required
+check passes. A fetched ancestry check proves reviewed head `ae711016` is in
+remote main `a2d5f2b1`. Watch relay replies, physical Watch controls and VoiceOver
+remain separate acceptance boundaries.
