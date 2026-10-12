@@ -1819,3 +1819,19 @@ The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers
 
 These results supplement the fourteen successful playback cases at `25f34f76`.
 Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.
+
+
+### Android clear-search synchronization repair
+
+Main CI run `38238653057` failed `phoneHasOneExplicitClearActionAfterSubmission` at `SearchFeedbackJourneyTest.kt:50`.
+The unchanged local search suite passes, confirming the failure depends on scheduling.
+A temporary fixture delay before accepting the clear request reproduces the same assertion on both phone and TV: expected an empty query, observed `Fictional`.
+Cached rows can make the screen idle before the fresh network response completes.
+The two retained journeys now wait for the response-backed empty `resultQuery`, while preserving clear-input, outgoing-query, and TV-focus assertions.
+This follows [Android's guidance for conditions that depend on external work](https://developer.android.com/develop/ui/compose/testing/synchronization).
+No production behavior changes, retries, or sleeps were added. The temporary delay was removed after red/green proof.
+
+All eight search journeys pass with the delay. Without it, the complete Android gate passes: 161 app, 8 watchcore, and 5 wear tests, plus both debug builds.
+Local proof: `ai-qa-campaign/android-search-clear-proof.json`, SHA-256 `2a77981bf1839226b1ccb3640563af9f95a121b72ac03edb446eeb7e5e50aded`.
+The proof records main `9e8d3bbc` plus the exact uncommitted test patch; it is not an exact committed-revision claim.
+These JVM journeys use an HTTP stand-in and do not prove populated production Server or physical-device behavior.

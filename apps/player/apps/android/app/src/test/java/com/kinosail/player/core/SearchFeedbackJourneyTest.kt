@@ -45,7 +45,8 @@ class SearchFeedbackJourneyTest {
         await { !catalog.state.loading && catalog.hasActiveSearch }
         capture("phone-clear-baseline")
         compose.onNodeWithText("Clear search").assertIsDisplayed().performClick()
-        await { !catalog.state.loading && !catalog.hasActiveSearch }
+        // Cached rows can settle the screen before the clear request completes.
+        await { !catalog.state.loading && !catalog.hasActiveSearch && catalog.state.resultQuery == "" }
         assertTrue(catalog.searchInput.isEmpty())
         assertEquals("", fixture.catalogQueries.last())
     }
@@ -59,7 +60,7 @@ class SearchFeedbackJourneyTest {
         val clear = compose.onNodeWithText("Clear search").assertIsDisplayed()
         focus(clear)
         clear.performKeyInput { pressKey(ComposeKey.DirectionCenter) }
-        await { !catalog.state.loading && !catalog.hasActiveSearch }
+        await { !catalog.state.loading && !catalog.hasActiveSearch && catalog.state.resultQuery == "" }
         assertTrue(catalog.searchInput.isEmpty())
         assertEquals("", fixture.catalogQueries.last())
         clear.assertIsFocused()
