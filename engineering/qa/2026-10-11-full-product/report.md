@@ -1512,6 +1512,14 @@ must establish its full-module coverage and execution cost. No test or assertion
 is removed to obtain coverage. Private `consumer-coverage-*` receipts retain exact
 commands, revisions, profiles and source/log hashes.
 
+The first full hosted profile with module-wide instrumentation reports Player at
+88.8% and Subtitles at 91.6%, at revision `ea760872`. Player remains below the
+unchanged 89% gate. Instrumentation corrects consumer accounting but does not
+close the remaining execution gaps. After workflow completion, the full log
+confirms no failing Go test, race warning or panic. The 88.8% threshold check is
+the failure. Profile archive hashes and block accounting are retained in the
+private `deep-ea-go` directory.
+
 ## Late native callback failure evidence
 
 The final hosted failure traces select Arrival over HLS, rather than the helper's
@@ -1535,3 +1543,36 @@ snapshots after closing the relay; it provides no native-snapshot evidence.
 A final type-only cast produces byte-identical JavaScript under TypeScript 6.0.3.
 Private `watched-failure-evidence-*` receipts record the controls and hashes.
 No playback behavior, retry, timeout or product assertion changes.
+
+The next hosted run, `38219097077` at `ea760872`, again fails both WebKit
+unwatched cases. Three failure snapshots show a seek held at 11.9 of 12 seconds,
+with readiness 1 and buffered output ending at 3.92 seconds. The remaining
+attempt records native decode error code 3 and no decoded frames. The first
+three snapshots identify an unbuffered tail while navigation is held; they do
+not yet establish why that tail cannot load. Snapshot revision fields are absent
+because the hosted environment does not set that variable. Attribution comes
+from the exact-revision artifact and workflow metadata. Chromium and Firefox
+pass their settings journeys; WebKit also has one flaky album-advance journey.
+No failure or flaky case is treated as completed QA.
+
+## Short HEVC preparation through real HTTP and codecs
+
+A retained journey generates an 8.37-second HEVC video with EAC3 audio, then calls
+the production Library, playback planning, preparation and HLS routes over real
+loopback HTTP. Planning preserves HEVC and converts audio. The journey compares
+every delivered video frame hash with the decoded source and requires decoded
+audio. It checks warm adoption, cancellation of preparation after playback, and
+preparation again. No encoder, response or server operation is mocked.
+
+All three phases pass locally with race detection using macOS ARM64 and FFmpeg
+9.0.2. They also pass on Linux ARM64 with the hosted deep run's pinned Jellyfin
+FFmpeg 8.1.3 package. Each phase delivers all 201 matching video frames and 394
+audio frames. The Linux test is cross-compiled without race instrumentation;
+the macOS run supplies the separate race evidence. The disposable Linux
+container is removed after collecting evidence.
+
+Private `hevc-public-e2e-first-artifacts` and `linux-hevc-public-e2e` directories
+retain source media, frame hashes, exact commands, revision and checksums.
+The final Linux receipt also records the test source hash and runtime versions.
+This is real API and stream decoding evidence. It does not establish browser,
+simulator, physical-device or full-module coverage acceptance.
