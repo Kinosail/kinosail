@@ -845,3 +845,38 @@ The final candidate patch is private at `ai-qa-campaign/audio-clock-final-candid
 | `ai-qa-campaign/audio-clock-noise/control-capture/warmup-comparison.json` | isolated Chromium startup PCM and packet-drop control | `d2b9ac919b5e1cad56197a62a8a784d78ffc95dd102f9f1e89e6591bfecca24a` |
 | `hls-resume-browser/20261012T003415Z/decoded-splice-comparison.json` | actual Chromium waveform; unresolved brief tail transition | `4d18366bb2f1f8ee7cad4e26ac3b375319baeb43493e6bf6cccd8c2ed0a0de0c` |
 | `hls-resume-browser/20261012T003305Z/receipt.json` | 44.1 kHz Matroska probe; reference EOF limit | `adf24109d0e332b53439bc0e47db628c23d95bafb92b435ae7150a7433292ac4` |
+
+
+### Copied-audio clock: clean checkpoint verification
+
+Clean revision `9cd7192c87f1bcf468f167e351f0f908622cbb51` passes all eight final public browser runs.
+Converted audio covers near-zero and exact-key resume, first-fragment and tail recovery, plus native WebKit tail recovery.
+AAC and video-only regression journeys also pass. Together these runs match 91 reference frames and reach playback ended.
+The malformed-header run passes eight controls in each MSE engine.
+Every harness receipt records its exact command, generated source, binary hash, environment, unchanged source, and settled Server.
+`make -C apps/player verify-changed` passes source limits, whitespace, server compilation, focused server tests (89 seconds), and E2E discovery.
+
+Independent low-rate decoder proof reproduces the rejected clock shift: only one of six Chromium frames matches without the clamp.
+The committed clamp matches all six frames, supplementing the sixteen-case offline clock and initialization matrix.
+This low-rate browser test is isolated decoder evidence, not public Server acceptance.
+
+The clean Chromium PCM replay confirms the unresolved brief waveform transition at the regenerated tail.
+There is no zero-energy gap in its measured windows, but that is insufficient to claim seamless decoded audio.
+The private diagnostic receipt now records its wrapper command, input sample rate, container, and driver hashes.
+Its original-file frame journey passes independently of the waveform comparison.
+The draft audio repair is not ready for protected integration until this transition is characterized or repaired.
+The [MSE audio splice algorithms](https://www.w3.org/TR/media-source-2/#audio-splice-frame-algorithm) describe overlap processing; they do not prove this implementation's decoded output.
+
+| Private receipt under `.verification/` | Evidence | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T003901Z/receipt.json` | near-zero converted resume | `9207c2287bd422d0c959b41c4a512bba1437ddfd24fa249ccac0cc5ed04f3f7d` |
+| `hls-resume-browser/20261012T003918Z/receipt.json` | exact-key converted resume | `8f6aed46f5d5c25ca1dd3f5c886ab230b9acc4551730c77bf017a567ed9f514f` |
+| `hls-resume-browser/20261012T003935Z/receipt.json` | converted tail recovery | `a74a6a519c47f35414ac90eb9927a3da9418663dd9413cad16326a21147cf0d6` |
+| `hls-resume-browser/20261012T003953Z/receipt.json` | converted first recovery | `1827626ff872f6cd3dfeb668a31d0987832df561edd8cfff4507e31a5b249711` |
+| `hls-resume-browser/20261012T004015Z/receipt.json` | native WebKit converted tail | `8f34cad6225106594b8af7f9fbeb3dd7ebebb07864bf8ea603a80a6947e77b2f` |
+| `hls-resume-browser/20261012T004030Z/receipt.json` | paired metadata controls | `2211736ce3a13172e31f18d2841c26d6c1e40045ca16ef9c17ce306ea6359ae1` |
+| `hls-resume-browser/20261012T004054Z/receipt.json` | AAC regression | `9153f4489d083bb842a45e2e5c5c1685a2a84466c58e87a7c2aa584a682bc069` |
+| `hls-resume-browser/20261012T004112Z/receipt.json` | video-only regression | `ccf48906b34be6ec4b34d222066422a3a6c836bfb6e42c66c247f9c609044759` |
+| `hls-resume-browser/20261012T004133Z/receipt.json` | Chromium PCM diagnostic and frame journey | `e8f168e88ed887e68094a3146181d327feb842d5c9df6a952720b0aad2c78129` |
+| `ai-qa-campaign/review-low-rate-preroll-20261012T003437Z/verification-summary.json` | isolated low-rate video counterfactual | `08f7b8ebbeb9a0d2ad723f5067162375143f6413ea640a0f48b6f386118f681a` |
+| `hls-resume-browser/20261012T004133Z/decoded-splice-comparison.json` | clean decoded-splice diagnostic; boundary open | `dd379853afe755dddfe78b5d61d5bc41db16e606f6be64c4772c0fccf6de1988` |
