@@ -1827,3 +1827,41 @@ Subtitles has 99 passes in each browser and no skips or flakes.
 The actual native result bundles report iOS 332 passes and one skip,
 and tvOS 313 passes and one skip. They do not prove physical-device behavior.
 WebKit startup remains open; a successful local repetition does not clear it.
+
+
+## Watched callback setup and initial native diagnostics
+
+The fixture now delivers its initial queued playing callbacks after decoded startup.
+It still holds the later resume notifications for the accepted-watched departure race.
+All form, persisted-state, late-progress and decoded-motion assertions remain required.
+No deadline, retry count or flaky-test policy changes.
+
+Private prototypes pass 15 WebKit cases, five Chromium cases and five Firefox cases.
+The exact retained source then passes all five cases in each browser without retries.
+An isolated binary removes only the accepted-watched save guard.
+Both the original and adjusted scheduling controls reject that binary in every trial.
+They observe late native ended callbacks restoring the wrong watched state.
+The served script hash proves the negative control is active.
+This preserves detection of the original product regression.
+
+Initial setup failures now retain at most 96 native media events.
+Each event contains only its allowlisted type, numeric state and callback count.
+Native decoder time is recorded separately from the Player timeline time.
+A deliberate second-play denial retains the original resume failure and nine events.
+The diagnostic includes no source URL, body, credential or remote error text.
+Owned containers are removed and host trust stays unchanged.
+These are controlled setup checks; they do not reproduce the hosted seek stall.
+
+The hosted `df8a2259` complete Player Go race run passes with 89.7% coverage.
+The unchanged 89% gate remains required. Its profile SHA-256 is
+`bcf2d27e17d8e646a78df05d8c43bcaab78bc90a06f3625ee31090b7fc5ea16e`.
+That run still rejects the stale snapshot, test lint and old WebKit setup.
+The repaired source needs a fresh complete hosted run before those failures clear.
+
+Private exact-source receipts: `watched-native-retained-{webkit,chromium,firefox}`.
+Their log SHA-256 values, in that order, are
+`bf75cbd93d7478d82d0c9ace22da206b78cdf5810f28a49ba03aac65e9460d2e`,
+`37b89dbec5865109f8c0e66f76fa18c0721cdc3308a76eab1e242d80e14845f0` and
+`872170357488d503da2da4c2e5208dd7f11063bb23c5cdcf66c0e047e985a880`.
+Private `watched-native-retained-denial` retains the controlled failure;
+its log SHA-256 is `e5074d20ddcf51455c1bf927364b2313cda27de94adbc386e34e56eaa278469f`.

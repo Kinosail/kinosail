@@ -12,7 +12,20 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     const add = EventTarget.prototype.addEventListener;
     const pending: Array<() => void> = [];
     const control = {pending, registered: 0, release() {for (const notify of pending.splice(0)) notify();}};
-    Object.assign(window, {watchedStartup: control});
+    const native: Array<Record<string, unknown>> = [];
+    const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime");
+    for (const event of ["loadstart", "loadedmetadata", "canplay", "play", "playing", "pause", "waiting", "stalled", "error", "ended", "seeking", "seeked", "timeupdate"]) {
+      add.call(document, event, event => {
+        if (!(event.target instanceof HTMLVideoElement)) return;
+        const video = event.target;
+        native.push({event: event.type, at: performance.now(), seconds: video.currentTime,
+          nativeSeconds: mediaTime?.get?.call(video) ?? null, paused: video.paused, seeking: video.seeking,
+          readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
+          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: pending.length});
+        if (native.length > 96) native.shift();
+      }, true);
+    }
+    Object.assign(window, {watchedStartup: control, watchedNativeStartup: native});
     EventTarget.prototype.addEventListener = function(type, listener, options) {
       if (this instanceof HTMLVideoElement && type === "playing" && listener) {
         control.registered++;
@@ -49,6 +62,8 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
     startupPhase = "first-start";
     await startPlaying(media);
+    // Settle the initial playing callbacks; hold the resume notifications for the departure race.
+    await page.evaluate(() => {(window as Window & {watchedStartup: {release(): void}}).watchedStartup.release();});
     await media.evaluate((video: HTMLVideoElement) => video.pause());
     await expect(media).toHaveJSProperty("paused", true);
     startupPhase = "resume";
@@ -62,6 +77,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])})).catch(() => ({unavailable: true}));
     await info.attach("late-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
       browser: info.project.name, watched, cancelledAgain, phase: startupPhase, media: mediaState,
+      events: await page.evaluate(() => (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup).catch(() => []),
       boundary: "Initial decoded-start setup before held navigation; no source URL or error text"}), contentType: "application/json"});
     throw error;
   }
