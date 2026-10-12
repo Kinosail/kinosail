@@ -1069,3 +1069,47 @@ Each matches all seven original-file frames, reaches EOF, preserves its source, 
 `make max-loc` and `make -C apps/player verify-changed` pass after reconciliation.
 The private command manifest is `cold-reconciled-20261012T0200/receipt.json`, SHA-256 `927ff83f9ae6fb04a36aafe582f53c1c5df541a180df9c6b7386a66fac1fdff3`.
 Required hosted checks must pass again for the reconciled head; no protection was bypassed.
+
+### Audio reconciliation with atomic recovery publication
+
+Merge checkpoint `6d476b60d8f6c00aecc8585cdf781443f5935807` incorporates the reconciled cold-resume branch and main recovery-stage repair.
+First- and tail-fragment converted-audio recovery pass in Chromium and WebKit.
+The four journeys match 28 reference frames, reach EOF, and retain every uninterrupted-reference AAC packet.
+Sources remain unchanged and all test Servers settle. Source limits, whitespace, compilation, and focused Server checks pass.
+`make -C apps/player verify-changed` passes, including 87 seconds of focused Server tests.
+The private manifest is `audio-reconciled-20261012T0200/receipt.json`, SHA-256 `cdd5c362b01da1b864b0f3b5d4f5982fe4479d22c46d58c1b2e7a80dd05ea5c8`.
+
+### AQA-014 — Open: longer unprepared H264 resume lacks a certified clock
+
+At clean revision `3f6e9e26920e4f021a0bfa86d561311336264594`, a generated 74.5-second H264/AAC source reproduces the longer cold-resume boundary.
+Saved progress is 12.5 seconds. The original-file reference presents the expected 12.541667-second frame and reaches EOF.
+Unprepared compatible playback presents 12.596028 seconds for the first requested sample, then the frame oracle times out.
+Its duration is 74.596027 seconds, and its responses contain neither certified clock header.
+The identical prepared control matches all seven frames, reports 74.5 seconds, and reaches EOF.
+Both probes preserve the source and settle the Server. Private driver changes extend the fixture and final sample only.
+The production watch page and media pipeline are unchanged. This is a confirmed open defect outside the short-window repair.
+An independent design review recommends reusing the complete suffix certificate within existing time and output budgets.
+Indexing budgets must remain separate from the 30-second converted-audio replay bound.
+Incomplete scans must fail explicitly; an origin-only certificate cannot establish future fragment cuts or EOF.
+The private comparison is `long-resume-comparison.json`, SHA-256 `ffd1fdea390c61d78582425d95108d29f86e5e3556e95dca99bef702adfc88e2`.
+
+### AQA-012 follow-up — traced repetitions do not reproduce the delay
+
+Twenty unchanged repetitions pass with `GOMAXPROCS=2`, including all sixteen rejected mutation routes per repetition.
+The retained Go trace captures scheduler activity, but contains no failing request and cannot establish the hosted failure cause.
+The original replacement-policy request log also records 336 ms before its final log emission.
+This rules out attributing the entire observed delay to that final log write alone. No threshold or production behavior changed.
+The private manifest is `subtitle-admission-trace-20261012T014453Z/receipt.json`, SHA-256 `e08cc02b23ac7a4dd1ab6644eb430f0f31040277ede388b22e986c912e6ef872`.
+
+### Physical device discovery and automation boundary
+
+Fresh CoreDevice queries reconnect the physical iPhone and Apple TV on OS 27.0.
+Both report Developer Mode enabled and developer disk-image services available.
+Installed Player builds are 3617 on iPhone and 3713 on Apple TV; these numbers do not certify the current task revision.
+No Android hardware or physical Apple Watch appears in this inventory.
+The campaign uses [Callstack agent-device](https://oss.callstack.com/agent-device/docs/installation) version 0.21.25 from an isolated private tool directory.
+It opens the existing iPhone Player, but UI inspection fails with `devtools_security_developer_mode_disabled`.
+This reports a Mac developer-tool permission boundary, separate from the enabled device Developer Mode.
+Permission to enable the Mac setting was requested; the setting remains unchanged pending an answer.
+The automation session closes successfully. No physical UI or playback acceptance is claimed.
+The safe private receipt is `physical-readiness-receipt-20261012.json`, SHA-256 `d06e3d19d0778708b35199bcb024bb3d7c52ab62438e2aa0cbf931fb83564fdf`.
