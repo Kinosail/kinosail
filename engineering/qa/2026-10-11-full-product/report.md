@@ -36,13 +36,13 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | HLS lifecycle and Show playback repairs delivered; native decoded follow-ups passed; WebKit watched-startup and physical media boundaries remain |
 | Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Decoded queue and media actions checked; physical interruption and receiver acceptance remain |
 | Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Platform and reading evidence is recorded below; Android EPUB accessibility and physical acceptance remain |
-| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; hardware remains |
+| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; Subtitles deployment and gateway TLS remain |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; main3947 publication/provenance and scanned Nox Player revision/health proved; validated private-network gateway TLS passed; Subtitles deployment and restricted public-gateway acceptance remain |
 
 ## Iteration 1 results
 
@@ -1150,3 +1150,85 @@ a stable security advisory, and lists a fix in unstable. Runtime reachability
 and exploit reproduction are not established. No suppression, release-gate
 change or unsupported distribution upgrade is applied. Full scan and SBOM
 receipts remain private and checksummed.
+
+
+## QA-018 — WebKit OPFS quota regression lacks persistent storage (test repair)
+
+The remaining offline batch at `43502d17` passes 31 Chromium and 31 Firefox
+cases. WebKit passes 30 and fails the orphaned OPFS quota case before reaching
+its quota assertions. Three unchanged focused WebKit executions also fail.
+The worker advertises the sync writer API, but `getDirectory()` rejects with
+`UnknownError`. Plain sixteen-byte controls fail at the same directory step in
+both the failing context and a fresh ephemeral context.
+
+Matched controls use pinned WebKit 26.6 on macOS ARM64 and Linux ARM64. On
+both systems, an ephemeral context cannot open the directory. A fresh persistent
+profile writes, reads and removes sixteen bytes. This isolates a browser test
+prerequisite; it does not demonstrate a product OPFS defect.
+
+Only the OPFS quota case now uses a fresh persistent profile. It retains the
+configured engine, launch options, Firefox profile CA wrapper, TLS validation
+and desktop context settings. The context closes and its owned profile is
+removed in `finally`. A bounded attachment records removal. Traces, screenshots
+and failure videos remain available; successful temporary videos are deleted.
+The IndexedDB case retains its ordinary context. No production source changes.
+
+## QA-019 — Seeded quota test retains the initial download action (test repair)
+
+The first repaired-profile repetitions pass all three OPFS cases in each engine.
+One WebKit IndexedDB case instead times out seeking “Download to this device.”
+Its screenshot shows “Resume on this device” and the interrupted-download message.
+The trace never dispatches that click. The test seeded an interrupted job after
+capturing the initial download locator; asynchronous refresh correctly changes
+the action label. The same race is possible in the OPFS case.
+
+Both seeded cases now reload the downloads page and use “Resume on this device.”
+Their quota values, orphaned bytes, corrupt chunk, manifest hashes, exact
+`[16, 16, 1]` range sequence and resulting storage assertions remain unchanged.
+Three executions of both cases pass in Chromium, Firefox and WebKit: six passes
+per engine, zero skips, failures, flakes or retries. Nine profile receipts confirm
+removal. The owned browser containers are removed and host trust is unchanged.
+The final artifact-cleanup adjustment receives a separate committed replay.
+
+These are retained isolated fault checks with synthetic chunks, mocked manifests,
+quota and service-worker state. Real Go sign-in and preparation do not turn the
+mocked transfer into populated-server E2E proof. The real 2.16 GB transfer,
+independent backing-file hash and disconnected decode remain separate evidence.
+Failure models, unchanged red runs, matched controls, exact commands, snapshots,
+source hashes, results and artifact checksums remain in the private evidence root.
+
+## Further Android and gateway boundaries — October 12
+
+The private plain-WebView control reaches the original EPUB failure on its fourth
+fresh tablet execution. The original reader's heading remains absent after
+reparenting. A fresh static WebView exposes its heading and finishes loading in
+the same renderer. This rules out a wholly unavailable renderer or accessibility
+service in that execution. It does not identify the reader's underlying cause.
+A later failure-only control would inspect the original heading after destroying
+the plain WebView. Four executions pass without reaching that control, so it
+provides no comparison result. Original failures remain open. Production APK
+hashes stay identical, temporary packages are removed and the shared AVD remains.
+
+Nox's configured HTTPS site passes normal system CA and hostname validation
+with TLS 1.3. Anonymous `/healthz` returns 200; `/` redirects; `/settings`
+returns 404 and `/api/v1/settings` returns 403. These responses include CSP and
+omit HSTS. A read-only `/login` request returns a password form. The separate
+Caddy wrapper proxies by network address, without the repository gateway's Unix
+transport or configured proxy-token header. Its DNS resolves only to a private
+address from this Mac. WAN forwarding and external Internet reachability are
+unproved. The intended LAN/VPN versus restricted public-access role is pending
+user clarification; no live gateway or authentication configuration is changed.
+
+The gateway shares no Player application-state mount source. Its process reports
+`NoNewPrivs=1` and seccomp filtering, but that does not prove the repository's
+process-wide IP-dial restriction. The gateway's separate `/config` destination is
+Caddy configuration, not evidence of an application-state share. A diagnostic
+initially omitted the configured nonstandard HTTPS port and hit a refused
+connection; the corrected request preserves the port and passes. This setup
+mistake is excluded from product failures. No private addresses, response bodies,
+credentials or raw configuration are published.
+
+Main advanced through other reviewed playback and architecture changes. The
+branch reconciles `a95f2cbb` without conflicts as `7f65fbc1`; `make max-loc` and
+post-merge Player `make verify-changed` pass. Required GitHub gates will run again
+for this reconciled offline test checkpoint before protected delivery.
