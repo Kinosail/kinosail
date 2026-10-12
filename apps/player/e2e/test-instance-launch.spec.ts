@@ -52,7 +52,7 @@ test("real large transfer survives browser restart and plays with the Server dis
     playback?: { time: number; width: number; height: number; error: string | null };
   } = { revision: process.env.KINOSAIL_TEST_REVISION,
     command: "KINOSAIL_LAUNCH_READINESS=1 pnpm exec playwright test test-instance-launch.spec.ts --project=chromium --workers=1",
-    environment: "Nox ARM64 isolated production container, Node 26, Chromium 1.63, persistent browser profile",
+    environment: `${process.platform} ${process.arch}, Node ${process.version}, persistent Chromium browser profile`,
     testData: "Generated 12-second MP4 with an ISO free box exceeding 2 GiB; this proves transfer size, not film duration", expected, result: "failed" };
   try {
     let page = await reopen();

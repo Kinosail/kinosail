@@ -30,19 +30,19 @@ Passing executions are evidence for named contracts, not a completeness score.
 
 | Domain | Required scope | Current status |
 | --- | --- | --- |
-| Installation and identity | First install, Owner protection, MFA/passkeys, sign-in/out, recovery, sessions | Fresh Chromium, Firefox, and WebKit journeys passed; broader identity review remains |
-| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Hosted baseline passed; additional review remains |
-| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Hosted baseline passed; responsive shell checks below passed in two engines |
-| Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | Caption transport/lifecycle checks below passed; complete decoded-media and device review remains |
-| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Hosted baseline passed; platform review remains |
-| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Hosted baseline passed; platform review remains |
-| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | All 27 ownership executions passed; large-file and hardware boundaries remain |
-| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted baseline passed; expanded local review remains |
-| Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration and session settings passed in two engines; remaining operations pending |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Native inventory refreshed; current interaction review pending |
-| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | Debug/release builds, lint, 174 unit checks, and real Server/Kotlin compatibility passed; emulator and hardware review remain |
+| Installation and identity | First install, Owner protection, MFA/passkeys, sign-in/out, recovery, sessions | Fresh install and required MFA journeys passed in three engines; external identity-provider and physical passkey acceptance remain |
+| Viewer access | Profiles, restrictions, public access, Quick Connect, expired/rejected grants | Mixed maturity, excluded Library, required Viewer MFA and Show action checks passed three times per engine; physical pairing remains |
+| Library | Every media type, search, filters, paging, details, My List, playlists, collections | Canonical paging passed 30 cases per engine; responsive sweep passed Chromium/WebKit with one Firefox protocol timeout |
+| Video | Direct First, preparation, seeking, progress, tracks, captions, retry, session cleanup | HLS lifecycle and Show playback repairs delivered; native decoded follow-ups passed; WebKit watched-startup and physical media boundaries remain |
+| Audio | Queue, next/previous, sleep timer, persisted progress, interruptions | Decoded queue and media actions checked; physical interruption and receiver acceptance remain |
+| Reading and photos | Supported formats, paging, bookmarks, preferences, zoom, invalid resources | Platform and reading evidence is recorded below; Android EPUB accessibility and physical acceptance remain |
+| Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real multi-gigabyte restart/verification journey is next; hardware remains |
+| Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
+| Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Current iOS329 and tvOS311 suites passed; five decoded follow-ups passed; real Server, Watch and physical acceptance remain |
+| Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Tooling passed; Halstead loading repaired; package lint remains failed |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Hosted validation passed; publication and deployment remain separate boundaries |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Seven protected PRs merged; prior publication gates passed; current main publication and exact deployed revision remain pending |
 
 ## Iteration 1 results
 
@@ -855,7 +855,7 @@ with merge commit `8307ea47fbc51408548e8e50b996b75ad7a0b561`. A fresh fetch and
 ancestry checks prove both the reviewed head and task commit are in remote main.
 
 
-## QA-016 — Show card repeats a watched episode (P2; repair pending delivery)
+## QA-016 — Show card repeats a watched episode (P2; repaired and delivered)
 
 The previous show-card journey checks link patterns and alignment. It never
 clicks Play or observes moving media. Its expanded real-Server journey marks
@@ -955,7 +955,7 @@ PR #566 merges reviewed native candidate `26e1682d` with merge commit
 `013d52472504b7d4309ba123b08808af3b8edea8`. Required CI `38193469566` passes.
 A fresh fetch and ancestry checks prove inclusion of that head and Wear commit
 `a21534c1`. The focused iOS comparison passes on the reconciled source. A complete
-iOS suite now runs against its unchanged native tree.
+iOS suite subsequently passes against its unchanged native tree.
 
 The first mixed-episode Viewer attempt is excluded from policy proof: it stops
 at required MFA enrollment. Its cleanup also expects 200 instead of the specified
@@ -971,8 +971,9 @@ persistence. No production change follows the Viewer check.
 The reconciled complete native suites use tree
 `c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`. iOS passes 329, fails zero and
 skips four. tvOS passes 311, fails zero and skips three. Three iOS skips and two
-tvOS skips require optional decoded-media files; focused executions with the
-documented fixture remain pending. The other iOS skip is the inapplicable picture-in-picture callback case.
+tvOS skips require optional decoded-media files. Focused follow-ups supply those
+files and pass all five applicable cases, as recorded below. The other iOS skip
+is the inapplicable picture-in-picture callback case.
 The other tvOS skip is optional `TVQualitySessionSeed`, which requires a
 disposable public Server session. Neither skip is a product pass.
 
@@ -983,3 +984,69 @@ shutdown both return a state error and change nothing. The shared simulator,
 installed app and data are preserved. No successful uninstall or restoration of
 a prior app version is claimed. A corrected inspection must distinguish device
 state failures before any later cleanup. Raw diagnostics remain private.
+
+
+## October 12 continuation — responsive, decoded media and protected delivery
+
+PR #564 merges reviewed head `a481eb9d2283f7c117c6b71755fcb97b8ebe525c`
+with merge commit `394736cb740fc6873aa6e94b41e22dc797155529`. Required CI
+`38194962439` and all three layout jobs in `38194962237` pass. A fresh fetch
+proves ancestry of the reviewed head, Show repair and completed Viewer journey.
+Its tree equals the merged tree. Main CI `38196658853` is queued; current
+publication, production promotion and Nox revision acceptance are not yet proved.
+
+A clean `a481eb9d` responsive sweep runs all six `layout-audit-*` spec files
+against a disposable populated Go HTTPS Server. Chromium and WebKit each pass
+81 cases without skips or flakes. Firefox passes 80 and times out once. The
+single sign-on configuration case stalls in its first `page.setViewportSize`,
+after successful sign-in and before opening configuration. The trace has no
+completed resize call; the failure screenshot shows the loaded home page.
+This is retained as an unresolved automation failure, not an identity-provider
+failure or a complete responsive pass. All browsers validate the fixture TLS
+certificate; only the disposable container and Firefox profiles trust its CA.
+
+The sweep covers six widths from 320 through 1440 pixels, populated media and
+library routes, settings, onboarding, created playlists and collections,
+configuration persistence, forced colors and dark presentation. The 62 distinct
+Chromium 320-pixel renders were inspected in full-page contact sheets and readable
+top crops. No additional defect was confirmed in those views. The remainder of
+long pages, interactive scrolling, other engine renders and real assistive
+technology are separate review boundaries. Private commands, source identities,
+reports, screenshots, traces and hashes remain retained.
+
+The decoded native follow-up uses the workflow's generated 12-second H.264/AAC
+fixture under two task-owned temporary filenames. iOS passes three applicable
+cases and tvOS passes two; none skip. Real AVPlayer decodes, pauses, resumes,
+seeks and exposes buffered ranges through authenticated synthetic native loopback.
+Thirteen new renders cover iOS pending, loaded and failed video, loaded audio,
+and tvOS audio, seek and system video. These were inspected. The system-video
+still does not prove interactive AVKit controls, real Go Server playback or
+physical hardware. Both owned temporary links are removed after identity/hash
+checks; the pre-existing landscape fixture remains untouched.
+
+Xcode changes the active simulator data-container path during installation.
+The first follow-up helper restores its prior evidence folder into the old path.
+A corrective inspection queries the active container again, preserves all new
+renders, and restores the original `Documents/buffer-bar-proof` state there.
+Full pre-test data backups remain private. Neither simulator nor its installed
+app is removed. Both simulators return to their original shutdown state. No
+prior app-version restoration or complete app-data identity claim is made.
+
+The API 36 tablet uses WebView `133.0.6943.137`. A private extra instrumentation
+class reproduces missing chapter text with an attached, visible WebView and
+enabled accessibility. Disabling screenshot accessibility checks alone still
+fails. Comparisons with renderer termination enabled and disabled also pass,
+so neither comparison proves a unique cause. Three executions of the two
+unchanged tracked EPUB methods pass four and fail two. The latest-position
+method passes all three; the longer reader method fails on initial chapter
+load once and chapter-two reopen once, then passes. The chapter assertions
+remain unchanged. Private diagnostic classes are separately identified by
+source/APK hashes and are not production changes. Emulator packages and data
+are restored or task-installed packages removed after every run. These failures
+and the physical TalkBack boundary remain open.
+
+The opt-in real large-transfer journey's receipt hardcodes Nox and Node 26.
+This mislabels local runs. Its environment field now reads the actual process
+platform, architecture and Node version. Transfer, hash, restart, offline
+playback and seek assertions remain unchanged. A dedicated greater-than-2-GiB
+synthetic fixture run follows; tiny mocked chunk checks remain isolated proof.
