@@ -91,4 +91,3 @@ if {fault!r}=='early-bound':time.sleep(45)
 raise SystemExit(42 if {fault!r}=='late-failure' else result.returncode)
 ''')
         path.chmod(0o700)
-
