@@ -187,6 +187,7 @@ test("network errors never authorize transcoding", async ({ page }) => {
   await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
   await expect(page.locator("[data-player-message]")).toHaveText("The connection interrupted playback. Check your connection and try again.");
   await expect(page.locator("[data-player-status]")).toHaveClass(/is-recovery/);
+  await expect(page.locator("[data-player-status]")).toHaveAttribute("aria-busy", "false");
   await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry Direct Play");
   await page.locator("[data-player-status] [data-player-fallback]").click();
   await expect.poll(() => page.evaluate(() => (window as Window & { directLoads?: number }).directLoads)).toBe(1);
@@ -214,4 +215,31 @@ test("an explicit direct link overrides the saved browser policy", async ({ page
   await expect(page.locator('[data-playback-mode] input[value="direct-only"]')).toBeChecked();
   await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(0);
   await expect.poll(() => page.evaluate(() => localStorage.getItem("kinosail.playback-policy-v2"))).toBe("direct-only");
+});
+
+
+// An encoder cannot emit deliberately malformed init data. This isolated error
+// control covers the parser rejection path that generated-media journeys miss.
+test("unsupported copied clocks stop with a visible error instead of retrying direct playback", async ({ page }) => {
+  await startDirectPlayer(page, { playbackPolicy: "compatible" });
+  await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
+  const outcome = await page.evaluate(() => {
+    const state = window as Window & { directLoads?: number; hlsInstance: {
+      handlers: Map<string, (event: string, data: object) => void>;
+      recoverMediaError: () => void;
+    } };
+    let recoveries = 0;
+    state.hlsInstance.recoverMediaError = () => { recoveries++; };
+    const error = { fatal: true, type: "media", details: "fragParsingError", reason: "copied-media-timing" };
+    state.hlsInstance.handlers.get("error")!("error", error);
+    state.hlsInstance.handlers.get("error")!("error", error);
+    return { recoveries, directLoads: state.directLoads || 0 };
+  });
+  expect(outcome).toEqual({ recoveries: 0, directLoads: 0 });
+  for (const event of ["canplay", "playing", "progress", "seeking"]) await page.locator("video").dispatchEvent(event);
+  await expect(page.locator("[data-playback-mode-status]")).toHaveText("Compatibility stopped");
+  await expect(page.locator("[data-player-status]")).toBeVisible();
+  await expect(page.locator("[data-player-status]")).toHaveClass(/is-recovery/);
+  await expect(page.locator("[data-player-status]")).toHaveAttribute("aria-busy", "false");
+  await expect(page.locator("[data-player-message]")).toHaveText("Compatibility playback is unavailable for this file.");
 });

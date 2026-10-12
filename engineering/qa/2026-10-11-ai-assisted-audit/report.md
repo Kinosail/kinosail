@@ -1574,6 +1574,21 @@ Player `make verify-changed` passes compilation, affected Server tests, source l
 The regenerated Player architecture snapshot and source limits pass. The final independent review reports no concrete blocker.
 
 
+### AQA-017 copied-clock investigation checkpoint (not accepted)
+
+The retained Subtitles watch-page regression now covers Chromium and WebKit frame hashes, converted AC3 audio PCM, and an explicit Direct First to Compatibility switch. The local candidate fixes initial source-clock normalization. Receipt `20261012T071404Z` passed both browsers and both strict decoded-audio captures. This is not a completed repair.
+
+A keyframe-cut prototype passed completed-file frame checks but introduced invalid speculative VOD timelines while encoding. A held real encoder had one four-second fragment; the HTTP playlist advertised eight. Completed real cuts were 4, 6, 4, 7, 6, 4, and 1 seconds. The keyframe-cut production change was removed. Its rejected harness remains private under `.verification/ai-qa-campaign/subtitles-mux-probe/rejected-keyframe-prefix.py`.
+
+An offline packet matrix identified FFmpeg fragment-index PTS adjustment. With fixed-time cuts, 600 copied packets had only 594 distinct PTS. `movflags=+skip_sidx` preserved all 600 timestamps; `frag_every_frame` did not preserve composition offsets. FFmpeg documents the relevant adjustment in [movenc.c](https://github.com/FFmpeg/FFmpeg/blob/n8.1.3/libavformat/movenc.c#L6581-L6597). Independent review confirmed that HLS does not require SIDX, and Player already omits it.
+
+The remaining real-browser boundary still fails: receipt `20261012T072647Z` matches six of seven samples in both browsers but times out seeking the reordered final frames after an irregular 64.5-second resume. The raw window starts at source keyframe 58 while the requested window is 60 seconds. Native WebKit capability simulation `20261012T072740Z` starts at 67 rather than saved 64.5 and matches four of seven samples. Do not publish this candidate or claim native acceptance. The exact runs, source patches, media, packet probes, and private logs remain in `.verification`.
+
+The explicit MSE direct-switch case passed at `20261012T072447Z`; no red proof is claimed for that adapter branch. On this Mac, native HLS must be capability-disabled to reach lazy Hls.js loading. The first direct-switch probes timed out because the test did not open Playback behavior or incorrectly assumed native HLS could not be selected.
+
+The workflow contract suite currently identifies a recurring macOS `killpg(...,0)` EPERM in Q09 owned-descendant cleanup. This is retained as an environment or harness investigation; assertions and cleanup boundaries remain unchanged.
+
+
 ### Hosted audio regression proof and bounded CI runtime
 
 PR 575 run `38214459101` completed all continuous-audio sample-rate/offset cases and the source rejection controls successfully on Ubuntu. The job then reached its 30-minute job deadline during source-version verification. That cancellation also prevented its final proof and upload steps from completing; the required Player check remains failed.
@@ -1620,3 +1635,187 @@ The HTTP helper now waits under the request deadline when no producer was select
 This path cannot authorize another admission. Permanent errors and cancellation still stop it.
 The expanded focused race run, including copied HTTP and cancellation controls, passes in 27.107 seconds.
 A second independent review found no concrete blocker. Hosted checks must pass again after publication.
+### AQA-017 edit-list and early-playlist reproduction
+
+Linux Chromium also fails the retained 64.5-second Subtitles resume at `hls-resume-subtitles-linux/20261012T073619Z`. Its first two reference frames match; the next seek presents the following IDR instead. This is separate from the Mac browser result.
+
+The bounded private Hls probe at `hls-resume-browser/20261012T073551Z` shows actual buffered media ending at 74.48 seconds while fragment metadata ends at 76.56. The initialization has a 2.08-second MP4 edit in both tracks. The browser applies it; the pinned Hls sample timing does not. An append-only offset cannot reconcile these two clocks.
+
+A private pre-consumer experiment accounts for that measured edit in all track PTS/DTS, keyframe timing, initialization timing, and append timing. Both browsers pass seven reference frames and EOF at `hls-edit-list-complete-prototype/20261012T074833Z`. Its edit value is fixture-specific. It is diagnostic evidence, not a general implementation or native acceptance.
+
+The new retained `test-subtitles-copied-prefix.py` fails before the planned keyframe repair. Receipt `hls-copied-prefix/20261012T075127Z` proves the real encoder is stopped with one fragment while HTTP advertises eight. Future cuts differ from the source keys and from the eventual completed playlist. The source remains unchanged, the owned encoder joins, and the Server exits. This assertion requires a stable, accurate full-duration playlist during progressive encoding; removing future seeking would not pass it.
+
+The native repair needs certified source cuts and generated-media clock evidence. Independent design review identifies the existing Player H264 packet, IDR, configuration, and joined-process scanner as the reusable boundary. Player cache admission, recovery, and audio replay policy must remain app-owned. Full-source scanning cost and distant-segment delivery still require verification.
+
+
+### Shared media proof and per-track clock controls
+
+Commits `3e1e295e` and `83150af9` extract the existing joined probe runner and immutable H264 source index into `packages/mediaprobe`. Player retains source validation, cache certificates, workload admission, audio policy, and recovery. The process tests move with their standalone fixture. Independent review found no concrete blocker in either extraction.
+
+Focused ownership, copied-HLS, and recovery checks pass. The moved process tests compile for Linux ARM64 and Windows AMD64; they were not run on those systems. New-code mediaprobe lint and source limits pass. Player's populated prepared irregular-resume journey passes Chromium and WebKit at `83150af9`.
+
+`make -C apps/player verify-changed` passes all selected Go tests, vulnerability checks, source limits, and whitespace checks. Its shared-packages stage still reports the established 95 lint findings, with no mediaprobe findings. Later verification stages were not reached. This is not a fully passing local gate or hosted proof for the extraction.
+
+The source-cut manifest renderer and prefix validation are now shared through `packages/hlsmanifest`. Player still requires its source and generated-clock certificate before calling them. The helper validates bounded, sequential observed cuts and preserves the existing final-GOP tolerance. It does not certify source identity, media bytes, or future-segment readiness.
+
+The private per-track experiment replaces the fixture-specific 2.08-second adjustment with bounded initialization parsing. It uses the selected timing track's edit for PTS/DTS and the video edit for first-keyframe timing. The real bytes are unchanged. This is still an injected, version-specific Hls controller, not a production repair.
+
+The later-first control proves a materially different case: the first media request is segment 3 and Hls selects audio track 2 (`-2560/48000` initial timing). The video and audio edits are 83.333 and 21.333 milliseconds. Seven reference frames, backward seeks, and EOF pass in both browsers. The earlier `082042Z` attempt had an incorrectly serialized test variable and never reached transmuxing; it is a harness failure, not a product regression.
+
+| Private receipt | Result and scope | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T080401Z/receipt.json` | Player prepared irregular resume after shared source-index extraction; Chromium and WebKit pass | `d22ba363c76f433c0215da9c4441bff605e72aef8de2fceb1652d076eed1b07a` |
+| `hls-track-edit-prototype/20261012T081732Z/receipt.json` | Per-track edit diagnostic; irregular 64.5-second resume passes both browsers | `4f12890870d769a7ea31373db472a8c23c01ebeb5e97a375824b62e2d4366d3f` |
+| `hls-track-edit-prototype/20261012T081825Z/receipt.json` | Per-track edit diagnostic; converted AC3 video, EOF, and strict PCM pass both browsers | `3bc1f093f89b7fac134b3f1f58a2c349b1206644a28e4bf2e59205e4ab9f175c` |
+| `hls-track-edit-prototype/20261012T081948Z/receipt.json` | Per-track edit diagnostic; video-only passes both browsers | `90e70ea939ebae88958b6bcbb873aca80c196d184476abf8377dfdd94c7d1d4e` |
+| `hls-track-edit-late-prototype/20261012T082248Z/receipt.json` | Per-track edit diagnostic; first media request is fragment 3, audio timing anchor, backward seeks and EOF pass both browsers | `40ea5f8ffe65d372514c250dcd5939332e81b31cc45acfc8a9dce2243c23bc05` |
+
+The prospective native repair is limited to certified, unedited H264 streams starting at source zero. It requires one generation-bound cut map throughout each response and identical early, completed, and warm playlists. Partial encoding must not fall back to fixed four-second guesses when its producer exits. Long-source indexing cost and distant segment delivery remain open. Partial transmux results, retry behavior, physical Safari, and deployment acceptance remain separate boundaries.
+
+PR 575 passed every required check at `5de9428e`, but strict protection blocked its merge after PR 571 advanced main. GitHub updated it to `7aea60a4`; its new checks are running. PR 577 passes required checks at `c67fb0a4` and awaits base reconciliation and protected delivery. Neither repair is claimed merged by this checkpoint.
+
+The shared cut-helper review found two extraction regressions before commit: malformed trailing `EXTINF` could be ignored, and the observed final-cut bound rejected a previously allowed 60.083333-second value. Both are corrected. Parse errors are rejected immediately, and the certified expected cut retains its 60-second bound while observed final durations keep the existing tolerance. Exact generated media names are now checked directly. The final focused copied-HLS/recovery checks, new-code hlsmanifest lint, source limits, and whitespace checks pass.
+
+The retained prefix regression now also checks exact warm and restarted VOD bodies and absence of another source encoder. At `hls-copied-prefix/20261012T083342Z`, the early map still changes after completion and after restart. No source re-encode occurs; source preservation, both Server exits, and encoder joining pass. SHA-256: `b3637ec133b387e9bd021ce295f0f91dddd3a112db3ca0142269f8a06ba7e401`. The prior `083137Z` encoder-count control included installation capability probes; the wrapper now targets only the generated test source.
+
+The shared-cut extraction at `05af4d28` passes the real Player prepared irregular-resume journey in Chromium and WebKit. The clean-revision artifact is under `ai-qa-campaign/shared-cuts-browser`; the browser receipt is `hls-resume-browser/20261012T083500Z/receipt.json`.
+
+The prefix regression also supports `--native`. It releases the held source encoder only after native WebKit requests a future segment. The browser still uses the real Server and media; MSE is capability-disabled to select native HLS. The run at `hls-copied-prefix/20261012T083817Z` remains red before the repair. Its source is unchanged, both Server processes settle, and the source encoder joins. Receipt SHA-256: `b1b9e6cf67d8dade08009e01d40ecc603f381fba570acf7dc5dd690b444e3ca8`. This is simulator-browser evidence, not physical Safari acceptance.
+
+### Probe failure classification before optional Subtitles indexing
+
+Before changing probe behavior, the failure inventory is: unsupported or bounded-out metadata, ordinary nonzero exit after cleanup, cancellation or deadline, failed process observation, rejected termination, and failed or over-budget settlement. An optional caller may fall back only after proven cleanup and while its own job and source policy remain valid. It must stop on ownership failure. Existing Player callers continue rejecting every failed index.
+
+Before implementing the MSE clock adapter, its failure inventory is: malformed or oversized boxes, unsupported edit versions, negative or multiple edits, nonunit playback rate, duplicate tracks or edits, missing video/timing tracks, invalid timescales, nonfinite anchors, stale initialization after retry, and media without its timing initialization. The existing real-browser irregular-resume regression is red. An isolated pre-consumer test covers malformed initialization that real FFmpeg cannot generate and deterministic selection of either timing track. It must reject before calling the media consumer and leave bytes unchanged. This test is not populated-server E2E proof.
+
+The retained completion-certificate seam checks OS failures that real-media E2E cannot reliably induce. Its new pre-change assertions require a distinct lifecycle error. Existing real configured-process tests now require cancellation to survive both pre-start rejection and joined-descendant cleanup. This closes a concrete E2E gap without introducing a test-only production hook.
+
+PR 575 now combines the reviewed audio and small-video repairs at `f7b4688f`, including current main `a2d5f2b1`. Fresh required checks are running. PR 577 remains open until inclusion is proved. The unaccepted Subtitles candidate is excluded from that delivery branch. Local combined-head source limits and whitespace checks pass; affected verification stops at the established 95 shared-package lint findings before later stages run.
+
+The new pre-change classification checks fail as expected, including cancellation in all five index entry points. After the repair, focused ownership, copied-HLS, recovery, and manifest checks pass. New mediaprobe code has zero lint findings. Source limits and whitespace checks pass. Linux ARM64 and Windows AMD64 test binaries compile; no runtime proof is claimed for those platforms. The independent read-only review found no concrete blocker.
+
+- Private `probe-classification-red-private.log` SHA-256: `5ccfe5d6987085895a8522c835f663a52c9ae5a61dae4759c3626f46e351bc0b`.
+- Private `probe-phase-red-private.log` SHA-256: `9a84c42ec8f49d1580e9dcf55a037e29c322eae794953496a5c155249a6b27c8`.
+- Private `probe-classification-green-private.log` SHA-256: `8895d38be6a6f948538496826ec282b7c7537c5aff8ae14e9f61556d547fdf6a`.
+- Private `probe-classification-focused-private.log` SHA-256: `1ac7b848e61d02a0a6b1ce20d67156eafc6ad8ddb6b62ff42afc4827483702d4`.
+
+### AQA-017 production MSE adapter checkpoint
+
+The production adapter now parses bounded per-track MP4 edits before Hls consumes fragment timing. It changes metadata only; initialization and media bytes remain unchanged. It applies only to local copied-HLS modes. The normal buffer controller retains append ordering. The parser supports one nonnegative, unit-rate edit per track; unsupported timing fails before the media consumer and enters the existing fatal media-error path. Native HLS remains unfixed.
+
+The pinned Hls callback review found stale-context handling, init-only callbacks, and a keyframe field containing video DTS ticks divided by the selected timing track scale. Each failure was reproduced before correction. The adapter now delegates discarded callbacks before changing cached edits, accepts valid initialization before samples, and restores keyframe units using the video timescale. A follow-up empty-initialization check also failed before correction. Present-empty data rejects even when earlier edits are cached. All 20 retained controls pass, including both fresh and cached malformed inputs. Final read-only review reports no remaining concrete blocker in this path.
+
+The initial production-browser candidate passes irregular 64.5-second resume and converted AC3 with strict browser PCM in Chromium and WebKit. These runs preceded the final callback fixes; final clean-revision browser proof is pending.
+
+- Private `hls-resume-browser/20261012T090229Z/receipt.json`: passed; SHA-256 `fa9fcea474968258c31a91f3cf5f7c18b3e3eec29a18e9a62e13edd229650b42`.
+- Private `hls-resume-browser/20261012T090318Z/receipt.json`: passed; SHA-256 `dc5a1a10c0073d055f8675f28f4bd2058459a64abc972ea37209dd3a7ec765c1`.
+- Private `hls-resume-browser/20261012T090624Z/receipt.json`: passed; SHA-256 `855c1e2f00f6f727cad6857d49ab279da6bc461cafd94569315540790c2e02cd`.
+
+The existing projection fixture built an outdated cache policy by hand and panicked after the copied-clock policy change. It now uses the actual settings operation for that fixture identity. No production cancellation guard was weakened.
+
+Primary references: [pinned Hls stream controller](https://github.com/video-dev/hls.js/blob/v1.7.3/src/controller/stream-controller.ts), [pinned passthrough remuxer](https://github.com/video-dev/hls.js/blob/v1.7.3/src/remux/passthrough-remuxer.ts), and [MSE ISO BMFF edit-list requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/). This version-specific adapter requires replaying the retained browser and parser checks on Hls upgrades.
+
+### AQA-017 clean-revision MSE verification
+
+At `641498c1eeb1c9e76b3d94db8e358fa03d83af2d`, all five final runs pass with clean, unchanged source receipts. Chromium and WebKit pass the irregular 64.5-second resume, converted AC3 strict PCM, and Direct First to Compatibility journeys. Linux Chromium independently passes the irregular resume with the cross-built ARM64 binary and Jellyfin FFmpeg. The retained Linux driver only substitutes the prebuilt binary and container paths. It does not inject a browser controller or change media assertions.
+
+The canonical Subtitles container command passes all 66 Chromium cases, with zero failures, skips, or flakes. The suite combines populated journeys and controlled rendered fixtures; it is not 66 independent populated-server proofs. Its production and fixture images use task-specific tags. The image revision labels match the tested commit. The Compose project has zero remaining containers and volumes. The older task-owned Linux browser container is removed after its successful final run.
+
+| Private artifact manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `copied-clock-final-long/manifest.json` | Pass; exact revision | `60880d543da4e2cb6dfaeb19f76325a73a059f4f5def3ff04d85d2f00d880d4d` |
+| `copied-clock-final-audio/manifest.json` | Pass; exact revision | `4f71f6e9a4dfb595206ea21ec76944d7f56362ec6a708d6e5048f5165412c648` |
+| `copied-clock-final-linux/manifest.json` | Pass; exact revision | `34d9adc1aa61911c397d60744eddcf818059598c916dcee36c975377efefe64a` |
+| `copied-clock-final-switch/manifest.json` | Pass; exact revision | `779b138b90f37552f4bdef53a4352927f02165f5b1152f6cd885a0352832eaeb` |
+| `copied-clock-container/manifest.json` | Pass; exact revision | `b0a569a4201023d6d35f8a315d995a91144a6b3e1edba233d3c0042b4280da0f` |
+
+The combined private receipt is `copied-clock-final-receipt.json`, SHA-256 `d2abdbf3334ad3843c559205d83f998f4636a69ba56bbbffcfa1c710cdd84f46`. It records private image IDs, wrapper hashes, the Linux driver/binary hashes, and cleanup. These local images are not GHCR publication or Nox deployment proof.
+
+Subtitles affected verification passes source limits, whitespace, compilation, and focused Server checks. Full shared-package lint found two new test-complexity findings above the established 95-finding baseline. The assertions were reorganized without changing production code; focused ownership and cancellation checks pass afterward. No assertion was removed or weakened.
+
+Native HLS still fails the retained irregular prefix/seek journey. Its source-cut and generation-lifetime repair remains open, along with physical devices and production acceptance. The MSE passes do not close those boundaries or establish 100 percent QA.
+
+### Protected delivery and remaining Subtitles clocks, 2026-10-12
+
+PR 575 merged at `5f169ee28472b99c416f0b7376641cefc835f573` after required run `38225253679` passed.
+PR 577 was included and GitHub marked it merged. Fetched ancestry checks prove both reviewed heads, `f7b4688f` and `c67fb0a4`, belong to remote main.
+Main run `38229443046` was still running at the last observation. This does not prove container promotion or deployment.
+The primary checkout remains dirty with unrelated Apple project and localization edits; it was not fast-forwarded or cleaned.
+
+Native WebKit HLS remains open. The unmodified `a2d5f2b1` binary fails all seven long-resume comparisons in `hls-subtitles-native-baseline/20261012T092127Z`.
+Candidate `5ed82339` matches four in `hls-resume-browser/20261012T092222Z`; both reach EOF. This is a pre-existing native boundary, not native acceptance.
+The exact `5ed82339` long Direct First-to-Compatibility journey passes both MSE engines (`copied-clock-final-long-switch/manifest.json`).
+
+The fractional 2.5-second case exposed a separate leading-empty-edit failure.
+Chromium falls back to the original; WebKit cannot decode the original Matroska reference. The tightened oracle now requires the selected decoder adapter.
+A separate MP4 reference is certified against every source video packet hash and presentation timestamp; it makes WebKit's reference playable.
+With that correction, both compatibility journeys still fail before the repair.
+
+A leading empty edit supplies a per-track delay. Chromium MSE ignores it rather than applying the following media edit.
+The adapter now copies initialization and fragment buffers, replaces the leading empty edit with equivalent `tfdt` offsets, and keeps one media edit.
+It preserves parent box sizes with a `free` box, every sample payload, and the original cached Hls inputs.
+Exact integer conversion, bounded boxes, duplicate timing fields, and version-specific overflow are checked before consumption.
+Native HLS still receives the original server bytes.
+Primary references: [Chromium edit handling](https://raw.githubusercontent.com/chromium/chromium/main/media/formats/mp4/track_run_iterator.cc) and [MSE single-edit requirements](https://www.w3.org/TR/mse-byte-stream-format-isobmff/#iso-init-segments).
+
+| Private receipt | Result | SHA-256 |
+| --- | --- | --- |
+| `hls-resume-browser/20261012T093446Z/receipt.json` | Corrected reference; both compatibility cases fail | `ca2e4064d47cd32068d13e22d8a316d350db51ad3b0bafd9df0c61d09789bcc2` |
+| `hls-empty-edit-prototype/20261012T093632Z/receipt.json` | Fixture-specific byte-normalization prototype passes both engines | `7fb883f0fb83115300820f2d5dce2e88cdacd3c3ea3b94f5fdf4f076dd9f308d` |
+| `hls-resume-browser/20261012T094124Z/receipt.json` | Bounded production candidate passes both engines, all seven frames and EOF | `9dee26c703de20968dc9889af934db477ebf3f8cb65d64073036d989b055d3ca` |
+
+These three runs include an uncommitted patch and are not exact committed-revision proof.
+Thirty-three isolated controls pass after reproducing cached-input mutation and leading-edit failures before implementation.
+Independent review found a caption clock mismatch when audio supplies the Hls anchor. A retained control failed before changing text cues to the video edit.
+Malformed init data also exposed a recovery loop. A retained browser control fails before terminal rejection handling and passes afterward.
+The error path uses the bounded `copied-media-timing` diagnostic class, makes no automatic direct retry, and retains its visible error through late readiness events.
+Fifteen rendered direct-playback controls pass. They are isolated fixture evidence, not populated-server proof.
+
+The shared-probe package now has zero local lint findings. Whole shared-package lint still has 95 established findings.
+One retained Mac process-ownership check failed with EPERM during settlement; an unchanged retry passed. Its assertion remains strict.
+This remains an intermittent ownership boundary; cross-compilation is not Linux or Windows runtime proof.
+
+### Isolated MSE delivery verification
+
+Commit `25f34f766ad16c2bd07e31e9118fda5fab1e0dfc` contains the MSE repair without the unfinished shared-index/native-HLS work.
+Both apps' `make verify-changed` commands pass. Subtitles Go compilation and focused checks use their validated input cache.
+All seven real-server browser scenarios pass Chromium and WebKit: default and fractional resume, long resume, long direct-to-compatible switch, video-only, converted audio, and fractional converted audio.
+All fourteen browser cases match seven reference frames, resume correctly, and reach EOF. Four decoded-audio captures report zero sample lag.
+Every source remains unchanged and every Server process settles.
+The exact-revision manifest is `mse-delivery-browser-proof/manifest.json`, SHA-256 `328494a99e830582aac4b047da8b68f3da33e0ccfa07913bb852530d028a459c`.
+
+The exact-revision canonical `test-instance-check` also passes all 66 selected checks at `25f34f76`.
+Its receipt is `mse-delivery-container-proof/manifest.json`; the suite mixes populated journeys and rendered fixtures.
+The task-owned Compose project `kinosail-test-78590-27681` leaves no containers or volumes.
+A fresh worktree audit reports eleven unrelated inactive worktrees: nine clean with unique commits and two dirty. They were left untouched.
+
+A malformed-response rendering probe exposed queued autoplay after terminal rejection. The retained test fails before adding the Play-event guard.
+With that guard, rejection remains paused and visible after late readiness events. Both engines pass at 390×844, 1440×900, and 1920×1080.
+The probe uses separate contexts with service workers blocked so the deliberately malformed network response reaches each browser.
+Earlier reused-context probes sometimes played an unmodified response; those are unsuccessful fault-injection attempts, not passing rejection proof.
+Phone, desktop, and TV-sized pending/error screenshots were inspected. Failure removes the loading skeleton and clears `aria-busy`.
+This is isolated network-fault evidence using the production page, not unmodified-media E2E or physical-device acceptance.
+
+Post-merge main run `38229443046` failed Player's long-lookback tail restoration with `fragment_not_restored`.
+It restored segments 0 and 8 before the final missing fragment failed; process joining and source preservation passed.
+The unchanged Player production code passes that case locally in `hls-cold-suffix/20261012T100144Z`.
+The failed hosted jobs were restarted once. The original evidence remains retained, and the intermittent failure remains open.
+Container promotion and deployment for `5f169ee2` are not confirmed.
+
+### Final terminal-state verification
+
+At `76a7696204dd73ecaa0d0e7227f277d32b8489d2`, fractional converted-audio playback passes Chromium and WebKit, including decoded PCM comparison.
+The retained malformed-init journey passes both engines at all three viewport sizes.
+Late readiness and Play events leave playback paused, the error visible, the skeleton hidden, and `aria-busy` false.
+The harness blocks service workers only for these isolated malformed-response cases.
+The canonical Subtitles container suite passes all 66 checks again.
+Both apps' affected verification passes; unchanged Go checks use the validated input cache.
+The task-owned Compose project `kinosail-test-89861-7836` leaves zero containers and volumes.
+
+| Exact-revision manifest | Result | SHA-256 |
+| --- | --- | --- |
+| `mse-terminal-browser-proof/manifest.json` | Pass; source unchanged | `d0606ef32aa37a126658e1b2e18349711ed61f685d0bfd3440b4c52552b0aedd` |
+| `mse-terminal-container-proof/manifest.json` | Pass; source unchanged | `bf68a9f5c80a3f538007b6cbb562d105a6f2a2644e7abcb6f17d2fce8da35575` |
+
+These results supplement the fourteen successful playback cases at `25f34f76`.
+Hosted Linux, native HLS, physical devices, image publication, and production acceptance remain separate boundaries.
