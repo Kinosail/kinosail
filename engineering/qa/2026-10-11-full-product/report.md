@@ -1972,6 +1972,15 @@ Earlier native decode errors and seeking stalls remain separate findings.
 The helper repair does not establish their complete cause or physical-device behavior.
 A fresh hosted deep run is still required on the committed reconciled source.
 
+The next deep run, `38255568088` at `0cb41055`, passes the complete Player Go suite.
+It flags cognitive complexity in the reconciled segment request method.
+The local diff filter had missed that function-level diagnostic at an unchanged declaration.
+Fragment preparation now has a separate helper with the same missing-file and error handling.
+Its diagnostics use the inherited segment context and retain request and session correlation.
+Lint against the broader pre-reconciliation revision passes after this repair.
+The focused race checks also pass again. Fresh hosted checks remain required for the repair commit.
+The run's browser and native results are still pending at this checkpoint.
+
 ## Further EPUB accessibility and device boundaries
 
 The byte-identical frozen Android production APK again reproduces missing chapter text.
@@ -1986,6 +1995,15 @@ Their inspected screenshots and unfocused app windows exclude them from EPUB con
 Four intervening unchanged executions pass and therefore do not execute the controls.
 All task-installed packages are removed and the existing AVD is shut down after each run.
 No production EPUB repair, current localization-asset proof or physical acceptance is claimed.
+
+Four bounded cold-boot executions then pass the unchanged EPUB assertion.
+Each disables snapshot loading and saving while preserving the existing AVD data.
+The focus/reload controls never run because the original assertion passes.
+These results establish neither snapshot causality nor an EPUB accessibility repair.
+Task-installed packages are removed after every execution, and the task emulator is shut down.
+The fourth execution's pending, loaded, empty and failed captures are visually inspected.
+They show another layout finding: pending tablet lines span the viewport, while loaded text uses a centered reading column.
+That skeleton geometry repair is queued for the next native UI change.
 
 Fresh physical discovery still finds no connected iPhone or Watch.
 The physical Apple TV preview remains at its system profile chooser.

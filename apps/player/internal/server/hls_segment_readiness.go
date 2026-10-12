@@ -20,19 +20,11 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	}
 	ready := false
 	for attempt := 0; attempt < 2 && !ready; attempt++ {
-		var job *hlsJob
-		if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-			var err error
-			job, err = manager.prepareSegmentJob(segmentContext, item, recipe, name)
-			if err != nil {
-				slog.WarnContext(request.Context(), "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "canceled", request.Context().Err() != nil, "error", hlsDiagnostic(err, item.Path))
-				if !errors.Is(err, os.ErrNotExist) {
-					cancel()
-					return false
-				}
-			}
+		job, err := manager.prepareRecipeSegmentFile(segmentContext, item, recipe, name, path)
+		if err != nil {
+			cancel()
+			return false
 		}
-		var err error
 		ready, err = waitForHLSJobFile(segmentContext, path, job)
 		if ready && job != nil {
 			manager.mu.Lock()
@@ -53,6 +45,20 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 	}
 	cancel()
 	return ready
+}
+
+func (manager *hlsManager) prepareRecipeSegmentFile(ctx context.Context, item library.Item, recipe hlsRecipe, name, path string) (*hlsJob, error) {
+	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	job, err := manager.prepareSegmentJob(ctx, item, recipe, name)
+	if err != nil {
+		slog.WarnContext(ctx, "HLS segment preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode, "canceled", ctx.Err() != nil, "error", hlsDiagnostic(err, item.Path))
+		if errors.Is(err, os.ErrNotExist) {
+			err = nil
+		}
+	}
+	return job, err
 }
 
 // Only a missing file after successful producer completion permits readmission.
