@@ -2044,3 +2044,9 @@ Independent review found no blocker. Player four-case fault replay, Subtitles un
 mediaprobe checks (44.912 seconds), changed-package lint, source limits, and whitespace pass again.
 Final local proof binds both changed source hashes over `e14406b9`; hosted verification is pending.
 Proof: `pr582-probe-final-proof.json`, SHA-256 `7ab72c6f460e36e5252d81aa951f3c58c2b5a87d944b94f40d692c83cd2bdbf8`.
+
+Fresh head `52e7886a` passed changed app lint but exposed stale generated Code Atlas metadata in tooling.
+Both snapshots now reflect the three added mediaprobe lines; dependency, symbol, and file counts are unchanged.
+The complete local `make tooling-check`, architecture checks, source limits, and whitespace pass.
+The source repair is unchanged. Both post-commit app wrappers stopped at the established 95 shared lint findings.
+Snapshot proof: `pr582-architecture-refresh-proof.json`, SHA-256 `35f1ca1f1420cf8c42f6cc79ddc571792a9b61a9b783a1752751632e95191465`.
