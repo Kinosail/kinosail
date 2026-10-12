@@ -962,4 +962,24 @@ at required MFA enrollment. Its cleanup also expects 200 instead of the specifie
 204 for profile deletion. The corrected journey retains required MFA, completes
 real authenticator enrollment, and checks the proper deletion response. Chromium
 passes family episode selection, excluded-Library action and route rejection,
-and restored next-episode access. Other browser repetitions remain pending.
+and restored next-episode access. All three repetitions pass in Chromium, Firefox and WebKit at `cfc884bf`: 12
+applicable checks per engine, zero skips, failures or flakes. This includes the
+Viewer policy journey, actual Show card playback and states, and settings
+persistence. No production change follows the Viewer check.
+
+
+The reconciled complete native suites use tree
+`c8b05b870b3c22ebc3b4b3bf61d95c2033ba23fc`. iOS passes 329, fails zero and
+skips four. tvOS passes 311, fails zero and skips three. Three iOS skips and two
+tvOS skips require optional decoded-media files; focused executions with the
+documented fixture remain pending. The other iOS skip is the inapplicable picture-in-picture callback case.
+The other tvOS skip is optional `TVQualitySessionSeed`, which requires a
+disposable public Server session. Neither skip is a product pass.
+
+The tvOS result bundle confirms the existing QA All Apps TV simulator. Xcode
+leaves it shut down. A preflight error was incorrectly interpreted as app absence;
+that receipt is explicitly invalid for absence proof. Post-run app removal and
+shutdown both return a state error and change nothing. The shared simulator,
+installed app and data are preserved. No successful uninstall or restoration of
+a prior app version is claimed. A corrected inspection must distinguish device
+state failures before any later cleanup. Raw diagnostics remain private.
