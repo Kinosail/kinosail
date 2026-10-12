@@ -1865,3 +1865,19 @@ Their log SHA-256 values, in that order, are
 `872170357488d503da2da4c2e5208dd7f11063bb23c5cdcf66c0e047e985a880`.
 Private `watched-native-retained-denial` retains the controlled failure;
 its log SHA-256 is `e5074d20ddcf51455c1bf927364b2313cda27de94adbc386e34e56eaa278469f`.
+
+The complete `df8a2259` WebKit artifact has two failed watched cases and one
+flaky ordinary form case. One first-start snapshot reports media decode error 3
+and no buffered frames. Other starts remain seeking with no decoded frames.
+The ordinary flow has no queued-playing hook. These observations keep a broader
+native playback boundary open beyond the callback setup adjustment.
+The bounded native journal now covers the ordinary flow too.
+Its failure snapshot preserves the original exception without changing the flow.
+
+The final shared journal source passes all five watched cases in each browser.
+The ordinary denial control retains its rejected play attempt and 44 native events,
+all with zero queued notifications. Existing canplay autoplay can still advance
+media during that control; the failure remains the deliberately rejected own call.
+Its original error is preserved. No source URL or remote error text is retained.
+Private `watched-native-retained-final-*` and `watched-native-ordinary-denial`
+receipts record exact source, commands, results, checksums and container cleanup.

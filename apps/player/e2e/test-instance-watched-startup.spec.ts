@@ -4,14 +4,9 @@ import {startPlaying} from "./checkpoint-setup-cases";
 
 configureTestInstance();
 test.use({serviceWorkers: "block"});
-
-for (const watched of [true, false]) {
-for (const cancelledAgain of [false, true]) {
-test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native media callbacks from the departing page${cancelledAgain ? " after another submission is cancelled" : ""}`, {tag: "@smoke"}, async ({page}, info) => {
+test.beforeEach(async ({page}) => {
   await page.addInitScript(() => {
     const add = EventTarget.prototype.addEventListener;
-    const pending: Array<() => void> = [];
-    const control = {pending, registered: 0, release() {for (const notify of pending.splice(0)) notify();}};
     const native: Array<Record<string, unknown>> = [];
     const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime");
     for (const event of ["loadstart", "loadedmetadata", "canplay", "play", "playing", "pause", "waiting", "stalled", "error", "ended", "seeking", "seeked", "timeupdate"]) {
@@ -21,11 +16,22 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
         native.push({event: event.type, at: performance.now(), seconds: video.currentTime,
           nativeSeconds: mediaTime?.get?.call(video) ?? null, paused: video.paused, seeking: video.seeking,
           readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
-          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: pending.length});
+          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: (window as Window & {watchedStartup?: {pending: unknown[]}}).watchedStartup?.pending.length ?? 0});
         if (native.length > 96) native.shift();
       }, true);
     }
-    Object.assign(window, {watchedStartup: control, watchedNativeStartup: native});
+    Object.assign(window, {watchedNativeStartup: native});
+  });
+});
+
+for (const watched of [true, false]) {
+for (const cancelledAgain of [false, true]) {
+test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native media callbacks from the departing page${cancelledAgain ? " after another submission is cancelled" : ""}`, {tag: "@smoke"}, async ({page}, info) => {
+  await page.addInitScript(() => {
+    const add = EventTarget.prototype.addEventListener;
+    const pending: Array<() => void> = [];
+    const control = {pending, registered: 0, release() {for (const notify of pending.splice(0)) notify();}};
+    Object.assign(window, {watchedStartup: control});
     EventTarget.prototype.addEventListener = function(type, listener, options) {
       if (this instanceof HTMLVideoElement && type === "playing" && listener) {
         control.registered++;
@@ -244,7 +250,18 @@ test("watched controls navigate and persist both states during decoded playback"
     const media = page.locator("video");
     await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-    await startPlaying(media);
+    try { await startPlaying(media); }
+    catch (error) {
+      const snapshot = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+        nativeSeconds: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")?.get?.call(video) ?? null,
+        duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended,
+        seeking: video.seeking, readyState: video.readyState, networkState: video.networkState,
+        errorCode: video.error?.code ?? null, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        events: (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup})).catch(() => ({unavailable: true}));
+      await info.attach("ordinary-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+        browser: info.project.name, watched, snapshot, boundary: "Ordinary native start; no queued-playing injection or source URL"}), contentType: "application/json"});
+      throw error;
+    }
     const [saved, redirected] = await Promise.all([
       page.waitForResponse(response => response.url() === `${origin}/watched/${id}` && response.request().method() === "POST"),
       page.waitForResponse(response => response.url() === `${origin}${watch}` && response.request().redirectedFrom()?.url() === `${origin}/watched/${id}`),
