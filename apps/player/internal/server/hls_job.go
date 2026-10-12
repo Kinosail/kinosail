@@ -6,10 +6,13 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
+
+const hlsIdleTimeout = 45 * time.Second
 
 type hlsJob struct {
 	lifecycle       context.Context
@@ -100,6 +103,27 @@ func waitForReplacedHLSJob(ctx context.Context, job *hlsJob) error {
 		return ctx.Err()
 	case <-job.done:
 		return nil
+	}
+}
+
+// Admission rechecks policy after either output arrival or producer completion.
+func waitForActiveHLSSegment(ctx context.Context, job *hlsJob, path string) error {
+	ticker := time.NewTicker(25 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-job.done:
+			return nil
+		case <-ticker.C:
+		}
 	}
 }
 

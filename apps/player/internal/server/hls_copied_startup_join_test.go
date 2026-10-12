@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"net/http"
@@ -155,8 +154,18 @@ func copiedStartupRefillSettled(t *testing.T, ctx context.Context, manager *hlsM
 }
 
 func TestCopiedStartupLiveProducerRemainsAdoptable(t *testing.T) {
-	manager, item, recipe, directory, _ := copiedRecoveryEnclosingFixture(t)
+	for _, outcome := range []string{"published", "completed", "canceled", "source-changed", "source-changed-published"} {
+		t.Run(outcome, func(t *testing.T) { copiedStartupLiveHTTP(t, outcome) })
+	}
+}
+
+// Unlike real-codec E2E, this controls the source-change boundary after adoption.
+func copiedStartupLiveHTTP(t *testing.T, outcome string) {
+	t.Helper()
+	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
 	check := copiedStartupRetained(t, directory, item.Path)
+	marker := filepath.Join(t.TempDir(), "refills")
+	copiedRecoveryEncoderOutput(t, manager, "printf refill\\n >> "+copiedRecoveryQuote(marker), initialization, "first fragment", copiedRecoveryManifest)
 	policy, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		t.Fatal(err)
@@ -164,15 +173,76 @@ func TestCopiedStartupLiveProducerRemainsAdoptable(t *testing.T) {
 	lifecycle, stop := context.WithCancelCause(t.Context())
 	defer stop(nil)
 	job := &hlsJob{lifecycle: lifecycle, cancel: stop, preparation: &startupEncoding{}, done: make(chan struct{}), cachePolicy: policy.Cache}
-	manager.jobs[hlsRecipeKey(item.ID, recipe)] = job
-	if err := manager.prepareSegment(t.Context(), item, recipe, "1080p/segment-00000.m4s"); err != nil {
-		t.Fatal(err)
+	key := hlsRecipeKey(item.ID, recipe)
+	manager.jobs[key] = job
+	join := copiedStartupJoin(t, manager, key, job)
+	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
+	defer cancel()
+	response := httptest.NewRecorder()
+	done := make(chan struct{})
+	go func() {
+		manager.serveRecipe(response, httptest.NewRequestWithContext(ctx, http.MethodGet, "/hls/"+item.ID+"/p/"+recipe.token()+"/1080p/segment-00000.m4s", nil), item, recipe, "1080p/segment-00000.m4s")
+		close(done)
+	}()
+	t.Cleanup(func() {
+		cancel()
+		select {
+		case <-done:
+		case <-time.After(time.Second):
+			t.Error("live producer request did not settle after cancellation")
+		}
+	})
+	until := time.Now().Add(time.Second)
+	for !job.preparation.adopted.Load() && time.Now().Before(until) {
+		time.Sleep(time.Millisecond)
 	}
 	if !job.preparation.adopted.Load() {
 		t.Fatal("live copied producer was not adopted")
 	}
-	if _, err := os.Stat(filepath.Join(directory, "1080p/segment-00000.m4s")); !os.IsNotExist(err) {
+	fragment := filepath.Join(directory, "1080p/segment-00000.m4s")
+	if _, err := os.Stat(fragment); !os.IsNotExist(err) {
 		t.Fatal("adopting live output invented a fragment")
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("adopting live output started a replacement")
+	}
+	select {
+	case <-done:
+		t.Fatal("live missing fragment completed before publication or join")
+	default:
+	}
+	check()
+	status := http.StatusOK
+	switch outcome {
+	case "published":
+		writeHLSLoadingFile(t, fragment, "first fragment")
+	case "completed":
+		join()
+	case "canceled":
+		status = http.StatusNotFound
+		cancel()
+	case "source-changed", "source-changed-published":
+		status = http.StatusNotFound
+		writeHLSLoadingFile(t, item.Path, "changed source")
+		check = copiedStartupRetained(t, directory, item.Path)
+		if outcome == "source-changed-published" {
+			writeHLSLoadingFile(t, fragment, "first fragment")
+		} else {
+			join()
+		}
+	}
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("live producer request failed to settle after publication, join or cancellation")
+	}
+	if response.Code != status || status == http.StatusOK && response.Body.String() != "first fragment" {
+		t.Fatalf("live fragment = %d; expected %d with retained bytes", response.Code, status)
+	}
+	if outcome == "completed" {
+		copiedStartupRefillSettled(t, ctx, manager, key, marker)
+	} else if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatal("live publication or rejected request started a replacement")
 	}
 	check()
 }
@@ -198,35 +268,4 @@ func TestCopiedStartupChangedPolicyRejectsBeforeAdoption(t *testing.T) {
 		t.Fatal("rejected policy started an encoder")
 	}
 	check()
-}
-
-func copiedStartupRetained(t *testing.T, directory, source string) func() {
-	t.Helper()
-	names := []string{"index.m3u8", ".source", ".copy-timeline", ".copy-clock", "1080p/index.m3u8", "1080p/init.mp4", "1080p/segment-00001.m4s"}
-	paths := []string{source}
-	for _, name := range names {
-		paths = append(paths, filepath.Join(directory, name))
-	}
-	data, identities := make([][]byte, len(paths)), make([]os.FileInfo, len(paths))
-	for i, path := range paths {
-		var err error
-		data[i], err = os.ReadFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-		identities[i], err = os.Stat(path)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-	return func() {
-		t.Helper()
-		for i, path := range paths {
-			after, err := os.ReadFile(path)
-			identity, statErr := os.Stat(path)
-			if err != nil || statErr != nil || !bytes.Equal(data[i], after) || !sameCopiedHLSFile(identities[i], identity) {
-				t.Errorf("refill changed retained %s", path)
-			}
-		}
-	}
 }

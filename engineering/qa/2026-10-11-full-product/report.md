@@ -1720,3 +1720,44 @@ receipts. No production data, gateway policy or unrelated checkout is reset.
 After reconciliation, the real HEVC and copied-fragment recovery Go journeys
 pass with race detection. The full CI contract suite and source limits pass.
 The original hosted failures remain retained; no passing replay erases them.
+
+
+## Cold HLS encoder handoff repair
+
+The retained `lookback-join` case reproduces the missing final fragment.
+Its wrapper runs real FFmpeg unchanged, then delays the middle refill's exit.
+The original `d69516d9` binary fails three Linux ARM64 runs: segment 15 returns
+404, no replacement starts, and the encoder eventually settles.
+The repaired binary passes all three runs. Segment 15 returns 200, a fourth
+encoder restores it, and decoded video frames and timestamps match.
+The source, retained initialization, certificates and playlists remain unchanged.
+All disposable servers, probes and containers settle; host trust is unchanged.
+
+Missing-fragment admission now waits for file arrival or the exact producer's
+completion, then rechecks source and playback policy before reuse or refill.
+A separate HTTP control exposes a changed source being served after publication.
+It fails before that recheck and passes after it. Cancellation still settles
+without starting a replacement. The existing 30-second request limit remains.
+The preparation warning now includes the playback session, mode and cancellation.
+
+The initial delay control exposes expected final master-bandwidth publication.
+The retained case waits for initial encoder completion before snapshotting metadata;
+it delays only later refills. No metadata assertion is removed.
+All 19 real-media cold-suffix cases pass on macOS. The focused Go suite passes
+with race detection, real first-fragment regeneration and the named HEVC proof.
+Source limits pass after moving a shared test fixture into its existing cache file.
+Server logs retain correlated INFO lifecycle and WARN failure events without tokens.
+Browser, physical-device, hosted AMD64 and deployment proof remain separate.
+
+The newer deep run retains another failure: Player coverage is 87.9%, below 89%.
+Compared with the passing `6008` profile, the two new copied-audio files add
+189 uncovered statements. Existing browser/native audio proofs do not contribute
+to that Go profile. The gate remains unchanged; coverage repair is still open.
+
+Private receipts: `cold-retained-join-baseline` (three expected failures),
+`cold-retained-join-fixed` (three passes), `cold-lookback-final-race`,
+`cold-suffix-all-final` and `deep-d695-go-failure`.
+- `cold-retained-join-baseline` log SHA-256: `097007aa10a9a1a772e032c743cd622b88574c1be41c64b05a125d206d073ab1`.
+- `cold-retained-join-fixed` log SHA-256: `fbeb2cf100afe2f4ae277cabddd6cd719f087d80daf135e290b02ed6fa56ef3e`.
+- `cold-lookback-final-race` log SHA-256: `aae06b99ce8a7ac97646a9b7c212654d9586927e22618542580306240668a924`.
+- `cold-suffix-all-final` log SHA-256: `048f3ee385ab39d20b6fd0273b8618049b0490fc7dfae76699b700dc1434c5ec`.

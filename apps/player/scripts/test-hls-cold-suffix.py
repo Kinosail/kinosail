@@ -20,7 +20,7 @@ from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--case', choices=['all', 'success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'], default='all')
+parser.add_argument('--case', choices=['all', 'success', 'clock-race', 'fractional-recovery', 'lookback', 'lookback-join', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'], default='all')
 args = parser.parse_args()
 run = ROOT / '.verification/hls-cold-suffix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 run.mkdir(parents=True)
@@ -60,6 +60,17 @@ def wait_for(condition, seconds, failure):
     raise RuntimeError(failure)
 
 
+def first_encoder_completed(directory):
+    for line in (directory / 'server-private.log').read_text().splitlines():
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if row.get('msg') == 'HLS transcode completed':
+            return True
+    return False
+
+
 def exercise(source_fixture, source_facts, fault):
     directory = run / fault
     media = directory / 'media'
@@ -67,11 +78,11 @@ def exercise(source_fixture, source_facts, fault):
     source = media / 'Fixture.mp4'
     shutil.copyfile(source_fixture, source)
     variant = None
-    if fault in ['fractional-recovery', 'lookback']:
+    if fault in ['fractional-recovery', 'lookback', 'lookback-join']:
         source.unlink()
         frames = 732 if fault == 'fractional-recovery' else 2280
         source, variant = fixture(media, 'Fixture', 48, ','.join(str(n) for n in range(0, 32 if frames == 732 else 95, 2)), frames=frames, extension='.mp4')
-    expected_origin = 64.0 if fault == 'lookback' else 0.0 if fault == 'endpoint-tolerance' else 12.0
+    expected_origin = 64.0 if fault in ['lookback', 'lookback-join'] else 0.0 if fault == 'endpoint-tolerance' else 12.0
     fragments = sum(point >= expected_origin for point in (variant or source_facts)['keyframesSeconds'])
     before = source_state(source)
     wrappers(directory, source, fault)
@@ -79,7 +90,7 @@ def exercise(source_fixture, source_facts, fault):
     receipt['cases'].append(case)
     if variant:
         case['fixture'] = variant
-    successful = fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'endpoint-tolerance']
+    successful = fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'lookback-join', 'endpoint-tolerance']
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
@@ -98,7 +109,7 @@ def exercise(source_fixture, source_facts, fault):
             item = next(v for v in api.call('/api/v1/library')['items'] if v['title'] == 'Fixture')
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_mode')
-            offset = 65100 if fault == 'lookback' else 500 if fault == 'endpoint-tolerance' else 12500
+            offset = 65100 if fault in ['lookback', 'lookback-join'] else 500 if fault == 'endpoint-tolerance' else 12500
             path = plan['compatible'].replace('/index.m3u8', f'-o{offset}/index.m3u8')
             started = time.monotonic()
             with ThreadPoolExecutor(max_workers=2) as pool:
@@ -149,13 +160,18 @@ def exercise(source_fixture, source_facts, fault):
                 wait_for(lambda: settled(directory), 5, 'index_probe_not_settled')
                 metadata = [cache / name for name in ['.copy-timeline', '.copy-clock', '.source', 'index.m3u8']]
                 metadata += [rendition / name for name in ['init.mp4', 'index.m3u8']]
+                if fault == 'lookback-join':
+                    wait_for(lambda: settled(directory, 'encoder-pids') and first_encoder_completed(directory), 5, 'initial_encoder_not_completed')
                 snapshots = [sha(p) for p in metadata]
+                case['retainedMetadataSHA256'] = {str(p.relative_to(cache)): digest for p, digest in zip(metadata, snapshots)}
                 case['recoveries'] = []
                 for number in sorted({0, fragments // 2, fragments - 1}):
                     fragment = rendition / f'segment-{number:05d}.m4s'
                     digest = sha(fragment)
                     previous = fragment_facts(rendition, fragment)
                     preceding = fragment_facts(rendition, rendition / f'segment-{number-1:05d}.m4s') if number else None
+                    if fault == 'lookback-join' and number == fragments - 1:
+                        check(not settled(directory, 'encoder-pids'), 'controlled_middle_encoder_already_joined')
                     fragment.unlink()
                     status, data, _ = api.http(base + fragment.name)
                     case.setdefault('recoveryAttempts', []).append({'segment': number, 'status': status,
@@ -169,7 +185,9 @@ def exercise(source_fixture, source_facts, fault):
                         check(abs(current['audioStart'] - preceding['audioEnd']) <= .05, 'fragment_audio_gap')
                     if number == 0:
                         check(sha(fragment) == digest, 'first_fragment_changed')
-                    check([sha(p) for p in metadata] == snapshots, 'certificate_or_initialization_changed')
+                    observed = [sha(p) for p in metadata]
+                    case['recoveryAttempts'][-1]['changedMetadata'] = [str(p.relative_to(cache)) for p, before, after in zip(metadata, snapshots, observed) if before != after]
+                    check(observed == snapshots, 'certificate_or_initialization_changed')
                     check(count(directory, 'suffix-starts') == 1, 'refill_rescanned_index')
                     case['recoveries'].append({'segment': number, 'status': status, 'binaryIdentical': sha(fragment) == digest, 'videoFramesAndTimestampsIdentical': True, 'audioGapSeconds': current['audioStart'] - preceding['audioEnd'] if preceding else None, 'metadataUnchanged': True})
                 if fault == 'success':
@@ -251,7 +269,7 @@ try:
     with (run / 'build-private.log').open('w') as log:
         subprocess.run(build, check=True, stdout=log, stderr=log, timeout=180)
     receipt['binarySHA256'] = sha(binary)
-    for fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'] if args.case == 'all' else [args.case]:
+    for fault in ['success', 'clock-race', 'fractional-recovery', 'lookback', 'lookback-join', 'late-failure', 'timeout', 'early-bound', 'non-key', 'source-change', 'idr-failure', 'configuration-failure', 'aggregate-deadline', 'producer-failure', 'packet-limit', 'byte-limit', 'key-limit', 'unsupported-duration', 'endpoint-tolerance'] if args.case == 'all' else [args.case]:
         exercise(source, facts, fault)
     if receipt['cases'] and all(case['result'] == 'passed' for case in receipt['cases']):
         receipt['result'] = 'passed'

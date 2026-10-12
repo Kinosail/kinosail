@@ -12,8 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-const hlsIdleTimeout = 45 * time.Second
-
 var (
 	errHLSSeekRestart     = errors.New("HLS transcode replaced for seek")
 	errHLSInactive        = errors.New("HLS playback is inactive")
@@ -196,7 +194,10 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 		manager.adoptStartupJob(ctx, job, key)
 		if job.coversSegment(filepath.Dir(path), segment) {
 			manager.mu.Unlock()
-			return nil
+			if err := waitForActiveHLSSegment(ctx, job, path); err != nil {
+				return err
+			}
+			continue
 		}
 		if job != nil && ctx.Value(startupEncodingKey{}) != nil {
 			// Preparation cannot replace a foreground seek or any shared encoder.
