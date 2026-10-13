@@ -188,17 +188,23 @@ try:
                                  "-no-window", "-no-audio", "-no-snapshot", "-no-boot-anim", "-gpu", "swiftshader_indirect"],
                                 env=env, stdout=emulator_log, stderr=subprocess.STDOUT)
     deadline = time.monotonic() + 180
+    receipt["boot"] = {"attempts": 0, "owned": False, "systemReady": False}
     while time.monotonic() < deadline and emulator.poll() is None:
+        boot = receipt["boot"]
+        boot.update(attempts=boot["attempts"] + 1, owned=False, systemReady=False, commandFailed=False)
         try:
-            owned = owns_emulator()
+            boot["owned"] = owns_emulator()
+            if boot["owned"]:
+                boot["systemReady"] = adb("shell", "getprop", "sys.boot_completed", timeout=10).strip() == b"1"
         except (OSError, subprocess.SubprocessError):
-            owned = False
-        if (owned and adb("shell", "getprop", "sys.boot_completed", timeout=10, check_exit=False).strip() == b"1"
-                and adb("shell", "getprop", "init.svc.bootanim", timeout=10, check_exit=False).strip() == b"stopped"):
+            boot["commandFailed"] = True
+        if boot["owned"] and boot["systemReady"]:
             break
         time.sleep(2)
     else:
+        receipt["boot"]["emulatorAlive"] = emulator.poll() is None
         raise RuntimeError("wear_boot_failed")
+    receipt["boot"]["emulatorAlive"] = emulator.poll() is None
     check(owns_emulator(), "wear_emulator_ownership_unconfirmed")
     for prop in ("ro.build.version.sdk", "ro.build.version.release", "ro.product.cpu.abi", "ro.build.characteristics"):
         value = adb("shell", "getprop", prop).decode().strip()

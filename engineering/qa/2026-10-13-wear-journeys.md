@@ -51,7 +51,8 @@ Neither layer establishes physical watch acceptance.
 
 Source preparation and independent source review are complete.
 The first hosted trial compiled both APKs but failed before emulator creation.
-Emulator execution, artifact decoding, and visual acceptance remain pending.
+The later executed trial was rejected during artifact inspection, and fresh-profile startup remains under repair.
+Complete artifact decoding and visual acceptance remain pending.
 A separate hosted Wear job now runs when deep verification selects Android.
 The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
 Before integration, the regression check proved missing Wear execution was accepted.
@@ -112,7 +113,7 @@ Both matrix jobs must succeed, and each retains a separate artifact with three t
 The workflow contract rejects a missing profile or a shared artifact name.
 Its failing baseline lacked the independent-profile matrix.
 
-The fixture waits for boot animation completion before device setup.
+The fixture waits for system boot completion before device setup.
 It sets `device_provisioned` and `user_setup_complete` only on its newly created, ownership-verified emulator.
 The receipt retains their bounded before and after values.
 This models a usable watch with no connected phone and avoids first-time setup obscuring the app.
@@ -120,3 +121,24 @@ No account is added, package is disabled, or phone is paired.
 Android's [test harness guidance](https://source.android.com/docs/core/tests/debug/harness) recommends minimal setup-screen customization for automated UI tests.
 The runner does not enable full Test Harness Mode or reset any existing device.
 Foreground ownership and visual acceptance remain required after this fixture setup.
+
+## Fresh-profile startup failure
+
+Both profiles at `5e7db444fdbf34832e2370f2abd13b15a954d6a1` failed with `wear_boot_failed` before setup, installation, or test execution.
+Each receipt records zero cases, successful owned-process shutdown, and transport removal after four inventory observations.
+All sixteen source pins in each artifact verify independently.
+
+| Profile | Job | Artifact | ZIP SHA-256 |
+| --- | --- | --- | --- |
+| Small round | `115578191236` | `11855804085` | `b44fae8a5b13aa8444cd919edb44d300da120b9ae6cbd67b8f133d513731dc3a` |
+| Large round | `115578191370` | `11856173743` | `3b7208b3e966cd5a50bec88cb98c8186580b066d9c03e63010b07771f2bf3d62` |
+
+The runner required `init.svc.bootanim=stopped` while launching with `-no-boot-anim`.
+Android's [emulator command reference](https://developer.android.com/studio/run/emulator-commandline) says that option disables startup animation.
+A disabled service need not establish the required stopped state.
+The old receipts did not retain boot-property observations, so the exact unmet prerequisite remains unknown.
+
+The correction requires the owned process and `sys.boot_completed=1`, with the same 180-second boot limit.
+It retains bounded last-observation Booleans, command-failure status, and attempt count without raw ADB output.
+Physical display, setup, foreground ownership, test selection, visual artifacts, and cleanup assertions remain required.
+The hosted journey remains the regression owner; source checks alone cannot establish successful watch startup.
