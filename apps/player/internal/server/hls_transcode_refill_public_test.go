@@ -63,6 +63,8 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	}
 	sourceBefore := transcodeRefillRead(t, source)
 	owned := filepath.Join(tools, "owned-pids")
+	logs := captureCopiedLogs(t, 64<<10)
+	defer func() { transcodeRefillDiagnostics(t, logs, tools) }()
 	adapter := filepath.Join(tools, "ffmpeg")
 	quote := func(value string) string { return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'" }
 	script := "#!/bin/sh\nset -eu\nprintf '%s\\n' $$ >> " + quote(owned) + "\nprintf '%s\\0' \"$@\" > " + quote(tools) + "/args-$$\nexec " + quote(ffmpeg) + " \"$@\"\n"

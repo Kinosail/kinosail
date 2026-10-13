@@ -33,11 +33,7 @@ func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, 
 	for _, damage := range []string{"missing-proof", "malformed-proof", "changed-init", "oversized-samples", "oversized-video-base"} {
 		t.Run(damage, func(t *testing.T) {
 			expectedMaster := transcodeRefillDamageProof(t, root, variant, damage, proof, initialization, master)
-			defer func() {
-				if os.WriteFile(proofPath, proof, 0o600) != nil || os.WriteFile(filepath.Join(directory, "init.mp4"), initialization, 0o600) != nil || os.WriteFile(filepath.Join(root, "index.m3u8"), master, 0o600) != nil {
-					t.Error("cannot restore owned proof control")
-				}
-			}()
+			defer transcodeRefillRestoreProof(t, map[string][]byte{proofPath: proof, filepath.Join(directory, "init.mp4"): initialization, filepath.Join(root, "index.m3u8"): master})
 			status := transcodeRefillRejectedStatus(t, ctx, prefix+strings.TrimSuffix(variant, "index.m3u8")+fragment)
 			joined := copiedRecoveryJoinedCodecs(t, ctx, owned)
 			_, targetErr := os.Stat(filepath.Join(directory, fragment))
@@ -48,6 +44,15 @@ func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, 
 			}
 			transcodeRefillRetained(t, map[string][]byte{filepath.Join(root, "index.m3u8"): expectedMaster, filepath.Join(directory, "segment-00008.m4s"): neighbor, source: sourceBefore})
 		})
+	}
+}
+
+func transcodeRefillRestoreProof(t *testing.T, files map[string][]byte) {
+	t.Helper()
+	for path, data := range files {
+		if os.WriteFile(path, data, 0o600) != nil {
+			t.Error("cannot restore owned proof control")
+		}
 	}
 }
 

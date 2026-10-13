@@ -206,12 +206,12 @@ func publishTranscodeHLSVariants(ctx context.Context, source, directory, policy 
 func (manager *hlsManager) readTranscodeHLSRecovery(ctx context.Context, directory, policy, rendition string, number int) (*transcodeHLSRecovery, error) {
 	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("recovery-root", err)
 	}
 	defer root.Close()
 	master, err := copiedHLSCacheFile(root, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	if err != nil {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("recovery-master", err)
 	}
 	marker, err := transcodeHLSMasterMarker(master)
 	if err != nil || marker == "" {
@@ -223,10 +223,10 @@ func (manager *hlsManager) readTranscodeHLSRecovery(ctx context.Context, directo
 	}
 	selected, ok := clock.Renditions[rendition]
 	if !ok || number < 0 || number >= len(selected.Cuts) {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("recovery-selection", nil)
 	}
 	if !manager.currentTranscodeRendition(ctx, root, directory, rendition, selected) {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("recovery-assets", nil)
 	}
 	return &transcodeHLSRecovery{clock: clock, digest: digest, rendition: rendition, number: number}, nil
 }
@@ -235,15 +235,15 @@ func readTranscodeHLSClock(root *os.Root, marker, policy string) (*transcodeHLSC
 	data, err := copiedHLSCacheFile(root, ".transcode-clock", maximumTranscodeHLSClock)
 	digest := sha256.Sum256(data)
 	if err != nil || marker != transcodeHLSClockMarker+hex.EncodeToString(digest[:]) {
-		return nil, digest, errTranscodeHLSClock
+		return nil, digest, transcodeClockError("proof-digest", err)
 	}
 	var clock transcodeHLSClock
 	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), maximumTranscodeHLSClock, &clock) != nil || clock.Policy != policy || !validTranscodeHLSClock(&clock) {
-		return nil, digest, errTranscodeHLSClock
+		return nil, digest, transcodeClockError("proof-fields", nil)
 	}
 	encoder, err := copiedHLSCacheFile(root, ".encoder", 1024)
 	if err != nil || sha256.Sum256(encoder) != clock.Encoder {
-		return nil, digest, errTranscodeHLSClock
+		return nil, digest, transcodeClockError("proof-encoder", err)
 	}
 	return &clock, digest, nil
 }

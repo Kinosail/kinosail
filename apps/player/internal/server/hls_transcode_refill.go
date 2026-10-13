@@ -31,7 +31,7 @@ func (manager *hlsManager) refillTranscodeHLS(ctx context.Context, item library.
 	defer cancel()
 	output, err := newTranscodeHLSOutput(manager.cache, recovery, qualities, start)
 	if err != nil {
-		return err
+		return transcodeClockError("refill-window", err)
 	}
 	defer output.close()
 	ctx = context.WithValue(ctx, transcodeHLSOutputKey{}, output)
@@ -58,7 +58,7 @@ func (manager *hlsManager) refillTranscodeHLS(ctx context.Context, item library.
 	close(stop)
 	<-joined
 	if err != nil || ctx.Err() != nil || !output.bounded() {
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-encode-or-bound", err)
 	}
 	return output.publish(manager, ctx, item, directory, options.Cache)
 }

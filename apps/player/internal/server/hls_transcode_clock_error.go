@@ -13,10 +13,15 @@ type transcodeClockStageError struct {
 	cause     error
 }
 
-func (failure *transcodeClockStageError) Error() string { return errTranscodeHLSClock.Error() }
+func (failure *transcodeClockStageError) Error() string {
+	return errTranscodeHLSClock.Error() + " (" + failure.operation + ")"
+}
 func (failure *transcodeClockStageError) Unwrap() error { return failure.cause }
 
 func transcodeClockError(operation string, cause error) error {
+	if cause == nil {
+		cause = errTranscodeHLSClock
+	}
 	var failure *transcodeClockStageError
 	if errors.As(cause, &failure) {
 		return cause

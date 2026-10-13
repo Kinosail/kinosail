@@ -31,13 +31,13 @@ func (output *transcodeHLSOutput) publish(manager *hlsManager, ctx context.Conte
 	original := recovery.clock.Renditions[recovery.rendition]
 	measured, err := manager.probeTranscodeFragments(ctx, stage, []string{name}, recovery.number == len(original.Cuts)-1)
 	if err != nil || !matchesTranscodeFragment(measured, original, recovery.number) {
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-stage-clock", err)
 	}
 	current := func() bool {
 		return output.current(manager, ctx, item, directory, policy, root, media)
 	}
 	if !current() {
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-generation", nil)
 	}
 	return output.publishTarget(manager, ctx, media, stage, current)
 }
@@ -80,7 +80,7 @@ func (output *transcodeHLSOutput) publishTarget(manager *hlsManager, ctx context
 	checked, err := manager.probeTranscodeFragments(ctx, media, []string{pendingName}, recovery.number == len(original.Cuts)-1)
 	physical, statErr := media.Lstat(pendingName)
 	if err != nil || statErr != nil || !os.SameFile(owned, physical) || !matchesTranscodeFragment(checked, original, recovery.number) || !current() {
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-pending-clock", err)
 	}
 	return output.linkTarget(manager, ctx, media, pendingName, owned, current)
 }
@@ -91,7 +91,7 @@ func (output *transcodeHLSOutput) linkTarget(manager *hlsManager, ctx context.Co
 	original := recovery.clock.Renditions[recovery.rendition]
 	linkErr := media.Link(pendingName, name)
 	if linkErr != nil && !errors.Is(linkErr, os.ErrExist) {
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-link", linkErr)
 	}
 	// A race winner remains untouched. Its clock must independently agree with
 	// the original generation before this waiter can accept it.
@@ -100,7 +100,7 @@ func (output *transcodeHLSOutput) linkTarget(manager *hlsManager, ctx context.Co
 		if linkErr == nil {
 			copiedHLSRemoveOwned(media, name, owned)
 		}
-		return errTranscodeHLSClock
+		return transcodeClockError("refill-committed-clock", err)
 	}
 	return nil
 }
