@@ -1,19 +1,24 @@
 import {expect, test, type Locator, type Page, type TestInfo} from "@playwright/test";
 
-type PlaybackAttempt = {finished: boolean; rejected: boolean};
+type PlaybackAttempt = {finished: boolean; rejected: boolean; minimumFrames: number};
 type PlaybackVideo = HTMLVideoElement & {checkpointPlayAttempt?: PlaybackAttempt};
 
 export async function startPlaying(media: Locator) {
   const before = await media.evaluate((video: PlaybackVideo) => {
-    const attempt = {finished: false, rejected: false};
-    video.checkpointPlayAttempt = attempt;
     const before = {frames: video.getVideoPlaybackQuality().totalVideoFrames, seconds: video.currentTime};
+    const attempt = {finished: false, rejected: false, minimumFrames: before.frames};
+    video.checkpointPlayAttempt = attempt;
     void video.play().catch(() => {if (!attempt.finished) attempt.rejected = true;});
     return before;
   });
   await expect.poll(() => media.evaluate((video: PlaybackVideo, before) => {
-    if (video.checkpointPlayAttempt?.rejected) return "rejected";
-    return !video.paused && !video.ended && video.getVideoPlaybackQuality().totalVideoFrames > before.frames + 2
+    const attempt = video.checkpointPlayAttempt;
+    if (!attempt || attempt.rejected) return "rejected";
+    const frames = video.getVideoPlaybackQuality().totalVideoFrames;
+    // Native HLS can reset this counter after pause or seek. Require three
+    // newly decoded frames after the lowest count observed in this attempt.
+    attempt.minimumFrames = Math.min(attempt.minimumFrames, frames);
+    return !video.paused && !video.ended && frames > attempt.minimumFrames + 2
       && video.currentTime > before.seconds + 0.2 ? "moving" : "pending";
   }, before)).toBe("moving");
   await media.evaluate((video: PlaybackVideo) => {

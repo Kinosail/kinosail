@@ -21,7 +21,7 @@ class CoverageEvidenceTests(unittest.TestCase):
         self.assertEqual(ci.count("coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}"), 2)
         script = (ROOT / 'scripts/ci/test-go.sh').read_text()
         self.assertIn('player|subtitles) directory="apps/$1"; minimum=89', script)
-        self.assertIn('go test -race -count=1 -covermode=atomic -coverprofile="$profile" ./...', script)
+        self.assertIn('go test -race -count=1 -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...', script)
 
 
 if __name__ == '__main__':
