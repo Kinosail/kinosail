@@ -59,7 +59,7 @@ class WearPreflightTests(unittest.TestCase):
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_text(f"#!{sys.executable}\n" + script)
                     target.chmod(0o755)
-                result = subprocess.run([sys.executable, "-B", str(RUNNER), "--output", str(folder / "evidence")],
+                result = subprocess.run([sys.executable, "-B", str(RUNNER), "--profile", "small-round", "--output", str(folder / "evidence")],
                     cwd=folder, capture_output=True, text=True, timeout=10,
                     env={**os.environ, "PATH": str(folder / "bin") + os.pathsep + os.environ["PATH"],
                          "GITHUB_ACTIONS": "true", "ANDROID_HOME": str(folder / "sdk")})

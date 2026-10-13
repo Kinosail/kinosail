@@ -39,10 +39,10 @@ The candidate uses `system-images;android-36;android-wear-signed;x86_64` and rec
 The [emulator guide](https://developer.android.com/training/wearables/get-started/emulator) distinguishes simulated inputs from physical watch behavior.
 
 1. Build `:wear:assembleDebug` and `:wear:assembleDebugAndroidTest` on a disposable hosted runner.
-2. Run `python3 apps/player/scripts/test-wear-journeys.py --output <new-output-directory>`.
+2. Run `python3 apps/player/scripts/test-wear-journeys.py --profile <small-round-or-large-round> --output <new-output-directory>` on a fresh runner for each profile.
 3. Retain only the output directory's `safe` child as the artifact.
 4. With Pillow available, run `python3 apps/player/scripts/inspect-wear-evidence.py <artifact.zip> <full-tested-commit>`.
-5. Inspect both sizes' launch and recreation images and accessibility semantics.
+5. Inspect both profiles' separate artifacts, launch and recreation images, and accessibility semantics.
 
 The runner checks PNG headers and dimensions. Full image decoding belongs to the independent inspector.
 Neither layer establishes physical watch acceptance.
@@ -103,3 +103,20 @@ Cleanup will observe the owned serial for up to five seconds after process shutd
 It must still fail if the serial remains, inventory fails, or process cleanup fails.
 It must never restart ADB or stop another process to manufacture disappearance.
 Hosted verification of these acceptance changes remains pending.
+
+## Fresh round hardware profiles
+
+Each profile now boots its own fresh AVD with the physical size configured before startup.
+The runner rejects logical size or density overrides and records physical-display verification.
+Both matrix jobs must succeed, and each retains a separate artifact with three test executions.
+The workflow contract rejects a missing profile or a shared artifact name.
+Its failing baseline lacked the independent-profile matrix.
+
+The fixture waits for boot animation completion before device setup.
+It sets `device_provisioned` and `user_setup_complete` only on its newly created, ownership-verified emulator.
+The receipt retains their bounded before and after values.
+This models a usable watch with no connected phone and avoids first-time setup obscuring the app.
+No account is added, package is disabled, or phone is paired.
+Android's [test harness guidance](https://source.android.com/docs/core/tests/debug/harness) recommends minimal setup-screen customization for automated UI tests.
+The runner does not enable full Test Harness Mode or reset any existing device.
+Foreground ownership and visual acceptance remain required after this fixture setup.

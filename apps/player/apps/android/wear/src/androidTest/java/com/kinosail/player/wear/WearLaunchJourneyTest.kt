@@ -42,8 +42,10 @@ class WearLaunchJourneyTest {
             val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
             val failures = mutableListOf<Throwable>()
             runCatching {
+                val foreground = foregroundIsApp()
                 File(directory, "wear-$stage-semantics.txt").writeText(
-                    "activeWindowIsApp=${foregroundIsApp()}\n" + compose.onRoot().printToString())
+                    "activeWindowIsApp=$foreground\n" + compose.onRoot().printToString())
+                assertTrue("The captured semantics must belong to the active app", foreground)
             }.onFailure { failures.add(it) }
             runCatching {
                 val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())

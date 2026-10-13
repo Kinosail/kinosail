@@ -13,6 +13,16 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_wear_requires_both_independent_hardware_profiles(self):
+        # One passing emulator cannot cover the other physical size. The old
+        # in-place wm override did not establish correct round-screen geometry.
+        source = (WORKFLOWS / 'app.yml').read_text().split('  wear:\n', 1)[1].split('\n  system:', 1)[0]
+        self.assertIn('fail-fast: false', source)
+        self.assertIn('profile: [small-round, large-round]', source)
+        self.assertIn('--profile "${{ matrix.profile }}"', source)
+        self.assertIn('name: wear-journey-evidence-${{ matrix.profile }}', source)
+        self.assertNotIn('continue-on-error:', source)
+
     def test_isolated_aac_trial_is_an_explicit_codec_only_selection(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
         self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)

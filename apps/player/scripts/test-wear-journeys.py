@@ -84,8 +84,9 @@ def run_case(safe, run, label, size, density):
     case = {"name": label, "result": "failed", "stage": "configure", "expectedTests": 3}
     try:
         check(adb("shell", "pm", "clear", APP).strip() == b"Success", "wear_clear_failed")
-        adb("shell", "wm", "size", f"{size}x{size}")
-        adb("shell", "wm", "density", str(density))
+        check(adb("shell", "wm", "size").decode().strip() == f"Physical size: {size}x{size}", "wear_physical_size")
+        check(adb("shell", "wm", "density").decode().strip() == f"Physical density: {density}", "wear_physical_density")
+        case["physicalDisplayVerified"] = True
         adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
         case["displayPixels"] = [size, size]
         case["density"] = density
@@ -130,7 +131,9 @@ def run_case(safe, run, label, size, density):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--output", type=Path, required=True)
+parser.add_argument("--profile", choices=("small-round", "large-round"), required=True)
 args = parser.parse_args()
+size = 384 if args.profile == "small-round" else 454
 check(os.environ.get("GITHUB_ACTIONS") == "true", "requires_disposable_hosted_runner")
 ROOT = Path.cwd()
 SDK = Path(os.environ["ANDROID_HOME"])
@@ -139,7 +142,7 @@ run.mkdir(parents=True, exist_ok=False)
 safe = run / "safe"
 safe.mkdir()
 receipt = {"startedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-           "revision": None, "result": "failed", "cases": [],
+           "revision": None, "result": "failed", "cases": [], "profile": args.profile,
            "boundary": "Owned API36 signed Wear emulator; rendered accessibility fixtures and actual unpaired WearActivity launch/recreation; no phone pairing, sensor, battery, or physical-device proof"}
 emulator = None
 emulator_log = None
@@ -169,7 +172,7 @@ try:
              "-k", IMAGE], input=b"no\n", env=env)
     configuration = avd / (avd_name + ".avd/config.ini")
     settings = dict(line.split("=", 1) for line in configuration.read_text().splitlines() if "=" in line)
-    settings.update({"hw.lcd.width": "384", "hw.lcd.height": "384", "hw.lcd.density": "320",
+    settings.update({"hw.lcd.width": str(size), "hw.lcd.height": str(size), "hw.lcd.density": "320",
                      "hw.lcd.circular": "yes", "hw.ramSize": "2048", "hw.cpu.ncore": "2"})
     configuration.write_text("".join(k + "=" + v + "\n" for k, v in settings.items()))
     receipt["avdName"] = avd_name
@@ -190,7 +193,8 @@ try:
             owned = owns_emulator()
         except (OSError, subprocess.SubprocessError):
             owned = False
-        if owned and adb("shell", "getprop", "sys.boot_completed", timeout=10, check_exit=False).strip() == b"1":
+        if (owned and adb("shell", "getprop", "sys.boot_completed", timeout=10, check_exit=False).strip() == b"1"
+                and adb("shell", "getprop", "init.svc.bootanim", timeout=10, check_exit=False).strip() == b"stopped"):
             break
         time.sleep(2)
     else:
@@ -202,11 +206,17 @@ try:
         receipt.setdefault("runtime", {})[prop] = value
     check(receipt["runtime"]["ro.build.version.sdk"] == "36", "wear_api_mismatch")
     check("watch" in receipt["runtime"]["ro.build.characteristics"].split(","), "wear_device_mismatch")
+    receipt["setup"] = {}
+    for namespace, key in (("global", "device_provisioned"), ("secure", "user_setup_complete")):
+        before = adb("shell", "settings", "get", namespace, key).decode().strip()
+        check(before in ("0", "1", "null"), "wear_setup_state_invalid")
+        adb("shell", "settings", "put", namespace, key, "1")
+        check(adb("shell", "settings", "get", namespace, key).strip() == b"1", "wear_setup_not_complete")
+        receipt["setup"][key] = {"before": before, "after": "1"}
     adb("shell", "settings", "put", "global", "stay_on_while_plugged_in", "3")
     for apk in apks:
         check(b"Success" in adb("install", "-r", "-t", str(apk), timeout=120), "wear_install_failed")
-    for label, size, density in (("small-round", 384, 320), ("large-round", 454, 320)):
-        receipt["cases"].append(run_case(safe, run, label, size, density))
+    receipt["cases"].append(run_case(safe, run, args.profile, size, 320))
     check(all(case["result"] == "passed" for case in receipt["cases"]), "wear_case_failed")
     receipt["result"] = "passed"
 except Exception as error:
