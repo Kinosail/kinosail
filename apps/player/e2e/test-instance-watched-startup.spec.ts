@@ -4,6 +4,25 @@ import {startPlaying} from "./checkpoint-setup-cases";
 
 configureTestInstance();
 test.use({serviceWorkers: "block"});
+test.beforeEach(async ({page}) => {
+  await page.addInitScript(() => {
+    const add = EventTarget.prototype.addEventListener;
+    const native: Array<Record<string, unknown>> = [];
+    const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime");
+    for (const event of ["loadstart", "loadedmetadata", "canplay", "play", "playing", "pause", "waiting", "stalled", "error", "ended", "seeking", "seeked", "timeupdate"]) {
+      add.call(document, event, event => {
+        if (!(event.target instanceof HTMLVideoElement)) return;
+        const video = event.target;
+        native.push({event: event.type, at: performance.now(), seconds: video.currentTime,
+          nativeSeconds: mediaTime?.get?.call(video) ?? null, paused: video.paused, seeking: video.seeking,
+          readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
+          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: (window as Window & {watchedStartup?: {pending: unknown[]}}).watchedStartup?.pending.length ?? 0});
+        if (native.length > 96) native.shift();
+      }, true);
+    }
+    Object.assign(window, {watchedNativeStartup: native});
+  });
+});
 
 for (const watched of [true, false]) {
 for (const cancelledAgain of [false, true]) {
@@ -42,14 +61,32 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   await expect(page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true})).toBeVisible();
   const media = page.locator("video");
   await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {registered: number}}).watchedStartup.registered)).toBeGreaterThan(0);
-  // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
-  await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
-  await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-  await startPlaying(media);
-  await media.evaluate((video: HTMLVideoElement) => video.pause());
-  await expect(media).toHaveJSProperty("paused", true);
-  await startPlaying(media);
-  await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
+  let startupPhase = "pending-media";
+  try {
+    // Settle native startup before pausing; the one-shot canplay autoplay can otherwise resume this fixture.
+    await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
+    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
+    startupPhase = "first-start";
+    await startPlaying(media);
+    // Settle the initial playing callbacks; hold the resume notifications for the departure race.
+    await page.evaluate(() => {(window as Window & {watchedStartup: {release(): void}}).watchedStartup.release();});
+    await media.evaluate((video: HTMLVideoElement) => video.pause());
+    await expect(media).toHaveJSProperty("paused", true);
+    startupPhase = "resume";
+    await startPlaying(media);
+    await expect.poll(() => page.evaluate(() => (window as Window & {watchedStartup: {pending: Array<() => void>}}).watchedStartup.pending.length)).toBeGreaterThan(0);
+  } catch (error) {
+    const mediaState = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+      duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended,
+      seeking: video.seeking, readyState: video.readyState, networkState: video.networkState,
+      errorCode: video.error?.code ?? null, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+      buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])})).catch(() => ({unavailable: true}));
+    await info.attach("late-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, watched, cancelledAgain, phase: startupPhase, media: mediaState,
+      events: await page.evaluate(() => (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup).catch(() => []),
+      boundary: "Initial decoded-start setup before held navigation; no source URL or error text"}), contentType: "application/json"});
+    throw error;
+  }
   let release!: () => void, committed = false;
   const pending = new Promise<void>(resolve => {release = resolve;});
   const latePositions: string[] = [];
@@ -76,14 +113,17 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       // Establish fresh decoded motion inside the held request before releasing
       // the page's queued real notifications and requesting the late native pause.
       const start = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
-      let rejected = false;
+      let rejected = false, minimumFrames = start.frames;
       void video.play().catch(() => {rejected = true;});
       const deadline = performance.now() + 8000;
-      while (video.paused || video.getVideoPlaybackQuality().totalVideoFrames <= start.frames + 2 || video.currentTime <= start.seconds + 0.2) {
+      while (video.paused || video.getVideoPlaybackQuality().totalVideoFrames <= minimumFrames + 2 || video.currentTime <= start.seconds + 0.2) {
         if (rejected || performance.now() >= deadline) {
           relay.postMessage({kind: "qa-watched-paused", failure: "native motion did not resume during held transport"}, location.origin);
           return;
         }
+        // Native HLS may reset frame statistics after a seek. Still require
+        // three newly decoded frames and advancing time after that reset.
+        minimumFrames = Math.min(minimumFrames, video.getVideoPlaybackQuality().totalVideoFrames);
         await new Promise(resolve => setTimeout(resolve, 20));
       }
       const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
@@ -111,6 +151,30 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   });
   let bodyFailed = false;
   try {
+    if (!watched) {
+      // A departing native HLS document may stop fetching new segments. Decode
+      // and buffer the real tail before holding navigation; the late ended
+      // callback must use available media rather than require another load.
+      await media.evaluate((video: HTMLVideoElement) => {
+        video.pause();
+        if (!Number.isFinite(video.duration) || video.duration <= 3) throw new Error("Late ended fixture needs a finite video longer than three seconds");
+        video.currentTime = video.duration - 2.5;
+      });
+      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
+      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => {
+        const target = video.duration - 0.1;
+        return Array.from({length: video.buffered.length}, (_, index) =>
+          video.buffered.start(index) <= target && video.buffered.end(index) >= target).some(Boolean);
+      })).toBe(true);
+      await startPlaying(media);
+      await media.evaluate((video: HTMLVideoElement) => video.pause());
+      await expect(media).toHaveJSProperty("paused", true);
+      const tail = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+        duration: video.duration, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])}));
+      await info.attach("late-ended-buffered-precondition", {body: JSON.stringify({browser: info.project.name,
+        cancelledAgain, tail, boundary: "Actual native tail seek and decoded motion before held navigation"}), contentType: "application/json"});
+    }
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
     expect(await progress()).toMatchObject({watched, seconds: 0});
@@ -141,7 +205,27 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     await info.attach("accepted-watched-late-native-notification", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
       browser: info.project.name, cancelledAgain, stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
-  } catch (error) {bodyFailed = true; throw error;}
+  } catch (error) {
+    bodyFailed = true;
+    // Read through the owned relay before aborting the pending navigation.
+    // The old document can disappear before an ordinary afterEach inspection.
+    const media = await relay.evaluate(() => {
+      const video = (opener as Window | null)?.document.querySelector<HTMLVideoElement>("video");
+      if (!video) return {unavailable: true};
+      const ranges = (value: TimeRanges) => Array.from({length: Math.min(value.length, 8)},
+        (_, index) => [value.start(index), value.end(index)]);
+      return {seconds: video.currentTime, nativeSeconds: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")?.get?.call(video) ?? null,
+        duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended, seeking: video.seeking,
+        readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
+        decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        events: (opener as Window & {watchedNativeStartup?: unknown[]}).watchedNativeStartup ?? [],
+        buffered: ranges(video.buffered), seekable: ranges(video.seekable)};
+    }).catch(() => ({unavailable: true}));
+    await info.attach("late-native-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, watched, cancelledAgain, phase: committed ? "held-or-reopened" : "pre-submit-tail", media,
+      boundary: "Native snapshot before owned transport cleanup; no source URL or error text"}), contentType: "application/json"});
+    throw error;
+  }
   finally {
     release();
     const cleanup = await Promise.allSettled([page.unrouteAll({behavior: "wait"}), relay.close()]);
@@ -167,7 +251,18 @@ test("watched controls navigate and persist both states during decoded playback"
     const media = page.locator("video");
     await media.evaluate((video: HTMLVideoElement) => {video.muted = true;});
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-    await startPlaying(media);
+    try { await startPlaying(media); }
+    catch (error) {
+      const snapshot = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
+        nativeSeconds: Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime")?.get?.call(video) ?? null,
+        duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended,
+        seeking: video.seeking, readyState: video.readyState, networkState: video.networkState,
+        errorCode: video.error?.code ?? null, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
+        events: (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup})).catch(() => ({unavailable: true}));
+      await info.attach("ordinary-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+        browser: info.project.name, watched, snapshot, boundary: "Ordinary native start; no queued-playing injection or source URL"}), contentType: "application/json"});
+      throw error;
+    }
     const [saved, redirected] = await Promise.all([
       page.waitForResponse(response => response.url() === `${origin}/watched/${id}` && response.request().method() === "POST"),
       page.waitForResponse(response => response.url() === `${origin}${watch}` && response.request().redirectedFrom()?.url() === `${origin}/watched/${id}`),

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 	"net/http/httptest"
@@ -70,5 +71,36 @@ func copiedStartupUnfinishedCache(t *testing.T, directory string) {
 	writeHLSLoadingFile(t, filepath.Join(directory, "1080p/index.m3u8"), strings.ReplaceAll(copiedRecoveryManifest, "#EXT-X-ENDLIST\n", ""))
 	if err := os.Remove(filepath.Join(directory, ".seekable")); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func copiedStartupRetained(t *testing.T, directory, source string) func() {
+	t.Helper()
+	names := []string{"index.m3u8", ".source", ".copy-timeline", ".copy-clock", "1080p/index.m3u8", "1080p/init.mp4", "1080p/segment-00001.m4s"}
+	paths := []string{source}
+	for _, name := range names {
+		paths = append(paths, filepath.Join(directory, name))
+	}
+	data, identities := make([][]byte, len(paths)), make([]os.FileInfo, len(paths))
+	for i, path := range paths {
+		var err error
+		data[i], err = os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		identities[i], err = os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	return func() {
+		t.Helper()
+		for i, path := range paths {
+			after, err := os.ReadFile(path)
+			identity, statErr := os.Stat(path)
+			if err != nil || statErr != nil || !bytes.Equal(data[i], after) || !sameCopiedHLSFile(identities[i], identity) {
+				t.Errorf("refill changed retained %s", path)
+			}
+		}
 	}
 }

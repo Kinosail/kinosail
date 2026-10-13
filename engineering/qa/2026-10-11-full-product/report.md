@@ -39,10 +39,10 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Downloads | Preparation, integrity, pause/resume, ownership, offline use, removal, interrupted state | Ownership and worker controls passed; real 2.16 GB restart, independent hash and disconnected playback passed; quota controls pass three times per engine; hardware remains |
 | Subtitles | Search, inspect, pair, save, cleanup, history, restore, provider failures | Hosted cross-browser evidence retained; provider, deployment and production acceptance remain separate |
 | Administration | Configuration, integrations, security, backups, updates, diagnostics | Responsive administration reviewed in three engines; one Firefox resize timeout remains; external providers and deployment remain |
-| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS332 and tvOS313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
+| Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS 332 and tvOS 313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
-| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Required tooling passes; package lint and Player deep Go remain failed; current Firefox/WebKit failures remain open |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Nine protected QA PRs merged; main156 publication passes; scanned Nox Player3947 health and private-network TLS passed; current-main publication, Subtitles deployment and public-gateway acceptance remain |
+| Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go race/coverage passes at `6fe7a7b9` (89.5%); local lint debt and hosted WebKit playback failures remain open; HLS reconciliation needs fresh hosted checks |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Last verified: Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS; Subtitles `6f41117d`; current-main promotion and rollout need fresh proof |
 
 ## Iteration 1 results
 
@@ -1146,8 +1146,9 @@ The Critical scanner entry is `CVE-2026-6653` in
 `libxml2 2.12.7+dfsg+really2.9.14-2.1+deb13u3`.
 The [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-6653)
 marks that exact stable package vulnerable, records it as a minor issue without
-a stable security advisory, and lists a fix in unstable. Runtime reachability
-and exploit reproduction are not established. No suppression, release-gate
+a stable security advisory, and lists a fix in unstable. Read-only inspection of the deployed `394736cb` image confirms that FFmpeg,
+FFprobe, bsdtar and fpcalc link to this library. This proves runtime presence.
+Reachability of the vulnerable function and exploit reproduction remain unproved. No suppression, release-gate
 change or unsupported distribution upgrade is applied. Full scan and SBOM
 receipts remain private and checksummed.
 
@@ -1488,3 +1489,709 @@ translated “Library” entry and asserts nonempty catalogs before introducing 
 Exact command receipts, source and log hashes remain in the private evidence
 directory under `native-copy-build-guard-*-v3`. The complete CI contract suite
 passes after this repair.
+
+## QA-023 — Deep coverage misses consumer execution
+
+The final Player profile marks database opening and configuration paths uncovered,
+although Server, CLI and backup consumers call them. The deep collector uses Go's
+default per-package instrumentation. It therefore misses execution through tests
+in another package. These production functions are used and remain intact.
+
+A disposable two-package module reproduces the accounting gap with a real HTTP
+request and filesystem write. The unchanged collector passes the consumer test
+but fails coverage at 66.7%. Adding only `-coverpkg=./...` reports 100% for the same
+executed production statements. An unexecuted-function control still fails at
+37.5%, with that function at 0%. All three runs retain race detection. The first
+profile projection ran outside its module and is excluded from complete proof.
+
+Before the collector change, the retained command regression and coverage-policy
+contract both fail. After adding module-wide instrumentation, they and the full
+CI contract suite pass. The quick command, complete package selection, race mode,
+89% app requirement, 85% package requirement and existing test-helper exclusion
+remain unchanged. Wider instrumentation can add deep-run overhead; hosted results
+must establish its full-module coverage and execution cost. No test or assertion
+is removed to obtain coverage. Private `consumer-coverage-*` receipts retain exact
+commands, revisions, profiles and source/log hashes.
+
+The first full hosted profile with module-wide instrumentation reports Player at
+88.8% and Subtitles at 91.6%, at revision `ea760872`. Player remains below the
+unchanged 89% gate. Instrumentation corrects consumer accounting but does not
+close the remaining execution gaps. After workflow completion, the full log
+confirms no failing Go test, race warning or panic. The 88.8% threshold check is
+the failure. Profile archive hashes and block accounting are retained in the
+private `deep-ea-go` directory.
+
+## Late native callback failure evidence
+
+The final hosted failure traces select Arrival over HLS, rather than the helper's
+preferred Example Movie. WebKit's failure capture shows “Seeking…” after the
+near-end seek. Four attempts fail while waiting for the actual late `ended`
+notification. Firefox's failed first attempt reaches the later reopened-page
+control assertion; its retry passes. Neither cause is resolved by these traces.
+
+Six focused local HLS repetitions pass unchanged assertions on Linux ARM64.
+The same six pass with the retained failure-only snapshot. This does not reproduce
+the hosted AMD64 failure. Before releasing the held request, the test now reads
+native media state through its owned relay. The attachment includes bounded
+buffer/seekable ranges, time, frame count, native flags and numeric error code.
+It excludes source URLs, credentials, remote text and media identifiers.
+
+A deliberate private assertion failure retains one valid native snapshot, the
+original forced error, failure artifacts and successful container cleanup. Host
+trust remains unchanged. The first negative selector matches no cases and is
+excluded. An earlier interval probe passes six journeys but loses its successful
+snapshots after closing the relay; it provides no native-snapshot evidence.
+A final type-only cast produces byte-identical JavaScript under TypeScript 6.0.3.
+Private `watched-failure-evidence-*` receipts record the controls and hashes.
+No playback behavior, retry, timeout or product assertion changes.
+
+The next hosted run, `38219097077` at `ea760872`, again fails both WebKit
+unwatched cases. Three failure snapshots show a seek held at 11.9 of 12 seconds,
+with readiness 1 and buffered output ending at 3.92 seconds. The remaining
+attempt records native decode error code 3 and no decoded frames. The first
+three snapshots identify an unbuffered tail while navigation is held; they do
+not yet establish why that tail cannot load. Snapshot revision fields are absent
+because the hosted environment does not set that variable. Attribution comes
+from the exact-revision artifact and workflow metadata. Chromium and Firefox
+pass their settings journeys; WebKit also has one flaky album-advance journey.
+No failure or flaky case is treated as completed QA.
+
+## Short HEVC preparation through real HTTP and codecs
+
+A retained journey generates an 8.37-second HEVC video with EAC3 audio, then calls
+the production Library, playback planning, preparation and HLS routes over real
+loopback HTTP. Planning preserves HEVC and converts audio. The journey compares
+every delivered video frame hash with the decoded source and requires decoded
+audio. It checks warm adoption, cancellation of preparation after playback, and
+preparation again. No encoder, response or server operation is mocked.
+
+All three phases pass locally with race detection using macOS ARM64 and FFmpeg
+9.0.2. They also pass on Linux ARM64 with the hosted deep run's pinned Jellyfin
+FFmpeg 8.1.3 package. Each phase delivers all 201 matching video frames and 394
+audio frames. The Linux test is cross-compiled without race instrumentation;
+the macOS run supplies the separate race evidence. The disposable Linux
+container is removed after collecting evidence.
+
+Private `hevc-public-e2e-first-artifacts` and `linux-hevc-public-e2e` directories
+retain source media, frame hashes, exact commands, revision and checksums.
+The final Linux receipt also records the test source hash and runtime versions.
+This is real API and stream decoding evidence. It does not establish browser,
+simulator, physical-device or full-module coverage acceptance.
+
+
+## Buffered tail and native frame-counter resets (test repair)
+
+The held-navigation fixture now completes a real tail seek and requires the tail
+in native buffered ranges before submitting Mark unwatched. Six initial WebKit
+attempts still fail. Their precondition snapshots show full buffering, while
+final snapshots show actual playback ending at 12 seconds. Two bounded diagnostic
+replays establish that the native decoded-frame counter resets from 50 to 1, then
+advances to 13. The fixed baseline could never observe the required newer frames.
+One diagnostic selector finds no tests and is excluded from execution proof.
+
+The fixture now tracks the lowest observed frame counter during held playback.
+It still requires three newer decoded frames, media time advancing over 0.2
+seconds, and the actual native pause or ended event. Real form submission,
+accepted Server state, zero late progress requests and persisted state remain
+required. Product playback code, deadlines, retries and assertion outcomes do
+not change.
+
+All five watched-control journeys pass three times per engine on Linux ARM64:
+15 Chromium, 15 Firefox and 15 WebKit passes, without retries, skips or flakes.
+The final test source hash is
+`92029df041f5ed3eaefdf973907fa18f33fd19ec7d9f8d8ef363c478733868e8`.
+Private `watched-buffered-tail-full-positive-safe.json` records exact source,
+report hashes and cleanup. Each disposable container is removed; host trust is
+unchanged. These local results do not close the hosted AMD64 failure, its native
+decode-error observation, the flaky album journey, or physical-device acceptance.
+
+PR [#578](https://github.com/Kinosail/kinosail/pull/578) merges after every required
+check passes. A fetched ancestry check proves reviewed head `ae711016` is in
+remote main `a2d5f2b1`. Watch relay replies, physical Watch controls and VoiceOver
+remain separate acceptance boundaries.
+
+
+The complete tooling check then finds one stale Code Atlas value: the Server
+package has 376 test files, while its snapshot still records 375. Regeneration
+changes only that count. The Subtitles snapshot remains byte-identical, and the
+architecture contract passes. Deep run `38226919051` at `9d4bca82` is cancelled
+after its tooling failure; it provides no complete acceptance result. A fresh
+exact-revision deep run follows the snapshot checkpoint.
+
+## Deep run at `6008fa77` — coverage passes; one WebKit startup flake remains
+
+[Deep run 38227963067](https://github.com/Kinosail/kinosail/actions/runs/38227963067)
+completes at `6008fa77c6a9f7dbf8aee27e25dab224c1d0f1d3`.
+Full module coverage reports Player 89.8% and Subtitles 91.6%. Both unchanged
+coverage gates pass. Both Go jobs pass, with no race warning or panic in their
+collected logs. Passing individual tests are not named in those logs; they do
+not independently establish whether the new HEVC test executed or skipped.
+The retained local HEVC decoding receipts remain the explicit per-test proof.
+
+Player Chromium passes 862 executions and Firefox 858. WebKit passes 855, with
+one flaky case. Primary Player selections also skip 353, 357 and 359 cases,
+respectively. Subtitles passes 99 cases in each of the three engines, with no
+skips or flakes. The previously persistent WebKit Mark unwatched cases pass
+their first attempts. The remaining flaky Mark watched case passes its retry
+after timing out during decoded resume setup, before held navigation begins.
+The strict hosted flaky-test policy correctly leaves that job failed.
+
+The failed screenshot shows “Playback interrupted.” Its captured HLS requests
+return 200. The first decoded start passes; the immediate pause and second start
+fail to establish motion. The trace omits media bodies and the fixture captures
+no initial-setup media snapshot. A successful HTTP response does not establish
+valid media bytes or a working decoder. No root cause is claimed from this trace.
+
+Twelve diagnostic repetitions pass without retries on Linux ARM64. They record
+actual native events and numeric state without URLs or remote error text.
+One initial selector matches no tests and is excluded. A failure-only capture
+then records startup phase, native error code, decoded frames and buffered
+ranges. A synthetic resume denial remains failed and produces that attachment.
+The same retained capture passes 15 WebKit, five Chromium and five Firefox
+watched-control executions after reconciliation with main. Deadlines, retry counts and motion assertions remain
+unchanged. These passes do not close the hosted AMD64 interruption.
+
+The native artifact confirms iOS 332 passes with one skip, and tvOS 313 passes
+with one skip. Android compilation and both apps' AMD64/ARM64 container jobs
+also pass. Native package tests and compilation remain separate from physical
+devices, real Watch replies and production media journeys.
+
+Private `deep-6008-go`, `deep-6008-webkit`,
+`deep-6008-remaining-browsers` and `deep-6008-native-contracts` retain immutable
+archives, parsed reports and checksums. `watched-initial-*` receipts retain the
+diagnostic, rejected-start control and final test sources.
+
+## Matched native WebKit decoder controls
+
+The same silent and AAC MP4 bytes run through the same minimal Go HTTP server
+and plain video page on macOS ARM64 and Linux ARM64. Neither page includes
+Kinosail playback JavaScript, authentication or service workers.
+All six macOS attempts advance decoded frames and media time. Linux passes one
+silent attempt and fails the other five attempts, including all three AAC runs.
+Failed attempts stop near 0.16 seconds with full buffered media and no native
+error. Inspected synthetic captures confirm the visible frame difference.
+
+This narrows the direct-MP4 freeze to a browser/media environment boundary.
+It does not identify the cause or establish that the separate hosted HLS error
+has the same cause. Source, exact media hashes, browser versions, commands and
+receipts remain under private `native-decoder-matched-controls`.
+The owned server and disposable container are removed. Host trust is unchanged.
+
+## Verified Player deployment; newer main remains blocked
+
+Player main `a2d5f2b1` passes hosted CI and production-image promotion.
+The independently downloaded GHCR manifest matches its registry digest,
+`sha256:4951917f9683ab36889191f5e89889a1a82e79ded80e4e0e8611b8420efbd1aa`.
+Both platform image configurations name the exact source revision. GitHub
+attestation verification passes with the expected main source and hosted signer.
+
+The existing deployment script builds, scans and deploys its own ARM image to
+Nox. Independent inspection confirms revision `a2d5f2b1`, running and healthy,
+with a passing in-container health check. That local image is
+`sha256:5ad3b43422754b2fb3cf181e80527e5cf71fa4a176f401ca2b2ef03d2bc613fd`;
+it is distinct from the published GHCR image. The scan retains one Critical
+finding, CVE-2026-6653, and no fixable High or Critical finding under existing
+policy. Runtime linking confirms the installed libxml2 reaches the deployed
+media tools; vulnerable-function reachability remains unproven.
+
+Fresh anonymous HTTPS checks require normal CA and hostname validation and
+TLS 1.3. Root, health, Settings and settings API return 303, 200, 404 and 403.
+Their responses contain CSP and lack HSTS, as previously recorded. A system
+curl build cannot request TLS 1.3 and is excluded; the successful Python client
+uses default CA trust and hostname checks. This proves private-network transport,
+not authenticated production flows or public-gateway acceptance.
+
+Subtitles remains healthy at `6f41117d`. A proposed update stops before building
+or changing Nox because main advances to `5f169ee2`. Its main run
+[38229443046](https://github.com/Kinosail/kinosail/actions/runs/38229443046)
+fails cold-suffix lookback recovery with `fragment_not_restored`; the other 17
+fault cases pass. The focused macOS replay and three Linux ARM64 replays pass. Linux uses the
+hosted pinned Jellyfin FFmpeg 8.1.3 package and an attested host cross-compiled
+Server binary; its runtime compiler copy is explicit. Recovery diagnostics now
+record final HTTP status, fragment existence, response size and owned encoder
+completion before the existing failure check. Native hosted AMD64 diagnosis and
+current-main publication remain open. Reconciliation regenerates the single
+conflicting Code Atlas snapshot from both source changes; its contract passes.
+
+Private `main-a2d5-publication`, `nox-main-a2d5-*` and `main-5f-hls-failure`
+retain exact revision, manifests, scan evidence, health, transport and failure
+receipts. No production data, gateway policy or unrelated checkout is reset.
+
+After reconciliation, the real HEVC and copied-fragment recovery Go journeys
+pass with race detection. The full CI contract suite and source limits pass.
+The original hosted failures remain retained; no passing replay erases them.
+
+
+## Cold HLS encoder handoff repair
+
+The retained `lookback-join` case reproduces the missing final fragment.
+Its wrapper runs real FFmpeg unchanged, then delays the middle refill's exit.
+The original `d69516d9` binary fails three Linux ARM64 runs: segment 15 returns
+404, no replacement starts, and the encoder eventually settles.
+The repaired binary passes all three runs. Segment 15 returns 200, a fourth
+encoder restores it, and decoded video frames and timestamps match.
+The source, retained initialization, certificates and playlists remain unchanged.
+All disposable servers, probes and containers settle; host trust is unchanged.
+
+Missing-fragment admission now waits for file arrival or the exact producer's
+completion, then rechecks source and playback policy before reuse or refill.
+A separate HTTP control exposes a changed source being served after publication.
+It fails before that recheck and passes after it. Cancellation still settles
+without starting a replacement. The existing 30-second request limit remains.
+The preparation warning now includes the playback session, mode and cancellation.
+
+The initial delay control exposes expected final master-bandwidth publication.
+The retained case waits for initial encoder completion before snapshotting metadata;
+it delays only later refills. No metadata assertion is removed.
+All 19 real-media cold-suffix cases pass on macOS. The focused Go suite passes
+with race detection, real first-fragment regeneration and the named HEVC proof.
+Source limits pass after moving a shared test fixture into its existing cache file.
+Server logs retain correlated INFO lifecycle and WARN failure events without tokens.
+Browser, physical-device, hosted AMD64 and deployment proof remain separate.
+
+The newer deep run retains another failure: Player coverage is 87.9%, below 89%.
+Compared with the passing `6008` profile, the two new copied-audio files add
+189 uncovered statements. Existing browser/native audio proofs do not contribute
+to that Go profile. The gate remains unchanged; coverage repair is still open.
+
+Private receipts: `cold-retained-join-baseline` (three expected failures),
+`cold-retained-join-fixed` (three passes), `cold-lookback-final-race`,
+`cold-suffix-all-final` and `deep-d695-go-failure`.
+- `cold-retained-join-baseline` log SHA-256: `097007aa10a9a1a772e032c743cd622b88574c1be41c64b05a125d206d073ab1`.
+- `cold-retained-join-fixed` log SHA-256: `fbeb2cf100afe2f4ae277cabddd6cd719f087d80daf135e290b02ed6fa56ef3e`.
+- `cold-lookback-final-race` log SHA-256: `aae06b99ce8a7ac97646a9b7c212654d9586927e22618542580306240668a924`.
+- `cold-suffix-all-final` log SHA-256: `048f3ee385ab39d20b6fd0273b8618049b0490fc7dfae76699b700dc1434c5ec`.
+
+
+## Long-source certification in the deep Go consumer
+
+The real-codec HTTP journey now includes a 74.5-second continuous ALAC source.
+It requires matching certified source and AAC clocks, then deletes and restores
+both the first and a middle fragment. FFmpeg decodes the middle fragment before
+and after refill with original timestamps; every video frame and timestamp matches.
+Owned encoders join before cold reopen. Existing source, metadata and retained
+fragment checks remain required. This extends the existing public lifecycle proof;
+it also exercises warm seeking under Go race instrumentation.
+
+All three codec cases pass with race detection and no skipped case. The complete
+local module coverage diagnostic passes at 89.8%: 8,473 of 9,437 statements.
+Its profile SHA-256 is
+`bb027d59d51302ec1097f537663c07ee358103c017dd02b9e64c8500bd6d8306`.
+That complete local diagnostic has no race instrumentation. A separate full local
+race attempt is interrupted after 524.87 seconds to inspect runtime stacks.
+Those stacks show active asset compression during repeated test-server construction;
+the interrupted attempt is excluded from pass evidence. Its receipt is retained.
+
+The workflow now enables the existing strict media journey in deep Go runs.
+The wiring contract fails before that change and passes after it. The 89% gate
+and complete race command remain unchanged. All CI contracts, workflow lint and
+source limits pass. Hosted Linux AMD64, with pinned FFmpeg 8.1.3, must still verify
+the complete race profile on the final commit.
+
+The preceding `d69516d9` deep WebKit run retains one first-attempt startup failure;
+its retry passes. The diagnostic records resume, seeking, zero decoded frames,
+readyState 4 and no media error. All recorded HLS requests return 200. The rendered
+player remains on Seeking. This failure remains open; repeated local passes do
+not clear it. Private `deep-d695-webkit` retains its trace, screenshot and bounded
+native-state snapshot. A private scheduling control investigates whether holding
+startup callbacks creates extra resume work before the intended navigation race.
+
+Private `long-copied-clock-*` receipts retain exact source, commands, profiles,
+logs and checksums. Browser audio waveform proof and physical-device proof remain
+separate from the Go video-frame and lifecycle checks.
+
+
+## Required-check repair after the HLS push
+
+The hosted tooling check rejects a stale generated Player Code Atlas snapshot.
+The hosted new-code lint also rejects complexity in the HTTP timing fixture
+and a temporary MP4 write in the long-source comparison. These are retained failures.
+The fixture now separates adoption, outcome publication and request settlement.
+It preserves all five response outcomes, cancellation and retained-file assertions.
+The frame comparison streams owned fragment bytes to FFmpeg through standard input.
+It keeps original timestamps and compares every decoded video frame.
+No production code or lint setting changes in this repair.
+
+The focused startup and native recovery journeys pass again with race detection.
+New-code Player lint passes. The generated Code Atlas snapshot is refreshed.
+The complete local tooling check passes after the first snapshot refresh;
+the focused architecture contract passes on the final refreshed snapshot.
+Private receipts retain the hosted failures and successive local controls.
+Final race log SHA-256: `cc2bfa012328453b19d1767f5bfa0e5121a21365956ec2983e572dce9835558b`.
+Final new-code lint log SHA-256: `e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47`.
+Complete tooling log SHA-256: `2f2625f866eba8d6ec7fd2f7456627cb1b1dc0ba8b1fb3086a2865e0163a6563`.
+
+The preceding deep browser artifacts confirm Player Chromium 862 passes and
+Firefox 858 passes, with 353 and 357 skipped cases respectively.
+Subtitles has 99 passes in each browser and no skips or flakes.
+The actual native result bundles report iOS 332 passes and one skip,
+and tvOS 313 passes and one skip. They do not prove physical-device behavior.
+WebKit startup remains open; a successful local repetition does not clear it.
+
+
+## Watched callback setup and initial native diagnostics
+
+The fixture now delivers its initial queued playing callbacks after decoded startup.
+It still holds the later resume notifications for the accepted-watched departure race.
+All form, persisted-state, late-progress and decoded-motion assertions remain required.
+No deadline, retry count or flaky-test policy changes.
+
+Private prototypes pass 15 WebKit cases, five Chromium cases and five Firefox cases.
+The exact retained source then passes all five cases in each browser without retries.
+An isolated binary removes only the accepted-watched save guard.
+Both the original and adjusted scheduling controls reject that binary in every trial.
+They observe late native ended callbacks restoring the wrong watched state.
+The served script hash proves the negative control is active.
+This preserves detection of the original product regression.
+
+Initial setup failures now retain at most 96 native media events.
+Each event contains only its allowlisted type, numeric state and callback count.
+Native decoder time is recorded separately from the Player timeline time.
+A deliberate second-play denial retains the original resume failure and nine events.
+The diagnostic includes no source URL, body, credential or remote error text.
+Owned containers are removed and host trust stays unchanged.
+These are controlled setup checks; they do not reproduce the hosted seek stall.
+
+The hosted `df8a2259` complete Player Go race run passes with 89.7% coverage.
+The unchanged 89% gate remains required. Its profile SHA-256 is
+`bcf2d27e17d8e646a78df05d8c43bcaab78bc90a06f3625ee31090b7fc5ea16e`.
+That run still rejects the stale snapshot, test lint and old WebKit setup.
+The repaired source needs a fresh complete hosted run before those failures clear.
+
+Private exact-source receipts: `watched-native-retained-{webkit,chromium,firefox}`.
+Their log SHA-256 values, in that order, are
+`bf75cbd93d7478d82d0c9ace22da206b78cdf5810f28a49ba03aac65e9460d2e`,
+`37b89dbec5865109f8c0e66f76fa18c0721cdc3308a76eab1e242d80e14845f0` and
+`872170357488d503da2da4c2e5208dd7f11063bb23c5cdcf66c0e047e985a880`.
+Private `watched-native-retained-denial` retains the controlled failure;
+its log SHA-256 is `e5074d20ddcf51455c1bf927364b2313cda27de94adbc386e34e56eaa278469f`.
+
+The complete `df8a2259` WebKit artifact has two failed watched cases and one
+flaky ordinary form case. One first-start snapshot reports media decode error 3
+and no buffered frames. Other starts remain seeking with no decoded frames.
+The ordinary flow has no queued-playing hook. These observations keep a broader
+native playback boundary open beyond the callback setup adjustment.
+The bounded native journal now covers the ordinary flow too.
+Its failure snapshot preserves the original exception without changing the flow.
+
+The final shared journal source passes all five watched cases in each browser.
+The ordinary denial control retains its rejected play attempt and 44 native events,
+all with zero queued notifications. Existing canplay autoplay can still advance
+media during that control; the failure remains the deliberately rejected own call.
+Its original error is preserved. No source URL or remote error text is retained.
+Private `watched-native-retained-final-*` and `watched-native-ordinary-denial`
+receipts record exact source, commands, results, checksums and container cleanup.
+
+
+## Hosted checkpoint at `6fe7a7b9` and HLS reconciliation
+
+[Deep run 38247019149](https://github.com/Kinosail/kinosail/actions/runs/38247019149)
+passes complete Player Go race tests with 89.5% reported coverage.
+The profile SHA-256 is
+`0b26b1d5ac87b9ff3b7e1a3c7fad5f2de38af773651cfb67fff84d1d898b72aa`.
+Chromium passes 862 cases with 353 selected skips. Firefox passes 858 with 357 skips.
+Neither browser records a flaky case. Subtitles passes all 99 cases in each engine.
+The hosted Apple artifacts contain 332 iOS passes and 313 tvOS passes.
+Each Apple platform has one skip and no failed test.
+
+WebKit passes 854 cases with 359 skips, one failed case and one flaky case.
+The flaky watched-resume journal records initial decoded motion, a frame-counter
+reset on resume, repeated source reloads, and native media decode error 3.
+A failed unwatched case remains seeking near the buffered tail without decoded frames.
+The ordinary form case passes this run. Earlier ordinary failures remain retained.
+The bounded journal now also accompanies failures after initial startup.
+No assertion, timeout, retry policy or product playback script changed for that diagnostic.
+The original tooling job fails inside `go list`; its captured subprocess error hides the cause.
+The same source passes required PR tooling. The targeted hosted tooling retry also passes.
+The deep run still fails because the retained WebKit failures remain unresolved.
+
+Main advanced to `51a5fcc2` through PR #581 with another producer-completion repair.
+Its nonblocking preparation and successful-completion-only readmission are preserved.
+The existing public HTTP source-change control fails against that implementation:
+a fragment published after its source changes returns 200 instead of 404.
+The synthetic completion fixture first adopts main's explicit completion cause.
+The reconciled path then rechecks the captured source and policy under the manager lock
+before serving a fragment that arrived during a producer wait.
+That red control passes with race detection after the check.
+Canceled producer, canceled request, published output and replacement controls also pass.
+These controlled HTTP checks do not replace fresh real-codec and hosted verification.
+
+The incoming `refill-completion` real-codec case replaces the duplicate `lookback-join` case.
+It holds the third completed encoder for three seconds and proves the request joins it.
+Initial encoder settlement, retained metadata hashes and per-recovery outcomes remain recorded.
+The safe producer-join log correlation from main remains required.
+Earlier `lookback-join` artifacts remain reproducible at their recorded revision.
+
+Reconciled focused Go race checks pass 102 named tests and subcases, without skips.
+The private log SHA-256 is
+`dff09681a671014df6ff087275d3178f89db0c1a9c08cf0b9cd95af07fa6b2ea`.
+New-code Player lint and complete repository tooling pass.
+The 19-case real-codec matrix passes 18 cases, including held producer completion.
+Its success case records a connection error during warm restart.
+That exact case passes a focused follow-up with an identical binary and source patch.
+Warm reuse and both corrupt and missing certificate regeneration pass the follow-up.
+The original failed matrix remains retained; it is not reported as a single passing run.
+These macOS codec results use FFmpeg 9.0.2. Hosted FFmpeg 8.1.3 remains a separate gate.
+
+A private observation overlay adds known request and session identifiers to the existing HTTP controls.
+The source-changed publication emits one WARN with both identifiers, mode and cancellation state.
+Successful publication emits no preparation warning. The synthetic private query and source path remain absent.
+This observes handler logs; it does not establish deployed logging behavior.
+Its private log SHA-256 is
+`02229f3be5f5c4c43ed8aeb9891fad896e1996845246864f383bb1c495508e12`.
+
+## Native decoded-frame counter reset in the browser setup helper
+
+The reconciled source reproduces three WebKit watched-journey failures without retries.
+Chromium and Firefox each pass all five journeys on that same source.
+The new late-failure journal records native frame counters resetting after pause and seek.
+The helper retains its pre-reset count and can miss advancing decoded media until the clip ends.
+One failed tail start resets from 43 frames to one and then reaches the real ended state.
+An earlier start similarly crosses the clip end before the held-navigation proof begins.
+
+The helper now tracks the lowest frame count observed during each play attempt.
+It still requires three newly decoded frames, advancing time, unpaused media and no play rejection.
+The corrected source passes 15 WebKit watched journeys, five Chromium journeys and five Firefox journeys.
+All runs use real Servers, trusted HTTPS, moving media and zero retries.
+The four existing checkpoint setup controls also pass in all three engines.
+Those controls retain delayed acknowledgements, late abort, rejected start and stored near-end resume checks.
+
+An isolated compiled binary then removes only the accepted-watched save guard.
+All three WebKit negative controls detect the original overwrite: watched becomes true after Mark unwatched.
+Each fails at the stored-state assertion, with no motion timeout.
+The actually served asset contains the negative marker and lacks the original guard.
+Its SHA-256 is `2b8a15bf808575f79c86395d2a7e2ca3ed1a19eea70a73fe7b9fd1fd19f52231`.
+This verifies that the corrected setup still detects the product regression.
+The positive WebKit result SHA-256 is
+`8fdff3bb211b186048c44c057de6d2773754e037ce68c6c97583f8e3fcb9ba25`.
+The negative result SHA-256 is
+`6d96eb4f125c1e526020e45789a14449251e38d74e225716fd599ab998478cad`.
+All disposable browser containers are removed. Host trust is unchanged.
+
+Earlier native decode errors and seeking stalls remain separate findings.
+The helper repair does not establish their complete cause or physical-device behavior.
+A fresh hosted deep run is still required on the committed reconciled source.
+
+The next deep run, `38255568088` at `0cb41055`, passes the complete Player Go suite.
+It flags cognitive complexity in the reconciled segment request method.
+The local diff filter had missed that function-level diagnostic at an unchanged declaration.
+Fragment preparation now has a separate helper with the same missing-file and error handling.
+Its diagnostics use the inherited segment context and retain request and session correlation.
+Lint against the broader pre-reconciliation revision passes after this repair.
+The focused race checks also pass again. Fresh hosted checks remain required for the repair commit.
+The run's browser and native results are still pending at this checkpoint.
+
+## Further EPUB accessibility and device boundaries
+
+The byte-identical frozen Android production APK again reproduces missing chapter text.
+After the original assertion fails, a content-change event does not recover the heading.
+Clearing and restoring the WebView description also fails to recover it.
+A separate control successfully activates touch exploration through UiAutomation.
+The original heading remains absent, and the exact service flags and touch state are restored.
+This is an emulator accessibility control; actual TalkBack is not running.
+
+Two focus/reload control attempts encounter an Android System UI ANR modal.
+Their inspected screenshots and unfocused app windows exclude them from EPUB conclusions.
+Four intervening unchanged executions pass and therefore do not execute the controls.
+All task-installed packages are removed and the existing AVD is shut down after each run.
+No production EPUB repair, current localization-asset proof or physical acceptance is claimed.
+
+Four bounded cold-boot executions then pass the unchanged EPUB assertion.
+Each disables snapshot loading and saving while preserving the existing AVD data.
+The focus/reload controls never run because the original assertion passes.
+These results establish neither snapshot causality nor an EPUB accessibility repair.
+Task-installed packages are removed after every execution, and the task emulator is shut down.
+The fourth execution's pending, loaded, empty and failed captures are visually inspected.
+They show another layout finding: pending tablet lines span the viewport, while loaded text uses a centered reading column.
+That skeleton geometry repair is queued for the next native UI change.
+
+Fresh physical discovery still finds no connected iPhone or Watch.
+The physical Apple TV preview remains at its system profile chooser.
+No profile is selected during this refresh. The existing human handoff remains pending.
+
+## Follow-up hosted and decoder observations
+
+Main advances to `a615e769` with the independently reviewed marker-bounds repair.
+Reconciliation preserves both source changes and regenerates the Player architecture page.
+The preceding deep run at `0cb41055` reports canonical Player Go coverage of 89.7%.
+Its WebKit report has one flaky compact-toolbar case and no unexpected final result.
+The first attempt passes the button geometry assertions, then fails during screenshot capture.
+Its retry passes; the first failure remains retained and is not accepted as a clean pass.
+The original watched-state failures do not recur in that report.
+The artifact SHA-256 is `edbde696f982ee241ee47c7f1c49d8b2f33a91b5899d9cae7cf554a676077882`.
+
+A separate native-decoder observation keeps the original loopback server, media and playback predicate.
+All six Linux WebKit contexts stall near 0.16 seconds, with no native media error.
+Each receives the complete HTTP 200 media body with the exact expected SHA-256.
+Both silent and AAC files match their original bytes. Incomplete transfer is excluded for these six observations.
+Response-body instrumentation remains a diagnostic timing boundary.
+The result SHA-256 is `49cd4fc4e0d9bea9ac1cf197e1ac282383826be89fffba7c4bc573b1df6d9220`.
+Earlier GStreamer warnings report temporary-file removal, not file creation failure.
+They do not establish the playback-stall cause. No production workaround is introduced.
+The owned diagnostic container is removed. Physical Safari behavior remains unproved.
+
+## Resolved subtitle-policy follow-up
+
+The deep run at `c0e38f59` retains 862 Chromium, 856 WebKit and 858 Firefox passing browser executions.
+Those browser reports have no unexpected or flaky results. Player Go coverage is 89.5%.
+The complete run fails the separate startup boundary and a tvOS endpoint-restore prerequisite.
+The tvOS failure occurs before its native scrub assertion; no product cause is established.
+
+Two hosted startup executions fail the fragment-success assertion after subtitle burn-in invalidation.
+The pinned Linux ARM64 reproduction fails at that same assertion.
+The wait-time policy check compares the URL recipe with a policy captured after source resolution.
+The URL recipe lacks the external subtitle path included in the captured policy.
+A valid subtitle-burned continuation can therefore return 404 after successful publication.
+
+The check now resolves the source recipe before comparing policies.
+Source inspection stays outside the HLS manager lock. The existing complete policy check remains under that lock.
+The unchanged startup journey passes with this candidate, including continuation decoding and retained initialization bytes.
+Its Linux runner copies an attested cross-built binary instead of rebuilding inside the browser image.
+The Mac replay passes while explicitly skipping burn-in because its FFmpeg lacks the subtitles filter.
+It does not establish the hosted failure's acceptance.
+
+The candidate diff SHA-256 is `b2b704f2eec757bd32485ffb3fc5f52428d5acbaa21d1cee440bae1a9101b2c5`.
+The passing candidate binary SHA-256 is `76dde0cd2396ce0fc63645725123c645b8474b9d54b4e673bfb3bf812fa0f8a8`.
+Main's shared copied-generation plans and native progress repair are then reconciled.
+The generated Player architecture page is rebuilt from the combined source.
+On that reconciled source, 42 focused HLS tests and 60 subcases pass with race detection and no skips.
+The stale-source and canceled-producer rejection controls remain intact.
+The broader pre-reconciliation lint check, complete tooling suite, workflow contracts and architecture contracts pass.
+The pinned actionlint fork passes; the Homebrew upstream validator lacks the repository's native parallel-step syntax.
+
+The controlled log observation repeats the five existing HTTP outcomes with synthetic request and session correlation.
+The source-changed publication emits one WARN. Successful publication emits no preparation warning.
+The synthetic private query and source path remain absent from the diagnostic projection.
+These are controlled handler logs, not deployed Server or browser log proof.
+The exact commands, patches, binaries and private logs remain in `linux-startup-continuation-*` and `hls-ae91-*` evidence.
+Fresh hosted checks are still required for the final committed revision.
+
+The original startup journey also passes on the fully reconciled source with the integrated repair.
+Its production-source snapshot is base `c0e38f59` plus patch SHA-256 `e5f51acb995e23f0faa93475e2dbc62080fa82891d7fb5946096984dc0cedcff`.
+The reconciled Linux binary SHA-256 is `dbfe66a5d0366a863cfdc13e2dc4c7d6a0cafff769d3c4e1978ab07f8e161a30`.
+The owned container is removed. This remains Linux ARM64 proof; exact-head hosted AMD64 checks follow the commit.
+
+
+## QA-026 — Layout recording ends before slow first paint
+
+The hosted WebKit layout run at `fd70beb4` stops after its first completed case.
+The library renders, but the recorder times out waiting for a fresh baseline frame.
+Chromium and Firefox layout runs pass. The hosted artifact SHA-256 is
+`94a2c9ccc1a22a25228165d52815b4bc875d77b159588bb9cc051dfde313b216`.
+A diagnostic Linux ARM64 replay passes 39 cases and 11 flows without reproducing that timeout.
+Its largest baseline is 6184ms. The hosted failure has no captured baseline timestamp,
+so this replay does not establish its exact cause.
+
+The recorder stops its animation callback eight seconds after navigation.
+A new isolated CLI regression serves a real critical stylesheet after 8500ms.
+The normal-render control passes. Three slow-render executions fail at the original fresh-frame wait.
+A fourth red execution uses the final fixture and fails at the same wait.
+No browser clock, frame callback or geometry predicate is mocked.
+The fixture is a local HTTP peer, not populated Go Server E2E proof.
+
+Recording now remains active until the settled measurement is collected, then stops.
+The initial and settled geometry checks and existing automation bounds remain unchanged.
+The regression requires a fresh frame after each viewport's baseline and a later settled frame.
+Both slow-case baselines must exceed 8000ms.
+The final fixture identifies its two documents rather than assuming one CSS request per document.
+Firefox requests each stylesheet twice; the earlier exact request-count failures remain retained.
+An earlier Chromium fixture also counted an icon request as a document; that fixture error is corrected.
+
+The final normal and slow cases pass in macOS Chromium and WebKit with zero retries.
+Linux Firefox passes both cases and all five retained authentication controls with zero retries.
+Its two slow baselines are 9304ms and 9270ms, followed by fresh and settled frames.
+The final test SHA-256 is `1c47919d7433c3f381b9dcb9c3b77545d95bba630dfd79ecba2f91a9f1cbbafd`.
+The repaired CLI SHA-256 is `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+The macOS run log SHA-256 is `808b1d1ec14db929e4ff3aa7ce1fc924c8dd907d7686927a551022830499bef8`.
+The Linux Firefox run log SHA-256 is `005a88415226a1266f26c7fd548d8c86f50b2fdb22accff306eff42290488634`.
+The owned Linux container is removed, and host certificate trust is unchanged.
+
+macOS Firefox cannot open its profile folder, including an execution outside the sandbox
+and a separate task-owned profile-location control. Those failed launches remain retained.
+An initial Chromium authentication control exceeds its subprocess bound; its outside-sandbox replay passes.
+The whole-tree TypeScript keyword policy still rejects five `unknown` annotations in the unchanged
+`test-instance-watched-startup.spec.ts`. The new test has no keyword-policy violation.
+The syntax and source-cap checks pass. Private `layout-sampling-*` receipts retain each attempt.
+
+## Current hosted and simulator boundaries
+
+The `fd70beb4` deep artifacts report canonical Go coverage of 89.7% for Player and 91.1% for Subtitles.
+Subtitles passes 99 browser executions in each of Chromium, Firefox and WebKit, with zero skips or flakes.
+Player Firefox has no unexpected or flaky result across its retained reports; platform skips remain.
+Player WebKit retains one flaky native-startup case. Its first attempt is still seeking at 0.1 seconds
+with zero decoded frames and no native error; the retry passes. This is not a clean startup result.
+The failed media-state SHA-256 is `6c495f78f0a8138e5596fd9caa2fbc1386166ffee6bd0dcfb11e4f39cc0b4192`.
+No timeout, decoder predicate or watched-state assertion is weakened.
+
+Hosted iOS starts zero tests because its runner hangs before connecting.
+Hosted tvOS passes 319 tests, skips one and fails none.
+The retained native artifact SHA-256 is `d8c34aef603834374f7bbec0e38c85c9a4366fa0c24fe527decbf5a097f2bfc9`.
+A separate local iPhone simulator suite passes 329 tests, skips four and fails none.
+Three skipped cases require the external decoded-media fixture; the remaining case is platform-specific.
+The local run preserves the exact native source tree and restores the simulator's shutdown state.
+Its summary SHA-256 is `21a2b1aca02656a8cc0bf2e902cc0d5f56fc1e3e23eac42cbd268ee62c2ad5c5`.
+Local simulator proof does not replace the failed hosted runner or physical-device proof.
+Fresh discovery still finds no connected iPhone, iPad or Watch. Two Apple TVs remain connected.
+The existing physical-TV profile handoff remains pending; discovery selects no profile or app.
+
+
+The repaired recorder also passes the populated Linux ARM64 WebKit audit: 39 cases and 11 flows.
+Every initial frame follows its baseline. The owned container is removed, with host trust unchanged.
+The run log SHA-256 is `bf08c96652d999acac0318bd543f31b6dc66cefac7f272c3c17f2f3be361e947`.
+The source archive and patch retain the exact recorder; the container adaptation only selects
+an existing trusted-CA Firefox launcher. WebKit predicates and native clocks remain unchanged.
+The report-only additions made during execution do not change the archived app or recorder sources.
+
+Required CI run `38322824963` passes for PR #579 head `fd70beb4`.
+Its tested merge is `66df3b153a084ff44172d442c1ecc4535fc1db3f`.
+A fetched ancestry check confirms that the reviewed head is included in that merge.
+The startup browser case passes with zero skips, unexpected results or flakes.
+Its burned-subtitle invalidation and original-init continuation assertions execute successfully.
+The startup artifact SHA-256 is `046cb2beef9dfab95145751019dd2a21336f82bb8399b1d2ed4d97aa05ba8097`.
+This is PR-merge startup proof, not remote main ancestry or production deployment proof.
+Fresh hosted checks must verify the subsequent recorder commit before protected integration.
+
+
+## Delayed-CSS fixture correction after hosted Chromium
+
+Required CI for `659046b8` fails only the new slow-render sampling fixture.
+Both attempts produce fresh baseline and later settled frames in both viewports.
+The CLI then rejects BODY layout shifts of 0.005146 and 0.002829.
+The delayed fixture changes the default body margin, heading size and card height.
+That is a real fixture shift, so the layout enforcement correctly returns exit 1.
+The failed browser artifact SHA-256 is `f3893ea96b6a3a20840eb8c35d129f28ce206361e9e49d5fe3c9f24f0fabf640`.
+Later receipt checks cannot complete because this earlier browser step fails; startup is not reached.
+This result does not reproduce the HLS subtitle-policy failure.
+
+The fixture now reserves identical real geometry inline.
+Its delayed stylesheet exposes the body only after delivery, without changing those dimensions.
+CLI enforcement, zero-exit, fresh-frame, settled-frame and 8000ms baseline assertions remain unchanged.
+The final fixture still fails against the original recorder at its fresh-frame wait.
+The repaired working CLI is restored after that red control, with its exact hash verified.
+The normal and slow controls then pass in Linux Chromium, Linux Firefox and macOS WebKit.
+Each final engine run has two passes, zero skips, zero unexpected results and zero flakes.
+Both owned Linux containers are removed, with host trust unchanged.
+The final test SHA-256 is `944dd0ba82a9abb840393afc0071a9c5798e0d275b4961ce6f89c2bdfd4d2c65`.
+The Linux Chromium run log SHA-256 is `3b6a2c0289836ea4eba0963e53f353b8cbd250c6dc4e18d2baf4f0022b817a90`.
+The Linux Firefox run log SHA-256 is `71784f44ae3fe93782579aba24927c55ed043a06bdfcd54bf07158a23e61babd`.
+The macOS WebKit run log SHA-256 is `c9e962df082c294eb687bf3b9a6ce35d98e815264c519dd4e7be72c22054a501`.
+The original-recorder red-control log SHA-256 is `7f2ddaac8fb3858658060e3abf97e2adbf9cddfd989a732824fc26a8db5252df`.
+These remain isolated CLI fixtures. The populated layout workflow at `659046b8` separately passes all three engines.
+Its source receipts show the exact head, empty working diffs and no source drift.
+
+The `659046b8` hosted native artifact also completes both platforms.
+iOS passes 332 tests and skips one. tvOS passes 319 tests and skips one. Neither platform fails.
+The artifact SHA-256 is `012bb10c30cbbfefd99567eb9fe10cf7a2d3aefb25b339ff72094ee985a185a6`.
+This clears the preceding hosted iOS startup boundary for this run; its earlier failure remains retained.
+These contracts do not include the separate pending Apple reader UI branch or physical-device acceptance.
+
+
+The hosted layout receipts for `659046b8` retain every selected case without source drift.
+Chromium passes 95 Player cases and 111 Subtitles cases, with 11 and 26 flows respectively.
+Firefox and WebKit each pass 40 Player cases and 46 Subtitles cases, with the same flow counts.
+Their fixture suites retain platform-specific skips separately from these populated measurements.
+The Chromium artifact SHA-256 is `bb258677879920ef47959ac4130652797e610eb5feb106d70ca4a253f73ba4b3`.
+The Firefox artifact SHA-256 is `7c80bef31c682b85d38337a3f1c9eb56f581cb5efe5ccb432b6b5ecb9f0602d2`.
+The WebKit artifact SHA-256 is `bc4f7b25bc31990a16d2d9bf23740dd9174226a441e7bb8fc0f2274d5c688f51`.
+All three record CLI SHA-256 `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+These hosted source receipts precede the fixture-only correction at `b0de9685`.

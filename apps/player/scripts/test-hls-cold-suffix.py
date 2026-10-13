@@ -60,6 +60,17 @@ def wait_for(condition, seconds, failure):
     raise RuntimeError(failure)
 
 
+def first_encoder_completed(directory):
+    for line in (directory / 'server-private.log').read_text().splitlines():
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if row.get('msg') == 'HLS transcode completed':
+            return True
+    return False
+
+
 def exercise(source_fixture, source_facts, fault):
     directory = run / fault
     media = directory / 'media'
@@ -149,7 +160,10 @@ def exercise(source_fixture, source_facts, fault):
                 wait_for(lambda: settled(directory), 5, 'index_probe_not_settled')
                 metadata = [cache / name for name in ['.copy-timeline', '.copy-clock', '.source', 'index.m3u8']]
                 metadata += [rendition / name for name in ['init.mp4', 'index.m3u8']]
+                if fault == 'refill-completion':
+                    wait_for(lambda: settled(directory, 'encoder-pids') and first_encoder_completed(directory), 5, 'initial_encoder_not_completed')
                 snapshots = [sha(p) for p in metadata]
+                case['retainedMetadataSHA256'] = {str(p.relative_to(cache)): digest for p, digest in zip(metadata, snapshots)}
                 case['recoveries'] = []
                 for number in sorted({0, fragments // 2, fragments - 1}):
                     fragment = rendition / f'segment-{number:05d}.m4s'
@@ -161,6 +175,8 @@ def exercise(source_fixture, source_facts, fault):
                         check(not settled(directory, 'encoder-pids'), 'refill_settled_before_request')
                     fragment.unlink()
                     status, data, headers = api.http(base + fragment.name)
+                    case.setdefault('recoveryAttempts', []).append({'segment': number, 'status': status,
+                        'fragmentExists': fragment.exists(), 'bodyBytes': len(data), 'encoderSettled': settled(directory, 'encoder-pids')})
                     case['lastRecoveryStatus'] = status
                     case['lastRecoveryRequestID'] = next((v for k, v in headers.items() if k.lower() == 'x-request-id'), '')
                     check(status == 200 and fragment.exists(), 'fragment_not_restored')
@@ -172,7 +188,9 @@ def exercise(source_fixture, source_facts, fault):
                         check(abs(current['audioStart'] - preceding['audioEnd']) <= .05, 'fragment_audio_gap')
                     if number == 0:
                         check(sha(fragment) == digest, 'first_fragment_changed')
-                    check([sha(p) for p in metadata] == snapshots, 'certificate_or_initialization_changed')
+                    observed = [sha(p) for p in metadata]
+                    case['recoveryAttempts'][-1]['changedMetadata'] = [str(p.relative_to(cache)) for p, before, after in zip(metadata, snapshots, observed) if before != after]
+                    check(observed == snapshots, 'certificate_or_initialization_changed')
                     check(count(directory, 'suffix-starts') == 1, 'refill_rescanned_index')
                     case['recoveries'].append({'segment': number, 'status': status, 'binaryIdentical': sha(fragment) == digest, 'videoFramesAndTimestampsIdentical': True, 'audioGapSeconds': current['audioStart'] - preceding['audioEnd'] if preceding else None, 'metadataUnchanged': True})
                 if fault == 'success':

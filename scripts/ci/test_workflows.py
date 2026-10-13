@@ -84,6 +84,7 @@ case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; e
 
     def test_deep_go_lane_installs_real_media_dependencies_before_testing(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
+        self.assertIn("KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}", source)
         step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
         self.assertIn('if: fromJSON(inputs.plan).deep', step)
         # Noble FFmpeg 6.1 rejects the real copied-HLS offset/resume fixtures.
