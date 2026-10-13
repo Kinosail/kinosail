@@ -132,6 +132,27 @@ class Trial:
             values.byteswap()
         return values
 
+    def input_seek(self, source, rate, warm):
+        micros = warm * 1_000_000 // rate
+        raw = self.run(["ffmpeg", "-nostdin", "-v", "error", "-ss",
+                        f"{micros // 1_000_000}.{micros % 1_000_000:06d}", "-i", str(source),
+                        "-map", "0:a:0", "-t", "0.1", "-ac", "1", "-c:a", "pcm_s16le", "-f", "s16le", "-"])
+        actual = array.array("h")
+        actual.frombytes(raw)
+        with wave.open(str(self.root / "source.wav"), "rb") as original:
+            lower = max(0, warm - 64)
+            original.setpos(lower)
+            reference = array.array("h")
+            reference.frombytes(original.readframes(len(actual) + 128))
+        if sys.byteorder != "little":
+            actual.byteswap()
+            reference.byteswap()
+        offsets = [shift for shift in range(-64, 65) if warm + shift >= lower
+                   and reference[warm + shift - lower:warm + shift - lower + len(actual)] == actual]
+        # Diagnostic only: never realign or relax the fixed splice acceptance.
+        return {"requestedSample": warm, "decodedSamples": len(actual), "exactMatchingOffsets": offsets,
+                "matchesRequestedContent": offsets == [0], "decodedSHA256": digest(raw)}
+
     def frames(self, media):
         raw = self.run(["ffmpeg", "-nostdin", "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0",
                         "-enc_time_base", "demux", "-fps_mode", "passthrough", "-avoid_negative_ts", "disabled",
@@ -172,6 +193,7 @@ def case(trial, source, original, rate, number):
     phase = int(audio["packets"][0]["pts"]) % 1024
     limit = max(0, (number * 2 - 3) * rate)
     warm = max(0, limit - (limit - phase) % 1024)
+    input_seek = trial.input_seek(source, rate, warm)
     candidate = trial.encode(source, f"refill-{number}", rate, number, warm, boundary - number * 2 * rate)
     refill = (candidate / f"segment-{number:05d}.m4s").read_bytes()
     control = initialization + b"".join(retained)
@@ -192,6 +214,7 @@ def case(trial, source, original, rate, number):
     bounded = number * 2 - warm / rate <= 3 + 1024 / rate and (number < 2 or warm > 0)
     result = {"rate": rate, "targetSeconds": number * 2, "warmStartSamples": warm,
               "warmStartMicros": warm * 1_000_000 // rate, "boundedPreroll": bounded,
+              "inputSeekDiagnostic": input_seek,
               "videoDTSBoundary": str(boundary), "phase": phase,
               "packetClocksEqual": expected_packets == actual_packets,
               "originalPacketClock": expected_packets, "mixedPacketClock": actual_packets,

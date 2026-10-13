@@ -2614,3 +2614,34 @@ Archive SHA-256 values are `320fbcc5c42557ba484021ae51065670c08135fdbee168af0934
 The isolated layout skip counts remain two each for Chromium/WebKit and zero for Firefox.
 All three Subtitles browser artifacts verify 198 checksums each and 99 passing cases, with no skips, failures, or flakes.
 No local application, browser, simulator, emulator, codec, or device runtime was started.
+
+### Bounded preroll restores clocks but still shifts later audio content
+
+The [next hosted run](https://github.com/Kinosail/kinosail/actions/runs/38358977537) at `c4a027f338b62491ead806621fa8c396d69a7e90`
+executes the nonperiodic public regression. All four audio renditions fail both content joins while rejecting silence and displacement controls.
+Entry correlations range from 0.7138 to 0.7151; exit correlations are about 0.4500. Both video-only fixtures pass.
+The public artifact verifies 13 checksums and 102 receipts. Its archive SHA-256 is
+`00118718a2c1890f03e2d5eb188de5b331825239b331d54575fb1d06e3fb339e`.
+
+The separate codec experiment completes all four cases and 48 commands without codec errors or diagnostics.
+Every case preserves exact AAC packet clocks, decoded video clocks, and PCM length.
+Both two-second refills match the control waveform exactly at both joins.
+Both fourteen-second refills fail the unchanged content thresholds despite matching all timing checks:
+
+| Sample rate | Entry correlation / normalized RMS | Exit correlation / normalized RMS | Result |
+| --- | --- | --- | --- |
+| 48 kHz | 0.2530 / 1.2247 | -0.0284 / 1.4329 | fail |
+| 44.1 kHz | 0.9471 / 0.3240 | 0.9216 / 0.3972 | fail |
+
+The artifact verifies both checksums, exact script source, revision, and installed codec binary hashes.
+Its archive SHA-256 is `ad623934544b9f181dc0e522423ffa5d0b0e44b42364fc7b50ff71a54136bb3c`.
+This rejects the proposed mechanism as a complete repair. Equal timestamps and packet counts cannot establish correct audio content.
+The next diagnostic compares the lossless input seek against known source samples within a fixed 64-sample search range.
+That search reports a possible source offset only. It never realigns the splice comparison or changes acceptance thresholds.
+An explicit manual `AAC` selection runs this codec-only experiment; the public HLS and required CI suites remain unchanged.
+
+Required CI also exposes an overbroad artifact contract: it scans all later workflow jobs for JSON wildcards.
+The repaired check isolates its upload step and requires the exact sixteen paths for four approved JSON files per campaign.
+The prior unrestricted-tail assertion is retained in the failed hosted log. Sixteen architecture and eighteen workflow checks pass locally.
+The branch also incorporates protected main `a1c7a1dc8396be32ac66851f098f2f23a8018c6a`, including the native preference-read repair.
+No production audio repair, local media execution, or comprehensive pass is claimed.

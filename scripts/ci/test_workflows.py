@@ -13,6 +13,18 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_isolated_aac_trial_is_an_explicit_codec_only_selection(self):
+        source = (WORKFLOWS / 'layout-stability.yml').read_text()
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)
+        self.assertIn("inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'", source)
+        section = source.split('  hls-followon:', 1)[1]
+        self.assertIn("inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC'", section)
+        self.assertIn("if: inputs.campaign_proof == 'HLS'\n        with:\n          go-version-file:", section)
+        self.assertIn("inputs.campaign_proof == 'HLS' && !inputs.hls_remaining_proof && !inputs.hls_transcoded_refill", section)
+        self.assertIn("(inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC') && steps.codecs.outcome == 'success'", section)
+        self.assertIn("always() && inputs.campaign_proof == 'HLS' && inputs.hls_audio_origin", section)
+        self.assertNotIn('continue-on-error', section)
+
     def test_layout_recovery_retains_original_precredential_evidence(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
         artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  campaign-proof:', 1)[0]

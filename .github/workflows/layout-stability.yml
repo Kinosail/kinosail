@@ -15,7 +15,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS]
+        options: [none, R06, Q14, Q09, Q47, HLS, AAC]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -143,7 +143,7 @@ jobs:
 
   campaign-proof:
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -311,8 +311,8 @@ jobs:
           retention-days: 3
 
   hls-followon:
-    name: Bounded public HLS follow-on
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'
+    name: ${{ inputs.campaign_proof == 'AAC' && 'Isolated AAC splice experiment' || 'Bounded public HLS follow-on' }}
+    if: github.event_name == 'workflow_dispatch' && (inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC')
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -322,13 +322,17 @@ jobs:
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - name: Validate transcode refill selection
-        if: inputs.hls_transcoded_refill
+        if: inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC'
         run: |
           test '${{ inputs.hls_remaining_proof }}' != true
           test '${{ inputs.hls_audio_timing }}' != true
           test '${{ inputs.hls_audio_installation }}' != true
           test '${{ inputs.hls_audio_origin }}' != true
+          if [ '${{ inputs.campaign_proof }}' = AAC ]; then
+            test '${{ inputs.hls_transcoded_refill }}' != true
+          fi
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        if: inputs.campaign_proof == 'HLS'
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -349,7 +353,7 @@ jobs:
           test '${{ inputs.hls_audio_timing }}' != true
           python3 -m unittest discover -s apps/player/scripts -p test_hls_remaining_installation_wrapper.py
       - name: Run all authenticated public cases
-        if: ${{ !inputs.hls_remaining_proof && !inputs.hls_transcoded_refill }}
+        if: ${{ inputs.campaign_proof == 'HLS' && !inputs.hls_remaining_proof && !inputs.hls_transcoded_refill }}
         run: python3 apps/player/scripts/test-hls-followon.py
       - name: Run strict public transcode refill race suite
         if: inputs.hls_transcoded_refill
@@ -375,17 +379,17 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Probe isolated bounded AAC preroll
-        if: always() && inputs.hls_transcoded_refill && steps.codecs.outcome == 'success'
+        if: always() && (inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC') && steps.codecs.outcome == 'success'
         run: timeout --kill-after=5s 180s python3 apps/player/scripts/probe-transcode-audio-splice.py "$RUNNER_TEMP/transcode-audio-trial"
       - name: Checksum completed or interrupted AAC trial
-        if: always() && inputs.hls_transcoded_refill && steps.codecs.outcome == 'success'
+        if: always() && (inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC') && steps.codecs.outcome == 'success'
         run: |
           git diff --quiet
           test -z "$(git status --porcelain)"
           cd "$RUNNER_TEMP/transcode-audio-trial"
           sha256sum -- receipt.json commands.jsonl > SHA256SUMS
       - name: Keep isolated AAC preroll receipts
-        if: always() && inputs.hls_transcoded_refill
+        if: always() && (inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC')
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-transcode-audio-trial-${{ github.sha }}
@@ -404,7 +408,7 @@ jobs:
           test "$selected" -le 1
           timeout --kill-after=5s 600s python3 apps/player/scripts/test-hls-remaining.py
       - name: Preserve safe follow-on receipts
-        if: always() && !inputs.hls_transcoded_refill
+        if: always() && inputs.campaign_proof == 'HLS' && !inputs.hls_transcoded_refill
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-hls-followon-${{ github.sha }}
@@ -415,5 +419,5 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Verify integrated Player source after commit
-        if: ${{ always() && inputs.hls_audio_origin }}
+        if: ${{ always() && inputs.campaign_proof == 'HLS' && inputs.hls_audio_origin }}
         run: timeout --kill-after=5s 300s make -C apps/player verify-changed BASE=origin/main
