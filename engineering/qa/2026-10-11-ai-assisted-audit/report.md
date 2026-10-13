@@ -27,9 +27,9 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
-| Browser session return | Subtitles Firefox and WebKit each pass 99 cases without failures, flakes, or skips at `657e2ca2`. | Player's previously skipped session-return case is now required by its populated runner; hosted execution is pending. |
+| Browser session return | Subtitles Firefox and WebKit each pass 99 cases without failures, flakes, or skips at `657e2ca2`. Player Firefox runs the required populated session-return case and passes without retry at `c09c2659`. | Player Chromium and WebKit execution and current required gates. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. | The later `657e2ca2` iOS reader journey times out for two light-mode arguments. Stage diagnostics and current native checks are pending. Physical-device behavior remains separate. |
+| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. Hosted native contracts pass again at `c09c2659`. | The intervening `657e2ca2` and `07db0b07` iOS reader journeys time out for two light-mode arguments. Stage diagnostics and retained reader attachments are pending. Physical-device behavior remains separate. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -2920,3 +2920,34 @@ The earlier `657e2ca2` native job reports one failed parameterized iOS test: the
 The existing native diagnostic file stays in the simulator's temporary directory and is absent from the hosted artifact. Failure-only diagnostics now retain the fixed stage, light-mode flag, font size, and fixture request counts in the captured test log. No request bodies, tokens, paths, or URLs enter that record. The original exception, ten-second waits, and all geometry and terminal-state assertions remain unchanged. This is diagnostic work; no product reader defect or repair is established yet.
 
 The `07db0b07` deep native job repeats the same two reader wait failures while tvOS passes its reported 316 Swift tests. Its private log SHA-256 is `4ccc602493f4c15a56d063c76da5bd5ecbb881174025a2d832802058ed32a5f3`. The failure remains open; a later pass will not replace investigation of these retained failures.
+
+
+### Populated Player saved-session execution verified
+
+Hosted deep run `38388921845`, Firefox job `115267783872`, passes at `c09c265954bb2db846f0f69a44d46a51e4d3dba4`.
+Artifact `11809696098` includes the saved-session case in `settings-firefox/results-firefox.json`.
+It executes once with status `passed` and retry zero. The general report still skips this fixture-dependent case.
+The authenticated return receives `/me` status 200, starts no ordinary passkey login, and retains explicit step-up.
+Seven reports contain 878 passing executions, 361 skips, zero failures, and zero flakes; these are not 878 distinct cases.
+All 574 checksum entries, 573 manifest evidence hashes, and ten source-input hashes match.
+Archive SHA-256: `07de5203c322b502f383910796167de90ab6486031f970ff00252d7b4df1a490`.
+Session receipt SHA-256: `db1655631ec722b5275cc998dcbf95d950fea8c86607a8b5e684d4387d49d341`.
+The private verification is `pr587-hosted/player-firefox-c09c2659.session-proof.json`.
+
+The same revision's native job `115267783222` passes both iOS and tvOS contracts.
+Its Swift Testing summaries report 335 and 316 tests respectively, without recorded issues.
+These console counts exclude separately reported XCTest cases; they are not full xcresult totals.
+Log SHA-256: `33164e3ae08362371057e77ca6c6c24a071d156e1ce108f4cc2e2142122078c1`.
+This pass does not resolve the two preceding reader failures. Revision `8fa923df` retains the failing stage if it recurs.
+
+### Retain reader screenshots and measurements in hosted native evidence
+
+The reader journeys wrote their PNG and JSON evidence only to simulator temporary directories.
+The hosted workflow retains `.xcresult`, so those files were missing from the downloadable result.
+Existing writes now also use Swift Testing data attachments. This preserves pending, loaded, empty, and failed renders,
+font geometry, localized footers, concurrent preference-save results, and failure-stage records.
+The attachments contain only synthetic fixture content and measurements. Assertions and deadlines are unchanged.
+[Apple's Swift Testing attachment documentation](https://developer.apple.com/documentation/testing/attachments)
+describes saving data with `Attachment.record` and inspecting it through Xcode test reports.
+Independent source review found no blocker. Source-file limits and whitespace pass locally.
+Compilation and attachment retrieval require the next hosted native run; local runtime remains held.

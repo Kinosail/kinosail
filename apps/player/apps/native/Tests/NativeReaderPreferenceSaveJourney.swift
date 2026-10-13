@@ -51,10 +51,10 @@ extension NativePreferencesUXTests {
             fixture.releasePreferences()
             #expect(try await client.mediaPreferences(policy: .cached) == edited)
             #expect(fixture.preferenceReads == 1)
-            try JSONSerialization.data(withJSONObject: ["savedFontSize": 32, "loadedFontSize": metrics.fontSize,
+            try readerEvidence(JSONSerialization.data(withJSONObject: ["savedFontSize": 32, "loadedFontSize": metrics.fontSize,
                 "preferenceReads": fixture.preferenceReads, "saves": fixture.saves,
-                "obsoleteResponseReleasedAfterLoaded": true], options: [.prettyPrinted, .sortedKeys])
-                .write(to: folder.appendingPathComponent("concurrent-save.json"))
+                "obsoleteResponseReleasedAfterLoaded": true], options: [.prettyPrinted, .sortedKeys]),
+                folder: folder, name: "concurrent-save.json")
         } catch {
             await session.client?.close(purgeCache: true)
             if let previous { try await keychain.save(previous) } else { try await keychain.clear() }

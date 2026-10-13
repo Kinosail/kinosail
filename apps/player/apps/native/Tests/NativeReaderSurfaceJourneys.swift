@@ -57,7 +57,7 @@ extension NativePreferencesUXTests {
                 context.cgContext.translateBy(x: 0, y: 180 - window.bounds.height)
                 window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             }
-            try #require(footer.pngData()).write(to: folder.appendingPathComponent("localized-footer.png"))
+            try readerEvidence(#require(footer.pngData()), folder: folder, name: "localized-footer.png")
             let image = try #require(footer.cgImage)
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = .accurate
@@ -74,8 +74,8 @@ extension NativePreferencesUXTests {
                 "requestEvents": fixture.state.withLock { $0.readerEvents.mapValues { $0 - shown } },
                 "positiveControlTranslated": normalized.contains(language.control),
                 "expectedCounterMatched": normalized.contains(expected)]
-            try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
-                .write(to: folder.appendingPathComponent("localization.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys]),
+                folder: folder, name: "localization.json")
             #expect(normalized.contains(language.control), "The explicit harness control must confirm the selected catalog")
             #expect(normalized.contains(expected), "The real reader must localize the counter and preserve unequal page numbers")
         } catch {
@@ -115,9 +115,9 @@ extension NativePreferencesUXTests {
             try await readerUntil { fixture.heldReaderCount == 1 }
             stage = "initial-pending-capture"
             let initial = try readerBands(window, light: light)
-            try JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
-                "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted])
-                .write(to: folder.appendingPathComponent("pending-font.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
+                "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted]),
+                folder: folder, name: "pending-font.json")
             try await readerCapture(window, folder: folder, name: "pending-initial")
             if fontSize != 20 {
                 stage = "saved-font-pending"
@@ -140,8 +140,8 @@ extension NativePreferencesUXTests {
                 "pendingLeft": pending[0].minX, "pendingRight": pending[0].maxX,
                 "loadedLeft": left, "loadedRight": right, "fontFamily": metrics.fontFamily,
                 "fontSize": metrics.fontSize, "horizontalOverflow": metrics.overflow]
-            try JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys])
-                .write(to: folder.appendingPathComponent("geometry.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]),
+                folder: folder, name: "geometry.json")
             try await readerCapture(window, folder: folder, name: "loaded")
             #expect(abs(pending[0].minX - left) <= 2, "Pending and loaded column left edges must match")
             #expect(abs(pending[0].maxX - right) <= 2, "Pending and loaded column right edges must match")
@@ -180,7 +180,7 @@ extension NativePreferencesUXTests {
                 let diagnostic: [String: Any] = ["stage": stage, "light": light, "fontSize": fontSize, "heldReaderCount": fixture.heldReaderCount,
                     "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
                 if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]) {
-                    try? data.write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
+                    try? readerEvidence(data, folder: evidenceFolder, name: "failed-operation.json")
                     // Retain only fixed stage names and fixture counts in hosted logs.
                     print("NATIVE_READER_FAILURE " + String(decoding: data, as: UTF8.self))
                 }
@@ -286,7 +286,14 @@ extension NativePreferencesUXTests {
             window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             if let web, let chapter { chapter.draw(in: web.convert(web.bounds, to: window)) }
         }
-        try #require(image.pngData()).write(to: folder.appendingPathComponent(name + ".png"))
+        try readerEvidence(#require(image.pngData()), folder: folder, name: name + ".png")
+    }
+
+    func readerEvidence(_ data: Data, folder: URL, name: String) throws {
+        try data.write(to: folder.appendingPathComponent(name))
+        // Hosted CI retains xcresult, while simulator temporary files are discarded.
+        // These bytes contain only the isolated reader fixture and measured geometry.
+        Attachment.record(data, named: name)
     }
 }
 #endif
