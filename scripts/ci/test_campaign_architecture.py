@@ -177,7 +177,14 @@ class ArchitectureAdmissionTests(unittest.TestCase):
         self.assertIn('default: false', section)
         self.assertIn('type: boolean', section)
         self.assertIn('timeout 120s python3 scripts/ci/campaign-architecture.py "$CAMPAIGN_PROOF"', source)
-        artifact = source.split('name: Keep safe campaign proof')[1]
+        step = re.search(r'(?ms)^      - name: Keep safe campaign proof\n(.*?)(?=^      - |^  [A-Za-z0-9_-]+:|\Z)', source)
+        self.assertIsNotNone(step, 'the campaign artifact upload step must exist')
+        artifact = step.group(1)
+        paths = artifact.split('          path: |\n', 1)[1].split('          include-hidden-files:', 1)[0]
+        self.assertEqual(sorted(line.strip() for line in paths.splitlines() if line.strip()), sorted(
+            f'.verification/campaign-proof/{campaign}/{name}'
+            for campaign in ('R06', 'Q14', 'Q09', 'Q47')
+            for name in ('receipt.json', 'results.json', 'source-manifest.json', 'artifact-manifest.json')))
         self.assertNotIn('*.json', artifact)
         self.assertNotIn('index.html', artifact)
         self.assertNotIn('command.log', artifact)
