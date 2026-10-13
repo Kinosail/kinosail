@@ -448,7 +448,7 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
       - name: Verify Subtitles copied-video clocks
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -462,7 +462,7 @@ jobs:
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode ac3 --force-audio-conversion --decoded-audio
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --copied-clock-errors
       - name: Verify Subtitles copied generation plans
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -477,7 +477,7 @@ jobs:
             python3 apps/player/scripts/test-subtitles-copied-prefix.py --plan-fault "$fault"
           done
       - name: Verify Subtitles completed copied suffixes
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 5
         env:
           GOMAXPROCS: "2"
@@ -503,7 +503,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify cold and damaged HLS cache reopen
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "2"
         run: python3 apps/player/scripts/test-hls-cache-reopen.py
@@ -519,7 +519,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify prepared copied-video timeline
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "2"
         run: |
@@ -553,7 +553,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify copied-video audio and legacy preparation
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -572,7 +572,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify continuous converted-audio recovery
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 15
         env:
           GOMAXPROCS: "2"
@@ -602,7 +602,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify complete HEVC preparation
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"

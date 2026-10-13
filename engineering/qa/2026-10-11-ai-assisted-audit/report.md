@@ -3427,3 +3427,23 @@ The following required check reports cognitive complexity 16 against the helper'
 The cache walker now returns the existing relative-path error directly, including nil for the cache root.
 Its outer walk-error counter retains unavailable-evidence reporting without the extra nested branch.
 Formatting and source caps pass. The architecture snapshot is unchanged because test-file contents are excluded; its file count is unchanged.
+
+
+## Superseded CI media work — October 13
+
+The complete Player lint and tooling jobs pass at `889d31d7`; the diagnostic helper and architecture corrections are accepted by hosted checks.
+While waiting, superseded run `38424844269` continued its media steps after cancellation was requested.
+Its next branch run remained pending until the old run eventually became cancelled.
+Eight expensive browser follow-on steps used `always()`, which also evaluates true after cancellation.
+[GitHub documents that cancellation re-evaluates these conditions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation).
+
+Those eight guards now use an explicit `!cancelled()` status condition with the same app and Chromium selection.
+This retains execution after an ordinary failed step while stopping cancelled media work.
+[GitHub's expression reference](https://docs.github.com/en/actions/reference/workflows-and-actions/expressions) documents status-function behavior and recommends this cancellation condition.
+Commands, media assertions, artifact uploads, safe evidence parsing, and required aggregate checks are unchanged.
+The first regression-contract run fails ten assertions across twenty tests before the workflow edit.
+The repaired campaign contracts pass twenty tests, and the broader workflow contracts pass seventeen tests.
+Pinned actionlint 1.17.0, source caps, and whitespace checks also pass.
+These are source-contract results; cancellation of a hosted run using the new guards has not yet been observed.
+Application production LOC is unchanged; this repair changes eight workflow conditions.
+Independent source review approves the condition change and retains the hosted cancellation/descendant-settlement boundary.
