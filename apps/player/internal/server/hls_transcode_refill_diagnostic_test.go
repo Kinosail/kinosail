@@ -19,12 +19,28 @@ func transcodeRefillDiagnostics(t *testing.T, logs *copiedLogBuffer, tools strin
 		if json.Unmarshal([]byte(line), &record) != nil || record["level"] != "WARN" && record["level"] != "ERROR" {
 			continue
 		}
-		failures = append(failures, map[string]any{"level": record["level"], "operation": transcodeRefillFailureOperation(record)})
+		failures = append(failures, map[string]any{"level": record["level"], "operation": transcodeRefillFailureOperation(record), "clock": transcodeRefillClockFields(record)})
 		if len(failures) == 16 {
 			break
 		}
 	}
 	transcodeRefillLog(t, map[string]any{"failureProjection": failures, "observedProducers": transcodeRefillProducers(t, tools)})
+}
+
+func transcodeRefillClockFields(record map[string]any) map[string]any {
+	clock, _ := record["clock"].(map[string]any)
+	safe := make(map[string]any)
+	for _, key := range []string{"measured", "init_equal", "video_clock_equal", "audio_clock_equal"} {
+		if value, ok := clock[key].(bool); ok {
+			safe[key] = value
+		}
+	}
+	for _, key := range []string{"expected_rate", "actual_rate", "expected_base", "actual_base", "expected_video_pts", "actual_video_pts", "expected_video_dts", "actual_video_dts", "expected_audio_pts", "actual_audio_pts", "expected_video_packets", "actual_video_packets", "expected_audio_packets", "actual_audio_packets", "actual_cuts"} {
+		if value, ok := clock[key].(float64); ok && value >= -(1<<40) && value <= 1<<40 {
+			safe[key] = value
+		}
+	}
+	return safe
 }
 
 func transcodeRefillFailureOperation(record map[string]any) string {

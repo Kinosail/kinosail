@@ -31,7 +31,7 @@ func (output *transcodeHLSOutput) publish(manager *hlsManager, ctx context.Conte
 	original := recovery.clock.Renditions[recovery.rendition]
 	measured, err := manager.probeTranscodeFragments(ctx, stage, []string{name}, recovery.number == len(original.Cuts)-1)
 	if err != nil || !matchesTranscodeFragment(measured, original, recovery.number) {
-		return transcodeClockError("refill-stage-clock", err)
+		return transcodeClockMismatch(err, measured, original, recovery.number)
 	}
 	current := func() bool {
 		return output.current(manager, ctx, item, directory, policy, root, media)
