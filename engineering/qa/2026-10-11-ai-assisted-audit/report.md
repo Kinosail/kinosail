@@ -3246,3 +3246,25 @@ All seven decoded frame comparisons and actual playback completion pass; compati
 The earlier failure's 73.88-second duration is exactly the final fragment's 0.6 seconds short.
 That failure never requested fragment four. This supports, but does not prove, an incomplete initial projection.
 The separate real-encoder pacing trial remains necessary to capture the initial playlist during generation.
+
+
+## Paced Subtitles tail reproduction and completion controls — October 13
+
+Artifact `11821127904` from deep run `38409036995` at `17185e27` reproduces the copied suffix defect.
+Its SHA-256 is `136785525a4a28c1293e67faa0cdc7bdb5498c35ef2593df78bea8aca5a9e7a6`.
+The unpaced direct-switch case passes all seven frame comparisons.
+The paced case confirms the real encoder wrapper was applied and fails only the final frame comparison.
+Its first served VOD lists four durations: 4, 4, 4, and 2.48 seconds.
+A later response lists 4, 4.08, 3.92, and 2.48 seconds, still with four fragment URIs.
+The final physical output has five fragments: 4, 4.08, 3.92, 4, and 0.6 seconds.
+The browser JSON hash matches its receipt. Source contents are unchanged and the Server settles.
+All eleven existing generation-plan controls pass separately.
+
+New public controls are written before the production repair.
+They hold real copied output after its first fragment and again after genuine ENDLIST, before command success.
+They require no master publication during either hold, exact completed playlists, warm reuse, and restart reuse.
+Failure controls cover ENDLIST followed by command failure, the readiness deadline, and missing or mismatched plan metadata.
+The original seven-frame browser journey and its unpaced control remain unchanged.
+The proposed repair covers nonzero copied windows with at most 30 seconds of requested media remaining.
+Their policy-bound master can serve as the success receipt if published only after successful producer completion and final validation.
+Longer nonzero windows require further work; delaying an entire remaining title would harm startup.
