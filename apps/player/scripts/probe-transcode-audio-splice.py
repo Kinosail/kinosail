@@ -22,6 +22,7 @@ import wave
 from fractions import Fraction
 
 import transcode_audio_source_probe as audio_source
+import transcode_fragment_clock_probe as fragment_clock
 
 
 def digest(data):
@@ -165,12 +166,11 @@ def case(trial, source, original, rate, number):
     initialization = (original / "init.mp4").read_bytes()
     retained = [(original / f"segment-{index:05d}.m4s").read_bytes() for index in range(number - 1, number + 2)]
     target = initialization + retained[1]
-    video = trial.probe(target, "v:0")
     audio = trial.probe(target, "a:0")
     if audio["streams"][0].get("sample_rate") != str(rate) or audio["streams"][0].get("time_base") != f"1/{rate}":
         raise RuntimeError("declared-audio-clock-mismatch")
-    boundary = int(video["packets"][0]["dts"]) * Fraction(video["streams"][0]["time_base"]) * rate
-    phase = int(audio["packets"][0]["pts"]) % 1024
+    boundary = Fraction(trial.presentation_clock["cuts"][number]["dtsSeconds"]) * rate
+    phase = trial.presentation_clock["audioPhase"]
     limit = max(0, (number * 2 - 3) * rate)
     warm = max(0, limit - (limit - phase) % 1024)
     input_seek = audio_source.input_seek(trial, source, rate, warm)
@@ -196,7 +196,7 @@ def case(trial, source, original, rate, number):
     result = {"rate": rate, "targetSeconds": number * 2, "warmStartSamples": warm,
               "warmStartMicros": warm * 1_000_000 // rate, "boundedPreroll": bounded,
               "inputSeekDiagnostic": input_seek, "correctedInputSeekDiagnostic": corrected_seek,
-              "certifiedFixtureClock": trial.clock,
+              "certifiedFixtureClock": trial.clock, "originalFragmentClock": trial.presentation_clock,
               "videoDTSBoundary": str(boundary), "phase": phase,
               "packetClocksEqual": expected_packets == actual_packets,
               "originalPacketClock": expected_packets, "mixedPacketClock": actual_packets,
@@ -227,7 +227,8 @@ def main():
     receipt = {"revision": revision, "complete": False, "codecs": codecs,
                "boundary": "isolated codec experiment; not public HTTP or production repair proof",
                "scriptSHA256": digest(Path(__file__).read_bytes()),
-               "helperSHA256": digest(Path(audio_source.__file__).read_bytes()), "results": results, "commands": commands}
+               "helperSHA256": digest(Path(audio_source.__file__).read_bytes()),
+               "fragmentHelperSHA256": digest(Path(fragment_clock.__file__).read_bytes()), "results": results, "commands": commands}
 
     def checkpoint():
         (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
@@ -241,16 +242,17 @@ def main():
             try:
                 source = trial.source(rate)
                 original = trial.encode(source, "original", rate)
+                trial.presentation_clock = fragment_clock.presentation(trial, original, rate)
                 for number in (1, 7):
                     try:
                         results.append(case(trial, source, original, rate, number))
                     except (RuntimeError, ValueError, KeyError, OSError, subprocess.SubprocessError) as error:
                         results.append({"rate": rate, "number": number, "accepted": False, "errorClass": type(error).__name__,
-                                        "sourceClockFailure": str(error) if isinstance(error, audio_source.FixtureClockError) else None})
+                                        "sourceClockFailure": str(error) if isinstance(error, (audio_source.FixtureClockError, fragment_clock.FragmentClockError)) else None})
                     checkpoint()
             except (RuntimeError, ValueError, KeyError, OSError, subprocess.SubprocessError) as error:
                 results.append({"rate": rate, "accepted": False, "errorClass": type(error).__name__,
-                                        "sourceClockFailure": str(error) if isinstance(error, audio_source.FixtureClockError) else None})
+                                        "sourceClockFailure": str(error) if isinstance(error, (audio_source.FixtureClockError, fragment_clock.FragmentClockError)) else None})
             finally:
                 commands.extend(trial.commands)
                 checkpoint()

@@ -2680,3 +2680,36 @@ This experiment is not a general source repair and does not alter any production
 The conservative uniqueness bound includes two coarse timestamp ticks plus two sample-rounding steps.
 Nineteen campaign-route checks pass after the stale assertions are repaired. Python source parsing and source limits pass.
 The next codec experiment awaits hosted execution; its helper source hash is included in the receipt.
+
+### Certified sample reconstruction passes the isolated splice experiment
+
+The [hosted trial](https://github.com/Kinosail/kinosail/actions/runs/38362489818) at
+`5fa2d1ba5c938205031814ca8c7ac61fa4fbd075` passes all four cases and all 58 codec commands without diagnostics.
+Both artifact checksums, both script hashes, exact revision, and codec binary identities verify.
+The archive SHA-256 is `25737cdc0ebc324f26bb1eb4ef9a251a6973eaccef81c558201af7a67e8af216`.
+Both rates have 4,608-sample FLAC blocks. The scan reaches EOF with exactly 864,000 and 793,800 samples respectively.
+The one-millisecond discontinuity control mutates the measured frame metadata; it is not a separately muxed faulty-media test.
+
+All four corrected input seeks match their source PCM exactly at offset zero. The uncorrected late offsets remain +16 and -3 samples.
+AAC packet clocks, 150 decoded video clocks, and PCM lengths remain exact in every mixed sequence.
+Both early waveform joins match exactly. Late results pass the unchanged thresholds:
+
+| Sample rate | Entry correlation / normalized RMS | Exit correlation / normalized RMS |
+| --- | --- | --- |
+| 48 kHz | 0.999971 / 0.007690 | 0.999995 / 0.003164 |
+| 44.1 kHz | 0.999970 / 0.007768 | 0.999993 / 0.003702 |
+
+All silence and displacement controls reject. No alignment search, padding, or threshold relaxation contributes to acceptance.
+This accepts the bounded reconstruction mechanism for these certified sources. Production HTTP refill remains red.
+Production still needs original rendition timing, durable generation identity, bounded staging, and publication without replacing retained neighbors.
+The branch incorporates protected main `5cf9ba06`, which includes PR 590's native recovery and deployment verification changes.
+
+The next isolated boundary is obtaining exact original cuts efficiently. Independent source review finds pre-mux records
+insufficient because they precede mux success, timestamp offsets, and HLS cut selection.
+The smaller alternative uses one FFprobe pass over initialization plus finalized fragments, assigning each packet by byte position.
+The experiment must prove exact agreement with isolated-fragment clocks, unique packet ownership, and bounded input/output.
+A second pass omits the actual middle fragment bytes; all surviving clocks must remain unchanged.
+This delegates edit-list and negative-DTS interpretation to FFmpeg and avoids a new MP4 clock parser.
+The [MOV demuxer](https://raw.githubusercontent.com/FFmpeg/FFmpeg/n8.1.3/libavformat/mov.c) records each packet's sample byte offset.
+Production completion scans would add media I/O. Interrupted-generation recovery and long-film cost remain unverified.
+Hosted Repository policy and tooling pass at `5fa2d1ba`, confirming the route-contract and architecture snapshot repairs.
