@@ -30,13 +30,26 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def command(args, *, timeout=60, input=None, env=None, check_exit=True):
-    return subprocess.run(args, input=input, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+def command(args, *, timeout=60, input=None, env=None, check_exit=True, stderr=subprocess.STDOUT):
+    return subprocess.run(args, input=input, stdout=subprocess.PIPE, stderr=stderr,
                           timeout=timeout, check=check_exit, env=env).stdout
 
 
 def adb(*args, **options):
     return command([str(SDK / "platform-tools/adb"), "-s", SERIAL, *args], **options)
+
+
+def device_inventory(stage):
+    with (run / (stage + ".adb-inventory.private.log")).open("wb") as diagnostics:
+        data = command([str(SDK / "platform-tools/adb"), "devices"], stderr=diagnostics)
+    check(len(data) <= 65536, "runner_device_inventory_bound")
+    lines = data.decode().splitlines()
+    valid = bool(lines and lines[0] == "List of devices attached")
+    entries = [line for line in lines[1:] if line.strip()]
+    receipt.setdefault("deviceInventory", {})[stage] = {
+        "headerValid": valid, "entryCount": len(entries) if valid else None}
+    check(valid, "runner_device_inventory_invalid")
+    return entries
 
 
 def collect(safe, label, size):
@@ -148,9 +161,7 @@ try:
     apks = [ROOT / "apps/player/apps/android/wear/build/outputs/apk/debug/wear-debug.apk",
             ROOT / "apps/player/apps/android/wear/build/outputs/apk/androidTest/debug/wear-debug-androidTest.apk"]
     receipt["apkSHA256"] = {str(p.relative_to(ROOT)): sha(p) for p in apks}
-    devices = command([str(SDK / "platform-tools/adb"), "devices"]).decode().splitlines()
-    check(devices and devices[0].startswith("List of devices attached"), "runner_device_inventory_invalid")
-    check(not any(line.strip() for line in devices[1:]), "runner_device_already_present")
+    check(not device_inventory("initial"), "runner_device_already_present")
     avd = run / "avd"
     avd.mkdir()
     env = dict(os.environ, ANDROID_AVD_HOME=str(avd))
@@ -221,8 +232,8 @@ finally:
             observe("kill-owned-process", emulator.kill)
             observe("join-after-kill", lambda: emulator.wait(timeout=10))
         receipt["emulatorSettled"] = emulator.poll() is not None
-        devices = observe("final-device-inventory", lambda: command([str(SDK / "platform-tools/adb"), "devices"]))
-        receipt["serialGone"] = devices is not None and not any(line.startswith(SERIAL + "\t") for line in devices.decode(errors="replace").splitlines())
+        devices = observe("final-device-inventory", lambda: device_inventory("final"))
+        receipt["serialGone"] = devices is not None and not any(line.startswith(SERIAL + "\t") for line in devices)
     else:
         receipt["emulatorSettled"] = receipt["serialGone"] = True
     if emulator_log is not None:

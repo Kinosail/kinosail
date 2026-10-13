@@ -50,7 +50,8 @@ Neither layer establishes physical watch acceptance.
 ## Current status
 
 Source preparation and independent source review are complete.
-Compilation, emulator execution, artifact decoding, and visual acceptance remain pending.
+The first hosted trial compiled both APKs but failed before emulator creation.
+Emulator execution, artifact decoding, and visual acceptance remain pending.
 A separate hosted Wear job now runs when deep verification selects Android.
 The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
 Before integration, the regression check proved missing Wear execution was accepted.
@@ -58,3 +59,23 @@ All 24 affected CI contract tests pass after integration.
 Local application execution remains held.
 
 Pairing, remote playback, active-session permission denial, heart sensors, battery use, and physical input remain separate coverage gaps.
+
+## Initial ADB inventory repair
+
+The first trial tested `0f5b2ca3dc2db46fe5f193e49bc0ea07a04fd497` in [job 115565070651](https://github.com/Kinosail/kinosail/actions/runs/38475473706/job/115565070651).
+It retained `runner_device_inventory_invalid`, zero cases, and no created emulator.
+Artifact `11854276433` has SHA-256 `857536458e708571aa166b87038eedb95b808c0c11c9ab3cf12df3b3cd3b4459`.
+The original receipt did not retain the inventory text, so its exact contents remain unknown.
+
+The runner merged ADB stderr into stdout before checking the inventory header.
+[ADB source](https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/android15-qpr2-s8-release/client/adb_client.cpp) writes daemon startup diagnostics to stderr.
+The repair keeps those diagnostics private and validates stdout separately.
+Both initial and final inventories require the exact header.
+Receipts expose only header validity and entry counts, without device identifiers.
+
+The isolated CLI regression uses inert SDK executables and synthetic APK bytes.
+It covers cold and warm empty inventories, connected, offline, and unauthorized devices, malformed headers, and command failure.
+These controls protect emulator ownership; the hosted journey cannot safely introduce foreign devices or corrupt ADB output.
+Before the repair, cold startup was rejected and a malformed header was accepted.
+The control creates no real device and does not establish native acceptance.
+Run it with `python3 -B -m unittest scripts.ci.test_wear_preflight`.
