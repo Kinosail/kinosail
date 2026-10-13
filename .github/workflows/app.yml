@@ -223,6 +223,7 @@ jobs:
           case "$NATIVE_PROBE" in
             AAC) selector=DownloadAACProbeTests ;;
             storage) selector=DownloadStorageAuthorizationTests ;;
+            reader) selector='NativePreferencesUXTests/readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light:fontSize:)' ;;
             *) exit 2 ;;
           esac
           printf 'selector=%s\n' "$selector" >> "$GITHUB_OUTPUT"
@@ -240,6 +241,7 @@ jobs:
             -destination "id=$device" -derivedDataPath apps/player/apps/native/.build/ios-simulator
             -resultBundlePath "$run/native.xcresult" "-only-testing:Kinosail-iOSTests/$SELECTOR"
             -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-)
+          if [[ "$NATIVE_PROBE" == reader ]]; then command+=(-test-iterations 3); fi
           printf '%q ' "${command[@]}" > "$run/command.txt"
           if "${command[@]}" > "$run/native.log" 2>&1; then status=0; else status=$?; fi
           export NATIVE_PROBE_EXIT="$status" NATIVE_PROBE_RUN="$run" NATIVE_PROBE_DEVICE="$device"
@@ -247,16 +249,19 @@ jobs:
           import hashlib, json, os, pathlib, platform, re, subprocess, sys
           run = pathlib.Path(os.environ['NATIVE_PROBE_RUN'])
           suite, count, data = {'AAC': ('DownloadAACProbeTests', 2, 'Embedded 2106-byte AAC; malformed/truncated/wrong-kind/playlist/symlink/remote controls'),
-              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization')}[os.environ['NATIVE_PROBE']]
+              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization'),
+              'reader': ('NativeReaderSurfaceJourneys', 1, 'Held loopback metadata; light/dark appearance and 20/32 point font; pending/loaded/empty/failed states')}[os.environ['NATIVE_PROBE']]
+          iterations = 3 if os.environ['NATIVE_PROBE'] == 'reader' else 1
           status = int(os.environ['NATIVE_PROBE_EXIT'])
           matches = re.findall(r'Test run with (\d+) tests? .*passed', (run / 'native.log').read_text())
           discovered = bool(matches and int(matches[-1]) == count)
+          if iterations > 1: discovered = [int(value) for value in matches] == [count] * iterations
           receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
               'command': (run / 'command.txt').read_text(), 'probe': os.environ['NATIVE_PROBE'],
               'environment': platform.platform(), 'xcode': subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
               'simulator': os.environ['NATIVE_PROBE_DEVICE'], 'data': data,
               'fixtureSourceSHA256': hashlib.sha256(pathlib.Path('apps/player/apps/native/Tests', suite + '.swift').read_bytes()).hexdigest(),
-              'expectedTests': count, 'discoveryVerified': discovered, 'exitCode': status,
+              'expectedTests': count, 'expectedIterations': iterations, 'discoveryVerified': discovered, 'exitCode': status,
               'result': 'passed' if status == 0 and discovered else 'failed',
               'boundaries': 'Focused iOS simulator regression; no physical device or full-suite proof'}
           (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

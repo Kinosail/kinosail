@@ -2951,3 +2951,33 @@ The attachments contain only synthetic fixture content and measurements. Asserti
 describes saving data with `Attachment.record` and inspecting it through Xcode test reports.
 Independent source review found no blocker. Source-file limits and whitespace pass locally.
 Compilation and attachment retrieval require the next hosted native run; local runtime remains held.
+
+
+### Bounded reader repetition and a Chromium trace synchronization failure
+
+Native job `115274022816` passes iOS and tvOS at `8fa923df24067a02b528e87b6ae3f81977cf148d`.
+The Swift summaries report 335 and 316 tests, without issues or reader failure-stage records.
+Log SHA-256: `9b6e957f5b058cebd6052093556543aa5e4c9f307aa40f7be4f94c72b800de8f`.
+Two failures followed by two passes establish intermittency; they do not identify its cause.
+The manual `reader` probe selects the exact parameterized reader function and requests three fixed iterations.
+It runs after the full native suite and keeps every failure. Missing, zero, incomplete, or wrong test counts fail discovery verification.
+The four light/font argument pairs remain unchanged. Actual iteration counts and attachments require hosted inspection.
+[Apple documents fixed Xcode test repetition](https://developer.apple.com/documentation/Xcode-Release-Notes/xcode-13-release-notes).
+The probe selector and discovery contracts failed before implementation and now pass. All 19 workflow contracts pass.
+The repository's pinned actionlint 1.17.0 fork, workflow validation, source-file caps, and whitespace checks pass.
+The system actionlint rejects pre-existing native parallel steps; the repository fork supports those steps without normalization.
+
+Player WebKit job `115267783757` also passes at `c09c2659`.
+Artifact `11809396503` verifies 502 checksums, 501 evidence hashes, and ten source-input hashes.
+Its populated settings report executes the saved-session case once with no retry; the authenticated return and explicit step-up assertions pass.
+Archive SHA-256: `faa4652f80eb522d76def40de6d699a3cab0bf2566b6d2e6d17b5556b16ca243`.
+Session receipt SHA-256: `cb0f760b427a79d899b5e0fc39bd9f8d56faf19af3335ebff1d785e9d2843717`.
+
+Chromium job `115267783810` fails because the isolated playback-trace case flakes before populated settings execution.
+The assertion expected capability, play, waiting, stalled, and playing. It instead observed session-start, capability, play, and playing.
+The existing wait accepted any four events, then synchronously asserted five specific events.
+It now polls for those five event names. The same-session and absent title/source/URL assertions remain unchanged.
+This is an isolated browser fixture repair, not a populated-server or real-decoder claim.
+The general report records 721 passing cases, 357 skips, and one flake that passed on retry. The gate correctly remains failed.
+Artifact `11810471375` verifies 482 checksums; archive SHA-256 is `dcb1b905c94e21a6b30d95935555980d34130608abfda114c0c64c0f4fc28019`.
+The Chromium saved-session case still needs execution. The repaired trace case needs hosted browser validation.
