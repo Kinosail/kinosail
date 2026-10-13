@@ -3524,3 +3524,28 @@ Uncertain certification must reject before encoding for this newly admitted resu
 Offset-zero optional-index fallback and the completed short-suffix strategy remain separate.
 Matroska, omitted ranges, and long audio conversion remain open investigation boundaries.
 These additional controls are written before production changes; their hosted results are not yet available.
+
+
+## Narrow resumed-index candidate — October 13
+
+Test checkpoint `f06d871b` precedes production repair `1e0180fb`.
+Candidate `59ded1efc42b525c41af726e32d3aa4c9cf18ad6` also corrects the early-failure cleanup budget to 65 seconds.
+The repair admits only probed MOV/MP4 H.264 remux without omitted ranges.
+It scans from the requested offset, normalizes key cuts in integer source ticks, and keeps the input-seek offset unchanged.
+An unsupported or timed-out resumed index rejects before encoding; this can return 503 for sources that cannot meet certification bounds.
+The existing root failure diagnostic retains request correlation and bounded error classification.
+The copied-plan cache policy advances from version two to three.
+Production changes total 26 added and 11 removed lines across two files.
+Independent source review approves this candidate after the cleanup correction.
+Exact mux output equality still requires the pending hosted media results.
+
+Thirty-seven source contract tests, pinned actionlint, source parsing, generated-wrapper parsing, source caps, and whitespace checks pass.
+Subtitles hosted lint also passes. Local verify-changed remains plan-only under the runtime hold.
+[Hosted Q09 run 38437317561](https://github.com/Kinosail/kinosail/actions/runs/38437317561) passes all sixty cases without retries.
+All owned groups settle; compile succeeds and source remains unchanged.
+Artifact `11833368107` has SHA-256 `53ae668447e564b4ed2d1c185950721e32b63570d25ff77321c4e9336468413a`.
+Three safe-file pins and exact source metadata verify before local source-only canonical rendering.
+Only the Subtitles architecture page changes; this resolves the candidate tooling job's stale-snapshot failure.
+
+The earlier merged commit `29ba9e4f5de30a78899f14f0994c1e108629bbaa` now passes all four exact-main protected gates.
+Its container build, test, and scan jobs are active. Publication and deployment are not inferred from gate success.
