@@ -54,7 +54,7 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'exit 0' >"$tmp/positive-bin/git"
 printf '%s\n' '#!/usr/bin/env bash' \
   'printf "%s\n" "$*" >>"$KINOSAIL_TEST_SSH_LOG"' \
-  'if [[ " $* " == *" docker inspect "* ]]; then printf "old|running|healthy\n"; exit; fi' \
+  'if [[ " $* " == *" docker inspect "* ]]; then printf "%s|running|healthy\n" "${KINOSAIL_TEST_CURRENT:-old}"; exit; fi' \
   'exec /bin/cat >/dev/null' >"$tmp/positive-bin/ssh"
 printf '%s\n' '#!/usr/bin/env bash' \
   'printf "%s\n" "$*" >>"$KINOSAIL_TEST_PODMAN_LOG"' \
@@ -124,6 +124,32 @@ fi
 if grep -Eq 'docker load|bash -s --' "$tmp/ssh.log"; then
   echo 'scanner rejection reached deployment' >&2; exit 1
 fi
+
+# Tool discovery is a host CLI boundary, outside populated application E2E.
+# A missing scanner must fail before building an image or changing Nox.
+mkdir "$tmp/base-bin"
+for command in bash dirname awk jq env cat mktemp mkdir tar rm grep date tail shasum xargs; do
+  ln -s "$(command -v "$command")" "$tmp/base-bin/$command"
+done
+for scanner in trivy syft; do
+  mv "$tmp/positive-bin/$scanner" "$tmp/positive-bin/$scanner.hidden"
+  : >"$tmp/podman.log"; : >"$tmp/ssh.log"; : >"$tmp/git.log"
+  status=0
+  PATH="$tmp/base-bin" positive player KINOSAIL_DEPLOY_GIT_DIR 1 2>"$tmp/preflight.log" || status=$?
+  if [[ "$status" != 127 ]] || ! grep -Fq "level=warn operation=deployment_preflight outcome=rejected failure_class=scanner_missing scanner=$scanner" "$tmp/preflight.log"; then
+    echo "missing $scanner lacks an actionable preflight rejection" >&2; exit 1
+  fi
+  [[ ! -s "$tmp/podman.log" ]] || { echo 'missing scanner reached an image build' >&2; exit 1; }
+  if grep -Eq 'archive ' "$tmp/git.log" || grep -Eq 'docker load|bash -s --' "$tmp/ssh.log"; then
+    echo 'missing scanner caused a deployment side effect' >&2; exit 1
+  fi
+  # An already healthy deployment needs no scanner or image build.
+  : >"$tmp/podman.log"; : >"$tmp/ssh.log"
+  PATH="$tmp/base-bin" KINOSAIL_TEST_CURRENT="$sha" positive player KINOSAIL_DEPLOY_GIT_DIR 1
+  [[ ! -s "$tmp/podman.log" ]] || { echo 'healthy deployment rebuilt an image' >&2; exit 1; }
+  mv "$tmp/positive-bin/$scanner.hidden" "$tmp/positive-bin/$scanner"
+done
+
 # A paused marker cannot bypass the deployment scanner.
 : >"$tmp/ssh.log"
 if KINOSAIL_TEST_PAUSED=1 KINOSAIL_TEST_SCAN_FAIL=1 positive player KINOSAIL_DEPLOY_GIT_DIR 1; then

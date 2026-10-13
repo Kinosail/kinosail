@@ -160,8 +160,12 @@ def exercise(source_fixture, source_facts, fault):
                 wait_for(lambda: settled(directory), 5, 'index_probe_not_settled')
                 metadata = [cache / name for name in ['.copy-timeline', '.copy-clock', '.source', 'index.m3u8']]
                 metadata += [rendition / name for name in ['init.mp4', 'index.m3u8']]
-                if fault == 'refill-completion':
-                    wait_for(lambda: settled(directory, 'encoder-pids') and first_encoder_completed(directory), 5, 'initial_encoder_not_completed')
+                # Completion finalizes the master's measured bandwidth. Capture
+                # the immutable cache only after the original producer finishes.
+                wait_for(lambda: settled(directory, 'encoder-pids') and first_encoder_completed(directory), 5, 'initial_encoder_not_completed')
+                case['initialProducerState'] = {'encoderSettled': settled(directory, 'encoder-pids'),
+                    'completionLogged': first_encoder_completed(directory)}
+                shutil.copyfile(cache / 'index.m3u8', directory / 'master-before.m3u8')
                 snapshots = [sha(p) for p in metadata]
                 case['retainedMetadataSHA256'] = {str(p.relative_to(cache)): digest for p, digest in zip(metadata, snapshots)}
                 case['recoveries'] = []
@@ -190,6 +194,10 @@ def exercise(source_fixture, source_facts, fault):
                         check(sha(fragment) == digest, 'first_fragment_changed')
                     observed = [sha(p) for p in metadata]
                     case['recoveryAttempts'][-1]['changedMetadata'] = [str(p.relative_to(cache)) for p, before, after in zip(metadata, snapshots, observed) if before != after]
+                    if observed != snapshots:
+                        shutil.copyfile(cache / 'index.m3u8', directory / 'master-after.m3u8')
+                        case['producerStateAfterMetadataChange'] = {'encoderSettled': settled(directory, 'encoder-pids'),
+                            'completionLogged': first_encoder_completed(directory)}
                     check(observed == snapshots, 'certificate_or_initialization_changed')
                     check(count(directory, 'suffix-starts') == 1, 'refill_rescanned_index')
                     case['recoveries'].append({'segment': number, 'status': status, 'binaryIdentical': sha(fragment) == digest, 'videoFramesAndTimestampsIdentical': True, 'audioGapSeconds': current['audioStart'] - preceding['audioEnd'] if preceding else None, 'metadataUnchanged': True})
