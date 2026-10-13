@@ -3447,3 +3447,145 @@ Pinned actionlint 1.17.0, source caps, and whitespace checks also pass.
 These are source-contract results; cancellation of a hosted run using the new guards has not yet been observed.
 Application production LOC is unchanged; this repair changes eight workflow conditions.
 Independent source review approves the condition change and retains the hosted cancellation/descendant-settlement boundary.
+
+
+## Protected delivery and next long-window trial — October 13
+
+PR #587 merged as `29ba9e4f5de30a78899f14f0994c1e108629bbaa`.
+A fetched ancestry check proves reviewed commit `570b1458d016cd74389418b307540107b98718ed` is included.
+The merged tree equals tested merge candidate `45d07830cfc9ac609ac3fc49a88a92dec9f32bfc`.
+[Required CI run 38426738759, attempt two](https://github.com/Kinosail/kinosail/actions/runs/38426738759) passes all four protected gates.
+The first attempt was deliberately cancelled to verify the repaired cancellation guards.
+One active media check cancelled; seven remaining selected media checks skipped.
+Available Subtitles and browser evidence uploads succeeded.
+This cancellation proof does not establish child-specific shutdown or an application pass.
+
+The final Subtitles artifact verifies 38 Chromium smoke cases and 71 checksum entries.
+Its copied-playback artifact verifies eight clock cases, eleven generation-plan cases, five completion cases, and sixteen uploaded checksums.
+The intentional source-version fault preserves source contents while changing metadata and rejecting delivery.
+All three layout jobs pass at the exact task head, with clean source and seven verified script inputs.
+Player also passes five cache-reopen cases, fourteen prepared/browser/cold-suffix receipts, six audio-conversion cases,
+eleven continuous-audio/source receipts, four HEVC preparation cases, five short-completion cases, and three source-version cases.
+These groups can overlap and are not a unique test total.
+Private, unuploaded runtime-file hashes are not claimed as independently verified from safe artifacts.
+Swift compilation and Android app/Wear/watchcore unit-task results remain separate from device behavior.
+Exact-main publication, deployment, physical playback, and earlier intermittent failures remain open.
+Local main has unrelated native project/localization edits; those files and thirteen inactive foreign checkouts are preserved.
+The owned leased worktree is reused for the continuing QA campaign.
+
+The next regression extends the existing held-prefix public journey with `--long-resume`.
+Its independent contract is that one published VOD rendition retains its complete segment map as the same producer finishes.
+The credible failure is an extrapolated early map that omits or retimes the final copied fragments after a nonzero seek.
+Existing offset-zero and short-suffix cases miss a resumed window with more than thirty seconds remaining.
+A browser seek can also open a different offset and conceal the original window's truncation.
+
+The new synthetic source has 2,662 frames at 25 fps; the request starts at 60 seconds.
+The preceding forced keyframe is at 58 seconds, leaving 1,212 source frames in the retained copied suffix.
+The same rendition URL is read while its real producer is held, after completion, and after Server restart.
+Its initialization segment and ordered media fragments are concatenated and decoded once.
+Every decoded frame must equal the contiguous original-source suffix, with first position, counts, and sequence hashes retained.
+[FFmpeg input-seek semantics](https://ffmpeg.org/ffmpeg.html#Main-options) support the preceding-key expectation for stream copy.
+[FFmpeg HLS documentation](https://ffmpeg.org/ffmpeg-formats.html#hls-2) permits non-keyframe fragment starts with `split_by_time`.
+The regression therefore does not require each split fragment to decode independently.
+
+One successful producer, final admission counts, joined children, source preservation, and diagnostic secrecy are required.
+On early failure, the driver releases the producer and waits boundedly for joins before stopping the Server.
+A secondary diagnostic collection error cannot replace the primary failure.
+Independent source review approves this trial. Its decoded start/count and expected baseline failure still require hosted execution.
+All existing assertions and fault controls remain unchanged. No production behavior changes in this test-first checkpoint.
+
+
+## Long resumed-window baseline and repair contract — October 13
+
+[PR #592 baseline run 38433464498](https://github.com/Kinosail/kinosail/actions/runs/38433464498) reproduces the long-window defect.
+Its tested merge candidate is `69d1eb50cc1fa738c96fd3e9c55f9ccf9a3262c1`, containing test commit `56aa63996b072a914f6ea6467c0467cc225b4b8c`.
+The held public VOD advertises twelve fragments totaling 46.48 seconds.
+The same producer finishes with thirteen fragments totaling 48.6 seconds.
+All 1,212 decoded frames equal the source suffix from frame 1,450 through EOF.
+The source, child joins, Server settlement, single producer, and secret-free diagnostics pass.
+Thus the public segment map fails independently of decoding or fixture cleanup.
+The existing twenty-four copied-playback controls pass; sixteen uploaded child checksums verify.
+Artifact `11833535150` has SHA-256 `842a754589198356750c5746375b135a02b36018e4947b882e997a5a0604c274`.
+Remaining work in this failed baseline run was cancelled after evidence capture.
+
+Before production edits, the same E2E owner gains exact-key, just-after-key, and origin-zero cases.
+These protect first-key agreement and complete suffix preservation, which the single 60-second offset cannot establish.
+An unsupported or timed-out suffix probe must return 503 before any encoder or playlist admission.
+The fault cases use the existing executable installation seam; no production test seam is added.
+They must prove the probe joined, no media was published, and one correlated root failure contains no credentials.
+Wrapper setup moves into a shared fixture helper to keep the driver within the source-file cap.
+The origin-zero case has over one hundred seconds remaining, so its real readrate-two producer receives a bounded 65-second join.
+
+Independent design review found different FFprobe/FFmpeg seek behavior outside the MOV/MP4 demuxer.
+The planned initial repair is restricted to probed MOV/MP4 H.264 remux without omissions.
+Container eligibility must use actual probe results, not a filename fallback.
+Requested offset remains the media clock; only segment cuts are normalized by the retained first key.
+Uncertain certification must reject before encoding for this newly admitted resumed path.
+Offset-zero optional-index fallback and the completed short-suffix strategy remain separate.
+Matroska, omitted ranges, and long audio conversion remain open investigation boundaries.
+These additional controls are written before production changes; their hosted results are not yet available.
+
+
+## Narrow resumed-index candidate — October 13
+
+Test checkpoint `f06d871b` precedes production repair `1e0180fb`.
+Candidate `59ded1efc42b525c41af726e32d3aa4c9cf18ad6` also corrects the early-failure cleanup budget to 65 seconds.
+The repair admits only probed MOV/MP4 H.264 remux without omitted ranges.
+It scans from the requested offset, normalizes key cuts in integer source ticks, and keeps the input-seek offset unchanged.
+An unsupported or timed-out resumed index rejects before encoding; this can return 503 for sources that cannot meet certification bounds.
+The existing root failure diagnostic retains request correlation and bounded error classification.
+The copied-plan cache policy advances from version two to three.
+Production changes total 26 added and 11 removed lines across two files.
+Independent source review approves this candidate after the cleanup correction.
+Exact mux output equality still requires the pending hosted media results.
+
+Thirty-seven source contract tests, pinned actionlint, source parsing, generated-wrapper parsing, source caps, and whitespace checks pass.
+Subtitles hosted lint also passes. Local verify-changed remains plan-only under the runtime hold.
+[Hosted Q09 run 38437317561](https://github.com/Kinosail/kinosail/actions/runs/38437317561) passes all sixty cases without retries.
+All owned groups settle; compile succeeds and source remains unchanged.
+Artifact `11833368107` has SHA-256 `53ae668447e564b4ed2d1c185950721e32b63570d25ff77321c4e9336468413a`.
+Three safe-file pins and exact source metadata verify before local source-only canonical rendering.
+Only the Subtitles architecture page changes; this resolves the candidate tooling job's stale-snapshot failure.
+
+The earlier merged commit `29ba9e4f5de30a78899f14f0994c1e108629bbaa` now passes all four exact-main protected gates.
+Its container build, test, and scan jobs are active. Publication and deployment are not inferred from gate success.
+
+
+## Verified 60-second repair and corrected boundary inputs — October 13
+
+Candidate `59ded1efc42b525c41af726e32d3aa4c9cf18ad6` runs as merge candidate `86af439acabbec4b984747075f96ea89d9310a6d`.
+Fetched parents and identical trees verify this binding.
+The original 60-second regression now passes with thirteen immutable fragments totaling 48.48 seconds.
+The early, final physical, final public, warm, and restarted maps agree exactly.
+Every one of 1,212 decoded frames equals the original source suffix from frame 1,450.
+All fragment responses, successful producer joins, source preservation, and secret-free diagnostics pass.
+Unsupported and timed-out index controls also pass: 503, no encoder, no published playlist, joined probe, and correlated failure.
+All twenty-four earlier copied-playback controls pass.
+Artifact `11835505056` contains thirty receipts; twenty-seven pass and sixteen uploaded child hashes verify.
+Its SHA-256 is `fc567aa868eb82028afc7e9ad0856a89c0e2bea33a1c2d88c7582df75085ddc2`.
+
+The three other failures expose an error in the added test inputs.
+Subtitles requires offsets in 30,000-millisecond increments; the proposed 1,000, 58,000, and 58,001 inputs are invalid.
+They failed before encoder admission and do not prove a product keyframe-boundary defect.
+The corrected controls vary source keyframes while retaining valid public offsets.
+At offset 60,000, the preceding, exact, and just-before keys are 58, 60, and 59.96 seconds.
+Expected first source frames are independently fixed at 1,450, 1,500, and 1,499.
+Their first segment lengths must be 4, 2, and 2.04 seconds.
+The origin-zero case uses offset 30,000 and source keys zero and 32 seconds, with first frame zero and first cut 32 seconds.
+The changed key gaps use a forty-second GOP cap; the original previous-key fixture retains its six-second cap.
+Actual generated key positions must match the independent fixture contract within one microsecond.
+Master HTTP status is retained before assertion. Full sequence and map equality remain unchanged.
+Independent review approves this correction; new hosted boundary results remain pending.
+
+Both Firefox and WebKit layout jobs pass at `59ded1ef`, with unchanged source and seven verified script inputs.
+Each contains forty Player and forty-six Subtitles measurements across eleven and twenty-six flows, without a failed stability observation.
+Firefox isolated fixtures pass 37 cases; WebKit passes 35 and skips two, with no failures or retries.
+These are browser layout and fixture results, not physical-device proof.
+
+Exact-main CI run `38432979723` finishes successfully for prior merged commit `29ba9e4f5de30a78899f14f0994c1e108629bbaa`.
+All nine publication jobs pass, including four tested and scanned architecture images, signatures, provenance, and production-tag promotion.
+Registry commit, main, and latest tags agree for each app.
+Player digest: `sha256:34952742be45801f3bd07bf93e4fecc434f678346c61a1e470adfe656e47b153`.
+Subtitles digest: `sha256:82b0c1c2f48fc8d2b1aaefec892e84babbceb5f8990213cc3a270a1655d43ac7`.
+Four platform configuration revision labels and four tested candidate-index artifacts bind to the published platform manifests.
+A fresh ancestry check retains the merged commit in remote main. No Nox or physical playback result follows from this publication evidence.

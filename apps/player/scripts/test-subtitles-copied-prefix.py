@@ -10,19 +10,22 @@ import json
 import os
 from pathlib import Path
 import re
-import shutil
 import shlex
 import sys
 import socket
 import subprocess
 import time
 from hls_copied_prefix_faults import held_fault
+from hls_copied_prefix_environment import held_encoder, fault_probe
 from hls_completed_suffix import completed_suffix, completed_suffix_receipt
 from hls_timeline_fixture import check, fixture
+from hls_long_resumed_prefix import long_fixture, long_window, long_window_final, long_window_join, long_window_rejection
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--long-resume', nargs='?', const='previous', choices=['previous', 'origin', 'on-key', 'after-key'],
+                    help='Hold a long copied window at this source keyframe boundary')
 parser.add_argument('--completed-suffix', choices=['success', 'producer', 'timeout', 'missing-plan', 'mismatched-plan'])
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
@@ -30,8 +33,9 @@ parser.add_argument('--held-source-change', action='store_true')
 parser.add_argument('--held-fault', choices=['policy', 'producer'])
 parser.add_argument('--index-fault', choices=['unsupported', 'timeout'])
 args = parser.parse_args()
-if args.completed_suffix and (args.native or args.plan_fault or args.held_source_change or args.held_fault or args.index_fault):
-    parser.error('completed suffix controls must run independently')
+if (args.long_resume and args.completed_suffix) or ((args.long_resume or args.completed_suffix)
+        and (args.native or args.plan_fault or args.held_source_change or args.held_fault or (args.index_fault and args.completed_suffix))):
+    parser.error('long resumed prefix and completed suffix controls must run independently')
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -60,57 +64,17 @@ def cuts(manifest):
 try:
     media = RUN / 'media'
     media.mkdir()
-    source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
-                                         frames=24 * 32, extension='.mp4')
+    if args.long_resume:
+        source, receipt['fixture'] = long_fixture(media, args.long_resume, receipt)
+    else:
+        source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
+                                             frames=24 * 32, extension='.mp4')
     before = source_state(source)
     build = ['go', 'build', '-p', '2', '-o', str(RUN / 'server'), './apps/subtitles/cmd/kinosail']
     receipt['build'] = build
     with (RUN / 'build-private.log').open('w') as log:
         subprocess.run(build, cwd=ROOT, check=True, stdout=log, stderr=log, timeout=180)
-    real = shutil.which('ffmpeg')
-    check(real, 'ffmpeg_missing')
-    wrapper = RUN / 'held-ffmpeg'
-    wrapper.write_text('''#!/usr/bin/env python3
-import os,signal,subprocess,sys,time
-from pathlib import Path
-a=sys.argv[1:]
-real=''' + repr(real) + '''
-source=''' + repr(str(source)) + '''
-if '-hls_time' not in a or source not in a: os.execv(real,[real]+a)
-a[a.index('-i'):a.index('-i')]=['-readrate','2']
-root=Path(__file__).parent
-admission=root/(str(os.getpid())+'.started')
-admission.write_text('pending')
-child=subprocess.Popen([real]+a)
-admission.write_text(str(child.pid))
-def stop(signum,frame): raise SystemExit(1)
-signal.signal(signal.SIGTERM,stop)
-try:
-    manifest=Path(a[-1])
-    limit=time.monotonic()+90
-    while child.poll() is None and time.monotonic()<limit:
-        if manifest.exists() and b'segment-00000.m4s' in manifest.read_bytes():
-            child.send_signal(signal.SIGSTOP)
-            (root/'held').write_text(str(child.pid))
-            while not (root/'release').exists() and time.monotonic()<limit: time.sleep(.01)
-            child.send_signal(signal.SIGCONT)
-            break
-        time.sleep(.005)
-    status=child.wait(timeout=30)
-    if ''' + repr(bool(args.completed_suffix)) + ''' and status == 0:
-        (root/'encoded').touch()
-        while not (root/'finish').exists() and time.monotonic()<limit: time.sleep(.01)
-        if not (root/'finish').exists(): raise SystemExit(38)
-    sys.exit(37 if status == 0 and ''' + repr(args.completed_suffix == 'producer') + ''' else status)
-finally:
-    if child.poll() is None:
-        child.send_signal(signal.SIGCONT)
-        child.terminate()
-        try: child.wait(timeout=3)
-        except subprocess.TimeoutExpired: child.kill(); child.wait()
-    (root/(str(child.pid)+'.joined')).write_text('joined')
-''')
-    wrapper.chmod(0o700)
+    wrapper = held_encoder(RUN, source, args.completed_suffix, args.long_resume)
     receipt['wrapperSHA256'] = sha(wrapper)
     with socket.socket() as listener:
         listener.bind(('127.0.0.1', 0))
@@ -121,15 +85,7 @@ finally:
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(RUN / 'cache'),
         KINOSAIL_BACKUP_DIR=str(RUN / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-prefix-key',
         KINOSAIL_FFMPEG=str(wrapper))
-    if args.index_fault:
-        probe = RUN / 'fault-ffprobe'
-        probe.write_text('#!/usr/bin/env python3\nimport os,sys,time\nfrom pathlib import Path\n' +
-            'a=sys.argv[1:]\nif "-show_packets" in a:\n' +
-            ' Path(' + repr(str(RUN / 'index-probe-pid')) + ').write_text(str(os.getpid()))\n' +
-            (' time.sleep(30)\n' if args.index_fault == 'timeout' else ' print("invalid metadata",end="",flush=True)\n') +
-            ' sys.exit(0)\nos.execv(' + repr(shutil.which('ffprobe')) + ',[' + repr(shutil.which('ffprobe')) + ']+a)\n')
-        probe.chmod(0o700)
-        env['KINOSAIL_FFPROBE'] = str(probe)
+    fault_probe(RUN, env, args.index_fault)
     with (RUN / 'server-private.log').open('w') as log:
         server = subprocess.Popen([str(RUN / 'server')], cwd=ROOT, env=env, stdout=log, stderr=log)
         try:
@@ -137,6 +93,8 @@ finally:
             item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Prefix Sample')
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_must_copy')
+            if args.long_resume:
+                plan['compatible'] = plan['compatible'].replace('/index.m3u8', f"-o{receipt['longResumeOffset']}/index.m3u8")
             if args.completed_suffix:
                 state = [server]
                 try:
@@ -144,7 +102,11 @@ finally:
                 finally:
                     server = state[0]
                 raise HeldFaultComplete()
+            if args.long_resume and args.index_fault:
+                long_window_rejection(api, plan['compatible'], RUN, receipt)
+                raise HeldFaultComplete()
             status, master, _ = api.http(plan['compatible'])
+            receipt['masterStatus'] = status
             check(status == 200, 'master_status')
             rendition = re.findall(rb'^([1-9][0-9]*p/index\.m3u8)$', master, re.M)
             check(len(rendition) == 1, 'one_variant')
@@ -152,7 +114,7 @@ finally:
             wait_for(lambda: (RUN / 'held').exists(), 'producer_not_held')
             physical = next((RUN / 'cache').glob('*/' + rendition[0].decode()))
             prefix = physical.read_bytes()
-            check(len(cuts(prefix)) == 1 and abs(cuts(prefix)[0][0] - 4) < .1
+            check(len(cuts(prefix)) == 1 and abs(cuts(prefix)[0][0] - receipt.get('longExpectedFirstCut', 4)) < .1
                   and b'#EXT-X-ENDLIST' not in prefix, 'held_prefix_shape')
             held_pid = (RUN / 'held').read_text()
             joined = RUN / (held_pid + '.joined')
@@ -162,9 +124,9 @@ finally:
             receipt['prefixStatus'] = status
             receipt['prefixCounts'] = {'physical': len(cuts(prefix)), 'public': len(cuts(public))}
             receipt['inventedEnd'] = b'#EXT-X-ENDLIST' in public
-            expected = [4, 6, 4, 7, 6, 4, 1]
-            receipt['accurateFutureCuts'] = [round(x, 6) for x, _ in cuts(public)] == expected
-            receipt['stableTargetDuration'] = b'#EXT-X-TARGETDURATION:7\n' in public
+            expected = None if args.long_resume else [4, 6, 4, 7, 6, 4, 1]
+            receipt['accurateFutureCuts'] = None if expected is None else [round(x, 6) for x, _ in cuts(public)] == expected
+            receipt['stableTargetDuration'] = None if expected is None else b'#EXT-X-TARGETDURATION:7\n' in public
             receipt['producerHeld'] = not joined.exists()
             receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
             (RUN / 'public-prefix.m3u8').write_bytes(public)
@@ -186,13 +148,13 @@ finally:
                 receipt['nativePassed'] = browser.returncode == 0
                 receipt['nativeFutureFragment'] = (RUN / 'release').read_text() if (RUN / 'release').exists() else None
             (RUN / 'release').touch()
-            wait_for(lambda: joined.exists(), 'producer_not_joined')
+            wait_for(lambda: joined.exists(), 'producer_not_joined', seconds=65 if args.long_resume else 25)
             wait_for(lambda: b'#EXT-X-ENDLIST' in physical.read_bytes(), 'cache_not_complete')
             status, completed, _ = api.http(path)
             receipt['completedCuts'] = [duration for duration, _ in cuts(completed)]
             receipt['completedMatchesCache'] = cuts(completed) == cuts(physical.read_bytes())
             check(status == 200 and b'#EXT-X-ENDLIST' in completed, 'completed_status')
-            receipt['completedKeyframeCuts'] = [round(x, 6) for x in receipt['completedCuts']] == expected
+            receipt['completedKeyframeCuts'] = None if expected is None else [round(x, 6) for x in receipt['completedCuts']] == expected
             receipt['immutablePlaylist'] = cuts(public) == cuts(completed)
             # A completed URI must retain its exact VOD map across warm reads
             # and process restart, without starting another encoder.
@@ -247,6 +209,8 @@ finally:
                 receipt['fallbackDiagnostics'] = len(warnings) == 1 and warnings[0]['level'] == 'WARN' and bool(warnings[0]['request_id']) and warnings[0]['outcome'] == 'legacy-before-encoding'
                 receipt['noFalseLifecycleError'] = not any(event.get('msg') == 'copied probe completion failed' for event in events)
                 check(receipt['fallbackDiagnostics'] and receipt['noFalseLifecycleError'], 'optional_index_diagnostics')
+            elif args.long_resume:
+                long_window(api, path, RUN, source, physical, receipt)
             else:
                 check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
@@ -255,6 +219,8 @@ finally:
             check(not args.native or receipt['nativePassed'] and receipt['nativeFutureFragment'], 'native_future_resume')
         finally:
             (RUN / 'release').touch()
+            if args.long_resume:
+                long_window_join(RUN, receipt)
             server.terminate()
             try:
                 server.wait(timeout=10)
@@ -266,6 +232,8 @@ finally:
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
             if args.completed_suffix:
                 completed_suffix_receipt(api, RUN, receipt)
+            if args.long_resume and not args.index_fault:
+                long_window_final(api, RUN, receipt, require_success=sys.exc_info()[0] is None)
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
 except HeldFaultComplete:

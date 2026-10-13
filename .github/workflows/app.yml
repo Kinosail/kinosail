@@ -476,6 +476,14 @@ jobs:
           for fault in missing malformed policy cuts downgrade; do
             python3 apps/player/scripts/test-subtitles-copied-prefix.py --plan-fault "$fault"
           done
+          status=0
+          for boundary in previous origin on-key after-key; do
+            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume "$boundary" || status=1
+          done
+          for fault in unsupported timeout; do
+            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume --index-fault "$fault" || status=1
+          done
+          exit "$status"
       - name: Verify Subtitles completed copied suffixes
         if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 5
