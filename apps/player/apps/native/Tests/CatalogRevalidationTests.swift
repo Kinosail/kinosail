@@ -31,14 +31,27 @@ struct CatalogRevalidationTests {
         await fixture.client.close()
     }
 
-    @Test func navigationCancellationDoesNotAbandonSharedPersistence() async throws {
+    @Test @MainActor func navigationCancellationDoesNotAbandonSharedPersistence() async throws {
         let fixture = try Fixture()
         defer { fixture.remove() }
-        let first = Task { try await fixture.client.library(view: .movies) }
+        var cancelled = false
+        let first = Task {
+            do { _ = try await fixture.client.library(view: .movies) }
+            catch is CancellationError { cancelled = true; throw CancellationError() }
+        }
         try await fixture.waitForRequests(1)
         first.cancel()
+        for _ in 0..<200 {
+            if cancelled { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        #expect(cancelled, "Navigation must stop waiting before the shared producer responds")
         fixture.respond(view: "movies", version: 1)
         await #expect(throws: CancellationError.self) { try await first.value }
+        for _ in 0..<200 {
+            if (try? await fixture.client.library(view: .movies, policy: .cached))?.items.first?.title == "Movie 1" { break }
+            try await Task.sleep(for: .milliseconds(5))
+        }
         let saved = try await fixture.client.library(view: .movies, policy: .cached)
         #expect(saved.items.first?.title == "Movie 1")
         #expect(fixture.pending.isEmpty)

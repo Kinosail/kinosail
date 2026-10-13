@@ -2030,5 +2030,17 @@
   {
     "id": "Back to Library",
     "other": "Back to Library"
+  },
+  {
+    "id": "Chapter %lld of %lld",
+    "other": "Hoofdstuk %lld van %lld"
+  },
+  {
+    "id": "Page %lld of %lld",
+    "other": "Pagina %lld van %lld"
+  },
+  {
+    "id": "Document",
+    "other": "Document"
   }
 ]

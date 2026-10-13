@@ -1,10 +1,48 @@
 import Foundation
+import OSLog
 
 enum CatalogPolicy: Sendable { case cached, automatic, reload }
 enum CatalogCacheMiss: Error { case missing }
-struct CatalogRequest: Sendable {
-    let id: UUID
-    let task: Task<any Sendable, Error>
+actor CatalogRequest {
+    nonisolated let id: UUID
+    nonisolated let task: Task<any Sendable, Error>
+    private let operation: String
+    private let log = Logger(subsystem: "com.kinosail.player", category: "catalog")
+    private var result: Result<any Sendable, Error>?
+    private var waiters: [UUID: CheckedContinuation<any Sendable, Error>] = [:]
+
+    init(id: UUID, operation: String, task: Task<any Sendable, Error>) {
+        self.id = id; self.operation = operation; self.task = task
+        Task { await self.finish(await task.result) }
+    }
+
+    // The producer keeps ownership of persistence when a consumer leaves.
+    func value() async throws -> any Sendable {
+        let consumer = UUID()
+        let value = try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            return try await withCheckedThrowingContinuation { continuation in
+                if let result { continuation.resume(with: result) }
+                else { waiters[consumer] = continuation }
+            }
+        } onCancel: { Task { await self.stopWaiting(consumer) } }
+        try Task.checkCancellation()
+        log.debug("Catalog wait operation=\(self.operation, privacy: .public) outcome=received catalog_request_id=\(self.id.uuidString, privacy: .public) consumer_id=\(consumer.uuidString, privacy: .public)")
+        return value
+    }
+
+    private func stopWaiting(_ consumer: UUID) {
+        guard let waiter = waiters.removeValue(forKey: consumer) else { return }
+        log.debug("Catalog wait operation=\(self.operation, privacy: .public) outcome=cancelled catalog_request_id=\(self.id.uuidString, privacy: .public) consumer_id=\(consumer.uuidString, privacy: .public)")
+        waiter.resume(throwing: CancellationError())
+    }
+
+    private func finish(_ result: Result<any Sendable, Error>) {
+        guard self.result == nil else { return }
+        self.result = result
+        let pending = Array(waiters.values); waiters.removeAll()
+        pending.forEach { $0.resume(with: result) }
+    }
 }
 
 extension ServerClient {
@@ -48,7 +86,7 @@ extension ServerClient {
             let id = UUID()
             // The producer owns persistence. Leaving a screen must not throw away
             // a successful fetch shared with another screen or a future visit.
-            request = CatalogRequest(id: id, task: Task {
+            request = CatalogRequest(id: id, operation: diagnosticOperation(path), task: Task {
                 defer { if catalogRequests[path]?.id == id { catalogRequests[path] = nil } }
                 do {
                     let raw = try await self.request(path).body
@@ -75,7 +113,7 @@ extension ServerClient {
             })
             catalogRequests[path] = request
         }
-        let result = try await request.task.value
+        let result = try await request.value()
         try Task.checkCancellation()
         guard catalogGeneration == generation else { throw CancellationError() }
         guard let value = result as? Value else { throw ClientError.invalidResponse }

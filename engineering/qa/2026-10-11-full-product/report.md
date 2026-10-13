@@ -2151,6 +2151,51 @@ The startup artifact SHA-256 is `046cb2beef9dfab95145751019dd2a21336f82bb8399b1d
 This is PR-merge startup proof, not remote main ancestry or production deployment proof.
 Fresh hosted checks must verify the subsequent recorder commit before protected integration.
 
+
+## Delayed-CSS fixture correction after hosted Chromium
+
+Required CI for `659046b8` fails only the new slow-render sampling fixture.
+Both attempts produce fresh baseline and later settled frames in both viewports.
+The CLI then rejects BODY layout shifts of 0.005146 and 0.002829.
+The delayed fixture changes the default body margin, heading size and card height.
+That is a real fixture shift, so the layout enforcement correctly returns exit 1.
+The failed browser artifact SHA-256 is `f3893ea96b6a3a20840eb8c35d129f28ce206361e9e49d5fe3c9f24f0fabf640`.
+Later receipt checks cannot complete because this earlier browser step fails; startup is not reached.
+This result does not reproduce the HLS subtitle-policy failure.
+
+The fixture now reserves identical real geometry inline.
+Its delayed stylesheet exposes the body only after delivery, without changing those dimensions.
+CLI enforcement, zero-exit, fresh-frame, settled-frame and 8000ms baseline assertions remain unchanged.
+The final fixture still fails against the original recorder at its fresh-frame wait.
+The repaired working CLI is restored after that red control, with its exact hash verified.
+The normal and slow controls then pass in Linux Chromium, Linux Firefox and macOS WebKit.
+Each final engine run has two passes, zero skips, zero unexpected results and zero flakes.
+Both owned Linux containers are removed, with host trust unchanged.
+The final test SHA-256 is `944dd0ba82a9abb840393afc0071a9c5798e0d275b4961ce6f89c2bdfd4d2c65`.
+The Linux Chromium run log SHA-256 is `3b6a2c0289836ea4eba0963e53f353b8cbd250c6dc4e18d2baf4f0022b817a90`.
+The Linux Firefox run log SHA-256 is `71784f44ae3fe93782579aba24927c55ed043a06bdfcd54bf07158a23e61babd`.
+The macOS WebKit run log SHA-256 is `c9e962df082c294eb687bf3b9a6ce35d98e815264c519dd4e7be72c22054a501`.
+The original-recorder red-control log SHA-256 is `7f2ddaac8fb3858658060e3abf97e2adbf9cddfd989a732824fc26a8db5252df`.
+These remain isolated CLI fixtures. The populated layout workflow at `659046b8` separately passes all three engines.
+Its source receipts show the exact head, empty working diffs and no source drift.
+
+The `659046b8` hosted native artifact also completes both platforms.
+iOS passes 332 tests and skips one. tvOS passes 319 tests and skips one. Neither platform fails.
+The artifact SHA-256 is `012bb10c30cbbfefd99567eb9fe10cf7a2d3aefb25b339ff72094ee985a185a6`.
+This clears the preceding hosted iOS startup boundary for this run; its earlier failure remains retained.
+These contracts do not include the separate pending Apple reader UI branch or physical-device acceptance.
+
+
+The hosted layout receipts for `659046b8` retain every selected case without source drift.
+Chromium passes 95 Player cases and 111 Subtitles cases, with 11 and 26 flows respectively.
+Firefox and WebKit each pass 40 Player cases and 46 Subtitles cases, with the same flow counts.
+Their fixture suites retain platform-specific skips separately from these populated measurements.
+The Chromium artifact SHA-256 is `bb258677879920ef47959ac4130652797e610eb5feb106d70ca4a253f73ba4b3`.
+The Firefox artifact SHA-256 is `7c80bef31c682b85d38337a3f1c9eb56f581cb5efe5ccb432b6b5ecb9f0602d2`.
+The WebKit artifact SHA-256 is `bc4f7b25bc31990a16d2d9bf23740dd9174226a441e7bb8fc0f2274d5c688f51`.
+All three record CLI SHA-256 `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+These hosted source receipts precede the fixture-only correction at `b0de9685`.
+
 ## QA-024 — Native verifier skips catalog inputs and reuses stale success
 
 The native stage selects only changes under `apps/native`. It can skip commits
@@ -2201,40 +2246,283 @@ Both task-created fixture links are removed only after their hashes are rechecke
 The iPhone simulator's original shutdown state is verified after execution.
 The hosted iOS connection failure and physical-device boundaries remain open.
 
+## QA-025 — EPUB pending geometry and enlarged reading
 
-## Delayed-CSS fixture correction after hosted Chromium
+The tablet pending column starts at pixel 40; its loaded chapter starts at pixel 592.
+The native regression records both public UI bounds before the production repair.
+It fails the column assertion on the original source.
+The reader now centers pending lines within the default chapter's 68ch column and 16dp page padding.
+Pending line height and spacing use the selected, scaled reader font.
+The reading page and publisher styles remain unchanged.
 
-Required CI for `659046b8` fails only the new slow-render sampling fixture.
-Both attempts produce fresh baseline and later settled frames in both viewports.
-The CLI then rejects BODY layout shifts of 0.005146 and 0.002829.
-The delayed fixture changes the default body margin, heading size and card height.
-That is a real fixture shift, so the layout enforcement correctly returns exit 1.
-The failed browser artifact SHA-256 is `f3893ea96b6a3a20840eb8c35d129f28ce206361e9e49d5fe3c9f24f0fabf640`.
-Later receipt checks cannot complete because this earlier browser step fails; startup is not reached.
-This result does not reproduce the HLS subtitle-policy failure.
+The first phone and tablet matrix also exposes horizontal overflow with system font scale 2.0.
+A new native viewport assertion fails before the document repair.
+Its artifact records WebView text zoom at 200% and horizontal overflow.
+Reader CSS already includes the system font scale, so the default WebView zoom applies it again.
+The document now fixes WebView text zoom at 100% while retaining scaled CSS text.
+Light-page system insets keep the dark toolbar background so white status icons remain readable.
 
-The fixture now reserves identical real geometry inline.
-Its delayed stylesheet exposes the body only after delivery, without changing those dimensions.
-CLI enforcement, zero-exit, fresh-frame, settled-frame and 8000ms baseline assertions remain unchanged.
-The final fixture still fails against the original recorder at its fresh-frame wait.
-The repaired working CLI is restored after that red control, with its exact hash verified.
-The normal and slow controls then pass in Linux Chromium, Linux Firefox and macOS WebKit.
-Each final engine run has two passes, zero skips, zero unexpected results and zero flakes.
-Both owned Linux containers are removed, with host trust unchanged.
-The final test SHA-256 is `944dd0ba82a9abb840393afc0071a9c5798e0d275b4961ce6f89c2bdfd4d2c65`.
-The Linux Chromium run log SHA-256 is `3b6a2c0289836ea4eba0963e53f353b8cbd250c6dc4e18d2baf4f0022b817a90`.
-The Linux Firefox run log SHA-256 is `71784f44ae3fe93782579aba24927c55ed043a06bdfcd54bf07158a23e61babd`.
-The macOS WebKit run log SHA-256 is `c9e962df082c294eb687bf3b9a6ce35d98e815264c519dd4e7be72c22054a501`.
-The original-recorder red-control log SHA-256 is `7f2ddaac8fb3858658060e3abf97e2adbf9cddfd989a732824fc26a8db5252df`.
-These remain isolated CLI fixtures. The populated layout workflow at `659046b8` separately passes all three engines.
-Its source receipts show the exact head, empty working diffs and no source drift.
+The initial width measurement rounds each zero-glyph advance before multiplying by 68.
+The correction uses fractional glyph advances with linear scaling and subpixel positioning.
+The native geometry assertion keeps its original two-density-pixel tolerance.
+The [Android implementation](https://android.googlesource.com/platform/frameworks/base/+/master/graphics/java/android/graphics/Paint.java)
+confirms that `measureText` rounds up; `getTextWidths` preserves advances.
 
-The `659046b8` hosted native artifact also completes both platforms.
-iOS passes 332 tests and skips one. tvOS passes 319 tests and skips one. Neither platform fails.
-The artifact SHA-256 is `012bb10c30cbbfefd99567eb9fe10cf7a2d3aefb25b339ff72094ee985a185a6`.
-This clears the preceding hosted iOS startup boundary for this run; its earlier failure remains retained.
-These contracts do not include the separate pending Apple reader UI branch or physical-device acceptance.
+The confirmation journeys pass on normal phone and on phone and tablet at system font scale 2.0 with a light page.
+Their loaded chapters have no horizontal overflow, and pending column edges match the loaded content.
+The tablet's normal confirmation is interrupted by a visible System UI ANR dialog.
+That execution is excluded from EPUB and accessibility conclusions.
+Its failure remains retained. The quiet normal-tablet follow-up passes with both column edges exactly aligned.
+Pending and loaded left edges are both pixel 592; the pending right edge is pixel 1968.
+WebView text zoom is 100%, and no horizontal overflow is present.
+The three earlier confirmation journeys precede this final fractional-width correction.
 
+Pending, loaded, empty and failed captures are inspected in both appearances and device classes.
+The native fixture retains blocked-script and escaped-resource checks, chapter navigation, renderer recovery and saved position.
+The native checks also verify that success and failure remove the pending placeholder.
+These are device-side synthetic HTTP journeys, not populated Go Server or physical TalkBack proof.
+The separate intermittent chapter-accessibility finding remains unresolved.
+Task-installed packages are removed and original system font settings are restored after every execution.
+The task emulator is shut down; unrelated AVDs and data are preserved.
+
+The final tablet artifact SHA-256 is `5f14e7f2776a96a2f9642e215c7b69bff7fbf79761611393f742f6f5572db3de`.
+The original geometry failure artifact SHA-256 is `c4f38a78cb224b68ce1b9d819f97f8df74742f17ade9683e2398540144b403c3`.
+The original overflow failure artifact SHA-256 is `9a9906a12ee6b95bfb8aa8ff61a6457d6e1e93d97e97d9b9dae52f7986c570f8`.
+Private `epub-column-*` and `epub-overflow-*` receipts retain exact APK hashes, source patches, commands and environment.
+
+All four final configurations use the same frozen APK pair.
+Normal phone and tablet use a dark page. Font-scale 2.0 phone and tablet use a light page.
+Every execution passes the complete chapter journey with text zoom 100% and no horizontal overflow.
+Phone pending and loaded left edges are pixel 42. The enlarged tablet left edge is pixel 32.
+The Android source tree is `62625979b9ad55fd13a227558ed1646b4e579525`.
+Reconciliation preserves that exact tree, so it preserves the tested production and test sources.
+The app APK SHA-256 is `2984a5122d4989f7f940fd9ac25b7ae91dc391e231e09c663f3814e7a801fe2c`.
+The test APK SHA-256 is `f6d9bda776c17399ddd7ae2a86c7f20f5d4dcce238ca482b9e02218561dbc213`.
+The final matrix log SHA-256 is `5e6c916eea637b5aa2a0ad7c5cd06d8f6d58abf626c16d6c71acd14067805d8c`.
+
+A separate cold-boot audit reads each existing AVD's settings and installed packages.
+Both font settings equal their original 1.0 value. Both task package pairs are absent.
+Process and ADB checks confirm that each task emulator is off.
+Two earlier audits saw ADB's brief disconnect delay after process exit; those failures remain retained.
+The corrected bounded disconnect observation passes without changing product assertions.
+Its log SHA-256 is `859ce8cda45781d2a9c1cfa5fbaf579695e37e0714f6de7d61c6ef072579a3ba`.
+Private `epub-final-all-configurations-safe.json` and `epub-emulator-cleanup-verified-safe.json`
+retain all four artifact hashes, geometry, exact APK provenance and cleanup observations.
+
+
+## QA-027 — Apple reader pending column spans the iPad viewport
+
+A test-first native journey holds reader metadata while the real pending UI is rendered.
+In both iPad appearances, pending lines span x=20–1012; loaded text spans x=176–856.
+The source remains unchanged during those two reproductions. Both edge assertions fail by 156 points.
+The retained owner suite reports six tests, with one failed parameterized test and four issues.
+An earlier test compile error uses a read-only environment value and is excluded from product evidence.
+
+The pending column now uses the default WebKit serif glyph measure, 68ch and 16-point page padding.
+Line size and spacing use the current scaled reader font.
+The pending footer uses disabled native controls with the loaded footer's styles and insets.
+Its center remains a placeholder. Only real pending work shows these controls.
+Chapter markup, resource security policy, loaded navigation and reading persistence are unchanged.
+
+The retained native journey compares rendered SwiftUI pixels with actual WKWebView DOM bounds.
+It also verifies placeholder removal after success, an invalid empty response and a failed metadata response.
+The test is part of the existing serialized preferences owner to preserve Keychain isolation.
+It uses a fictional held HTTP peer, not a populated Go Server or physical-device journey.
+Animations are disabled in the host transaction for geometry capture; motion is not claimed as verified.
+
+The phone and iPad confirmation suites each pass six tests with zero failures or skips.
+Both appearances match their loaded edges exactly: x=176–856 on the 1032-point iPad window,
+and x=16–386 on the 402-point phone window. Neither loaded page has horizontal overflow.
+Pending, loaded, empty-response and failed captures are visually inspected on both devices and appearances.
+The native source patch SHA-256 is `6af2d4b95e0e9c052047c7ec07cc7e552dc25e09ee92cebb7f3ac7be0f3100d9`.
+The iPad run log SHA-256 is `39db5a60303dfe6f5f32800d2de5f6a2262f742b51d773b58f7da8cc91a999ca`.
+The phone run log SHA-256 is `0213890503688c6f9bb4c84ef9068c283d05a6fe35e4305e56bc91a3ef67260e`.
+Original simulator shutdown states are verified after execution, and the previous Keychain session is restored.
+This checkpoint covers the default 20px preference. Other reader sizes, Dynamic Type,
+publisher fonts, physical VoiceOver and physical reading remain verification boundaries.
+Private `apple-reader-*` receipts retain exact source, commands, xcresults, geometry and screenshot hashes.
+
+### QA-027 — saved font confirmation
+
+The expanded journey requests 20px and 32px text in both appearances.
+Before the fix, pending lines retain 20px while held metadata waits, despite confirmed saved preferences.
+Both 32px reproductions fail before metadata is released.
+The reader now publishes validated preferences independently during its concurrent metadata and position work.
+It retains the generation and cancellation guards before publishing those preferences.
+
+The final phone and iPad owner suites each pass six tests, with no failures or skips.
+Each suite executes all four font and appearance combinations.
+The 32px iPad pending and loaded edges both span x=16–1016; the phone spans x=16–386.
+The 20px edges retain the earlier matching measurements. All eight loaded pages have zero horizontal overflow.
+Pending, loaded, invalid-empty and failed captures are visually inspected at both font sizes on both simulators.
+This remains an isolated native HTTP-peer journey. Publisher fonts, Dynamic Type and physical reading remain open.
+The final native patch SHA-256 is `3ee7431f20742ab0d4480812cc0b43c51ce9eea109841b4a9b876edb95901784`.
+The iPad log SHA-256 is `6fce866ae3fc70c541cedfbc0a3930fa554f2838a38c26d516582703af4fc2b9`.
+The phone log SHA-256 is `f5df5522973c9321cf7cbb7c6d5b098acd87b162111bbe4e5ddd34b45ce422fe`.
+
+## QA-028 — canceled catalog consumers keep the reader pending
+
+Held reader metadata returns a failure while its shared preference request remains pending.
+The reader stays in its loading state because catalog consumers directly await the producer task.
+Canceling a consumer does not interrupt that await. Async child cleanup therefore delays the screen's failure state.
+Four font and appearance controls reproduce this failure after metadata is released, with exactly one preference response held.
+The HTTP transport already supports cancellation; the catalog consumer wait is the affected boundary.
+The red native patch SHA-256 is `8a2bf2321705c58867d5504a38e43210e196b70593798a3c4b3e25e37fb800d9`.
+Its log SHA-256 is `8361a087c4af187cee019e942e7df72ae11771bbe217995d90cf1251de02deae`.
+
+A catalog request now resumes canceled consumers independently through actor-owned continuations.
+The shared producer retains ownership of validation and persistence.
+The reader journey requires failure UI before releasing the preference response.
+A second consumer must still receive the saved preference, and a subsequent cached read must retain it.
+Both device suites pass all four combinations without changing timeouts or removing failure assertions.
+
+The full iOS suite passes 333 tests, with zero failures and one platform skip.
+Its exact tested native patch is the same `3ee7431f` patch above.
+Its private log SHA-256 is `a361d152820013ce15d32ff03f9b382dd17d73b3724542b54e3db39a047b3cc8`.
+The run uses the hosted decoded-media fixture recipe; both task-owned fixture links are verified and removed afterward.
+Debug catalog logs contain 123 received and five canceled outcomes across 128 validated records.
+Four correlated producer IDs have both outcomes. Every message matches the bounded operation and random-ID schema.
+No remote URL, response body, account identifier or credential is added to these diagnostics.
+
+The initial full tvOS run exposes an obsolete synchronization assumption in the retained navigation-cancellation test.
+That test reads the cache immediately after the canceled caller completes, before independent persistence is guaranteed.
+The corrected test first requires cancellation while the response is held, then waits for the observable cached value.
+This also protects persistence when every consumer leaves, a case the reader's surviving-consumer journey does not cover.
+The initial tvOS failure is retained; its three skips include absent decoded-media prerequisites.
+Confirmation uses those prerequisites and the corrected observable synchronization.
+
+### Further hosted audit and environment boundaries
+
+Required CI run `38330723203` and layout run `38330722937` pass at `6012dba24dd27c3a39ec0adf375bb3877298ae57`.
+PR #579 is merged with merge commit `7131f22a317f97d7819fce5c60b1a766eb61c3db`.
+A fresh fetch and ancestry check prove that task commit is included in remote main.
+The deep run `38330990339` fails and remains evidence, despite required checks passing.
+Its WebKit watched-state startup fails once, then passes on retry: seeking=true, seconds=0.1, decodedFrames=0 and errorCode=3.
+This is an additional retained failure, not proof of the earlier Linux decoder stall's root cause.
+Its iOS contracts pass 331 tests, fail one extensionless offline AAC decode assertion, and skip one platform case.
+The full local iOS confirmation passes that assertion; this does not erase the hosted failure or explain its cause.
+Hosted tvOS passes 319 tests with one platform skip.
+The WebKit artifact SHA-256 is `8607c7456e35fde3591c4485df8b2cf1a73ee9ac43426c3861988c39ef6a3c6f`.
+The native artifact SHA-256 is `718e4f83fd22f926931ac693790fe8dcdfb5fd20c8f03d4e366083553a3049e2`.
+
+A newly installed, task-owned copy of the pinned macOS Firefox runtime still fails with the same profile-folder error.
+Global browser runtimes remain unchanged. macOS Firefox is not verified by the passing Linux Firefox controls.
+Image publication, deployed revision, physical devices, VoiceOver and the remaining product journeys remain separate evidence boundaries.
+
+QA-028 confirmation passes the full tvOS suite: 319 passed, zero failed and one platform skip.
+All decoded-media prerequisites are present. Both task-owned media links are verified and removed afterward.
+The native source remains unchanged throughout that run; only this report changes while validation runs.
+The final native patch SHA-256 is `e0d7002c262937e71e89b4fe898dd708fc2830294bec03feecbbda9328863f55`.
+The tvOS log SHA-256 is `2c29725906b7afb1cab12d0a5d39d4984ffc8a790461e75ee9423f06b64f8130`.
+The focused iOS catalog-revalidation suite also passes after the test synchronization change.
+Its receipt retains the selected test count and exact source; no production code changes after the full iOS run.
+The tvOS diagnostic stream contains 87 received and five canceled records, all at Debug level and with valid bounded shapes.
+Original shutdown states for the reused phone, iPad and TV simulators are verified after execution.
+
+The hosted AAC failure log reports its 20-second deadline at phase `asset`.
+That default phase cannot distinguish a delayed worker from blocked asset construction.
+The root cause remains unconfirmed, and the deadline is unchanged.
+The existing manual `AAC` probe option is dispatched against current main for a focused hosted comparison after the full suites.
+
+## QA-029 — native reader counters bypass the interface locale
+
+A rendered Spanish control translates Appearance to Apariencia while the reader still shows Chapter 1 of 1.
+The native chapter label is assembled as a runtime English string and has no generated catalog entry.
+The owning suite selects seven tests: six pass and the localization test fails its two counter assertions.
+The earlier function filter selects zero tests and is excluded from product proof.
+The failing source patch SHA-256 is `df6dcbbe4ab4a0f863673bcce0f005b965769d00e28d9475e893cc8ce6de5364`.
+Its private log SHA-256 is `8e5fe824772bc392104ec380ce579aa23f1b57fa9c60cfc6d42bfbec6e492d0d`.
+
+The native footer now uses localized Text labels for chapter, page and PDF document modes.
+Explicit format-key annotations retain the interpolated keys in the existing catalog generator.
+Three messages are added to all 108 source catalogs, preserving their existing formatting and fallback policy.
+The 17 translated locales receive translated labels. Generated Apple, Android and Wear catalogs remain synchronized.
+The three existing Go catalog compatibility checks pass, and native catalog freshness passes.
+The first Go command uses an incorrect relative script path and is excluded; the corrected receipt selects three passing tests.
+
+The retained native regression checks the footer after validated metadata presents the reader.
+It uses English, Spanish and Japanese with page 2 of 3, so unequal arguments test positional formatting.
+A clearly separated Appearance harness control verifies the selected catalog through rendered pixels and OCR.
+The native footer capture does not wait for unrelated document decoding.
+Its proof class is metadata-ready native footer; it does not claim that a document finished loading.
+The phone owner suite passes seven tests with zero skips, including all nine format and language combinations.
+Its source patch SHA-256 is `21e01fcebd5436bbf4a5d0c7b16b2dec41ce7d20eb27fdab82bc199e138b57d1`.
+Its private log SHA-256 is `1121db3b230d099aadd275b6a482640ef538ab0b940067868b89f053625c20d0`.
+The existing four font and appearance cases still compare pending, loaded and terminal states.
+Other translated locales, right-to-left rendering, physical VoiceOver and physical reading remain separate acceptance boundaries.
+
+## QA-030 — native comic navigation finishes late in simulator controls
+
+The expanded format audit retains repeated first-comic readiness failures on phone and iPad.
+The original 10-second readiness deadline is unchanged in those retained diagnostic executions.
+The iPad observation records metadata at 0.054 seconds and the complete image transfer at 1.382 seconds.
+Its WebView still reports loading at 12.293 seconds after window setup begins.
+A failure capture completes later, when the WebView is loaded; those observations are distinct.
+The first PDF fixture uses an invalid asset route and is correctly rejected.
+That fixture is corrected to the required file route before any PDF acceptance claim.
+
+Bounded Debug phases now identify secure setup, resource processing, scheme delivery and navigation completion.
+They contain a random reader ID, byte count and monotonic timing, without URLs, titles, bodies or credentials.
+The diagnostic iPad owner suite passes all seven tests and all nine loaded-format controls.
+Its 66 records match the bounded schema and use Debug level exclusively.
+The first image conversion and transfer take about 0.029 seconds; WebKit completion then takes 7.975 seconds.
+Later comic WebKit completions take 2.746 and 2.565 seconds.
+The source patch SHA-256 is `74bcb25d9a476253fcd1be27c73974f4e294c355426fe45c75165729238b7304`.
+The private log SHA-256 is `e5494fee58e034071965a39cd05e258d6905fd8623876cb96ec72a41438f0346`.
+The Debug stream SHA-256 is `58f0adcc7da00fcca87e2c6ddfb9c93b1fc16b5dd0e1537fdd28e8aad36ea955`.
+The host has ten logical CPUs and measured one-minute load above 23, with five-minute load above 50.
+This is a measured environment factor, not a proven root cause.
+The passing control and added diagnostics do not repair or erase the earlier readiness failures.
+The localization regression now asserts its own native-footer interface; full-document readiness remains open QA work.
+Private diagnostic sources, screenshots, timings and xcresults retain every earlier control.
+
+## QA-031 — additional hosted recovery and browser failures
+
+Main CI run `38335277859` passes and publishes both selected containers at `7131f22a317f97d7819fce5c60b1a766eb61c3db`.
+The separate manual deep run `38336225457` fails and remains open evidence.
+Its Chromium browser reports have no unexpected results or flakes, but the prepared-timeline command fails a cold-suffix control.
+Eighteen cold-suffix fault cases pass; the lookback case reports certificate_or_initialization_changed after HTTP 200 recovery.
+Its source remains unchanged and its owned probes and Server settle. The cause is not yet diagnosed.
+The prepared-timeline artifact SHA-256 is `751af5b0c707d3b229999767b84cb0805370f64d4f83a9a0df3d49d9ed48dc70`.
+Later missing-receipt checks fail after that command; they are not independent product failures.
+WebKit retains an audio-queue readiness flake and a watched-state failure after another submission is canceled.
+The latter fails its real-media precondition on the retry as well.
+Its artifact SHA-256 is `3f2ae2036b67bca0ff04830298e4b82a0d4215d88d5503ab870e7152fe1ae20a`.
+
+That deep run passes 332 iOS contracts and 319 tvOS contracts, with one platform skip each.
+Its separate AAC probe selects both expected tests and passes both without skips.
+Those successes do not explain the earlier AAC deadline failure.
+The native artifact SHA-256 is `6e5ecd3185cb2baed33f08370910238044ee5f2ed65f572a491cb060be84a860`.
+PR #588 then merges with commit `47f250c46f9d3118942804727e140a6bb9f8fb01`.
+A fresh fetch and ancestry check prove that native verifier task commit `ac3ff109406ae34da5858f2f2598c3d5ce2796f0` is included.
+No Nox deployment of either new main revision is claimed here.
+
+QA-029 final iPad confirmation also passes seven tests, with zero failures or skips.
+All nine native-footer format and language combinations match their rendered expectations.
+The final phone and iPad native patch SHA-256 is `21e01fcebd5436bbf4a5d0c7b16b2dec41ce7d20eb27fdab82bc199e138b57d1`.
+The iPad private log SHA-256 is `d62b99d3cfd2318f77c428663e94e18e82c904e619559a7493ead8f5572ed3be`.
+The same owner still executes the four pending/loaded/font/appearance and terminal-state cases.
+Both reused simulators return to their original shutdown state.
+Generated Android catalog additions change the APK inputs; the earlier frozen-APK matrix remains proof of its recorded revision.
+A fresh Android build and focused native confirmation are required before claiming the final APK.
+
+QA-029 fresh Android phone, test and Wear APK builds pass at `c363c936f554506a60f0bae723fd53c83bb5586a`.
+The Android source tree is `a1e34d54e0f35b3fbffb0174e7a76d6e8bee44f9`; only 34 generated catalog files differ from the frozen matrix source.
+The app APK SHA-256 is `1fa6120f695ded6630c9930f08fc0e141dd82e1830d9a893011df48f47e89f01`.
+Its DEX files and all non-catalog, non-signature ZIP entries match the earlier frozen APK exactly.
+The test APK is byte-identical to that matrix's test APK.
+The fresh phone journey confirms pending x=42–1038, loaded x=42, text zoom 100% and no horizontal overflow.
+It passes initial loading, renderer recovery and chapter navigation, then reproduces QA-011 after reopening chapter two.
+The missing-accessibility screenshot visibly contains Harbor lights. No System UI ANR is reported.
+The full journey fails; it is not counted as a passing final-APK confirmation.
+Its instrumentation log SHA-256 is `d8e56d4e04e3466c174be36611565898f3ecbe7a338b2eaf55bec3cda094bb4c`.
+Both task-installed packages are removed and the font setting is restored.
+A separate cold boot confirms font scale 1.0, both packages absent and emulator shutdown.
+The first cleanup audit checks ADB disconnection too early and fails that observation.
+A separate audit waits up to ten seconds for ADB to observe shutdown and passes.
+Its run log SHA-256 is `d65d0e3108ae2fd76413a46340d8febfccf736d78df8b22b6406d9e083f843a9`.
+Neither audit launches the app, changes settings or saves an emulator snapshot.
+The reader accessibility failure remains retained.
 
 The hosted layout receipts for `659046b8` retain every selected case without source drift.
 Chromium passes 95 Player cases and 111 Subtitles cases, with 11 and 26 flows respectively.
@@ -2317,3 +2605,9 @@ CSP is present; HSTS is absent on this private-network endpoint.
 These checks establish transport and anonymous access behavior only.
 Authenticated production journeys, public gateway and physical acceptance remain open.
 Private `nox-main47-*` and `ghcr-main47-*` receipts retain scan and transport hashes.
+
+PR #589 merges through the four protected checks and all three layout jobs.
+Fetched ancestry proves reviewed head `ce55f771a81c8106252f34735587afce92ad57e8`
+is included in remote main `3b9fb3c595b83b556ddbf2767d2443227bfbab7f`.
+Final-head deep run `38349207874` remains in progress. Its result is separate
+from required PR checks, prior local native tests and the deployed main47 snapshot.
