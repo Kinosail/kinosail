@@ -3422,3 +3422,8 @@ Both have zero failures and zero flaky outcomes.
 Chromium, Firefox, and WebKit browser artifacts now all verify for this revision.
 The enclosing deep workflow remains failed because its copied-AC3 fragment rejection was retained.
 The later complete Player race pass establishes recovery-suite success, not a repair for that intermittent rejection.
+
+The following required check reports cognitive complexity 16 against the helper's limit of 15.
+The cache walker now returns the existing relative-path error directly, including nil for the cache root.
+Its outer walk-error counter retains unavailable-evidence reporting without the extra nested branch.
+Formatting and source caps pass. The architecture snapshot is unchanged because test-file contents are excluded; its file count is unchanged.

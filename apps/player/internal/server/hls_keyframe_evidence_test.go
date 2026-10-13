@@ -86,12 +86,8 @@ func copiedKeyframeCache(cache string) ([]map[string]any, map[string]int) {
 			return fs.SkipDir
 		}
 		relative, err := filepath.Rel(cache, path)
-		if err != nil {
-			unavailable["relative"]++
+		if err != nil || relative == "." {
 			return err
-		}
-		if relative == "." {
-			return nil
 		}
 		parts := strings.Split(relative, string(filepath.Separator))
 		if len(parts) > 3 || len(files) == 128 {
