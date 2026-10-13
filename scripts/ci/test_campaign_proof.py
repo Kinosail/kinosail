@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -51,9 +51,9 @@ class CampaignProofTests(unittest.TestCase):
 
     def test_hls_followon_is_manual_bounded_and_keeps_only_receipts(self):
         source = LAYOUT.read_text()
-        self.assertIn("inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'", source)
+        self.assertIn("inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'", source)
         proof = source.split('  hls-followon:\n')[1]
-        self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'", proof)
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && (inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC')", proof)
         self.assertIn('timeout-minutes: 15', proof)
         self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', proof)
         self.assertIn('python3 apps/player/scripts/test-hls-followon.py', proof)
@@ -66,7 +66,7 @@ class CampaignProofTests(unittest.TestCase):
         # remains strict; a workflow dispatch cannot substitute for required CI.
         source = (ROOT / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Verify copied-video audio and legacy preparation\n')[1]
-        self.assertIn("if: always() && inputs.app == 'player' && matrix.engine == 'chromium'", step)
+        self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
         self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite audio', step)
         self.assertIn('name: player-hls-audio-conversion-evidence', step)
         self.assertIn('.verification/hls-followon/*/receipt.json', step)
@@ -80,7 +80,7 @@ class CampaignProofTests(unittest.TestCase):
         # HEVC tail media. Require their own strict public proof and safe receipt.
         source = (ROOT / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Verify complete HEVC preparation\n')[1]
-        self.assertIn("if: always() && inputs.app == 'player' && matrix.engine == 'chromium'", step)
+        self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
         self.assertIn('timeout-minutes: 10', step)
         self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite hevc', step)
         self.assertIn('name: player-hls-hevc-preparation-evidence', step)
@@ -94,6 +94,28 @@ class CampaignProofTests(unittest.TestCase):
         manual = LAYOUT.read_text().split('  hls-followon:\n')[1]
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
         self.assertNotIn('--suite', manual)
+
+    def test_media_proofs_survive_failure_but_stop_on_cancellation(self):
+        # Populated browser journeys cannot exercise the hosting workflow's
+        # cancellation condition. These exact bindings retain failure evidence
+        # without letting superseded runs launch more real media producers.
+        source = (ROOT / '.github/workflows/app.yml').read_text()
+        for app, names in {
+            'subtitles': ('Verify Subtitles copied-video clocks', 'Verify Subtitles copied generation plans',
+                          'Verify Subtitles completed copied suffixes'),
+            'player': ('Verify cold and damaged HLS cache reopen', 'Verify prepared copied-video timeline',
+                       'Verify copied-video audio and legacy preparation', 'Verify continuous converted-audio recovery',
+                       'Verify complete HEVC preparation'),
+        }.items():
+            for name in names:
+                with self.subTest(step=name):
+                    step = source.split('      - name: ' + name + '\n')[1].split('      - ')[0]
+                    self.assertIn("if: ${{ !cancelled() && inputs.app == '" + app + "' && matrix.engine == 'chromium' }}", step)
+                    self.assertNotIn('continue-on-error:', step)
+        uploads = [step for step in source.split('      - ') if 'uses: actions/upload-artifact@' in step]
+        self.assertTrue(uploads)
+        for step in uploads:
+            self.assertIn('if: always()', step)
 
     def test_artifact_paths_are_exact_safe_json_only(self):
         source = LAYOUT.read_text().split('  campaign-proof:\n')[1].split('\n  hls-followon:\n')[0]

@@ -1,14 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"io"
 	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -143,11 +146,66 @@ func startTestServer(t *testing.T, environment []string) *exec.Cmd {
 	t.Helper()
 	command := exec.CommandContext(t.Context(), os.Args[0], "-test.run=TestCommandLineHelperProcess", "--") //nolint:gosec // The executable is the current Go test binary.
 	command.Env = environment
-	command.Stdout, command.Stderr = io.Discard, io.Discard
+	output, err := os.CreateTemp(t.TempDir(), "server-*.log")
+	if err != nil {
+		t.Fatal("cannot retain private CLI diagnostics")
+	}
+	command.Stdout, command.Stderr = output, output
+	t.Cleanup(func() {
+		defer output.Close()
+		if t.Failed() {
+			logTestServerFailure(t, command, output)
+		}
+	})
 	if err := command.Start(); err != nil {
 		t.Fatal(err)
 	}
 	return command
+}
+
+// A failed health request can come from application rejection, a child startup
+// failure, or another listener using the released port. Keep those classes
+// observable without publishing raw process logs, addresses, or response bodies.
+func logTestServerFailure(t *testing.T, command *exec.Cmd, output *os.File) {
+	t.Helper()
+	if _, err := output.Seek(0, io.SeekStart); err != nil {
+		t.Log("CLI failure diagnostics unavailable")
+		return
+	}
+	scanner := bufio.NewScanner(io.LimitReader(output, 256<<10))
+	ready, failed, bindConflict, rejected := readTestServerFailure(scanner)
+	exit := -1
+	if command.ProcessState != nil {
+		exit = command.ProcessState.ExitCode()
+	}
+	info, err := output.Stat()
+	truncated := scanner.Err() != nil || err != nil || info.Size() > 256<<10
+	t.Logf("CLI failure: readyLog=%t serverFailed=%t bindConflict=%t child404s=%d exit=%d diagnosticsTruncated=%t", ready, failed, bindConflict, rejected, exit, truncated)
+}
+
+func readTestServerFailure(scanner *bufio.Scanner) (ready, failed, bindConflict bool, rejected int) {
+	for scanner.Scan() {
+		var record struct {
+			Message string `json:"msg"`
+			Error   string `json:"error"`
+			Status  int    `json:"status"`
+		}
+		if json.Unmarshal(scanner.Bytes(), &record) != nil {
+			continue
+		}
+		switch record.Message {
+		case "Kinosail ready":
+			ready = true
+		case "server failed":
+			failed = true
+			bindConflict = bindConflict || strings.Contains(record.Error, "address already in use")
+		case "request":
+			if record.Status == http.StatusNotFound {
+				rejected++
+			}
+		}
+	}
+	return ready, failed, bindConflict, rejected
 }
 
 func stopTestServer(command *exec.Cmd) {

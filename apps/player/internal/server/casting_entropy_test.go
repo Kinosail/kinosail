@@ -1,14 +1,19 @@
 package server_test
 
 import (
+	"context"
 	"crypto/rand"
 	"errors"
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
@@ -17,7 +22,37 @@ type failedCastEntropy struct{}
 
 func (failedCastEntropy) Read([]byte) (int, error) { return 0, errors.New("entropy unavailable") }
 
+// Confine global entropy replacement to one test, away from earlier TLS cleanup.
+func entropyFailureIsolated(t *testing.T) bool {
+	t.Helper()
+	if os.Getenv("KINOSAIL_ENTROPY_TEST") == t.Name() {
+		return false
+	}
+	args := []string{"-test.run=^" + regexp.QuoteMeta(t.Name()) + "$", "-test.v", "-test.count=1", "-test.timeout=30s"}
+	if testing.CoverMode() != "" {
+		cover := flag.Lookup("test.gocoverdir")
+		if cover == nil || cover.Value.String() == "" {
+			t.Fatal("entropy isolation requires the parent test coverage directory")
+		}
+		// The same instrumented binary writes child counters for the parent's final merge.
+		args = append(args, "-test.gocoverdir="+cover.Value.String())
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 35*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, os.Args[0], args...) //nolint:gosec // Current instrumented test binary and exact test-owned selector.
+	command.Env = append(os.Environ(), "KINOSAIL_ENTROPY_TEST="+t.Name())
+	output, err := command.CombinedOutput()
+	if err != nil || !strings.Contains(string(output), "--- PASS: "+t.Name()+" (") {
+		t.Fatalf("isolated entropy control failed: %v\n%s", err, output)
+	}
+	t.Logf("isolated entropy control passed; parent coverage retained=%t", testing.CoverMode() != "")
+	return true
+}
+
 func TestCastEntropyFailureDoesNotPanicOrCreateGrant(t *testing.T) {
+	if entropyFailureIsolated(t) {
+		return
+	}
 	handler, id := castFixture(t)
 	endpoint := "/api/v1/items/" + id + "/cast"
 	previous := rand.Reader
@@ -41,6 +76,9 @@ func TestCastEntropyFailureDoesNotPanicOrCreateGrant(t *testing.T) {
 }
 
 func TestMissingRequestIDSurvivesEntropyFailure(t *testing.T) {
+	if entropyFailureIsolated(t) {
+		return
+	}
 	handler, _ := castFixture(t)
 	previous := rand.Reader
 	rand.Reader = failedCastEntropy{}
@@ -52,6 +90,9 @@ func TestMissingRequestIDSurvivesEntropyFailure(t *testing.T) {
 }
 
 func TestBookmarkEntropyFailureDoesNotSave(t *testing.T) {
+	if entropyFailureIsolated(t) {
+		return
+	}
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Song.mp3"), []byte("audio"), 0o600); err != nil {
 		t.Fatal(err)

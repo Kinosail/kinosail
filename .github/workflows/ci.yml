@@ -16,7 +16,7 @@ on:
       native_probe:
         description: Add one isolated native regression suite after the complete deep run
         type: choice
-        options: [none, AAC, storage]
+        options: [none, AAC, storage, reader]
         default: none
       coverage_diagnostic:
         description: Keep exact deep Go coverage profiles

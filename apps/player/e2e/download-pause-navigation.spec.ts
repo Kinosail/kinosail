@@ -7,6 +7,7 @@ const scenarios = ["ready", "http-error", "normal-http-error", "redirect", "norm
 
 for (const scenario of scenarios) test(`download navigation preserves original ${scenario} evidence`, {tag: "@smoke"}, async ({browser}, info) => {
   let calls = 0, documents = 0;
+  let workerReplacementReady = false;
   const peer = await downloadPeer(true, () => {
     if (calls === 1 && (scenario === "http-error" || scenario === "normal-http-error") || calls === 2 && scenario === "replacement-http-error") return {status: 500};
     if (calls === 1 && (scenario === "redirect" || scenario === "normal-redirect") || calls === 2 && scenario === "replacement-redirect") return {status: 302, location: "/different"};
@@ -30,12 +31,23 @@ for (const scenario of scenarios) test(`download navigation preserves original $
     }
     if (calls === 1) {
       if (scenario === "wrong-worker" || scenario === "wrong-scope") {
+        // Finish the app's own worker registration before replacing it. An
+        // activated controller alone does not settle the offline bootstrap.
+        expect(await page.evaluate(async () => {
+          const api = (window as Window & {KinosailOfflineMedia: {source: (id: string) => Promise<string>}}).KinosailOfflineMedia;
+          return api.source("bbbbbbbbbbbbbbbb");
+        })).toBe("");
         await page.evaluate(async scenario => {
           await navigator.serviceWorker.register(scenario === "wrong-worker" ? "/service-worker.js?v=wrong" : "/service-worker.js?v=56", scenario === "wrong-scope" ? {scope: "/offline-downloads"} : {});
         }, scenario);
-        await page.waitForFunction(async scenario => scenario === "wrong-worker"
-          ? navigator.serviceWorker.controller?.scriptURL.endsWith("?v=wrong")
-          : (await navigator.serviceWorker.getRegistration())?.scope.endsWith("/offline-downloads"), scenario);
+        await page.waitForFunction(async scenario => {
+          const registration = await navigator.serviceWorker.getRegistration(), controller = navigator.serviceWorker.controller;
+          return controller?.state === "activated" && registration?.active?.state === "activated" &&
+            !registration.installing && !registration.waiting && (scenario === "wrong-worker"
+              ? controller.scriptURL.endsWith("?v=wrong") && registration.active.scriptURL === controller.scriptURL
+              : registration.scope.endsWith("/offline-downloads"));
+        }, scenario);
+        workerReplacementReady = true;
       }
       await page.evaluate(async scenario => {
         const button = document.querySelector<HTMLButtonElement>("[data-download-device]")!;
@@ -83,6 +95,9 @@ for (const scenario of scenarios) test(`download navigation preserves original $
   };
   try {
     const result = await openDownloadPage(page, peer.origin, "indexeddb", info).then(served => ({ok: true, served}), error => ({ok: false, error: String(error)}));
+    if (scenario === "wrong-worker" || scenario === "wrong-scope") {
+      expect(workerReplacementReady, "The invalid worker prerequisite must complete before navigation rejection counts").toBe(true);
+    }
     const eligible = browser.browserType().name() === "firefox" && scenario === "ready";
     expect(result.ok).toBe(eligible);
     const replacement = browser.browserType().name() === "firefox" && ["ready", "repeated-timeout", "replacement-http-error", "replacement-redirect"].includes(scenario);
@@ -97,7 +112,7 @@ for (const scenario of scenarios) test(`download navigation preserves original $
       await expect(page.locator("[data-download-device-status]")).toHaveText("Not stored on this device");
     }
     await info.attach("download-navigation-control", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-      scenario, browser: browser.browserType().name(), version: browser.version(), calls, documents, pageErrors, stats, result,
+      scenario, browser: browser.browserType().name(), version: browser.version(), calls, documents, pageErrors, workerReplacementReady, stats, result,
       command: "playwright test download-pause-navigation.spec.ts --workers=1 --retries=0", environment: process.platform,
       downloadsSHA256: createHash("sha256").update(downloadsSource).digest("hex"), workerSHA256: createHash("sha256").update(serviceWorkerSource).digest("hex"),
       data: "Fictional native HTTP download shell and committed bundle/worker; controlled automation timeout and negative boundaries", outcome: "passed"}), contentType: "application/json"});

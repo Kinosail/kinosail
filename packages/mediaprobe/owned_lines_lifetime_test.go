@@ -3,12 +3,15 @@ package mediaprobe
 import (
 	"context"
 	"errors"
+	"io"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 )
+
+var errOwnedProbeMetadata = errors.New("owned probe metadata rejected")
 
 // Populated media does not exercise probe descendants retaining or closing
 // stdout. These real configured-process controls protect that coverage gap.
@@ -39,7 +42,7 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 	}
 }
 
-func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) error {
+func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool, input ...io.Reader) error {
 	t.Helper()
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
@@ -49,7 +52,24 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if mode == "bytes" {
 		maximumBytes, maximumLines = 64, 2
 	}
-	err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	var err error
+	if len(input) == 0 {
+		err = ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	} else {
+		err = ProbeInputLines(ctx, nil, executable, copiedHLSProbeArguments(mode), input[0], maximumBytes, maximumLines, marker.visit)
+	}
+	marker.assertCompletion(started, err, wantError, mode)
+	// Media E2E cannot reliably order scanner rejection before process exit.
+	// This configured owner must retain the visitor's cause after settlement.
+	if reject && !errors.Is(err, errOwnedProbeMetadata) {
+		t.Fatal("configured probe discarded its metadata rejection cause")
+	}
+	return err
+}
+
+func (marker *copiedHLSProbeMarkers) assertCompletion(started time.Time, err error, wantError bool, mode string) {
+	t := marker.t
+	t.Helper()
 	processes, markers, visits := marker.processes, marker.markers, marker.visits
 	t.Cleanup(func() { settleCopiedHLSProbeFixture(t, started, processes) })
 	settled := copiedHLSProbeSettled(processes)
@@ -65,7 +85,6 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
 	}
-	return err
 }
 
 type copiedHLSProbeMarkers struct {
@@ -95,7 +114,7 @@ func (marker *copiedHLSProbeMarkers) visit(line string) error {
 		marker.cancel()
 	}
 	if marker.reject {
-		return errCopiedHLSIndex
+		return errOwnedProbeMetadata
 	}
 	return nil
 }

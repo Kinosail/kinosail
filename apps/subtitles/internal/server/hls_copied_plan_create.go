@@ -11,6 +11,7 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/mediaprobe"
+	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
@@ -44,6 +45,10 @@ func (manager *hlsManager) createCopiedHLSPlan(ctx context.Context, item library
 func (manager *hlsManager) selectCopiedHLSPlan(ctx context.Context, item library.Item, recipe hlsRecipe, policy string) (*copiedHLSPlan, error) {
 	plan := &copiedHLSPlan{Version: 1, Policy: policy, Strategy: "legacy"}
 	facts := mediaFactsFor(item, manager.probe.inspect(ctx, item))
+	if completedCopiedHLSWindow(recipe, facts.Duration) {
+		plan.Strategy = "completed"
+		return plan, nil
+	}
 	if recipe.offset == 0 && len(recipe.omitted) == 0 && facts.Video.Codec == "h264" && manager.index.Safe(item.Path) {
 		index, err := manager.scanCopiedHLSPlan(ctx, item, facts.Duration)
 		if ctx.Err() != nil || errors.Is(err, mediaprobe.ErrProbeLifecycle) {
@@ -105,4 +110,11 @@ func (plan *copiedHLSPlan) segmentMode(mode string) string {
 		return "copied-keyframes"
 	}
 	return mode
+}
+
+// A short copied suffix can retain earlier packets than its requested offset.
+// Publish its actual completed map instead of extrapolating a shorter timeline.
+func completedCopiedHLSWindow(recipe hlsRecipe, duration float64) bool {
+	remaining := playback.HLSPlaybackDuration(sharedHLSRecipe(recipe), duration)
+	return copiedHLSMode(recipe) && recipe.offset > 0 && remaining > 0 && remaining <= 30
 }

@@ -17,17 +17,21 @@ import socket
 import subprocess
 import time
 from hls_copied_prefix_faults import held_fault
+from hls_completed_suffix import completed_suffix, completed_suffix_receipt
 from hls_timeline_fixture import check, fixture
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--completed-suffix', choices=['success', 'producer', 'timeout', 'missing-plan', 'mismatched-plan'])
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
 parser.add_argument('--held-source-change', action='store_true')
 parser.add_argument('--held-fault', choices=['policy', 'producer'])
 parser.add_argument('--index-fault', choices=['unsupported', 'timeout'])
 args = parser.parse_args()
+if args.completed_suffix and (args.native or args.plan_fault or args.held_source_change or args.held_fault or args.index_fault):
+    parser.error('completed suffix controls must run independently')
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -75,7 +79,10 @@ source=''' + repr(str(source)) + '''
 if '-hls_time' not in a or source not in a: os.execv(real,[real]+a)
 a[a.index('-i'):a.index('-i')]=['-readrate','2']
 root=Path(__file__).parent
+admission=root/(str(os.getpid())+'.started')
+admission.write_text('pending')
 child=subprocess.Popen([real]+a)
+admission.write_text(str(child.pid))
 def stop(signum,frame): raise SystemExit(1)
 signal.signal(signal.SIGTERM,stop)
 try:
@@ -89,7 +96,12 @@ try:
             child.send_signal(signal.SIGCONT)
             break
         time.sleep(.005)
-    sys.exit(child.wait(timeout=30))
+    status=child.wait(timeout=30)
+    if ''' + repr(bool(args.completed_suffix)) + ''' and status == 0:
+        (root/'encoded').touch()
+        while not (root/'finish').exists() and time.monotonic()<limit: time.sleep(.01)
+        if not (root/'finish').exists(): raise SystemExit(38)
+    sys.exit(37 if status == 0 and ''' + repr(args.completed_suffix == 'producer') + ''' else status)
 finally:
     if child.poll() is None:
         child.send_signal(signal.SIGCONT)
@@ -125,6 +137,13 @@ finally:
             item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Prefix Sample')
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_must_copy')
+            if args.completed_suffix:
+                state = [server]
+                try:
+                    completed_suffix(api, plan, RUN, source, receipt, args.completed_suffix, state, env, log)
+                finally:
+                    server = state[0]
+                raise HeldFaultComplete()
             status, master, _ = api.http(plan['compatible'])
             check(status == 200, 'master_status')
             rendition = re.findall(rb'^([1-9][0-9]*p/index\.m3u8)$', master, re.M)
@@ -245,11 +264,13 @@ finally:
             receipt.update(sourceUnchanged=source_state(source) == before,
                            serverSettled=server.poll() is not None,
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
+            if args.completed_suffix:
+                completed_suffix_receipt(api, RUN, receipt)
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
 except HeldFaultComplete:
     receipt['sourceContentUnchanged'] = sha(source) == before['sha256']
-    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged'] and (args.held_source_change or receipt['sourceUnchanged']):
+    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged'] and (args.held_source_change or receipt['sourceUnchanged']) and (not args.completed_suffix or receipt.get('completedFinalProof')):
         receipt['result'] = 'passed'
     else:
         receipt['failureClass'] = 'held_fault_cleanup'

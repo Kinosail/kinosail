@@ -35,8 +35,9 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
   const failureRoute = `**/progress/${first.id}`;
   await page.route(failureRoute, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-mobile-progress-failure"}}));
   await media.evaluate((audio: HTMLAudioElement) => {audio.currentTime = 2;});
-  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => !audio.seeking && audio.readyState >= 3)).toBe(true);
+  // Request playback before requiring future data from the paused decoder.
   await media.evaluate((audio: HTMLAudioElement) => audio.play());
+  await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => !audio.seeking && audio.readyState >= 3)).toBe(true);
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThan(2.1);
   await media.evaluate((audio: HTMLAudioElement) => audio.pause());
   await expect(notice).toBeVisible();

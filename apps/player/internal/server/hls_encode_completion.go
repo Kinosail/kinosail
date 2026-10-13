@@ -32,8 +32,9 @@ func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory stri
 
 func (manager *hlsManager) reportHLSEncode(job *hlsJob, item library.Item, directory string, options transcodeSettings, recipe hlsRecipe, outcome hlsEncodeOutcome, started time.Time) {
 	if job.err != nil {
+		logger := transcodeClockLogger(job.err)
 		job.err = newHLSDiagnosticError(job.err, hlsDiagnostic(job.err, item.Path, directory), item.Path, directory)
-		slog.Error("HLS transcode failed", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator, "software_fallback", outcome.softwareFallback, "duration_ms", time.Since(started).Milliseconds(), "error", hlsDiagnostic(job.err))
+		logger.Error("HLS transcode failed", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator, "software_fallback", outcome.softwareFallback, "duration_ms", time.Since(started).Milliseconds(), "error", hlsDiagnostic(job.err))
 		if !outcome.preserve {
 			_ = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
 		}

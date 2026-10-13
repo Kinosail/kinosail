@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -107,6 +108,8 @@ func (manager *hlsManager) openHLSGeneration(request *http.Request, item library
 func logHLSPlanRejection(request *http.Request, err error) {
 	outcome := ""
 	switch {
+	case errors.Is(err, context.DeadlineExceeded):
+		outcome = "readiness-timeout"
 	case errors.Is(err, errCopiedHLSPlan):
 		outcome = "plan-invalid"
 	case errors.Is(err, errHLSIdentityChanged), errors.Is(err, playback.ErrHLSSourceChanged):

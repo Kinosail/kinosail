@@ -38,7 +38,14 @@ func assertCopiedHLSAudio(t *testing.T, ffmpeg, ffprobe, audio string) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	media := independentHLSMedia(t, ctx, ffmpeg, audio)
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe})
+	cache := t.TempDir()
+	logs := captureCopiedLogs(t, 64<<10)
+	defer func() {
+		if t.Failed() {
+			copiedKeyframeFailureEvidence(t, cache, logs)
+		}
+	}()
+	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
 	var info struct {
 		Compatible     string
 		CompatiblePlan playback.PlaybackPlan
@@ -91,6 +98,7 @@ func assertIndependentHLSRendition(t *testing.T, ctx context.Context, handler ht
 	if !bytes.Contains(playlist, []byte("#EXT-X-ENDLIST")) {
 		t.Fatal("HLS fixture did not complete")
 	}
+	t.Logf("COPIED_KEYFRAME_PLAYLIST %s", copiedKeyframePlaylistEvidence(playlist))
 	base := source[:strings.LastIndex(source, "/")+1]
 	initialization := speedTestGET(t, ctx, handler, base+"init.mp4")
 	segments := speedTestURIs(playlist)

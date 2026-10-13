@@ -67,7 +67,7 @@ test.describe("Apple launch policy @smoke", () => {
     await expect(page.locator(".player-control-feedback")).toBeHidden();
   });
 
-  test("ready Play opens Apple, dismissal pauses and next Play reenters", async ({page}) => {
+  test("ready Play opens Apple, dismissal pauses and next Play reenters", async ({page}, info) => {
     const video = page.locator("video");
     await expect(page.getByRole("button", {name: "Settings", exact: true})).toBeVisible();
     await page.getByRole("button", {name: "Play", exact: true}).tap();
@@ -82,9 +82,39 @@ test.describe("Apple launch policy @smoke", () => {
     await page.getByRole("button", {name: "Settings", exact: true}).tap();
     await page.locator("[data-subtitles]").selectOption("0");
     await page.locator("[data-player-settings-close]").tap();
-    await page.getByRole("button", {name: "Play", exact: true}).tap();
-    await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
-    await expect(page.locator("[data-subtitles]")).toHaveValue("0");
+    // Keep gesture evidence outside the page if its execution context stops responding.
+    type GestureEvent = {event: string; milliseconds: number; trusted: boolean; fullscreen: boolean};
+    const events: GestureEvent[] = [];
+    const started = performance.now();
+    let pageCrashed = false, pageClosed = false, tapReturned = false;
+    page.on("crash", () => {pageCrashed = true;});
+    page.on("close", () => {pageClosed = true;});
+    await page.exposeFunction("recordAppleReturnGesture", (entry: GestureEvent) => {
+      if (events.length < 16 && ["touchstart", "touchend", "click", "webkitbeginfullscreen"].includes(entry.event) &&
+          Number.isFinite(entry.milliseconds) && entry.milliseconds >= 0 && typeof entry.trusted === "boolean" && typeof entry.fullscreen === "boolean") {
+        events.push({event: entry.event, milliseconds: entry.milliseconds, trusted: entry.trusted, fullscreen: entry.fullscreen});
+      }
+    });
+    await video.evaluate(media => {
+      const started = performance.now();
+      const record = (window as Window & {recordAppleReturnGesture: (entry: GestureEvent) => Promise<void>}).recordAppleReturnGesture;
+      for (const type of ["touchstart", "touchend", "click", "webkitbeginfullscreen"]) document.addEventListener(type, event => {
+        if (event.target !== media && !(event.target instanceof Element && event.target.closest("[data-player-toggle]"))) return;
+        void record({event: event.type, milliseconds: performance.now() - started, trusted: event.isTrusted,
+          fullscreen: (media as HTMLVideoElement & {webkitDisplayingFullscreen: boolean}).webkitDisplayingFullscreen}).catch(() => {});
+      }, {capture: true, passive: true});
+    });
+    try {
+      await page.getByRole("button", {name: "Play", exact: true}).tap();
+      tapReturned = true;
+      await expect(video).toHaveJSProperty("webkitDisplayingFullscreen", true);
+      await expect(page.locator("[data-subtitles]")).toHaveValue("0");
+    } finally {
+      await info.attach("apple-return-gesture", {body: JSON.stringify({events, pageCrashed, pageClosed, tapReturned,
+        browserConnected: page.context().browser()?.isConnected(), milliseconds: performance.now() - started,
+        boundary: "Passive simulated-fullscreen observation; empty events can mean binding delivery failed; no physical input or decoder proof"}), contentType: "application/json"})
+        .catch(() => {console.warn("APPLE_RETURN_GESTURE_EVIDENCE unavailable");});
+    }
   });
 
   test("limited in-band Apple playback emits no custom theater errors", async ({page}) => {

@@ -122,14 +122,22 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	if len(facts.Audio) > 0 {
 		audioBitrate = min(128_000, max(1_000, qualities[0].Bitrate/4))
 	}
+	if recovery, ok := ctx.Value(transcodeHLSRecoveryKey{}).(*transcodeHLSRecovery); ok {
+		return manager.refillTranscodeHLS(ctx, item, directory, options, window, qualities, audioBitrate, start, recovery)
+	}
+	committed := make(chan string, 1)
 	results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
-		return manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start, startNumber)
+		err := manager.encodePresentation(ctx, item, directory, options, window, qualities, audioBitrate, start, startNumber)
+		if err == nil && startNumber == 0 && audioBitrate > 0 {
+			err = manager.certifyTranscodeHLS(ctx, item, directory, options, recipe, qualities, committed)
+		}
+		return err
 	})
 	defer stop()
 	if startNumber > 0 {
 		return <-results
 	}
-	return publishVariants(ctx, item.Path, directory, options.Cache, qualities, results, 1, true)
+	return publishTranscodeHLSVariants(ctx, item.Path, directory, options.Cache, qualities, results, committed)
 }
 
 func hlsTranscodeQualities(facts MediaFacts, recipe hlsRecipe) []PlaybackQuality {

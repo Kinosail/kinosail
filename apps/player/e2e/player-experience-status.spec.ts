@@ -82,8 +82,8 @@ test("records one private trace across playback events", async ({ page }) => {
   await video.dispatchEvent("waiting");
   await video.dispatchEvent("stalled");
   await video.dispatchEvent("playing");
-  await expect.poll(() => events.length).toBeGreaterThanOrEqual(4);
-  expect(events.map((event) => event.event)).toEqual(expect.arrayContaining(["capability", "play", "waiting", "stalled", "playing"]));
+  await expect.poll(() => events.map((event) => event.event))
+    .toEqual(expect.arrayContaining(["capability", "play", "waiting", "stalled", "playing"]));
   expect(new Set(events.map((event) => event.session))).toEqual(new Set(["trace-session"]));
   for (const event of events) {
     expect(event).not.toHaveProperty("title");

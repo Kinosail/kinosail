@@ -24,15 +24,23 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	input, _ := videoArguments(options, strconv.Itoa(qualities[len(qualities)-1].Width))
 	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}), input...)
 	if startNumber > 0 {
-		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-max_delay", "5000000")
+		arguments = append(arguments, "-max_delay", "5000000")
 	}
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
 	}
 	arguments = append(arguments, "-i", item.Path)
+	refill, _ := ctx.Value(transcodeHLSOutputKey{}).(*transcodeHLSOutput)
+	if refill != nil {
+		arguments = refill.input(arguments, item.Path)
+	}
 	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
 	for index, quality := range qualities {
-		directory, playlistDirectory, err := preparePresentationDirectories(root, quality.Label, startNumber)
+		layoutNumber := startNumber
+		if refill != nil {
+			layoutNumber = 0 // The exclusive stage contains media and init together.
+		}
+		directory, playlistDirectory, err := preparePresentationDirectories(root, quality.Label, layoutNumber)
 		if err != nil {
 			return err
 		}
@@ -42,8 +50,12 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		mapping = presentationVideoMapping(mapping, label)
 		arguments = append(arguments, mapping...)
 		if audioBitrate > 0 {
-			arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(recipe.audio)+"?")
-			arguments = append(arguments, playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())...)
+			if refill != nil {
+				arguments = refill.audio(arguments, recipe.audio, quality.Label)
+			} else {
+				arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(recipe.audio)+"?")
+				arguments = append(arguments, playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())...)
+			}
 		}
 		arguments = append(arguments, "-sn")
 		arguments = append(arguments, encoded...)
@@ -55,14 +67,22 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 			arguments = append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", strconv.FormatInt(audioBitrate/1000, 10)+"k")
 		}
 		arguments = append(arguments, "-flags", "+cgop", "-force_key_frames", "expr:gte(t,n_forced*2)")
+		// Automatic shifting depends on the start time; every rendition must keep the same refill clock.
+		arguments = append(arguments, "-avoid_negative_ts", "disabled")
 		if startNumber > 0 {
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
+		}
+		if refill != nil {
+			arguments = append(arguments, "-t", copiedHLSTime(refill.duration))
 		}
 		arguments = append(arguments, hlsSegmentArguments("transcode", directory, filepath.Join(playlistDirectory, "index.m3u8"), startNumber)...)
 	}
 	//nolint:gosec // G204: executable is installation config and input is found only by a Library scan.
 	if err := runHLSCommand(ctx, exec.CommandContext(ctx, manager.ffmpeg, arguments...), item.Path, root); err != nil {
 		return err
+	}
+	if refill != nil {
+		return finalizePresentationPlaylists(root, qualities, 0)
 	}
 	return finalizePresentationPlaylists(root, qualities, startNumber)
 }

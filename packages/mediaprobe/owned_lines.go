@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"os/exec"
+	"runtime"
 )
 
 var errCopiedHLSIndex = errors.New("copied HLS timeline is unavailable")
@@ -14,6 +15,9 @@ var errCopiedHLSIndex = errors.New("copied HLS timeline is unavailable")
 // ErrProbeLifecycle means probe ownership or completion could not be certified.
 // Callers must not treat it as optional, unsupported media metadata.
 var ErrProbeLifecycle = errors.New("media probe lifecycle failed")
+
+// ErrProbeInputUnsupported means the platform owner cannot yet bind stdin.
+var ErrProbeInputUnsupported = errors.New("owned media probe input is unsupported")
 
 type probeLoggerKey struct{}
 
@@ -27,6 +31,16 @@ func probeLogger(ctx context.Context) *slog.Logger {
 // ProbeLines reads bounded metadata and joins the complete configured process tree.
 // The caller supplies a deadline and a logger with already-validated correlation fields.
 func ProbeLines(parent context.Context, logger *slog.Logger, executable string, arguments []string, maximumBytes int64, maximumLines int, visit func(string) error) error {
+	return ProbeInputLines(parent, logger, executable, arguments, nil, maximumBytes, maximumLines, visit)
+}
+
+// ProbeInputLines joins input delivery as well as the configured process tree.
+// A supplied reader must stop on parent cancellation; the caller retains closure.
+// Platforms without owned stdin reject before starting a process.
+func ProbeInputLines(parent context.Context, logger *slog.Logger, executable string, arguments []string, input io.Reader, maximumBytes int64, maximumLines int, visit func(string) error) error {
+	if input != nil && runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
+		return ErrProbeInputUnsupported
+	}
 	parent = context.WithValue(parent, probeLoggerKey{}, logger)
 	ctx, cancel, err := copiedHLSProbeContext(parent)
 	if err != nil {
@@ -35,6 +49,7 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	defer cancel()
 	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
 	command := exec.CommandContext(ctx, executable, arguments...)
+	command.Stdin = input
 	command.Cancel = nil // The joined owner below settles the entire process group.
 	probe, output, err := startCopiedHLSProbe(ctx, command)
 	if err != nil {
@@ -45,10 +60,14 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	}
 	defer probe.close()
 	defer output.Close()
+	return readCopiedHLSProbeLines(ctx, parent, probe, output, maximumBytes, maximumLines, visit)
+}
+
+func readCopiedHLSProbeLines(ctx, parent context.Context, probe copiedHLSProbe, output io.ReadCloser, maximumBytes int64, maximumLines int, visit func(string) error) error {
 	scanned := make(chan error, 1)
 	watched := make(chan copiedHLSProbeWatch, 1)
 	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
-	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
+	err := scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
 	scanned <- err
 	watch := <-watched
 	waitErr := probe.wait()
@@ -56,7 +75,7 @@ func ProbeLines(parent context.Context, logger *slog.Logger, executable string, 
 	watchErr := watch.completionError(ctx, waitErr, settleErr)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
 		reportCopiedHLSProbeCompletion(ctx, err, watchErr, waitErr, settleErr)
-		return errors.Join(errCopiedHLSIndex, ctx.Err(), watchErr)
+		return errors.Join(errCopiedHLSIndex, err, ctx.Err(), watchErr)
 	}
 	return err
 }

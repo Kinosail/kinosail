@@ -69,7 +69,24 @@ jobs:
           APP: ${{ inputs.app }}
           KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
           KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}
+          KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ inputs.app == 'player' && fromJSON(inputs.plan).deep && format('{0}/transcode-refill', runner.temp) || '' }}
         run: ./scripts/ci/test-go.sh "$APP"
+      - name: Checksum public transcode refill evidence
+        if: always() && inputs.app == 'player' && fromJSON(inputs.plan).deep
+        run: |
+          git diff --quiet
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD > "$RUNNER_TEMP/transcode-refill/revision.txt"
+          cd "$RUNNER_TEMP/transcode-refill"
+          sha256sum -- *.jsonl revision.txt > SHA256SUMS
+      - name: Keep public transcode refill evidence
+        if: always() && inputs.app == 'player' && fromJSON(inputs.plan).deep
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: player-transcode-refill-${{ github.sha }}
+          path: ${{ runner.temp }}/transcode-refill/
+          if-no-files-found: error
+          retention-days: 30
       - name: Verify CLI startup latency
         id: cli_startup
         if: fromJSON(inputs.plan).deep
@@ -206,6 +223,7 @@ jobs:
           case "$NATIVE_PROBE" in
             AAC) selector=DownloadAACProbeTests ;;
             storage) selector=DownloadStorageAuthorizationTests ;;
+            reader) selector='NativePreferencesUXTests/readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light:fontSize:)' ;;
             *) exit 2 ;;
           esac
           printf 'selector=%s\n' "$selector" >> "$GITHUB_OUTPUT"
@@ -223,6 +241,7 @@ jobs:
             -destination "id=$device" -derivedDataPath apps/player/apps/native/.build/ios-simulator
             -resultBundlePath "$run/native.xcresult" "-only-testing:Kinosail-iOSTests/$SELECTOR"
             -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-)
+          if [[ "$NATIVE_PROBE" == reader ]]; then command+=(-test-iterations 3); fi
           printf '%q ' "${command[@]}" > "$run/command.txt"
           if "${command[@]}" > "$run/native.log" 2>&1; then status=0; else status=$?; fi
           export NATIVE_PROBE_EXIT="$status" NATIVE_PROBE_RUN="$run" NATIVE_PROBE_DEVICE="$device"
@@ -230,16 +249,36 @@ jobs:
           import hashlib, json, os, pathlib, platform, re, subprocess, sys
           run = pathlib.Path(os.environ['NATIVE_PROBE_RUN'])
           suite, count, data = {'AAC': ('DownloadAACProbeTests', 2, 'Embedded 2106-byte AAC; malformed/truncated/wrong-kind/playlist/symlink/remote controls'),
-              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization')}[os.environ['NATIVE_PROBE']]
+              'storage': ('DownloadStorageAuthorizationTests', 1, 'Synthetic blocked journal root; 40 scoped denials, reset and authorization'),
+              'reader': ('NativeReaderSurfaceJourneys', 1, 'Held loopback metadata; light/dark appearance and 20/32 point font; pending/loaded/empty/failed states')}[os.environ['NATIVE_PROBE']]
+          iterations = 3 if os.environ['NATIVE_PROBE'] == 'reader' else 1
           status = int(os.environ['NATIVE_PROBE_EXIT'])
           matches = re.findall(r'Test run with (\d+) tests? .*passed', (run / 'native.log').read_text())
           discovered = bool(matches and int(matches[-1]) == count)
+          if iterations > 1:
+              # Swift prints one summary for all repetitions; xcresult owns the per-argument outcomes.
+              discovered = matches == [str(count)]
+              try:
+                  raw = subprocess.check_output(['xcrun', 'xcresulttool', 'get', 'test-results', 'test-details',
+                      '--path', str(run / 'native.xcresult'), '--test-id', os.environ['SELECTOR'], '--compact'], text=True)
+                  (run / 'test-details.json').write_text(raw)
+                  details = json.loads(raw)
+                  groups = details['testRuns']
+                  discovered = discovered and details['testIdentifier'] == os.environ['SELECTOR'] and details['testResult'] == 'Passed'
+                  discovered = discovered and len(groups) == 4 and {group['name'] for group in groups} == {'false, 20', 'false, 32', 'true, 20', 'true, 32'}
+                  for group in groups:
+                      repeats = [child for child in group['children'] if child['nodeType'] == 'Repetition']
+                      discovered = discovered and group['nodeType'] == 'Arguments' and group['result'] == 'Passed'
+                      discovered = discovered and len(repeats) == iterations and {item['nodeIdentifier'] for item in repeats} == {'1', '2', '3'}
+                      discovered = discovered and all(item['result'] == 'Passed' for item in repeats)
+              except (OSError, subprocess.CalledProcessError, ValueError, KeyError, TypeError):
+                  discovered = False
           receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
               'command': (run / 'command.txt').read_text(), 'probe': os.environ['NATIVE_PROBE'],
               'environment': platform.platform(), 'xcode': subprocess.check_output(['xcodebuild', '-version'], text=True).strip(),
               'simulator': os.environ['NATIVE_PROBE_DEVICE'], 'data': data,
               'fixtureSourceSHA256': hashlib.sha256(pathlib.Path('apps/player/apps/native/Tests', suite + '.swift').read_bytes()).hexdigest(),
-              'expectedTests': count, 'discoveryVerified': discovered, 'exitCode': status,
+              'expectedTests': count, 'expectedIterations': iterations, 'discoveryVerified': discovered, 'exitCode': status,
               'result': 'passed' if status == 0 and discovered else 'failed',
               'boundaries': 'Focused iOS simulator regression; no physical device or full-suite proof'}
           (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
@@ -409,7 +448,7 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
       - name: Verify Subtitles copied-video clocks
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -417,12 +456,13 @@ jobs:
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch
+          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch --pace-hls
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 2.5
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode none
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode ac3 --force-audio-conversion --decoded-audio
           python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --copied-clock-errors
       - name: Verify Subtitles copied generation plans
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -436,6 +476,17 @@ jobs:
           for fault in missing malformed policy cuts downgrade; do
             python3 apps/player/scripts/test-subtitles-copied-prefix.py --plan-fault "$fault"
           done
+      - name: Verify Subtitles completed copied suffixes
+        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
+        timeout-minutes: 5
+        env:
+          GOMAXPROCS: "2"
+        run: |
+          status=0
+          for scenario in success producer timeout missing-plan mismatched-plan; do
+            python3 apps/player/scripts/test-subtitles-copied-prefix.py --completed-suffix "$scenario" || status=1
+          done
+          exit "$status"
       - name: Keep safe Subtitles copied-clock evidence
         if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -452,7 +503,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify cold and damaged HLS cache reopen
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "2"
         run: python3 apps/player/scripts/test-hls-cache-reopen.py
@@ -468,7 +519,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify prepared copied-video timeline
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "2"
         run: |
@@ -502,7 +553,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify copied-video audio and legacy preparation
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"
@@ -521,7 +572,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify continuous converted-audio recovery
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 15
         env:
           GOMAXPROCS: "2"
@@ -551,7 +602,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify complete HEVC preparation
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         timeout-minutes: 10
         env:
           GOMAXPROCS: "2"

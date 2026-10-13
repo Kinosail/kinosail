@@ -149,6 +149,7 @@ extension SessionRefreshTests {
                 try Data([0]).write(to: journal.appendingPathComponent("write-blocker"))
             }
             var threw = false
+            let reauthorizationBegan = ContinuousClock.now
             do { try await probe.engine.authorize(backgroundAccess(saved), ifCurrent: revision) }
             catch {
                 threw = true
@@ -166,6 +167,10 @@ extension SessionRefreshTests {
                     try await Task.sleep(for: .milliseconds(5))
                 }
                 let files = probe.fixture.requests.filter { $0.url?.path == path + "/file" }
+                if files.count != 2 {
+                    await probe.recordReauthorizationDelivery(access: try backgroundAccess(saved), key: key,
+                        filePath: path + "/file", revision: revision, began: reauthorizationBegan, initialCount: files.count)
+                }
                 try #require(files.count == 2)
                 #expect(files[1].value(forHTTPHeaderField: "Authorization") == "Bearer new-token")
                 #expect(files[1].value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == "viewer")
@@ -176,7 +181,7 @@ extension SessionRefreshTests {
     }
 }
 
-private struct BackgroundAuthorizationProbe: Sendable {
+struct BackgroundAuthorizationProbe: Sendable {
     let directory: URL
     let engine: VerifiedDownloads
     let fixture: HTTPFixture
@@ -258,7 +263,13 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
         && diagnosticRequest?.url?.path == path + "/manifest"
         && diagnosticRequest?.value(forHTTPHeaderField: "Authorization") == access.header
         && diagnosticRequest?.value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == access.profileID
+    let diagnosticState = try? await probe.engine.snapshot(access.scope)
+    let diagnosticJob = diagnosticState?.first { $0.key == String(repeating: "b", count: 64) }
+    let safeStatuses = ["preparing", "paused", "queued", "waiting", "downloading", "verifying", "complete"]
     let diagnostic: [String: Any] = ["enqueueFinishedMs": milliseconds(began.duration(to: enqueued)),
+        "snapshotAuthorized": diagnosticState != nil, "jobPresent": diagnosticJob != nil,
+        "jobStatus": diagnosticJob.flatMap { safeStatuses.contains($0.status) ? $0.status : nil } ?? "unavailable",
+        "jobHasMessage": diagnosticJob?.message.isEmpty == false,
         "readinessFinishedMs": milliseconds(began.duration(to: readinessFinished)),
         "polls": polls, "readinessDeadlineAfterEnqueueMs": 10_000, "longestPollGapMs": milliseconds(longestGap),
         "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count,

@@ -7,6 +7,9 @@ import (
 )
 
 func publishVariants(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, plan *copiedHLSPlan) error {
+	if plan != nil && plan.Strategy == "completed" {
+		return publishCompletedCopiedHLS(ctx, source, directory, transcoder, qualities, results, expected, plan)
+	}
 	return playback.PublishVariants(ctx, source, directory, transcoder, qualities, results, expected, independent, plan.bindMaster)
 }
 

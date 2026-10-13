@@ -57,7 +57,7 @@ extension NativePreferencesUXTests {
                 context.cgContext.translateBy(x: 0, y: 180 - window.bounds.height)
                 window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             }
-            try #require(footer.pngData()).write(to: folder.appendingPathComponent("localized-footer.png"))
+            try readerEvidence(#require(footer.pngData()), folder: folder, name: "localized-footer.png")
             let image = try #require(footer.cgImage)
             let request = VNRecognizeTextRequest()
             request.recognitionLevel = .accurate
@@ -74,8 +74,8 @@ extension NativePreferencesUXTests {
                 "requestEvents": fixture.state.withLock { $0.readerEvents.mapValues { $0 - shown } },
                 "positiveControlTranslated": normalized.contains(language.control),
                 "expectedCounterMatched": normalized.contains(expected)]
-            try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
-                .write(to: folder.appendingPathComponent("localization.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys]),
+                folder: folder, name: "localization.json")
             #expect(normalized.contains(language.control), "The explicit harness control must confirm the selected catalog")
             #expect(normalized.contains(expected), "The real reader must localize the counter and preserve unequal page numbers")
         } catch {
@@ -111,13 +111,16 @@ extension NativePreferencesUXTests {
             fixture.readerHeld = true
             readerRoot(window, session: session, light: light)
             window.makeKeyAndVisible()
+            stage = "initial-metadata-start"
             try await readerUntil { fixture.heldReaderCount == 1 }
+            stage = "initial-pending-capture"
             let initial = try readerBands(window, light: light)
-            try JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
-                "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted])
-                .write(to: folder.appendingPathComponent("pending-font.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
+                "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted]),
+                folder: folder, name: "pending-font.json")
             try await readerCapture(window, folder: folder, name: "pending-initial")
             if fontSize != 20 {
+                stage = "saved-font-pending"
                 try await readerUntil("Pending lines must adopt the confirmed saved font before book metadata is released") {
                     (try? readerBands(window, light: light).contains { abs($0.height - CGFloat(fontSize)) <= 1 }) == true
                 }
@@ -126,7 +129,9 @@ extension NativePreferencesUXTests {
             try #require(!pending.isEmpty, "Prerequisite: real pending lines must be visible while metadata is held")
             try await readerCapture(window, folder: folder, name: "pending")
             fixture.releaseReader()
-            try await readerUntil { readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading } }
+            stage = "loaded-webview"
+            try await readerLoadedWebView(window, fixture: fixture, folder: folder)
+            stage = "loaded-geometry"
             let web = try #require(readerDescendants(window).compactMap { $0 as? WKWebView }.first)
             let metrics = try await readerMetrics(web)
             let origin = web.convert(web.bounds, to: window)
@@ -135,8 +140,8 @@ extension NativePreferencesUXTests {
                 "pendingLeft": pending[0].minX, "pendingRight": pending[0].maxX,
                 "loadedLeft": left, "loadedRight": right, "fontFamily": metrics.fontFamily,
                 "fontSize": metrics.fontSize, "horizontalOverflow": metrics.overflow]
-            try JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys])
-                .write(to: folder.appendingPathComponent("geometry.json"))
+            try readerEvidence(JSONSerialization.data(withJSONObject: receipt, options: [.prettyPrinted, .sortedKeys]),
+                folder: folder, name: "geometry.json")
             try await readerCapture(window, folder: folder, name: "loaded")
             #expect(abs(pending[0].minX - left) <= 2, "Pending and loaded column left edges must match")
             #expect(abs(pending[0].maxX - right) <= 2, "Pending and loaded column right edges must match")
@@ -172,10 +177,13 @@ extension NativePreferencesUXTests {
             }
         } catch {
             if let evidenceFolder {
-                let diagnostic: [String: Any] = ["stage": stage, "heldReaderCount": fixture.heldReaderCount,
+                let diagnostic: [String: Any] = ["stage": stage, "light": light, "fontSize": fontSize, "heldReaderCount": fixture.heldReaderCount,
                     "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
-                try? JSONSerialization.data(withJSONObject: diagnostic, options: [.prettyPrinted])
-                    .write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
+                if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]) {
+                    try? readerEvidence(data, folder: evidenceFolder, name: "failed-operation.json")
+                    // Retain only fixed stage names and fixture counts in hosted logs.
+                    print("NATIVE_READER_FAILURE " + String(decoding: data, as: UTF8.self))
+                }
             }
             await session.client?.close(purgeCache: true)
             if let previousSession { try await keychain.save(previousSession) } else { try await keychain.clear() }
@@ -278,7 +286,8 @@ extension NativePreferencesUXTests {
             window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             if let web, let chapter { chapter.draw(in: web.convert(web.bounds, to: window)) }
         }
-        try #require(image.pngData()).write(to: folder.appendingPathComponent(name + ".png"))
+        try readerEvidence(#require(image.pngData()), folder: folder, name: name + ".png")
     }
+
 }
 #endif

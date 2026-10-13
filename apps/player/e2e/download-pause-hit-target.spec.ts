@@ -36,6 +36,13 @@ test("actual Go phone: fictional download controls and ready Play link remain re
   test.setTimeout(45_000);
   await page.setViewportSize({width: 390, height: 844});
   const peer = await downloadPeer();
+  let refreshHeld = false;
+  const releaseRefresh = async () => {
+    if (!refreshHeld) return;
+    // Cleanup must still reach the peer after Playwright cancels its context.
+    expect((await fetch(`${peer.origin}/__download-pause?refresh=release`, {method: "POST", signal: AbortSignal.timeout(2_000)})).ok).toBe(true);
+    refreshHeld = false;
+  };
   try {
     const served = await openDownloadPage(page, peer.origin, "indexeddb", info);
     await info.attach("served-hit-target-bundle", {body: JSON.stringify(served), contentType: "application/json"});
@@ -63,11 +70,34 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);
     await expect(page.locator("[data-offline-library] h2")).toHaveText("Fictional Range Fixture");
     await info.attach("phone-play-pointer-navigation", {body: JSON.stringify({pathname: new URL(page.url()).pathname, selectedJob: new URL(page.url()).searchParams.get("job"), decodingClaim: false}), contentType: "application/json"});
-    // Reload the public Server page; this does not claim actual BFCache admission.
-    await page.goto(`${peer.origin}/offline-downloads`);
+    // Hold a real live refresh at the disposable peer until Play has focus.
+    // Native service workers can bypass Playwright's page-level routing.
+    // The Server cannot know device storage and returns this link hidden.
+    expect((await page.request.post(`${peer.origin}/__download-pause?refresh=hold`)).ok()).toBe(true);
+    refreshHeld = true;
+    // Mark only the document request; service-worker fetches can change its destination header.
+    // The live refresh still fetches the canonical URL and real Server markup.
+    const reloaded = await page.goto(`${peer.origin}/offline-downloads?refreshDocument=1`, {waitUntil: "domcontentloaded"});
+    expect(reloaded?.status()).toBe(200);
     const again = page.locator("[data-download-play]");
     await expect(again).toBeVisible();
-    await centerAndFocus(again);
+    try {
+      await expect.poll(async () => {
+        const response = await page.request.get(`${peer.origin}/__download-pause?refresh=status`);
+        expect(response.ok()).toBe(true);
+        return (await response.json()).waiting;
+      }).toBeGreaterThan(0);
+      await centerAndFocus(again);
+      await expect(again).toBeFocused();
+      await page.screenshot({path: info.outputPath("phone-play-refresh-pending.png")});
+      const beforeRefresh = await again.elementHandle();
+      await releaseRefresh();
+      await expect.poll(() => beforeRefresh!.evaluate(element => element.isConnected)).toBe(false);
+      await expect(again).toBeVisible();
+      await expect(again).toBeFocused();
+      await page.screenshot({path: info.outputPath("phone-play-refresh-loaded.png")});
+      await beforeRefresh!.dispose();
+    } finally { await releaseRefresh(); }
     expect(await hitTarget(again, "phone-play-keyboard-hit-target", info)).toMatchObject({centerInViewport: true, receivesPointer: true, focused: true});
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);
@@ -75,5 +105,8 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     expect((await peer.stats()).ranges).toEqual([0, downloadChunk, downloadChunk, downloadChunk * 2]);
     expect((await peer.stats()).removals).toBe(0);
     await info.attach("phone-play-keyboard-navigation", {body: JSON.stringify({pathname: new URL(page.url()).pathname, selectedJob: new URL(page.url()).searchParams.get("job"), peer: await peer.stats(), decodingClaim: false}), contentType: "application/json"});
-  } finally { await context.close(); await peer.close(); }
+  } finally {
+    try { await releaseRefresh(); }
+    finally { await context.close(); await peer.close(); }
+  }
 });

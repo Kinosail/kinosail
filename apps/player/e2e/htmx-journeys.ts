@@ -46,8 +46,9 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
 
   test("HTMX delays visual placeholders while keeping pending content inert @smoke", async ({ page }, info) => {
     await open(page);
-    await page.clock.install();
-    await page.clock.pauseAt(new Date());
+    // Keep the pause target ahead while the installed clock is still running.
+    await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
+    await page.clock.pauseAt(new Date("2026-01-01T01:00:00Z"));
     let release!: () => void;
     const held = new Promise<void>(resolve => { release = resolve; });
     await page.route(`${origin}/first`, async route => { await held; await route.fulfill({ contentType: "text/html", body: content("Loaded") }); });
@@ -72,8 +73,8 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
 
   for (const status of [200, 500]) test(`HTMX clears a fast ${status} response before delayed placeholders appear @smoke`, async ({ page }) => {
     await open(page);
-    await page.clock.install();
-    await page.clock.pauseAt(new Date());
+    await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
+    await page.clock.pauseAt(new Date("2026-01-01T01:00:00Z"));
     await page.route(`${origin}/first`, route => route.fulfill({ status, contentType: "text/html", body: content("Loaded") }));
     await page.getByRole("button", { name: "First" }).click();
     await ready(page);

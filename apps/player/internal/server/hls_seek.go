@@ -193,6 +193,19 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 			}
 			continue
 		}
+		// The preceding owner may have committed certification while this request
+		// joined it. Resolve the strategy only after that owner has settled.
+		var recovery *transcodeHLSRecovery
+		if recipe.mode == "transcode" {
+			recovery, err = manager.readTranscodeHLSRecovery(ctx, directory, options.Cache, filepath.Base(filepath.Dir(path)), segment)
+			if err != nil {
+				manager.mu.Unlock()
+				return nil, err
+			}
+			if recovery != nil {
+				recovery.original = recipe
+			}
+		}
 		if err = writeAtomicFile(filepath.Join(directory, ".seekable"), []byte(options.Cache)); err != nil {
 			manager.mu.Unlock()
 			return nil, err
@@ -200,6 +213,9 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 		jobContext, created := manager.newHLSJob(ctx, segment)
 		if indexed {
 			jobContext = context.WithValue(jobContext, copiedHLSRequiredKey{}, true)
+		}
+		if recovery != nil {
+			jobContext = context.WithValue(jobContext, transcodeHLSRecoveryKey{}, recovery)
 		}
 		job = created
 		job.cachePolicy = options.Cache

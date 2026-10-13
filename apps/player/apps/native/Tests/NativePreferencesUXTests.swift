@@ -25,6 +25,7 @@ struct NativePreferencesUXTests {
             let window = try host(WatchPosition(item: item, barOnly: true), session: session)
             defer { window.isHidden = true }
             try await until("The visible progress bar must fetch its duration") { session.resourceSnapshots.value(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self) != nil }
+            let cachedAtRender = session.resourceSnapshots.value(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self)
             let renderer = ImageRenderer(content: CinemaHero(item: item, showsPlot: false) { EmptyView() }
                 .frame(width: 335).environment(session).environment(\.colorScheme, .dark))
             let image = try #require(renderer.cgImage)
@@ -35,6 +36,25 @@ struct NativePreferencesUXTests {
                 context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
             }
             let greenPixels = stride(from: 0, to: pixels.count, by: 4).filter { pixels[$0] > 140 && pixels[$0 + 1] > 180 && pixels[$0 + 2] < 130 }.count
+            if greenPixels <= 40 {
+                // Preserve the exact first image and asserted bytes; do not redraw or retry.
+                let facts: [String: Any] = ["width": image.width, "height": image.height,
+                    "bytesPerRow": image.width * 4, "format": "RGBA8-premultiplied-last-deviceRGB",
+                    "greenPixels": greenPixels,
+                    "nonzeroAlphaPixels": stride(from: 3, to: pixels.count, by: 4).filter { pixels[$0] != 0 }.count,
+                    "cachedDuration": cachedAtRender?.duration ?? -1, "cachedFraction": cachedAtRender?.fraction ?? -1,
+                    "savedSeconds": item.progress.seconds, "rendererRequestedScheme": "dark",
+                    "windowStyle": window.traitCollection.userInterfaceStyle.rawValue,
+                    "windowContrast": window.traitCollection.accessibilityContrast.rawValue]
+                if let data = try? JSONSerialization.data(withJSONObject: facts, options: [.sortedKeys]) {
+                    Attachment.record(data, named: "hero-first-frame-state.json")
+                    print("NATIVE_HERO_FIRST_FRAME " + String(decoding: data, as: UTF8.self))
+                }
+                if pixels.count <= 16 * 1024 * 1024 {
+                    Attachment.record(Data(pixels), named: "hero-first-frame.rgba")
+                    if let data = UIImage(cgImage: image).pngData() { Attachment.record(data, named: "hero-first-frame.png") }
+                }
+            }
             #expect(greenPixels > 40)
             window.isHidden = true
             session.resourceSnapshots.remove(for: "watch-progress:movie", clientID: clientID, as: WatchProgressSummary.self)

@@ -148,7 +148,7 @@ func (manager *hlsManager) writeCopiedHLSTimeline(directory string, timeline *co
 }
 
 func writeCopiedHLSMetadata(root *os.Root, name string, data []byte) error {
-	if name != ".copy-timeline" && name != ".copy-clock" && name != shortHEVCCompletionMarker {
+	if name != ".copy-timeline" && name != ".copy-clock" && name != ".transcode-clock" && name != shortHEVCCompletionMarker {
 		return errCopiedHLSIndex
 	}
 	file, err := root.OpenFile(name+".pending", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)

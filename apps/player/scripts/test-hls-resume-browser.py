@@ -10,12 +10,12 @@ import socket
 import subprocess
 import time
 
-from hls_timeline_fixture import LONG_RESUME_KEYS, browser_reference, fixture
+from hls_timeline_fixture import LONG_RESUME_KEYS, browser_reference, fixture, paced_encoder
 from hls_audio_capture import capture_audio, decode_source
 from hls_resume_audio import audio_packets, uninterrupted_audio_reference
-from hls_timeline_http import PublicServer, sha, source_state
+from hls_timeline_http import PublicServer, copied_playlist_evidence, sha, source_state
 from hls_timeline_preparation import prepare_scene
-from hls_followon_public import bounded_bytes, check, encoder_count
+from hls_followon_public import bounded_bytes, check, encoder_count, encoder_count_or_unavailable
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -30,6 +30,7 @@ parser.add_argument('--audio-mode', choices=['aac', 'ac3', 'none'], default='aac
 parser.add_argument('--decoded-audio', action='store_true', help='Compare browser PCM with the nonperiodic source audio')
 parser.add_argument('--copied-clock-errors', action='store_true', help='Inject malformed Subtitles init data and verify terminal failure rendering')
 parser.add_argument('--direct-switch', action='store_true', help='Start direct playback, then select Compatibility in the real player')
+parser.add_argument('--pace-hls', action='store_true', help='Pace the selected real HLS encoder at source speed to expose a pending playlist')
 parser.add_argument('--audio-reference', action='store_true', help='Compare converted AAC with uninterrupted encoding')
 parser.add_argument('--tail-recovery', action='store_true')
 parser.add_argument('--first-recovery', action='store_true')
@@ -40,6 +41,8 @@ if args.copied_clock_errors and (args.app != 'subtitles' or args.engines == 'web
     parser.error('--copied-clock-errors requires Subtitles MSE playback')
 if args.direct_switch and args.app != 'subtitles':
     parser.error('--direct-switch currently exercises the Subtitles playback control')
+if args.pace_hls and not (args.direct_switch and args.long_remux and args.engines == 'chromium' and args.resume_seconds == 64.5):
+    parser.error('--pace-hls requires Chromium long-remux direct-switch at 64.5 seconds')
 if args.decoded_audio and (args.audio_mode != 'ac3' or not args.force_audio_conversion):
     parser.error('--decoded-audio requires AC3 and forced audio conversion')
 if args.app == 'subtitles' and (args.prepared or args.controls):
@@ -79,6 +82,9 @@ if args.copied_clock_errors:
 receipt['directSwitch'] = args.direct_switch
 if args.direct_switch:
     receipt['command'] += ' --direct-switch'
+if args.pace_hls:
+    receipt['command'] += ' --pace-hls'
+    receipt['boundary'] += ' Real HLS encoder input paced at source speed; media and browser decoding remain real.'
 
 
 def audio_boundaries(rendition):
@@ -151,6 +157,9 @@ try:
                KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(run / 'config'),
                KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(run / 'cache'),
                KINOSAIL_BACKUP_DIR=str(run / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-resume-key')
+    if args.pace_hls:
+        wrapper, receipt['testOnlyRealCodecPacing'] = paced_encoder(run, source)
+        env['KINOSAIL_FFMPEG'] = str(wrapper)
     with (run / 'server-private.log').open('w') as log:
         server = subprocess.Popen([str(run / 'player')], cwd=ROOT, env=env, stdout=log, stderr=log)
         try:
@@ -222,6 +231,14 @@ try:
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],
                                             cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=300)
                 case['exitCode'] = result.returncode
+                if args.pace_hls:
+                    invocation = json.loads(bounded_bytes(run / 'pacing-invocation.json', 4096, 'pacing_receipt_bound'))
+                    case['pacingApplied'] = invocation == {'readrate': 1, 'sourceMatched': True, 'parent': server.pid}
+                    if not case['pacingApplied']: case['exitCode'] = 1
+                if args.app == 'subtitles' and args.direct_switch:
+                    case['postBrowserEncoders'] = encoder_count_or_unavailable(server, source)
+                    case['postBrowserGenerations'] = copied_playlist_evidence(run / 'cache')
+                    case['postBrowserEncodersAfterSnapshot'] = encoder_count_or_unavailable(server, source)
                 if args.small_video:
                     facts = json.loads((run / f'{engine}.json').read_text())
                     case['originalDimensionsPreserved'] = len(facts['rows']) == 2 and all(
