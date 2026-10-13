@@ -29,9 +29,9 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
 | Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | Full suites and twelve reader outcomes pass at `bc33897b`. Later runs expose a tvOS scrub assertion, a hero first-frame assertion, and reader timeouts with slow WebKit launches. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
+| Apple native contracts | At `a1197ae4`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
-| Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. A completed-output strategy is implemented for nonzero windows with at most 30 seconds remaining. | Hosted paced playback and lifecycle controls; longer windows remain unresolved. |
+| Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. The repaired paced journey, all eight clock cases, eleven plan cases, and five completion cases pass at `5df3c236`. | Current required gates and longer copied windows remain open. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
 Local runtime remains held for the coordinated physical Apple TV window. Current local checks use source formatting, shell parsing, source contracts, and artifact inspection. Hosted gates remain enabled.
@@ -3293,3 +3293,46 @@ They also verify outcome log levels, request correlation, and absence of fixture
 Independent source review found no production blocker. It identified fixture offset and cleanup errors, which were corrected before publication.
 Python sources and six generated wrapper branches parse. Source caps, whitespace, 17 workflow contracts, and pinned actionlint pass.
 No local Go build, FFmpeg execution, browser, simulator, or device run is claimed; hosted execution remains required.
+
+
+## Verified completed suffixes and native recorder — October 13
+
+[Subtitles Chromium job 115355020355](https://github.com/Kinosail/kinosail/actions/runs/38414411705/job/115355020355) passes at `5df3c236`.
+Artifact `11825131521` has SHA-256 `3c8609d5428dee51a08a7bb2bfa224b7edb018fd1508d78e3e2fa956f55c1bf9`.
+All 24 receipts identify that revision and report success: eight clock cases, eleven generation-plan cases, and five completed-suffix cases.
+All sixteen uploaded files named in the inner artifact hashes verify; omitted private logs are not claimed as independently downloaded.
+
+The paced direct-switch case confirms real producer pacing and matches all seven decoded frames.
+Both reference and compatible playback reach actual EOF at 74.48 seconds.
+Its first served rendition contains all five actual fragment durations: 4, 4.08, 3.92, 4, and 0.6 seconds.
+The final cache has the same durations and fragment names.
+All five completion controls withhold the master during the unfinished prefix and after genuine ENDLIST while command exit remains held.
+The failed producer returns 503 for initial, warm, and restarted requests.
+Timeout returns 503 with the expected warning, while the shared producer subsequently completes and supports warm/restarted reads.
+Missing and mismatched plan controls return playlist/media statuses 503/404 without another encoder.
+Every control verifies source preservation, Server settlement, all producer joins, no late encoder admission, expected diagnostic levels, and credential absence.
+
+[Native job 115344270842](https://github.com/Kinosail/kinosail/actions/runs/38411328340/job/115344270842) passes at `a1197ae4`.
+Artifact `11823328682` has SHA-256 `8879779f1ac725122c71b69264671b8b31d4b141f261bf454abd5f945ec06128`.
+Xcode summaries show 336 iOS passes and 320 tvOS passes, with zero failures and one skip per platform.
+The iOS skip requires unsupported simulator PiP capability; the tvOS skip is the opt-in disposable session seed.
+The separate reader probe verifies all twelve argument/repetition outcomes.
+Its structured details hash is `f4416525e61674cd37531274a3e00956279dedb5533d14cb611b2707c00bb980`.
+Scrub snapshots record native/source positions 3/6 at startup return and the later assertion, with no completion callback.
+Those observations are 90.717 milliseconds apart. This healthy run does not diagnose the earlier scrub failure.
+The corrected recorder compiles and executes; the earlier hero and reader failures remain separate investigations.
+
+## Architecture refresh and Q09 hosted proof — October 13
+
+The first completed-suffix run found a gocritic conditional-style error and the expected stale Subtitles architecture snapshot.
+Commit `ea354f88` corrects the conditional style without changing behavior; its Subtitles lint job passes.
+[Q09 run 38416138037](https://github.com/Kinosail/kinosail/actions/runs/38416138037) passes and collects exact-revision architecture metadata.
+Artifact `11824252919` has SHA-256 `0688b983d2527c1e28fa47db7a3c6ce7f3b56a1a2836e751eb3124cca6c42ca9`.
+All three safe artifact-manifest hashes and the architecture payload hash verify.
+The canonical Python reproducer validates the complete tracked-tree identity and both rendered HTML hashes before writing the Subtitles snapshot.
+No local Go command or browser is used for reproduction.
+
+Q09 verifies twelve isolated browser cases, 47 populated Server cases, and one populated phone case.
+All sixty cases pass without retry or failure locations. Each owned process group settles, and the source is unchanged.
+These Linux hosted results complement the earlier ten process-settlement contracts; they do not establish physical-device or macOS browser proof.
+Current required gates, longer copied windows, local-runtime restrictions, and remaining platform boundaries still prevent full campaign acceptance.
