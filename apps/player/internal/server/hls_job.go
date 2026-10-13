@@ -125,6 +125,9 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	if recipe.subtitlePath != "" {
 		options.Cache += ":subtitle=" + sourceVersion(recipe.subtitlePath)
 	}
+	if recipe.mode == "transcode" && item.Kind != "audio" && item.Kind != "audiobook" {
+		options.Cache += ":transcode-clock=1"
+	}
 	if remainingAACOriginRecipe(item, recipe) {
 		options.Cache += ":aac-origin=1"
 	}

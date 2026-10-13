@@ -2386,3 +2386,31 @@ All three `bf39db6e` layout artifacts verify unchanged source and seven script i
 Each reports eleven stable Player flows and 26 stable Subtitles flows, without a failed stability or focus field.
 The isolated fixture suites passed 35 Chromium, 37 Firefox, and 35 WebKit cases, with two conditional skips in Chromium and WebKit.
 Measurement hashes were recorded locally. These artifacts do not provide an upstream full checksum manifest.
+
+### Confirmed transcode refill failure and output-policy trial
+
+The `bcc888a0` public HTTP regression failed all four actual renditions: 180p, 432p, 540p, and 720p.
+Each original sequence decoded 150 contiguous frames. Each mixed sequence decoded only 148 frames with the same 1/12800 timebase.
+All eight decodes exited successfully and emitted no diagnostics. The source, initialization, and preceding fragment remained unchanged.
+Each fixture recorded exactly one joined initial producer and one joined refill producer using `libx264`.
+The three-rendition refill recorded three output offsets and start numbers, proving that it exercised the multi-output path.
+The hosted Go log SHA-256 is `740eb0f139a9740dae8819bfdebaa3d630ad7629e21ee185486187a44457d505`.
+The regression completed in 10.46 seconds. This confirms lost decoded frames after public regeneration; it does not establish the cause of WebKit resets.
+
+The production trial explicitly sets `-avoid_negative_ts disabled` for every HLS video-transcode output, both initially and during refill.
+The former flag appeared before `-i`, in the input option group. It did not explicitly configure each output muxer.
+The output offset, keyframes, segment duration, and decoder assertions remain unchanged.
+A video-transcode-only cache marker forces older presentations to rebuild before they can mix with new output.
+Copied streams and audio-only cache identities retain their existing policy.
+
+Before this production change, the public regression gained a synthetic legacy-policy migration check.
+It removes the marker from all three owned cache bindings, reopens through HTTP, and requires another joined producer.
+The rebuilt master and durable bindings must restore the policy. Decoded clocks and source bytes must remain unchanged.
+This tests invalidation of simulated legacy metadata; it does not replay a retained historical media cache.
+Safe JSONL receipts and checksums now persist for both passing and failed deep jobs without repeating the test.
+
+Independent review found no source blocker in the trial. Seventeen workflow contracts and the pinned parallel-aware actionlint passed.
+The system actionlint rejected a pre-existing parallel step; it does not support the workflow syntax used by this repository.
+Source limits and whitespace checks passed. The Code Atlas was refreshed from unchanged canonical package inventory using the generator's source parser.
+Full canonical generation and runtime verification remain hosted checks. No local app runtime was started.
+These fixtures are video-only software H.264 at 25 fps. AAC timing, browser/native startup, and hardware encoders remain separate boundaries.

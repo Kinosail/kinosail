@@ -24,7 +24,7 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	input, _ := videoArguments(options, strconv.Itoa(qualities[len(qualities)-1].Width))
 	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}), input...)
 	if startNumber > 0 {
-		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-max_delay", "5000000")
+		arguments = append(arguments, "-max_delay", "5000000")
 	}
 	if start > 0 {
 		arguments = append(arguments, "-ss", ffmpegSeconds(start))
@@ -55,6 +55,8 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 			arguments = append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", strconv.FormatInt(audioBitrate/1000, 10)+"k")
 		}
 		arguments = append(arguments, "-flags", "+cgop", "-force_key_frames", "expr:gte(t,n_forced*2)")
+		// Automatic shifting depends on the start time; every rendition must keep the same refill clock.
+		arguments = append(arguments, "-avoid_negative_ts", "disabled")
 		if startNumber > 0 {
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
 		}

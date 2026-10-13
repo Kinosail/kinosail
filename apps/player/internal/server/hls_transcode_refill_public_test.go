@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -38,6 +39,9 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 }
 
 func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
+	defer func() {
+		transcodeRefillLog(t, map[string]any{"complete": true, "failed": t.Failed(), "revision": os.Getenv("GITHUB_SHA"), "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version(), "command": "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"})
+	}()
 	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 	defer cancel()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
@@ -106,6 +110,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //
 	if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 		t.Fatal("public refill mutated its source")
 	}
+	controls := make([]refillFrameTimeline, len(variants))
 	for index, variant := range variants {
 		t.Run(filepath.Dir(variant), func(t *testing.T) {
 			base := prefix + strings.TrimSuffix(variant, "index.m3u8")
@@ -137,7 +142,14 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //
 					t.Fatalf("public refill shifted frame %d: original=%+v mixed=%+v", frame, clock, actual.Frames[frame])
 				}
 			}
+			controls[index] = control
 		})
+	}
+	if !t.Failed() {
+		transcodeRefillLegacyCache(t, ctx, ffmpeg, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned)
+		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
+			t.Fatal("legacy cache rebuild mutated its source")
+		}
 	}
 }
 
@@ -157,4 +169,7 @@ func transcodeRefillLog(t *testing.T, value any) {
 		t.Fatal(err)
 	}
 	t.Logf("transcode-refill-receipt %s", data)
+	if directory := os.Getenv("KINOSAIL_TRANSCODE_REFILL_EVIDENCE"); directory != "" {
+		transcodeRefillSave(t, directory, value)
+	}
 }

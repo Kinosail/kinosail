@@ -6,9 +6,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -100,4 +102,65 @@ func transcodeRefillProducers(t *testing.T, directory string) []map[string][]str
 		records = append(records, record)
 	}
 	return records
+}
+
+func transcodeRefillSave(t *testing.T, directory string, value any) {
+	t.Helper()
+	data, err := json.Marshal(map[string]any{"test": t.Name(), "receipt": value})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(directory, 0o700); err != nil {
+		t.Fatal("cannot create owned media evidence directory")
+	}
+	path := filepath.Join(directory, fmt.Sprintf("%x.jsonl", sha256.Sum256([]byte(t.Name()))))
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0o600) //nolint:gosec // Trusted test-runner directory and hash-only generated filename.
+	if err != nil {
+		t.Fatal("cannot retain media evidence")
+	}
+	_, writeErr := file.Write(append(data, '\n'))
+	closeErr := file.Close()
+	if writeErr != nil || closeErr != nil {
+		t.Fatal("cannot complete media evidence receipt")
+	}
+}
+
+func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, master, prefix, root, owned string, variants []string, controls []refillFrameTimeline, beforeOwned int) {
+	t.Helper()
+	// Simulate a completed pre-policy cache entirely inside the disposable root.
+	// Every public identity must agree on the old policy before the HTTP reopen.
+	for _, name := range []string{"index.m3u8", ".source", ".seekable"} {
+		path := filepath.Join(root, name)
+		data := transcodeRefillRead(t, path)
+		marker := []byte(":transcode-clock=1")
+		if bytes.Count(data, marker) != 1 {
+			t.Fatal("transcoded cache must identify its frame-clock policy")
+		}
+		if err := os.WriteFile(path, bytes.Replace(data, marker, nil, 1), 0o600); err != nil {
+			t.Fatal("cannot prepare owned legacy cache")
+		}
+	}
+	rebuilt := bandwidthHTTPGET(t, ctx, master)
+	afterOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
+	transcodeRefillLog(t, map[string]any{"legacyCacheReopen": true, "producersBefore": beforeOwned, "producersAfter": afterOwned, "masterSHA256": fmt.Sprintf("%x", sha256.Sum256(rebuilt))})
+	if afterOwned != beforeOwned+1 || !bytes.Contains(rebuilt, []byte(":transcode-clock=1")) {
+		t.Fatal("public reopen reused the legacy frame clock instead of rebuilding")
+	}
+	for _, name := range []string{".source", ".seekable"} {
+		if bytes.Count(transcodeRefillRead(t, filepath.Join(root, name)), []byte(":transcode-clock=1")) != 1 {
+			t.Fatal("rebuilt cache did not persist its frame-clock policy")
+		}
+	}
+	for index, variant := range variants {
+		base := prefix + strings.TrimSuffix(variant, "index.m3u8")
+		var parts [][]byte
+		for _, name := range []string{"init.mp4", "segment-00000.m4s", "segment-00001.m4s", "segment-00002.m4s"} {
+			parts = append(parts, bandwidthHTTPGET(t, ctx, base+name))
+		}
+		actual := transcodeRefillDecode(t, ctx, ffmpeg, "legacy-rebuilt-"+filepath.Dir(variant), parts)
+		control := controls[index]
+		if actual.Numerator != control.Numerator || actual.Denominator != control.Denominator || !slices.Equal(actual.Frames, control.Frames) {
+			t.Fatal("legacy cache rebuild changed the accepted frame clock")
+		}
+	}
 }
