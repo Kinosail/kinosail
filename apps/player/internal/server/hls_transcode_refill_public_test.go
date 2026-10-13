@@ -216,6 +216,9 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 			t.Error("final restarted requests mutated their source")
 		}
+		if !t.Failed() {
+			transcodeRefillRejectDamagedProof(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], finalOwned)
+		}
 	}
 	if !t.Failed() && targetSegment == 1 {
 		transcodeRefillLegacyCache(t, ctx, ffmpeg, ffprobe, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned, audio)

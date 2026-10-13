@@ -2739,3 +2739,10 @@ Independent review tightened the restart journey before execution. It reads reta
 then joins and recounts producers after all requests. This prevents repair-on-read from hiding a deleted neighbor.
 The final check requires fragment zero to remain absent. Fragment seven is a late middle fragment of a 20-second source,
 not an EOF-tail case. Encoder exit and ENDLIST do not certify any future metadata worker; that handoff needs explicit proof.
+
+Production integration failure model, recorded before implementation: a missing or modified proof must not select a legacy writer;
+changed init/source/encoder identity must reject; incomplete metadata must never appear committed; pending media must not be served;
+retained fragments must not be replaced; cancellation must join owned workers before cleanup; a competing writer must not be overwritten.
+The minimum new public counterexamples remove the committed proof, corrupt it, and change the retained initialization bytes.
+Each must return 404, start no encoder, leave the requested fragment absent, and preserve the master and retained neighbor.
+The completed master will bind the proof hash. Initial or interrupted presentations must remain distinguishable from committed certification.
