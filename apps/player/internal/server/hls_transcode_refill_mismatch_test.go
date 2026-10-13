@@ -16,14 +16,22 @@ func transcodeRefillRejectClockMismatch(t *testing.T, ctx context.Context, root,
 	t.Helper()
 	proofPath, masterPath := filepath.Join(root, ".transcode-clock"), filepath.Join(root, "index.m3u8")
 	proof, master := transcodeRefillRead(t, proofPath), transcodeRefillRead(t, masterPath)
-	directory := filepath.Join(root, filepath.Dir(variant))
 	changed := transcodeRefillAlterPacketClock(t, proof, filepath.Dir(variant))
 	changedMaster := transcodeRefillRehashProof(master, changed)
 	defer transcodeRefillRestoreProof(t, map[string][]byte{proofPath: proof, masterPath: master})
 	if os.WriteFile(proofPath, changed, 0o600) != nil || os.WriteFile(masterPath, changedMaster, 0o600) != nil {
 		t.Fatal("cannot prepare rehashed media clock mismatch")
 	}
-	retained := map[string][]byte{proofPath: changed, masterPath: changedMaster, source: transcodeRefillRead(t, source)}
+	return transcodeRefillRejectStaged(t, ctx, root, prefix, owned, variant, fragment, source, beforeOwned, logs, "stagedClock", transcodeRefillMismatchFields)
+}
+
+func transcodeRefillRejectStaged(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment, source string, beforeOwned int, logs *copiedLogBuffer, kind string, fields func(map[string]any) bool) int {
+	t.Helper()
+	directory := filepath.Join(root, filepath.Dir(variant))
+	retained := make(map[string][]byte)
+	for _, path := range []string{filepath.Join(root, ".transcode-clock"), filepath.Join(root, "index.m3u8"), source} {
+		retained[path] = transcodeRefillRead(t, path)
+	}
 	for _, name := range []string{"index.m3u8", "init.mp4", "segment-00006.m4s", "segment-00008.m4s"} {
 		path := filepath.Join(directory, name)
 		retained[path] = transcodeRefillRead(t, path)
@@ -37,8 +45,8 @@ func transcodeRefillRejectClockMismatch(t *testing.T, ctx context.Context, root,
 	}
 	transcodeRefillRetained(t, retained)
 	transcodeRefillStageRemoved(t, filepath.Dir(root), directory)
-	transcodeRefillMismatchLog(t, logs, requestID, root, source, prefix)
-	transcodeRefillLog(t, map[string]any{"stagedClockRejected": true, "status": status, "producers": joined, "targetAbsent": true, "zeroAbsent": true, "retainedUnchanged": !t.Failed(), "ownedStageRemoved": true})
+	transcodeRefillRejectionLog(t, logs, requestID, kind, fields, root, source, prefix)
+	transcodeRefillLog(t, map[string]any{kind + "Rejected": true, "status": status, "producers": joined, "targetAbsent": true, "zeroAbsent": true, "retainedUnchanged": !t.Failed(), "ownedStageRemoved": true})
 	return joined
 }
 
@@ -82,7 +90,7 @@ func transcodeRefillAlterPacketClock(t *testing.T, proof []byte, rendition strin
 	return changed
 }
 
-func transcodeRefillMismatchLog(t *testing.T, logs *copiedLogBuffer, requestID string, private ...string) {
+func transcodeRefillRejectionLog(t *testing.T, logs *copiedLogBuffer, requestID, kind string, fields func(map[string]any) bool, private ...string) {
 	t.Helper()
 	matches := 0
 	for _, line := range strings.Split(logs.snapshot(), "\n") {
@@ -91,8 +99,8 @@ func transcodeRefillMismatchLog(t *testing.T, logs *copiedLogBuffer, requestID s
 			continue
 		}
 		matches++
-		if !transcodeRefillMismatchFields(record) {
-			t.Error("staged rejection lacks its correlated measured clock diagnosis")
+		if !fields(record) {
+			t.Error("staged rejection lacks its correlated clock diagnosis")
 		}
 		for _, value := range private {
 			if strings.Contains(line, value) {
@@ -103,7 +111,7 @@ func transcodeRefillMismatchLog(t *testing.T, logs *copiedLogBuffer, requestID s
 	if matches != 1 {
 		t.Error("expected one correlated encoder failure for mismatched staged media")
 	}
-	transcodeRefillLog(t, map[string]any{"stagedClockDiagnostic": true, "errorRecords": matches, "correlationAndPrivacyVerified": !t.Failed()})
+	transcodeRefillLog(t, map[string]any{kind + "Diagnostic": true, "errorRecords": matches, "correlationAndPrivacyVerified": !t.Failed()})
 }
 
 func transcodeRefillMismatchFields(record map[string]any) bool {
