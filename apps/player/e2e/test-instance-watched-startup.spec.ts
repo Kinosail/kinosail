@@ -5,13 +5,19 @@ import {startPlaying} from "./checkpoint-setup-cases";
 configureTestInstance();
 test.use({serviceWorkers: "block"});
 
+type ProgressReceipt = {method: string; status: number | null; finished: boolean};
+
 for (const watched of [true, false]) {
 for (const cancelledAgain of [false, true]) {
 test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native media callbacks from the departing page${cancelledAgain ? " after another submission is cancelled" : ""}`, {tag: "@smoke"}, async ({page}, info) => {
   await page.addInitScript(() => {
     const add = EventTarget.prototype.addEventListener;
     const pending: Array<() => void> = [];
-    const control = {pending, registered: 0, release() {for (const notify of pending.splice(0)) notify();}};
+    const control = {pending, registered: 0, release() {
+      const notifications = pending.splice(0);
+      for (const notify of notifications) notify();
+      return notifications.length;
+    }};
     Object.assign(window, {watchedStartup: control});
     EventTarget.prototype.addEventListener = function(type, listener, options) {
       if (this instanceof HTMLVideoElement && type === "playing" && listener) {
@@ -38,10 +44,17 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     "X-Kinosail-CSRF": await page.locator('meta[name="kinosail-csrf"]').getAttribute("content") || ""}, data: {seconds: 0, watched: !watched}});
   expect(setup.status()).toBe(200);
   expect(await progress()).toMatchObject({seconds: 0, watched: !watched});
-  let committed = false;
-  const preAcceptancePositions: string[] = [];
+  let committed = false, baselineFrozen = false;
+  const baselineRequests: Array<Promise<ProgressReceipt>> = [], latePositions: string[] = [];
+  let baselineProgress: ProgressReceipt[] = [];
   page.on("request", request => {
-    if (!committed && new URL(request.url()).pathname === `/progress/${id}`) preAcceptancePositions.push(request.method());
+    if (new URL(request.url()).pathname !== `/progress/${id}`) return;
+    if (baselineFrozen) {latePositions.push(request.method()); return;}
+    baselineRequests.push((async () => {
+      const response = await request.response();
+      return {method: request.method(), status: response?.status() ?? null,
+        finished: response ? await response.finished() === null : false};
+    })().catch(() => ({method: request.method(), status: null, finished: false})));
   });
   await page.goto(watch);
   await expect(page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true})).toBeVisible();
@@ -58,7 +71,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   let endpointAdmission: {seconds: number; duration: number; bufferedStart: number; bufferedEnd: number} | undefined;
   if (!watched) {
     // Accepted departure stops HLS loading. Advance naturally with playing
-    // callbacks still queued: seeking would establish progress before acceptance.
+    // callbacks still queued so the ending is already buffered on this timeline.
     await expect.poll(() => media.evaluate((video: HTMLVideoElement) => {
       const remaining = video.duration - video.currentTime;
       return !video.paused && !video.seeking && !video.ended && video.readyState >= 2 &&
@@ -78,7 +91,6 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   }
   let release!: () => void;
   const pending = new Promise<void>(resolve => {release = resolve;});
-  const latePositions: string[] = [];
   const origin = new URL(page.url()).origin;
   const relayReady = page.waitForEvent("popup");
   await page.evaluate(() => Object.assign(window, {qaWatchedRelay: window.open("about:blank", "qa-watched-relay")}));
@@ -120,20 +132,32 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
         }
         await new Promise(resolve => setTimeout(resolve, 20));
       }
-      const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames, startSeconds: start.seconds, frameTimes};
-      (window as Window & {watchedStartup: {release(): void}}).watchedStartup.release();
+      const before = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames,
+        startSeconds: start.seconds, frameTimes};
+      const callbacksReleased = (window as Window & {watchedStartup: {release(): number}}).watchedStartup.release();
       const report = (event: Event) => relay.postMessage({kind: "qa-watched-paused", event: event.type, paused: video.paused,
-        before, seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames}, location.origin);
+        before: {...before, callbacksReleased}, seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames}, location.origin);
       if (watched) {video.addEventListener("pause", report, {once: true}); return video.pause();}
       video.addEventListener("ended", report, {once: true});
       // Decode the admitted buffered ending; departure intentionally stopped loading.
       void video.play().catch(() => {});
     });
   }, {watched, cancelledAgain});
-  page.on("request", request => {
-    if (committed && new URL(request.url()).pathname === `/progress/${id}`) latePositions.push(request.postData() || "");
-  });
   await page.route(`**/watched/${id}`, async route => {
+    // Native seeks can save progress before this departure. Navigation can also
+    // finish a checkpoint before replaying the form. Require their real acknowledgements.
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    try {
+      expect(baselineFrozen).toBe(false);
+      baselineFrozen = true;
+      baselineProgress = await Promise.race([Promise.all(baselineRequests), new Promise<never>((_, reject) => {
+        deadline = setTimeout(() => reject(new Error("Baseline progress did not finish before watched submission")), 5_000);
+      })]);
+      expect(baselineProgress.every(receipt => receipt.method === "POST" && receipt.status === 204 && receipt.finished)).toBe(true);
+    } catch (error) {
+      await route.abort("aborted").catch(() => {});
+      throw error;
+    } finally { clearTimeout(deadline); }
     // Preserve the actual form, cookies and CSRF on the single real Server POST.
     const response = await route.fetch({maxRedirects: 0, headers: {...await route.request().allHeaders(), "Sec-Fetch-Site": "same-origin"}});
     expect(response.status()).toBe(303);
@@ -145,19 +169,21 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   });
   let bodyFailed = false;
   try {
-    expect(preAcceptancePositions).toEqual([]);
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
-    expect(preAcceptancePositions).toEqual([]);
+    expect(baselineFrozen).toBe(true);
+    expect(baselineProgress).toHaveLength(baselineRequests.length);
+    expect(latePositions).toEqual([]);
     expect(await progress()).toMatchObject({watched, seconds: 0});
     await relay.evaluate(origin => opener!.postMessage("qa-watched-commit", origin), origin);
-    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number; startSeconds: number; frameTimes: number[]}; seconds: number; frames: number}}).qaWatchedObserved);
+    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number; startSeconds: number; frameTimes: number[]; callbacksReleased: number}; seconds: number; frames: number}}).qaWatchedObserved);
     await expect.poll(() => observation().then(value => value?.failure || value?.paused)).toBe(true);
     const paused = (await observation())!;
     expect(paused.event).toBe(watched ? "pause" : "ended");
     expect(paused.before.seconds).toBeGreaterThan(0.2);
     expect(paused.before.frames).toBeGreaterThan(2);
     expect(paused.before.frameTimes).toHaveLength(3);
+    expect(paused.before.callbacksReleased).toBeGreaterThan(0);
     expect(paused.before.frameTimes.every((seconds, index, times) => seconds > (times[index - 1] ?? paused.before.startSeconds))).toBe(true);
     expect(paused.seconds).toBeGreaterThan(0.2);
     // Keep the accepted real form's transport pending while the native pause and
@@ -177,7 +203,8 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     const stored = await progress();
     expect(stored).toMatchObject({watched, seconds: 0});
     await info.attach("accepted-watched-late-native-notification", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-      browser: info.project.name, cancelledAgain, endpointAdmission, preAcceptancePositions, stored, paused, latePositions, result: "passed",
+      browser: info.project.name, cancelledAgain, endpointAdmission, baselineProgress,
+      baselineBoundary: "actual watched request intercepted before Server POST", stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
   } catch (error) {bodyFailed = true; throw error;}
   finally {
