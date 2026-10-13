@@ -2667,3 +2667,16 @@ All three approved metadata file hashes match. Exact revision, tracked tree, sou
 The canonical reproduction updates only Player's architecture snapshot after added Go regression files.
 Its rendered SHA-256 is `0194dcd9536a6f5c867c3456b49145d8e53163cbef592448e83df39ea1e65080`.
 No local Go, application, browser, native, codec, or device execution was used for this refresh.
+
+The isolated reconstruction trial has its failure model before implementation: wrong fixed block size, partial interior frames,
+format changes, nonzero origin, unfinished scans, excessive clock uncertainty, and persistent timestamp discontinuities must reject.
+The closed fixture scan must reach EOF and account for exactly 18 seconds of samples.
+A persistent one-millisecond timestamp step is the negative admission control.
+The normalized lossless seek must match the source exactly at offset zero, independently of the unchanged AAC splice comparison.
+Independent review confirms the formula only for the certified fixture and exact formatted microsecond seek.
+[FFmpeg seek behavior](https://ffmpeg.org/ffmpeg-all.html#Main-options) requires disabling automatic accurate-seek trimming before reconstruction.
+[FLAC fixed-block framing](https://www.rfc-editor.org/rfc/rfc9639.html#section-8.2) permits a shorter final block.
+This experiment is not a general source repair and does not alter any production media path.
+The conservative uniqueness bound includes two coarse timestamp ticks plus two sample-rounding steps.
+Nineteen campaign-route checks pass after the stale assertions are repaired. Python source parsing and source limits pass.
+The next codec experiment awaits hosted execution; its helper source hash is included in the receipt.

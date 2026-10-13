@@ -21,6 +21,8 @@ import tempfile
 import wave
 from fractions import Fraction
 
+import transcode_audio_source_probe as audio_source
+
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
@@ -80,6 +82,7 @@ class Trial:
         self.run(["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i",
                   "testsrc2=size=320x180:rate=25:duration=18", "-i", str(path),
                   "-c:v", "ffv1", "-threads", "2", "-c:a", "flac", str(source)])
+        self.clock = audio_source.source_clock(self, source, rate)
         return source
 
     def encode(self, source, label, rate, number=0, warm=None, cutoff=None):
@@ -91,12 +94,10 @@ class Trial:
             args += ["-max_delay", "5000000", "-ss", f"{number * 2:.3f}"]
         args += ["-i", str(source)]
         if warm is not None:
-            micros = warm * 1_000_000 // rate
-            args += ["-ss", f"{micros // 1_000_000}.{micros % 1_000_000:06d}", "-i", str(source)]
+            args += ["-ss", audio_source.seek_text(rate, warm), "-noaccurate_seek", "-i", str(source)]
         args += ["-map", "0:v:0", "-map", "1:a:0" if warm is not None else "0:a:0"]
         if warm is not None:
-            # Shift after accurate input trimming; do not discard warm-up samples.
-            args += ["-af", f"asettb=1/{rate},asetpts=PTS+({warm - number * 2 * rate})"]
+            args += ["-af", audio_source.seek_filter(self.clock, rate, warm, number * 2 * rate)]
         args += ["-sn", "-vf", "scale=w=320:h=-2,format=yuv420p", "-c:v", "libx264",
                  "-preset", "veryfast", "-crf", "22", "-fpsmax", "60", "-threads:v", "2",
                  "-profile:v", "high", "-level:v", "4.2", "-maxrate", "500k", "-bufsize", "500k",
@@ -131,27 +132,6 @@ class Trial:
         if sys.byteorder != "little":
             values.byteswap()
         return values
-
-    def input_seek(self, source, rate, warm):
-        micros = warm * 1_000_000 // rate
-        raw = self.run(["ffmpeg", "-nostdin", "-v", "error", "-ss",
-                        f"{micros // 1_000_000}.{micros % 1_000_000:06d}", "-i", str(source),
-                        "-map", "0:a:0", "-t", "0.1", "-ac", "1", "-c:a", "pcm_s16le", "-f", "s16le", "-"])
-        actual = array.array("h")
-        actual.frombytes(raw)
-        with wave.open(str(self.root / "source.wav"), "rb") as original:
-            lower = max(0, warm - 64)
-            original.setpos(lower)
-            reference = array.array("h")
-            reference.frombytes(original.readframes(len(actual) + 128))
-        if sys.byteorder != "little":
-            actual.byteswap()
-            reference.byteswap()
-        offsets = [shift for shift in range(-64, 65) if warm + shift >= lower
-                   and reference[warm + shift - lower:warm + shift - lower + len(actual)] == actual]
-        # Diagnostic only: never realign or relax the fixed splice acceptance.
-        return {"requestedSample": warm, "decodedSamples": len(actual), "exactMatchingOffsets": offsets,
-                "matchesRequestedContent": offsets == [0], "decodedSHA256": digest(raw)}
 
     def frames(self, media):
         raw = self.run(["ffmpeg", "-nostdin", "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0",
@@ -193,7 +173,8 @@ def case(trial, source, original, rate, number):
     phase = int(audio["packets"][0]["pts"]) % 1024
     limit = max(0, (number * 2 - 3) * rate)
     warm = max(0, limit - (limit - phase) % 1024)
-    input_seek = trial.input_seek(source, rate, warm)
+    input_seek = audio_source.input_seek(trial, source, rate, warm)
+    corrected_seek = audio_source.input_seek(trial, source, rate, warm, corrected=True)
     candidate = trial.encode(source, f"refill-{number}", rate, number, warm, boundary - number * 2 * rate)
     refill = (candidate / f"segment-{number:05d}.m4s").read_bytes()
     control = initialization + b"".join(retained)
@@ -214,7 +195,8 @@ def case(trial, source, original, rate, number):
     bounded = number * 2 - warm / rate <= 3 + 1024 / rate and (number < 2 or warm > 0)
     result = {"rate": rate, "targetSeconds": number * 2, "warmStartSamples": warm,
               "warmStartMicros": warm * 1_000_000 // rate, "boundedPreroll": bounded,
-              "inputSeekDiagnostic": input_seek,
+              "inputSeekDiagnostic": input_seek, "correctedInputSeekDiagnostic": corrected_seek,
+              "certifiedFixtureClock": trial.clock,
               "videoDTSBoundary": str(boundary), "phase": phase,
               "packetClocksEqual": expected_packets == actual_packets,
               "originalPacketClock": expected_packets, "mixedPacketClock": actual_packets,
@@ -226,7 +208,7 @@ def case(trial, source, original, rate, number):
               "refilledTargetFirstPacket": trial.probe(initialization + refill, "a:0")["packets"][0],
               "joins": joins, "sourceSHA256": digest(source.read_bytes()),
               "retainedSHA256": [digest(data) for data in retained], "refillSHA256": digest(refill)}
-    result["accepted"] = all(result[key] for key in ("boundedPreroll", "packetClocksEqual", "videoFrameClocksEqual", "pcmLengthEqual")) and all(item["accepted"] and item["silenceRejected"] and item["shiftRejected"] for item in joins)
+    result["accepted"] = corrected_seek["matchesRequestedContent"] and all(result[key] for key in ("boundedPreroll", "packetClocksEqual", "videoFrameClocksEqual", "pcmLengthEqual")) and all(item["accepted"] and item["silenceRejected"] and item["shiftRejected"] for item in joins)
     return result
 
 
@@ -244,7 +226,8 @@ def main():
               for name in ("ffmpeg", "ffprobe")}
     receipt = {"revision": revision, "complete": False, "codecs": codecs,
                "boundary": "isolated codec experiment; not public HTTP or production repair proof",
-               "scriptSHA256": digest(Path(__file__).read_bytes()), "results": results, "commands": commands}
+               "scriptSHA256": digest(Path(__file__).read_bytes()),
+               "helperSHA256": digest(Path(audio_source.__file__).read_bytes()), "results": results, "commands": commands}
 
     def checkpoint():
         (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
@@ -262,10 +245,12 @@ def main():
                     try:
                         results.append(case(trial, source, original, rate, number))
                     except (RuntimeError, ValueError, KeyError, OSError, subprocess.SubprocessError) as error:
-                        results.append({"rate": rate, "number": number, "accepted": False, "errorClass": type(error).__name__})
+                        results.append({"rate": rate, "number": number, "accepted": False, "errorClass": type(error).__name__,
+                                        "sourceClockFailure": str(error) if isinstance(error, audio_source.FixtureClockError) else None})
                     checkpoint()
             except (RuntimeError, ValueError, KeyError, OSError, subprocess.SubprocessError) as error:
-                results.append({"rate": rate, "accepted": False, "errorClass": type(error).__name__})
+                results.append({"rate": rate, "accepted": False, "errorClass": type(error).__name__,
+                                        "sourceClockFailure": str(error) if isinstance(error, audio_source.FixtureClockError) else None})
             finally:
                 commands.extend(trial.commands)
                 checkpoint()
