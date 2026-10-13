@@ -3,6 +3,9 @@ package server_test
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,11 +15,12 @@ import (
 
 // A completed certified generation cannot silently downgrade to a legacy writer
 // after its proof disappears. Ordinary browser journeys cannot evict this state.
-func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment string, beforeOwned int) {
+func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment, source string, beforeOwned int) {
 	t.Helper()
 	proofPath := filepath.Join(root, ".transcode-clock")
 	proof := transcodeRefillRead(t, proofPath)
 	master := transcodeRefillRead(t, filepath.Join(root, "index.m3u8"))
+	sourceBefore := transcodeRefillRead(t, source)
 	if !bytes.Contains(master, []byte("#KINOSAIL-TRANSCODE-REFILL:")) {
 		t.Fatal("completed public presentation did not bind its refill proof")
 	}
@@ -26,25 +30,11 @@ func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, 
 	if err := os.Remove(filepath.Join(directory, fragment)); err != nil {
 		t.Fatal("cannot evict owned fragment for rejected recovery")
 	}
-	for _, damage := range []string{"missing-proof", "malformed-proof", "changed-init"} {
+	for _, damage := range []string{"missing-proof", "malformed-proof", "changed-init", "oversized-samples", "oversized-video-base"} {
 		t.Run(damage, func(t *testing.T) {
-			if damage == "missing-proof" {
-				if err := os.Remove(proofPath); err != nil {
-					t.Fatal(err)
-				}
-			} else if damage == "malformed-proof" {
-				if err := os.WriteFile(proofPath, []byte("{"), 0o600); err != nil {
-					t.Fatal(err)
-				}
-			} else {
-				changed := bytes.Clone(initialization)
-				changed[len(changed)-1] ^= 1
-				if err := os.WriteFile(filepath.Join(directory, "init.mp4"), changed, 0o600); err != nil {
-					t.Fatal(err)
-				}
-			}
+			expectedMaster := transcodeRefillDamageProof(t, root, variant, damage, proof, initialization, master)
 			defer func() {
-				if os.WriteFile(proofPath, proof, 0o600) != nil || os.WriteFile(filepath.Join(directory, "init.mp4"), initialization, 0o600) != nil {
+				if os.WriteFile(proofPath, proof, 0o600) != nil || os.WriteFile(filepath.Join(directory, "init.mp4"), initialization, 0o600) != nil || os.WriteFile(filepath.Join(root, "index.m3u8"), master, 0o600) != nil {
 					t.Error("cannot restore owned proof control")
 				}
 			}()
@@ -64,9 +54,72 @@ func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, 
 			if response.StatusCode != http.StatusNotFound || joined != beforeOwned || !os.IsNotExist(targetErr) || !os.IsNotExist(zeroErr) {
 				t.Error("damaged proof admitted a writer or exposed regenerated media")
 			}
-			if !bytes.Equal(master, transcodeRefillRead(t, filepath.Join(root, "index.m3u8"))) || !bytes.Equal(neighbor, transcodeRefillRead(t, filepath.Join(directory, "segment-00008.m4s"))) {
+			if !bytes.Equal(expectedMaster, transcodeRefillRead(t, filepath.Join(root, "index.m3u8"))) || !bytes.Equal(neighbor, transcodeRefillRead(t, filepath.Join(directory, "segment-00008.m4s"))) || !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 				t.Error("rejected recovery changed retained presentation bytes")
 			}
 		})
 	}
+}
+
+func transcodeRefillDamageProof(t *testing.T, root, variant, damage string, proof, initialization, master []byte) []byte {
+	t.Helper()
+	proofPath := filepath.Join(root, ".transcode-clock")
+	switch damage {
+	case "missing-proof":
+		if err := os.Remove(proofPath); err != nil {
+			t.Fatal(err)
+		}
+	case "malformed-proof":
+		if err := os.WriteFile(proofPath, []byte("{"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	case "changed-init":
+		changed := bytes.Clone(initialization)
+		changed[len(changed)-1] ^= 1
+		if err := os.WriteFile(filepath.Join(root, filepath.Dir(variant), "init.mp4"), changed, 0o600); err != nil {
+			t.Fatal(err)
+		}
+	default:
+		changed := transcodeRefillOversizedProof(t, proof, damage, filepath.Dir(variant))
+		lines := strings.Split(string(master), "\n")
+		for index, line := range lines {
+			if strings.HasPrefix(line, "#KINOSAIL-TRANSCODE-REFILL:") {
+				lines[index] = fmt.Sprintf("#KINOSAIL-TRANSCODE-REFILL:%x", sha256.Sum256(changed))
+			}
+		}
+		master = []byte(strings.Join(lines, "\n"))
+		if os.WriteFile(proofPath, changed, 0o600) != nil || os.WriteFile(filepath.Join(root, "index.m3u8"), master, 0o600) != nil {
+			t.Fatal("cannot prepare rehashed arithmetic rejection control")
+		}
+	}
+	return master
+}
+
+func transcodeRefillOversizedProof(t *testing.T, proof []byte, damage, rendition string) []byte {
+	t.Helper()
+	var clock map[string]json.RawMessage
+	if json.Unmarshal(proof, &clock) != nil {
+		t.Fatal("completed proof control is not JSON")
+	}
+	var fields map[string]json.RawMessage
+	if damage == "oversized-samples" {
+		if json.Unmarshal(clock["Source"], &fields) != nil {
+			t.Fatal("source proof fields unavailable")
+		}
+		fields["Samples"] = json.RawMessage("9223372036854775807")
+		clock["Source"], _ = json.Marshal(fields)
+	} else {
+		var renditions map[string]json.RawMessage
+		if json.Unmarshal(clock["Renditions"], &renditions) != nil || json.Unmarshal(renditions[rendition], &fields) != nil {
+			t.Fatal("rendition proof fields unavailable")
+		}
+		fields["VideoBase"] = json.RawMessage("9223372036854775807")
+		renditions[rendition], _ = json.Marshal(fields)
+		clock["Renditions"], _ = json.Marshal(renditions)
+	}
+	changed, err := json.Marshal(clock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return changed
 }

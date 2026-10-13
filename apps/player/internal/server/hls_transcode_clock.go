@@ -20,8 +20,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-const transcodeHLSClockMarker = "#KINOSAIL-TRANSCODE-REFILL:"
-const maximumTranscodeHLSClock = 8 << 20
+const (
+	transcodeHLSClockMarker  = "#KINOSAIL-TRANSCODE-REFILL:"
+	maximumTranscodeHLSClock = 8 << 20
+)
 
 type transcodeHLSClock struct {
 	Version    int
@@ -53,7 +55,7 @@ func (manager *hlsManager) certifyTranscodeHLS(ctx context.Context, item library
 			return err
 		}
 		if observation.Err() == nil {
-			slog.WarnContext(observation, "HLS transcode refill certification unavailable", "request_id", requestActivityID(observation), "playback_session", requestPlaybackSession(observation), "failure_class", "source-or-fragment-clock", "outcome", "ordinary-stream-retained", "budget_expired", ctx.Err() != nil)
+			reportTranscodeClockFailure(observation, err, ctx.Err() != nil)
 		}
 	} else {
 		committed <- transcodeHLSClockMarker + hex.EncodeToString(digest[:])
@@ -73,7 +75,7 @@ func (manager *hlsManager) writeTranscodeHLSClock(ctx context.Context, item libr
 	defer release()
 	source, err := manager.transcodeAudioSourceClock(ctx, item, recipe)
 	if err != nil {
-		return err
+		return transcodeClockError("source-clock", err)
 	}
 	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
@@ -86,23 +88,21 @@ func (manager *hlsManager) writeTranscodeHLSClock(ctx context.Context, item libr
 	}
 	clock := transcodeHLSClock{Version: 1, Policy: options.Cache, Encoder: sha256.Sum256(encoder), Source: *source, Renditions: make(map[string]transcodeRenditionClock)}
 	for _, quality := range qualities {
-		media, err := root.OpenRoot(quality.Label)
+		measured, err := manager.certifyTranscodeDirectory(ctx, root, directory, quality.Label, source.Rate)
 		if err != nil {
-			return errTranscodeHLSClock
-		}
-		measured, err := manager.certifyTranscodeRendition(ctx, media, source.Rate)
-		current := manager.copiedHLSCanonicalGeneration(directory, quality.Label, root, media)
-		_ = media.Close()
-		if err != nil {
-			return err
-		}
-		if !current {
-			return errTranscodeHLSClock
+			return transcodeClockError("rendition-clock", err)
 		}
 		clock.Renditions[quality.Label] = *measured
 	}
-	if !validTranscodeHLSClock(&clock) || manager.validateHLSPolicy(ctx, item, recipe, options.Cache) != nil {
-		return errTranscodeHLSClock
+	if manager.validateHLSPolicy(ctx, item, recipe, options.Cache) != nil {
+		return transcodeClockError("completion-bounds-or-policy", errTranscodeHLSClock)
+	}
+	return persistTranscodeHLSClock(root, &clock, digest)
+}
+
+func persistTranscodeHLSClock(root *os.Root, clock *transcodeHLSClock, digest *[32]byte) error {
+	if !validTranscodeHLSClock(clock) {
+		return transcodeClockError("completion-bounds-or-policy", errTranscodeHLSClock)
 	}
 	data, err := json.Marshal(clock)
 	if err != nil || len(data) > maximumTranscodeHLSClock {
@@ -115,22 +115,32 @@ func (manager *hlsManager) writeTranscodeHLSClock(ctx context.Context, item libr
 	return nil
 }
 
+func (manager *hlsManager) certifyTranscodeDirectory(ctx context.Context, root *os.Root, directory, label string, rate int64) (*transcodeRenditionClock, error) {
+	media, err := root.OpenRoot(label)
+	if err != nil {
+		return nil, errTranscodeHLSClock
+	}
+	defer media.Close()
+	measured, err := manager.certifyTranscodeRendition(ctx, media, rate)
+	if err != nil {
+		return nil, err
+	}
+	if !manager.copiedHLSCanonicalGeneration(directory, label, root, media) {
+		return nil, errTranscodeHLSClock
+	}
+	return measured, nil
+}
+
 func (manager *hlsManager) certifyTranscodeRendition(ctx context.Context, root *os.Root, rate int64) (*transcodeRenditionClock, error) {
 	manifest, err := copiedHLSCacheFile(root, "index.m3u8", maximumCopiedHLSTimelineBytes)
 	if err != nil || !playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 		return nil, errTranscodeHLSClock
 	}
-	var names []string
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		if number, valid := hlsSegmentNumber(line); !valid || number != len(names) {
-			return nil, errTranscodeHLSClock
-		}
-		names = append(names, line)
+	names, err := transcodeManifestFragments(manifest)
+	if err != nil {
+		return nil, err
 	}
-	clock, err := manager.probeTranscodeFragments(ctx, root, names)
+	clock, err := manager.probeTranscodeFragments(ctx, root, names, true)
 	if err != nil {
 		return nil, err
 	}
@@ -146,6 +156,20 @@ func (manager *hlsManager) certifyTranscodeRendition(ctx context.Context, root *
 	}
 	clock.Manifest = sha256.Sum256(manifest)
 	return clock, nil
+}
+
+func transcodeManifestFragments(manifest []byte) ([]string, error) {
+	var names []string
+	for _, line := range strings.Split(string(manifest), "\n") {
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if number, valid := hlsSegmentNumber(line); !valid || number != len(names) {
+			return nil, errTranscodeHLSClock
+		}
+		names = append(names, line)
+	}
+	return names, nil
 }
 
 func transcodeHLSMasterMarker(manifest []byte) (string, error) {
@@ -193,34 +217,46 @@ func (manager *hlsManager) readTranscodeHLSRecovery(ctx context.Context, directo
 	if err != nil || marker == "" {
 		return nil, err
 	}
+	clock, digest, err := readTranscodeHLSClock(root, marker, policy)
+	if err != nil {
+		return nil, err
+	}
+	selected, ok := clock.Renditions[rendition]
+	if !ok || number < 0 || number >= len(selected.Cuts) {
+		return nil, errTranscodeHLSClock
+	}
+	if !manager.currentTranscodeRendition(ctx, root, directory, rendition, selected) {
+		return nil, errTranscodeHLSClock
+	}
+	return &transcodeHLSRecovery{clock: clock, digest: digest, rendition: rendition, number: number}, nil
+}
+
+func readTranscodeHLSClock(root *os.Root, marker, policy string) (*transcodeHLSClock, [32]byte, error) {
 	data, err := copiedHLSCacheFile(root, ".transcode-clock", maximumTranscodeHLSClock)
 	digest := sha256.Sum256(data)
 	if err != nil || marker != transcodeHLSClockMarker+hex.EncodeToString(digest[:]) {
-		return nil, errTranscodeHLSClock
+		return nil, digest, errTranscodeHLSClock
 	}
 	var clock transcodeHLSClock
 	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), maximumTranscodeHLSClock, &clock) != nil || clock.Policy != policy || !validTranscodeHLSClock(&clock) {
-		return nil, errTranscodeHLSClock
+		return nil, digest, errTranscodeHLSClock
 	}
 	encoder, err := copiedHLSCacheFile(root, ".encoder", 1024)
 	if err != nil || sha256.Sum256(encoder) != clock.Encoder {
-		return nil, errTranscodeHLSClock
+		return nil, digest, errTranscodeHLSClock
 	}
-	selected, ok := clock.Renditions[rendition]
-	if !ok || number < 0 || number >= len(selected.Cuts) || len(selected.Cuts) > 16384 || selected.VideoBase <= 0 || selected.Rate != clock.Source.Rate {
-		return nil, errTranscodeHLSClock
-	}
+	return &clock, digest, nil
+}
+
+func (manager *hlsManager) currentTranscodeRendition(ctx context.Context, root *os.Root, directory, rendition string, selected transcodeRenditionClock) bool {
 	media, err := root.OpenRoot(rendition)
 	if err != nil {
-		return nil, errTranscodeHLSClock
+		return false
 	}
 	defer media.Close()
 	initialization, err := copiedHLSAssetHash(ctx, media, "init.mp4", 2<<20)
 	manifest, manifestErr := copiedHLSAssetHash(ctx, media, "index.m3u8", maximumCopiedHLSTimelineBytes)
-	if err != nil || manifestErr != nil || initialization != selected.Initialization || manifest != selected.Manifest || !manager.copiedHLSCanonicalGeneration(directory, rendition, root, media) {
-		return nil, errTranscodeHLSClock
-	}
-	return &transcodeHLSRecovery{clock: &clock, digest: digest, rendition: rendition, number: number}, nil
+	return err == nil && manifestErr == nil && initialization == selected.Initialization && manifest == selected.Manifest && manager.copiedHLSCanonicalGeneration(directory, rendition, root, media)
 }
 
 func transcodeFragmentName(number int) string {

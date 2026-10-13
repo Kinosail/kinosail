@@ -2783,3 +2783,15 @@ Joined fragment input uses the existing process-tree owner. Its first stdin exte
 Windows explicitly declines streamed-input certification before process launch. No bare subprocess fallback is used.
 Configured-process cancellation controls and public first-fragment recovery are added alongside the restart and damaged-proof journeys.
 The candidate has only source formatting and line-cap checks so far. No runtime, browser, native, physical-device, or production acceptance is claimed.
+
+### Production transcode recovery: first hosted acceptance boundary
+
+The full Player race run [38369723795](https://github.com/Kinosail/kinosail/actions/runs/38369723795) tested revision `2ef831ae631bf9258de2015ffae87374cbd804fa`. Four initial refill cases passed: 320x180 and 1280x720, each with and without audio. Each case used one initial producer and one real HTTP refill producer. Every tested audio rendition retained the exact decoded PCM bytes: 1,142,784 bytes for the six-second comparison. This closes the earlier 64 ms loss for these early-fragment cases. It does not prove the restarted late case.
+
+The 20-second restart fixture failed before cache eviction or restart. Its completed master never committed a recovery certificate. Certification reported an ordinary-stream fallback without budget expiry. Artifact `11798873690` binds 14 checksum records to the exact revision. Its ZIP SHA-256 is `511d013d1f9ce49ad7a70d9f9ecff4a021e2302b814fa66ab4ac4b829d5a4d76`. The private job log SHA-256 is `4a473fbbdde2131031a376e9182f5b16574fa426974d8749defa3a1cb6e90d07`.
+
+Independent source review found that certification rejects every AAC packet whose duration differs from 1024 samples. A final 512-sample packet necessarily fails this rule. The 20-second fixture ends halfway through that grid; the 8-second fixture ends on it. The generic hosted warning does not independently identify that packet as its rejection point. The candidate now accepts a short AAC packet only in the actual final fragment, rejects any following AAC packet, and retains the exact duration in the clock digest. A single-fragment recovery probe receives final-fragment authority from the certified original record, never from its local EOF. Hosted confirmation remains required.
+
+The candidate also records fixed safe certification operation names. Underlying probe errors are retained for lifecycle handling but never logged. New public rejection controls rehash proofs with oversized source sample counts and video timebases, then require HTTP rejection, no extra producer, absent target fragments, and unchanged retained media and source bytes. These controls remain unaccepted until the restarted journey reaches them.
+
+Hosted lint failures prompted extraction of parsing, validation, and publication phases. No linter thresholds or required gates changed. Local validation remains limited to formatting, source-file limits, whitespace, and verification plans under the coordinated runtime hold. The architecture snapshots were reproduced from the verified metadata artifact for revision `2ef831ae`; the additional source changes require a fresh canonical projection.

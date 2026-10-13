@@ -60,10 +60,14 @@ func ProbeInputLines(parent context.Context, logger *slog.Logger, executable str
 	}
 	defer probe.close()
 	defer output.Close()
+	return readCopiedHLSProbeLines(ctx, parent, probe, output, maximumBytes, maximumLines, visit)
+}
+
+func readCopiedHLSProbeLines(ctx, parent context.Context, probe copiedHLSProbe, output io.ReadCloser, maximumBytes int64, maximumLines int, visit func(string) error) error {
 	scanned := make(chan error, 1)
 	watched := make(chan copiedHLSProbeWatch, 1)
 	go func() { watched <- watchCopiedHLSProbe(ctx, probe, output, scanned) }()
-	err = scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
+	err := scanCopiedHLSLines(output, maximumBytes, maximumLines, visit)
 	scanned <- err
 	watch := <-watched
 	waitErr := probe.wait()

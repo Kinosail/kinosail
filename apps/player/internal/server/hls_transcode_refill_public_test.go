@@ -235,7 +235,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			t.Error("final restarted requests mutated their source")
 		}
 		if !t.Failed() {
-			transcodeRefillRejectDamagedProof(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], finalOwned)
+			transcodeRefillRejectDamagedProof(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], source, finalOwned)
 			transcodeRefillRecoverFirst(t, ctx, ffmpeg, ffprobe, prefix+strings.TrimSuffix(variants[0], "index.m3u8"), owned, originalFirst, finalOwned)
 		}
 	}

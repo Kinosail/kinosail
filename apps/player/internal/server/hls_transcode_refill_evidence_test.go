@@ -86,30 +86,35 @@ func transcodeRefillProducers(t *testing.T, directory string) []map[string][]str
 		t.Fatal(err)
 	}
 	var records []map[string][]string
-	safe := regexp.MustCompile(`^[A-Za-z0-9+._-]{1,64}$`)
 	for _, path := range paths {
 		arguments := strings.Split(string(transcodeRefillRead(t, path)), "\x00")
-		record := make(map[string][]string)
-		inputSeek := "none"
-		for index, argument := range arguments {
-			if argument == "-i" {
-				record["input-seek"] = append(record["input-seek"], inputSeek)
-				inputSeek = "none"
-			}
-			switch argument {
-			case "-ss", "-output_ts_offset", "-avoid_negative_ts", "-start_number", "-c:v", "-c:a":
-				if index+1 >= len(arguments) || !safe.MatchString(arguments[index+1]) {
-					t.Fatal("producer clock argument is missing or unbounded")
-				}
-				record[argument] = append(record[argument], arguments[index+1])
-				if argument == "-ss" {
-					inputSeek = arguments[index+1]
-				}
-			}
-		}
-		records = append(records, record)
+		records = append(records, transcodeRefillProducerClock(t, arguments))
 	}
 	return records
+}
+
+func transcodeRefillProducerClock(t *testing.T, arguments []string) map[string][]string {
+	t.Helper()
+	safe := regexp.MustCompile(`^[A-Za-z0-9+._-]{1,64}$`)
+	record := make(map[string][]string)
+	inputSeek := "none"
+	for index, argument := range arguments {
+		if argument == "-i" {
+			record["input-seek"] = append(record["input-seek"], inputSeek)
+			inputSeek = "none"
+		}
+		switch argument {
+		case "-ss", "-output_ts_offset", "-avoid_negative_ts", "-start_number", "-c:v", "-c:a":
+			if index+1 >= len(arguments) || !safe.MatchString(arguments[index+1]) {
+				t.Fatal("producer clock argument is missing or unbounded")
+			}
+			record[argument] = append(record[argument], arguments[index+1])
+			if argument == "-ss" {
+				inputSeek = arguments[index+1]
+			}
+		}
+	}
+	return record
 }
 
 func transcodeRefillSave(t *testing.T, directory string, value any) {

@@ -61,22 +61,14 @@ func (reader *transcodeFragmentReader) Read(data []byte) (int, error) {
 		}
 		interval := reader.intervals[reader.index]
 		if reader.file == nil {
-			file, info, err := copiedHLSOpenFile(reader.root, interval.name, 64<<20)
-			if err != nil || !sameCopiedHLSFile(interval.info, info) {
-				if file != nil {
-					_ = file.Close()
-				}
+			if err := reader.open(interval); err != nil {
 				return 0, errTranscodeHLSClock
 			}
-			reader.file, reader.read = file, 0
 		}
 		n, err := reader.file.Read(data)
 		reader.read += int64(n)
 		if errors.Is(err, io.EOF) {
-			_ = reader.file.Close()
-			reader.file = nil
-			after, statErr := reader.root.Lstat(interval.name)
-			if statErr != nil || !sameCopiedHLSFile(interval.info, after) || reader.read != interval.end-interval.start {
+			if !reader.finish(interval) {
 				return n, errTranscodeHLSClock
 			}
 			reader.index++
@@ -90,54 +82,80 @@ func (reader *transcodeFragmentReader) Read(data []byte) (int, error) {
 	return 0, io.EOF
 }
 
+func (reader *transcodeFragmentReader) open(interval transcodeFragmentInterval) error {
+	file, info, err := copiedHLSOpenFile(reader.root, interval.name, 64<<20)
+	if err != nil || !sameCopiedHLSFile(interval.info, info) {
+		if file != nil {
+			_ = file.Close()
+		}
+		return errTranscodeHLSClock
+	}
+	reader.file, reader.read = file, 0
+	return nil
+}
+
+func (reader *transcodeFragmentReader) finish(interval transcodeFragmentInterval) bool {
+	_ = reader.file.Close()
+	reader.file = nil
+	after, err := reader.root.Lstat(interval.name)
+	return err == nil && sameCopiedHLSFile(interval.info, after) && reader.read == interval.end-interval.start
+}
+
 type transcodeClockProjection struct {
-	intervals []transcodeFragmentInterval
-	clock     transcodeRenditionClock
-	digests   [][2]hash.Hash
-	streams   [2]bool
+	intervals            []transcodeFragmentInterval
+	clock                transcodeRenditionClock
+	digests              [][2]hash.Hash
+	streams              [2]bool
+	terminal, shortAudio bool
 }
 
 func (projection *transcodeClockProjection) visit(line string) error {
 	fields := mediaprobe.CompactFields(line)
 	if strings.HasPrefix(line, "stream|") {
-		index, err := strconv.Atoi(fields["index"])
-		if err != nil || index < 0 || index > 1 || projection.streams[index] {
-			return errTranscodeHLSClock
-		}
-		base, err := strconv.ParseInt(strings.TrimPrefix(fields["time_base"], "1/"), 10, 32)
-		if err != nil || base <= 0 || fields["time_base"] != "1/"+strconv.FormatInt(base, 10) {
-			return errTranscodeHLSClock
-		}
-		if index == 0 && fields["codec_type"] == "video" {
-			projection.clock.VideoBase = base
-		} else if index == 1 && fields["codec_type"] == "audio" && fields["codec_name"] == "aac" && fields["sample_rate"] == strconv.FormatInt(base, 10) {
-			projection.clock.Rate = base
-		} else {
-			return errTranscodeHLSClock
-		}
-		projection.streams[index] = true
-		return nil
+		return projection.stream(fields)
 	}
 	if !strings.HasPrefix(line, "packet|") {
 		return errTranscodeHLSClock
 	}
+	values, err := transcodePacketValues(fields)
+	if err != nil {
+		return err
+	}
+	stream, pts, dts, duration, position, size := values[0], values[1], values[2], values[3], values[4], values[5]
+	owner := sort.Search(len(projection.intervals), func(index int) bool { return projection.intervals[index].end > position })
+	if owner < 1 || owner >= len(projection.intervals) || position < projection.intervals[owner].start || size > projection.intervals[owner].end-position {
+		return errTranscodeHLSClock
+	}
+	cut := &projection.clock.Cuts[owner-1]
+	if !projection.audioDuration(stream, duration, owner) {
+		return transcodeClockError("aac-packet-duration", errTranscodeHLSClock)
+	}
+	if err := cut.addPacket(stream, pts, dts, fields["flags"]); err != nil {
+		return err
+	}
+	_, _ = fmt.Fprintf(projection.digests[owner-1][stream], "%d,%d,%d\n", pts, dts, duration)
+	return nil
+}
+
+func transcodePacketValues(fields map[string]string) ([6]int64, error) {
 	var values [6]int64
 	for index, name := range []string{"stream_index", "pts", "dts", "duration", "pos", "size"} {
 		value, err := strconv.ParseInt(fields[name], 10, 64)
 		if err != nil || value < -(1<<40) || value > 1<<40 {
-			return errTranscodeHLSClock
+			return values, errTranscodeHLSClock
 		}
 		values[index] = value
 	}
-	stream, pts, dts, duration, position, size := values[0], values[1], values[2], values[3], values[4], values[5]
-	owner := sort.Search(len(projection.intervals), func(index int) bool { return projection.intervals[index].end > position })
-	if stream < 0 || stream > 1 || duration <= 0 || size <= 0 || owner < 1 || owner >= len(projection.intervals) || position < projection.intervals[owner].start || size > projection.intervals[owner].end-position {
-		return errTranscodeHLSClock
+	if values[0] < 0 || values[0] > 1 || values[3] <= 0 || values[5] <= 0 {
+		return values, errTranscodeHLSClock
 	}
-	cut := &projection.clock.Cuts[owner-1]
+	return values, nil
+}
+
+func (cut *transcodeFragmentClock) addPacket(stream, pts, dts int64, flags string) error {
 	if cut.Packets[stream] == 0 {
 		if stream == 0 {
-			if !strings.Contains(fields["flags"], "K") {
+			if !strings.Contains(flags, "K") {
 				return errTranscodeHLSClock
 			}
 			cut.VideoPTS, cut.VideoDTS = pts, dts
@@ -145,31 +163,75 @@ func (projection *transcodeClockProjection) visit(line string) error {
 			cut.AudioPTS = pts
 		}
 	}
-	if stream == 1 && (duration != 1024 || pts != cut.AudioPTS+int64(cut.Packets[1])*1024 || dts != pts) {
+	if stream == 1 && (pts != cut.AudioPTS+int64(cut.Packets[1])*1024 || dts != pts) {
 		return errTranscodeHLSClock
 	}
 	cut.Packets[stream]++
 	if cut.Packets[stream] > 16384 {
 		return errTranscodeHLSClock
 	}
-	_, _ = fmt.Fprintf(projection.digests[owner-1][stream], "%d,%d,%d\n", pts, dts, duration)
 	return nil
 }
 
-func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os.Root, names []string) (*transcodeRenditionClock, error) {
+func (projection *transcodeClockProjection) audioDuration(stream, duration int64, owner int) bool {
+	if stream != 1 {
+		return true
+	}
+	if projection.shortAudio || duration <= 0 || duration > 1024 {
+		return false
+	}
+	if duration == 1024 {
+		return true
+	}
+	// The muxer can trim the final AAC packet. Only the actual final fragment
+	// can contain it, and no later audio packet may follow in the joined demux.
+	projection.shortAudio = true
+	return projection.terminal && owner == len(projection.intervals)-1
+}
+
+func (projection *transcodeClockProjection) stream(fields map[string]string) error {
+	index, err := strconv.Atoi(fields["index"])
+	if err != nil || index < 0 || index > 1 || projection.streams[index] {
+		return errTranscodeHLSClock
+	}
+	base := transcodeStreamBase(fields)
+	if base == 0 {
+		return errTranscodeHLSClock
+	}
+	switch {
+	case index == 0 && fields["codec_type"] == "video":
+		projection.clock.VideoBase = base
+	case index == 1 && transcodeAACStream(fields, base):
+		projection.clock.Rate = base
+	default:
+		return errTranscodeHLSClock
+	}
+	projection.streams[index] = true
+	return nil
+}
+
+func transcodeStreamBase(fields map[string]string) int64 {
+	base, err := strconv.ParseInt(strings.TrimPrefix(fields["time_base"], "1/"), 10, 32)
+	if err != nil || base <= 0 || fields["time_base"] != "1/"+strconv.FormatInt(base, 10) {
+		return 0
+	}
+	return base
+}
+
+func transcodeAACStream(fields map[string]string, base int64) bool {
+	return fields["codec_type"] == "audio" && fields["codec_name"] == "aac" && fields["sample_rate"] == strconv.FormatInt(base, 10)
+}
+
+func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os.Root, names []string, terminal bool) (*transcodeRenditionClock, error) {
 	if len(names) == 0 || len(names) > 16384 {
 		return nil, errTranscodeHLSClock
 	}
-	projection := transcodeClockProjection{clock: transcodeRenditionClock{Cuts: make([]transcodeFragmentClock, len(names))}}
-	var position int64
-	for _, name := range append([]string{"init.mp4"}, names...) {
-		info, err := root.Lstat(name)
-		if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 64<<20 || position > (64<<30)-info.Size() {
-			return nil, errTranscodeHLSClock
-		}
-		projection.intervals = append(projection.intervals, transcodeFragmentInterval{name, position, position + info.Size(), info})
-		position += info.Size()
+	projection := transcodeClockProjection{clock: transcodeRenditionClock{Cuts: make([]transcodeFragmentClock, len(names))}, terminal: terminal}
+	intervals, err := transcodeFragmentIntervals(root, names)
+	if err != nil {
+		return nil, err
 	}
+	projection.intervals = intervals
 	for range names {
 		projection.digests = append(projection.digests, [2]hash.Hash{sha256.New(), sha256.New()})
 	}
@@ -180,14 +242,18 @@ func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os
 	if err := mediaprobe.ProbeInputLines(ctx, logger, manager.probe.executable, arguments, reader, 256<<20, 4_000_000, projection.visit); err != nil {
 		return nil, err
 	}
-	if ctx.Err() != nil || reader.index != len(projection.intervals) || !projection.streams[0] || !projection.streams[1] {
+	if ctx.Err() != nil || reader.index != len(projection.intervals) {
 		return nil, errTranscodeHLSClock
 	}
-	for _, interval := range projection.intervals {
-		current, err := root.Lstat(interval.name)
-		if err != nil || !sameCopiedHLSFile(interval.info, current) {
-			return nil, errTranscodeHLSClock
-		}
+	if !currentTranscodeFragmentIntervals(root, projection.intervals) {
+		return nil, errTranscodeHLSClock
+	}
+	return projection.complete(root)
+}
+
+func (projection *transcodeClockProjection) complete(root *os.Root) (*transcodeRenditionClock, error) {
+	if !projection.streams[0] || !projection.streams[1] {
+		return nil, errTranscodeHLSClock
 	}
 	for index := range projection.clock.Cuts {
 		cut := &projection.clock.Cuts[index]
@@ -204,4 +270,28 @@ func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os
 	}
 	projection.clock.Initialization = sha256.Sum256(initialization)
 	return &projection.clock, nil
+}
+
+func transcodeFragmentIntervals(root *os.Root, names []string) ([]transcodeFragmentInterval, error) {
+	var intervals []transcodeFragmentInterval
+	var position int64
+	for _, name := range append([]string{"init.mp4"}, names...) {
+		info, err := root.Lstat(name)
+		if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 64<<20 || position > (64<<30)-info.Size() {
+			return nil, errTranscodeHLSClock
+		}
+		intervals = append(intervals, transcodeFragmentInterval{name, position, position + info.Size(), info})
+		position += info.Size()
+	}
+	return intervals, nil
+}
+
+func currentTranscodeFragmentIntervals(root *os.Root, intervals []transcodeFragmentInterval) bool {
+	for _, interval := range intervals {
+		current, err := root.Lstat(interval.name)
+		if err != nil || !sameCopiedHLSFile(interval.info, current) {
+			return false
+		}
+	}
+	return true
 }

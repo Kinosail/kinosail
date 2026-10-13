@@ -64,26 +64,12 @@ func (manager *hlsManager) refillTranscodeHLS(ctx context.Context, item library.
 }
 
 func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualities []PlaybackQuality, start float64) (*transcodeHLSOutput, error) {
+	target, end, err := recovery.refillWindow(start)
+	if err != nil || !recovery.includesQualities(qualities) {
+		return nil, errTranscodeHLSClock
+	}
 	clock := recovery.clock.Renditions[recovery.rendition]
 	rate := recovery.clock.Source.Rate
-	target := int64(math.Round(start * float64(rate)))
-	cut := clock.Cuts[recovery.number]
-	if math.Abs(start-float64(cut.VideoPTS)/float64(clock.VideoBase)) > 0.000001 || math.Abs(start*float64(rate)-float64(target)) > 0.000001 || start < 0 || target >= recovery.clock.Source.Samples {
-		return nil, errTranscodeHLSClock
-	}
-	end := float64(recovery.clock.Source.Samples) / float64(rate)
-	if recovery.number+2 < len(clock.Cuts) {
-		end = float64(clock.Cuts[recovery.number+2].VideoPTS)/float64(clock.VideoBase) + 0.5
-	}
-	if end <= start || end-start > 12 {
-		return nil, errTranscodeHLSClock
-	}
-	for _, quality := range qualities {
-		other, ok := recovery.clock.Renditions[quality.Label]
-		if !ok || other.Rate != rate || other.VideoBase <= 0 || recovery.number >= len(other.Cuts) || other.Cuts[recovery.number].VideoPTS*clock.VideoBase != cut.VideoPTS*other.VideoBase {
-			return nil, errTranscodeHLSClock
-		}
-	}
 	phase := (clock.Cuts[0].AudioPTS%1024 + 1024) % 1024
 	limit := max(int64(0), target-3*rate)
 	warm := max(int64(0), limit-((limit-phase)%1024+1024)%1024)
@@ -97,6 +83,36 @@ func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualiti
 		return nil, errTranscodeHLSClock
 	}
 	return &transcodeHLSOutput{recovery: recovery, directory: directory, stage: stage, warm: warm, target: target, duration: end - start, qualities: qualities}, nil
+}
+
+func (recovery *transcodeHLSRecovery) refillWindow(start float64) (int64, float64, error) {
+	clock := recovery.clock.Renditions[recovery.rendition]
+	rate := recovery.clock.Source.Rate
+	target := int64(math.Round(start * float64(rate)))
+	cut := clock.Cuts[recovery.number]
+	if math.Abs(start-float64(cut.VideoPTS)/float64(clock.VideoBase)) > 0.000001 || math.Abs(start*float64(rate)-float64(target)) > 0.000001 || start < 0 || target >= recovery.clock.Source.Samples {
+		return 0, 0, errTranscodeHLSClock
+	}
+	end := float64(recovery.clock.Source.Samples) / float64(rate)
+	if recovery.number+2 < len(clock.Cuts) {
+		end = float64(clock.Cuts[recovery.number+2].VideoPTS)/float64(clock.VideoBase) + 0.5
+	}
+	if end <= start || end-start > 12 {
+		return 0, 0, errTranscodeHLSClock
+	}
+	return target, end, nil
+}
+
+func (recovery *transcodeHLSRecovery) includesQualities(qualities []PlaybackQuality) bool {
+	clock := recovery.clock.Renditions[recovery.rendition]
+	cut := clock.Cuts[recovery.number]
+	for _, quality := range qualities {
+		other, ok := recovery.clock.Renditions[quality.Label]
+		if !ok || other.Rate != clock.Rate || other.VideoBase <= 0 || recovery.number >= len(other.Cuts) || other.Cuts[recovery.number].VideoPTS*clock.VideoBase != cut.VideoPTS*other.VideoBase {
+			return false
+		}
+	}
+	return true
 }
 
 func (output *transcodeHLSOutput) input(arguments []string, path string) []string {
@@ -129,39 +145,62 @@ func (output *transcodeHLSOutput) bounded() bool {
 		if err != nil {
 			return false
 		}
-		file, err := media.Open(".")
-		if err != nil {
-			_ = media.Close()
-			return false
-		}
-		entries, readErr := file.ReadDir(17)
-		_ = file.Close()
-		valid := len(entries) <= 16 && (readErr == nil || errors.Is(readErr, io.EOF))
-		for _, entry := range entries {
-			name := strings.TrimSuffix(entry.Name(), ".tmp")
-			number, segment := hlsSegmentNumber(name)
-			limit := int64(64 << 20)
-			if name == "init.mp4" || name == "index.m3u8" {
-				limit = 2 << 20
-			} else if !segment || number < output.recovery.number || number > output.recovery.number+6 {
-				valid = false
-			}
-			info, err := media.Lstat(entry.Name())
-			if os.IsNotExist(err) && strings.HasSuffix(entry.Name(), ".tmp") {
-				continue
-			}
-			if err != nil || !info.Mode().IsRegular() || info.Size() > limit {
-				valid = false
-			} else {
-				total += info.Size()
-			}
-		}
+		bytes, valid := output.renditionSize(media)
+		total += bytes
 		_ = media.Close()
 		if !valid || total > 512<<20 {
 			return false
 		}
 	}
 	return true
+}
+
+func (output *transcodeHLSOutput) renditionSize(media *os.Root) (int64, bool) {
+	file, err := media.Open(".")
+	if err != nil {
+		return 0, false
+	}
+	defer file.Close()
+	entries, err := file.ReadDir(17)
+	if len(entries) > 16 || err != nil && !errors.Is(err, io.EOF) {
+		return 0, false
+	}
+	var total int64
+	for _, entry := range entries {
+		size, valid := output.fileSize(media, entry.Name())
+		if !valid {
+			return 0, false
+		}
+		total += size
+	}
+	return total, true
+}
+
+func (output *transcodeHLSOutput) fileSize(media *os.Root, filename string) (int64, bool) {
+	limit := output.fileLimit(filename)
+	if limit == 0 {
+		return 0, false
+	}
+	info, err := media.Lstat(filename)
+	if os.IsNotExist(err) && strings.HasSuffix(filename, ".tmp") {
+		return 0, true
+	}
+	if err != nil || !info.Mode().IsRegular() || info.Size() > limit {
+		return 0, false
+	}
+	return info.Size(), true
+}
+
+func (output *transcodeHLSOutput) fileLimit(filename string) int64 {
+	name := strings.TrimSuffix(filename, ".tmp")
+	number, segment := hlsSegmentNumber(name)
+	limit := int64(64 << 20)
+	if name == "init.mp4" || name == "index.m3u8" {
+		limit = 2 << 20
+	} else if !segment || number < output.recovery.number || number > output.recovery.number+6 {
+		return 0
+	}
+	return limit
 }
 
 func (output *transcodeHLSOutput) close() {
