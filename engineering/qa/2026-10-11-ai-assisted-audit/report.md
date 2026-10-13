@@ -3493,3 +3493,34 @@ On early failure, the driver releases the producer and waits boundedly for joins
 A secondary diagnostic collection error cannot replace the primary failure.
 Independent source review approves this trial. Its decoded start/count and expected baseline failure still require hosted execution.
 All existing assertions and fault controls remain unchanged. No production behavior changes in this test-first checkpoint.
+
+
+## Long resumed-window baseline and repair contract — October 13
+
+[PR #592 baseline run 38433464498](https://github.com/Kinosail/kinosail/actions/runs/38433464498) reproduces the long-window defect.
+Its tested merge candidate is `69d1eb50cc1fa738c96fd3e9c55f9ccf9a3262c1`, containing test commit `56aa63996b072a914f6ea6467c0467cc225b4b8c`.
+The held public VOD advertises twelve fragments totaling 46.48 seconds.
+The same producer finishes with thirteen fragments totaling 48.6 seconds.
+All 1,212 decoded frames equal the source suffix from frame 1,450 through EOF.
+The source, child joins, Server settlement, single producer, and secret-free diagnostics pass.
+Thus the public segment map fails independently of decoding or fixture cleanup.
+The existing twenty-four copied-playback controls pass; sixteen uploaded child checksums verify.
+Artifact `11833535150` has SHA-256 `842a754589198356750c5746375b135a02b36018e4947b882e997a5a0604c274`.
+Remaining work in this failed baseline run was cancelled after evidence capture.
+
+Before production edits, the same E2E owner gains exact-key, just-after-key, and origin-zero cases.
+These protect first-key agreement and complete suffix preservation, which the single 60-second offset cannot establish.
+An unsupported or timed-out suffix probe must return 503 before any encoder or playlist admission.
+The fault cases use the existing executable installation seam; no production test seam is added.
+They must prove the probe joined, no media was published, and one correlated root failure contains no credentials.
+Wrapper setup moves into a shared fixture helper to keep the driver within the source-file cap.
+The origin-zero case has over one hundred seconds remaining, so its real readrate-two producer receives a bounded 65-second join.
+
+Independent design review found different FFprobe/FFmpeg seek behavior outside the MOV/MP4 demuxer.
+The planned initial repair is restricted to probed MOV/MP4 H.264 remux without omissions.
+Container eligibility must use actual probe results, not a filename fallback.
+Requested offset remains the media clock; only segment cuts are normalized by the retained first key.
+Uncertain certification must reject before encoding for this newly admitted resumed path.
+Offset-zero optional-index fallback and the completed short-suffix strategy remain separate.
+Matroska, omitted ranges, and long audio conversion remain open investigation boundaries.
+These additional controls are written before production changes; their hosted results are not yet available.

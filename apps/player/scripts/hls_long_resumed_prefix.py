@@ -42,7 +42,7 @@ def long_window(api, path, run, source, physical, receipt):
     evidence = {'initialVOD': b'#EXT-X-PLAYLIST-TYPE:VOD' in initial and b'#EXT-X-ENDLIST' in initial,
                 'actualCompleted': b'#EXT-X-ENDLIST' in actual, 'initialCuts': first,
                 'finalPublicCuts': final, 'finalPhysicalCuts': stored,
-                'sameWindow': '-o60000/' in path, 'immutableCompleteMap': first == final == stored}
+                'sameWindow': f"-o{receipt['longResumeOffset']}/" in path, 'immutableCompleteMap': first == final == stored}
     receipt['longWindow'] = evidence
     base = path.removesuffix('index.m3u8')
     status, initialization, _ = api.http(base + 'init.mp4')
@@ -59,9 +59,9 @@ def long_window(api, path, run, source, physical, receipt):
             output.write(data)
     reference = decoded_frames(source, run, 'long-source')
     compatible = decoded_frames(joined, run, 'long-compatible')
-    # The fixture independently fixes the retained key at 58 seconds, frame 1450.
+    # The fixture independently fixes the retained key at zero or 58 seconds.
     # Compare every decoded frame to reject a full-source or other-window response.
-    expected_start = 58 * 25
+    expected_start = 0 if receipt['longResumeOffset'] == 1000 else 58 * 25
     evidence['reference'] = frame_receipt(reference)
     evidence['compatible'] = frame_receipt(compatible)
     evidence['expectedFirstSourceFrame'] = expected_start
@@ -122,3 +122,30 @@ def long_window_final(api, run, receipt, require_success):
         receipt['longFinalEvidenceFailureClass'] = type(error).__name__
         if require_success:
             raise
+
+
+def long_window_rejection(api, path, run, receipt):
+    """An uncertain resumed index must reject before any encoder or VOD admission."""
+    status, _, _ = api.http(path)
+    receipt['longIndexFaultStatus'] = status
+    pid_file = run / 'index-probe-pid'
+    receipt['longIndexProbeReached'] = pid_file.is_file()
+    pid = pid_file.read_text() if pid_file.exists() else ''
+    receipt['longIndexProbeSettled'] = pid.isdecimal() and subprocess.run(
+        ['ps', '-p', pid], stdout=subprocess.DEVNULL, check=False).returncode != 0
+    receipt['longIndexNoEncoder'] = not list(run.glob('*.started'))
+    receipt['longIndexNoPublishedMedia'] = not any((run / 'cache').rglob('*.m3u8'))
+    with (run / 'server-private.log').open('rb') as log:
+        data = log.read((4 << 20) + 1)
+    check(len(data) <= 4 << 20, 'long_index_log_bound')
+    raw = data.decode()
+    events = [json.loads(line) for line in raw.splitlines() if line.startswith('{')]
+    failures = [e for e in events if e.get('msg') == 'HLS transcode failed']
+    receipt['longIndexRootDiagnostic'] = (len(failures) == 1 and failures[0].get('level') == 'ERROR'
+        and bool(failures[0].get('request_id')) and 'copied HLS generation plan' in failures[0].get('error', ''))
+    receipt['longIndexSecretsAbsent'] = all(secret not in raw for secret in
+        (api.token, 'synthetic-timeline-password', 'synthetic-prefix-key') if secret)
+    check(status == 503 and receipt['longIndexProbeReached'] and receipt['longIndexProbeSettled']
+          and receipt['longIndexNoEncoder'] and receipt['longIndexNoPublishedMedia']
+          and receipt['longIndexRootDiagnostic'] and receipt['longIndexSecretsAbsent'],
+          'uncertified_long_index_must_reject_before_encoding')
