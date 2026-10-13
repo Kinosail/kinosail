@@ -2501,3 +2501,40 @@ The original, mixed, rebuilt, and standalone refilled audio fragment must decode
 The standalone check prevents retained neighbors from hiding a missing refilled audio track.
 Video-clock results are recorded before audio acceptance, so audio failures cannot conceal that diagnostic.
 Independent source review finds no blocker. Runtime validation is pending; audio sample alignment and waveform equality remain untested.
+
+
+### AAC-bearing clocks pass; audio duration and native timeout remain open
+
+At `e15932f843a53e7dd11ac2cd372bd347aae9f116`, the expanded [deep run](https://github.com/Kinosail/kinosail/actions/runs/38351956804) passes Player Go tests.
+The public-media artifact verifies 13 checksum entries and 76 receipts for four fixtures and eight actual renditions.
+All 24 original, mixed, and legacy-rebuilt video decodes contain 150 frames with identical clocks.
+All four legacy reopens start exactly one additional producer. The sixteen audio decodes produce nonempty PCM without diagnostics.
+The archive SHA-256 is `d82b37a5545437794e6dd668f9c013346919d05cb4297d926fd7bf0e7ae028ca`.
+
+The audio receipts expose an unresolved difference in every audio-bearing rendition.
+Original and rebuilt sequences each decode 1,142,784 PCM bytes; the mixed sequence decodes 1,130,496 bytes.
+The 12,288-byte deficit is repeatable. Clean decoding alone does not prove audio continuity.
+The next diagnostic records original and regenerated fragment packet clocks, including gaps, discard flags, and skip/padding metadata.
+Missing clock fields fail explicitly. The existing video and audio acceptance checks remain unchanged.
+These are demuxed packet observations; they do not by themselves prove raw encoded-packet loss or waveform equality.
+The projection follows [FFprobe's selected-entry interface](https://ffmpeg.org/ffprobe.html#Main-options) and its [packet side-data definitions](https://www.ffmpeg.org/doxygen/5.1/group__lavc__packet.html).
+Independent review requested timestamp-presence checks and trimming metadata; both are included.
+A hosted gofumpt receipt-format finding was also corrected using source formatting only.
+
+The same revision passes all three [layout jobs](https://github.com/Kinosail/kinosail/actions/runs/38351962381).
+Each artifact verifies seven exact source inputs and a clean, unchanged revision. Both app commands exit successfully.
+Chromium records 95 Player and 111 Subtitles measurements; Firefox and WebKit each record 40 and 46.
+Each engine completes 11 Player and 26 Subtitles interaction flows without failed stability or focus checks.
+Isolated layout fixtures report 37 Firefox passes and 35 Chromium/WebKit passes each, with two skips in each latter engine.
+There are no failed or flaky isolated cases. The earlier Firefox navigation failure remains retained as intermittent evidence.
+Archive SHA-256 values are `b6121f66b735ed829866d9248ac1f7c66cec5df644c4984223a65bfa2b64305b` (Chromium),
+`6ac02ba2a7810d1b805ad6c1761e7503c4f740563830cf1f92ec1c1625f67a18` (Firefox), and
+`4f71b3dde01c6d23ef3a4a311e1d76ce7c256d32d064bf153329d5de8c496296` (WebKit).
+
+The native run passes the previously failing pairing and TV top-bar cases but fails extensionless AAC playability on iOS.
+The safe probe receipt reports a deadline at 20.025212 seconds in `start-reading`, with zero samples and no reported error.
+This locates the stall in AVFoundation startup; it does not establish a corrupt fixture or a production remedy.
+The native log reports 334 iOS tests with failure and 316 tvOS tests passing. These reported counts are not a full test-discovery audit.
+The log SHA-256 is `9c479738653de99f6669ab9bc751889e716b841822c7b4773f7db0baac9906e6`.
+The next deep run also selects the existing isolated AAC suite to compare full-suite and isolated behavior.
+No native deadline, assertion, or production behavior has been relaxed. Local runtime remains held for coordinated device work.

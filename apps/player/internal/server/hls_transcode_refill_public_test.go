@@ -152,14 +152,15 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			}
 			controls[index] = control
 			if audio {
-				transcodeRefillAudio(t, ctx, ffmpeg, "original", original)
-				transcodeRefillAudio(t, ctx, ffmpeg, "mixed", mixed)
-				transcodeRefillAudio(t, ctx, ffmpeg, "refilled-fragment", [][]byte{original[0], refilled})
+				transcodeRefillAudioPackets(t, ctx, ffprobe, "original-fragment", [][]byte{original[0], original[2]})
+				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "original", original)
+				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "mixed", mixed)
+				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "refilled-fragment", [][]byte{original[0], refilled})
 			}
 		})
 	}
 	if !t.Failed() {
-		transcodeRefillLegacyCache(t, ctx, ffmpeg, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned, audio)
+		transcodeRefillLegacyCache(t, ctx, ffmpeg, ffprobe, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned, audio)
 		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 			t.Fatal("legacy cache rebuild mutated its source")
 		}
