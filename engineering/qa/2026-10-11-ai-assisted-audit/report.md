@@ -3077,7 +3077,10 @@ Archive SHA-256: `9b4dd8fe9c938411ab804267283dfec2159fba988c843b52f6f20f713b064b
 Job log SHA-256: `8e6863084a38b227d4cfa3d4a81e7280adca12ef7e934c8825778aec2f2151da`.
 
 The trace shows the final Play button is visible, enabled, stable, and reached by the tap action.
-Input dispatch then takes about 29.3 seconds. The following fullscreen-property assertion ends almost immediately at the test deadline.
+The interval from performing the tap to its completion takes about 29.3 seconds, before the navigation wait.
+That interval includes browser input dispatch and hit-target interceptor cleanup; the trace does not distinguish which stalls.
+The following fullscreen-property assertion ends almost immediately. The report gives a 60-second test limit and 33.54-second duration, so this is not an established test-deadline failure.
 Its reported `undefined` value is not evidence that the application deleted the simulated property; the trace records no completed property observation.
 The cause of the input stall is not established. Keep the original gesture, deadline, and fullscreen assertions for the next hosted run.
+The snapshots show Settings already hidden and the Play control visible; they do not support adding a Settings-close readiness workaround.
 This case simulates Apple fullscreen and media state; it provides no physical iPhone or real-decoder result.
