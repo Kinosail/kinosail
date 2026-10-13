@@ -130,7 +130,7 @@ extension NativePreferencesUXTests {
             try await readerCapture(window, folder: folder, name: "pending")
             fixture.releaseReader()
             stage = "loaded-webview"
-            try await readerUntil { readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading } }
+            try await readerLoadedWebView(window, fixture: fixture, folder: folder)
             stage = "loaded-geometry"
             let web = try #require(readerDescendants(window).compactMap { $0 as? WKWebView }.first)
             let metrics = try await readerMetrics(web)
@@ -289,11 +289,5 @@ extension NativePreferencesUXTests {
         try readerEvidence(#require(image.pngData()), folder: folder, name: name + ".png")
     }
 
-    func readerEvidence(_ data: Data, folder: URL, name: String) throws {
-        try data.write(to: folder.appendingPathComponent(name))
-        // Hosted CI retains xcresult, while simulator temporary files are discarded.
-        // These bytes contain only the isolated reader fixture and measured geometry.
-        Attachment.record(data, named: name)
-    }
 }
 #endif

@@ -39,29 +39,53 @@ class NativeProbeContractTests(unittest.TestCase):
         self.assertIn("native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}", root)
         self.assertIn("steps.probe.outcome == 'success'", source)
 
-    def test_reader_probe_rejects_missing_or_wrong_iteration_discovery(self):
-        # Native E2E cannot prove its own missing selector or truncated iteration
-        # log is rejected. Require all three complete one-test repetitions.
+    def test_reader_probe_checks_all_parameter_repetitions_from_xcresult(self):
+        # Native E2E cannot prove that missing, duplicate, skipped, or failed
+        # results are rejected by its own receipt verifier.
         from unittest.mock import patch
         source = (WORKFLOWS / 'app.yml').read_text()
         step = source.split('      - name: Execute one iOS probe suite\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split("          python3 - <<'PY'\n", 1)[1].split('\n          PY', 1)[0])
-        for counts in ([1, 1, 1], [], [1, 1], [0, 0, 0], [1, 1, 2]):
-            with self.subTest(counts=counts), tempfile.TemporaryDirectory() as directory:
+        selector = 'NativePreferencesUXTests/readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light:fontSize:)'
+        cases = ('passed', 'missing-summary', 'wrong-summary', 'wrong-selector', 'missing-arguments',
+                 'duplicate-arguments', 'missing-repeat', 'duplicate-repeat', 'skipped-repeat', 'failed-repeat',
+                 'overall-failed', 'missing-result', 'invalid-result')
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                details = {'testIdentifier': selector, 'testResult': 'Passed', 'testRuns': [
+                    {'name': name, 'nodeType': 'Arguments', 'result': 'Passed', 'children': [
+                        {'nodeType': 'Repetition', 'nodeIdentifier': str(n), 'result': 'Passed'} for n in (1, 2, 3)]}
+                    for name in ('false, 20', 'false, 32', 'true, 20', 'true, 32')]}
+                if case == 'wrong-selector': details['testIdentifier'] = 'Wrong/test()'
+                if case == 'missing-arguments': details['testRuns'].pop()
+                if case == 'duplicate-arguments': details['testRuns'].append(details['testRuns'][0])
+                if case == 'missing-repeat': details['testRuns'][0]['children'].pop()
+                if case == 'duplicate-repeat': details['testRuns'][0]['children'][2]['nodeIdentifier'] = '1'
+                if case == 'skipped-repeat': details['testRuns'][0]['children'][2]['result'] = 'Skipped'
+                if case == 'failed-repeat': details['testRuns'][0]['children'][2]['result'] = 'Failed'
+                if case == 'overall-failed': details['testResult'] = 'Failed'
                 run = Path(directory)
                 (run / 'command.txt').write_text('isolated command fixture')
-                (run / 'native.log').write_text('\n'.join(f'Test run with {count} test in 1 suite passed' for count in counts))
-                with patch.dict(os.environ, {'NATIVE_PROBE': 'reader', 'NATIVE_PROBE_EXIT': '0',
+                summary = 'Test run with 1 test in 1 suite passed'
+                if case == 'missing-summary': summary = ''
+                if case == 'wrong-summary': summary = 'Test run with 2 tests in 1 suite passed'
+                (run / 'native.log').write_text(summary)
+                def command_output(command, **_):
+                    if command[0] == 'xcrun' and case == 'missing-result':
+                        raise subprocess.CalledProcessError(1, command)
+                    if command[0] == 'xcrun' and case == 'invalid-result': return '{'
+                    return json.dumps(details) if command[0] == 'xcrun' else 'isolated-revision-or-xcode'
+                with patch.dict(os.environ, {'NATIVE_PROBE': 'reader', 'NATIVE_PROBE_EXIT': '0', 'SELECTOR': selector,
                     'NATIVE_PROBE_RUN': str(run), 'NATIVE_PROBE_DEVICE': 'isolated-simulator'}), \
                     patch('platform.platform', return_value='isolated-platform'), \
-                    patch('subprocess.check_output', return_value='isolated-revision-or-xcode'):
-                    if counts == [1, 1, 1]:
+                    patch('subprocess.check_output', side_effect=command_output):
+                    if case == 'passed':
                         exec(compile(script, 'native-probe-receipt', 'exec'), {})
                     else:
                         with self.assertRaises(SystemExit):
                             exec(compile(script, 'native-probe-receipt', 'exec'), {})
                 receipt = json.loads((run / 'receipt.json').read_text())
-                self.assertEqual(receipt['discoveryVerified'], counts == [1, 1, 1])
+                self.assertEqual(receipt['discoveryVerified'], case == 'passed')
+                self.assertEqual(receipt['result'] == 'passed', case == 'passed')
                 self.assertEqual(receipt['expectedTests'], 1)
                 self.assertEqual(receipt['expectedIterations'], 3)
-

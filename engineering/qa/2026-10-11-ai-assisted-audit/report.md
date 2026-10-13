@@ -27,9 +27,9 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
-| Browser session return | Subtitles Firefox and WebKit each pass 99 cases without failures, flakes, or skips at `657e2ca2`. Player Firefox runs the required populated session-return case and passes without retry at `c09c2659`. | Player Chromium and WebKit execution and current required gates. |
+| Browser session return | Subtitles Firefox and WebKit each pass 99 cases at `657e2ca2`. Player Firefox and WebKit at `c09c2659`, and Chromium at `8fa923df`, execute the required populated session-return case without retry. | Current required gates and the repaired trace assertion. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. Hosted native contracts pass again at `c09c2659`. | The intervening `657e2ca2` and `07db0b07` iOS reader journeys time out for two light-mode arguments. Stage diagnostics and retained reader attachments are pending. Physical-device behavior remains separate. |
+| Apple native contracts | Full hosted native suites pass at `c09c2659`, `8fa923df`, and `ea644e55`. Reader attachments are retained in xcresult. | The repeated reader probe at `ea644e55` fails at loaded-WebView readiness for light mode, font 32, repetition 3. Failure-state evidence and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -2981,3 +2981,34 @@ This is an isolated browser fixture repair, not a populated-server or real-decod
 The general report records 721 passing cases, 357 skips, and one flake that passed on retry. The gate correctly remains failed.
 Artifact `11810471375` verifies 482 checksums; archive SHA-256 is `dcb1b905c94e21a6b30d95935555980d34130608abfda114c0c64c0f4fc28019`.
 The Chromium saved-session case still needs execution. The repaired trace case needs hosted browser validation.
+
+### Repeated reader probe identifies the failing operation
+
+At `ea644e550f998ba7628999456e06f0832004ffb8`, hosted job `115282916048` passes compilation and both full native suites.
+The subsequent fixed reader probe fails, preserving exit 65. Eleven parameter runs pass; light mode at font 32 fails on repetition three.
+Its stage is `loaded-webview`: the original ten-second wait never observes a WebView with a URL and completed loading.
+Metadata is released; the diagnostic reports no held reader or preference requests and one preference read.
+This narrows the investigation but does not establish a product cause or repair.
+
+Artifact `11812116542` retains the probe result bundle, log, command, and receipt.
+Archive SHA-256: `5f1da7338553fefa4057b3d18c755437ef22ed260b33edecbb9ad37af3583a28`.
+Probe log SHA-256: `2681aa86a0f7ba8dbd78893f84266c22cf1c02525baa492ecabc395fd64c0853`.
+Read-only `xcresulttool` inspection verifies all four argument pairs with three recorded repetitions each.
+It also confirms attached pending/loaded/empty/failed screenshots and geometry for the eleven successful runs.
+The failed run retains pending screenshots and its operation diagnostic, but lacks the WebView state at timeout.
+The next diagnostic captures that state and a synchronous window screenshot before teardown, without changing the predicate or deadline.
+Its bounded fields contain window visibility, lifecycle state, WebView readiness and dimensions, and isolated fixture counters and event ages.
+
+The probe also exposed a verifier defect: Swift emits one summary for all repetitions, while the previous verifier expected three summaries.
+The existing discovery contract now reproduces that format and fails against the old verifier.
+The repair reads structured xcresult test details and requires the exact selector, four distinct argument pairs, and three distinct passing repetitions per pair.
+Missing, duplicate, skipped, failed, malformed, or unavailable results reject. A nonzero native process exit remains fatal.
+All 19 focused workflow contracts pass, including these negative controls; pinned actionlint, workflow validation, source limits, and whitespace pass.
+This isolated verifier check protects the evidence boundary; it is not native app execution.
+
+Chromium artifact `11811690752` at `8fa923df` closes the saved-session execution gap across all three Player browser engines.
+Its populated settings report executes the case once without retry and verifies authenticated return with explicit step-up.
+All 538 checksum entries, 537 evidence hashes, and ten source-input hashes match.
+Archive SHA-256: `ea422d6f40626e50ea17c9f42ddc719d336028f9928087bf433b86ecd2b7fc22`.
+Session receipt SHA-256: `47cf84e23e9ee8fa43caa139890ebb39225ef423ce38d6de4fd8c7ec7c05c658`.
+Local app runtime remains held. No deployment or physical-device result follows from these hosted checks.
