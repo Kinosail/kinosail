@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var errOwnedProbeMetadata = errors.New("owned probe metadata rejected")
+
 // Populated media does not exercise probe descendants retaining or closing
 // stdout. These real configured-process controls protect that coverage gap.
 func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
@@ -57,6 +59,11 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 		err = ProbeInputLines(ctx, nil, executable, copiedHLSProbeArguments(mode), input[0], maximumBytes, maximumLines, marker.visit)
 	}
 	marker.assertCompletion(started, err, wantError, mode)
+	// Media E2E cannot reliably order scanner rejection before process exit.
+	// This configured owner must retain the visitor's cause after settlement.
+	if reject && !errors.Is(err, errOwnedProbeMetadata) {
+		t.Fatal("configured probe discarded its metadata rejection cause")
+	}
 	return err
 }
 
@@ -107,7 +114,7 @@ func (marker *copiedHLSProbeMarkers) visit(line string) error {
 		marker.cancel()
 	}
 	if marker.reject {
-		return errCopiedHLSIndex
+		return errOwnedProbeMetadata
 	}
 	return nil
 }

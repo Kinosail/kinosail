@@ -75,7 +75,7 @@ func readCopiedHLSProbeLines(ctx, parent context.Context, probe copiedHLSProbe, 
 	watchErr := watch.completionError(ctx, waitErr, settleErr)
 	if watchErr != nil || waitErr != nil || settleErr != nil || ctx.Err() != nil {
 		reportCopiedHLSProbeCompletion(ctx, err, watchErr, waitErr, settleErr)
-		return errors.Join(errCopiedHLSIndex, ctx.Err(), watchErr)
+		return errors.Join(errCopiedHLSIndex, err, ctx.Err(), watchErr)
 	}
 	return err
 }

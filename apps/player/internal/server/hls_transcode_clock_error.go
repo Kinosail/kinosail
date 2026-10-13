@@ -22,8 +22,9 @@ func transcodeClockMismatch(cause error, actual *transcodeRenditionClock, origin
 	var inner *transcodeClockStageError
 	if errors.As(cause, &inner) {
 		failure.operation = inner.operation
+		failure.comparison = append(failure.comparison, inner.comparison...)
 	}
-	failure.comparison = []slog.Attr{slog.Bool("measured", actual != nil)}
+	failure.comparison = append(failure.comparison, slog.Bool("measured", actual != nil))
 	if actual == nil {
 		return failure
 	}
@@ -37,6 +38,25 @@ func transcodeClockMismatch(cause error, actual *transcodeRenditionClock, origin
 			slog.Int64("expected_audio_pts", want.AudioPTS), slog.Int64("actual_audio_pts", got.AudioPTS),
 			slog.Int("expected_video_packets", want.Packets[0]), slog.Int("actual_video_packets", got.Packets[0]),
 			slog.Int("expected_audio_packets", want.Packets[1]), slog.Int("actual_audio_packets", got.Packets[1]))
+	}
+	return failure
+}
+
+func transcodePacketError(operation string, cause error, values [6]int64, owner int, cut *transcodeFragmentClock) error {
+	if cause == nil {
+		cause = errTranscodeHLSClock
+	}
+	failure := &transcodeClockStageError{operation: operation, cause: cause}
+	var inner *transcodeClockStageError
+	if errors.As(cause, &inner) {
+		failure.operation = inner.operation
+	}
+	for index, name := range []string{"stream", "pts", "dts", "duration", "position", "size"} {
+		failure.comparison = append(failure.comparison, slog.Int64("packet_"+name, values[index]))
+	}
+	failure.comparison = append(failure.comparison, slog.Int("packet_owner", owner))
+	if cut != nil {
+		failure.comparison = append(failure.comparison, slog.Int64("first_audio_pts", cut.AudioPTS), slog.Int("audio_packets", cut.Packets[1]), slog.Int("video_packets", cut.Packets[0]))
 	}
 	return failure
 }

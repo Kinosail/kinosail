@@ -116,7 +116,7 @@ func (projection *transcodeClockProjection) visit(line string) error {
 		return projection.stream(fields)
 	}
 	if !strings.HasPrefix(line, "packet|") {
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-record", nil)
 	}
 	values, err := transcodePacketValues(fields)
 	if err != nil {
@@ -125,14 +125,14 @@ func (projection *transcodeClockProjection) visit(line string) error {
 	stream, pts, dts, duration, position, size := values[0], values[1], values[2], values[3], values[4], values[5]
 	owner := sort.Search(len(projection.intervals), func(index int) bool { return projection.intervals[index].end > position })
 	if owner < 1 || owner >= len(projection.intervals) || position < projection.intervals[owner].start || size > projection.intervals[owner].end-position {
-		return errTranscodeHLSClock
+		return transcodePacketError("probe-owner", nil, values, owner, nil)
 	}
 	cut := &projection.clock.Cuts[owner-1]
 	if !projection.audioDuration(stream, duration, owner) {
-		return transcodeClockError("aac-packet-duration", errTranscodeHLSClock)
+		return transcodePacketError("aac-packet-duration", nil, values, owner, cut)
 	}
 	if err := cut.addPacket(stream, pts, dts, fields["flags"]); err != nil {
-		return err
+		return transcodePacketError("probe-packets", err, values, owner, cut)
 	}
 	_, _ = fmt.Fprintf(projection.digests[owner-1][stream], "%d,%d,%d\n", pts, dts, duration)
 	return nil
@@ -143,12 +143,12 @@ func transcodePacketValues(fields map[string]string) ([6]int64, error) {
 	for index, name := range []string{"stream_index", "pts", "dts", "duration", "pos", "size"} {
 		value, err := strconv.ParseInt(fields[name], 10, 64)
 		if err != nil || value < -(1<<40) || value > 1<<40 {
-			return values, errTranscodeHLSClock
+			return values, transcodeClockError("probe-field-"+name, nil)
 		}
 		values[index] = value
 	}
 	if values[0] < 0 || values[0] > 1 || values[3] <= 0 || values[5] <= 0 {
-		return values, errTranscodeHLSClock
+		return values, transcodePacketError("probe-values", nil, values, 0, nil)
 	}
 	return values, nil
 }
@@ -157,7 +157,7 @@ func (cut *transcodeFragmentClock) addPacket(stream, pts, dts int64, flags strin
 	if cut.Packets[stream] == 0 {
 		if stream == 0 {
 			if !strings.Contains(flags, "K") {
-				return errTranscodeHLSClock
+				return transcodeClockError("probe-keyframe", nil)
 			}
 			cut.VideoPTS, cut.VideoDTS = pts, dts
 		} else {
@@ -165,11 +165,11 @@ func (cut *transcodeFragmentClock) addPacket(stream, pts, dts int64, flags strin
 		}
 	}
 	if stream == 1 && (pts != cut.AudioPTS+int64(cut.Packets[1])*1024 || dts != pts) {
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-aac-sequence", nil)
 	}
 	cut.Packets[stream]++
 	if cut.Packets[stream] > 16384 {
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-packet-count", nil)
 	}
 	return nil
 }
@@ -193,11 +193,11 @@ func (projection *transcodeClockProjection) audioDuration(stream, duration int64
 func (projection *transcodeClockProjection) stream(fields map[string]string) error {
 	index, err := strconv.Atoi(fields["index"])
 	if err != nil || uint(index) > 1 || projection.streams[index] {
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-stream", nil)
 	}
 	base := transcodeStreamBase(fields)
 	if base == 0 {
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-stream", nil)
 	}
 	switch {
 	case index == 0 && fields["codec_type"] == "video":
@@ -205,7 +205,7 @@ func (projection *transcodeClockProjection) stream(fields map[string]string) err
 	case index == 1 && transcodeAACStream(fields, base):
 		projection.clock.Rate = base
 	default:
-		return errTranscodeHLSClock
+		return transcodeClockError("probe-stream", nil)
 	}
 	projection.streams[index] = true
 	return nil
@@ -230,7 +230,7 @@ func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os
 	projection := transcodeClockProjection{clock: transcodeRenditionClock{Cuts: make([]transcodeFragmentClock, len(names))}, terminal: terminal}
 	intervals, err := transcodeFragmentIntervals(root, names)
 	if err != nil {
-		return nil, err
+		return nil, transcodeClockError("probe-interval", err)
 	}
 	projection.intervals = intervals
 	for range names {
@@ -241,25 +241,25 @@ func (manager *hlsManager) probeTranscodeFragments(ctx context.Context, root *os
 	arguments := []string{"-v", "error", "-threads", "1", "-show_packets", "-show_streams", "-show_entries", "stream=index,codec_type,codec_name,time_base,sample_rate:stream_tags=:stream_disposition=:packet=stream_index,pts,dts,duration,pos,size,flags:packet_side_data=", "-of", "compact=p=1", "pipe:0"}
 	logger := slog.With("request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx))
 	if err := mediaprobe.ProbeInputLines(ctx, logger, manager.probe.executable, arguments, reader, 256<<20, 4_000_000, projection.visit); err != nil {
-		return nil, err
+		return nil, transcodeClockError("probe-run", err)
 	}
 	if ctx.Err() != nil || reader.index != len(projection.intervals) {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("probe-consumption", nil)
 	}
 	if !currentTranscodeFragmentIntervals(root, projection.intervals) {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("probe-mutated", nil)
 	}
 	return projection.complete(root)
 }
 
 func (projection *transcodeClockProjection) complete(root *os.Root) (*transcodeRenditionClock, error) {
 	if !projection.streams[0] || !projection.streams[1] {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("probe-streams", nil)
 	}
 	for index := range projection.clock.Cuts {
 		cut := &projection.clock.Cuts[index]
 		if cut.Packets[0] == 0 || cut.Packets[1] == 0 {
-			return nil, errTranscodeHLSClock
+			return nil, transcodeClockError("probe-empty-track", nil)
 		}
 		for stream := range 2 {
 			copy(cut.Clocks[stream][:], projection.digests[index][stream].Sum(nil))
@@ -267,7 +267,7 @@ func (projection *transcodeClockProjection) complete(root *os.Root) (*transcodeR
 	}
 	initialization, err := copiedHLSCacheFile(root, "init.mp4", 2<<20)
 	if err != nil {
-		return nil, errTranscodeHLSClock
+		return nil, transcodeClockError("probe-init", err)
 	}
 	projection.clock.Initialization = sha256.Sum256(initialization)
 	return &projection.clock, nil
