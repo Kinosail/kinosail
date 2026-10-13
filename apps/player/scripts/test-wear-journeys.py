@@ -230,6 +230,13 @@ try:
     adb("shell", "settings", "put", "global", "stay_on_while_plugged_in", "3")
     for apk in apks:
         check(b"Success" in adb("install", "-r", "-t", str(apk), timeout=120), "wear_install_failed")
+    check(owns_emulator(), "wear_emulator_ownership_unconfirmed")
+    started = time.monotonic()
+    home = adb("shell", "am", "start", "-W", "-a", "android.intent.action.MAIN",
+               "-c", "android.intent.category.HOME", timeout=30)
+    receipt["homeLaunch"] = {"statusOK": b"Status: ok" in home.splitlines(),
+                             "complete": b"Complete" in home.splitlines(), "seconds": round(time.monotonic() - started, 3)}
+    check(len(home) <= 4096 and receipt["homeLaunch"]["statusOK"] and receipt["homeLaunch"]["complete"], "wear_home_launch_failed")
     receipt["cases"].append(run_case(safe, run, args.profile, size, 320))
     check(all(case["result"] == "passed" for case in receipt["cases"]), "wear_case_failed")
     receipt["result"] = "passed"

@@ -167,3 +167,27 @@ It never copies exception messages, arbitrary class names, stack lines, device i
 Capture records its fixed phase and foreground Boolean before reading the Compose tree.
 A failed tree read can no longer erase those observations, and screenshot capture remains independent.
 The existing hosted journey owns this failure; its assertions and deadlines remain unchanged.
+
+## Diagnostic trial: different failing phases
+
+At `6b520b27c34c93b5974b223524145e8fcde7c202`, both profiles record two successful tests and one failure, with no skips.
+Both retain successful boot, physical-display checks, setup flags, and cleanup.
+All sixteen source pins and seven child hashes per profile verify independently.
+
+| Profile | Artifact | ZIP SHA-256 | Observation |
+| --- | --- | --- | --- |
+| Small round | `11858856792` | `2a3b8dcadf701aab62a474ff1b66da6ad3a0aebbaa3a2868585fcf7989765259` | The disconnected component test records `IllegalStateException` at line 47. Actual launch and recreation captures show the app and retain true foreground ownership. |
+| Large round | `11858911477` | `9ce0fc8c38e0ea4b4b2e36e239197357d9f9a25e21fc397a3212e83cce52543d` | The launch test records a Compose timeout at the foreground wait. Its capture records false ownership and `phase=foreground`. |
+
+The small-watch actual captures show centered round geometry and the expected disconnected content.
+Its separate component failure still prevents accepting the complete profile.
+The large-watch failure proves missing app foreground. The small-watch exception does not establish the same cause.
+No production Activity cause is proven.
+
+The next single-variable fixture experiment launches the system Home Activity after fresh-device setup and APK installation.
+Android's [ADB reference](https://developer.android.com/tools/adb#am) defines `am start -W` as waiting for launch completion.
+The owned emulator must return exit zero, exact successful status, and completion within a bounded command.
+Only success Booleans and elapsed time enter the receipt.
+This establishes Home launch completion; it cannot guarantee a later system transition will not replace the app.
+Instrumentation assertions, deadlines, and UiAutomation flags remain unchanged.
+If failures persist, the next observation should capture bounded Activity lifecycle and window-focus state at the original failure.

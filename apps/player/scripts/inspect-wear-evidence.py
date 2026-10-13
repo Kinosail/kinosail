@@ -45,6 +45,8 @@ with zipfile.ZipFile(archive) as bundle:
     check(set(receipt["setup"]) == {"device_provisioned", "user_setup_complete"} and
           all(v["before"] in ("0", "1", "null") and v["after"] == "1" for v in receipt["setup"].values()),
           "device_setup_not_verified")
+    check(receipt["homeLaunch"]["statusOK"] is True and receipt["homeLaunch"]["complete"] is True,
+          "home_launch_not_verified")
     pins = receipt["sourceSHA256"]
     source_files = subprocess.check_output(["git", "ls-tree", "-r", "--name-only", revision,
                                            "apps/player/apps/android/wear/src"], text=True).splitlines()

@@ -22,7 +22,7 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 ## Latest checkpoint — October 13
 
 PRs #587, #592, and #593 are merged. PR #593's reviewed task commit is an ancestor of fetched `origin/main` at `0a68e51544458de32d1458b6a567050ed344f229`.
-All four required PR checks passed. Exact-main CI and publication remain pending for this newest merge.
+All four required PR checks and exact-main verification passed. Container publication is running for this newest merge.
 The separate Wear follow-up remains draft PR #594; its latest source repairs await hosted acceptance.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
@@ -36,7 +36,7 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | Both profiles at `912871d3` boot, verify physical dimensions, and clean up successfully. JUnit fails, and both launch images show the watch face without retained app semantics. | A bounded failure projection must identify the actual Activity assertion. App visibility and recreation remain unverified. Pairing, sensors, battery, and physical input remain open. |
+| Wear | At `6b520b27`, small-watch actual launch/recreation captures pass foreground and visual checks, but its disconnected component test fails. Large-watch actual launch times out on foreground ownership. Both complete runs fail. | A single-variable Home-launch fixture experiment follows the distinct failure evidence. Full-profile acceptance, pairing, sensors, battery, and physical input remain open. |
 | Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
@@ -50,8 +50,8 @@ Its original navigation timeout remains an unresolved intermittent observation.
 
 The [Wear evidence note](../2026-10-13-wear-journeys.md) records the rejected screenshots, exact artifacts, and successive runner repairs.
 Commits `89c1af8a` and `9c4cf628` require foreground app ownership, bounded transport detachment, and fresh physical profiles.
-Source checks and independent review pass. Corrected boot readiness succeeds on both fresh profiles, but actual Activity acceptance still fails.
-The next revision retains safe failure signals and capture-phase observations without changing assertions or deadlines.
+Source checks and independent review pass. Corrected boot readiness succeeds on both fresh profiles; bounded diagnostics identify different failing phases.
+The next fixture experiment waits for Home launch completion before instrumentation, without changing assertions, deadlines, or automation flags.
 The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
 
 Exact-main `0a68e515` also passes the nineteen cold-suffix cases and verifies all seven helper pins.
@@ -63,7 +63,7 @@ The 139 private child-artifact hashes remain unavailable for independent verific
 The same main revision passes all thirty Subtitles copied-clock receipts, including four long-window completions before restart.
 Artifact `11857083775` has SHA-256 `38d476acea6a87c1bd2c759a0614bec952002e2ffbe9771d5cf0dd51b3580468`.
 All sixteen uploaded child hashes verify; 275 private child hashes remain unavailable.
-Exact-main browser completion and image publication remain pending.
+The exact-main browser job completed successfully; image publication remains pending.
 
 ## Baseline evidence
 
