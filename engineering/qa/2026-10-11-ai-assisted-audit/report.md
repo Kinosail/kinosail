@@ -2343,3 +2343,30 @@ Source checks and hosted runtime results for these repairs are recorded separate
 Independent review found no remaining material source blocker in the listener and acknowledgement repairs.
 Whitespace, source-file limits, and production browser-script lint passed. Discovery selected 60 cases across three engines and three files.
 These source checks did not launch a browser or application. Hosted validation remains the runtime acceptance step.
+
+### Listener trial and public transcode refill diagnostic
+
+At `dda33cd1`, [deep run 38341639360](https://github.com/Kinosail/kinosail/actions/runs/38341639360) passed the WebKit listener control and all four unmodified controlled watched cases on their first attempts.
+The ordinary navigation case and two mutation cases also passed immediately.
+The watched mutation failed initial playback admission, then passed on retry.
+The cancelled unwatched mutation failed the ending-buffer prerequisite twice. Neither attempt reached mutation admission.
+The downloaded WebKit archive verified clean source, ten inputs, and 540 checksums.
+Its SHA-256 is `c38a4477a275cecb905e8743776ff7ce7c84f078fef16f9ac3a56cea4179c954`.
+These failures remain open; the fixture repair is not proof of a media repair.
+
+The next diagnostic was written before any production timestamp change.
+It covers these concrete failures: a refill shifts frame timestamps, changes frame count, corrupts decoding, mutates retained media, or silently avoids regeneration.
+The real HTTP test generates an eight-second FFV1 source at 25 fps, forcing video transcoding at two source sizes.
+It requires one actual rendition at 320×180 and multiple actual renditions at 1280×720.
+Both exercise `encodePresentation`; copied-media `encodeVariant` is outside this test.
+After the initial encoder exits, it saves initialization and three fragments, then deletes one owned middle fragment.
+A public GET must start a real refill. An exec-only adapter records joined producer identities and safe clock arguments.
+The mixed decode uses the original neighboring snapshots because clients may already have buffered them.
+Forward cache files may legitimately be replaced. Source bytes, initialization, and the preceding fragment must remain unchanged.
+
+The control must decode 150 contiguous frames. The regenerated sequence must preserve each frame's exact timestamp and duration.
+The oracle retains the demux timebase and uses `-copyts` and `-fps_mode passthrough`, as described in the [FFmpeg documentation](https://ffmpeg.org/ffmpeg.html).
+It records media hashes, decoded-clock hashes, exit status, and bounded diagnostic classes without printing raw codec output or source paths.
+Pixel hashes identify evidence; lossy reencoding is not required to reproduce identical pixels.
+This test can establish a Server timeline defect. Browser append offsets and the cause of WebKit resets require separate proof.
+Hosted execution is pending. Local runtime remains held for the coordinated physical-device window.
