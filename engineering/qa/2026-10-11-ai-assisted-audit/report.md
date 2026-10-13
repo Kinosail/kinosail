@@ -21,12 +21,13 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 13
 
-PR 587 remains draft. The campaign goal is active; no complete product or platform acceptance is claimed.
+PR 587 is ready for review. The campaign goal is active; no complete product or platform acceptance is claimed.
 The chronological sections below retain earlier failures, repairs, and exact artifact evidence.
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
+| Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. | Preserve the existing failure and collect its public playlist, cache, and operational error evidence. |
 | Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
 | Apple native contracts | At `a1197ae4`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
@@ -3336,3 +3337,47 @@ Q09 verifies twelve isolated browser cases, 47 populated Server cases, and one p
 All sixty cases pass without retry or failure locations. Each owned process group settles, and the source is unchanged.
 These Linux hosted results complement the earlier ten process-settlement contracts; they do not establish physical-device or macOS browser proof.
 Current required gates, longer copied windows, local-runtime restrictions, and remaining platform boundaries still prevent full campaign acceptance.
+
+## October 13 final-revision checks and copied AC3 investigation
+
+At `08d0da84`, all three layout jobs in run `38417372683` pass.
+The retained source inputs and clean revision verify for every layout artifact.
+Chromium records 95 Player and 111 Subtitles measurements; Firefox and WebKit each record 40 and 46.
+Each browser records eleven Player flows and 26 Subtitles flows, with no failed stability fields.
+The isolated fixture counts are 35 passed and two skipped in Chromium and WebKit, and 37 passed in Firefox.
+These are separate populated-Server and isolated-fixture boundaries.
+
+Subtitles Firefox and WebKit each pass 99 cases without failures, skips, or retries.
+All 198 checksum entries verify in each artifact.
+The copied-clock and completion-control job also passes; its latest artifact awaits detailed inspection.
+
+| Artifact | SHA-256 |
+| --- | --- |
+| Chromium layout `11826906209` | `3625e001f1d8243d9c7abf65c020f817f5239c02105550411ff35936e892d29e` |
+| Firefox layout `11825616819` | `41bde33470ec03bf6f9a8eca9407cb06b7dff0335d0a6abde4376f4891cb5e6e` |
+| WebKit layout `11825322100` | `180f78d96e09d826006005d0fd4258783999ad629d98b3001127e76efb598e2b` |
+| Player transcoded recovery `11826006566` | `25e892b5497a5b612c9e22a032fbcd77bea6459a4683c34e3642f018304a075d` |
+
+All 168 Player transcoded-recovery receipts and twenty checksum entries verify at this revision.
+The five fixtures, nine rendition comparisons, first-fragment recovery, and rejection controls pass.
+The surrounding Go job `115366445338` nevertheless fails a separate real-media test:
+`TestRealCopiedVideoHLSSegmentsDecodeIndependently/ac3/offset-12700`.
+Its public request for `segment-00003.m4s` returns HTTP 404.
+The retained job log has SHA-256 `b6b4decb31f433ee4cec5e32321867d3874494b2ad848f41883efbab9c4d169c`.
+It contains no data-race report or test timeout. The failed suite does not establish a passing coverage gate.
+
+The existing journey now retains its advertised playlist durations and digest.
+On failure, it records bounded cache state and allowlisted operational outcomes before canceling the producer.
+It excludes raw paths, response bodies, source policies, credentials, and raw process errors from this diagnostic projection.
+Unavailable or truncated cache evidence is explicit.
+The original requests, decoding assertions, deadlines, and failure remain unchanged.
+
+Source review identifies a possible ordering issue: copied-certificate verification reads an actively replaced EVENT playlist before reusing its producer.
+Its stable-file check can reject a concurrent atomic playlist replacement.
+That is a hypothesis; the original failure lacks evidence to confirm its cause.
+The observation change is not a production repair, and hosted execution remains required.
+
+The preceding `5df3c236` native artifact `11824094028` also verifies 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes.
+Its archive SHA-256 is `c40cde45cdc99b6b3ebecead60e10737d42e2a586f0e885354cfcaddc724eda4`.
+Its structured reader details have SHA-256 `c0e54e191e2a29972b3c7c0662fc31a152af96481e315d877e007ab14ef73dce`.
+Earlier intermittent native failures remain separate investigations.
