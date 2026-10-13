@@ -3589,3 +3589,47 @@ Player digest: `sha256:34952742be45801f3bd07bf93e4fecc434f678346c61a1e470adfe656
 Subtitles digest: `sha256:82b0c1c2f48fc8d2b1aaefec892e84babbceb5f8990213cc3a270a1655d43ac7`.
 Four platform configuration revision labels and four tested candidate-index artifacts bind to the published platform manifests.
 A fresh ancestry check retains the merged commit in remote main. No Nox or physical playback result follows from this publication evidence.
+
+
+## Complete copied-window repair delivery — October 13
+
+[PR #592](https://github.com/Kinosail/kinosail/pull/592) merged as `57bf077a5f6d27c0390178a3ea9560c39aa234f2`.
+Fetched ancestry proves reviewed head `7dae0351764d5e90a5291e546ad7664fb4387df8` is included.
+The merged tree equals tested merge `e160a9832a6a575588582f40c7a9903ad848fe99`.
+[CI 38440416500](https://github.com/Kinosail/kinosail/actions/runs/38440416500) passes all four required gates.
+All thirty copied-playback receipts pass, including the four corrected boundary windows and both failed-index controls.
+Sixty fragments preserve all 6,199 independently expected source frames.
+Early, completed, warm, and restarted public maps match the final physical cuts exactly.
+Media artifact `11837015951` has SHA-256 `5fc32936262b9695e0571a760f297a4c00daeb9bad58887f71ea8548eaf9b78a`.
+All sixteen uploaded child hashes verify.
+[Layout run 38440416474](https://github.com/Kinosail/kinosail/actions/runs/38440416474) passes Chromium, Firefox, and WebKit.
+Every uploaded source pin and layout measurement verifies.
+Inspected Chromium reports record 532 Player passes and 63 skips across eight reports, plus 38 Subtitles passes.
+Neither app reports failures or flakes. These counts do not replace the separate native or physical-device boundaries.
+Exact-main CI and publication run `38445870966` is pending.
+Unrelated native project and localization edits in local main remain preserved.
+
+## Hosted Android caption baseline — October 13
+
+Earlier actual Media3 screenshots show captions intersecting gesture navigation in landscape.
+The existing overlay journey checks label contrast and pending, failed, retry, and recovered states.
+It does not assert caption placement. A new compositor journey adds that missing public behavior check before production changes.
+The test pauses actual playback, dismisses native controls, and captures stable captions-off, captions-on, and captions-off frames.
+Actual root window insets define the protected system navigation area.
+Visible caption pixels must exist, and none may intersect that area.
+A forced-captions-off negative control must fail the visibility assertion, preventing an absent-caption false pass.
+
+The manual and weekly Android lane now prepares one disposable hosted API 36 emulator.
+It runs the negative control and the complete three-test class on phone portrait, phone landscape, and two tablet landscape repetitions.
+The runner sets actual display rotation and checks screenshot dimensions independently of requested activity orientation.
+Android 16 can ignore requested orientation on large screens; the test does not change the app's compatibility behavior.
+See [Android 16 adaptive layouts](https://developer.android.com/about/versions/16/behavior-changes-16#adaptive-layouts).
+The runner retains exact source, APK, fixture, screenshot, and metric hashes plus selected-test counts and owned-process settlement.
+Session seeds, raw Server logs, and raw instrumentation logs remain private.
+Timeouts retain partial private output and available safe artifacts while preserving a failed result.
+Independent source review corrected orientation, timeout evidence, and resource cleanup before the hosted trial.
+
+The loopback fault bridge isolates controlled media failures while the actual Go Server supplies the catalog and media.
+This is an emulator E2E journey with synthetic data and a controlled network boundary.
+It does not establish native TLS, physical-device, Cast, deployment, or Nox behavior.
+The local runtime hold remains active. The hosted baseline and any production caption repair are still pending.

@@ -98,6 +98,145 @@ class LivePlaybackOverlayTest {
         verifyLabels(capture("$prefix-recovered"), title)
     }
 
+    // Browser evidence cannot prove the native caption compositor respects Android system bars.
+    // Use real decoded static media and on/off compositor frames, without private player internals.
+    @Test fun captionsStayAboveTheSystemNavigationArea() = journey { json, _ ->
+        awaitLightFrame()
+        Thread.sleep(2_000) // The generated cue starts at one second.
+        val prefix = json.optString("capture", "phone")
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val automation = instrumentation.uiAutomation
+        fun accessibilitySnapshot(): List<android.view.accessibility.AccessibilityNodeInfo>? {
+            val nodes = mutableListOf<android.view.accessibility.AccessibilityNodeInfo>()
+            fun visit(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
+                if (node == null || nodes.size >= 250) return false
+                nodes.add(node)
+                for (index in 0 until node.childCount) if (!visit(node.getChild(index))) return false
+                return true
+            }
+            return if (visit(automation.rootInActiveWindow)) nodes else null
+        }
+        fun visibleAction(nodes: List<android.view.accessibility.AccessibilityNodeInfo>, description: String) =
+            nodes.firstOrNull { it.contentDescription?.toString() == description && it.isVisibleToUser }
+        fun action(description: String) = accessibilitySnapshot()?.let { visibleAction(it, description) }
+        fun completeSnapshot(): List<android.view.accessibility.AccessibilityNodeInfo> {
+            var nodes: List<android.view.accessibility.AccessibilityNodeInfo>? = null
+            compose.waitUntil(10_000) { nodes = accessibilitySnapshot(); nodes != null }
+            return requireNotNull(nodes)
+        }
+        fun controllerHidden(): Boolean {
+            val nodes = accessibilitySnapshot() ?: return false
+            val visible = nodes.filter { it.isVisibleToUser }.map { it.contentDescription?.toString() }
+            return "Show player controls" in visible &&
+                "Play" !in visible && "Pause" !in visible && "Hide player controls" !in visible
+        }
+        val initialControls = completeSnapshot()
+        if (visibleAction(initialControls, "Pause") == null && visibleAction(initialControls, "Play") == null) {
+            compose.onRoot().performTouchInput { click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f)) }
+        }
+        compose.waitUntil(10_000) { action("Pause") != null || action("Play") != null }
+        val playbackControls = completeSnapshot()
+        visibleAction(playbackControls, "Pause")?.let { pause ->
+            assertTrue("Pause through the public playback control",
+                pause.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))
+        }
+        compose.waitUntil(10_000) { action("Play") != null }
+        val forceCaptionsOff = InstrumentationRegistry.getArguments().getString("captionOracleControl") == "true"
+        fun captions(enabled: Boolean) {
+            val target = if (enabled) "Captions on" else "Captions off"
+            if (captionsLabel() != target) compose.onNodeWithText(captionsLabel()).performClick()
+            waitForText(target)
+            Thread.sleep(500) // Wait for the native decoder's next cue delivery.
+        }
+        fun captureCaptionFrame(name: String): Bitmap {
+            // The native controller is painted above the captions. Dismiss it through the
+            // video surface below its centered Play button so it cannot hide an overlap.
+            val controls = completeSnapshot()
+            assertNull("Playback must remain paused", visibleAction(controls, "Pause"))
+            if (visibleAction(controls, "Play") != null) compose.onRoot().performTouchInput {
+                click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f))
+            }
+            compose.waitUntil(10_000) { controllerHidden() }
+            Thread.sleep(300) // Retain a frame after the controller's hide transition.
+            assertTrue("A complete accessibility tree must confirm the controller is hidden", controllerHidden())
+            val pixels = capture(name)
+            try {
+                val hiddenControls = completeSnapshot()
+                assertNotNull("The captured player must expose its Show controls action",
+                    visibleAction(hiddenControls, "Show player controls"))
+                compose.onRoot().performTouchInput { click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f)) }
+                compose.waitUntil(10_000) {
+                    accessibilitySnapshot()?.let {
+                        visibleAction(it, "Play") != null && visibleAction(it, "Pause") == null
+                    } == true
+                }
+                compose.waitUntil(10_000) {
+                    compose.onAllNodesWithText("Captions ", substring = true).fetchSemanticsNodes().isNotEmpty()
+                }
+                compose.onNodeWithText(captionsLabel()).assertIsDisplayed()
+                waitForText("Done")
+                return pixels
+            } catch (error: Throwable) {
+                pixels.recycle()
+                throw error
+            }
+        }
+        var bottomInset = 0
+        instrumentation.runOnMainSync {
+            val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).single()
+            bottomInset = requireNotNull(androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView))
+                .getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or
+                    androidx.core.view.WindowInsetsCompat.Type.displayCutout()).bottom
+        }
+        assertTrue("This mobile check needs a visible bottom system navigation area", bottomInset > 0)
+        captions(false)
+        val before = captureCaptionFrame("$prefix-captions-off-before")
+        captions(!forceCaptionsOff)
+        val shown = captureCaptionFrame("$prefix-captions-on")
+        captions(false)
+        val after = captureCaptionFrame("$prefix-captions-off-after")
+        try {
+            assertEquals(before.width, shown.width)
+            assertEquals(before.height, shown.height)
+            assertEquals(before.width, after.width)
+            assertEquals(before.height, after.height)
+            fun difference(a: Int, b: Int) = maxOf(kotlin.math.abs(Color.red(a) - Color.red(b)),
+                kotlin.math.abs(Color.green(a) - Color.green(b)), kotlin.math.abs(Color.blue(a) - Color.blue(b)))
+            var captionPixels = 0
+            var protectedPixels = 0
+            var unstableProtectedPixels = 0
+            var lowestCaptionPixel = -1
+            val safeBottom = before.height - bottomInset
+            for (y in before.height / 2 until before.height) for (x in 0 until before.width) {
+                val a = before.getPixel(x, y)
+                val b = after.getPixel(x, y)
+                if (difference(a, b) > 3) {
+                    if (y >= safeBottom) unstableProtectedPixels++
+                    continue
+                }
+                val displayed = shown.getPixel(x, y)
+                if (difference(a, displayed) > 20 && difference(b, displayed) > 20) {
+                    captionPixels++
+                    lowestCaptionPixel = maxOf(lowestCaptionPixel, y)
+                    if (y >= safeBottom) protectedPixels++
+                }
+            }
+            val evidence = JSONObject().put("bottomInset", bottomInset).put("safeBottom", safeBottom)
+                .put("width", before.width).put("height", before.height)
+                .put("captionPixels", captionPixels).put("protectedCaptionPixels", protectedPixels)
+                .put("unstableProtectedPixels", unstableProtectedPixels).put("lowestCaptionPixel", lowestCaptionPixel)
+                .put("forcedCaptionsOffControl", forceCaptionsOff)
+            File(instrumentation.targetContext.filesDir, "video-overlay/$prefix-caption-safe-area.json")
+                .writeText(evidence.toString(2))
+            assertEquals("The system navigation area must be fully observed and stable", 0, unstableProtectedPixels)
+            assertTrue("Captions must visibly render in the paired screenshots", captionPixels > 100)
+            assertEquals("Caption pixels must not overlap the system navigation area", 0, protectedPixels)
+        } finally {
+            before.recycle(); shown.recycle(); after.recycle()
+        }
+    }
+
     private fun journey(mode: String = "ready", check: (JSONObject, String) -> Unit) {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
