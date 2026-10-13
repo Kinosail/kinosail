@@ -4,13 +4,14 @@ import {startPlaying} from "./checkpoint-setup-cases";
 import {observeHeldWatchedMotion, recordWatchedNativeEvents, type WatchedObservation} from "./watched-startup-motion";
 import {installDisplayedMotionTracker} from "./watched-motion-counter";
 import {installWatchedGuardMutation, verifyMutationInitiations} from "./watched-guard-mutation";
+import {installWatchedPlayingBarrier} from "./watched-playing-barrier";
 
 configureTestInstance();
 test.use({serviceWorkers: "block"});
 test.beforeEach(async ({page}) => {await page.addInitScript(recordWatchedNativeEvents);});
 
-type ProgressReceipt = {method: string; status: number | null; finished: boolean};
-
+type ProgressReceipt = {method: string; status: number | null};
+const baselineAcknowledgement = "http-204-headers";
 
 for (const watched of [true, false]) {
 for (const cancelledAgain of [false, true]) {
@@ -21,27 +22,7 @@ const title = guardMutation ? `late callbacks detect phase-targeted departure gu
 test(title, {tag: "@smoke"}, async ({page}, info) => {
   const mutation = guardMutation ? await installWatchedGuardMutation(page) : undefined;
   await page.addInitScript(installDisplayedMotionTracker);
-  await page.addInitScript(() => {
-    const add = EventTarget.prototype.addEventListener;
-    const pending: Array<() => void> = [];
-    const control = {pending, registered: 0, release() {
-      const notifications = pending.splice(0);
-      for (const notify of notifications) notify();
-      return notifications.length;
-    }};
-    Object.assign(window, {watchedStartup: control});
-    EventTarget.prototype.addEventListener = function(type, listener, options) {
-      if (this instanceof HTMLVideoElement && type === "playing" && listener) {
-        control.registered++;
-        const target = this;
-        return add.call(this, type, event => pending.push(() => {
-          if (typeof listener === "function") listener.call(target, event);
-          else listener.handleEvent(event);
-        }), options);
-      }
-      return add.call(this, type, listener, options);
-    };
-  });
+  await page.addInitScript(installWatchedPlayingBarrier);
   await login(page);
   const watch = await firstPlayable(page), id = watch.split("/").at(-1)!;
   const progress = async () => {
@@ -63,9 +44,8 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
     if (baselineFrozen) {latePositions.push(request.method()); return;}
     baselineRequests.push((async () => {
       const response = await request.response();
-      return {method: request.method(), status: response?.status() ?? null,
-        finished: response ? await response.finished() === null : false};
-    })().catch(() => ({method: request.method(), status: null, finished: false})));
+      return {method: request.method(), status: response?.status() ?? null};
+    })().catch(() => ({method: request.method(), status: null})));
   });
   await page.goto(watch);
   await expect(page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true})).toBeVisible();
@@ -132,15 +112,16 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
   await page.evaluate(observeHeldWatchedMotion, {watched, cancelledAgain, guardMutation});
   await page.route(`**/watched/${id}`, async route => {
     // Native seeks can save progress before this departure. Navigation can also
-    // finish a checkpoint before replaying the form. Require their real acknowledgements.
+    // finish a checkpoint before replaying the form. The Server sends 204 only
+    // after SetRevision returns. A bodyless 204 is complete at its response headers.
     let deadline: ReturnType<typeof setTimeout> | undefined;
     try {
       expect(baselineFrozen).toBe(false);
       baselineFrozen = true;
       baselineProgress = await Promise.race([Promise.all(baselineRequests), new Promise<never>((_, reject) => {
-        deadline = setTimeout(() => reject(new Error("Baseline progress did not finish before watched submission")), 5_000);
+        deadline = setTimeout(() => reject(new Error("Baseline progress was not acknowledged before watched submission")), 5_000);
       })]);
-      expect(baselineProgress.every(receipt => receipt.method === "POST" && receipt.status === 204 && receipt.finished)).toBe(true);
+      expect(baselineProgress.every(receipt => receipt.method === "POST" && receipt.status === 204)).toBe(true);
     } catch (error) {
       await route.abort("aborted").catch(() => {});
       throw error;
@@ -189,7 +170,7 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
       expect(latePositions.every(method => method === "POST")).toBe(true);
       const fetchInitiations = await verifyMutationInitiations(relay, baselineProgress.length, latePositions.length);
       await info.attach("phase-targeted-watched-guard-mutation", {body: JSON.stringify({browser: info.project.name,
-        watched, cancelledAgain, mutation, paused, latePositions, baselineProgress, fetchInitiations,
+        watched, cancelledAgain, mutation, paused, latePositions, baselineProgress, baselineAcknowledgement, fetchInitiations,
         stored: await progress(), boundary: "Mutated served script against populated Server; guard bypass activates only after motion admission. Not historical pre-fix replay."}), contentType: "application/json"});
       return;
     }
@@ -207,7 +188,7 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
     const stored = await progress();
     expect(stored).toMatchObject({watched, seconds: 0});
     await info.attach("accepted-watched-late-native-notification", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-      browser: info.project.name, cancelledAgain, endpointAdmission, baselineProgress,
+      browser: info.project.name, cancelledAgain, endpointAdmission, baselineProgress, baselineAcknowledgement,
       baselineBoundary: "actual watched request intercepted before Server POST", stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
   } catch (error) {

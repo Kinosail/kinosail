@@ -2272,3 +2272,74 @@ They require one exact replacement, original and mutated script hashes, released
 Earlier startup, transport, or motion failures must still fail these controls. No blanket expected-failure marker is used.
 These are phase-targeted mutation controls against a populated Server, not historical pre-fix replay.
 The original four cases still require zero late requests and unchanged stored state. Runtime validation of this trial remains pending.
+
+### Displayed-motion trial and listener isolation
+
+At `4f27d376`, [deep run 38337038045](https://github.com/Kinosail/kinosail/actions/runs/38337038045) passed Firefox, native, and Go checks.
+Firefox passed ten isolated arithmetic controls and all nine watched cases on their first attempts.
+Each mutation initiated a late POST only after its guard bypass was armed. Each normal case preserved accepted Server state.
+Exact clean source, ten inputs, and 571 artifact checksums were verified.
+The Firefox archive SHA-256 is `11ca1dcd835a6fc3ed91f6a92e6ecb620383a1a8f3b8accf886bfe3cd9b9b1e4`.
+
+WebKit passed the arithmetic controls, both watched variants and their mutation controls, and ordinary navigation without retries.
+Its four unwatched cases failed initially. One passed on retry; three still failed. The run correctly remained failed.
+Five failed attempts stopped at the ending-buffer prerequisite. Two stopped at initial or resumed playback admission.
+These attempts never reached the held watched response. Their failure does not test the departure guard.
+The trace reports `bufferAppendNoProgress`, followed by media-source resets. All captured media requests returned HTTP 200.
+The downloaded fragments have an 80 ms raw presentation overlap between segments zero and one across three qualities.
+Producer provenance, edit lists, and effective append offsets still need reconciliation before assigning the timestamp cause.
+Exact clean source, ten inputs, and 569 artifact checksums were verified.
+The WebKit archive SHA-256 is `c62dbb7b321a76b5f427aff28e5c17a14d100481b5de165e5bef794b331578b8`.
+
+Independent source review found a separate fixture defect. The global barrier also delayed HLS controller callbacks.
+Its anonymous wrappers prevented removal by the original listener identity during recovery.
+The revised barrier delays only callbacks installed synchronously by the same-origin application script.
+Other registrations retain native dispatch. The wrapper registry preserves listener identity and the capture flag.
+One isolated DOM control covers immediate external callbacks, removed listeners, duplicate registration, and one-shot dispatch.
+This control was written first. Missing-module discovery failed before implementation; that is wiring evidence, not executed failure proof.
+The existing populated cases retain moving media, real native events, positive callback release, accepted state, and mutation assertions.
+The listener repair does not claim to resolve the independent fragment-clock finding. Hosted runtime proof remains required.
+
+iOS passed 333 contracts and tvOS passed 320, with the same two documented conditional skips and no failures.
+Their archive SHA-256 is `784cff92626c158445fefccc83646128b4b3a365ffc3cbea4ab9b537a804415f`.
+Player deep Go coverage passed at 89.7% against the unchanged 89% threshold. No test-failure or race marker was found.
+Subtitles passed all 99 cases in each browser without skips, failures, or retries. Each archive verified 198 checksums.
+All three [layout jobs](https://github.com/Kinosail/kinosail/actions/runs/38337038964) passed with unchanged source and seven verified inputs each.
+Local runtime and physical-device boundaries remain unchanged.
+
+### Restore coverage reconciliation
+
+The earlier R06 preflight failures remain historical evidence. Later exact-revision results close three selected restore proofs.
+At `8e816c7187fb08669b80638e78d3052223a33965`, [restore controls](https://github.com/Kinosail/kinosail/actions/runs/38264506250) passed four real HTTP cases.
+[Restore headers](https://github.com/Kinosail/kinosail/actions/runs/38264907457) and [inspection-body checks](https://github.com/Kinosail/kinosail/actions/runs/38265395148) each passed desktop and phone cases, including all twelve assertions.
+All three archives were rechecked against their source and artifact manifests. Each verified 49 source inputs and three evidence files.
+Their archive SHA-256 values are `9f6ddddd1df8fe8205f0e98566d41ccd1d50efe7708ffc9d0b232d2274e31c1e`,
+`14a572536feb62ea91ee0051cc3593e57127cfa9a305a0ef989e3421ae6a493a`, and
+`b60ce2f7cb04e6ca1c4e10390bc1b44a2e45fd660fa8281fd227409626695a28`, respectively.
+Source pins were not relaxed. These are selected historical Chromium and HTTP proofs, not current-revision or device acceptance.
+
+
+### Chromium baseline acknowledgement repair
+
+At `4f27d376`, required and deep Chromium jobs failed all eight controlled watched cases on both attempts.
+Every failure occurred at the five-second baseline-progress deadline, before the actual watched POST was replayed.
+The first trace recorded three baseline POSTs with HTTP 204 response headers, received within four milliseconds each.
+Their `response.finished()` promises did not resolve during the held navigation. The underlying browser cause remains unconfirmed.
+The trace SHA-256 is `248845465b2defb7f5bebe6c847e0b326e8eca6b3d87722034222b960659140f`.
+The deep archive SHA-256 is `5974d85776dffdbf8a5083091199ee80b6f0722e1017e1722d451f36bb39ae94`; all 721 checksums were verified.
+Required CI tested merge revision `61b4b64b`, with parents `7131f22a` and `4f27d376`. Its archive verified 617 checksums.
+
+The progress handler emits 204 only after the store operation returns successfully.
+[RFC 9110, section 15.3.5](https://www.rfc-editor.org/rfc/rfc9110.html#name-204-no-content) defines 204 as complete at its headers.
+The revised prerequisite records the received response status and explicitly labels its boundary `http-204-headers`.
+It does not claim a browser request-finished event. Null responses, non-204 responses, and missed deadlines still fail.
+The five-second deadline, native motion, late-POST checks, mutation controls, and final stored-state assertions remain unchanged.
+Historical receipts still require their original request-finished field when rechecked.
+
+The isolated listener control also checks duplicate registration from outside the application script.
+The fixture resolves existing wrapper identity before checking registration scope, so that duplicate cannot bypass the barrier.
+Source checks and hosted runtime results for these repairs are recorded separately. Runtime acceptance remains pending.
+
+Independent review found no remaining material source blocker in the listener and acknowledgement repairs.
+Whitespace, source-file limits, and production browser-script lint passed. Discovery selected 60 cases across three engines and three files.
+These source checks did not launch a browser or application. Hosted validation remains the runtime acceptance step.
