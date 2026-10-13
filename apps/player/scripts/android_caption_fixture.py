@@ -8,12 +8,43 @@ import http.client
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
 import threading
 import time
+from urllib.parse import parse_qsl, urlencode, urlsplit
 from hls_timeline_http import PublicServer
+
+
+def target(method, raw):
+    if len(raw) > 4096 or any(ord(char) < 33 or ord(char) > 126 for char in raw):
+        raise ValueError()
+    url = urlsplit(raw)
+    if url.scheme or url.netloc or url.fragment:
+        raise ValueError()
+    static = {"/api/v1/me", "/api/v1/library", "/api/v1/cast/config", "/api/v1/remote-players"}
+    if url.path in static and method == "GET":
+        path = next(value for value in static if value == url.path)
+    else:
+        match = re.fullmatch(r"/(api/v1/items|art|backdrop|episode-art|media|subtitle)/([A-Za-z0-9_-]{1,128})(/(?:playback|playback-preferences|progress/sync|[0-9]{1,6}|embedded/[0-9]{1,6}))?", url.path)
+        if match is None:
+            raise ValueError()
+        prefix, identifier, suffix = match.groups()
+        suffix = suffix or ""
+        if method == "PUT" and (prefix != "api/v1/items" or suffix not in ("/progress/sync", "/playback-preferences")):
+            raise ValueError()
+        if method not in ("GET", "PUT"):
+            raise ValueError()
+        path = "/" + prefix + "/" + identifier + suffix
+    query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True, max_num_fields=16)
+    allowed = {"q", "view", "sort", "offset", "limit"} if path == "/api/v1/library" else (
+        {"videoCodecs", "audioCodecs", "hdrFormats", "maxAudioChannels"} if path.endswith("/playback") else
+        {"variant"} if path.startswith("/art/") else set())
+    if len({key for key, _ in query}) != len(query) or any(key not in allowed or len(value) > 512 for key, value in query):
+        raise ValueError()
+    return path + ("?" + urlencode(query) if query else "")
 
 
 class Bridge(BaseHTTPRequestHandler):
@@ -53,7 +84,9 @@ class Bridge(BaseHTTPRequestHandler):
         self.end_headers()
 
     def forward(self):
-        if len(self.path) > 4096 or not self.path.startswith(("/api/v1/", "/art/", "/backdrop/", "/episode-art/", "/media/", "/subtitle/")):
+        try:
+            destination = target(self.command, self.path)
+        except ValueError:
             self.send_error(400)
             return
         if self.path.startswith("/media/"):
@@ -75,17 +108,23 @@ class Bridge(BaseHTTPRequestHandler):
             body = self.rfile.read(size) if size else None
             headers = {k: v for k, v in self.headers.items() if k.lower() in
                 ("authorization", "accept", "range", "if-range", "content-type", "x-kinosail-viewer-profile")}
-            upstream.request(self.command, self.path, body=body, headers=headers)
+            upstream.request(self.command, destination, body=body, headers=headers)
             response = upstream.getresponse()
             data = response.read(8388609)
             if len(data) > 8388608:
                 self.send_error(502)
                 return
-            self.send_response(response.status)
+            forwarded = {}
             for name in ("Content-Type", "Content-Range", "Accept-Ranges"):
                 value = response.getheader(name)
                 if value:
-                    self.send_header(name, value)
+                    if len(value) > 1024 or "\r" in value or "\n" in value or not value.isascii() or not value.isprintable():
+                        self.send_error(502)
+                        return
+                    forwarded[name] = value
+            self.send_response(response.status)
+            for name, value in forwarded.items():
+                self.send_header(name, value)
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
             self.wfile.write(data)

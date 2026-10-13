@@ -6,7 +6,7 @@ Failure modes: path escape, absolute URL, encoded traversal, unbounded target/he
 header folding, rejection after response headers, or an unjoined fixture peer.
 """
 import http.client
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler
 import threading
 from android_caption_fixture import Bridge, OwnedBridgeServer
 
@@ -30,13 +30,13 @@ class Peer(BaseHTTPRequestHandler):
         pass
 
 
-def verify_bridge():
+def verify_bridge(receipt):
     owned = []
-    receipt = {"boundary": "Isolated real HTTP peer; native populated E2E cannot emit malformed upstream headers",
-               "cases": [], "settled": False}
+    receipt.update(boundary="Isolated real HTTP peer; native populated E2E cannot emit malformed upstream headers",
+                   cases=[], settled=False)
     try:
         for address, handler in ((("127.0.0.1", 39227), Peer), (("127.0.0.1", 39231), Bridge)):
-            server = ThreadingHTTPServer(address, handler) if handler is Peer else OwnedBridgeServer(address, handler)
+            server = OwnedBridgeServer(address, handler)
             thread = threading.Thread(target=server.serve_forever, daemon=True)
             owned.append((server, thread))
             thread.start()
@@ -48,6 +48,7 @@ def verify_bridge():
                 return response.status, dict(response.getheaders()), response.read(4096)
             finally:
                 client.close()
+        receipt["activeCase"] = "valid_request"
         status, _, body = request("GET", "/api/v1/me")
         assert status == 200 and body == b"ok"
         receipt["cases"].append({"name": "valid_request", "status": status})
@@ -60,10 +61,12 @@ def verify_bridge():
             ("wrong_method", "PUT", "/api/v1/me"),
             ("unknown_query", "GET", "/api/v1/library?redirect=http%3A%2F%2Fexample.invalid"),
             ("oversized_target", "GET", "/api/v1/library?q=" + "a" * 4096)):
+            receipt["activeCase"] = name
             before = Peer.calls
             status, _, _ = request(method, path)
+            receipt["cases"].append({"name": name, "status": status, "upstreamCalls": Peer.calls - before})
             assert status == 400 and Peer.calls == before, name
-            receipt["cases"].append({"name": name, "status": status, "upstreamCalls": 0})
+        receipt["activeCase"] = "folded_upstream_header"
         Peer.malformed = True
         status, headers, _ = request("GET", "/api/v1/me")
         assert status == 502 and not any("injected" in k.lower() or "injected" in v.lower() for k,v in headers.items())
@@ -78,4 +81,5 @@ def verify_bridge():
                 thread.join(timeout=5)
         receipt["settled"] = all(not thread.is_alive() for _,thread in owned)
     assert receipt["settled"]
+    receipt["activeCase"] = None
     return receipt

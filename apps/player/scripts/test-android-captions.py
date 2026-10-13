@@ -11,6 +11,7 @@ import subprocess
 import struct
 import time
 from android_caption_fixture import fixture
+from android_caption_bridge_checks import verify_bridge
 
 APP = "com.kinosail.player.dev"
 TEST_CLASS = "com.kinosail.player.mobile.LivePlaybackOverlayTest"
@@ -155,8 +156,11 @@ try:
     check(not command(["git", "status", "--porcelain"]).strip(), "checkout_not_clean")
     receipt["sourceSHA256"] = {str(path.relative_to(ROOT)): sha(path) for path in (
         ROOT / "apps/player/scripts/test-android-captions.py", ROOT / "apps/player/scripts/android_caption_fixture.py",
+        ROOT / "apps/player/scripts/android_caption_bridge_checks.py",
         ROOT / "apps/player/apps/android/app/src/androidTest/java/com/kinosail/player/mobile/LivePlaybackOverlayTest.kt",
         ROOT / "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt")}
+    receipt["bridgeBoundary"] = {}
+    verify_bridge(receipt["bridgeBoundary"])
     # All application work runs on the hosted runner, never on the shared Mac.
     command(["go", "-C", "apps/player", "build", "-trimpath", "-o", str(run / "player"), "./cmd/kinosail"], timeout=180)
     receipt["serverBinarySHA256"] = sha(run / "player")

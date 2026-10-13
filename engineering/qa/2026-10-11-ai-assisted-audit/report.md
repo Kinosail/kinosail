@@ -3634,3 +3634,13 @@ The loopback fault bridge isolates controlled media failures while the actual Go
 This is an emulator E2E journey with synthetic data and a controlled network boundary.
 It does not establish native TLS, physical-device, Cast, deployment, or Nox behavior.
 The local runtime hold remains active. The hosted baseline and any production caption repair are still pending.
+
+
+The first hosted baseline scan identifies two bridge findings: CodeQL `py/partial-ssrf` and `py/http-response-splitting`.
+The fixed upstream is loopback, but the bridge previously forwarded client paths and unvalidated upstream header values.
+The candidate repair admits bounded route shapes and known query fields, reconstructs query encoding, and validates headers before sending a response.
+New isolated real-HTTP controls precede that repair and check rejected traversal, unknown routes, methods, query fields, and oversized targets.
+Every rejected target must return 400 without reaching the peer. A folded upstream header must return 502 without injection.
+The real Go Server cannot emit that malformed header through the populated native journey, which justifies this isolated boundary check.
+These controls run only on the disposable hosted runner under the local runtime hold.
+Neither a clean scan nor a passing native result is yet claimed for the repaired bridge.
