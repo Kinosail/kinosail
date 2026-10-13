@@ -100,6 +100,17 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		}
 	}
 	beforeOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
+	if audio {
+		// Encoder exit alone does not join post-encode metadata. The completed
+		// master is the public handoff before restart or deliberate cache loss.
+		for !bytes.Contains(bandwidthHTTPGET(t, ctx, host.URL+info.Compatible), []byte("#KINOSAIL-TRANSCODE-REFILL:")) {
+			select {
+			case <-ctx.Done():
+				t.Fatal("completed presentation did not certify its public refill handoff")
+			case <-time.After(25 * time.Millisecond):
+			}
+		}
+	}
 	prefix := host.URL + strings.TrimSuffix(info.Compatible, "index.m3u8")
 	var originals [][][]byte
 	for _, variant := range variants {
@@ -109,6 +120,13 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			parts = append(parts, bandwidthHTTPGET(t, ctx, base+name))
 		}
 		originals = append(originals, parts)
+	}
+	var originalFirst [][]byte
+	if targetSegment > 1 {
+		base := prefix + strings.TrimSuffix(variants[0], "index.m3u8")
+		for _, name := range []string{"init.mp4", "segment-00000.m4s", "segment-00001.m4s", "segment-00002.m4s"} {
+			originalFirst = append(originalFirst, bandwidthHTTPGET(t, ctx, base+name))
+		}
 	}
 	if targetSegment > 1 {
 		stopFirst()
@@ -218,6 +236,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		}
 		if !t.Failed() {
 			transcodeRefillRejectDamagedProof(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], finalOwned)
+			transcodeRefillRecoverFirst(t, ctx, ffmpeg, ffprobe, prefix+strings.TrimSuffix(variants[0], "index.m3u8"), owned, originalFirst, finalOwned)
 		}
 	}
 	if !t.Failed() && targetSegment == 1 {

@@ -26,6 +26,13 @@ func refreshCachedVideoHLSMaster(playlist string, facts MediaFacts, recipe hlsRe
 		return err
 	}
 	write := func(path string, data []byte) error {
+		marker, err := transcodeHLSMasterMarker(manifest)
+		if err != nil {
+			return err
+		}
+		if marker != "" {
+			data = append(data, []byte(marker+"\n")...)
+		}
 		if bytes.Equal(manifest, data) {
 			return nil
 		}

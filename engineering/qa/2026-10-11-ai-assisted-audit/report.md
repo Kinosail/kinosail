@@ -2752,3 +2752,34 @@ must use the existing process-tree owner. A bare command wait is insufficient wh
 Before changing that shared owner API, configured-process controls now cover blocked stdin plus a descendant under deadline and cancellation.
 Real media journeys cannot reliably create this process-lifetime failure. The existing bounded two-second settlement assertion remains unchanged.
 The first streaming-input implementation will explicitly decline platforms whose existing launcher cannot own stdin; no unowned fallback is allowed.
+
+### Restart regression finds retained-neighbor overwrite
+
+The [hosted public run](https://github.com/Kinosail/kinosail/actions/runs/38365950074) at
+`a10b55dd20e4e5bf87c4ea487d80cc19b357dda4` retains 107 receipts with 14 verified artifact checksums.
+Both video-only cases pass. Both early audio cases retain the 64 ms defect.
+The restarted late case fails because recovery replaces retained `segment-00008.m4s`.
+It still joins exactly two encoders, observes a bounded input seek, and leaves fragment zero absent.
+Artifact archive SHA-256: `2c0d45302570d84cc1670ad5210a516f0f9686ff289ccbd8348eec189254b320`.
+Private job log SHA-256: `adf0dac1200f51e3311249d79ecc7eae5f02bb6058a50fc23eb9bc595a867847`.
+
+### Draft production integration awaiting hosted verification
+
+The first production candidate records original packet clocks after encoder completion, then binds the record hash in the master.
+The publication loop accepts only the completion signal from its own worker. It does not adopt an arbitrary existing record.
+Recovery admission rechecks certification after joining a prior producer. Damaged committed records reject before creating an encoder.
+Regeneration uses separate nominal video and sample-aligned audio inputs. It stages all output and publishes only the requested missing fragment.
+The candidate validates original init, exact per-track packet-clock digests, source policy, encoder identity, and canonical cache ownership.
+A no-replace link preserves another writer's destination. Retained neighbors never become encoder output paths.
+
+Initial certification is limited to software H.264 and closed, zero-origin, fixed-block FLAC without omitted ranges or history-dependent audio filters.
+Every cut must have an exact audio sample and millisecond video seek. Its actual playlist offset must agree with the observed cut.
+A common validator bounds persisted arithmetic and rejects incompatible cuts before the stream opts in.
+Certification reads at most 16,384 fragments per rendition, 64 GiB of generated input, and 256 MiB of packet metadata within 15 seconds.
+Source certification has a six-second budget. These are explicit optional-certification limits, not established long-film performance results.
+Unsupported or interrupted streams retain their existing behavior and remain outside the audio-repair claim.
+
+Joined fragment input uses the existing process-tree owner. Its first stdin extension supports Linux and macOS;
+Windows explicitly declines streamed-input certification before process launch. No bare subprocess fallback is used.
+Configured-process cancellation controls and public first-fragment recovery are added alongside the restart and damaged-proof journeys.
+The candidate has only source formatting and line-cap checks so far. No runtime, browser, native, physical-device, or production acceptance is claimed.
