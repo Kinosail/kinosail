@@ -3223,3 +3223,26 @@ Python sources and the generated wrapper parse without executing FFmpeg. All sev
 The repository-pinned actionlint, source-file limits, and whitespace checks pass.
 The observation-only encoder-count helper was moved beside its existing process reader to retain the source-file cap.
 Independent source review approves a hosted diagnostic trial. Hosted execution remains required before any production repair.
+
+
+## Native diagnostic compilation and healthy copied tail — October 13
+
+Hosted deep run `38406685296` at `0277cce9` passed the 335-test iOS Swift suite.
+The reader probe separately passed all twelve exact argument/repetition outcomes.
+Its structured result hash is `3788349f7d22ee55080d440dd70836d05ef169f89879ede2a1e8e41bac0a2576`.
+The native artifact is `11819978245`, SHA-256 `1bb06d38ea7ecf2dc44448f7100b484f95beedd554c179adb852ab7ae3de86ea`.
+
+The tvOS tests did not run: the added scrub diagnostic failed Swift concurrency checking.
+The local actor-isolated function captured mutable observation rows and a completion counter.
+The recorder now owns its rows on `MainActor` and receives completion counts as values.
+Observation points, frozen assertion values, timing limits, and acceptance thresholds are unchanged.
+Independent source review approved the repair. Hosted compilation remains required.
+Local native builds remain held for the coordinated device window.
+
+The same revision's Subtitles copied-clock artifact `11819717583` passed the direct-switch journey.
+Its SHA-256 is `1d9b92f1ee023983a8673ba71657e9409cf382a88846919a3c9fe9f0f92d28f6`.
+The served and final cached playlists both contain five durations: 4, 4.08, 3.92, 4, and 0.6 seconds.
+All seven decoded frame comparisons and actual playback completion pass; compatible duration is 74.48 seconds.
+The earlier failure's 73.88-second duration is exactly the final fragment's 0.6 seconds short.
+That failure never requested fragment four. This supports, but does not prove, an incomplete initial projection.
+The separate real-encoder pacing trial remains necessary to capture the initial playlist during generation.

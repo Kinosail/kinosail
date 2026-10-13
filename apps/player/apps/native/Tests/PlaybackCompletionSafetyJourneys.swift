@@ -160,28 +160,8 @@ extension PlaybackEndpointJourneys {
             var superseded = false
             var completions = 0
             coordinator.onCompleted = { _, _ in completions += 1 }
-            let observationStart = ProcessInfo.processInfo.systemUptime
-            var observations: [[String: Any]] = []
-            func boundedPosition(_ value: Double?) -> Any {
-                guard let value, value.isFinite, abs(value) <= 3600 else { return NSNull() }
-                return value
-            }
-            @MainActor func observe(_ phase: String, native: Double? = nil, source: Double? = nil) {
-                guard observations.count < 3 else { return }
-                observations.append(["phase": phase,
-                    "elapsedMs": (ProcessInfo.processInfo.systemUptime - observationStart) * 1000,
-                    "nativeSeconds": boundedPosition(native ?? coordinator.player?.currentTime().seconds),
-                    "sourceSeconds": boundedPosition(source ?? coordinator.seconds),
-                    "rate": boundedPosition(coordinator.player.map { Double($0.rate) }),
-                    "timeControlStatus": coordinator.player?.timeControlStatus.rawValue ?? -1,
-                    "loading": coordinator.loading, "completed": coordinator.completed, "completionCount": completions])
-            }
-            defer {
-                if let data = try? JSONSerialization.data(withJSONObject: observations, options: [.sortedKeys]) {
-                    Attachment.record(data, named: "native-scrub-startup.json")
-                    print("NATIVE_SCRUB_STARTUP " + String(decoding: data, as: UTF8.self))
-                }
-            }
+            let observation = CompletionScrubObservation()
+            defer { observation.record() }
             let observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { notification in
                 guard let ended = notification.object as? AVPlayerItem else { return }
                 MainActor.assumeIsolated {
@@ -192,17 +172,18 @@ extension PlaybackEndpointJourneys {
                     superseded = true
                     _ = coordinator.presentation.playerViewController(coordinator.presentation.controller,
                         timeToSeekAfterUserNavigatedFrom: player.currentTime(), to: CMTime(seconds: 3, preferredTimescale: 600))
-                    observe("scrub-injected")
+                    observation.observe("scrub-injected", coordinator: coordinator, completions: completions)
                 }
             }
             defer { NotificationCenter.default.removeObserver(observer) }
             let store = try await pendingStore(fixture, seconds: 15)
             try await joinedStartup(coordinator, item: item, fixture: fixture, store: store,
-                                    onReturn: { observe("startup-return") })
+                                    onReturn: { observation.observe("startup-return", coordinator: coordinator, completions: completions) })
             try #require(superseded, "Prerequisite: native endpoint EOF must invoke a scrub while owned AVKit is attached and loading")
             let player = try #require(coordinator.player)
             let nativeSeconds = player.currentTime().seconds, sourceSeconds = coordinator.seconds
-            observe("assertion", native: nativeSeconds, source: sourceSeconds)
+            observation.observe("assertion", coordinator: coordinator, completions: completions,
+                                native: nativeSeconds, source: sourceSeconds)
             try #require(abs(nativeSeconds - 3) < 0.1 && abs(sourceSeconds - 6) < 0.1)
             try await decodedProgress(player)
             #expect(completions == 0 && !coordinator.completed)
@@ -275,6 +256,34 @@ extension PlaybackEndpointJourneys {
                   ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
             try #require(fixture.progressReceipts.contains { $0.itemID == itemID && $0.watched && abs($0.seconds - seconds) < 0.1 })
         }
+    }
+}
+
+@MainActor private final class CompletionScrubObservation {
+    private let start = ProcessInfo.processInfo.systemUptime
+    private var rows: [[String: Any]] = []
+
+    func observe(_ phase: String, coordinator: PlaybackCoordinator, completions: Int,
+                 native: Double? = nil, source: Double? = nil) {
+        guard rows.count < 3 else { return }
+        rows.append(["phase": phase, "elapsedMs": (ProcessInfo.processInfo.systemUptime - start) * 1000,
+            "nativeSeconds": boundedPosition(native ?? coordinator.player?.currentTime().seconds),
+            "sourceSeconds": boundedPosition(source ?? coordinator.seconds),
+            "rate": boundedPosition(coordinator.player.map { Double($0.rate) }),
+            "timeControlStatus": coordinator.player?.timeControlStatus.rawValue ?? -1,
+            "loading": coordinator.loading, "completed": coordinator.completed, "completionCount": completions])
+    }
+
+    func record() {
+        if let data = try? JSONSerialization.data(withJSONObject: rows, options: [.sortedKeys]) {
+            Attachment.record(data, named: "native-scrub-startup.json")
+            print("NATIVE_SCRUB_STARTUP " + String(decoding: data, as: UTF8.self))
+        }
+    }
+
+    private func boundedPosition(_ value: Double?) -> Any {
+        guard let value, value.isFinite, abs(value) <= 3600 else { return NSNull() }
+        return value
     }
 }
 
