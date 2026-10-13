@@ -1,4 +1,5 @@
 import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {writeFile} from 'node:fs/promises';
 
@@ -17,7 +18,7 @@ const directSwitch = process.env.QA_RESUME_DIRECT_SWITCH === 'true';
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const context = await browser.newContext({...(forceConversion ? {userAgent: 'Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36'} : {}), extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
-const rows = [], responses = [];
+const rows = [], responses = [], playlists = [], playlistCaptures = [];
 let failureClass, stage = 'setup';
 
 try {
@@ -64,6 +65,30 @@ try {
         segment: path.match(/\/(segment-\d{5}\.m4s)$/)?.[1],
         origin: response.headers()['x-kinosail-hls-origin'], clock: response.headers()['x-kinosail-hls-clock'],
       });
+      if (!path.startsWith('/hls/') || !path.endsWith('.m3u8') || playlists.length >= 16) return;
+      const capture = {variant, offset: path.match(/-o(\d+)\//)?.[1], state: 'pending'};
+      playlists.push(capture);
+      playlistCaptures.push((async () => {
+        let timer;
+        try {
+          const bytes = await Promise.race([response.body(), new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error('capture_timeout')), 2000);
+          })]);
+          if (bytes.length > 65536) {capture.state = 'oversized'; return;}
+          const lines = bytes.toString('utf8').split('\n').map(line => line.trim());
+          const durations = lines.filter(line => /^#EXTINF:\d+(?:\.\d+)?,/.test(line)).map(line => Number(line.match(/^#EXTINF:([\d.]+)/)[1]));
+          const segments = lines.map(line => line.match(/^segment-(\d{5})\.m4s(?:\?|$)/)?.[1]).filter(Boolean);
+          if (durations.length > 64 || segments.length > 64) {capture.state = 'too_many_segments'; return;}
+          if (durations.some(value => !Number.isFinite(value) || value <= 0 || value > 60)) {capture.state = 'invalid_durations'; return;}
+          const targetDuration = Number(lines.find(line => /^#EXT-X-TARGETDURATION:\d+$/.test(line))?.split(':')[1]);
+          Object.assign(capture, {state: 'captured', sha256: createHash('sha256').update(bytes).digest('hex'),
+            master: lines.some(line => line.startsWith('#EXT-X-STREAM-INF:')),
+            ended: lines.includes('#EXT-X-ENDLIST'), event: lines.includes('#EXT-X-PLAYLIST-TYPE:EVENT'),
+            vod: lines.includes('#EXT-X-PLAYLIST-TYPE:VOD'), durations, segments,
+            targetDuration: Number.isInteger(targetDuration) && targetDuration > 0 && targetDuration <= 60 ? targetDuration : null});
+        } catch (error) {capture.state = error instanceof Error && error.message === 'capture_timeout' ? 'timeout' : 'unavailable';}
+        finally {clearTimeout(timer);}
+      })());
     });
     if (variant === 'reference') {
       // Only the reference document is synthetic. All original media and the
@@ -156,7 +181,7 @@ try {
           const bytes = drawing.getImageData(0, 0, canvas.width, canvas.height).data;
           const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
             .map(value => value.toString(16).padStart(2, '0')).join('');
-          samples.push({point, currentTime: video.currentTime, ...frame, digest});
+          samples.push({point, currentTime: video.currentTime, duration: video.duration, ...frame, digest});
         }
         video.muted = true;
         // Seeking to the final decoded frame can already set ended, in which
@@ -174,6 +199,7 @@ try {
     }, {variant, duration, native, resume, frameRate});
     rows.push(row);
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
+    await Promise.all(playlistCaptures);
     await page.close();
   }
 } catch (error) {
@@ -181,6 +207,7 @@ try {
   await context.pages().at(-1)?.screenshot({path: output.replace('.json', '-failure.png')});
 }
 finally {
+  await Promise.all(playlistCaptures);
   await context.close();
   await browser.close();
 }
@@ -194,6 +221,6 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
   capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', directSwitch ? 'Native HLS support disabled to exercise lazy MSE fallback' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
   proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file or independently certified stream-copy MP4 reference',
-  directSwitch, stage, passed, failureClass, rows, matches, responses}, null, 2) + '\n');
+  directSwitch, stage, passed, failureClass, rows, matches, responses, playlists}, null, 2) + '\n');
 console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
 process.exitCode = passed ? 0 : 1;

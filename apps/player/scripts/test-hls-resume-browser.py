@@ -13,7 +13,7 @@ import time
 from hls_timeline_fixture import LONG_RESUME_KEYS, browser_reference, fixture
 from hls_audio_capture import capture_audio, decode_source
 from hls_resume_audio import audio_packets, uninterrupted_audio_reference
-from hls_timeline_http import PublicServer, sha, source_state
+from hls_timeline_http import PublicServer, copied_playlist_evidence, sha, source_state
 from hls_timeline_preparation import prepare_scene
 from hls_followon_public import bounded_bytes, check, encoder_count
 
@@ -222,6 +222,15 @@ try:
                     result = subprocess.run(['node', str(ROOT / 'apps/player/scripts' / script)],
                                             cwd=ROOT, env=child, stdout=output, stderr=subprocess.STDOUT, timeout=300)
                 case['exitCode'] = result.returncode
+                if args.app == 'subtitles' and args.direct_switch:
+                    def observed_encoders():
+                        try:
+                            return encoder_count(server, source)
+                        except (OSError, subprocess.SubprocessError):
+                            return 'unavailable'
+                    case['postBrowserEncoders'] = observed_encoders()
+                    case['postBrowserGenerations'] = copied_playlist_evidence(run / 'cache')
+                    case['postBrowserEncodersAfterSnapshot'] = observed_encoders()
                 if args.small_video:
                     facts = json.loads((run / f'{engine}.json').read_text())
                     case['originalDimensionsPreserved'] = len(facts['rows']) == 2 and all(

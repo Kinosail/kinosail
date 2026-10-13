@@ -29,7 +29,7 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
 | Browser session return | Subtitles Firefox and WebKit each pass 99 cases at `657e2ca2`. Player Firefox and WebKit at `c09c2659`, and Chromium at `8fa923df`, execute the required populated session-return case without retry. Chromium's repaired trace assertion passes at `ea644e55`. | Current gates, the Firefox wrong-worker fixture repair, and a WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | Full hosted native suites and all twelve structured reader probe outcomes pass at `bc33897b`. Reader attachments are retained in xcresult. | The earlier loaded-WebView timeout at `ea644e55` remains unresolved. Failure-state evidence and physical-device proof remain open. |
+| Apple native contracts | Full suites and twelve reader probe outcomes pass at `bc33897b`. At `2e4feeee`, iOS and all twelve probe outcomes pass; a tvOS scrub-resume assertion fails. | Exact scrub timing, the earlier loaded-WebView timeout, and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -3099,3 +3099,51 @@ This diagnostic is intended to separate prompt page events from delayed automati
 
 The earlier `bc33897b` deep run finishes with Player Chromium job `115297806207` passing.
 Its two failing browser jobs remain Firefox's invalid-worker setup and WebKit's Apple-launch flake. The native job passes as recorded above.
+
+### Subtitles direct-to-compatible tail failure and bounded playlist evidence
+
+At `2e4feeeec97ea951d1d9a137f2ab931160edb852`, Subtitles Chromium job `115310331513` passes all 99 populated browser cases.
+Its later copied-clock step fails the third command:
+`python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch`.
+The default resume and long-remux compatible-start commands pass. The later generation-plan step passes eleven controls.
+This does not mean the copied-clock commands after the failure ran.
+
+The failing journey uses the same 74.48-second H264/AAC fixture and 60-second HLS offset as the passing long-remux case.
+Its first six decoded-frame hashes match the original, from 64.55 through 69.05 seconds.
+The final 74.43-second sample times out. The compatible element reports 73.88 seconds, and no EOF acceptance is established.
+All recorded playlist, initialization, and fragment responses succeed. The failing case never requests segment four; the passing case does.
+The old artifact does not retain the initially served playlist or the completed cache inventory.
+Missing projected tail media is a hypothesis, not an established production cause.
+
+Copied-clock artifact `11815528727` has SHA-256 `3a60607f94b660ad49e6fd9ab2b99ce5bc721d0b0e9fff2181ae715ee23679e1`.
+Each browser JSON checksum matches its receipt. Source bytes remain unchanged and each Server process settles during cleanup.
+Cleanup does not prove when media encoding completed.
+The separate populated-browser artifact `11815798465` verifies 198 checksum entries and 99 passes without skips, flakes, or unexpected outcomes.
+Its SHA-256 is `ae428fbb0d073f5d24a32b9497204b94213e9086857bbee66e032fec51df9f54`.
+The private job log has SHA-256 `a82ac9e0faa4fc246054af300b908051649cbb06596426dff8bb9f441d214386`.
+
+The existing browser runner now retains bounded playlist projections: hashes, segment numbers, durations, and terminal/type flags.
+Captures use the existing responses, wait at most two seconds, and settle before each page closes.
+The 64 KiB limit bounds parsing and retained data; Playwright materializes response bodies before that check.
+Each decoded sample also retains the observed element duration.
+For Subtitles direct-switch cases, the parent records a bounded cache snapshot and encoder counts before and after it.
+Process-observation failures report unavailable. They cannot change playback exit status or replace its failure class.
+No URLs, playlist bodies, private cache paths, or raw process commands are emitted.
+These are snapshots, not producer-settlement proof. The seven-frame and EOF acceptance criteria remain unchanged.
+Independent source review found and corrected observation-error propagation and early page teardown.
+Node syntax, Python source parsing, source-file caps, and whitespace checks pass. Hosted execution of these diagnostics is pending.
+
+### A separate tvOS scrub-resume failure at the same revision
+
+Native job `115310331401` passes the iOS suite, reporting 335 Swift tests, then fails one tvOS case.
+The tvOS xcresult summary records 319 passed, one failed, and one skipped test out of 321.
+`nativeScrubSupersedesEndpointRestoreWithoutWatchedCompletion()` reaches its native-scrub prerequisite, then fails the native clock assertion at line 180.
+The expression `abs(player.currentTime().seconds - 3) < 0.1` is false.
+Its combined coordinator-clock expression is not evaluated. The artifact does not retain the actual native clock value.
+This is insufficient to distinguish an incorrect seek from advancing playback or delayed observation.
+
+The separate reader probe passes all four argument pairs with repetitions one, two, and three each present and passing.
+Its receipt has exit zero and verified discovery. This later pass does not repair the earlier reader timeout.
+Artifact `11816802390` has SHA-256 `69cc919b12550fadd89d65d1c2f9956457c869308c0302d2d8e1e374c1d36e71`.
+The private native job log has SHA-256 `3fda4f4ea24a04502cb5d57ac921d101dac1b08af877b5a8790c7889a8870a15`.
+Only downloaded xcresult data was inspected locally; no local native runtime ran.
