@@ -2030,5 +2030,17 @@
   {
     "id": "Back to Library",
     "other": "Back to Library"
+  },
+  {
+    "id": "Chapter %lld of %lld",
+    "other": "%2$lld bölümden %1$lld. bölüm"
+  },
+  {
+    "id": "Page %lld of %lld",
+    "other": "%2$lld sayfadan %1$lld. sayfa"
+  },
+  {
+    "id": "Document",
+    "other": "Belge"
   }
 ]
