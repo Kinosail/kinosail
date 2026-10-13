@@ -2137,3 +2137,63 @@ Per-suite receipts and reconciliation proofs are in `.verification/ai-qa-campaig
 These are Chromium journeys against generated documentation and disposable HTTP peers.
 They do not prove a production installation, populated app Server behavior, Nox deployment, or physical-device acceptance.
 The separate Player browser totals above remain unchanged.
+
+### PR 587: download focus, media fixture admission, and native capture
+
+A populated Downloads refresh removed keyboard focus from the Play offline link.
+The Server response hides that link because downloaded-file readiness belongs to the device.
+The repair preserves an already visible link for the same job before replacing markup and restoring focus.
+Production changes total two added lines in `packages/webassets/static/downloads-ui.js`.
+
+The regression holds the canonical refresh at a disposable Go peer with native service workers enabled.
+It proves replacement of the old DOM node, retained focus, Enter navigation, stored-byte checksums, and zero removals.
+All three engines passed at `4a2594c03cec7bcfd9c76f1d43c0fd7eee290165` in [deep run 38324888163](https://github.com/Kinosail/kinosail/actions/runs/38324888163).
+Pending and loaded screenshots are byte-identical within each engine. Visual inspection confirms the focus ring remains visible.
+
+| Player browser | Download-focus result | Verified checksum entries | Archive SHA-256 |
+| --- | --- | ---: | --- |
+| Chromium | Passed without retry | 521 | `27825e928748b4039f254b091d02c0d7f768495f14f53e92555f120786817dea` |
+| Firefox | Passed without retry | 561 | `2f105194dd9bda70057e284d3c3ed9f22b6037c5f9d09379cc49c219e93d9404` |
+| WebKit | Passed without retry | 579 | See private `player-webkit-4a2594c0.proof.json` |
+
+Each archive also proves clean, unchanged source at the exact revision and matching fixture inputs.
+Chromium and Firefox completed their full Player browser jobs successfully. Chromium's HLS follow-on checks also passed.
+All three engines passed seven caption-recovery cases and 47 download-pause cases without retries.
+Subtitles passed all 99 cases in each engine, with no skips, failures, or flakes and 198 verified checksum entries per archive.
+These observations do not replace the earlier whole-campaign coverage inventory.
+
+The watched-state fixture now buffers a natural ending before accepting the real form POST.
+It measures three fresh advancing presented-frame timestamps after resume, rather than a counter that WebKit can reset.
+All five watched cases passed without retry in Chromium and Firefox at the revision above.
+WebKit failed four cases and passed one only on retry. Its traces failed during startup or rejected an earlier acknowledged progress save.
+
+Revision `ebd56df70c39d712567ba9fed9f76c3224ecb4e6` corrects the latter fixture assumption.
+It freezes the baseline request set when the watched form is intercepted, then requires each baseline save to finish with HTTP 204.
+A five-second deadline and route abort preserve failure during cleanup. Every subsequent progress request remains forbidden.
+The accepted watched state must remain unchanged after real native pause or ended events and released queued callbacks.
+This fixture no longer guarantees that form acceptance precedes every instance of progress ownership.
+The historical guard-mutation check remains pending for this revision.
+Shared startup and coverage-accounting changes remain owned by PR 579.
+
+Native deep run [38327020555](https://github.com/Kinosail/kinosail/actions/runs/38327020555) tested `2609d636ae37323f9c61bcab0b45ed65755f8afd`.
+iOS passed 331 test cases, failed the card-rating comparison, and skipped one. tvOS passed 319 and skipped one.
+The first rated RGBA capture contained 366,160 zero bytes. Its PNG and the unrated PNG were identical and visibly nonblank.
+Both PNGs have SHA-256 `27afffddcedda61aefb36e2eda1b945ad590f20dea3beb1da18edabe1788f6ad`.
+The native artifact archive has SHA-256 `c0345b74914490aec3e453eb3e233f237dfadcef86cd2993b2673eb7ebf77b99`.
+Keeping the bitmap context alive during copying did not resolve this intermittent capture failure.
+
+The next capture implementation draws `ImageRenderer` content directly into an owned RGBA context.
+Assertions and image attachments use that same completed raster. Strict dimensions, pixel equality, and independent nonblank checks remain.
+A separate control changes only the opacity of an overlaid rating label and requires unequal pixels at equal dimensions.
+This protects against a capture that draws backgrounds but omits text. Both control images are retained.
+The implementation follows [Apple's context-rendering API](https://developer.apple.com/documentation/swiftui/imagerenderer/render(rasterizationscale:renderer:)).
+Independent source review found no blocker. Swift syntax parsing, source limits, and whitespace checks passed; hosted rendering remains pending.
+The earlier background-authorization count failure now retains safe timing diagnostics after freezing the original failed assertion.
+That test passed at `2609d636`; the intermittent cause remains unproved.
+
+Private repeatable evidence is under `.verification/ai-qa-campaign/pr587-hosted/`.
+Browser archives contain command receipts, fixture inputs, environment details, traces, screenshots, and checksum manifests.
+Native archives contain the hosted iOS/tvOS result bundles and image attachments; read-only extraction used `xcrun xcresulttool`.
+Local affected verification plans still select held runtime work. No local build, browser run, emulator, or deployment was started for these deltas.
+The earlier full affected checks stopped at 95 existing shared-package lint diagnostics; no threshold or required gate was bypassed.
+PR 587 remains unmerged. Device, deployment, skipped-case, and complete campaign acceptance remain open.
