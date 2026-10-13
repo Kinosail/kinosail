@@ -257,6 +257,7 @@ jobs:
           discovered = bool(matches and int(matches[-1]) == count)
           if iterations > 1:
               # Swift prints one summary for all repetitions; xcresult owns the per-argument outcomes.
+              discovered = matches == [str(count)]
               try:
                   raw = subprocess.check_output(['xcrun', 'xcresulttool', 'get', 'test-results', 'test-details',
                       '--path', str(run / 'native.xcresult'), '--test-id', os.environ['SELECTOR'], '--compact'], text=True)

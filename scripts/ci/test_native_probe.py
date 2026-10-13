@@ -47,7 +47,7 @@ class NativeProbeContractTests(unittest.TestCase):
         step = source.split('      - name: Execute one iOS probe suite\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split("          python3 - <<'PY'\n", 1)[1].split('\n          PY', 1)[0])
         selector = 'NativePreferencesUXTests/readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light:fontSize:)'
-        cases = ('passed', 'missing-summary', 'wrong-summary', 'wrong-selector', 'missing-arguments',
+        cases = ('passed', 'missing-summary', 'wrong-summary', 'duplicate-summary', 'mixed-summary', 'wrong-selector', 'missing-arguments',
                  'duplicate-arguments', 'missing-repeat', 'duplicate-repeat', 'skipped-repeat', 'failed-repeat',
                  'overall-failed', 'missing-result', 'invalid-result')
         for case in cases:
@@ -69,6 +69,8 @@ class NativeProbeContractTests(unittest.TestCase):
                 summary = 'Test run with 1 test in 1 suite passed'
                 if case == 'missing-summary': summary = ''
                 if case == 'wrong-summary': summary = 'Test run with 2 tests in 1 suite passed'
+                if case == 'duplicate-summary': summary += '\n' + summary
+                if case == 'mixed-summary': summary = 'Test run with 2 tests in 1 suite passed\n' + summary
                 (run / 'native.log').write_text(summary)
                 def command_output(command, **_):
                     if command[0] == 'xcrun' and case == 'missing-result':
