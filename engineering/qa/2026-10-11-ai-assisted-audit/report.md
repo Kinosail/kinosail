@@ -3084,3 +3084,18 @@ Its reported `undefined` value is not evidence that the application deleted the 
 The cause of the input stall is not established. Keep the original gesture, deadline, and fullscreen assertions for the next hosted run.
 The snapshots show Settings already hidden and the Play control visible; they do not support adding a Settings-close readiness workaround.
 This case simulates Apple fullscreen and media state; it provides no physical iPhone or real-decoder result.
+
+
+The next observation adds a passive recorder only around that final return gesture.
+It streams bounded touch, click, and simulated fullscreen events to a Node-owned array with relative times and primitive state.
+Node also retains page-close, page-crash, browser-connection, and tap-return state. Failure collection does not evaluate the page again.
+The existing simulated fullscreen method changes its boolean before emitting the observed event; its implementation is unchanged.
+An empty array means no events reached the recorder. It cannot distinguish absent input from failed asynchronous binding delivery.
+The original gesture, property and subtitle assertions, and deadlines remain unchanged. Attachment failure warns without replacing the original test error.
+Independent source review approves the recorder after that error-preservation correction.
+TypeScript source policy, three-engine discovery of the existing case, source-file caps, and whitespace pass; browser execution is pending.
+The [pinned Playwright pointer-action source](https://github.com/microsoft/playwright/blob/v1.63.0/packages/playwright-core/src/server/dom.ts) includes interceptor cleanup before reporting action completion.
+This diagnostic is intended to separate prompt page events from delayed automation acknowledgment, without attributing the stall to either yet.
+
+The earlier `bc33897b` deep run finishes with Player Chromium job `115297806207` passing.
+Its two failing browser jobs remain Firefox's invalid-worker setup and WebKit's Apple-launch flake. The native job passes as recorded above.
