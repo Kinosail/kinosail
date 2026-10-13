@@ -6,6 +6,14 @@ configureTestInstance();
 test.use({serviceWorkers: "block"});
 
 type ProgressReceipt = {method: string; status: number | null; finished: boolean};
+type MotionState = {seconds: number | null; frames: number | null; duration: number | null; paused: boolean; ended: boolean; seeking: boolean;
+  readyState: number; networkState: number; errorCode: number; visibility: string; focused: boolean;
+  inViewport: boolean; buffered: {count: number; scanTruncated: boolean; current: (number | null)[] | null; last: (number | null)[] | null}};
+type WatchedObservation = {event: string; paused: boolean; failure?: string;
+  motion?: {start: MotionState | null; current: MotionState | null; frameTimes: number[]; rawFrameTimes: (number | null)[];
+    callbacksSeen: number; playResult: string; rejection: string};
+  before: {seconds: number; frames: number; startSeconds: number; frameTimes: number[]; callbacksReleased: number};
+  seconds: number; frames: number};
 
 for (const watched of [true, false]) {
 for (const cancelledAgain of [false, true]) {
@@ -113,21 +121,45 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       // Native navigation can pause WebKit media before the response arrives.
       // Establish fresh decoded motion inside the held request before releasing
       // the page's queued real notifications and requesting the late native pause.
+      const finite = (value: number) => Number.isFinite(value) ? value : null;
+      const state = (): MotionState | null => { try {
+        const bounds = video.getBoundingClientRect(), ranges = video.buffered;
+        const range = (index: number) => [finite(ranges.start(index)), finite(ranges.end(index))];
+        let current: (number | null)[] | null = null;
+        for (let index = 0; index < Math.min(ranges.length, 32); index++) {
+          if (ranges.start(index) <= video.currentTime && ranges.end(index) >= video.currentTime) {current = range(index); break;}
+        }
+        return {seconds: finite(video.currentTime), frames: finite(video.getVideoPlaybackQuality().totalVideoFrames), duration: finite(video.duration),
+          paused: video.paused, ended: video.ended, seeking: video.seeking, readyState: video.readyState,
+          networkState: video.networkState, errorCode: video.error?.code ?? 0, visibility: document.visibilityState,
+          focused: document.hasFocus(), inViewport: bounds.bottom > 0 && bounds.right > 0 && bounds.top < innerHeight && bounds.left < innerWidth,
+          buffered: {count: ranges.length, scanTruncated: ranges.length > 32, current, last: ranges.length ? range(ranges.length - 1) : null}};
+      } catch {return null;} };
       const start = {seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames};
       // WebKit can reset its quality counter when resuming. Count freshly
       // presented frames instead of treating totalVideoFrames as monotonic.
       const frameTimes: number[] = [];
+      const rawFrameTimes: (number | null)[] = [];
+      let callbacksSeen = 0;
       let frame = video.requestVideoFrameCallback(function presented(_now, metadata) {
+        callbacksSeen = Math.min(callbacksSeen + 1, 255);
+        if (rawFrameTimes.length < 3) rawFrameTimes.push(finite(metadata.mediaTime));
         if (metadata.mediaTime > (frameTimes.at(-1) ?? start.seconds)) frameTimes.push(metadata.mediaTime);
         if (frameTimes.length < 3) frame = video.requestVideoFrameCallback(presented);
       });
-      let rejected = false;
-      void video.play().catch(() => {rejected = true;});
+      let rejected = false, rejection = "none", playResult = "pending";
+      const startState = state();
+      void video.play().then(() => {playResult = "fulfilled";}, (error: unknown) => {
+        rejected = true;
+        playResult = "rejected";
+        rejection = error instanceof DOMException && ["AbortError", "NotAllowedError", "NotSupportedError"].includes(error.name) ? error.name : "other";
+      });
       const deadline = performance.now() + 8000;
       while (video.paused || frameTimes.length < 3 || video.currentTime <= start.seconds + 0.2) {
         if (rejected || performance.now() >= deadline) {
           video.cancelVideoFrameCallback(frame);
-          relay.postMessage({kind: "qa-watched-paused", failure: "native motion did not resume during held transport"}, location.origin);
+          relay.postMessage({kind: "qa-watched-paused", failure: "native motion did not resume during held transport",
+            motion: {start: startState, current: state(), frameTimes, rawFrameTimes, callbacksSeen, playResult, rejection}}, location.origin);
           return;
         }
         await new Promise(resolve => setTimeout(resolve, 20));
@@ -167,7 +199,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     // Abort this owned transport barrier after the proof, then reopen the real page.
     await route.abort("aborted");
   });
-  let bodyFailed = false;
+  let bodyFailed = false, observed: WatchedObservation | undefined;
   try {
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
@@ -176,9 +208,9 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     expect(latePositions).toEqual([]);
     expect(await progress()).toMatchObject({watched, seconds: 0});
     await relay.evaluate(origin => opener!.postMessage("qa-watched-commit", origin), origin);
-    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: {event: string; paused: boolean; failure?: string; before: {seconds: number; frames: number; startSeconds: number; frameTimes: number[]; callbacksReleased: number}; seconds: number; frames: number}}).qaWatchedObserved);
-    await expect.poll(() => observation().then(value => value?.failure || value?.paused)).toBe(true);
-    const paused = (await observation())!;
+    const observation = () => relay.evaluate(() => (window as Window & {qaWatchedObserved?: WatchedObservation}).qaWatchedObserved);
+    await expect.poll(async () => {observed = await observation(); return observed?.failure || observed?.paused;}).toBe(true);
+    const paused = observed!;
     expect(paused.event).toBe(watched ? "pause" : "ended");
     expect(paused.before.seconds).toBeGreaterThan(0.2);
     expect(paused.before.frames).toBeGreaterThan(2);
@@ -206,7 +238,12 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       browser: info.project.name, cancelledAgain, endpointAdmission, baselineProgress,
       baselineBoundary: "actual watched request intercepted before Server POST", stored, paused, latePositions, result: "passed",
       data: "Real Go Server and moving decoded media; queued actual native playing notifications; actual form POST replayed once with real 303 acknowledgement; held transport aborted after proof and real page reopened"}), contentType: "application/json"});
-  } catch (error) {bodyFailed = true; throw error;}
+  } catch (error) {
+    bodyFailed = true;
+    if (observed?.motion) await info.attach("watched-held-motion-failure", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
+      browser: info.project.name, watched, cancelledAgain, motion: observed.motion}), contentType: "application/json"}).catch(() => {});
+    throw error;
+  }
   finally {
     release();
     const cleanup = await Promise.allSettled([page.unrouteAll({behavior: "wait"}), relay.close()]);

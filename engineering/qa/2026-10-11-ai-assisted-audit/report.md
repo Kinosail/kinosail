@@ -2187,9 +2187,35 @@ Assertions and image attachments use that same completed raster. Strict dimensio
 A separate control changes only the opacity of an overlaid rating label and requires unequal pixels at equal dimensions.
 This protects against a capture that draws backgrounds but omits text. Both control images are retained.
 The implementation follows [Apple's context-rendering API](https://developer.apple.com/documentation/swiftui/imagerenderer/render(rasterizationscale:renderer:)).
-Independent source review found no blocker. Swift syntax parsing, source limits, and whitespace checks passed; hosted rendering remains pending.
+Independent source review found no blocker. Swift syntax parsing, source limits, and whitespace checks passed.
+At `9dbee4b88f11a1c14e33bd5dad0a1267d5aea9c4`, [deep run 38330038654](https://github.com/Kinosail/kinosail/actions/runs/38330038654) passed the native contracts.
+iOS passed 333 cases and tvOS passed 320; each platform skipped one case. Neither platform reported a failure.
+Both card comparisons and visible-text controls passed. All 20 images were inspected, including 18 unique images.
+Each visible control contains readable PG-13 text. Hidden controls match the normal video poster, without rating text.
+The archive SHA-256 is `5d411a803d1567833857adbbdecc29d6bc4da82354bc527e15d6d712381bbb88`.
+These are hosted simulator rendering contracts; physical-device acceptance remains separate.
 The earlier background-authorization count failure now retains safe timing diagnostics after freezing the original failed assertion.
 That test passed at `2609d636`; the intermittent cause remains unproved.
+
+At `9dbee4b8`, [layout run 38330042136](https://github.com/Kinosail/kinosail/actions/runs/38330042136) passed in Chromium, Firefox, and WebKit.
+Each engine completed 11 Player flows and 26 Subtitles flows without failed stability or focus flags.
+Chromium recorded 95 Player measurements and 111 Subtitles measurements. Firefox and WebKit each recorded 40 and 46.
+The isolated layout checks passed 35 cases in Chromium and WebKit, with two Firefox-only skips each. Firefox passed all 37.
+Exact clean source and seven script input hashes were verified. Measurement hashes are recorded in the private proof files.
+The layout artifacts do not contain a complete upstream checksum manifest; their measurement hashes were computed after download.
+
+At `ebd56df7`, WebKit passed ordinary watched/unwatched navigation without retry and verified 580 artifact checksums.
+It also passed download focus, pause, caption recovery, pagination, and queue loading.
+All four controlled watched cases failed. Seven attempts reached the held response but could not establish fresh video motion.
+One attempt failed the older shared startup prerequisite. The first held-response failure screenshot still displayed "Seeking...".
+Its trace reported only the generic motion failure, so it does not distinguish a media stall from missing compositor callbacks.
+The new diagnostic captures safe media state, bounded buffered ranges, and callback counts before play and at the existing deadline.
+It records the first three raw callback times, qualified times, visibility, and an allowlisted play rejection class.
+The original failure is retained even if attachment writing fails. No assertion, deadline, playback action, or transport behavior changes.
+Historical mutation verification and controlled WebKit late-callback acceptance remain pending.
+
+The `9dbee4b8` deep Go job failed the unchanged 89% coverage gate at 86.7%, without test-failure or race markers.
+The independent coverage-accounting repair remains in PR 579. No coverage threshold was reduced.
 
 Private repeatable evidence is under `.verification/ai-qa-campaign/pr587-hosted/`.
 Browser archives contain command receipts, fixture inputs, environment details, traces, screenshots, and checksum manifests.
