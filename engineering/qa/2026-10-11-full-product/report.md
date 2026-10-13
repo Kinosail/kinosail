@@ -2150,3 +2150,37 @@ Its burned-subtitle invalidation and original-init continuation assertions execu
 The startup artifact SHA-256 is `046cb2beef9dfab95145751019dd2a21336f82bb8399b1d2ed4d97aa05ba8097`.
 This is PR-merge startup proof, not remote main ancestry or production deployment proof.
 Fresh hosted checks must verify the subsequent recorder commit before protected integration.
+
+
+## Delayed-CSS fixture correction after hosted Chromium
+
+Required CI for `659046b8` fails only the new slow-render sampling fixture.
+Both attempts produce fresh baseline and later settled frames in both viewports.
+The CLI then rejects BODY layout shifts of 0.005146 and 0.002829.
+The delayed fixture changes the default body margin, heading size and card height.
+That is a real fixture shift, so the layout enforcement correctly returns exit 1.
+The failed browser artifact SHA-256 is `f3893ea96b6a3a20840eb8c35d129f28ce206361e9e49d5fe3c9f24f0fabf640`.
+Later receipt checks cannot complete because this earlier browser step fails; startup is not reached.
+This result does not reproduce the HLS subtitle-policy failure.
+
+The fixture now reserves identical real geometry inline.
+Its delayed stylesheet exposes the body only after delivery, without changing those dimensions.
+CLI enforcement, zero-exit, fresh-frame, settled-frame and 8000ms baseline assertions remain unchanged.
+The final fixture still fails against the original recorder at its fresh-frame wait.
+The original CLI is restored afterward, with its exact hash verified.
+The normal and slow controls then pass in Linux Chromium, Linux Firefox and macOS WebKit.
+Each final engine run has two passes, zero skips, zero unexpected results and zero flakes.
+Both owned Linux containers are removed, with host trust unchanged.
+The final test SHA-256 is `944dd0ba82a9abb840393afc0071a9c5798e0d275b4961ce6f89c2bdfd4d2c65`.
+The Linux Chromium run log SHA-256 is `3b6a2c0289836ea4eba0963e53f353b8cbd250c6dc4e18d2baf4f0022b817a90`.
+The Linux Firefox run log SHA-256 is `71784f44ae3fe93782579aba24927c55ed043a06bdfcd54bf07158a23e61babd`.
+The macOS WebKit run log SHA-256 is `c9e962df082c294eb687bf3b9a6ce35d98e815264c519dd4e7be72c22054a501`.
+The original-recorder red-control log SHA-256 is `7f2ddaac8fb3858658060e3abf97e2adbf9cddfd989a732824fc26a8db5252df`.
+These remain isolated CLI fixtures. The populated layout workflow at `659046b8` separately passes all three engines.
+Its source receipts show the exact head, empty working diffs and no source drift.
+
+The `659046b8` hosted native artifact also completes both platforms.
+iOS passes 332 tests and skips one. tvOS passes 319 tests and skips one. Neither platform fails.
+The artifact SHA-256 is `012bb10c30cbbfefd99567eb9fe10cf7a2d3aefb25b339ff72094ee985a185a6`.
+This clears the preceding hosted iOS startup boundary for this run; its earlier failure remains retained.
+These contracts do not include the separate pending Apple reader UI branch or physical-device acceptance.
