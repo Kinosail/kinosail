@@ -42,7 +42,7 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS 332 and tvOS 313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go race/coverage passes at `6fe7a7b9` (89.5%); local lint debt and hosted WebKit playback failures remain open; HLS reconciliation needs fresh hosted checks |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Last verified: Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS; Subtitles `6f41117d`; current-main promotion and rollout need fresh proof |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Both apps at `47f250c4`: hosted promotion, separate scanned Nox ARM images, healthy containers and private-network TLS; authenticated and physical acceptance remain |
 
 ## Iteration 1 results
 
@@ -2245,3 +2245,75 @@ The Firefox artifact SHA-256 is `7c80bef31c682b85d38337a3f1c9eb56f581cb5efe5ccb4
 The WebKit artifact SHA-256 is `bc4f7b25bc31990a16d2d9bf23740dd9174226a441e7bb8fc0f2274d5c688f51`.
 All three record CLI SHA-256 `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
 These hosted source receipts precede the fixture-only correction at `b0de9685`.
+
+## QA-031 — Cold-resume verification snapshots an unfinished producer
+
+Deep main run `38336225457` fails the prepared-timeline lookback control.
+The missing fragment recovers with identical bytes, frames and timestamps.
+Only the master playlist changes after the test records its metadata hashes.
+The original encoder intentionally finalizes measured bandwidth when it finishes.
+Waiting for probe wrappers alone does not wait for that publication.
+
+A two-second delay after real encoder output reproduces this ordering failure.
+The red receipt observes an unfinished original producer before the snapshot,
+then a completed producer and changed master bandwidth after recovery.
+Its receipt SHA-256 is `bd39dd1fde759db013b5b4e48183d4ae0f120ed0f56ad775855816124386818d`.
+The retained lookback fault now includes this bounded completion delay.
+The test waits for original encoder completion before recording immutable hashes.
+It preserves fragment, frame, timestamp, source, metadata and logging checks.
+Application publication behavior and recovery deadlines do not change.
+
+The controlled lookback replay passes. The complete local suite passes all
+19 cases and 18 recoveries against an authenticated real Server and synthetic media.
+Every case verifies settled processes, correlated logs and absence of its token.
+The intentional source-change case remains the only changed source.
+The complete receipt SHA-256 is `05f43ddb31a579491399b6f530b85376c9092dbcfaebdc19bcd9666ff6f32504`.
+The run log SHA-256 is `ca960dfa2d8604a6ef911e5e5c429e6e4468c3772d3e6501d6cc251b113d9c6f`.
+This is macOS ARM64 server proof. Hosted Linux, browser and device proof remain separate.
+
+## QA-032 — Missing deployment scanners fail late without a useful message
+
+A real deployment builds its ARM image, then exits because the default PATH
+does not contain Trivy or Syft. Nox remains unchanged during this failed attempt.
+The host already has actual scanner binaries in the task's private tool folder.
+
+Both CLI failure models and failing regressions precede the repair.
+The deployment command now checks scanners before archiving or building an image.
+The standalone scan command checks before creating evidence or running either tool.
+Both return exit 127 with one bounded warning naming the missing scanner.
+They log no host, URL, credential or PATH value.
+An already healthy deployment still succeeds without rebuilding or requiring scanners.
+
+The retained CLI controls execute real shell entry points with explicit tool stand-ins.
+They prove both missing-tool failures cause no build, upload or deployment side effects.
+The standalone controls also prove no scanner runs and no evidence directory appears.
+Populated application E2E does not exercise host executable discovery.
+Both regressions, shellcheck and the complete local tooling command pass.
+The tooling log SHA-256 is `1f17cbdba843657341ab77640fd958fe2afb1da1a7cf9a9a6a15a6e7b59e3a35`.
+
+## Main `47f250c4` publication and Nox verification
+
+PR #579 merges at `7131f22a`; PR #588 merges at `47f250c4`.
+Fetched ancestry checks prove both reviewed task commits are in remote main.
+Main CI `38340092170` succeeds and promotes both apps for the exact revision
+`47f250c46f9d3118942804727e140a6bb9f8fb01`.
+Independent registry reads verify both manifest digests and AMD64/ARM64 entries:
+
+- Player: `sha256:c584af225770c5de89319ec72a8eff680a4a41999c73523efd7d0044444e0e99`.
+- Subtitles: `sha256:6c469075c2a112caab137f308921cfa698c7d2d15f0b3607ecccbd61f17a4032`.
+
+Using the actual local scanner binaries, both exact-revision Nox deployments pass.
+Separate local ARM images pass scans with zero fixable HIGH or CRITICAL findings.
+Player's local image is `sha256:0ef2ea36e2cb84b4ad6d0c29b8519f7ec84e8c21ab6a74bf4bfeb5b253662e46`.
+Subtitles' local image is `sha256:c659dc3cb39e07a1cbbeb5d3b67ddeffb5b04258d2667282d2256ffd024a9ab5`.
+These image IDs are distinct from the published registry manifest digests.
+Independent inspection at 04:49 UTC confirms both exact-revision containers
+are running and healthy, with zero restarts. Existing rollback images remain retained.
+The local save watcher remains unchanged.
+
+Anonymous HTTPS checks require normal CA and hostname validation and TLS 1.3.
+They observe root redirect 303, health 200, settings page 404 and settings API 403.
+CSP is present; HSTS is absent on this private-network endpoint.
+These checks establish transport and anonymous access behavior only.
+Authenticated production journeys, public gateway and physical acceptance remain open.
+Private `nox-main47-*` and `ghcr-main47-*` receipts retain scan and transport hashes.

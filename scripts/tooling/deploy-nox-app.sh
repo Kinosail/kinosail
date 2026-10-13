@@ -75,6 +75,13 @@ if [[ "$current" == "$sha|running|healthy" ]]; then
   exit
 fi
 
+for scanner in trivy syft; do
+  command -v "$scanner" >/dev/null || {
+    printf 'level=warn operation=deployment_preflight outcome=rejected failure_class=scanner_missing scanner=%s\n' "$scanner" >&2
+    exit 127
+  }
+done
+
 tmp="$(mktemp -d "${TMPDIR:-/tmp}/kinosail-$app-nox.XXXXXX")"
 if (( archive_shared )) && git_cmd cat-file -e "$sha:packages/go.mod" 2>/dev/null; then
   git_cmd archive "$sha" -- "$app_path" packages | tar -x -C "$tmp"
