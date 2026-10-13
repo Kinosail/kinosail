@@ -73,8 +73,9 @@ test("previews request promptly, coalesce slow loads, reuse decoded frames and r
   });
   const seek = page.locator("[data-player-seek]");
   await seek.evaluate(input => { input.dataset.trickplay = "https://127.0.0.1:38127/trickplay/movie/{second}"; });
+  // The installed clock runs until paused; leave more headroom than this test's timeout.
   await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
-  await page.clock.pauseAt(new Date("2026-01-01T00:00:00Z"));
+  await page.clock.pauseAt(new Date("2026-01-01T01:00:00Z"));
   const preview = page.locator("[data-seek-preview]");
   const show = async (value: number) => {
     await seek.evaluate((input: HTMLInputElement, position) => { input.value = String(position); input.dispatchEvent(new Event("input")); }, value);

@@ -2439,3 +2439,18 @@ The CLI test now retains private child output and emits only a bounded failure p
 It reports the ready-log observation, server failure, bind-conflict class, child 404 count, exit status, and truncation.
 The ready log precedes binding and does not prove that the child served a request.
 The test still fails the first unexpected HTTP response. No status retry, timeout relaxation, or production seam was added.
+
+### Browser clock setup race
+
+The `b2d5ae37` Firefox archive verifies ten source inputs and 518 checksums.
+Its sole failed first attempt was the isolated scrub-preview fixture; the retry passed.
+`clock.pauseAt` failed before any preview request because its target equaled the earlier installation time.
+The clock had already advanced between those calls. [Playwright documents a future pause target](https://playwright.dev/docs/api/class-clock#clock-pause-at).
+The fixture now pauses one hour after its fixed installation time, beyond its unchanged 60-second test deadline.
+The shared HTMX fixture had the same setup race against wall time and now uses the same forward-only initialization.
+Preview coalescing, the 32-millisecond step, HTMX's 119/120-millisecond threshold, screenshots, and error-state assertions remain unchanged.
+These are isolated browser fixtures, not populated-server media proof.
+The Firefox archive SHA-256 is `4b9993a63648ba3ccc22df0df8d5b3774cbbe5ab8da7bb8e6ef1bcc888729222`.
+The WebKit `bcc888a0` archive also verifies ten inputs and 525 checksums; one mutation prerequisite required a retry.
+Its SHA-256 is `fce75a1b810dc66c3defe6c698553ae162843eab4f5da7d63b3a4faeac7b7cad`.
+That WebKit result predates the timestamp repair and remains separate from its current validation.
