@@ -3,6 +3,7 @@ package mediaprobe
 import (
 	"context"
 	"errors"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -39,7 +40,7 @@ func TestCopiedHLSLinesOwnedLifetime(t *testing.T) {
 	}
 }
 
-func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool) error {
+func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject, cancelNow, wantError bool, input ...io.Reader) error {
 	t.Helper()
 	started := time.Now()
 	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
@@ -49,7 +50,12 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if mode == "bytes" {
 		maximumBytes, maximumLines = 64, 2
 	}
-	err := ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	var err error
+	if len(input) == 0 {
+		err = ProbeLines(ctx, nil, executable, copiedHLSProbeArguments(mode), maximumBytes, maximumLines, marker.visit)
+	} else {
+		err = ProbeInputLines(ctx, nil, executable, copiedHLSProbeArguments(mode), input[0], maximumBytes, maximumLines, marker.visit)
+	}
 	processes, markers, visits := marker.processes, marker.markers, marker.visits
 	t.Cleanup(func() { settleCopiedHLSProbeFixture(t, started, processes) })
 	settled := copiedHLSProbeSettled(processes)

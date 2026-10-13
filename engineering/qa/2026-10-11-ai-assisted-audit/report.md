@@ -2746,3 +2746,9 @@ retained fragments must not be replaced; cancellation must join owned workers be
 The minimum new public counterexamples remove the committed proof, corrupt it, and change the retained initialization bytes.
 Each must return 404, start no encoder, leave the requested fragment absent, and preserve the master and retained neighbor.
 The completed master will bind the proof hash. Initial or interrupted presentations must remain distinguishable from committed certification.
+
+Independent review found two draft integration gaps: certified fragment zero must remain recoverable, and joined input probing
+must use the existing process-tree owner. A bare command wait is insufficient when a descendant retains a pipe.
+Before changing that shared owner API, configured-process controls now cover blocked stdin plus a descendant under deadline and cancellation.
+Real media journeys cannot reliably create this process-lifetime failure. The existing bounded two-second settlement assertion remains unchanged.
+The first streaming-input implementation will explicitly decline platforms whose existing launcher cannot own stdin; no unowned fallback is allowed.
