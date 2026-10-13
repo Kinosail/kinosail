@@ -58,7 +58,7 @@ import org.junit.runner.RunWith
 class LivePlaybackOverlayTest {
     @get:Rule val compose = createEmptyComposeRule()
 
-    @Test fun decodedLightVideoKeepsItsTitleAndActionsReadable() = journey { json, title ->
+    @Test fun decodedLightVideoKeepsItsTitleAndActionsReadable() = journey("loaded") { json, title ->
         awaitLightFrame()
         val prefix = json.optString("capture", "phone")
         verifyLabels(capture("$prefix-loaded"), title)
@@ -82,7 +82,7 @@ class LivePlaybackOverlayTest {
         verifyLabels(capture("$prefix-actions-used"), title)
     }
 
-    @Test fun pendingAndFailedMediaKeepDismissalAndRetryUsable() = journey("pending") { json, title ->
+    @Test fun pendingAndFailedMediaKeepDismissalAndRetryUsable() = journey("recovery", "pending") { json, title ->
         compose.waitUntil(30_000) { progressIndicators() > 0 }
         val prefix = json.optString("capture", "phone")
         verifyLabels(capture("$prefix-pending"), title)
@@ -100,7 +100,7 @@ class LivePlaybackOverlayTest {
 
     // Browser evidence cannot prove the native caption compositor respects Android system bars.
     // Use real decoded static media and on/off compositor frames, without private player internals.
-    @Test fun captionsStayAboveTheSystemNavigationArea() = journey { json, _ ->
+    @Test fun captionsStayAboveTheSystemNavigationArea() = journey("captions") { json, _ ->
         awaitLightFrame()
         Thread.sleep(2_000) // The generated cue starts at one second.
         val prefix = json.optString("capture", "phone")
@@ -135,12 +135,15 @@ class LivePlaybackOverlayTest {
             compose.onRoot().performTouchInput { click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f)) }
         }
         compose.waitUntil(10_000) { action("Pause") != null || action("Play") != null }
-        val playbackControls = completeSnapshot()
-        visibleAction(playbackControls, "Pause")?.let { pause ->
-            assertTrue("Pause through the public playback control",
-                pause.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK))
+        fun pausePlayback() {
+            compose.waitUntil(10_000) {
+                // A remote accessibility node can become stale between discovery and click.
+                action("Pause")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true ||
+                    action("Play") != null
+            }
+            compose.waitUntil(10_000) { action("Play") != null }
         }
-        compose.waitUntil(10_000) { action("Play") != null }
+        pausePlayback()
         val forceCaptionsOff = InstrumentationRegistry.getArguments().getString("captionOracleControl") == "true"
         fun captions(enabled: Boolean) {
             val target = if (enabled) "Captions on" else "Captions off"
@@ -148,7 +151,17 @@ class LivePlaybackOverlayTest {
             waitForText(target)
             Thread.sleep(500) // Wait for the native decoder's next cue delivery.
         }
-        fun captureCaptionFrame(name: String): Bitmap {
+        fun difference(a: Int, b: Int) = maxOf(kotlin.math.abs(Color.red(a) - Color.red(b)),
+            kotlin.math.abs(Color.green(a) - Color.green(b)), kotlin.math.abs(Color.blue(a) - Color.blue(b)))
+        fun hasVisibleChange(reference: Bitmap, current: Bitmap): Boolean {
+            if (reference.width != current.width || reference.height != current.height) return false
+            var changed = 0
+            for (y in reference.height / 2 until reference.height) for (x in 0 until reference.width) {
+                if (difference(reference.getPixel(x, y), current.getPixel(x, y)) > 20 && ++changed > 100) return true
+            }
+            return false
+        }
+        fun captureCaptionFrame(name: String, reference: Bitmap? = null): Bitmap {
             // The native controller is painted above the captions. Dismiss it through the
             // video surface below its centered Play button so it cannot hide an overlap.
             val controls = completeSnapshot()
@@ -159,8 +172,21 @@ class LivePlaybackOverlayTest {
             compose.waitUntil(10_000) { controllerHidden() }
             Thread.sleep(300) // Retain a frame after the controller's hide transition.
             assertTrue("A complete accessibility tree must confirm the controller is hidden", controllerHidden())
+            if (reference != null) {
+                // Track selection can finish before Media3 paints its cue. Observe actual
+                // pixels with a bound, then retain the original visibility/overlap oracle.
+                val deadline = android.os.SystemClock.elapsedRealtime() + 10_000
+                while (true) {
+                    val current = screenPixels()
+                    val visible = try { hasVisibleChange(reference, current) } finally { current.recycle() }
+                    if (visible || android.os.SystemClock.elapsedRealtime() >= deadline) break
+                    Thread.sleep(250)
+                }
+            }
+            assertTrue("The controller must stay hidden until capture", controllerHidden())
             val pixels = capture(name)
             try {
+                assertTrue("The controller must remain hidden across capture", controllerHidden())
                 val hiddenControls = completeSnapshot()
                 assertNotNull("The captured player must expose its Show controls action",
                     visibleAction(hiddenControls, "Show player controls"))
@@ -193,7 +219,7 @@ class LivePlaybackOverlayTest {
         captions(false)
         val before = captureCaptionFrame("$prefix-captions-off-before")
         captions(!forceCaptionsOff)
-        val shown = captureCaptionFrame("$prefix-captions-on")
+        val shown = captureCaptionFrame("$prefix-captions-on", if (forceCaptionsOff) null else before)
         captions(false)
         val after = captureCaptionFrame("$prefix-captions-off-after")
         try {
@@ -201,8 +227,6 @@ class LivePlaybackOverlayTest {
             assertEquals(before.height, shown.height)
             assertEquals(before.width, after.width)
             assertEquals(before.height, after.height)
-            fun difference(a: Int, b: Int) = maxOf(kotlin.math.abs(Color.red(a) - Color.red(b)),
-                kotlin.math.abs(Color.green(a) - Color.green(b)), kotlin.math.abs(Color.blue(a) - Color.blue(b)))
             var captionPixels = 0
             var protectedPixels = 0
             var unstableProtectedPixels = 0
@@ -229,6 +253,40 @@ class LivePlaybackOverlayTest {
                 .put("forcedCaptionsOffControl", forceCaptionsOff)
             File(instrumentation.targetContext.filesDir, "video-overlay/$prefix-caption-safe-area.json")
                 .writeText(evidence.toString(2))
+            if (captionPixels <= 100 && !forceCaptionsOff) {
+                // Diagnose delayed cue delivery without changing the retained failed pair.
+                // This extra frame cannot make the original visibility assertion pass.
+                runCatching {
+                    val deadline = android.os.SystemClock.elapsedRealtime() + 15_000
+                    fun awaitDiagnostic(condition: () -> Boolean) {
+                        val remaining = deadline - android.os.SystemClock.elapsedRealtime()
+                        check(remaining > 0)
+                        compose.waitUntil(remaining, condition)
+                    }
+                    compose.onNodeWithText("Captions off").performClick()
+                    awaitDiagnostic { captionsLabel() == "Captions on" }
+                    awaitDiagnostic {
+                        action("Play")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true ||
+                            action("Pause") != null
+                    }
+                    awaitDiagnostic { action("Pause") != null }
+                    check(deadline - android.os.SystemClock.elapsedRealtime() >= 2_000)
+                    Thread.sleep(2_000)
+                    awaitDiagnostic {
+                        action("Pause")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true ||
+                            action("Play") != null
+                    }
+                    awaitDiagnostic { action("Play") != null }
+                    compose.onRoot().performTouchInput {
+                        click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f))
+                    }
+                    awaitDiagnostic { controllerHidden() }
+                    check(deadline - android.os.SystemClock.elapsedRealtime() >= 300)
+                    Thread.sleep(300)
+                    check(controllerHidden())
+                    capture("$prefix-captions-after-resume").recycle()
+                }
+            }
             assertEquals("The system navigation area must be fully observed and stable", 0, unstableProtectedPixels)
             assertTrue("Captions must visibly render in the paired screenshots", captionPixels > 100)
             assertEquals("Caption pixels must not overlap the system navigation area", 0, protectedPixels)
@@ -237,7 +295,7 @@ class LivePlaybackOverlayTest {
         }
     }
 
-    private fun journey(mode: String = "ready", check: (JSONObject, String) -> Unit) {
+    private fun journey(evidenceName: String, mode: String = "ready", check: (JSONObject, String) -> Unit) {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val seed = File(context.filesDir, "video-overlay-seed.json")
@@ -284,30 +342,41 @@ class LivePlaybackOverlayTest {
         try {
             setMedia(json, mode)
             ActivityScenario.launch(MobileActivity::class.java).use { scenario ->
-                waitForText("Search")
-                compose.onNodeWithText("Search").performClick()
-                waitForText("Search library")
-                compose.onNodeWithText("Search library").performTextInput(title)
-                compose.onNode(hasText("Search") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
-                compose.waitUntil(30_000) {
-                    compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
+                var stage = "search"
+                try {
+                    waitForText("Search")
+                    compose.onNodeWithText("Search").performClick()
+                    waitForText("Search library")
+                    compose.onNodeWithText("Search library").performTextInput(title)
+                    compose.onNode(hasText("Search") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
+                    compose.waitUntil(30_000) {
+                        compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
+                    }
+                    stage = "detail"
+                    compose.onNodeWithContentDescription(title).performClick()
+                    compose.waitUntil(30_000) {
+                        compose.onAllNodesWithText("Play").fetchSemanticsNodes().isNotEmpty() ||
+                            compose.onAllNodesWithText("Resume").fetchSemanticsNodes().isNotEmpty()
+                    }
+                    val action = if (compose.onAllNodesWithText("Resume").fetchSemanticsNodes().isEmpty()) "Play" else "Resume"
+                    stage = "playback"
+                    compose.onNodeWithText(action).performClick()
+                    if (json.optBoolean("landscape")) scenario.onActivity {
+                        it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    }
+                    compose.waitUntil(30_000) {
+                        compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()
+                    }
+                    check(json, title)
+                    compose.onNodeWithText("Done").assertIsEnabled().performClick()
+                    waitForText("Back")
+                } catch (error: Throwable) {
+                    // Keep the visible isolated fixture before ActivityScenario closes it.
+                    runCatching {
+                        capture(json.optString("capture", "phone") + "-" + evidenceName + "-" + stage + "-failure").recycle()
+                    }
+                    throw error
                 }
-                compose.onNodeWithContentDescription(title).performClick()
-                compose.waitUntil(30_000) {
-                    compose.onAllNodesWithText("Play").fetchSemanticsNodes().isNotEmpty() ||
-                        compose.onAllNodesWithText("Resume").fetchSemanticsNodes().isNotEmpty()
-                }
-                val action = if (compose.onAllNodesWithText("Resume").fetchSemanticsNodes().isEmpty()) "Play" else "Resume"
-                compose.onNodeWithText(action).performClick()
-                if (json.optBoolean("landscape")) scenario.onActivity {
-                    it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                }
-                compose.waitUntil(30_000) {
-                    compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()
-                }
-                check(json, title)
-                compose.onNodeWithText("Done").assertIsEnabled().performClick()
-                waitForText("Back")
             }
         } finally {
             setMedia(json, "ready")
