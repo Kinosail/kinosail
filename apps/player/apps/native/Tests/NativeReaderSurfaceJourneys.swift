@@ -2,6 +2,7 @@
 import SwiftUI
 import Testing
 import UIKit
+import Vision
 import WebKit
 @testable import KinosailPlayer
 
@@ -10,6 +11,83 @@ import WebKit
 // held loopback metadata and production screens, without a production seam.
 // Keep it in the serialized preferences owner because both use SessionKeychain.
 extension NativePreferencesUXTests {
+    @Test(arguments: [("en", "appearance", "chapter2of3", "page2of3", "document"),
+                      ("es", "apariencia", "capitulo2de3", "pagina2de3", "documento"),
+                      ("ja", "外観", "第2章全3章", "2ページ全3ページ", "文書")],
+          [ReaderBook.Kind.epub, .comic, .pdf])
+    func readerFooterUsesSelectedInterfaceLocale(language: (tag: String, control: String, chapter: String, page: String, document: String), kind: ReaderBook.Kind) async throws {
+        let fixture = try await PreferencesLoopbackFixture()
+        defer { fixture.listener.cancel() }
+        let asset = kind == .pdf ? UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: 400, height: 600)).pdfData { context in
+            for _ in 0..<3 { context.beginPage(); ("A quiet morning" as NSString).draw(at: CGPoint(x: 20, y: 40), withAttributes: [.font: UIFont.systemFont(ofSize: 20)]) }
+        } : kind == .comic ? UIGraphicsImageRenderer(size: CGSize(width: 400, height: 600)).pngData { context in
+            UIColor.systemBlue.setFill(); context.fill(CGRect(x: 0, y: 0, width: 400, height: 600))
+        } : Data()
+        fixture.state.withLock { $0.readerKind = kind; $0.readerPageCount = kind == .pdf ? 1 : 3; $0.readerPage = kind == .pdf ? 1 : 2; $0.readerAsset = asset }
+        let keychain = SessionKeychain(), previous = try await keychain.restore()
+        try await keychain.save(SavedSession(server: fixture.server, token: "isolated-reader-token", viewer: fixture.viewer))
+        let session = AppSession()
+        await session.restore()
+        do {
+            let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
+            let previousWindow = scene.windows.first { $0.isKeyWindow }
+            let window = UIWindow(windowScene: scene)
+            defer { window.isHidden = true; previousWindow?.makeKey() }
+            window.overrideUserInterfaceStyle = .dark
+            // This explicit harness control proves the selected catalog is active.
+            // It is outside the real reader and is not part of the product UI.
+            window.rootViewController = UIHostingController(rootView: VStack(spacing: 0) {
+                NavigationStack { ReaderScreen(itemID: "book") }
+                Text("Appearance").padding(8)
+            }.environment(session).environment(\.scenePhase, .active)
+                .environment(\.locale, Locale(identifier: language.tag))
+                .preferredColorScheme(.dark))
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-reader-column-" + UUID().uuidString)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            print("NATIVE_READER_EVIDENCE \(folder.path)")
+            let shown = ProcessInfo.processInfo.systemUptime
+            window.makeKeyAndVisible()
+            try await readerUntil("Validated metadata must present the native reading footer") {
+                readerDescendants(window).contains { $0 is ProtectedReaderView }
+            }
+            window.layoutIfNeeded()
+            // The native footer is available before document decoding completes.
+            // Capture its pixels without coupling localization to WebKit readiness.
+            let footer = UIGraphicsImageRenderer(size: CGSize(width: window.bounds.width, height: 180)).image { context in
+                context.cgContext.translateBy(x: 0, y: 180 - window.bounds.height)
+                window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+            }
+            try #require(footer.pngData()).write(to: folder.appendingPathComponent("localized-footer.png"))
+            let image = try #require(footer.cgImage)
+            let request = VNRecognizeTextRequest()
+            request.recognitionLevel = .accurate
+            request.recognitionLanguages = language.tag == "en" ? ["en"] : [language.tag, "en"]
+            request.usesLanguageCorrection = false
+            try VNImageRequestHandler(cgImage: image).perform([request])
+            let text = (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
+            let normalized = String(String.UnicodeScalarView(text.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: language.tag))
+                .unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }))
+            let expected = kind == .pdf ? language.document : kind == .epub ? language.chapter : language.page
+            let evidence: [String: Any] = ["locale": language.tag, "kind": kind.rawValue, "recognizedText": text,
+                "proofClass": "metadata-ready native footer",
+                "secondsSinceShown": ProcessInfo.processInfo.systemUptime - shown,
+                "requestEvents": fixture.state.withLock { $0.readerEvents.mapValues { $0 - shown } },
+                "positiveControlTranslated": normalized.contains(language.control),
+                "expectedCounterMatched": normalized.contains(expected)]
+            try JSONSerialization.data(withJSONObject: evidence, options: [.prettyPrinted, .sortedKeys])
+                .write(to: folder.appendingPathComponent("localization.json"))
+            #expect(normalized.contains(language.control), "The explicit harness control must confirm the selected catalog")
+            #expect(normalized.contains(expected), "The real reader must localize the counter and preserve unequal page numbers")
+        } catch {
+            await session.client?.close(purgeCache: true)
+            if let previous { try await keychain.save(previous) } else { try await keychain.clear() }
+            throw error
+        }
+        await session.client?.close(purgeCache: true)
+        if let scope = session.profileKey { try await ReaderPositionStore(scope: scope).discard(itemID: "book") }
+        if let previous { try await keychain.save(previous) } else { try await keychain.clear() }
+    }
+
     @Test(arguments: [false, true], [20, 32])
     func readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light: Bool, fontSize: Int) async throws {
         let fixture = try await PreferencesLoopbackFixture()

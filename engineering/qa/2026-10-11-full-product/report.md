@@ -2423,3 +2423,85 @@ The hosted AAC failure log reports its 20-second deadline at phase `asset`.
 That default phase cannot distinguish a delayed worker from blocked asset construction.
 The root cause remains unconfirmed, and the deadline is unchanged.
 The existing manual `AAC` probe option is dispatched against current main for a focused hosted comparison after the full suites.
+
+## QA-029 — native reader counters bypass the interface locale
+
+A rendered Spanish control translates Appearance to Apariencia while the reader still shows Chapter 1 of 1.
+The native chapter label is assembled as a runtime English string and has no generated catalog entry.
+The owning suite selects seven tests: six pass and the localization test fails its two counter assertions.
+The earlier function filter selects zero tests and is excluded from product proof.
+The failing source patch SHA-256 is `df6dcbbe4ab4a0f863673bcce0f005b965769d00e28d9475e893cc8ce6de5364`.
+Its private log SHA-256 is `8e5fe824772bc392104ec380ce579aa23f1b57fa9c60cfc6d42bfbec6e492d0d`.
+
+The native footer now uses localized Text labels for chapter, page and PDF document modes.
+Explicit format-key annotations retain the interpolated keys in the existing catalog generator.
+Three messages are added to all 108 source catalogs, preserving their existing formatting and fallback policy.
+The 17 translated locales receive translated labels. Generated Apple, Android and Wear catalogs remain synchronized.
+The three existing Go catalog compatibility checks pass, and native catalog freshness passes.
+The first Go command uses an incorrect relative script path and is excluded; the corrected receipt selects three passing tests.
+
+The retained native regression checks the footer after validated metadata presents the reader.
+It uses English, Spanish and Japanese with page 2 of 3, so unequal arguments test positional formatting.
+A clearly separated Appearance harness control verifies the selected catalog through rendered pixels and OCR.
+The native footer capture does not wait for unrelated document decoding.
+Its proof class is metadata-ready native footer; it does not claim that a document finished loading.
+The phone owner suite passes seven tests with zero skips, including all nine format and language combinations.
+Its source patch SHA-256 is `21e01fcebd5436bbf4a5d0c7b16b2dec41ce7d20eb27fdab82bc199e138b57d1`.
+Its private log SHA-256 is `1121db3b230d099aadd275b6a482640ef538ab0b940067868b89f053625c20d0`.
+The existing four font and appearance cases still compare pending, loaded and terminal states.
+Other translated locales, right-to-left rendering, physical VoiceOver and physical reading remain separate acceptance boundaries.
+
+## QA-030 — native comic navigation finishes late in simulator controls
+
+The expanded format audit retains repeated first-comic readiness failures on phone and iPad.
+The original 10-second readiness deadline is unchanged in those retained diagnostic executions.
+The iPad observation records metadata at 0.054 seconds and the complete image transfer at 1.382 seconds.
+Its WebView still reports loading at 12.293 seconds after window setup begins.
+A failure capture completes later, when the WebView is loaded; those observations are distinct.
+The first PDF fixture uses an invalid asset route and is correctly rejected.
+That fixture is corrected to the required file route before any PDF acceptance claim.
+
+Bounded Debug phases now identify secure setup, resource processing, scheme delivery and navigation completion.
+They contain a random reader ID, byte count and monotonic timing, without URLs, titles, bodies or credentials.
+The diagnostic iPad owner suite passes all seven tests and all nine loaded-format controls.
+Its 66 records match the bounded schema and use Debug level exclusively.
+The first image conversion and transfer take about 0.029 seconds; WebKit completion then takes 7.975 seconds.
+Later comic WebKit completions take 2.746 and 2.565 seconds.
+The source patch SHA-256 is `74bcb25d9a476253fcd1be27c73974f4e294c355426fe45c75165729238b7304`.
+The private log SHA-256 is `e5494fee58e034071965a39cd05e258d6905fd8623876cb96ec72a41438f0346`.
+The Debug stream SHA-256 is `58f0adcc7da00fcca87e2c6ddfb9c93b1fc16b5dd0e1537fdd28e8aad36ea955`.
+The host has ten logical CPUs and measured one-minute load above 23, with five-minute load above 50.
+This is a measured environment factor, not a proven root cause.
+The passing control and added diagnostics do not repair or erase the earlier readiness failures.
+The localization regression now asserts its own native-footer interface; full-document readiness remains open QA work.
+Private diagnostic sources, screenshots, timings and xcresults retain every earlier control.
+
+## QA-031 — additional hosted recovery and browser failures
+
+Main CI run `38335277859` passes and publishes both selected containers at `7131f22a317f97d7819fce5c60b1a766eb61c3db`.
+The separate manual deep run `38336225457` fails and remains open evidence.
+Its Chromium browser reports have no unexpected results or flakes, but the prepared-timeline command fails a cold-suffix control.
+Eighteen cold-suffix fault cases pass; the lookback case reports certificate_or_initialization_changed after HTTP 200 recovery.
+Its source remains unchanged and its owned probes and Server settle. The cause is not yet diagnosed.
+The prepared-timeline artifact SHA-256 is `751af5b0c707d3b229999767b84cb0805370f64d4f83a9a0df3d49d9ed48dc70`.
+Later missing-receipt checks fail after that command; they are not independent product failures.
+WebKit retains an audio-queue readiness flake and a watched-state failure after another submission is canceled.
+The latter fails its real-media precondition on the retry as well.
+Its artifact SHA-256 is `3f2ae2036b67bca0ff04830298e4b82a0d4215d88d5503ab870e7152fe1ae20a`.
+
+That deep run passes 332 iOS contracts and 319 tvOS contracts, with one platform skip each.
+Its separate AAC probe selects both expected tests and passes both without skips.
+Those successes do not explain the earlier AAC deadline failure.
+The native artifact SHA-256 is `6e5ecd3185cb2baed33f08370910238044ee5f2ed65f572a491cb060be84a860`.
+PR #588 then merges with commit `47f250c46f9d3118942804727e140a6bb9f8fb01`.
+A fresh fetch and ancestry check prove that native verifier task commit `ac3ff109406ae34da5858f2f2598c3d5ce2796f0` is included.
+No Nox deployment of either new main revision is claimed here.
+
+QA-029 final iPad confirmation also passes seven tests, with zero failures or skips.
+All nine native-footer format and language combinations match their rendered expectations.
+The final phone and iPad native patch SHA-256 is `21e01fcebd5436bbf4a5d0c7b16b2dec41ce7d20eb27fdab82bc199e138b57d1`.
+The iPad private log SHA-256 is `d62b99d3cfd2318f77c428663e94e18e82c904e619559a7493ead8f5572ed3be`.
+The same owner still executes the four pending/loaded/font/appearance and terminal-state cases.
+Both reused simulators return to their original shutdown state.
+Generated Android catalog additions change the APK inputs; the earlier frozen-APK matrix remains proof of its recorded revision.
+A fresh Android build and focused native confirmation are required before claiming the final APK.

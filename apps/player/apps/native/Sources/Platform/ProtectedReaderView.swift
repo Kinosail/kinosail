@@ -1,10 +1,12 @@
 #if os(iOS)
 import Foundation
+import OSLog
 import PDFKit
 import WebKit
 
 @MainActor
 final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDelegate, PDFViewDelegate {
+    private let log = Logger(subsystem: "com.kinosail.player", category: "reader")
     var onOffset: (Double) -> Void = { _ in }
     var onFailure: (String) -> Void = { _ in }
     var onNavigate: (URL) -> Void = { _ in }
@@ -41,6 +43,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         loading.isAccessibilityElement = true
         loading.sizeToFit(); addSubview(loading); loading.startAnimating(); setNeedsLayout()
         let attempt = generation
+        logPhase("started", attempt: attempt)
         loader = ReaderResourceLoader()
         if book.kind == .pdf {
             fileTask = Task { [weak self] in
@@ -56,6 +59,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
                     view.document = document; view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                     view.backgroundColor = self.background
                     self.pdf = view; self.addSubview(view); self.contentReady = true
+                    self.logPhase("finished", attempt: attempt)
                     self.loading.stopAnimating()
                     self.restorePosition()
                     self.observer = NotificationCenter.default.addObserver(forName: .PDFViewPageChanged, object: view, queue: .main) { [weak self, weak view] _ in
@@ -77,6 +81,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         WKContentRuleListStore.default().compileContentRuleList(forIdentifier: "KinosailSwiftReaderLocalOnly", encodedContentRuleList: rules) { [weak self] list, _ in
             guard let self, self.generation == attempt else { return }
             guard let list else { self.fail("Could not open the reader securely. Reopen this book to try again."); return }
+            self.logPhase("secure-ready", attempt: attempt)
             configuration.userContentController.add(list)
             let view = WKWebView(frame: self.bounds, configuration: configuration)
             view.navigationDelegate = self; view.scrollView.delegate = self
@@ -112,11 +117,13 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         do { remote = try ReaderResourcePolicy.remote(path, itemID: itemID, server: client.server) }
         catch { request.didFailWithError(error); return }
         let loader = loader, bookID = itemID, attempt = generation
+        logPhase("resource-start", attempt: attempt)
         tasks[key] = Task { [weak self] in
             do {
                 let (bytes, type) = try await loader.load(url: remote, itemID: bookID, client: client)
                 try Task.checkCancellation()
                 guard let self, self.generation == attempt, self.tasks[key] != nil else { return }
+                self.logPhase("resource-ready", attempt: attempt, bytes: bytes.count)
                 var data = bytes, mime = type
                 if mime.contains("html") {
                     guard bytes.count <= 8 * 1024 * 1024, let html = String(data: bytes, encoding: .utf8) else { throw ClientError.invalidResponse }
@@ -128,6 +135,7 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
                 self.tasks[key] = nil
                 request.didReceive(URLResponse(url: local, mimeType: mime, expectedContentLength: data.count, textEncodingName: mime.hasPrefix("text/") ? "utf-8" : nil))
                 request.didReceive(data); request.didFinish()
+                self.logPhase("scheme-finished", attempt: attempt, bytes: data.count)
             } catch is CancellationError {} catch {
                 guard let self, self.generation == attempt, self.tasks.removeValue(forKey: key) != nil else { return }
                 request.didFailWithError(error)
@@ -136,7 +144,10 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         }
     }
     func stop(_ task: any WKURLSchemeTask) { tasks.removeValue(forKey: ObjectIdentifier(task))?.cancel() }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { guard webView === web else { return }; contentReady = true; loading.stopAnimating(); restorePosition() }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { guard webView === web else { return }; logPhase("finished", attempt: generation); contentReady = true; loading.stopAnimating(); restorePosition() }
+    private func logPhase(_ phase: String, attempt: UUID, bytes: Int = 0) {
+        log.debug("Reader operation=page phase=\(phase, privacy: .public) reader_id=\(attempt.uuidString, privacy: .public) bytes=\(bytes, privacy: .public) uptime=\(ProcessInfo.processInfo.systemUptime, privacy: .public)")
+    }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: any Error) { if webView === web, (error as NSError).code != NSURLErrorCancelled { fail("The chapter could not be displayed.") } }
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: any Error) { if webView === web, (error as NSError).code != NSURLErrorCancelled { fail("The chapter could not be opened.") } }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { if webView === web { fail("The chapter stopped responding. Reopen it to continue reading.") } }
