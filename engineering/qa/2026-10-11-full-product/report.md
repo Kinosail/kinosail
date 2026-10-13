@@ -2263,3 +2263,48 @@ The corrected bounded disconnect observation passes without changing product ass
 Its log SHA-256 is `859ce8cda45781d2a9c1cfa5fbaf579695e37e0714f6de7d61c6ef072579a3ba`.
 Private `epub-final-all-configurations-safe.json` and `epub-emulator-cleanup-verified-safe.json`
 retain all four artifact hashes, geometry, exact APK provenance and cleanup observations.
+
+
+## Delayed-CSS fixture correction after hosted Chromium
+
+Required CI for `659046b8` fails only the new slow-render sampling fixture.
+Both attempts produce fresh baseline and later settled frames in both viewports.
+The CLI then rejects BODY layout shifts of 0.005146 and 0.002829.
+The delayed fixture changes the default body margin, heading size and card height.
+That is a real fixture shift, so the layout enforcement correctly returns exit 1.
+The failed browser artifact SHA-256 is `f3893ea96b6a3a20840eb8c35d129f28ce206361e9e49d5fe3c9f24f0fabf640`.
+Later receipt checks cannot complete because this earlier browser step fails; startup is not reached.
+This result does not reproduce the HLS subtitle-policy failure.
+
+The fixture now reserves identical real geometry inline.
+Its delayed stylesheet exposes the body only after delivery, without changing those dimensions.
+CLI enforcement, zero-exit, fresh-frame, settled-frame and 8000ms baseline assertions remain unchanged.
+The final fixture still fails against the original recorder at its fresh-frame wait.
+The repaired working CLI is restored after that red control, with its exact hash verified.
+The normal and slow controls then pass in Linux Chromium, Linux Firefox and macOS WebKit.
+Each final engine run has two passes, zero skips, zero unexpected results and zero flakes.
+Both owned Linux containers are removed, with host trust unchanged.
+The final test SHA-256 is `944dd0ba82a9abb840393afc0071a9c5798e0d275b4961ce6f89c2bdfd4d2c65`.
+The Linux Chromium run log SHA-256 is `3b6a2c0289836ea4eba0963e53f353b8cbd250c6dc4e18d2baf4f0022b817a90`.
+The Linux Firefox run log SHA-256 is `71784f44ae3fe93782579aba24927c55ed043a06bdfcd54bf07158a23e61babd`.
+The macOS WebKit run log SHA-256 is `c9e962df082c294eb687bf3b9a6ce35d98e815264c519dd4e7be72c22054a501`.
+The original-recorder red-control log SHA-256 is `7f2ddaac8fb3858658060e3abf97e2adbf9cddfd989a732824fc26a8db5252df`.
+These remain isolated CLI fixtures. The populated layout workflow at `659046b8` separately passes all three engines.
+Its source receipts show the exact head, empty working diffs and no source drift.
+
+The `659046b8` hosted native artifact also completes both platforms.
+iOS passes 332 tests and skips one. tvOS passes 319 tests and skips one. Neither platform fails.
+The artifact SHA-256 is `012bb10c30cbbfefd99567eb9fe10cf7a2d3aefb25b339ff72094ee985a185a6`.
+This clears the preceding hosted iOS startup boundary for this run; its earlier failure remains retained.
+These contracts do not include the separate pending Apple reader UI branch or physical-device acceptance.
+
+
+The hosted layout receipts for `659046b8` retain every selected case without source drift.
+Chromium passes 95 Player cases and 111 Subtitles cases, with 11 and 26 flows respectively.
+Firefox and WebKit each pass 40 Player cases and 46 Subtitles cases, with the same flow counts.
+Their fixture suites retain platform-specific skips separately from these populated measurements.
+The Chromium artifact SHA-256 is `bb258677879920ef47959ac4130652797e610eb5feb106d70ca4a253f73ba4b3`.
+The Firefox artifact SHA-256 is `7c80bef31c682b85d38337a3f1c9eb56f581cb5efe5ccb432b6b5ecb9f0602d2`.
+The WebKit artifact SHA-256 is `bc4f7b25bc31990a16d2d9bf23740dd9174226a441e7bb8fc0f2274d5c688f51`.
+All three record CLI SHA-256 `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+These hosted source receipts precede the fixture-only correction at `b0de9685`.

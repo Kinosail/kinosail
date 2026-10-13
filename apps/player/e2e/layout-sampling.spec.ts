@@ -6,6 +6,7 @@ import {spawn} from "node:child_process";
 import {fileURLToPath} from "node:url";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
+const geometryCSS = "body{margin:0}main{padding:16px}h1{font-size:24px}.card{height:80px;background:#ddd}";
 
 // A populated Server cannot deterministically hold native first paint beyond
 // the recorder's old cutoff. This isolated CLI contract uses a real critical
@@ -33,7 +34,7 @@ for (const delay of [0, 8500]) {
         const timer = setTimeout(() => {
           timers.delete(timer);
           response.writeHead(200, {"Content-Type": "text/css"});
-          response.end('body{margin:0}main{padding:16px}h1{font-size:24px}.card{height:80px;background:#ddd}');
+          response.end(geometryCSS + "body{visibility:visible}");
         }, delay);
         timers.add(timer);
       } else if (path === "/") {
@@ -41,7 +42,7 @@ for (const delay of [0, 8500]) {
         response.writeHead(200, {"Content-Type": "text/html"});
         // The first document completes authentication. Measurement documents
         // load the slow stylesheet through the actual layout CLI's route.
-        response.end(`<!doctype html><head>${documents > 1 ? `<link rel="stylesheet" href="/critical.css?document=${documents}">` : ""}</head><body><main><h1>Layout example</h1><div class="card">Stable content</div></main></body>`);
+        response.end(`<!doctype html><head><style>${geometryCSS}${documents > 1 ? "body{visibility:hidden}" : ""}</style>${documents > 1 ? `<link rel="stylesheet" href="/critical.css?document=${documents}">` : ""}</head><body><main><h1>Layout example</h1><div class="card">Stable content</div></main></body>`);
       } else {
         response.writeHead(204); response.end();
       }
