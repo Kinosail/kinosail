@@ -186,7 +186,7 @@ extension NativePreferencesUXTests {
         if let previousSession { try await keychain.save(previousSession) } else { try await keychain.clear() }
     }
 
-    private func readerRoot(_ window: UIWindow, session: AppSession, light: Bool) {
+    func readerRoot(_ window: UIWindow, session: AppSession, light: Bool) {
         window.overrideUserInterfaceStyle = light ? .light : .dark
         window.rootViewController = UIHostingController(rootView: NavigationStack { ReaderScreen(itemID: "book") }
             .environment(session).environment(\.scenePhase, .active)
@@ -195,15 +195,15 @@ extension NativePreferencesUXTests {
         window.layoutIfNeeded()
     }
 
-    private func readerUntil(_ reason: String = "The held reader operation must reach its expected visible state", _ condition: () -> Bool) async throws {
+    func readerUntil(_ reason: String = "The held reader operation must reach its expected visible state", _ condition: () -> Bool) async throws {
         let deadline = ContinuousClock.now.advanced(by: .seconds(10))
         while !condition() && ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(20)) }
         try #require(condition(), Comment(rawValue: reason))
     }
 
-    private func readerDescendants(_ view: UIView) -> [UIView] { [view] + view.subviews.flatMap(readerDescendants) }
+    func readerDescendants(_ view: UIView) -> [UIView] { [view] + view.subviews.flatMap(readerDescendants) }
 
-    private func readerBands(_ window: UIWindow, light: Bool) throws -> [CGRect] {
+    func readerBands(_ window: UIWindow, light: Bool) throws -> [CGRect] {
         window.layoutIfNeeded()
         let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
             window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
@@ -244,7 +244,7 @@ extension NativePreferencesUXTests {
         return groups.sorted { $0.width > $1.width }
     }
 
-    private func readerMetrics(_ web: WKWebView) async throws -> (left: Double, right: Double, fontSize: String, fontFamily: String, overflow: Double) {
+    func readerMetrics(_ web: WKWebView) async throws -> (left: Double, right: Double, fontSize: String, fontFamily: String, overflow: Double) {
         let script = """
         JSON.stringify((()=>{const b=document.body,r=b.getBoundingClientRect(),s=getComputedStyle(b);return {
         left:r.left+parseFloat(s.paddingLeft),right:r.right-parseFloat(s.paddingRight),fontSize:s.fontSize,
@@ -263,7 +263,7 @@ extension NativePreferencesUXTests {
                 try #require(value["overflow"] as? Double))
     }
 
-    private func readerCapture(_ window: UIWindow, folder: URL, name: String) async throws {
+    func readerCapture(_ window: UIWindow, folder: URL, name: String) async throws {
         let web = readerDescendants(window).compactMap { $0 as? WKWebView }.first
         let chapter: UIImage?
         if let web {

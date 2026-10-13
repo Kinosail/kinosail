@@ -2612,6 +2612,62 @@ is included in remote main `3b9fb3c595b83b556ddbf2767d2443227bfbab7f`.
 Final-head deep run `38349207874` remains in progress. Its result is separate
 from required PR checks, prior local native tests and the deployed main47 snapshot.
 
+## QA-033 — A concurrent preference save strands an opening native reader
+
+A successful preference save cancels an older shared GET. The active reader
+receives cancellation without leaving its pending state. A test-first native
+journey holds that GET and book metadata, then saves font size 32 through the
+real client HTTP interface. The original screen remains pending after metadata
+is released. Before-save and failed-after-save screenshots have identical hashes.
+The focused red run has eight tests: seven pass and this new journey fails.
+Its source patch SHA-256 is `75a77eb81f94c4ec899193472ea920f3916d7c2352021da65c86cba21b7e003f`.
+Its run log SHA-256 is `a7fe8043c03b3234a9902c8592b55d83f6976750a58b904e0ec6a7554308a41d`.
+
+Validated preference saves now complete waiting consumers with the accepted
+typed value before canceling the obsolete fetch. The existing helper also
+handles accepted playback preference saves and resets. Validation and cache
+persistence remain in place. Canceled consumers still check cancellation before
+returning a value. An already completed request does not emit a replacement log.
+
+The retained journey passes on iPhone and iPad. Both focused suites pass eight
+tests without skips. They verify one GET, one save, a loaded 32px document,
+a surviving consumer with the saved value, and the accepted cached value after
+the obsolete response is released. This isolated native UI fixture covers a
+shared-client boundary that populated browser E2E cannot host.
+
+The complete iOS suite for this production repair passes 335 tests and skips one platform
+control; the complete tvOS suite passes 319 and skips one. Neither suite fails.
+Their source patch SHA-256 is `cb2e47eaeabf0f8206fd9e14c294f38a24c6079abfeb05e6ca2a85666acf5c61`.
+The iOS summary SHA-256 is `8b92bc700cd4d6f13e9a9524dfdfbdfc6473c7f6f7ff9ba150e0c0facb6c8ae6`.
+The tvOS summary SHA-256 is `88121c14ef930a545566aaf82387d0db19a703fe0e2e7a074010b47f458c6fe5`.
+Actual H264/AAC fixtures execute decoded playback controls. Both temporary links
+are removed after independent hash checks. All three reused simulators are
+confirmed shut down afterward.
+
+The iPad log projection validates 59 records, including one replacement and
+nine cancellations. The full iOS projection validates 140 records, including
+one replacement and five cancellations. The tvOS projection validates 102 records.
+All use Debug level, bounded operation names and random correlation IDs.
+No record has an invalid shape, and fixture tokens are absent from the iPad log.
+The iPad raw-log SHA-256 is `64d72e36f553a2a9be2cefb707d2dddcb05e202b21ced6f617493b1d72842c08`.
+
+Final-head hosted deep run `38349207874` remains failed on separate contracts.
+Its iOS suite passes 333, fails the dark font-32 reader journey, and skips one.
+tvOS passes 319 and skips one. The isolated AAC probe passes one test and fails
+the valid extensionless AAC case at its unchanged 20-second deadline.
+Its artifact SHA-256 is `083b5bd15a7214a0e1c028f98ff0d551bb8f76d4fc50d8e6d8d3fb39a145ebbb`.
+The failing reader result lacks the runtime stage files needed to classify its
+visible-state timeout. Both hosted failures remain open; local success does not
+clear them. General catalog invalidation and physical cross-window acceptance
+remain separate from this accepted preference-save repair.
+
+The source cap rejects the expanded reader journey file before commit.
+The new preference-save scenario moves into its own file and reuses existing
+test helpers. The cap then passes. The focused owner suite again selects and
+passes all eight tests, with zero skips. Production source is byte-identical
+to both complete native runs; those runs precede only this test-file split.
+The split confirmation log SHA-256 is `fc2ca2f972d72e709da5b9e0a023ac027f850f190a90ed749e1a1132a8e86bcf`.
+
 ## QA-034 — Nox adapter fixture omits the new scanner prerequisites
 
 PR #590's hosted Player and Subtitles installer jobs fail the shared Nox adapter
@@ -2634,3 +2690,21 @@ missing-scanner regression also passes, preserving rejection before side effects
 Focused shellcheck passes. This corrects test prerequisites; actual deployment
 scanner discovery, vulnerability policy and image promotion checks do not change.
 Fresh hosted checks remain required before integration.
+
+PR #591 merges through all four protected checks. A fetched ancestry check proves
+reviewed head `64e9db012ef1eff4f77782415fc73aee3a6c6648` is included in remote
+main `a1c7a1dc8396be32ac66851f098f2f23a8018c6a`. Main3b9 CI `38349891258`
+separately succeeds and promotes Player; this does not update the Nox47 evidence.
+
+A separate plain native audio control uses the exact 384044-byte fictional WAV
+from the hosted queue failure. Its requested 4800-byte tail matches that full file.
+Natural playback, three 150ms tail seeks and three two-second tail seeks all pass
+in macOS ARM64 and Linux ARM64 WebKit 26.6, using pinned Playwright 1.63.0.
+Every case reaches the actual native ended state and 12-second clock.
+Server receipts independently verify all returned WAV byte ranges and hashes.
+The macOS results SHA-256 is `0a198b0b9ccd1f2dc349de896bbb93cdc81637860141a6be0ec2718b95c9abb1`.
+The Linux results SHA-256 is `b2de5a5964af7a386500b0acad63ca0b91fd086d9f20357676f700240a96d7c4`.
+Both the owned Server and container are confirmed stopped or removed.
+An earlier missing-module setup attempt executes no media cases and is excluded.
+These controls contain no Player code, authentication or queue preload. They do
+not clear the hosted x64 populated queue failure or identify its root cause.

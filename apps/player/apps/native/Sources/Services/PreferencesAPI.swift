@@ -8,7 +8,7 @@ extension ServerClient {
     func saveMediaPreferences(_ preferences: MediaPreferences) async throws -> MediaPreferences {
         let validated = try MediaPreferences(preferences.json)
         let saved = try MediaPreferences(await request("/api/v1/me/media-preferences", method: .put, body: validated.json).body)
-        await rememberPreferences(saved.json, path: "/api/v1/me/media-preferences")
+        await rememberPreferences(saved.json, path: "/api/v1/me/media-preferences", saved: saved)
         return saved
     }
 
@@ -32,7 +32,7 @@ extension ServerClient {
         let path = "/api/v1/items/\(try Input.id(itemID))/playback-preferences"
         let raw = try await request(path, method: .put, body: validated.json).body
         let saved = try ItemPlaybackPreferences(raw)
-        await rememberPreferences(raw, path: path)
+        await rememberPreferences(raw, path: path, saved: saved)
         return saved
     }
 
@@ -40,13 +40,13 @@ extension ServerClient {
         let path = "/api/v1/items/\(try Input.id(itemID))/playback-preferences"
         let raw = try await request(path, method: .delete).body
         let saved = try ItemPlaybackPreferences(raw)
-        await rememberPreferences(raw, path: path)
+        await rememberPreferences(raw, path: path, saved: saved)
         return saved
     }
 
-    private func rememberPreferences(_ value: JSONValue, path: String) async {
-        catalogRequests[path]?.task.cancel()
-        catalogRequests[path] = nil
+    private func rememberPreferences<Value: Sendable>(_ value: JSONValue, path: String, saved: Value) async {
+        let pending = catalogRequests.removeValue(forKey: path)
+        await pending?.replace(with: saved)
         if let store = try? cacheStore(), let data = try? JSONEncoder().encode(value) {
             await store.remove(path, kind: .catalog)
             await store.enqueueWrite(data, key: path, kind: .catalog)
