@@ -2538,3 +2538,36 @@ The native log reports 334 iOS tests with failure and 316 tvOS tests passing. Th
 The log SHA-256 is `9c479738653de99f6669ab9bc751889e716b841822c7b4773f7db0baac9906e6`.
 The next deep run also selects the existing isolated AAC suite to compare full-suite and isolated behavior.
 No native deadline, assertion, or production behavior has been relaxed. Local runtime remains held for coordinated device work.
+
+
+### Confirmed transcode refill audio gap
+
+The `07a6e06779ec11fc5d986f1c4826606e2925af0b` public-media artifact verifies 116 receipts and 13 checksum entries.
+The archive SHA-256 is `6dfc50e52a59a2c426844a272e363b64c2a3c6da9e78066f65f26eea32e9cf32`.
+All 24 video decodes and four legacy migrations still pass. Packet diagnostics explain the audio deficit in every AAC-bearing rendition.
+The original middle fragment contains 94 packets, starting at tick 92,160. The regenerated fragment contains 91, starting at 94,976.
+Every packet lasts 1,024 ticks in the verified 48 kHz clock. Neither sequence reports discard flags or skip/padding metadata.
+The mixed sequence has gaps of 2,816 and 256 ticks at the two splice boundaries: 3,072 ticks, or 64 milliseconds, total.
+It contains 276 packets versus the original 279. PCM is correspondingly 12,288 bytes shorter in stereo 16-bit output.
+This is missing delivered audio time, not merely a different AAC payload hash or decoder-trimming receipt.
+
+Before production changes, the existing public journey now requires matching AAC packet counts, PTS, DTS, and duration.
+It also requires equal original/mixed decoded PCM lengths. Both full mixed sequences and standalone regenerated fragments are compared.
+The old receipts violate these new assertions in all four audio renditions. Execution of the strengthened regression is still pending.
+The audio helpers are separated from video/cache evidence to preserve the 300-line file limit.
+A fixed manual HLS selection runs the existing complete Player race suite with the same codecs and evidence format.
+It rejects conflicting remaining-playback selections and does not change required PR or main gates.
+Seventeen CI contract checks, pinned actionlint, source limits, and whitespace checks pass locally. No local application runtime was started.
+
+The repair must preserve bounded seeking and real audio content. Padding or timestamp-only changes are insufficient.
+Failure cases include a restarted AAC sample grid, missing audio before the first video's decode time, and millisecond seek rounding.
+Other boundaries include nonzero recipe origins, differing sample rates, omitted ranges, listening filters, missing initial fragments,
+per-rendition decode offsets, stale cache metadata, and source replacement. These guide the next bounded experiment and review.
+The initial design review favors a separately sought audio input with real encoder history, preserving the existing video input and filters.
+That design is not yet implemented or accepted. Exact-clock assertions alone do not establish waveform continuity.
+
+The same revision's native artifact passes iOS (335 passed, one skipped), tvOS (320 passed, one skipped), and isolated AAC (two passed).
+The isolated receipt verifies exact source, revision, test discovery, and exit status. The native archive SHA-256 is
+`f1f1a1bd549e988379ea10b4695563599fe985a709dc88609d058c21c125801e`.
+The iOS skip requires Picture in Picture support absent from that simulator. The tvOS skip is an opt-in disposable-session seeding helper.
+The earlier AVFoundation timeout remains intermittent evidence with no claimed production repair or relaxed deadline.

@@ -152,10 +152,15 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			}
 			controls[index] = control
 			if audio {
-				transcodeRefillAudioPackets(t, ctx, ffprobe, "original-fragment", [][]byte{original[0], original[2]})
-				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "original", original)
-				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "mixed", mixed)
-				transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "refilled-fragment", [][]byte{original[0], refilled})
+				originalFragment := transcodeRefillAudioPackets(t, ctx, ffprobe, "original-fragment", [][]byte{original[0], original[2]})
+				originalBytes, originalAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "original", original)
+				mixedBytes, mixedAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "mixed", mixed)
+				_, refilledAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "refilled-fragment", [][]byte{original[0], refilled})
+				transcodeRefillCompareAudio(t, "mixed", originalAudio, mixedAudio)
+				transcodeRefillCompareAudio(t, "refilled-fragment", originalFragment, refilledAudio)
+				if originalBytes != mixedBytes {
+					t.Errorf("mixed fragments changed the decoded PCM length: original=%d actual=%d", originalBytes, mixedBytes)
+				}
 			}
 		})
 	}
