@@ -78,7 +78,7 @@ def long_window(api, path, run, source, physical, receipt):
 
 def long_window_join(run, receipt):
     """Give admitted wrappers time to reap children before stopping their owner."""
-    deadline = time.monotonic() + 35
+    deadline = time.monotonic() + 65
     receipt['longCleanupJoinedBeforeServerStop'] = False
     try:
         while time.monotonic() < deadline:
