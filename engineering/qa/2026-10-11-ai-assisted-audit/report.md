@@ -3951,3 +3951,34 @@ Both index-failure controls pass. No assertion is removed to obtain these result
 
 Local application execution remains held. Source checks and artifact inspection do not override that boundary.
 Required PR checks, protected merge, exact-main publication, deployment, and physical playback remain separate delivery steps.
+
+
+## Deep-run failures after caption acceptance — October 13
+
+The caption and Apple jobs pass, but the remaining Player jobs in `38467583398` fail.
+Auto-merge for PR #593 is disabled while these findings are investigated.
+All Chromium browser reports pass. Their archive has SHA-256 `52127e027528c45605321a758caf1dfaec756b19837e96f7eb0736ec153c24a0`.
+Its ten source pins and 538 artifact checksums verify against unchanged `e76ab401`.
+
+The later cold-suffix suite has eighteen passing cases and one failed success case.
+Prepared-timeline artifact `11852825129` has SHA-256 `4ce0200f1e8696149a7ffc24146307162abb8a6d56d210431a19843eb460f310`.
+The failed case preserves its initial metadata, all three fragment recoveries, and warm restart.
+Corrupt-certificate regeneration passes; missing-certificate regeneration returns HTTP 200 but fails final metadata equality.
+Its source is unchanged, and the Server and owned probes settle.
+The uploaded receipt omits the changed filenames and this generation's terminal log. Their contents are not inferred.
+
+Source inspection finds the same completion distinction at replacement generation.
+The fixture waits for FFmpeg to exit, while the Server can still finalize metadata afterward.
+The initial snapshot already waits for the Server's completion event; the replacement snapshot must establish that prerequisite too.
+The next trial requires exactly one INFO completion for the response request ID and synthetic session, with no failure event and joined encoders.
+It retains the existing five-second bound, byte equality, public status and clock, process counts, source preservation, and cleanup assertions.
+Each damage attempt is recorded before assertions. Any mismatch retains the fixed relative metadata names that changed.
+This repairs a source-proven prerequisite gap; the unavailable failing log does not prove it caused this occurrence.
+The receipt pins the extracted evidence helper. Python syntax, source caps, whitespace, and independent source review pass.
+The changed fixture still requires hosted execution. Local runtime remains held.
+
+WebKit's phase-targeted Mark watched control times out in `firstPlayable` before reaching its playback assertions; its retry passes.
+Its artifact has SHA-256 `81ccd50e81a23f947759ea102d1c6d97415b48cec59bd5af3ff9612793a0a8fa`.
+All ten source pins and 528 artifact checksums verify. The flaky result remains a failure, not acceptance.
+The trace shows the preceding home navigation returning HTTP 200, followed by a new Library navigation with no completed response.
+The test retains its original 60-second failure. No product change, timeout increase, or speculative navigation repair is applied.
