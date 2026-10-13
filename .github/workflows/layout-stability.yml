@@ -355,15 +355,53 @@ jobs:
       - name: Run all authenticated public cases
         if: ${{ inputs.campaign_proof == 'HLS' && !inputs.hls_remaining_proof && !inputs.hls_transcoded_refill }}
         run: python3 apps/player/scripts/test-hls-followon.py
-      - name: Run strict public transcode refill race suite
+      - name: Probe restarted transcode refill
+        id: refill_preflight
         if: inputs.hls_transcoded_refill
+        working-directory: apps/player
+        env:
+          KINOSAIL_GO_TEST_MODE: deep
+          KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
+          KINOSAIL_TRANSCODE_REFILL_PREFLIGHT: "1"
+          KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ runner.temp }}/transcode-refill-preflight
+        run: go test -race -count=1 -run '^TestRealTranscodedHLSRefillPreservesFrameClock$/^320x180-restarted-late-audio$' ./internal/server
+      - name: Checksum restarted refill diagnostics
+        if: always() && inputs.hls_transcoded_refill
+        run: |
+          git diff --quiet
+          test -z "$(git status --porcelain)"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'transcode-refill-preflight'
+          rows = [json.loads(line) for path in root.glob('*.jsonl') for line in path.read_text().splitlines()]
+          completed = [row for row in rows if row['receipt'].get('complete') is True]
+          assert len(completed) == 1
+          assert completed[0]['test'] == 'TestRealTranscodedHLSRefillPreservesFrameClock/320x180-restarted-late-audio'
+          assert completed[0]['receipt']['revision'] == os.environ['GITHUB_SHA']
+          assert type(completed[0]['receipt']['failed']) is bool
+          (root / 'revision.txt').write_text(os.environ['GITHUB_SHA'] + '\n')
+          PY
+          cd "$RUNNER_TEMP/transcode-refill-preflight"
+          sha256sum -- *.jsonl revision.txt > SHA256SUMS
+      - name: Keep restarted refill diagnostics
+        if: always() && inputs.hls_transcoded_refill
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: player-transcode-refill-preflight-${{ github.sha }}
+          path: ${{ runner.temp }}/transcode-refill-preflight/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Run strict public transcode refill race suite
+        id: refill_suite
+        if: inputs.hls_transcoded_refill && steps.refill_preflight.outcome == 'success'
         env:
           KINOSAIL_GO_TEST_MODE: deep
           KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
           KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ runner.temp }}/transcode-refill
         run: ./scripts/ci/test-go.sh player
       - name: Checksum transcode refill evidence
-        if: always() && inputs.hls_transcoded_refill
+        if: always() && inputs.hls_transcoded_refill && steps.refill_suite.outcome != 'skipped'
         run: |
           git diff --quiet
           test -z "$(git status --porcelain)"
@@ -371,7 +409,7 @@ jobs:
           cd "$RUNNER_TEMP/transcode-refill"
           sha256sum -- *.jsonl revision.txt > SHA256SUMS
       - name: Keep transcode refill evidence
-        if: always() && inputs.hls_transcoded_refill
+        if: always() && inputs.hls_transcoded_refill && steps.refill_suite.outcome != 'skipped'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-transcode-refill-${{ github.sha }}

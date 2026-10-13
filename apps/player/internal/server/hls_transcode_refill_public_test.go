@@ -44,7 +44,11 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 
 func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool, targetSegment int) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
 	defer func() {
-		transcodeRefillLog(t, map[string]any{"complete": true, "failed": t.Failed(), "revision": os.Getenv("GITHUB_SHA"), "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version(), "command": "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"})
+		command := "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"
+		if os.Getenv("KINOSAIL_TRANSCODE_REFILL_PREFLIGHT") == "1" {
+			command = "KINOSAIL_GO_TEST_MODE=deep go test -race -count=1 -run '^TestRealTranscodedHLSRefillPreservesFrameClock$/^320x180-restarted-late-audio$' ./internal/server"
+		}
+		transcodeRefillLog(t, map[string]any{"complete": true, "failed": t.Failed(), "revision": os.Getenv("GITHUB_SHA"), "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version(), "command": command})
 	}()
 	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 	defer cancel()
