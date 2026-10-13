@@ -4,7 +4,28 @@ import json
 import re
 import subprocess
 import time
-from hls_timeline_fixture import check
+from hls_timeline_fixture import LONG_RESUME_KEYS, check, fixture
+
+
+def long_fixture(media, boundary, receipt):
+    keys = [*LONG_RESUME_KEYS, 77, 81, 84, 89, 93, 96, 100, 104]
+    offset, first_frame, first_cut = 60000, 1450, 4
+    if boundary == 'on-key':
+        keys[keys.index(58)] = 60
+        first_frame, first_cut = 1500, 2
+    elif boundary == 'after-key':
+        keys[keys.index(58)] = 59.96
+        first_frame, first_cut = 1499, 2.04
+    elif boundary == 'origin':
+        keys = [0, 32, *(key for key in keys if key > 32)]
+        offset, first_frame, first_cut = 30000, 0, 32
+    receipt.update(longBoundary=boundary, longResumeOffset=offset,
+                   longExpectedFirstFrame=first_frame, longExpectedFirstCut=first_cut)
+    source, evidence = fixture(media, 'Prefix Sample', 25 * (6 if boundary == 'previous' else 40),
+                              ','.join(map(str, keys)), rate='25', frames=2662, extension='.mp4')
+    check(all(abs(actual - expected) < .000001 for actual, expected in zip(evidence['keyframesSeconds'], keys)),
+          'long_fixture_exact_key_positions')
+    return source, evidence
 
 
 def cuts(data):
@@ -59,9 +80,9 @@ def long_window(api, path, run, source, physical, receipt):
             output.write(data)
     reference = decoded_frames(source, run, 'long-source')
     compatible = decoded_frames(joined, run, 'long-compatible')
-    # The fixture independently fixes the retained key at zero or 58 seconds.
+    # The fixture independently fixes its retained key on the source frame clock.
     # Compare every decoded frame to reject a full-source or other-window response.
-    expected_start = 0 if receipt['longResumeOffset'] == 1000 else 58 * 25
+    expected_start = receipt['longExpectedFirstFrame']
     evidence['reference'] = frame_receipt(reference)
     evidence['compatible'] = frame_receipt(compatible)
     evidence['expectedFirstSourceFrame'] = expected_start

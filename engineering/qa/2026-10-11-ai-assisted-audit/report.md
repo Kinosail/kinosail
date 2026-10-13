@@ -3549,3 +3549,43 @@ Only the Subtitles architecture page changes; this resolves the candidate toolin
 
 The earlier merged commit `29ba9e4f5de30a78899f14f0994c1e108629bbaa` now passes all four exact-main protected gates.
 Its container build, test, and scan jobs are active. Publication and deployment are not inferred from gate success.
+
+
+## Verified 60-second repair and corrected boundary inputs — October 13
+
+Candidate `59ded1efc42b525c41af726e32d3aa4c9cf18ad6` runs as merge candidate `86af439acabbec4b984747075f96ea89d9310a6d`.
+Fetched parents and identical trees verify this binding.
+The original 60-second regression now passes with thirteen immutable fragments totaling 48.48 seconds.
+The early, final physical, final public, warm, and restarted maps agree exactly.
+Every one of 1,212 decoded frames equals the original source suffix from frame 1,450.
+All fragment responses, successful producer joins, source preservation, and secret-free diagnostics pass.
+Unsupported and timed-out index controls also pass: 503, no encoder, no published playlist, joined probe, and correlated failure.
+All twenty-four earlier copied-playback controls pass.
+Artifact `11835505056` contains thirty receipts; twenty-seven pass and sixteen uploaded child hashes verify.
+Its SHA-256 is `fc567aa868eb82028afc7e9ad0856a89c0e2bea33a1c2d88c7582df75085ddc2`.
+
+The three other failures expose an error in the added test inputs.
+Subtitles requires offsets in 30,000-millisecond increments; the proposed 1,000, 58,000, and 58,001 inputs are invalid.
+They failed before encoder admission and do not prove a product keyframe-boundary defect.
+The corrected controls vary source keyframes while retaining valid public offsets.
+At offset 60,000, the preceding, exact, and just-before keys are 58, 60, and 59.96 seconds.
+Expected first source frames are independently fixed at 1,450, 1,500, and 1,499.
+Their first segment lengths must be 4, 2, and 2.04 seconds.
+The origin-zero case uses offset 30,000 and source keys zero and 32 seconds, with first frame zero and first cut 32 seconds.
+The changed key gaps use a forty-second GOP cap; the original previous-key fixture retains its six-second cap.
+Actual generated key positions must match the independent fixture contract within one microsecond.
+Master HTTP status is retained before assertion. Full sequence and map equality remain unchanged.
+Independent review approves this correction; new hosted boundary results remain pending.
+
+Both Firefox and WebKit layout jobs pass at `59ded1ef`, with unchanged source and seven verified script inputs.
+Each contains forty Player and forty-six Subtitles measurements across eleven and twenty-six flows, without a failed stability observation.
+Firefox isolated fixtures pass 37 cases; WebKit passes 35 and skips two, with no failures or retries.
+These are browser layout and fixture results, not physical-device proof.
+
+Exact-main CI run `38432979723` finishes successfully for prior merged commit `29ba9e4f5de30a78899f14f0994c1e108629bbaa`.
+All nine publication jobs pass, including four tested and scanned architecture images, signatures, provenance, and production-tag promotion.
+Registry commit, main, and latest tags agree for each app.
+Player digest: `sha256:34952742be45801f3bd07bf93e4fecc434f678346c61a1e470adfe656e47b153`.
+Subtitles digest: `sha256:82b0c1c2f48fc8d2b1aaefec892e84babbceb5f8990213cc3a270a1655d43ac7`.
+Four platform configuration revision labels and four tested candidate-index artifacts bind to the published platform manifests.
+A fresh ancestry check retains the merged commit in remote main. No Nox or physical playback result follows from this publication evidence.

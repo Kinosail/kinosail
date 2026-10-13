@@ -18,14 +18,14 @@ import time
 from hls_copied_prefix_faults import held_fault
 from hls_copied_prefix_environment import held_encoder, fault_probe
 from hls_completed_suffix import completed_suffix, completed_suffix_receipt
-from hls_timeline_fixture import LONG_RESUME_KEYS, check, fixture
-from hls_long_resumed_prefix import long_window, long_window_final, long_window_join, long_window_rejection
+from hls_timeline_fixture import check, fixture
+from hls_long_resumed_prefix import long_fixture, long_window, long_window_final, long_window_join, long_window_rejection
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--long-resume', type=int, nargs='?', const=60000, choices=[1000, 58000, 58001, 60000],
-                    help='Hold a long copied window at this millisecond offset')
+parser.add_argument('--long-resume', nargs='?', const='previous', choices=['previous', 'origin', 'on-key', 'after-key'],
+                    help='Hold a long copied window at this source keyframe boundary')
 parser.add_argument('--completed-suffix', choices=['success', 'producer', 'timeout', 'missing-plan', 'mismatched-plan'])
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
@@ -65,9 +65,7 @@ try:
     media = RUN / 'media'
     media.mkdir()
     if args.long_resume:
-        keys = (*LONG_RESUME_KEYS, 77, 81, 84, 89, 93, 96, 100, 104)
-        source, receipt['fixture'] = fixture(media, 'Prefix Sample', 25 * 6, ','.join(map(str, keys)),
-                                             rate='25', frames=2662, extension='.mp4')
+        source, receipt['fixture'] = long_fixture(media, args.long_resume, receipt)
     else:
         source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
                                              frames=24 * 32, extension='.mp4')
@@ -96,8 +94,7 @@ try:
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_must_copy')
             if args.long_resume:
-                plan['compatible'] = plan['compatible'].replace('/index.m3u8', f'-o{args.long_resume}/index.m3u8')
-                receipt['longResumeOffset'] = args.long_resume
+                plan['compatible'] = plan['compatible'].replace('/index.m3u8', f"-o{receipt['longResumeOffset']}/index.m3u8")
             if args.completed_suffix:
                 state = [server]
                 try:
@@ -109,6 +106,7 @@ try:
                 long_window_rejection(api, plan['compatible'], RUN, receipt)
                 raise HeldFaultComplete()
             status, master, _ = api.http(plan['compatible'])
+            receipt['masterStatus'] = status
             check(status == 200, 'master_status')
             rendition = re.findall(rb'^([1-9][0-9]*p/index\.m3u8)$', master, re.M)
             check(len(rendition) == 1, 'one_variant')
@@ -116,7 +114,7 @@ try:
             wait_for(lambda: (RUN / 'held').exists(), 'producer_not_held')
             physical = next((RUN / 'cache').glob('*/' + rendition[0].decode()))
             prefix = physical.read_bytes()
-            check(len(cuts(prefix)) == 1 and abs(cuts(prefix)[0][0] - (2 if args.long_resume == 1000 else 4)) < .1
+            check(len(cuts(prefix)) == 1 and abs(cuts(prefix)[0][0] - receipt.get('longExpectedFirstCut', 4)) < .1
                   and b'#EXT-X-ENDLIST' not in prefix, 'held_prefix_shape')
             held_pid = (RUN / 'held').read_text()
             joined = RUN / (held_pid + '.joined')

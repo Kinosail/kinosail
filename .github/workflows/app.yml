@@ -477,8 +477,8 @@ jobs:
             python3 apps/player/scripts/test-subtitles-copied-prefix.py --plan-fault "$fault"
           done
           status=0
-          for offset in 60000 1000 58000 58001; do
-            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume "$offset" || status=1
+          for boundary in previous origin on-key after-key; do
+            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume "$boundary" || status=1
           done
           for fault in unsupported timeout; do
             python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume --index-fault "$fault" || status=1
