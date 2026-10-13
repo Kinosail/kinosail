@@ -359,7 +359,79 @@ class LivePlaybackOverlayTest {
         }
     }
 
-    private fun journey(evidenceName: String, mode: String = "ready", check: (JSONObject, String) -> Unit) {
+    // The normal toggle journey parses before the final cue. Resume after it to prove
+    // lazy first selection still allows seeking backward into the retained caption.
+    @Test fun captionsReturnWhenSeekingBackFromAfterTheirFinalCue() =
+        journey("caption-seek", "pending", startAt = 115.0, pauseOnStart = true) { json, _ ->
+            val subtitleLoaded = java.util.concurrent.atomic.AtomicBoolean(false)
+            val listener = object : androidx.media3.exoplayer.analytics.AnalyticsListener {
+                override fun onLoadCompleted(
+                    eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime,
+                    info: androidx.media3.exoplayer.source.LoadEventInfo,
+                    data: androidx.media3.exoplayer.source.MediaLoadData,
+                ) {
+                    if (info.uri.path?.startsWith("/subtitle/") == true) subtitleLoaded.set(true)
+                }
+            }
+            withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).addAnalyticsListener(listener) }
+            // The bridge held both video and captions, so the listener cannot miss
+            // the first sidecar completion. No production injection hook is needed.
+            try {
+                setMedia(json, "ready")
+                compose.waitUntil(10_000) { subtitleLoaded.get() }
+            } finally {
+                withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).removeAnalyticsListener(listener) }
+            }
+            awaitLightFrame()
+            compose.waitUntil(10_000) { withPlayer {
+                playbackState == androidx.media3.common.Player.STATE_READY && currentPosition >= 114_000 &&
+                    currentTracks.isTypeSelected(androidx.media3.common.C.TRACK_TYPE_TEXT)
+            } }
+            assertTrue("No caption remains after its final cue", withPlayer { currentCues.cues.isEmpty() })
+            val prefix = json.optString("capture", "phone")
+            capture("$prefix-captions-after-final-cue").recycle()
+            withPlayer { seekTo(5_000) }
+            compose.waitUntil(10_000) { withPlayer {
+                playbackState == androidx.media3.common.Player.STATE_READY && currentPosition in 4_900L..5_100L &&
+                    currentCues.cues.size == 1
+            } }
+            assertFalse("Caption seek preserves paused playback", withPlayer { playWhenReady })
+            assertEquals("Sidecar duration must not shorten the video", 120_000L, withPlayer { duration })
+            capture("$prefix-captions-seek-back").recycle()
+        }
+
+    private fun <T> withPlayer(action: androidx.media3.common.Player.() -> T): T {
+        val result = AtomicReference<Result<T>>()
+        val finished = CountDownLatch(1)
+        val main = android.os.Handler(android.os.Looper.getMainLooper())
+        val collect = Runnable {
+            result.set(runCatching {
+                val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                    .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).single()
+                var visited = 0
+                fun find(view: android.view.View): androidx.media3.ui.PlayerView? {
+                    if (++visited > 250) return null
+                    if (view is androidx.media3.ui.PlayerView) return view
+                    if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                        if (visited >= 250) break
+                        find(view.getChildAt(index))?.let { return it }
+                    }
+                    return null
+                }
+                val player = requireNotNull(find(activity.window.decorView)?.player)
+                check(player.applicationLooper == android.os.Looper.myLooper())
+                player.action()
+            })
+            finished.countDown()
+        }
+        check(main.post(collect))
+        try { check(finished.await(2, TimeUnit.SECONDS)) { "Native player action did not finish" } }
+        finally { main.removeCallbacks(collect) }
+        return requireNotNull(result.get()).getOrThrow()
+    }
+
+    private fun journey(evidenceName: String, mode: String = "ready", startAt: Double = 0.0,
+                        pauseOnStart: Boolean = false, check: (JSONObject, String) -> Unit) {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         val seed = File(context.filesDir, "video-overlay-seed.json")
@@ -396,10 +468,11 @@ class LivePlaybackOverlayTest {
             journal.apply(itemId, entry.progress, result)
             if (result.conflict) journal.resolve(itemId, false)
         }
-        val reset = progress.sync(itemId, token, viewer.id, WatchProgress(session = UUID.randomUUID().toString(), revision = 1),
+        val reset = progress.sync(itemId, token, viewer.id,
+            WatchProgress(session = UUID.randomUUID().toString(), revision = 1, seconds = startAt),
             progress.current(itemId, token, viewer.id))
         assertFalse("The generated title starts from known progress", reset.conflict)
-        assertEquals(0.0, reset.progress.seconds, 0.0)
+        assertEquals(startAt, reset.progress.seconds, 0.0)
         val store = SessionStore(context)
         store.clear()
         store.save(SavedSession(server, token, viewer))
@@ -440,6 +513,7 @@ class LivePlaybackOverlayTest {
                     compose.waitUntil(30_000) {
                         compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()
                     }
+                    if (pauseOnStart) withPlayer { pause() }
                     check(json, title)
                     compose.onNodeWithText("Done").assertIsEnabled().performClick()
                     waitForText("Back")

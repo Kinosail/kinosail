@@ -3794,3 +3794,51 @@ It cannot show whether the endpoint notification was absent or rejected by an ob
 The next revision records up to four notification arrivals and each guard condition without loading a view.
 The original observer guard, startup deadline, scrub action, clock assertion, and completion checks remain unchanged.
 No production playback change or local application runtime is included in this diagnostic revision.
+
+## Android cue duration repair — October 13
+
+At `3203b915a18f77a6d9fe6ad25dab4828cf11f920`, all four positive caption cases retain one selected text track after re-enabling captions.
+Each has one active cue before toggling and zero afterward, including after playback advances.
+All paired compositor measurements independently confirm zero caption pixels.
+Search setup and fixture controls succeed. The captions-off negative control reaches its intended visibility rejection.
+Both tablet repetitions now use the original portrait video on a landscape display.
+
+Artifact `11846286477` has SHA-256 `8b07e83b44ba512e1a896411668f0112c9d74da4998a4bb43583d570880ab006`.
+Five source pins, six fixture pins, and all 57 artifact hashes verify.
+The Server, bridge, and emulator settle, and retained source remains unchanged.
+These observations establish cue loss rather than an invisible selected caption layer.
+
+Pinned Media3 1.11.1 source explains the observed failure.
+[DefaultMediaSourceFactory](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/DefaultMediaSourceFactory.java) constructs the lazy sidecar extractor with a null format.
+[SubtitleExtractor](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/extractor/src/main/java/androidx/media3/extractor/text/SubtitleExtractor.java) then cannot publish its measured cue end through a seek map.
+[ProgressiveMediaPeriod](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaPeriod.java) instead estimates duration from the last sample start plus 10 milliseconds.
+For this fixture, that yields 1.01 seconds despite a cue ending at 110 seconds.
+Disabling the track clears its queue. Re-enabling it past the estimated duration ends the stream without replaying its cue.
+This is a source-supported cause; the hosted repair trial must establish the counterfactual.
+
+The repair gives each WebVTT sidecar extractor its original format so it publishes the actual duration.
+The primary source and sidecars use the same guarded transport. Embedded subtitle parsing remains with the default factory.
+Lazy preparation retains its exact output format and fresh parser instances.
+The primary media duration remains authoritative when sources merge.
+A ten-line, compile-checked bridge accesses Media3's package-private lazy-loading method.
+This explicit dependency coupling avoids eager requests for every unselected sidecar.
+Remove the bridge when upstream exposes or repairs this path; dependency upgrades must retain the runtime regressions.
+
+The existing off/on/off journey failed before the repair and remains unchanged.
+A new journey resumes the real Server title at 115 seconds, after its final cue, while video and subtitle responses are held.
+It pauses the app's public Player and attaches a public load-completion listener before releasing the fixture.
+Only a completed sidecar load permits seeking backward to five seconds.
+The test requires one restored cue, paused playback, and the original 120-second video duration.
+This closes a gap where a backward seek could race the first parse and let the old code pass.
+The listener is removed, and two screenshots retain the late and restored states.
+This additional test was authored before the production remedy but has not yet run on the baseline.
+
+The same hosted revision records 335 iOS passes, one failure, and one skip; tvOS records 320 passes and one skip.
+Apple artifact `11845663106` has SHA-256 `7809ab62146d6529f6881bb0378b95122116fb524be80ad7899bc16fbc87e031`.
+The reader times out with an attached loading WebView and no asset request.
+That same view finishes about four seconds after the deadline. The original failure is retained.
+The tvOS endpoint notification and injected scrub pass this time; prior intermittent failures remain unresolved.
+
+Python source parsing, whitespace, and source caps pass for this repair trial.
+Hosted compilation, cue restoration, and caption placement remain pending. Local application runtimes remain held.
+The original tablet gesture-bar overlap still requires the strict pixel oracle after cue restoration.

@@ -91,7 +91,7 @@ class Bridge(BaseHTTPRequestHandler):
         except ValueError:
             self.send_error(400)
             return
-        if self.path.startswith("/media/"):
+        if self.path.startswith(("/media/", "/subtitle/")):
             Bridge.ready.wait(30)
             with Bridge.lock:
                 mode = Bridge.mode

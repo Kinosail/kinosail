@@ -49,7 +49,7 @@ def await_boot(process):
 
 
 def capture_case(run, safe, token, label, landscape, tablet, negative=False):
-    case = {"name": label, "negativeControl": negative, "expectedTests": 1 if negative else 3,
+    case = {"name": label, "negativeControl": negative, "expectedTests": 1 if negative else 4,
             "result": "failed", "stage": "configure"}
     try:
         adb("shell", "am", "force-stop", APP)
@@ -110,7 +110,7 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         names = [name for name in listing if name.startswith(label + "-") and
             re.fullmatch(r"[a-z0-9-]+(?:\.png|-caption-safe-area\.json)", name)]
         case["availableArtifactCount"] = len(names)
-        check(0 < len(names) <= 16, "caption_artifact_count")
+        check(0 < len(names) <= 19, "caption_artifact_count")
         destination = safe / label
         destination.mkdir()
         case["screenshotSizes"] = {}
@@ -195,6 +195,9 @@ try:
         ROOT / "apps/player/scripts/test-android-captions.py", ROOT / "apps/player/scripts/android_caption_fixture.py",
         ROOT / "apps/player/scripts/android_caption_bridge_checks.py",
         ROOT / "apps/player/apps/android/app/src/androidTest/java/com/kinosail/player/mobile/LivePlaybackOverlayTest.kt",
+        ROOT / "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackMediaSourceFactory.kt",
+        ROOT / "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackModel.kt",
+        ROOT / "apps/player/apps/android/app/src/main/java/androidx/media3/exoplayer/source/KinosailSubtitleLoading.kt",
         ROOT / "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt")}
     receipt["bridgeBoundary"] = {}
     verify_bridge(receipt["bridgeBoundary"])
