@@ -111,13 +111,16 @@ extension NativePreferencesUXTests {
             fixture.readerHeld = true
             readerRoot(window, session: session, light: light)
             window.makeKeyAndVisible()
+            stage = "initial-metadata-start"
             try await readerUntil { fixture.heldReaderCount == 1 }
+            stage = "initial-pending-capture"
             let initial = try readerBands(window, light: light)
             try JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
                 "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted])
                 .write(to: folder.appendingPathComponent("pending-font.json"))
             try await readerCapture(window, folder: folder, name: "pending-initial")
             if fontSize != 20 {
+                stage = "saved-font-pending"
                 try await readerUntil("Pending lines must adopt the confirmed saved font before book metadata is released") {
                     (try? readerBands(window, light: light).contains { abs($0.height - CGFloat(fontSize)) <= 1 }) == true
                 }
@@ -126,7 +129,9 @@ extension NativePreferencesUXTests {
             try #require(!pending.isEmpty, "Prerequisite: real pending lines must be visible while metadata is held")
             try await readerCapture(window, folder: folder, name: "pending")
             fixture.releaseReader()
+            stage = "loaded-webview"
             try await readerUntil { readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading } }
+            stage = "loaded-geometry"
             let web = try #require(readerDescendants(window).compactMap { $0 as? WKWebView }.first)
             let metrics = try await readerMetrics(web)
             let origin = web.convert(web.bounds, to: window)
@@ -172,10 +177,13 @@ extension NativePreferencesUXTests {
             }
         } catch {
             if let evidenceFolder {
-                let diagnostic: [String: Any] = ["stage": stage, "heldReaderCount": fixture.heldReaderCount,
+                let diagnostic: [String: Any] = ["stage": stage, "light": light, "fontSize": fontSize, "heldReaderCount": fixture.heldReaderCount,
                     "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
-                try? JSONSerialization.data(withJSONObject: diagnostic, options: [.prettyPrinted])
-                    .write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
+                if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]) {
+                    try? data.write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
+                    // Retain only fixed stage names and fixture counts in hosted logs.
+                    print("NATIVE_READER_FAILURE " + String(decoding: data, as: UTF8.self))
+                }
             }
             await session.client?.close(purgeCache: true)
             if let previousSession { try await keychain.save(previousSession) } else { try await keychain.clear() }

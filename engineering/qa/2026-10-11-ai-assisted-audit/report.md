@@ -26,10 +26,10 @@ The chronological sections below retain earlier failures, repairs, and exact art
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
-| Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The shortened-AAC control passes the focused race preflight at `07db0b07`. | Complete race, coverage, and current required gates. |
+| Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
 | Browser session return | Subtitles Firefox and WebKit each pass 99 cases without failures, flakes, or skips at `657e2ca2`. | Player's previously skipped session-return case is now required by its populated runner; hosted execution is pending. |
-| Entropy failures | Source review approves process isolation with preserved child coverage and unchanged response/state assertions. | Hosted race and coverage confirmation at `07db0b07`. |
-| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. | Current hosted checks and physical-device behavior. |
+| Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
+| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. | The later `657e2ca2` iOS reader journey times out for two light-mode arguments. Stage diagnostics and current native checks are pending. Physical-device behavior remains separate. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -2907,3 +2907,16 @@ Architecture artifact `11807298010` verifies all three pins, exact source, and u
 Browser artifact inspection also finds an execution gap. The Player saved-session case is skipped in the general suite and absent from the populated runner's selected files. The runner now includes its existing test file and requires its exact title. Its existing result verifier rejects missing, skipped, failed, retried-failure, and duplicate required journeys. The three focused verifier contracts pass. Shell parsing, ShellCheck, source limits, whitespace, and discovery of the selected case in all three browser projects pass. Hosted execution is still required; no new browser test or product authentication change was added.
 
 At `657e2ca2`, Player Firefox artifact `11806348473` verifies 573 checksums with no failures or flakes. Its seven reports contain 877 passing executions and 361 skips. Those skips require separate populated fixtures, isolated transport controls, or unsupported native UI; they are not passing evidence. ZIP SHA-256: `f2a31ccf558df26eb4324069ea17003bb67ef755f6a66005751506395ca757f7`. Subtitles WebKit artifact `11806990789` verifies 198 checksums, 99 passes, and zero skips, failures, or flakes. ZIP SHA-256: `a5eaa3736f49486454cbaf355016df90dfa9f8cee631888dc5a47392329387ec`.
+
+
+### Complete race and coverage pass; native reader failure needs a precise stage
+
+The entire HLS job [38388024799](https://github.com/Kinosail/kinosail/actions/runs/38388024799) succeeds at `07db0b07`, including integrated Player verification. Full artifact `11807995728` verifies all five fixtures, nine rendition comparisons, four legacy rebuilds, five damaged-proof controls, both staged-rejection controls, and exact first-fragment recovery. Its 168 receipts and 20 checksum entries verify. ZIP SHA-256: `339cadc96ba65556524ea689bb92bd711a217e1d378c3366cb96c24795e04534`. Private job log SHA-256: `74831d6f91a3957a39e854fce0a2f2ef248f6e8eef9db2ff4e3d6e03cc4fd825`. No test failure or race is reported.
+
+The separate deep Player job also passes. Go's authoritative function summary reports 89.2%, above the unchanged 89% floor. Coverage artifact `11808355507` has archive SHA-256 `5774a96fb36c902a9d93e6697ac945b1f36f5ca3408804149254e4aadbb7e821`. The merged profile retains positive counters for cast entropy rejection, bookmark entropy rejection, and fallback request-ID generation. All three isolated child controls therefore retain their failure-path coverage. Private deep job log SHA-256: `e616e7a66a3b283fdb0942d175d2f8bab47cb3c66f9a1685f16240663ee60785`.
+
+The earlier `657e2ca2` native job reports one failed parameterized iOS test: the pending-to-loaded reader journey times out for light mode at font sizes 20 and 32. Its generic wait message does not identify which operation stalled. The xcresult reports 335 passes, one failed case, and one skip. Artifact `11806284270` has ZIP SHA-256 `87a20243e66bc77b7f79f3cc4e44e01161cfc49a572c3bbdb89c5b7d121e9280`. Private log SHA-256: `adef86ed568dd5a57bff1cea1ebfccb670b4828734fb0d7789d671a0dbd975d3`.
+
+The existing native diagnostic file stays in the simulator's temporary directory and is absent from the hosted artifact. Failure-only diagnostics now retain the fixed stage, light-mode flag, font size, and fixture request counts in the captured test log. No request bodies, tokens, paths, or URLs enter that record. The original exception, ten-second waits, and all geometry and terminal-state assertions remain unchanged. This is diagnostic work; no product reader defect or repair is established yet.
+
+The `07db0b07` deep native job repeats the same two reader wait failures while tvOS passes its reported 316 Swift tests. Its private log SHA-256 is `4ccc602493f4c15a56d063c76da5bd5ecbb881174025a2d832802058ed32a5f3`. The failure remains open; a later pass will not replace investigation of these retained failures.
