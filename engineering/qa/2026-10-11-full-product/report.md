@@ -2611,3 +2611,26 @@ Fetched ancestry proves reviewed head `ce55f771a81c8106252f34735587afce92ad57e8`
 is included in remote main `3b9fb3c595b83b556ddbf2767d2443227bfbab7f`.
 Final-head deep run `38349207874` remains in progress. Its result is separate
 from required PR checks, prior local native tests and the deployed main47 snapshot.
+
+## QA-034 — Nox adapter fixture omits the new scanner prerequisites
+
+PR #590's hosted Player and Subtitles installer jobs fail the shared Nox adapter
+fixture. Each fixture expects an unhealthy or exited target to reach its deliberate
+image-build failure. It supplies no scanner executables, so the correct new
+preflight rejects before the existing build assertion. The verification-plan test
+is not the failing Makefile step. Its separate ignored-fixture control is excluded
+from this diagnosis, and its exploratory diagnostic edits are removed before commit.
+
+Both adapter cases reproduce locally at exact head `840a2a55`, before fixture edits.
+Their red log SHA-256 values are
+`f5d2b7d05c4ae8a60060af4ca03d3d84f4c92de44bd573f52b51cd178254e62d` and
+`01781a7a24b9265b57db092a91ec9fef9de7e5dc9995fd3a62041034e724f7e4`.
+The fixture now supplies explicit Trivy and Syft stand-ins. Neither runs because
+the fixture deliberately fails its image build. All existing unhealthy-state,
+no-rebuild, watcher and adapter assertions remain unchanged.
+
+Both complete app local-pipeline test commands pass afterward. The shared
+missing-scanner regression also passes, preserving rejection before side effects.
+Focused shellcheck passes. This corrects test prerequisites; actual deployment
+scanner discovery, vulnerability policy and image promotion checks do not change.
+Fresh hosted checks remain required before integration.

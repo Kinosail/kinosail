@@ -35,6 +35,9 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'if [[ " $* " == *" run list "* ]]; then printf "[{\"databaseId\":123,\"headSha\":\"%s\",\"status\":\"completed\",\"conclusion\":\"success\"}]\n" "$KINOSAIL_TEST_SHA"; exit; fi' \
   'if [[ " $* " == *" run view "* ]]; then printf "{\"jobs\":[{\"name\":\"Publish verified containers / Advance %s production tags\",\"conclusion\":\"success\"}]}\n" "$KINOSAIL_TEST_APP"; exit; fi' \
   'exit 99' >"$tmp/bin/gh"
+for scanner in trivy syft; do
+  printf '%s\n' '#!/usr/bin/env bash' 'exit 0' >"$tmp/bin/$scanner"
+done
 chmod +x "$tmp/bin/"*
 
 deploy() {
