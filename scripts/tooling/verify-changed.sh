@@ -166,10 +166,17 @@ while IFS= read -r file; do
   [[ -z "$file" ]] || run_stage "ui-lint:$file" "$file" "$repo/.codex/skills/impeccable/scripts/impeccable" detect --no-advisory "$file"
 done <<<"$css_files"
 
-native_files="$(grep -E '^apps/native/' <<<"$changed" | grep -Ev '^apps/native/AGENTS\.md$' || true)"
-if [[ "$app_path" == apps/player && -n "$native_files" ]]; then
-  native_inputs="$(printf '%s\n%s\n' "$(git ls-files apps/native)" "$native_files" | LC_ALL=C sort -u)"
-  run_stage native-client "$native_inputs" make client-check
+if [[ "$app_path" == apps/player ]]; then
+  native_files="$(grep -E '^Makefile$|^apps/native/' <<<"$changed" | grep -Ev '^apps/native/AGENTS\.md$' || true)"
+  copy_files="$(grep -E '^scripts/generate-native-copy\.py$|^internal/server/locales/active\.[^/]+\.json$|^apps/android/(app|wear)/src/main/(java/.*\.kt|assets/interface-copy/[^/]+\.json|res/xml/locale_config\.xml)$' <<<"$changed" || true)"
+  if [[ -n "$native_files$copy_files" ]] || grep -Fqx 'packages/localization/languages.go' <<<"$shared_changed"; then
+    native_inputs="$(printf '%s\n%s\n%s\n' "$(git ls-files Makefile scripts/generate-native-copy.py 'internal/server/locales/active.*.json' apps/native 'apps/android/app/src/main/java/*.kt' 'apps/android/wear/src/main/java/*.kt' 'apps/android/*/src/main/assets/interface-copy/*.json' 'apps/android/*/src/main/res/xml/locale_config.xml' ../../packages/localization/languages.go)" "$native_files" "$copy_files" | LC_ALL=C sort -u)"
+    if [[ -n "$native_files" ]]; then
+      run_stage native-client "$native_inputs" make client-check
+    else
+      run_stage native-copy "$native_inputs" make native-copy-check
+    fi
+  fi
 fi
 
 e2e_files="$(while IFS= read -r file; do
