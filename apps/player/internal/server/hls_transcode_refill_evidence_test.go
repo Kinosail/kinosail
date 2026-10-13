@@ -110,7 +110,7 @@ func transcodeRefillSave(t *testing.T, directory string, value any) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := os.MkdirAll(directory, 0o700); err != nil {
+	if err := os.MkdirAll(directory, 0o700); err != nil { //nolint:gosec // G703: this test-only evidence root comes from the trusted runner, never an HTTP or media input.
 		t.Fatal("cannot create owned media evidence directory")
 	}
 	path := filepath.Join(directory, fmt.Sprintf("%x.jsonl", sha256.Sum256([]byte(t.Name()))))
@@ -146,11 +146,7 @@ func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, maste
 	if afterOwned != beforeOwned+1 || !bytes.Contains(rebuilt, []byte(":transcode-clock=1")) {
 		t.Fatal("public reopen reused the legacy frame clock instead of rebuilding")
 	}
-	for _, name := range []string{".source", ".seekable"} {
-		if bytes.Count(transcodeRefillRead(t, filepath.Join(root, name)), []byte(":transcode-clock=1")) != 1 {
-			t.Fatal("rebuilt cache did not persist its frame-clock policy")
-		}
-	}
+	transcodeRefillCurrentBindings(t, root)
 	for index, variant := range variants {
 		base := prefix + strings.TrimSuffix(variant, "index.m3u8")
 		var parts [][]byte
@@ -161,6 +157,21 @@ func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, maste
 		control := controls[index]
 		if actual.Numerator != control.Numerator || actual.Denominator != control.Denominator || !slices.Equal(actual.Frames, control.Frames) {
 			t.Fatal("legacy cache rebuild changed the accepted frame clock")
+		}
+	}
+}
+
+func transcodeRefillCurrentBindings(t *testing.T, root string) {
+	t.Helper()
+	for _, name := range []string{".source", ".seekable"} {
+		data, err := os.ReadFile(filepath.Join(root, name))
+		// A complete rebuild may remove the seek-only marker. If retained, it
+		// must identify the new policy rather than certify the legacy cache.
+		if name == ".seekable" && os.IsNotExist(err) {
+			continue
+		}
+		if err != nil || bytes.Count(data, []byte(":transcode-clock=1")) != 1 {
+			t.Fatal("rebuilt cache did not persist its frame-clock policy")
 		}
 	}
 }

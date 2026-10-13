@@ -2414,3 +2414,28 @@ The system actionlint rejected a pre-existing parallel step; it does not support
 Source limits and whitespace checks passed. The Code Atlas was refreshed from unchanged canonical package inventory using the generator's source parser.
 Full canonical generation and runtime verification remain hosted checks. No local app runtime was started.
 These fixtures are video-only software H.264 at 25 fps. AAC timing, browser/native startup, and hardware encoders remain separate boundaries.
+
+### Output-clock trial: refill passes, migration assertion corrected
+
+At `b2d5ae37`, [deep run 38346543067](https://github.com/Kinosail/kinosail/actions/runs/38346543067) passed the unchanged original/mixed clock assertions for all four actual renditions.
+All eight decodes produced 150 frames with identical timestamps and durations, zero diagnostics, and successful exits.
+The clock SHA-256 is `8fc7ba932ab62e939b596e1d5ffb756fe56173405fe1196abb68f8a63788af0b` in every case.
+This repairs the demonstrated 150-to-148 frame loss. It is not yet full migration or browser acceptance.
+The evidence archive SHA-256 is `aec1ba44b8a1202366bf5501c29cfc013ed670551320c7a9f9635c77dc87a1c4`.
+
+Both migration fixtures started exactly one additional joined producer and restored the master policy.
+The test then incorrectly required `.seekable` after a full rebuild. That marker belongs to a seek-generated cache.
+A full rebuild can remove it; the completed master and `.source` bind the resulting cache.
+The corrected assertion still requires the new `.source` policy. It accepts an absent `.seekable`, but rejects other read errors or a retained stale policy.
+Independent review confirmed this lifecycle distinction. The exact legacy decoded-clock assertions remain unchanged and await hosted execution.
+
+The trial also identified two test-helper lint findings: a complex migration function and the trusted evidence-directory boundary.
+The binding check now has a focused helper. The test-only directory creation explicitly documents its trusted runner input.
+No production validation or quality threshold changed. Canonical Code Atlas generation passed at `b2d5ae37`.
+
+The earlier `bcc888a0` Subtitles deep job received HTTP 404 in `TestCommandLineCanDisableTLS`.
+The unchanged Subtitles deep job passed at `b2d5ae37`; this does not establish the earlier failure's cause.
+The CLI test now retains private child output and emits only a bounded failure projection.
+It reports the ready-log observation, server failure, bind-conflict class, child 404 count, exit status, and truncation.
+The ready log precedes binding and does not prove that the child served a request.
+The test still fails the first unexpected HTTP response. No status retry, timeout relaxation, or production seam was added.
