@@ -21,21 +21,22 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 13
 
-PR 587 is ready for review. The campaign goal is active; no complete product or platform acceptance is claimed.
-The chronological sections below retain earlier failures, repairs, and exact artifact evidence.
+PRs #587 and #592 are merged. PR #593 is the active Android caption regression draft.
+The campaign goal remains active; no complete product or platform acceptance is claimed.
+Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
-| Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage, including staged-clock and shortened-AAC rejection. | Current required gates and physical playback. |
-| Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. The diagnostic revision passes the full Player race suite at `a02a4227`. | The earlier failure remains unconfirmed; retain bounded observations on recurrence. |
-| Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
-| Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | At `08d0da84`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
-| Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
-| Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. The repaired paced journey, all eight clock cases, eleven plan cases, and five completion cases pass at `5df3c236`. | Current required gates and longer copied windows remain open. |
-| Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
+| Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
+| Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
+| Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. |
+| Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
+| Apple native contracts | At `08d0da84`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. | Earlier intermittent scrub, hero, and reader failures still need diagnostic reproduction; physical-device proof remains open. |
+| Android | Earlier populated phone, tablet, and TV results are recorded below. PR #593 adds a hosted caption baseline and negative control. | Hosted caption reproduction and repair, intermittent EPUB accessibility, and Wear execution. |
+| Subtitles copied suffix | PR #592 verifies thirty receipts. Four long resumed windows preserve all sixty fragments and 6,199 expected frames. Both index-failure controls pass. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
+| Publication and deployment | PR #587's exact-main images are verified and promoted. PR #592 is merged with fetched ancestry and matching tested tree. | PR #592 exact-main CI/publication is running. Deployment and physical playback remain unverified. |
 
-Local runtime remains held for the coordinated physical Apple TV window. Current local checks use source formatting, shell parsing, source contracts, and artifact inspection. Hosted gates remain enabled.
+Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 
 ## Baseline evidence
 
