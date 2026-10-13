@@ -68,11 +68,12 @@ func validateCompletedCopiedAssets(root *os.Root, directory string, manifest []b
 	initialized, segments := false, 0
 	for _, line := range strings.Split(string(manifest), "\n") {
 		name := line
-		if line == `#EXT-X-MAP:URI="init.mp4"` {
+		switch {
+		case line == `#EXT-X-MAP:URI="init.mp4"`:
 			name, initialized = "init.mp4", true
-		} else if line != "" && !strings.HasPrefix(line, "#") {
+		case line != "" && !strings.HasPrefix(line, "#"):
 			segments++
-		} else {
+		default:
 			continue
 		}
 		if !completedCopiedAsset(root, directory, name) {
