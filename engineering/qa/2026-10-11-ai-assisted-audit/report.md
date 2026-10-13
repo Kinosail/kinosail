@@ -27,9 +27,9 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
-| Browser session return | Subtitles Firefox and WebKit each pass 99 cases at `657e2ca2`. Player Firefox and WebKit at `c09c2659`, and Chromium at `8fa923df`, execute the required populated session-return case without retry. Chromium's repaired trace assertion passes at `ea644e55`. | Current gates, the Firefox wrong-worker fixture repair, and a WebKit touch-dispatch stall. |
+| Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | Full suites and twelve reader probe outcomes pass at `bc33897b`. At `2e4feeee`, iOS and all twelve probe outcomes pass; a tvOS scrub-resume assertion fails. | Exact scrub timing, the earlier loaded-WebView timeout, and physical-device proof remain open. |
+| Apple native contracts | Full suites and twelve reader outcomes pass at `bc33897b`. Later runs expose a tvOS scrub assertion, a hero first-frame assertion, and reader timeouts with slow WebKit launches. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -3165,3 +3165,45 @@ Its passive recorder observes trusted touchstart at 98 milliseconds, then touche
 The simulated fullscreen event also arrives at 99 milliseconds with the fullscreen boolean true.
 The complete gesture/assertion interval is about 185 milliseconds. The page remains open, no crash is observed, and the browser stays connected.
 This establishes that the new receipt captures a healthy execution. It does not diagnose or repair the earlier 29.3-second stall.
+
+### Firefox worker repair passes with its negative prerequisites intact
+
+Player Firefox artifact `11815749903` at `2e4feeee` verifies 574 checksum entries and exits successfully.
+Archive SHA-256: `d23e91bdcb4312be020d01d9d37fe97604d6c7a691b8857f82d58e37d7f9713c`.
+The wrong-worker and wrong-scope controls each appear in two retained reports, passing without retry.
+All four receipts require `workerReplacementReady=true`, retain one navigation call, and reject the controlled navigation timeout.
+They record no page error, transfer ranges, close operation, or removal. The setup repair is now exercised with the original rejection assertions.
+
+### Reader process-start evidence and a separate hero first-frame failure
+
+Native job `115315821820` at `08718f4740e7d46c28cf0b865723b4a88f80c241` fails the iOS suite and the reader probe; tvOS passes.
+The iOS suite records a hero first-frame failure and a dark, 20-point reader timeout.
+The separate probe fails light, 20-point reading on repetition one; its other eleven outcomes pass.
+Artifact `11818763253` has SHA-256 `e3bb653388fa4b81a13b35f6023e0b80099206f968427907c91a0876dca1ab39`.
+The private job log has SHA-256 `636ee879369f8dbac87b25d722065e92bb9f00a5cebb56ed3f4072341f9089d2`.
+
+Both reader failures retain a visible key window and attached WebView with a URL, loading state true, and progress 0.1.
+Neither fixture has received a book asset request. Metadata ages are approximately 11.83 and 12.38 seconds.
+A WebView exists only after this implementation's content-rule compilation succeeds, narrowing the earlier compilation hypothesis.
+The full-suite log records WebContent, GPU, and Networking launches taking approximately 9.1, 9.1, and 9.4 seconds near failure.
+The probe log records a WebContent launch taking 16.114382 seconds, reported about six seconds after the failure snapshot.
+This is evidence of slow auxiliary-process startup before asset admission; teardown prevents proving how the same navigation would finish.
+[WebKit's process documentation](https://webkit.org/debugging-webkit/) explains the separate WebContent and networking processes.
+The screenshot shows the chapter controls and pending spinner, with no chapter text.
+Its SHA-256 is `4ead3f18325831fe97d25a6413a40bad1d7e8f21801cce2c8e0c188deb05e960`.
+The corresponding state JSON SHA-256 is `bcbbb572084abb5543e760dc828fc4071d66dd6d337da16fa97d032bcabcbb1e`.
+
+The next reader observation keeps the original ten-second failure and briefly retains the same WebView afterward.
+It records asset-admission and loading transitions for at most fifteen additional seconds, without reload or retry, then rethrows the original error.
+This observation cannot turn a timed-out test into a pass. It distinguishes delayed startup from a navigation that remains stuck.
+No production pooling, data-store change, or passing-timeout increase is made.
+Apple documents that [nonpersistent data stores](https://developer.apple.com/documentation/webkit/wkwebsitedatastore) keep website data in memory; that isolation remains intact.
+
+The hero case retains `greenPixels=0` against its original greater-than-40 assertion, but no original image or pixel attachment.
+Cache presence was confirmed; the cached duration and fraction were not retained.
+A blank raster, missing progress content, and color-threshold mismatch remain distinct possibilities.
+In particular, the valid high-contrast dark signal color has blue 152, outside this predicate's blue-below-130 range.
+The failed execution's contrast is unknown, so that is an oracle sensitivity rather than its established cause.
+The existing test now attaches its original first image, exact asserted RGBA bytes, alpha count, cached progress values, and window traits on failure.
+It neither redraws the view nor retries the assertion. No production rendering behavior changes.
+Source-file limits and whitespace checks pass; native compilation and execution remain hosted evidence.

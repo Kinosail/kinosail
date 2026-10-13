@@ -39,6 +39,36 @@ extension NativePreferencesUXTests {
                 window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             }
             if let data = image.pngData() { try? readerEvidence(data, folder: folder, name: "loaded-webview-timeout.png") }
+            // Keep the original failure. Observe this navigation after the deadline
+            // to distinguish delayed process startup from an app load that stays stuck.
+            let observationStart = ProcessInfo.processInfo.systemUptime
+            var transitions: [[String: Any]] = []
+            var previousReads = fixture.state.withLock { $0.readerAssetReads }
+            var previousLoading = web.first?.isLoading
+            while ProcessInfo.processInfo.systemUptime - observationStart < 15, !Task.isCancelled {
+                do { try await Task.sleep(for: .milliseconds(50)) } catch { break }
+                let reads = fixture.state.withLock { $0.readerAssetReads }
+                let loading = web.first?.isLoading
+                if reads != previousReads || loading != previousLoading {
+                    if transitions.count < 8 {
+                        transitions.append(["elapsedMs": (ProcessInfo.processInfo.systemUptime - observationStart) * 1000,
+                            "assetReads": reads, "loading": loading ?? false, "hasWebView": !web.isEmpty,
+                            "progress": web.first?.estimatedProgress ?? 0])
+                    }
+                    previousReads = reads; previousLoading = loading
+                }
+                if let view = web.first, view.url != nil, !view.isLoading { break }
+            }
+            let followup: [String: Any] = ["originalFailureRetained": true,
+                "elapsedMs": (ProcessInfo.processInfo.systemUptime - observationStart) * 1000,
+                "assetReads": fixture.state.withLock { $0.readerAssetReads }, "transitions": transitions,
+                "sameWebViewAttached": web.first?.window === window,
+                "loading": web.first?.isLoading ?? false, "progress": web.first?.estimatedProgress ?? 0,
+                "cancelled": Task.isCancelled]
+            if let data = try? JSONSerialization.data(withJSONObject: followup, options: [.sortedKeys]) {
+                try? readerEvidence(data, folder: folder, name: "loaded-webview-after-timeout.json")
+                print("NATIVE_READER_AFTER_TIMEOUT " + String(decoding: data, as: UTF8.self))
+            }
             throw error
         }
     }
