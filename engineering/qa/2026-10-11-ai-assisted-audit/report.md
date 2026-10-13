@@ -2370,3 +2370,19 @@ It records media hashes, decoded-clock hashes, exit status, and bounded diagnost
 Pixel hashes identify evidence; lossy reencoding is not required to reproduce identical pixels.
 This test can establish a Server timeline defect. Browser append offsets and the cause of WebKit resets require separate proof.
 Hosted execution is pending. Local runtime remains held for the coordinated physical-device window.
+
+The test-only regression was committed as `bcc888a0` and dispatched in [deep run 38344855812](https://github.com/Kinosail/kinosail/actions/runs/38344855812).
+Source review found no admission or clock-oracle blocker. Runtime results remain pending.
+Its first tooling check exposed a stale Code Atlas test-file count, 374 instead of 376.
+Only two untagged Server test files were added. The snapshot count was refreshed; the canonical hosted generator must verify it.
+
+The completed `dda33cd1` Chromium and Firefox archives verify clean source and ten inputs each.
+Chromium verifies 535 checksums; Firefox verifies 571. Both passed all ten arithmetic controls, the listener control, and nine watched cases on their first attempts.
+Their archive SHA-256 values are `199ee42141e440e20dcea6130da91401faf056c6e86286a10d4a384012b45cdf`
+and `7a05d6a7dba4070c20c9917438db2f79c9d5ee764d74530ac2a3bc5556b15974`, respectively.
+Their general suites retain 357 and 361 conditional skips. These results do not imply complete product coverage.
+
+All three `bf39db6e` layout artifacts verify unchanged source and seven script inputs each.
+Each reports eleven stable Player flows and 26 stable Subtitles flows, without a failed stability or focus field.
+The isolated fixture suites passed 35 Chromium, 37 Firefox, and 35 WebKit cases, with two conditional skips in Chromium and WebKit.
+Measurement hashes were recorded locally. These artifacts do not provide an upstream full checksum manifest.
