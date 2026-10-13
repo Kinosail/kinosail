@@ -242,6 +242,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		}
 		if !t.Failed() {
 			transcodeRefillRejectDamagedProof(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], source, finalOwned)
+			finalOwned = transcodeRefillRejectClockMismatch(t, ctx, root, prefix, owned, variants[0], fragmentNames[2], source, finalOwned, logs)
 			transcodeRefillRecoverFirst(t, ctx, ffmpeg, ffprobe, prefix+strings.TrimSuffix(variants[0], "index.m3u8"), owned, originalFirst, finalOwned)
 		}
 	}

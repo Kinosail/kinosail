@@ -15,8 +15,10 @@ test("closing a signed-in tab resumes its saved login URL @smoke", async ({page,
   const reopened = await context.newPage();
   let begins = 0;
   reopened.on("request", request => { if (new URL(request.url()).pathname === "/api/v1/passkeys/login/begin") begins++; });
-  await reopened.goto(`${origin}/login?next=%2Faccount`);
+  // The saved session redirects during document loading; verify its destination.
+  await reopened.goto(`${origin}/login?next=%2Faccount`, {waitUntil:"commit"});
   await expect(reopened).toHaveURL(origin+"/account");
+  await expect(reopened.getByRole("heading", {name:"Ways to sign in", exact:true})).toBeVisible();
   await expect(reopened.locator("[data-passkey-login]")).toHaveCount(0);
   const status = await reopened.evaluate(async () => (await fetch("/api/v1/me")).status);
   expect(status).toBe(200);
@@ -26,7 +28,7 @@ test("closing a signed-in tab resumes its saved login URL @smoke", async ({page,
   expect(new URL(reopened.url()).pathname).toBe("/login");
   const receipt = info.outputPath("session-persistence.json");
   await writeFile(receipt, JSON.stringify({revision:execFileSync("git", ["rev-parse", "HEAD"], {encoding:"utf8"}).trim(), result:"passed",
-    command:"playwright test test-instance-session-persistence.spec.ts --project=chromium",
+    command:`playwright test test-instance-session-persistence.spec.ts --project=${info.project.name}`,
     data:"isolated populated Server Owner fixture; same browser context, closed tab and new tab",
     browser:info.project.name, meStatus:status, ordinaryReturnPasskeyBegins:0, explicitStepUpRetained:true}, null, 2));
   await info.attach("session-persistence", {path:receipt, contentType:"application/json"});

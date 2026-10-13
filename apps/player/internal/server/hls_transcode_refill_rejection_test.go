@@ -58,6 +58,12 @@ func transcodeRefillRestoreProof(t *testing.T, files map[string][]byte) {
 
 func transcodeRefillRejectedStatus(t *testing.T, ctx context.Context, url string) int {
 	t.Helper()
+	status, _ := transcodeRefillRejectedResponse(t, ctx, url)
+	return status
+}
+
+func transcodeRefillRejectedResponse(t *testing.T, ctx context.Context, url string) (int, string) {
+	t.Helper()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +73,11 @@ func transcodeRefillRejectedStatus(t *testing.T, ctx context.Context, url string
 		t.Fatal("damaged-proof HTTP request did not complete")
 	}
 	_ = response.Body.Close()
-	return response.StatusCode
+	requestID := response.Header.Get("X-Request-ID")
+	if requestID == "" || len(requestID) > 128 {
+		t.Fatal("rejected HTTP request lacks a bounded correlation ID")
+	}
+	return response.StatusCode, requestID
 }
 
 func transcodeRefillRetained(t *testing.T, files map[string][]byte) {
