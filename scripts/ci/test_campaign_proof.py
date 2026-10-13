@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -51,9 +51,9 @@ class CampaignProofTests(unittest.TestCase):
 
     def test_hls_followon_is_manual_bounded_and_keeps_only_receipts(self):
         source = LAYOUT.read_text()
-        self.assertIn("inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS'", source)
+        self.assertIn("inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'", source)
         proof = source.split('  hls-followon:\n')[1]
-        self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'HLS'", proof)
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && (inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC')", proof)
         self.assertIn('timeout-minutes: 15', proof)
         self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', proof)
         self.assertIn('python3 apps/player/scripts/test-hls-followon.py', proof)

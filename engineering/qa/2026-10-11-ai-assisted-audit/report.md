@@ -2645,3 +2645,25 @@ The repaired check isolates its upload step and requires the exact sixteen paths
 The prior unrestricted-tail assertion is retained in the failed hosted log. Sixteen architecture and eighteen workflow checks pass locally.
 The branch also incorporates protected main `a1c7a1dc8396be32ac66851f098f2f23a8018c6a`, including the native preference-read repair.
 No production audio repair, local media execution, or comprehensive pass is claimed.
+
+### Accurate input seeking loses the sample origin on coarse clocks
+
+The [codec-only diagnostic](https://github.com/Kinosail/kinosail/actions/runs/38360904835) at
+`2d06a296c70e711fc76084decb889c7d6c69b1c6` verifies both artifact checksums, exact script source, and pinned codec hashes.
+All 52 commands complete cleanly. Early refills still match exactly; both late content comparisons still fail.
+The lossless input diagnostic finds the 48 kHz seek starts 16 samples late and the 44.1 kHz seek starts three samples early.
+Both comparisons use exact PCM equality against the generated source. Neither diagnostic changes the fixed splice acceptance.
+The artifact archive SHA-256 is `c11e1b1663cf2d95e56dc346f222ff53f18293fb57bfbe182a3d7886e3e8b233`.
+This identifies a sample-origin error before AAC encoding. A timestamp-only repair would preserve that content error.
+The next isolated experiment will reconstruct the certified fixture's decoded frame clock before trimming.
+General source clocks, discontinuities, priming, resampling, and production publication remain separate unresolved contracts.
+
+Required CI at the same revision exposes two stale campaign-route assertions after adding the manual AAC selector.
+Their exact allowlist and manual-only job condition now include AAC; the general campaign route explicitly excludes it.
+Required PR/main gates are unchanged. The failed repository job log SHA-256 is
+`df23f146e1689cdb8ecad275ef455cd64943e78071bf1dee07f39a68fc4f7afc`.
+The [hosted source-metadata run](https://github.com/Kinosail/kinosail/actions/runs/38360999608) passes at the same revision.
+All three approved metadata file hashes match. Exact revision, tracked tree, source pins, and both rendered HTML hashes verify locally.
+The canonical reproduction updates only Player's architecture snapshot after added Go regression files.
+Its rendered SHA-256 is `0194dcd9536a6f5c867c3456b49145d8e53163cbef592448e83df39ea1e65080`.
+No local Go, application, browser, native, codec, or device execution was used for this refresh.
