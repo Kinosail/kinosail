@@ -44,6 +44,7 @@ extension NativePreferencesUXTests {
                 .preferredColorScheme(.dark))
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-reader-column-" + UUID().uuidString)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            defer { readerAttach(folder) }
             print("NATIVE_READER_EVIDENCE \(folder.path)")
             let shown = ProcessInfo.processInfo.systemUptime
             window.makeKeyAndVisible()
@@ -98,6 +99,7 @@ extension NativePreferencesUXTests {
         let session = AppSession()
         await session.restore()
         var evidenceFolder: URL?
+        defer { if let evidenceFolder { readerAttach(evidenceFolder) } }
         var stage = "initial"
         do {
             let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
@@ -111,6 +113,7 @@ extension NativePreferencesUXTests {
             fixture.readerHeld = true
             readerRoot(window, session: session, light: light)
             window.makeKeyAndVisible()
+            stage = "initial-metadata"
             try await readerUntil { fixture.heldReaderCount == 1 }
             let initial = try readerBands(window, light: light)
             try JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
@@ -126,6 +129,7 @@ extension NativePreferencesUXTests {
             try #require(!pending.isEmpty, "Prerequisite: real pending lines must be visible while metadata is held")
             try await readerCapture(window, folder: folder, name: "pending")
             fixture.releaseReader()
+            stage = "loaded-document"
             try await readerUntil { readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading } }
             let web = try #require(readerDescendants(window).compactMap { $0 as? WKWebView }.first)
             let metrics = try await readerMetrics(web)
@@ -174,6 +178,7 @@ extension NativePreferencesUXTests {
             if let evidenceFolder {
                 let diagnostic: [String: Any] = ["stage": stage, "heldReaderCount": fixture.heldReaderCount,
                     "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
+                print("level=error operation=reader_surface_test outcome=failed stage=\(stage) held_reader=\(fixture.heldReaderCount) held_preferences=\(fixture.heldPreferenceCount) preference_reads=\(fixture.preferenceReads)")
                 try? JSONSerialization.data(withJSONObject: diagnostic, options: [.prettyPrinted])
                     .write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
             }

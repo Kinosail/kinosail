@@ -37,6 +37,7 @@ enum OfflineProbe {
     static func check(_ url: URL, video: Bool, completion: @escaping @Sendable (Bool) -> Void) {
         let finished = ProbeCompletion(completion)
         let worker = Task.detached(priority: .utility) {
+            finished.phase("asset")
             var playable = false
             var failure: NSError?, samples = 0, readerStatus = 0
             do {
@@ -88,7 +89,8 @@ enum OfflineProbe {
 }
 private final class ProbeCompletion: Sendable {
     private static let log = Logger(subsystem: "com.kinosail.player", category: "offline-probe")
-    private let state = Mutex((finished: false, phase: "asset"))
+    private let state = Mutex((finished: false, phase: "queued"))
+    private let id = UUID().uuidString
     private let started = Date()
     private let completion: @Sendable (Bool) -> Void
     init(_ completion: @escaping @Sendable (Bool) -> Void) { self.completion = completion }
@@ -102,7 +104,11 @@ private final class ProbeCompletion: Sendable {
         guard let phase else { return false }
         let domain = error.map { ["NSCocoaErrorDomain", "NSPOSIXErrorDomain", "NSOSStatusErrorDomain", "AVFoundationErrorDomain", "CoreMediaErrorDomain"].contains($0.domain) ? $0.domain : "other" } ?? "none"
         let code = error?.code ?? 0, elapsed = Date().timeIntervalSince(started)
-        Self.log.notice("Offline probe playable=\(value) cause=\(cause, privacy: .public) phase=\(phase, privacy: .public) elapsed=\(elapsed) samples=\(samples) reader=\(readerStatus) errorDomain=\(domain, privacy: .public) errorCode=\(code)")
+        if value {
+            Self.log.info("Offline probe level=info operation=decode outcome=passed probe_id=\(self.id, privacy: .public) cause=\(cause, privacy: .public) phase=\(phase, privacy: .public) elapsed=\(elapsed) samples=\(samples) reader=\(readerStatus) errorDomain=\(domain, privacy: .public) errorCode=\(code)")
+        } else {
+            Self.log.warning("Offline probe level=warn operation=decode outcome=rejected probe_id=\(self.id, privacy: .public) cause=\(cause, privacy: .public) phase=\(phase, privacy: .public) elapsed=\(elapsed) samples=\(samples) reader=\(readerStatus) errorDomain=\(domain, privacy: .public) errorCode=\(code)")
+        }
         completion(value)
         return true
     }

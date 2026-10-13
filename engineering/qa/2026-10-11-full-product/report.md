@@ -2573,3 +2573,61 @@ test helpers. The cap then passes. The focused owner suite again selects and
 passes all eight tests, with zero skips. Production source is byte-identical
 to both complete native runs; those runs precede only this test-file split.
 The split confirmation log SHA-256 is `fc2ca2f972d72e709da5b9e0a023ac027f850f190a90ed749e1a1132a8e86bcf`.
+
+## QA-035 — Native timeout results lose useful stage evidence
+
+The hosted dark font-32 reader failure has no media attachments. Its stage JSON
+and screenshots remain in the simulator, outside the uploaded result bundle.
+The failure message therefore cannot distinguish a held request from unfinished
+WebKit document loading. The AAC probe also labels its initial state as asset
+before its detached worker starts, hiding a possible queue delay.
+
+Reader journeys now retain a fixed allowlist of fictional PNG and JSON files
+through Swift Testing attachments. The collector rejects symbolic links,
+nonregular files and files larger than 10 MiB. Reader failure context records
+the operation stage and bounded request counts. The AAC probe labels queue and
+asset entry separately and correlates each final outcome with a random probe ID.
+Accepted probes log Info; rejected probes use the warning API and an explicit
+warn field. Native OSLog reports those warning records as Error.
+Media validation, completion ownership and both existing deadlines remain unchanged.
+
+The focused reader suite passes all eight tests with zero skips. Exporting its
+result retains 49 attachments: 31 PNGs and 18 JSON files. Every exported byte hash
+matches the original captured files; the largest is 510545 bytes.
+The export manifest SHA-256 is
+`ce1b52fdbdec13b1ad0934e7663f932711d77e58671c47ea52fe329286b00517`.
+The focused AAC suite selects and passes both tests. Its strict log projection
+validates seven unique probe records: six rejections and one accepted decode.
+All outcomes match their semantic log levels, with zero invalid record shapes.
+The raw-log SHA-256 is `d1b82fadefa009576e8f0bd43c7a7ddb0a9f79ee4f870670ed2949b691b64ece`.
+
+A test-owned held response deliberately fails only the dark font-32 journey.
+The suite retains seven passes and one expected failure, without changing the
+ten-second readiness limit. The failed test exports 25 attachments, including
+stage loaded-document, one held reader request and no held preference request.
+The stage JSON SHA-256 is `b62229e96cebbe546b765b8080888dc765b44019909ab9df65dec6acad3c4993`.
+Xcode's failure-only attachment filter selects none of these regular Swift
+Testing attachments. Exporting the failed test by its identifier retains them.
+The workflow already uploads the complete result bundle.
+
+A separate native E2E control selects exactly the preference-save test. After
+its normal assertions, the fixture adds an unknown JSON file, a linked PNG and
+a JSON file of 10485761 bytes. Both guards record issues. The exported result
+retains only its three normal artifacts and contains no sentinel payload.
+Both temporary source injections are restored byte-for-byte. The reused phone
+simulator is shut down after the failure control. These are artifact controls,
+not newly reproduced product failures.
+
+The normal reader and AAC source patch SHA-256 is
+`23a4da345bceb265496e0b3ad087dc585fdad7da05ddafde7fdb196c5c6f3f86`.
+These local results do not clear the earlier hosted reader or AAC timeouts.
+Fresh hosted execution must classify them using the retained evidence.
+
+PR #590 separately merges at `5cf9ba061dd52c5d3f811d2cdc85b0d367d948e3`.
+Fetched ancestry proves its reviewed head `01d6cf33f90cfa0ba618ff5173d212d9c9497e08`
+is included. The hosted x64 cold-suffix suite at `840a2a55` passes all 19 cases
+and 18 recoveries, with matching current helper hashes and correlated safe logs.
+Its receipt SHA-256 is `da6cc2730c41e4e639a6714d849f0fe9eee51bab15aa8cec3951fb0cd72647c1`.
+CodeQL's retried JavaScript upload still reports a missing task ref while a fresh
+Git read finds that exact ref and expected head. That CI service boundary remains
+open; the other four retried CodeQL languages pass.

@@ -21,6 +21,7 @@ extension NativePreferencesUXTests {
             defer { window.isHidden = true; previousWindow?.makeKey() }
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-reader-column-" + UUID().uuidString)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            defer { readerAttach(folder) }
             print("NATIVE_READER_EVIDENCE \(folder.path)")
             fixture.readerHeld = true; fixture.preferencesHeld = true
             readerRoot(window, session: session, light: true)
