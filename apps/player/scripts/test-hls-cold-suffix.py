@@ -14,6 +14,7 @@ import time
 
 from hls_followon_public import check
 from hls_cold_suffix_faults import wrappers
+from hls_cold_suffix_evidence import count, settled, first_encoder_completed, replacement_completed
 from hls_timeline_fixture import LONG_RESUME_KEYS, fixture
 from hls_timeline_packets import fragment_facts
 from hls_timeline_http import PublicServer, sha, source_state
@@ -31,24 +32,8 @@ receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], tex
 patch = run / 'tested-source.patch'
 patch.write_bytes(subprocess.check_output(['git', 'diff', 'HEAD', '--']))
 receipt['patchSHA256'] = sha(patch)
-receipt['helpersSHA256'] = {name: sha(Path(__file__).with_name(name)) for name in ['test-hls-cold-suffix.py', 'hls_cold_suffix_faults.py', 'hls_followon_public.py', 'hls_timeline_http.py', 'hls_timeline_fixture.py', 'hls_timeline_packets.py']}
+receipt['helpersSHA256'] = {name: sha(Path(__file__).with_name(name)) for name in ['test-hls-cold-suffix.py', 'hls_cold_suffix_faults.py', 'hls_cold_suffix_evidence.py', 'hls_followon_public.py', 'hls_timeline_http.py', 'hls_timeline_fixture.py', 'hls_timeline_packets.py']}
 binary = run / 'player'
-
-
-def count(directory, name):
-    path = directory / name
-    return len(path.read_text().splitlines()) if path.exists() else 0
-
-
-def settled(directory, name='wrapper-pids'):
-    path = directory / name
-    for pid in path.read_text().splitlines() if path.exists() else []:
-        try:
-            os.kill(int(pid), 0)
-            return False
-        except ProcessLookupError:
-            pass
-    return True
 
 
 def wait_for(condition, seconds, failure):
@@ -58,17 +43,6 @@ def wait_for(condition, seconds, failure):
             return
         time.sleep(.025)
     raise RuntimeError(failure)
-
-
-def first_encoder_completed(directory):
-    for line in (directory / 'server-private.log').read_text().splitlines():
-        try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if row.get('msg') == 'HLS transcode completed':
-            return True
-    return False
 
 
 def exercise(source_fixture, source_facts, fault):
@@ -220,6 +194,8 @@ def exercise(source_fixture, source_facts, fault):
                     case['warmRestart'] = 'passed'
                     case['damagedMetadata'] = []
                     for damage in ['corrupt', 'missing']:
+                        observation = {'damage': damage}
+                        case['damagedMetadata'].append(observation)
                         before_encoders = count(directory, 'encoder-starts')
                         before_probes = count(directory, 'suffix-starts')
                         if damage == 'corrupt':
@@ -228,18 +204,22 @@ def exercise(source_fixture, source_facts, fault):
                             timeline.unlink()
                         status, data, headers = api.http(path)
                         normalized = {k.lower(): v for k, v in headers.items()}
+                        observation['status'] = status
                         case['responses'].append({'status': status, 'requestID': normalized.get('x-request-id'), 'playlistPublished': data.startswith(b'#EXTM3U')})
                         if status == 200:
-                            wait_for(lambda: settled(directory, 'encoder-pids'), 5, 'replacement_encoder_not_settled')
+                            wait_for(lambda: replacement_completed(directory, normalized.get('x-request-id'), session, observation),
+                                     5, 'replacement_encoder_not_completed')
                             check(normalized.get('x-kinosail-hls-origin') == f'{expected_origin:.6f}' and normalized.get('x-kinosail-hls-clock'), 'damaged_certificate_served_without_clock')
-                            check([sha(p) for p in metadata] == snapshots, 'replacement_certificate_changed')
+                            observed = [sha(p) for p in metadata]
+                            observation['changedMetadata'] = [str(p.relative_to(cache)) for p, before, after in zip(metadata, snapshots, observed) if before != after]
+                            check(observed == snapshots, 'replacement_certificate_changed')
                             check(count(directory, 'encoder-starts') == before_encoders + 1 and count(directory, 'suffix-starts') == before_probes + 1, 'damaged_certificate_not_regenerated')
                             outcome = 'verified-regeneration'
                         else:
                             check(status == 503 and not data.startswith(b'#EXTM3U'), 'damaged_certificate_published')
                             check(count(directory, 'encoder-starts') == before_encoders, 'rejected_certificate_started_encoder')
                             outcome = 'rejected'
-                        case['damagedMetadata'].append({'damage': damage, 'status': status, 'outcome': outcome})
+                        observation['outcome'] = outcome
             case['result'] = 'passed'
         except Exception as error:
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__

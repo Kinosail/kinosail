@@ -21,21 +21,23 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 13
 
-PR 587 is ready for review. The campaign goal is active; no complete product or platform acceptance is claimed.
-The chronological sections below retain earlier failures, repairs, and exact artifact evidence.
+PRs #587 and #592 are merged. PR #593 has passing Android caption and Apple hosted acceptance at `e76ab401`.
+Required PR checks and protected delivery remain pending.
+The campaign goal remains active; no complete product or platform acceptance is claimed.
+Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
-| Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage, including staged-clock and shortened-AAC rejection. | Current required gates and physical playback. |
-| Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. The diagnostic revision passes the full Player race suite at `a02a4227`. | The earlier failure remains unconfirmed; retain bounded observations on recurrence. |
-| Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
-| Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | At `08d0da84`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
-| Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
-| Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. The repaired paced journey, all eight clock cases, eleven plan cases, and five completion cases pass at `5df3c236`. | Current required gates and longer copied windows remain open. |
-| Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
+| Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
+| Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
+| Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. |
+| Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
+| Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
+| Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
+| Subtitles copied suffix | At `66f6f8dd` and `e76ab401`, all thirty receipts pass. Four long windows record successful completion before the deliberate restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
+| Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
-Local runtime remains held for the coordinated physical Apple TV window. Current local checks use source formatting, shell parsing, source contracts, and artifact inspection. Hosted gates remain enabled.
+Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 
 ## Baseline evidence
 
@@ -3589,3 +3591,394 @@ Player digest: `sha256:34952742be45801f3bd07bf93e4fecc434f678346c61a1e470adfe656
 Subtitles digest: `sha256:82b0c1c2f48fc8d2b1aaefec892e84babbceb5f8990213cc3a270a1655d43ac7`.
 Four platform configuration revision labels and four tested candidate-index artifacts bind to the published platform manifests.
 A fresh ancestry check retains the merged commit in remote main. No Nox or physical playback result follows from this publication evidence.
+
+
+## Complete copied-window repair delivery — October 13
+
+[PR #592](https://github.com/Kinosail/kinosail/pull/592) merged as `57bf077a5f6d27c0390178a3ea9560c39aa234f2`.
+Fetched ancestry proves reviewed head `7dae0351764d5e90a5291e546ad7664fb4387df8` is included.
+The merged tree equals tested merge `e160a9832a6a575588582f40c7a9903ad848fe99`.
+[CI 38440416500](https://github.com/Kinosail/kinosail/actions/runs/38440416500) passes all four required gates.
+All thirty copied-playback receipts pass, including the four corrected boundary windows and both failed-index controls.
+Sixty fragments preserve all 6,199 independently expected source frames.
+Early, completed, warm, and restarted public maps match the final physical cuts exactly.
+Media artifact `11837015951` has SHA-256 `5fc32936262b9695e0571a760f297a4c00daeb9bad58887f71ea8548eaf9b78a`.
+All sixteen uploaded child hashes verify.
+[Layout run 38440416474](https://github.com/Kinosail/kinosail/actions/runs/38440416474) passes Chromium, Firefox, and WebKit.
+Every uploaded source pin and layout measurement verifies.
+Inspected Chromium reports record 532 Player passes and 63 skips across eight reports, plus 38 Subtitles passes.
+Neither app reports failures or flakes. These counts do not replace the separate native or physical-device boundaries.
+Exact-main CI and publication run `38445870966` is pending.
+Unrelated native project and localization edits in local main remain preserved.
+
+## Hosted Android caption baseline — October 13
+
+Earlier actual Media3 screenshots show captions intersecting gesture navigation in landscape.
+The existing overlay journey checks label contrast and pending, failed, retry, and recovered states.
+It does not assert caption placement. A new compositor journey adds that missing public behavior check before production changes.
+The test pauses actual playback, dismisses native controls, and captures stable captions-off, captions-on, and captions-off frames.
+Actual root window insets define the protected system navigation area.
+Visible caption pixels must exist, and none may intersect that area.
+A forced-captions-off negative control must fail the visibility assertion, preventing an absent-caption false pass.
+
+The manual and weekly Android lane now prepares one disposable hosted API 36 emulator.
+It runs the negative control and the complete three-test class on phone portrait, phone landscape, and two tablet landscape repetitions.
+The runner sets actual display rotation and checks screenshot dimensions independently of requested activity orientation.
+Android 16 can ignore requested orientation on large screens; the test does not change the app's compatibility behavior.
+See [Android 16 adaptive layouts](https://developer.android.com/about/versions/16/behavior-changes-16#adaptive-layouts).
+The runner retains exact source, APK, fixture, screenshot, and metric hashes plus selected-test counts and owned-process settlement.
+Session seeds, raw Server logs, and raw instrumentation logs remain private.
+Timeouts retain partial private output and available safe artifacts while preserving a failed result.
+Independent source review corrected orientation, timeout evidence, and resource cleanup before the hosted trial.
+
+The loopback fault bridge isolates controlled media failures while the actual Go Server supplies the catalog and media.
+This is an emulator E2E journey with synthetic data and a controlled network boundary.
+It does not establish native TLS, physical-device, Cast, deployment, or Nox behavior.
+The local runtime hold remains active. The hosted baseline and any production caption repair are still pending.
+
+
+The first hosted baseline scan identifies two bridge findings: CodeQL `py/partial-ssrf` and `py/http-response-splitting`.
+The fixed upstream is loopback, but the bridge previously forwarded client paths and unvalidated upstream header values.
+The candidate repair admits bounded route shapes and known query fields, reconstructs query encoding, and validates headers before sending a response.
+New isolated real-HTTP controls precede that repair and check rejected traversal, unknown routes, methods, query fields, and oversized targets.
+Every rejected target must return 400 without reaching the peer. A folded upstream header must return 502 without injection.
+The real Go Server cannot emit that malformed header through the populated native journey, which justifies this isolated boundary check.
+These controls run only on the disposable hosted runner under the local runtime hold.
+Neither a clean scan nor a passing native result is yet claimed for the repaired bridge.
+
+
+## Hosted caption capture boundary — October 13
+
+Initial baseline `b2b35e151764a5ba3ade3fc4ff8c5f6fc55a95db` selected all thirteen test executions, without skips or instrumentation timeouts.
+Every case fails the screenshot-dimension guard. Phone portrait captures are 1080 by 1920, and landscape captures are 1920 by 1080.
+Both tablet captures are 1920 by 1600. Requested dimensions were 1080 by 2400 and 2560 by 1600.
+The collector stopped at the first mismatch, so positive caption metrics and paired frames were not uploaded.
+The negative metric records zero caption pixels, but its missing paired frames prevent independent confirmation.
+All Server, bridge, and emulator owners settle; exact source remains unchanged.
+Artifact `11840216225` has SHA-256 `19cc62c47c4cb92b9436c5bc0a8fc7fae50d611637c395661a41b75fe118bac6`.
+Four source pins, six fixture pins, and six retained artifact hashes verify.
+This is failed harness evidence, not a reproduced product caption result.
+
+The next runner sets the owned AVD hardware resolution before boot and records actual `wm` size and density values.
+It retains all safe files before validating dimensions, keeps typed caption metrics on failure, and reports fixed assertion names and source-line numbers.
+Requested geometry, selected-test counts, visibility, stability, and zero-overlap assertions remain unchanged.
+No production playback layout has changed.
+
+
+## Bridge controls and reader save timeout — October 13
+
+Hosted revision `9512ccf53f9632f2a7d864b898725553638b99fa` passes all ten isolated bridge boundary controls.
+Eight invalid targets return 400 with zero upstream calls. A folded upstream header returns 502 without injection.
+Both owned HTTP servers settle. Artifact `11838934619` has SHA-256 `fadcb6c9343e37f597750813a6a2295c9dd8f1ee7c091f9c19f1634a052e25ba`.
+Five source pins, six fixture pins, and seven retained artifact hashes verify.
+The native cases again fail the unchanged dimension guard, so they do not establish caption overlap or its absence.
+CodeQL still reports a flow into the complete request target after the path-only guard.
+The next repair validates the complete encoded target while preserving the stricter endpoint, method, and query restrictions.
+No scan rule, finding, or required gate is suppressed.
+
+The initial deep Apple artifact records 335 iOS passes, one failure, and one skip, plus 320 tvOS passes and one skip.
+The failure is `readerPreferenceSaveDoesNotAbandonOpeningChapter`, after saving preferences while the opening chapter is held.
+Its 10-second loaded-WebView condition fails, and the retained screenshot shows an empty chapter body.
+Artifact `11840220696` has SHA-256 `150f49d392c1435f2a6bfb8263504b8d5970eac5cddd33ab37e42ee231f1d279`.
+This journey previously missed the shared WebView timeout diagnostics.
+It now uses that helper, preserving the exact deadline, condition, message, and original failure.
+Only after failure does it retain bounded window, WebView, and fixture timing evidence and observe later progress.
+Independent review finds no concrete blocker in either change. Fresh hosted security and native results remain pending.
+
+
+## Exact-main copied-window publication — October 13
+
+[Main run 38445870966](https://github.com/Kinosail/kinosail/actions/runs/38445870966) passes all required checks and nine container-publication jobs.
+Both apps publish and promote revision `57bf077a5f6d27c0390178a3ea9560c39aa234f2` with verified signatures and provenance.
+Each app's commit, `main`, and `latest` registry tags resolve to the same image index.
+Player digest: `sha256:e478fd14065926dfd1cc3a7b89b005d708ddbc295351fe0431e816674a48be44`.
+Subtitles digest: `sha256:1afef4dce7965d9297c38cba851049edf1916d9a1b39ac31231425a5f0c516b3`.
+All four architecture configuration labels carry the exact merged revision.
+Four retained tested-candidate artifacts bind to the promoted platform manifests; fetched ancestry confirms inclusion in current remote main.
+This closes PR #592's publication boundary. Nox, TLS, and physical playback remain separate and unverified here.
+
+
+Revision `4620c3dd8207a1a5a1aaef6f5a7dc6b201c6089d` clears the complete Python CodeQL scan and hosted security gate.
+Analysis `1946069832` reports zero findings, compared with two initial findings and one after the path-only repair.
+The retained SARIF SHA-256 is `feffb7cee1543a694b1943a8f3f193567319f769a8f6153cc5350706d3c10b29`.
+This is scan proof; the new Android emulator trial and Apple diagnostic contracts are still running.
+
+
+The fresh native artifact `11841751561` at `4620c3dd` verifies 336 iOS passes, 320 tvOS passes, and one skip per platform.
+Its SHA-256 is `891286aa0147f944e129369c48944bc3493954e68a063847dee47837c1fcb66e`.
+The reader-save journey passes in 5.60 seconds, after a passing 8.03-second result at `9512ccf5` and the earlier 12.83-second failed execution.
+No new timeout diagnostic is emitted. These successful repetitions preserve the intermittent failure as an open investigation.
+Neither a source repair nor physical reader acceptance is inferred from them.
+
+
+## Correct display geometry and absent caption pixels — October 13
+
+Hosted revision `4620c3dd8207a1a5a1aaef6f5a7dc6b201c6089d` now captures the requested display sizes.
+Phone portrait frames are 1080 by 2400; phone landscape frames are 2400 by 1080; tablet landscape frames are 2560 by 1600.
+Artifact `11840828430` has SHA-256 `3a1b1d81235b83c0c5972c9cfbbd14aa2917435d49f8456e5124570daaab98d0`.
+Five source pins, six fixture pins, and all 36 retained artifact hashes verify independently.
+Exact source remains unchanged, and the Server, bridge, and emulator settle.
+All ten bridge HTTP controls pass again at this revision, alongside the clean security scan.
+
+Phone portrait and both tablet repetitions retain complete captions-off/on/off compositor frames.
+Independent pixel calculations reproduce zero visible caption pixels, zero protected caption pixels, and zero unstable protected pixels in all three cases.
+The tablet image visibly shows “Captions on” and hidden native controls but no caption text.
+These are visibility failures; they do not prove caption placement is safe or reproduce overlap.
+All expected tests are selected, with no skips or instrumentation timeouts.
+The negative control fails earlier at the public Pause accessibility action and does not establish the intended pixel rejection.
+Phone landscape's loaded and caption journeys fail while waiting for the detail Play or Resume action.
+Its three retained images cover pending, failed, and recovered playback; they do not show the failed detail state.
+
+The next test revision retries the public Pause action with freshly discovered accessibility nodes and still requires visible Play.
+After enabling captions, it waits up to ten seconds for changed compositor pixels before retaining the original final visibility and overlap measurements.
+Complete accessibility-tree checks require hidden controls immediately before and after capture.
+A persistent visibility failure also attempts one after-resume diagnostic frame within a shared 15-second wait budget.
+It cannot change the failed comparison or assertion.
+Every journey retains a distinct, fixed-name stage screenshot before the activity closes on failure.
+No production playback, inset, or navigation behavior changes in this trial.
+The new hosted result remains pending; local application execution remains held.
+Independent source review confirms the hidden-control checks, distinct failure filenames, and shared diagnostic deadline.
+The maximum retained artifact count is fifteen, within the runner's sixteen-file bound.
+Whitespace and source-cap checks pass. Hosted compilation and runtime verification are still required.
+
+
+## Restore the original tablet video geometry — October 13
+
+A direct image comparison identifies a mismatch in the hosted reproduction.
+The original tablet overlap uses portrait video on a landscape display; both hosted tablet repetitions instead select landscape video.
+The original recovered caption crosses the gesture bar. The `4620c3dd` recovered landscape-video caption is visible above that bar.
+Neither recovered frame is the paused off/on/off comparison, so these observations do not resolve the paused-caption failure.
+
+The original image bytes verify against archive SHA-256 `c91f9022518a802e5ef5055ca67b0b11ec5053f4d3242c4dd0f57a649f9c694e`.
+The recovered image SHA-256 is `3a7ac17cb55f6d25df989694d0d1126f6fd0cef43c53c51e083559239cfc1f82`.
+Eleven playback, build, and fixture files are byte-identical between original revision `e9baa35a` and `a1341467`.
+Independent review confirms both tablet repetitions must use the portrait fixture to preserve this scenario.
+
+The runner now separates video orientation from display orientation.
+Both landscape-tablet repetitions select portrait video. Phone fixture choices and all display dimensions remain unchanged.
+Each case records its fixed synthetic title and the selected video, subtitle, and metadata hashes.
+The strict visible-caption prerequisite, pixel oracle, and after-resume diagnostic remain unchanged.
+Python source parsing, whitespace, and source caps pass; no local application runtime executes.
+Hosted run `38455346218` continues at `a1341467` before this fixture correction is submitted.
+
+
+## Caption and endpoint diagnostics after a1341467 — October 13
+
+[Hosted run 38455346218](https://github.com/Kinosail/kinosail/actions/runs/38455346218) completes Android compilation but fails native runtime acceptance.
+Artifact `11845305386` has SHA-256 `c2e72df6d02d68c8549e7905051e60019737263d2eddef68f86041de0ca50f43`.
+Five source pins, six fixture pins, and all 51 artifact hashes verify independently.
+Every expected test is selected, without skips or instrumentation timeouts. The Server, bridge, and emulator settle.
+The captions-off negative control now reaches the intended visible-caption rejection and passes its control contract.
+All four positive cases retain complete off/on/off frames with zero caption pixels.
+Independent comparisons also find zero lower-half changed pixels in all four after-resume frames.
+These results rule out the tested short rendering delay; they do not identify the missing-cue cause.
+
+The phone-landscape loaded journey fails at the detail prerequisite. Its failure image still shows Search covered by the keyboard.
+The next revision submits the public IME Search action, verifies the keyboard is hidden, and requires the displayed exact result before selecting it.
+The existing Play or Resume prerequisite remains unchanged.
+A tablet recovery journey fails at the fixture-control response assertion before activity launch.
+The runner now retains only its bounded numeric HTTP status and fixed assertion name for diagnosis.
+
+The next caption trial records four bounded snapshots from public Media3 Player APIs on the player application thread.
+They distinguish unavailable observations from zero and record position, playback state, selected text-track count, and cue count.
+Each dispatch waits at most one second, capped by the remaining after-resume budget when applicable.
+Late callbacks own detached results and cannot change the emitted receipt.
+They contain no cue text, track labels, URLs, or error strings.
+The runner validates the exact field shape, allowed stages, and numeric bounds.
+These observations do not change the screenshot oracle, negative control, overlap assertion, or pass criteria.
+
+Apple artifact `11843777780` has SHA-256 `8ff2b04c46d67a28aa727ea3e1047cf7dbde22da5b8baf6fe10cd9aa62e7f35d`.
+Xcode records 336 iOS passes, 319 tvOS passes, one tvOS failure, and one skip per platform.
+The tvOS endpoint-scrub test fails its required injection prerequisite before checking the native and source clocks.
+Its sole snapshot records startup return at 1192 milliseconds: native time 12, source time 15, and loading false.
+It cannot show whether the endpoint notification was absent or rejected by an observer guard.
+The next revision records up to four notification arrivals and each guard condition without loading a view.
+The original observer guard, startup deadline, scrub action, clock assertion, and completion checks remain unchanged.
+No production playback change or local application runtime is included in this diagnostic revision.
+
+## Android cue duration repair — October 13
+
+At `3203b915a18f77a6d9fe6ad25dab4828cf11f920`, all four positive caption cases retain one selected text track after re-enabling captions.
+Each has one active cue before toggling and zero afterward, including after playback advances.
+All paired compositor measurements independently confirm zero caption pixels.
+Search setup and fixture controls succeed. The captions-off negative control reaches its intended visibility rejection.
+Both tablet repetitions now use the original portrait video on a landscape display.
+
+Artifact `11846286477` has SHA-256 `8b07e83b44ba512e1a896411668f0112c9d74da4998a4bb43583d570880ab006`.
+Five source pins, six fixture pins, and all 57 artifact hashes verify.
+The Server, bridge, and emulator settle, and retained source remains unchanged.
+These observations establish cue loss rather than an invisible selected caption layer.
+
+Pinned Media3 1.11.1 source explains the observed failure.
+[DefaultMediaSourceFactory](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/DefaultMediaSourceFactory.java) constructs the lazy sidecar extractor with a null format.
+[SubtitleExtractor](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/extractor/src/main/java/androidx/media3/extractor/text/SubtitleExtractor.java) then cannot publish its measured cue end through a seek map.
+[ProgressiveMediaPeriod](https://raw.githubusercontent.com/androidx/media/1.11.1/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/source/ProgressiveMediaPeriod.java) instead estimates duration from the last sample start plus 10 milliseconds.
+For this fixture, that yields 1.01 seconds despite a cue ending at 110 seconds.
+Disabling the track clears its queue. Re-enabling it past the estimated duration ends the stream without replaying its cue.
+This is a source-supported cause; the hosted repair trial must establish the counterfactual.
+
+The repair gives each WebVTT sidecar extractor its original format so it publishes the actual duration.
+The primary source and sidecars use the same guarded transport. Embedded subtitle parsing remains with the default factory.
+Lazy preparation retains its exact output format and fresh parser instances.
+The primary media duration remains authoritative when sources merge.
+A ten-line, compile-checked bridge accesses Media3's package-private lazy-loading method.
+This explicit dependency coupling avoids eager requests for every unselected sidecar.
+Remove the bridge when upstream exposes or repairs this path; dependency upgrades must retain the runtime regressions.
+
+The existing off/on/off journey failed before the repair and remains unchanged.
+A new journey resumes the real Server title at 115 seconds, after its final cue, while video and subtitle responses are held.
+It pauses the app's public Player and attaches a public load-completion listener before releasing the fixture.
+Only a completed sidecar load permits seeking backward to five seconds.
+The test requires one restored cue, paused playback, and the original 120-second video duration.
+This closes a gap where a backward seek could race the first parse and let the old code pass.
+The listener is removed, and two screenshots retain the late and restored states.
+This additional test was authored before the production remedy but has not yet run on the baseline.
+
+The same hosted revision records 335 iOS passes, one failure, and one skip; tvOS records 320 passes and one skip.
+Apple artifact `11845663106` has SHA-256 `7809ab62146d6529f6881bb0378b95122116fb524be80ad7899bc16fbc87e031`.
+The reader times out with an attached loading WebView and no asset request.
+That same view finishes about four seconds after the deadline. The original failure is retained.
+The tvOS endpoint notification and injected scrub pass this time; prior intermittent failures remain unresolved.
+
+Python source parsing, whitespace, and source caps pass for this repair trial.
+Hosted compilation, cue restoration, and caption placement remain pending. Local application runtimes remain held.
+The original tablet gesture-bar overlap still requires the strict pixel oracle after cue restoration.
+
+## Subtitles completion before the deliberate restart — October 13
+
+At `3203b915`, all 99 Subtitles Chromium browser cases pass without skips, retries, or failures.
+Artifact `11846262449` verifies 198 checksums and ten source pins against the exact unchanged revision.
+Its SHA-256 is `c41daece2db1626d15355dc07c4dcfacf599c8f20924da60c094aae8f3253339`.
+The job instead fails the later copied-generation step.
+Media artifact `11847096129` contains 29 passing receipts and one failure, with all 16 uploaded child hashes verified.
+Its SHA-256 is `2128945f6b65e7eb76cd839232be340f20adfdb7dae562f2bcee12f5c5a32721`.
+
+The origin-window case preserves all 21 fragments and all 2,662 decoded source frames.
+Early, completed, warm, and restarted manifests match. The source is unchanged, the child joins, and the Server stops.
+Only the successful terminal-log requirement fails. Raw process logs were not uploaded, so missing, duplicate, and failed outcomes remain indistinguishable.
+
+Source inspection finds a fixture race: the FFmpeg wrapper writes its child-join marker before the wrapper itself exits.
+The test can stop the first Server after seeing that marker and a complete playlist, before the Server reports encoding completion.
+The next trial waits up to ten seconds for exactly one successful terminal event before deliberately restarting the Server.
+An error, duplicate event, or missing request ID fails immediately. A missing event fails at the bound.
+The original final ownership, privacy, media, restart, and cleanup requirements remain intact.
+Receipts now retain bounded terminal-event counts before restart and after shutdown, without messages, IDs, or URLs.
+Live polling ignores unfinished log lines; final inspection preserves the original strict JSON parsing.
+This repairs the fixture prerequisite. It does not claim the unavailable failed process log proved that race caused this occurrence.
+
+## Caption restoration and landscape overlap — October 13
+
+Hosted revision `e07a45584569f8f3968eab7b8856d94c0468e308` restores captions in all four positive off/on/off cases.
+Each retains one selected text track and one cue after enabling captions while paused.
+Independent compositor comparisons find 117,424 caption pixels on portrait phone, 83,799 in each tablet repetition, and 37,961 on landscape phone.
+This establishes the duration repair's counterfactual against the preceding four zero-cue, zero-pixel cases.
+
+Artifact `11848318417` has SHA-256 `cd5dcfedf0e95e0ba6945230448c6780dfc18222c68ba72ca67494f8863876c2`.
+Eight source pins, six fixture pins, and 52 artifact hashes verify against unchanged source.
+All expected tests are selected without skips or instrumentation timeouts. The Server, bridge, and emulator settle.
+The Apple job passes at this revision; earlier intermittent Apple failures remain unresolved.
+
+The restored captions expose the original layout defect.
+Both landscape tablets paint 44,102 caption pixels inside the bottom system navigation area; landscape phone paints 30,135.
+Portrait phone paints none there. All protected areas remain stable across their off frames.
+The next remedy pads only the native caption canvas using current system-bar and display-cutout insets.
+Insets refresh on attachment and system changes. Video sizing, track selection, and controls keep their existing behavior.
+The same failing compositor oracle remains the acceptance test.
+
+The late-seek test fails before seeking because its playing-frame color check sees the paused controller's gray scrim.
+Its retained screenshot shows paused playback at 1:55 of 2:00 after the required subtitle load completed.
+The next test revision instead requires the public decoder's first-rendered-frame event before the same readiness and backward-seek assertions.
+The event listener is attached before releasing held media and removed in `finally`.
+The negative control fails earlier while awaiting the initial Speed control; it does not prove its intended rejection in this run.
+Hosted verification of caption placement, the late-seek case, and the negative control remains pending.
+
+The negative control's retained image shows decoded captioned video with the playback controls hidden.
+Its stack identifies the shared journey's initial Speed-control wait, before any negative-control assertion.
+The setup now uses the visible public “Show player controls” accessibility action when Speed is absent.
+It reuses the existing bounded, complete accessibility snapshot and still requires Speed within the original deadline.
+No private player state, control timeout, caption toggle, or pixel requirement changes.
+The next hosted trial must prove the negative control reaches its intended visibility rejection.
+
+
+## Hosted caption acceptance and completion sequencing — October 13
+
+[Run 38467583398](https://github.com/Kinosail/kinosail/actions/runs/38467583398) executes revision `e76ab401e8d908e4b739dc8cde3404eacf378363`.
+Android job `115538463486` passes on its disposable API 36 emulator.
+The command is `python3 apps/player/scripts/test-android-captions.py --output "$RUNNER_TEMP/android-caption-qa"`.
+The runner creates an isolated real Server and synthetic 120-second portrait and landscape videos with a cue from one to 110 seconds.
+It retains exact source, fixture, environment, command, test selection, process cleanup, and screenshot evidence.
+
+Artifact `11850903952` has SHA-256 `01599f95e2c5c0534798e02f7b5fc8aceeaa49dcfbfcc1555a25bb73ff6635c7`.
+Eight source pins, six fixture pins, and all 57 artifact hashes verify independently against unchanged source.
+All sixteen positive test executions pass, without skipped, ignored, or timed-out tests.
+The captions-off negative control reaches the intended visible-caption rejection; its expected failing JUnit result remains preserved.
+All ten real HTTP bridge controls pass. The Server, bridge, and emulator settle.
+
+| Case | Verified image size | Caption pixels | Caption pixels under navigation | Unstable protected pixels |
+| --- | --- | --- | --- | --- |
+| Phone portrait | 1080 × 2400 | 101,234 | 0 | 0 |
+| Landscape tablet, first | 2560 × 1600 | 71,048 | 0 | 0 |
+| Landscape tablet, repeat | 2560 × 1600 | 71,048 | 0 | 0 |
+| Phone landscape | 2400 × 1080 | 29,044 | 0 | 0 |
+
+Each positive case verifies decoded playback and actions, pending/failure/retry recovery, captions off/on/off, and late backward seeking.
+Both tablet cases retain the original portrait-video geometry on a landscape display.
+The late case completes sidecar loading at 115 seconds and observes a rendered video frame before seeking backward to five seconds.
+The restored cue, paused state, ready player, and original 120-second duration all pass.
+This additional regression has no independent baseline execution; the original toggle and navigation-overlap oracles each retain their earlier failures.
+
+Direct inspection compares retained pending, loaded, failed, and recovered states across phone and tablet evidence.
+The loading indicator clears at failure and recovery. Captions appear above the gesture bar in loaded and recovered states.
+Caption-off frames contain no caption. Late-start frames contain no active cue; backward-seek frames retain the restored cue.
+The paused native controller darkens the seek-back image. That image proves restoration, not contrast with controls open.
+No physical device, Android TV, picture-in-picture, live rotation, or screen-reader runtime acceptance follows from this emulator result.
+
+The same revision passes Apple job `115538463063`.
+Artifact `11851508476` has SHA-256 `4d3164f23ad807db14af55fa6588068bf492ce056c50b5cba135566a12e21271`.
+The retained Xcode result bundles report 336 iOS passes and 320 tvOS passes, no failures, and one skip per platform.
+The safe job-log projection has SHA-256 `096d1e669822cb843268c3b483568fdd245b5f9badd79484204575c4c76080bf`.
+Reader and endpoint-scrub assertions pass here; earlier intermittent failures remain unresolved.
+These are hosted simulator contracts, not physical-device proof.
+
+The Subtitles completion prerequisite passes in two successive source revisions.
+At `66f6f8dd`, artifact `11849965429` has SHA-256 `82daf71e56e66cd03e98d1d02e4d2fe7e52e2442975a190d5a3f7830553d55b4`.
+At `e76ab401`, artifact `11850733726` has SHA-256 `49a2fff4aa0e29724e2bbc6187e0cd3847c66251b8a1410864cf968665712895`.
+Each contains thirty passing receipts and sixteen independently verified uploaded child hashes.
+The 275 referenced private child artifacts are absent from each upload and are not independently verified.
+All four long windows record exactly one successful INFO terminal event with a request ID before restart and after shutdown.
+The retained checks also require unchanged media, joined producers, stable warm and restarted windows, no late encoder, and private diagnostics.
+Both index-failure controls pass. No assertion is removed to obtain these results.
+
+Local application execution remains held. Source checks and artifact inspection do not override that boundary.
+Required PR checks, protected merge, exact-main publication, deployment, and physical playback remain separate delivery steps.
+
+
+## Deep-run failures after caption acceptance — October 13
+
+The caption and Apple jobs pass, but the remaining Player jobs in `38467583398` fail.
+Auto-merge for PR #593 is disabled while these findings are investigated.
+All Chromium browser reports pass. Their archive has SHA-256 `52127e027528c45605321a758caf1dfaec756b19837e96f7eb0736ec153c24a0`.
+Its ten source pins and 538 artifact checksums verify against unchanged `e76ab401`.
+
+The later cold-suffix suite has eighteen passing cases and one failed success case.
+Prepared-timeline artifact `11852825129` has SHA-256 `4ce0200f1e8696149a7ffc24146307162abb8a6d56d210431a19843eb460f310`.
+The failed case preserves its initial metadata, all three fragment recoveries, and warm restart.
+Corrupt-certificate regeneration passes; missing-certificate regeneration returns HTTP 200 but fails final metadata equality.
+Its source is unchanged, and the Server and owned probes settle.
+The uploaded receipt omits the changed filenames and this generation's terminal log. Their contents are not inferred.
+
+Source inspection finds the same completion distinction at replacement generation.
+The fixture waits for FFmpeg to exit, while the Server can still finalize metadata afterward.
+The initial snapshot already waits for the Server's completion event; the replacement snapshot must establish that prerequisite too.
+The next trial requires exactly one INFO completion for the response request ID and synthetic session, with no failure event and joined encoders.
+It retains the existing five-second bound, byte equality, public status and clock, process counts, source preservation, and cleanup assertions.
+Each damage attempt is recorded before assertions. Any mismatch retains the fixed relative metadata names that changed.
+This repairs a source-proven prerequisite gap; the unavailable failing log does not prove it caused this occurrence.
+The receipt pins the extracted evidence helper. Python syntax, source caps, whitespace, and independent source review pass.
+The changed fixture still requires hosted execution. Local runtime remains held.
+
+WebKit's phase-targeted Mark watched control times out in `firstPlayable` before reaching its playback assertions; its retry passes.
+Its artifact has SHA-256 `81ccd50e81a23f947759ea102d1c6d97415b48cec59bd5af3ff9612793a0a8fa`.
+All ten source pins and 528 artifact checksums verify. The flaky result remains a failure, not acceptance.
+The trace shows the preceding home navigation returning HTTP 200, followed by a new Library navigation with no completed response.
+The test retains its original 60-second failure. No product change, timeout increase, or speculative navigation repair is applied.

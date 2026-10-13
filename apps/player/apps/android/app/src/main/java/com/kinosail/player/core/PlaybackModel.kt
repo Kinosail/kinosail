@@ -20,7 +20,6 @@ import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import java.io.IOException
 import java.net.URL
 import java.util.UUID
@@ -168,7 +167,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     catch (_: IllegalArgumentException) { throw IOException("Blocked media request.") }
                 }
                 val engine = ExoPlayer.Builder(getApplication<Application>())
-                    .setMediaSourceFactory(DefaultMediaSourceFactory(guarded))
+                    .setMediaSourceFactory(PlaybackMediaSourceFactory(guarded))
                     .build()
                 engine.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
                     .setContentType(if (item.kind == "video") C.AUDIO_CONTENT_TYPE_MOVIE else C.AUDIO_CONTENT_TYPE_MUSIC)

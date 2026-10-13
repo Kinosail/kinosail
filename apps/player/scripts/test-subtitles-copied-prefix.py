@@ -19,7 +19,8 @@ from hls_copied_prefix_faults import held_fault
 from hls_copied_prefix_environment import held_encoder, fault_probe
 from hls_completed_suffix import completed_suffix, completed_suffix_receipt
 from hls_timeline_fixture import check, fixture
-from hls_long_resumed_prefix import long_fixture, long_window, long_window_final, long_window_join, long_window_rejection
+from hls_long_resumed_prefix import (long_fixture, long_window, long_window_final, long_window_join,
+                                   long_window_rejection, long_window_complete_before_restart)
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -161,6 +162,8 @@ try:
             encoded = len(list(RUN.glob('*.joined')))
             status, warm, _ = api.http(path)
             receipt['warmStable'] = status == 200 and warm == public
+            if args.long_resume:
+                long_window_complete_before_restart(RUN, receipt)
             server.terminate()
             server.wait(timeout=10)
             receipt['firstServerSettled'] = server.poll() is not None

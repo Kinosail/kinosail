@@ -2,7 +2,8 @@
 
 The active clients are SwiftUI applications for iOS and tvOS, sharing validated Server contracts and native platform services. The apps include Quick Connect and nearby discovery, library browsing and search, collections, movies and episodes, music and audiobooks, AVKit playback, subtitles, bookmarks, progress synchronization, photos and DLNA receiver controls. iPhone and iPad also support verified offline downloads and PDF, EPUB and comic reading.
 
-The iOS, tvOS and companion watchOS application targets are in this project. iPad belongs to the iOS target. Android, Android TV and Fire TV were removed.
+The iOS, tvOS and companion watchOS application targets are in this project. iPad belongs to the iOS target.
+The [Android clients](../android/README.md) have a separate project for phones, tablets, Android TV, and Wear OS.
 
 ## Connect to a Server
 

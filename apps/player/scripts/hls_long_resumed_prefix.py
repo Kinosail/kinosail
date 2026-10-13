@@ -115,16 +115,47 @@ def long_window_join(run, receipt):
         receipt['longCleanupFailureClass'] = type(error).__name__
 
 
-def final_evidence(api, run, receipt):
-    admissions = list(run.glob('*.started'))
-    child = admissions[0].read_text() if len(admissions) == 1 else ''
-    joined = child.isdecimal() and (run / (child + '.joined')).is_file()
+def lifecycle_outcomes(run, complete=False):
     with (run / 'server-private.log').open('rb') as source:
         data = source.read((4 << 20) + 1)
     check(len(data) <= 4 << 20, 'long_window_log_bound')
     raw = data.decode()
-    events = [json.loads(line) for line in raw.splitlines() if line.startswith('{')]
+    # Poll only complete JSON lines while the Server still owns this log.
+    lines = raw.splitlines() if complete else [line for line in raw.splitlines(keepends=True) if line.endswith('\n')]
+    events = [json.loads(line) for line in lines if line.startswith('{')]
     outcomes = [event for event in events if event.get('msg') in ('HLS transcode completed', 'HLS transcode failed')]
+    return raw, outcomes
+
+
+def lifecycle_counts(outcomes):
+    return {'completed': sum(event.get('msg') == 'HLS transcode completed' for event in outcomes),
+            'failed': sum(event.get('msg') == 'HLS transcode failed' for event in outcomes),
+            'info': sum(event.get('level') == 'INFO' for event in outcomes),
+            'withRequestID': sum(bool(event.get('request_id')) for event in outcomes)}
+
+
+def long_window_complete_before_restart(run, receipt):
+    # The wrapper writes .joined before it exits. That does not prove the Server
+    # has reaped the wrapper and finished publication; do not kill that owner yet.
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        _, outcomes = lifecycle_outcomes(run)
+        counts = lifecycle_counts(outcomes)
+        receipt['longCompletionBeforeRestart'] = counts
+        if outcomes:
+            check(counts == {'completed': 1, 'failed': 0, 'info': 1, 'withRequestID': 1},
+                  'long_window_completion_before_restart')
+            return
+        time.sleep(.025)
+    raise RuntimeError('long_window_completion_before_restart')
+
+
+def final_evidence(api, run, receipt):
+    admissions = list(run.glob('*.started'))
+    child = admissions[0].read_text() if len(admissions) == 1 else ''
+    joined = child.isdecimal() and (run / (child + '.joined')).is_file()
+    raw, outcomes = lifecycle_outcomes(run, complete=True)
+    receipt['longTerminalOutcomes'] = lifecycle_counts(outcomes)
     receipt['longNoLateEncoder'] = len(admissions) == 1
     receipt['longProducerSuccessfullyJoined'] = (joined and len(outcomes) == 1
         and outcomes[0].get('msg') == 'HLS transcode completed' and outcomes[0].get('level') == 'INFO'

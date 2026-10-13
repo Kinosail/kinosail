@@ -34,14 +34,8 @@ extension NativePreferencesUXTests {
             #expect(try await client.saveMediaPreferences(edited) == edited)
             #expect(fixture.saves == 1 && fixture.heldPreferenceCount == 1)
             fixture.releaseReader()
-            do {
-                try await readerUntil("A successful preference save must complete the active reader without releasing the obsolete GET") {
-                    readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading }
-                }
-            } catch {
-                try await readerCapture(window, folder: folder, name: "failed-after-save")
-                throw error
-            }
+            try await readerLoadedWebView(window, fixture: fixture, folder: folder,
+                reason: "A successful preference save must complete the active reader without releasing the obsolete GET")
             #expect(try await survivor.value == edited)
             let web = try #require(readerDescendants(window).compactMap { $0 as? WKWebView }.first)
             let metrics = try await readerMetrics(web)

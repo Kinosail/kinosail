@@ -39,6 +39,9 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -91,6 +94,14 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         this.player = engine
         useController = true
         controllerShowTimeoutMs = if (accessibleControls) 0 else 4_000
+        // Keep video edge-to-edge while the caption canvas avoids system UI.
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
+            val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout())
+            subtitleView?.setPadding(safe.left, safe.top, safe.right, safe.bottom)
+            insets
+        }
+        doOnAttach { ViewCompat.requestApplyInsets(it) }
     } } }
     DisposableEffect(playerView) {
         playerView?.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
