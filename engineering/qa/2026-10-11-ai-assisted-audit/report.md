@@ -21,8 +21,9 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 13
 
-PRs #587 and #592 are merged. PR #593 has passing Android caption and Apple hosted acceptance at `e76ab401`.
-Required PR checks and protected delivery remain pending.
+PRs #587, #592, and #593 are merged. PR #593's reviewed task commit is an ancestor of fetched `origin/main` at `0a68e51544458de32d1458b6a567050ed344f229`.
+All four required PR checks passed. Exact-main CI and publication remain pending for this newest merge.
+The separate Wear follow-up remains draft PR #594; its latest source repairs await hosted acceptance.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -34,10 +35,23 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
-| Subtitles copied suffix | At `66f6f8dd` and `e76ab401`, all thirty receipts pass. Four long windows record successful completion before the deliberate restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
+| Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
+| Wear | The first executed trial reports six passing assertions but fails final transport cleanup. Both small-watch compositor images show the system welcome screen. | App visibility, physical round geometry, and complete cleanup require the new hosted trial. Pairing, sensors, battery, and physical input remain open. |
 | Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
+
+The accepted `f78be3bb` cold-suffix artifact passes all nineteen cases and verifies seven helper pins.
+Both corrupted and missing metadata recoveries retain identical metadata after one correlated INFO completion.
+Receipt SHA-256: `ba28ce53e7189b0a2d3f06186d1803b3fa0862bc847a490da780dd2c2e91658d`.
+The Chromium artifact verifies ten source pins and 435 checksums without failed or flaky reports.
+The focused WebKit repeat verifies ten source pins and 502 checksums, with 806 distinct passing cases and 284 skipped-only cases.
+Its original navigation timeout remains an unresolved intermittent observation.
+
+The [Wear evidence note](../2026-10-13-wear-journeys.md) records the rejected screenshots, exact artifacts, and successive runner repairs.
+Commits `89c1af8a` and `9c4cf628` require foreground app ownership, bounded transport detachment, and fresh physical profiles.
+Source checks and independent review pass; these commits have no hosted runtime acceptance yet.
+The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
 
 ## Baseline evidence
 
