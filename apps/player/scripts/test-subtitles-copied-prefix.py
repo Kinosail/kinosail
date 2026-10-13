@@ -17,7 +17,7 @@ import socket
 import subprocess
 import time
 from hls_copied_prefix_faults import held_fault
-from hls_completed_suffix import completed_suffix
+from hls_completed_suffix import completed_suffix, completed_suffix_receipt
 from hls_timeline_fixture import check, fixture
 from hls_timeline_http import PublicServer, sha, source_state
 
@@ -79,7 +79,10 @@ source=''' + repr(str(source)) + '''
 if '-hls_time' not in a or source not in a: os.execv(real,[real]+a)
 a[a.index('-i'):a.index('-i')]=['-readrate','2']
 root=Path(__file__).parent
+admission=root/(str(os.getpid())+'.started')
+admission.write_text('pending')
 child=subprocess.Popen([real]+a)
+admission.write_text(str(child.pid))
 def stop(signum,frame): raise SystemExit(1)
 signal.signal(signal.SIGTERM,stop)
 try:
@@ -261,11 +264,13 @@ finally:
             receipt.update(sourceUnchanged=source_state(source) == before,
                            serverSettled=server.poll() is not None,
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
+            if args.completed_suffix:
+                completed_suffix_receipt(api, RUN, receipt)
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
 except HeldFaultComplete:
     receipt['sourceContentUnchanged'] = sha(source) == before['sha256']
-    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged'] and (args.held_source_change or receipt['sourceUnchanged']):
+    if receipt['serverSettled'] and receipt['encoderJoined'] and receipt['sourceContentUnchanged'] and (args.held_source_change or receipt['sourceUnchanged']) and (not args.completed_suffix or receipt.get('completedFinalProof')):
         receipt['result'] = 'passed'
     else:
         receipt['failureClass'] = 'held_fault_cleanup'

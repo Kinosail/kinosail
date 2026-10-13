@@ -92,11 +92,17 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	if manager.cache == "" {
 		return errors.New("compatible playback is not configured")
 	}
-	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), mediaFactsFor(item, manager.probe.inspect(ctx, item)), item.Subtitles)
+	facts := mediaFactsFor(item, manager.probe.inspect(ctx, item))
+	resolved, sourceErr := playback.ResolveHLSSource(sharedHLSRecipe(recipe), facts, item.Subtitles)
 	if sourceErr != nil {
 		return sourceErr
 	}
 	recipe = localHLSRecipe(resolved)
+	if completedCopiedHLSWindow(recipe, facts.Duration) {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+	}
 	key := hlsRecipeKey(item.ID, recipe)
 	playlist := filepath.Join(manager.cache, key, "index.m3u8")
 	options, err := manager.hlsSettings(item, recipe)

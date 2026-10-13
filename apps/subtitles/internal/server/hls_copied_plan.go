@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/hlsmanifest"
+	"github.com/MikeO7/kinosail/packages/playback"
 )
 
 var errCopiedHLSPlan = errors.New("copied HLS generation plan is invalid")
@@ -81,7 +82,7 @@ func (plan *copiedHLSPlan) valid(policy string) bool {
 	if plan.Version != 1 || plan.Policy != policy || len(policy) == 0 || len(policy) > 16<<10 {
 		return false
 	}
-	if plan.Strategy == "legacy" {
+	if plan.Strategy == "legacy" || plan.Strategy == "completed" {
 		return len(plan.Cuts) == 0
 	}
 	if plan.Strategy != "certified" || len(plan.Cuts) < 2 || len(plan.Cuts) > maxHLSPlaylistURIs || plan.Cuts[0] != 0 {
@@ -103,6 +104,13 @@ func validCopiedHLSCuts(cuts []float64) bool {
 }
 
 func (plan *copiedHLSPlan) project(manifest []byte, duration float64) ([]byte, bool, error) {
+	if plan != nil && plan.Strategy == "completed" && !bytes.Contains(manifest, []byte("#EXT-X-STREAM-INF:")) {
+		if !playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
+			return nil, false, errCopiedHLSPlan
+		}
+		projected, ready := hlsmanifest.CompleteVOD(manifest, duration, 4)
+		return projected, ready, nil
+	}
 	if plan == nil || plan.Strategy == "legacy" || bytes.Contains(manifest, []byte("#EXT-X-STREAM-INF:")) {
 		projected, ready := hlsmanifest.CompleteVOD(manifest, duration, 4)
 		return projected, ready, nil
@@ -115,6 +123,9 @@ func (plan *copiedHLSPlan) project(manifest []byte, duration float64) ([]byte, b
 }
 
 func (plan *copiedHLSPlan) validateRendition(root *os.Root, name string) error {
+	if plan != nil && plan.Strategy == "completed" && name != "index.m3u8" {
+		return validateCompletedCopiedRendition(root, filepath.Dir(name))
+	}
 	if plan == nil || plan.Strategy != "certified" || name == "index.m3u8" {
 		return nil
 	}

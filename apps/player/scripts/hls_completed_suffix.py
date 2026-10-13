@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 import threading
 import time
 from hls_timeline_fixture import check
@@ -22,7 +23,7 @@ def wait_for(predicate, failure, seconds=35):
 
 
 def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log):
-    path = plan['compatible'].replace('/index.m3u8', '-o24000/index.m3u8')
+    path = plan['compatible'].replace('/index.m3u8', '-o30000/index.m3u8')
     receipt['completedSuffix'] = scenario
     responses, failures = [], []
 
@@ -56,7 +57,8 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
             check(receipt['timeoutDiagnostic'], 'completed_timeout_diagnostic')
         (run / 'release').touch()
         wait_for(lambda: (run / 'encoded').exists(), 'completed_endlist_producer_not_held')
-        check(b'#EXT-X-ENDLIST' in physical.read_bytes(), 'completed_real_endlist_required')
+        receipt['genuineEndlistBeforeExit'] = b'#EXT-X-ENDLIST' in physical.read_bytes()
+        check(receipt['genuineEndlistBeforeExit'], 'completed_real_endlist_required')
         time.sleep(.25)
         receipt['masterAbsentBeforeProducerExit'] = not (root / 'index.m3u8').exists()
         receipt['endlistStillPending'] = pending.is_alive() if scenario != 'timeout' else True
@@ -66,7 +68,6 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
         check(not pending.is_alive() and not failures and len(responses) == 1, 'completed_request_must_settle')
         joined = run / ((run / 'held').read_text() + '.joined')
         wait_for(joined.exists, 'completed_producer_not_joined')
-        check(b'#EXT-X-ENDLIST' in physical.read_bytes(), 'completed_real_endlist_required')
         if scenario == 'producer':
             receipt['failedEndlistStatus'] = responses[0][0]
             receipt['masterAbsentAfterFailure'] = not (root / 'index.m3u8').exists()
@@ -74,6 +75,7 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
             receipt['failedWarmStatus'] = api.http(path)[0]
             check(receipt['failedWarmStatus'] == 503 and not (root / 'index.m3u8').exists(), 'failed_endlist_warm_rejected')
             restart(api, run, state, env, log)
+            receipt['completedExpectedAdmissions'] = 3
             receipt['failedRestartStatus'] = api.http(path)[0]
             check(receipt['failedRestartStatus'] == 503 and not (root / 'index.m3u8').exists(), 'failed_endlist_restart_rejected')
             return
@@ -89,11 +91,12 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
         check(receipt['exactCompletedPlaylist'], 'completed_playlist_must_preserve_actual_cuts')
         data = json.loads((root / '.copied-cuts').read_text())
         check(data['Strategy'] == 'completed', 'explicit_completed_strategy')
-        encoded = len(list(run.glob('*.joined')))
+        encoded = len(list(run.glob('*.started')))
+        receipt['completedExpectedAdmissions'] = encoded
         receipt['warmStable'] = api.http(variant)[:2] == (200, public)
         restart(api, run, state, env, log)
         receipt['restartStable'] = api.http(path)[0] == 200 and api.http(variant)[:2] == (200, public)
-        receipt['noWarmEncode'] = len(list(run.glob('*.joined'))) == encoded
+        receipt['noWarmEncode'] = len(list(run.glob('*.started'))) == encoded
         check(receipt['warmStable'] and receipt['restartStable'] and receipt['noWarmEncode'], 'completed_cache_stability')
         if scenario in ('missing-plan', 'mismatched-plan'):
             metadata = root / '.copied-cuts'
@@ -104,13 +107,23 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
                 metadata.write_text(json.dumps(data, separators=(',', ':')))
             restart(api, run, state, env, log)
             receipt['metadataFaultStatuses'] = [api.http(variant)[0], api.http(variant.removesuffix('index.m3u8') + 'segment-00000.m4s')[0]]
-            receipt['metadataFaultStartsNoEncoder'] = len(list(run.glob('*.joined'))) == encoded
+            receipt['metadataFaultStartsNoEncoder'] = len(list(run.glob('*.started'))) == encoded
             check(receipt['metadataFaultStatuses'] == [503, 404] and receipt['metadataFaultStartsNoEncoder'], 'completed_metadata_must_reject')
     finally:
         (run / 'release').touch()
         (run / 'finish').touch()
         pending.join(timeout=40)
-        check(not pending.is_alive(), 'completed_request_cleanup')
+        original_failed = sys.exc_info()[0] is not None
+        def joined():
+            admissions = list(run.glob('*.started'))
+            return all(p.read_text().isdigit() and (run / (p.read_text() + '.joined')).exists() for p in admissions)
+        try:
+            wait_for(joined, 'completed_producer_cleanup', seconds=15)
+            receipt['completedCleanupVerified'] = not pending.is_alive()
+        except RuntimeError:
+            receipt['completedCleanupVerified'] = False
+        if not original_failed:
+            check(receipt['completedCleanupVerified'], 'completed_request_cleanup')
 
 
 def restart(api, run, state, env, log):
@@ -123,3 +136,22 @@ def restart(api, run, state, env, log):
         except OSError:
             return False
     wait_for(ready, 'completed_restart_not_ready')
+
+
+def completed_suffix_receipt(api, run, receipt):
+    """Final side-effect and diagnostic proof after the owning Server has exited."""
+    admissions = list(run.glob('*.started'))
+    receipt['completedNoLateEncoder'] = len(admissions) == receipt.get('completedExpectedAdmissions')
+    receipt['completedAllProducersJoined'] = 0 < len(admissions) <= 16 and all(
+        p.read_text().isdigit() and (run / (p.read_text() + '.joined')).exists() for p in admissions)
+    raw = (run / 'server-private.log').read_text()
+    events = [json.loads(line) for line in raw.splitlines() if line.startswith('{')]
+    failed = receipt.get('completedSuffix') == 'producer'
+    message = 'HLS transcode failed' if failed else 'HLS transcode completed'
+    outcomes = [e for e in events if e.get('msg') == message]
+    receipt['completedOutcomeDiagnostics'] = len(outcomes) == len(admissions) and all(
+        e.get('level') == ('ERROR' if failed else 'INFO') and e.get('request_id') for e in outcomes)
+    receipt['completedDiagnosticSecretsAbsent'] = all(value not in raw for value in
+        (api.token, 'synthetic-timeline-password', 'synthetic-prefix-key') if value)
+    receipt['completedFinalProof'] = all(receipt.get(key) for key in ('completedNoLateEncoder',
+        'completedAllProducersJoined', 'completedOutcomeDiagnostics', 'completedDiagnosticSecretsAbsent', 'completedCleanupVerified'))

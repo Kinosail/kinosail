@@ -31,6 +31,7 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
 | Apple native contracts | Full suites and twelve reader outcomes pass at `bc33897b`. Later runs expose a tvOS scrub assertion, a hero first-frame assertion, and reader timeouts with slow WebKit launches. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
+| Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. A completed-output strategy is implemented for nonzero windows with at most 30 seconds remaining. | Hosted paced playback and lifecycle controls; longer windows remain unresolved. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
 Local runtime remains held for the coordinated physical Apple TV window. Current local checks use source formatting, shell parsing, source contracts, and artifact inspection. Hosted gates remain enabled.
@@ -3268,3 +3269,27 @@ The original seven-frame browser journey and its unpaced control remain unchange
 The proposed repair covers nonzero copied windows with at most 30 seconds of requested media remaining.
 Their policy-bound master can serve as the success receipt if published only after successful producer completion and final validation.
 Longer nonzero windows require further work; delaying an entire remaining title would harm startup.
+
+
+## Bounded completed-output implementation — October 13
+
+Short nonzero copied windows now select an immutable `completed` generation strategy.
+The copied cache policy changes so earlier caches cannot impersonate this completion contract.
+The Server waits for successful producer exit and validates the actual final playlist and every referenced asset.
+Only then does it write the existing policy-bound master playlist, which serves as the success receipt.
+There is no new completion marker and no early master for this strategy.
+Delivery requires the bound plan and finalized rendition. It returns actual durations without extrapolating future fragments.
+
+The request's readiness deadline is 30 seconds. A waiter timeout leaves the Server-owned producer running.
+Timeout rejection logs `WARN`, the safe outcome `readiness-timeout`, and the existing request/session correlation fields.
+The existing encoder boundary records successful completion or producer failure once.
+This adds startup delay for the selected short window; an unusually slow producer can return unavailable at the deadline.
+Longer copied windows keep their prior behavior and remain an unresolved timing boundary.
+
+Five public lifecycle scenarios cover success, failed producer exit after genuine ENDLIST, timeout, missing plan, and mismatched plan.
+The actual held fixture uses admitted offset 30000 and retains a real first-fragment prefix from the source keyframe at 27 seconds.
+The controls compare producer admissions after final Server shutdown and require each admitted child to join.
+They also verify outcome log levels, request correlation, and absence of fixture credentials.
+Independent source review found no production blocker. It identified fixture offset and cleanup errors, which were corrected before publication.
+Python sources and six generated wrapper branches parse. Source caps, whitespace, 17 workflow contracts, and pinned actionlint pass.
+No local Go build, FFmpeg execution, browser, simulator, or device run is claimed; hosted execution remains required.
