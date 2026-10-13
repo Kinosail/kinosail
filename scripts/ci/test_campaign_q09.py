@@ -110,6 +110,18 @@ class Q09ProofTests(unittest.TestCase):
                     try: os.killpg(pid, signal.SIGKILL)
                     except ProcessLookupError: pass
 
+    def test_group_settlement_requires_absence_after_transient_permission_errors(self):
+        # A real process test cannot force Darwin's short-lived EPERM window
+        # while an exiting group disappears, or a persistent permission denial.
+        for outcomes, expected in (([None, PermissionError(), ProcessLookupError()], True),
+                                   ([PermissionError(), ProcessLookupError()], True),
+                                   ([PermissionError()] * 8, False), ([None] * 8, False)):
+            with self.subTest(expected=expected, outcomes=outcomes), \
+                    patch.object(self.driver.os, 'killpg', side_effect=outcomes), \
+                    patch.object(self.driver.time, 'monotonic', side_effect=[0, .5, 1, 2, 3, 3.5, 4, 5]), \
+                    patch.object(self.driver.time, 'sleep'):
+                self.assertEqual(self.driver.settle_owned(456), expected)
+
     def test_real_embed_and_executed_binary_provenance_is_prepared(self):
         source = DRIVER.read_text()
         self.assertNotIn("extensions =", source)

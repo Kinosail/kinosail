@@ -3012,3 +3012,31 @@ All 538 checksum entries, 537 evidence hashes, and ten source-input hashes match
 Archive SHA-256: `ea422d6f40626e50ea17c9f42ddc719d336028f9928087bf433b86ecd2b7fc22`.
 Session receipt SHA-256: `47cf84e23e9ee8fa43caa139890ebb39225ef423ce38d6de4fd8c7ec7c05c658`.
 Local app runtime remains held. No deployment or physical-device result follows from these hosted checks.
+
+### Browser trace passes; bounded macOS cleanup no longer rejects an exiting group
+
+At `ea644e55`, Player Chromium job `115282916149` succeeds.
+Its JSON report confirms one passing execution of `records one private trace across playback events`, without retry.
+The populated saved-session case also passes once without retry; its authenticated return and explicit step-up assertions remain intact.
+Artifact `11814415128` verifies 538 checksum entries, 537 evidence hashes, and ten source-input hashes.
+Archive SHA-256: `1473900fb6daea64e589c7d2f0c897275055c17d3467820bac29e80e48ba3003`.
+This closes the trace synchronization regression; the trace case remains an isolated browser fixture.
+
+Independent reader-verifier review found that multiple console summaries ending with the expected count could still pass that part of admission.
+Duplicate and mixed-summary controls failed before the repair. Revision `2b0c224f` requires exactly one aggregate summary, alongside all twelve structured passing outcomes.
+All 19 workflow contracts pass. The real reader timeout remains open, with richer diagnostics running at `bc33897b`.
+
+The existing Q09 owned-descendant control again reproduces the macOS cleanup error.
+TERM succeeds, the immediate group probe returns `EPERM`, and the next signal reports `ESRCH`.
+A process-table projection taken between those calls contains no group members.
+Apple's [XNU process-group signal implementation](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/kern_sig.c) can return `EPERM` when a retained group has no signalable members.
+That behavior is consistent with the observed transition; permission denial alone does not prove the group is absent.
+Reproduction log SHA-256: `16e68f8455a41e19f1c45da281da529cf7df6f16cbb4970ae40161dcc34231d3`.
+
+The cleanup helper now retains its existing bounded polling after `PermissionError` and accepts absence only after `ProcessLookupError`.
+Persistent denial or a still-present group returns false. The TERM/KILL sequence, ownership boundary, and deadlines remain unchanged.
+The new kernel-result controls were written first and failed before the repair.
+All ten Q09 contracts then pass, including the existing real Python descendant control and persistent-denial/live-group rejection.
+Red log SHA-256: `4b4234c23c66633f2515bbeb852b08c9ef7c05dcc3b0ef0348af20e866cf6e23`.
+Green log SHA-256: `31b2bfe589b18fc24d4c9e2a9238cc23789f14ea232b47dc9b07d6932031689c`.
+These are Python runner contracts. No local Go process, browser, media decoder, simulator, or device ran.
