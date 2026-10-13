@@ -11,6 +11,8 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
         var populated = false; var fails = false; var delay = 0.0; var artwork = Data(); var landscape = Data()
         var readerHeld = false; var readerFails = false; var readerEmpty = false
         var readerPending: [(NWConnection, Data)] = []
+        var preferencesHeld = false
+        var preferencesPending: [(NWConnection, Data)] = []
     }
     let state = Mutex(State())
     let listener: NWListener
@@ -29,6 +31,17 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
     var readerFails: Bool { get { state.withLock { $0.readerFails } } set { state.withLock { $0.readerFails = newValue } } }
     var readerEmpty: Bool { get { state.withLock { $0.readerEmpty } } set { state.withLock { $0.readerEmpty = newValue } } }
     var heldReaderCount: Int { state.withLock { $0.readerPending.count } }
+    var preferencesHeld: Bool { get { state.withLock { $0.preferencesHeld } } set { state.withLock { $0.preferencesHeld = newValue } } }
+    var heldPreferenceCount: Int { state.withLock { $0.preferencesPending.count } }
+    func releasePreferences() {
+        let pending = state.withLock { value in
+            value.preferencesHeld = false
+            let pending = value.preferencesPending; value.preferencesPending = []; return pending
+        }
+        for (connection, response) in pending {
+            connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+        }
+    }
     func releaseReader() {
         let pending = state.withLock { value in
             value.readerHeld = false
@@ -139,6 +152,9 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
             let status = (fails && path != "/api/v1/me") || (reader && readerFails) ? "503 Service Unavailable" : "200 OK"
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(encoded.count)\r\nConnection: close\r\n\r\n".utf8) + encoded
             let held = state.withLock { value in
+                if path == "/api/v1/me/media-preferences", value.preferencesHeld {
+                    value.preferencesPending.append((connection, response)); return true
+                }
                 guard reader && value.readerHeld else { return false }
                 value.readerPending.append((connection, response)); return true
             }

@@ -10,14 +10,17 @@ import WebKit
 // held loopback metadata and production screens, without a production seam.
 // Keep it in the serialized preferences owner because both use SessionKeychain.
 extension NativePreferencesUXTests {
-    @Test(arguments: [false, true])
-    func readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light: Bool) async throws {
+    @Test(arguments: [false, true], [20, 32])
+    func readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light: Bool, fontSize: Int) async throws {
         let fixture = try await PreferencesLoopbackFixture()
-        defer { fixture.releaseReader(); fixture.listener.cancel() }
+        defer { fixture.releaseReader(); fixture.releasePreferences(); fixture.listener.cancel() }
+        fixture.state.withLock { $0.preferences.readerFontSize = fontSize }
         let keychain = SessionKeychain(), previousSession = try await keychain.restore()
         try await keychain.save(SavedSession(server: fixture.server, token: "isolated-reader-token", viewer: fixture.viewer))
         let session = AppSession()
         await session.restore()
+        var evidenceFolder: URL?
+        var stage = "initial"
         do {
             let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
             let previousWindow = scene.windows.first { $0.isKeyWindow }
@@ -25,11 +28,22 @@ extension NativePreferencesUXTests {
             defer { window.isHidden = true; previousWindow?.makeKey() }
             let folder = FileManager.default.temporaryDirectory.appendingPathComponent("native-reader-column-" + UUID().uuidString)
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            evidenceFolder = folder
             print("NATIVE_READER_EVIDENCE \(folder.path)")
             fixture.readerHeld = true
             readerRoot(window, session: session, light: light)
             window.makeKeyAndVisible()
             try await readerUntil { fixture.heldReaderCount == 1 }
+            let initial = try readerBands(window, light: light)
+            try JSONSerialization.data(withJSONObject: ["requestedFontSize": fontSize,
+                "observedPendingHeights": initial.map(\.height)], options: [.prettyPrinted])
+                .write(to: folder.appendingPathComponent("pending-font.json"))
+            try await readerCapture(window, folder: folder, name: "pending-initial")
+            if fontSize != 20 {
+                try await readerUntil("Pending lines must adopt the confirmed saved font before book metadata is released") {
+                    (try? readerBands(window, light: light).contains { abs($0.height - CGFloat(fontSize)) <= 1 }) == true
+                }
+            }
             let pending = try readerBands(window, light: light)
             try #require(!pending.isEmpty, "Prerequisite: real pending lines must be visible while metadata is held")
             try await readerCapture(window, folder: folder, name: "pending")
@@ -52,18 +66,39 @@ extension NativePreferencesUXTests {
             #expect(try readerBands(window, light: light).isEmpty, "Success must remove the pending lines")
             for state in ["empty", "failed"] {
                 fixture.readerEmpty = state == "empty"; fixture.readerFails = state == "failed"
+                fixture.preferencesHeld = state == "failed"
                 fixture.readerHeld = true
                 readerRoot(window, session: session, light: light)
+                stage = state + "-metadata-start"
                 try await readerUntil { fixture.heldReaderCount == 1 }
+                stage = state + "-preference-start"
+                if state == "failed" { try await readerUntil { fixture.heldPreferenceCount == 1 } }
+                let client = try #require(session.client)
+                let survivor: Task<MediaPreferences, Error>? = state == "failed" ? Task { try await client.mediaPreferences() } : nil
+                defer { survivor?.cancel() }
                 #expect(try !readerBands(window, light: light).isEmpty)
                 fixture.releaseReader()
-                try await readerUntil {
+                stage = state + "-terminal"
+                try await readerUntil("Metadata failure must clear pending UI while preferences are held") {
                     readerDescendants(window).compactMap { $0 as? WKWebView }.isEmpty &&
                         (try? readerBands(window, light: light).isEmpty) == true
                 }
                 try await readerCapture(window, folder: folder, name: state)
+                fixture.releasePreferences()
+                if let survivor {
+                    #expect(try await survivor.value.readerFontSize == fontSize,
+                            "Canceling the failed reader must preserve the shared preference producer")
+                    #expect(try await client.mediaPreferences(policy: .cached).readerFontSize == fontSize,
+                            "The producer must retain its successful validated result")
+                }
             }
         } catch {
+            if let evidenceFolder {
+                let diagnostic: [String: Any] = ["stage": stage, "heldReaderCount": fixture.heldReaderCount,
+                    "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
+                try? JSONSerialization.data(withJSONObject: diagnostic, options: [.prettyPrinted])
+                    .write(to: evidenceFolder.appendingPathComponent("failed-operation.json"))
+            }
             await session.client?.close(purgeCache: true)
             if let previousSession { try await keychain.save(previousSession) } else { try await keychain.clear() }
             throw error
@@ -82,10 +117,10 @@ extension NativePreferencesUXTests {
         window.layoutIfNeeded()
     }
 
-    private func readerUntil(_ condition: () -> Bool) async throws {
+    private func readerUntil(_ reason: String = "The held reader operation must reach its expected visible state", _ condition: () -> Bool) async throws {
         let deadline = ContinuousClock.now.advanced(by: .seconds(10))
         while !condition() && ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(20)) }
-        try #require(condition(), "The held reader operation must reach its expected visible state")
+        try #require(condition(), Comment(rawValue: reason))
     }
 
     private func readerDescendants(_ view: UIView) -> [UIView] { [view] + view.subviews.flatMap(readerDescendants) }
@@ -122,7 +157,7 @@ extension NativePreferencesUXTests {
                     width: CGFloat(last - first + 1) / scale, height: 1 / scale)
                 current = current.map { $0.union(row) } ?? row
             } else if let group = current {
-                // This fixture uses 20px body text. Exclude native navigation
+                // This fixture uses at most 32px body text. Exclude native navigation
                 // and footer surfaces when locating its paragraph placeholders.
                 if (8...40).contains(group.height) { groups.append(group) }
                 current = nil

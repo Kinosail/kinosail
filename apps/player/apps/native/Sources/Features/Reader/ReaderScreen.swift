@@ -135,14 +135,14 @@ struct ReaderScreen: View {
         do {
             async let details = client.reader(itemID: itemID)
             async let remotePosition = client.readerPosition(itemID: itemID)
-            async let savedPreferences = client.mediaPreferences()
-            let (book, remote, preferences) = try await (details, remotePosition, savedPreferences)
+            async let savedPreferences: Void = loadPreferences(client: client, attempt: attempt)
+            let (book, remote, _) = try await (details, remotePosition, savedPreferences)
             guard remote.total == book.pages.count else { throw ClientError.invalidResponse }
             let store = try ReaderPositionStore(scope: scope)
             let pending = try await store.pending(itemID: itemID)
             try Task.checkCancellation()
             guard generation == attempt else { return }
-            self.book = book; self.preferences = preferences; self.position = remote
+            self.book = book; self.position = remote
             writer = try ReaderProgressWriter(itemID: itemID, client: client, store: store, expected: remote)
             if let pending, pending.position.total == remote.total {
                 position = pending.position
@@ -151,6 +151,12 @@ struct ReaderScreen: View {
             } else if pending != nil { notice = "The book’s page order changed. The Server’s current position is shown." }
             jump = UUID()
         } catch is CancellationError {} catch { if generation == attempt { failure = AppSession.message(error) } }
+    }
+    private func loadPreferences(client: ServerClient, attempt: UUID) async throws {
+        let preferences = try await client.mediaPreferences()
+        try Task.checkCancellation()
+        guard generation == attempt else { return }
+        self.preferences = preferences
     }
     private func reloadPreferences() async {
         guard let client = session.client else { return }

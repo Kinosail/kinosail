@@ -2341,3 +2341,85 @@ Original simulator shutdown states are verified after execution, and the previou
 This checkpoint covers the default 20px preference. Other reader sizes, Dynamic Type,
 publisher fonts, physical VoiceOver and physical reading remain verification boundaries.
 Private `apple-reader-*` receipts retain exact source, commands, xcresults, geometry and screenshot hashes.
+
+### QA-027 — saved font confirmation
+
+The expanded journey requests 20px and 32px text in both appearances.
+Before the fix, pending lines retain 20px while held metadata waits, despite confirmed saved preferences.
+Both 32px reproductions fail before metadata is released.
+The reader now publishes validated preferences independently during its concurrent metadata and position work.
+It retains the generation and cancellation guards before publishing those preferences.
+
+The final phone and iPad owner suites each pass six tests, with no failures or skips.
+Each suite executes all four font and appearance combinations.
+The 32px iPad pending and loaded edges both span x=16–1016; the phone spans x=16–386.
+The 20px edges retain the earlier matching measurements. All eight loaded pages have zero horizontal overflow.
+Pending, loaded, invalid-empty and failed captures are visually inspected at both font sizes on both simulators.
+This remains an isolated native HTTP-peer journey. Publisher fonts, Dynamic Type and physical reading remain open.
+The final native patch SHA-256 is `3ee7431f20742ab0d4480812cc0b43c51ce9eea109841b4a9b876edb95901784`.
+The iPad log SHA-256 is `6fce866ae3fc70c541cedfbc0a3930fa554f2838a38c26d516582703af4fc2b9`.
+The phone log SHA-256 is `f5df5522973c9321cf7cbb7c6d5b098acd87b162111bbe4e5ddd34b45ce422fe`.
+
+## QA-028 — canceled catalog consumers keep the reader pending
+
+Held reader metadata returns a failure while its shared preference request remains pending.
+The reader stays in its loading state because catalog consumers directly await the producer task.
+Canceling a consumer does not interrupt that await. Async child cleanup therefore delays the screen's failure state.
+Four font and appearance controls reproduce this failure after metadata is released, with exactly one preference response held.
+The HTTP transport already supports cancellation; the catalog consumer wait is the affected boundary.
+The red native patch SHA-256 is `8a2bf2321705c58867d5504a38e43210e196b70593798a3c4b3e25e37fb800d9`.
+Its log SHA-256 is `8361a087c4af187cee019e942e7df72ae11771bbe217995d90cf1251de02deae`.
+
+A catalog request now resumes canceled consumers independently through actor-owned continuations.
+The shared producer retains ownership of validation and persistence.
+The reader journey requires failure UI before releasing the preference response.
+A second consumer must still receive the saved preference, and a subsequent cached read must retain it.
+Both device suites pass all four combinations without changing timeouts or removing failure assertions.
+
+The full iOS suite passes 333 tests, with zero failures and one platform skip.
+Its exact tested native patch is the same `3ee7431f` patch above.
+Its private log SHA-256 is `a361d152820013ce15d32ff03f9b382dd17d73b3724542b54e3db39a047b3cc8`.
+The run uses the hosted decoded-media fixture recipe; both task-owned fixture links are verified and removed afterward.
+Debug catalog logs contain 123 received and five canceled outcomes across 128 validated records.
+Four correlated producer IDs have both outcomes. Every message matches the bounded operation and random-ID schema.
+No remote URL, response body, account identifier or credential is added to these diagnostics.
+
+The initial full tvOS run exposes an obsolete synchronization assumption in the retained navigation-cancellation test.
+That test reads the cache immediately after the canceled caller completes, before independent persistence is guaranteed.
+The corrected test first requires cancellation while the response is held, then waits for the observable cached value.
+This also protects persistence when every consumer leaves, a case the reader's surviving-consumer journey does not cover.
+The initial tvOS failure is retained; its three skips include absent decoded-media prerequisites.
+Confirmation uses those prerequisites and the corrected observable synchronization.
+
+### Further hosted audit and environment boundaries
+
+Required CI run `38330723203` and layout run `38330722937` pass at `6012dba24dd27c3a39ec0adf375bb3877298ae57`.
+PR #579 is merged with merge commit `7131f22a317f97d7819fce5c60b1a766eb61c3db`.
+A fresh fetch and ancestry check prove that task commit is included in remote main.
+The deep run `38330990339` fails and remains evidence, despite required checks passing.
+Its WebKit watched-state startup fails once, then passes on retry: seeking=true, seconds=0.1, decodedFrames=0 and errorCode=3.
+This is an additional retained failure, not proof of the earlier Linux decoder stall's root cause.
+Its iOS contracts pass 331 tests, fail one extensionless offline AAC decode assertion, and skip one platform case.
+The full local iOS confirmation passes that assertion; this does not erase the hosted failure or explain its cause.
+Hosted tvOS passes 319 tests with one platform skip.
+The WebKit artifact SHA-256 is `8607c7456e35fde3591c4485df8b2cf1a73ee9ac43426c3861988c39ef6a3c6f`.
+The native artifact SHA-256 is `718e4f83fd22f926931ac693790fe8dcdfb5fd20c8f03d4e366083553a3049e2`.
+
+A newly installed, task-owned copy of the pinned macOS Firefox runtime still fails with the same profile-folder error.
+Global browser runtimes remain unchanged. macOS Firefox is not verified by the passing Linux Firefox controls.
+Image publication, deployed revision, physical devices, VoiceOver and the remaining product journeys remain separate evidence boundaries.
+
+QA-028 confirmation passes the full tvOS suite: 319 passed, zero failed and one platform skip.
+All decoded-media prerequisites are present. Both task-owned media links are verified and removed afterward.
+The native source remains unchanged throughout that run; only this report changes while validation runs.
+The final native patch SHA-256 is `e0d7002c262937e71e89b4fe898dd708fc2830294bec03feecbbda9328863f55`.
+The tvOS log SHA-256 is `2c29725906b7afb1cab12d0a5d39d4984ffc8a790461e75ee9423f06b64f8130`.
+The focused iOS catalog-revalidation suite also passes after the test synchronization change.
+Its receipt retains the selected test count and exact source; no production code changes after the full iOS run.
+The tvOS diagnostic stream contains 87 received and five canceled records, all at Debug level and with valid bounded shapes.
+Original shutdown states for the reused phone, iPad and TV simulators are verified after execution.
+
+The hosted AAC failure log reports its 20-second deadline at phase `asset`.
+That default phase cannot distinguish a delayed worker from blocked asset construction.
+The root cause remains unconfirmed, and the deadline is unchanged.
+The existing manual `AAC` probe option is dispatched against current main for a focused hosted comparison after the full suites.
