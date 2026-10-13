@@ -24,20 +24,17 @@ def target(method, raw):
     url = urlsplit(raw)
     if url.scheme or url.netloc or url.fragment:
         raise ValueError()
+    path = url.path
     static = {"/api/v1/me", "/api/v1/library", "/api/v1/cast/config", "/api/v1/remote-players"}
-    if url.path in static and method == "GET":
-        path = next(value for value in static if value == url.path)
+    if path in static and method == "GET":
+        path = next(value for value in static if value == path)
     else:
-        match = re.fullmatch(r"/(api/v1/items|art|backdrop|episode-art|media|subtitle)/([A-Za-z0-9_-]{1,128})(/(?:playback|playback-preferences|progress/sync|[0-9]{1,6}|embedded/[0-9]{1,6}))?", url.path)
-        if match is None:
+        if not re.fullmatch(r"/(api/v1/items|art|backdrop|episode-art|media|subtitle)/([A-Za-z0-9_-]{1,128})(/(?:playback|playback-preferences|progress/sync|[0-9]{1,6}|embedded/[0-9]{1,6}))?", path):
             raise ValueError()
-        prefix, identifier, suffix = match.groups()
-        suffix = suffix or ""
-        if method == "PUT" and (prefix != "api/v1/items" or suffix not in ("/progress/sync", "/playback-preferences")):
+        if method == "PUT" and (not path.startswith("/api/v1/items/") or not path.endswith(("/progress/sync", "/playback-preferences"))):
             raise ValueError()
         if method not in ("GET", "PUT"):
             raise ValueError()
-        path = "/" + prefix + "/" + identifier + suffix
     query = parse_qsl(url.query, keep_blank_values=True, strict_parsing=True, max_num_fields=16)
     allowed = {"q", "view", "sort", "offset", "limit"} if path == "/api/v1/library" else (
         {"videoCodecs", "audioCodecs", "hdrFormats", "maxAudioChannels"} if path.endswith("/playback") else
