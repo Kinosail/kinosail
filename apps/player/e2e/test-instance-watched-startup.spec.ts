@@ -1,7 +1,7 @@
 import {expect, test} from "@playwright/test";
 import {configureTestInstance, firstPlayable, login} from "./test-instance-helpers";
 import {startPlaying} from "./checkpoint-setup-cases";
-import {observeHeldWatchedMotion, recordWatchedNativeEvents, type WatchedObservation} from "./watched-startup-motion";
+import {observeHeldWatchedMotion, recordWatchedNativeEvents, type WatchedNativeEvent, type WatchedObservation} from "./watched-startup-motion";
 import {installDisplayedMotionTracker} from "./watched-motion-counter";
 import {installWatchedGuardMutation, verifyMutationInitiations} from "./watched-guard-mutation";
 import {installWatchedPlayingBarrier} from "./watched-playing-barrier";
@@ -73,7 +73,7 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
       buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])})).catch(() => ({unavailable: true}));
     await info.attach("late-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
       browser: info.project.name, watched, cancelledAgain, phase: startupPhase, media: mediaState,
-      events: await page.evaluate(() => (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup).catch(() => []),
+      events: await page.evaluate(() => (window as Window & {watchedNativeStartup: WatchedNativeEvent[]}).watchedNativeStartup).catch(() => []),
       boundary: "Initial decoded-start setup before held navigation; no source URL or error text"}), contentType: "application/json"});
     throw error;
   }
@@ -206,7 +206,7 @@ test(title, {tag: "@smoke"}, async ({page}, info) => {
         duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended, seeking: video.seeking,
         readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
         decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
-        events: (opener as Window & {watchedNativeStartup?: unknown[]}).watchedNativeStartup ?? [],
+        events: (opener as Window & {watchedNativeStartup?: WatchedNativeEvent[]}).watchedNativeStartup ?? [],
         buffered: ranges(video.buffered), seekable: ranges(video.seekable)};
     }).catch(() => ({unavailable: true}));
     await info.attach("late-native-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
@@ -247,7 +247,7 @@ test("watched controls navigate and persist both states during decoded playback"
         duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused, ended: video.ended,
         seeking: video.seeking, readyState: video.readyState, networkState: video.networkState,
         errorCode: video.error?.code ?? null, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
-        events: (window as Window & {watchedNativeStartup: unknown[]}).watchedNativeStartup})).catch(() => ({unavailable: true}));
+        events: (window as Window & {watchedNativeStartup: WatchedNativeEvent[]}).watchedNativeStartup})).catch(() => ({unavailable: true}));
       await info.attach("ordinary-native-startup-failure-media-state", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
         browser: info.project.name, watched, snapshot, boundary: "Ordinary native start; no queued-playing injection or source URL"}), contentType: "application/json"});
       throw error;

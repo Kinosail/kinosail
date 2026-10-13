@@ -27,9 +27,9 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
-| Browser session return | Subtitles Firefox and WebKit each pass 99 cases at `657e2ca2`. Player Firefox and WebKit at `c09c2659`, and Chromium at `8fa923df`, execute the required populated session-return case without retry. | Current required gates and the repaired trace assertion. |
+| Browser session return | Subtitles Firefox and WebKit each pass 99 cases at `657e2ca2`. Player Firefox and WebKit at `c09c2659`, and Chromium at `8fa923df`, execute the required populated session-return case without retry. Chromium's repaired trace assertion passes at `ea644e55`. | Current gates, the Firefox wrong-worker fixture repair, and a WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | Full hosted native suites pass at `c09c2659`, `8fa923df`, and `ea644e55`. Reader attachments are retained in xcresult. | The repeated reader probe at `ea644e55` fails at loaded-WebView readiness for light mode, font 32, repetition 3. Failure-state evidence and physical-device proof remain open. |
+| Apple native contracts | Full hosted native suites and all twelve structured reader probe outcomes pass at `bc33897b`. Reader attachments are retained in xcresult. | The earlier loaded-WebView timeout at `ea644e55` remains unresolved. Failure-state evidence and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
 
@@ -3040,3 +3040,44 @@ All ten Q09 contracts then pass, including the existing real Python descendant c
 Red log SHA-256: `4b4234c23c66633f2515bbeb852b08c9ef7c05dcc3b0ef0348af20e866cf6e23`.
 Green log SHA-256: `31b2bfe589b18fc24d4c9e2a9238cc23789f14ea232b47dc9b07d6932031689c`.
 These are Python runner contracts. No local Go process, browser, media decoder, simulator, or device ran.
+
+### Native repetition passes; Firefox invalid-worker setup needs synchronization
+
+At `bc33897b7c0553f5e1c7fa2b62791d11aa75a06c`, native job `115297806099` passes both complete suites and the reader probe.
+Structured test details contain all four expected argument pairs, each with repetitions one, two, and three passing.
+The receipt reports exit zero and verified discovery. Artifact `11812834824` retains the result bundle and probe details.
+Archive SHA-256: `d10d7b1ae7addb714a776ee7ec607500c8f77d202762b64f9e61477b344fade3`.
+The earlier reader timeout remains unresolved. A later pass is not a repair, and this run has no timeout-state capture.
+
+Player Firefox job `115297806413` fails the existing wrong-worker negative control.
+The injected controller initially uses the wrong worker. About 17 milliseconds later, the admission snapshot sees the expected active worker and controller.
+The original document has one successful response, no page error, and no side effect. Recovery correctly accepts that observed state.
+The trace therefore proves that the negative prerequisite did not survive until inspection; it does not establish an admission-policy defect.
+Artifact `11814841529` verifies 132 checksum entries.
+Archive SHA-256: `58ba3a86dafbdbd572a6e7b0d2f421dc08fcc14b026c4b160ef8c253a4d2a420`.
+
+The existing wrong-worker and wrong-scope cases now await the public offline `source()` operation before replacing the worker.
+That operation awaits the app's initial worker registration. Setup then requires an activated controller and registration with no installing or waiting worker.
+The wrong-worker case requires both active and controller script URLs to identify the injected worker; the wrong-scope case verifies its scope.
+A setup-complete flag is asserted outside the caught navigation result, so prerequisite failure cannot count as successful rejection.
+The flag is retained in the existing receipt. Admission checks, navigation counts, and side-effect assertions are unchanged.
+Independent source review approves the repair for hosted validation. No product code or extra test case is added.
+
+The TypeScript source-policy check also identifies seven broad annotations in this campaign's watched-playback evidence code.
+They now name the recorded native-event fields, queued callback functions, and native playback error objects.
+The source-policy check passes. Three-engine discovery lists 141 cases across the changed browser files; discovery is not execution.
+Source-file limits and whitespace checks pass. Hosted runtime validation remains required.
+
+### WebKit Apple launch failure stalls during input dispatch
+
+At the same revision, WebKit job `115297806494` reports 715 passes, 363 skips, and one flake.
+The initial `ready Play opens Apple, dismissal pauses and next Play reenters` execution fails; its retry passes.
+The gate remains failed. Artifact `11814764004` verifies 447 checksum entries.
+Archive SHA-256: `9b4dd8fe9c938411ab804267283dfec2159fba988c843b52f6f20f713b064b37`.
+Job log SHA-256: `8e6863084a38b227d4cfa3d4a81e7280adca12ef7e934c8825778aec2f2151da`.
+
+The trace shows the final Play button is visible, enabled, stable, and reached by the tap action.
+Input dispatch then takes about 29.3 seconds. The following fullscreen-property assertion ends almost immediately at the test deadline.
+Its reported `undefined` value is not evidence that the application deleted the simulated property; the trace records no completed property observation.
+The cause of the input stall is not established. Keep the original gesture, deadline, and fullscreen assertions for the next hosted run.
+This case simulates Apple fullscreen and media state; it provides no physical iPhone or real-decoder result.

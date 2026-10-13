@@ -1,5 +1,9 @@
 import type {DisplayedMotionHost, DisplayedMotionReceipt} from "./watched-motion-counter";
 
+export type WatchedNativeEvent = {event: string; at: number; seconds: number; nativeSeconds: number | null;
+  paused: boolean; seeking: boolean; readyState: number; networkState: number; errorCode: number | null;
+  decodedFrames: number; pendingNotifications: number};
+
 type MotionState = {seconds: number | null; frames: number | null; dropped: number | null; duration: number | null; paused: boolean; ended: boolean; seeking: boolean;
   readyState: number; networkState: number; errorCode: number; visibility: string; focused: boolean;
   inViewport: boolean; buffered: {count: number; scanTruncated: boolean; current: (number | null)[] | null; last: (number | null)[] | null}};
@@ -54,7 +58,7 @@ export function observeHeldWatchedMotion({watched, cancelledAgain, guardMutation
       });
       let rejected = false, rejection = "none", playResult = "pending";
       const startState = state();
-      void video.play().then(() => {playResult = "fulfilled";}, (error: unknown) => {
+      void video.play().then(() => {playResult = "fulfilled";}, (error: DOMException | Error) => {
         rejected = true;
         playResult = "rejected";
         rejection = error instanceof DOMException && ["AbortError", "NotAllowedError", "NotSupportedError"].includes(error.name) ? error.name : "other";
@@ -88,7 +92,7 @@ export function observeHeldWatchedMotion({watched, cancelledAgain, guardMutation
 
 export function recordWatchedNativeEvents() {
     const add = EventTarget.prototype.addEventListener;
-    const native: Array<Record<string, unknown>> = [];
+    const native: WatchedNativeEvent[] = [];
     const mediaTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "currentTime");
     for (const event of ["loadstart", "loadedmetadata", "canplay", "play", "playing", "pause", "waiting", "stalled", "error", "ended", "seeking", "seeked", "timeupdate"]) {
       add.call(document, event, event => {
@@ -97,7 +101,7 @@ export function recordWatchedNativeEvents() {
         native.push({event: event.type, at: performance.now(), seconds: video.currentTime,
           nativeSeconds: mediaTime?.get?.call(video) ?? null, paused: video.paused, seeking: video.seeking,
           readyState: video.readyState, networkState: video.networkState, errorCode: video.error?.code ?? null,
-          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: (window as Window & {watchedStartup?: {pending: unknown[]}}).watchedStartup?.pending.length ?? 0});
+          decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames, pendingNotifications: (window as Window & {watchedStartup?: {pending: Array<() => void>}}).watchedStartup?.pending.length ?? 0});
         if (native.length > 96) native.shift();
       }, true);
     }

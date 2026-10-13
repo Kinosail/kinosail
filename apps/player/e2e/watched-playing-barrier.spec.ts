@@ -27,7 +27,7 @@ test("watched barrier preserves library callbacks and owned listener identity", 
     const state = window as Window & {
       barrierCounts: {outside: number; removed: number; duplicate: number; once: number};
       barrierDuplicate: EventListener;
-      watchedStartup: {pending: unknown[]; release(): number};
+      watchedStartup: {pending: Array<() => void>; release(): number};
     };
     const video = document.querySelector("video")!;
     video.addEventListener("playing", state.barrierDuplicate);
