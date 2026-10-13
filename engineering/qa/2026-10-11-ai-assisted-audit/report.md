@@ -3207,3 +3207,19 @@ The failed execution's contrast is unknown, so that is an oracle sensitivity rat
 The existing test now attaches its original first image, exact asserted RGBA bytes, alpha count, cached progress values, and window traits on failure.
 It neither redraws the view nor retries the assertion. No production rendering behavior changes.
 Source-file limits and whitespace checks pass; native compilation and execution remain hosted evidence.
+
+### Paced early-playlist trial for the Subtitles tail investigation
+
+The existing unpaced direct-switch case remains in CI. A separate Chromium case adds `--pace-hls` to the same 64.5-second long-remux journey.
+Its real FFmpeg process reads only the selected HLS source at playback speed, using the existing executable override.
+The wrapper immediately replaces itself with FFmpeg, preserving process ownership and normal Server cleanup.
+It does not alter source bytes, codec settings, timestamps, browser responses, or decoded-frame expectations.
+A bounded receipt must confirm the selected source, pacing value, and parent Server process. Wrapper and executable hashes are retained.
+This trial is intended to expose early playlist delivery while media is still being produced.
+Pacing proves the changed invocation; it does not by itself prove that a particular response preceded encoder completion.
+The served-playlist and cache evidence must establish that boundary.
+The expected failure under investigation is a projected terminal playlist that omits a physical tail fragment; that cause remains unconfirmed.
+Python sources and the generated wrapper parse without executing FFmpeg. All seventeen workflow contracts and two native-probe contracts pass.
+The repository-pinned actionlint, source-file limits, and whitespace checks pass.
+The observation-only encoder-count helper was moved beside its existing process reader to retain the source-file cap.
+Independent source review approves a hosted diagnostic trial. Hosted execution remains required before any production repair.
