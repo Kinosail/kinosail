@@ -3147,3 +3147,21 @@ Its receipt has exit zero and verified discovery. This later pass does not repai
 Artifact `11816802390` has SHA-256 `69cc919b12550fadd89d65d1c2f9956457c869308c0302d2d8e1e374c1d36e71`.
 The private native job log has SHA-256 `3fda4f4ea24a04502cb5d57ac921d101dac1b08af877b5a8790c7889a8870a15`.
 Only downloaded xcresult data was inspected locally; no local native runtime ran.
+
+The existing tvOS journey now records three bounded clock snapshots: immediately after scrub injection, after startup returns, and before assertion.
+Each snapshot includes monotonic elapsed time, both positions, playback rate, time-control status, and completion state.
+Both assertion positions are sampled independently. The original 0.1-second bounds, startup deadline, decoded-progress check, and watched-receipt assertions remain.
+The JSON attachment and fixed diagnostic marker are emitted before window teardown, including when the assertion fails.
+A test-helper callback records startup return before its result is published; production code is unchanged.
+Source limits and whitespace pass. Native compilation and execution remain hosted checks.
+
+### Healthy WebKit return-gesture evidence at `08718f47`
+
+Player WebKit artifact `11816753210` verifies 502 checksum entries and 501 evidence hashes against ten source inputs.
+Archive SHA-256: `cdb02b36a58da5f7796e355306ad0c609474ec5338d4636a29612ac063515bf2`.
+The general suite reports 716 passes and 363 skips, with no flakes or unexpected results. Its additional selected suites also pass.
+The Apple return-gesture case passes once without retry.
+Its passive recorder observes trusted touchstart at 98 milliseconds, then touchend and click at 99 milliseconds.
+The simulated fullscreen event also arrives at 99 milliseconds with the fullscreen boolean true.
+The complete gesture/assertion interval is about 185 milliseconds. The page remains open, no crash is observed, and the browser stays connected.
+This establishes that the new receipt captures a healthy execution. It does not diagnose or repair the earlier 29.3-second stall.

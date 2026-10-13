@@ -160,6 +160,28 @@ extension PlaybackEndpointJourneys {
             var superseded = false
             var completions = 0
             coordinator.onCompleted = { _, _ in completions += 1 }
+            let observationStart = ProcessInfo.processInfo.systemUptime
+            var observations: [[String: Any]] = []
+            func boundedPosition(_ value: Double?) -> Any {
+                guard let value, value.isFinite, abs(value) <= 3600 else { return NSNull() }
+                return value
+            }
+            @MainActor func observe(_ phase: String, native: Double? = nil, source: Double? = nil) {
+                guard observations.count < 3 else { return }
+                observations.append(["phase": phase,
+                    "elapsedMs": (ProcessInfo.processInfo.systemUptime - observationStart) * 1000,
+                    "nativeSeconds": boundedPosition(native ?? coordinator.player?.currentTime().seconds),
+                    "sourceSeconds": boundedPosition(source ?? coordinator.seconds),
+                    "rate": boundedPosition(coordinator.player.map { Double($0.rate) }),
+                    "timeControlStatus": coordinator.player?.timeControlStatus.rawValue ?? -1,
+                    "loading": coordinator.loading, "completed": coordinator.completed, "completionCount": completions])
+            }
+            defer {
+                if let data = try? JSONSerialization.data(withJSONObject: observations, options: [.sortedKeys]) {
+                    Attachment.record(data, named: "native-scrub-startup.json")
+                    print("NATIVE_SCRUB_STARTUP " + String(decoding: data, as: UTF8.self))
+                }
+            }
             let observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { notification in
                 guard let ended = notification.object as? AVPlayerItem else { return }
                 MainActor.assumeIsolated {
@@ -170,14 +192,18 @@ extension PlaybackEndpointJourneys {
                     superseded = true
                     _ = coordinator.presentation.playerViewController(coordinator.presentation.controller,
                         timeToSeekAfterUserNavigatedFrom: player.currentTime(), to: CMTime(seconds: 3, preferredTimescale: 600))
+                    observe("scrub-injected")
                 }
             }
             defer { NotificationCenter.default.removeObserver(observer) }
             let store = try await pendingStore(fixture, seconds: 15)
-            try await joinedStartup(coordinator, item: item, fixture: fixture, store: store)
+            try await joinedStartup(coordinator, item: item, fixture: fixture, store: store,
+                                    onReturn: { observe("startup-return") })
             try #require(superseded, "Prerequisite: native endpoint EOF must invoke a scrub while owned AVKit is attached and loading")
             let player = try #require(coordinator.player)
-            try #require(abs(player.currentTime().seconds - 3) < 0.1 && abs(coordinator.seconds - 6) < 0.1)
+            let nativeSeconds = player.currentTime().seconds, sourceSeconds = coordinator.seconds
+            observe("assertion", native: nativeSeconds, source: sourceSeconds)
+            try #require(abs(nativeSeconds - 3) < 0.1 && abs(sourceSeconds - 6) < 0.1)
             try await decodedProgress(player)
             #expect(completions == 0 && !coordinator.completed)
             #expect(!fixture.progressReceipts.contains { $0.itemID == item.id && $0.watched })
@@ -203,10 +229,15 @@ extension PlaybackEndpointJourneys {
         }
 
         private func joinedStartup(_ coordinator: PlaybackCoordinator, item: MediaItem,
-                                   fixture: PlaybackStartupFixture, store: ProgressSyncStore) async throws {
+                                   fixture: PlaybackStartupFixture, store: ProgressSyncStore,
+                                   onReturn: (@MainActor () -> Void)? = nil) async throws {
             var result: Result<Void, Error>?
             let task = Task { @MainActor in
-                do { try await coordinator.play(item, client: fixture.client, store: store); result = .success(()) }
+                do {
+                    try await coordinator.play(item, client: fixture.client, store: store)
+                    onReturn?()
+                    result = .success(())
+                }
                 catch { result = .failure(error) }
             }
             do {
