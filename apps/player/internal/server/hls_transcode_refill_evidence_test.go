@@ -164,9 +164,11 @@ func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, label strin
 	if command.ProcessState != nil {
 		status = command.ProcessState.ExitCode()
 	}
-	transcodeRefillLog(t, map[string]any{"audioDecode": label, "arguments": arguments, "exit": status,
+	transcodeRefillLog(t, map[string]any{
+		"audioDecode": label, "arguments": arguments, "exit": status,
 		"pcmBytes": len(pcm), "pcmSHA256": fmt.Sprintf("%x", sha256.Sum256(pcm)),
-		"diagnosticBytes": diagnostics.Len(), "diagnosticSHA256": fmt.Sprintf("%x", sha256.Sum256(diagnostics.Bytes()))})
+		"diagnosticBytes": diagnostics.Len(), "diagnosticSHA256": fmt.Sprintf("%x", sha256.Sum256(diagnostics.Bytes())),
+	})
 	// This proves actual audio delivery, not sample alignment or waveform equality.
 	if err != nil || len(pcm) == 0 || diagnostics.Len() != 0 {
 		t.Fatal("public audio fragment sequence did not decode cleanly")
