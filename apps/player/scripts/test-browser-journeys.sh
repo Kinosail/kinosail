@@ -101,5 +101,6 @@ run_populated_player_journeys() {
     --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
     --required-title 'opening the current Viewer Profile in another tab keeps saved video playing, while sign-out stops it' \
-    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-offline-profile.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
+    --required-title 'closing a signed-in tab resumes its saved login URL @smoke' \
+    -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-offline-profile.spec.ts test-instance-session-persistence.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }

@@ -19,7 +19,23 @@ Application of these methods uses the pinned local Playwright, actual disposable
 No upstream skill collection or external paid QA service is required.
 The existing audit's uncovered cases guide additional execution, rather than treating a collected or skipped test as a passing journey.
 
-## Current evidence
+## Latest checkpoint — October 13
+
+PR 587 remains draft. The campaign goal is active; no complete product or platform acceptance is claimed.
+The chronological sections below retain earlier failures, repairs, and exact artifact evidence.
+
+| Surface | Latest verified evidence | Remaining work |
+| --- | --- | --- |
+| Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The shortened-AAC control passes the focused race preflight at `07db0b07`. | Complete race, coverage, and current required gates. |
+| Browser session return | Subtitles Firefox and WebKit each pass 99 cases without failures, flakes, or skips at `657e2ca2`. | Player's previously skipped session-return case is now required by its populated runner; hosted execution is pending. |
+| Entropy failures | Source review approves process isolation with preserved child coverage and unchanged response/state assertions. | Hosted race and coverage confirmation at `07db0b07`. |
+| Apple native contracts | At `7fa9cf0f`, xcresult reports iOS 336 passed and tvOS 320 passed; each skips one case. | Current hosted checks and physical-device behavior. |
+| Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
+| Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
+
+Local runtime remains held for the coordinated physical Apple TV window. Current local checks use source formatting, shell parsing, source contracts, and artifact inspection. Hosted gates remain enabled.
+
+## Baseline evidence
 
 Private artifacts are under `.verification/ai-qa-campaign/`, `.verification/scrub/`, `.verification/startup/`, and `.verification/apple-mobile/` in this task's worktree.
 The outer `scripts/ci/e2e-artifact.py` receipts record revision, tracked diff hash, command, environment, and checksums.
@@ -2880,3 +2896,14 @@ Before changing these controls, their failure model is explicit. Global entropy 
 The three existing isolated HTTP controls cover unavailable cryptographic entropy that a populated browser cannot deterministically force. They verify no cast grant, no saved bookmark, and a usable fallback request ID. Running the same instrumented test binary in a fresh process confines their global replacement. Forwarding Go's test coverage directory retains child counters for the parent's final profile. Hosted race, coverage, and lint results remain required.
 
 The deep profile at `657e2ca2` has 8,741 covered statements of 9,829 and still reports 88.9%. Its checksum is `629b14765a3ab0526103c3c405b06421eba6c512dfaaca1cfdff44e9d1714864`. The measured-mismatch control now covers its intended diagnostics. The malformed-packet rejection remains uncovered. The next control repeats the observed original defect using the test-owned encoder adapter: shorten only the recovery output to 4.5 seconds. It must generate real truncated AAC, reject without publication, join its producer, preserve retained bytes, remove staging, and emit one correlated safe packet-duration diagnostic. This protects rejection behavior if a codec returns incomplete media despite a successful exit. The valid first-fragment recovery must still pass afterward.
+
+
+### Shortened AAC rejects; Player session selection is now explicit
+
+The focused race preflight at `07db0b0798c3b88ae8e1a349156af0d50929f7d8` passes the real shortened-AAC control. Artifact `11807597988` verifies 44 receipts and eight checksums. ZIP SHA-256: `31c1f551ba5db013e2e51da49eaa15504c3c22ae292587dfaf882f0877e9d823`. The controlled encoder receives exactly one 4.5-second output budget. The actual short AAC packet produces one response-ID-correlated duration diagnosis. The request returns 404, retains presentation bytes, removes staging, and leaves both missing fragments absent. Restoring the adapter permits exact first-fragment video clocks, AAC clocks, and PCM. The full suite remains separate.
+
+Architecture artifact `11807298010` verifies all three pins, exact source, and unchanged-source flags. ZIP SHA-256: `a586143ded73a1cd4df233f6864debadbf7e48bff01827314301fc32925b7431`. Metadata SHA-256: `56fd9cd0c404462409e9e4b7763c64f6052e627b5e990ccad3a05c7b606e375b`. Pure source reproduction refreshes the canonical Player snapshot included here. The earlier tooling failure at this revision reports that stale snapshot; its private log SHA-256 is `8ade546ba9dc6bf661a6a820dace2f4f33596dacb285ec9f7375efb8279fb6c5`.
+
+Browser artifact inspection also finds an execution gap. The Player saved-session case is skipped in the general suite and absent from the populated runner's selected files. The runner now includes its existing test file and requires its exact title. Its existing result verifier rejects missing, skipped, failed, retried-failure, and duplicate required journeys. The three focused verifier contracts pass. Shell parsing, ShellCheck, source limits, whitespace, and discovery of the selected case in all three browser projects pass. Hosted execution is still required; no new browser test or product authentication change was added.
+
+At `657e2ca2`, Player Firefox artifact `11806348473` verifies 573 checksums with no failures or flakes. Its seven reports contain 877 passing executions and 361 skips. Those skips require separate populated fixtures, isolated transport controls, or unsupported native UI; they are not passing evidence. ZIP SHA-256: `f2a31ccf558df26eb4324069ea17003bb67ef755f6a66005751506395ca757f7`. Subtitles WebKit artifact `11806990789` verifies 198 checksums, 99 passes, and zero skips, failures, or flakes. ZIP SHA-256: `a5eaa3736f49486454cbaf355016df90dfa9f8cee631888dc5a47392329387ec`.
