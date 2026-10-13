@@ -3842,3 +3842,25 @@ The tvOS endpoint notification and injected scrub pass this time; prior intermit
 Python source parsing, whitespace, and source caps pass for this repair trial.
 Hosted compilation, cue restoration, and caption placement remain pending. Local application runtimes remain held.
 The original tablet gesture-bar overlap still requires the strict pixel oracle after cue restoration.
+
+## Subtitles completion before the deliberate restart — October 13
+
+At `3203b915`, all 99 Subtitles Chromium browser cases pass without skips, retries, or failures.
+Artifact `11846262449` verifies 198 checksums and ten source pins against the exact unchanged revision.
+Its SHA-256 is `c41daece2db1626d15355dc07c4dcfacf599c8f20924da60c094aae8f3253339`.
+The job instead fails the later copied-generation step.
+Media artifact `11847096129` contains 29 passing receipts and one failure, with all 16 uploaded child hashes verified.
+Its SHA-256 is `2128945f6b65e7eb76cd839232be340f20adfdb7dae562f2bcee12f5c5a32721`.
+
+The origin-window case preserves all 21 fragments and all 2,662 decoded source frames.
+Early, completed, warm, and restarted manifests match. The source is unchanged, the child joins, and the Server stops.
+Only the successful terminal-log requirement fails. Raw process logs were not uploaded, so missing, duplicate, and failed outcomes remain indistinguishable.
+
+Source inspection finds a fixture race: the FFmpeg wrapper writes its child-join marker before the wrapper itself exits.
+The test can stop the first Server after seeing that marker and a complete playlist, before the Server reports encoding completion.
+The next trial waits up to ten seconds for exactly one successful terminal event before deliberately restarting the Server.
+An error, duplicate event, or missing request ID fails immediately. A missing event fails at the bound.
+The original final ownership, privacy, media, restart, and cleanup requirements remain intact.
+Receipts now retain bounded terminal-event counts before restart and after shutdown, without messages, IDs, or URLs.
+Live polling ignores unfinished log lines; final inspection preserves the original strict JSON parsing.
+This repairs the fixture prerequisite. It does not claim the unavailable failed process log proved that race caused this occurrence.
