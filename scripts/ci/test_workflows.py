@@ -187,7 +187,7 @@ case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; e
         self.assertNotIn('    paths:', ci)
         self.assertIn('needs: [plan, static, tooling, packages, web, docs]', ci)
         self.assertIn('needs: [plan, secrets, codeql, supply-chain, findings]', ci)
-        self.assertIn('needs: [static, race, security, tooling, client, android, system, browser]', app)
+        self.assertIn('needs: [static, race, security, tooling, client, android, wear, system, browser]', app)
         self.assertNotIn('  validate:', app)
 
     def test_invalid_quality_scope_has_no_side_effects(self):

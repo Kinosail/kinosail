@@ -51,7 +51,10 @@ Neither layer establishes physical watch acceptance.
 
 Source preparation and independent source review are complete.
 Compilation, emulator execution, artifact decoding, and visual acceptance remain pending.
-The hosted lane and required-check selection will be integrated in the next commit.
+A separate hosted Wear job now runs when deep verification selects Android.
+The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
+Before integration, the regression check proved missing Wear execution was accepted.
+All 24 affected CI contract tests pass after integration.
 Local application execution remains held.
 
 Pairing, remote playback, active-session permission denial, heart sensors, battery use, and physical input remain separate coverage gaps.
