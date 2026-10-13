@@ -3447,3 +3447,49 @@ Pinned actionlint 1.17.0, source caps, and whitespace checks also pass.
 These are source-contract results; cancellation of a hosted run using the new guards has not yet been observed.
 Application production LOC is unchanged; this repair changes eight workflow conditions.
 Independent source review approves the condition change and retains the hosted cancellation/descendant-settlement boundary.
+
+
+## Protected delivery and next long-window trial — October 13
+
+PR #587 merged as `29ba9e4f5de30a78899f14f0994c1e108629bbaa`.
+A fetched ancestry check proves reviewed commit `570b1458d016cd74389418b307540107b98718ed` is included.
+The merged tree equals tested merge candidate `45d07830cfc9ac609ac3fc49a88a92dec9f32bfc`.
+[Required CI run 38426738759, attempt two](https://github.com/Kinosail/kinosail/actions/runs/38426738759) passes all four protected gates.
+The first attempt was deliberately cancelled to verify the repaired cancellation guards.
+One active media check cancelled; seven remaining selected media checks skipped.
+Available Subtitles and browser evidence uploads succeeded.
+This cancellation proof does not establish child-specific shutdown or an application pass.
+
+The final Subtitles artifact verifies 38 Chromium smoke cases and 71 checksum entries.
+Its copied-playback artifact verifies eight clock cases, eleven generation-plan cases, five completion cases, and sixteen uploaded checksums.
+The intentional source-version fault preserves source contents while changing metadata and rejecting delivery.
+All three layout jobs pass at the exact task head, with clean source and seven verified script inputs.
+Player also passes five cache-reopen cases, fourteen prepared/browser/cold-suffix receipts, six audio-conversion cases,
+eleven continuous-audio/source receipts, four HEVC preparation cases, five short-completion cases, and three source-version cases.
+These groups can overlap and are not a unique test total.
+Private, unuploaded runtime-file hashes are not claimed as independently verified from safe artifacts.
+Swift compilation and Android app/Wear/watchcore unit-task results remain separate from device behavior.
+Exact-main publication, deployment, physical playback, and earlier intermittent failures remain open.
+Local main has unrelated native project/localization edits; those files and thirteen inactive foreign checkouts are preserved.
+The owned leased worktree is reused for the continuing QA campaign.
+
+The next regression extends the existing held-prefix public journey with `--long-resume`.
+Its independent contract is that one published VOD rendition retains its complete segment map as the same producer finishes.
+The credible failure is an extrapolated early map that omits or retimes the final copied fragments after a nonzero seek.
+Existing offset-zero and short-suffix cases miss a resumed window with more than thirty seconds remaining.
+A browser seek can also open a different offset and conceal the original window's truncation.
+
+The new synthetic source has 2,662 frames at 25 fps; the request starts at 60 seconds.
+The preceding forced keyframe is at 58 seconds, leaving 1,212 source frames in the retained copied suffix.
+The same rendition URL is read while its real producer is held, after completion, and after Server restart.
+Its initialization segment and ordered media fragments are concatenated and decoded once.
+Every decoded frame must equal the contiguous original-source suffix, with first position, counts, and sequence hashes retained.
+[FFmpeg input-seek semantics](https://ffmpeg.org/ffmpeg.html#Main-options) support the preceding-key expectation for stream copy.
+[FFmpeg HLS documentation](https://ffmpeg.org/ffmpeg-formats.html#hls-2) permits non-keyframe fragment starts with `split_by_time`.
+The regression therefore does not require each split fragment to decode independently.
+
+One successful producer, final admission counts, joined children, source preservation, and diagnostic secrecy are required.
+On early failure, the driver releases the producer and waits boundedly for joins before stopping the Server.
+A secondary diagnostic collection error cannot replace the primary failure.
+Independent source review approves this trial. Its decoded start/count and expected baseline failure still require hosted execution.
+All existing assertions and fault controls remain unchanged. No production behavior changes in this test-first checkpoint.

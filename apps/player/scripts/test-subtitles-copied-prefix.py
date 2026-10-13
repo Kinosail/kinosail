@@ -18,11 +18,13 @@ import subprocess
 import time
 from hls_copied_prefix_faults import held_fault
 from hls_completed_suffix import completed_suffix, completed_suffix_receipt
-from hls_timeline_fixture import check, fixture
+from hls_timeline_fixture import LONG_RESUME_KEYS, check, fixture
+from hls_long_resumed_prefix import long_window, long_window_final, long_window_join
 from hls_timeline_http import PublicServer, sha, source_state
 
 ROOT = Path(__file__).resolve().parents[3]
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--long-resume', action='store_true', help='Hold a copied window with more than thirty seconds remaining')
 parser.add_argument('--completed-suffix', choices=['success', 'producer', 'timeout', 'missing-plan', 'mismatched-plan'])
 parser.add_argument('--native', action='store_true', help='Release the held encoder only after a native WebKit future-fragment request')
 parser.add_argument('--plan-fault', choices=['missing', 'malformed', 'policy', 'cuts', 'downgrade'])
@@ -30,8 +32,9 @@ parser.add_argument('--held-source-change', action='store_true')
 parser.add_argument('--held-fault', choices=['policy', 'producer'])
 parser.add_argument('--index-fault', choices=['unsupported', 'timeout'])
 args = parser.parse_args()
-if args.completed_suffix and (args.native or args.plan_fault or args.held_source_change or args.held_fault or args.index_fault):
-    parser.error('completed suffix controls must run independently')
+if (args.long_resume and args.completed_suffix) or ((args.long_resume or args.completed_suffix)
+        and (args.native or args.plan_fault or args.held_source_change or args.held_fault or args.index_fault)):
+    parser.error('long resumed prefix and completed suffix controls must run independently')
 RUN = ROOT / '.verification/hls-copied-prefix' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 RUN.mkdir(parents=True)
 receipt = {'revision': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
@@ -60,8 +63,13 @@ def cuts(manifest):
 try:
     media = RUN / 'media'
     media.mkdir()
-    source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
-                                         frames=24 * 32, extension='.mp4')
+    if args.long_resume:
+        keys = (*LONG_RESUME_KEYS, 77, 81, 84, 89, 93, 96, 100, 104)
+        source, receipt['fixture'] = fixture(media, 'Prefix Sample', 25 * 6, ','.join(map(str, keys)),
+                                             rate='25', frames=2662, extension='.mp4')
+    else:
+        source, receipt['fixture'] = fixture(media, 'Prefix Sample', 24 * 8, '0,4,10,14,21,27,31',
+                                             frames=24 * 32, extension='.mp4')
     before = source_state(source)
     build = ['go', 'build', '-p', '2', '-o', str(RUN / 'server'), './apps/subtitles/cmd/kinosail']
     receipt['build'] = build
@@ -137,6 +145,9 @@ finally:
             item = next(i for i in api.call('/api/v1/library')['items'] if i['title'] == 'Prefix Sample')
             plan = api.call('/api/v1/items/' + item['id'] + '/playback?videoCodecs=h264&audioCodecs=aac')
             check(plan['compatiblePlan']['mode'] == 'remux', 'fixture_must_copy')
+            if args.long_resume:
+                plan['compatible'] = plan['compatible'].replace('/index.m3u8', '-o60000/index.m3u8')
+                receipt['longResumeOffset'] = 60000
             if args.completed_suffix:
                 state = [server]
                 try:
@@ -162,9 +173,9 @@ finally:
             receipt['prefixStatus'] = status
             receipt['prefixCounts'] = {'physical': len(cuts(prefix)), 'public': len(cuts(public))}
             receipt['inventedEnd'] = b'#EXT-X-ENDLIST' in public
-            expected = [4, 6, 4, 7, 6, 4, 1]
-            receipt['accurateFutureCuts'] = [round(x, 6) for x, _ in cuts(public)] == expected
-            receipt['stableTargetDuration'] = b'#EXT-X-TARGETDURATION:7\n' in public
+            expected = None if args.long_resume else [4, 6, 4, 7, 6, 4, 1]
+            receipt['accurateFutureCuts'] = None if expected is None else [round(x, 6) for x, _ in cuts(public)] == expected
+            receipt['stableTargetDuration'] = None if expected is None else b'#EXT-X-TARGETDURATION:7\n' in public
             receipt['producerHeld'] = not joined.exists()
             receipt['heldPrefixUnchanged'] = physical.read_bytes() == prefix
             (RUN / 'public-prefix.m3u8').write_bytes(public)
@@ -192,7 +203,7 @@ finally:
             receipt['completedCuts'] = [duration for duration, _ in cuts(completed)]
             receipt['completedMatchesCache'] = cuts(completed) == cuts(physical.read_bytes())
             check(status == 200 and b'#EXT-X-ENDLIST' in completed, 'completed_status')
-            receipt['completedKeyframeCuts'] = [round(x, 6) for x in receipt['completedCuts']] == expected
+            receipt['completedKeyframeCuts'] = None if expected is None else [round(x, 6) for x in receipt['completedCuts']] == expected
             receipt['immutablePlaylist'] = cuts(public) == cuts(completed)
             # A completed URI must retain its exact VOD map across warm reads
             # and process restart, without starting another encoder.
@@ -247,6 +258,8 @@ finally:
                 receipt['fallbackDiagnostics'] = len(warnings) == 1 and warnings[0]['level'] == 'WARN' and bool(warnings[0]['request_id']) and warnings[0]['outcome'] == 'legacy-before-encoding'
                 receipt['noFalseLifecycleError'] = not any(event.get('msg') == 'copied probe completion failed' for event in events)
                 check(receipt['fallbackDiagnostics'] and receipt['noFalseLifecycleError'], 'optional_index_diagnostics')
+            elif args.long_resume:
+                long_window(api, path, RUN, source, physical, receipt)
             else:
                 check(receipt['prefixStatus'] == 200 and receipt['accurateFutureCuts'] and receipt['stableTargetDuration']
                   and receipt['inventedEnd'] and receipt['immutablePlaylist'] and receipt['completedKeyframeCuts'] and receipt['heldPrefixUnchanged']
@@ -255,6 +268,8 @@ finally:
             check(not args.native or receipt['nativePassed'] and receipt['nativeFutureFragment'], 'native_future_resume')
         finally:
             (RUN / 'release').touch()
+            if args.long_resume:
+                long_window_join(RUN, receipt)
             server.terminate()
             try:
                 server.wait(timeout=10)
@@ -266,6 +281,8 @@ finally:
                            encoderJoined=not (RUN / 'held').exists() or (RUN / ((RUN / 'held').read_text()+'.joined')).exists())
             if args.completed_suffix:
                 completed_suffix_receipt(api, RUN, receipt)
+            if args.long_resume:
+                long_window_final(api, RUN, receipt, require_success=sys.exc_info()[0] is None)
     check(receipt['sourceUnchanged'] and receipt['serverSettled'] and receipt['encoderJoined'], 'fixture_cleanup')
     receipt['result'] = 'passed'
 except HeldFaultComplete:
