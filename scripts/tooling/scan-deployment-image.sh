@@ -8,8 +8,12 @@ archive="$1"
 evidence="$2"
 [[ ${#archive} -le 4096 && "$archive" == /* && -f "$archive" && ! -L "$archive" && "$archive" != *$'\n'* ]] || { echo 'invalid image archive' >&2; exit 2; }
 [[ ${#evidence} -le 4096 && "$evidence" == /* && "$evidence" != *$'\n'* && ! -L "$evidence" ]] || { echo 'invalid evidence directory' >&2; exit 2; }
-command -v trivy >/dev/null
-command -v syft >/dev/null
+for scanner in trivy syft; do
+  command -v "$scanner" >/dev/null || {
+    printf 'level=warn operation=image_scan outcome=rejected failure_class=scanner_missing scanner=%s\n' "$scanner" >&2
+    exit 127
+  }
+done
 mkdir -p "$evidence"
 shasum -a 256 "$archive" >"$evidence/archive.sha256"
 # Keep the complete findings separately from the existing release policy gate.

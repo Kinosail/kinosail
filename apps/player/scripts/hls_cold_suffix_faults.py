@@ -52,6 +52,11 @@ if encode and {fault!r}=='producer-failure' and len((directory/'encoder-starts')
  child.wait(timeout=5)
  (directory/'producer-failed').write_text('failed')
  raise SystemExit(42)
+if encode and {fault!r}=='lookback' and len((directory/'encoder-starts').read_text().splitlines())==1:
+ result=subprocess.run([real]+args)
+ (directory/'initial-output-ready').write_text('ready')
+ time.sleep(2)
+ raise SystemExit(result.returncode)
 if encode and {fault!r}=='refill-completion' and len((directory/'encoder-starts').read_text().splitlines())==3:
  result=subprocess.run([real]+args)
  (directory/'refill-held').write_text('held')
