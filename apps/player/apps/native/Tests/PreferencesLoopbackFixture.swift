@@ -6,7 +6,12 @@ import UIKit
 @testable import KinosailPlayer
 
 final class PreferencesLoopbackFixture: @unchecked Sendable {
-    struct State { var preferences = MediaPreferences(); var saves = 0; var preferenceReads = 0; var libraryReads = 0; var populated = false; var fails = false; var delay = 0.0; var artwork = Data(); var landscape = Data() }
+    struct State {
+        var preferences = MediaPreferences(); var saves = 0; var preferenceReads = 0; var libraryReads = 0
+        var populated = false; var fails = false; var delay = 0.0; var artwork = Data(); var landscape = Data()
+        var readerHeld = false; var readerFails = false; var readerEmpty = false
+        var readerPending: [(NWConnection, Data)] = []
+    }
     let state = Mutex(State())
     let listener: NWListener
     let server: ServerAddress
@@ -20,6 +25,19 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
     var populated: Bool { get { state.withLock { $0.populated } } set { state.withLock { $0.populated = newValue } } }
     var fails: Bool { get { state.withLock { $0.fails } } set { state.withLock { $0.fails = newValue } } }
     var delay: Double { get { state.withLock { $0.delay } } set { state.withLock { $0.delay = newValue } } }
+    var readerHeld: Bool { get { state.withLock { $0.readerHeld } } set { state.withLock { $0.readerHeld = newValue } } }
+    var readerFails: Bool { get { state.withLock { $0.readerFails } } set { state.withLock { $0.readerFails = newValue } } }
+    var readerEmpty: Bool { get { state.withLock { $0.readerEmpty } } set { state.withLock { $0.readerEmpty = newValue } } }
+    var heldReaderCount: Int { state.withLock { $0.readerPending.count } }
+    func releaseReader() {
+        let pending = state.withLock { value in
+            value.readerHeld = false
+            let pending = value.readerPending; value.readerPending = []; return pending
+        }
+        for (connection, response) in pending {
+            connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+        }
+    }
     static let showID = "0123456789abcdef"
     static var movie: JSONValue { .object(["id": .string("movie"), "kind": .string("video"), "title": .string("The Last Observatory"),
         "year": .string("2025"), "genres": .string("Science fiction · Adventure"), "rating": .string("PG-13"),
@@ -81,7 +99,8 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
                 connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
                 return
             }
-            if path == "/api/v1/books/book/reader" { body = .object(["id": .string("book"), "title": .string("The harbor"), "type": .string("epub"), "pages": .array([.object(["number": .number(1), "title": .string("A quiet morning"), "url": .string("/read/book/asset/chapter.xhtml")])])]) }
+            let reader = path == "/api/v1/books/book/reader"
+            if reader { body = .object(["id": .string("book"), "title": .string("The harbor"), "type": .string("epub"), "pages": .array(readerEmpty ? [] : [.object(["number": .number(1), "title": .string("A quiet morning"), "url": .string("/read/book/asset/chapter.xhtml")])])]) }
             if path == "/api/v1/books/book/reader/progress" { body = .object(["page": .number(1), "total": .number(1), "offset": .number(0)]) }
             if path == "/api/v1/me" { body = viewer.json }
             if path.hasSuffix("/watch-progress") { body = .object(["seconds": .number(120), "duration": .number(600)]) }
@@ -117,8 +136,13 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
                 body = .object(["display": .string("automatic"), "badges": .array(populated ? [.object(["edition": .string("monthly"), "family": .string("living-standard"), "rank": .number(1), "name": .string("Voyager"), "active": .bool(true), "archived": .bool(false)])] : [])])
             }
             guard let encoded = try? JSONEncoder().encode(body) else { connection.cancel(); return }
-            let status = fails && path != "/api/v1/me" ? "503 Service Unavailable" : "200 OK"
+            let status = (fails && path != "/api/v1/me") || (reader && readerFails) ? "503 Service Unavailable" : "200 OK"
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(encoded.count)\r\nConnection: close\r\n\r\n".utf8) + encoded
+            let held = state.withLock { value in
+                guard reader && value.readerHeld else { return false }
+                value.readerPending.append((connection, response)); return true
+            }
+            if held { return }
             DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
                 connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
             }

@@ -3,28 +3,38 @@ import SwiftUI
 import UIKit
 #endif
 
+#if os(iOS)
 private struct ReaderLoadingState: View {
+    let fontSize: Int
+    private var columnWidth: CGFloat {
+        let font = UIFont(name: "TimesNewRomanPSMT", size: CGFloat(fontSize)) ?? UIFont.systemFont(ofSize: CGFloat(fontSize))
+        return ("0" as NSString).size(withAttributes: [.font: font]).width * 68 + 32
+    }
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            ForEach(0..<7) { index in
-                RoundedRectangle(cornerRadius: 4).fill(KinoTheme.surface)
-                    .frame(maxWidth: index == 6 ? 220 : .infinity).frame(height: 18)
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: CGFloat(fontSize) * 0.65) {
+                ForEach(0..<7) { index in
+                    RoundedRectangle(cornerRadius: 4).fill(KinoTheme.surface)
+                        .frame(maxWidth: index == 6 ? 220 : .infinity).frame(height: CGFloat(fontSize))
+                }
             }
+            .padding(16).frame(maxWidth: columnWidth).frame(maxWidth: .infinity)
+            .skeletonShimmer()
             Spacer()
             HStack {
-                Circle().fill(KinoTheme.raised).frame(width: 44, height: 44)
+                Button("Previous", systemImage: "chevron.left") {}.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(true)
                 Spacer()
-                Capsule().fill(KinoTheme.raised).frame(width: 120, height: 44)
+                Capsule().fill(KinoTheme.raised).frame(width: 120, height: 20).frame(minHeight: 44)
                 Spacer()
-                Circle().fill(KinoTheme.raised).frame(width: 44, height: 44)
-            }
+                Button("Next", systemImage: "chevron.right") {}.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(true)
+            }.padding(16).background(.regularMaterial)
         }
-        .padding(KinoTheme.contentPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .skeletonLoading("Opening your book…")
+        .skeletonLoading("Opening your book…", shimmers: false)
         .background(KinoTheme.background)
     }
 }
+#endif
 
 struct ReaderScreen: View {
     let itemID: String
@@ -80,7 +90,7 @@ struct ReaderScreen: View {
                         }
                     }.padding(16).background(.regularMaterial)
                 }
-            } else { ReaderLoadingState() }
+            } else { ReaderLoadingState(fontSize: displayFont) }
         }
         .navigationTitle(book?.title ?? "Reader")
         .navigationBarTitleDisplayMode(.inline)

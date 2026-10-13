@@ -2263,3 +2263,36 @@ The corrected bounded disconnect observation passes without changing product ass
 Its log SHA-256 is `859ce8cda45781d2a9c1cfa5fbaf579695e37e0714f6de7d61c6ef072579a3ba`.
 Private `epub-final-all-configurations-safe.json` and `epub-emulator-cleanup-verified-safe.json`
 retain all four artifact hashes, geometry, exact APK provenance and cleanup observations.
+
+
+## QA-027 — Apple reader pending column spans the iPad viewport
+
+A test-first native journey holds reader metadata while the real pending UI is rendered.
+In both iPad appearances, pending lines span x=20–1012; loaded text spans x=176–856.
+The source remains unchanged during those two reproductions. Both edge assertions fail by 156 points.
+The retained owner suite reports six tests, with one failed parameterized test and four issues.
+An earlier test compile error uses a read-only environment value and is excluded from product evidence.
+
+The pending column now uses the default WebKit serif glyph measure, 68ch and 16-point page padding.
+Line size and spacing use the current scaled reader font.
+The pending footer uses disabled native controls with the loaded footer's styles and insets.
+Its center remains a placeholder. Only real pending work shows these controls.
+Chapter markup, resource security policy, loaded navigation and reading persistence are unchanged.
+
+The retained native journey compares rendered SwiftUI pixels with actual WKWebView DOM bounds.
+It also verifies placeholder removal after success, an invalid empty response and a failed metadata response.
+The test is part of the existing serialized preferences owner to preserve Keychain isolation.
+It uses a fictional held HTTP peer, not a populated Go Server or physical-device journey.
+Animations are disabled in the host transaction for geometry capture; motion is not claimed as verified.
+
+The phone and iPad confirmation suites each pass six tests with zero failures or skips.
+Both appearances match their loaded edges exactly: x=176–856 on the 1032-point iPad window,
+and x=16–386 on the 402-point phone window. Neither loaded page has horizontal overflow.
+Pending, loaded, empty-response and failed captures are visually inspected on both devices and appearances.
+The native source patch SHA-256 is `6af2d4b95e0e9c052047c7ec07cc7e552dc25e09ee92cebb7f3ac7be0f3100d9`.
+The iPad run log SHA-256 is `39db5a60303dfe6f5f32800d2de5f6a2262f742b51d773b58f7da8cc91a999ca`.
+The phone run log SHA-256 is `0213890503688c6f9bb4c84ef9068c283d05a6fe35e4305e56bc91a3ef67260e`.
+Original simulator shutdown states are verified after execution, and the previous Keychain session is restored.
+This checkpoint covers the default 20px preference. Other reader sizes, Dynamic Type,
+publisher fonts, physical VoiceOver and physical reading remain verification boundaries.
+Private `apple-reader-*` receipts retain exact source, commands, xcresults, geometry and screenshot hashes.
