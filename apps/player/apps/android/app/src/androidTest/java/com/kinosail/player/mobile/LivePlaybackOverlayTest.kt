@@ -109,7 +109,6 @@ class LivePlaybackOverlayTest {
         Thread.sleep(2_000) // The generated cue starts at one second.
         val prefix = json.optString("capture", "phone")
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val automation = instrumentation.uiAutomation
         val observations = JSONArray()
         fun recordPlayback(stage: String, deadline: Long = Long.MAX_VALUE) {
             val fields = listOf("positionMs", "state", "playing", "playWhenReady", "cueCount", "selectedTextTracks")
@@ -165,18 +164,6 @@ class LivePlaybackOverlayTest {
             if (observations.length() < 4) observations.put(if (received) result.get() else unavailable())
         }
         recordPlayback("initial-playing")
-        fun accessibilitySnapshot(): List<android.view.accessibility.AccessibilityNodeInfo>? {
-            val nodes = mutableListOf<android.view.accessibility.AccessibilityNodeInfo>()
-            fun visit(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
-                if (node == null || nodes.size >= 250) return false
-                nodes.add(node)
-                for (index in 0 until node.childCount) if (!visit(node.getChild(index))) return false
-                return true
-            }
-            return if (visit(automation.rootInActiveWindow)) nodes else null
-        }
-        fun visibleAction(nodes: List<android.view.accessibility.AccessibilityNodeInfo>, description: String) =
-            nodes.firstOrNull { it.contentDescription?.toString() == description && it.isVisibleToUser }
         fun action(description: String) = accessibilitySnapshot()?.let { visibleAction(it, description) }
         fun completeSnapshot(): List<android.view.accessibility.AccessibilityNodeInfo> {
             var nodes: List<android.view.accessibility.AccessibilityNodeInfo>? = null
@@ -407,6 +394,19 @@ class LivePlaybackOverlayTest {
             capture("$prefix-captions-seek-back").recycle()
         }
 
+    private fun accessibilitySnapshot(): List<android.view.accessibility.AccessibilityNodeInfo>? {
+        val nodes = mutableListOf<android.view.accessibility.AccessibilityNodeInfo>()
+        fun visit(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
+            if (node == null || nodes.size >= 250) return false
+            nodes.add(node)
+            for (index in 0 until node.childCount) if (!visit(node.getChild(index))) return false
+            return true
+        }
+        return if (visit(InstrumentationRegistry.getInstrumentation().uiAutomation.rootInActiveWindow)) nodes else null
+    }
+    private fun visibleAction(nodes: List<android.view.accessibility.AccessibilityNodeInfo>, description: String) =
+        nodes.firstOrNull { it.contentDescription?.toString() == description && it.isVisibleToUser }
+
     private fun <T> withPlayer(action: androidx.media3.common.Player.() -> T): T {
         val result = AtomicReference<Result<T>>()
         val finished = CountDownLatch(1)
@@ -518,7 +518,14 @@ class LivePlaybackOverlayTest {
                         it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                     }
                     compose.waitUntil(30_000) {
-                        compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()
+                        if (compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()) true
+                        else {
+                            // Playback can auto-hide its controls before test discovery.
+                            // Reopen only the explicitly hidden player's public action.
+                            accessibilitySnapshot()?.let { visibleAction(it, "Show player controls") }
+                                ?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
+                            false
+                        }
                     }
                     if (pauseOnStart) withPlayer { pause() }
                     check(json, title)

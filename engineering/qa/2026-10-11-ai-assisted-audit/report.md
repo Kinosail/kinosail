@@ -3890,3 +3890,10 @@ The next test revision instead requires the public decoder's first-rendered-fram
 The event listener is attached before releasing held media and removed in `finally`.
 The negative control fails earlier while awaiting the initial Speed control; it does not prove its intended rejection in this run.
 Hosted verification of caption placement, the late-seek case, and the negative control remains pending.
+
+The negative control's retained image shows decoded captioned video with the playback controls hidden.
+Its stack identifies the shared journey's initial Speed-control wait, before any negative-control assertion.
+The setup now uses the visible public “Show player controls” accessibility action when Speed is absent.
+It reuses the existing bounded, complete accessibility snapshot and still requires Speed within the original deadline.
+No private player state, control timeout, caption toggle, or pixel requirement changes.
+The next hosted trial must prove the negative control reaches its intended visibility rejection.
