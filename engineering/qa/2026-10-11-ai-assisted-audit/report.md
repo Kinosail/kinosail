@@ -2214,6 +2214,13 @@ It records the first three raw callback times, qualified times, visibility, and 
 The original failure is retained even if attachment writing fails. No assertion, deadline, playback action, or transport behavior changes.
 Historical mutation verification and controlled WebKit late-callback acceptance remain pending.
 
+The same revision's Chromium watched-state cases all passed without retry.
+Its separate older-progress ordering case failed once with `NotSupportedError`, then passed on retry. The job correctly remained failed.
+The trace places native `play()` at 163,300 ms, before the HLS library request began at 163,400 ms.
+The library, playlists, and media segment subsequently returned HTTP 200. The trace archive SHA-256 is `da68f172184e5d8bbacfbf78314a81c741e742dcd9dfebc85127ee261a50128a`.
+That fixture now waits for decoded data before its single native playback request.
+Decoded-frame, held-progress, request-order, and stored-state assertions remain unchanged. Runtime validation of this prerequisite remains pending.
+
 The `9dbee4b8` deep Go job failed the unchanged 89% coverage gate at 86.7%, without test-failure or race markers.
 The independent coverage-accounting repair remains in PR 579. No coverage threshold was reduced.
 
