@@ -37,6 +37,13 @@ actor CatalogRequest {
         waiter.resume(throwing: CancellationError())
     }
 
+    func replace(with value: any Sendable) {
+        guard result == nil else { return }
+        finish(.success(value))
+        task.cancel()
+        log.debug("Catalog wait operation=\(self.operation, privacy: .public) outcome=replaced catalog_request_id=\(self.id.uuidString, privacy: .public)")
+    }
+
     private func finish(_ result: Result<any Sendable, Error>) {
         guard self.result == nil else { return }
         self.result = result

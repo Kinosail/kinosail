@@ -171,7 +171,7 @@ final class PreferencesLoopbackFixture: @unchecked Sendable {
             let status = (fails && path != "/api/v1/me") || (reader && readerFails) ? "503 Service Unavailable" : "200 OK"
             let response = Data("HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(encoded.count)\r\nConnection: close\r\n\r\n".utf8) + encoded
             let held = state.withLock { value in
-                if path == "/api/v1/me/media-preferences", value.preferencesHeld {
+                if path == "/api/v1/me/media-preferences", request[0] == "GET", value.preferencesHeld {
                     value.preferencesPending.append((connection, response)); return true
                 }
                 guard reader && value.readerHeld else { return false }
