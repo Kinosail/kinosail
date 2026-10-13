@@ -51,7 +51,8 @@ Neither layer establishes physical watch acceptance.
 
 Source preparation and independent source review are complete.
 The first hosted trial compiled both APKs but failed before emulator creation.
-The later executed trial was rejected during artifact inspection, and fresh-profile startup remains under repair.
+The later executed trial was rejected during artifact inspection.
+Fresh-profile startup now passes, but actual Activity acceptance still fails.
 Complete artifact decoding and visual acceptance remain pending.
 A separate hosted Wear job now runs when deep verification selects Android.
 The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
@@ -142,3 +143,27 @@ The correction requires the owned process and `sys.boot_completed=1`, with the s
 It retains bounded last-observation Booleans, command-failure status, and attempt count without raw ADB output.
 Physical display, setup, foreground ownership, test selection, visual artifacts, and cleanup assertions remain required.
 The hosted journey remains the regression owner; source checks alone cannot establish successful watch startup.
+
+## Boot correction verified; Activity failure retained
+
+Both profiles at `912871d331069ac88f7ecf56392ba8c6021bd418` booted and verified the owned emulator, physical dimensions, and setup state.
+Both also completed process and transport cleanup, with four final inventory observations.
+Their three selected tests ran without skips, but JUnit reported failure.
+
+| Profile | Job | Artifact | ZIP SHA-256 |
+| --- | --- | --- | --- |
+| Small round | `115583868730` | `11857289139` | `f7a98f28a5001e2a13b4624745a98a43f09270b561724736806f4c12a8a1d910` |
+| Large round | `115583868742` | `11858435101` | `24252b30a17de8d60982f30dbcf8d0d9a7c6a7880772cd2c1b532e0908a9de2e` |
+
+Each artifact independently verifies sixteen source pins and seven retained child hashes.
+Both launch compositor images show the system watch face, with centered round boundaries.
+Neither launch semantics file contains a Compose tree; recreation screenshots are absent.
+The old collector retained the fixed-path missing-file response in place of semantics and correctly rejected it.
+The raw instrumentation logs were not uploaded, and job output does not contain their exception details.
+The exact failing assertion remains unknown; no production Activity defect is claimed from these artifacts.
+
+The next diagnostic revision retains closed-enum failure signals, status counts, and bounded locations in the two fixed test files.
+It never copies exception messages, arbitrary class names, stack lines, device identifiers, or raw logs into the receipt.
+Capture records its fixed phase and foreground Boolean before reading the Compose tree.
+A failed tree read can no longer erase those observations, and screenshot capture remains independent.
+The existing hosted journey owns this failure; its assertions and deadlines remain unchanged.

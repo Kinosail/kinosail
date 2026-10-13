@@ -38,13 +38,17 @@ class WearLaunchJourneyTest {
             instrumentation.uiAutomation.clearCache()
             return instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString() == context.packageName
         }
+        var stage = "launch-unpaired"
+        var phase = "launch"
         fun capture(stage: String) {
             val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
             val failures = mutableListOf<Throwable>()
             runCatching {
+                val semantics = File(directory, "wear-$stage-semantics.txt")
+                semantics.writeText("phase=$phase\n")
                 val foreground = foregroundIsApp()
-                File(directory, "wear-$stage-semantics.txt").writeText(
-                    "activeWindowIsApp=$foreground\n" + compose.onRoot().printToString())
+                semantics.writeText("activeWindowIsApp=$foreground\nphase=$phase\n")
+                semantics.appendText(compose.onRoot().printToString())
                 assertTrue("The captured semantics must belong to the active app", foreground)
             }.onFailure { failures.add(it) }
             runCatching {
@@ -60,7 +64,6 @@ class WearLaunchJourneyTest {
                 throw failures.first()
             }
         }
-        var stage = "launch-unpaired"
         fun <T> retainingFailure(action: () -> T): T = try { action() } catch (failure: Throwable) {
             runCatching { capture(stage) }.onFailure(failure::addSuppressed)
             throw failure
@@ -70,7 +73,9 @@ class WearLaunchJourneyTest {
                 compose.enableAccessibilityChecks()
                 fun verifyAndCapture() {
                     // Compose visibility alone can pass behind a system welcome screen.
+                    phase = "foreground"
                     compose.waitUntil(10_000) { foregroundIsApp() }
+                    phase = "content"
                     compose.waitUntil(10_000) {
                         compose.onAllNodesWithText("Connect phone").fetchSemanticsNodes().isNotEmpty()
                     }
@@ -79,14 +84,17 @@ class WearLaunchJourneyTest {
                     compose.onNodeWithText("Pair Android phone.").assertIsDisplayed()
                     compose.onNodeWithContentDescription("Play").assertDoesNotExist()
                     compose.onNodeWithContentDescription("Pause").assertDoesNotExist()
+                    phase = "accessibility"
                     compose.onRoot().tryPerformAccessibilityChecks()
                     compose.waitForIdle()
                     instrumentation.waitForIdleSync()
                     assertTrue("The app must own the active window before capture", foregroundIsApp())
+                    phase = "capture"
                     capture(stage)
                 }
                 verifyAndCapture()
                 stage = "recreated-unpaired"
+                phase = "recreate"
                 scenario.recreate()
                 verifyAndCapture()
             }

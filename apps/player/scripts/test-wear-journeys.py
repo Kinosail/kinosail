@@ -109,6 +109,14 @@ def run_case(safe, run, label, size, density):
                 case["timeoutCleanupFailure"] = type(cleanup_error).__name__
         (run / (label + ".instrumentation.private.log")).write_bytes(log[:4 << 20])
         case["logTruncated"] = len(log) > 4 << 20
+        signals = {"assertion": b"java.lang.AssertionError", "illegal-state": b"java.lang.IllegalStateException",
+                   "security": b"java.lang.SecurityException", "compose-timeout": b"ComposeTimeoutException",
+                   "process-crashed": b"INSTRUMENTATION_RESULT: shortMsg=Process crashed."}
+        case["failureSignals"] = [name for name, marker in signals.items() if marker in log]
+        case["failureLocations"] = sorted({file.decode() + ":" + line.decode() for file, line in re.findall(
+            rb"\((WearLaunchJourneyTest\.kt|WearAccessibilityTest\.kt):(\d{1,5})\)", log)})[:16]
+        statuses = re.findall(rb"(?m)^INSTRUMENTATION_STATUS_CODE: (-?[0-9]+)\r?$", log)
+        case["statusCounts"] = {str(code): statuses.count(str(code).encode()) for code in (-4, -3, -2, -1, 0, 1, 2)}
         case["selectedTests"] = sorted({m.decode() for m in re.findall(
             rb"(?m)^INSTRUMENTATION_STATUS: test=([A-Za-z0-9_]+)\r?$", log)} & EXPECTED_TESTS)
         case["selectedExpectedCount"] = set(re.findall(

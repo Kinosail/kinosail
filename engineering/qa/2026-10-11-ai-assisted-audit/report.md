@@ -36,7 +36,7 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | The first executed trial reports six passing assertions but fails cleanup and visual acceptance. Both fresh physical profiles at `5e7db444` then fail before tests during boot readiness; both clean up successfully. | Corrected boot prerequisites require hosted verification, followed by app visibility and physical round geometry. Pairing, sensors, battery, and physical input remain open. |
+| Wear | Both profiles at `912871d3` boot, verify physical dimensions, and clean up successfully. JUnit fails, and both launch images show the watch face without retained app semantics. | A bounded failure projection must identify the actual Activity assertion. App visibility and recreation remain unverified. Pairing, sensors, battery, and physical input remain open. |
 | Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
@@ -50,9 +50,20 @@ Its original navigation timeout remains an unresolved intermittent observation.
 
 The [Wear evidence note](../2026-10-13-wear-journeys.md) records the rejected screenshots, exact artifacts, and successive runner repairs.
 Commits `89c1af8a` and `9c4cf628` require foreground app ownership, bounded transport detachment, and fresh physical profiles.
-Source checks and independent review pass. The fresh-profile trial stops before tests and does not establish runtime acceptance.
-The next correction removes a boot-animation service prerequisite that conflicts with disabled animation and retains safe boot diagnostics.
+Source checks and independent review pass. Corrected boot readiness succeeds on both fresh profiles, but actual Activity acceptance still fails.
+The next revision retains safe failure signals and capture-phase observations without changing assertions or deadlines.
 The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
+
+Exact-main `0a68e515` also passes the nineteen cold-suffix cases and verifies all seven helper pins.
+Artifact `11855719704` has SHA-256 `bad88c024be90ff7a301585e4e12dfe4203d732ade5f25a38d3957d30c68460c`.
+Its cold-suffix receipt has SHA-256 `43991f1abc077bf5609fb159d364f99da2c13d1dcfcfc52e58409596331eda31`.
+Both metadata recoveries preserve metadata after one correlated INFO completion.
+The 139 private child-artifact hashes remain unavailable for independent verification.
+
+The same main revision passes all thirty Subtitles copied-clock receipts, including four long-window completions before restart.
+Artifact `11857083775` has SHA-256 `38d476acea6a87c1bd2c759a0614bec952002e2ffbe9771d5cf0dd51b3580468`.
+All sixteen uploaded child hashes verify; 275 private child hashes remain unavailable.
+Exact-main browser completion and image publication remain pending.
 
 ## Baseline evidence
 
