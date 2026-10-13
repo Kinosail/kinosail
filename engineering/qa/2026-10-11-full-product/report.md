@@ -2505,3 +2505,15 @@ The same owner still executes the four pending/loaded/font/appearance and termin
 Both reused simulators return to their original shutdown state.
 Generated Android catalog additions change the APK inputs; the earlier frozen-APK matrix remains proof of its recorded revision.
 A fresh Android build and focused native confirmation are required before claiming the final APK.
+
+QA-029 fresh Android phone, test and Wear APK builds pass at `c363c936f554506a60f0bae723fd53c83bb5586a`.
+The Android source tree is `a1e34d54e0f35b3fbffb0174e7a76d6e8bee44f9`; only 34 generated catalog files differ from the frozen matrix source.
+The app APK SHA-256 is `1fa6120f695ded6630c9930f08fc0e141dd82e1830d9a893011df48f47e89f01`.
+Its DEX files and all non-catalog, non-signature ZIP entries match the earlier frozen APK exactly.
+The test APK is byte-identical to that matrix's test APK.
+The fresh phone journey confirms pending x=42–1038, loaded x=42, text zoom 100% and no horizontal overflow.
+It passes initial loading, renderer recovery and chapter navigation, then reproduces QA-011 after reopening chapter two.
+The missing-accessibility screenshot visibly contains Harbor lights. No System UI ANR is reported.
+The full journey fails; it is not counted as a passing final-APK confirmation.
+Its instrumentation log SHA-256 is `d8e56d4e04e3466c174be36611565898f3ecbe7a338b2eaf55bec3cda094bb4c`.
+Both task-installed packages are removed and the font setting is restored. Independent cleanup verification remains required.
