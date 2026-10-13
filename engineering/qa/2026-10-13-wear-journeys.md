@@ -240,3 +240,35 @@ The runner, inspector, and assertions continue to reject failed tests and incomp
 This is a hypothesis for the observed displacement, not a confirmed cause.
 The [interactive-state API](https://developer.android.com/reference/android/os/PowerManager#isInteractive()) and
 [lock-state API](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceLocked()) distinguish device state without taking a wake lock or dismissing the keyguard.
+
+## Displacement occurs while interactive and unlocked
+
+At `470234c6e40c000ef80c2bb6d610dda0f0ce79ef`, the large profile passes all three tests.
+Its seventeen source pins, eight child hashes, four decoded PNGs, foreground checks, and cleanup all verify.
+Visual inspection confirms the actual app after launch and recreation; component images remain isolated render evidence.
+The small profile passes both component tests but fails the actual foreground wait.
+Its seventeen source pins, seven available child hashes, and cleanup verify.
+Before the wait, its Activity is resumed without focus. At capture, it is stopped without finishing or destruction.
+Both snapshots show an interactive device, an unlocked keyguard, and an unlocked user.
+The fixed `missing-compose-root` signal also occurs. The launch screenshot shows the watch face.
+These observations do not support a power or lock-state change at either sampled instant.
+They do not exclude an unobserved intermediate transition.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11860158000` | `c4864362b01e71bfad8b880fabfa32b4d28aa755f740d33ec3306a7b58ad3962` |
+| Large round | `11859154369` | `5a703ddc6d58c542c48651e3561713cb93e29e8ba75acfdaa14fad297f0cc38a` |
+
+The next experiment runs the actual Activity journey before the two component tests.
+It changes only class order, retaining all three tests, assertions, timeouts, and automation flags.
+A bounded sequence of known test names from instrumentation status lines confirms the observed order and reports truncation.
+Truncation or an observed component-first order makes this experiment inconclusive.
+Each test normally appears at start and finish; the sequence is not an execution count.
+The existing exact selection and three-pass checks remain authoritative.
+
+The pinned [AndroidX test-core 1.7.0 source](https://dl.google.com/dl/android/maven2/androidx/test/core/1.7.0/core-1.7.0-sources.jar)
+starts a temporary Activity when finishing a scenario, then broadcasts its cleanup.
+Preceding fixture teardown is therefore a testable hypothesis, not a diagnosed library defect.
+An actual-first failure would reject preceding component teardown as a necessary cause.
+An actual-first pass alone would not prove the hypothesis or establish a repair.
+Reordering also changes time since wakeup and instrumentation startup.

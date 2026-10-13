@@ -15,7 +15,7 @@ import uuid
 APP = "com.kinosail.player.dev"
 SERIAL = "emulator-5554"
 IMAGE = "system-images;android-36;android-wear-signed;x86_64"
-CLASSES = "com.kinosail.player.wear.WearAccessibilityTest,com.kinosail.player.wear.WearLaunchJourneyTest"
+CLASSES = "com.kinosail.player.wear.WearLaunchJourneyTest,com.kinosail.player.wear.WearAccessibilityTest"
 EXPECTED_TESTS = {"changingRemoteStatusCanBeAnnounced", "disconnectedStateCanBeAnnounced",
                   "unpairedWatchLaunchesAndSurvivesRecreation"}
 STAGES = ("heart-permission", "unpaired", "launch-unpaired", "recreated-unpaired")
@@ -120,6 +120,9 @@ def run_case(safe, run, label, size, density):
         case["statusCounts"] = {str(code): statuses.count(str(code).encode()) for code in (-4, -3, -2, -1, 0, 1, 2)}
         case["selectedTests"] = sorted({m.decode() for m in re.findall(
             rb"(?m)^INSTRUMENTATION_STATUS: test=([A-Za-z0-9_]+)\r?$", log)} & EXPECTED_TESTS)
+        sequence = [m.decode() for m in re.findall(
+            rb"(?m)^INSTRUMENTATION_STATUS: test=([A-Za-z0-9_]+)\r?$", log) if m.decode() in EXPECTED_TESTS]
+        case["testStatusSequence"], case["testStatusSequenceTruncated"] = sequence[:12], len(sequence) > 12
         case["selectedExpectedCount"] = set(re.findall(
             rb"(?m)^INSTRUMENTATION_STATUS: numtests=(\d+)\r?$", log)) == {b"3"}
         case["junitPassed"] = b"OK (3 tests)" in log and b"FAILURES!!!" not in log
