@@ -138,7 +138,7 @@ function observe() {
   const ids = new WeakMap(); let nextID = 0;
   const identify = node => {if(!ids.has(node))ids.set(node, ++nextID);return ids.get(node);};
   const label = node => node?.id || (typeof node?.className === "string" ? node.className : "") || node?.nodeName;
-  window.layoutAudit = {shifts: [], frames: [], paints: [], support: PerformanceObserver.supportedEntryTypes};
+  window.layoutAudit = {recording: true, shifts: [], frames: [], paints: [], support: PerformanceObserver.supportedEntryTypes};
   if (PerformanceObserver.supportedEntryTypes.includes("layout-shift")) new PerformanceObserver(list => {
     for (const entry of list.getEntries()) window.layoutAudit.shifts.push({time: entry.startTime, value: entry.value,
       recentInput: entry.hadRecentInput, sources: entry.sources?.map(source => ({node: label(source.node),
@@ -153,7 +153,7 @@ function observe() {
         .filter(node => node.getBoundingClientRect().height > 0 && (!node.checkVisibility || node.checkVisibility()) && ![...document.querySelectorAll("details:not([open])")].some(d=>d.contains(node)&&!d.querySelector(":scope>summary")?.contains(node))).map(node => ({pinned: (()=>{for(let n=node;n;n=n.parentElement)if(["fixed","sticky"].includes(getComputedStyle(n).position))return true;return false;})(), id: identify(node), documentY: node.getBoundingClientRect().y + scrollY, node: label(node), aria: node.getAttribute("aria-label"), text: node.textContent.trim().slice(0, 45), ...node.getBoundingClientRect().toJSON()}));
       window.layoutAudit.frames.push({time, scrollY, boxes});
     }
-    if (time < 8000) requestAnimationFrame(sample);
+    if (window.layoutAudit.recording) requestAnimationFrame(sample);
   };
   requestAnimationFrame(sample);
 }
@@ -232,8 +232,8 @@ try {
     }
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2400);
-    const audit = await page.evaluate(() => ({...window.layoutAudit, overflow: document.documentElement.scrollWidth - innerWidth,
-      font: document.fonts.check("15px Manrope"), skeleton: document.querySelectorAll(".request-skeleton").length}));
+    const audit = await page.evaluate(() => {window.layoutAudit.recording = false; return {...window.layoutAudit, overflow: document.documentElement.scrollWidth - innerWidth,
+      font: document.fonts.check("15px Manrope"), skeleton: document.querySelectorAll(".request-skeleton").length};});
     const entries=audit.shifts.filter(s=>!s.recentInput);
     const unexpected=cls(entries), aggregateUnexpected=entries.reduce((sum,e)=>sum+e.value,0);
     const identifiedDOMCLS=cls(entries.filter(e=>e.sources?.some(s=>s.node)));

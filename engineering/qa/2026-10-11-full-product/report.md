@@ -2071,6 +2071,86 @@ Its production-source snapshot is base `c0e38f59` plus patch SHA-256 `e5f51acb99
 The reconciled Linux binary SHA-256 is `dbfe66a5d0366a863cfdc13e2dc4c7d6a0cafff769d3c4e1978ab07f8e161a30`.
 The owned container is removed. This remains Linux ARM64 proof; exact-head hosted AMD64 checks follow the commit.
 
+
+## QA-026 — Layout recording ends before slow first paint
+
+The hosted WebKit layout run at `fd70beb4` stops after its first completed case.
+The library renders, but the recorder times out waiting for a fresh baseline frame.
+Chromium and Firefox layout runs pass. The hosted artifact SHA-256 is
+`94a2c9ccc1a22a25228165d52815b4bc875d77b159588bb9cc051dfde313b216`.
+A diagnostic Linux ARM64 replay passes 39 cases and 11 flows without reproducing that timeout.
+Its largest baseline is 6184ms. The hosted failure has no captured baseline timestamp,
+so this replay does not establish its exact cause.
+
+The recorder stops its animation callback eight seconds after navigation.
+A new isolated CLI regression serves a real critical stylesheet after 8500ms.
+The normal-render control passes. Three slow-render executions fail at the original fresh-frame wait.
+A fourth red execution uses the final fixture and fails at the same wait.
+No browser clock, frame callback or geometry predicate is mocked.
+The fixture is a local HTTP peer, not populated Go Server E2E proof.
+
+Recording now remains active until the settled measurement is collected, then stops.
+The initial and settled geometry checks and existing automation bounds remain unchanged.
+The regression requires a fresh frame after each viewport's baseline and a later settled frame.
+Both slow-case baselines must exceed 8000ms.
+The final fixture identifies its two documents rather than assuming one CSS request per document.
+Firefox requests each stylesheet twice; the earlier exact request-count failures remain retained.
+An earlier Chromium fixture also counted an icon request as a document; that fixture error is corrected.
+
+The final normal and slow cases pass in macOS Chromium and WebKit with zero retries.
+Linux Firefox passes both cases and all five retained authentication controls with zero retries.
+Its two slow baselines are 9304ms and 9270ms, followed by fresh and settled frames.
+The final test SHA-256 is `1c47919d7433c3f381b9dcb9c3b77545d95bba630dfd79ecba2f91a9f1cbbafd`.
+The repaired CLI SHA-256 is `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+The macOS run log SHA-256 is `808b1d1ec14db929e4ff3aa7ce1fc924c8dd907d7686927a551022830499bef8`.
+The Linux Firefox run log SHA-256 is `005a88415226a1266f26c7fd548d8c86f50b2fdb22accff306eff42290488634`.
+The owned Linux container is removed, and host certificate trust is unchanged.
+
+macOS Firefox cannot open its profile folder, including an execution outside the sandbox
+and a separate task-owned profile-location control. Those failed launches remain retained.
+An initial Chromium authentication control exceeds its subprocess bound; its outside-sandbox replay passes.
+The whole-tree TypeScript keyword policy still rejects five `unknown` annotations in the unchanged
+`test-instance-watched-startup.spec.ts`. The new test has no keyword-policy violation.
+The syntax and source-cap checks pass. Private `layout-sampling-*` receipts retain each attempt.
+
+## Current hosted and simulator boundaries
+
+The `fd70beb4` deep artifacts report canonical Go coverage of 89.7% for Player and 91.1% for Subtitles.
+Subtitles passes 99 browser executions in each of Chromium, Firefox and WebKit, with zero skips or flakes.
+Player Firefox has no unexpected or flaky result across its retained reports; platform skips remain.
+Player WebKit retains one flaky native-startup case. Its first attempt is still seeking at 0.1 seconds
+with zero decoded frames and no native error; the retry passes. This is not a clean startup result.
+The failed media-state SHA-256 is `6c495f78f0a8138e5596fd9caa2fbc1386166ffee6bd0dcfb11e4f39cc0b4192`.
+No timeout, decoder predicate or watched-state assertion is weakened.
+
+Hosted iOS starts zero tests because its runner hangs before connecting.
+Hosted tvOS passes 319 tests, skips one and fails none.
+The retained native artifact SHA-256 is `d8c34aef603834374f7bbec0e38c85c9a4366fa0c24fe527decbf5a097f2bfc9`.
+A separate local iPhone simulator suite passes 329 tests, skips four and fails none.
+Three skipped cases require the external decoded-media fixture; the remaining case is platform-specific.
+The local run preserves the exact native source tree and restores the simulator's shutdown state.
+Its summary SHA-256 is `21a2b1aca02656a8cc0bf2e902cc0d5f56fc1e3e23eac42cbd268ee62c2ad5c5`.
+Local simulator proof does not replace the failed hosted runner or physical-device proof.
+Fresh discovery still finds no connected iPhone, iPad or Watch. Two Apple TVs remain connected.
+The existing physical-TV profile handoff remains pending; discovery selects no profile or app.
+
+
+The repaired recorder also passes the populated Linux ARM64 WebKit audit: 39 cases and 11 flows.
+Every initial frame follows its baseline. The owned container is removed, with host trust unchanged.
+The run log SHA-256 is `bf08c96652d999acac0318bd543f31b6dc66cefac7f272c3c17f2f3be361e947`.
+The source archive and patch retain the exact recorder; the container adaptation only selects
+an existing trusted-CA Firefox launcher. WebKit predicates and native clocks remain unchanged.
+The report-only additions made during execution do not change the archived app or recorder sources.
+
+Required CI run `38322824963` passes for PR #579 head `fd70beb4`.
+Its tested merge is `66df3b153a084ff44172d442c1ecc4535fc1db3f`.
+A fetched ancestry check confirms that the reviewed head is included in that merge.
+The startup browser case passes with zero skips, unexpected results or flakes.
+Its burned-subtitle invalidation and original-init continuation assertions execute successfully.
+The startup artifact SHA-256 is `046cb2beef9dfab95145751019dd2a21336f82bb8399b1d2ed4d97aa05ba8097`.
+This is PR-merge startup proof, not remote main ancestry or production deployment proof.
+Fresh hosted checks must verify the subsequent recorder commit before protected integration.
+
 ## QA-024 — Native verifier skips catalog inputs and reuses stale success
 
 The native stage selects only changes under `apps/native`. It can skip commits
@@ -2106,3 +2186,17 @@ interaction or physical-device behavior. A unittest discovery attempt selects
 no hyphenated files and is excluded; the root tooling command invokes the files
 explicitly. Private `native-verification-*` receipts retain commands, revisions,
 source hashes, controls and logs.
+
+
+The three locally skipped decoded-media journeys are then executed with the exact CI fixture recipe.
+Cold and prepared native playback, seek/pause/resume, video buffering and audio buffering all pass.
+This focused execution passes three tests with zero skips or failures on the unchanged native source tree.
+It supplements the earlier 329-pass run; it is a separate execution with an added media fixture.
+The unsupported Picture in Picture control remains a local platform skip.
+The fictional media is 288629 bytes with SHA-256
+`fca8542e89dcbfc618e21fdbe98261caacc72070ab92866ac604783ba4c37ff6`.
+The test-summary SHA-256 is `38093ff64f22d364446b235b34d20d6996528682b902b0afc7fafd59769ae60a`.
+The private run log SHA-256 is `9878657f4f0330a8a58654acbe244a32af43a22bdaa30e4740db6fbad05e7854`.
+Both task-created fixture links are removed only after their hashes are rechecked.
+The iPhone simulator's original shutdown state is verified after execution.
+The hosted iOS connection failure and physical-device boundaries remain open.
