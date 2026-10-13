@@ -90,13 +90,21 @@ func transcodeRefillProducers(t *testing.T, directory string) []map[string][]str
 	for _, path := range paths {
 		arguments := strings.Split(string(transcodeRefillRead(t, path)), "\x00")
 		record := make(map[string][]string)
+		inputSeek := "none"
 		for index, argument := range arguments {
+			if argument == "-i" {
+				record["input-seek"] = append(record["input-seek"], inputSeek)
+				inputSeek = "none"
+			}
 			switch argument {
 			case "-ss", "-output_ts_offset", "-avoid_negative_ts", "-start_number", "-c:v", "-c:a":
 				if index+1 >= len(arguments) || !safe.MatchString(arguments[index+1]) {
 					t.Fatal("producer clock argument is missing or unbounded")
 				}
 				record[argument] = append(record[argument], arguments[index+1])
+				if argument == "-ss" {
+					inputSeek = arguments[index+1]
+				}
 			}
 		}
 		records = append(records, record)
@@ -181,5 +189,31 @@ func transcodeRefillCurrentBindings(t *testing.T, root string) {
 		if err != nil || bytes.Count(data, []byte(":transcode-clock=1")) != 1 {
 			t.Fatal("rebuilt cache did not persist its frame-clock policy")
 		}
+	}
+}
+
+// This fixed FFV1 fixture has seekable keys throughout. Every source input must
+// request the nearby window; an output trim after origin replay is insufficient.
+func transcodeRefillBoundedInputs(t *testing.T, directory string, target int) {
+	t.Helper()
+	selected := 0
+	for _, record := range transcodeRefillProducers(t, directory) {
+		if !slices.Contains(record["-start_number"], strconv.Itoa(target)) {
+			continue
+		}
+		selected++
+		for _, value := range record["input-seek"] {
+			seek, err := strconv.ParseFloat(value, 64)
+			if err != nil || !(seek >= float64(target*2-4) && seek <= float64(target*2)) {
+				t.Error("late refill replays an input outside the bounded source window")
+			}
+		}
+		transcodeRefillLog(t, map[string]any{"boundedRefillInputs": len(record["input-seek"]), "targetSegment": target})
+		if len(record["input-seek"]) == 0 {
+			t.Fatal("late refill has no observed source input")
+		}
+	}
+	if selected != 1 {
+		t.Error("expected exactly one observed late refill command")
 	}
 }

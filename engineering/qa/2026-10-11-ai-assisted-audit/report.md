@@ -2713,3 +2713,29 @@ This delegates edit-list and negative-DTS interpretation to FFmpeg and avoids a 
 The [MOV demuxer](https://raw.githubusercontent.com/FFmpeg/FFmpeg/n8.1.3/libavformat/mov.c) records each packet's sample byte offset.
 Production completion scans would add media I/O. Interrupted-generation recovery and long-film cost remain unverified.
 Hosted Repository policy and tooling pass at `5fa2d1ba`, confirming the route-contract and architecture snapshot repairs.
+
+Before production integration, the public HTTP regression also needs a later recovery boundary.
+The added journey will close the first server after its encoder joins, remove the first and seventh fragments,
+start a fresh server with the same cache, and request fragment seven using the original playback plan.
+It must preserve the original init and both retained neighbors, leave the evicted first fragment absent,
+and satisfy exact video/AAC clocks, PCM length, waveform joins, and negative controls.
+Existing short-clip journeys do not cover durable metadata, nonzero audio warm-up, or a missing initial fragment after restart.
+No production seam is added; only the owned cache files are evicted between two real HTTP server lifecycles.
+
+### Joined fragment timing matches independent demux
+
+The [hosted joined-scan trial](https://github.com/Kinosail/kinosail/actions/runs/38364261264) at
+`b171808c110e7400293699d6ccf2366d475e92c2` passes all four splice cases and 94 clean codec commands.
+The artifact verifies both checksums, all three script hashes, exact revision, and pinned codec identities.
+Its archive SHA-256 is `36bbfa1900d381fa907e76face12059a96e45d6ee7ebed2cefae3c21da04bb81`.
+At each rate, all video/audio packet clocks in nine fragment intervals exactly match isolated-fragment demux.
+Removing the actual fourth-index fragment from joined input preserves every packet clock in the eight surviving intervals.
+Each packet's byte position and size belongs to exactly one fragment. The refill now derives its original cut and AAC phase from this result.
+All four splice cases retain exact packet clocks, video clocks, and PCM lengths, with unchanged waveform thresholds and negative controls.
+This establishes closed-fixture packet association. It does not establish durable metadata or production restart recovery.
+The new public restart journey also checks bounded pre-input seeks; an output trim after replaying the source origin cannot pass.
+
+Independent review tightened the restart journey before execution. It reads retained cache files before HTTP reads,
+then joins and recounts producers after all requests. This prevents repair-on-read from hiding a deleted neighbor.
+The final check requires fragment zero to remain absent. Fragment seven is a late middle fragment of a 20-second source,
+not an EOF-tail case. Encoder exit and ENDLIST do not certify any future metadata worker; that handoff needs explicit proof.

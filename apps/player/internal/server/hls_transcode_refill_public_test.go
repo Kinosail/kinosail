@@ -34,14 +34,15 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 		t.Fatal("hosted FFprobe unavailable")
 	}
 	for _, size := range []string{"320x180", "1280x720"} {
-		t.Run(size, func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, false) })
+		t.Run(size, func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, false, 1) })
 		// AAC priming can affect a muxer's video clock. The video-only cases
 		// cannot prove that the output policy is also stable with an audio track.
-		t.Run(size+"-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, true) })
+		t.Run(size+"-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, true, 1) })
 	}
+	t.Run("320x180-restarted-late-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, "320x180", true, 7) })
 }
 
-func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
+func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool, targetSegment int) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
 	defer func() {
 		transcodeRefillLog(t, map[string]any{"complete": true, "failed": t.Failed(), "revision": os.Getenv("GITHUB_SHA"), "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version(), "command": "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"})
 	}()
@@ -49,14 +50,16 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	defer cancel()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	source := filepath.Join(media, "Refill clock.mkv")
-	arguments := []string{"-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=" + size + ":rate=25:duration=8"}
+	duration := max(8, (targetSegment+3)*2)
+	fragmentNames := []string{"init.mp4", fmt.Sprintf("segment-%05d.m4s", targetSegment-1), fmt.Sprintf("segment-%05d.m4s", targetSegment), fmt.Sprintf("segment-%05d.m4s", targetSegment+1)}
+	arguments := []string{"-nostdin", "-v", "error", "-f", "lavfi", "-i", fmt.Sprintf("testsrc2=size=%s:rate=25:duration=%d", size, duration)}
 	if audio {
-		arguments = append(arguments, "-f", "lavfi", "-i", "aevalsrc=0.25*sin(2*PI*(173*t+37*t*t))+0.1*sin(2*PI*(613*t+11*t*t)):s=48000:d=8", "-c:a", "flac")
+		arguments = append(arguments, "-f", "lavfi", "-i", fmt.Sprintf("aevalsrc=0.25*sin(2*PI*(173*t+37*t*t))+0.1*sin(2*PI*(613*t+11*t*t)):s=48000:d=%d", duration), "-c:a", "flac")
 	}
 	arguments = append(arguments, "-c:v", "ffv1", "-threads", "2", source)
 	generate := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed bounded synthetic source and discovered hosted executable.
 	if err := generate.Run(); err != nil {
-		t.Fatal("eight-second FFV1 fixture generation failed")
+		t.Fatal("bounded FFV1 fixture generation failed")
 	}
 	sourceBefore := transcodeRefillRead(t, source)
 	owned := filepath.Join(tools, "owned-pids")
@@ -66,9 +69,12 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	if err := os.WriteFile(adapter, []byte(script), 0o700); err != nil { //nolint:gosec // Owned exec-only adapter records provenance without changing codec arguments.
 		t.Fatal(err)
 	}
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: adapter, FFprobe: ffprobe})
+	firstLifecycle, stopFirst := context.WithCancel(ctx)
+	defer stopFirst()
+	config := server.Config{Lifecycle: firstLifecycle, MediaDir: media, CacheDir: cache, FFmpeg: adapter, FFprobe: ffprobe}
+	handler, id := formatTestItem(t, config)
 	host := httptest.NewServer(handler)
-	defer host.Close()
+	defer func() { host.Close() }()
 	var info struct {
 		Compatible     string
 		CompatiblePlan playback.PlaybackPlan
@@ -99,19 +105,35 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	for _, variant := range variants {
 		base := prefix + strings.TrimSuffix(variant, "index.m3u8")
 		var parts [][]byte
-		for _, name := range []string{"init.mp4", "segment-00000.m4s", "segment-00001.m4s", "segment-00002.m4s"} {
+		for _, name := range fragmentNames {
 			parts = append(parts, bandwidthHTTPGET(t, ctx, base+name))
 		}
 		originals = append(originals, parts)
 	}
+	if targetSegment > 1 {
+		stopFirst()
+		host.Close()
+		for _, variant := range variants {
+			if err := os.Remove(filepath.Join(root, filepath.Dir(variant), "segment-00000.m4s")); err != nil {
+				t.Fatal("cannot evict the owned initial fragment before restart")
+			}
+		}
+		config.Lifecycle = ctx
+		restarted, restartedID := formatTestItem(t, config)
+		if restartedID != id {
+			t.Fatal("restarted library changed the fixture identity")
+		}
+		host = httptest.NewServer(restarted)
+		prefix = host.URL + strings.TrimSuffix(info.Compatible, "index.m3u8")
+	}
 	// Evict one owned cache entry after its producer has exited. Public HTTP must
-	// start a real refill. Forward files may be replaced by that presentation.
-	if err := os.Remove(filepath.Join(root, filepath.Dir(variants[0]), "segment-00001.m4s")); err != nil {
+	// start a real refill. The restart case also checks retained cache bytes.
+	if err := os.Remove(filepath.Join(root, filepath.Dir(variants[0]), fragmentNames[2])); err != nil {
 		t.Fatal(err)
 	}
-	bandwidthHTTPGET(t, ctx, prefix+strings.TrimSuffix(variants[0], "index.m3u8")+"segment-00001.m4s")
+	bandwidthHTTPGET(t, ctx, prefix+strings.TrimSuffix(variants[0], "index.m3u8")+fragmentNames[2])
 	afterOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
-	transcodeRefillLog(t, map[string]any{"revision": os.Getenv("GITHUB_SHA"), "size": size, "audio": audio, "renditions": len(variants), "initialProducers": beforeOwned, "totalProducers": afterOwned, "sourceSHA256": fmt.Sprintf("%x", sha256.Sum256(sourceBefore)), "producers": transcodeRefillProducers(t, tools)})
+	transcodeRefillLog(t, map[string]any{"revision": os.Getenv("GITHUB_SHA"), "size": size, "audio": audio, "targetSegment": targetSegment, "restarted": targetSegment > 1, "renditions": len(variants), "initialProducers": beforeOwned, "totalProducers": afterOwned, "sourceSHA256": fmt.Sprintf("%x", sha256.Sum256(sourceBefore)), "producers": transcodeRefillProducers(t, tools)})
 	if beforeOwned != 1 || afterOwned != 2 {
 		t.Fatal("expected one joined initial presentation and one joined HTTP refill")
 	}
@@ -123,12 +145,24 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		t.Run(filepath.Dir(variant), func(t *testing.T) {
 			base := prefix + strings.TrimSuffix(variant, "index.m3u8")
 			original := originals[index]
-			for part, name := range []string{"init.mp4", "segment-00000.m4s"} {
+			if targetSegment > 1 {
+				for _, part := range []int{0, 1, 3} {
+					if !bytes.Equal(original[part], transcodeRefillRead(t, filepath.Join(root, filepath.Dir(variant), fragmentNames[part]))) {
+						t.Fatalf("restarted refill changed retained cache file %s", fragmentNames[part])
+					}
+				}
+			}
+			for part, name := range fragmentNames[:2] {
 				if !bytes.Equal(original[part], bandwidthHTTPGET(t, ctx, base+name)) {
 					t.Fatalf("refill changed retained %s", name)
 				}
 			}
-			refilled := bandwidthHTTPGET(t, ctx, base+"segment-00001.m4s")
+			if targetSegment > 1 {
+				if !bytes.Equal(original[3], bandwidthHTTPGET(t, ctx, base+fragmentNames[3])) {
+					t.Error("restarted refill replaced its retained later neighbor")
+				}
+			}
+			refilled := bandwidthHTTPGET(t, ctx, base+fragmentNames[2])
 			// The last fragment is the original snapshot, as if already buffered.
 			mixed := [][]byte{original[0], original[1], refilled, original[3]}
 			control := transcodeRefillDecode(t, ctx, ffmpeg, "original", original)
@@ -165,7 +199,25 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			}
 		})
 	}
-	if !t.Failed() {
+	if targetSegment > 1 {
+		finalOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
+		transcodeRefillLog(t, map[string]any{"finalProducers": finalOwned, "targetSegment": targetSegment})
+		if finalOwned != afterOwned || finalOwned != 2 {
+			t.Error("retained fragment reads triggered an additional producer")
+		}
+		transcodeRefillBoundedInputs(t, tools, targetSegment)
+		for _, variant := range variants {
+			_, zeroErr := os.Stat(filepath.Join(root, filepath.Dir(variant), "segment-00000.m4s"))
+			transcodeRefillLog(t, map[string]any{"restartedWithoutZero": true, "zeroRemainsMissing": os.IsNotExist(zeroErr)})
+			if !os.IsNotExist(zeroErr) {
+				t.Error("late refill rebuilt the missing first fragment")
+			}
+		}
+		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
+			t.Error("final restarted requests mutated their source")
+		}
+	}
+	if !t.Failed() && targetSegment == 1 {
 		transcodeRefillLegacyCache(t, ctx, ffmpeg, ffprobe, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned, audio)
 		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 			t.Fatal("legacy cache rebuild mutated its source")
