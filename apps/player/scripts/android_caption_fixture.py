@@ -41,7 +41,12 @@ def target(method, raw):
         {"variant"} if path.startswith("/art/") else set())
     if len({key for key, _ in query}) != len(query) or any(key not in allowed or len(value) > 512 for key, value in query):
         raise ValueError()
-    return path + ("?" + urlencode(query) if query else "")
+    destination = path + ("?" + urlencode(query) if query else "")
+    # Validate the complete wire target after encoding. Paths cannot contain
+    # traversal or percent escapes; escaped data stays inside the query.
+    if not re.fullmatch(r"/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_~.%+=&-]+)?", destination):
+        raise ValueError()
+    return destination
 
 
 class Bridge(BaseHTTPRequestHandler):

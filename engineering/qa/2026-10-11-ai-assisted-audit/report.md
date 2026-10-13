@@ -3662,3 +3662,24 @@ The next runner sets the owned AVD hardware resolution before boot and records a
 It retains all safe files before validating dimensions, keeps typed caption metrics on failure, and reports fixed assertion names and source-line numbers.
 Requested geometry, selected-test counts, visibility, stability, and zero-overlap assertions remain unchanged.
 No production playback layout has changed.
+
+
+## Bridge controls and reader save timeout — October 13
+
+Hosted revision `9512ccf53f9632f2a7d864b898725553638b99fa` passes all ten isolated bridge boundary controls.
+Eight invalid targets return 400 with zero upstream calls. A folded upstream header returns 502 without injection.
+Both owned HTTP servers settle. Artifact `11838934619` has SHA-256 `fadcb6c9343e37f597750813a6a2295c9dd8f1ee7c091f9c19f1634a052e25ba`.
+Five source pins, six fixture pins, and seven retained artifact hashes verify.
+The native cases again fail the unchanged dimension guard, so they do not establish caption overlap or its absence.
+CodeQL still reports a flow into the complete request target after the path-only guard.
+The next repair validates the complete encoded target while preserving the stricter endpoint, method, and query restrictions.
+No scan rule, finding, or required gate is suppressed.
+
+The initial deep Apple artifact records 335 iOS passes, one failure, and one skip, plus 320 tvOS passes and one skip.
+The failure is `readerPreferenceSaveDoesNotAbandonOpeningChapter`, after saving preferences while the opening chapter is held.
+Its 10-second loaded-WebView condition fails, and the retained screenshot shows an empty chapter body.
+Artifact `11840220696` has SHA-256 `150f49d392c1435f2a6bfb8263504b8d5970eac5cddd33ab37e42ee231f1d279`.
+This journey previously missed the shared WebView timeout diagnostics.
+It now uses that helper, preserving the exact deadline, condition, message, and original failure.
+Only after failure does it retain bounded window, WebView, and fixture timing evidence and observe later progress.
+Independent review finds no concrete blocker in either change. Fresh hosted security and native results remain pending.
