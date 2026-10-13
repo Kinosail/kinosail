@@ -2151,6 +2151,56 @@ The startup artifact SHA-256 is `046cb2beef9dfab95145751019dd2a21336f82bb8399b1d
 This is PR-merge startup proof, not remote main ancestry or production deployment proof.
 Fresh hosted checks must verify the subsequent recorder commit before protected integration.
 
+## QA-024 — Native verifier skips catalog inputs and reuses stale success
+
+The native stage selects only changes under `apps/native`. It can skip commits
+that change the Makefile, generator, translations, Android source or catalogs,
+or the shared language list. Its cache also omits those dependencies. A previous
+native-build success can therefore hide stale generated copy.
+
+The failure model and retained CLI regression precede the verifier repair.
+Sixteen source-selection and cache subcases fail before the change, with zero
+fixture errors. An unrelated documentation control passes. These isolated
+checks execute the actual verifier, Git and content hasher. Compiler, module and
+source-cap commands are explicit stand-ins. Product E2E does not invoke this
+local selection and cache boundary.
+
+The verifier now selects a catalog check for copy-only changes. Native and
+Makefile changes retain the native-build stage. Both stages hash the Makefile,
+generator, translation data, native source and catalogs, relevant Android source
+and catalogs, and shared language list. Unrelated documentation still does not
+start native verification. The regression is part of `make tooling-check`.
+
+Independent controls use the actual Makefile, generator and translation data.
+The old verifier incorrectly accepts a stale Spanish catalog through both a
+native-cache hit and a copy-only commit. The repaired verifier rejects both.
+Catalog hashes remain unchanged and no compiler runs during rejection.
+Regenerating catalogs restores success and permits both native compiler calls.
+Those controls use a compiler stand-in; the first control's incorrect expected
+stage after regeneration is corrected before the passing replay.
+
+The retained CLI suite, shellcheck and complete local tooling command pass.
+A separate actual `make -C apps/player client-check` passes iOS and tvOS Xcode
+compilation after the real freshness check. This proves compilation, not app
+interaction or physical-device behavior. A unittest discovery attempt selects
+no hyphenated files and is excluded; the root tooling command invokes the files
+explicitly. Private `native-verification-*` receipts retain commands, revisions,
+source hashes, controls and logs.
+
+
+The three locally skipped decoded-media journeys are then executed with the exact CI fixture recipe.
+Cold and prepared native playback, seek/pause/resume, video buffering and audio buffering all pass.
+This focused execution passes three tests with zero skips or failures on the unchanged native source tree.
+It supplements the earlier 329-pass run; it is a separate execution with an added media fixture.
+The unsupported Picture in Picture control remains a local platform skip.
+The fictional media is 288629 bytes with SHA-256
+`fca8542e89dcbfc618e21fdbe98261caacc72070ab92866ac604783ba4c37ff6`.
+The test-summary SHA-256 is `38093ff64f22d364446b235b34d20d6996528682b902b0afc7fafd59769ae60a`.
+The private run log SHA-256 is `9878657f4f0330a8a58654acbe244a32af43a22bdaa30e4740db6fbad05e7854`.
+Both task-created fixture links are removed only after their hashes are rechecked.
+The iPhone simulator's original shutdown state is verified after execution.
+The hosted iOS connection failure and physical-device boundaries remain open.
+
 
 ## Delayed-CSS fixture correction after hosted Chromium
 
