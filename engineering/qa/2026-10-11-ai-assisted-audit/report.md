@@ -2571,3 +2571,46 @@ The isolated receipt verifies exact source, revision, test discovery, and exit s
 `f1f1a1bd549e988379ea10b4695563599fe985a709dc88609d058c21c125801e`.
 The iOS skip requires Picture in Picture support absent from that simulator. The tvOS skip is an opt-in disposable-session seeding helper.
 The earlier AVFoundation timeout remains intermittent evidence with no claimed production repair or relaxed deadline.
+
+### Strict public audio regression is red before the repair
+
+The [focused hosted run](https://github.com/Kinosail/kinosail/actions/runs/38357506323) at
+`3206083a4687113c2120f0da51cf84b1173550d7` executes the stricter public regression and fails as expected.
+Its artifact verifies 13 checksums and 94 receipts. Both video-only fixtures pass; both audio-bearing fixtures fail.
+All four audio renditions report 279 original versus 276 mixed packets, and 94 original versus 91 regenerated middle packets.
+Every mixed sequence retains the same 2,816- and 256-tick gaps. PCM remains 12,288 bytes shorter.
+The archive SHA-256 is `9a4123c8a1ee0e0c6062a4c198aace40e11b308d02775d5eab1f4cb83f329f79`.
+The safe error projection binds to job log SHA-256 `f81a4bf3b8c26584faa687c9d10d4105d098ae36e903d5c77a48ccaae5d228d1`.
+This is executed regression failure before any production audio repair, not a prediction from older receipts.
+
+The next public fixture uses two changing-frequency chirps instead of a periodic sine tone.
+It compares decoded content at fixed positions across both splice boundaries, with 100 milliseconds on each side.
+Acceptance requires correlation of at least 0.995 and normalized RMS error of at most 0.1.
+The same windows must reject silence and a 64-millisecond displacement. Packet clocks, counts, and PCM lengths remain exact.
+These content assertions are written before production changes and await hosted execution.
+
+A separate hosted codec experiment tests bounded sample-aligned audio preroll at 48 kHz and 44.1 kHz.
+Each source is 18 seconds long. The experiment refills at two and fourteen seconds, retaining both original neighbors.
+It keeps video seeking and encoding unchanged, adds a separately sought audio input, and drops only encoded AAC preroll.
+Audio timestamps move inside the user filter, after FFmpeg's automatic accurate-seek input trimming.
+Negative input `-itsoffset` can discard warm-up before encoding; the pinned implementation explains that boundary:
+[demux timing](https://raw.githubusercontent.com/FFmpeg/FFmpeg/n8.1.3/fftools/ffmpeg_demux.c) and
+[input filtering](https://raw.githubusercontent.com/FFmpeg/FFmpeg/n8.1.3/fftools/ffmpeg_filter.c).
+The experiment reads the original target's timing. Production still needs durable timing metadata before master publication.
+It is isolated codec evidence, not public HTTP proof or an accepted repair. Omitted ranges and listening effects remain untested.
+
+Independent review corrected timestamp precision, command journaling, timeout checkpoints, codec provenance, and interrupted checksums.
+The experiment uses the public oracle's demux timebase and requires exactly 150 contiguous decoded video frames.
+It records resolved codec binary hashes and runs only after successful pinned-codec installation.
+An interrupted run preserves incomplete status; an always-run checksum step seals the available receipt and command journal.
+The public content helper shares one threshold predicate to remain within the existing complexity limit.
+
+The earlier [full deep run](https://github.com/Kinosail/kinosail/actions/runs/38354552694) at `07a6e067` finishes green.
+That green result predates the stricter audio assertions and does not close this defect.
+Its latest layout artifacts verify clean revision and all 11 Player and 26 Subtitles flows in each browser.
+Archive SHA-256 values are `320fbcc5c42557ba484021ae51065670c08135fdbee168af0934c0f2fd4c6587` (Chromium),
+`ffd7bcf97855e5a7f4272ce59b60612d3f43daae65a020136239b83626ff99b6` (Firefox), and
+`6726e57ab9ce63fe21d374b8cb327736a815448364990527333092fe37a83351` (WebKit).
+The isolated layout skip counts remain two each for Chromium/WebKit and zero for Firefox.
+All three Subtitles browser artifacts verify 198 checksums each and 99 passing cases, with no skips, failures, or flakes.
+No local application, browser, simulator, emulator, codec, or device runtime was started.

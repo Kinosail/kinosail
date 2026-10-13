@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, label string, parts [][]byte) (int, []refillAudioPacket) {
+func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, label string, parts [][]byte) ([]byte, []refillAudioPacket) {
 	t.Helper()
 	arguments := []string{"-nostdin", "-v", "error", "-i", "pipe:0", "-map", "0:a:0", "-c:a", "pcm_s16le", "-f", "s16le", "-"}
 	command := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed decoder arguments and owned synthetic public HTTP fragments.
@@ -29,11 +29,11 @@ func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, la
 		"pcmBytes": len(pcm), "pcmSHA256": fmt.Sprintf("%x", sha256.Sum256(pcm)),
 		"diagnosticBytes": diagnostics.Len(), "diagnosticSHA256": fmt.Sprintf("%x", sha256.Sum256(diagnostics.Bytes())),
 	})
-	// This proves actual audio delivery, not sample alignment or waveform equality.
+	// The caller compares clocks and decoded content separately.
 	if err != nil || len(pcm) == 0 || diagnostics.Len() != 0 {
 		t.Fatal("public audio fragment sequence did not decode cleanly")
 	}
-	return len(pcm), transcodeRefillAudioPackets(t, ctx, ffprobe, label, parts)
+	return pcm, transcodeRefillAudioPackets(t, ctx, ffprobe, label, parts)
 }
 
 type refillAudioPacket struct {

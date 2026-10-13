@@ -51,7 +51,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	source := filepath.Join(media, "Refill clock.mkv")
 	arguments := []string{"-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=" + size + ":rate=25:duration=8"}
 	if audio {
-		arguments = append(arguments, "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=8", "-c:a", "flac")
+		arguments = append(arguments, "-f", "lavfi", "-i", "aevalsrc=0.25*sin(2*PI*(173*t+37*t*t))+0.1*sin(2*PI*(613*t+11*t*t)):s=48000:d=8", "-c:a", "flac")
 	}
 	arguments = append(arguments, "-c:v", "ffv1", "-threads", "2", source)
 	generate := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed bounded synthetic source and discovered hosted executable.
@@ -153,14 +153,15 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 			controls[index] = control
 			if audio {
 				originalFragment := transcodeRefillAudioPackets(t, ctx, ffprobe, "original-fragment", [][]byte{original[0], original[2]})
-				originalBytes, originalAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "original", original)
-				mixedBytes, mixedAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "mixed", mixed)
+				originalPCM, originalAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "original", original)
+				mixedPCM, mixedAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "mixed", mixed)
 				_, refilledAudio := transcodeRefillAudio(t, ctx, ffmpeg, ffprobe, "refilled-fragment", [][]byte{original[0], refilled})
 				transcodeRefillCompareAudio(t, "mixed", originalAudio, mixedAudio)
 				transcodeRefillCompareAudio(t, "refilled-fragment", originalFragment, refilledAudio)
-				if originalBytes != mixedBytes {
-					t.Errorf("mixed fragments changed the decoded PCM length: original=%d actual=%d", originalBytes, mixedBytes)
+				if len(originalPCM) != len(mixedPCM) {
+					t.Errorf("mixed fragments changed the decoded PCM length: original=%d actual=%d", len(originalPCM), len(mixedPCM))
 				}
+				transcodeRefillContent(t, originalPCM, mixedPCM, originalAudio, originalFragment)
 			}
 		})
 	}
