@@ -27,7 +27,7 @@ The chronological sections below retain earlier failures, repairs, and exact art
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
-| Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. | Preserve the existing failure and collect its public playlist, cache, and operational error evidence. |
+| Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. The diagnostic revision passes the full Player race suite at `a02a4227`. | The earlier failure remains unconfirmed; retain bounded observations on recurrence. |
 | Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
 | Apple native contracts | At `a1197ae4`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
@@ -3349,7 +3349,7 @@ These are separate populated-Server and isolated-fixture boundaries.
 
 Subtitles Firefox and WebKit each pass 99 cases without failures, skips, or retries.
 All 198 checksum entries verify in each artifact.
-The copied-clock and completion-control job also passes; its latest artifact awaits detailed inspection.
+The copied-clock and completion-control job also passes; all 24 receipts and sixteen uploaded checksums verify in artifact `11826476525`. Its intentional source-version fault changes metadata while preserving source contents, rejects reads, and starts no replacement encoder.
 
 | Artifact | SHA-256 |
 | --- | --- |
@@ -3381,3 +3381,24 @@ The preceding `5df3c236` native artifact `11824094028` also verifies 336 iOS pas
 Its archive SHA-256 is `c40cde45cdc99b6b3ebecead60e10737d42e2a586f0e885354cfcaddc724eda4`.
 Its structured reader details have SHA-256 `c0e54e191e2a29972b3c7c0662fc31a152af96481e315d877e007ab14ef73dce`.
 Earlier intermittent native failures remain separate investigations.
+
+
+## Copied-playback diagnostic validation — October 13
+
+[Hosted HLS run 38422132480](https://github.com/Kinosail/kinosail/actions/runs/38422132480) passes at `a02a4227`.
+It executes the complete Player race suite with real copied-media cases and reports 89.1% total coverage against the 89% gate.
+The earlier copied-AC3 fragment rejection does not recur; no root cause or production repair is established.
+Its retained private job log has SHA-256 `59b47e31fb18b9f039eda9fdcd10228608f86e8f86e859272c256b15e10277ea`.
+The transcoded-recovery artifact `11827397302` independently verifies all 168 receipts and twenty checksum entries.
+Its archive SHA-256 is `a26c00f5f82e71c0e36cb13ac8adc834c127bfca3467175ab5a213a0b1945b54`.
+
+Required CI identifies formatter and nil-error diagnostics in the new evidence helper, plus a stale Player architecture snapshot.
+The helper now propagates a failed relative-path calculation and records its unavailable-evidence class.
+Source-only gofumpt and goimports formatting is applied through the installed formatter.
+No production behavior, request, assertion, deadline, or retry changes.
+The architecture snapshot is refreshed from exact-revision hosted metadata after this source correction.
+
+The `08d0da84` native artifact `11827240271` verifies 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes.
+Its archive SHA-256 is `d9e26e156b7330bedd3fcfe84d533e6a8241921a227896b3f16bca5bad4fe335`.
+Its structured reader details hash is `f61a8ed9f607791f261596c1a1dc0389430fc2028a675f41787694b53bc66c41`.
+Earlier native intermittents and physical-device proof remain open.

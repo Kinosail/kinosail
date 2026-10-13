@@ -70,12 +70,15 @@ func copiedKeyframeEvent(entry map[string]any, message string) map[string]any {
 			failureClass = known
 		}
 	}
-	return map[string]any{"level": entry["level"], "message": message, "failureClass": failureClass,
-		"errorClasses": classes, "errorSHA256": fmt.Sprintf("%x", sha256.Sum256([]byte(failure))), "requestCorrelated": entry["request_id"] != nil && entry["request_id"] != ""}
+	return map[string]any{
+		"level": entry["level"], "message": message, "failureClass": failureClass,
+		"errorClasses": classes, "errorSHA256": fmt.Sprintf("%x", sha256.Sum256([]byte(failure))), "requestCorrelated": entry["request_id"] != nil && entry["request_id"] != "",
+	}
 }
 
 func copiedKeyframeCache(cache string) ([]map[string]any, map[string]int) {
 	var files []map[string]any
+
 	generation, unavailable := map[string]int{}, map[string]int{}
 	walkErr := filepath.WalkDir(cache, func(path string, entry fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -83,7 +86,11 @@ func copiedKeyframeCache(cache string) ([]map[string]any, map[string]int) {
 			return fs.SkipDir
 		}
 		relative, err := filepath.Rel(cache, path)
-		if err != nil || relative == "." {
+		if err != nil {
+			unavailable["relative"]++
+			return err
+		}
+		if relative == "." {
 			return nil
 		}
 		parts := strings.Split(relative, string(filepath.Separator))
@@ -154,7 +161,9 @@ func copiedKeyframePlaylistEvidence(data []byte) []byte {
 			}
 		}
 	}
-	result, _ := json.Marshal(map[string]any{"sha256": fmt.Sprintf("%x", sha256.Sum256(data)),
-		"durations": durations, "endlist": strings.Contains(string(data), "#EXT-X-ENDLIST"), "bytes": len(data)})
+	result, _ := json.Marshal(map[string]any{
+		"sha256":    fmt.Sprintf("%x", sha256.Sum256(data)),
+		"durations": durations, "endlist": strings.Contains(string(data), "#EXT-X-ENDLIST"), "bytes": len(data),
+	})
 	return result
 }
