@@ -2030,5 +2030,17 @@
   {
     "id": "Back to Library",
     "other": "Back to Library"
+  },
+  {
+    "id": "Chapter %lld of %lld",
+    "other": "الفصل %1$lld من %2$lld"
+  },
+  {
+    "id": "Page %lld of %lld",
+    "other": "الصفحة %1$lld من %2$lld"
+  },
+  {
+    "id": "Document",
+    "other": "المستند"
   }
 ]

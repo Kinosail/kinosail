@@ -1,5 +1,8 @@
 package com.kinosail.player.core
 
+import android.graphics.Paint
+import android.graphics.Typeface
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,7 +48,16 @@ internal fun EpubReaderScreen(item: CatalogItem, viewer: Viewer, close: () -> Un
     val saved = state.session
     val textColor = if (light) Color(0xFF162011) else KinoColor.text
     val background = if (light) Color(0xFFF4F8EF) else KinoColor.background
-    Column(Modifier.fillMaxSize().background(background).safeDrawingPadding()) {
+    val displayDensity = LocalDensity.current
+    val readerFontSize = (fontSize * displayDensity.fontScale).toInt().coerceIn(16, 96)
+    val columnWidth = remember(readerFontSize, displayDensity.density) {
+        // measureText rounds up; retain the fractional advance across the 68ch column.
+        val glyph = FloatArray(1)
+        Paint(Paint.ANTI_ALIAS_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
+            .apply { typeface = Typeface.DEFAULT; textSize = readerFontSize * displayDensity.density }.getTextWidths("0", glyph)
+        with(displayDensity) { (glyph[0] * 68).toDp() + 32.dp }
+    }
+    Column(Modifier.fillMaxSize().background(KinoColor.surface).safeDrawingPadding().background(background)) {
         FlowRow(Modifier.fillMaxWidth().background(KinoColor.surface).padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { model.flush(); close() }) { Text(interfaceText("Done")) }
@@ -69,17 +81,19 @@ internal fun EpubReaderScreen(item: CatalogItem, viewer: Viewer, close: () -> Un
                 val page = state.position.page
                 key(book.id, page, state.revision, fontSize, light) {
                     EpubDocument(book, saved, viewer, state.position,
-                        (fontSize * LocalDensity.current.fontScale).toInt().coerceIn(16, 96), light,
+                        readerFontSize, light,
                         Modifier.fillMaxSize(), result = { model.chapterResult(page, it) },
                         offset = { model.offset(page, it) }, navigate = model::turn)
                 }
             }
-            if (state.loading || state.chapterLoading && state.notice == null) Column(
-                Modifier.fillMaxSize().background(background).padding(20.dp)
+            if (state.loading || state.chapterLoading && state.notice == null) Box(
+                Modifier.fillMaxSize().background(background), contentAlignment = Alignment.TopCenter) {
+                Column(Modifier.widthIn(max = columnWidth).fillMaxWidth().padding(16.dp)
                     .clearAndSetSemantics { contentDescription = "Opening your book" },
-                verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                repeat(7) { index -> Box(Modifier.fillMaxWidth(if (index == 6) 0.5f else 1f).height(18.dp)
-                    .clip(RoundedCornerShape(4.dp)).background(if (light) Color(0xFFE1E6DB) else KinoColor.raised)) }
+                    verticalArrangement = Arrangement.spacedBy((readerFontSize * 0.65f).dp)) {
+                    repeat(7) { index -> Box(Modifier.fillMaxWidth(if (index == 6) 0.5f else 1f).height(readerFontSize.dp)
+                        .clip(RoundedCornerShape(4.dp)).background(if (light) Color(0xFFE1E6DB) else KinoColor.raised)) }
+                }
             }
             state.notice?.let { notice ->
                 Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -2030,5 +2030,17 @@
   {
     "id": "Back to Library",
     "other": "Back to Library"
+  },
+  {
+    "id": "Chapter %lld of %lld",
+    "other": "총 %2$lld장 중 %1$lld장"
+  },
+  {
+    "id": "Page %lld of %lld",
+    "other": "총 %2$lld페이지 중 %1$lld페이지"
+  },
+  {
+    "id": "Document",
+    "other": "문서"
   }
 ]

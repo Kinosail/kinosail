@@ -2030,5 +2030,17 @@
   {
     "id": "Back to Library",
     "other": "Back to Library"
+  },
+  {
+    "id": "Chapter %lld of %lld",
+    "other": "第 %1$lld 章，共 %2$lld 章"
+  },
+  {
+    "id": "Page %lld of %lld",
+    "other": "第 %1$lld 頁，共 %2$lld 頁"
+  },
+  {
+    "id": "Document",
+    "other": "文件"
   }
 ]
