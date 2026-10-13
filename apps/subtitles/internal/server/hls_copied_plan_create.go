@@ -44,27 +44,38 @@ func (manager *hlsManager) createCopiedHLSPlan(ctx context.Context, item library
 
 func (manager *hlsManager) selectCopiedHLSPlan(ctx context.Context, item library.Item, recipe hlsRecipe, policy string) (*copiedHLSPlan, error) {
 	plan := &copiedHLSPlan{Version: 1, Policy: policy, Strategy: "legacy"}
-	facts := mediaFactsFor(item, manager.probe.inspect(ctx, item))
+	probe := manager.probe.inspect(ctx, item)
+	facts := mediaFactsFor(item, probe)
 	if completedCopiedHLSWindow(recipe, facts.Duration) {
 		plan.Strategy = "completed"
 		return plan, nil
 	}
-	if recipe.offset == 0 && len(recipe.omitted) == 0 && facts.Video.Codec == "h264" && manager.index.Safe(item.Path) {
-		index, err := manager.scanCopiedHLSPlan(ctx, item, facts.Duration)
+	if copiedHLSIndexEligible(recipe, probe) && manager.index.Safe(item.Path) {
+		index, err := manager.scanCopiedHLSPlan(ctx, item, recipe.offset, facts.Duration)
 		if ctx.Err() != nil || errors.Is(err, mediaprobe.ErrProbeLifecycle) {
 			return nil, errors.Join(ctx.Err(), err)
 		}
 		if err == nil {
-			plan.certify(index)
+			plan.certify(index, recipe.offset)
 		}
 		if plan.Strategy == "legacy" {
+			if recipe.offset > 0 {
+				return nil, errors.Join(errCopiedHLSPlan, err)
+			}
 			slog.WarnContext(ctx, "HLS copied index unavailable", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "outcome", "legacy-before-encoding")
 		}
 	}
 	return plan, nil
 }
 
-func (manager *hlsManager) scanCopiedHLSPlan(ctx context.Context, item library.Item, duration float64) (mediaprobe.H264Index, error) {
+func copiedHLSIndexEligible(recipe hlsRecipe, probe probeResult) bool {
+	// MOV uses PTS seeking in both the source scan and the copying encoder.
+	// Other demuxers can retain different keys for the same requested offset.
+	return len(recipe.omitted) == 0 && probe.Video.Codec == "h264" &&
+		(recipe.offset == 0 || recipe.mode == "remux" && (probe.Container == "mov" || probe.Container == "mp4"))
+}
+
+func (manager *hlsManager) scanCopiedHLSPlan(ctx context.Context, item library.Item, from, duration float64) (mediaprobe.H264Index, error) {
 	scan, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	release, err := manager.workloads.Acquire(scan, workload.Background)
@@ -73,23 +84,27 @@ func (manager *hlsManager) scanCopiedHLSPlan(ctx context.Context, item library.I
 	}
 	defer release()
 	return manager.probe.core.H264Index(scan, manager.ffmpeg, mediaprobe.H264Scan{
-		Path:     item.Path,
+		Path: item.Path, From: from,
 		Duration: duration, MaximumSpan: duration + 0.1, MaximumPacketBytes: 128 << 20, MaximumPacketLines: 2_000_010,
 		Logger: slog.With("request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx)),
 	})
 }
 
-func (plan *copiedHLSPlan) certify(index mediaprobe.H264Index) {
+func (plan *copiedHLSPlan) certify(index mediaprobe.H264Index, from float64) {
 	keys := index.Keys()
-	if len(keys) == 0 || len(keys) >= maxHLSPlaylistURIs || keys[0].PTS != 0 {
+	if len(keys) == 0 || len(keys) >= maxHLSPlaylistURIs {
 		return
 	}
 	numerator, denominator := index.TimeBase()
+	origin := float64(keys[0].PTS) * float64(numerator) / float64(denominator)
+	if origin > from {
+		return
+	}
 	cuts := make([]float64, 0, len(keys)+1)
 	for _, key := range keys {
-		cuts = append(cuts, float64(key.PTS)*float64(numerator)/float64(denominator))
+		cuts = append(cuts, float64(key.PTS-keys[0].PTS)*float64(numerator)/float64(denominator))
 	}
-	cuts = append(cuts, index.End())
+	cuts = append(cuts, index.End()-origin)
 	plan.Strategy, plan.Cuts = "certified", cuts
 }
 
