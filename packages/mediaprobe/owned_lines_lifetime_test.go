@@ -56,6 +56,13 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	} else {
 		err = ProbeInputLines(ctx, nil, executable, copiedHLSProbeArguments(mode), input[0], maximumBytes, maximumLines, marker.visit)
 	}
+	marker.assertCompletion(started, err, wantError, mode)
+	return err
+}
+
+func (marker *copiedHLSProbeMarkers) assertCompletion(started time.Time, err error, wantError bool, mode string) {
+	t := marker.t
+	t.Helper()
 	processes, markers, visits := marker.processes, marker.markers, marker.visits
 	t.Cleanup(func() { settleCopiedHLSProbeFixture(t, started, processes) })
 	settled := copiedHLSProbeSettled(processes)
@@ -71,7 +78,6 @@ func verifyCopiedHLSProbeLifetime(t *testing.T, executable, mode string, reject,
 	if elapsed > 2*time.Second || !settled {
 		t.Fatal("configured probe exceeded its shared budget or left an owned process")
 	}
-	return err
 }
 
 type copiedHLSProbeMarkers struct {

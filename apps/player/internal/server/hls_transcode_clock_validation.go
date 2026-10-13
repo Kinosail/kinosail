@@ -102,7 +102,7 @@ func validTranscodeFragment(cut transcodeFragmentClock, number int, base int64, 
 	return true
 }
 
-func (cut transcodeFragmentClock) withinTranscodeSource(base int64, source transcodeSourceClock) bool {
+func (cut *transcodeFragmentClock) withinTranscodeSource(base int64, source transcodeSourceClock) bool {
 	return cut.VideoPTS >= 0 && cut.VideoPTS < source.Samples*base/source.Rate && cut.VideoDTS >= cut.VideoPTS-2*base && cut.VideoDTS <= cut.VideoPTS && cut.AudioPTS >= -1024 && cut.AudioPTS <= source.Samples+1024
 }
 

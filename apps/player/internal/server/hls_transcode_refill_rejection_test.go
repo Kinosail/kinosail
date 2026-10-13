@@ -38,26 +38,39 @@ func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, 
 					t.Error("cannot restore owned proof control")
 				}
 			}()
-			request, err := http.NewRequestWithContext(ctx, http.MethodGet, prefix+strings.TrimSuffix(variant, "index.m3u8")+fragment, nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			response, err := http.DefaultClient.Do(request)
-			if err != nil {
-				t.Fatal("damaged-proof HTTP request did not complete")
-			}
-			_ = response.Body.Close()
+			status := transcodeRefillRejectedStatus(t, ctx, prefix+strings.TrimSuffix(variant, "index.m3u8")+fragment)
 			joined := copiedRecoveryJoinedCodecs(t, ctx, owned)
 			_, targetErr := os.Stat(filepath.Join(directory, fragment))
 			_, zeroErr := os.Stat(filepath.Join(directory, "segment-00000.m4s"))
-			transcodeRefillLog(t, map[string]any{"damagedProof": damage, "status": response.StatusCode, "producers": joined, "targetAbsent": os.IsNotExist(targetErr), "zeroAbsent": os.IsNotExist(zeroErr)})
-			if response.StatusCode != http.StatusNotFound || joined != beforeOwned || !os.IsNotExist(targetErr) || !os.IsNotExist(zeroErr) {
+			transcodeRefillLog(t, map[string]any{"damagedProof": damage, "status": status, "producers": joined, "targetAbsent": os.IsNotExist(targetErr), "zeroAbsent": os.IsNotExist(zeroErr)})
+			if status != http.StatusNotFound || joined != beforeOwned || !os.IsNotExist(targetErr) || !os.IsNotExist(zeroErr) {
 				t.Error("damaged proof admitted a writer or exposed regenerated media")
 			}
-			if !bytes.Equal(expectedMaster, transcodeRefillRead(t, filepath.Join(root, "index.m3u8"))) || !bytes.Equal(neighbor, transcodeRefillRead(t, filepath.Join(directory, "segment-00008.m4s"))) || !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
-				t.Error("rejected recovery changed retained presentation bytes")
-			}
+			transcodeRefillRetained(t, map[string][]byte{filepath.Join(root, "index.m3u8"): expectedMaster, filepath.Join(directory, "segment-00008.m4s"): neighbor, source: sourceBefore})
 		})
+	}
+}
+
+func transcodeRefillRejectedStatus(t *testing.T, ctx context.Context, url string) int {
+	t.Helper()
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	response, err := http.DefaultClient.Do(request)
+	if err != nil {
+		t.Fatal("damaged-proof HTTP request did not complete")
+	}
+	_ = response.Body.Close()
+	return response.StatusCode
+}
+
+func transcodeRefillRetained(t *testing.T, files map[string][]byte) {
+	t.Helper()
+	for path, expected := range files {
+		if !bytes.Equal(expected, transcodeRefillRead(t, path)) {
+			t.Error("rejected recovery changed retained presentation bytes")
+		}
 	}
 }
 
@@ -81,18 +94,22 @@ func transcodeRefillDamageProof(t *testing.T, root, variant, damage string, proo
 		}
 	default:
 		changed := transcodeRefillOversizedProof(t, proof, damage, filepath.Dir(variant))
-		lines := strings.Split(string(master), "\n")
-		for index, line := range lines {
-			if strings.HasPrefix(line, "#KINOSAIL-TRANSCODE-REFILL:") {
-				lines[index] = fmt.Sprintf("#KINOSAIL-TRANSCODE-REFILL:%x", sha256.Sum256(changed))
-			}
-		}
-		master = []byte(strings.Join(lines, "\n"))
+		master = transcodeRefillRehashProof(master, changed)
 		if os.WriteFile(proofPath, changed, 0o600) != nil || os.WriteFile(filepath.Join(root, "index.m3u8"), master, 0o600) != nil {
 			t.Fatal("cannot prepare rehashed arithmetic rejection control")
 		}
 	}
 	return master
+}
+
+func transcodeRefillRehashProof(master, changed []byte) []byte {
+	lines := strings.Split(string(master), "\n")
+	for index, line := range lines {
+		if strings.HasPrefix(line, "#KINOSAIL-TRANSCODE-REFILL:") {
+			lines[index] = fmt.Sprintf("#KINOSAIL-TRANSCODE-REFILL:%x", sha256.Sum256(changed))
+		}
+	}
+	return []byte(strings.Join(lines, "\n"))
 }
 
 func transcodeRefillOversizedProof(t *testing.T, proof []byte, damage, rendition string) []byte {

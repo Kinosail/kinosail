@@ -60,10 +60,8 @@ func (reader *transcodeFragmentReader) Read(data []byte) (int, error) {
 			return 0, err
 		}
 		interval := reader.intervals[reader.index]
-		if reader.file == nil {
-			if err := reader.open(interval); err != nil {
-				return 0, errTranscodeHLSClock
-			}
+		if err := reader.open(interval); err != nil {
+			return 0, errTranscodeHLSClock
 		}
 		n, err := reader.file.Read(data)
 		reader.read += int64(n)
@@ -83,6 +81,9 @@ func (reader *transcodeFragmentReader) Read(data []byte) (int, error) {
 }
 
 func (reader *transcodeFragmentReader) open(interval transcodeFragmentInterval) error {
+	if reader.file != nil {
+		return nil
+	}
 	file, info, err := copiedHLSOpenFile(reader.root, interval.name, 64<<20)
 	if err != nil || !sameCopiedHLSFile(interval.info, info) {
 		if file != nil {
@@ -191,7 +192,7 @@ func (projection *transcodeClockProjection) audioDuration(stream, duration int64
 
 func (projection *transcodeClockProjection) stream(fields map[string]string) error {
 	index, err := strconv.Atoi(fields["index"])
-	if err != nil || index < 0 || index > 1 || projection.streams[index] {
+	if err != nil || uint(index) > 1 || projection.streams[index] {
 		return errTranscodeHLSClock
 	}
 	base := transcodeStreamBase(fields)
