@@ -76,7 +76,8 @@ func validTranscodeRendition(clock transcodeRenditionClock, source transcodeSour
 		if number+2 < len(clock.Cuts) {
 			end = float64(clock.Cuts[number+2].VideoPTS)/float64(clock.VideoBase) + 0.5
 		}
-		if end-float64(cut.VideoPTS)/float64(clock.VideoBase) > 12 {
+		warm := transcodeWarmSample(cut.VideoPTS*source.Rate/clock.VideoBase, source.Rate, clock.Cuts[0].AudioPTS)
+		if end-float64(warm)/float64(source.Rate) > 12 {
 			return false
 		}
 	}

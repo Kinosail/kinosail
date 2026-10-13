@@ -104,7 +104,7 @@ func transcodeRefillProducerClock(t *testing.T, arguments []string) map[string][
 			inputSeek = "none"
 		}
 		switch argument {
-		case "-ss", "-output_ts_offset", "-avoid_negative_ts", "-start_number", "-c:v", "-c:a":
+		case "-ss", "-t", "-output_ts_offset", "-avoid_negative_ts", "-start_number", "-c:v", "-c:a":
 			if index+1 >= len(arguments) || !safe.MatchString(arguments[index+1]) {
 				t.Fatal("producer clock argument is missing or unbounded")
 			}
@@ -207,6 +207,7 @@ func transcodeRefillBoundedInputs(t *testing.T, directory string, target int) {
 			continue
 		}
 		selected++
+		transcodeRefillDuration(t, record, target)
 		for _, value := range record["input-seek"] {
 			seek, err := strconv.ParseFloat(value, 64)
 			if err != nil || !(seek >= float64(target*2-4) && seek <= float64(target*2)) {
@@ -221,4 +222,19 @@ func transcodeRefillBoundedInputs(t *testing.T, directory string, target int) {
 	if selected != 1 {
 		t.Error("expected exactly one observed late refill command")
 	}
+}
+
+func transcodeRefillDuration(t *testing.T, record map[string][]string, target int) {
+	t.Helper()
+	if len(record["input-seek"]) != 2 || len(record["-t"]) != 1 {
+		t.Fatal("late refill must expose two bounded inputs and one output duration")
+	}
+	duration, durationErr := strconv.ParseFloat(record["-t"][0], 64)
+	audio, audioErr := strconv.ParseFloat(record["input-seek"][1], 64)
+	// The fixture's requested fragment lasts two seconds. Discarded audio
+	// warm-up must fit as well; an output budget cannot end inside that fragment.
+	if durationErr != nil || audioErr != nil || !(duration > 0 && duration <= 12 && duration >= float64(target*2)-audio+2) {
+		t.Fatal("late refill duration truncates the requested audio or exceeds its bound")
+	}
+	transcodeRefillLog(t, map[string]any{"boundedRefillDuration": duration, "targetSegment": target})
 }

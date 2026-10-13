@@ -70,9 +70,13 @@ func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualiti
 	}
 	clock := recovery.clock.Renditions[recovery.rendition]
 	rate := recovery.clock.Source.Rate
-	phase := (clock.Cuts[0].AudioPTS%1024 + 1024) % 1024
-	limit := max(int64(0), target-3*rate)
-	warm := max(int64(0), limit-((limit-phase)%1024+1024)%1024)
+	warm := transcodeWarmSample(target, rate, clock.Cuts[0].AudioPTS)
+	// FFmpeg's output duration includes audio later discarded by the bitstream
+	// filter. Budget from the trimmed warm-up origin, not the video seek origin.
+	duration := end - float64(warm)/float64(rate)
+	if duration <= 0 || duration > 12 {
+		return nil, errTranscodeHLSClock
+	}
 	directory, err := os.MkdirTemp(cache, ".transcode-refill-")
 	if err != nil {
 		return nil, errTranscodeHLSClock
@@ -82,7 +86,13 @@ func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualiti
 		_ = os.Remove(directory) // Exclusive empty task-owned stage.
 		return nil, errTranscodeHLSClock
 	}
-	return &transcodeHLSOutput{recovery: recovery, directory: directory, stage: stage, warm: warm, target: target, duration: end - start, qualities: qualities}, nil
+	return &transcodeHLSOutput{recovery: recovery, directory: directory, stage: stage, warm: warm, target: target, duration: duration, qualities: qualities}, nil
+}
+
+func transcodeWarmSample(target, rate, firstAudioPTS int64) int64 {
+	phase := (firstAudioPTS%1024 + 1024) % 1024
+	limit := max(int64(0), target-3*rate)
+	return max(int64(0), limit-((limit-phase)%1024+1024)%1024)
 }
 
 func (recovery *transcodeHLSRecovery) refillWindow(start float64) (int64, float64, error) {
