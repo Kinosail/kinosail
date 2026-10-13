@@ -39,9 +39,9 @@ def adb(*args, **options):
     return command([str(SDK / "platform-tools/adb"), "-s", SERIAL, *args], **options)
 
 
-def device_inventory(stage):
+def device_inventory(stage, *, timeout=60):
     with (run / (stage + ".adb-inventory.private.log")).open("wb") as diagnostics:
-        data = command([str(SDK / "platform-tools/adb"), "devices"], stderr=diagnostics)
+        data = command([str(SDK / "platform-tools/adb"), "devices"], stderr=diagnostics, timeout=timeout)
     check(len(data) <= 65536, "runner_device_inventory_bound")
     lines = data.decode().splitlines()
     valid = bool(lines and lines[0] == "List of devices attached")
@@ -232,8 +232,16 @@ finally:
             observe("kill-owned-process", emulator.kill)
             observe("join-after-kill", lambda: emulator.wait(timeout=10))
         receipt["emulatorSettled"] = emulator.poll() is not None
-        devices = observe("final-device-inventory", lambda: device_inventory("final"))
-        receipt["serialGone"] = devices is not None and not any(line.startswith(SERIAL + "\t") for line in devices)
+        receipt["serialGone"] = False
+        receipt["deviceDetachAttempts"] = 0
+        deadline = time.monotonic() + 5
+        while (remaining := deadline - time.monotonic()) > 0:
+            receipt["deviceDetachAttempts"] += 1
+            devices = observe("final-device-inventory", lambda: device_inventory("final", timeout=min(1, remaining)))
+            receipt["serialGone"] = devices is not None and not any(line.startswith(SERIAL + "\t") for line in devices)
+            if devices is None or receipt["serialGone"]:
+                break
+            time.sleep(min(.1, max(0, deadline - time.monotonic())))
     else:
         receipt["emulatorSettled"] = receipt["serialGone"] = True
     if emulator_log is not None:

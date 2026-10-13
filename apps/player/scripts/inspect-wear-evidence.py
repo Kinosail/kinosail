@@ -76,6 +76,8 @@ with zipfile.ZipFile(archive) as bundle:
             check(len(data) <= 65536 and b"\0" not in data, "semantics_bound")
             text = data.decode("utf-8")
             check("Connect phone" in text or "Allow heart rate access" in text, "semantics_missing")
+            if path.endswith(("launch-unpaired-semantics.txt", "recreated-unpaired-semantics.txt")):
+                check(text.startswith("activeWindowIsApp=true\n"), "foreground_not_verified")
     check(len(receipt["cases"]) == 2 and {c["name"] for c in receipt["cases"]} == {"small-round", "large-round"},
           "case_inventory")
     for case in receipt["cases"]:

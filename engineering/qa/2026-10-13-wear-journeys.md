@@ -79,3 +79,27 @@ These controls protect emulator ownership; the hosted journey cannot safely intr
 Before the repair, cold startup was rejected and a malformed header was accepted.
 The control creates no real device and does not establish native acceptance.
 Run it with `python3 -B -m unittest scripts.ci.test_wear_preflight`.
+
+## First executed journeys: acceptance rejected
+
+[Job 115570796858](https://github.com/Kinosail/kinosail/actions/runs/38477204665/job/115570796858) tested `730220fa76d3f1da50ff298ffa3a5efd757f4eae`.
+Both sizes reported all three tests passing, but the complete run failed cleanup.
+The owned process exited while its ADB transport remained in the immediate final inventory.
+No later inventory was recorded, so delayed detachment is a hypothesis, not an observed outcome.
+
+Artifact `11856950445` has SHA-256 `8c51adb66f76102ba0f5d226ec69ec3d59b035cf43c6b805039adc136c6b7998`.
+All sixteen source pins and sixteen artifact hashes verify independently.
+Both small-watch compositor images show the system's `Hello` screen despite passing Compose visibility assertions.
+Those images do not establish app visibility. The large-watch images show the app but an off-center circular boundary.
+Changing logical display size has not yet established faithful physical round-screen geometry.
+
+The journey now requires the app to own the active accessibility window before capture.
+Its semantics artifact records only the ownership Boolean, and the inspector requires a true value.
+Android's [UiAutomation reference](https://developer.android.com/reference/android/app/UiAutomation#getRootInActiveWindow()) defines this active-window observation.
+Visual inspection remains mandatory; foreground ownership alone cannot prove layout quality.
+
+The existing shutdown assertion remains the regression owner for transport detachment.
+Cleanup will observe the owned serial for up to five seconds after process shutdown.
+It must still fail if the serial remains, inventory fails, or process cleanup fails.
+It must never restart ADB or stop another process to manufacture disappearance.
+Hosted verification of these acceptance changes remains pending.

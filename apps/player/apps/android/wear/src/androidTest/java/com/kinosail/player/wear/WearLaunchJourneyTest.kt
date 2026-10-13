@@ -34,11 +34,16 @@ class WearLaunchJourneyTest {
         val context = instrumentation.targetContext
         assertTrue("Wear launch requires a watch", context.packageManager.hasSystemFeature(PackageManager.FEATURE_WATCH))
         assertTrue("Hosted watch profile must be round", context.resources.configuration.isScreenRound)
+        fun foregroundIsApp(): Boolean {
+            instrumentation.uiAutomation.clearCache()
+            return instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString() == context.packageName
+        }
         fun capture(stage: String) {
             val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
             val failures = mutableListOf<Throwable>()
             runCatching {
-                File(directory, "wear-$stage-semantics.txt").writeText(compose.onRoot().printToString())
+                File(directory, "wear-$stage-semantics.txt").writeText(
+                    "activeWindowIsApp=${foregroundIsApp()}\n" + compose.onRoot().printToString())
             }.onFailure { failures.add(it) }
             runCatching {
                 val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
@@ -62,6 +67,8 @@ class WearLaunchJourneyTest {
             retainingFailure {
                 compose.enableAccessibilityChecks()
                 fun verifyAndCapture() {
+                    // Compose visibility alone can pass behind a system welcome screen.
+                    compose.waitUntil(10_000) { foregroundIsApp() }
                     compose.waitUntil(10_000) {
                         compose.onAllNodesWithText("Connect phone").fetchSemanticsNodes().isNotEmpty()
                     }
@@ -73,6 +80,7 @@ class WearLaunchJourneyTest {
                     compose.onRoot().tryPerformAccessibilityChecks()
                     compose.waitForIdle()
                     instrumentation.waitForIdleSync()
+                    assertTrue("The app must own the active window before capture", foregroundIsApp())
                     capture(stage)
                 }
                 verifyAndCapture()
