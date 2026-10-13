@@ -63,20 +63,38 @@ private struct HeaderBackgroundProbeScreen: View {
         window.rootViewController = UIHostingController(rootView: HomeActionsProbeScreen(probe: probe))
         window.makeKeyAndVisible()
         defer { window.isHidden = true }
+        var observations: [[String: Any]] = []
+        let began = ContinuousClock.now
+        func observe(_ phase: String) {
+            let elapsed = began.duration(to: .now).components
+            observations.append(["phase": phase, "focus": probe.focused?.rawValue ?? "none",
+                "requestedFocus": probe.requestedFocus.rawValue, "keyWindow": window.isKeyWindow,
+                "hidden": window.isHidden, "sceneState": scene.activationState.rawValue,
+                "visibleWindows": scene.windows.filter { !$0.isHidden }.count,
+                "elapsedMs": Double(elapsed.seconds) * 1000 + Double(elapsed.attoseconds) / 1e15])
+        }
+        defer {
+            if let data = try? JSONSerialization.data(withJSONObject: observations, options: [.sortedKeys]),
+               let text = String(data: data, encoding: .utf8) { print("TV_TOP_BAR_FOCUS \(text)") }
+        }
 
         try await Task.sleep(for: .milliseconds(300))
+        observe("initial")
         #expect(probe.focused == .search)
         probe.showsContent = true
         try await Task.sleep(for: .milliseconds(100))
+        observe("loaded")
         #expect(probe.focused == .search)
 
         probe.requestedFocus = .library
         try await Task.sleep(for: .milliseconds(100))
+        observe("absent-library")
         #expect(probe.focused != .library)
         #expect(probe.opened == nil)
 
         probe.requestedFocus = .settings
         try await Task.sleep(for: .milliseconds(100))
+        observe("settings")
         #expect(probe.focused == .settings)
         #expect(probe.opened == nil)
     }

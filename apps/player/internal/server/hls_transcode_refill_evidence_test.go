@@ -127,19 +127,7 @@ func transcodeRefillSave(t *testing.T, directory string, value any) {
 
 func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, master, prefix, root, owned string, variants []string, controls []refillFrameTimeline, beforeOwned int) {
 	t.Helper()
-	// Simulate a completed pre-policy cache entirely inside the disposable root.
-	// Every public identity must agree on the old policy before the HTTP reopen.
-	for _, name := range []string{"index.m3u8", ".source", ".seekable"} {
-		path := filepath.Join(root, name)
-		data := transcodeRefillRead(t, path)
-		marker := []byte(":transcode-clock=1")
-		if bytes.Count(data, marker) != 1 {
-			t.Fatal("transcoded cache must identify its frame-clock policy")
-		}
-		if err := os.WriteFile(path, bytes.Replace(data, marker, nil, 1), 0o600); err != nil {
-			t.Fatal("cannot prepare owned legacy cache")
-		}
-	}
+	transcodeRefillSetLegacyBindings(t, root)
 	rebuilt := bandwidthHTTPGET(t, ctx, master)
 	afterOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
 	transcodeRefillLog(t, map[string]any{"legacyCacheReopen": true, "producersBefore": beforeOwned, "producersAfter": afterOwned, "masterSHA256": fmt.Sprintf("%x", sha256.Sum256(rebuilt))})
@@ -157,6 +145,23 @@ func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, maste
 		control := controls[index]
 		if actual.Numerator != control.Numerator || actual.Denominator != control.Denominator || !slices.Equal(actual.Frames, control.Frames) {
 			t.Fatal("legacy cache rebuild changed the accepted frame clock")
+		}
+	}
+}
+
+func transcodeRefillSetLegacyBindings(t *testing.T, root string) {
+	t.Helper()
+	// Simulate a completed pre-policy cache entirely inside the disposable root.
+	// Every public identity must agree on the old policy before the HTTP reopen.
+	for _, name := range []string{"index.m3u8", ".source", ".seekable"} {
+		path := filepath.Join(root, name)
+		data := transcodeRefillRead(t, path)
+		marker := []byte(":transcode-clock=1")
+		if bytes.Count(data, marker) != 1 {
+			t.Fatal("transcoded cache must identify its frame-clock policy")
+		}
+		if err := os.WriteFile(path, bytes.Replace(data, marker, nil, 1), 0o600); err != nil {
+			t.Fatal("cannot prepare owned legacy cache")
 		}
 	}
 }

@@ -2454,3 +2454,39 @@ The Firefox archive SHA-256 is `4b9993a63648ba3ccc22df0df8d5b3774cbbe5ab8da7bb8e
 The WebKit `bcc888a0` archive also verifies ten inputs and 525 checksums; one mutation prerequisite required a retry.
 Its SHA-256 is `fce75a1b810dc66c3defe6c698553ae162843eab4f5da7d63b3a4faeac7b7cad`.
 That WebKit result predates the timestamp repair and remains separate from its current validation.
+
+### Refill and migration accepted; native and navigation failures retained
+
+The exact refill and simulated legacy-cache journeys pass at `a8bf2a55` and `9e220a9e`.
+Each archive verifies seven checksum entries and 30 safe receipts against its exact revision.
+All twelve original, mixed, and rebuilt decodes contain 150 frames with identical clocks across four actual renditions.
+Both legacy reopens require exactly one additional joined producer. No decoder reports an error or diagnostic output.
+The archive SHA-256 values are `b99aced794a6b11952eaf1a813af8de93bd2c523f5a91b49dfe56740bd0b639c`
+and `56e419017d5d23d7bd1a72d52b61d850b8ab09e25f6cc3e27c69c4da3d672fe7`.
+The corresponding Player Go jobs passed. The video-only software-encoder boundary remains unchanged.
+
+At `b2d5ae37`, WebKit passes all nine watched-state journeys without retries, including the mutation controls.
+Its artifact verifies ten source inputs and 499 checksum entries, with zero failed or flaky cases.
+It also passes the focused caption, Downloads, queue, pagination, and settings cases.
+The archive SHA-256 is `9f07f83e1120bec14c488ae4ce173cce2ee95db0c16ed3d89861b7cffe366cfe`.
+This is browser acceptance at that revision, not physical-device or current-main proof.
+
+Required CI at `9e220a9e` identifies one remaining migration-helper complexity violation: 11 against a maximum of 10.
+The legacy-binding mutation now has a separate helper. Mutation order and every public migration assertion remain unchanged.
+Independent review finds no blocker. Source limits and whitespace checks pass; hosted validation remains pending.
+
+The same revision's native job fails one stale-pairing authorization case and three assertions in the TV top-bar focus journey.
+The authorization fixture records no request admission or arrival during the original ten-second deadline or the extra diagnostic window.
+The new receipt also reports whether the public snapshot remains authorized, whether the job exists, and its allowlisted status.
+It never reports credentials, identifiers, error messages, or request contents. The original request observation remains frozen before diagnostics.
+The TV receipt records four fixed phases, observed and requested focus, window state, and elapsed time.
+The existing waits and assertions are unchanged. No native production defect or repair is claimed from these failures alone.
+The failed native log SHA-256 is `a4c58551846bad9c3457285a60bb99cb73b101dde9536d41081bcd01aa14c809`.
+
+Firefox layout completes 40 Player measurements and 11 flows, then 46 Subtitles measurements before its first interaction journey times out.
+The original navigation receives HTTP 200 for its document and eight assets. The failure screenshot shows the populated Library.
+Playwright still reports `about:blank`, and its navigation reaches the unchanged 30-second deadline without a commit event.
+This evidence suggests an automation navigation failure, but does not make the incomplete Subtitles flows pass.
+The archive SHA-256 is `301fca9016b7ab711008df7bebfb452e852d68e46b085b65993c8e2c31fbeec5`.
+The screenshot SHA-256 is `fc564c78d9b1cffd0dcc052fd5837a44b292f47d0ac61ec3550f7a951f31b779`.
+These failures remain open. Local runtime stays held, and PR 587 remains unmerged.

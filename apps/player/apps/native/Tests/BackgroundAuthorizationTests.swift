@@ -263,7 +263,13 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
         && diagnosticRequest?.url?.path == path + "/manifest"
         && diagnosticRequest?.value(forHTTPHeaderField: "Authorization") == access.header
         && diagnosticRequest?.value(forHTTPHeaderField: "X-Kinosail-Viewer-Profile") == access.profileID
+    let diagnosticState = try? await probe.engine.snapshot(access.scope)
+    let diagnosticJob = diagnosticState?.first { $0.key == String(repeating: "b", count: 64) }
+    let safeStatuses = ["preparing", "paused", "queued", "waiting", "downloading", "verifying", "complete"]
     let diagnostic: [String: Any] = ["enqueueFinishedMs": milliseconds(began.duration(to: enqueued)),
+        "snapshotAuthorized": diagnosticState != nil, "jobPresent": diagnosticJob != nil,
+        "jobStatus": diagnosticJob.flatMap { safeStatuses.contains($0.status) ? $0.status : nil } ?? "unavailable",
+        "jobHasMessage": diagnosticJob?.message.isEmpty == false,
         "readinessFinishedMs": milliseconds(began.duration(to: readinessFinished)),
         "polls": polls, "readinessDeadlineAfterEnqueueMs": 10_000, "longestPollGapMs": milliseconds(longestGap),
         "callerTaskPriority": Task.currentPriority.rawValue, "initialRequestCount": observed.count,
