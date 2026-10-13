@@ -2490,3 +2490,14 @@ This evidence suggests an automation navigation failure, but does not make the i
 The archive SHA-256 is `301fca9016b7ab711008df7bebfb452e852d68e46b085b65993c8e2c31fbeec5`.
 The screenshot SHA-256 is `fc564c78d9b1cffd0dcc052fd5837a44b292f47d0ac61ec3550f7a951f31b779`.
 These failures remain open. Local runtime stays held, and PR 587 remains unmerged.
+
+### Video-clock coverage with AAC present
+
+The refill matrix now adds an audio-bearing version of both synthetic sources. The original video-only cases remain unchanged.
+The new inputs contain lossless 48 kHz audio, which the actual video-transcode path converts to AAC.
+They retain the exact 150-frame original, mixed, and legacy-rebuilt video assertions for every rendition.
+This targets video-clock changes caused by muxing audio, including encoder priming.
+The original, mixed, rebuilt, and standalone refilled audio fragment must decode to nonempty PCM without diagnostics.
+The standalone check prevents retained neighbors from hiding a missing refilled audio track.
+Video-clock results are recorded before audio acceptance, so audio failures cannot conceal that diagnostic.
+Independent source review finds no blocker. Runtime validation is pending; audio sample alignment and waveform equality remain untested.

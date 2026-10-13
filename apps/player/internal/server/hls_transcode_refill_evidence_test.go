@@ -125,7 +125,7 @@ func transcodeRefillSave(t *testing.T, directory string, value any) {
 	}
 }
 
-func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, master, prefix, root, owned string, variants []string, controls []refillFrameTimeline, beforeOwned int) {
+func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, master, prefix, root, owned string, variants []string, controls []refillFrameTimeline, beforeOwned int, audio bool) {
 	t.Helper()
 	transcodeRefillSetLegacyBindings(t, root)
 	rebuilt := bandwidthHTTPGET(t, ctx, master)
@@ -146,6 +146,30 @@ func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, maste
 		if actual.Numerator != control.Numerator || actual.Denominator != control.Denominator || !slices.Equal(actual.Frames, control.Frames) {
 			t.Fatal("legacy cache rebuild changed the accepted frame clock")
 		}
+		if audio {
+			transcodeRefillAudio(t, ctx, ffmpeg, "legacy-rebuilt-"+filepath.Dir(variant), parts)
+		}
+	}
+}
+
+func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, label string, parts [][]byte) {
+	t.Helper()
+	arguments := []string{"-nostdin", "-v", "error", "-i", "pipe:0", "-map", "0:a:0", "-c:a", "pcm_s16le", "-f", "s16le", "-"}
+	command := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed decoder arguments and owned synthetic public HTTP fragments.
+	command.Stdin = bytes.NewReader(bytes.Join(parts, nil))
+	var diagnostics bytes.Buffer
+	command.Stderr = &diagnostics
+	pcm, err := command.Output()
+	status := -1
+	if command.ProcessState != nil {
+		status = command.ProcessState.ExitCode()
+	}
+	transcodeRefillLog(t, map[string]any{"audioDecode": label, "arguments": arguments, "exit": status,
+		"pcmBytes": len(pcm), "pcmSHA256": fmt.Sprintf("%x", sha256.Sum256(pcm)),
+		"diagnosticBytes": diagnostics.Len(), "diagnosticSHA256": fmt.Sprintf("%x", sha256.Sum256(diagnostics.Bytes()))})
+	// This proves actual audio delivery, not sample alignment or waveform equality.
+	if err != nil || len(pcm) == 0 || diagnostics.Len() != 0 {
+		t.Fatal("public audio fragment sequence did not decode cleanly")
 	}
 }
 

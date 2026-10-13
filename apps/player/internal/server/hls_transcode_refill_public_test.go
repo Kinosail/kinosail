@@ -34,11 +34,14 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 		t.Fatal("hosted FFprobe unavailable")
 	}
 	for _, size := range []string{"320x180", "1280x720"} {
-		t.Run(size, func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size) })
+		t.Run(size, func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, false) })
+		// AAC priming can affect a muxer's video clock. The video-only cases
+		// cannot prove that the output policy is also stable with an audio track.
+		t.Run(size+"-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, true) })
 	}
 }
 
-func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
+func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
 	defer func() {
 		transcodeRefillLog(t, map[string]any{"complete": true, "failed": t.Failed(), "revision": os.Getenv("GITHUB_SHA"), "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version(), "command": "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"})
 	}()
@@ -46,7 +49,12 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //
 	defer cancel()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	source := filepath.Join(media, "Refill clock.mkv")
-	generate := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size="+size+":rate=25:duration=8", "-c:v", "ffv1", "-threads", "2", source) //nolint:gosec // Fixed bounded synthetic source and discovered hosted executable.
+	arguments := []string{"-nostdin", "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=" + size + ":rate=25:duration=8"}
+	if audio {
+		arguments = append(arguments, "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=8", "-c:a", "flac")
+	}
+	arguments = append(arguments, "-c:v", "ffv1", "-threads", "2", source)
+	generate := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed bounded synthetic source and discovered hosted executable.
 	if err := generate.Run(); err != nil {
 		t.Fatal("eight-second FFV1 fixture generation failed")
 	}
@@ -103,7 +111,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //
 	}
 	bandwidthHTTPGET(t, ctx, prefix+strings.TrimSuffix(variants[0], "index.m3u8")+"segment-00001.m4s")
 	afterOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
-	transcodeRefillLog(t, map[string]any{"revision": os.Getenv("GITHUB_SHA"), "size": size, "renditions": len(variants), "initialProducers": beforeOwned, "totalProducers": afterOwned, "sourceSHA256": fmt.Sprintf("%x", sha256.Sum256(sourceBefore)), "producers": transcodeRefillProducers(t, tools)})
+	transcodeRefillLog(t, map[string]any{"revision": os.Getenv("GITHUB_SHA"), "size": size, "audio": audio, "renditions": len(variants), "initialProducers": beforeOwned, "totalProducers": afterOwned, "sourceSHA256": fmt.Sprintf("%x", sha256.Sum256(sourceBefore)), "producers": transcodeRefillProducers(t, tools)})
 	if beforeOwned != 1 || afterOwned != 2 {
 		t.Fatal("expected one joined initial presentation and one joined HTTP refill")
 	}
@@ -143,10 +151,15 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string) { //
 				}
 			}
 			controls[index] = control
+			if audio {
+				transcodeRefillAudio(t, ctx, ffmpeg, "original", original)
+				transcodeRefillAudio(t, ctx, ffmpeg, "mixed", mixed)
+				transcodeRefillAudio(t, ctx, ffmpeg, "refilled-fragment", [][]byte{original[0], refilled})
+			}
 		})
 	}
 	if !t.Failed() {
-		transcodeRefillLegacyCache(t, ctx, ffmpeg, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned)
+		transcodeRefillLegacyCache(t, ctx, ffmpeg, host.URL+info.Compatible, prefix, root, owned, variants, controls, afterOwned, audio)
 		if !bytes.Equal(sourceBefore, transcodeRefillRead(t, source)) {
 			t.Fatal("legacy cache rebuild mutated its source")
 		}
