@@ -3739,3 +3739,23 @@ The new hosted result remains pending; local application execution remains held.
 Independent source review confirms the hidden-control checks, distinct failure filenames, and shared diagnostic deadline.
 The maximum retained artifact count is fifteen, within the runner's sixteen-file bound.
 Whitespace and source-cap checks pass. Hosted compilation and runtime verification are still required.
+
+
+## Restore the original tablet video geometry — October 13
+
+A direct image comparison identifies a mismatch in the hosted reproduction.
+The original tablet overlap uses portrait video on a landscape display; both hosted tablet repetitions instead select landscape video.
+The original recovered caption crosses the gesture bar. The `4620c3dd` recovered landscape-video caption is visible above that bar.
+Neither recovered frame is the paused off/on/off comparison, so these observations do not resolve the paused-caption failure.
+
+The original image bytes verify against archive SHA-256 `c91f9022518a802e5ef5055ca67b0b11ec5053f4d3242c4dd0f57a649f9c694e`.
+The recovered image SHA-256 is `3a7ac17cb55f6d25df989694d0d1126f6fd0cef43c53c51e083559239cfc1f82`.
+Eleven playback, build, and fixture files are byte-identical between original revision `e9baa35a` and `a1341467`.
+Independent review confirms both tablet repetitions must use the portrait fixture to preserve this scenario.
+
+The runner now separates video orientation from display orientation.
+Both landscape-tablet repetitions select portrait video. Phone fixture choices and all display dimensions remain unchanged.
+Each case records its fixed synthetic title and the selected video, subtitle, and metadata hashes.
+The strict visible-caption prerequisite, pixel oracle, and after-resume diagnostic remain unchanged.
+Python source parsing, whitespace, and source caps pass; no local application runtime executes.
+Hosted run `38455346218` continues at `a1341467` before this fixture correction is submitted.

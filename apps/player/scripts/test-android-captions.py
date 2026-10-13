@@ -63,8 +63,13 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["displayDensities"] = {kind.decode().lower(): int(value) for kind,value in
             re.findall(rb"(Physical|Override) density: (\d+)", adb("shell", "wm", "density"))}
         case["stage"] = "seed"
+        # The original tablet overlap used portrait video on a landscape display.
+        case["videoOrientation"] = "landscape" if landscape and not tablet else "portrait"
+        case["fixtureTitle"] = "Native " + case["videoOrientation"] + " contrast 01a0f2ab"
+        case["fixtureSHA256"] = {suffix: sha(ROOT / "engineering/qa/2026-09-30-android-playback-overlay/fixtures" /
+            (case["fixtureTitle"] + suffix)) for suffix in (".mp4", ".en.srt", ".nfo")}
         seed = {"version": 1, "server": "http://10.0.2.2:39231", "token": token,
-                "title": "Native " + ("landscape" if landscape else "portrait") + " contrast 01a0f2ab",
+                "title": case["fixtureTitle"],
                 "capture": label, "landscape": landscape}
         adb("shell", "run-as", APP, "mkdir", "-p", "files")
         adb("shell", "run-as", APP, "tee", "files/video-overlay-seed.json",
