@@ -364,6 +364,7 @@ class LivePlaybackOverlayTest {
     @Test fun captionsReturnWhenSeekingBackFromAfterTheirFinalCue() =
         journey("caption-seek", "pending", startAt = 115.0, pauseOnStart = true) { json, _ ->
             val subtitleLoaded = java.util.concurrent.atomic.AtomicBoolean(false)
+            val firstFrameRendered = java.util.concurrent.atomic.AtomicBoolean(false)
             val listener = object : androidx.media3.exoplayer.analytics.AnalyticsListener {
                 override fun onLoadCompleted(
                     eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime,
@@ -372,6 +373,10 @@ class LivePlaybackOverlayTest {
                 ) {
                     if (info.uri.path?.startsWith("/subtitle/") == true) subtitleLoaded.set(true)
                 }
+                override fun onRenderedFirstFrame(
+                    eventTime: androidx.media3.exoplayer.analytics.AnalyticsListener.EventTime,
+                    output: Any, renderTimeMs: Long,
+                ) { firstFrameRendered.set(true) }
             }
             withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).addAnalyticsListener(listener) }
             // The bridge held both video and captions, so the listener cannot miss
@@ -379,10 +384,12 @@ class LivePlaybackOverlayTest {
             try {
                 setMedia(json, "ready")
                 compose.waitUntil(10_000) { subtitleLoaded.get() }
+                // Paused native controls dim the white frame. Observe actual decoder
+                // presentation instead of applying the playing-frame color threshold.
+                compose.waitUntil(30_000) { firstFrameRendered.get() }
             } finally {
                 withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).removeAnalyticsListener(listener) }
             }
-            awaitLightFrame()
             compose.waitUntil(10_000) { withPlayer {
                 playbackState == androidx.media3.common.Player.STATE_READY && currentPosition >= 114_000 &&
                     currentTracks.isTypeSelected(androidx.media3.common.C.TRACK_TYPE_TEXT)

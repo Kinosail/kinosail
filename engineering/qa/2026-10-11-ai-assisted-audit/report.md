@@ -3864,3 +3864,29 @@ The original final ownership, privacy, media, restart, and cleanup requirements 
 Receipts now retain bounded terminal-event counts before restart and after shutdown, without messages, IDs, or URLs.
 Live polling ignores unfinished log lines; final inspection preserves the original strict JSON parsing.
 This repairs the fixture prerequisite. It does not claim the unavailable failed process log proved that race caused this occurrence.
+
+## Caption restoration and landscape overlap — October 13
+
+Hosted revision `e07a45584569f8f3968eab7b8856d94c0468e308` restores captions in all four positive off/on/off cases.
+Each retains one selected text track and one cue after enabling captions while paused.
+Independent compositor comparisons find 117,424 caption pixels on portrait phone, 83,799 in each tablet repetition, and 37,961 on landscape phone.
+This establishes the duration repair's counterfactual against the preceding four zero-cue, zero-pixel cases.
+
+Artifact `11848318417` has SHA-256 `cd5dcfedf0e95e0ba6945230448c6780dfc18222c68ba72ca67494f8863876c2`.
+Eight source pins, six fixture pins, and 52 artifact hashes verify against unchanged source.
+All expected tests are selected without skips or instrumentation timeouts. The Server, bridge, and emulator settle.
+The Apple job passes at this revision; earlier intermittent Apple failures remain unresolved.
+
+The restored captions expose the original layout defect.
+Both landscape tablets paint 44,102 caption pixels inside the bottom system navigation area; landscape phone paints 30,135.
+Portrait phone paints none there. All protected areas remain stable across their off frames.
+The next remedy pads only the native caption canvas using current system-bar and display-cutout insets.
+Insets refresh on attachment and system changes. Video sizing, track selection, and controls keep their existing behavior.
+The same failing compositor oracle remains the acceptance test.
+
+The late-seek test fails before seeking because its playing-frame color check sees the paused controller's gray scrim.
+Its retained screenshot shows paused playback at 1:55 of 2:00 after the required subtitle load completed.
+The next test revision instead requires the public decoder's first-rendered-frame event before the same readiness and backward-seek assertions.
+The event listener is attached before releasing held media and removed in `finally`.
+The negative control fails earlier while awaiting the initial Speed control; it does not prove its intended rejection in this run.
+Hosted verification of caption placement, the late-seek case, and the negative control remains pending.
