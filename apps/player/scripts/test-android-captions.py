@@ -58,6 +58,10 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         adb("shell", "wm", "user-rotation", "lock", "1" if landscape else "0")
         expected_size = (2560, 1600) if tablet else ((2400, 1080) if landscape else (1080, 2400))
         case["expectedScreenshotSize"] = list(expected_size)
+        case["displaySizes"] = {kind.decode().lower(): [int(width), int(height)] for kind,width,height in
+            re.findall(rb"(Physical|Override) size: (\d+)x(\d+)", adb("shell", "wm", "size"))}
+        case["displayDensities"] = {kind.decode().lower(): int(value) for kind,value in
+            re.findall(rb"(Physical|Override) density: (\d+)", adb("shell", "wm", "density"))}
         case["stage"] = "seed"
         seed = {"version": 1, "server": "http://10.0.2.2:39231", "token": token,
                 "title": "Native " + ("landscape" if landscape else "portrait") + " contrast 01a0f2ab",
@@ -87,6 +91,12 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["selectedExpectedTests"] = set(re.findall(rb"(?m)^INSTRUMENTATION_STATUS: numtests=(\d+)\r?$", log)) == {str(case["expectedTests"]).encode()}
         case["junitPassed"] = ("OK (" + str(case["expectedTests"]) + (" test)" if negative else " tests)")).encode() in log and b"FAILURES!!!" not in log
         case["ignored"] = b"INSTRUMENTATION_STATUS_CODE: -3" in log or b"INSTRUMENTATION_STATUS_CODE: -4" in log
+        case["failureAssertions"] = [message for message in (
+            "Captions must visibly render in the paired screenshots",
+            "Caption pixels must not overlap the system navigation area",
+            "The system navigation area must be fully observed and stable") if message.encode() in log]
+        case["testSourceLines"] = sorted({int(line) for line in
+            re.findall(rb"LivePlaybackOverlayTest\.kt:(\d{1,5})\)", log)})[:32]
         case["stage"] = "collect"
         listing = adb("shell", "run-as", APP, "ls", "files/video-overlay").decode().splitlines()
         names = [name for name in listing if name.startswith(label + "-") and
@@ -95,6 +105,7 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         check(0 < len(names) <= 16, "caption_artifact_count")
         destination = safe / label
         destination.mkdir()
+        case["screenshotSizes"] = {}
         for name in names:
             data = adb("exec-out", "run-as", APP, "cat", "files/video-overlay/" + name)
             check(0 < len(data) <= 16 << 20, "caption_artifact_size")
@@ -102,7 +113,7 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
             (destination / name).write_bytes(data)
             if name.endswith(".png"):
                 check(data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR", "caption_png_invalid")
-                check(struct.unpack(">II", data[16:24]) == expected_size, "caption_screenshot_orientation_mismatch")
+                case["screenshotSizes"][name] = list(struct.unpack(">II", data[16:24]))
         metric = destination / (label + "-caption-safe-area.json")
         check(metric.exists() and metric.stat().st_size <= 4096, "caption_metric_missing")
         measure = json.loads(metric.read_text())
@@ -112,12 +123,13 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["stage"] = "verify"
         check(all(type(measure[k]) is int for k in keys - {"forcedCaptionsOffControl"}) and
               type(measure["forcedCaptionsOffControl"]) is bool, "caption_metric_types")
+        case["measurement"] = measure
+        check(all(size == list(expected_size) for size in case["screenshotSizes"].values()), "caption_screenshot_orientation_mismatch")
         check(0 < measure["width"] <= 4096 and 0 < measure["height"] <= 4096 and
               0 < measure["bottomInset"] < measure["height"] and
               measure["safeBottom"] == measure["height"] - measure["bottomInset"], "caption_metric_bounds")
         check((measure["width"], measure["height"]) == expected_size, "caption_metric_orientation_mismatch")
         check(not case["logTruncated"], "instrumentation_log_bound")
-        case["measurement"] = measure
         check(case["selectedExpectedTests"] and not case["ignored"], "caption_test_not_executed")
         check(measure["forcedCaptionsOffControl"] == negative, "caption_control_binding")
         check(measure["bottomInset"] > 0 and measure["unstableProtectedPixels"] == 0,
@@ -175,6 +187,12 @@ try:
     check(not any(re.match(r"\S+\s+(device|offline|unauthorized)$", line) for line in devices), "runner_device_already_present")
     manager = SDK / "cmdline-tools/latest/bin/avdmanager"
     command([str(manager), "create", "avd", "-n", "kinosail-caption", "-k", IMAGE], input=b"no\n", env=env)
+    configuration = avd / "kinosail-caption.avd/config.ini"
+    settings = dict(line.split("=", 1) for line in configuration.read_text().splitlines() if "=" in line)
+    # Set the hardware display before boot. wm overrides alone did not produce the requested captures.
+    settings.update({"hw.lcd.width": "1600", "hw.lcd.height": "2560", "hw.lcd.density": "320"})
+    configuration.write_text("".join(key + "=" + value + "\n" for key,value in sorted(settings.items())))
+    receipt["hardwareDisplay"] = {"width": 1600, "height": 2560, "density": 320, "configurationSHA256": sha(configuration)}
     emulator_tool = SDK / "emulator/emulator"
     receipt["emulatorVersion"] = command([str(emulator_tool), "-version"]).decode().splitlines()[0]
     receipt["image"] = IMAGE
@@ -201,7 +219,9 @@ try:
             ("phone-negative", False, False, True), ("phone-portrait", False, False, False),
             ("tablet-landscape-first", True, True, False), ("tablet-landscape-repeat", True, True, False),
             ("phone-landscape", True, False, False)):
-                receipt["cases"].append(capture_case(run, safe, token, label, landscape, tablet, negative))
+                case = capture_case(run, safe, token, label, landscape, tablet, negative)
+                receipt["cases"].append(case)
+                print(json.dumps({k:case[k] for k in ("name", "result", "stage", "failureClass") if k in case}), flush=True)
         finally:
             adb("shell", "am", "force-stop", APP, check=False)
     receipt["finalRevision"] = command(["git", "rev-parse", "HEAD"]).decode().strip()

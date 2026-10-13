@@ -3644,3 +3644,21 @@ Every rejected target must return 400 without reaching the peer. A folded upstre
 The real Go Server cannot emit that malformed header through the populated native journey, which justifies this isolated boundary check.
 These controls run only on the disposable hosted runner under the local runtime hold.
 Neither a clean scan nor a passing native result is yet claimed for the repaired bridge.
+
+
+## Hosted caption capture boundary — October 13
+
+Initial baseline `b2b35e151764a5ba3ade3fc4ff8c5f6fc55a95db` selected all thirteen test executions, without skips or instrumentation timeouts.
+Every case fails the screenshot-dimension guard. Phone portrait captures are 1080 by 1920, and landscape captures are 1920 by 1080.
+Both tablet captures are 1920 by 1600. Requested dimensions were 1080 by 2400 and 2560 by 1600.
+The collector stopped at the first mismatch, so positive caption metrics and paired frames were not uploaded.
+The negative metric records zero caption pixels, but its missing paired frames prevent independent confirmation.
+All Server, bridge, and emulator owners settle; exact source remains unchanged.
+Artifact `11840216225` has SHA-256 `19cc62c47c4cb92b9436c5bc0a8fc7fae50d611637c395661a41b75fe118bac6`.
+Four source pins, six fixture pins, and six retained artifact hashes verify.
+This is failed harness evidence, not a reproduced product caption result.
+
+The next runner sets the owned AVD hardware resolution before boot and records actual `wm` size and density values.
+It retains all safe files before validating dimensions, keeps typed caption metrics on failure, and reports fixed assertion names and source-line numbers.
+Requested geometry, selected-test counts, visibility, stability, and zero-overlap assertions remain unchanged.
+No production playback layout has changed.
