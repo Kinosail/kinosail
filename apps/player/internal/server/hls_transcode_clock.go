@@ -17,6 +17,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/mediaprobe"
 	"github.com/MikeO7/kinosail/packages/playback"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 const transcodeHLSClockMarker = "#KINOSAIL-TRANSCODE-REFILL:"
@@ -65,6 +66,11 @@ func (manager *hlsManager) writeTranscodeHLSClock(ctx context.Context, item libr
 	if options.Accelerator != "none" || options.Encoder != "libx264" {
 		return errTranscodeHLSClock
 	}
+	release, err := manager.workloads.Acquire(ctx, workload.Background)
+	if err != nil {
+		return err
+	}
+	defer release()
 	source, err := manager.transcodeAudioSourceClock(ctx, item, recipe)
 	if err != nil {
 		return err
