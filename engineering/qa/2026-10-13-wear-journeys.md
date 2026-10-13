@@ -212,3 +212,31 @@ Each observation waits at most 500 milliseconds and reports a fixed timeout or f
 It retains at most two matching Activities per fixed lifecycle stage, without object identities or arbitrary class names.
 The monitor may release old Activities; an empty observation does not prove that an Activity never existed.
 No lifecycle listener, Activity reference, production seam, assertion relaxation, or added retry is introduced.
+
+## Lifecycle evidence narrows the displaced Activity
+
+At `fec8cfa7a298cd095072e985d546187b750f6ba7`, both complete profiles still fail, with two successful tests and one failure each.
+The small-watch Activity is resumed without focus before the foreground wait, then stopped without finishing or destruction at capture.
+Its screenshot shows the system watch face. This identifies Activity displacement, rather than destruction, in that run.
+The large-watch launch and recreation pass with resumed, focused Activities and the expected disconnected app screenshots.
+Its disconnected component test fails at the Compose query instead.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11859052868` | `51bc068597e97b0203b8ac77f41d72e342953879a42f82142afb3ee068191fe0` |
+| Large round | `11859980959` | `e195f8a05ba7ef9d2a246fc38c7f30c08781f5d825e788e506e364b49e275f1b` |
+
+Each artifact verifies sixteen source pins, seven child hashes, and complete cleanup.
+The successful actual journey does not establish a repair: the change only added observations, and the complete profile fails.
+
+The next diagnostic shares the bounded observer across the fixture and actual Activities.
+It adds only interactive, keyguard-locked, and device-locked Booleans, without changing power or lock state.
+Component failures retain this observation and a compositor image before the test rule closes the Activity.
+The original exception remains the test failure; evidence errors become suppressed exceptions.
+A fixed `missing-compose-root` signal identifies the known Compose exception without exposing its raw message.
+The runner, inspector, and assertions continue to reject failed tests and incomplete evidence.
+
+[Wear power-state documentation](https://developer.android.com/training/wearables/always-on) describes inactivity transitions that can return to the watch face.
+This is a hypothesis for the observed displacement, not a confirmed cause.
+The [interactive-state API](https://developer.android.com/reference/android/os/PowerManager#isInteractive()) and
+[lock-state API](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceLocked()) distinguish device state without taking a wake lock or dismissing the keyguard.

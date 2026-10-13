@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 class WearAccessibilityTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
-    @Test fun changingRemoteStatusCanBeAnnounced() {
+    @Test fun changingRemoteStatusCanBeAnnounced() = retainingEvidence("heart-permission") {
         val remote = WearRemoteSession(InstrumentationRegistry.getInstrumentation().targetContext)
         compose.setContent {
             WatchApp(remote, null, "Allow heart rate access to make a graph.", {}, {}, {})
@@ -38,25 +38,50 @@ class WearAccessibilityTest {
             compose.enableAccessibilityChecks()
             compose.onRoot().tryPerformAccessibilityChecks()
         }
-        capture("heart-permission")
     }
 
-    @Test fun disconnectedStateCanBeAnnounced() {
+    @Test fun disconnectedStateCanBeAnnounced() = retainingEvidence("unpaired") {
         val remote = WearRemoteSession(InstrumentationRegistry.getInstrumentation().targetContext)
         compose.setContent { WatchApp(remote, null, null, {}, {}, {}) }
         compose.waitUntil(10_000) { compose.onAllNodesWithText("Connect phone").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Connect phone")
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
-        capture("unpaired")
     }
 
-    private fun capture(name: String) {
+    private fun retainingEvidence(name: String, action: () -> Unit) {
+        val before = wearActivityObservation(ComponentActivity::class.java)
+        try {
+            action()
+            capture(name, before)
+        } catch (failure: Throwable) {
+            runCatching {
+                val directory = observe(name, before)
+                val image = requireNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+                try {
+                    File(directory, "wear-$name.png").outputStream().use {
+                        check(image.compress(Bitmap.CompressFormat.PNG, 100, it))
+                    }
+                } finally { image.recycle() }
+            }.onFailure(failure::addSuppressed)
+            throw failure
+        }
+    }
+
+    private fun observe(name: String, before: String): File {
+        val directory = File(InstrumentationRegistry.getInstrumentation().targetContext.filesDir, "parity-evidence")
+            .apply { mkdirs() }
+        File(directory, "wear-$name-semantics.txt").writeText(
+            "activityBefore=$before\nactivityAtCapture=${wearActivityObservation(ComponentActivity::class.java)}\n")
+        return directory
+    }
+
+    private fun capture(name: String, before: String) {
+        val directory = observe(name, before)
         compose.waitForIdle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.waitForIdleSync()
         Thread.sleep(300)
-        val directory = File(instrumentation.targetContext.filesDir, "parity-evidence").apply { mkdirs() }
-        File(directory, "wear-$name-semantics.txt").writeText(compose.onRoot().printToString())
+        File(directory, "wear-$name-semantics.txt").appendText(compose.onRoot().printToString())
         val bitmap = compose.onRoot().captureToImage().asAndroidBitmap()
         File(directory, "wear-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
         bitmap.recycle()

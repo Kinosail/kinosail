@@ -111,6 +111,7 @@ def run_case(safe, run, label, size, density):
         case["logTruncated"] = len(log) > 4 << 20
         signals = {"assertion": b"java.lang.AssertionError", "illegal-state": b"java.lang.IllegalStateException",
                    "security": b"java.lang.SecurityException", "compose-timeout": b"ComposeTimeoutException",
+                   "missing-compose-root": b"No compose hierarchies found in the app.",
                    "process-crashed": b"INSTRUMENTATION_RESULT: shortMsg=Process crashed."}
         case["failureSignals"] = [name for name, marker in signals.items() if marker in log]
         case["failureLocations"] = sorted({file.decode() + ":" + line.decode() for file, line in re.findall(

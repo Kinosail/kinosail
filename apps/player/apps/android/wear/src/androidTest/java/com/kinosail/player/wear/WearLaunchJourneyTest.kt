@@ -2,8 +2,6 @@ package com.kinosail.player.wear
 
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
@@ -20,12 +18,7 @@ import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
 import java.io.File
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -48,30 +41,12 @@ class WearLaunchJourneyTest {
         var stage = "launch-unpaired"
         var phase = "launch"
         var activityBefore = "unavailable"
-        fun activityObservation(): String {
-            val observation = AtomicReference("unavailable")
-            val done = CountDownLatch(1)
-            Handler(Looper.getMainLooper()).post {
-                try {
-                    val monitor = ActivityLifecycleMonitorRegistry.getInstance()
-                    val rows = Stage.values().flatMap { lifecycle ->
-                        monitor.getActivitiesInStage(lifecycle).filterIsInstance<WearActivity>().take(2).map {
-                            "${lifecycle.name}:focus=${it.hasWindowFocus()},finishing=${it.isFinishing}," +
-                                "destroyed=${it.isDestroyed},changing=${it.isChangingConfigurations}"
-                        }
-                    }
-                    observation.set(rows.joinToString("|").ifEmpty { "none" })
-                } catch (_: Exception) { observation.set("failed") }
-                finally { done.countDown() }
-            }
-            return if (done.await(500, TimeUnit.MILLISECONDS)) observation.get() else "timeout"
-        }
         fun capture(stage: String) {
             val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
             val failures = mutableListOf<Throwable>()
             runCatching {
                 val semantics = File(directory, "wear-$stage-semantics.txt")
-                val observations = "phase=$phase\nactivityBefore=$activityBefore\nactivityAtCapture=${activityObservation()}\n"
+                val observations = "phase=$phase\nactivityBefore=$activityBefore\nactivityAtCapture=${wearActivityObservation(WearActivity::class.java)}\n"
                 semantics.writeText(observations)
                 val foreground = foregroundIsApp()
                 semantics.writeText("activeWindowIsApp=$foreground\n$observations")
@@ -97,7 +72,7 @@ class WearLaunchJourneyTest {
         }
         retainingFailure { ActivityScenario.launch(WearActivity::class.java) }.use { scenario ->
             retainingFailure {
-                activityBefore = activityObservation()
+                activityBefore = wearActivityObservation(WearActivity::class.java)
                 phase = "accessibility-setup"
                 compose.enableAccessibilityChecks()
                 fun verifyAndCapture() {
