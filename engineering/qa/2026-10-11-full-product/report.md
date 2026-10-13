@@ -42,7 +42,7 @@ Passing executions are evidence for named contracts, not a completeness score.
 | Apple | iPhone/iPad touch, TV focus/remote, Watch relay, lifecycle, accessibility | Hosted iOS 332 and tvOS 313 pass; Watch renders and pending transport checked; actual relay, VoiceOver, larger text and physical acceptance remain |
 | Android | Phone/tablet/TV/Wear, lifecycle, input, accessibility, supported media | API23/30/36 emulator and Wear boundaries recorded; original API36 EPUB tests remain intermittent; physical acceptance remains |
 | Quality and security | Go tests/races/coverage, lint, metrics, supply chain, workflow contracts | Deep Go race/coverage passes at `6fe7a7b9` (89.5%); local lint debt and hosted WebKit playback failures remain open; HLS reconciliation needs fresh hosted checks |
-| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Last verified: Player `a2d5f2b1` publication, scanned Nox image, health and private-network TLS; Subtitles `6f41117d`; current-main promotion and rollout need fresh proof |
+| Containers and release | Both apps and architectures, scan, installer, publication, deployment, TLS | Both apps at `47f250c4`: hosted promotion, separate scanned Nox ARM images, healthy containers and private-network TLS; authenticated and physical acceptance remain |
 
 ## Iteration 1 results
 
@@ -2516,7 +2516,101 @@ It passes initial loading, renderer recovery and chapter navigation, then reprod
 The missing-accessibility screenshot visibly contains Harbor lights. No System UI ANR is reported.
 The full journey fails; it is not counted as a passing final-APK confirmation.
 Its instrumentation log SHA-256 is `d8e56d4e04e3466c174be36611565898f3ecbe7a338b2eaf55bec3cda094bb4c`.
-Both task-installed packages are removed and the font setting is restored. Independent cleanup verification remains required.
+Both task-installed packages are removed and the font setting is restored.
+A separate cold boot confirms font scale 1.0, both packages absent and emulator shutdown.
+The first cleanup audit checks ADB disconnection too early and fails that observation.
+A separate audit waits up to ten seconds for ADB to observe shutdown and passes.
+Its run log SHA-256 is `d65d0e3108ae2fd76413a46340d8febfccf736d78df8b22b6406d9e083f843a9`.
+Neither audit launches the app, changes settings or saves an emulator snapshot.
+The reader accessibility failure remains retained.
+
+The hosted layout receipts for `659046b8` retain every selected case without source drift.
+Chromium passes 95 Player cases and 111 Subtitles cases, with 11 and 26 flows respectively.
+Firefox and WebKit each pass 40 Player cases and 46 Subtitles cases, with the same flow counts.
+Their fixture suites retain platform-specific skips separately from these populated measurements.
+The Chromium artifact SHA-256 is `bb258677879920ef47959ac4130652797e610eb5feb106d70ca4a253f73ba4b3`.
+The Firefox artifact SHA-256 is `7c80bef31c682b85d38337a3f1c9eb56f581cb5efe5ccb432b6b5ecb9f0602d2`.
+The WebKit artifact SHA-256 is `bc4f7b25bc31990a16d2d9bf23740dd9174226a441e7bb8fc0f2274d5c688f51`.
+All three record CLI SHA-256 `09076f6796f4f3be319be6d92d5d7fd3e7aa419ae09dbe58a8b7267d4fe3ca41`.
+These hosted source receipts precede the fixture-only correction at `b0de9685`.
+
+## QA-031 — Cold-resume verification snapshots an unfinished producer
+
+Deep main run `38336225457` fails the prepared-timeline lookback control.
+The missing fragment recovers with identical bytes, frames and timestamps.
+Only the master playlist changes after the test records its metadata hashes.
+The original encoder intentionally finalizes measured bandwidth when it finishes.
+Waiting for probe wrappers alone does not wait for that publication.
+
+A two-second delay after real encoder output reproduces this ordering failure.
+The red receipt observes an unfinished original producer before the snapshot,
+then a completed producer and changed master bandwidth after recovery.
+Its receipt SHA-256 is `bd39dd1fde759db013b5b4e48183d4ae0f120ed0f56ad775855816124386818d`.
+The retained lookback fault now includes this bounded completion delay.
+The test waits for original encoder completion before recording immutable hashes.
+It preserves fragment, frame, timestamp, source, metadata and logging checks.
+Application publication behavior and recovery deadlines do not change.
+
+The controlled lookback replay passes. The complete local suite passes all
+19 cases and 18 recoveries against an authenticated real Server and synthetic media.
+Every case verifies settled processes, correlated logs and absence of its token.
+The intentional source-change case remains the only changed source.
+The complete receipt SHA-256 is `05f43ddb31a579491399b6f530b85376c9092dbcfaebdc19bcd9666ff6f32504`.
+The run log SHA-256 is `ca960dfa2d8604a6ef911e5e5c429e6e4468c3772d3e6501d6cc251b113d9c6f`.
+This is macOS ARM64 server proof. Hosted Linux, browser and device proof remain separate.
+
+## QA-032 — Missing deployment scanners fail late without a useful message
+
+A real deployment builds its ARM image, then exits because the default PATH
+does not contain Trivy or Syft. Nox remains unchanged during this failed attempt.
+The host already has actual scanner binaries in the task's private tool folder.
+
+Both CLI failure models and failing regressions precede the repair.
+The deployment command now checks scanners before archiving or building an image.
+The standalone scan command checks before creating evidence or running either tool.
+Both return exit 127 with one bounded warning naming the missing scanner.
+They log no host, URL, credential or PATH value.
+An already healthy deployment still succeeds without rebuilding or requiring scanners.
+
+The retained CLI controls execute real shell entry points with explicit tool stand-ins.
+They prove both missing-tool failures cause no build, upload or deployment side effects.
+The standalone controls also prove no scanner runs and no evidence directory appears.
+Populated application E2E does not exercise host executable discovery.
+Both regressions, shellcheck and the complete local tooling command pass.
+The tooling log SHA-256 is `1f17cbdba843657341ab77640fd958fe2afb1da1a7cf9a9a6a15a6e7b59e3a35`.
+
+## Main `47f250c4` publication and Nox verification
+
+PR #579 merges at `7131f22a`; PR #588 merges at `47f250c4`.
+Fetched ancestry checks prove both reviewed task commits are in remote main.
+Main CI `38340092170` succeeds and promotes both apps for the exact revision
+`47f250c46f9d3118942804727e140a6bb9f8fb01`.
+Independent registry reads verify both manifest digests and AMD64/ARM64 entries:
+
+- Player: `sha256:c584af225770c5de89319ec72a8eff680a4a41999c73523efd7d0044444e0e99`.
+- Subtitles: `sha256:6c469075c2a112caab137f308921cfa698c7d2d15f0b3607ecccbd61f17a4032`.
+
+Using the actual local scanner binaries, both exact-revision Nox deployments pass.
+Separate local ARM images pass scans with zero fixable HIGH or CRITICAL findings.
+Player's local image is `sha256:0ef2ea36e2cb84b4ad6d0c29b8519f7ec84e8c21ab6a74bf4bfeb5b253662e46`.
+Subtitles' local image is `sha256:c659dc3cb39e07a1cbbeb5d3b67ddeffb5b04258d2667282d2256ffd024a9ab5`.
+These image IDs are distinct from the published registry manifest digests.
+Independent inspection at 04:49 UTC confirms both exact-revision containers
+are running and healthy, with zero restarts. Existing rollback images remain retained.
+The local save watcher remains unchanged.
+
+Anonymous HTTPS checks require normal CA and hostname validation and TLS 1.3.
+They observe root redirect 303, health 200, settings page 404 and settings API 403.
+CSP is present; HSTS is absent on this private-network endpoint.
+These checks establish transport and anonymous access behavior only.
+Authenticated production journeys, public gateway and physical acceptance remain open.
+Private `nox-main47-*` and `ghcr-main47-*` receipts retain scan and transport hashes.
+
+PR #589 merges through the four protected checks and all three layout jobs.
+Fetched ancestry proves reviewed head `ce55f771a81c8106252f34735587afce92ad57e8`
+is included in remote main `3b9fb3c595b83b556ddbf2767d2443227bfbab7f`.
+Final-head deep run `38349207874` remains in progress. Its result is separate
+from required PR checks, prior local native tests and the deployed main47 snapshot.
 
 ## QA-033 — A concurrent preference save strands an opening native reader
 
@@ -2573,3 +2667,44 @@ test helpers. The cap then passes. The focused owner suite again selects and
 passes all eight tests, with zero skips. Production source is byte-identical
 to both complete native runs; those runs precede only this test-file split.
 The split confirmation log SHA-256 is `fc2ca2f972d72e709da5b9e0a023ac027f850f190a90ed749e1a1132a8e86bcf`.
+
+## QA-034 — Nox adapter fixture omits the new scanner prerequisites
+
+PR #590's hosted Player and Subtitles installer jobs fail the shared Nox adapter
+fixture. Each fixture expects an unhealthy or exited target to reach its deliberate
+image-build failure. It supplies no scanner executables, so the correct new
+preflight rejects before the existing build assertion. The verification-plan test
+is not the failing Makefile step. Its separate ignored-fixture control is excluded
+from this diagnosis, and its exploratory diagnostic edits are removed before commit.
+
+Both adapter cases reproduce locally at exact head `840a2a55`, before fixture edits.
+Their red log SHA-256 values are
+`f5d2b7d05c4ae8a60060af4ca03d3d84f4c92de44bd573f52b51cd178254e62d` and
+`01781a7a24b9265b57db092a91ec9fef9de7e5dc9995fd3a62041034e724f7e4`.
+The fixture now supplies explicit Trivy and Syft stand-ins. Neither runs because
+the fixture deliberately fails its image build. All existing unhealthy-state,
+no-rebuild, watcher and adapter assertions remain unchanged.
+
+Both complete app local-pipeline test commands pass afterward. The shared
+missing-scanner regression also passes, preserving rejection before side effects.
+Focused shellcheck passes. This corrects test prerequisites; actual deployment
+scanner discovery, vulnerability policy and image promotion checks do not change.
+Fresh hosted checks remain required before integration.
+
+PR #591 merges through all four protected checks. A fetched ancestry check proves
+reviewed head `64e9db012ef1eff4f77782415fc73aee3a6c6648` is included in remote
+main `a1c7a1dc8396be32ac66851f098f2f23a8018c6a`. Main3b9 CI `38349891258`
+separately succeeds and promotes Player; this does not update the Nox47 evidence.
+
+A separate plain native audio control uses the exact 384044-byte fictional WAV
+from the hosted queue failure. Its requested 4800-byte tail matches that full file.
+Natural playback, three 150ms tail seeks and three two-second tail seeks all pass
+in macOS ARM64 and Linux ARM64 WebKit 26.6, using pinned Playwright 1.63.0.
+Every case reaches the actual native ended state and 12-second clock.
+Server receipts independently verify all returned WAV byte ranges and hashes.
+The macOS results SHA-256 is `0a198b0b9ccd1f2dc349de896bbb93cdc81637860141a6be0ec2718b95c9abb1`.
+The Linux results SHA-256 is `b2de5a5964af7a386500b0acad63ca0b91fd086d9f20357676f700240a96d7c4`.
+Both the owned Server and container are confirmed stopped or removed.
+An earlier missing-module setup attempt executes no media cases and is excluded.
+These controls contain no Player code, authentication or queue preload. They do
+not clear the hosted x64 populated queue failure or identify its root cause.
