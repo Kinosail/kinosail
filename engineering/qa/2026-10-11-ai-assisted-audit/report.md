@@ -26,11 +26,11 @@ The chronological sections below retain earlier failures, repairs, and exact art
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
-| Transcoded HLS recovery | Five public fixtures, nine rendition comparisons, four legacy rebuilds, and staged rejection pass at `657e2ca2`. The full race matrix, shortened-AAC rejection, and 89.2% coverage pass at `07db0b07`. | Current required gates and physical playback. |
+| Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage, including staged-clock and shortened-AAC rejection. | Current required gates and physical playback. |
 | Copied AC3 playback | Deep run `38417668707` at `08d0da84` rejects `segment-00003.m4s` after a 12.7-second resume. The diagnostic revision passes the full Player race suite at `a02a4227`. | The earlier failure remains unconfirmed; retain bounded observations on recurrence. |
 | Browser session return | Required session return passes across the three Player engines. Chromium's repaired trace assertion passes at `ea644e55`. Firefox worker controls pass at `2e4feeee`; the WebKit return gesture passes at `08718f47`. | Current gates and the earlier WebKit touch-dispatch stall. |
 | Entropy failures | Hosted race passes at `07db0b07`. All three entropy-failure paths retain covered counters in the merged profile. | Current required gates. |
-| Apple native contracts | At `a1197ae4`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
+| Apple native contracts | At `08d0da84`, Xcode records 336 iOS passes, 320 tvOS passes, one skip each, and all twelve reader outcomes. Earlier scrub, hero, and reader failures remain under investigation. | Current timing and image diagnostics, reader post-timeout observation, and physical-device proof remain open. |
 | Android | Earlier populated phone, tablet, and TV results and exact limits are recorded below. | Caption overlap, intermittent EPUB accessibility, and Wear execution. |
 | Subtitles copied suffix | The paced `17185e27` journey confirms a four-fragment VOD truncated a five-fragment output. The repaired paced journey, all eight clock cases, eleven plan cases, and five completion cases pass at `5df3c236`. | Current required gates and longer copied windows remain open. |
 | Publication and deployment | Earlier merged fixes have separate main and container receipts below. | PR 587 merge, current publication, deployment, and physical playback proof. |
@@ -3402,3 +3402,23 @@ The `08d0da84` native artifact `11827240271` verifies 336 iOS passes, 320 tvOS p
 Its archive SHA-256 is `d9e26e156b7330bedd3fcfe84d533e6a8241921a227896b3f16bca5bad4fe335`.
 Its structured reader details hash is `f61a8ed9f607791f261596c1a1dc0389430fc2028a675f41787694b53bc66c41`.
 Earlier native intermittents and physical-device proof remain open.
+
+
+## Final diagnostic architecture and browser receipts — October 13
+
+[Q09 run 38424171469](https://github.com/Kinosail/kinosail/actions/runs/38424171469) passes at `94f80249`.
+Artifact `11827468176` verifies all three safe-file hashes and exact-revision metadata.
+Its archive SHA-256 is `67fc454ee644529a343c69a0028ca5a9dc31d09e86ffc81859caf85f89e57585`.
+All sixty cases pass without retries; each owned process group settles.
+The case boundary is twelve isolated controls, 47 mixed Server-group controls, and one populated phone case.
+The Server group includes nine real Server cases and 38 isolated controls.
+Source-only reproduction updates the canonical Player architecture snapshot; Subtitles output is unchanged.
+
+The final `08d0da84` Chromium artifacts also verify.
+Player artifact `11827337854` verifies 538 checksums and all report outcomes.
+Its main report has 722 passed and 357 skipped cases; focused reports remain separate and can overlap.
+Subtitles artifact `11825897103` verifies 198 checksums and 99 passed cases without skips.
+Both have zero failures and zero flaky outcomes.
+Chromium, Firefox, and WebKit browser artifacts now all verify for this revision.
+The enclosing deep workflow remains failed because its copied-AC3 fragment rejection was retained.
+The later complete Player race pass establishes recovery-suite success, not a repair for that intermittent rejection.
