@@ -191,3 +191,24 @@ Only success Booleans and elapsed time enter the receipt.
 This establishes Home launch completion; it cannot guarantee a later system transition will not replace the app.
 Instrumentation assertions, deadlines, and UiAutomation flags remain unchanged.
 If failures persist, the next observation should capture bounded Activity lifecycle and window-focus state at the original failure.
+
+## Home launch completed; foreground failure persists
+
+Both profiles at `056ffc0fc419ea9adecf4eca7ba99dc96fe55be8` completed Home launch, in 0.046 and 0.053 seconds respectively.
+Both still fail the original foreground wait, record two successful tests and one failure, and clean up completely.
+Both capture headers record false foreground ownership and `phase=foreground`; both compositor images show the watch face.
+This rejects Home launch completion as a sufficient repair.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11858539003` | `655084e01dff23cddec66223b2ac1f373851df722fb743a12aa54cfadc142e33` |
+| Large round | `11858279156` | `21ff988acc572c48bb093bc3ef6d4de654b76d8b0e432339fcdeae422286c9c0` |
+
+Each artifact verifies sixteen source pins and seven retained child hashes.
+The next diagnostic records lifecycle stages and focus, finishing, destroyed, and configuration-change Booleans for `WearActivity`.
+It observes once after launch, before accessibility setup, and again at capture before the Compose tree read.
+Queries run on the main thread, as required by Android's [ActivityLifecycleMonitor contract](https://developer.android.com/reference/androidx/test/runner/lifecycle/ActivityLifecycleMonitor).
+Each observation waits at most 500 milliseconds and reports a fixed timeout or failure marker if unavailable.
+It retains at most two matching Activities per fixed lifecycle stage, without object identities or arbitrary class names.
+The monitor may release old Activities; an empty observation does not prove that an Activity never existed.
+No lifecycle listener, Activity reference, production seam, assertion relaxation, or added retry is introduced.
