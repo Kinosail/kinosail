@@ -99,7 +99,10 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["failureAssertions"] = [message for message in (
             "Captions must visibly render in the paired screenshots",
             "Caption pixels must not overlap the system navigation area",
-            "The system navigation area must be fully observed and stable") if message.encode() in log]
+            "The system navigation area must be fully observed and stable",
+            "Operator-owned media fixture accepted") if message.encode() in log]
+        case["fixtureFailureStatuses"] = [int(status) for status in re.findall(
+            rb"Operator-owned media fixture accepted expected:<204> but was:<([1-5][0-9]{2})>", log)[:8]]
         case["testSourceLines"] = sorted({int(line) for line in
             re.findall(rb"LivePlaybackOverlayTest\.kt:(\d{1,5})\)", log)})[:32]
         case["stage"] = "collect"
@@ -123,11 +126,28 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         check(metric.exists() and metric.stat().st_size <= 4096, "caption_metric_missing")
         measure = json.loads(metric.read_text())
         keys = {"bottomInset", "safeBottom", "width", "height", "captionPixels", "protectedCaptionPixels",
-                "unstableProtectedPixels", "lowestCaptionPixel", "forcedCaptionsOffControl"}
+                "unstableProtectedPixels", "lowestCaptionPixel", "forcedCaptionsOffControl", "playbackObservations"}
         check(set(measure) == keys, "caption_metric_shape")
         case["stage"] = "verify"
-        check(all(type(measure[k]) is int for k in keys - {"forcedCaptionsOffControl"}) and
+        check(all(type(measure[k]) is int for k in keys - {"forcedCaptionsOffControl", "playbackObservations"}) and
               type(measure["forcedCaptionsOffControl"]) is bool, "caption_metric_types")
+        observations = measure["playbackObservations"]
+        check(type(observations) is list and len(observations) <= 4, "caption_observation_count")
+        stages = set()
+        values = {"positionMs", "state", "playing", "playWhenReady", "cueCount", "selectedTextTracks"}
+        for row in observations:
+            check(type(row) is dict and set(row) == values | {"stage", "available"}, "caption_observation_shape")
+            check(type(row["stage"]) is str and row["stage"] in {"initial-playing", "paused", "enabled", "after-resume"}
+                  and row["stage"] not in stages and type(row["available"]) is bool, "caption_observation_stage")
+            stages.add(row["stage"])
+            if not row["available"]:
+                check(all(row[key] is None for key in values), "caption_observation_unavailable")
+                continue
+            check(type(row["state"]) is int and 1 <= row["state"] <= 4 and
+                  all(type(row[key]) is bool for key in ("playing", "playWhenReady")), "caption_observation_state")
+            for key, maximum in (("positionMs", 3_600_000), ("cueCount", 256), ("selectedTextTracks", 256)):
+                check(row[key] is None or type(row[key]) is int and 0 <= row[key] <= maximum,
+                      "caption_observation_bounds")
         case["measurement"] = measure
         check(all(size == list(expected_size) for size in case["screenshotSizes"].values()), "caption_screenshot_orientation_mismatch")
         check(0 < measure["width"] <= 4096 and 0 < measure["height"] <= 4096 and

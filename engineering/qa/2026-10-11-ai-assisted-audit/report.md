@@ -31,8 +31,8 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
 | Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
-| Apple native contracts | At `4620c3dd`, Xcode records 336 iOS passes, 320 tvOS passes, and one skip each. The reader-save journey passes in 5.60 seconds. | The earlier reader-save timeout and intermittent scrub and hero failures remain open; physical-device proof remains separate. |
-| Android | At `4620c3dd`, all retained frames have correct dimensions. Three complete comparisons independently confirm zero visible caption pixels. All ten bridge controls pass. | Cue-delivery diagnosis, missing negative-control and phone-landscape evidence, caption placement, intermittent EPUB accessibility, and Wear execution. |
+| Apple native contracts | At `a1341467`, Xcode records 336 iOS passes, 319 tvOS passes, one tvOS failure, and one skip each. | The tvOS endpoint-scrub prerequisite fails before the clock assertion. Reader and hero intermittency and physical-device proof remain open. |
+| Android | At `a1341467`, the negative control passes. All four enabled cases have zero caption pixels, including after resuming. All ten bridge controls pass. | Diagnose caption delivery, Search navigation, and one fixture-control rejection. Reproduce portrait video on landscape tablets; EPUB accessibility and Wear execution remain open. |
 | Subtitles copied suffix | PR #592 verifies thirty receipts. Four long resumed windows preserve all sixty fragments and 6,199 expected frames. Both index-failure controls pass. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
@@ -3759,3 +3759,38 @@ Each case records its fixed synthetic title and the selected video, subtitle, an
 The strict visible-caption prerequisite, pixel oracle, and after-resume diagnostic remain unchanged.
 Python source parsing, whitespace, and source caps pass; no local application runtime executes.
 Hosted run `38455346218` continues at `a1341467` before this fixture correction is submitted.
+
+
+## Caption and endpoint diagnostics after a1341467 — October 13
+
+[Hosted run 38455346218](https://github.com/Kinosail/kinosail/actions/runs/38455346218) completes Android compilation but fails native runtime acceptance.
+Artifact `11845305386` has SHA-256 `c2e72df6d02d68c8549e7905051e60019737263d2eddef68f86041de0ca50f43`.
+Five source pins, six fixture pins, and all 51 artifact hashes verify independently.
+Every expected test is selected, without skips or instrumentation timeouts. The Server, bridge, and emulator settle.
+The captions-off negative control now reaches the intended visible-caption rejection and passes its control contract.
+All four positive cases retain complete off/on/off frames with zero caption pixels.
+Independent comparisons also find zero lower-half changed pixels in all four after-resume frames.
+These results rule out the tested short rendering delay; they do not identify the missing-cue cause.
+
+The phone-landscape loaded journey fails at the detail prerequisite. Its failure image still shows Search covered by the keyboard.
+The next revision submits the public IME Search action, verifies the keyboard is hidden, and requires the displayed exact result before selecting it.
+The existing Play or Resume prerequisite remains unchanged.
+A tablet recovery journey fails at the fixture-control response assertion before activity launch.
+The runner now retains only its bounded numeric HTTP status and fixed assertion name for diagnosis.
+
+The next caption trial records four bounded snapshots from public Media3 Player APIs on the player application thread.
+They distinguish unavailable observations from zero and record position, playback state, selected text-track count, and cue count.
+Each dispatch waits at most one second, capped by the remaining after-resume budget when applicable.
+Late callbacks own detached results and cannot change the emitted receipt.
+They contain no cue text, track labels, URLs, or error strings.
+The runner validates the exact field shape, allowed stages, and numeric bounds.
+These observations do not change the screenshot oracle, negative control, overlap assertion, or pass criteria.
+
+Apple artifact `11843777780` has SHA-256 `8ff2b04c46d67a28aa727ea3e1047cf7dbde22da5b8baf6fe10cd9aa62e7f35d`.
+Xcode records 336 iOS passes, 319 tvOS passes, one tvOS failure, and one skip per platform.
+The tvOS endpoint-scrub test fails its required injection prerequisite before checking the native and source clocks.
+Its sole snapshot records startup return at 1192 milliseconds: native time 12, source time 15, and loading false.
+It cannot show whether the endpoint notification was absent or rejected by an observer guard.
+The next revision records up to four notification arrivals and each guard condition without loading a view.
+The original observer guard, startup deadline, scrub action, clock assertion, and completion checks remain unchanged.
+No production playback change or local application runtime is included in this diagnostic revision.

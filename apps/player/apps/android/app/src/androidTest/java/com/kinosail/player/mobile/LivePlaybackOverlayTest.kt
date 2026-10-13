@@ -16,10 +16,9 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
@@ -44,8 +43,12 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URI
 import java.util.UUID
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.pow
 import org.json.JSONObject
+import org.json.JSONArray
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -55,6 +58,7 @@ import org.junit.runner.RunWith
 // Opt-in real Server journey. The runner copies a private, synthetic session seed
 // into the isolated app. Playback uses the actual decoder and Server responses.
 @RunWith(AndroidJUnit4::class)
+@androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
 class LivePlaybackOverlayTest {
     @get:Rule val compose = createEmptyComposeRule()
 
@@ -106,6 +110,61 @@ class LivePlaybackOverlayTest {
         val prefix = json.optString("capture", "phone")
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val automation = instrumentation.uiAutomation
+        val observations = JSONArray()
+        fun recordPlayback(stage: String, deadline: Long = Long.MAX_VALUE) {
+            val fields = listOf("positionMs", "state", "playing", "playWhenReady", "cueCount", "selectedTextTracks")
+            fun unavailable() = JSONObject().put("stage", stage).put("available", false).also { row ->
+                fields.forEach { row.put(it, JSONObject.NULL) }
+            }
+            val result = AtomicReference<JSONObject>()
+            val finished = CountDownLatch(1)
+            val main = android.os.Handler(android.os.Looper.getMainLooper())
+            val collect = Runnable {
+                val row = unavailable()
+                runCatching {
+                    val activity = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED).single()
+                    var visited = 0
+                    fun find(view: android.view.View): androidx.media3.ui.PlayerView? {
+                        if (++visited > 250) return null
+                        if (view is androidx.media3.ui.PlayerView) return view
+                        if (view is android.view.ViewGroup) for (index in 0 until view.childCount) {
+                            if (visited >= 250) break
+                            find(view.getChildAt(index))?.let { return it }
+                        }
+                        return null
+                    }
+                    val player = find(activity.window.decorView)?.player ?: return@runCatching
+                    if (player.applicationLooper != android.os.Looper.myLooper()) return@runCatching
+                    row.put("state", player.playbackState).put("playing", player.isPlaying)
+                        .put("playWhenReady", player.playWhenReady)
+                    if (player.isCommandAvailable(androidx.media3.common.Player.COMMAND_GET_CURRENT_MEDIA_ITEM))
+                        row.put("positionMs", player.currentPosition.takeIf { it in 0L..3_600_000L } ?: JSONObject.NULL)
+                    if (player.isCommandAvailable(androidx.media3.common.Player.COMMAND_GET_TEXT))
+                        row.put("cueCount", player.currentCues.cues.size.takeIf { it <= 256 } ?: JSONObject.NULL)
+                    if (player.isCommandAvailable(androidx.media3.common.Player.COMMAND_GET_TRACKS)) {
+                        val selected = player.currentTracks.groups.filter { it.type == androidx.media3.common.C.TRACK_TYPE_TEXT }
+                            .sumOf { group -> (0 until group.length).count(group::isTrackSelected) }
+                        row.put("selectedTextTracks", selected.takeIf { it <= 256 } ?: JSONObject.NULL)
+                    }
+                    row.put("available", true)
+                }
+                if (!row.getBoolean("available")) fields.forEach { row.put(it, JSONObject.NULL) }
+                result.set(row)
+                finished.countDown()
+            }
+            val waitMs = minOf(1_000L, deadline - android.os.SystemClock.elapsedRealtime()).coerceAtLeast(0)
+            val received = if (waitMs > 0 && main.post(collect)) try {
+                finished.await(waitMs, TimeUnit.MILLISECONDS)
+            } catch (_: InterruptedException) {
+                Thread.currentThread().interrupt()
+                false
+            } else false
+            if (!received) main.removeCallbacks(collect)
+            // A late callback owns only its detached result, never the emitted receipt.
+            if (observations.length() < 4) observations.put(if (received) result.get() else unavailable())
+        }
+        recordPlayback("initial-playing")
         fun accessibilitySnapshot(): List<android.view.accessibility.AccessibilityNodeInfo>? {
             val nodes = mutableListOf<android.view.accessibility.AccessibilityNodeInfo>()
             fun visit(node: android.view.accessibility.AccessibilityNodeInfo?): Boolean {
@@ -144,6 +203,7 @@ class LivePlaybackOverlayTest {
             compose.waitUntil(10_000) { action("Play") != null }
         }
         pausePlayback()
+        recordPlayback("paused")
         val forceCaptionsOff = InstrumentationRegistry.getArguments().getString("captionOracleControl") == "true"
         fun captions(enabled: Boolean) {
             val target = if (enabled) "Captions on" else "Captions off"
@@ -182,6 +242,7 @@ class LivePlaybackOverlayTest {
                     if (visible || android.os.SystemClock.elapsedRealtime() >= deadline) break
                     Thread.sleep(250)
                 }
+                recordPlayback("enabled")
             }
             assertTrue("The controller must stay hidden until capture", controllerHidden())
             val pixels = capture(name)
@@ -250,9 +311,9 @@ class LivePlaybackOverlayTest {
                 .put("width", before.width).put("height", before.height)
                 .put("captionPixels", captionPixels).put("protectedCaptionPixels", protectedPixels)
                 .put("unstableProtectedPixels", unstableProtectedPixels).put("lowestCaptionPixel", lowestCaptionPixel)
-                .put("forcedCaptionsOffControl", forceCaptionsOff)
-            File(instrumentation.targetContext.filesDir, "video-overlay/$prefix-caption-safe-area.json")
-                .writeText(evidence.toString(2))
+                .put("forcedCaptionsOffControl", forceCaptionsOff).put("playbackObservations", observations)
+            val evidenceFile = File(instrumentation.targetContext.filesDir, "video-overlay/$prefix-caption-safe-area.json")
+            evidenceFile.writeText(evidence.toString(2))
             if (captionPixels <= 100 && !forceCaptionsOff) {
                 // Diagnose delayed cue delivery without changing the retained failed pair.
                 // This extra frame cannot make the original visibility assertion pass.
@@ -284,8 +345,11 @@ class LivePlaybackOverlayTest {
                     check(deadline - android.os.SystemClock.elapsedRealtime() >= 300)
                     Thread.sleep(300)
                     check(controllerHidden())
+                    recordPlayback("after-resume", deadline)
+                    check(android.os.SystemClock.elapsedRealtime() < deadline)
                     capture("$prefix-captions-after-resume").recycle()
                 }
+                runCatching { evidenceFile.writeText(evidence.toString(2)) }
             }
             assertEquals("The system navigation area must be fully observed and stable", 0, unstableProtectedPixels)
             assertTrue("Captions must visibly render in the paired screenshots", captionPixels > 100)
@@ -348,12 +412,21 @@ class LivePlaybackOverlayTest {
                     compose.onNodeWithText("Search").performClick()
                     waitForText("Search library")
                     compose.onNodeWithText("Search library").performTextInput(title)
-                    compose.onNode(hasText("Search") and SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button)).performClick()
+                    compose.onNodeWithText("Search library").performImeAction()
+                    compose.waitUntil(10_000) {
+                        var hidden = false
+                        scenario.onActivity {
+                            hidden = androidx.core.view.ViewCompat.getRootWindowInsets(it.window.decorView)
+                                ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false
+                        }
+                        hidden
+                    }
+                    waitForText("Results: 1 · “$title”")
                     compose.waitUntil(30_000) {
                         compose.onAllNodesWithContentDescription(title).fetchSemanticsNodes().isNotEmpty()
                     }
                     stage = "detail"
-                    compose.onNodeWithContentDescription(title).performClick()
+                    compose.onNodeWithContentDescription(title).performScrollTo().assertIsDisplayed().performClick()
                     compose.waitUntil(30_000) {
                         compose.onAllNodesWithText("Play").fetchSemanticsNodes().isNotEmpty() ||
                             compose.onAllNodesWithText("Resume").fetchSemanticsNodes().isNotEmpty()

@@ -165,6 +165,7 @@ extension PlaybackEndpointJourneys {
             let observer = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { notification in
                 guard let ended = notification.object as? AVPlayerItem else { return }
                 MainActor.assumeIsolated {
+                    observation.endpoint(coordinator: coordinator, ended: ended, window: window, superseded: superseded)
                     guard !superseded, coordinator.loading, let player = coordinator.player,
                           ended === player.currentItem,
                           coordinator.presentation.controller.player === player,
@@ -256,34 +257,6 @@ extension PlaybackEndpointJourneys {
                   ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
             try #require(fixture.progressReceipts.contains { $0.itemID == itemID && $0.watched && abs($0.seconds - seconds) < 0.1 })
         }
-    }
-}
-
-@MainActor private final class CompletionScrubObservation {
-    private let start = ProcessInfo.processInfo.systemUptime
-    private var rows: [[String: Any]] = []
-
-    func observe(_ phase: String, coordinator: PlaybackCoordinator, completions: Int,
-                 native: Double? = nil, source: Double? = nil) {
-        guard rows.count < 3 else { return }
-        rows.append(["phase": phase, "elapsedMs": (ProcessInfo.processInfo.systemUptime - start) * 1000,
-            "nativeSeconds": boundedPosition(native ?? coordinator.player?.currentTime().seconds),
-            "sourceSeconds": boundedPosition(source ?? coordinator.seconds),
-            "rate": boundedPosition(coordinator.player.map { Double($0.rate) }),
-            "timeControlStatus": coordinator.player?.timeControlStatus.rawValue ?? -1,
-            "loading": coordinator.loading, "completed": coordinator.completed, "completionCount": completions])
-    }
-
-    func record() {
-        if let data = try? JSONSerialization.data(withJSONObject: rows, options: [.sortedKeys]) {
-            Attachment.record(data, named: "native-scrub-startup.json")
-            print("NATIVE_SCRUB_STARTUP " + String(decoding: data, as: UTF8.self))
-        }
-    }
-
-    private func boundedPosition(_ value: Double?) -> Any {
-        guard let value, value.isFinite, abs(value) <= 3600 else { return NSNull() }
-        return value
     }
 }
 
