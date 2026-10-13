@@ -2,6 +2,8 @@ import {expect, test} from "@playwright/test";
 import {configureTestInstance, firstPlayable, login} from "./test-instance-helpers";
 import {startPlaying} from "./checkpoint-setup-cases";
 import {observeHeldWatchedMotion, recordWatchedNativeEvents, type WatchedObservation} from "./watched-startup-motion";
+import {installDisplayedMotionTracker} from "./watched-motion-counter";
+import {installWatchedGuardMutation, verifyMutationInitiations} from "./watched-guard-mutation";
 
 configureTestInstance();
 test.use({serviceWorkers: "block"});
@@ -12,7 +14,13 @@ type ProgressReceipt = {method: string; status: number | null; finished: boolean
 
 for (const watched of [true, false]) {
 for (const cancelledAgain of [false, true]) {
-test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native media callbacks from the departing page${cancelledAgain ? " after another submission is cancelled" : ""}`, {tag: "@smoke"}, async ({page}, info) => {
+for (const guardMutation of [false, true]) {
+const scenario = `Mark ${watched ? "watched" : "unwatched"}${cancelledAgain ? " after another submission is cancelled" : ""}`;
+const title = guardMutation ? `late callbacks detect phase-targeted departure guard mutation: ${scenario}` :
+  `accepted Mark ${watched ? "watched" : "unwatched"} survives late native media callbacks from the departing page${cancelledAgain ? " after another submission is cancelled" : ""}`;
+test(title, {tag: "@smoke"}, async ({page}, info) => {
+  const mutation = guardMutation ? await installWatchedGuardMutation(page) : undefined;
+  await page.addInitScript(installDisplayedMotionTracker);
   await page.addInitScript(() => {
     const add = EventTarget.prototype.addEventListener;
     const pending: Array<() => void> = [];
@@ -121,7 +129,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
       if (event.source === opener && event.origin === origin && event.data?.kind === "qa-watched-paused") Object.assign(window, {qaWatchedObserved: event.data});
     });
   }, origin);
-  await page.evaluate(observeHeldWatchedMotion, {watched, cancelledAgain});
+  await page.evaluate(observeHeldWatchedMotion, {watched, cancelledAgain, guardMutation});
   await page.route(`**/watched/${id}`, async route => {
     // Native seeks can save progress before this departure. Navigation can also
     // finish a checkpoint before replaying the form. Require their real acknowledgements.
@@ -148,30 +156,6 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
   });
   let bodyFailed = false, observed: WatchedObservation | undefined;
   try {
-    if (!watched) {
-      // A departing native HLS document may stop fetching new segments. Decode
-      // and buffer the real tail before holding navigation; the late ended
-      // callback must use available media rather than require another load.
-      await media.evaluate((video: HTMLVideoElement) => {
-        video.pause();
-        if (!Number.isFinite(video.duration) || video.duration <= 3) throw new Error("Late ended fixture needs a finite video longer than three seconds");
-        video.currentTime = video.duration - 2.5;
-      });
-      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
-      await expect.poll(() => media.evaluate((video: HTMLVideoElement) => {
-        const target = video.duration - 0.1;
-        return Array.from({length: video.buffered.length}, (_, index) =>
-          video.buffered.start(index) <= target && video.buffered.end(index) >= target).some(Boolean);
-      })).toBe(true);
-      await startPlaying(media);
-      await media.evaluate((video: HTMLVideoElement) => video.pause());
-      await expect(media).toHaveJSProperty("paused", true);
-      const tail = await media.evaluate((video: HTMLVideoElement) => ({seconds: video.currentTime,
-        duration: video.duration, decodedFrames: video.getVideoPlaybackQuality().totalVideoFrames,
-        buffered: Array.from({length: Math.min(video.buffered.length, 8)}, (_, index) => [video.buffered.start(index), video.buffered.end(index)])}));
-      await info.attach("late-ended-buffered-precondition", {body: JSON.stringify({browser: info.project.name,
-        cancelledAgain, tail, boundary: "Actual native tail seek and decoded motion before held navigation"}), contentType: "application/json"});
-    }
     await page.getByRole("button", {name: `Mark ${watched ? "watched" : "unwatched"}`, exact: true}).click({noWaitAfter: true});
     await expect.poll(() => committed).toBe(true);
     expect(baselineFrozen).toBe(true);
@@ -185,13 +169,30 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     expect(paused.event).toBe(watched ? "pause" : "ended");
     expect(paused.before.seconds).toBeGreaterThan(0.2);
     expect(paused.before.frames).toBeGreaterThan(2);
-    expect(paused.before.frameTimes).toHaveLength(3);
+    const motion = paused.before.displayedMotion;
+    expect(motion.invalid).toBe(false);
+    expect(motion.samples).toHaveLength(3);
     expect(paused.before.callbacksReleased).toBeGreaterThan(0);
-    expect(paused.before.frameTimes.every((seconds, index, times) => seconds > (times[index - 1] ?? paused.before.startSeconds))).toBe(true);
+    expect(motion.samples.every((sample, index, samples) => {
+      const previous = samples[index - 1] ?? motion.baseline;
+      return sample.seconds > previous.seconds && sample.total - sample.dropped > previous.total - previous.dropped;
+    })).toBe(true);
+    expect(paused.before.seconds).toBeGreaterThan(paused.before.startSeconds + 0.2);
     expect(paused.seconds).toBeGreaterThan(0.2);
     // Keep the accepted real form's transport pending while the native pause and
     // page-owned progress callbacks finish; media time and Server state stay real.
     await page.waitForTimeout(500);
+    if (guardMutation) {
+      expect(mutation!.replacements).toBe(1);
+      expect(paused.before.guardMutation).toBe(true);
+      await expect.poll(() => latePositions.filter(method => method === "POST").length).toBeGreaterThan(0);
+      expect(latePositions.every(method => method === "POST")).toBe(true);
+      const fetchInitiations = await verifyMutationInitiations(relay, baselineProgress.length, latePositions.length);
+      await info.attach("phase-targeted-watched-guard-mutation", {body: JSON.stringify({browser: info.project.name,
+        watched, cancelledAgain, mutation, paused, latePositions, baselineProgress, fetchInitiations,
+        stored: await progress(), boundary: "Mutated served script against populated Server; guard bypass activates only after motion admission. Not historical pre-fix replay."}), contentType: "application/json"});
+      return;
+    }
     expect(await progress()).toMatchObject({watched, seconds: 0});
     expect(latePositions).toEqual([]);
     // The relay's proof is complete; remove this artificial auxiliary window
@@ -240,6 +241,7 @@ test(`accepted Mark ${watched ? "watched" : "unwatched"} survives late native me
     if (!bodyFailed && failures.length) throw new AggregateError(failures.map(failure => failure.reason), "Watched fixture cleanup failed");
   }
 });
+}
 }
 }
 

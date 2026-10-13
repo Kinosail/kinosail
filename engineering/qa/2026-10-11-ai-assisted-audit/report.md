@@ -2230,3 +2230,45 @@ Native archives contain the hosted iOS/tvOS result bundles and image attachments
 Local affected verification plans still select held runtime work. No local build, browser run, emulator, or deployment was started for these deltas.
 The earlier full affected checks stopped at 95 existing shared-package lint diagnostics; no threshold or required gate was bypassed.
 PR 587 remains unmerged. Device, deployment, skipped-case, and complete campaign acceptance remain open.
+
+### Held-response motion diagnostics and main reconciliation
+
+At `7bafe6ed`, [deep run 38332811290](https://github.com/Kinosail/kinosail/actions/runs/38332811290) completed Chromium, Firefox, and native jobs successfully.
+Chromium verified 521 artifact checksums; Firefox verified 561. All five watched cases passed without retries in both engines.
+iOS passed 333 contracts and tvOS passed 320; each skipped one. Neither platform failed.
+The iOS skip requires supported picture-in-picture hardware. The tvOS skip is an opt-in disposable navigation-fixture seed.
+
+WebKit verified 582 artifact checksums and failed four controlled watched cases.
+Six held-motion failure snapshots contained zero raw frame callbacks while native play fulfilled.
+All snapshots reported visible, focused, in-viewport media with no native error code.
+Two watched attempts advanced approximately eight seconds; both unwatched snapshots reached native EOF.
+Other watched attempts exhausted the partial buffer. Two attempts failed the older startup prerequisite before collecting this diagnostic.
+This rules out timestamp filtering as the reason for the missing callbacks. It does not establish the browser's underlying cause.
+The WebKit archive SHA-256 is `2bf020e25a01d040de7a70dc4c59e90584d097915c8e79a03b9f752a6d0adf79`.
+
+For head `e67181c4`, [required CI 38333249448](https://github.com/Kinosail/kinosail/actions/runs/38333249448) passed every selected job.
+Its browser archive tested merge revision `e269bb00`, whose parents are `ae91fe70` and `e67181c4`.
+[Layout run 38333249158](https://github.com/Kinosail/kinosail/actions/runs/38333249158) also passed in all three engines.
+Exact clean source and seven script hashes per layout archive were verified. No measured stability or focus flag failed.
+The Chromium progress-ordering case passed on its first populated execution; its general fixture execution was correctly skipped.
+Exact clean merge source, ten fixture inputs, and all 418 artifact checksums were verified.
+The archive SHA-256 is `e2e8d540433ce9f50b280a82442ad53724fb5720ff565b6eb13cade96ce93d45`.
+
+PR 579 merged into `7131f22a`. This task merged that main revision in `64ca7ff3`.
+The reconciliation retains initial callback settlement, shared startup handling, safe diagnostics, and acknowledged baseline writes.
+It uses one natural buffered-ending preparation. It removes the redundant second tail seek introduced by the automatic merge.
+
+The next trial uses three increasing non-dropped frame counts with increasing media time.
+It samples total and dropped counts together, rejects invalid counters, and discards credit after a counter or time regression.
+The [Media Playback Quality specification](https://w3c.github.io/media-playback-quality/) defines displayed frames as total minus dropped frames.
+These samples replace individual frame presentation timestamps. They do not claim equivalent per-frame timestamp evidence.
+The eight-second deadline, native playback, actual pause/ended events, positive callback release, and stored-state assertions remain.
+Raw frame callbacks remain diagnostic only; there is no fallback path or extended timeout.
+
+Ten isolated arithmetic controls cover stale, dropped-only, reset, invalid, and advancing counters.
+They were written before the helper. Missing-module discovery failed first; that is wiring evidence, not an executed negative control.
+Four additional controls mutate only the served browser script's departure guard after motion admission.
+They require one exact replacement, original and mutated script hashes, released native callbacks, and an actual forbidden late POST.
+Earlier startup, transport, or motion failures must still fail these controls. No blanket expected-failure marker is used.
+These are phase-targeted mutation controls against a populated Server, not historical pre-fix replay.
+The original four cases still require zero late requests and unchanged stored state. Runtime validation of this trial remains pending.
