@@ -11,7 +11,7 @@ import struct
 import subprocess
 import time
 import uuid
-from wear_event_projection import capture_events, reset_events, wait_for_home
+from wear_home_readiness import wait_for_home
 
 APP = "com.kinosail.player.dev"
 SERIAL = "emulator-5554"
@@ -94,7 +94,6 @@ def run_case(safe, run, label, size, density, home):
         args = ["shell", "am", "instrument", "-w", "-r", "-e", "class", CLASSES,
                 APP + ".test/androidx.test.runner.AndroidJUnitRunner"]
         case["command"] = ["adb", "-s", SERIAL, *args]
-        case["systemEventLogReset"] = reset_events(adb)
         try:
             log = adb(*args, timeout=180)
             case["instrumentationExitCode"] = 0
@@ -109,7 +108,6 @@ def run_case(safe, run, label, size, density, home):
             except Exception as cleanup_error:
                 case["timeoutCleanupFailure"] = type(cleanup_error).__name__
         (run / (label + ".instrumentation.private.log")).write_bytes(log[:4 << 20])
-        case["systemEvents"] = capture_events(adb, run, home)
         case["logTruncated"] = len(log) > 4 << 20
         signals = {"assertion": b"java.lang.AssertionError", "illegal-state": b"java.lang.IllegalStateException",
                    "security": b"java.lang.SecurityException", "compose-timeout": b"ComposeTimeoutException",
@@ -171,7 +169,7 @@ try:
     check(re.fullmatch(r"[0-9a-f]{40}", receipt["revision"]), "revision_invalid")
     check(not command(["git", "status", "--porcelain"]).strip(), "checkout_not_clean")
     paths = ["apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
-             "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_event_projection.py"]
+             "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_home_readiness.py"]
     source = ROOT / "apps/player/apps/android/wear/src"
     paths += [str(p.relative_to(ROOT)) for p in sorted(source.rglob("*.kt"))]
     receipt["sourceSHA256"] = {p: sha(ROOT / p) for p in paths}

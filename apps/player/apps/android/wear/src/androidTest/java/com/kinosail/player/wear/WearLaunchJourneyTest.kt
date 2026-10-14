@@ -42,13 +42,12 @@ class WearLaunchJourneyTest {
         }
         var stage = "launch-unpaired"
         var phase = "launch"
-        var activityBefore = "unavailable"
         fun capture(stage: String) {
             val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
             val failures = mutableListOf<Throwable>()
             runCatching {
                 val semantics = File(directory, "wear-$stage-semantics.txt")
-                val observations = "phase=$phase\nactivityBefore=$activityBefore\nactivityAtCapture=${wearActivityObservation(WearActivity::class.java)}\n"
+                val observations = "phase=$phase\n"
                 semantics.writeText(observations)
                 val foreground = foregroundIsApp()
                 semantics.writeText("activeWindowIsApp=$foreground\n$observations")
@@ -74,7 +73,6 @@ class WearLaunchJourneyTest {
         }
         retainingFailure { ActivityScenario.launch(WearActivity::class.java) }.use { scenario ->
             retainingFailure {
-                activityBefore = wearActivityObservation(WearActivity::class.java)
                 phase = "accessibility-setup"
                 compose.enableAccessibilityChecks()
                 fun verifyAndCapture() {
@@ -88,6 +86,15 @@ class WearLaunchJourneyTest {
                     compose.onNodeWithText("Connect phone").assertIsDisplayed()
                         .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
                     compose.onNodeWithText("Pair Android phone.").assertIsDisplayed()
+                    // Rectangular Compose visibility can miss clipping by the round display.
+                    val viewport = compose.onRoot().fetchSemanticsNode().boundsInRoot
+                    val brand = compose.onNodeWithText("KINOSAIL").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+                    val radius = minOf(viewport.width, viewport.height) / 2
+                    assertTrue("The app name must fit inside the round display",
+                        radius.isFinite() && radius > 0 && brand.width > 0 && brand.height > 0 &&
+                        listOf(brand.topLeft, brand.topRight, brand.bottomLeft, brand.bottomRight).all {
+                            (it - viewport.center).getDistanceSquared() <= radius * radius
+                        })
                     compose.onNodeWithContentDescription("Play").assertDoesNotExist()
                     compose.onNodeWithContentDescription("Pause").assertDoesNotExist()
                     phase = "accessibility"

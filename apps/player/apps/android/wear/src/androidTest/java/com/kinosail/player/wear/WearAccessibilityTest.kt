@@ -49,13 +49,13 @@ class WearAccessibilityTest {
     }
 
     private fun retainingEvidence(name: String, action: () -> Unit) {
-        val before = wearActivityObservation(ComponentActivity::class.java)
         try {
             action()
-            capture(name, before)
+            capture(name)
         } catch (failure: Throwable) {
             runCatching {
-                val directory = observe(name, before)
+                val directory = evidenceDirectory()
+                File(directory, "wear-$name-semantics.txt").writeText("captureFailed=true\n")
                 val image = requireNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
                 try {
                     File(directory, "wear-$name.png").outputStream().use {
@@ -67,21 +67,17 @@ class WearAccessibilityTest {
         }
     }
 
-    private fun observe(name: String, before: String): File {
-        val directory = File(InstrumentationRegistry.getInstrumentation().targetContext.filesDir, "parity-evidence")
+    private fun evidenceDirectory(): File =
+        File(InstrumentationRegistry.getInstrumentation().targetContext.filesDir, "parity-evidence")
             .apply { mkdirs() }
-        File(directory, "wear-$name-semantics.txt").writeText(
-            "activityBefore=$before\nactivityAtCapture=${wearActivityObservation(ComponentActivity::class.java)}\n")
-        return directory
-    }
 
-    private fun capture(name: String, before: String) {
-        val directory = observe(name, before)
+    private fun capture(name: String) {
+        val directory = evidenceDirectory()
         compose.waitForIdle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.waitForIdleSync()
         Thread.sleep(300)
-        File(directory, "wear-$name-semantics.txt").appendText(compose.onRoot().printToString())
+        File(directory, "wear-$name-semantics.txt").writeText(compose.onRoot().printToString())
         val bitmap = compose.onRoot().captureToImage().asAndroidBitmap()
         File(directory, "wear-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
         bitmap.recycle()

@@ -52,8 +52,8 @@ Neither layer establishes physical watch acceptance.
 Source preparation and independent source review are complete.
 The first hosted trial compiled both APKs but failed before emulator creation.
 The later executed trial was rejected during artifact inspection.
-Fresh-profile startup now passes, but actual Activity acceptance still fails.
-Complete artifact decoding and visual acceptance remain pending.
+Home readiness now permits both actual Activity journeys to pass, with complete artifact decoding.
+Visual review found a clipped app name on the large round display; final-source acceptance remains pending.
 A separate hosted Wear job now runs when deep verification selects Android.
 The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
 Before integration, the regression check proved missing Wear execution was accepted.
@@ -408,3 +408,41 @@ Its SHA-256 is `e6a7aba9a938a77b7aae5ff0e289b1972975c2cb32e1972626bc8c69de3512d0
 The readiness privacy control was written before the parser and initially failed because the function did not exist.
 All 33 focused source checks, source caps, whitespace checks, and independent source review pass.
 These checks execute no Android runtime. Hosted acceptance of this readiness experiment remains pending.
+
+## Home readiness passes; visual review finds brand clipping
+
+Both profiles at `966408cea25c88b6252bf2c9877c59c95800ddea` pass all three selected tests without skips.
+The small profile observes the follow-on Home Activity after 45 reads and 11.034 seconds.
+The large profile observes it after 41 reads and 10.130 seconds.
+Both observations are available, unambiguous, untruncated, and in the expected Home package.
+Eighteen source pins and all eight child hashes verify per profile; all four PNGs per profile decode.
+Both independent inspectors accept the receipts. All eight images were inspected, and both owned emulators clean up fully.
+The app owns the active window at launch and after recreation on both sizes.
+This supports a Home startup-order interaction, not identification of the initiating caller or proof against every future takeover.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11862950809` | `9e127b23639e8583111bfa060faf744a2a4451ad009b5d7e69c0079dd473f9b9` |
+| Large round | `11863060754` | `f7264a62ea3d9e59e50929af4e967bb35a5a99c91f11511c5b063003ad827ecd` |
+
+The large compositor image visibly clips the first letter of `KINOSAIL` against the round edge.
+Both retained launch semantics place its bounds at `[44, 72, 158, 108]` pixels.
+The farthest corner is 239.821 pixels from the large display's center, outside its 227-pixel radius.
+On the small display, that distance is 190.536 pixels, within its 192-pixel radius.
+Rectangular Compose visibility therefore missed a real circular-display defect.
+
+A new assertion checks the displayed app name's nonempty bounds against the round viewport at launch and recreation.
+It was written before the production edit; the retained geometry establishes the failing large-display baseline.
+The new Kotlin assertion itself has not yet executed on the hosted watches.
+The correction centers only the app name, preserving vertical spacing, copy, controls, and state handling.
+Disconnected and permission-message states have retained images; paired loaded states, pending transitions, enlarged type, and physical watches remain separate boundaries.
+
+The final candidate removes temporary Kotlin lifecycle/power observations and the system event timeline.
+It retains bounded Home readiness, private failure artifacts, foreground ownership, all original tests, and strict cleanup.
+The readiness helper and source-pin inventory are renamed together; the existing privacy regression remains.
+All 27 remaining focused source checks pass. Final-source hosted execution and visual review are pending.
+
+The broader `966408ce` run also fails the Swift build before native tests execute.
+Its private log identifies a tvOS asset-catalog runtime launch/handshake failure, without a Swift source error location.
+Log SHA-256: `0c47778b1bcc90500ae127ca1761cdf341da566916172a93b8cf7b3527e8afd7`.
+This is a separate hosted build failure, not a passing native test run. The next candidate must pass that gate too.
