@@ -78,7 +78,6 @@ The title index and scrollable install help use the same height.
 The title index retains its existing short-screen dialog fallback.
 Keyboard traversal reveals page controls between the header and dock.
 
-The candidate still requires passing hosted geometry, keyboard, focus, responsive, and accessibility evidence.
 Independent source review found no remaining concrete blocker after the overlay and inline-index corrections.
 The new stylesheet passes the Impeccable source detector. JavaScript syntax, Go formatting, and source-size checks pass.
 CI at `2c3b919a` correctly rejected the stale Code Atlas after the two new embed declarations shifted source locations.
@@ -87,5 +86,21 @@ Its Q09 groups passed 12 isolated, 47 server, and one phone-browser checks, with
 Artifact `11879308556` has SHA-256 `6798c4e93c60f43de081d7fd56f473db93ebe151d05e95f10d5c6ad17dcdf1a8`.
 After verifying the digest, source identity, and receipt, the existing reproduction command regenerated the Player Code Atlas.
 Only its source counts and seven symbol line numbers changed. Subtitles and the surrounding HTML stayed unchanged.
+
+WebKit at `2c3b919a` passes 42 Player snapshots and 29 flows, including all six combinations for each new flow.
+It also passes 46 Subtitles snapshots and 26 flows.
+Both apps record zero identified DOM layout shift, overflow, or terminal skeleton cases.
+Artifact `11880305232` has SHA-256 `8dbfad20d8ce2566f7f85637a4f65306afd1fa55a31491fcc7017f4f1afb1236`.
+The archive digest, clean revision, and eight direct source pins were verified.
+Four selected WebKit screenshots show intact default and saved labels at enlarged text sizes, including short landscape.
+
+Firefox passes all 42 Player snapshot checks, then rejects the inline title-index container at 844 pixels.
+Artifact `11879164120` has SHA-256 `1b7c83737a1d1b898e7ce501800d0630c15251c2daa6289bba3de65ff8a5c017`.
+Its trace shows all three controls ending at 261.333 pixels, above the dock at 268.667 pixels.
+The focused control's six-pixel outline also fits. Only the container's padding extends beneath the dock.
+Independent review confirms that the inline-container assertion is overstrict.
+The correction retains whole-container bounds for fixed rails and checks every inline control and focus outline against the usable viewport.
+It records the control rectangles and focus state. No production CSS change follows from this fixture error.
+The corrected fixture and complete required CI still need a passing run.
 Local application and browser execution remain held. Source checks do not establish browser acceptance.
 These browser captures do not establish physical-device or assistive-technology acceptance.
