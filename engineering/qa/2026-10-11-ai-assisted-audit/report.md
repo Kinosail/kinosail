@@ -21,41 +21,43 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 14 UTC
 
-PRs #587, #592, #593, and #594 are merged. PR #594's reviewed task commit is an ancestor of fetched `origin/main` at `21436c6e16f3f78f948095a9abde8d8b8dd65845`.
-All four required PR checks and exact-main verification passed. All nine publication jobs passed for this newest merge.
-Independent registry inspection verifies both architectures, revision labels, tested candidate digests, and production tags for both apps.
-PR #594 delivered the round Wear label and image security repairs. Exact-main run `38499148593` and registry inspection verify publication.
-Draft PR #595 moves native audio setup off the main thread and rejects stale playback installations.
-Its `6920080a` native artifact passes 336 iOS and 322 tvOS tests with zero runtime warnings and one skip per platform.
-Both nine-second cases acquire frames displayed at 9.25 seconds. The retained healthy late-output failure does not require a retired installation.
-The FocusState capture repair passes strict checks and retains eleven images identical to those already visually inspected.
-At `6920080a`, the Android captions-off control reaches its intended pixel rejection, and all sixteen positive executions pass.
-Its repaired pause interaction reopens explicitly hidden controls within the existing deadline. Earlier failures remain retained.
-The same deep run rejects one Player WebKit navigation flake before watched-state assertions.
-A destination-readiness repair and two real HTTP controls are committed in `118af962`.
-That revision passes the native contracts with the same counts and zero runtime warnings.
-Its Android caption artifact passes the negative control and all sixteen positive executions again.
-Subtitles Firefox and WebKit each pass 99 tests, with no skips or retries. Player browser verification is still running.
-Main then advances through PR #596's UI polish. Merge `9f6f19de` incorporates `639359e9` without conflicts.
-Reconciled-source verification remains required; earlier results do not certify the merged UI changes.
-The campaign goal remains active; no complete product or platform acceptance is claimed.
-Chronological sections retain earlier failures, repairs, and exact artifact evidence.
+PRs #587, #592, #593, #594, #595, and #598 are merged with fetched ancestry proof.
+PR #598's exact main is `e9e96833731416836302f222b35c1b3eb82801c2`.
+Its required checks, deep suite, main CI, and all nine publication jobs pass.
+Registry inspection verifies both apps, both architectures, revision labels, tested candidates, and production tags.
+The deep suite's first attempt failed during artifact upload; that failure remains retained separately from the successful retry.
+
+PR #602 repairs manifest discovery from six production Subtitles pages.
+All seven page cases, including the sign-in control, pass in Chromium, Firefox, and WebKit.
+Required CI passes. Merge `9457698061136b33fb3eca0f1c9858ae60a4b66a` includes the reviewed task commit by fetched ancestry.
+Its exact-main CI and image publication remain pending at this checkpoint.
+The [metadata note](../2026-10-14-subtitles-web-app-metadata.md) records source revisions, checksums, and boundaries.
+
+The next QA repair corrects selection geometry in browse-return evidence.
+A test-first hosted baseline records a hidden duplicate link's zero bounds instead of the focused Movies card.
+At `46557737`, the corrected recorder passes all three Home journeys without retries.
+The broader Movies run stops during dependency download, before tests, and its failed job is retried.
+The [geometry note](../2026-10-14-browse-return-geometry.md) retains the failed baseline and accepted Home evidence.
+
+The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
 | Copied H264 resume | PR #570 merged the cold and longer-remux origin repairs. At `6920080a`, eleven Chromium journeys retain 77 matching frame samples; eight metadata-fault controls pass. | Exact legacy diagnostic fixtures, larger sources, native clients, and physical acceptance remain distinct. Historical AQA-006 and AQA-014 entries below precede these repairs. |
 | Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
-| Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. At `fab16419`, WebKit fails playable-item discovery navigation. At `3792686c`, Subtitles Firefox times out on initial login navigation. Both retries pass; CI correctly rejects both flakes. |
+| Browser session return | At `c47a0cd3`, the full browser artifacts contain 814 distinct Player passes in Chromium, 810 in Firefox, and 808 in WebKit. Subtitles passes 99 per engine. Current-source Home, primary Movies, and cold Movies supplemental journeys pass at `3b3e2ecd`. | Skipped-only counts remain 279, 283, and 285 for Player. Historical browser flakes remain unresolved. The recorder repair needs broader verification. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
-| Apple native contracts | At `6920080a`, Xcode results record 336 iOS passes, 322 tvOS passes, no failures, and one skip each. All runtime warnings fall to zero. Both nine-second cases acquire frames displayed at 9.25. Capture tests pass; eleven images exactly match the inspected pixels and color profiles. | The underlying late-output mechanism and the intermediate test-host launch failure remain undiagnosed. The new installation race is tvOS-only. Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
-| Android | At `6920080a`, all sixteen positive executions pass across four phone/tablet cases. Independent pixel checks find no captions inside system navigation. The captions-off negative control reaches its intended visibility rejection with zero caption pixels. Eight source pins, six fixture pins, 57 child hashes, and cleanup verify. | Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
+| Apple native contracts | At `c47a0cd3`, Xcode records 336 iOS passes, 322 tvOS passes, and one backup-container pass, with zero runtime warnings. The tvOS same-title regression passes. | Three tests are skipped. Actual audio activation, earlier reader and hero intermittency, backup transport, and physical-device proof remain open. |
+| Android | At `c47a0cd3`, all sixteen caption executions pass. The captions-off control reaches its intended pixel rejection. Eight source pins, six fixture pins, 57 child hashes, and cleanup verify. | Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. PR #594 is merged. | Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
-| Publication and deployment | PRs #587, #592, #593, and #594 have verified exact-main CI, image publication, signatures, provenance, and production tags. | PR #595 remains draft. Deployment and physical playback remain unverified. |
-| Runtime image security | At `d1f6dcf9`, both apps on amd64 and arm64 install the fixed librsvg package and pass scans and production paths. All four system artifacts verify revision, architecture, ten source pins, and two checksum entries. PR #594's exact-main publication is verified. | Deployment remains unverified. |
+| Wear | At `c47a0cd3`, both profiles pass three tests. Seventeen source pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight screenshots were inspected. | The small permission component capture cuts off part of the lower Sponsor control. Full scrolling accessibility, paired sessions, enlarged type, sensors, battery, and physical input remain open. |
+| Publication and deployment | PR #598 has verified exact-main CI and publication. The latest published revision is `e9e96833731416836302f222b35c1b3eb82801c2`. PR #602 is merged at `9457698061136b33fb3eca0f1c9858ae60a4b66a`. | PR #602 main CI and publication are pending. Deployment, TLS, and physical playback remain unverified. |
+| Runtime image security | Exact-main `e9e96833` passes all nine publication jobs, including production-image tests and scans. Both architectures and tested candidate manifests match the published Player and Subtitles images. | Deployment remains unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
+
+## Retained earlier evidence
 
 The [native audio evidence note](../2026-10-14-native-audio-session.md) retains both frame-observer trials, artifact hashes, and proof boundaries.
 

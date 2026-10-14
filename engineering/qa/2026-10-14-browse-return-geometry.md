@@ -40,5 +40,19 @@ It retains the existing fallback for observations without a matching focused lin
 Focus and geometry now come from the same selected action in these Home journeys.
 The application code and acceptance checks remain unchanged.
 
-Hosted verification of the repaired recorder is pending.
+At `46557737e7ad6e4c510d8fbab7d9ba82221373c1`, hosted run `38590788569` passes all three cases without retries.
+The Movies card records top 409.28125 and bottom 497.28125 before and after navigation.
+Both Continue watching controls retain their original bounds. All three cases have zero vertical scroll drift.
+Artifact `11906679259` has SHA-256 `c733f71fb5aebd84f214a502c330b84cfcdf7b1c011bfbd28e8a124b7aaa0e04`.
+The tracked tree, 160 source pins, three child hashes, final source identity, and owned-process shutdown verify.
+Independent source review finds no concrete blocker.
+
+The broader Movies-return run `38591287593` stops during dependency preparation with an HTTP/2 stream error.
+No journey executes in that attempt. The failed job is retried without changing its source, deadlines, or assertions.
+Other return suites and required PR checks remain pending.
+
+Reconciliation with merged PR #602 produces `55d3da01094769048ad4839b86a332cf0f1f864d` with the same tracked tree as `46557737`.
+No application or test source changes during that reconciliation.
+The existing first-link fallback remains ambiguous when the requested destination is not focused.
+The verified repair concerns the matching focused action.
 Local application and browser execution remain held.
