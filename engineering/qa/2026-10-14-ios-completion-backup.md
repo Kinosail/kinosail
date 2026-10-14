@@ -58,4 +58,30 @@ Preparation failures retain fixed diagnostic fields, a generated request ID, and
 No raw paths, profile identifiers, saved data, or error descriptions belong in those logs.
 
 The production delta adds 24 lines and removes six. The regression is unchanged from the accepted baseline.
-Independent source review found no blockers. Fixed hosted execution and runtime log evidence remain pending.
+Independent source review found no blockers. The fixed hosted evidence follows.
+
+
+## Accepted repair
+
+Revision `cf4fb6e306291fccfbff1e913fd8cbbb09534f23` passes the unchanged focused regression once, with no skips.
+Run `38524962927`, job `115723117850`, also passes 336 iOS tests and 322 tvOS tests.
+The full suites retain two iOS skips and one tvOS skip, including the separately executed backup opt-in.
+All three invocations report zero failures and zero runtime warnings.
+The same-title tvOS replacement regression also passes.
+
+Artifact `11876470651` has SHA-256 `954730256684b8d2dc907264d057363dded2a4085db070180aa0f9b6288819c2`.
+Independent read-only xcresult inspection agrees with all hosted summaries, receipts, and test trees.
+The production store hash is `ead5697f63aaaae5fe7d7f33052611b5dcdc8b55ec816d61ebaaf9d91e44e4a8`.
+The regression hash remains `e48ee04692a4fc364f2662d7a8847d3ea3c2fabc62a146890c855ed218ade98e`.
+The focused command hash remains `ab551590bf29ec48cddc5cb62efd8963a9722249adbfcf7b8f2430dddee2e6c1`.
+The final fixture marker occurs once, after blocked-file preservation and cleanup assertions.
+
+The blocked-directory control emits one preparation diagnostic: outcome `blocked`, phase `create-directory`, code `516`.
+Its request ID is a valid generated UUID. Full-message validation finds only the documented safe fields.
+The private job log hash is `ea54d896ce302dd724e919b5cadcd43453a6a401aac58e1b9edd5da419ac20cd`.
+The capture omits severity metadata and successful debug messages; those levels remain source-verified only.
+This does not establish physical iCloud backup selection or transport behavior.
+
+Reconciliation `b390b9c6` adds main's dependency caches without changing application or regression sources.
+All 192 source CI contracts pass, with five explicit skips. Four affected workflows pass pinned actionlint.
+Required checks on the final PR head and protected-main publication remain separate delivery gates.

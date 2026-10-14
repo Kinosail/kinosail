@@ -29,3 +29,14 @@ Retain a source contract for this GitHub condition; a native or browser journey 
 
 One unchanged retry is additional evidence. It does not erase the failed run or establish a root cause.
 Local Go, browser, and media execution remain held.
+
+
+## Separate unchanged passing run
+
+All five cases pass in run `38522246479` at revision `4fb2d4a5bfa4de9edcedd38c7f5034ba19d6d208`.
+Artifact `11875137515` has SHA-256 `52476cfdfc94b76bc0d3bb91bd50bcbe4b36c7ee552ae72737951b05828fd455`.
+Its receipt hash is `77222183e652ae3a1ceb0841a214fa6c9b71dc5c63804dc029a0bfdc3ffdd6d8`.
+All five source pins match the retained failed run. Every case preserves its source and joins its encoder.
+This additional pass does not establish the earlier failure's cause or prove a repair.
+The original unchanged retry was cancelled when a newer PR head superseded it; it supplies no acceptance result.
+The diagnostic changes remain subject to current hosted execution.
