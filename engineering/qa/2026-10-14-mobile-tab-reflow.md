@@ -104,3 +104,20 @@ It records the control rectangles and focus state. No production CSS change foll
 The corrected fixture and complete required CI still need a passing run.
 Local application and browser execution remain held. Source checks do not establish browser acceptance.
 These browser captures do not establish physical-device or assistive-technology acceptance.
+
+## Install-help failure on the next revision
+
+At `1f518666`, WebKit again passes all 42 Player snapshots, 29 Player flows, 46 Subtitles snapshots, and 26 Subtitles flows.
+Its artifact `11880887581` has SHA-256 `58b5a041e8b35806412896f50704c4f1a0afa574e1f3e31f1b286cb11f4c3ef6`.
+The eleven automated accessibility audits report no violations.
+
+Firefox passes the corrected title-index assertion, then detects a clipped install-help button at 844 by 390 pixels with 200% root text.
+Its artifact `11880488891` has SHA-256 `c8216423ef0e89a0b6e70c03957d606e9bad4f4557f08f0bedd541930883615e`.
+The button ends at 260.400 pixels; the scrollable panel ends at 252.667 pixels. The dock begins at 268.667 pixels.
+The screenshot confirms clipping by the panel. It does not establish whether focus scrolling has settled.
+Firefox's 42 Player snapshots and all Subtitles checks pass, but its Player flow suite remains failed and incomplete.
+Both archives verify their GitHub digest, clean revision, and eight direct script pins.
+
+Commit `b184e6b9` records focus identity, scroll dimensions, computed overflow, and geometry across six animation frames.
+It preserves the original geometry assertion and makes no production change.
+These bounded observations distinguish delayed focus scrolling from a control that remains clipped.
