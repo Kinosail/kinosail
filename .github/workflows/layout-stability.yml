@@ -352,6 +352,8 @@ jobs:
         run: |
           revision="$(git rev-parse HEAD)"
           docker build --file apps/player/Containerfile --tag localhost/kinosail:dev --build-arg VERSION=qa --build-arg "REVISION=$revision" .
+      - name: Install Chromium fixture trust tools
+        run: sudo apt-get update && sudo apt-get install -y libnss3-tools
       - name: Admit the populated instance with retained evidence
         timeout-minutes: 12
         working-directory: apps/player

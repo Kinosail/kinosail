@@ -12,30 +12,43 @@ if [[ "$output" != /* || ! -d "$output" || -L "$output" || ! -d "${RUNNER_TEMP:-
   exit 2
 fi
 cd "$(dirname "$0")/.."
+# shellcheck source=scripts/ci/browser-fixture-tls.sh
+source ../../scripts/ci/browser-fixture-tls.sh
 export CONTAINER_ENGINE=docker KINOSAIL_TEST_IMAGE_READY=1 KINOSAIL_PORT=0 KINOSAIL_MANAGEMENT_BIND=127.0.0.1
 KINOSAIL_TEST_ROOT="$(mktemp -d "$RUNNER_TEMP/kinosail-populated.XXXXXX")"
 export KINOSAIL_TEST_ROOT
 export KINOSAIL_TEST_PROJECT="kinosail-populated-$$-$RANDOM"
 stage=source
+nss_database=""
 
 cleanup() {
-  local status=$? cleanup_status=0 remaining_containers=0 remaining_volumes=0 fixture_removed=0
+  local status=$? cleanup_status=0 remaining_containers=0 remaining_volumes=0 fixture_removed=0 trust_removed=1 inventory
   trap - EXIT
-  ./scripts/test-instance.sh down --volumes >"$output/cleanup.log" 2>&1 || cleanup_status=$?
+  if [[ -n "$nss_database" ]]; then
+    certutil -D -d "sql:$nss_database" -n "$KINOSAIL_TEST_PROJECT" >>"$output/cleanup.log" 2>&1 || cleanup_status=1
+    trust_removed=0
+    if inventory="$(certutil -L -d "sql:$nss_database" 2>>"$output/cleanup.log")" && ! grep -q "^${KINOSAIL_TEST_PROJECT}[[:space:]]" <<<"$inventory"; then
+      trust_removed=1
+    else
+      cleanup_status=1
+    fi
+  fi
+  ./scripts/test-instance.sh down --volumes >>"$output/cleanup.log" 2>&1 || cleanup_status=$?
   remaining_containers="$(docker ps -aq --filter "label=com.docker.compose.project=$KINOSAIL_TEST_PROJECT" | awk 'NF {n++} END {print n+0}')" || cleanup_status=1
   remaining_volumes="$(docker volume ls -q --filter "label=com.docker.compose.project=$KINOSAIL_TEST_PROJECT" | awk 'NF {n++} END {print n+0}')" || cleanup_status=1
   if [[ "$remaining_containers" != 0 || "$remaining_volumes" != 0 ]]; then cleanup_status=1; fi
   rm -rf -- "${KINOSAIL_TEST_ROOT:?}" || cleanup_status=1
   if [[ ! -e "$KINOSAIL_TEST_ROOT" ]]; then fixture_removed=1; else cleanup_status=1; fi
   if [[ "$status" == 0 && "$cleanup_status" != 0 ]]; then status=1; fi
-  python3 - "$output/fixture-lifecycle.json" "$status" "$cleanup_status" "$remaining_containers" "$remaining_volumes" "$fixture_removed" "$stage" <<'PY'
+  python3 - "$output/fixture-lifecycle.json" "$status" "$cleanup_status" "$remaining_containers" "$remaining_volumes" "$fixture_removed" "$stage" "$trust_removed" <<'PY'
 import json,sys
 from pathlib import Path
 result,cleanup,containers,volumes,removed=map(int,sys.argv[2:7])
 Path(sys.argv[1]).write_text(json.dumps({'result':'passed' if result==0 else 'failed',
     'level':'info' if result==0 else 'error','stage':sys.argv[7],
     'exitCode':result,'cleanupExitCode':cleanup,'remainingContainers':containers,
-    'remainingVolumes':volumes,'privateFixtureRemoved':bool(removed)},indent=2)+'\n')
+    'remainingVolumes':volumes,'privateFixtureRemoved':bool(removed),
+    'browserTrustRemoved':sys.argv[8]=='1'},indent=2)+'\n')
 PY
   exit "$status"
 }
@@ -53,6 +66,26 @@ read -r image_id image_revision <<<"$identity"
 printf '%s\n' "$identity" >"$output/test-image-identity.txt"
 stage=catalog-verification
 ./scripts/test-instance.sh verify
+stage=browser-trust
+container="$(docker compose --project-name "$KINOSAIL_TEST_PROJECT" --file compose.yaml --file compose.test.yaml ps --quiet kinosail)"
+[[ "$container" =~ ^[a-f0-9]{12,64}$ ]]
+certificate="$KINOSAIL_TEST_ROOT/browser-fixture-ca.crt"
+docker exec "$container" kinosail tls-certificate >"$certificate"
+validate_browser_fixture_ca "$certificate"
+cp "$certificate" "$output/browser-fixture-ca.crt"
+database="${HOME:?}/.local/share/pki/nssdb"
+if [[ -d "$HOME/.pki/nssdb" ]]; then database="$HOME/.pki/nssdb"; fi
+[[ ! -L "$database" ]]
+mkdir -p "$database"
+if [[ ! -f "$database/cert9.db" ]]; then certutil -N --empty-password -d "sql:$database"; fi
+certutil -L -d "sql:$database" >/dev/null
+if certutil -L -d "sql:$database" -n "$KINOSAIL_TEST_PROJECT" >/dev/null 2>&1; then
+  echo 'Populated fixture trust nickname already exists' >&2
+  exit 2
+fi
+nss_database="$database"
+certutil -A -d "sql:$database" -t 'C,,' -n "$KINOSAIL_TEST_PROJECT" -i "$certificate"
+export NODE_EXTRA_CA_CERTS="$certificate"
 export KINOSAIL_TEST_INSTANCE=1 KINOSAIL_BROWSER_PROJECT=chromium KINOSAIL_E2E_WORKERS=1
 KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")"
 export KINOSAIL_TEST_TOTP_SECRET
