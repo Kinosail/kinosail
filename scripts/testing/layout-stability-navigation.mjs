@@ -136,11 +136,19 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
         await page.waitForFunction(() => document.querySelector("[data-title-jump]")?.classList.contains("title-jump-scrubbable"));
         const index = jump.locator("[data-title-jump-index]");
         const railVisible = await index.isVisible();
+        const railFixed = await index.evaluate(node => getComputedStyle(node).position === "fixed");
+        if (railVisible && !railFixed) {
+          await index.locator("[data-title-letter]").first().focus();
+          await page.keyboard.press("Shift+Tab");
+          await page.keyboard.press("Tab");
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+        }
         const rail = await index.boundingBox(), libraryDock = await nav.boundingBox();
+        const libraryHeader = await page.locator(".app-header").boundingBox();
         let railReachable;
         if (railVisible) {
           const links = await index.locator("[data-title-letter]").evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().toJSON()));
-          railReachable = Boolean(rail && libraryDock && links.length && rail.y >= 0 &&
+          railReachable = Boolean(rail && libraryDock && libraryHeader && links.length && rail.y >= libraryHeader.y + libraryHeader.height - 1 &&
             rail.y + rail.height <= libraryDock.y + 1 && links.every(r => r.top >= rail.y - 1 && r.bottom <= rail.y + rail.height + 1));
         } else {
           await jump.locator("[data-title-jump-open]").click();
@@ -150,7 +158,7 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
           await dialog.waitFor({state: "hidden"});
           railReachable = true;
         }
-        const overlayResult = {flow: probe.stage, viewport, savedTabs, railVisible, rail, libraryDock, railReachable,
+        const overlayResult = {flow: probe.stage, viewport, savedTabs, railVisible, railFixed, rail, libraryDock, libraryHeader, railReachable,
           userAgentFixture: "iPhone web install affordance; browser engine unchanged", stable: railReachable};
         results.push(overlayResult);
         if (!railReachable) throw new Error("Player title index is obscured by its navigation");
