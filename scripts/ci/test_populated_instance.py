@@ -106,7 +106,7 @@ elif name=='certutil':
   print((nickname+' C,,') if state.exists() or failure=='collision' else '')
 elif name=='pnpm':
  if failure=='browser':sys.exit(8)
- report((20 if failure=='omitted' else 22 if failure=='extra' else 21) if os.environ.get('KINOSAIL_POPULATED_SUITE')=='browse' else 1)
+ report((21 if failure=='omitted' else 23 if failure=='extra' else 22) if os.environ.get('KINOSAIL_POPULATED_SUITE')=='browse' else 1)
 '''
             for name in ['uname', 'git', 'docker', 'pnpm', 'mkdir', 'certutil']:
                 path = binaries / name
@@ -217,7 +217,7 @@ elif name=='pnpm':
     def test_browse_suite_runs_fixed_cases_and_rejects_incomplete_or_extra_results(self):
         # Actual browser E2E cannot prove that its runner omitted or added a
         # case, or preserved cleanup after a browser-process admission failure.
-        expected = ["collections-loading.spec.ts", "curation-count.spec.ts", "dependency-thanks.spec.ts",
+        expected = ["browse-readability.spec.ts", "collections-loading.spec.ts", "curation-count.spec.ts", "dependency-thanks.spec.ts",
                     "layout-audit-library.spec.ts", "layout-audit-shell.spec.ts", "mobile-quick-connect.spec.ts",
                     "navigation-repeat.spec.ts", "show-card-viewer-policy.spec.ts", "show-episode-ledger.spec.ts",
                     "static-compression.spec.ts"]
