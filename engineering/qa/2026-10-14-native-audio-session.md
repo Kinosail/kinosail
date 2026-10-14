@@ -236,12 +236,13 @@ The archive SHA-256 is `dc927a60fdacf04c6597f4eea6fc724e1a408ece4451a0170a71460f
 Both isolated login controls execute once and pass. The delayed and blocked responses remain independently controlled.
 
 The following evidence uses reconciled revision `b57e3313a63cc0e7b799b1fc77eae27079c92950` in deep run `38513995698`.
-GitHub digests and the retained artifact checks agree.
+The complete deep run passes. GitHub digests and the retained artifact checks agree.
 
 | Surface | Accepted result | Artifact | Archive SHA-256 |
 | --- | --- | --- | --- |
 | Native | iOS 336 and tvOS 322 passes; one skip each; zero runtime warnings | `11871886606` | `fdf19077f18f1a0cacc55ea398409df9a646bac787fb33bf81988f4eee0d0934` |
 | Android captions | Sixteen positive executions; intended negative-control rejection; all owned resources stopped | `11871702395` | `3a2be62727aa96b0fec746a446baaff8054ed0fc021e860e8da6a8ee46648d41` |
+| Player Chromium | 814 distinct passes; 279 skipped-only cases; zero retries | `11872735850` | `76871f8e2b8d2d494af6ca18517e00a504d90dd821a645ddf3c5eb0db8a6834b` |
 | Player Firefox | 810 distinct passes; 283 skipped-only cases; zero retries | `11871596333` | `e3c6bf848d49b407af74f149409e5ce76f7b8318b7c03f85695d7168a294d21b` |
 | Player WebKit | 808 distinct passes; 285 skipped-only cases; zero retries | `11871613514` | `9aafa45aa984d6da83edb9857be0c9ea0978bc0139195604ba450ff809164873` |
 | Subtitles Firefox | 99 passes; zero skips or retries | `11870989784` | `8ff57e2192902e38bf664f55c0149ed17fe7e7142a280d88635a3907f91c8916` |
@@ -253,9 +254,20 @@ GitHub digests and the retained artifact checks agree.
 The native gate receipts agree with independently read Xcode summaries and test trees.
 The Android check verifies eight source pins, six fixture pins, 57 child hashes, and four independently measured pixel comparisons.
 Browser checks verify ten source pins per artifact and every recorded child hash.
-Both login controls pass once in Firefox and WebKit. These are isolated HTTP controls, not populated-server journeys.
+Both login controls pass once in each engine. These are isolated HTTP controls, not populated-server journeys.
 
 Each Wear artifact verifies 17 source pins, eight child hashes, and four screenshots.
 The round launch and recreated views retain readable headings, copy, and attribution.
 Permission screenshots use square fixtures. Round permission interaction, scrolling, pairing, sensors, and battery behavior remain unverified.
 These results do not establish physical-device or deployment acceptance.
+
+Converted-audio artifact `11872615196` has SHA-256 `3c827043405a9cb52d042b9031fdbeeb2bc07253e07deb6f005fff67ade50a0d`.
+Its receipts record 39 passing captures without gaps, 100 rejected metadata controls without encoder starts or asset changes, and seven passing source-clock fault cases.
+The minimum recorded correlation is 0.943257; the maximum absolute lag is one sample.
+All 49 uploaded child hashes agree. Raw PCM and 167 private child files are absent, so their measurements cannot be independently recomputed here.
+
+Prepared-timeline artifact `11872365571` has SHA-256 `cdf397df003791ae6fffcff3ee0908d150626a87b94d879650f124207483bcdf`.
+It records 19 cold-suffix cases, nine timeline cases, and twelve Chromium journeys passing.
+Seven helper source pins and twelve uploaded child hashes agree; 213 private child files are absent.
+The deliberate source-change case rejects requests with 503, no published playlist, and no encoder start.
+These are receipt checks, not fresh local media executions.
