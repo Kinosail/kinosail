@@ -124,3 +124,20 @@ This rejects a declared video track ending before the failed seek; it does not p
 The next matched control holds initial loading, seeks to nine seconds, pauses, releases media, and resumes.
 It attaches the output late, as in the retained failed trial, but has no retired installation.
 This control is pending hosted execution. The successful early-output trial alone does not establish the earlier failure's cause.
+
+## FocusState capture trial
+
+The three retained tvOS warnings point to two `MediaCardRatingTests` invocations and one `TVTopBarTests` invocation.
+Those invocations use `ImageRenderer` around focus-dependent views. No visible production focus defect is established.
+Apple describes [FocusState](https://developer.apple.com/documentation/swiftui/focusstate/) as state updated by focus within a scene.
+
+The tvOS capture trial hosts those fixtures in a non-key window and preserves the previous key window.
+Each card keeps its original width and receives an independently fitted height.
+The same normalized raster supplies assertions and image attachments.
+Invalid dimensions, failed hierarchy drawing, changed key ownership, or blank pixels reject the capture.
+All eight strict card comparisons, dynamic-type variants, dark theme, and visible-text sensitivity control remain.
+The iOS renderer and live-window TV focus journey are unchanged.
+
+Failure modes include unwanted focus decoration, safe-area cropping, background-only images, and capture before layout settles.
+Hosted acceptance must preserve the strict comparisons and text control, remove the warnings, and retain readable card/header images.
+This capture-lifecycle trial is pending execution. No production focus bindings or warning filters changed.

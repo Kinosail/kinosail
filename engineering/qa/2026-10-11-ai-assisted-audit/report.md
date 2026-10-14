@@ -19,12 +19,15 @@ Application of these methods uses the pinned local Playwright, actual disposable
 No upstream skill collection or external paid QA service is required.
 The existing audit's uncovered cases guide additional execution, rather than treating a collected or skipped test as a passing journey.
 
-## Latest checkpoint — October 13
+## Latest checkpoint — October 14 UTC
 
-PRs #587, #592, and #593 are merged. PR #593's reviewed task commit is an ancestor of fetched `origin/main` at `0a68e51544458de32d1458b6a567050ed344f229`.
+PRs #587, #592, #593, and #594 are merged. PR #594's reviewed task commit is an ancestor of fetched `origin/main` at `21436c6e16f3f78f948095a9abde8d8b8dd65845`.
 All four required PR checks and exact-main verification passed. All nine publication jobs passed for this newest merge.
 Independent registry inspection verifies both architectures, revision labels, tested candidate digests, and production tags for both apps.
-The separate Wear follow-up remains draft PR #594; its Wear journeys and image security repair pass affected hosted acceptance; protected delivery remains pending.
+PR #594 delivered the round Wear label and image security repairs. Exact-main run `38499148593` and registry inspection verify publication.
+Draft PR #595 moves native audio setup off the main thread and rejects stale playback installations.
+Its `fab16419` native artifact passes 336 iOS and 321 tvOS tests with zero audio main-thread warnings and one skip per platform.
+The replacement journey acquires a frame after the restored seek. A matched late-output control and FocusState capture trial still need execution.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -34,14 +37,20 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
 | Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
-| Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
+| Apple native contracts | At `fab16419`, independently inspected Xcode results record 336 iOS passes, 321 tvOS passes, no failures, and one skip each. Both audio warning counts fall to zero. The replacement frame has display time 9.25 after restoring to 9 seconds. | Matched late-output and FocusState capture trials remain pending. Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. | Required gates and delivery remain pending. Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
-| Publication and deployment | PRs #587, #592, and #593 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
-| Runtime image security | At `d1f6dcf9`, both apps on amd64 and arm64 install the fixed librsvg package and pass scans and production paths. All four system artifacts verify revision, architecture, ten source pins, and two checksum entries. | Protected delivery, exact-main publication, and deployment remain pending. |
+| Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. PR #594 is merged. | Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
+| Publication and deployment | PRs #587, #592, #593, and #594 have verified exact-main CI, image publication, signatures, provenance, and production tags. | PR #595 remains draft. Deployment and physical playback remain unverified. |
+| Runtime image security | At `d1f6dcf9`, both apps on amd64 and arm64 install the fixed librsvg package and pass scans and production paths. All four system artifacts verify revision, architecture, ten source pins, and two checksum entries. PR #594's exact-main publication is verified. | Deployment remains unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
+
+The [native audio evidence note](../2026-10-14-native-audio-session.md) retains both frame-observer trials, artifact hashes, and proof boundaries.
+PR #594's published Player digest is `sha256:f1b14af7ac729c0a4c94bf3e0ab81ab9aa2ceffa349ab0b3c66ab4ae35b14101`.
+Its Subtitles digest is `sha256:4302e8c63b9469e95ee25ada65727c4152cc1735777c2d7cbbf17525dc32cf0a`.
+Both apps' commit, main, and latest tags match. All four architecture revision labels and tested candidate manifests match exact main.
+The private proof is `wear-hosted-draft/main-21436c6e-publication-proof.json`.
 
 The accepted `f78be3bb` cold-suffix artifact passes all nineteen cases and verifies seven helper pins.
 Both corrupted and missing metadata recoveries retain identical metadata after one correlated INFO completion.
