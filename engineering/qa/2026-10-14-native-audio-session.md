@@ -140,4 +140,33 @@ The iOS renderer and live-window TV focus journey are unchanged.
 
 Failure modes include unwanted focus decoration, safe-area cropping, background-only images, and capture before layout settles.
 Hosted acceptance must preserve the strict comparisons and text control, remove the warnings, and retain readable card/header images.
-This capture-lifecycle trial is pending execution. No production focus bindings or warning filters changed.
+No production focus bindings or warning filters changed. The result follows below.
+
+## Matched late-output result and capture acceptance
+
+Deep run `38505809043` tested `535faec8e74e7c2652c2022c2c3192b9513de8e3`.
+Native artifact `11868261650` has SHA-256 `0558c57dedbe98c2aef6e94783a1387848088174f8b5dd9a10b8bc7f5ea5dae0`.
+GitHub's digest, gate receipts, independent summaries, and test trees agree.
+iOS passed 336 tests with one skip. tvOS passed 321, failed one, and skipped one.
+Both platforms reported zero audio warnings and zero other runtime warnings.
+
+The only failed case is `healthyPendingSeekToNineSupportsLateFrameObservation`.
+It restores nine seconds and remains paused before resume, without a retired installation.
+Its clock then advances to 11.888 at rate 1, with a ready item and no reported media error.
+The attached late output acquires no frame. A retired installation is therefore not necessary for this failure.
+The same-title early-output case again passes, with a frame displayed at 9.25 seconds.
+All four six-second controls pass. The log SHA-256 is `78e5acf005e672ac590fc0fad9659c66741d529618fa3ab2e9dab5f32555766c`.
+
+The next matched trial attaches the healthy case's output before seeking and releasing held media.
+It retains the same pause, player identity, clock, frame timestamp, and three-second requirements.
+The output belongs to the captured item and is removed on every exit.
+This trial remains pending. No production decoder behavior changes.
+A pass would support an attachment-timing interaction, without establishing why late observation fails or proving ordinary rendered playback.
+
+Both card capture tests, the header background test, and the unchanged live focus journey pass.
+All eight strict card pairs and the visible-text sensitivity control remain active.
+All eleven exported images were inspected: eight cards, two text controls, and one header.
+They retain readable titles, artwork placeholders, progress markers, and uncropped header controls.
+The large poster keeps its existing two-line ellipsis; accessibility titles and landscape titles fit.
+The visible control adds PG-13 text while the hidden control omits it.
+The fixture repair removes all three FocusState warnings. This is fixture acceptance, not physical-TV proof.

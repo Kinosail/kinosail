@@ -27,7 +27,8 @@ Independent registry inspection verifies both architectures, revision labels, te
 PR #594 delivered the round Wear label and image security repairs. Exact-main run `38499148593` and registry inspection verify publication.
 Draft PR #595 moves native audio setup off the main thread and rejects stale playback installations.
 Its `fab16419` native artifact passes 336 iOS and 321 tvOS tests with zero audio main-thread warnings and one skip per platform.
-The replacement journey acquires a frame after the restored seek. A matched late-output control and FocusState capture trial still need execution.
+The replacement journey acquires a frame after the restored seek. At `535faec8`, a healthy late-output control reproduces the missing-frame failure without a retired installation.
+The FocusState capture repair passes strict checks, removes all three warnings, and retains eleven visually inspected images. A matched early-output control needs execution.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -35,9 +36,9 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | --- | --- | --- |
 | Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
-| Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. |
+| Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. At `fab16419`, WebKit also fails navigation during playable-item discovery; its retry passes, and CI correctly rejects the flake. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
-| Apple native contracts | At `fab16419`, independently inspected Xcode results record 336 iOS passes, 321 tvOS passes, no failures, and one skip each. Both audio warning counts fall to zero. The replacement frame has display time 9.25 after restoring to 9 seconds. | Matched late-output and FocusState capture trials remain pending. Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
+| Apple native contracts | At `535faec8`, Xcode results record 336 iOS passes, 321 tvOS passes, one failed tvOS control, and one skip each. All runtime warnings fall to zero. The replacement frame displays at 9.25 after restoring to 9 seconds. Capture tests and all eleven inspected images pass. | The healthy late-output control fails without replacement; a matched early-output trial remains pending. Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. PR #594 is merged. | Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
@@ -47,6 +48,16 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 
 The [native audio evidence note](../2026-10-14-native-audio-session.md) retains both frame-observer trials, artifact hashes, and proof boundaries.
+
+The rejected `fab16419` WebKit artifact is `11867553708`, SHA-256 `3f3104b011bca3fc5c7e18e973e9ca72e278facd2da9c2ebfe59e44540482204`.
+Its clean-source receipt, ten source pins, and 525 uploaded child hashes verify.
+The trace locates the internal navigation error in `firstPlayable`, before watched-state or media assertions. The retry passes.
+[Playwright issue #42803](https://github.com/microsoft/playwright/issues/42803) describes a similar WebKit error class and links a fix shipped in 1.64.
+Our trace lacks the matching crash backtrace and loaded dependency version; the cause remains unproven.
+Playwright 1.64.0 remains the latest stable release checked on October 14 UTC.
+The [existing dependency audit](../2026-10-10-dependency-update/dependency-audit.json) reproduces a separate HTTP 204 assertion failure under its driver with both Chromium versions.
+The 1.63 pin and navigation assertions remain unchanged. A later passing run cannot diagnose the retained flake.
+
 PR #594's published Player digest is `sha256:f1b14af7ac729c0a4c94bf3e0ab81ab9aa2ceffa349ab0b3c66ab4ae35b14101`.
 Its Subtitles digest is `sha256:4302e8c63b9469e95ee25ada65727c4152cc1735777c2d7cbbf17525dc32cf0a`.
 Both apps' commit, main, and latest tags match. All four architecture revision labels and tested candidate manifests match exact main.

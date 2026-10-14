@@ -175,15 +175,19 @@ extension PlaybackProgressSafetyJourneys {
         }
     }
 
-    // Diagnostic control for the retained missing-frame failure: use the same
-    // pending seek, pause and late output, without a retired installation.
-    @Test func healthyPendingSeekToNineSupportsLateFrameObservation() async throws {
+    // The retained late-output control fails without a retired installation.
+    // Match early observation while preserving the seek and frame requirements.
+    @Test func healthyPendingSeekToNineSupportsEarlyFrameObservation() async throws {
         try await withSources(count: 1) { engine, sources in
             let source = sources[0]
             source.fixture.holdMedia = true
             let startup = source.start(engine)
             try await source.waitForMedia()
             let player = try #require(engine.player)
+            let item = try #require(player.currentItem)
+            let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+            item.add(output)
+            defer { item.remove(output) }
             try #require(engine.loading)
             try await engine.seek(to: 9)
             engine.pause(); try await drain(engine.writing, client: source.fixture.client)
@@ -192,7 +196,8 @@ extension PlaybackProgressSafetyJourneys {
             try #require(!engine.loading && engine.player === player)
             try #require(abs(player.currentTime().seconds - 9) < 0.1)
             try #require(player.timeControlStatus == .paused && player.rate == 0)
-            engine.resume(); try await decodedProgress(player)
+            try #require(player.currentItem === item && item.outputs.contains { $0 === output })
+            engine.resume(); try await decodedProgress(player, output: output)
             engine.pause(); try await drain(engine.writing, client: source.fixture.client)
             #expect(engine.seconds > 9 && engine.seconds < 12 && !engine.completed)
         }
