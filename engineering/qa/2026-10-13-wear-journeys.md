@@ -338,3 +338,39 @@ The hosted journey remains the owner for lifecycle behavior and visual acceptanc
 All 31 focused source checks pass after these repairs, including the existing inventory and workflow contracts.
 Source caps, whitespace checks, and the final independent source review pass.
 Hosted execution is pending; these local checks execute no Android runtime.
+
+## Another Activity resumes before teardown
+
+Both profiles at `9b0dcda95857407db408fb5112c4bc24203b46da` fail the same actual foreground wait.
+Both later component tests pass. Eighteen source pins, seven child hashes per profile, and complete cleanup verify.
+Both launch screenshots show the watch face. Power and lifecycle snapshots match the preceding failed trial.
+The event buffer resets successfully; the small profile retains 37 events and the large profile retains 41.
+Neither reports malformed events, byte truncation, event truncation, or reaching the tail limit.
+
+Both timelines start with this sequence:
+
+1. Create Wear and pause the resolved Home Activity.
+2. Resume Wear and stop Home.
+3. Create another Activity, represented by `other`.
+4. Pause Wear with `pauseBackTasks` and `userLeaving=true`.
+5. Resume `other` and stop Wear.
+6. Create the test-driver Activity for later teardown.
+
+This locates the displacement before scenario teardown. It does not identify the initiating caller or the other Activity's package.
+The `userLeaving` field is a platform observation, not proof of a physical user action.
+Ring-buffer limitations still apply despite the absence of truncation flags.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11861542395` | `6c33d0c62b6190999260888c38327536061e47803d2405f19522eafa60ca163b` |
+| Large round | `11861672556` | `ea874c88c9b6348f11ef72d4018c32109ef119c172074165cd64a172698fb566` |
+
+The next diagnostic refines only the uploaded role classification.
+It distinguishes another Activity in the resolved Home package, the target package, or the instrumentation package.
+A fixed map recognizes known Android and Wear system packages without uploading their names.
+An exact `android.service.dreams.DreamActivity` class match has the `system-dream` role.
+That label describes a class-name match; it does not establish an ambient state, system ownership, the initiating caller, or a complete cause.
+All unmatched packages and classes remain `other`.
+Raw component names, IDs, URIs, and unknown reasons remain private.
+The new isolated privacy control fails on the previous classifier and passes after refinement.
+All 32 focused source checks, source caps, and whitespace checks pass. Runtime acceptance remains open.

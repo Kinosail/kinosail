@@ -89,6 +89,28 @@ class WearEventProjectionTests(unittest.TestCase):
                     self.assertEqual(result["events"], [])
                     self.assertEqual(result["malformedEvents"], 1)
 
+    def test_other_activities_retain_safe_package_roles_without_names(self):
+        for target, expected in (
+            ("private.launcher/.Secret", "home-package"),
+            ("com.kinosail.player.dev/.Secret", "target-package"),
+            ("com.kinosail.player.dev.test/.Secret", "instrumentation-package"),
+            ("com.google.android.wearable.app/.Secret", "wearable-app"),
+            ("com.google.android.wearable.sysui/.Secret", "wearable-system-ui"),
+            ("com.google.android.wearable.setupwizard/.Secret", "wearable-setup"),
+            ("com.google.android.gms/.Secret", "play-services"),
+            ("com.android.systemui/.Secret", "system-ui"),
+            ("com.android.settings/.Secret", "system-settings"),
+            ("android/.Secret", "android-system"),
+            ("private.package/android.service.dreams.DreamActivity", "system-dream"),
+            ("private.package/.Secret", "other"),
+        ):
+            with self.subTest(role=expected):
+                data = f"I/wm_stop_activity( 1): [0,1,{target}]".encode()
+                result = MODULE.project(data, b"Activity: private.launcher/.Home\n")
+                self.assertEqual(result["events"], [{"event": "stop", "role": expected}])
+                for secret in ("private", "Secret", "com.google", "DreamActivity"):
+                    self.assertNotIn(secret, json.dumps(result))
+
 
 if __name__ == "__main__":
     unittest.main()

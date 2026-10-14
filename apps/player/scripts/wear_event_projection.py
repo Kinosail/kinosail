@@ -14,6 +14,17 @@ SCHEMA = {
 REASONS = {"resumeTopActivity", "realStart", "sleep", "pauseBackTasks", "finishActivity",
            "finish-imm", "finish-top", "completePause", "startActivity", "moveTaskToFront"}
 LIMIT = 1 << 20
+PACKAGE_ROLES = {
+    "com.kinosail.player.dev": "target-package",
+    "com.kinosail.player.dev.test": "instrumentation-package",
+    "com.google.android.wearable.app": "wearable-app",
+    "com.google.android.wearable.sysui": "wearable-system-ui",
+    "com.google.android.wearable.setupwizard": "wearable-setup",
+    "com.google.android.gms": "play-services",
+    "com.android.systemui": "system-ui",
+    "com.android.settings": "system-settings",
+    "android": "android-system",
+}
 
 
 def integer(value):
@@ -56,6 +67,13 @@ def project(data, home_output):
                         for p in ("com.kinosail.player.dev", "com.kinosail.player.dev.test")
                         for activity in ("EmptyActivity", "EmptyFloatingActivity", "BootstrapActivity")}:
             role = "test-driver"
+        if role == "other":
+            package, activity = target.split("/")
+            role = PACKAGE_ROLES.get(package, "other")
+            if home is not None and package == home.split("/")[0]:
+                role = "home-package"
+            if activity == "android.service.dreams.DreamActivity":
+                role = "system-dream"
         event = {"event": name, "role": role}
         if reason_index is not None:
             event["reason"] = fields[reason_index] if fields[reason_index] in REASONS else "other"
