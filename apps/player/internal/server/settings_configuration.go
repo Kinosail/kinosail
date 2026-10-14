@@ -79,7 +79,7 @@ var configurationLabels = map[string]string{ //nolint:gosec // These are display
 	"binaries.ffmpeg": "FFmpeg command", "binaries.ffprobe": "FFprobe command", "binaries.fpcalc": "Chromaprint command", "dlna.url": "DLNA address",
 	"integrations.google_cast.app_id":       "Google Cast receiver app ID",
 	"integrations.mcp.authorization_server": "MCP authorization server", "integrations.mcp.client_id": "MCP client ID", "integrations.mcp.client_secret": "MCP client secret", "integrations.mcp.introspection_url": "MCP token check address", "integrations.mcp.resource_url": "MCP resource address",
-	"integrations.oidc.client_id": "Single sign-on client ID", "integrations.oidc.client_secret": "Single sign-on client secret", "integrations.oidc.issuer": "Single sign-on issuer", "integrations.oidc.redirect_url": "Single sign-on return address",
+	"integrations.oidc.client_id": "Single sign-on client ID", "integrations.oidc.client_secret": "Single sign-on client secret", "integrations.oidc.identity_claim": "Single sign-on identity claim", "integrations.oidc.issuer": "Single sign-on issuer", "integrations.oidc.redirect_url": "Single sign-on return address",
 	"integrations.saml.metadata_url": "SAML provider metadata URL", "integrations.saml.metadata_xml": "SAML provider metadata XML",
 	"integrations.scim.token":            "SCIM provisioning token",
 	"integrations.scim.token_expires_at": "SCIM provisioning token expiration",
