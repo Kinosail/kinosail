@@ -63,3 +63,12 @@ Firefox times out during an earlier library navigation, before reaching the mani
 Its trace records a 30-second navigation timeout; the later failure screenshot shows the populated Library.
 That timeout remains unexplained and is not accepted as manifest-baseline evidence.
 Artifact `11903854976` has SHA-256 `5bc70e90c1894b18027e3829708b623ee7e7aa948b09db13af56e87111e0f14b`.
+
+## Repair
+
+The dashboard, inspector, and production Settings templates now declare the existing `/manifest.webmanifest` resource.
+The dashboard link belongs to its full-document shell, so partial content responses keep their existing shape.
+The sign-in template retains its original link.
+No manifest values, navigation controls, or service-worker behavior change.
+
+Hosted verification of the repair remains pending.
