@@ -264,7 +264,7 @@
 .subtitle-history-columns{padding:.75rem 0;color:var(--muted);font-size:.75rem}
 .subtitle-history-row{padding:1.25rem 0;border-top:1px solid var(--line);font-size:.88rem;line-height:1.6}
 .subtitle-history-title,.subtitle-history-change,.subtitle-history-meta{min-width:0;overflow-wrap:anywhere}
-.subtitle-history-title h3{margin:0;font-size:1rem;font-weight:650;line-height:1.5}.subtitle-history-title a{display:inline-block;min-height:24px;color:var(--text);text-decoration:none}.subtitle-history-title a:hover{text-decoration:underline;text-underline-offset:.2em}
+.subtitle-history-title h3{margin:0;font-size:1rem;font-weight:650;line-height:1.5}.subtitle-history-title a{display:inline-flex;align-items:center;min-height:44px;color:var(--text);text-decoration:none}.subtitle-history-title a:hover{text-decoration:underline;text-underline-offset:.2em}
 .subtitle-history-title small{display:block;margin-top:.25rem;color:var(--muted);font-size:.8rem}
 .subtitle-history-result{display:flex;align-items:baseline;gap:.75rem}.subtitle-history-action{color:var(--text);font-weight:650}.subtitle-history-language{color:var(--muted);font-size:.8rem;text-transform:uppercase}
 .subtitle-history-change p{margin:.25rem 0 0;color:var(--text);font-size:.85rem}.subtitle-history-match{display:block;margin-top:.5rem;color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}

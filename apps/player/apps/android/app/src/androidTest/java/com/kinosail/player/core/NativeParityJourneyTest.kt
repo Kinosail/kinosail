@@ -387,7 +387,10 @@ class NativeParityJourneyTest {
     @Test fun catalogGridKeepsPendingFailedEmptyAndLoadedStatesDistinct() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.mode = "pending"
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
+        if (tv) {
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onNodeWithText("Movies").performScrollTo().activate()
+        }
         else compose.onNodeWithText("Movies").activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading library").fetchSemanticsNodes().isNotEmpty() }
         capture("catalog-pending")
@@ -402,7 +405,10 @@ class NativeParityJourneyTest {
         fixture.mode = "ready"
         compose.onNodeWithText("Home").activate()
         waitText(if (tv) "Continue watching" else "Watching")
-        if (tv) compose.onNodeWithText("Movies").performScrollTo().activate()
+        if (tv) {
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onNodeWithText("Movies").performScrollTo().activate()
+        }
         else compose.onNodeWithText("Movies").activate()
         waitText("New Film")
         capture("catalog-loaded")

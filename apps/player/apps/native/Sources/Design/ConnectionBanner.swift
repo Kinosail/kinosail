@@ -38,12 +38,13 @@ struct ConnectionBanner: View {
             HStack(spacing: 12) { buttons }
             VStack(alignment: .leading, spacing: 8) { buttons }
         }
+        .controlSize(.large)
     }
 
     @ViewBuilder private var buttons: some View {
         #if os(iOS)
         Button(action: openDownloads) {
-            Label("Downloads", systemImage: "arrow.down.circle").frame(minHeight: 44)
+            Label("Downloads", systemImage: "arrow.down.circle")
         }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
         #endif
         Button {
@@ -51,9 +52,9 @@ struct ConnectionBanner: View {
             Task { await session.connection.check(client, force: true) }
         } label: {
             #if os(tvOS)
-            Text(session.connection.checking ? "Checking…" : "Reconnect").frame(minHeight: 44)
+            Text(session.connection.checking ? "Checking…" : "Reconnect")
             #else
-            Text(session.connection.checking ? "Checking…" : "Try again").frame(minHeight: 44)
+            Text(session.connection.checking ? "Checking…" : "Try again")
             #endif
         }
         .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()

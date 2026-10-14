@@ -59,6 +59,7 @@ private val ink = Color(0xFF0B0D0B)
 private val signal = Color(0xFFC4FF47)
 private val muted = Color(0xFFA0A79C)
 private val raised = Color(0xFF20271E)
+private val text = Color(0xFFF6F8F2)
 
 @Composable
 internal fun WatchApp(
@@ -75,7 +76,7 @@ internal fun WatchApp(
     val pager = rememberPagerState(pageCount = { if (timeline == null) 1 else 2 })
     val scope = rememberCoroutineScope()
     MaterialTheme(colorScheme = ColorScheme(primary = signal, onPrimary = Color(0xFF142000),
-        background = ink, onBackground = Color(0xFFF6F8F2), onSurface = Color(0xFFF6F8F2),
+        background = ink, onBackground = text, onSurface = text,
         surfaceContainer = raised, onSurfaceVariant = muted)) {
         AppScaffold {
             VerticalPagerScaffold(pagerState = pager) {
@@ -106,7 +107,7 @@ private fun RemotePage(
     var showingNotices by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().background(ink).verticalScroll(rememberScrollState())
-        .padding(horizontal = 22.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        .padding(horizontal = 16.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("KINOSAIL", modifier = Modifier.align(Alignment.CenterHorizontally),
             color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         if (remote.players.size > 1 || choosing) {
@@ -117,7 +118,8 @@ private fun RemotePage(
                     label = { Text("${player.name} · ${if (player.active) player.title else interfaceText("Nothing playing")}", maxLines = 1,
                         overflow = TextOverflow.Ellipsis) })
             }
-        } else if (remote.players.isNotEmpty()) Text(remote.selected?.name ?: interfaceText("Remote"), color = muted, fontSize = 12.sp)
+        } else if (remote.players.isNotEmpty()) Text(remote.selected?.name ?: interfaceText("Remote"), color = muted,
+            fontSize = 12.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
 
         val player = remote.selected
         if (timeline != null && player?.active != true) HeartLink(timeline, onHeartPage)
@@ -136,16 +138,18 @@ private fun RemotePage(
                     Text(clock(player.duration), color = muted, fontSize = 11.sp)
                 }
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
                 Control("−15", interfaceText("Back 15 seconds"), !remote.busy) { remote.command("backward") }
                 Control(if (player.playing) "pause" else "play", interfaceText(if (player.playing) "Pause" else "Play"), !remote.busy,
                     primary = true) { remote.command(if (player.playing) "pause" else "play") }
                 Control("+30", interfaceText("Forward 30 seconds"), !remote.busy) { remote.command("forward") }
             }
             if (player.duration > 0) Button(onClick = { seeking = player }, modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = raised, contentColor = text),
                 label = { Text(interfaceText("Go to time")) })
             if (!player.audio && player.duration > 0 && timeline?.tracking != true) {
                 Button(onClick = { onStartHeart(player) }, modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = raised, contentColor = text),
                     label = { Text(interfaceText("Start heart graph")) })
             }
         } else {
@@ -161,6 +165,7 @@ private fun RemotePage(
             Text(it, color = muted, fontSize = 12.sp, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
         Button(onClick = { showingThanks = !showingThanks }, modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = raised, contentColor = text),
             label = { Text("Made possible by") })
         if (showingThanks) {
             Text("Thank you to the people behind Wear Compose and the Android tools that make this remote possible. FFmpeg powers media tools on your Server.", fontSize = 12.sp)
@@ -189,7 +194,7 @@ private fun Control(label: String, description: String, enabled: Boolean, primar
     val scope = rememberCoroutineScope()
     Button(onClick = { scope.launch { command() } }, enabled = enabled,
         colors = ButtonDefaults.buttonColors(containerColor = if (primary) signal else raised,
-            contentColor = if (primary) ink else Color.White),
+            contentColor = if (primary) ink else text),
         modifier = Modifier.size(48.dp).semantics { contentDescription = description },
         label = {
             if (label in setOf("play", "pause")) Image(painterResource(if (label == "play") R.drawable.remote_play else R.drawable.remote_pause),
