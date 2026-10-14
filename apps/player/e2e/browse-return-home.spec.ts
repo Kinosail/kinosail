@@ -52,9 +52,19 @@ async function assertHomeReturn(page: Page, before: Snapshot, href: string, sele
   await expect(page.locator(selector), "Q14 Home acceptance: original action regains focus").toBeFocused({ timeout: 4000 });
   await settle(page, href);
   const state = await snapshot(page, href);
+  await assertSelectedBounds(page, state, selector);
   expect({ path: state.path, values: state.values, profile: state.profile }).toEqual({ path: before.path, values: before.values, profile: before.profile });
   expect(Math.abs(state.scroll.x - before.scroll.x), "Q14 Home acceptance: settled horizontal position").toBeLessThanOrEqual(2);
   expect(Math.abs(state.scroll.y - before.scroll.y), "Q14 Home acceptance: settled vertical position").toBeLessThanOrEqual(2);
+}
+
+async function assertSelectedBounds(page: Page, state: Snapshot, selector: string) {
+  const actual = await page.locator(selector).boundingBox();
+  expect(actual, "Home prerequisite: visible selected action bounds").not.toBeNull();
+  expect(actual!.height, "Home prerequisite: visible selected action height").toBeGreaterThan(0);
+  expect(state.selected, "Home prerequisite: recorded selected action").not.toBeNull();
+  expect(state.selected!.top, "Home prerequisite: recorded selected action top").toBeCloseTo(actual!.y, 0);
+  expect(state.selected!.bottom, "Home prerequisite: recorded selected action bottom").toBeCloseTo(actual!.y + actual!.height, 0);
 }
 
 async function assertColdBoundary(page: Page, info: TestInfo, before: Awaited<ReturnType<typeof record>>, href: string) {
@@ -105,6 +115,7 @@ test("cold native Back restores the scrolled Home Movies destination without a L
   const before = await record(page, info, "home-before", href);
   expect(before.state.profile).toBe("local-owner");
   expect(before.state.scroll.y, "Home prerequisite: a scrolled destination").toBeGreaterThan(100);
+  await assertSelectedBounds(page, before.state, `.destination-card[href="${href}"]`);
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(`${origin}${href}`);
   await expect(page.locator("#library"), "destination prerequisite: real Go Movies grid").toBeVisible();

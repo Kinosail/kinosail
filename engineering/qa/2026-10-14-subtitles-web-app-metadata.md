@@ -71,4 +71,29 @@ The dashboard link belongs to its full-document shell, so partial content respon
 The sign-in template retains its original link.
 No manifest values, navigation controls, or service-worker behavior change.
 
-Hosted verification of the repair remains pending.
+## Verified repair and delivery
+
+At `3b3e2ecd5cfe17bfa79f68a6a1aae33eaef5d408`, run `38586349263` passes all seven metadata cases in each engine.
+Chromium also processes the expected manifest without errors.
+The surrounding layout checks pass with zero overflow, terminal skeletons, identified layout shifts, or accessibility violations.
+Chromium records 97 Player and 111 Subtitles measurements. Firefox and WebKit each record 42 and 46.
+All 21 new page screenshots were inspected. The 33 accessibility audits report zero violations.
+
+| Engine | Artifact | Archive SHA-256 |
+| --- | --- | --- |
+| Chromium | `11907410054` | `971bad5030568d4f1d561ffb4c3665277c363a5daa3a5d95c8bc721a49cd7724` |
+| Firefox | `11905144734` | `a9ceab33fe63ee5266a56b9cf58f09a33365ba32a3133e2c9066c7ea067f4825` |
+| WebKit | `11905499085` | `3fec902c0e87627673361bc67f4bda52c9beb027ae249474be784db05154642e` |
+
+Each archive's clean revision and all nine direct script pins verify.
+The retained fixture suites pass separately: 35 passed and two skipped in Chromium and WebKit, and 37 passed in Firefox.
+Those isolated fixtures are not described as populated-server proof.
+
+Required CI `38586349662` passes. The Subtitles quick Go suite and all 38 selected Chromium smoke tests pass.
+The hosted PR checkout `31c372bb06cabaff45464476adfacf2575f4ad8c` has the same tracked tree as the task commit.
+The local `verify-changed` invocation was plan-only under the runtime hold.
+
+PR #602 merges with commit `9457698061136b33fb3eca0f1c9858ae60a4b66a`.
+A fetched ancestry check proves that the reviewed task commit is included in remote main.
+Exact-main CI and publication remain pending at this checkpoint.
+The earlier Firefox timeout remains unexplained. OS installation, deployment, and physical-device acceptance remain separate.
