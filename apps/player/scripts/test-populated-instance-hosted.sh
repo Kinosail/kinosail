@@ -6,6 +6,11 @@ if [[ "${CI:-}" != true || "${GITHUB_ACTIONS:-}" != true || "${RUNNER_OS:-}" != 
   echo 'Populated admission requires a disposable Linux Actions runner' >&2
   exit 2
 fi
+suite="${KINOSAIL_POPULATED_SUITE:-admission}"
+case "$suite" in
+  admission|selected) ;;
+  *) echo 'Unknown populated fixture suite' >&2; exit 2 ;;
+esac
 output="${KINOSAIL_E2E_ARTIFACT_DIR:-}"
 if [[ "$output" != /* || ! -d "$output" || -L "$output" || ! -d "${RUNNER_TEMP:-}" ]]; then
   echo 'Populated admission requires an existing private artifact directory and runner temporary directory' >&2
@@ -40,7 +45,7 @@ cleanup() {
   rm -rf -- "${KINOSAIL_TEST_ROOT:?}" || cleanup_status=1
   if [[ ! -e "$KINOSAIL_TEST_ROOT" ]]; then fixture_removed=1; else cleanup_status=1; fi
   if [[ "$status" == 0 && "$cleanup_status" != 0 ]]; then status=1; fi
-  python3 - "$output/fixture-lifecycle.json" "$status" "$cleanup_status" "$remaining_containers" "$remaining_volumes" "$fixture_removed" "$stage" "$trust_removed" <<'PY'
+  python3 - "$output/fixture-lifecycle.json" "$status" "$cleanup_status" "$remaining_containers" "$remaining_volumes" "$fixture_removed" "$stage" "$trust_removed" "$suite" <<'PY'
 import json,sys
 from pathlib import Path
 result,cleanup,containers,volumes,removed=map(int,sys.argv[2:7])
@@ -48,7 +53,7 @@ Path(sys.argv[1]).write_text(json.dumps({'result':'passed' if result==0 else 'fa
     'level':'info' if result==0 else 'error','stage':sys.argv[7],
     'exitCode':result,'cleanupExitCode':cleanup,'remainingContainers':containers,
     'remainingVolumes':volumes,'privateFixtureRemoved':bool(removed),
-    'browserTrustRemoved':sys.argv[8]=='1'},indent=2)+'\n')
+    'browserTrustRemoved':sys.argv[8]=='1','suite':sys.argv[9]},indent=2)+'\n')
 PY
   exit "$status"
 }
@@ -92,10 +97,15 @@ export KINOSAIL_TEST_TOTP_SECRET
 KINOSAIL_E2E_URL="$(./scripts/test-instance.sh url)"
 export KINOSAIL_E2E_URL
 title='Connection choices stay optional and secure by default'
-stage=connection-settings
-pnpm --dir e2e exec playwright test test-instance.spec.ts --grep "$title" --project=chromium --workers=1 --retries=0 --max-failures=1
+if [[ "$suite" == admission ]]; then
+  stage=connection-settings
+  pnpm --dir e2e exec playwright test test-instance.spec.ts --grep "$title" --project=chromium --workers=1 --retries=0 --max-failures=1
+else
+  stage=selected-suite
+  ./scripts/test-instance.sh browser --project=chromium --retries=0 --max-failures=1
+fi
 stage=browser-result
-python3 - "$output/results-chromium.json" "$title" <<'PY'
+python3 - "$output/results-chromium.json" "$title" "$suite" <<'PY'
 import json,sys
 from pathlib import Path
 report=json.loads(Path(sys.argv[1]).read_text())
@@ -103,12 +113,14 @@ def specs(suite):
     yield from suite.get('specs',[])
     for child in suite.get('suites',[]):yield from specs(child)
 cases=[spec for suite in report['suites'] for spec in specs(suite)]
-assert len(cases)==1 and cases[0]['title']==sys.argv[2]
-tests=cases[0]['tests'];assert len(tests)==1
-test=tests[0];assert test['projectName']=='chromium' and test['status']=='expected'
-assert len(test['results'])==1
-result=test['results'][0]
-assert result['status']=='passed' and result['retry']==0 and not result.get('errors')
+if sys.argv[3]=='admission':assert len(cases)==1 and cases[0]['title']==sys.argv[2]
+else:assert len(cases)>=81
+for case in cases:
+    tests=case['tests'];assert len(tests)==1
+    test=tests[0];assert test['projectName']=='chromium' and test['status']=='expected'
+    assert len(test['results'])==1
+    result=test['results'][0]
+    assert result['status']=='passed' and result['retry']==0 and not result.get('errors')
 assert not report.get('errors')
 PY
 stage=complete

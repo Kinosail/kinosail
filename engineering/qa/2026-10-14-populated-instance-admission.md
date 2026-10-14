@@ -80,4 +80,39 @@ The failing log SHA-256 is `3977a2056bfa35ecbe36d5f0cd7c80ba540626f12ea1d5ba02bc
 The full source suite passes 197 tests with five hosted scanner integration skips.
 Its log SHA-256 is `fe9a32bff35639cf3d182b6ae7ed5ce960b821b39d99ea135c36803ec1ec30a5`.
 Workflow validation, Actionlint, ShellCheck, shell syntax, source limits, and whitespace checks pass.
-The repaired hosted browser journey remains pending.
+The repaired hosted browser journey passes at `18f91de79793fa876af1c31faf403d5f884b71a7` in run `38608420461`.
+Artifact `11917515109` has SHA-256 `c6f69ce1df656284985300bedacbfb2d0f34f21ac8102c7dab0925418a6d562b`.
+Its clean source, ten source pins, eleven child hashes, and twelve checksum entries verify.
+The derived fixture image identifies the same revision.
+The connection-settings journey executes once without retries or global errors.
+It passes accessibility assertions and captures 320, 390, and 1440-pixel layouts.
+All three screenshots were inspected; full-page captures alone do not establish viewport occlusion behavior.
+Cleanup verifies zero owned containers and volumes, removed private data, and removed browser trust.
+PR #605 is ready; required CI and protected delivery remain pending.
+
+## Broader selected suite
+
+The next explicit `selected` mode reuses the existing 22-spec browser command.
+It generates the existing production-template fixtures and retains browser output outside the temporary fixture root.
+The inventory maps 71 previously unpassed populated cases into that selection.
+Exact identity reconciliation finds five more populated cases under alternate skip labels, plus five production-template fixture cases.
+The broader selection therefore targets all 81 previously unpassed cases in those 22 spec files.
+The command must run with one worker, no retries, and stop after its first failure.
+Each emitted case must pass exactly once; skipped, empty, retried, or failed reports cannot establish acceptance.
+The report must contain at least those 81 cases, and later artifact inspection will reconcile their exact identities.
+Unknown modes must reject before fixture side effects.
+Success and failure must retain the existing resource and certificate cleanup checks.
+
+Isolated lifecycle controls cover unknown selection, omitted execution, skipped reports, and cleanup after browser failure.
+They cannot establish actual broader-suite acceptance.
+The original admission mode remains the default and keeps its existing time limits.
+Independent review identifies that unrestricted forwarding could override the existing single-worker option.
+Six negative shell controls reproduce unsupported arguments reaching fixture generation before rejection.
+The helper now accepts only the three exact hosted options and rejects everything else before generating fixtures.
+Their failing log SHA-256 is `620f710c189b8800a0febd7663c827deba0af800e814098c9d7ee16b9bdc1e67`.
+An 80-case negative control also fails before raising the corrected minimum to 81.
+Its log SHA-256 is `2d7deddf1a904e95215460adacfde359f92502636bbefb8228536d5e824cd3ff`.
+After these corrections, all 201 source contracts pass with five hosted scanner integration skips.
+The final log SHA-256 is `ccc082802166d64482e563fc63f135c7869e619808b20e6cbb3a5cefea48108e`.
+Independent review confirms the worker guard and corrected count check, with no further source blockers.
+Actual selected-suite execution and exact identity reconciliation remain pending.
