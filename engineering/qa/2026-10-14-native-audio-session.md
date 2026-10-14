@@ -221,4 +221,41 @@ The hosted Android job now runs `:app:lintDebug` and retains its XML report as `
 
 All 18 workflow contract tests, actionlint 1.17.0, source limits, and whitespace checks pass locally.
 The existing lint rule supplies the failure check; no duplicate test is added for an annotation-only repair.
-Hosted Android lint acceptance remains pending. Local Gradle execution remains held.
+Hosted Android lint passes at `5db7b0cd4b94b6cfb352e05bf395c81fd4422274`.
+Run `38515090038`, job `115692500508`, completes the Android build, lint, and unit-test command successfully.
+Artifact `11871951905` has SHA-256 `54a54ae65ac39d1b0bad62e3edd00715fa220c270ff8b92e99c3068810551f3b`.
+Its report has zero errors, 26 warnings, and one hint. All 43 opt-in errors are absent.
+The report SHA-256 is `a6f0ca7ff88d826a4438558a448eb7f1f0ed7a6d0d2fddb9b2780941ad09411d`.
+The superseded aggregate run was canceled after this job passed. Local Gradle execution remains held.
+
+## Reconciled hosted acceptance
+
+Deep run `38511895265` completes successfully at `118af96260a69ea4010726b6524cbf0688ff9e84`.
+Its Chromium artifact `11872106476` passes 814 distinct tests, with 279 skipped-only cases and zero retries.
+The archive SHA-256 is `dc927a60fdacf04c6597f4eea6fc724e1a408ece4451a0170a71460f7d9f3f48`.
+Both isolated login controls execute once and pass. The delayed and blocked responses remain independently controlled.
+
+The following evidence uses reconciled revision `b57e3313a63cc0e7b799b1fc77eae27079c92950` in deep run `38513995698`.
+GitHub digests and the retained artifact checks agree.
+
+| Surface | Accepted result | Artifact | Archive SHA-256 |
+| --- | --- | --- | --- |
+| Native | iOS 336 and tvOS 322 passes; one skip each; zero runtime warnings | `11871886606` | `fdf19077f18f1a0cacc55ea398409df9a646bac787fb33bf81988f4eee0d0934` |
+| Android captions | Sixteen positive executions; intended negative-control rejection; all owned resources stopped | `11871702395` | `3a2be62727aa96b0fec746a446baaff8054ed0fc021e860e8da6a8ee46648d41` |
+| Player Firefox | 810 distinct passes; 283 skipped-only cases; zero retries | `11871596333` | `e3c6bf848d49b407af74f149409e5ce76f7b8318b7c03f85695d7168a294d21b` |
+| Player WebKit | 808 distinct passes; 285 skipped-only cases; zero retries | `11871613514` | `9aafa45aa984d6da83edb9857be0c9ea0978bc0139195604ba450ff809164873` |
+| Subtitles Firefox | 99 passes; zero skips or retries | `11870989784` | `8ff57e2192902e38bf664f55c0149ed17fe7e7142a280d88635a3907f91c8916` |
+| Subtitles WebKit | 99 passes; zero skips or retries | `11871136554` | `20094dfbeae2d06f5e628987deb995972c994187ecaf2693d2be500743fcc044` |
+| Subtitles Chromium | 99 passes; zero skips or retries | `11871253839` | `27b54c227eb96d5dca42cc958c2b171ddf157a5235fea882a3cfaa33452085b0` |
+| Wear small round | Three selected journeys; foreground and cleanup checks pass | `11870784777` | `9999c16414406e1c2686dc84934106be0aa325b9c71cbcd27d31065063227111` |
+| Wear large round | Three selected journeys; foreground and cleanup checks pass | `11871735079` | `a4b1e63de46e55fb8912d2f3644eb9987c1197c7b75feac22198e2d881c13332` |
+
+The native gate receipts agree with independently read Xcode summaries and test trees.
+The Android check verifies eight source pins, six fixture pins, 57 child hashes, and four independently measured pixel comparisons.
+Browser checks verify ten source pins per artifact and every recorded child hash.
+Both login controls pass once in Firefox and WebKit. These are isolated HTTP controls, not populated-server journeys.
+
+Each Wear artifact verifies 17 source pins, eight child hashes, and four screenshots.
+The round launch and recreated views retain readable headings, copy, and attribution.
+Permission screenshots use square fixtures. Round permission interaction, scrolling, pairing, sensors, and battery behavior remain unverified.
+These results do not establish physical-device or deployment acceptance.
