@@ -105,7 +105,7 @@ elif [[ "$suite" == selected ]]; then
   ./scripts/test-instance.sh browser --project=chromium --retries=0 --max-failures=1
 else
   stage=browse-suite
-  pnpm --dir e2e exec playwright test collections-loading.spec.ts curation-count.spec.ts dependency-thanks.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts mobile-quick-connect.spec.ts navigation-repeat.spec.ts show-card-viewer-policy.spec.ts show-episode-ledger.spec.ts static-compression.spec.ts --project=chromium --workers=1 --retries=0 --max-failures=1
+  pnpm --dir e2e exec playwright test browse-readability.spec.ts collections-loading.spec.ts curation-count.spec.ts dependency-thanks.spec.ts layout-audit-library.spec.ts layout-audit-shell.spec.ts mobile-quick-connect.spec.ts navigation-repeat.spec.ts show-card-viewer-policy.spec.ts show-episode-ledger.spec.ts static-compression.spec.ts --project=chromium --workers=1 --retries=0 --max-failures=1
 fi
 stage=browser-result
 python3 - "$output/results-chromium.json" "$title" "$suite" <<'PY'
@@ -118,7 +118,7 @@ def specs(suite):
 cases=[spec for suite in report['suites'] for spec in specs(suite)]
 if sys.argv[3]=='admission':assert len(cases)==1 and cases[0]['title']==sys.argv[2]
 elif sys.argv[3]=='selected':assert len(cases)>=82
-else:assert len(cases)==21
+else:assert len(cases)==22
 for case in cases:
     tests=case['tests'];assert len(tests)==1
     test=tests[0];assert test['projectName']=='chromium' and test['status']=='expected'
