@@ -145,11 +145,21 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
         }
         const rail = await index.boundingBox(), libraryDock = await nav.boundingBox();
         const libraryHeader = await page.locator(".app-header").boundingBox();
-        let railReachable;
+        let railReachable, letterControls = [], indexFocusRetained;
         if (railVisible) {
-          const links = await index.locator("[data-title-letter]").evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().toJSON()));
-          railReachable = Boolean(rail && libraryDock && libraryHeader && links.length && rail.y >= libraryHeader.y + libraryHeader.height - 1 &&
-            rail.y + rail.height <= libraryDock.y + 1 && links.every(r => r.top >= rail.y - 1 && r.bottom <= rail.y + rail.height + 1));
+          letterControls = await index.locator("[data-title-letter]").evaluateAll(nodes => nodes.map(node => {
+            const style = getComputedStyle(node), focused = node === document.activeElement;
+            const outline = focused && node.matches(":focus-visible") && style.outlineStyle !== "none" ?
+              Math.max(0, (parseFloat(style.outlineWidth) || 0) + (parseFloat(style.outlineOffset) || 0)) : 0;
+            return {rect: node.getBoundingClientRect().toJSON(), focused, outline};
+          }));
+          indexFocusRetained = railFixed || letterControls[0]?.focused;
+          railReachable = Boolean(rail && libraryDock && libraryHeader && letterControls.length && indexFocusRetained &&
+            (!railFixed || (rail.y >= libraryHeader.y + libraryHeader.height - 1 && rail.y + rail.height <= libraryDock.y + 1)) &&
+            letterControls.every(({rect: r, outline}) => r.width > 0 && r.height > 0 &&
+              r.top >= rail.y - 1 && r.bottom <= rail.y + rail.height + 1 &&
+              r.left >= rail.x - 1 && r.right <= rail.x + rail.width + 1 &&
+              r.top - outline >= libraryHeader.y + libraryHeader.height - 1 && r.bottom + outline <= libraryDock.y + 1));
         } else {
           await jump.locator("[data-title-jump-open]").click();
           const dialog = jump.locator("[data-title-jump-dialog]");
@@ -158,7 +168,8 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
           await dialog.waitFor({state: "hidden"});
           railReachable = true;
         }
-        const overlayResult = {flow: probe.stage, viewport, savedTabs, railVisible, railFixed, rail, libraryDock, libraryHeader, railReachable,
+        const overlayResult = {flow: probe.stage, viewport, savedTabs, railVisible, railFixed, rail, letterControls, indexFocusRetained,
+          libraryDock, libraryHeader, railReachable,
           userAgentFixture: "iPhone web install affordance; browser engine unchanged", stable: railReachable};
         results.push(overlayResult);
         if (!railReachable) throw new Error("Player title index is obscured by its navigation");
