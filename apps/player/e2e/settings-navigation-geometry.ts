@@ -56,10 +56,22 @@ export async function verifySettingsNavigation(page: Page, info: TestInfo, notic
     baseURL: new URL(page.url()).origin, storageState: await page.context().storageState(),
     serviceWorkers: "block", ignoreHTTPSErrors: false, viewport: { width: 1440, height: 900 },
   });
+  let primaryFailed = false;
   try {
     await verifyDeferredNavigation(await context.newPage(), info, noticeExpected);
+  } catch (error) {
+    primaryFailed = true;
+    throw error;
   } finally {
-    await context.close();
+    let closeFailed = false, evidenceFailed = false;
+    try { await context.close(); }
+    catch { closeFailed = true; }
+    try {
+      await info.attach(`settings-navigation-${noticeExpected}-context-cleanup.json`, {
+        body: JSON.stringify({ primaryFailed, closed: !closeFailed }), contentType: "application/json",
+      });
+    } catch { evidenceFailed = true; }
+    if (!primaryFailed && (closeFailed || evidenceFailed)) throw new Error("Controlled settings context cleanup failed");
   }
 }
 
