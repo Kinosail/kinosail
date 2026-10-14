@@ -27,8 +27,11 @@ The body-target trial also fails at `a9059357` and is reverted; bounded scroll d
 The strengthened adjacent Back journey passes at `e663b5df`, restoring 120 pixels and all 34 titles in the same document.
 The recovery fixture now finishes real startup and verifies a paused, ready state before injection; all three hosted checks pass at `bf3e43b5`.
 That run reaches the rapid failure and records HTMX aligning `main`, followed by smooth scrolling from zero to 22 pixels.
-The pending repair gives successful title-filter navigation an explicit instant page-top operation while preserving request generation and Back restoration.
-The original rapid helper is restored without diagnostic wrappers. Hosted repair and nonzero Back verification are pending.
+Commit `0e1a9e50` gives successful title-filter navigation an explicit instant page-top operation while preserving request generation and Back restoration.
+All 87 selected cases pass without retries or skips, including the original rapid helper without diagnostic wrappers.
+Thirteen retained geometry receipts settle at zero; the nonzero Back journey restores 120 pixels and all 34 titles.
+A new actual-Server layout flow extends rapid select-and-clear coverage to all three browser engines at four sizes.
+That extension and current-head required checks remain pending; physical-device acceptance is separate.
 The [populated-instance note](../2026-10-14-populated-instance-admission.md) records the failures, diagnosis, and exact evidence.
 
 PRs #587, #592, #593, #594, #595, and #598 are merged with fetched ancestry proof.
@@ -52,10 +55,12 @@ The required Go replay passes, while its original CLI HTTP 503 remains undiagnos
 The [geometry note](../2026-10-14-browse-return-geometry.md) retains the failed baseline, accepted receipts, and delivery boundary.
 
 At `7fce6b94`, dedicated download run `38595079268` passes all sixty cases without retries.
-It covers twelve isolated browser controls, forty-seven disposable Server cases, and one phone case.
+It covers fifty isolated controls and ten actual disposable Server executions, including one phone hit-target.
+The 47-case Server group contains nine real Server cases and 38 isolated controls.
 Artifact `11909367689` has SHA-256 `01bb6ed7c5c5ecefd83f92d0692af86220746e02f97cf2f809fcb70d737c7016`.
 All 3,537 selected source pins, three safe-file hashes, final source identity, and process cleanup verify.
-This reconciles eight skipped-only full-suite cases with dedicated current-revision evidence.
+The pinned ordinal-to-title admission reconciles eight skipped-only cases with historical evidence at that revision.
+These are eight isolated controls; the reconciliation does not establish current-head or all-engine acceptance.
 
 PR #604 repairs the reproduced layout login readiness defect at `8f63db42`.
 Both failing baseline controls returned early and requested Library before Home initialized, including on their configured retry.
@@ -95,7 +100,8 @@ Artifact `11920844630` verifies exact clean source, 590 child hashes, 591 checks
 Its paced title checks pass, but their added pause may conceal the earlier rapid-toggle failure.
 The restored rapid baseline and ineffective body-target trial both reproduce the 22-pixel failure.
 The deliberate late-resume loading control passes. The separate recovery-layout injection now has its own real-startup prerequisite.
-The production scroll cause remains under investigation. Local runtime remains held.
+The subsequent HTMX alignment diagnosis and explicit page-top repair pass the original rapid control at `0e1a9e50`.
+Its exact source, 591 child hashes, 592 checksums, and complete cleanup verify. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
@@ -111,8 +117,8 @@ The campaign goal remains active. Complete product, deployment, and physical-dev
 | Android | At `c47a0cd3`, all sixteen caption executions pass. The captions-off control reaches its intended pixel rejection. Eight source pins, six fixture pins, 57 child hashes, and cleanup verify. | Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Wear | At `c47a0cd3`, both profiles pass three tests. Seventeen source pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight screenshots were inspected. | The small permission component capture cuts off part of the lower Sponsor control. Full scrolling accessibility, paired sessions, enlarged type, sensors, battery, and physical input remain open. |
-| Publication and deployment | PR #604 has verified exact-main CI and publication for both apps at `be52f79d1f4c81a24954df15b7ee271b7799a1b5`. PR #605 is merged after required CI and admission pass. | PR #605 exact-main publication, deployment, TLS, and physical playback remain unverified. |
-| Runtime image security | Exact-main `be52f79d` passes all nine publication jobs for both apps. Both architecture labels and tested candidate manifests match their published images. | PR #605 exact-main publication and deployment remain unverified. |
+| Publication and deployment | PR #605 has verified exact-main CI and publication for both apps at `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`. | PR #606 delivery, deployment, TLS, and physical playback remain unverified. |
+| Runtime image security | Exact-main `0d09639c` passes all nine publication jobs for both apps. Both architecture labels and tested candidate manifests match their published images. | PR #606 exact-main publication and deployment remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 

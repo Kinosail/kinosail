@@ -352,3 +352,42 @@ Hosted acceptance must include that original rapid control, paced responsive che
 Existing HTMX transport controls separately cover pending, loaded, empty, failed, and overlapping responses.
 Those controlled-response cases are isolated browser evidence; populated navigation and physical-device proof remain separate.
 Independent source review finds no blockers. Hosted acceptance of this repair is pending.
+
+
+## Accepted rapid scrolling and nonzero history
+
+Run `38631845671` at `0e1a9e50c6a73548cdf81136b8f492e3de800aa8` passes all 87 selected executions.
+All 82 target identities pass: 77 populated journeys and five isolated production-template cases.
+There are no skips, retries, flakes, or global errors.
+Artifact `11926638820` has SHA-256 `75bd76468e5b808b42dccd1f3a920fbe96e8450c6c029d1cd0a1bf09903c9f8a`.
+Ten input pins, 22 spec pins, helper pins, 591 child hashes, and 592 checksum entries verify against the exact clean source.
+The derived image identifies that revision. No containers or volumes remain; the private fixture and browser trust are removed.
+
+The original rapid interaction and all four paced viewport pairs pass without diagnostic wrappers.
+All thirteen geometry receipts settle at zero and retain the same document across each paced pair.
+Cleared content has four cards, no pending state, and no horizontal overflow. The accessibility assertions pass.
+The desktop retains a 22-pixel scroll extent; both phone extents are nonzero at 887 and 610 pixels.
+The 1920 × 1080 page has no scroll extent, so its zero position alone is not a scroll counterexample.
+Direct inspection of four unique cleared screenshots confirms populated content and responsive navigation.
+The rapid and paced desktop screenshots match byte for byte.
+All three playback-recovery prerequisites also pass, with paused, ready media, no seek, and no native error before synthetic injection.
+
+The adjacent real-Server history journey passes in attempt two of run `38631861843` at the same revision.
+Artifact `11927820652` has SHA-256 `bca2564f0fa7f683378ccf07db83010f6f6e4ce040d17ecb69f6c8a8c9739188`.
+All 160 source pins, three safe-file hashes, clean source identity, and process cleanup verify.
+It records 120 pixels before selection, zero after selection, and 120 after Back.
+All 34 titles and letter focus return in the same document, with an actual Server history request.
+The first attempt failed before browser execution while verifying a Go dependency checksum through an HTTP/2 service error.
+The unchanged failed-job replay preserves checksum verification and has no browser retry.
+Original history attachments are not uploaded; this evidence is the admitted safe observation receipt.
+
+## Cross-browser coverage gap
+
+The selected populated runner executes Chromium. Existing title-overlay layout checks use reduced motion and do not clear the active letter.
+A separate actual-Server flow now exercises immediate select-and-clear behavior with normal motion in the three existing layout engines.
+It uses the existing four-title catalog at 1440 × 900, 390 × 650, 390 × 844, and 1920 × 1080.
+Each flow requires four-to-one-to-four results, first-result focus, the same document, and settled zero scroll without horizontal overflow.
+Receipts retain scroll extent and samples; screenshots follow assertions, so capture does not delay clearing.
+The flow uses no mocked responses, motion stubs, or production-only test seam.
+Independent source review finds no blockers for hosted execution. Source syntax, whitespace, and source limits pass.
+Hosted acceptance of this added flow remains pending. Physical TV, devices, deployment, and full-product acceptance remain separate.
