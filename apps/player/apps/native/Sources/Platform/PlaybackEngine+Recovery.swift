@@ -4,12 +4,12 @@ import Foundation
 import Synchronization
 
 extension PlaybackEngine {
-    func install(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, failure: Error? = nil) async throws {
+    func install(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, installation: UUID, failure: Error? = nil) async throws {
         var error = failure
-        defer { if generation == attempt { recoveringNetwork = false; recoveryPosition = nil; nativeRecoveryPosition = nil } }
+        defer { if generation == attempt, self.installation == installation { loading = false; recoveringNetwork = false; recoveryPosition = nil; nativeRecoveryPosition = nil } }
         while true {
             if let error {
-                try check(attempt)
+                try check(attempt, installation: installation)
                 guard Self.isNetworkFailure(error), networkRecoveries < 8 else { throw error }
                 networkRecoveries += 1
                 networkStableSince = nil
@@ -17,15 +17,19 @@ extension PlaybackEngine {
                 message = "Connection interrupted. Reconnecting…"
                 try await Task.sleep(for: .seconds(min(8, pow(2, Double(networkRecoveries - 1))) + Double.random(in: 0...0.5)))
             }
-            try check(attempt)
+            try check(attempt, installation: installation)
             do {
-                try await installSource(details: details, compatible: compatible, at: recoveryPosition ?? nativeRecoveryPosition ?? position, attempt: attempt)
+                try await installSource(details: details, compatible: compatible, at: recoveryPosition ?? nativeRecoveryPosition ?? position, attempt: attempt, installation: installation)
                 return
-            } catch let next { error = next }
+            } catch let next {
+                try check(attempt, installation: installation)
+                error = next
+            }
         }
     }
 
-    func installSource(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID) async throws {
+    func installSource(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, installation: UUID) async throws {
+        try check(attempt, installation: installation)
         guard let client, let item = currentItem else { throw CancellationError() }
         let url: URL
         if compatible {
@@ -44,14 +48,14 @@ extension PlaybackEngine {
         player = nil
         usingCompatibility = compatible
         let local = try await transport.open(url: url, itemID: item.id, client: client)
-        try await installPlayer(url: local, item: item, position: position, attempt: attempt)
+        try await installPlayer(url: local, item: item, position: position, attempt: attempt, installation: installation)
     }
 
-    func installPlayer(url: URL, item: MediaItem, position: Double, attempt: UUID) async throws {
-        try check(attempt)
+    func installPlayer(url: URL, item: MediaItem, position: Double, attempt: UUID, installation: UUID) async throws {
+        try check(attempt, installation: installation)
         bufferedRanges = []
-        try AVAudioSession.sharedInstance().setCategory(.playback, mode: item.isAudio ? .default : .moviePlayback)
-        try AVAudioSession.sharedInstance().setActive(true)
+        try await PlaybackAudioSession.activate(audio: item.isAudio, session: attempt)
+        try check(attempt, installation: installation)
         let retainedPosition = recoveryPosition ?? nativeRecoveryPosition ?? position
         nativeRecoveryPosition = nil
         let nextItem: AVPlayerItem
@@ -83,7 +87,7 @@ extension PlaybackEngine {
         // AVPlayer also jumps automatically while loading. Only AVKit's
         // user-navigation delegate represents a native scrub to retain.
         presentation.userNavigated = { [weak self, weak next] active, time in
-            guard let self, let next, active === next, self.player === next, self.generation == attempt,
+            guard let self, let next, active === next, self.player === next, self.generation == attempt, self.installation == installation,
                   self.loading || self.recoveringNetwork, (try? Input.position(time)) != nil else { return }
             self.nativeRecoveryPosition = self.timeline?.sourceTime(time) ?? time
         }
@@ -91,12 +95,12 @@ extension PlaybackEngine {
         let deadline = Date().addingTimeInterval(45)
         while nextItem.status == .unknown {
             try await Task.sleep(for: .milliseconds(100))
-            try check(attempt)
+            try check(attempt, installation: installation)
             guard Date() < deadline else { throw URLError(.timedOut) }
         }
         if nextItem.status == .failed {
             let failure = await transport.failure()
-            try check(attempt)
+            try check(attempt, installation: installation)
             throw failure ?? nextItem.error ?? ClientError.unavailable
         }
         let actual = nextItem.duration.seconds
@@ -105,9 +109,9 @@ extension PlaybackEngine {
             duration = actual
             timeline = validated
         }
-        try await loadTracks(nextItem, attempt: attempt)
+        try await loadTracks(nextItem, attempt: attempt, installation: installation)
         try await applyPreferences(preferences)
-        try check(attempt)
+        try check(attempt, installation: installation)
         // An endpoint restore can emit EOF before its awaited seek returns.
         // Capture synchronously, then publish only after the final seek commits.
         let completion = Mutex((restoring: true, ended: false))
@@ -125,19 +129,21 @@ extension PlaybackEngine {
         }
         var target = recoveryPosition ?? nativeRecoveryPosition ?? retainedPosition
         while true {
+            try check(attempt, installation: installation)
             try await seekPlayer(to: min(target, duration > 0 ? duration : target))
-            try check(attempt)
+            try check(attempt, installation: installation)
             guard player === next, next.currentItem === nextItem else { throw CancellationError() }
             guard let requested = recoveryPosition ?? nativeRecoveryPosition, abs(requested - target) >= 0.01 else { break }
             // A native scrub superseded the endpoint that emitted EOF.
             completion.withLock { $0.ended = false }
             target = requested
         }
-        try check(attempt)
+        try check(attempt, installation: installation)
         timeObserver = next.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self, weak next, weak nextItem] time in
             Task { @MainActor in
                 guard let self, let next, let nextItem, self.player === next,
-                      next.currentItem === nextItem, nextItem.status == .readyToPlay else { return }
+                      self.installation == installation, next.currentItem === nextItem,
+                      nextItem.status == .readyToPlay else { return }
                 self.tick(time: time, attempt: attempt)
             }
         }
@@ -149,25 +155,29 @@ extension PlaybackEngine {
     func beginMonitoring(attempt: UUID) {
         monitoring?.cancel()
         monitoring = Task { [weak self] in
+            guard let initial = self?.installation else { return }
+            var installation = initial
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(1)) } catch { return }
-                guard let self, self.generation == attempt, let item = self.player?.currentItem else { return }
+                guard let self, self.generation == attempt, self.installation == installation, let item = self.player?.currentItem else { return }
                 self.refreshBufferedRanges()
                 if item.status == .failed {
                     let failure = await self.transport.failure() ?? item.error
-                    guard self.generation == attempt else { return }
+                    guard self.generation == attempt, self.installation == installation, self.player?.currentItem === item else { return }
                     guard let source = self.source else { self.message = Self.playbackMessage(failure); return }
                     do {
                         if Self.isNetworkFailure(failure) {
-                            try await self.install(details: source, compatible: self.usingCompatibility, at: self.seconds, attempt: attempt, failure: failure)
+                            installation = self.beginInstallation()
+                            try await self.install(details: source, compatible: self.usingCompatibility, at: self.seconds, attempt: attempt, installation: installation, failure: failure)
                         } else if !self.usingCompatibility, source.compatible != nil, Self.isFormatFailure(failure) {
-                            try await self.install(details: source, compatible: true, at: self.seconds, attempt: attempt)
+                            installation = self.beginInstallation()
+                            try await self.install(details: source, compatible: true, at: self.seconds, attempt: attempt, installation: installation)
                         } else { self.message = Self.playbackMessage(failure); return }
-                        try self.check(attempt)
+                        try self.check(attempt, installation: installation)
                         guard !self.completed else { return }
                         if self.nativeIntent.playing.withLock({ $0 }) ?? self.wantsPlayback { self.player?.play() }
                     } catch {
-                        if self.generation == attempt, !(error is CancellationError) { self.message = Self.playbackMessage(error) }
+                        if self.generation == attempt, self.installation == installation, !(error is CancellationError) { self.message = Self.playbackMessage(error) }
                         return
                     }
                 }

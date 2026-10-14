@@ -29,10 +29,10 @@ extension PlaybackEngine {
     func seekPlayer(to seconds: Double) async throws {
         try Input.position(seconds)
         guard duration == 0 || seconds <= duration + 1, let player else { throw ClientError.invalidInput("The playback position is unavailable.") }
-        let attempt = generation
+        let attempt = generation, installation = self.installation
         let position = timeline?.presentationTime(seconds) ?? seconds
         let success = await player.seek(to: CMTime(seconds: position, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
-        try check(attempt)
+        try check(attempt, installation: installation)
         guard self.player === player else { throw CancellationError() }
         if !success {
             if let error = player.currentItem?.error { throw error }
@@ -71,7 +71,6 @@ extension PlaybackEngine {
                 throw ClientError.invalidInput("Update Kinosail Server to use audio enhancements.")
             }
             let position = seconds
-            let shouldResume = nativeIntent.playing.withLock { $0 } ?? wantsPlayback
             self.preferences = valid
             source = details; subtitlePolicy = details.subtitlePolicy
             #if os(tvOS)
@@ -79,13 +78,15 @@ extension PlaybackEngine {
             #endif
             playbackPreparation = nil
             playbackPreparationRequest?.cancel(); playbackPreparationRequest = nil
-            try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt)
-            try check(attempt)
+            let installation = beginInstallation()
+            try await install(details: details, compatible: valid.audioEnhancementsEnabled || details.direct == nil, at: position, attempt: attempt, installation: installation)
+            try check(attempt, installation: installation)
             guard !completed else { return }
             beginMonitoring(attempt: attempt)
-            if shouldResume { player?.play() }
+            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
             return
         }
+        let attempt = generation, installation = self.installation
         subtitleGeneration = UUID(); subtitleDocument = nil; externalCaptions = false; presentation.showCaptions("")
         self.preferences = valid
         if effectsChanged, source == nil, valid.audioEnhancementsEnabled {
@@ -112,8 +113,13 @@ extension PlaybackEngine {
         else if let index = preferredExternal {
             do { try await selectSubtitleTrack(id: "external:\(index)", remember: false) }
             catch is CancellationError { throw CancellationError() }
-            catch { progressMessage = "The selected subtitles could not be loaded. Choose a track in Playback options." }
+            catch {
+                try check(attempt, installation: installation)
+                progressMessage = "The selected subtitles could not be loaded. Choose a track in Playback options."
+            }
         }
+        try check(attempt, installation: installation)
+        guard player?.currentItem === item else { throw CancellationError() }
         if rememberedOn, selectedSubtitleTrackID == nil, let subtitleGroup,
            let first = subtitleOptions.first(where: { allowsSubtitleLanguage($0.extendedLanguageTag ?? $0.locale?.identifier ?? "") }) {
             item.select(first, in: subtitleGroup)
@@ -170,20 +176,20 @@ extension PlaybackEngine {
 
     func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy?.allows(language) ?? false }
 
-    func loadTracks(_ item: AVPlayerItem, attempt: UUID) async throws {
+    func loadTracks(_ item: AVPlayerItem, attempt: UUID, installation: UUID) async throws {
         let audio = Task { @MainActor in
             let group = try await item.asset.loadMediaSelectionGroup(for: .audible)
-            try check(attempt)
+            try check(attempt, installation: installation)
             audioGroup = group
         }
         defer { audio.cancel() }
         try await withTaskCancellationHandler {
             let subtitles = try await item.asset.loadMediaSelectionGroup(for: .legible)
             try await audio.value
-            try check(attempt)
+            try check(attempt, installation: installation)
             subtitleGroup = subtitles
         } onCancel: { audio.cancel() }
-        try check(attempt)
+        try check(attempt, installation: installation)
         audioOptions = audioGroup?.options ?? []
         subtitleOptions = subtitleGroup?.options ?? []
         audioTracks = audioOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
@@ -216,11 +222,13 @@ extension PlaybackEngine {
         let selection = UUID(); subtitleGeneration = selection
         if let id, id.hasPrefix("external:") {
             guard let index = Int(id.dropFirst(9)), id == "external:\(index)", let subtitles = source?.subtitles, subtitles.indices.contains(index), let client else { throw ClientError.invalidInput("The subtitle track is unavailable.") }
-            let attempt = generation
+            let attempt = generation, installation = self.installation
+            let activeItem = player?.currentItem
             let (data, type) = try await client.resource(subtitles[index].url.absoluteString, maximum: 2 * 1024 * 1024)
+            try check(attempt, installation: installation)
+            guard player?.currentItem === activeItem else { throw CancellationError() }
             guard type == "text/vtt" || type == "text/plain" else { throw ClientError.invalidResponse }
             let document = try SubtitleDocument(data: data)
-            try check(attempt)
             guard subtitleGeneration == selection else { throw CancellationError() }
             if let group = subtitleGroup { player?.currentItem?.select(nil, in: group) }
             subtitleDocument = document; externalCaptions = true

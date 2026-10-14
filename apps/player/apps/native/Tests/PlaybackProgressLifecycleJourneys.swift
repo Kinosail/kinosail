@@ -44,8 +44,9 @@ extension PlaybackProgressSafetyJourneys {
             source.fixture.progressSafetyMediaStatus = 403
             source.fixture.holdMedia = true
             let replacement = source.begin {
+                let installation = engine.beginInstallation()
                 try await engine.install(details: details, compatible: false, at: committed,
-                                         attempt: attempt, failure: URLError(.networkConnectionLost))
+                                         attempt: attempt, installation: installation, failure: URLError(.networkConnectionLost))
             }
             try await source.waitForMedia()
             try #require(engine.recoveringNetwork)
@@ -116,6 +117,54 @@ extension PlaybackProgressSafetyJourneys {
             engine.stop(); try await drain(engine.writing, client: second.fixture.client)
             try await first.expectPreserved(at: 6, label: "stale-initial-load")
             try await second.expectPreserved(at: committed, label: "replacement-healthy-title", allowEarlier: true)
+        }
+    }
+
+    // Distinct gap: replacing the stream for the same title retains generation.
+    // A retired load must not clear pending state, seek the new player, or resume
+    // it after the user's pause. Hold real media after player creation; this
+    // does not claim to hold the operating system's audio activation call.
+    @Test func supersededSameTitleLoadPreservesLatestSeekAndPause() async throws {
+        try await withSources(count: 1) { engine, sources in
+            let source = sources[0]
+            try (await source.start(engine).join()).get()
+            engine.pause(); try await drain(engine.writing, client: source.fixture.client)
+            let monitor = engine.monitoring; monitor?.cancel(); await monitor?.value
+            let details = try #require(engine.source), attempt = engine.generation
+            source.fixture.holdMedia = true
+            let retired = source.begin {
+                let installation = engine.beginInstallation()
+                try await engine.install(details: details, compatible: false, at: 6,
+                                         attempt: attempt, installation: installation)
+            }
+            try await source.waitForMedia()
+            let oldPlayer = try #require(engine.player)
+            let heldBefore = source.fixture.heldMediaCount
+            let replacement = source.begin {
+                let installation = engine.beginInstallation()
+                try await engine.install(details: details, compatible: false, at: 6,
+                                         attempt: attempt, installation: installation)
+            }
+            let deadline = ContinuousClock.now.advanced(by: .seconds(6))
+            while (engine.player == nil || engine.player === oldPlayer || source.fixture.heldMediaCount <= heldBefore),
+                  ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
+            let newPlayer = try #require(engine.player)
+            try #require(newPlayer !== oldPlayer && source.fixture.heldMediaCount > heldBefore)
+            try #require(engine.generation == attempt && engine.loading)
+            try await engine.seek(to: 9)
+            engine.pause(); try await drain(engine.writing, client: source.fixture.client)
+            #expect((try await retired.join()).error is CancellationError)
+            #expect(engine.loading && engine.seconds == 9 && engine.player === newPlayer)
+            #expect(source.fixture.progressReceipts.allSatisfy { !$0.watched && $0.seconds < 9 })
+            source.fixture.releaseMedia()
+            try (await replacement.join()).get()
+            #expect(!engine.loading && engine.player === newPlayer)
+            #expect(abs(newPlayer.currentTime().seconds - 9) < 0.1)
+            #expect(newPlayer.timeControlStatus == .paused && newPlayer.rate == 0)
+            engine.resume(); try await decodedProgress(newPlayer)
+            engine.pause(); try await drain(engine.writing, client: source.fixture.client)
+            #expect(engine.seconds > 9 && engine.seconds < 12 && !engine.completed)
+            print("PLAYBACK_INSTALLATION sameTitle=true retiredCancelled=true latestSeek=9 paused=true decodedReplacement=true joined=true")
         }
     }
 
