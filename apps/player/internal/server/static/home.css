@@ -180,27 +180,6 @@ body.show-detail .season-group{scroll-margin-top:1rem}
   body.show-detail .media-hero.has-media-backdrop>.media-backdrop{aspect-ratio:16/9}
   body.show-detail .media-hero .hero-actions{margin-top:.75rem}
 }
-/* Personal tab choices never hide the remaining destinations. */
-.nav-personal-tab,.nav-personal-more{display:none!important}
-.tab-editor{width:min(100% - 2rem,34rem);max-height:85dvh;padding:1.5rem;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--text)}
-.tab-editor::backdrop{background:rgb(0 0 0 / 65%)}
-.tab-editor h2{margin:0;font-size:1.8rem}
-.tab-editor>p{color:var(--muted);font-size:.9rem;line-height:1.6}
-.tab-editor-row{display:flex;gap:.25rem;align-items:center;min-height:60px;border-bottom:1px solid var(--line)}
-.tab-editor-row>span{flex:1;min-width:0;font-size:.95rem;font-weight:600}
-.tab-editor-row button{min-width:44px;min-height:44px;padding:.5rem;background:none;color:var(--text);border:0}
-.tab-editor .tab-move-earlier{transform:rotate(90deg)}
-.tab-editor .tab-move-later{transform:rotate(-90deg)}
-.tab-editor footer{position:sticky;bottom:-1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;padding:1rem 0;background:var(--surface)}
-.tab-editor footer button{min-height:48px}
-@media(max-width:900px){
-  body .app-header nav.has-personal-tabs{grid-template-columns:repeat(var(--personal-tab-count),minmax(0,1fr))}
-  body .app-header nav.has-personal-tabs>a:not(.nav-personal-tab){display:none!important}
-  body .app-header nav.has-personal-tabs>.nav-personal-tab{display:flex!important}
-  body .app-header nav.has-personal-tabs .nav-personal-more{display:grid!important}
-  body .app-header nav.has-personal-tabs .nav-more-library{display:none}
-  body .app-header nav>a,body .nav-more>summary{white-space:normal;overflow-wrap:anywhere;line-height:1.15}
-}
 
 .app-header nav a[href="#library-search"]:before{display:inline-block;width:1.15rem;height:1.15rem;flex:none;background:currentColor;content:"";mask-image:var(--nav-icon);mask-position:center;mask-repeat:no-repeat;mask-size:contain;-webkit-mask-image:var(--nav-icon);-webkit-mask-position:center;-webkit-mask-repeat:no-repeat;-webkit-mask-size:contain;--nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m16 16 5 5'/%3E%3C/svg%3E")}
 
