@@ -42,8 +42,11 @@ if (selected("htmx")) test("HTMX title-letter Back fetches current browse data a
   const letter = page.locator('[data-title-jump-index] [data-title-letter="A"]');
   await letter.scrollIntoViewIfNeeded();
   await letter.focus();
+  // A zero-position return cannot detect an unintended reset to the page top.
+  await page.evaluate(() => scrollTo({ top: 120, behavior: "instant" }));
   await settle(page, href);
   const before = await record(page, info, "before", href);
+  expect(before.state.scroll.y, "HTMX prerequisite: nonzero departure position").toBeGreaterThan(100);
   await letter.click();
   await expect(page).toHaveURL(/letter=A/);
   await expect(page.locator("#library .card h2")).toHaveText(["Anchor Movie"]);

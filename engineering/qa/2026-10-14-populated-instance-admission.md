@@ -267,3 +267,13 @@ The exact timing mechanism remains unconfirmed; this candidate is not accepted u
 The adjacent real HTMX Back journey must also preserve its query, content extent, focus, and saved position.
 Current hosted layout coverage checks pending, loaded, empty, failed, and recovery states separately.
 Local runtime remains held. Source formatting, source limits, and whitespace checks do not establish browser acceptance.
+
+The first adjacent HTMX Back execution passes at candidate `a9059357` in run `38624433421`.
+Artifact `11923616484` has SHA-256 `f08d5a6e8125e3ed2da3e2e9080c84818051347931cdf1ccc4ba20ae27ace40c`.
+The exact tree, changed template, 160 source pins, three child hashes, and stopped process groups verify.
+The real Server observes the history request; all 34 titles and title-letter focus return in the same document.
+Its saved and restored scroll positions are both zero, so it cannot detect an unwanted reset to the page top.
+Strengthen this existing adjacent journey by scrolling to 120 pixels before departure and requiring a nonzero recorded position.
+Keep its current history, query, content, focus, and coordinate-restoration assertions.
+This is an additional regression guard for the scroll-target change; it adds no production seam or duplicate case.
+The rapid populated regression and production candidate remain unchanged.
