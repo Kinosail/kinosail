@@ -42,6 +42,7 @@ for (const install of installs) install.addEventListener("click", async () => {
   } else if (help) help.hidden = false;
 });
 document.querySelector("[data-install-close]")?.addEventListener("click", () => { help.hidden = true; });
+help?.addEventListener("focusin", ({target}) => target.scrollIntoView({block: "nearest", inline: "nearest", behavior: "instant"}));
 window.addEventListener("appinstalled", () => { installComplete = true; for (const install of installs) install.hidden = true; });
 
 const prototypeSwitcher = document.querySelector("[data-prototype-switcher]");
