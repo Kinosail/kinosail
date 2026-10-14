@@ -69,3 +69,11 @@ Repeat the unchanged application baseline before qualifying a forced-colors fail
 The standard container smoke fixture does not run this spec with `KINOSAIL_TEST_INSTANCE=1`.
 Its separately prepared Owner journeys use an explicit file list that excludes this spec.
 The closed browse campaign supplies the required one Show and four Movies.
+
+## Count repair
+
+The Library toolbar and playlist index now use the existing singular/plural template pattern.
+A count of one renders `1 item`; zero and larger counts retain `items`.
+This changes displayed copy only; request handling, stored data, and failure paths are unchanged.
+The hosted regression above precedes this repair.
+Repaired browser acceptance remains pending.
