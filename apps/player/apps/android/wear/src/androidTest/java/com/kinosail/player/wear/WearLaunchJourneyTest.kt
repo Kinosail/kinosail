@@ -34,9 +34,11 @@ class WearLaunchJourneyTest {
         val context = instrumentation.targetContext
         assertTrue("Wear launch requires a watch", context.packageManager.hasSystemFeature(PackageManager.FEATURE_WATCH))
         assertTrue("Hosted watch profile must be round", context.resources.configuration.isScreenRound)
+        // Connect the observer before launching the Activity.
+        val automation = checkNotNull(instrumentation.uiAutomation) { "UI automation must connect before launch" }
         fun foregroundIsApp(): Boolean {
-            instrumentation.uiAutomation.clearCache()
-            return instrumentation.uiAutomation.rootInActiveWindow?.packageName?.toString() == context.packageName
+            automation.clearCache()
+            return automation.rootInActiveWindow?.packageName?.toString() == context.packageName
         }
         var stage = "launch-unpaired"
         var phase = "launch"
@@ -54,7 +56,7 @@ class WearLaunchJourneyTest {
                 assertTrue("The captured semantics must belong to the active app", foreground)
             }.onFailure { failures.add(it) }
             runCatching {
-                val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+                val image = requireNotNull(automation.takeScreenshot())
                 try {
                     File(directory, "wear-$stage.png").outputStream().use {
                         assertTrue("Compositor image must encode", image.compress(Bitmap.CompressFormat.PNG, 100, it))

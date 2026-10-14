@@ -272,3 +272,27 @@ Preceding fixture teardown is therefore a testable hypothesis, not a diagnosed l
 An actual-first failure would reject preceding component teardown as a necessary cause.
 An actual-first pass alone would not prove the hypothesis or establish a repair.
 Reordering also changes time since wakeup and instrumentation startup.
+
+## Actual-first execution still fails
+
+Both profiles at `af7c723fd31dddfba0878cdf9017a4c2f83c8c9f` execute the actual Activity journey first and still fail it.
+Both later component tests pass. The six status entries confirm start/finish order without truncation.
+Each artifact verifies seventeen source pins, seven child hashes, and complete cleanup.
+Both actual Activities change from resumed without focus to stopped without finishing or destruction.
+Both snapshots remain interactive and unlocked; the launch screenshots show the watch face.
+The later component snapshots show resumed, focused Activities.
+This rejects preceding component teardown as a necessary cause of the foreground failure.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11860108712` | `cbace5c673736e6764dff012484c18efdbfd90af3dc94594716cad7fd192e7bd` |
+| Large round | `11860545506` | `e205e373024d8bc3c87e903ec5e19a51c0c06fcf8427615720189cc3c847499e` |
+
+The next experiment connects UI automation before launching the Activity and reuses that observer.
+The [Android 16 implementation](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/core/java/android/app/Instrumentation.java)
+creates and connects this observer on first access; the no-argument accessor uses default flags zero.
+Previously, the journey first accessed it inside the foreground wait, after Activity launch.
+Moving this setup earlier tests whether observer initialization contributes to Activity displacement.
+Flags, lifecycle operations, assertions, deadlines, class order, and screenshots remain unchanged.
+No retry, wake action, forced focus, or production behavior change is added.
+A successful trial would still need final-source verification and repeat acceptance before claiming the intermittent failure is resolved.
