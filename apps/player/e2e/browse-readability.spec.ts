@@ -1,9 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { configureTestInstance, login } from "./test-instance-helpers";
 import { expectNavigationIconPaint } from "./navigation-icon-paint";
+import { verifyTitleRail } from "./title-rail-geometry";
 
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
+
+test("mobile title rail clears Search and navigation across browse states", { tag: "@smoke" }, async ({ page }, info) => {
+	await login(page);
+	await verifyTitleRail(page, info);
+});
 
 test("browse counts and navigation icons remain readable", { tag: "@smoke" }, async ({ page }, info) => {
 	await login(page);
