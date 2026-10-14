@@ -118,14 +118,19 @@ function initializeMobileTabs(nav) {
   }
   renderNavigation();
   const mobile = matchMedia("(max-width: 900px)");
+  const header = nav.closest("header");
   const updateDock = () => {
     const root = document.documentElement;
-    if (!mobile.matches) { root.style.removeProperty("--player-dock-height"); return; }
-    const height = `${nav.getBoundingClientRect().height}px`;
-    if (root.style.getPropertyValue("--player-dock-height") !== height) root.style.setProperty("--player-dock-height", height);
+    for (const [property, element] of [["--player-dock-height", nav], ["--player-header-height", header]]) {
+      if (!mobile.matches) { root.style.removeProperty(property); continue; }
+      const height = `${element.getBoundingClientRect().height}px`;
+      if (root.style.getPropertyValue(property) !== height) root.style.setProperty(property, height);
+    }
   };
   updateDock();
-  new ResizeObserver(updateDock).observe(nav);
+  const navigationObserver = new ResizeObserver(updateDock);
+  navigationObserver.observe(nav);
+  navigationObserver.observe(header);
   mobile.addEventListener("change", updateDock);
   document.addEventListener("keydown", event => {
     if (!mobile.matches || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return;

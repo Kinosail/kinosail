@@ -16,7 +16,7 @@
   body:has([data-mobile-tabs]){padding-bottom:calc(var(--player-dock-height,0px) + 1rem)}
   body .app-header :is(.nav-more-menu,.header-compact-panel){bottom:calc(var(--player-dock-height,8rem) + .5rem);max-height:calc(100dvh - var(--player-dock-height,8rem) - 1rem)}
   body .install-help{bottom:calc(var(--player-dock-height,8rem) + .5rem);max-height:calc(100dvh - var(--player-dock-height,8rem) - 1rem);overflow-y:auto}
-  .js body .title-jump.title-jump-scrubbable .letter-jump{bottom:calc(var(--player-dock-height,8rem) + .5rem)}
+  .js body .title-jump.title-jump-scrubbable .letter-jump{top:max(6.5rem,calc(var(--player-header-height,0px) + .5rem));bottom:calc(var(--player-dock-height,8rem) + .5rem)}
   body .app-header nav.has-personal-tabs{display:flex;flex-flow:row wrap;align-items:stretch}
   body .app-header nav.has-personal-tabs>:is(.nav-personal-tab,.nav-more){flex:1 1 auto;width:auto;min-width:min-content}
   body .app-header nav.has-personal-tabs>a:not(.nav-personal-tab){display:none!important}
