@@ -1,7 +1,7 @@
 # Android backup exclusion policy
 
 The app and Wear client intend to exclude their data from backups and device transfer.
-Their rules currently exclude `root`, `device_root`, and `external` in both transfer sections.
+Their previous rules excluded only `root`, `device_root`, and `external` in both transfer sections.
 Independent source review found six uncovered domains: files, databases, and preferences in credential-protected and device-protected storage.
 
 Android scans each domain independently. The export traversal compares exclusions with exact canonical paths.
@@ -71,3 +71,20 @@ Backup selection inspects paths and file metadata; it does not parse database or
 The fixture therefore needs no preference API writes or user-lock shadow.
 It still requires each file to exist, distinct storage paths, six selected domains before repair, and all nine domains in each control.
 The test makes no claim about preference creation, database validity, or storage-unlock behavior.
+
+## Reproduced policy failure and repair
+
+Baseline `1c8d0adaac59e708f79465ea74a5efac525e315f` reaches file selection in both modules.
+Run `38519156011`, job `115705191648`, records exactly two policy failures and one passing control per module.
+Both cloud and device-transfer checks select `file`, `database`, `sharedpref`, `device_file`, `device_database`, and `device_sharedpref`.
+Both destinations select all nine files when the rules are removed. The other 166 unit cases pass.
+
+Artifact `11873770394` has SHA-256 `6b81c2cdf32d98de4b4bf5ab223c683d967f3440db472b32aa2ae082453e3a2c`.
+The app report SHA-256 is `1d19c4cf310cb66083d1ca7d6430ef9876dc2cd1768ea443bb43f53dfd4b9638`.
+The Wear report SHA-256 is `8634d46a928bd60fc5eaf935de429ceae0e0fcb521069dafb88bbbd655c69d4d`.
+This is accepted framework-selection reproduction, distinct from the earlier setup failures.
+
+The repair adds explicit `.` exclusions for those six domains to both sections in both XML files.
+The existing root and external exclusions and disabled-backup manifest flags remain intact.
+The regression is unchanged from the accepted baseline. Fixed hosted selection results remain pending.
+No actual OEM transfer or disclosure is established by this test.
