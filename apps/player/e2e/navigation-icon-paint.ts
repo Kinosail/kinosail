@@ -32,13 +32,20 @@ export async function expectNavigationIconPaint(page: Page, info: TestInfo, name
 		return page.screenshot({ path: info.outputPath(`${name}-icons${suffix}.png`), animations: "disabled", scale: "css" });
 	};
 	let hiddenBefore: Buffer, painted: Buffer, hiddenAfter: Buffer;
+	let primaryFailed = false;
 	try {
 		hiddenBefore = await capture(true, "-hidden-before");
 		painted = await capture(false, "");
 		hiddenAfter = await capture(true, "-hidden-after");
+	} catch (error) {
+		primaryFailed = true;
+		throw error;
 	} finally {
-		await sheet.evaluate(sheet => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter(candidate => candidate !== sheet); });
-		await sheet.dispose();
+		let cleanupError: unknown;
+		await sheet.evaluate(sheet => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter(candidate => candidate !== sheet); })
+			.catch(error => { cleanupError = error; });
+		await sheet.dispose().catch(error => { cleanupError ??= error; });
+		if (cleanupError && !primaryFailed) throw cleanupError;
 	}
 	const pixels = await page.evaluate(async ({ original, firstControl, secondControl, boxes }) => {
 		const decode = async (png: string) => {
