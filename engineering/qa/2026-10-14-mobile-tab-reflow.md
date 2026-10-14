@@ -81,5 +81,11 @@ Keyboard traversal reveals page controls between the header and dock.
 The candidate still requires passing hosted geometry, keyboard, focus, responsive, and accessibility evidence.
 Independent source review found no remaining concrete blocker after the overlay and inline-index corrections.
 The new stylesheet passes the Impeccable source detector. JavaScript syntax, Go formatting, and source-size checks pass.
+CI at `2c3b919a` correctly rejected the stale Code Atlas after the two new embed declarations shifted source locations.
+Hosted metadata run `38535168661` supplied canonical source data for the same clean revision.
+Its Q09 groups passed 12 isolated, 47 server, and one phone-browser checks, with no retries.
+Artifact `11879308556` has SHA-256 `6798c4e93c60f43de081d7fd56f473db93ebe151d05e95f10d5c6ad17dcdf1a8`.
+After verifying the digest, source identity, and receipt, the existing reproduction command regenerated the Player Code Atlas.
+Only its source counts and seven symbol line numbers changed. Subtitles and the surrounding HTML stayed unchanged.
 Local application and browser execution remain held. Source checks do not establish browser acceptance.
 These browser captures do not establish physical-device or assistive-technology acceptance.
