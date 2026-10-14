@@ -277,3 +277,25 @@ Strengthen this existing adjacent journey by scrolling to 120 pixels before depa
 Keep its current history, query, content, focus, and coordinate-restoration assertions.
 This is an additional regression guard for the scroll-target change; it adds no production seam or duplicate case.
 The rapid populated regression and production candidate remain unchanged.
+
+## Rejected scroll-target trial and timing diagnosis
+
+Run `38624428506` at `a9059357` still produces a settled 22-pixel offset during the rapid toggle.
+It retains 74 passing cases, one failed case, and 12 unrun cases, with no retry.
+Artifact `11923378425` has SHA-256 `051c1fff7489a61c50f240fb52e0ad13530f6bb3fe36f4dcaf2bf9f486ac385a`.
+All source pins, 588 child hashes, 589 checksums, case identities, and fixture cleanup verify.
+The body scroll target did not repair the defect and is reverted.
+
+The next diagnosis distinguishes overlapping smooth scrolling, focus scrolling, and geometry or native anchoring changes.
+Bounded instrumentation records existing scroll and focus calls, HTMX events, and scroll positions in the disposable browser.
+It guards recording errors and forwards the original calls without adding waits between selection and clearing.
+A final collector retains evidence after early failures and reports any lost records or recording errors.
+It records only fixed element classes, allowed options, and script line references, without URLs or query strings.
+The original rapid interaction and zero-scroll assertions remain unchanged.
+Observer timing can affect the race; a passing observed run alone cannot establish a repair.
+
+The adjacent Back journey at `e663b5df` passes from a nonzero departure.
+Selection moves from 120 pixels to zero, and Back restores 120 pixels, 34 titles, query, and letter focus.
+Run `38625561776` verifies the same document, an actual server history request, and process cleanup without retries.
+Artifact `11923083839` has SHA-256 `bee52372a642397116a6d7afcfb99de651e84304ad311a79795e297c49682de1`.
+This does not close the rapid-toggle defect.
