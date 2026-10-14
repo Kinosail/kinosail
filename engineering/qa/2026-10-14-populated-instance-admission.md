@@ -124,7 +124,16 @@ Its log SHA-256 is `2d7deddf1a904e95215460adacfde359f92502636bbefb8228536d5e824c
 After these corrections, all 201 source contracts pass with five hosted scanner integration skips.
 The final log SHA-256 is `ccc082802166d64482e563fc63f135c7869e619808b20e6cbb3a5cefea48108e`.
 Independent review confirms the worker guard and corrected count check, with no further source blockers.
-Actual selected-suite execution and exact identity reconciliation remain pending.
 PR #606 contains the broader selection at `a2f600151c2014433d3d3635f8c3ee1ada665f2c`.
-Manual run `38610622218` executes that revision with the explicit `selected` choice.
+Manual run `38610622218` executes that revision with the explicit `selected` choice and fails.
 The private expected-case inventory pins all 81 identities and the unchanged contents of all 22 selected specs.
+The job log reports 74 passing executions, one failure, and twelve cases that did not run.
+The title-letter toggle expects zero scroll after clearing the letter; it observes 22 pixels at `ui-happy-paths.spec.ts:34`.
+The root cause remains unconfirmed, and the assertion remains unchanged.
+
+Artifact upload also fails because `polish-shell.spec.ts` puts a query string's question mark in a screenshot filename.
+The retained job log has SHA-256 `a3c3a7833dfd2b8c2eab468d171e12801b73646daf04144ffcf758f06dca39b7`.
+No uploaded manifest, trace, or cleanup receipt is available from that attempt.
+The logged pass count therefore does not establish checksummed acceptance of the selected identities.
+Encode each route when constructing those screenshot filenames, preserving distinct routes and their query strings.
+The next hosted execution must retain the artifact before diagnosis can use its trace and cleanup evidence.
