@@ -77,3 +77,19 @@ A count of one renders `1 item`; zero and larger counts retain `items`.
 This changes displayed copy only; request handling, stored data, and failure paths are unchanged.
 The hosted regression above precedes this repair.
 Repaired browser acceptance remains pending.
+
+## Qualified icon baseline and repair
+
+Run `38644650754` tests the corrected control at `ccd53bb151b42e4b5447275059c2843e12f34b57`.
+Artifact `11932825085` has archive SHA-256 `d570bc0ffeb5a29189154b180fa3d5ded9b869dc6142245fc6eb2976ec9f3b83`.
+All six ordinary-color icons contribute 23 to 150 pixels reaching 3:1 contrast across both themes.
+All twelve forced-colors measurements contribute zero qualifying pixels.
+Every pair of hidden controls has zero qualifying differences.
+The four singular-count failures repeat, and fixture cleanup passes.
+This baseline qualifies the missing forced-colors glyphs before the CSS repair.
+
+The repair scopes `forced-color-adjust: none` to navigation and Actions pseudo-elements.
+Their background paint uses the system `CanvasText` color.
+The rest of the interface remains subject to forced-color adjustment.
+The shared stylesheet keeps its line count so the strict Subtitles stylesheet patch remains applicable.
+Hosted acceptance must cover the repaired browse journey and both affected applications.
