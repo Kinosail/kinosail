@@ -178,7 +178,7 @@ jobs:
           persist-credentials: false
       - run: make -C apps/player client-check
         env:
-          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
       - name: Prepare decoded native media fixture
         if: fromJSON(inputs.plan).deep
         env:
@@ -199,7 +199,7 @@ jobs:
       - name: Execute iOS and tvOS native contracts
         if: fromJSON(inputs.plan).deep
         env:
-          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
         run: |
           native_failed=0
           for contract in iOS-backup iOS tvOS; do
@@ -225,7 +225,7 @@ jobs:
       - name: Inspect native contract results
         if: always() && fromJSON(inputs.plan).deep
         env:
-          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
         run: |
           native_failed=0
           for contract in iOS-backup iOS tvOS; do
@@ -261,7 +261,7 @@ jobs:
         env:
           SELECTOR: ${{ steps.probe.outputs.selector }}
           NATIVE_PROBE: ${{ inputs.native_probe }}
-          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
         run: |
           run="$RUNNER_TEMP/native-probe"
           mkdir "$run"

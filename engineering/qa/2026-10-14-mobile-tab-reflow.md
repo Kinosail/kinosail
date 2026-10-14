@@ -136,3 +136,19 @@ The earlier `1f518666` Chromium run remains failed because the desktop account s
 Its identified DOM layout shift is `0.003452506443437071`, above the unchanged `0.001` threshold.
 Artifact `11881681724` has SHA-256 `2c787a67fd80086cb6d8c0097f235d25f2c47ef2d0c7d4512bbbd561e4c0d340`.
 The later pass does not diagnose that intermittent shift.
+
+## Hosted Xcode image transition
+
+Required run `38573733320`, job `115886424823`, fails before Swift compilation at `874422be`.
+Runner image `xcode-27-arm64 20261012.0260.1` no longer contains `Xcode_27.1_beta.app`.
+Its [published manifest](https://github.com/actions/runner-images/blob/xcode-27-arm64/20261012.0260/images/macos/xcode-27-arm64-Readme.md) lists `Xcode_27.1_Release_Candidate.app` and the versioned alias `Xcode_27.1.app`.
+The previous image also provides that alias.
+Compilation, native contracts, focused probes, result inspection, and scheduled Swift scanning now use the alias.
+This preserves the selected 27.1 toolchain across the bundle rename.
+
+The existing CI contract failed before the workflow edit: two tests, one failure.
+After the edit, all 192 CI contract tests pass, with five real-scanner checks deferred to the hosted secret gate.
+Repository actionlint 1.17.0, workflow validation, source-size limits, and whitespace checks pass.
+The system actionlint lacks native parallel syntax; its rejection is not accepted validation.
+Private evidence records the original failure, manifests, commands, and log checksums.
+Hosted compilation remains required. No local native runtime was started.
