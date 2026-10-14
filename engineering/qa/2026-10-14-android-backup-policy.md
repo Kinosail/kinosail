@@ -36,3 +36,17 @@ The corrected policy must select no canaries in either destination for both modu
 Hosted reports must retain the exact revision and test results.
 This checks framework file selection. It does not establish OEM transport admission or a physical device transfer.
 Local Gradle execution remains held.
+
+## Initial setup failure
+
+Run `38516297794` tests baseline revision `d8e5b7c1aeffe1a30a5c9a92a872ef431144db6a`.
+All three cases in each module stop at the missing backup-rule resource guard.
+No file-selection assertion executes. This is a rejected setup result, not policy reproduction.
+Artifact `11871834716` has SHA-256 `b0fa3759fb2ace74022881acf071d5adaf1c5be2ff1076ac64e2d2acf47ec674`.
+
+[Robolectric 4.17 uses the legacy PackageParser](https://github.com/robolectric/robolectric/blob/robolectric-4.17/shadows/framework/src/main/java/org/robolectric/shadows/ShadowPackageParser.java).
+[Android 15's legacy parser](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-15.0.0_r1/core/java/android/content/pm/PackageParser.java) does not read `dataExtractionRules`.
+The test now reads that resource reference directly from the compiled manifest.
+It checks the package, disabled backup flag, and nonzero named resource before binding the missing field during each operation.
+The framework still parses the real backup XML and selects files. The original field is restored afterward.
+Both production XML files remain unchanged while the corrected baseline runs.

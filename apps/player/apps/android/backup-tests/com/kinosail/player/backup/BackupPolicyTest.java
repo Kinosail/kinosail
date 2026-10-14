@@ -11,6 +11,7 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.FullBackupDataOutput;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.res.XmlResourceParser;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.UserHandle;
@@ -33,6 +34,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.util.ReflectionHelpers;
+import org.xmlpull.v1.XmlPullParser;
 
 /** Framework selection regression; no OEM transport or device-transfer claim. */
 @RunWith(RobolectricTestRunner.class)
@@ -59,10 +61,9 @@ public class BackupPolicyTest {
     private Set<String> selectedCanaries(int destination, boolean noRules) throws Exception {
         Context app = RuntimeEnvironment.getApplication();
         ApplicationInfo info = app.getApplicationInfo();
-        int rules = ReflectionHelpers.getField(info, "dataExtractionRulesRes");
+        int originalRules = ReflectionHelpers.getField(info, "dataExtractionRulesRes");
+        int rules = compiledBackupRules(app);
         int legacyRules = ReflectionHelpers.getField(info, "fullBackupContent");
-        assertTrue("The installed manifest must reference compiled rules", rules != 0);
-        assertEquals("data_extraction_rules", app.getResources().getResourceEntryName(rules));
         assertEquals(0, info.flags & ApplicationInfo.FLAG_ALLOW_BACKUP);
         Map<String, String> canaries = seedCanaries(app);
         Class<?> fullBackup = Class.forName("android.app.backup.FullBackup");
@@ -71,8 +72,10 @@ public class BackupPolicyTest {
         schemeCache.clear();
         TarRecorder.paths.clear();
         try {
+            // Robolectric's legacy PackageParser omits dataExtractionRules. Bind the
+            // compiled manifest's actual reference, without replacing backup parsing.
+            ReflectionHelpers.setField(info, "dataExtractionRulesRes", noRules ? 0 : rules);
             if (noRules) {
-                ReflectionHelpers.setField(info, "dataExtractionRulesRes", 0);
                 ReflectionHelpers.setField(info, "fullBackupContent", 0);
             }
             DefaultAgent agent = controller.create().get();
@@ -92,11 +95,35 @@ public class BackupPolicyTest {
             return selected;
         } finally {
             controller.destroy();
-            ReflectionHelpers.setField(info, "dataExtractionRulesRes", rules);
+            ReflectionHelpers.setField(info, "dataExtractionRulesRes", originalRules);
             ReflectionHelpers.setField(info, "fullBackupContent", legacyRules);
             schemeCache.clear();
             TarRecorder.paths.clear();
         }
+    }
+
+    private int compiledBackupRules(Context app) throws Exception {
+        String android = "http://schemas.android.com/apk/res/android";
+        int applications = 0;
+        int rules = 0;
+        try (XmlResourceParser manifest = app.getAssets().openXmlResourceParser("AndroidManifest.xml")) {
+            while (manifest.next() != XmlPullParser.END_DOCUMENT) {
+                if (manifest.getEventType() != XmlPullParser.START_TAG) continue;
+                if (manifest.getName().equals("manifest")) {
+                    assertEquals(app.getPackageName(), manifest.getAttributeValue(null, "package"));
+                }
+                if (manifest.getName().equals("application")) {
+                    applications++;
+                    assertFalse(manifest.getAttributeBooleanValue(android, "allowBackup", true));
+                    rules = manifest.getAttributeResourceValue(android, "dataExtractionRules", 0);
+                    assertTrue("The compiled manifest must reference backup rules", rules != 0);
+                    assertEquals("xml", app.getResources().getResourceTypeName(rules));
+                    assertEquals("data_extraction_rules", app.getResources().getResourceEntryName(rules));
+                }
+            }
+        }
+        assertEquals("The compiled manifest must have one application", 1, applications);
+        return rules;
     }
 
     private Map<String, String> seedCanaries(Context app) throws IOException {
