@@ -199,6 +199,20 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
           closeBox.y + closeBox.height <= helpBox.y + helpBox.height + 1);
         Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpFocusSamples, helpReachable, stable: railReachable && helpReachable});
         if (!helpReachable) throw new Error("Player install help is obscured by its navigation");
+        await page.keyboard.press("Shift+Tab");
+        await page.keyboard.press("Tab");
+        const helpKeyboard = await closeHelp.evaluate(button => {
+          const panel = button.closest("[data-install-help]"), style = getComputedStyle(button);
+          return {focused: document.activeElement === button, focusVisible: button.matches(":focus-visible"),
+            outline: Math.max(0, (parseFloat(style.outlineWidth) || 0) + (parseFloat(style.outlineOffset) || 0)),
+            button: button.getBoundingClientRect().toJSON(), panel: panel.getBoundingClientRect().toJSON()};
+        });
+        const helpKeyboardReachable = helpKeyboard.focused && helpKeyboard.focusVisible &&
+          helpKeyboard.button.top - helpKeyboard.outline >= helpKeyboard.panel.top &&
+          helpKeyboard.button.bottom + helpKeyboard.outline <= helpKeyboard.panel.bottom;
+        Object.assign(overlayResult, {helpKeyboard, helpKeyboardReachable, stable: overlayResult.stable && helpKeyboardReachable});
+        if (!helpKeyboardReachable) throw new Error("Player install help keyboard focus is clipped");
+        await probe.captureSnapshot(`${viewport.width}-${savedTabs ? "saved" : "default"}-install-help-keyboard`, page);
         await page.keyboard.press("Enter");
         await help.waitFor({state: "hidden"});
         overlayResult.helpDismissed = true;

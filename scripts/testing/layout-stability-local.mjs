@@ -57,6 +57,7 @@ flowProbe.openPage = async context => {
   return flowProbe.page = await context.newPage();
 };
 flowProbe.captureFailure = recordFailure;
+flowProbe.captureSnapshot = (name, page) => page.screenshot({path: join(run, name + ".png")});
 process.once("uncaughtException", async error => {
   await recordFailure(error);
   await browser?.close();
