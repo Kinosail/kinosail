@@ -131,7 +131,7 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         items(state.items, key = CatalogItem::id) { item ->
                             Card(onClick = { catalog.select(item) }, modifier = Modifier.semantics { contentDescription = item.title }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                                 MediaArtwork(item, catalog, Modifier.fillMaxWidth())
-                                Text(item.title, modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.titleMedium,
+                                Text(item.title, modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.titleMedium, minLines = 2,
                                     maxLines = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f) Int.MAX_VALUE else 2,
                                     overflow = TextOverflow.Ellipsis)
                             }

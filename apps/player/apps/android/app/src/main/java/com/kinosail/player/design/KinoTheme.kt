@@ -17,6 +17,9 @@ object KinoColor {
     val muted = Color(0xFFA0A79C)
     val signal = Color(0xFFC4FF47)
     val signalInk = Color(0xFF142000)
+    val danger = Color(0xFFFFABAB)
+    val dangerInk = Color(0xFF5C1520)
+    val dangerSurface = Color(0xFF3F1720)
 }
 
 @Composable
@@ -24,10 +27,20 @@ fun KinoTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = darkColorScheme(
         primary = KinoColor.signal,
         onPrimary = KinoColor.signalInk,
+        primaryContainer = KinoColor.raised,
+        onPrimaryContainer = KinoColor.text,
         secondary = KinoColor.signal,
         onSecondary = KinoColor.signalInk,
         secondaryContainer = KinoColor.raised,
         onSecondaryContainer = KinoColor.text,
+        tertiary = KinoColor.signal,
+        onTertiary = KinoColor.signalInk,
+        tertiaryContainer = KinoColor.raised,
+        onTertiaryContainer = KinoColor.text,
+        error = KinoColor.danger,
+        onError = KinoColor.dangerInk,
+        errorContainer = KinoColor.dangerSurface,
+        onErrorContainer = KinoColor.danger,
         background = KinoColor.background,
         onBackground = KinoColor.text,
         surface = KinoColor.surface,
@@ -50,6 +63,20 @@ fun TvKinoTheme(content: @Composable () -> Unit) {
             colorScheme = tvDarkColorScheme(
                 primary = KinoColor.signal,
                 onPrimary = KinoColor.signalInk,
+                primaryContainer = KinoColor.raised,
+                onPrimaryContainer = KinoColor.text,
+                secondary = KinoColor.signal,
+                onSecondary = KinoColor.signalInk,
+                secondaryContainer = KinoColor.raised,
+                onSecondaryContainer = KinoColor.text,
+                tertiary = KinoColor.signal,
+                onTertiary = KinoColor.signalInk,
+                tertiaryContainer = KinoColor.raised,
+                onTertiaryContainer = KinoColor.text,
+                error = KinoColor.danger,
+                onError = KinoColor.dangerInk,
+                errorContainer = KinoColor.dangerSurface,
+                onErrorContainer = KinoColor.danger,
                 background = KinoColor.background,
                 onBackground = KinoColor.text,
                 surface = KinoColor.surface,

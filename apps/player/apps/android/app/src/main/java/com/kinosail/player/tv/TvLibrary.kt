@@ -125,7 +125,10 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                         Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.title }) {
                             Column {
                                 MediaArtwork(item, catalog, Modifier.fillMaxWidth())
-                                Text(item.title, maxLines = 2, modifier = Modifier.padding(8.dp), color = KinoColor.text)
+                                Text(item.title, minLines = 2,
+                                    maxLines = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f) Int.MAX_VALUE else 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(8.dp), color = KinoColor.text)
                             }
                         }
                     }
