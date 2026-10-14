@@ -165,11 +165,24 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 		await expect(levels.locator('[aria-current="page"]')).toHaveText("Basic");
 		await expect(page.locator("#playback")).toBeVisible();
 		await nav.getByRole("link", { name: "General", exact: true }).click();
-		await page.getByRole("textbox", { name: "Server name", exact: true }).fill("Unsaved household name");
+		// The populated fixture intentionally manages Server name through Docker.
+		const serverName = page.getByRole("textbox", { name: "Server name", exact: true });
+		await expect(serverName).toBeDisabled();
+		await expect(page.locator("#general .managed-setting")).toContainText("KINOSAIL_SERVER_NAME");
+		const managedName = await serverName.inputValue();
+		await nav.locator('[data-settings-group="playback"]').click();
+		const language = page.getByRole("textbox", { name: "Preferred language", exact: true });
+		await expect(language).toBeEditable();
+		const savedLanguage = await language.inputValue();
+		const unsavedLanguage = savedLanguage === "fr" ? "de" : "fr";
+		await language.fill(unsavedLanguage);
 		await levels.getByRole("link", { name: "Advanced", exact: true }).click();
 		await levels.getByRole("link", { name: "Basic", exact: true }).click();
+		await nav.locator('[data-settings-group="playback"]').click();
+		await expect(language).toHaveValue(unsavedLanguage);
 		await nav.getByRole("link", { name: "General", exact: true }).click();
-		await expect(page.getByRole("textbox", { name: "Server name", exact: true })).toHaveValue("Unsaved household name");
+		await expect(serverName).toBeDisabled();
+		await expect(serverName).toHaveValue(managedName);
 		await expect(page.locator("#transcoder")).toBeHidden();
 		await expect(page.locator("#security")).toBeHidden();
 		if (viewport.width <= 900) {
@@ -194,5 +207,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 		await expect(page.locator("#transcoder")).toBeVisible();
 		await page.goto("/settings#unknown-%broken");
 		await expect(page.locator("#playback")).toBeVisible();
+		await expect(language).toHaveValue(unsavedLanguage);
+		await page.reload();
+		await expect(page.locator("#playback")).toBeVisible();
+		await expect(language).toHaveValue(savedLanguage);
+		await testInfo.attach(`settings-unsaved-state-${viewport.width}.json`, {
+			body: JSON.stringify({ viewport, managedServerNameStayedDisabled: true, unsavedEditablePreferenceRetained: true, savedPreferenceUnchangedAfterReload: true }),
+			contentType: "application/json",
+		});
 	});
 }
