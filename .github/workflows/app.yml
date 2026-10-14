@@ -746,7 +746,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify HLS source-version freshness
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "4"
         run: python3 apps/player/scripts/test-hls-source-version.py
@@ -762,7 +762,7 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: Verify bounded startup and request boundary
-        if: inputs.app == 'player' && matrix.engine == 'chromium'
+        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
         env:
           GOMAXPROCS: "4"
           KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium

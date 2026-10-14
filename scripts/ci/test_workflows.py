@@ -13,6 +13,13 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
+    def test_independent_hls_evidence_producers_continue_after_a_failed_journey(self):
+        source = (WORKFLOWS / 'app.yml').read_text()
+        for name in ('Verify HLS source-version freshness', 'Verify bounded startup and request boundary'):
+            step = source.split('      - name: ' + name + '\n', 1)[1].split('      - name:', 1)[0]
+            self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
+            self.assertNotIn('continue-on-error', step)
+
     def test_wear_requires_both_independent_hardware_profiles(self):
         # One passing emulator cannot cover the other physical size. The old
         # in-place wm override did not establish correct round-screen geometry.
