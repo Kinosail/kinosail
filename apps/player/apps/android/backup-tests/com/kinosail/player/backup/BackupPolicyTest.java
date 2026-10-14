@@ -3,6 +3,7 @@ package com.kinosail.player.backup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.util.ReflectionHelpers.ClassParameter.from;
 
 import android.app.backup.BackupAgent;
@@ -15,6 +16,7 @@ import android.content.res.XmlResourceParser;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.UserHandle;
+import android.os.UserManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +35,7 @@ import org.robolectric.android.controller.BackupAgentController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowUserManager.UserState;
 import org.robolectric.util.ReflectionHelpers;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -127,6 +130,8 @@ public class BackupPolicyTest {
     }
 
     private Map<String, String> seedCanaries(Context app) throws IOException {
+        shadowOf(app.getSystemService(UserManager.class))
+            .setUserState(Process.myUserHandle(), UserState.STATE_RUNNING_UNLOCKED);
         Context credential = ReflectionHelpers.callInstanceMethod(app, "createCredentialProtectedStorageContext");
         Context device = app.createDeviceProtectedStorageContext();
         assertFalse(credential.getDataDir().getCanonicalPath().equals(device.getDataDir().getCanonicalPath()));

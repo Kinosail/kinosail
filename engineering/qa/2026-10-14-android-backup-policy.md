@@ -50,3 +50,12 @@ The test now reads that resource reference directly from the compiled manifest.
 It checks the package, disabled backup flag, and nonzero named resource before binding the missing field during each operation.
 The framework still parses the real backup XML and selects files. The original field is restored afterward.
 Both production XML files remain unchanged while the corrected baseline runs.
+
+The next baseline, `70a503a689ed2159f63f595f554e71c225b1f4db`, passes those manifest guards.
+It then stops before file selection because the simulated user's credential-protected preferences are locked.
+All six cases retain that setup failure in artifact `11872398231`.
+Its SHA-256 is `6161ecfcee56f38b91906ae61b27c8c614ba137776dc4bf87bd864c693bd0599`.
+The fixture now sets the current user's state to `STATE_RUNNING_UNLOCKED` before creating canaries.
+This uses [Robolectric's per-user state API](https://github.com/robolectric/robolectric/blob/robolectric-4.17/shadows/framework/src/main/java/org/robolectric/shadows/ShadowUserManager.java).
+The separate no-argument unlocked flag does not configure the per-user check used by credential storage.
+Preference creation still uses a real committed write. The nine-file control and production XML remain unchanged.
