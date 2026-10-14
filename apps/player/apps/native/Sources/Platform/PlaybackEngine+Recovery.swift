@@ -5,6 +5,8 @@ import Synchronization
 
 extension PlaybackEngine {
     func install(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, installation: UUID, failure: Error? = nil) async throws {
+        try check(attempt, installation: installation)
+        loading = true
         var error = failure
         defer { if generation == attempt, self.installation == installation { loading = false; recoveringNetwork = false; recoveryPosition = nil; nativeRecoveryPosition = nil } }
         while true {
@@ -110,6 +112,7 @@ extension PlaybackEngine {
             timeline = validated
         }
         try await loadTracks(nextItem, attempt: attempt, installation: installation)
+        try check(attempt, installation: installation)
         try await applyPreferences(preferences)
         try check(attempt, installation: installation)
         // An endpoint restore can emit EOF before its awaited seek returns.
@@ -154,8 +157,8 @@ extension PlaybackEngine {
 
     func beginMonitoring(attempt: UUID) {
         monitoring?.cancel()
+        let initial = installation
         monitoring = Task { [weak self] in
-            guard let initial = self?.installation else { return }
             var installation = initial
             while !Task.isCancelled {
                 do { try await Task.sleep(for: .seconds(1)) } catch { return }
