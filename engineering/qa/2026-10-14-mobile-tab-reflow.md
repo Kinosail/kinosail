@@ -152,3 +152,30 @@ Repository actionlint 1.17.0, workflow validation, source-size limits, and white
 The system actionlint lacks native parallel syntax; its rejection is not accepted validation.
 Private evidence records the original failure, manifests, commands, and log checksums.
 Hosted compilation remains required. No local native runtime was started.
+
+## Accepted three-engine repair evidence
+
+Layout run `38573733810` succeeds at `874422beb43a6d7b874f8596226ced2ef2c9ca8d`.
+All archive digests match GitHub metadata. The clean revision and all eight direct script pins verify.
+
+| Engine | Player snapshots / flows | Subtitles snapshots / flows | Artifact | Archive SHA-256 |
+| --- | --- | --- | --- | --- |
+| Chromium | 97 / 29 | 111 / 26 | `11899778762` | `402258e332d7a8c1f690a928114bf41b123c23e709c9649ea535b3aa9386bd9f` |
+| Firefox | 42 / 29 | 46 / 26 | `11900495025` | `1a9ac44e51c2f25fa85538da8ed2f57db15b46413c6bbec32571a7f189572a25` |
+| WebKit | 42 / 29 | 46 / 26 | `11899597973` | `323acab3db261e6820f9118e9b0a48f507e4f8e0551e24e144e3dac9cd10c00d` |
+
+Each engine completes all six combinations of every new navigation flow.
+All 18 install-help cases explicitly retain keyboard focus, show the complete outline, preserve page scroll, and dismiss with Enter.
+Visual inspection covers every corresponding screenshot at 320, 390, and 844 pixels, with default and saved tabs.
+The previously clipped Firefox control now fits inside its scrollable panel.
+Both apps have zero recorded horizontal overflow, terminal skeletons, and identified DOM layout shift in this run.
+Four Player and seven Subtitles automated accessibility audits per engine report zero violations.
+The isolated fixture suites pass 35 cases each in Chromium and WebKit, with two skips, and 37 in Firefox without skips.
+No fixture reports unexpected failures or retries.
+
+Independent source review at `4266f253` finds no concrete blockers in the focus listener, regression, or Xcode alias repair.
+The dedicated new install-help journey covers Player. The corresponding Subtitles focus path remains a coverage gap.
+The earlier intermittent Chromium desktop search shift remains unexplained despite this passing run.
+The Xcode workflow repair changes no browser or application source after this accepted revision.
+Required CI at the final revision and protected delivery remain pending.
+Local verify-changed executions remain plan-only; local runtimes, deployment, and physical devices remain unverified.
