@@ -103,3 +103,24 @@ Bounded receipts include attachment state, requested and displayed times, and ac
 This is an unverified diagnostic change, not a confirmed fixture repair.
 Apple documents frame acquisition through [AVPlayerItemVideoOutput](https://developer.apple.com/documentation/avfoundation/avplayeritemvideooutput).
 The earlier failure remains retained; production playback code is unchanged in this trial.
+
+## Early-output trial and matched control
+
+Deep run `38503683206` tested `fab16419ec0acfcdcb7a3f44c63678b6b06f94fd`.
+Native artifact `11867382561` has SHA-256 `71eab75f9e09f86c3adb7b0e018144db866c2ed00989118395d94fcf0361c71f`.
+The GitHub digest, gate receipts, independent summaries, and test trees agree.
+iOS passed 336 tests and skipped one. tvOS passed 321 tests and skipped one.
+Both reported zero audio main-thread warnings; the three tvOS FocusState warnings remain.
+
+The replacement journey acquired a frame with display time 9.25 after restoring to 9 seconds.
+Its clock advanced to 9.306, within the unchanged three-second bound.
+All four sibling controls acquired frames after their restored six-second positions.
+The log SHA-256 is `fee4bc3567e9adda62f5c25d6e18962cdf64064750614e4ba665e9dc000c6d42`.
+
+Read-only MP4 sample-table inspection verifies 144 video samples over twelve seconds.
+Thirty-five start after nine seconds, with the last starting at 11.917 seconds.
+This rejects a declared video track ending before the failed seek; it does not prove decoding.
+
+The next matched control holds initial loading, seeks to nine seconds, pauses, releases media, and resumes.
+It attaches the output late, as in the retained failed trial, but has no retired installation.
+This control is pending hosted execution. The successful early-output trial alone does not establish the earlier failure's cause.
