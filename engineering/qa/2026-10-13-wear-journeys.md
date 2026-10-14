@@ -469,3 +469,17 @@ Paired loaded states, pending transitions, enlarged type, physical input, and ph
 Swift compilation succeeds in this run. Separate production-image scans reject a cached vulnerable `librsvg2-2` package.
 The [security repair note](2026-10-13-librsvg-security.md) records that new blocker and its correction.
 This Wear result does not establish that all required gates, image publication, or deployment have passed.
+
+## Repeat acceptance after the image repair
+
+Both profiles pass again at `d1f6dcf90f8b2f707a2866cee54c112067a653a4`, with the same final Wear source.
+Each executes all three tests, verifies seventeen source pins and eight child hashes, and completes owned-emulator cleanup.
+Both independent inspectors accept the receipts; all eight images were inspected and preserve the corrected circular layout.
+The small profile reaches Home readiness after 50 reads and 11.767 seconds; the large profile takes 41 reads and 10.303 seconds.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11863553772` | `f69d93a3357b0e3a0d7df0dc2a47b2e55a1e3a3f228c433808a95d5c428f568c` |
+| Large round | `11862978905` | `26dd3ea91506ddfbf043606d11a7182c64a7ea9e0cb08867dfbbf7261a2e33b4` |
+
+The repeated result supports the readiness correction within these two emulator profiles. Physical and paired-session boundaries remain open.

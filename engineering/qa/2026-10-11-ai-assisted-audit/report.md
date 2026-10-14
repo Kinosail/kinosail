@@ -24,7 +24,7 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 PRs #587, #592, and #593 are merged. PR #593's reviewed task commit is an ancestor of fetched `origin/main` at `0a68e51544458de32d1458b6a567050ed344f229`.
 All four required PR checks and exact-main verification passed. All nine publication jobs passed for this newest merge.
 Independent registry inspection verifies both architectures, revision labels, tested candidate digests, and production tags for both apps.
-The separate Wear follow-up remains draft PR #594; its latest source repairs await hosted acceptance.
+The separate Wear follow-up remains draft PR #594; its Wear journeys and image security repair pass affected hosted acceptance; protected delivery remains pending.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -37,9 +37,9 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | At `660bc087`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. | Required gates and delivery remain pending. Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
+| Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. | Required gates and delivery remain pending. Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
 | Publication and deployment | PRs #587, #592, and #593 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
-| Runtime image security | Hosted scans at `660bc087` reject cached `librsvg2-2` with HIGH-severity `CVE-2026-96889`. Debian publishes a fixed trixie package. | Both production images now require that fixed minimum version; fresh builds, scans, and affected container journeys are pending. |
+| Runtime image security | At `d1f6dcf9`, both apps on amd64 and arm64 install the fixed librsvg package and pass scans and production paths. All four system artifacts verify revision, architecture, ten source pins, and two checksum entries. | Protected delivery, exact-main publication, and deployment remain pending. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 

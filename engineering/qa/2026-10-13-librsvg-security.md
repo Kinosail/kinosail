@@ -18,7 +18,7 @@ Run: [38493862973](https://github.com/Kinosail/kinosail/actions/runs/38493862973
 Both scanner tables identify the same installed and fixed versions.
 Build logs show cached package-install layers: Player step 22 and Subtitles steps 22 and 27.
 An unchanged cached layer does not rerun its existing `apt-get update` and `apt-get upgrade` commands.
-Subtitles amd64 also fails its scan; that log has not yet been independently classified.
+Subtitles amd64 independently confirms the same finding. Its private log has SHA-256 `ebb4904accfa3a0e9e8bf586b8dab90381a0e6de7f59264e13ac78dff7d84264`.
 
 ## Correction and acceptance
 
@@ -34,4 +34,20 @@ Source caps and whitespace checks pass. Local container execution remains held.
 
 Acceptance requires new amd64 and arm64 builds, successful vulnerability scans, and affected container journeys for both apps.
 Exact-main image publication, deployed versions, and physical playback remain separate facts.
-The corrected images have not yet been built or scanned.
+The correction is verified below; protected delivery and exact-main publication remain pending.
+
+## Corrected image acceptance
+
+At `d1f6dcf90f8b2f707a2866cee54c112067a653a4`, both apps pass production image builds, scans, and container journeys on amd64 and arm64.
+Each retained build log confirms installation of `librsvg2-2` version `2.60.0+dfsg-1+deb13u1`.
+Each system artifact verifies ten source pins, two checksum entries, unchanged clean source, and a successful command.
+Image revision labels, command identity, and native runner architecture also verify.
+
+| App | Architecture | Artifact | ZIP SHA-256 |
+| --- | --- | --- | --- |
+| Player | amd64 | `11863199262` | `832f40363a21941146427bde9c67e34b2b52b86358b5b1e42dfb4b7fd7a215f3` |
+| Player | arm64 | `11862928457` | `f3cff50a5c0f4405875c3073d67754ac636a983363efad370742605286e4cf7f` |
+| Subtitles | amd64 | `11864010198` | `2141f4ea2eb7cbad1dbe64a73d83ed85a533ca27d415968600060c11a41c7472` |
+| Subtitles | arm64 | `11863463430` | `7ac798e12786ed17f1f53c55b2ffe223cbcacdf479a7edffa5bbaef07a65a9c2` |
+
+These receipts establish hosted container acceptance. They do not establish publication, deployment, or physical playback.
