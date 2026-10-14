@@ -20,9 +20,9 @@ on:
         options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]
         default: none
       populated_suite:
-        description: Select fixture admission, the existing selection, browse, or configuration journeys
+        description: Select fixture admission, the existing selection, browse, configuration, or beta journeys
         type: choice
-        options: [admission, selected, browse, configuration]
+        options: [admission, selected, browse, configuration, beta]
         default: admission
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
