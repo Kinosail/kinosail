@@ -147,7 +147,8 @@ Compilation, native contracts, focused probes, result inspection, and scheduled 
 This preserves the selected 27.1 toolchain across the bundle rename.
 
 The existing CI contract failed before the workflow edit: two tests, one failure.
-After the edit, all 192 CI contract tests pass, with five real-scanner checks deferred to the hosted secret gate.
+After the edit, 187 CI contract tests pass and five real-scanner checks skip locally.
+The hosted secret gate owns those five controls.
 Repository actionlint 1.17.0, workflow validation, source-size limits, and whitespace checks pass.
 The system actionlint lacks native parallel syntax; its rejection is not accepted validation.
 Private evidence records the original failure, manifests, commands, and log checksums.
@@ -174,8 +175,31 @@ The isolated fixture suites pass 35 cases each in Chromium and WebKit, with two 
 No fixture reports unexpected failures or retries.
 
 Independent source review at `4266f253` finds no concrete blockers in the focus listener, regression, or Xcode alias repair.
-The dedicated new install-help journey covers Player. The corresponding Subtitles focus path remains a coverage gap.
+The dedicated new install-help journey covers Player.
+Production Subtitles has no Install action in its header; its separate manifest-association audit is recorded in `2026-10-14-subtitles-web-app-metadata.md`.
 The earlier intermittent Chromium desktop search shift remains unexplained despite this passing run.
 The Xcode workflow repair changes no browser or application source after this accepted revision.
 Required CI at the final revision and protected delivery remain pending.
 Local verify-changed executions remain plan-only; local runtimes, deployment, and physical devices remain unverified.
+
+## Final revision and protected delivery
+
+Final task revision `c47a0cd3dfde15f48297dc3fdb3d1f3ee5c5ba3c` passes required CI `38577083490`.
+Layout run `38577083527` repeats the accepted counts and all 18 install-help keyboard cases.
+Each current screenshot matches its visually reviewed predecessor byte for byte.
+The current Chromium, Firefox, and WebKit archive IDs are `11902023774`, `11902721549`, and `11900483765`.
+Their GitHub digests, exact revisions, and direct source pins verify.
+
+Deep run `38578049294` passes 659 native tests, with three skips and no runtime warnings.
+The retained xcresult trees independently match those counts.
+Both native jobs use runner image `20261006.0244.1`; execution on the renamed image remains unobserved.
+Subtitles passes 99 full-suite cases per browser engine, without skips or retries.
+Player Firefox and WebKit pass 810 and 808 distinct cases, respectively, without retries.
+Their 283 and 285 skipped-only cases remain coverage boundaries.
+Required Chromium evidence verifies 464 distinct passed cases and 22 skipped-only cases, without retries.
+These suite counts include isolated fixtures and do not classify every case as populated-server E2E evidence.
+
+PR #598 merged with commit `e9e96833731416836302f222b35c1b3eb82801c2`.
+A fetched ancestry check proves the reviewed task commit is included in remote main.
+The deep Chromium media tail and exact-main container publication remain pending at this checkpoint.
+Primary-checkout native project and localization edits prevent local main cleanup; they remain preserved.
