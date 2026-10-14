@@ -26,6 +26,7 @@ android {
     buildFeatures { compose = true }
 
     sourceSets.getByName("main").assets.srcDir("../licenses")
+    sourceSets.getByName("test").java.srcDir("../backup-tests")
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
