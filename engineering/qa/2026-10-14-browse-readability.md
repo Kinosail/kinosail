@@ -26,7 +26,9 @@ The normal capture must add at least eight pixels reaching that contrast.
 Retain each PNG and a receipt with revision, browser, control geometry, and pixel counts.
 Ordinary-color controls must pass before a forced-colors failure is qualified.
 
-The [Playwright screenshot style option](https://playwright.dev/docs/api/class-page#page-screenshot-option-style) temporarily hides only the measured pseudo-elements.
+A temporary CSSOM stylesheet hides only the measured pseudo-elements.
+The test checks each glyph is hidden before capture and visible for the painted control.
+It removes that stylesheet in a `finally` block.
 This negative control does not replace the Server response or change its content security policy.
 The baseline and acceptance runs must establish that the check operates under the production policy.
 These controls test painted icons; they do not replace device accessibility testing.
@@ -47,3 +49,23 @@ They cover omitted, extra, skipped, and failed results; they do not prove browse
 Local application and browser runtime remain held.
 Hosted artifacts must establish the failing baseline and the repaired result separately.
 No physical-device, deployment, TLS outside the disposable fixture, or full-product completion is claimed.
+
+## First hosted baseline
+
+Run `38643751399` tests commit `0c11cdcc729cb428fca69d95a7914461e5e2f185`.
+Artifact `11931183972` has archive SHA-256 `e0c5f99139c3806333d5616453d6196811c1e03352f8325419d0358469d3b953`.
+The singular Shows count fails at all three widths; the single-item playlist index also fails.
+Plural counts and owned-playlist cleanup pass.
+The first case fails, and the configured failure limit leaves the other 21 cases unrun.
+Fixture containers, volumes, private media, and browser trust are removed successfully.
+
+The initial icon measurement is invalid: its ordinary-color controls also report zero pixels.
+The saved normal and hidden images both show the icons.
+Eight trace console events identify rejected inline styles under `style-src`.
+The screenshot style option did not hide the glyphs under the production content security policy.
+Replace that negative control with a temporary CSSOM stylesheet and assert its computed visibility.
+Repeat the unchanged application baseline before qualifying a forced-colors failure.
+
+The standard container smoke fixture does not run this spec with `KINOSAIL_TEST_INSTANCE=1`.
+Its separately prepared Owner journeys use an explicit file list that excludes this spec.
+The closed browse campaign supplies the required one Show and four Movies.

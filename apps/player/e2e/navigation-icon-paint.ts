@@ -15,9 +15,31 @@ export async function expectNavigationIconPaint(page: Page, info: TestInfo, name
 		return { name: element.textContent!.trim(), x: box.x, y: box.y, width: box.width, height: box.height };
 	}));
 	const hiddenStyle = ".header-compact-menu > summary::before, .mobile-navigation > a::before, .mobile-navigation .nav-more > summary::before { visibility: hidden !important; }";
-	const hiddenBefore = await page.screenshot({ path: info.outputPath(`${name}-icons-hidden-before.png`), animations: "disabled", scale: "css", style: hiddenStyle });
-	const painted = await page.screenshot({ path: info.outputPath(`${name}-icons.png`), animations: "disabled", scale: "css" });
-	const hiddenAfter = await page.screenshot({ path: info.outputPath(`${name}-icons-hidden-after.png`), animations: "disabled", scale: "css", style: hiddenStyle });
+	// Inline screenshot styles are rejected by the real Server's CSP. Use CSSOM
+	// for this temporary negative control, and verify it actually hides each glyph.
+	const sheet = await page.evaluateHandle(rule => {
+		const sheet = new CSSStyleSheet();
+		sheet.replaceSync(rule);
+		return sheet;
+	}, hiddenStyle);
+	const capture = async (hidden: boolean, suffix: string) => {
+		await sheet.evaluate((sheet, hidden) => {
+			document.adoptedStyleSheets = document.adoptedStyleSheets.filter(candidate => candidate !== sheet);
+			if (hidden) document.adoptedStyleSheets.push(sheet);
+		}, hidden);
+		expect(await controls.evaluateAll(elements => elements.map(element => getComputedStyle(element, "::before").visibility)))
+			.toEqual(Array(6).fill(hidden ? "hidden" : "visible"));
+		return page.screenshot({ path: info.outputPath(`${name}-icons${suffix}.png`), animations: "disabled", scale: "css" });
+	};
+	let hiddenBefore: Buffer, painted: Buffer, hiddenAfter: Buffer;
+	try {
+		hiddenBefore = await capture(true, "-hidden-before");
+		painted = await capture(false, "");
+		hiddenAfter = await capture(true, "-hidden-after");
+	} finally {
+		await sheet.evaluate(sheet => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter(candidate => candidate !== sheet); });
+		await sheet.dispose();
+	}
 	const pixels = await page.evaluate(async ({ original, firstControl, secondControl, boxes }) => {
 		const decode = async (png: string) => {
 			const image = new Image();
