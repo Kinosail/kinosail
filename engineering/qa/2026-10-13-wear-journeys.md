@@ -374,3 +374,37 @@ All unmatched packages and classes remain `other`.
 Raw component names, IDs, URIs, and unknown reasons remain private.
 The new isolated privacy control fails on the previous classifier and passes after refinement.
 All 32 focused source checks, source caps, and whitespace checks pass. Runtime acceptance remains open.
+
+## The replacement belongs to the Home package
+
+Both profiles at `a0fc41055bb46186cd6a0027d7048eafc0ba6e11` fail the actual foreground wait.
+Both later component tests pass. Eighteen source pins, seven child hashes per profile, and complete cleanup verify.
+Both launch screenshots show the watch face. Lifecycle and power observations match the preceding failure.
+The small profile retains 41 events and the large profile retains 40.
+Both reset the event buffer and report no malformed events or truncation flags.
+
+The initial sequence now identifies the replacement as `home-package`: another Activity in the resolved Home package.
+It is created and resumed while Wear pauses and stops, before the test-driver Activity is created for teardown.
+This identifies package membership, not the initiating caller, exact component, or complete cause.
+Neither replacement has the `system-dream` role.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11861593241` | `4f9663f3d8f7d2a12bef282e4d7b9d5915b3b9cf6e43798a77e852516c011ab8` |
+| Large round | `11861498956` | `cf5c700ae6da5745034f71ab7734518cf1361e79613a5e5e23d8468b48dbb0fc` |
+
+The next controlled experiment observes current Home state after the existing wake action, immediately before instrumentation.
+It waits at most 30 seconds for one global top-resumed Activity in the Home package, different from its routing entrypoint.
+Each read has a two-second limit. Missing, ambiguous, oversized, or per-display-only records cannot satisfy readiness.
+Raw snapshots remain private and capped at one MiB; the receipt contains only fixed Booleans, attempt count, and elapsed seconds.
+Timeout retains a failed receipt and owned-emulator cleanup. It does not fall back to accepting the routing Activity.
+A timeout is an experimental prerequisite failure, not evidence of an app defect.
+A successful observation proves current resumption only, not visible readiness or absence of a later takeover.
+No additional wake action, forced focus, retry of instrumentation, or assertion change is introduced.
+
+The pinned [Android 16 Activity manager source](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/services/core/java/com/android/server/wm/ActivityTaskManagerService.java)
+prints `ResumedActivity:` from the global `getTopResumedActivity()` result.
+Its SHA-256 is `e6a7aba9a938a77b7aae5ff0e289b1972975c2cb32e1972626bc8c69de3512d0`.
+The readiness privacy control was written before the parser and initially failed because the function did not exist.
+All 33 focused source checks, source caps, whitespace checks, and independent source review pass.
+These checks execute no Android runtime. Hosted acceptance of this readiness experiment remains pending.

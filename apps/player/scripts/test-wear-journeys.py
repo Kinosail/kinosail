@@ -11,7 +11,7 @@ import struct
 import subprocess
 import time
 import uuid
-from wear_event_projection import capture_events, reset_events
+from wear_event_projection import capture_events, reset_events, wait_for_home
 
 APP = "com.kinosail.player.dev"
 SERIAL = "emulator-5554"
@@ -87,9 +87,9 @@ def run_case(safe, run, label, size, density, home):
         check(adb("shell", "pm", "clear", APP).strip() == b"Success", "wear_clear_failed")
         check(adb("shell", "wm", "size").decode().strip() == f"Physical size: {size}x{size}", "wear_physical_size")
         check(adb("shell", "wm", "density").decode().strip() == f"Physical density: {density}", "wear_physical_density")
-        case["physicalDisplayVerified"] = True
+        case.update(physicalDisplayVerified=True, displayPixels=[size, size], density=density)
         adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
-        case.update(displayPixels=[size, size], density=density)
+        wait_for_home(adb, run, home, case)
         case["stage"] = "instrument"
         args = ["shell", "am", "instrument", "-w", "-r", "-e", "class", CLASSES,
                 APP + ".test/androidx.test.runner.AndroidJUnitRunner"]
