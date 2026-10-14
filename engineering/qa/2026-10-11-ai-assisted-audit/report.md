@@ -37,8 +37,9 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | At `966408ce`, both profiles pass all three tests after bounded Home readiness. Eighteen pins, eight child hashes, foreground ownership, and cleanup verify per profile. Visual review finds the app name clipped on the large round display. | Centered-label correction and removal of temporary diagnostics await final-source hosted verification. Pairing, sensors, battery, and physical input remain open. |
+| Wear | At `660bc087`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. | Required gates and delivery remain pending. Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
 | Publication and deployment | PRs #587, #592, and #593 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
+| Runtime image security | Hosted scans at `660bc087` reject cached `librsvg2-2` with HIGH-severity `CVE-2026-96889`. Debian publishes a fixed trixie package. | Both production images now require that fixed minimum version; fresh builds, scans, and affected container journeys are pending. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 
@@ -58,8 +59,10 @@ Early UI automation connection also fails on both profiles. System timelines loc
 Waiting for that follow-on Activity to be globally top-resumed permits both profiles to pass at `966408ce`.
 Visual review then finds a separate clipped app name on the large round display; its bounds exceed the circular viewport.
 The final candidate centers only that label, adds a geometry assertion, and removes temporary lifecycle and event diagnostics.
-All 27 remaining focused source checks pass; final-source hosted and visual acceptance remain open.
+All 27 remaining focused source checks pass. Both final-source hosted Wear journeys and visual acceptance pass at `660bc087`.
 The broader run also fails a tvOS asset-catalog runtime launch before native tests; that build gate remains required.
+Swift compilation succeeds on the next `660bc087` run. Its image scans expose a separate cached-package vulnerability.
+The [librsvg evidence note](../2026-10-13-librsvg-security.md) records the scanner findings, cache evidence, and minimum-version repair.
 The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
 
 Exact-main `0a68e515` also passes the nineteen cold-suffix cases and verifies all seven helper pins.

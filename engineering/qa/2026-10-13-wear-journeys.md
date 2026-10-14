@@ -52,8 +52,9 @@ Neither layer establishes physical watch acceptance.
 Source preparation and independent source review are complete.
 The first hosted trial compiled both APKs but failed before emulator creation.
 The later executed trial was rejected during artifact inspection.
-Home readiness now permits both actual Activity journeys to pass, with complete artifact decoding.
-Visual review found a clipped app name on the large round display; final-source acceptance remains pending.
+Home readiness permits both actual Activity journeys to pass, with complete artifact decoding.
+The corrected app name fits both round displays at launch and recreation on the final Wear source.
+Required repository gates remain pending, including a newly discovered production-image vulnerability repair.
 A separate hosted Wear job now runs when deep verification selects Android.
 The app's required check rejects missing, failed, cancelled, or incorrectly skipped Wear execution.
 Before integration, the regression check proved missing Wear execution was accepted.
@@ -446,3 +447,25 @@ The broader `966408ce` run also fails the Swift build before native tests execut
 Its private log identifies a tvOS asset-catalog runtime launch/handshake failure, without a Swift source error location.
 Log SHA-256: `0c47778b1bcc90500ae127ca1761cdf341da566916172a93b8cf7b3527e8afd7`.
 This is a separate hosted build failure, not a passing native test run. The next candidate must pass that gate too.
+
+## Final Wear source passes both profiles
+
+At `660bc08747da33aa640ef169a4c50fbfc02a74d1`, both profiles pass all three tests without skips.
+The temporary lifecycle and event instrumentation is absent.
+Seventeen source pins and eight child hashes verify per profile; all eight PNGs decode and were visually inspected.
+Both inspectors accept the artifacts. Foreground ownership, source stability, process cleanup, and transport removal all verify.
+
+| Profile | Artifact | ZIP SHA-256 | Home readiness |
+| --- | --- | --- | --- |
+| Small round | `11862492979` | `987d2c94b05fa3017429a0c3fbf40867b5ec17ae5a8ea96d034042406db08cbd` | 43 reads, 10.759 seconds |
+| Large round | `11863311946` | `a8e48c8a442142018108a2eed180815600df78841acc554cdae5bb18cc3d54eb` | 53 reads, 12.804 seconds |
+
+The app name now has bounds `[135, 72, 249, 108]` on the small profile and `[170, 72, 284, 108]` on the large profile.
+These remain identical after recreation. Farthest-corner distances are 132.850 and 165.148 pixels, within radii of 192 and 227 pixels.
+The new Kotlin geometry assertion passes at both stages on both profiles, and the images show the complete label.
+Disconnected and permission-message images preserve the existing controls and content flow.
+Paired loaded states, pending transitions, enlarged type, physical input, and physical watches remain unverified by these journeys.
+
+Swift compilation succeeds in this run. Separate production-image scans reject a cached vulnerable `librsvg2-2` package.
+The [security repair note](2026-10-13-librsvg-security.md) records that new blocker and its correction.
+This Wear result does not establish that all required gates, image publication, or deployment have passed.
