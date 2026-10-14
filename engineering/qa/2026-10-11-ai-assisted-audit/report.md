@@ -30,14 +30,25 @@ The deep suite's first attempt failed during artifact upload; that failure remai
 PR #602 repairs manifest discovery from six production Subtitles pages.
 All seven page cases, including the sign-in control, pass in Chromium, Firefox, and WebKit.
 Required CI passes. Merge `9457698061136b33fb3eca0f1c9858ae60a4b66a` includes the reviewed task commit by fetched ancestry.
-Its exact-main CI and image publication remain pending at this checkpoint.
+Its exact-main CI and all nine image publication jobs pass. Both apps and architectures match the tested candidates and production tags.
 The [metadata note](../2026-10-14-subtitles-web-app-metadata.md) records source revisions, checksums, and boundaries.
 
-The next QA repair corrects selection geometry in browse-return evidence.
-A test-first hosted baseline records a hidden duplicate link's zero bounds instead of the focused Movies card.
-At `46557737`, the corrected recorder passes all three Home journeys without retries.
-The broader Movies run stops during dependency download, before tests, and its failed job is retried.
-The [geometry note](../2026-10-14-browse-return-geometry.md) retains the failed baseline and accepted Home evidence.
+PR #603 corrects selection geometry in browse-return evidence and is merged as `1a811974d4a05022557602eade45b0bfedc40352`.
+Fetched ancestry proves delivery of the reviewed commit. Its exact-main CI and selected Player publication are pending.
+All seven affected return suites pass: 21 distinct cases across 23 executions, without browser retries.
+The required Chromium artifact records 534 passing executions and 63 skipped executions, with no retries or flaky results.
+The required Go replay passes, while its original CLI HTTP 503 remains undiagnosed.
+The [geometry note](../2026-10-14-browse-return-geometry.md) retains the failed baseline, accepted receipts, and delivery boundary.
+
+At `7fce6b94`, dedicated download run `38595079268` passes all sixty cases without retries.
+It covers twelve isolated browser controls, forty-seven disposable Server cases, and one phone case.
+Artifact `11909367689` has SHA-256 `01bb6ed7c5c5ecefd83f92d0692af86220746e02f97cf2f809fcb70d737c7016`.
+All 3,537 selected source pins, three safe-file hashes, final source identity, and process cleanup verify.
+This reconciles eight skipped-only full-suite cases with dedicated current-revision evidence.
+
+Draft PR #604 adds a baseline for layout login destination readiness at `8bd2898b`.
+The helper remains unchanged. Its hosted browser step fails; retained artifact inspection is pending.
+That step outcome alone does not establish the candidate failure's cause.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
 
@@ -46,14 +57,14 @@ The campaign goal remains active. Complete product, deployment, and physical-dev
 | Copied H264 resume | PR #570 merged the cold and longer-remux origin repairs. At `6920080a`, eleven Chromium journeys retain 77 matching frame samples; eight metadata-fault controls pass. | Exact legacy diagnostic fixtures, larger sources, native clients, and physical acceptance remain distinct. Historical AQA-006 and AQA-014 entries below precede these repairs. |
 | Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
-| Browser session return | At `c47a0cd3`, the full browser artifacts contain 814 distinct Player passes in Chromium, 810 in Firefox, and 808 in WebKit. Subtitles passes 99 per engine. Current-source Home, primary Movies, and cold Movies supplemental journeys pass at `3b3e2ecd`. | Skipped-only counts remain 279, 283, and 285 for Player. Historical browser flakes remain unresolved. The recorder repair needs broader verification. |
+| Browser session return | At `c47a0cd3`, the full browser artifacts contain 814 distinct Player passes in Chromium, 810 in Firefox, and 808 in WebKit. Subtitles passes 99 per engine. The recorder repair passes all seven affected return suites, plus 60 dedicated download cases at `7fce6b94`. | Skipped-only counts remain 279, 283, and 285 for Player. Historical browser flakes remain unresolved. The next login baseline needs failure-artifact inspection. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
 | Apple native contracts | At `c47a0cd3`, Xcode records 336 iOS passes, 322 tvOS passes, and one backup-container pass, with zero runtime warnings. The tvOS same-title regression passes. | Three tests are skipped. Actual audio activation, earlier reader and hero intermittency, backup transport, and physical-device proof remain open. |
 | Android | At `c47a0cd3`, all sixteen caption executions pass. The captions-off control reaches its intended pixel rejection. Eight source pins, six fixture pins, 57 child hashes, and cleanup verify. | Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Wear | At `c47a0cd3`, both profiles pass three tests. Seventeen source pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight screenshots were inspected. | The small permission component capture cuts off part of the lower Sponsor control. Full scrolling accessibility, paired sessions, enlarged type, sensors, battery, and physical input remain open. |
-| Publication and deployment | PR #598 has verified exact-main CI and publication. The latest published revision is `e9e96833731416836302f222b35c1b3eb82801c2`. PR #602 is merged at `9457698061136b33fb3eca0f1c9858ae60a4b66a`. | PR #602 main CI and publication are pending. Deployment, TLS, and physical playback remain unverified. |
-| Runtime image security | Exact-main `e9e96833` passes all nine publication jobs, including production-image tests and scans. Both architectures and tested candidate manifests match the published Player and Subtitles images. | Deployment remains unverified. |
+| Publication and deployment | PR #602 has verified exact-main CI and publication at `9457698061136b33fb3eca0f1c9858ae60a4b66a`. PR #603 is merged at `1a811974d4a05022557602eade45b0bfedc40352`. | PR #603 main CI and selected Player publication are pending. Deployment, TLS, and physical playback remain unverified. |
+| Runtime image security | Exact-main `94576980` passes all nine publication jobs, including production-image tests and scans. Both architectures and tested candidate manifests match the published Player and Subtitles images. | Deployment remains unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 

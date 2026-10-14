@@ -95,5 +95,9 @@ The local `verify-changed` invocation was plan-only under the runtime hold.
 
 PR #602 merges with commit `9457698061136b33fb3eca0f1c9858ae60a4b66a`.
 A fetched ancestry check proves that the reviewed task commit is included in remote main.
-Exact-main CI and publication remain pending at this checkpoint.
+Exact-main run `38591712153` and all nine publication jobs pass.
+Registry inspection verifies both apps, both architectures, revision labels, tested candidates, and commit/main/latest tags.
+The Player index digest is `sha256:554ea175ae27f3c52580103345ed14b1b90bb34685c567d5e4ef5a05ff776dfb`.
+The Subtitles index digest is `sha256:321029851b6a06c9712c194d411f302f77a1bc7993cf84d14a8b375888bef8f9`.
+These are published registry artifacts; no local image execution or deployment is claimed.
 The earlier Firefox timeout remains unexplained. OS installation, deployment, and physical-device acceptance remain separate.
