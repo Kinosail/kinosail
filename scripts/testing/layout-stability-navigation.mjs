@@ -180,11 +180,24 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
         const closeHelp = help.locator("[data-install-close]");
         await closeHelp.focus();
         const helpBox = await help.boundingBox(), closeBox = await closeHelp.boundingBox(), helpDock = await nav.boundingBox();
+        const helpFocusSamples = await help.evaluate(async panel => {
+          const button = panel.querySelector("[data-install-close]"), samples = [];
+          for (const frameCount of [0, 2, 4]) {
+            for (let frame = 0; frame < frameCount; frame++) await new Promise(resolve => requestAnimationFrame(resolve));
+            const style = getComputedStyle(panel);
+            samples.push({time: performance.now(), focused: document.activeElement === button,
+              focusVisible: button.matches(":focus-visible"), scrollTop: panel.scrollTop,
+              clientHeight: panel.clientHeight, scrollHeight: panel.scrollHeight,
+              overflowY: style.overflowY, scrollBehavior: style.scrollBehavior,
+              panel: panel.getBoundingClientRect().toJSON(), button: button.getBoundingClientRect().toJSON()});
+          }
+          return samples;
+        });
         const helpReachable = Boolean(helpBox && closeBox && helpDock && helpBox.y >= 0 &&
           helpBox.x >= 0 && helpBox.x + helpBox.width <= viewport.width + 1 &&
           helpBox.y + helpBox.height <= helpDock.y + 1 && closeBox.y >= helpBox.y - 1 &&
           closeBox.y + closeBox.height <= helpBox.y + helpBox.height + 1);
-        Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpReachable, stable: railReachable && helpReachable});
+        Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpFocusSamples, helpReachable, stable: railReachable && helpReachable});
         if (!helpReachable) throw new Error("Player install help is obscured by its navigation");
         await page.keyboard.press("Enter");
         await help.waitFor({state: "hidden"});
