@@ -181,19 +181,27 @@ struct PlaybackProgressSafetyJourneys {
         }
     }
 
-    func decodedProgress(_ player: AVPlayer) async throws {
+    func decodedProgress(_ player: AVPlayer, output supplied: AVPlayerItemVideoOutput? = nil) async throws {
         let item = try #require(player.currentItem)
         try #require(abs(item.duration.seconds - 12) < 0.002)
-        let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
-        item.add(output)
-        defer { item.remove(output) }
+        let output = supplied ?? AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+        if supplied == nil { item.add(output) }
+        defer { if supplied == nil { item.remove(output) } }
+        try #require(item.outputs.contains { $0 === output })
         let initial = player.currentTime().seconds
         let deadline = ContinuousClock.now.advanced(by: .seconds(3))
         var decoded = false
+        var requested: Double?, displayed: Double?, acquired = 0
         while ContinuousClock.now < deadline {
-            if player.currentTime().seconds > initial + 0.3,
-               output.copyPixelBuffer(forItemTime: player.currentTime(), itemTimeForDisplay: nil) != nil {
-                decoded = true; break
+            let time = player.currentTime()
+            if time.seconds > initial + 0.3 {
+                requested = time.seconds
+                var display = CMTime.invalid
+                if output.copyPixelBuffer(forItemTime: time, itemTimeForDisplay: &display) != nil {
+                    acquired += 1
+                    displayed = display.seconds.isFinite ? display.seconds : nil
+                    if let displayed, displayed > initial { decoded = true; break }
+                }
             }
             try await Task.sleep(for: .milliseconds(10))
         }
@@ -201,6 +209,8 @@ struct PlaybackProgressSafetyJourneys {
         let observation = ProgressDecodeObservation(initial: initial.isFinite ? initial : nil,
             final: end.isFinite ? end : nil, rate: player.rate, nativeStatus: item.status.rawValue,
             timeControlStatus: player.timeControlStatus.rawValue, decoded: decoded,
+            earlyOutput: supplied != nil, outputAttached: item.outputs.contains { $0 === output },
+            requested: requested, displayed: displayed, acquired: acquired,
             failure: PlaybackSafeFailure(item.error))
         print("PLAYBACK_PROGRESS_SAFETY_DECODE " + String(decoding: try JSONEncoder().encode(observation), as: UTF8.self))
         try #require(decoded, "Healthy control requires real decoded advancement, not state alone")
@@ -209,7 +219,8 @@ struct PlaybackProgressSafetyJourneys {
 
 private struct ProgressDecodeObservation: Encodable {
     let initial: Double?; let final: Double?; let rate: Float; let nativeStatus: Int
-    let timeControlStatus: Int; let decoded: Bool; let failure: PlaybackSafeFailure
+    let timeControlStatus: Int; let decoded: Bool; let earlyOutput: Bool; let outputAttached: Bool
+    let requested: Double?; let displayed: Double?; let acquired: Int; let failure: PlaybackSafeFailure
 }
 
 private struct PlaybackProgressSafetyReceipt: Encodable {

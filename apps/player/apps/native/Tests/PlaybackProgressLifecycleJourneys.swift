@@ -150,6 +150,12 @@ extension PlaybackProgressSafetyJourneys {
                   ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
             let newPlayer = try #require(engine.player)
             try #require(newPlayer !== oldPlayer && source.fixture.heldMediaCount > heldBefore)
+            // Observe this item's decoder before releasing preparation. The
+            // retained late-attachment trial advanced without yielding a frame.
+            let newItem = try #require(newPlayer.currentItem)
+            let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+            newItem.add(output)
+            defer { newItem.remove(output) }
             try #require(engine.generation == attempt && engine.loading)
             try await engine.seek(to: 9)
             engine.pause(); try await drain(engine.writing, client: source.fixture.client)
@@ -161,7 +167,8 @@ extension PlaybackProgressSafetyJourneys {
             #expect(!engine.loading && engine.player === newPlayer)
             #expect(abs(newPlayer.currentTime().seconds - 9) < 0.1)
             #expect(newPlayer.timeControlStatus == .paused && newPlayer.rate == 0)
-            engine.resume(); try await decodedProgress(newPlayer)
+            try #require(newPlayer.currentItem === newItem && newItem.outputs.contains { $0 === output })
+            engine.resume(); try await decodedProgress(newPlayer, output: output)
             engine.pause(); try await drain(engine.writing, client: source.fixture.client)
             #expect(engine.seconds > 9 && engine.seconds < 12 && !engine.completed)
             print("PLAYBACK_INSTALLATION sameTitle=true retiredCancelled=true latestSeek=9 paused=true decodedReplacement=true joined=true")

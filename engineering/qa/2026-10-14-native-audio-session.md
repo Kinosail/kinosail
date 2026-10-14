@@ -70,7 +70,7 @@ The gate rejected both retained baseline summaries with the exact warning counts
 This establishes the baseline failure at the artifact boundary.
 
 Local application runtime work remains on hold. No local Swift compilation, simulator, or media run was performed.
-Hosted compilation and execution of the repaired revision are pending.
+Hosted compilation passed for `f91be11017a48357b4feb72aaf2bf34425be3d3b`.
 The new same-title journey was written before production changes, but its pre-fix native execution was not run.
 Do not claim native red-green proof until that boundary is exercised.
 
@@ -81,3 +81,25 @@ These properties have source inspection only; runtime failure-log evidence is pe
 
 Physical routing, interruption, Picture in Picture, offline playback, and device responsiveness need their own evidence.
 The work does not verify Nox deployment, physical devices, or store publication.
+
+## First repaired-source runtime
+
+Deep run `38501376945` produced artifact `11865579540` at `f91be110`.
+Its archive SHA-256 is `5bd9dd36f195d8853c1200270cd578e5d342ee2d6c73341ffc78ef85218edafd`.
+GitHub's digest, retained summaries, gate receipts, and independently read Xcode test trees agree.
+
+iOS passed 336 tests with one skip. tvOS passed 320, failed one, and skipped one.
+Both platforms reported zero audio main-thread warnings. The three tvOS FocusState warnings remain.
+The failed test is the new same-title installation journey's decoded-frame prerequisite.
+Its earlier ownership, restored seek, and pause assertions reported no failures.
+Playback advanced from 9.0 to 11.885 seconds at rate 1 with a ready item and no reported media error.
+The late-added video output returned no frame. This does not establish the underlying cause or a visible playback failure.
+
+The next diagnostic attaches the output to the captured replacement item before releasing held media.
+It preserves seek, pause/resume, advancement, and the three-second deadline.
+An acquired frame must have a display time after the initial restored position.
+The output stays attached to that item and is removed on every exit.
+Bounded receipts include attachment state, requested and displayed times, and acquisition count.
+This is an unverified diagnostic change, not a confirmed fixture repair.
+Apple documents frame acquisition through [AVPlayerItemVideoOutput](https://developer.apple.com/documentation/avfoundation/avplayeritemvideooutput).
+The earlier failure remains retained; production playback code is unchanged in this trial.
