@@ -23,5 +23,22 @@ The check runs before leaving the Movies destination and after every Home return
 It retains the existing focus, scroll, cold-document, and request assertions.
 
 No application response, document, scrolling behavior, or lifecycle is mocked.
-Hosted baseline execution is pending. The recorder remains unchanged for that baseline.
+The recorder remains unchanged at baseline commit `b98c5450e65e332f00ea5aa1cfa23a31448f91d8`.
+Hosted run `38590117987` passes both Continue watching cases and rejects the Movies destination's recorded top edge.
+The failure maps to `browse-return-home.spec.ts:66`, after the actual card's nonzero-height check.
+The retained selection has zero top and bottom, while focus identifies the Movies destination.
+
+Artifact `11907686622` has SHA-256 `739fef2c78e103b094bca71a3e7c35fd949f330652f3e24ca4fbc187e912d0bb`.
+Its tracked tree, 160 input pins, three child hashes, and owned-process shutdown verify.
+The runner classifies this geometry prerequisite failure as `prerequisite-blocked`.
+It exits before its final source-unchanged check, so that additional boundary is not claimed.
+
+## Repair
+
+The recorder now prefers the focused link when its destination matches the requested selection.
+It retains the existing fallback for observations without a matching focused link.
+Focus and geometry now come from the same selected action in these Home journeys.
+The application code and acceptance checks remain unchanged.
+
+Hosted verification of the repaired recorder is pending.
 Local application and browser execution remain held.

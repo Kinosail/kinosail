@@ -35,7 +35,9 @@ export async function loadAll(page: Page, expected: string[]) {
 
 export async function snapshot(page: Page, selected: string) {
   return page.evaluate(href => {
-    const selectedLink = [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find(link => link.getAttribute("href") === href);
+    const focusedLink = document.activeElement?.closest<HTMLAnchorElement>("a[href]");
+    const selectedLink = focusedLink?.getAttribute("href") === href ? focusedLink :
+      [...document.querySelectorAll<HTMLAnchorElement>("a[href]")].find(link => link.getAttribute("href") === href);
     const rect = selectedLink?.getBoundingClientRect();
     return {
       path: location.pathname, values: Object.fromEntries(new URLSearchParams(location.search)),
@@ -44,7 +46,7 @@ export async function snapshot(page: Page, selected: string) {
       navigation: performance.getEntriesByType("navigation").map(entry => (entry as PerformanceNavigationTiming).type),
       titles: [...document.querySelectorAll("#library .card h2")].map(element => element.textContent),
       hrefs: [...document.querySelectorAll("#library .card")].map(card => card.matches("a") ? card.getAttribute("href") : card.querySelector("a.show-details")?.getAttribute("href")),
-      focused: document.activeElement?.closest("a")?.getAttribute("href") || null,
+      focused: focusedLink?.getAttribute("href") || null,
       scroll: { x: scrollX, y: scrollY }, selected: selectedLink ? { href, top: rect!.top, bottom: rect!.bottom } : null,
     };
   }, selected);
