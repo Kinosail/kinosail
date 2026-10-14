@@ -207,3 +207,18 @@ The same-title replacement case executes once and passes on tvOS.
 Merge `9f6f19de` subsequently incorporates main `639359e9` and its separate UI changes.
 Source limits and whitespace checks pass. Both affected-app verification commands run in plan mode under the local runtime hold.
 Those plans do not establish runtime acceptance. Hosted checks must verify the reconciled source before delivery.
+
+## Android subtitle API opt-ins
+
+A retained Android lint report contains 43 `UnsafeOptInUsageError` errors in two subtitle declarations.
+Both files exactly match checkpoint `b57e3313`; the report is prior evidence, not a fresh local execution.
+Its SHA-256 is `6c521374537509029e3bf3001d678e95c7ae2ab2139c807464647946c9f52f6f`.
+
+`PlaybackMediaSourceFactory` and `kinosailLazySubtitleTrack` now explicitly opt into the Media3 APIs they already use.
+The annotations apply only to those declarations. Playback behavior and lint severity remain unchanged.
+This follows the [Media3 guidance for unstable API lint errors](https://developer.android.com/media/media3/exoplayer/troubleshooting#unstable-api-lint-errors).
+The hosted Android job now runs `:app:lintDebug` and retains its XML report as `android-lint-evidence`.
+
+All 18 workflow contract tests, actionlint 1.17.0, source limits, and whitespace checks pass locally.
+The existing lint rule supplies the failure check; no duplicate test is added for an annotation-only repair.
+Hosted Android lint acceptance remains pending. Local Gradle execution remains held.
