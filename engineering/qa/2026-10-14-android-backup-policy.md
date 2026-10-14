@@ -57,5 +57,17 @@ All six cases retain that setup failure in artifact `11872398231`.
 Its SHA-256 is `6161ecfcee56f38b91906ae61b27c8c614ba137776dc4bf87bd864c693bd0599`.
 The fixture now sets the current user's state to `STATE_RUNNING_UNLOCKED` before creating canaries.
 This uses [Robolectric's per-user state API](https://github.com/robolectric/robolectric/blob/robolectric-4.17/shadows/framework/src/main/java/org/robolectric/shadows/ShadowUserManager.java).
-The separate no-argument unlocked flag does not configure the per-user check used by credential storage.
+The separate no-argument unlocked flag does not configure the handle-based per-user check.
 Preference creation still uses a real committed write. The nine-file control and production XML remain unchanged.
+
+That attempt, `d253d92912e950754696d0c5fbcb31bde0250b40`, also stops at the locked-preference guard in all six cases.
+Artifact `11872643218` has SHA-256 `ea365376ae27343e22acf0fe6991f3482e78a41b91a622e1dec5ffde13c8555e`.
+[ContextImpl](https://github.com/aosp-mirror/platform_frameworks_base/blob/android-15.0.0_r1/core/java/android/app/ContextImpl.java) calls the integer-user overload of `isUserUnlockingOrUnlocked`.
+Robolectric shadows the handle overload, so the attempted state setup does not cover this call.
+This remains a rejected setup result, with no file-selection execution.
+
+The final fixture creates all nine synthetic files directly at paths supplied by the framework, including `getSharedPreferencesPath`.
+Backup selection inspects paths and file metadata; it does not parse database or preference contents.
+The fixture therefore needs no preference API writes or user-lock shadow.
+It still requires each file to exist, distinct storage paths, six selected domains before repair, and all nine domains in each control.
+The test makes no claim about preference creation, database validity, or storage-unlock behavior.
