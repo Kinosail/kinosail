@@ -22,7 +22,7 @@ def unique_object(pairs):
 
 
 def inspect(platform, path, revision):
-    if platform not in ('iOS', 'tvOS') or not re.fullmatch(r'[a-f0-9]{40}', revision):
+    if platform not in ('iOS', 'tvOS', 'iOS-backup') or not re.fullmatch(r'[a-f0-9]{40}', revision):
         raise ValueError('invalid identity')
     with Path(path).open('rb') as stream:
         raw = stream.read(MAX_BYTES + 1)
@@ -38,7 +38,7 @@ def inspect(platform, path, revision):
     devices = data['devicesAndConfigurations']
     if not isinstance(devices, list) or not 1 <= len(devices) <= 32:
         raise ValueError('invalid destinations')
-    if any(device['device']['platform'] != platform + ' Simulator' for device in devices):
+    if any(device['device']['platform'] != platform.removesuffix('-backup') + ' Simulator' for device in devices):
         raise ValueError('wrong destination')
     warnings = data['runtimeWarnings']
     if not isinstance(warnings, list) or len(warnings) > 10000:
@@ -54,6 +54,8 @@ def inspect(platform, path, revision):
     passed = (data['result'] == 'Passed' and counts['passedTests'] > 0
               and counts['failedTests'] == counts['expectedFailures'] == 0
               and data['testFailures'] == [] and audio_warnings == 0)
+    if platform == 'iOS-backup':
+        passed = passed and counts['passedTests'] == counts['totalTestCount'] == 1
     return {'schemaVersion': 1, 'revision': revision, 'platform': platform,
             'result': 'passed' if passed else 'failed', **counts,
             'audioMainThreadWarnings': audio_warnings,

@@ -50,6 +50,19 @@ class NativeResultsTests(unittest.TestCase):
                 self.assertEqual(receipt['skippedTests'], 1)
                 self.assertEqual(receipt['summarySHA256'], hashlib.sha256(raw).hexdigest())
 
+    def test_fresh_backup_contract_requires_exactly_one_executed_test(self):
+        # A fresh-container test cannot create missing/duplicate/skipped receipt inputs.
+        for passed, skipped, wanted in [(1, 0, 0), (0, 1, 1), (2, 0, 1), (1, 1, 1), (0, 0, 1)]:
+            with self.subTest(passed=passed, skipped=skipped):
+                data = summary()
+                data.update(passedTests=passed, skippedTests=skipped, totalTestCount=passed + skipped)
+                result = self.run_gate(json.dumps(data).encode(), 'iOS-backup')
+                self.assertEqual(result.returncode, wanted, result.stderr)
+        data = summary('tvOS')
+        data.update(passedTests=1, skippedTests=0, totalTestCount=1)
+        self.assertNotEqual(self.run_gate(json.dumps(data).encode(), 'iOS-backup').returncode, 0)
+
+
     def test_unrelated_warning_is_counted_without_exposing_private_text(self):
         data = summary()
         data['runtimeWarnings'] = [{'message': 'FocusState private-fixture-name',
@@ -132,18 +145,20 @@ class NativeResultsTests(unittest.TestCase):
             folder = Path(directory)
             fake = folder / 'xcrun'
             fake.write_text('''#!/usr/bin/env python3
-import json, os, sys
-platform = 'iOS' if any('native-iOS.xcresult' in arg for arg in sys.argv) else 'tvOS'
-with open(os.environ['TEST_EXPORT_LOG'], 'a') as stream: stream.write(platform + '\\n')
-if os.environ.get('TEST_EXPORT_FAILURE') == platform: sys.exit(2)
+import json, os, pathlib, sys
+contract = next(pathlib.Path(arg).stem.removeprefix('native-') for arg in sys.argv if arg.endswith('.xcresult'))
+platform = contract.split('-')[0]
+with open(os.environ['TEST_EXPORT_LOG'], 'a') as stream: stream.write(contract + '\\n')
+if os.environ.get('TEST_EXPORT_FAILURE') == contract: sys.exit(2)
 data = json.loads(os.environ['TEST_SUMMARY'])
 data['devicesAndConfigurations'][0]['device']['platform'] = platform + ' Simulator'
-if os.environ.get('TEST_WARNING') == platform:
+if contract == 'iOS-backup': data.update(passedTests=1, skippedTests=0, totalTestCount=1)
+if os.environ.get('TEST_WARNING') == contract:
     data['runtimeWarnings'] = [{'message': 'AVAudioSession.mm:123 UI unresponsiveness on the main thread'}]
 print(json.dumps(data))
 ''')
             fake.chmod(0o755)
-            for export_failure, warning in [('', ''), ('iOS', ''), ('tvOS', ''), ('', 'iOS'), ('', 'tvOS')]:
+            for export_failure, warning in [('', ''), ('iOS-backup', ''), ('iOS', ''), ('tvOS', ''), ('', 'iOS-backup'), ('', 'iOS'), ('', 'tvOS')]:
                 with self.subTest(export_failure=export_failure, warning=warning):
                     log = folder / 'exports.log'
                     log.write_text('')
@@ -153,7 +168,7 @@ print(json.dumps(data))
                             'GITHUB_SHA': REVISION, 'TEST_EXPORT_LOG': str(log),
                             'TEST_SUMMARY': json.dumps(summary()), 'TEST_EXPORT_FAILURE': export_failure,
                             'TEST_WARNING': warning})
-                    self.assertEqual(log.read_text().splitlines(), ['iOS', 'tvOS'])
+                    self.assertEqual(log.read_text().splitlines(), ['iOS-backup', 'iOS', 'tvOS'])
                     self.assertEqual(result.returncode, 1 if export_failure or warning else 0, result.stderr)
 
 

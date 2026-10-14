@@ -202,13 +202,22 @@ jobs:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
         run: |
           native_failed=0
-          for platform in iOS tvOS; do
+          for contract in iOS-backup iOS tvOS; do
+            platform="${contract%%-*}"
             device="$(xcrun simctl list devices available --json | python3 scripts/ci/select-simulator.py "$platform")"
-            if ! xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj \
-              -scheme "Kinosail-$platform" -destination "id=$device" \
-              -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator" \
-              -resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult" \
-              -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-; then
+            command=(xcodebuild test -project apps/player/apps/native/Kinosail.xcodeproj
+              -scheme "Kinosail-$platform" -destination "id=$device"
+              -derivedDataPath "apps/player/apps/native/.build/$([[ "$platform" == iOS ]] && echo ios || echo tvos)-simulator"
+              -resultBundlePath "$RUNNER_TEMP/native-$contract.xcresult"
+              -parallel-testing-enabled NO -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-)
+            if [[ "$contract" == iOS-backup ]]; then
+              command+=(-only-testing:Kinosail-iOSTests/OfflineCatalogBackupTests)
+              printf 'TEST_RUNNER_KINOSAIL_FRESH_BACKUP_TEST=1 ' > "$RUNNER_TEMP/native-$contract-command.txt"
+              printf '%q ' "${command[@]}" >> "$RUNNER_TEMP/native-$contract-command.txt"
+              shasum -a 256 apps/player/apps/native/Sources/Platform/OfflineCatalogStore.swift \
+                apps/player/apps/native/Tests/OfflineCatalogBackupTests.swift > "$RUNNER_TEMP/native-$contract-sources.sha256"
+              if ! TEST_RUNNER_KINOSAIL_FRESH_BACKUP_TEST=1 "${command[@]}"; then native_failed=1; fi
+            elif ! "${command[@]}"; then
               native_failed=1
             fi
           done
@@ -219,16 +228,16 @@ jobs:
           DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
         run: |
           native_failed=0
-          for platform in iOS tvOS; do
-            summary="$RUNNER_TEMP/native-$platform-summary.json"
+          for contract in iOS-backup iOS tvOS; do
+            summary="$RUNNER_TEMP/native-$contract-summary.json"
             if ! xcrun xcresulttool get test-results summary \
-              --path "$RUNNER_TEMP/native-$platform.xcresult" --compact \
-              > "$summary" 2> "$RUNNER_TEMP/native-$platform-summary.stderr"; then
+              --path "$RUNNER_TEMP/native-$contract.xcresult" --compact \
+              > "$summary" 2> "$RUNNER_TEMP/native-$contract-summary.stderr"; then
               native_failed=1
               continue
             fi
-            if ! python3 scripts/ci/inspect-native-results.py "$platform" "$summary" "$GITHUB_SHA" \
-              > "$RUNNER_TEMP/native-$platform-receipt.json"; then
+            if ! python3 scripts/ci/inspect-native-results.py "$contract" "$summary" "$GITHUB_SHA" \
+              > "$RUNNER_TEMP/native-$contract-receipt.json"; then
               native_failed=1
             fi
           done
@@ -315,6 +324,8 @@ jobs:
             ${{ runner.temp }}/native-*-summary.json
             ${{ runner.temp }}/native-*-summary.stderr
             ${{ runner.temp }}/native-*-receipt.json
+            ${{ runner.temp }}/native-*-command.txt
+            ${{ runner.temp }}/native-*-sources.sha256
             ${{ runner.temp }}/native-media.json
             ${{ runner.temp }}/native-media.sha256
             ${{ runner.temp }}/native-probe

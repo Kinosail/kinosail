@@ -86,5 +86,12 @@ This is accepted framework-selection reproduction, distinct from the earlier set
 
 The repair adds explicit `.` exclusions for those six domains to both sections in both XML files.
 The existing root and external exclusions and disabled-backup manifest flags remain intact.
-The regression is unchanged from the accepted baseline. Fixed hosted selection results remain pending.
+The regression is unchanged from the accepted baseline.
+Fixed revision `11a9a696a62edfb5a882b6c9bb838f7b5aee17cd` passes all six cases in run `38520041411`, job `115708078212`.
+Each policy selects zero canaries. Each no-rules control still selects all nine, and the other 166 unit cases pass.
+Artifact `11874116320` has SHA-256 `b07af061cae89abe271de70fd96d6acd2701db11a8217d79686e788cedd67c59`.
+The actual checkout is `2d0bba2abf7077ba57deb28096b8556696bb764a`.
+Its tree equals the branch tree, `2e370021b0ac78f6d5258a96ddb8174412dac637`.
+The lint artifact `11873911599` has SHA-256 `e20363cbcc017b0a800b96d158e31ee8b0cfab18087c848d55e05ce4c9f03ed9`.
+It contains zero errors, 26 warnings, and one hint.
 No actual OEM transfer or disclosure is established by this test.

@@ -46,38 +46,39 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('if: always()', artifact)
         self.assertNotIn('.verification/layout/**', artifact)
 
-    def test_native_failure_still_executes_the_other_platform_and_fails_the_gate(self):
-        # Failure modes: iOS hides tvOS evidence; either failed platform reports
-        # success; both successful platforms incorrectly report failure.
-        source = (WORKFLOWS / 'app.yml').read_text()
+    def test_backup_runs_first_without_leaking_its_flag_or_hiding_later_runs(self):
+        # Runtime tests cannot observe skipped CI commands or a flag leaked to another invocation.
+        root = ROOT
+        source = (root / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Execute iOS and tvOS native contracts\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split('        run: |\n', 1)[1])
-        devices = {'devices': {
-            'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.iPhone-17', 'udid': '11111111-1111-1111-1111-111111111111', 'isAvailable': True}],
-            'com.apple.CoreSimulator.SimRuntime.tvOS-26-0': [{'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.Apple-TV-4K', 'udid': '22222222-2222-2222-2222-222222222222', 'isAvailable': True}],
-        }}
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
-            (folder / 'xcrun').write_text('#!/bin/sh\ncat <<\'JSON\'\n' + json.dumps(devices) + '\nJSON\n')
-            (folder / 'xcodebuild').write_text('''#!/bin/sh
-printf '%s\\n' "$*" >> "$TEST_NATIVE_LOG"
-case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; esac
+            devices = {'devices': {f'com.apple.CoreSimulator.SimRuntime.{platform}-27-0': [
+                {'isAvailable': True, 'udid': 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',
+                 'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.' + kind}]
+                for platform, kind in [('iOS', 'iPhone-17'), ('tvOS', 'Apple-TV-4K')]}}
+            (folder / 'xcrun').write_text('#!/bin/sh\nprintf \'%s\\n\' \'' + json.dumps(devices) + '\'\n')
+            (folder / 'xcodebuild').write_text('''#!/usr/bin/env python3
+import json, os, sys
+args = sys.argv[1:]
+contract = args[args.index('-resultBundlePath') + 1].rsplit('/', 1)[-1]
+with open(os.environ['TEST_COMMAND_LOG'], 'a') as out:
+    out.write(json.dumps({'contract': contract, 'flag': os.environ.get('TEST_RUNNER_KINOSAIL_FRESH_BACKUP_TEST'), 'args': args}) + '\\n')
+sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
 ''')
-            for name in ('xcrun', 'xcodebuild'):
-                (folder / name).chmod(0o755)
-            for ios, tvos in ((1, 0), (0, 1), (0, 0)):
-                with self.subTest(ios=ios, tvos=tvos):
-                    log = folder / 'native.log'
-                    log.unlink(missing_ok=True)
-                    result = subprocess.run(['bash', '-ec', script], cwd=ROOT, capture_output=True, text=True, timeout=10,
-                        env={**os.environ, 'PATH': f'{folder}{os.pathsep}{os.environ["PATH"]}',
-                             'RUNNER_TEMP': directory, 'TEST_NATIVE_LOG': str(log),
-                             'TEST_IOS_EXIT': str(ios), 'TEST_TV_EXIT': str(tvos)})
-                    commands = log.read_text().splitlines() if log.exists() else []
-                    self.assertEqual(len(commands), 2, result.stderr)
-                    self.assertIn('-scheme Kinosail-iOS', commands[0])
-                    self.assertIn('-scheme Kinosail-tvOS', commands[1])
-                    self.assertEqual(result.returncode, 1 if ios or tvos else 0, result.stderr)
+            for name in ('xcrun', 'xcodebuild'): (folder / name).chmod(0o755)
+            for failure in ('', 'native-iOS-backup.xcresult', 'native-iOS.xcresult', 'native-tvOS.xcresult'):
+                log = folder / 'commands.jsonl'; log.write_text('')
+                result = subprocess.run(['bash', '-ec', script], cwd=root, capture_output=True, text=True, timeout=10,
+                    env={**os.environ, 'PATH': f'{folder}{os.pathsep}{os.environ["PATH"]}', 'RUNNER_TEMP': directory,
+                         'TEST_COMMAND_LOG': str(log), 'TEST_COMMAND_FAILURE': failure})
+                rows = [json.loads(line) for line in log.read_text().splitlines()]
+                self.assertEqual([row['contract'] for row in rows], ['native-iOS-backup.xcresult', 'native-iOS.xcresult', 'native-tvOS.xcresult'])
+                self.assertEqual([row['flag'] for row in rows], ['1', None, None])
+                self.assertIn('-only-testing:Kinosail-iOSTests/OfflineCatalogBackupTests', rows[0]['args'])
+                self.assertTrue(all(not arg.startswith('-only-testing') for row in rows[1:] for arg in row['args']))
+                self.assertEqual(result.returncode, 1 if failure else 0, result.stderr)
 
     def test_deep_go_lane_installs_real_media_dependencies_before_testing(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
@@ -99,10 +100,10 @@ case "$*" in *Kinosail-iOS*) exit "$TEST_IOS_EXIT";; *) exit "$TEST_TV_EXIT";; e
         # platform. The manual and weekly lane must execute both existing schemes.
         source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
         self.assertIn('if: fromJSON(inputs.plan).deep', source)
-        self.assertIn('for platform in iOS tvOS', source)
+        self.assertIn('for contract in iOS-backup iOS tvOS', source)
         self.assertIn('xcodebuild test', source)
         self.assertIn('-scheme "Kinosail-$platform"', source)
-        self.assertIn('-resultBundlePath "$RUNNER_TEMP/native-$platform.xcresult"', source)
+        self.assertIn('-resultBundlePath "$RUNNER_TEMP/native-$contract.xcresult"', source)
         self.assertIn('if: always() && fromJSON(inputs.plan).deep', source)
         self.assertIn('${{ runner.temp }}/native-*.xcresult', source)
         self.assertNotIn('continue-on-error', source)
