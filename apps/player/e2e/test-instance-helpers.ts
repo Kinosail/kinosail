@@ -43,7 +43,13 @@ export async function login(page: import("@playwright/test").Page) {
   await page.getByLabel("Password", { exact: true }).fill(process.env.KINOSAIL_E2E_OWNER_PASSWORD ?? "test-instance-password");
   await submitFixtureLogin(page, totp);
   await page.waitForURL(url => url.pathname !== "/login");
-  if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+  const notNow = page.getByRole("link", {name: "Not now"});
+  if (await notNow.isVisible()) {
+    const href = await notNow.getAttribute("href");
+    expect(href).toBeTruthy();
+    // The click waits for navigation commitment, not the destination's load.
+    await Promise.all([page.waitForURL(new URL(href!, page.url()).href, {waitUntil: "load"}), notNow.click()]);
+  }
 }
 
 export async function loginViewer(page: Page, name: string, password: string) {

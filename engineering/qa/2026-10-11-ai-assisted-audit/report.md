@@ -31,6 +31,8 @@ Both nine-second cases acquire frames displayed at 9.25 seconds. The retained he
 The FocusState capture repair passes strict checks and retains eleven images identical to those already visually inspected.
 At `6920080a`, the Android captions-off control reaches its intended pixel rejection, and all sixteen positive executions pass.
 Its repaired pause interaction reopens explicitly hidden controls within the existing deadline. Earlier failures remain retained.
+The same deep run rejects one Player WebKit navigation flake before watched-state assertions.
+A destination-readiness repair and two real HTTP controls are prepared for hosted verification.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -59,6 +61,23 @@ Our trace lacks the matching crash backtrace and loaded dependency version; the 
 Playwright 1.64.0 remains the latest stable release checked on October 14 UTC.
 The [existing dependency audit](../2026-10-10-dependency-update/dependency-audit.json) reproduces a separate HTTP 204 assertion failure under its driver with both Chromium versions.
 The 1.63 pin and navigation assertions remain unchanged. A later passing run cannot diagnose the retained flake.
+
+The failure recurs at `6920080a` in artifact `11870135205`.
+Its SHA-256 is `67c3b2311d2c5fe2176ebc7fcdab054bd65be2c00ceed3c6867efbae3a090c1c`.
+Ten source pins, 525 child hashes, and all 526 checksum entries verify against unchanged source.
+The first attempt reports an internal WebKit error in `firstPlayable`; its retry passes.
+The Not now click finishes 1.949 milliseconds before the failing Library navigation starts.
+Home returns HTTP 200, but its resources are still starting when the second navigation begins.
+The trace SHA-256 is `3af50ae92e55b0015c72259ce2dce8bd3952c7e2a63ccc4a4e2da9ce98fada98`.
+
+The [pinned click barrier](https://github.com/microsoft/playwright/blob/v1.63.0/packages/playwright-core/src/server/frames.ts) waits for navigation commitment, without requiring destination load.
+The login helper now reads the Not now destination and registers its load wait before clicking.
+Both operations must finish before the next journey navigates. Navigation errors still propagate without retry.
+New isolated HTTP controls hold a Home script after the real form and redirect chain.
+The released control requires a complete, initialized document before exactly one Library navigation.
+The unreleased control requires a bounded timeout with no Library navigation.
+These controls and the existing populated journeys still require hosted execution.
+This repairs a helper ordering gap. It does not establish the internal WebKit failure mechanism.
 
 Android artifact `11868885407` at `535faec8` has SHA-256 `b95348368e685f86d6897100fbe1172903b3cc4d4b860f216125fae2cd6d2c9b`.
 Its clean-source receipt, eight source pins, six fixture pins, and 53 uploaded child hashes verify.
