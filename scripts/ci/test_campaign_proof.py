@@ -40,7 +40,7 @@ class CampaignProofTests(unittest.TestCase):
     def test_focused_route_does_not_replace_normal_ci(self):
         source = LAYOUT.read_text()
         self.assertIn('campaign_proof:', source)
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]', source)
         self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.campaign_proof == 'none'", source)
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none'", source)
         self.assertIn('name: Bounded campaign proof', source)
@@ -118,7 +118,7 @@ class CampaignProofTests(unittest.TestCase):
             self.assertIn('if: always()', step)
 
     def test_artifact_paths_are_exact_safe_json_only(self):
-        source = LAYOUT.read_text().split('  campaign-proof:\n')[1].split('\n  hls-followon:\n')[0]
+        source = LAYOUT.read_text().split('  campaign-proof:\n')[1].split('\n  populated-instance:\n')[0]
         for value in ('R06', 'Q14', 'Q09'):
             for name in ('receipt.json', 'results.json', 'source-manifest.json', 'artifact-manifest.json'):
                 self.assertIn(f'            .verification/campaign-proof/{value}/{name}\n', source)

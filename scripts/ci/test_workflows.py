@@ -32,7 +32,7 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_isolated_aac_trial_is_an_explicit_codec_only_selection(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC]', source)
+        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]', source)
         self.assertIn("inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'", source)
         section = source.split('  hls-followon:', 1)[1]
         self.assertIn("inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC'", section)

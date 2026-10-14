@@ -51,7 +51,24 @@ The layout helper now waits for the **Not now** destination's `load` event along
 It uses the destination URL from that link, matching the existing populated-instance helper.
 The blocked destination still uses the unchanged navigation timeout and must prevent Library navigation.
 No application code, retries, deadlines, or assertions change in this repair.
-Hosted verification of the repaired controls and populated settings journeys is pending.
+At `8f63db4278cad868f1ceef9025b0cbd3fbd285b0`, all four destination controls pass in each browser without retries.
+Each retained artifact verifies against its hosted checksum, clean revision, and nine measurement-script source pins.
+
+| Browser | Artifact | SHA-256 | Broader layout result |
+| --- | --- | --- | --- |
+| Chromium | `11913939879` | `f374e36f9027a2fcb0e9047d6585b02a8f3f34d34d64e354e48b89929851ae21` | Player and Subtitles pass |
+| Firefox | `11914131684` | `f64102139c784fd12c3ac9df2b00c23ff135375bb6d423c5dbf999b32fe5c0a9` | Player passes; later Subtitles navigation fails |
+| WebKit | `11913539582` | `4e5a3eb3ec6308c717c7154ab77132aa89e0430fdecc31162a64136db2a89cf7` | Player and Subtitles pass |
+
+The Firefox failure occurs in the theater journey before its assertions, at `layout-stability-flows.mjs:90`.
+The navigation times out after 30,005 milliseconds, although the Server returns HTTP 200 and the screenshot shows rendered playback.
+The trace records 31 requests without network failures, while the driver reports a blank URL.
+Its SHA-256 is `95c3590881986c268a3b53687cb19ed812d54b388d4f48d8ef4400509532a6d2`.
+The relevant Subtitles, shared packages, measurement scripts, and browser lockfile match the previous green layout revision `3b3e2ecd`.
+[Playwright issue #42183](https://github.com/microsoft/playwright/issues/42183) reports similar Firefox navigation symptoms.
+This trace lacks the document and lifecycle probes needed to establish the same cause.
+One unchanged replay of the failed Firefox job is running; the original failure remains retained.
+Required CI and protected delivery are still pending.
 
 ## Hosted coverage routing
 
