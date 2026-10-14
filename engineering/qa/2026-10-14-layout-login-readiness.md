@@ -45,7 +45,7 @@ These observations were captured before releasing the fixture during cleanup.
 The aggregate report has 454 passing executions, two failed cases, 63 skipped executions, and no global errors.
 This failed run does not establish populated settings acceptance; that later suite was not reached.
 
-### Repair and pending verification
+### Repair and verified delivery
 
 The layout helper now waits for the **Not now** destination's `load` event alongside the click.
 It uses the destination URL from that link, matching the existing populated-instance helper.
@@ -67,8 +67,24 @@ Its SHA-256 is `95c3590881986c268a3b53687cb19ed812d54b388d4f48d8ef4400509532a6d2
 The relevant Subtitles, shared packages, measurement scripts, and browser lockfile match the previous green layout revision `3b3e2ecd`.
 [Playwright issue #42183](https://github.com/microsoft/playwright/issues/42183) reports similar Firefox navigation symptoms.
 This trace lacks the document and lifecycle probes needed to establish the same cause.
-One unchanged replay of the failed Firefox job is running; the original failure remains retained.
-Required CI and protected delivery are still pending.
+One unchanged replay of the failed Firefox job passes; the original failure remains retained and unexplained.
+Artifact `11916480592` has SHA-256 `5b98c95d0501664c761fcb76b1402469ca81f64539b97d5c33b3df013074391e`.
+Its clean revision and nine script source pins verify.
+All 29 Player flows, 33 Subtitles flows, and 43 isolated controls pass without retries.
+
+Required CI run `38601559279` passes all four protected gates.
+The tested merge revision `939e01e9aa509611cb7e4eca862b68e7e0a15893` has the same tree as the reviewed head.
+Player artifact `11916360374` verifies 536 passing executions, 466 distinct passing tests, and 63 skipped executions.
+Its SHA-256 is `1250f92f21b6295cb1493c2f975cf527bc5f2d8d19d38eed7ea29bc412dbdcbc`.
+Subtitles artifact `11915375980` verifies 38 passing tests.
+Its SHA-256 is `de7eb45f6bffd08bd0f46a6767d0edcb9b3962b939e3b12bcaaf8e50d0d2f7a3`.
+Both artifacts have zero retries, unexpected failures, or global errors.
+Their ten source pins and all 504 combined child hashes verify.
+These totals include isolated fixtures and do not represent only populated-server journeys.
+
+PR #604 merged at `be52f79d1f4c81a24954df15b7ee271b7799a1b5`.
+A fetched ancestry check confirms that remote main includes the reviewed commit.
+Exact-main publication remains pending.
 
 ## Hosted coverage routing
 
