@@ -57,15 +57,22 @@ Its retained trace records HTTP 200 and a rendered page while the driver reports
 The relevant Subtitles and measurement source matches the previous green layout run.
 The unchanged failed-job replay passes all Firefox flows and controls; the earlier failure remains undiagnosed.
 Required CI passes, and fetched ancestry proves the reviewed commit in merge `be52f79d1f4c81a24954df15b7ee271b7799a1b5`.
-Its exact-main CI and publication remain pending.
+Its exact-main CI `38607182249` and all nine publication jobs pass.
+Registry verification confirms both architectures, revision labels, tested candidate manifests, and matching production tags for both apps.
+The Player digest is `sha256:f5f5adbdf9ba7ba7d3f55500f6d653d3ba357f8a8f760c0cb9ea03d1f452ec81`.
+The Subtitles digest is `sha256:b49929fde861617be00d145a933f5477fed344f8ee5142392aab451950974397`.
 The [readiness note](../2026-10-14-layout-login-readiness.md) separates this helper repair from broader browser failures.
 
 PR #605 admits the existing generated catalog and connection-settings journey after repairing disposable fixture CA trust.
 The hosted journey passes once at `18f91de7`, with verified source, catalog identity, and resource and trust cleanup.
-Its three-browser layout checks also pass; required Player CI and protected delivery remain pending.
+Its three-browser layout checks and required CI pass; fetched ancestry verifies merge `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`.
+Exact-main CI and publication for that merge remain pending.
 PR #606 expands the existing command to 22 spec files covering 81 previously unpassed case identities.
 These comprise 76 populated journeys and five isolated production-template cases.
-The selected hosted execution is pending; local runtime remains held.
+The first selected execution reports 74 passes, a title-letter scroll failure, and twelve cases not run.
+Artifact upload rejects a screenshot filename containing a question mark, so those counts lack retained manifest acceptance.
+Commit `1252849d` encodes the route in screenshot filenames; a new hosted execution will retain the failure trace.
+The scroll assertion is unchanged and its root cause remains unconfirmed. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
@@ -81,8 +88,8 @@ The campaign goal remains active. Complete product, deployment, and physical-dev
 | Android | At `c47a0cd3`, all sixteen caption executions pass. The captions-off control reaches its intended pixel rejection. Eight source pins, six fixture pins, 57 child hashes, and cleanup verify. | Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Wear | At `c47a0cd3`, both profiles pass three tests. Seventeen source pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight screenshots were inspected. | The small permission component capture cuts off part of the lower Sponsor control. Full scrolling accessibility, paired sessions, enlarged type, sensors, battery, and physical input remain open. |
-| Publication and deployment | PR #602 has verified exact-main CI and publication at `9457698061136b33fb3eca0f1c9858ae60a4b66a`. PR #603 has verified main CI and selected Player publication at `1a811974d4a05022557602eade45b0bfedc40352`. | Deployment, TLS, and physical playback remain unverified. |
-| Runtime image security | Exact-main `94576980` passes all nine publication jobs for both apps. Main `1a811974` passes all five selected Player publication jobs. Both architecture labels and tested candidate manifests match their published images. | Deployment remains unverified. |
+| Publication and deployment | PR #604 has verified exact-main CI and publication for both apps at `be52f79d1f4c81a24954df15b7ee271b7799a1b5`. PR #605 is merged after required CI and admission pass. | PR #605 exact-main publication, deployment, TLS, and physical playback remain unverified. |
+| Runtime image security | Exact-main `be52f79d` passes all nine publication jobs for both apps. Both architecture labels and tested candidate manifests match their published images. | PR #605 exact-main publication and deployment remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
 

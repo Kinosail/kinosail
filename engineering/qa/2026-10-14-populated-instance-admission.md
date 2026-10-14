@@ -89,7 +89,9 @@ The connection-settings journey executes once without retries or global errors.
 It passes accessibility assertions and captures 320, 390, and 1440-pixel layouts.
 All three screenshots were inspected; full-page captures alone do not establish viewport occlusion behavior.
 Cleanup verifies zero owned containers and volumes, removed private data, and removed browser trust.
-PR #605 is ready; required CI and protected delivery remain pending.
+PR #605 passes required CI `38608355820` and merges as `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`.
+Fetched ancestry confirms the reviewed commit is included in protected main.
+Exact-main CI and publication for that merge remain pending.
 Its complete layout workflow `38608355808` passes in Chromium, Firefox, and WebKit.
 Chromium artifact `11917483431` has SHA-256 `d299341769a1f327d69bb31e36b36e33c9bf35d0b6a62bfa37dabff4a40ef156`.
 It verifies 97 Player measurements across 29 flows and 111 Subtitles measurements across 33 flows.
@@ -98,6 +100,10 @@ The controls pass without retries; the two isolated Firefox-only cases remain sk
 The required Subtitles browser artifact passes all 38 cases without retries or global errors.
 Its SHA-256 is `a2096784607fbcae25f50ad677a26ec0c0c5f835bb4b07854fc579026e466b37`.
 The tested synthetic merge `779f6e02efb2d4a0476c381380ad30488d27320d` has the same tree as reviewed head `18f91de7`.
+Its Player browser artifact verifies 536 passing executions across 466 distinct tests, without retries, flaky results, or global errors.
+It also records 63 skipped executions across 22 skipped-only identities.
+Ten source pins, 434 child hashes, and 435 checksum entries verify.
+Artifact `11918268092` has SHA-256 `6058a7f0d50be5bab98b023f29d34bbcf556c78ddbf33083b6b6743bcea049e1`.
 
 ## Broader selected suite
 
@@ -136,4 +142,8 @@ The retained job log has SHA-256 `a3c3a7833dfd2b8c2eab468d171e12801b73646daf0414
 No uploaded manifest, trace, or cleanup receipt is available from that attempt.
 The logged pass count therefore does not establish checksummed acceptance of the selected identities.
 Encode each route when constructing those screenshot filenames, preserving distinct routes and their query strings.
+This follows [GitHub's artifact path validation](https://github.com/actions/toolkit/blob/main/packages/artifact/src/internal/upload/path-and-artifact-name-validation.ts), which rejects question marks in uploaded paths.
+Commit `1252849d` contains only that screenshot-name correction and its evidence note.
+TypeScript syntax, source limits, and whitespace checks pass; local `verify-changed` remains plan-only.
 The next hosted execution must retain the artifact before diagnosis can use its trace and cleanup evidence.
+Manual run `38613332317` executes the corrected source with the same browser selection, assertions, and limits.
