@@ -70,11 +70,19 @@ export async function verifyTitleRail(page: Page, info: TestInfo) {
       throw error;
     } finally {
       release();
-      const cleanup = await Promise.allSettled([
-        page.unroute(bundle),
-        expect.poll(() => !entered || settled, { message: "held bundle handler settled" }).toBe(true),
-      ]);
-      if (!primaryFailed && (continuationFailed || cleanup.some(result => result.status === "rejected"))) {
+      let joinFailed = false, removalFailed = false, evidenceFailed = false;
+      // Removing an active handler can continue its route before our handler does.
+      // Release and join first, then remove the no-longer-active handler.
+      try { await expect.poll(() => !entered || settled, { message: "held bundle handler settled" }).toBe(true); }
+      catch { joinFailed = true; }
+      try { await page.unroute(bundle); }
+      catch { removalFailed = true; }
+      try {
+        await info.attach(`rail-${width}-bundle-cleanup.json`, { body: JSON.stringify({
+          entered, settled, continuationFailed, joinFailed, removalFailed,
+        }), contentType: "application/json" });
+      } catch { evidenceFailed = true; }
+      if (!primaryFailed && (continuationFailed || joinFailed || removalFailed || evidenceFailed)) {
         throw new Error("Held navigation bundle cleanup failed");
       }
     }
