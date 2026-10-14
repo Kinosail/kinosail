@@ -33,3 +33,107 @@ export function personalNavigationReadable(initial, settled, expected) {
     [initial, settled].every(state => state.entries.every(entry => entry.words.length > 0 &&
       entry.words.every(word => word.lines === 1 && word.contained)));
 }
+
+export async function measurePersonalNavigationFlow(browser, options, results, probe) {
+  for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}]) {
+    for (const savedTabs of [false, true]) {
+      probe.stage = "player-enlarged-dock-end-focus";
+      const context = await browser.newContext({...options, viewport, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
+      let page;
+      try {
+        await context.addInitScript(() => {
+          const apply = () => {
+            if (!document.documentElement) return false;
+            document.documentElement.style.fontSize = "200%";
+            return true;
+          };
+          if (!apply()) {
+            const observer = new MutationObserver(() => { if (apply()) observer.disconnect(); });
+            observer.observe(document, {childList: true});
+          }
+        });
+        page = await probe.openPage(context);
+        await page.goto("/settings#thanks");
+        const nav = page.locator("[data-mobile-tabs]");
+        if (savedTabs) {
+          const profile = await nav.getAttribute("data-nav-profile");
+          if (!profile) throw new Error("Player navigation profile missing");
+          await page.evaluate(profile => localStorage.setItem(`kinosail:tabs:v2:${profile}`,
+            '["audiobooks","collections","unwatched","playlists"]'), profile);
+          await page.reload();
+        }
+        await page.waitForFunction(() => document.querySelector("[data-mobile-tabs]")?.classList.contains("has-personal-tabs"));
+        const navigation = await page.evaluate(personalNavigationSnapshot);
+        const expected = savedTabs ? ["Audiobooks", "Collections", "Unwatched", "Playlists", "More"] :
+          ["Home", "TV Shows", "Movies", "Search", "More"];
+        if (!navigation.present || !navigation.ready ||
+            JSON.stringify(navigation.entries.map(entry => entry.label)) !== JSON.stringify(expected)) {
+          results.push({flow: probe.stage, viewport, savedTabs, navigation, expected, stable: false});
+          throw new Error("Player navigation did not render the requested tabs");
+        }
+        const last = page.locator("#thanks a[href]").last();
+        await last.focus();
+        await page.keyboard.press("Shift+Tab");
+        await page.keyboard.press("Tab");
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(resolve)));
+        const control = await last.boundingBox(), dock = await nav.boundingBox();
+        const header = await page.locator(".app-header").boundingBox();
+        const focusRetained = await last.evaluate(node => node === document.activeElement);
+        await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: "instant"}));
+        const tail = await page.locator("#thanks").boundingBox(), endDock = await nav.boundingBox();
+        const endFocus = {flow: "player-enlarged-dock-end-focus", viewport, savedTabs, navigation, control, dock, header, tail, endDock,
+          focusRetained, stable: Boolean(control && dock && header && tail && endDock &&
+            control.y >= header.y + header.height - 1 && control.y + control.height <= dock.y + 1 &&
+            tail.y + tail.height <= endDock.y + 1)};
+        results.push(endFocus);
+        if (!focusRetained || !endFocus.stable) throw new Error("Player page end is obscured by its navigation");
+
+        probe.stage = "player-enlarged-more-keyboard";
+        const more = nav.locator(":scope > .nav-more > summary");
+        await more.focus();
+        await page.keyboard.press("Enter");
+        const menu = nav.locator(".nav-more-menu");
+        await menu.waitFor({state: "visible"});
+        const connect = menu.getByRole("link", {name: "Quick Connect", exact: true});
+        await connect.focus();
+        const measureMenuControl = async locator => {
+          const control = await locator.boundingBox(), menuBox = await menu.boundingBox(), dock = await nav.boundingBox();
+          return {control, menuBox, dock, reachable: Boolean(control && menuBox && dock &&
+            menuBox.y >= 0 && menuBox.x >= 0 && menuBox.x + menuBox.width <= viewport.width + 1 &&
+            menuBox.y + menuBox.height <= Math.min(viewport.height, dock.y) + 1 &&
+            control.x >= menuBox.x - 1 && control.x + control.width <= menuBox.x + menuBox.width + 1 &&
+            control.y >= menuBox.y - 1 && control.y + control.height <= menuBox.y + menuBox.height + 1)};
+        };
+        const connectGeometry = await measureMenuControl(connect);
+        const customize = menu.getByRole("button", {name: "Customize tabs", exact: true});
+        await customize.focus();
+        const customizeGeometry = await measureMenuControl(customize);
+        const menuReachable = connectGeometry.reachable && customizeGeometry.reachable;
+        const menuResult = {flow: "player-enlarged-more-keyboard", viewport, savedTabs, navigation,
+          connectGeometry, customizeGeometry, menuReachable, stable: menuReachable};
+        results.push(menuResult);
+        if (!menuReachable) throw new Error("Player More controls are obscured by its navigation");
+        await page.keyboard.press("Enter");
+        const editor = page.locator(".tab-editor");
+        await editor.waitFor({state: "visible"});
+        await page.keyboard.press("Escape");
+        await editor.waitFor({state: "hidden"});
+        const focusRestored = await more.evaluate(node => node === document.activeElement);
+        menuResult.focusRetained = focusRestored;
+        if (!focusRestored) throw new Error("Player Customize tabs did not restore focus to More");
+        await page.keyboard.press("Enter");
+        await connect.click();
+        await page.waitForURL(url => url.pathname === "/quick-connect");
+        await page.getByRole("heading", {name: "Connect a device", exact: true}).waitFor({state: "visible"});
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+        Object.assign(menuResult, {destinationReached: true, overflow});
+        if (overflow > 1) throw new Error("Player Quick Connect exceeds the enlarged mobile viewport");
+      } catch (error) {
+        await probe.captureFailure(error, page);
+        throw error;
+      } finally {
+        await context.close();
+      }
+    }
+  }
+}

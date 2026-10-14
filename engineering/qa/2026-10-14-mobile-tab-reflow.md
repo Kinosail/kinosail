@@ -34,6 +34,9 @@ Keep the existing Subtitles label check separate.
 Exercise the default tabs and four saved long labels at 320, 390, and 844 pixels.
 The saved set is Audiobooks, Collections, Unwatched, and Playlists, plus More.
 Retain pending and settled snapshots, screenshots, exact revisions, source pins, and archive hashes.
+Separate real-server flows check the last page link above the dock after keyboard traversal and end scrolling.
+They also open More, focus Quick Connect, open Customize tabs, close it with Escape, and verify restored focus.
+Finally, they follow Quick Connect and require its actual destination heading.
 
 The existing disposable runner uses synthetic media and an isolated Owner account.
 Run `gh workflow run layout-stability.yml --ref <regression-branch>` for the hosted baseline.
