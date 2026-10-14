@@ -1,12 +1,13 @@
 # Populated-instance admission
 
-The full browser archive inventory leaves 225 populated-instance cases without a passing execution in those archives.
-The existing `test-instance-check` command selects 22 spec files covering 71 of those cases.
+The retained full browser archives leave populated-instance journeys without a passing execution.
+The existing `test-instance-check` command selects 22 spec files covering 81 previously unpassed cases.
+Exact identity reconciliation classifies 76 as populated journeys and five as isolated production-template cases.
 It needs a separate hosted execution because local runtime remains held.
 
 The first hosted baseline uses the existing generated catalog, Owner setup, inventory verification, and connection-settings journey.
 It runs one existing journey without retries before expanding the selected suite.
-This is admission evidence, not acceptance of all 71 cases.
+This establishes fixture admission; acceptance of the broader selection requires its own execution.
 
 ## Failure cases and retained evidence
 
@@ -89,6 +90,14 @@ It passes accessibility assertions and captures 320, 390, and 1440-pixel layouts
 All three screenshots were inspected; full-page captures alone do not establish viewport occlusion behavior.
 Cleanup verifies zero owned containers and volumes, removed private data, and removed browser trust.
 PR #605 is ready; required CI and protected delivery remain pending.
+Its complete layout workflow `38608355808` passes in Chromium, Firefox, and WebKit.
+Chromium artifact `11917483431` has SHA-256 `d299341769a1f327d69bb31e36b36e33c9bf35d0b6a62bfa37dabff4a40ef156`.
+It verifies 97 Player measurements across 29 flows and 111 Subtitles measurements across 33 flows.
+All nine source pins, seven manifest cases, and four login readiness controls verify.
+The controls pass without retries; the two isolated Firefox-only cases remain skipped in Chromium.
+The required Subtitles browser artifact passes all 38 cases without retries or global errors.
+Its SHA-256 is `a2096784607fbcae25f50ad677a26ec0c0c5f835bb4b07854fc579026e466b37`.
+The tested synthetic merge `779f6e02efb2d4a0476c381380ad30488d27320d` has the same tree as reviewed head `18f91de7`.
 
 ## Broader selected suite
 
@@ -116,3 +125,6 @@ After these corrections, all 201 source contracts pass with five hosted scanner 
 The final log SHA-256 is `ccc082802166d64482e563fc63f135c7869e619808b20e6cbb3a5cefea48108e`.
 Independent review confirms the worker guard and corrected count check, with no further source blockers.
 Actual selected-suite execution and exact identity reconciliation remain pending.
+PR #606 contains the broader selection at `a2f600151c2014433d3d3635f8c3ee1ada665f2c`.
+Manual run `38610622218` executes that revision with the explicit `selected` choice.
+The private expected-case inventory pins all 81 identities and the unchanged contents of all 22 selected specs.

@@ -55,12 +55,17 @@ Chromium and WebKit also pass their complete populated layout runs.
 Firefox passes Player measurements but times out during a later Subtitles watch navigation.
 Its retained trace records HTTP 200 and a rendered page while the driver reports a blank URL.
 The relevant Subtitles and measurement source matches the previous green layout run.
-The unchanged failed-job replay and required CI remain pending.
+The unchanged failed-job replay passes all Firefox flows and controls; the earlier failure remains undiagnosed.
+Required CI passes, and fetched ancestry proves the reviewed commit in merge `be52f79d1f4c81a24954df15b7ee271b7799a1b5`.
+Its exact-main CI and publication remain pending.
 The [readiness note](../2026-10-14-layout-login-readiness.md) separates this helper repair from broader browser failures.
 
-The next populated-instance baseline uses the existing generated catalog and connection-settings journey.
-The broader existing command selects 22 spec files covering 71 previously skipped populated-instance cases.
-Hosted admission must pass before that execution expands; local runtime remains held.
+PR #605 admits the existing generated catalog and connection-settings journey after repairing disposable fixture CA trust.
+The hosted journey passes once at `18f91de7`, with verified source, catalog identity, and resource and trust cleanup.
+Its three-browser layout checks also pass; required Player CI and protected delivery remain pending.
+PR #606 expands the existing command to 22 spec files covering 81 previously unpassed case identities.
+These comprise 76 populated journeys and five isolated production-template cases.
+The selected hosted execution is pending; local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
