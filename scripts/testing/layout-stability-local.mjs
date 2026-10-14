@@ -4,6 +4,7 @@ import {join} from "node:path";
 import {createHmac} from "node:crypto";
 import {measureFlows} from "./layout-stability-flows.mjs";
 import {bookmarkSnapshot} from "./layout-stability-bookmarks.mjs";
+import {personalNavigationSnapshot, personalNavigationReadable} from "./layout-stability-navigation.mjs";
 import {gotoAuthForm} from "./auth-form-navigation.ts";
 const require = createRequire(new URL("../../apps/player/e2e/package.json", import.meta.url));
 const {chromium, webkit, firefox} = require("@playwright/test");
@@ -173,7 +174,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
-if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")cases.push({viewport:{width:390,height:844},path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
+if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}])cases.push({viewport,path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:320,height:800},path:"/?view=library",variant:"text-200",scale:"200%"});
 try {
@@ -182,7 +183,7 @@ try {
     const context = await browser.newContext({baseURL, storageState: path === "/login" ? undefined : auth,
       viewport, ignoreHTTPSErrors: false, reducedMotion: motion||"reduce"});
     if(scale)await context.addInitScript(scale=>{const apply=()=>{if(!document.documentElement)return false;document.documentElement.style.fontSize=scale;return true;};if(!apply()){const observer=new MutationObserver(()=>{if(apply())observer.disconnect();});observer.observe(document,{childList:true});}},scale);
-    if(savedTabs)await context.addInitScript(profile=>localStorage.setItem(`kinosail:tabs:v2:${profile}`,'["audiobooks","list","history"]'),navProfile);
+    if(savedTabs)await context.addInitScript(profile=>localStorage.setItem(`kinosail:tabs:v2:${profile}`,'["audiobooks","collections","unwatched","playlists"]'),navProfile);
     if(apple)await context.addInitScript(()=>{
       Object.defineProperty(navigator,"platform",{value:"MacIntel"});Object.defineProperty(navigator,"maxTouchPoints",{value:5});
       HTMLVideoElement.prototype.webkitEnterFullscreen=function(){this.dispatchEvent(new Event("webkitbeginfullscreen"));};
@@ -220,6 +221,7 @@ try {
     await page.waitForFunction(after => window.layoutAudit.frames.at(-1)?.time >= after, baselineAfter);
     const initialState = await page.evaluate(inspect);
     initialState.bookmark = await page.evaluate(bookmarkSnapshot);
+    initialState.personalNavigation = await page.evaluate(personalNavigationSnapshot);
     const initialFrame=await page.evaluate(()=>window.layoutAudit.frames.at(-1));
     const initialBoxes=initialFrame.boxes;
     if (engine === "chromium") {
@@ -241,12 +243,16 @@ try {
     const moved=boxesChanged(initialBoxes,audit.frames.at(-1)?.boxes||[]);
     const finalState=await page.evaluate(inspect);
     finalState.bookmark=await page.evaluate(bookmarkSnapshot);
+    finalState.personalNavigation=await page.evaluate(personalNavigationSnapshot);
     const categoryStable=!initialState.category||JSON.stringify(initialState.sections)===JSON.stringify(finalState.sections);
     const timeoutsPresent=!["/settings#session-timeouts","/settings#security"].includes(path)||[initialState,finalState].every(s=>s.timeouts?.anchorPresent&&s.timeouts.visible&&JSON.stringify(s.timeouts.access)==='["private","public"]');
     const bookmarkRequired=routes.filter(route=>route.startsWith("/settings#")).includes(path)||(app==="player"&&path==="/settings#%61ccess");
     const bookmarkVisible=[initialState,finalState].every(s=>bookmarkRequired?Boolean(s.bookmark?.resolved&&s.bookmark.visible):!s.bookmark?.resolved||s.bookmark.visible);
     const navigationLabelsReadable=[initialState,finalState].every(state=>state.navigationLabels.every(label=>label.lines===1));
-    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,navigationLabelsReadable,initialState,finalState,...audit});
+    const expectedTabs=savedTabs?["Audiobooks","Collections","Unwatched","Playlists","More"]:["Home","TV Shows","Movies","Search","More"];
+    const personalNavigationRequired=app==="player"&&viewport.width<=900&&path.startsWith("/settings");
+    const personalNavigationWordsReadable=!personalNavigationRequired||personalNavigationReadable(initialState.personalNavigation,finalState.personalNavigation,expectedTabs);
+    reports.push({viewport,path,variant,baselineAfter,initialFrameTime:initialFrame.time,scaleApplied:!scale||finalState.rootScale===scale,status:response.status(),unexpected,aggregateUnexpected,identifiedDOMCLS,unattributedCLS,moved,categoryStable,timeoutsPresent,bookmarkRequired,bookmarkVisible,navigationLabelsReadable,personalNavigationRequired,personalNavigationWordsReadable,initialState,finalState,...audit});
     console.log(JSON.stringify({viewport: viewport.width, path, unexpected, overflow: audit.overflow,
       sources: audit.shifts.flatMap(shift => shift.sources.map(source => source.node))}));
     if (engine === "chromium") {
@@ -272,5 +278,5 @@ try {
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
 }
 await browser.close();
-if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || !report.navigationLabelsReadable || report.moved.length>0)) process.exitCode = 1;
+if (process.env.KINOSAIL_LAYOUT_ENFORCE && reports.some(report => report.identifiedDOMCLS > 0.001 || report.overflow > 1 || !report.categoryStable || !report.timeoutsPresent || !report.bookmarkVisible || !report.scaleApplied || !report.navigationLabelsReadable || !report.personalNavigationWordsReadable || report.moved.length>0)) process.exitCode = 1;
 if(flows.some(f=>f.pendingStable===false||f.failureRetainsContent===false||f.caretPreserved===false||f.focusRetained===false||f.scrollRetained===false||f.settled?.inert||f.settled?.skeleton||f.stable===false||f.overflow>1))process.exitCode=1;
