@@ -3,6 +3,7 @@ import SwiftUI
 private let electric = Color(red: 0.77, green: 1, blue: 0.28)
 
 struct RemoteView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(WatchRemoteSession.self) private var remote
     @Environment(MovieHeartTracker.self) private var heart
     @State private var page = 0
@@ -51,8 +52,10 @@ struct RemoteView: View {
                         .font(.headline)
                 } else if let player = remote.selected, player.active {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(player.title).font(.title3.bold()).lineLimit(2)
-                        if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+                        Text(player.title).font(.title3.bold()).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                            .fixedSize(horizontal: false, vertical: true)
+                        if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2) }
                     }
                     if player.duration > 0 {
                         ProgressView(value: player.position, total: player.duration).tint(electric)
@@ -67,19 +70,22 @@ struct RemoteView: View {
                         Button {
                             Task { await remote.command(player.audio ? "previous" : "backward") }
                         } label: { Image(systemName: player.audio ? "backward.end.fill" : "gobackward.15")
-                            .frame(maxWidth: .infinity, minHeight: 44) }
+                            .frame(maxWidth: .infinity) }
                         .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Previous track" : "Back 15 seconds")
+                        .frame(minWidth: 44, minHeight: 44)
                         Button {
                             Task { await remote.command(player.playing ? "pause" : "play") }
                         } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill")
-                            .frame(maxWidth: .infinity, minHeight: 44) }
+                            .frame(maxWidth: .infinity) }
                         .buttonStyle(.borderedProminent).tint(electric).foregroundStyle(.black)
+                        .frame(minWidth: 44, minHeight: 44)
                         .accessibilityLabel(player.playing ? "Pause \(player.title)" : "Play \(player.title)")
                         Button {
                             Task { await remote.command(player.audio ? "next" : "forward") }
                         } label: { Image(systemName: player.audio ? "forward.end.fill" : "goforward.30")
-                            .frame(maxWidth: .infinity, minHeight: 44) }
+                            .frame(maxWidth: .infinity) }
                         .buttonStyle(.bordered).accessibilityLabel(player.audio ? "Next track" : "Forward 30 seconds")
+                        .frame(minWidth: 44, minHeight: 44)
                     }
                     .font(.title3)
                     .disabled(remote.busy)
@@ -113,7 +119,7 @@ struct RemoteView: View {
                             Image(systemName: "chevron.up")
                         }
                         .font(.caption.weight(.semibold)).foregroundStyle(electric)
-                        .padding(.vertical, 6)
+                        .frame(minHeight: 44)
                     }
                     .buttonStyle(.plain)
                     .accessibilityHint("Swipe up to open the Heart page")
