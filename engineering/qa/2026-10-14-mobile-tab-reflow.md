@@ -121,3 +121,18 @@ Both archives verify their GitHub digest, clean revision, and eight direct scrip
 Commit `b184e6b9` records focus identity, scroll dimensions, computed overflow, and geometry across six animation frames.
 It preserves the original geometry assertion and makes no production change.
 These bounded observations distinguish delayed focus scrolling from a control that remains clipped.
+
+At `5a8a0c80`, Firefox repeats the clipping with unchanged geometry across all three samples.
+The button retains focus. The panel has 287 pixels of content and a 235-pixel client height, but its scroll offset stays zero.
+Its computed overflow and scroll behavior are both `auto`.
+WebKit scrolls the equivalent panel by nine pixels and exposes the complete button.
+Firefox artifact `11882067135` has SHA-256 `f04a3379977825d9460285e25c51bade18ad32f71a3125ac68830b1ba6819538`.
+The repair explicitly reveals focused install-help controls with nearest, immediate scrolling.
+The original reachability assertion remains. A further keyboard check requires the complete focus outline inside the panel and retains a screenshot.
+
+Required CI `38539329583` passes at `5a8a0c80`. Chromium and WebKit also pass their complete layout suites at that revision.
+These results precede the focus repair, which still needs hosted verification.
+The earlier `1f518666` Chromium run remains failed because the desktop account search field shifts during initial loading.
+Its identified DOM layout shift is `0.003452506443437071`, above the unchanged `0.001` threshold.
+Artifact `11881681724` has SHA-256 `2c787a67fd80086cb6d8c0097f235d25f2c47ef2d0c7d4512bbbd561e4c0d340`.
+The later pass does not diagnose that intermittent shift.
