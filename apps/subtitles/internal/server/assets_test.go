@@ -16,5 +16,5 @@ var assetContracts = servertest.AssetsFixture{
 
 func TestHomeIsInstallableAsAWebApp(t *testing.T) {
 	t.Parallel()
-	servertest.AssertInstallableWebApp(t, server.New(server.Config{}))
+	servertest.AssertInstallableWebApp(t, server.New(server.Config{SubtitleApp: true}))
 }
