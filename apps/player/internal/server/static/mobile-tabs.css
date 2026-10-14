@@ -1,0 +1,27 @@
+/* Personal tab choices never hide the remaining destinations. */
+.nav-personal-tab,.nav-personal-more{display:none!important}
+.tab-editor{width:min(100% - 2rem,34rem);max-height:85dvh;padding:1.5rem;border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--text)}
+.tab-editor::backdrop{background:rgb(0 0 0 / 65%)}
+.tab-editor h2{margin:0;font-size:1.8rem}
+.tab-editor>p{color:var(--muted);font-size:.9rem;line-height:1.6}
+.tab-editor-row{display:flex;gap:.25rem;align-items:center;min-height:60px;border-bottom:1px solid var(--line)}
+.tab-editor-row>span{flex:1;min-width:0;font-size:.95rem;font-weight:600}
+.tab-editor-row button{min-width:44px;min-height:44px;padding:.5rem;background:none;color:var(--text);border:0}
+.tab-editor .tab-move-earlier{transform:rotate(90deg)}
+.tab-editor .tab-move-later{transform:rotate(-90deg)}
+.tab-editor footer{position:sticky;bottom:-1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;padding:1rem 0;background:var(--surface)}
+.tab-editor footer button{min-height:48px}
+@media(max-width:900px){
+  :root:has([data-mobile-tabs]){scroll-padding-bottom:calc(var(--player-dock-height,0px) + 1rem)}
+  body:has([data-mobile-tabs]){padding-bottom:calc(var(--player-dock-height,0px) + 1rem)}
+  body .app-header :is(.nav-more-menu,.header-compact-panel){bottom:calc(var(--player-dock-height,8rem) + .5rem);max-height:calc(100dvh - var(--player-dock-height,8rem) - 1rem)}
+  body .install-help{bottom:calc(var(--player-dock-height,8rem) + .5rem);max-height:calc(100dvh - var(--player-dock-height,8rem) - 1rem);overflow-y:auto}
+  .js body .title-jump.title-jump-scrubbable .letter-jump{bottom:calc(var(--player-dock-height,8rem) + .5rem)}
+  body .app-header nav.has-personal-tabs{display:flex;flex-flow:row wrap;align-items:stretch}
+  body .app-header nav.has-personal-tabs>:is(.nav-personal-tab,.nav-more){flex:1 1 auto;width:auto;min-width:min-content}
+  body .app-header nav.has-personal-tabs>a:not(.nav-personal-tab){display:none!important}
+  body .app-header nav.has-personal-tabs>.nav-personal-tab{display:flex!important}
+  body .app-header nav.has-personal-tabs .nav-personal-more{display:grid!important}
+  body .app-header nav.has-personal-tabs .nav-more-library{display:none}
+  body .app-header nav>a,body .nav-more>summary{white-space:normal;overflow-wrap:normal;line-height:1.15}
+}

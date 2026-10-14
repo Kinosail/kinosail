@@ -43,14 +43,39 @@ Run `gh workflow run layout-stability.yml --ref <regression-branch>` for the hos
 Local browser and application execution remain held.
 Syntax, source-size, and whitespace checks alone do not establish a failing browser regression.
 
-## Repair constraints and current boundary
+## Accepted failing baseline
 
-Production remains unchanged while the regression baseline is pending.
-The repair must preserve text size, saved choices, and access to More and Customize tabs.
-If navigation gains rows, verify its actual height against page padding and menu placement.
-Check bottom-content visibility, keyboard reachability, Escape, and focus restoration.
-Check short landscape viewports as well as portrait phones.
+Hosted run `38531698842` tests regression commit `597ff4e9982d208d1091b0fec2301e65b28754ed`.
+Firefox and WebKit each record eight failed word-readability cases across 42 Player snapshots.
+The settled controls contain the exact expected labels and initialized navigation state.
+Individual words occupy multiple lines. The other recorded layout acceptance checks pass.
+Each engine also records 11 existing Player flows and 46 Subtitles snapshots with 26 flows.
+Subtitles succeeds in both artifacts.
 
-An independent source review supports this contract and identifies dock-height accounting as a required check.
-Implementation and hosted red-green evidence are still pending.
+| Engine | Artifact | Archive SHA-256 |
+| --- | --- | --- |
+| Firefox | `11878811014` | `5415c5c2a16f8753d1ccf37ff42682641283e3bb669c7ed5b5dbf5a2463c8255` |
+| WebKit | `11879215097` | `294be95f4e5a311739538d2e362c52de87c14fcc759cdc06332c24bb80cc388e` |
+
+Both archive digests match GitHub metadata. All eight direct script pins match the clean recorded revision.
+The later keyboard regression commit `6a42d34a` is separate from this word-readability baseline.
+Its six default/saved viewport combinations still need hosted execution.
+Commit `05b7b0c9` adds title-index and install-help reachability to those combinations before their production changes.
+Those flows use a synthetic iPhone user agent to expose the web install action in each browser engine.
+This does not establish physical iPhone behavior.
+
+## Repair and current boundary
+
+Personal tabs now use wrapping flex rows sized to their words, including More.
+The existing navigation and editor styles move into `mobile-tabs.css` to keep source files within the size limit.
+The app embeds those styles in the same stylesheet, immediately after `home.css`.
+Text size, saved choices, and access to More and Customize tabs remain part of the acceptance contract.
+The initial script measures the actual dock height and tracks changes with a resize observer.
+That height reserves scrolling space and positions menus above the dock.
+The title index and scrollable install help use the same height.
+The title index retains its existing short-screen dialog fallback.
+Keyboard traversal reveals page controls between the header and dock.
+
+The candidate still requires passing hosted geometry, keyboard, focus, responsive, and accessibility evidence.
+Local application and browser execution remain held. Source checks do not establish browser acceptance.
 These browser captures do not establish physical-device or assistive-technology acceptance.

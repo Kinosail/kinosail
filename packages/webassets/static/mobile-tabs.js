@@ -71,7 +71,6 @@ function initializeMobileTabs(nav) {
     nav.querySelectorAll(":scope > .nav-personal-tab").forEach(item => item.remove());
     for (const id of pinned) { const a = link(id); a.classList.add("nav-personal-tab"); nav.insertBefore(a, more); }
     group.replaceChildren(...mobileTabCatalog.filter(item => !pinned.includes(item[0])).map(item => link(item[0])));
-    nav.style.setProperty("--personal-tab-count", String(pinned.length + 1));
     nav.classList.add("has-personal-tabs");
     const view = currentView();
     more.querySelector("summary").classList.toggle("active", !pinned.includes(view));
@@ -118,6 +117,30 @@ function initializeMobileTabs(nav) {
     }
   }
   renderNavigation();
+  const mobile = matchMedia("(max-width: 900px)");
+  const updateDock = () => {
+    const root = document.documentElement;
+    if (!mobile.matches) { root.style.removeProperty("--player-dock-height"); return; }
+    const height = `${nav.getBoundingClientRect().height}px`;
+    if (root.style.getPropertyValue("--player-dock-height") !== height) root.style.setProperty("--player-dock-height", height);
+  };
+  updateDock();
+  new ResizeObserver(updateDock).observe(nav);
+  mobile.addEventListener("change", updateDock);
+  document.addEventListener("keydown", event => {
+    if (!mobile.matches || event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return;
+    const previous = document.activeElement;
+    requestAnimationFrame(() => {
+      const target = document.activeElement;
+      if (event.defaultPrevented || target === previous || !target?.closest("main")) return;
+      const rect = target.getBoundingClientRect();
+      const top = nav.closest("header").getBoundingClientRect().bottom + 8;
+      const bottom = nav.getBoundingClientRect().top - 8;
+      const delta = rect.top < top ? rect.top - top : rect.bottom > bottom ?
+        (rect.height <= bottom - top ? rect.bottom - bottom : rect.top - top) : 0;
+      if (delta) scrollBy({top: delta, behavior: "instant"});
+    });
+  });
   document.addEventListener("htmx:after:swap", renderNavigation);
 }
 // Theme runs while HTML parses. Wait only for the complete navigation subtree,
