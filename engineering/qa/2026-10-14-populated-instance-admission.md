@@ -299,3 +299,25 @@ Selection moves from 120 pixels to zero, and Back restores 120 pixels, 34 titles
 Run `38625561776` verifies the same document, an actual server history request, and process cleanup without retries.
 Artifact `11923083839` has SHA-256 `bee52372a642397116a6d7afcfb99de651e84304ad311a79795e297c49682de1`.
 This does not close the rapid-toggle defect.
+
+## Recovery fixture startup race
+
+Diagnostic run `38627146328` stops before the title case at an unchanged playback-recovery journey.
+It retains 15 passes, one failure, and 71 unrun cases with complete fixture cleanup.
+Artifact `11924756611` has SHA-256 `97ab0b4943a9ae7e7ae195860c9e3110ef67b90790ec4f011f383b239df86494`.
+Its exact source, 412 child hashes, 413 checksums, and all 87 case identities verify.
+
+The private media-event projection identifies the fixture race.
+The test injects an unknown error at elapsed 116 milliseconds while a saved-position seek remains pending.
+The real media is at 9.998 seconds with ready state 1.
+At 153 milliseconds, the seek completes and native `canplay` starts automatic playback.
+Native `playing` follows at 154 milliseconds and the app clears the recovery panel.
+The screenshot shows actual playback reaching the twelve-second end.
+This does not establish a product failure to retain a valid stopped state.
+
+The fixture must finish actual playback startup before injecting its synthetic error.
+Await the real play promise, pause, and retain position, duration, readiness, seeking, paused, and native error state.
+Reject pending seeks, insufficient readiness, or native errors before injection.
+Apply the same prerequisite to both viewport checks and the light-theme check.
+Keep recovery copy, keyboard activation, geometry, accessibility, and color assertions unchanged.
+These checks establish injected presentation states on a populated server, not a naturally failing decoder.

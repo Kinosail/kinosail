@@ -23,9 +23,11 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 The rapid title-toggle control reproduces the retained 22-pixel failure at `9b2ab330`, while every paced viewport pair passes.
 Its exact archive and cleanup verify; the deliberate late-resume loading control also passes.
-A one-attribute candidate now targets the stable page body when scrolling after a title swap.
-The original rapid regression remains unchanged. Acceptance requires that regression and adjacent HTMX Back behavior to pass.
-The [populated-instance note](../2026-10-14-populated-instance-admission.md) records the failure, hashes, and candidate limits.
+The body-target trial also fails at `a9059357` and is reverted; bounded scroll diagnostics now preserve the original rapid assertions.
+The strengthened adjacent Back journey passes at `e663b5df`, restoring 120 pixels and all 34 titles in the same document.
+The diagnostic execution stops earlier when native startup clears a synthetically injected playback error.
+The recovery fixture now finishes real startup and verifies a paused, ready state before injection; hosted verification remains pending.
+The [populated-instance note](../2026-10-14-populated-instance-admission.md) records both failures and their exact evidence.
 
 PRs #587, #592, #593, #594, #595, and #598 are merged with fetched ancestry proof.
 PR #598's exact main is `e9e96833731416836302f222b35c1b3eb82801c2`.
@@ -89,8 +91,8 @@ Commit `656c3082` normalizes real playback and validates fresh advancement befor
 Run `38618533354` passes all 87 selected cases, including all 82 target identities, without skips, retries, flakes, or global errors.
 Artifact `11920844630` verifies exact clean source, 590 child hashes, 591 checksum entries, and complete cleanup.
 Its paced title checks pass, but their added pause may conceal the earlier rapid-toggle failure.
-The next baseline restores the original rapid interaction and verifies same-document filtering.
-It also forces a real late-resume position before normalizing the loading fixture.
+The restored rapid baseline and ineffective body-target trial both reproduce the 22-pixel failure.
+The deliberate late-resume loading control passes. The separate recovery-layout injection now has its own real-startup prerequisite.
 The production scroll cause remains under investigation. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
