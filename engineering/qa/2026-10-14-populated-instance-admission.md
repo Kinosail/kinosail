@@ -179,3 +179,27 @@ All nine affected lifecycle contracts pass after the count correction.
 Their log SHA-256 is `3bc748bed397dfc15a06fb94a35ce5ca9f1b7d56f1b65538227701021008b6ec`.
 Native Node TypeScript syntax checks, shell syntax, ShellCheck, source limits, and whitespace checks pass.
 No local application or browser runtime starts.
+
+## Earlier loading-review fixture failure
+
+The instrumented baseline at `a285858d23d1b981f89d64e185257c26aa04adde` stops before the title-letter case.
+Run `38616953081` records seventeen passes and fails `loading-review.spec.ts:53`.
+Artifact `11920935810` has SHA-256 `9bfff4af820d404462e4f840999f79c151e496071f00ac3d8815d4d5e803cb90`.
+Its exact clean source, ten input pins, 22 spec pins, supporting helper, 418 child hashes, and 419 checksum entries verify.
+All 87 contextual cases remain present. Cleanup removes the owned containers, volumes, private fixture, and browser trust.
+
+The trace records a 12-second movie resuming at 10.228067 seconds; the inspected screenshot shows the same position.
+The presentation test then replaces its buffered range with `[0, 7.2]` and sends synthetic loading and readiness events.
+That range ends behind the current position, so the production readiness guard correctly keeps loading visible.
+The previous `currentTime > 0.25` assertion can pass immediately at the inherited position without proving fresh advancement.
+The trace SHA-256 is `4da6cc3b8bfa085b219570c336c31a0dc61024810266e3698942f9dfb886c40f`.
+
+Normalize the real media position before injecting presentation states.
+Wait for initialized media, pause, seek to zero, and require the seek to settle with current-frame data.
+Then resume and require fresh advancement before freezing the synthetic buffered range.
+Check that the frozen media has future data, no error or active seek, and at least two seconds inside that range.
+A bounded numeric receipt retains inherited, reset, and frozen states without URLs or media identifiers.
+The loading, buffering, settings, and geometry assertions remain intact.
+Independent source review confirms the fixture inconsistency and the correction's preconditions.
+This remains a populated-page presentation journey with injected media state, not natural bandwidth-recovery proof.
+The next hosted execution must verify the correction and reach the unchanged title-letter regression.
