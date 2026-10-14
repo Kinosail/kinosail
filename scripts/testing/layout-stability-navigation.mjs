@@ -38,7 +38,8 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
   for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}]) {
     for (const savedTabs of [false, true]) {
       probe.stage = "player-enlarged-dock-end-focus";
-      const context = await browser.newContext({...options, viewport, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
+      const context = await browser.newContext({...options, viewport, ignoreHTTPSErrors: false, reducedMotion: "reduce",
+        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1"});
       let page;
       try {
         await context.addInitScript(() => {
@@ -128,6 +129,47 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
         Object.assign(menuResult, {destinationReached: true, overflow});
         if (overflow > 1) throw new Error("Player Quick Connect exceeds the enlarged mobile viewport");
+
+        probe.stage = "player-enlarged-library-overlays";
+        await page.goto("/?view=movies");
+        const jump = page.locator("[data-title-jump]");
+        await page.waitForFunction(() => document.querySelector("[data-title-jump]")?.classList.contains("title-jump-scrubbable"));
+        const index = jump.locator("[data-title-jump-index]");
+        const railVisible = await index.isVisible();
+        const rail = await index.boundingBox(), libraryDock = await nav.boundingBox();
+        let railReachable;
+        if (railVisible) {
+          const links = await index.locator("[data-title-letter]").evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().toJSON()));
+          railReachable = Boolean(rail && libraryDock && links.length && rail.y >= 0 &&
+            rail.y + rail.height <= libraryDock.y + 1 && links.every(r => r.top >= rail.y - 1 && r.bottom <= rail.y + rail.height + 1));
+        } else {
+          await jump.locator("[data-title-jump-open]").click();
+          const dialog = jump.locator("[data-title-jump-dialog]");
+          await dialog.waitFor({state: "visible"});
+          await dialog.locator("[data-title-letter]").first().click();
+          await dialog.waitFor({state: "hidden"});
+          railReachable = true;
+        }
+        const overlayResult = {flow: probe.stage, viewport, savedTabs, railVisible, rail, libraryDock, railReachable,
+          userAgentFixture: "iPhone web install affordance; browser engine unchanged", stable: railReachable};
+        results.push(overlayResult);
+        if (!railReachable) throw new Error("Player title index is obscured by its navigation");
+        await more.click();
+        await menu.locator("[data-install]").click();
+        const help = page.locator("[data-install-help]");
+        await help.waitFor({state: "visible"});
+        const closeHelp = help.locator("[data-install-close]");
+        await closeHelp.focus();
+        const helpBox = await help.boundingBox(), closeBox = await closeHelp.boundingBox(), helpDock = await nav.boundingBox();
+        const helpReachable = Boolean(helpBox && closeBox && helpDock && helpBox.y >= 0 &&
+          helpBox.x >= 0 && helpBox.x + helpBox.width <= viewport.width + 1 &&
+          helpBox.y + helpBox.height <= helpDock.y + 1 && closeBox.y >= helpBox.y - 1 &&
+          closeBox.y + closeBox.height <= helpBox.y + helpBox.height + 1);
+        Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpReachable, stable: railReachable && helpReachable});
+        if (!helpReachable) throw new Error("Player install help is obscured by its navigation");
+        await page.keyboard.press("Enter");
+        await help.waitFor({state: "hidden"});
+        overlayResult.helpDismissed = true;
       } catch (error) {
         await probe.captureFailure(error, page);
         throw error;
