@@ -213,6 +213,26 @@ jobs:
             fi
           done
           exit "$native_failed"
+      - name: Inspect native contract results
+        if: always() && fromJSON(inputs.plan).deep
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1_beta.app/Contents/Developer
+        run: |
+          native_failed=0
+          for platform in iOS tvOS; do
+            summary="$RUNNER_TEMP/native-$platform-summary.json"
+            if ! xcrun xcresulttool get test-results summary \
+              --path "$RUNNER_TEMP/native-$platform.xcresult" --compact \
+              > "$summary" 2> "$RUNNER_TEMP/native-$platform-summary.stderr"; then
+              native_failed=1
+              continue
+            fi
+            if ! python3 scripts/ci/inspect-native-results.py "$platform" "$summary" "$GITHUB_SHA" \
+              > "$RUNNER_TEMP/native-$platform-receipt.json"; then
+              native_failed=1
+            fi
+          done
+          exit "$native_failed"
       - name: Validate focused probe
         id: probe
         if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none'
@@ -292,6 +312,9 @@ jobs:
           name: player-native-contracts-${{ github.sha }}
           path: |
             ${{ runner.temp }}/native-*.xcresult
+            ${{ runner.temp }}/native-*-summary.json
+            ${{ runner.temp }}/native-*-summary.stderr
+            ${{ runner.temp }}/native-*-receipt.json
             ${{ runner.temp }}/native-media.json
             ${{ runner.temp }}/native-media.sha256
             ${{ runner.temp }}/native-probe
