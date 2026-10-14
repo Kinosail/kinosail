@@ -3,6 +3,7 @@ import {readFile} from "node:fs/promises";
 import {createHash} from "node:crypto";
 import {createServer} from "node:http";
 import {firstPlayable, login} from "./test-instance-helpers";
+import {login as layoutLogin} from "./layout-audit-helpers";
 
 const theme = await readFile(new URL("../../../packages/webassets/static/theme.js", import.meta.url), "utf8");
 for (const scriptState of ["delayed", "missing"]) {
@@ -68,8 +69,8 @@ for (const scriptState of ["delayed", "missing"]) {
 // Isolation gap: a populated Server cannot hold one Home resource after the
 // optional passkey offer. The helper must finish that destination before the
 // next journey navigates; a permanently pending load must stop that journey.
-for (const homeState of ["delayed", "blocked"] as const) {
-  test(`login finishes the Not now destination before Library when Home is ${homeState}`, {tag: "@smoke"}, async ({browser}, info) => {
+for (const helper of [{name: "populated", run: login}, {name: "layout", run: layoutLogin}]) for (const homeState of ["delayed", "blocked"] as const) {
+  test(`${helper.name === "layout" ? "layout " : ""}login finishes the Not now destination before Library when Home is ${homeState}`, {tag: "@smoke"}, async ({browser}, info) => {
     let release!: () => void, homeRequested = false, posts = 0, homeGets = 0, libraryGets = 0;
     const barrier = new Promise<void>(resolve => release = resolve);
     const server = createServer(async (request, response) => {
@@ -103,7 +104,7 @@ for (const homeState of ["delayed", "blocked"] as const) {
       page = await browser.newPage({baseURL: origin, serviceWorkers: "block"});
       page.setDefaultNavigationTimeout(3000);
       const destination = page;
-      attempt = login(destination).then(async () => {
+      attempt = helper.run(destination).then(async () => {
         loginReturned = true;
         home = await destination.evaluate(() => ({state: document.readyState,
           initialized: (window as Window & {fixtureHomeLoaded?: boolean}).fixtureHomeLoaded === true}));
@@ -127,15 +128,23 @@ for (const homeState of ["delayed", "blocked"] as const) {
       }
       expect(posts).toBe(1); expect(homeGets).toBe(1);
       await info.attach("post-login-destination-readiness", {body: JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION,
-        homeState, posts, homeGets, libraryGets, home, browser: info.project.name, version: browser.version(),
+        loginHelper: helper.name, homeState, posts, homeGets, libraryGets, home, browser: info.project.name, version: browser.version(),
         themeSHA256: createHash("sha256").update(theme).digest("hex"),
         boundary: "Isolated real HTTP login and redirect chain; held Home resource; no populated Server or WebKit root-cause claim", result: "passed"}), contentType: "application/json"});
     } finally {
-      release();
-      try { await attempt; } finally {
-        try { await page?.close(); } finally {
-          server.closeAllConnections();
-          await new Promise<void>(resolve => server.close(() => resolve()));
+      try {
+        await info.attach("post-login-destination-observations", {body: JSON.stringify({
+          loginHelper: helper.name, homeState, homeRequested, loginReturned, posts, homeGets, libraryGets, home,
+          browser: info.project.name, version: browser.version(), phase: "before fixture cleanup",
+          boundary: "Isolated HTTP fixture observations; no credentials, URLs, or raw errors",
+        }), contentType: "application/json"});
+      } finally {
+        release();
+        try { await attempt; } finally {
+          try { await page?.close(); } finally {
+            server.closeAllConnections();
+            await new Promise<void>(resolve => server.close(() => resolve()));
+          }
         }
       }
     }

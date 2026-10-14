@@ -40,7 +40,15 @@ export async function login(page: Page, name = "Owner", password = "test-instanc
 	const code = page.getByLabel("Authentication or recovery code");
 	await submitFixtureLogin(page, await code.count() ? totp : undefined);
   await page.waitForURL(url => url.pathname !== "/login");
-	if (await page.getByRole("link", { name: "Not now" }).isVisible()) await page.getByRole("link", { name: "Not now" }).click();
+	const notNow = page.getByRole("link", { name: "Not now" });
+	if (await notNow.isVisible()) {
+		const href = await notNow.getAttribute("href");
+		expect(href).toBeTruthy();
+		await Promise.all([
+			page.waitForURL(new URL(href!, page.url()).href, { waitUntil: "load" }),
+			notNow.click(),
+		]);
+	}
 }
 
 export async function layoutProblems(page: Page) {

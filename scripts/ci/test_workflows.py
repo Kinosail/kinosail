@@ -44,6 +44,11 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_layout_recovery_retains_original_precredential_evidence(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
+        # Browser execution cannot prove that an omitted spec or path filter runs.
+        triggers = source.split('  workflow_dispatch:', 1)[0]
+        for path in ('apps/player/e2e/login-readiness.spec.ts', 'apps/player/e2e/layout-audit-helpers.ts'):
+            self.assertIn(f'      - "{path}"\n', triggers)
+        self.assertIn('login-readiness.spec.ts layout-auth-navigation.spec.ts\n', source)
         artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  campaign-proof:', 1)[0]
         for name in ('login-original-navigation-trace.zip', 'firefox-auth-form-navigation-recovery.json'):
             self.assertIn(f'            .verification/layout/*/*/{name}\n', artifact)
