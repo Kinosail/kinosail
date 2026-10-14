@@ -178,6 +178,7 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
         const help = page.locator("[data-install-help]");
         await help.waitFor({state: "visible"});
         const closeHelp = help.locator("[data-install-close]");
+        const backgroundBefore = await page.evaluate(() => ({x: scrollX, y: scrollY}));
         await closeHelp.focus();
         const helpBox = await help.boundingBox(), closeBox = await closeHelp.boundingBox(), helpDock = await nav.boundingBox();
         const helpFocusSamples = await help.evaluate(async panel => {
@@ -193,11 +194,14 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
           }
           return samples;
         });
-        const helpReachable = Boolean(helpBox && closeBox && helpDock && helpBox.y >= 0 &&
+        const backgroundAfter = await page.evaluate(() => ({x: scrollX, y: scrollY}));
+        const backgroundStable = Math.abs(backgroundBefore.x - backgroundAfter.x) <= 1 && Math.abs(backgroundBefore.y - backgroundAfter.y) <= 1;
+        const helpReachable = Boolean(backgroundStable && helpBox && closeBox && helpDock && helpBox.y >= 0 &&
           helpBox.x >= 0 && helpBox.x + helpBox.width <= viewport.width + 1 &&
           helpBox.y + helpBox.height <= helpDock.y + 1 && closeBox.y >= helpBox.y - 1 &&
           closeBox.y + closeBox.height <= helpBox.y + helpBox.height + 1);
-        Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpFocusSamples, helpReachable, stable: railReachable && helpReachable});
+        Object.assign(overlayResult, {helpBox, closeBox, helpDock, helpFocusSamples, backgroundBefore, backgroundAfter, backgroundStable,
+          helpReachable, stable: railReachable && helpReachable});
         if (!helpReachable) throw new Error("Player install help is obscured by its navigation");
         await page.keyboard.press("Shift+Tab");
         await page.keyboard.press("Tab");
@@ -205,9 +209,11 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
           const panel = button.closest("[data-install-help]"), style = getComputedStyle(button);
           return {focused: document.activeElement === button, focusVisible: button.matches(":focus-visible"),
             outline: Math.max(0, (parseFloat(style.outlineWidth) || 0) + (parseFloat(style.outlineOffset) || 0)),
+            background: {x: scrollX, y: scrollY},
             button: button.getBoundingClientRect().toJSON(), panel: panel.getBoundingClientRect().toJSON()};
         });
         const helpKeyboardReachable = helpKeyboard.focused && helpKeyboard.focusVisible &&
+          Math.abs(helpKeyboard.background.x - backgroundBefore.x) <= 1 && Math.abs(helpKeyboard.background.y - backgroundBefore.y) <= 1 &&
           helpKeyboard.button.top - helpKeyboard.outline >= helpKeyboard.panel.top &&
           helpKeyboard.button.bottom + helpKeyboard.outline <= helpKeyboard.panel.bottom;
         Object.assign(overlayResult, {helpKeyboard, helpKeyboardReachable, stable: overlayResult.stable && helpKeyboardReachable});
