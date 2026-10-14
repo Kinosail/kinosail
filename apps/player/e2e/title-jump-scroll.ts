@@ -23,6 +23,7 @@ async function record(page: Page, info: TestInfo, name: string) {
     const settled = samples.filter(sample => sample.at >= 550);
     return {
       viewport: { width: innerWidth, height: innerHeight },
+      documentStarted: performance.timeOrigin,
       scroll: {
         initial: samples[0].y, final: scrollY,
         min: Math.min(...samples.map(sample => sample.y)),
@@ -49,13 +50,14 @@ async function letter(page: Page, selected: boolean, compact: boolean) {
     await expect(index).toBeHidden();
     await page.getByRole("button", { name: /^Jump to title/ }).click();
     await expect(page.getByRole("dialog", { name: "Jump to title", exact: true })).toBeVisible();
-  } else await expect(index).toBeVisible();
+  }
   const navigation = compact ? page.getByRole("navigation", { name: "Choose a title letter" }) : index;
   await navigation.getByRole("link", { name: selected ? "B, 1 title, selected; activate to show all titles" : "B, 1 title", exact: true }).click();
 }
 
 export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
   for (const viewport of [
+    { width: 1440, height: 900, compact: false, rapid: true },
     { width: 1440, height: 900, compact: false },
     { width: 390, height: 650, compact: true },
     { width: 390, height: 844, compact: false },
@@ -63,21 +65,29 @@ export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
   ]) {
     await page.setViewportSize(viewport);
     await page.goto("/?view=movies");
-    const prefix = `title-jump-${viewport.width}x${viewport.height}`;
-    await record(page, info, `${prefix}-loaded`);
+    const prefix = `title-jump-${viewport.rapid ? "rapid-" : ""}${viewport.width}x${viewport.height}`;
+    const documentStarted = await page.evaluate(() => performance.timeOrigin);
+    if (!viewport.rapid) await record(page, info, `${prefix}-loaded`);
     await letter(page, false, viewport.compact);
     await expect(page).toHaveURL(/letter=B/);
     await expect(page.getByRole("heading", { name: "Beta", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Arrival", exact: true })).toHaveCount(0);
     await expect(page.locator("#library a.card").first()).toBeFocused();
-    const selected = await record(page, info, `${prefix}-selected`);
-    expect.soft(selected.scroll.settledFrames, prefix).toBeGreaterThan(1);
-    expect.soft([selected.scroll.settledMin, selected.scroll.settledMax], prefix).toEqual([0, 0]);
+    if (viewport.rapid) {
+      // Keep the original interaction pace. Sampling or screenshots here can
+      // let an in-flight swap settle before the viewer clears the same letter.
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    } else {
+      const selected = await record(page, info, `${prefix}-selected`);
+      expect.soft(selected.scroll.settledFrames, prefix).toBeGreaterThan(1);
+      expect.soft([selected.scroll.settledMin, selected.scroll.settledMax], prefix).toEqual([0, 0]);
+    }
     await letter(page, true, viewport.compact);
     await expect(page).not.toHaveURL(/letter=/);
     await expect(page.getByRole("heading", { name: "Arrival", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Beta", exact: true })).toBeVisible();
     const cleared = await record(page, info, `${prefix}-cleared`);
+    expect.soft(cleared.documentStarted, "Letter filtering must use the same document").toBe(documentStarted);
     expect.soft(cleared.scroll.settledFrames, prefix).toBeGreaterThan(1);
     expect.soft([cleared.scroll.settledMin, cleared.scroll.settledMax], prefix).toEqual([0, 0]);
     expect.soft(cleared.horizontalOverflow, prefix).toBe(false);

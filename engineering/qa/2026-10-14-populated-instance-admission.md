@@ -213,3 +213,32 @@ The loading, buffering, settings, and geometry assertions remain intact.
 Independent source review confirms the fixture inconsistency and the correction's preconditions.
 This remains a populated-page presentation journey with injected media state, not natural bandwidth-recovery proof.
 The next hosted execution must verify the correction and reach the unchanged title-letter regression.
+
+## Complete selected execution and remaining scroll diagnosis
+
+Run `38618533354` passes all 87 selected cases at `656c30821262c2b3a5bfc035b23630f584de2a94`.
+Artifact `11920844630` has SHA-256 `e51d76735b91fc18945596bf9cf606a3899e547ec054dad819cc89deaa8d6897`.
+The exact clean revision, ten inputs, 22 spec pins, supporting helper, 590 child hashes, and 591 checksum entries verify.
+All 82 target identities pass: 77 populated journeys and five isolated production-template cases.
+The five previously covered cases also pass. There are no skips, retries, flaky results, or global errors.
+Cleanup verifies zero owned containers and volumes, removed fixture data, and removed browser trust.
+
+The loading receipt records inherited playback near zero, a settled reset to zero, and fresh advancement to 0.401489 seconds.
+Its synthetic endpoint is 7.2 seconds, with future data, no active seek, and no media error.
+This execution validates the repaired setup's postconditions but does not exercise an inherited late-resume position.
+The next version therefore establishes a real settled seek to 85% before normalization on every run.
+It preserves the original presentation assertions and records both inherited and deliberately resumed positions.
+
+All twelve paced title geometry receipts record zero settled scroll across four viewport sizes.
+At 1440 by 900, the main region begins at 80 pixels and the document has 22 pixels of scroll extent.
+The two phone layouts also have positive scroll extent while retaining zero scroll.
+Four retained screenshots were inspected across desktop, compact phone, tall phone, and TV-sized web views.
+These results do not close the original rapid-toggle failure.
+The new measurements inserted 800 milliseconds and a screenshot between selecting and clearing the letter.
+That changed the interaction timing before the previously failing action.
+
+Add a rapid desktop pair before those paced checks, preserving the original select, focus, zero-poll, and immediate clear sequence.
+Measure the settled position only after clearing, and retain the exact zero assertion.
+Require the same document time origin after filtering so a full navigation cannot provide a false pass.
+Independent source review finds no blockers in these controls.
+The production title control remains unchanged while the next baseline tests this timing hypothesis.

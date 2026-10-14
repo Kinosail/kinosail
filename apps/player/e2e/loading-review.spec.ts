@@ -30,13 +30,21 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 	expect(await video.evaluate((element) => element.dataset.hls || element.dataset.adaptive || element.getAttribute("src"))).toMatch(/\/(media|stream|hls)\//);
 	expect(stage?.width).toBeGreaterThan(300);
 	expect(stage?.height).toBeGreaterThan(150);
-	const resumed = await video.evaluate(async (element: HTMLVideoElement) => {
+	const inherited = await video.evaluate(async (element: HTMLVideoElement) => {
 		element.muted = true;
 		await element.play();
 		const state = { currentTime: element.currentTime, duration: element.duration };
+		element.pause();
+		// Exercise the retained failure's late-resume condition on every run.
+		element.currentTime = element.duration * 0.85;
+		return state;
+	});
+	await expect.poll(() => video.evaluate((element: HTMLVideoElement) =>
+		!element.seeking && Math.abs(element.currentTime - element.duration * 0.85) < 0.05 && element.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA)).toBe(true);
+	const resumed = await video.evaluate((element: HTMLVideoElement) => {
+		const state = { currentTime: element.currentTime, duration: element.duration };
 		// Earlier journeys retain real progress. Start this synthetic buffer review
 		// at zero so its fixed 60% buffered range contains the playback position.
-		element.pause();
 		element.currentTime = 0;
 		return state;
 	});
@@ -54,7 +62,7 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 		return { currentTime: element.currentTime, duration: element.duration, end: element.duration * 0.6,
 			readyState: element.readyState, seeking: element.seeking, paused: element.paused, errorCode: element.error?.code ?? 0 };
 	});
-	await testInfo.attach("loading-review-buffer-fixture", { contentType: "application/json", body: JSON.stringify({ resumed, reset, bufferedFixture }) });
+	await testInfo.attach("loading-review-buffer-fixture", { contentType: "application/json", body: JSON.stringify({ inherited, resumed, reset, bufferedFixture }) });
 	expect(Number.isFinite(bufferedFixture.duration)).toBe(true);
 	expect(bufferedFixture).toMatchObject({ seeking: false, paused: true, errorCode: 0 });
 	expect(bufferedFixture.readyState).toBeGreaterThanOrEqual(3);

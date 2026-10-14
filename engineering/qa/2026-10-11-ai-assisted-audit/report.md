@@ -80,8 +80,12 @@ The corrected inventory distinguishes two direct-retry viewport cases previously
 Commit `a285858d` adds settled-scroll geometry across four viewport sizes before changing production behavior.
 Its hosted run stops earlier because the loading review resumes beyond the end of its synthetic buffered range.
 Commit `656c3082` normalizes real playback and validates fresh advancement before injecting those presentation states.
-Run `38618533354` is checking that correction and the unchanged title-letter regression.
-The scroll cause remains under investigation. Local runtime remains held.
+Run `38618533354` passes all 87 selected cases, including all 82 target identities, without skips, retries, flakes, or global errors.
+Artifact `11920844630` verifies exact clean source, 590 child hashes, 591 checksum entries, and complete cleanup.
+Its paced title checks pass, but their added pause may conceal the earlier rapid-toggle failure.
+The next baseline restores the original rapid interaction and verifies same-document filtering.
+It also forces a real late-resume position before normalizing the loading fixture.
+The production scroll cause remains under investigation. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
