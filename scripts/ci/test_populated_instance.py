@@ -20,7 +20,7 @@ class PopulatedInstanceTests(unittest.TestCase):
         section = source.split('  populated-instance:\n', 1)[1].split('\n  hls-followon:', 1)[0]
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'INSTANCE'", section)
         self.assertIn('runs-on: ubuntu-24.04', section)
-        self.assertIn('timeout-minutes: 30', section)
+        self.assertIn("timeout-minutes: ${{ inputs.populated_suite == 'selected' && 40 || 30 }}", section)
         self.assertIn('persist-credentials: false', section)
         self.assertIn('--build-arg "REVISION=$revision"', section)
         self.assertIn('KINOSAIL_TEST_IMAGE: localhost/kinosail:dev', section)
@@ -33,7 +33,18 @@ class PopulatedInstanceTests(unittest.TestCase):
         self.assertNotIn('continue-on-error', section)
         self.assertNotIn('ignoreHTTPSErrors', section)
 
-    def run_fixture(self, failure='', hosted=True):
+    def test_selected_mode_reuses_the_existing_suite_and_keeps_artifacts(self):
+        # A browser cannot prove that workflow routing omitted the whole suite.
+        source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
+        self.assertIn('populated_suite:', source)
+        self.assertIn('options: [admission, selected]', source)
+        self.assertIn('KINOSAIL_POPULATED_SUITE: ${{ inputs.populated_suite }}', source)
+        self.assertIn("timeout-minutes: ${{ inputs.populated_suite == 'selected' && 24 || 12 }}", source)
+        helper = (ROOT / 'apps/player/scripts/test-instance.sh').read_text()
+        self.assertIn('KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$KINOSAIL_TEST_ROOT/playwright-results}"', helper)
+        self.assertIn('--workers="${KINOSAIL_E2E_WORKERS:-1}" "$@"', helper)
+
+    def run_fixture(self, failure='', hosted=True, suite='admission'):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             app = root / 'repo/apps/player'
@@ -62,12 +73,18 @@ name=pathlib.Path(sys.argv[0]).name;args=sys.argv[1:]
 with open(os.environ['COMMAND_LOG'],'a') as out:
  out.write(json.dumps({'name':name,'args':args,'root':os.environ.get('KINOSAIL_TEST_ROOT'),'project':os.environ.get('KINOSAIL_TEST_PROJECT')})+'\\n')
 failure=os.environ['FAILURE']
+def report(count):
+ status='skipped' if failure=='empty' else 'expected'
+ result={'status':'skipped' if failure=='empty' else 'passed','retry':0}
+ cases=[{'title':os.environ['TITLE'] if count==1 else 'Selected case '+str(i),'tests':[{'projectName':'chromium','status':status,'results':[result]}]} for i in range(count)]
+ pathlib.Path(os.environ['KINOSAIL_E2E_ARTIFACT_DIR'],'results-chromium.json').write_text(json.dumps({'suites':[{'specs':cases}]}))
 if name=='uname':print('Linux')
 elif name=='git':print('a'*40)
 elif name=='test-instance.sh':
  if args[0]=='up':
   pathlib.Path(os.environ['KINOSAIL_TEST_ROOT'],'totp-secret').write_text('synthetic-private-secret')
  if args[0]==failure:sys.exit(7)
+ if args[0]=='browser':report(81 if failure=='omitted' else 82)
 elif name=='docker':
  if args[:2]==['image','inspect']:print('sha256:'+'b'*64+' '+'a'*40)
  elif args[0]=='compose':print('c'*64)
@@ -89,10 +106,7 @@ elif name=='certutil':
   print((nickname+' C,,') if state.exists() or failure=='collision' else '')
 elif name=='pnpm':
  if failure=='browser':sys.exit(8)
- status='skipped' if failure=='empty' else 'expected'
- result={'status':'skipped' if failure=='empty' else 'passed','retry':0}
- report={'suites':[{'specs':[{'title':os.environ['TITLE'],'tests':[{'projectName':'chromium','status':status,'results':[result]}]}]}]}
- pathlib.Path(os.environ['KINOSAIL_E2E_ARTIFACT_DIR'],'results-chromium.json').write_text(json.dumps(report))
+ report(1)
 '''
             for name in ['uname', 'git', 'docker', 'pnpm', 'mkdir', 'certutil']:
                 path = binaries / name
@@ -107,7 +121,8 @@ elif name=='pnpm':
                      'RUNNER_TEMP': directory, 'KINOSAIL_E2E_ARTIFACT_DIR': str(output),
                      'KINOSAIL_E2E_OUTPUT_DIR': str(output / 'browser-results'),
                      'COMMAND_LOG': str(log), 'FAILURE': failure, 'TITLE': TITLE,
-                     'CERT': str(certificate), 'NSS_STATE': str(root / 'nss-entry')})
+                     'CERT': str(certificate), 'NSS_STATE': str(root / 'nss-entry'),
+                     'KINOSAIL_POPULATED_SUITE': suite})
             commands = [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
             receipt = output / 'fixture-lifecycle.json'
             evidence = json.loads(receipt.read_text()) if receipt.exists() else None
@@ -183,6 +198,48 @@ elif name=='pnpm':
                     self.assertFalse(receipt['browserTrustRemoved'])
                 self.assertEqual(receipt['stage'], 'complete' if failure == 'remove-trust' else 'browser-trust')
                 self.assertTrue(receipt['privateFixtureRemoved'])
+
+    def test_selected_suite_requires_all_cases_and_preserves_cleanup_on_failure(self):
+        for failure in ['', 'browser', 'empty', 'omitted']:
+            with self.subTest(failure=failure):
+                result, commands, receipt = self.run_fixture(failure, suite='selected')
+                self.assertEqual(result.returncode == 0, not failure)
+                self.assertEqual(receipt['suite'], 'selected')
+                self.assertTrue(receipt['browserTrustRemoved'])
+                self.assertTrue(receipt['privateFixtureRemoved'])
+                self.assertEqual(receipt['remainingContainers'], 0)
+                self.assertEqual(receipt['remainingVolumes'], 0)
+                browser = [row for row in commands if row['name'] == 'test-instance.sh' and row['args'][0] == 'browser']
+                self.assertEqual(len(browser), 1)
+                self.assertEqual(browser[0]['args'][1:], ['--project=chromium', '--retries=0', '--max-failures=1'])
+                self.assertFalse(any(row['name'] == 'pnpm' for row in commands))
+
+    def test_unknown_suite_rejects_before_fixture_side_effects(self):
+        result, commands, receipt = self.run_fixture(suite='unknown')
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(any(row['name'] in ['test-instance.sh', 'docker', 'pnpm', 'certutil'] for row in commands))
+        self.assertIsNone(receipt)
+
+    def test_forwarded_browser_options_cannot_bypass_the_single_worker_guard(self):
+        # The real browser command must reject unsafe selection before starting
+        # Go fixture generation, which actual browser E2E cannot inspect first.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            effects = root / 'effects'
+            tool = root / 'go'
+            tool.write_text('#!/bin/sh\nprintf started > "$EFFECTS"\nexit 93\n')
+            tool.chmod(0o755)
+            for arguments in [['--workers=2'], ['--workers', '2'], ['-j2'], ['--'],
+                              ['--project=firefox'], ['--retries=2']]:
+                with self.subTest(arguments=arguments):
+                    effects.unlink(missing_ok=True)
+                    result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/test-instance.sh'),
+                        'browser', *arguments], capture_output=True, text=True, timeout=10,
+                        env={**os.environ, 'PATH': f'{root}{os.pathsep}{os.environ["PATH"]}',
+                             'CONTAINER_ENGINE': 'docker', 'KINOSAIL_E2E_WORKERS': '1',
+                             'KINOSAIL_TEST_ROOT': str(root), 'EFFECTS': str(effects)})
+                    self.assertEqual(result.returncode, 2)
+                    self.assertFalse(effects.exists())
 
 
 if __name__ == '__main__':

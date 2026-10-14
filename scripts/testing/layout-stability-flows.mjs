@@ -2,7 +2,7 @@
 import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
 import {measureSubtitleBackground} from "./layout-stability-subtitle-background.mjs";
 import {measureSubtitleWebAppMetadata} from "./layout-stability-subtitle-web-app.mjs";
-import {measurePersonalNavigationFlow} from "./layout-stability-navigation.mjs";
+import {measurePersonalNavigationFlow, measureTitleFilterFlow} from "./layout-stability-navigation.mjs";
 export async function measureFlows(browser, options, watchPath, inspectorPath, results = [], probe = {}) {
   probe.stage = "HTMX-search";
   for (const viewport of [{width:390,height:844},{width:1440,height:900},...(inspectorPath?[{width:320,height:800}]:[])]) {
@@ -65,7 +65,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     await context.close();
   }
   if(inspectorPath){await measureSubtitleBackground(browser,options,results,probe);await measureSubtitleWebAppMetadata(browser,options,inspectorPath,results,probe);}
-  else await measurePersonalNavigationFlow(browser,options,results,probe);
+  else {await measureTitleFilterFlow(browser,options,results,probe);await measurePersonalNavigationFlow(browser,options,results,probe);}
   if(inspectorPath)for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}]){
     probe.stage="enlarged-dock-end-focus";
     const context=await browser.newContext({...options,viewport,ignoreHTTPSErrors:false,reducedMotion:"reduce"});

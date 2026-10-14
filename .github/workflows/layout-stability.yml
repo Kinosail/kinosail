@@ -19,6 +19,11 @@ on:
         type: choice
         options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]
         default: none
+      populated_suite:
+        description: Select fixture admission or the existing 22-spec populated suite
+        type: choice
+        options: [admission, selected]
+        default: admission
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
         type: choice
@@ -325,7 +330,7 @@ jobs:
     name: Populated Player admission
     if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'INSTANCE'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.populated_suite == 'selected' && 40 || 30 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -355,7 +360,7 @@ jobs:
       - name: Install Chromium fixture trust tools
         run: sudo apt-get update && sudo apt-get install -y libnss3-tools
       - name: Admit the populated instance with retained evidence
-        timeout-minutes: 12
+        timeout-minutes: ${{ inputs.populated_suite == 'selected' && 24 || 12 }}
         working-directory: apps/player
         env:
           CONTAINER_ENGINE: docker
@@ -363,6 +368,7 @@ jobs:
           KINOSAIL_TEST_IMAGE_READY: '1'
           KINOSAIL_BROWSER_PROJECT: chromium
           KINOSAIL_E2E_VIDEO: 'off'
+          KINOSAIL_POPULATED_SUITE: ${{ inputs.populated_suite }}
         run: >-
           python3 ../../scripts/ci/e2e-artifact.py
           --output "$GITHUB_WORKSPACE/.verification/populated-instance"

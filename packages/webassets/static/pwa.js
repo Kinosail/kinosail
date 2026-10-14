@@ -130,11 +130,15 @@ function finishLoadingRequest({ detail }) {
 document.body.addEventListener("htmx:finally:request", finishLoadingRequest);
 
 document.body.addEventListener("htmx:before:request", (event) => {
-  if (event.detail?.ctx?.target?.id === "main") mainRequests.set(event.detail.ctx, ++mainRequestGeneration);
+  const ctx = event.detail?.ctx;
+  if (ctx?.target?.id === "main") mainRequests.set(ctx, {
+    generation: ++mainRequestGeneration,
+    titleJump: ctx.sourceElement?.matches("[data-title-letter]"),
+  });
 });
 document.body.addEventListener("htmx:after:request", (event) => {
-  const generation = mainRequests.get(event.detail?.ctx);
-  if (generation && generation !== mainRequestGeneration) event.preventDefault();
+  const request = mainRequests.get(event.detail?.ctx);
+  if (request && request.generation !== mainRequestGeneration) event.preventDefault();
 });
 function motionAllowed() {
   return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -214,6 +218,9 @@ function bindTitleJump() {
 
 bindTitleJump();
 document.body.addEventListener("htmx:after:swap", (event) => {
+  const request = mainRequests.get(event.detail?.ctx);
+  // A title filter starts at the page top, independently of the main offset.
+  if (request?.titleJump && request.generation === mainRequestGeneration) window.scrollTo({ top: 0, behavior: "instant" });
   if (event.detail?.ctx?.target?.id === "main") animateMotion(document.getElementById("main"), "motion-enter");
   bindInfiniteLibrary();
   bindTitleJump();

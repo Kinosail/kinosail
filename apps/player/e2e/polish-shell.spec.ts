@@ -25,7 +25,7 @@ test("administration uses a plain canvas while dark media browsing retains Cinem
     expect(await hasCanvasArtwork(page)).toBe(true);
     for (const route of ["/settings", "/settings/configuration", "/account", "/quick-connect"]) {
       await page.goto(route);
-      await page.screenshot({ path: info.outputPath(`${width}-${route.replaceAll("/", "-")}.png`) });
+      await page.screenshot({ path: info.outputPath(`${width}-${encodeURIComponent(route)}.png`) });
       await expect(page.locator("body"), route).toHaveCSS("background-image", "none");
       expect(await hasCanvasArtwork(page), route).toBe(false);
     }
@@ -57,7 +57,7 @@ test("landscape search stays reachable before and after focus on signed-in pages
           const box = element.getBoundingClientRect(); const style = getComputedStyle(element);
           return { left: box.left, right: box.right, width: box.width, viewport: innerWidth, position: style.position, cssWidth: style.width };
         });
-        await page.screenshot({ path: info.outputPath(`${width}-${route.replaceAll("/", "-")}-${focused}.png`) });
+        await page.screenshot({ path: info.outputPath(`${width}-${encodeURIComponent(route)}-${focused}.png`) });
         expect(geometry.left, JSON.stringify(geometry)).toBeGreaterThanOrEqual(0);
         expect(geometry.right, JSON.stringify(geometry)).toBeLessThanOrEqual(width);
         expect(geometry.width).toBeGreaterThanOrEqual(44);

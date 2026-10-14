@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { configureLayoutAudit, layoutProblems, login, viewports } from "./layout-audit-helpers";
 import { firstPlayable } from "./test-instance-helpers";
+import { injectUnknownFailure } from "./playback-recovery-fixture";
 
 configureLayoutAudit();
 
@@ -152,17 +153,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 	for (const viewport of [viewports[0], viewports[viewports.length - 1]]) {
 		await page.setViewportSize(viewport);
 		await page.goto(watch!);
-		await page.locator("video").evaluate((video) => {
-			video.pause();
-			video.dataset.compatibilityMode = "transcode";
-			video.dataset.compatibilityLabel = "Transcoding video";
-			video.dataset.compatibilityDescription = "This device cannot decode the original video.";
-			Object.defineProperty(video, "error", {
-				configurable: true,
-				value: { code: 0 },
-			});
-			video.dispatchEvent(new Event("error"));
-		});
+		await injectUnknownFailure(page, testInfo, `${viewport.width}px`);
 		const method = page.locator("[data-playback-mode-status]");
 		await expect(method).toHaveText("Direct Play stopped");
 		await expect(page.locator("[data-player-status] [data-player-fallback]")).toHaveText("Retry playback");
@@ -218,17 +209,7 @@ test("player explains an unconfirmed failure and offers a direct retry", async (
 	await page.evaluate(() => localStorage.setItem("kinosail-theme", "light"));
 	await page.setViewportSize(viewports[0]);
 	await page.goto(watch!);
-	await page.locator("video").evaluate((video) => {
-		video.pause();
-		video.dataset.compatibilityMode = "transcode";
-		video.dataset.compatibilityLabel = "Transcoding video";
-		video.dataset.compatibilityDescription = "This device cannot decode the original video.";
-		Object.defineProperty(video, "error", {
-			configurable: true,
-			value: { code: 0 },
-		});
-		video.dispatchEvent(new Event("error"));
-	});
+	await injectUnknownFailure(page, testInfo, "light");
 	await page.locator("[data-playback-mode-status]").click();
 	const lightColors = await page.locator("[data-playback-recovery] [data-player-fallback]").evaluate((button) => {
 		const style = getComputedStyle(button);

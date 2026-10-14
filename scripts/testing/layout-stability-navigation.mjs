@@ -231,3 +231,60 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
     }
   }
 }
+
+// The populated regression owns rapid toggling; this checks the other engines
+// with native motion enabled instead of the layout suite's reduced-motion mode.
+export async function measureTitleFilterFlow(browser, options, results, probe) {
+  for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 650},
+    {width: 390, height: 844}, {width: 1920, height: 1080}]) {
+    probe.stage = "player-title-filter-scroll";
+    const context = await browser.newContext({...options, viewport, ignoreHTTPSErrors: false,
+      reducedMotion: "no-preference", serviceWorkers: "block"});
+    let page;
+    try {
+      page = await probe.openPage(context);
+      await page.goto("/?view=movies");
+      const documentStarted = await page.evaluate(() => performance.timeOrigin);
+      await page.waitForFunction(() => document.querySelectorAll("#library a.card").length === 4);
+      const choose = async selected => {
+        const index = page.locator("[data-title-jump-index]");
+        let navigation = index;
+        if (!await index.isVisible()) {
+          await page.locator("[data-title-jump-open]").click();
+          navigation = page.locator("[data-title-jump-dialog]");
+          await navigation.waitFor({state: "visible"});
+        }
+        await navigation.locator(`[data-title-letter="G"]${selected ? '[aria-current="true"]' : ':not([aria-current])'}`).click();
+      };
+      await choose(false);
+      await page.waitForURL(url => url.searchParams.get("letter") === "G");
+      await page.waitForFunction(() => document.querySelectorAll("#library a.card").length === 1 &&
+        document.querySelector("#library a.card") === document.activeElement && scrollY === 0);
+      await choose(true);
+      await page.waitForURL(url => !url.searchParams.has("letter"));
+      await page.waitForFunction(() => document.querySelectorAll("#library a.card").length === 4 &&
+        document.querySelector("#main")?.getAttribute("aria-busy") !== "true");
+      const state = await page.evaluate(async () => {
+        const started = performance.now(), samples = [];
+        do { await new Promise(resolve => requestAnimationFrame(resolve));
+          samples.push({at: performance.now() - started, y: scrollY});
+        } while (samples.at(-1).at < 800);
+        return {documentStarted: performance.timeOrigin, samples,
+          scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+          reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+          cards: document.querySelectorAll("#library a.card").length,
+          extent: document.documentElement.scrollHeight - innerHeight,
+          overflow: document.documentElement.scrollWidth - innerWidth};
+      });
+      const settled = state.samples.filter(sample => sample.at >= 550);
+      const stable = state.documentStarted === documentStarted && settled.length > 1 &&
+        settled.every(sample => sample.y === 0) && !state.reducedMotion && state.cards === 4 && state.overflow <= 1;
+      results.push({flow: probe.stage, viewport, ...state, stable});
+      if (!stable) throw new Error("Title filtering did not retain the page top");
+      await probe.captureSnapshot(`title-filter-${viewport.width}x${viewport.height}`, page);
+    } catch (error) {
+      await probe.captureFailure(error, page);
+      throw error;
+    } finally { await context.close(); }
+  }
+}
