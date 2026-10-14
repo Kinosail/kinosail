@@ -166,6 +166,8 @@ iOS Home selects the first Continue watching item, otherwise the first Recently 
 
 `ResourceView` displays loading feedback only while initial content is pending. Native skeletons shimmer within their existing shapes and expose one accessible loading label; Reduce Motion keeps the placeholders still. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton. Determinate playback and download progress remains visible; actions without a replacement layout use plain status text.
 
+Recovery and empty-state descriptions stay within a 560pt measure and wrap vertically. Recovery actions use large system controls. Connection banners use the same system sizing without adding a second minimum height inside their labels. Watch transport targets retain at least 44pt, and playback titles expand at accessibility text sizes.
+
 ### Asset provenance
 
 Approved Player sail geometry is authored SVG under `assets/source/`, recolored to Electric green. `scripts/generate-brand-assets.sh` uses `sips` to rasterize and resize those sources, and `ffmpeg` to export the iOS app icon as RGB. Swift iOS and tvOS asset catalogs derive from these sources, including separate TV foreground/background layers and top-shelf images. Apple owns final icon masking. The decision comp is a critique reference, not production library artwork.
