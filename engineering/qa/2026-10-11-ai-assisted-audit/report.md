@@ -21,6 +21,12 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 14 UTC
 
+The rapid title-toggle control reproduces the retained 22-pixel failure at `9b2ab330`, while every paced viewport pair passes.
+Its exact archive and cleanup verify; the deliberate late-resume loading control also passes.
+A one-attribute candidate now targets the stable page body when scrolling after a title swap.
+The original rapid regression remains unchanged. Acceptance requires that regression and adjacent HTMX Back behavior to pass.
+The [populated-instance note](../2026-10-14-populated-instance-admission.md) records the failure, hashes, and candidate limits.
+
 PRs #587, #592, #593, #594, #595, and #598 are merged with fetched ancestry proof.
 PR #598's exact main is `e9e96833731416836302f222b35c1b3eb82801c2`.
 Its required checks, deep suite, main CI, and all nine publication jobs pass.

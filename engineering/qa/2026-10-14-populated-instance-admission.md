@@ -242,3 +242,28 @@ Measure the settled position only after clearing, and retain the exact zero asse
 Require the same document time origin after filtering so a full navigation cannot provide a false pass.
 Independent source review finds no blockers in these controls.
 The production title control remains unchanged while the next baseline tests this timing hypothesis.
+
+## Rapid baseline and stable scroll target
+
+Run `38622019193` reproduces the rapid title-toggle failure at `9b2ab330cbf63f5b77017b439cf8db4ec6c4450d`.
+Artifact `11923355629` has SHA-256 `c7dcc9d9e434add74b38fc6f44b1cb9d1680dd451700a08e41ab954f8363c02d`.
+All 87 identities, ten input pins, 22 spec pins, the helper, 588 child hashes, and 589 checksum entries verify.
+There are 74 passes, one failure, and twelve unrun cases. Resource and trust cleanup passes.
+The same-document assertion passes. After rapid clearing, all sixteen settled samples record 22 pixels.
+The document extent is also 22 pixels; the main region begins at 58 pixels in the scrolled viewport.
+All four paced viewport pairs in that same case record zero settled scroll.
+This isolates a rapid-interaction failure; slower passing measurements cannot close it.
+
+The loading control passes after a real seek to 10.2 of 12 seconds.
+It resets to zero, advances to 0.383317 seconds, and freezes with future data and a 7.2-second buffer endpoint.
+The recorded media has no error or active seek. The injected-state presentation assertions pass.
+
+The title-link candidate changes one existing swap attribute to `outerHTML show:top showTarget:body`.
+It requests the top of the stable page body instead of the swapped main region.
+The installed HTMX source and [HTMX 4 documentation](https://four.htmx.org/reference/attributes/hx-swap/#show) support that selector.
+The public interface remains title filtering through the existing browse links.
+The retained rapid regression runs unchanged so only the production scroll target changes in this comparison.
+The exact timing mechanism remains unconfirmed; this candidate is not accepted until the original failure passes.
+The adjacent real HTMX Back journey must also preserve its query, content extent, focus, and saved position.
+Current hosted layout coverage checks pending, loaded, empty, failed, and recovery states separately.
+Local runtime remains held. Source formatting, source limits, and whitespace checks do not establish browser acceptance.
