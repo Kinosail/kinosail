@@ -20,3 +20,11 @@ The absence of a restart notice is the empty-state control; no placeholder is ex
 The test is committed before the production repair.
 Hosted execution and exact-revision evidence are pending.
 Local product runtime remains paused by the workstation resource hold.
+
+The first baseline at `34cf21c9` passed all seven no-notice loaded controls.
+It did not intercept the later deferred bundle, so it never reached restart-state geometry.
+The retained trace allowed service workers; it does not identify the request-routing cause conclusively.
+The controlled pending/failure checks now use a fresh authenticated context with service workers blocked.
+Strict fixture TLS stays enabled, and the context closes after both observations.
+The ordinary loaded checks retain the original context with service workers allowed.
+Restart-label assertions now compare the captured server-rendered list immediately instead of waiting on immutable text.

@@ -51,8 +51,20 @@ export async function verifySettingsNavigation(page: Page, info: TestInfo, notic
     await expect(page.locator("[data-settings-ready]")).toHaveCount(1);
     await recordNavigation(page, info, noticeExpected, "loaded");
   }
+  // A controlled fresh context prevents the service worker from bypassing asset routing.
+  const context = await page.context().browser()!.newContext({
+    baseURL: new URL(page.url()).origin, storageState: await page.context().storageState(),
+    serviceWorkers: "block", ignoreHTTPSErrors: false, viewport: { width: 1440, height: 900 },
+  });
+  try {
+    await verifyDeferredNavigation(await context.newPage(), info, noticeExpected);
+  } finally {
+    await context.close();
+  }
+}
+
+async function verifyDeferredNavigation(page: Page, info: TestInfo, noticeExpected: boolean) {
   // Keep the actual server document and stylesheet when its deferred bundle is pending or fails.
-  await page.setViewportSize({ width: 1440, height: 900 });
   const bundle = "**/static/main.kinosail.bundle.js*";
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
@@ -67,6 +79,7 @@ export async function verifySettingsNavigation(page: Page, info: TestInfo, notic
     await page.goto("/settings", { waitUntil: "commit" });
     await expect.poll(() => entered, { message: "actual settings bundle held" }).toBe(true);
     await expect(page.locator("[data-settings-nav]")).toBeVisible();
+    await expect(page.locator(".settings-shell")).toHaveCSS("display", "grid");
     await recordNavigation(page, info, noticeExpected, "pending-bundle");
   } catch (error) {
     primaryFailed = true;
