@@ -18,10 +18,12 @@ export async function measureSubtitleWebAppMetadata(browser, options, inspectorP
     const cases = [
       ...["summary", "wanted", "library", "history"].map(view => ({name: view, path: `/?view=${view}`, view, selector: "#subtitle-content"})),
       {name: "inspector", path: inspectorPath, selector: "main.subtitle-inspector"},
-      {name: "settings-control", path: "/settings", selector: ".settings-shell"}
+      {name: "settings", path: "/settings", selector: ".settings-shell"},
+      {name: "login-control", path: "/login", selector: "body.auth", anonymous: true}
     ];
     for (const testCase of cases) {
       probe.stage = "subtitle-dashboard-web-app-metadata";
+      if (testCase.anonymous) await context.clearCookies();
       const navigation = await page.goto(testCase.path, {waitUntil: "domcontentloaded"});
       await page.locator(testCase.selector).waitFor({state: "attached"});
       const document = await page.evaluate(() => {
@@ -48,7 +50,7 @@ export async function measureSubtitleWebAppMetadata(browser, options, inspectorP
           processedManifest = {locationValid, identityValid: matches(decoded), errors: processed.errors.length};
         } finally { await cdp.detach(); }
       }
-      const stable = navigation?.status() === 200 && (!testCase.view || document.view === testCase.view) && document.dockPresent === (testCase.name !== "settings-control") &&
+      const stable = navigation?.status() === 200 && (!testCase.view || document.view === testCase.view) && document.dockPresent === (testCase.name !== "login-control") &&
         document.manifestLinks === 1 && document.expectedManifestLinks === 1 && manifestValid &&
         (!processedManifest || processedManifest.locationValid && processedManifest.identityValid && processedManifest.errors === 0);
       results.push({flow: probe.stage, page: testCase.name, document, manifestStatus: response.status(), manifestValid, manifestSHA256,
