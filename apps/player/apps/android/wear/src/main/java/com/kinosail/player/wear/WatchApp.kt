@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -106,7 +107,8 @@ private fun RemotePage(
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().background(ink).verticalScroll(rememberScrollState())
         .padding(horizontal = 22.dp, vertical = 36.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("KINOSAIL", color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        Text("KINOSAIL", modifier = Modifier.align(Alignment.CenterHorizontally),
+            color = signal, fontWeight = FontWeight.Bold, fontSize = 12.sp)
         if (remote.players.size > 1 || choosing) {
             Button(onClick = { choosing = !choosing }, modifier = Modifier.fillMaxWidth(),
                 label = { Text(remote.selected?.name ?: interfaceText("Choose player"), maxLines = 1) })

@@ -37,6 +37,7 @@ RUN apt-get update \
     && wget -q -O /tmp/jellyfin-ffmpeg.deb "https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v${JELLYFIN_FFMPEG_VERSION}/jellyfin-ffmpeg8_${JELLYFIN_FFMPEG_VERSION}-trixie_${arch}.deb" \
     && echo "$checksum  /tmp/jellyfin-ffmpeg.deb" | sha256sum -c - \
     && apt-get install -y --no-install-recommends /tmp/jellyfin-ffmpeg.deb \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' librsvg2-2)" ge '2.60.0+dfsg-1+deb13u1' \
     && apt-get purge -y --auto-remove wget \
     && ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
     && ln -s /usr/lib/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe \

@@ -345,6 +345,43 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
+  wear:
+    name: Player Wear journeys (${{ matrix.profile }})
+    if: inputs.app == 'player' && fromJSON(inputs.plan).android && fromJSON(inputs.plan).deep
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [small-round, large-round]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0 emulator system-images;android-36;android-wear-signed;x86_64'
+      - name: Build Wear app and instrumentation APKs
+        run: ./gradlew :wear:assembleDebug :wear:assembleDebugAndroidTest
+        working-directory: apps/player/apps/android
+      - name: Exercise Wear launch and recreation
+        run: |
+          test -c /dev/kvm
+          sudo chown "$USER" /dev/kvm
+          python3 apps/player/scripts/test-wear-journeys.py --profile "${{ matrix.profile }}" --output "${{ runner.temp }}/wear-journey-qa"
+      - name: Keep safe Wear evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: wear-journey-evidence-${{ matrix.profile }}
+          path: ${{ runner.temp }}/wear-journey-qa/safe
+          retention-days: 14
+          if-no-files-found: error
+
   system:
     name: ${{ inputs.app }} production container (${{ matrix.platform }})
     if: fromJSON(inputs.plan)[inputs.app]
@@ -710,7 +747,7 @@ jobs:
   required:
     name: ${{ inputs.app }} suite complete
     if: always()
-    needs: [static, race, security, tooling, client, android, system, browser]
+    needs: [static, race, security, tooling, client, android, wear, system, browser]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

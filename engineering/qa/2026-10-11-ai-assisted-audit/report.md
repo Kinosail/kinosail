@@ -21,8 +21,10 @@ The existing audit's uncovered cases guide additional execution, rather than tre
 
 ## Latest checkpoint — October 13
 
-PRs #587 and #592 are merged. PR #593 has passing Android caption and Apple hosted acceptance at `e76ab401`.
-Required PR checks and protected delivery remain pending.
+PRs #587, #592, and #593 are merged. PR #593's reviewed task commit is an ancestor of fetched `origin/main` at `0a68e51544458de32d1458b6a567050ed344f229`.
+All four required PR checks and exact-main verification passed. All nine publication jobs passed for this newest merge.
+Independent registry inspection verifies both architectures, revision labels, tested candidate digests, and production tags for both apps.
+The separate Wear follow-up remains draft PR #594; its Wear journeys and image security repair pass affected hosted acceptance; protected delivery remains pending.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -34,10 +36,53 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
-| Subtitles copied suffix | At `66f6f8dd` and `e76ab401`, all thirty receipts pass. Four long windows record successful completion before the deliberate restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Publication and deployment | PR #587 and PR #592 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
+| Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
+| Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. | Required gates and delivery remain pending. Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
+| Publication and deployment | PRs #587, #592, and #593 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
+| Runtime image security | At `d1f6dcf9`, both apps on amd64 and arm64 install the fixed librsvg package and pass scans and production paths. All four system artifacts verify revision, architecture, ten source pins, and two checksum entries. | Protected delivery, exact-main publication, and deployment remain pending. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
+
+The accepted `f78be3bb` cold-suffix artifact passes all nineteen cases and verifies seven helper pins.
+Both corrupted and missing metadata recoveries retain identical metadata after one correlated INFO completion.
+Receipt SHA-256: `ba28ce53e7189b0a2d3f06186d1803b3fa0862bc847a490da780dd2c2e91658d`.
+The Chromium artifact verifies ten source pins and 435 checksums without failed or flaky reports.
+The focused WebKit repeat verifies ten source pins and 502 checksums, with 806 distinct passing cases and 284 skipped-only cases.
+Its original navigation timeout remains an unresolved intermittent observation.
+
+The [Wear evidence note](../2026-10-13-wear-journeys.md) records the rejected screenshots, exact artifacts, and successive runner repairs.
+Commits `89c1af8a` and `9c4cf628` require foreground app ownership, bounded transport detachment, and fresh physical profiles.
+Source checks and independent review pass. Corrected boot readiness succeeds on both fresh profiles; bounded diagnostics identify different failing phases.
+Home launch completion does not resolve the foreground failure on either profile.
+Actual-first execution fails on both profiles, ruling out preceding component teardown as a necessary cause.
+Early UI automation connection also fails on both profiles. System timelines locate another Home-package Activity resuming before test-driver teardown.
+Waiting for that follow-on Activity to be globally top-resumed permits both profiles to pass at `966408ce`.
+Visual review then finds a separate clipped app name on the large round display; its bounds exceed the circular viewport.
+The final candidate centers only that label, adds a geometry assertion, and removes temporary lifecycle and event diagnostics.
+All 27 remaining focused source checks pass. Both final-source hosted Wear journeys and visual acceptance pass at `660bc087`.
+The broader run also fails a tvOS asset-catalog runtime launch before native tests; that build gate remains required.
+Swift compilation succeeds on the next `660bc087` run. Its image scans expose a separate cached-package vulnerability.
+The [librsvg evidence note](../2026-10-13-librsvg-security.md) records the scanner findings, cache evidence, and minimum-version repair.
+The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
+
+Exact-main `0a68e515` also passes the nineteen cold-suffix cases and verifies all seven helper pins.
+Artifact `11855719704` has SHA-256 `bad88c024be90ff7a301585e4e12dfe4203d732ade5f25a38d3957d30c68460c`.
+Its cold-suffix receipt has SHA-256 `43991f1abc077bf5609fb159d364f99da2c13d1dcfcfc52e58409596331eda31`.
+Both metadata recoveries preserve metadata after one correlated INFO completion.
+The 139 private child-artifact hashes remain unavailable for independent verification.
+
+The same main revision passes all thirty Subtitles copied-clock receipts, including four long-window completions before restart.
+Artifact `11857083775` has SHA-256 `38d476acea6a87c1bd2c759a0614bec952002e2ffbe9771d5cf0dd51b3580468`.
+All sixteen uploaded child hashes verify; 275 private child hashes remain unavailable.
+Exact-main run `38478804268` completed successfully, including all nine container publication jobs.
+Registry metadata matches `sha-0a68e51544458de32d1458b6a567050ed344f229`, `main`, and `latest` for both apps:
+
+- Player: `sha256:800b85f3740e37f0447826fb014488f2fc38ff5926d831809435325e8dfbb8d1`.
+- Subtitles: `sha256:1f73b0b106d6e19026b9324b4df2eef57eeda4352f0f6a1adf069457617e3cc6`.
+
+Both architecture config labels contain the exact main revision, and all four tested candidate manifests match the published platforms.
+Hosted signature and provenance verification succeeded before promotion. No image layers were downloaded or executed locally.
+The retained proof is `long-copied-window-draft/main-0a68e515-publication-proof.json` under the private campaign evidence directory.
 
 ## Baseline evidence
 
