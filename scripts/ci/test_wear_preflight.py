@@ -35,6 +35,7 @@ class WearPreflightTests(unittest.TestCase):
                 folder = Path(directory)
                 for path in ("apps/player/scripts/test-wear-journeys.py",
                              "apps/player/scripts/inspect-wear-evidence.py",
+                             "apps/player/scripts/wear_event_projection.py",
                              ".github/workflows/app.yml",
                              "apps/player/apps/android/wear/build.gradle.kts"):
                     target = folder / path

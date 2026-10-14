@@ -296,3 +296,45 @@ Moving this setup earlier tests whether observer initialization contributes to A
 Flags, lifecycle operations, assertions, deadlines, class order, and screenshots remain unchanged.
 No retry, wake action, forced focus, or production behavior change is added.
 A successful trial would still need final-source verification and repeat acceptance before claiming the intermittent failure is resolved.
+
+## Early observer connection is insufficient
+
+Both profiles at `6fdba7b955ad584914a0120b902b2c6f97380391` still fail the actual foreground wait.
+Both later component tests pass. Actual-first execution is confirmed without truncation.
+Seventeen source pins, seven child hashes per profile, and complete cleanup verify.
+Both actual Activities change from resumed without focus to stopped, without finishing or destruction.
+Both sampled instants remain interactive and unlocked. Both launch screenshots show the watch face.
+Connecting UI automation before launch is therefore insufficient to prevent this failure.
+
+| Profile | Artifact | ZIP SHA-256 |
+| --- | --- | --- |
+| Small round | `11861255926` | `0a9ade04d20085cfeb62b868bcc030ccbaf8802f2370ea3e501f5c1f43fc4a09` |
+| Large round | `11861250798` | `1311951d7d1ea1b83c4953477e81cee7b7bc829b5c2908f920355c13dc607949` |
+
+The next diagnostic retains a bounded system lifecycle timeline from the owned emulator.
+It clears only that fresh emulator's event log immediately before instrumentation.
+After instrumentation, it reads the unfiltered event-log tail with a ten-second command limit.
+The private reader requests at most 1,000 records, then projects seven fixed lifecycle tags.
+Raw bytes stay in a private file outside the uploaded directory, capped at one MiB.
+The receipt contains at most 64 events, fixed Activity roles, known reason labels, and user-leaving Booleans.
+The resolved Home component identifies the `home` role; unknown components and reasons become `other`.
+No component names, process or task IDs, action strings, URIs, or unknown reason text are uploaded.
+Input, tail, and event limits are explicit; malformed records and missing diagnostics are reported.
+A reset failure or truncated timeline cannot establish a complete instrumentation window.
+The system ring buffer can overwrite older records; absence of an event does not exclude a transition.
+Events include teardown after the test, so a final Home transition alone is not a launch-failure cause.
+The original assertions, deadlines, class order, and observer setup remain unchanged.
+
+The projection follows the pinned [Android 16 event schema](https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-16.0.0_r1/services/core/java/com/android/server/wm/EventLogTags.logtags).
+Its source SHA-256 is `bfbb60473bb0c9c1a2244d66f7b6fa0e7754d2c0f7db0e6d8032a40c6dba93f7`.
+Five isolated source checks protect diagnostic privacy, malformed-input rejection, and explicit truncation.
+The first three were written before the projector; the initial run failed because the module did not yet exist.
+Independent review caught a filtered-tail limit that could hide earlier event loss.
+A fourth check reproduces that mistake and passes after removing reader-side tag filtering.
+A fifth rejects invalid signed 32-bit event fields, including intent flags, before projecting transitions.
+This is not a reproduced Android failure or native acceptance.
+The hosted journey remains the owner for lifecycle behavior and visual acceptance.
+
+All 31 focused source checks pass after these repairs, including the existing inventory and workflow contracts.
+Source caps, whitespace checks, and the final independent source review pass.
+Hosted execution is pending; these local checks execute no Android runtime.

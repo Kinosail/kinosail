@@ -11,6 +11,7 @@ import struct
 import subprocess
 import time
 import uuid
+from wear_event_projection import capture_events, reset_events
 
 APP = "com.kinosail.player.dev"
 SERIAL = "emulator-5554"
@@ -80,7 +81,7 @@ def collect(safe, label, size):
     return sizes, errors
 
 
-def run_case(safe, run, label, size, density):
+def run_case(safe, run, label, size, density, home):
     case = {"name": label, "result": "failed", "stage": "configure", "expectedTests": 3}
     try:
         check(adb("shell", "pm", "clear", APP).strip() == b"Success", "wear_clear_failed")
@@ -88,12 +89,12 @@ def run_case(safe, run, label, size, density):
         check(adb("shell", "wm", "density").decode().strip() == f"Physical density: {density}", "wear_physical_density")
         case["physicalDisplayVerified"] = True
         adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
-        case["displayPixels"] = [size, size]
-        case["density"] = density
+        case.update(displayPixels=[size, size], density=density)
         case["stage"] = "instrument"
         args = ["shell", "am", "instrument", "-w", "-r", "-e", "class", CLASSES,
                 APP + ".test/androidx.test.runner.AndroidJUnitRunner"]
         case["command"] = ["adb", "-s", SERIAL, *args]
+        case["systemEventLogReset"] = reset_events(adb)
         try:
             log = adb(*args, timeout=180)
             case["instrumentationExitCode"] = 0
@@ -108,6 +109,7 @@ def run_case(safe, run, label, size, density):
             except Exception as cleanup_error:
                 case["timeoutCleanupFailure"] = type(cleanup_error).__name__
         (run / (label + ".instrumentation.private.log")).write_bytes(log[:4 << 20])
+        case["systemEvents"] = capture_events(adb, run, home)
         case["logTruncated"] = len(log) > 4 << 20
         signals = {"assertion": b"java.lang.AssertionError", "illegal-state": b"java.lang.IllegalStateException",
                    "security": b"java.lang.SecurityException", "compose-timeout": b"ComposeTimeoutException",
@@ -169,7 +171,7 @@ try:
     check(re.fullmatch(r"[0-9a-f]{40}", receipt["revision"]), "revision_invalid")
     check(not command(["git", "status", "--porcelain"]).strip(), "checkout_not_clean")
     paths = ["apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
-             "apps/player/apps/android/wear/build.gradle.kts"]
+             "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_event_projection.py"]
     source = ROOT / "apps/player/apps/android/wear/src"
     paths += [str(p.relative_to(ROOT)) for p in sorted(source.rglob("*.kt"))]
     receipt["sourceSHA256"] = {p: sha(ROOT / p) for p in paths}
@@ -241,7 +243,7 @@ try:
     receipt["homeLaunch"] = {"statusOK": b"Status: ok" in home.splitlines(),
                              "complete": b"Complete" in home.splitlines(), "seconds": round(time.monotonic() - started, 3)}
     check(len(home) <= 4096 and receipt["homeLaunch"]["statusOK"] and receipt["homeLaunch"]["complete"], "wear_home_launch_failed")
-    receipt["cases"].append(run_case(safe, run, args.profile, size, 320))
+    receipt["cases"].append(run_case(safe, run, args.profile, size, 320, home))
     check(all(case["result"] == "passed" for case in receipt["cases"]), "wear_case_failed")
     receipt["result"] = "passed"
 except Exception as error:

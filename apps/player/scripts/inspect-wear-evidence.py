@@ -52,7 +52,7 @@ with zipfile.ZipFile(archive) as bundle:
                                            "apps/player/apps/android/wear/src"], text=True).splitlines()
     expected_pins = {p for p in source_files if p.endswith(".kt")} | {
         "apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
-        "apps/player/apps/android/wear/build.gradle.kts"}
+        "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_event_projection.py"}
     check(set(pins) == expected_pins, "source_pin_inventory")
     for path, digest in pins.items():
         check(path.startswith(("apps/player/", ".github/workflows/")) and ".." not in Path(path).parts,

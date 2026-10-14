@@ -37,7 +37,7 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Apple native contracts | At `e76ab401`, retained Xcode results record 336 iOS passes, 320 tvOS passes, no failures, and one skip each. | Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
 | Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
-| Wear | At `af7c723f`, both actual-first journeys fail while later component tests pass. Both Activities stop without destruction; snapshots show interactive, unlocked devices. The prior large profile at `470234c6` passed once. | A prelaunch UI-automation connection tests observer initialization as a contributor. Full-profile acceptance, pairing, sensors, battery, and physical input remain open. |
+| Wear | At `6fdba7b9`, both actual-first journeys still fail after early observer connection. Both Activities stop without destruction; snapshots show interactive, unlocked devices. The prior large profile at `470234c6` passed once. | A bounded system lifecycle timeline will identify observed transitions. Full-profile acceptance, pairing, sensors, battery, and physical input remain open. |
 | Publication and deployment | PRs #587, #592, and #593 have verified exact-main CI, image publication, signatures, provenance, and production tags. | Deployment and physical playback remain unverified. |
 
 Local runtime remains held for coordinated device work. Local checks use source checks and artifact inspection. Hosted gates remain enabled.
@@ -54,7 +54,7 @@ Commits `89c1af8a` and `9c4cf628` require foreground app ownership, bounded tran
 Source checks and independent review pass. Corrected boot readiness succeeds on both fresh profiles; bounded diagnostics identify different failing phases.
 Home launch completion does not resolve the foreground failure on either profile.
 Actual-first execution fails on both profiles, ruling out preceding component teardown as a necessary cause.
-The next experiment connects UI automation before Activity launch, with the same flags, assertions, and deadlines.
+Early UI automation connection also fails on both profiles. The next diagnostic records fixed system lifecycle roles and reasons, with raw logs kept private.
 The primary checkout retains unrelated Xcode project and localization edits, so it is not eligible for automatic fast-forward and cleanup.
 
 Exact-main `0a68e515` also passes the nineteen cold-suffix cases and verifies all seven helper pins.
