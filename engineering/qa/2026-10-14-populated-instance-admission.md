@@ -391,3 +391,42 @@ Receipts retain scroll extent and samples; screenshots follow assertions, so cap
 The flow uses no mocked responses, motion stubs, or production-only test seam.
 Independent source review finds no blockers for hosted execution. Source syntax, whitespace, and source limits pass.
 Hosted acceptance of this added flow remains pending. Physical TV, devices, deployment, and full-product acceptance remain separate.
+
+
+## Accepted cross-browser repair and protected merge
+
+The added title flow passes in Chromium, Firefox, and WebKit at all four sizes on `867b95a0`.
+All twelve final viewport screenshots were inspected. Both phone sizes have positive scroll extent; the wide fixtures have none.
+The original Firefox attempt timed out before this flow while waiting for `DOMContentLoaded`.
+Its document returned HTTP 200, and its screenshot showed populated Movies. The cause remains unresolved.
+A single unchanged failed-job replay passes. The original failing artifact remains retained.
+
+| Engine | Artifact | SHA-256 |
+| --- | --- | --- |
+| Chromium | `11929690112` | `2914aa27cd26a8540d557c373f38f8208ebd8cb4965ef9609c82c35a0d1ab6db` |
+| Firefox, attempt 2 | `11929776891` | `3ca0f91644b90e4c789c4f05bd976ca026c96dfd112f375d9134bb97f95377ed` |
+| WebKit | `11928261505` | `a383152f282b9669d7307ef0bbcfd9cc6a7233a888ec9b80d246aae1f9522b60` |
+
+Required CI run `38634252343` passes on the tested merge `25573ad4`, whose tree equals the reviewed head.
+The Player smoke archive has SHA-256 `4d5d2468891f952e7a0a10c04d5b925c201c760474207bfc5ac2011a67be2a28`.
+Ten source pins, 434 child hashes, and 435 checksums verify.
+Its eight reports contain 536 passing executions and 63 skipped executions, with no retries, flakes, unexpected results, or global errors.
+Subtitles smoke has 38 passes and no skips. These smoke selections include isolated fixtures.
+The focused 87-case repair suite remains separate and has no skips.
+
+[PR #606](https://github.com/Kinosail/kinosail/pull/606) merged with a merge commit.
+A fetched ancestry check confirms `867b95a0064bf2809d56c555ed372113db06bb7b` in main `7f4d58864bfa0a8745c187181967f8747d244445`.
+Exact-main CI and publication are running separately. Local application execution remains held.
+Unrelated native project and localization edits in the primary checkout prevent final cleanup and remain untouched.
+
+## Next populated browse selection
+
+The closed `browse` option selects 21 existing cases across ten specs through the existing disposable HTTPS fixture.
+Twenty cases are previously unpassed targets; the Owner Settings search case is also selected and counted.
+The selection covers collections, curation, dependency credits, library and shell layouts, quick connect, repeated navigation, viewer policy, episode history, and static compression.
+It uses one Chromium worker, zero retries, and the existing failure and cleanup limits.
+The runner rejects incomplete or extra results and retains the same source, fixture, artifact, and cleanup evidence.
+
+Command stand-ins cover missing and extra cases, skipped results, process failures, and cleanup.
+These are isolated runner checks; they do not establish application behavior.
+Exact case identity and source inspection are required after the hosted run. Hosted acceptance remains pending.
