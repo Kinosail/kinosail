@@ -311,6 +311,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: ${{ fromJSON(inputs.plan).deep && 'platform-tools platforms;android-37.0 emulator system-images;android-36;google_apis;x86_64' || 'platform-tools platforms;android-37.0' }}
@@ -362,6 +367,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
           packages: 'platform-tools platforms;android-37.0 emulator system-images;android-36;android-wear-signed;x86_64'
@@ -455,7 +465,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: 26
-          package-manager-cache: false
+          cache: pnpm
+          cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
       - env:
           APP: ${{ inputs.app }}
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
