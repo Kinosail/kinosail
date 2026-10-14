@@ -91,7 +91,17 @@ All three screenshots were inspected; full-page captures alone do not establish 
 Cleanup verifies zero owned containers and volumes, removed private data, and removed browser trust.
 PR #605 passes required CI `38608355820` and merges as `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`.
 Fetched ancestry confirms the reviewed commit is included in protected main.
-Exact-main CI and publication for that merge remain pending.
+Exact-main workflow `38613543319` and all nine publication jobs pass.
+Registry inspection verifies both apps, both architectures, revision labels, tested candidates, and matching production tags.
+The Player digest is `sha256:2d9ac6f79c868c4aee2d74ec43ba728e0b16d9dbaccc2a2f0371bd37837d289c`.
+The Subtitles digest is `sha256:c03f8055fd2a8942fb20aef23e5c2516c590896aae602d7b86a6e7061fce44cd`.
+Fetched ancestry still identifies that merge as protected main.
+Its Player smoke artifact verifies 536 passing executions, 63 skipped executions, and zero retries, flakes, or global errors.
+Archive SHA-256: `e8106ead1584eee70057192ef9068d580551867ae506a07bba4a0d6c0ebc09bd`.
+Its Subtitles smoke artifact verifies all 38 passes without skips, retries, or global errors.
+Archive SHA-256: `dd6dca998d43570c6d9cfcbaaa1dff2eb811db3c596e2a3a614173b093553c13`.
+Both browser manifests verify exact clean source, ten input pins, and every evidence checksum.
+This establishes hosted delivery and publication; device and deployment acceptance remain separate.
 Its complete layout workflow `38608355808` passes in Chromium, Firefox, and WebKit.
 Chromium artifact `11917483431` has SHA-256 `d299341769a1f327d69bb31e36b36e33c9bf35d0b6a62bfa37dabff4a40ef156`.
 It verifies 97 Player measurements across 29 flows and 111 Subtitles measurements across 33 flows.

@@ -66,7 +66,10 @@ The [readiness note](../2026-10-14-layout-login-readiness.md) separates this hel
 PR #605 admits the existing generated catalog and connection-settings journey after repairing disposable fixture CA trust.
 The hosted journey passes once at `18f91de7`, with verified source, catalog identity, and resource and trust cleanup.
 Its three-browser layout checks and required CI pass; fetched ancestry verifies merge `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`.
-Exact-main CI and publication for that merge remain pending.
+Its exact-main workflow `38613543319` and all nine publication jobs pass.
+Both apps' AMD64 and ARM64 manifests match their tested candidates and identify the merged revision.
+Player's production digest is `sha256:2d9ac6f79c868c4aee2d74ec43ba728e0b16d9dbaccc2a2f0371bd37837d289c`.
+Subtitles' production digest is `sha256:c03f8055fd2a8942fb20aef23e5c2516c590896aae602d7b86a6e7061fce44cd`.
 PR #606 expands the existing command to 22 spec files covering 82 previously unpassed contextual case identities.
 These comprise 77 populated journeys and five isolated production-template cases.
 The first selected execution reports 74 passes, a title-letter scroll failure, and twelve cases not run.
@@ -74,8 +77,11 @@ Artifact upload rejects a screenshot filename containing a question mark, so tho
 Commit `1252849d` encodes the route in screenshot filenames; run `38613332317` retains the same scroll failure successfully.
 Artifact `11920280325` verifies all source and evidence hashes, 74 passes, one failure, twelve unrun cases, and complete fixture cleanup.
 The corrected inventory distinguishes two direct-retry viewport cases previously collapsed under the same leaf title.
-The next regression records settled scroll and geometry across four viewport sizes before changing production behavior.
-The root cause remains under investigation. Local runtime remains held.
+Commit `a285858d` adds settled-scroll geometry across four viewport sizes before changing production behavior.
+Its hosted run stops earlier because the loading review resumes beyond the end of its synthetic buffered range.
+Commit `656c3082` normalizes real playback and validates fresh advancement before injecting those presentation states.
+Run `38618533354` is checking that correction and the unchanged title-letter regression.
+The scroll cause remains under investigation. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.
