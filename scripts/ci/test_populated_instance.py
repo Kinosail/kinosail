@@ -105,12 +105,18 @@ elif name=='pnpm':
                 self.assertEqual(actions.count('down'), 1)
                 self.assertEqual(actions[-1], 'down')
                 self.assertEqual(receipt['result'], 'failed')
+                self.assertEqual(receipt['level'], 'error')
+                self.assertEqual(receipt['stage'], {'up': 'setup', 'verify': 'catalog-verification',
+                    'browser': 'connection-settings', 'down': 'complete', 'leftover': 'complete',
+                    'empty': 'browser-result'}[failure])
                 self.assertNotIn('totp', json.dumps(receipt).lower())
 
     def test_success_requires_one_executed_journey_and_zero_owned_resources(self):
         result, commands, receipt = self.run_fixture()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(receipt['result'], 'passed')
+        self.assertEqual(receipt['level'], 'info')
+        self.assertEqual(receipt['stage'], 'complete')
         self.assertEqual(receipt['remainingContainers'], 0)
         self.assertEqual(receipt['remainingVolumes'], 0)
         browser = [row for row in commands if row['name'] == 'pnpm']

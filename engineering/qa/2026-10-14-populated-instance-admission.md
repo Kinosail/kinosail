@@ -16,6 +16,7 @@ A skipped or absent journey cannot establish acceptance.
 Cleanup must run once for the owned Compose project and leave no containers or volumes.
 Private fixture data must be removed after both successful and failed runs.
 Lifecycle receipts must exclude the Owner credential and authenticator secret.
+They record a bounded operation stage and an `info` or `error` level for success or failure.
 
 Isolated shell contracts inject these failures before implementing the runner.
 Real browser journeys cannot reliably force setup or teardown failures while preserving the hosted runner for inspection.
@@ -37,3 +38,4 @@ Moving the new workflow contract into the fixture-specific test file keeps the s
 All 23 affected contracts pass afterward.
 Workflow validation, pinned Actionlint, ShellCheck, shell syntax, source limits, and whitespace checks pass.
 Actual hosted admission remains pending.
+The failure-stage assertions also fail before adding that diagnostic context, then all four fixture contracts pass.
