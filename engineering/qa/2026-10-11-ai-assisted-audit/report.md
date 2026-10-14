@@ -32,12 +32,18 @@ The FocusState capture repair passes strict checks and retains eleven images ide
 At `6920080a`, the Android captions-off control reaches its intended pixel rejection, and all sixteen positive executions pass.
 Its repaired pause interaction reopens explicitly hidden controls within the existing deadline. Earlier failures remain retained.
 The same deep run rejects one Player WebKit navigation flake before watched-state assertions.
-A destination-readiness repair and two real HTTP controls are prepared for hosted verification.
+A destination-readiness repair and two real HTTP controls are committed in `118af962`.
+That revision passes the native contracts with the same counts and zero runtime warnings.
+Its Android caption artifact passes the negative control and all sixteen positive executions again.
+Subtitles Firefox and WebKit each pass 99 tests, with no skips or retries. Player browser verification is still running.
+Main then advances through PR #596's UI polish. Merge `9f6f19de` incorporates `639359e9` without conflicts.
+Reconciled-source verification remains required; earlier results do not certify the merged UI changes.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
 | Surface | Latest verified evidence | Remaining work |
 | --- | --- | --- |
+| Copied H264 resume | PR #570 merged the cold and longer-remux origin repairs. At `6920080a`, eleven Chromium journeys retain 77 matching frame samples; eight metadata-fault controls pass. | Exact legacy diagnostic fixtures, larger sources, native clients, and physical acceptance remain distinct. Historical AQA-006 and AQA-014 entries below precede these repairs. |
 | Transcoded HLS recovery | All 168 recovery receipts verify at `a02a4227`. The complete Player race suite passes with 89.1% coverage. PR #587's required gates and exact-main publication pass. | Physical playback and any new regression. |
 | Copied AC3 playback | Deep run `38417668707` rejects `segment-00003.m4s` after a 12.7-second resume. Later complete Player race evidence passes at `a02a4227`. | The earlier intermittent rejection remains undiagnosed; retain observations on recurrence. |
 | Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. At `fab16419`, WebKit fails playable-item discovery navigation. At `3792686c`, Subtitles Firefox times out on initial login navigation. Both retries pass; CI correctly rejects both flakes. |
@@ -78,6 +84,20 @@ The released control requires a complete, initialized document before exactly on
 The unreleased control requires a bounded timeout with no Library navigation.
 These controls and the existing populated journeys still require hosted execution.
 This repairs a helper ordering gap. It does not establish the internal WebKit failure mechanism.
+
+The manual HLS diagnostic at `118af962` is retained as failed, not accepted.
+Run `38512973642` produces artifact `11870612947`, SHA-256 `ef5a71a39d096bfa1cf2621beefb0b7d0c5b38d3dab8ec053de4b59c2da42705`.
+The receipt hash and 28 source pins verify. Two of six cases pass.
+Both non-keyframe cases compare all decoded frames against the requested suffix while discarding the public Origin/Clock headers.
+Player uses those headers to map the preceding source key to the requested presentation time.
+The two ten-second audio cases reject a second encoder and cannot qualify their historical replay template.
+Their receipts record an eight-second prepared prefix, one tail refill, two completed encoders, and peak concurrency one.
+Independent review finds that these failures alone do not establish a current playback defect.
+No assertion or production behavior changes to obtain acceptance.
+The exact MKV/MP4 fixtures still need rendered-frame comparisons through the watch page.
+The audio fixtures need nonperiodic browser PCM compared with an uninterrupted control across the refill.
+The separate `6920080a` browser artifact already verifies 77 recorded frame-digest matches, duration, and EOF across eleven other journeys.
+Its eight isolated metadata controls reject invalid headers, remove pending skeletons, and recover playback after retry.
 
 Android artifact `11868885407` at `535faec8` has SHA-256 `b95348368e685f86d6897100fbe1172903b3cc4d4b860f216125fae2cd6d2c9b`.
 Its clean-source receipt, eight source pins, six fixture pins, and 53 uploaded child hashes verify.
@@ -328,7 +348,7 @@ Chromium reported `response-cache-control-no-store`, `masked`, and `other` reaso
 The requested persisted-document path was not established. The authenticated response's cache policy was not weakened.
 Run: [38156964354](https://github.com/Kinosail/kinosail/actions/runs/38156964354).
 
-### AQA-006 — Open: copied-video resume starts before the requested frame
+### AQA-006 — Initial finding: copied-video resume starts before the requested frame
 
 Two complete authenticated HLS runs on `f64bb55a5b1a3c60b7e528381a61425f6de4f65e` each passed ten of twelve cases.
 The MKV and MP4 non-keyframe resume cases both failed `public_full_timeline`, `presented_source_frames`, and `presentation_duration`.
@@ -1212,7 +1232,7 @@ Sources remain unchanged and all test Servers settle. Source limits, whitespace,
 `make -C apps/player verify-changed` passes, including 87 seconds of focused Server tests.
 The private manifest is `audio-reconciled-20261012T0200/receipt.json`, SHA-256 `cdd5c362b01da1b864b0f3b5d4f5982fe4479d22c46d58c1b2e7a80dd05ea5c8`.
 
-### AQA-014 — Open: longer unprepared H264 resume lacks a certified clock
+### AQA-014 — Initial finding: longer unprepared H264 resume lacks a certified clock
 
 At clean revision `3f6e9e26920e4f021a0bfa86d561311336264594`, a generated 74.5-second H264/AAC source reproduces the longer cold-resume boundary.
 Saved progress is 12.5 seconds. The original-file reference presents the expected 12.541667-second frame and reaches EOF.

@@ -195,3 +195,15 @@ Its rejected result remains retained. The later pass does not diagnose that laun
 
 The installation race and frame controls remain tvOS-only. iOS execution does not establish that specific race on iOS.
 Actual system activation cancellation, runtime failure logs, physical devices, deployment, and complete product acceptance remain separate boundaries.
+
+## Latest native replay and main reconciliation
+
+Deep run `38511895265` repeats the native contracts at `118af96260a69ea4010726b6524cbf0688ff9e84`.
+Artifact `11869918228` has SHA-256 `5c77ba5ecb70b4c21f4ddfb72e9aee0f1922dd10bd374d1dd18b8986185a5e0f`.
+The GitHub digest, exported summaries, gate receipts, and independently read Xcode test trees agree.
+iOS passes 336 tests and tvOS passes 322. Both retain one skip, zero failures, and zero runtime warnings.
+The same-title replacement case executes once and passes on tvOS.
+
+Merge `9f6f19de` subsequently incorporates main `639359e9` and its separate UI changes.
+Source limits and whitespace checks pass. Both affected-app verification commands run in plan mode under the local runtime hold.
+Those plans do not establish runtime acceptance. Hosted checks must verify the reconciled source before delivery.
