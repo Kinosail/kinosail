@@ -29,6 +29,8 @@ Draft PR #595 moves native audio setup off the main thread and rejects stale pla
 Its `fab16419` native artifact passes 336 iOS and 321 tvOS tests with zero audio main-thread warnings and one skip per platform.
 The replacement journey acquires a frame after the restored seek. At `535faec8`, a healthy late-output control reproduces the missing-frame failure without a retired installation.
 The FocusState capture repair passes strict checks, removes all three warnings, and retains eleven visually inspected images. A matched early-output control needs execution.
+The `535faec8` Android caption run passes all sixteen positive executions but fails its negative control before the caption oracle.
+Its pause interaction can lose auto-hidden controls after discovery. A test-only repair reopens the explicit hidden-state action within the existing deadline.
 The campaign goal remains active; no complete product or platform acceptance is claimed.
 Chronological sections retain earlier failures, repairs, and exact artifact evidence.
 
@@ -39,7 +41,7 @@ Chronological sections retain earlier failures, repairs, and exact artifact evid
 | Browser session return | Three-engine evidence passes, including repaired controls and trace assertions. PR #587 and PR #592 pass required gates. | The earlier WebKit touch-dispatch stall remains distinct from later passes. At `fab16419`, WebKit also fails navigation during playable-item discovery; its retry passes, and CI correctly rejects the flake. |
 | Entropy failures | Hosted race passes at `07db0b07`; all three failure paths retain covered counters. PR #587's required gates pass. | Physical and deployment acceptance remain separate. |
 | Apple native contracts | At `535faec8`, Xcode results record 336 iOS passes, 321 tvOS passes, one failed tvOS control, and one skip each. All runtime warnings fall to zero. The replacement frame displays at 9.25 after restoring to 9 seconds. Capture tests and all eleven inspected images pass. | The healthy late-output control fails without replacement; a matched early-output trial remains pending. Earlier endpoint-scrub, reader, and hero intermittency remain unresolved. Physical-device proof remains open. |
-| Android | At `e76ab401`, all sixteen positive executions pass across four phone/tablet cases. Captions restore after toggling and late backward seeking; no caption pixels overlap system navigation. The negative control and all ten bridge controls pass. | Current Android TV, picture-in-picture, live rotation, EPUB accessibility, Wear runtime, and physical-device acceptance remain open. |
+| Android | At `535faec8`, all sixteen positive executions pass across four phone/tablet cases. Independent pixel checks find no captions inside system navigation. The negative control stops during pause preparation; its interaction repair needs execution. Earlier `e76ab401` negative and bridge controls pass. | Negative-control acceptance at the repaired source, Android TV, picture-in-picture, live rotation, EPUB accessibility, paired Wear, and physical-device acceptance remain open. |
 | Subtitles copied suffix | At `66f6f8dd`, `e76ab401`, and the tested PR merge for `f78be3bb`, all thirty receipts pass. Four long windows record successful completion before restart and retain final media, ownership, privacy, and cleanup checks. | Other containers, omissions, long audio conversion, and physical playback remain outside the repair's verified scope. |
 | Wear | At `660bc087` and again at `d1f6dcf9`, both profiles pass all three tests on the final Wear source. Seventeen pins, eight child hashes, foreground ownership, and cleanup verify per profile. All eight images were inspected; the centered label fits both circles at launch and recreation. PR #594 is merged. | Pairing, loaded sessions, enlarged type, sensors, battery, and physical input remain open. |
 | Publication and deployment | PRs #587, #592, #593, and #594 have verified exact-main CI, image publication, signatures, provenance, and production tags. | PR #595 remains draft. Deployment and physical playback remain unverified. |
@@ -57,6 +59,16 @@ Our trace lacks the matching crash backtrace and loaded dependency version; the 
 Playwright 1.64.0 remains the latest stable release checked on October 14 UTC.
 The [existing dependency audit](../2026-10-10-dependency-update/dependency-audit.json) reproduces a separate HTTP 204 assertion failure under its driver with both Chromium versions.
 The 1.63 pin and navigation assertions remain unchanged. A later passing run cannot diagnose the retained flake.
+
+Android artifact `11868885407` at `535faec8` has SHA-256 `b95348368e685f86d6897100fbe1172903b3cc4d4b860f216125fae2cd6d2c9b`.
+Its clean-source receipt, eight source pins, six fixture pins, and 53 uploaded child hashes verify.
+All four positive profiles pass all four tests. Independent pixel counts reproduce their saved metrics with zero system-navigation overlap.
+The negative control retains a decoded captioned frame with native playback controls hidden, but no caption metric.
+Its source stack points to the pause preparation wait. The runner correctly rejects the missing negative-control evidence.
+The test checked control visibility once, then polled for Play or Pause without reopening controls that auto-hide between those steps.
+The repair reads one complete accessibility snapshot per poll and invokes Show player controls only when neither Play nor Pause is visible.
+It preserves the ten-second bound, final Play requirement, captions-off control, and strict pixel oracle.
+Hosted acceptance remains pending. Server, bridge, and emulator cleanup are all verified for the rejected run.
 
 PR #594's published Player digest is `sha256:f1b14af7ac729c0a4c94bf3e0ab81ab9aa2ceffa349ab0b3c66ab4ae35b14101`.
 Its Subtitles digest is `sha256:4302e8c63b9469e95ee25ada65727c4152cc1735777c2d7cbbf17525dc32cf0a`.
