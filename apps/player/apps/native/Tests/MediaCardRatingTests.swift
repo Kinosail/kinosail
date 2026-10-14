@@ -5,18 +5,18 @@ import XCTest
 @MainActor
 final class MediaCardRatingTests: XCTestCase {
     // E2E does not exercise this raster helper. It must not omit text and compare backgrounds alone.
-    func testCardCaptureIncludesVisibleRatingText() throws {
+    func testCardCaptureIncludesVisibleRatingText() async throws {
         let session = AppSession()
         let rated = try item(kind: "video", rating: "PG-13")
-        func render(opacity: Double) throws -> (image: CGImage, pixels: Data) {
-            try capture(MediaCard(item: rated, landscape: false)
+        func render(opacity: Double) async throws -> (image: CGImage, pixels: Data) {
+            try await capture(MediaCard(item: rated, landscape: false)
                 .frame(width: 230).environment(session)
                 .environment(\.dynamicTypeSize, .large).environment(\.colorScheme, .dark)
                 .overlay(alignment: .topLeading) {
                     Text("PG-13").font(.headline).foregroundStyle(.white).padding(8).opacity(opacity)
-                })
+                }, width: 230)
         }
-        let hidden = try render(opacity: 0), visible = try render(opacity: 1)
+        let hidden = try await render(opacity: 0), visible = try await render(opacity: 1)
         XCTAssertEqual(hidden.image.width, visible.image.width)
         XCTAssertEqual(hidden.image.height, visible.image.height)
         XCTAssertNotEqual(hidden.pixels, visible.pixels, "Visible rating text must change the captured pixels")
@@ -30,23 +30,23 @@ final class MediaCardRatingTests: XCTestCase {
     }
 
     // Failures: ratings remain visible, reserve a metadata row, or disappear from selected-video metadata.
-    func testVideoCardsRenderIdenticallyWithAndWithoutRatings() throws {
+    func testVideoCardsRenderIdenticallyWithAndWithoutRatings() async throws {
         let session = AppSession()
         for kind in ["video", "show"] {
             for landscape in [false, true] {
                 for size in [DynamicTypeSize.large, .accessibility3] {
                     let rated = try item(kind: kind, rating: "PG-13")
                     let unrated = try item(kind: kind, rating: "")
-                    func render(_ item: MediaItem) throws -> (image: CGImage, pixels: Data) {
-                        try capture(
+                    func render(_ item: MediaItem) async throws -> (image: CGImage, pixels: Data) {
+                        try await capture(
                             MediaCard(item: item, landscape: landscape)
                                 .frame(width: landscape ? 390 : 230)
                                 .environment(session).environment(\.dynamicTypeSize, size)
-                                .environment(\.colorScheme, .dark)
+                                .environment(\.colorScheme, .dark), width: landscape ? 390 : 230
                         )
                     }
-                    let (actual, actualPixels) = try render(rated)
-                    let (expected, expectedPixels) = try render(unrated)
+                    let (actual, actualPixels) = try await render(rated)
+                    let (expected, expectedPixels) = try await render(unrated)
                     let actualHasPixels = stride(from: 3, to: actualPixels.count, by: 4).contains { actualPixels[$0] != 0 }
                     let expectedHasPixels = stride(from: 3, to: expectedPixels.count, by: 4).contains { expectedPixels[$0] != 0 }
                     if actual.width != expected.width || actual.height != expected.height || actualPixels != expectedPixels || !actualHasPixels || !expectedHasPixels {
@@ -80,7 +80,10 @@ final class MediaCardRatingTests: XCTestCase {
 
     // Failures: blank capture, cropped content, or attachments from a different raster.
     // Draw directly into the same bitmap used for assertions and image evidence.
-    private func capture<Content: View>(_ content: Content) throws -> (image: CGImage, pixels: Data) {
+    private func capture<Content: View>(_ content: Content, width: CGFloat) async throws -> (image: CGImage, pixels: Data) {
+#if os(tvOS)
+        return try await tvRasterFixture(content, width: width)
+#else
         let renderer = ImageRenderer(content: content)
         var result: Result<(image: CGImage, pixels: Data), Error>?
         renderer.render(rasterizationScale: 1) { size, draw in
@@ -102,6 +105,7 @@ final class MediaCardRatingTests: XCTestCase {
             }
         }
         return try XCTUnwrap(result, "ImageRenderer must invoke the capture closure").get()
+#endif
     }
 
     private func item(kind: String, rating: String) throws -> MediaItem {

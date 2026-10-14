@@ -176,16 +176,19 @@ class LivePlaybackOverlayTest {
             return "Show player controls" in visible &&
                 "Play" !in visible && "Pause" !in visible && "Hide player controls" !in visible
         }
-        val initialControls = completeSnapshot()
-        if (visibleAction(initialControls, "Pause") == null && visibleAction(initialControls, "Play") == null) {
-            compose.onRoot().performTouchInput { click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f)) }
-        }
-        compose.waitUntil(10_000) { action("Pause") != null || action("Play") != null }
         fun pausePlayback() {
             compose.waitUntil(10_000) {
-                // A remote accessibility node can become stale between discovery and click.
-                action("Pause")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK) == true ||
-                    action("Play") != null
+                val nodes = accessibilitySnapshot() ?: return@waitUntil false
+                val pause = visibleAction(nodes, "Pause")
+                when {
+                    pause != null -> pause.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
+                    visibleAction(nodes, "Play") != null -> true
+                    else -> {
+                        // Controls can auto-hide after discovery. Reopen only their public hidden-state action.
+                        visibleAction(nodes, "Show player controls")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
+                        false
+                    }
+                }
             }
             compose.waitUntil(10_000) { action("Play") != null }
         }

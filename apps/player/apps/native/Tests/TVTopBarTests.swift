@@ -39,11 +39,11 @@ private struct HeaderBackgroundProbeScreen: View {
 }
 
 @Suite(.serialized) struct TVTopBarTests {
-    @Test @MainActor func topControlsShareThePageBackground() throws {
-        let renderer = ImageRenderer(content: HeaderBackgroundProbeScreen().frame(width: 800, height: 76)
-            .environment(\.colorScheme, .dark))
-        renderer.scale = 1
-        let image = try #require(renderer.uiImage)
+    @Test @MainActor func topControlsShareThePageBackground() async throws {
+        let raster = try await tvRasterFixture(HeaderBackgroundProbeScreen().frame(width: 800, height: 76)
+            .environment(\.colorScheme, .dark), width: 800)
+        let image = UIImage(cgImage: raster.image)
+        Attachment.record(try #require(image.pngData()), named: "tv-top-bar-background.png")
         let sample = CGRect(x: 400, y: 38, width: 1, height: 1)
         let pixel = try #require(image.cgImage?.cropping(to: sample))
         var rgba = [UInt8](repeating: 0, count: 4)

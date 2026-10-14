@@ -121,6 +121,7 @@ final class PlaybackEngine {
 
     @ObservationIgnored var transport = MediaTransport()
     @ObservationIgnored var generation = UUID()
+    @ObservationIgnored var installation = UUID()
     @ObservationIgnored var client: ServerClient?
     @ObservationIgnored var store: ProgressSyncStore?
     @ObservationIgnored var writer: ProgressWriter?
@@ -167,13 +168,14 @@ final class PlaybackEngine {
         try Task.checkCancellation()
         stop(clearQueue: item.kind != .music)
         let attempt = generation
+        let installation = beginInstallation()
         devicePreferencesScope = scope
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
-        defer { if generation == attempt { loading = false } }
+        defer { if generation == attempt, self.installation == installation { loading = false } }
         do {
             let prepared = try await preparedPlayback(for: item, client: client)
             let details = prepared.source
-            try check(attempt)
+            try check(attempt, installation: installation)
             source = details; subtitlePolicy = details.subtitlePolicy
             #if os(tvOS)
             presentation.limitSubtitleLanguages(to: details.subtitlePickerLimited ? details.subtitleLanguage : nil)
@@ -182,27 +184,27 @@ final class PlaybackEngine {
             duration = details.duration
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }
-            try check(attempt)
+            try check(attempt, installation: installation)
             // A completed device entry represents replay, not an endpoint seek.
             let start = pending.map { $0.progress.watched ? 0 : $0.progress.seconds } ?? details.start
             if pending?.progress.watched == true {
                 playbackStartLog.info("operation=playback-start outcome=replay-completed-progress session=\(attempt.uuidString, privacy: .public)")
             }
             let preferCompatible = details.direct == nil || details.shouldPreferCompatibleOnAppleTV
-            do { try await install(details: details, compatible: preferCompatible, at: start, attempt: attempt) }
+            do { try await install(details: details, compatible: preferCompatible, at: start, attempt: attempt, installation: installation) }
             catch {
-                try check(attempt)
+                try check(attempt, installation: installation)
                 guard !preferCompatible, details.direct != nil, details.compatible != nil, Self.isFormatFailure(error) else { throw error }
-                try await install(details: details, compatible: true, at: start, attempt: attempt)
+                try await install(details: details, compatible: true, at: start, attempt: attempt, installation: installation)
             }
-            try check(attempt)
+            try check(attempt, installation: installation)
             guard !completed else { return }
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt)
             observeAudioSession()
             if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
         } catch {
-            if generation == attempt, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
+            if generation == attempt, self.installation == installation, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
             throw error
         }
     }
@@ -220,26 +222,27 @@ final class PlaybackEngine {
         let preferences = DevicePlaybackChoices.load(scope: scope).apply(to: try PlaybackPreferences(preferences.json))
         stop()
         let attempt = generation
+        let installation = beginInstallation()
         devicePreferencesScope = scope
         currentItem = item; self.client = client; self.store = store; self.preferences = preferences
         self.subtitlePolicy = subtitlePolicy; loading = true; wantsPlayback = true
         if preferences.audioEnhancementsEnabled {
             progressMessage = "Audio enhancements need a Server stream and aren’t applied to this download."
         }
-        defer { if generation == attempt { loading = false } }
+        defer { if generation == attempt, self.installation == installation { loading = false } }
         do {
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }
-            try check(attempt)
+            try check(attempt, installation: installation)
             let position = pending?.progress.seconds ?? (item.progress.watched ? 0 : item.progress.seconds)
-            try await installPlayer(url: file, item: item, position: position, attempt: attempt)
-            try check(attempt)
+            try await installPlayer(url: file, item: item, position: position, attempt: attempt, installation: installation)
+            try check(attempt, installation: installation)
             guard !completed else { return }
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt); observeAudioSession()
             if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
         } catch {
-            if generation == attempt, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
+            if generation == attempt, self.installation == installation, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
             throw error
         }
     }
@@ -270,6 +273,17 @@ final class PlaybackEngine {
         let previous = transport
         transport = MediaTransport()
         Task { await previous.close() }
+    }
+
+    func beginInstallation() -> UUID {
+        installation = UUID()
+        loading = true
+        return installation
+    }
+
+    func check(_ attempt: UUID, installation: UUID) throws {
+        try check(attempt)
+        guard self.installation == installation else { throw CancellationError() }
     }
 
     func check(_ attempt: UUID) throws { try Task.checkCancellation(); guard attempt == generation else { throw CancellationError() } }

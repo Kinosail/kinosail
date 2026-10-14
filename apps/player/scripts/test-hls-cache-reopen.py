@@ -93,6 +93,7 @@ def cold_scene(api, hls, item_id, cache, server, case):
 
 
 def corrupt_scene(api, hls, item_id, cache, server, case, damage):
+    case["stage"] = "indexed-preparation"
     prepare = "/api/v1/items/" + item_id + "/playback-prepare"
     def ready():
         return api.call(prepare, "POST", {"source": hls}, 202).get("state") == "ready"
@@ -101,7 +102,18 @@ def corrupt_scene(api, hls, item_id, cache, server, case, damage):
     check(len(roots) == 1, "one_indexed_cache")
     root = roots[0]
     physical = list(root.glob("*p/index.m3u8"))[0]
-    wait_until(lambda: owned_encoder(server) == 0 and b"#EXT-X-ENDLIST" in read(physical), "indexed_not_complete")
+    case["stage"] = "indexed-completion"
+    started = time.monotonic()
+    try:
+        wait_until(lambda: owned_encoder(server) == 0 and b"#EXT-X-ENDLIST" in read(physical), "indexed_not_complete")
+    finally:
+        try:
+            case["completionObservation"] = {"elapsedSeconds": round(time.monotonic() - started, 3),
+                "ownedEncoders": owned_encoder(server), "variant": manifest_facts(read(physical))[0],
+                "timelinePresent": (root / ".copy-timeline").is_file(), "startupPresent": (root / ".startup").is_file()}
+        except Exception as error:
+            # Keep the primary failure; never include a path, body, or raw log in diagnostics.
+            case["completionObservationFailure"] = type(error).__name__
     check((root / ".copy-timeline").is_file(), "indexed_map_missing")
     case["completedIndexedCacheBeforeDamage"] = True
     target = root / ".copy-timeline"
@@ -209,11 +221,16 @@ def journey(name, original, metadata, corrupt=False):
             lifecycle = safe_encoder_lifecycle(private_log)
             case["encoderLifecycle"] = lifecycle
             diagnostics = []
+            outcomes = {"completed": 0, "paused": 0, "failed": 0}
+            messages = {"HLS transcode completed": "completed", "HLS transcode paused after playback became inactive": "paused",
+                "HLS transcode failed": "failed"}
             for line in private_log.splitlines():
                 try:
                     entry = json.loads(line)
                 except json.JSONDecodeError:
                     continue
+                if entry.get("msg") in messages:
+                    outcomes[messages[entry["msg"]]] += 1
                 if entry.get("msg") != "HLS copied cache rejected":
                     continue
                 safe = (set(entry) == {"time", "level", "msg", "request_id", "playback_session", "mode", "failure_class"}
@@ -222,6 +239,7 @@ def journey(name, original, metadata, corrupt=False):
                     and entry.get("request_id") == case.get("reopenRequestID") and entry.get("playback_session") == "")
                 diagnostics.append({"boundedFieldsAndCorrelationValid": safe})
             case["cacheRejectionDiagnostics"] = diagnostics[:8]
+            case["encoderOutcomes"] = outcomes
             if len(diagnostics) != (1 if corrupt else 0) or not all(row["boundedFieldsAndCorrelationValid"] for row in diagnostics):
                 case["result"] = "failed"
                 case.setdefault("failureClass", "cache_rejection_diagnostic")

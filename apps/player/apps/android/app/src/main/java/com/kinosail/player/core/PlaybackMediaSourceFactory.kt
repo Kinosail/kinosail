@@ -15,6 +15,7 @@ import androidx.media3.extractor.ExtractorsFactory
 import androidx.media3.extractor.text.DefaultSubtitleParserFactory
 import androidx.media3.extractor.text.SubtitleExtractor
 
+@androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
 internal class PlaybackMediaSourceFactory(private val data: DataSource.Factory) : MediaSource.Factory {
     private val primary = DefaultMediaSourceFactory(data)
     private var errorPolicy: LoadErrorHandlingPolicy? = null

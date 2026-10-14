@@ -1,5 +1,6 @@
 #if os(iOS)
 import Foundation
+import OSLog
 
 struct OfflineRecord: Identifiable, Sendable {
     let key: String
@@ -73,6 +74,7 @@ struct OfflineCompletion: Sendable {
 }
 
 actor OfflineCatalogStore {
+    private static let log = Logger(subsystem: "com.kinosail.player", category: "offline-catalog")
     private let file: URL
     private let server: ServerAddress
     static var root: URL { FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].resolvingSymlinksInPath().appendingPathComponent("KinosailOfflineCatalog", isDirectory: true) }
@@ -96,11 +98,8 @@ actor OfflineCatalogStore {
         for record in catalog.records { _ = try OfflineRecord(record.json, server: server) }
         _ = try MediaPreferences(catalog.preferences.json)
         let data = try JSONEncoder().encode(value)
-        guard data.count <= 2 * 1024 * 1024, Self.root.resolvingSymlinksInPath().standardizedFileURL == Self.root.standardizedFileURL else { throw ClientError.invalidResponse }
-        try FileManager.default.createDirectory(at: Self.root, withIntermediateDirectories: true, attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
-        var root = Self.root
-        var properties = URLResourceValues(); properties.isExcludedFromBackup = true
-        try root.setResourceValues(properties)
+        guard data.count <= 2 * 1024 * 1024 else { throw ClientError.invalidResponse }
+        try Self.prepareRoot()
         try data.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
     private var completionFile: URL { file.deletingPathExtension().appendingPathExtension("completed.json") }
@@ -111,6 +110,7 @@ actor OfflineCatalogStore {
               values.isRegularFile == true, let size = values.fileSize, size <= 2 * 1024 * 1024 else { throw ClientError.invalidResponse }
         let pending = try StrictJSON.decode(Data(contentsOf: completionFile)).array(max: 50).map { try OfflineCompletion($0, server: server) }
         guard Set(pending.map { $0.item.id }).count == pending.count else { throw ClientError.invalidResponse }
+        try Self.prepareRoot()
         return pending
     }
     func recordCompletion(_ completion: OfflineCompletion) throws -> [OfflineCompletion] {
@@ -131,8 +131,26 @@ actor OfflineCatalogStore {
     private func saveCompletions(_ pending: [OfflineCompletion]) throws {
         let data = try JSONEncoder().encode(JSONValue.array(pending.map(\.json)))
         guard data.count <= 2 * 1024 * 1024, completionFile.resolvingSymlinksInPath().standardizedFileURL == completionFile.standardizedFileURL else { throw ClientError.invalidResponse }
-        try FileManager.default.createDirectory(at: Self.root, withIntermediateDirectories: true, attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+        try Self.prepareRoot()
         try data.write(to: completionFile, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    }
+    private static func prepareRoot() throws {
+        var directory = root
+        let requestID = UUID()
+        var phase = "validate-root"
+        do {
+            guard directory.resolvingSymlinksInPath().standardizedFileURL == directory.standardizedFileURL else { throw ClientError.invalidResponse }
+            phase = "create-directory"
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication])
+            phase = "exclude-backup"
+            var properties = URLResourceValues(); properties.isExcludedFromBackup = true
+            try directory.setResourceValues(properties)
+            log.debug("operation=prepare-offline-catalog outcome=ready request_id=\(requestID.uuidString, privacy: .public)")
+        } catch {
+            let code = (error as NSError).code
+            log.error("operation=prepare-offline-catalog outcome=blocked phase=\(phase, privacy: .public) request_id=\(requestID.uuidString, privacy: .public) code=\(code)")
+            throw error
+        }
     }
     static func reset() throws {
         guard root.resolvingSymlinksInPath().standardizedFileURL == root.standardizedFileURL else { throw ClientError.invalidResponse }
