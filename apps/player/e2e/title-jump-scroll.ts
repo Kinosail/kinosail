@@ -107,6 +107,7 @@ export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
     { width: 390, height: 844, compact: false },
     { width: 1920, height: 1080, compact: false },
   ]) {
+    let primaryFailure = false;
     try {
       await page.setViewportSize(viewport);
       await page.goto("/?view=movies");
@@ -137,6 +138,9 @@ export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
       expect.soft([cleared.scroll.settledMin, cleared.scroll.settledMax], prefix).toEqual([0, 0]);
       expect.soft(cleared.horizontalOverflow, prefix).toBe(false);
       expect.soft((await new AxeBuilder({ page }).include("#main").analyze()).violations, prefix).toEqual([]);
+    } catch (error) {
+      primaryFailure = true;
+      throw error;
     } finally {
       if (viewport.rapid) {
         const observation = await page.evaluate(() => ({
@@ -145,6 +149,9 @@ export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
         })).catch(() => ({ unavailable: true }));
         await info.attach("title-jump-rapid-scroll-timeline", {
           contentType: "application/json", body: JSON.stringify(observation),
+        }).catch(error => {
+          if (!primaryFailure) throw error;
+          info.annotations.push({ type: "diagnostic", description: "Rapid scroll attachment unavailable after a primary failure." });
         });
       }
     }
