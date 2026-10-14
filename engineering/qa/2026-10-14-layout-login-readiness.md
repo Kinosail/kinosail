@@ -29,3 +29,16 @@ The observations omit credentials, URLs, and raw errors.
 The browser report and source manifest bind them to the hosted revision and command.
 Hosted baseline execution is pending. Local browser execution remains held.
 The existing browser retries and deadlines have not changed.
+
+## Hosted coverage routing
+
+The existing layout workflow now selects the login readiness controls in Chromium, Firefox, and WebKit.
+Changes to either the layout login helper or its readiness tests trigger that workflow.
+An extended CI contract fails before this routing change, then passes after it.
+Browser execution alone cannot prove that an omitted test file or path filter will run.
+The original failure log has SHA-256 `abfd1abfda087f2ed2a34355c2b98bd092ee747d2f9feb803457f4605f8b11e7`.
+
+The local CI contract suite runs 192 tests with five skips for hosted scanner integration.
+Workflow validation, pinned Actionlint 1.17.0, source limits, and whitespace checks pass.
+The suite log has SHA-256 `9f24f50ec24b403add47dc400a31932d5ef0241d640d11bff9c94ae4722372ea`.
+This source validation does not establish browser acceptance.
