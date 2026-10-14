@@ -147,7 +147,7 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
                         MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape, progress = false)
                         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             val enlarged = androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f
-                            Text(item.title, style = MaterialTheme.typography.titleMedium, color = KinoColor.text,
+                            Text(item.title, style = MaterialTheme.typography.titleMedium, color = KinoColor.text, minLines = 2,
                                 maxLines = if (enlarged) Int.MAX_VALUE else 2, overflow = TextOverflow.Ellipsis)
                             val metadata = if (item.kind in setOf("music", "audiobook")) listOf(item.artist, item.album)
                                 else listOf(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else "", item.rating, item.genres)

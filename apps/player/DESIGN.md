@@ -166,6 +166,8 @@ The tab editor is a native HTML dialog capped at 34rem wide and 85dvh high. Its 
 
 ### Cards / Containers
 
+Poster titles reserve two lines so neighboring metadata stays aligned. Saved-position values use tabular numerals. Empty-state copy stays within a readable measure, with the recovery action below it.
+
 Posters retain real media artwork, the artwork radius and media-specific proportions; hover or keyboard focus outlines the poster without moving it. The home feature uses a compact portrait and details composition, with a landscape fallback when only a backdrop is available. Resume rows use portrait artwork and bounded widths, preserving the title, real saved position, direct media action and separate removal action. The featured resume title is omitted from the shelf and keeps its removal action beside the featured controls. Browse destinations are open divider rows. The app's approved sail mark keeps its geometry in Electric green.
 
 ### Progress, pending and recovery

@@ -11,14 +11,17 @@ struct RetryState: View {
     var body: some View {
         VStack(spacing: 16) {
             Label(title, systemImage: "exclamationmark.circle").font(.headline)
+                .multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
             Text(message).foregroundStyle(KinoTheme.muted).multilineTextAlignment(.center)
+                .frame(maxWidth: 560).fixedSize(horizontal: false, vertical: true)
             Button("Try again", action: retry).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                .controlSize(.large)
                 #if os(tvOS)
                 .focused($retryFocused)
                 .onAppear { if focusesRetry { retryFocused = true } }
                 #endif
         }
-        .padding(32).frame(maxWidth: .infinity, minHeight: 220)
+        .padding(KinoTheme.contentPadding).frame(maxWidth: .infinity, minHeight: 220)
         #if os(tvOS)
         .focusSection()
         #endif

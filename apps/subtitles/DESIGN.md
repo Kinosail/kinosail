@@ -130,6 +130,8 @@ At 900px and below, the header becomes 72px high and the four-destination naviga
 
 File disclosures keep at least 100px summary height, a compact artwork strip and adjacent status. Narrow layouts reduce padding and gaps while keeping the title, disclosure and file operations reachable. Filter controls wrap instead of forcing the page wider.
 
+Closed file titles can wrap to two lines. Opening a file exposes the complete title. Narrow status labels remain readable beside the title. History title links retain a 44px minimum target.
+
 ## Elevation & Depth
 
 Tonal surfaces, fine dividers and real content provide depth. Ordinary panels and resting content have no shadow or backdrop blur. Bounded menus and dialogs use the shared overlay shadow; its dark and light values live in the sidecar extensions.

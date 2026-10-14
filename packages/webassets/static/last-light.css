@@ -73,7 +73,9 @@ body .settings-section h2,body .settings-flow h2{font-size:1.35rem;letter-spacin
 body .settings-nav{padding:.5rem;border-radius:12px;background:var(--surface);box-shadow:none}
 body .settings-nav a{min-height:44px;border-radius:8px}
 body .empty{border:1px dashed var(--line-strong);border-radius:16px;background:transparent;padding:3rem 1.5rem}
-body .empty h2{font-size:1.5rem}
+body .empty h2{margin:0;font-size:1.5rem;line-height:1.3}
+body .empty p{max-width:48ch;margin:.75rem auto 0;color:var(--muted);line-height:1.6;text-wrap:pretty}
+body .empty p+:is(.button,form){margin-top:1.25rem}
 body .media-hero{padding-block:2rem;background:none}
 body .media-hero h1{font-size:clamp(2.5rem,5vw,5rem);line-height:1.05;font-weight:800;letter-spacing:-.035em}
 body .media-hero.has-media-backdrop{min-height:0;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:center;gap:3rem;padding:1rem 0 2rem;border:0;border-radius:0;background:none;color:var(--text)}
