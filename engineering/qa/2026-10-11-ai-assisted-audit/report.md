@@ -25,9 +25,11 @@ The rapid title-toggle control reproduces the retained 22-pixel failure at `9b2a
 Its exact archive and cleanup verify; the deliberate late-resume loading control also passes.
 The body-target trial also fails at `a9059357` and is reverted; bounded scroll diagnostics now preserve the original rapid assertions.
 The strengthened adjacent Back journey passes at `e663b5df`, restoring 120 pixels and all 34 titles in the same document.
-The diagnostic execution stops earlier when native startup clears a synthetically injected playback error.
-The recovery fixture now finishes real startup and verifies a paused, ready state before injection; hosted verification remains pending.
-The [populated-instance note](../2026-10-14-populated-instance-admission.md) records both failures and their exact evidence.
+The recovery fixture now finishes real startup and verifies a paused, ready state before injection; all three hosted checks pass at `bf3e43b5`.
+That run reaches the rapid failure and records HTMX aligning `main`, followed by smooth scrolling from zero to 22 pixels.
+The pending repair gives successful title-filter navigation an explicit instant page-top operation while preserving request generation and Back restoration.
+The original rapid helper is restored without diagnostic wrappers. Hosted repair and nonzero Back verification are pending.
+The [populated-instance note](../2026-10-14-populated-instance-admission.md) records the failures, diagnosis, and exact evidence.
 
 PRs #587, #592, #593, #594, #595, and #598 are merged with fetched ancestry proof.
 PR #598's exact main is `e9e96833731416836302f222b35c1b3eb82801c2`.

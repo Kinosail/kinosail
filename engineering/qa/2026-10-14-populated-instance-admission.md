@@ -321,3 +321,34 @@ Reject pending seeks, insufficient readiness, or native errors before injection.
 Apply the same prerequisite to both viewport checks and the light-theme check.
 Keep recovery copy, keyboard activation, geometry, accessibility, and color assertions unchanged.
 These checks establish injected presentation states on a populated server, not a naturally failing decoder.
+
+
+## Title-filter scroll ownership
+
+Run `38629094562` at `bf3e43b5` passes all three recovery prerequisites and their presentation assertions.
+Both viewport checks and the light-theme check record ready state 4, paused playback, no active seek, and no native error.
+The selected run then reaches the rapid title regression: 74 passes, one failure, and twelve unrun cases.
+Artifact `11925508811` has SHA-256 `21a54482648d0d00714b99b6251d927b9388c5ba927398e279c40c1ef03464d6`.
+Exact source, all case identities, 588 child hashes, 589 checksums, and complete fixture cleanup verify.
+
+The bounded scroll receipt has no dropped records or recording errors.
+After clearing the letter, HTMX calls `scrollIntoView(true)` on `main` at 585.9 milliseconds.
+The page remains at zero through request completion, then moves through 6, 17, 21, and 22 pixels.
+The root scroll behavior is `smooth`; all sixteen settled samples remain at 22 pixels.
+No subsequent application focus call appears in that interval.
+The trace has SHA-256 `aee107f23f3f2d2ad8051f6ab1629eb6bdfee3b812e0f58758534335d76fa0e9`.
+The final screenshot matches the earlier retained rapid-failure screenshot byte for byte.
+
+The repair gives successful title-filter navigation one explicit page-top operation.
+Remove the title links' automatic main-alignment modifier.
+Capture title navigation in the existing request record before HTMX can replace its source element.
+After the current request swaps successfully, scroll instantly to zero.
+Keep the generation guard, first-result focus, and separate history restoration.
+The [CSSOM scrolling algorithm](https://www.w3.org/TR/cssom-view-1/#scrolling) defines instant scrolling separately from computed smooth behavior.
+
+The rapid helper is restored byte for byte from the failing `9b2ab330` baseline.
+It contains no diagnostic wrappers or extra wait before clearing the active letter.
+Hosted acceptance must include that original rapid control, paced responsive checks, and the nonzero 120-pixel Back journey.
+Existing HTMX transport controls separately cover pending, loaded, empty, failed, and overlapping responses.
+Those controlled-response cases are isolated browser evidence; populated navigation and physical-device proof remain separate.
+Independent source review finds no blockers. Hosted acceptance of this repair is pending.
