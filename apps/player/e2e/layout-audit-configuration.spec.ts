@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { verifySettingsNavigation } from "./settings-navigation-geometry";
 import { configureLayoutAudit, layoutProblems, login, viewports } from "./layout-audit-helpers";
 
 configureLayoutAudit();
@@ -39,7 +40,7 @@ test("SCIM configuration stays usable at every supported width", async ({ page }
 
 test("single sign-on configuration stays usable at every supported width", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
-	test.setTimeout(120_000);
+	test.setTimeout(180_000);
 	await login(page);
 	for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
@@ -60,6 +61,7 @@ test("single sign-on configuration stays usable at every supported width", async
 		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
 		await section.screenshot({ path: testInfo.outputPath(`oidc-configuration-${viewport.width}.png`) });
 	}
+	await verifySettingsNavigation(page, testInfo, false);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/settings/configuration#integrations.oidc");
 	const section = page.locator('section[id="integrations.oidc"]');
@@ -87,6 +89,7 @@ test("single sign-on configuration stays usable at every supported width", async
 		}
 	}
 	await testInfo.attach("restart-notice-labels.json", { body: JSON.stringify(restartLabels), contentType: "application/json" });
+	await verifySettingsNavigation(page, testInfo, true);
 });
 
 test("SAML configuration stays usable at every supported width", async ({ page }, testInfo) => {
