@@ -67,12 +67,15 @@ PR #605 admits the existing generated catalog and connection-settings journey af
 The hosted journey passes once at `18f91de7`, with verified source, catalog identity, and resource and trust cleanup.
 Its three-browser layout checks and required CI pass; fetched ancestry verifies merge `0d09639cd4799a4cb2470d6cb2e3d24c90f32279`.
 Exact-main CI and publication for that merge remain pending.
-PR #606 expands the existing command to 22 spec files covering 81 previously unpassed case identities.
-These comprise 76 populated journeys and five isolated production-template cases.
+PR #606 expands the existing command to 22 spec files covering 82 previously unpassed contextual case identities.
+These comprise 77 populated journeys and five isolated production-template cases.
 The first selected execution reports 74 passes, a title-letter scroll failure, and twelve cases not run.
 Artifact upload rejects a screenshot filename containing a question mark, so those counts lack retained manifest acceptance.
-Commit `1252849d` encodes the route in screenshot filenames; a new hosted execution will retain the failure trace.
-The scroll assertion is unchanged and its root cause remains unconfirmed. Local runtime remains held.
+Commit `1252849d` encodes the route in screenshot filenames; run `38613332317` retains the same scroll failure successfully.
+Artifact `11920280325` verifies all source and evidence hashes, 74 passes, one failure, twelve unrun cases, and complete fixture cleanup.
+The corrected inventory distinguishes two direct-retry viewport cases previously collapsed under the same leaf title.
+The next regression records settled scroll and geometry across four viewport sizes before changing production behavior.
+The root cause remains under investigation. Local runtime remains held.
 The [admission note](../2026-10-14-populated-instance-admission.md) records failure modes and evidence requirements.
 
 The campaign goal remains active. Complete product, deployment, and physical-device acceptance are not established.

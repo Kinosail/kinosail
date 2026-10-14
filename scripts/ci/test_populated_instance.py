@@ -84,7 +84,7 @@ elif name=='test-instance.sh':
  if args[0]=='up':
   pathlib.Path(os.environ['KINOSAIL_TEST_ROOT'],'totp-secret').write_text('synthetic-private-secret')
  if args[0]==failure:sys.exit(7)
- if args[0]=='browser':report(80 if failure=='omitted' else 81)
+ if args[0]=='browser':report(81 if failure=='omitted' else 82)
 elif name=='docker':
  if args[:2]==['image','inspect']:print('sha256:'+'b'*64+' '+'a'*40)
  elif args[0]=='compose':print('c'*64)

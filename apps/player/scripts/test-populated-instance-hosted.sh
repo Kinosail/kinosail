@@ -114,7 +114,7 @@ def specs(suite):
     for child in suite.get('suites',[]):yield from specs(child)
 cases=[spec for suite in report['suites'] for spec in specs(suite)]
 if sys.argv[3]=='admission':assert len(cases)==1 and cases[0]['title']==sys.argv[2]
-else:assert len(cases)>=81
+else:assert len(cases)>=82
 for case in cases:
     tests=case['tests'];assert len(tests)==1
     test=tests[0];assert test['projectName']=='chromium' and test['status']=='expected'

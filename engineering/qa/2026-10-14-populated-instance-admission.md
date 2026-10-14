@@ -1,8 +1,8 @@
 # Populated-instance admission
 
 The retained full browser archives leave populated-instance journeys without a passing execution.
-The existing `test-instance-check` command selects 22 spec files covering 81 previously unpassed cases.
-Exact identity reconciliation classifies 76 as populated journeys and five as isolated production-template cases.
+The existing `test-instance-check` command selects 22 spec files covering 82 previously unpassed cases.
+Contextual identity reconciliation classifies 77 as populated journeys and five as isolated production-template cases.
 It needs a separate hosted execution because local runtime remains held.
 
 The first hosted baseline uses the existing generated catalog, Owner setup, inventory verification, and connection-settings journey.
@@ -147,3 +147,35 @@ Commit `1252849d` contains only that screenshot-name correction and its evidence
 TypeScript syntax, source limits, and whitespace checks pass; local `verify-changed` remains plan-only.
 The next hosted execution must retain the artifact before diagnosis can use its trace and cleanup evidence.
 Manual run `38613332317` executes the corrected source with the same browser selection, assertions, and limits.
+
+## Retained title-letter failure and inventory correction
+
+The second selected run fails at the same title-letter assertion and successfully uploads artifact `11920280325`.
+Its archive SHA-256 is `3b3aaaa5046614bde8598a83cf6220980aaac731e00ac30db970c8edc03e3703`.
+The clean revision, ten source inputs, 22 selected specs, 575 child hashes, and 576 checksum entries verify.
+The derived image identifies `1252849d32dfd59e5469ee0c0d40bea43aed9c30`.
+All 87 reported cases reconcile by filename, nested describe titles, and exact leaf title.
+There are 74 passes, one failure, and twelve unrun cases; the stop-after-first-failure error remains recorded.
+Of those passes, 64 are target populated journeys, five are target isolated-template cases, and five were previously covered.
+Cleanup confirms zero owned containers and volumes, removed private data, and removed browser trust.
+This verifies the screenshot-name repair and retained failure evidence, not full-suite acceptance.
+
+The earlier 81-case inventory collapsed two direct-retry cases with the same leaf title under different viewport descriptions.
+The corrected target count is 82: 77 populated journeys and five isolated-template cases.
+The inspector now requires unique contextual identities and report IDs instead of ignoring that collision.
+An 81-case negative control fails before raising the runner's minimum to 82.
+Its log SHA-256 is `d36a73821691f99cd256e4a6e57827a43567160de16a8b8378941780037c7385`.
+The minimum remains a coarse runner guard; acceptance requires exact artifact identity reconciliation.
+
+The retained trace records scrolling through 6, 17, 21, and 22 pixels after clearing the title letter.
+The selected-letter state records zero; thirteen later scroll evaluations record 22.
+The failure screenshot was inspected. The trace SHA-256 is `8d68232bff663c90669615413965074300a339d92ee35278f8193fe173f94823`.
+The current HTMX option aligns the replaced main region; its exact scroll extent is not measured in that trace.
+The next regression records bounded geometry and settled scrolling before changing production behavior.
+It covers desktop, compact phone dialog, tall-phone index, and TV-sized web viewports, with content, focus, and accessibility assertions.
+These added viewport assertions remain unexecuted until the next hosted run.
+
+All nine affected lifecycle contracts pass after the count correction.
+Their log SHA-256 is `3bc748bed397dfc15a06fb94a35ce5ca9f1b7d56f1b65538227701021008b6ec`.
+Native Node TypeScript syntax checks, shell syntax, ShellCheck, source limits, and whitespace checks pass.
+No local application or browser runtime starts.

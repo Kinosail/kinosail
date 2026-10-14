@@ -2,6 +2,7 @@ import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { totp } from "./test-instance-helpers";
+import { verifyTitleJumpScroll } from "./title-jump-scroll";
 test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
 
 async function login(page: Page) {
@@ -14,24 +15,9 @@ async function login(page: Page) {
 	await expect(page).toHaveURL("/");
 }
 
-test("Owner can toggle the active title letter without a second scroll", async ({ page }) => {
+test("Owner can toggle the active title letter without a second scroll", async ({ page }, testInfo) => {
 	await login(page);
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/?view=movies");
-
-	const titleJump = page.getByRole("navigation", { name: "Jump to title" });
-	await titleJump.getByRole("link", { name: "B, 1 title" }).click();
-	await expect(page).toHaveURL(/letter=B/);
-	await expect(page.getByRole("heading", { name: "Beta" })).toBeVisible();
-	await expect(page.getByRole("heading", { name: "Arrival" })).toHaveCount(0);
-	await expect(page.locator("#library a.card").first()).toBeFocused();
-	await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-
-	await titleJump.getByRole("link", { name: "B, 1 title, selected; activate to show all titles" }).click();
-	await expect(page).not.toHaveURL(/letter=/);
-	await expect(page.getByRole("heading", { name: "Arrival" })).toBeVisible();
-	await expect(page.getByRole("heading", { name: "Beta" })).toBeVisible();
-	await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+	await verifyTitleJumpScroll(page, testInfo);
 });
 
 test("Owner can use keyboard utilities and persist the chosen theme", async ({ page }) => {
