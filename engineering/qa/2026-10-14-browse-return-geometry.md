@@ -90,6 +90,9 @@ The passing replay log has SHA-256 `3936f227fd81e7ffa55fcc06bd50a1c369f91be27dd8
 
 PR #603 merges as `1a811974d4a05022557602eade45b0bfedc40352`.
 Fetched ancestry proves the reviewed commit is included in remote main.
-Exact-main CI and the selected Player image publication remain pending at this checkpoint.
+Exact-main run `38598636262` and all five selected Player publication jobs pass.
+Registry inspection verifies both architecture revision labels and their tested candidate manifests.
+The commit, main, and latest tags share digest `sha256:aae00f3a480ba92d7a549f59c9d721fedb4a6391400eb93464a42cb996b9f041`.
+Subtitles was not selected by this change; its preceding publication remains separate.
 The unsupported BFCache path, physical devices, and deployment remain separate boundaries.
 Q14 uploads schema-admitted receipt observations; original raw attachment bytes are not independently inspected.

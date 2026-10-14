@@ -17,7 +17,7 @@ on:
       campaign_proof:
         description: Run one bounded campaign proof instead of layout diagnosis
         type: choice
-        options: [none, R06, Q14, Q09, Q47, HLS, AAC]
+        options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]
         default: none
       campaign_q14_suite:
         description: Select one fixed Q14 public suite; primary keeps its two repeats
@@ -146,7 +146,7 @@ jobs:
 
   campaign-proof:
     name: Bounded campaign proof
-    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof != 'none' && inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC' && inputs.campaign_proof != 'INSTANCE'
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
@@ -320,6 +320,62 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 3
+
+  populated-instance:
+    name: Populated Player admission
+    if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'INSTANCE'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.work
+          cache-dependency-path: '**/go.sum'
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
+        with:
+          version: 11.28.5
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '26'
+          cache: pnpm
+          cache-dependency-path: apps/player/e2e/pnpm-lock.yaml
+      - run: pnpm --dir apps/player/e2e install --frozen-lockfile
+      - run: pnpm --dir apps/player/e2e exec playwright install --with-deps chromium
+      - name: Build the existing synthetic-catalog base image
+        timeout-minutes: 15
+        run: |
+          revision="$(git rev-parse HEAD)"
+          docker build --file apps/player/Containerfile --tag localhost/kinosail:dev --build-arg VERSION=qa --build-arg "REVISION=$revision" .
+      - name: Install Chromium fixture trust tools
+        run: sudo apt-get update && sudo apt-get install -y libnss3-tools
+      - name: Admit the populated instance with retained evidence
+        timeout-minutes: 12
+        working-directory: apps/player
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_TEST_IMAGE: localhost/kinosail:dev
+          KINOSAIL_TEST_IMAGE_READY: '1'
+          KINOSAIL_BROWSER_PROJECT: chromium
+          KINOSAIL_E2E_VIDEO: 'off'
+        run: >-
+          python3 ../../scripts/ci/e2e-artifact.py
+          --output "$GITHUB_WORKSPACE/.verification/populated-instance"
+          -- bash ./scripts/test-populated-instance-hosted.sh
+      - name: Retain the populated admission result
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: populated-instance-${{ github.sha }}
+          path: .verification/populated-instance/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
 
   hls-followon:
     name: ${{ inputs.campaign_proof == 'AAC' && 'Isolated AAC splice experiment' || 'Bounded public HLS follow-on' }}
