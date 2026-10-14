@@ -170,3 +170,28 @@ They retain readable titles, artwork placeholders, progress markers, and uncropp
 The large poster keeps its existing two-line ellipsis; accessibility titles and landscape titles fit.
 The visible control adds PG-13 text while the hidden control omits it.
 The fixture repair removes all three FocusState warnings. This is fixture acceptance, not physical-TV proof.
+
+## Verified matched early-output trial
+
+Deep run `38508067234` tested `6920080a718143f540c554d6b139ed37c58b19ca`.
+Native artifact `11869640810` has SHA-256 `ef907407c2d7a7aed04d5a6e691fe577bfa899175d4902187f9c158a1010ed25`.
+The GitHub digest, gate receipts, independent summaries, and test trees agree.
+iOS passes 336 tests. tvOS passes 322. Both have one skip, zero failures, and zero runtime warnings.
+
+The healthy and replacement nine-second cases each execute once and pass.
+Both acquire a frame displayed at 9.25 seconds. Their clocks advance to 9.307 and 9.310 seconds.
+All four six-second controls acquire frames displayed at 6.25 seconds.
+The log SHA-256 is `c09dea8104714971a2c30943306233d0a1bba83e01608878ee6eae5b6ca17fdb`.
+This supports an observation-attachment interaction. It does not establish the late-output failure mechanism or ordinary rendered playback without that output.
+
+Both card tests, the header test, and the unchanged live focus journey pass.
+All eleven exported images exactly match the pixels and color profiles inspected at `535faec8`.
+The strict comparisons, visible-text control, independent dimensions, and warning rejection remain intact.
+
+The intermediate `3792686c` run passes 336 iOS tests but cannot launch the tvOS test host.
+It executes no selected tvOS case and produces one failed harness record.
+Artifact `11868553995` has SHA-256 `22bc91922582788257c7ba8bac95b13dae7c697273a9f62c6d79d3c080a847ef`.
+Its rejected result remains retained. The later pass does not diagnose that launch failure.
+
+The installation race and frame controls remain tvOS-only. iOS execution does not establish that specific race on iOS.
+Actual system activation cancellation, runtime failure logs, physical devices, deployment, and complete product acceptance remain separate boundaries.
