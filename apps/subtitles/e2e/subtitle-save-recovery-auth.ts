@@ -1,15 +1,9 @@
-import { createHmac, randomBytes } from "node:crypto";
+import { fixtureTotp } from "../../../scripts/testing/fixture-totp";
+import { randomBytes } from "node:crypto";
 import type { Page } from "@playwright/test";
 
 function totp(secret: string): string {
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  let bits = 0, value = 0; const bytes: number[] = [];
-  for (const letter of secret) { const index = alphabet.indexOf(letter); if (index < 0) throw new Error("fixed-auth-boundary");
-    value = (value << 5) | index; bits += 5; if (bits >= 8) { bits -= 8; bytes.push((value >>> bits) & 255); } }
-  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000)));
-  const digest = createHmac("sha1", Buffer.from(bytes)).update(counter).digest();
-  const at = digest[digest.length - 1] & 15;
-  return String((digest.readUInt32BE(at) & 0x7fffffff) % 1000000).padStart(6, "0");
+  return fixtureTotp(secret);
 }
 export async function owner(page: Page, origin: string) {
   const response = await page.request.post(origin + "/setup", {
