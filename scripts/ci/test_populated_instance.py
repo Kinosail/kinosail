@@ -34,7 +34,7 @@ class PopulatedInstanceTests(unittest.TestCase):
     def test_selected_mode_reuses_the_existing_suite_and_keeps_artifacts(self):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         self.assertIn('populated_suite:', source)
-        self.assertIn('options: [admission, selected, browse, configuration]', source)
+        self.assertIn('options: [admission, selected, browse, configuration, beta]', source)
         self.assertIn('KINOSAIL_POPULATED_SUITE: ${{ inputs.populated_suite }}', source)
         self.assertIn("timeout-minutes: ${{ inputs.populated_suite != 'admission' && 24 || 12 }}", source)
         helper = (ROOT / 'apps/player/scripts/test-instance.sh').read_text()
@@ -103,7 +103,7 @@ elif name=='certutil':
   print((nickname+' C,,') if state.exists() or failure=='collision' else '')
 elif name=='pnpm':
  if failure=='browser':sys.exit(8)
- count={'browse':23,'configuration':11}.get(os.environ.get('KINOSAIL_POPULATED_SUITE'),1)
+ count={'browse':23,'configuration':11,'beta':54}.get(os.environ.get('KINOSAIL_POPULATED_SUITE'),1)
  report(count-1 if failure=='omitted' else count+1 if failure=='extra' else count)
 '''
             for name in ['uname', 'git', 'docker', 'pnpm', 'mkdir', 'certutil']:
@@ -228,22 +228,23 @@ elif name=='pnpm':
                 self.assertEqual(browser[0]['args'], ['--dir', 'e2e', 'exec', 'playwright', 'test', *expected,
                     '--project=chromium', '--workers=1', '--retries=0', '--max-failures=1'])
 
-    def test_configuration_suite_runs_fixed_cases_and_rejects_incomplete_or_extra_results(self):
-        for failure in ['', 'browser', 'empty', 'omitted', 'extra']:
-            with self.subTest(failure=failure):
-                result, commands, receipt = self.run_fixture(failure, suite='configuration')
-                self.assertIsNotNone(receipt, 'configuration must reach owned fixture cleanup')
-                self.assertEqual(result.returncode == 0, not failure)
-                self.assertEqual(receipt['suite'], 'configuration')
-                self.assertTrue(receipt['browserTrustRemoved'])
-                self.assertTrue(receipt['privateFixtureRemoved'])
-                self.assertEqual(receipt['remainingContainers'], 0)
-                self.assertEqual(receipt['remainingVolumes'], 0)
-                browser = [row for row in commands if row['name'] == 'pnpm']
-                self.assertEqual(len(browser), 1)
-                self.assertEqual(browser[0]['args'], ['--dir', 'e2e', 'exec', 'playwright', 'test',
-                    'layout-audit-configuration.spec.ts', '--project=chromium', '--workers=1',
-                    '--retries=0', '--max-failures=1'])
+    def test_configuration_and_beta_suites_reject_incomplete_or_extra_results(self):
+        for suite in ['configuration', 'beta']:
+            for failure in ['', 'browser', 'empty', 'omitted', 'extra']:
+                with self.subTest(suite=suite, failure=failure):
+                    result, commands, receipt = self.run_fixture(failure, suite=suite)
+                    self.assertIsNotNone(receipt, f'{suite} must reach owned fixture cleanup')
+                    self.assertEqual(result.returncode == 0, not failure)
+                    self.assertEqual(receipt['suite'], suite)
+                    self.assertTrue(receipt['browserTrustRemoved'])
+                    self.assertTrue(receipt['privateFixtureRemoved'])
+                    self.assertEqual(receipt['remainingContainers'], 0)
+                    self.assertEqual(receipt['remainingVolumes'], 0)
+                    browser = [row for row in commands if row['name'] == 'pnpm']
+                    self.assertEqual(len(browser), 1)
+                    self.assertEqual(browser[0]['args'], ['--dir', 'e2e', 'exec', 'playwright', 'test',
+                        f'layout-audit-{suite}.spec.ts', '--project=chromium', '--workers=1',
+                        '--retries=0', '--max-failures=1'])
 
     def test_unknown_suite_rejects_before_fixture_side_effects(self):
         result, commands, receipt = self.run_fixture(suite='unknown')
