@@ -23,25 +23,13 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertIn('name: wear-journey-evidence-${{ matrix.profile }}', source)
         self.assertNotIn('continue-on-error:', source)
 
-    def test_isolated_aac_trial_is_an_explicit_codec_only_selection(self):
-        source = (WORKFLOWS / 'layout-stability.yml').read_text()
-        self.assertIn('options: [none, R06, Q14, Q09, Q47, HLS, AAC, INSTANCE]', source)
-        self.assertIn("inputs.campaign_proof != 'HLS' && inputs.campaign_proof != 'AAC'", source)
-        section = source.split('  hls-followon:', 1)[1]
-        self.assertIn("inputs.campaign_proof == 'HLS' || inputs.campaign_proof == 'AAC'", section)
-        self.assertIn("if: inputs.campaign_proof == 'HLS'\n        with:\n          go-version-file:", section)
-        self.assertIn("inputs.campaign_proof == 'HLS' && !inputs.hls_remaining_proof && !inputs.hls_transcoded_refill", section)
-        self.assertIn("(inputs.hls_transcoded_refill || inputs.campaign_proof == 'AAC') && steps.codecs.outcome == 'success'", section)
-        self.assertIn("always() && inputs.campaign_proof == 'HLS' && inputs.hls_audio_origin", section)
-        self.assertNotIn('continue-on-error', section)
-
     def test_layout_recovery_retains_original_precredential_evidence(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
         triggers = source.split('  workflow_dispatch:', 1)[0]
         for path in ('apps/player/e2e/login-readiness.spec.ts', 'apps/player/e2e/layout-audit-helpers.ts'):
             self.assertIn(f'      - "{path}"\n', triggers)
         self.assertIn('login-readiness.spec.ts layout-auth-navigation.spec.ts\n', source)
-        artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  campaign-proof:', 1)[0]
+        artifact = source.split('      - name: Preserve safe measurements and screenshots\n', 1)[1].split('\n  populated-instance:', 1)[0]
         for name in ('login-original-navigation-trace.zip', 'firefox-auth-form-navigation-recovery.json'):
             self.assertIn(f'            .verification/layout/*/*/{name}\n', artifact)
             self.assertIn(f'            .verification/layout-fixtures/**/{name}\n', artifact)
