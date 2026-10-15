@@ -103,3 +103,15 @@ captures match. This report update records that clearance without a product
 or harness change. `test-container.sh` remains untouched during R03 integration.
 
 MAIN: NO — awaiting required integration/hosted gates and merge ancestry.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-04-r10-subtitle-recovery/evidence-gitleaks.log` | 79 | `8a47e826846603eb5a7b41dad350cd9bbe5796307195a6d3f9c887f1e552066a` |
+| `2026-10-04-r10-subtitle-recovery/lifecycle-browser-lint.log` | 38 | `c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91` |
+| `2026-10-04-r10-subtitle-recovery/product-browser-lint.log` | 38 | `c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91` |
+| `2026-10-04-r10-subtitle-recovery/product-max-loc.log` | 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| `2026-10-04-r10-subtitle-recovery/server-green.log.gz` | 6868 | `60b94b8c01350803020c61c1f5a26487ae8d57221cff54850cc453b0908148b7` |

@@ -73,3 +73,11 @@ the clean source revision and the generated effective browser configuration.
 
 The initial missing-media/missing-direct-MP4 receipts are setup failures. They are
 preserved as failed evidence and are not product-regression or passing-suite claims.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-03-test-overhaul/ci-e2e-archive-verification-388.json` | 192214 | `9548d330fee700d9d8f87d9ea3197f2b56e0186257ff510921e886cc79c78650` |

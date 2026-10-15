@@ -77,3 +77,11 @@ Physical phones, tablets, TVs, watches, paired Wear remote delivery, real heart 
 API 37 builds passed. The initial API 37 instrumentation attempt stopped in AndroidX input injection before product journeys; the recorded successful runtime checks use API 36.
 
 GitHub's required checks remain the delivery authority. This packet records local evidence, not hosted CI, deployed container health, or physical-device proof. Unrelated dirty primary-checkout work and inactive worktrees were preserved.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-01-android-apple-parity/gallery.html` | 21510 | `13f41d1aaeb23a4bbc5f59c1323166ae3bb47e6592809f5cae42f0c5d52aca37` |

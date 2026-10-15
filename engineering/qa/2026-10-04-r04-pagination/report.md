@@ -96,3 +96,11 @@ explicitly recorded. No production data, Nox or native device state was changed.
 PiP/miniplayer remains excluded.
 
 MAIN: NO — awaiting integration, required hosted checks, merge and ancestry proof.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-04-r04-pagination/green-report/html-all/index.html` | 533467 | `109fcf9cf30ec9879a8e198cb2bf848bd1950d4ba67d4452f3ac3f61d1503fa6` |

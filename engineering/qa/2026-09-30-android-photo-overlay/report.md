@@ -42,3 +42,11 @@ The black backdrop occupies the existing overlay area. It improves legibility wh
 ## Reconciled main
 
 The branch incorporates main `f1e7139ca5b38b7db57280adc2c02059b9d3ef34`. Android source and test hashes remain unchanged, so the 131-test and build evidence still applies. API-key sorting and shared test coverage match the already-merged upstream change. Both current changed-app gates, shared package tests, the latest catalog tests and root tooling pass. Fresh hosted CI is required on the reconciled review head.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-android-photo-overlay/gallery.html` | 3321 | `036d1b9b182c98a7399295a9b37b10d1fcac3b5137603133fa9ffa5cbeefe3b8` |
