@@ -7,6 +7,7 @@ protocol MediaTransferConsumer: AnyObject {
 }
 
 final class MediaTransferSession: NSObject, URLSessionDataDelegate, @unchecked Sendable {
+  static let capacity = 16
   private let queue: DispatchQueue
   private var consumers: [Int: MediaTransferConsumer] = [:]
   private var session: URLSession!
@@ -19,7 +20,7 @@ final class MediaTransferSession: NSObject, URLSessionDataDelegate, @unchecked S
     configuration.urlCache = nil
     configuration.httpCookieStorage = nil
     configuration.httpShouldSetCookies = false
-    configuration.httpMaximumConnectionsPerHost = 4
+    configuration.httpMaximumConnectionsPerHost = Self.capacity
     configuration.timeoutIntervalForResource = 24 * 60 * 60
     configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
     let delegates = OperationQueue()
@@ -28,7 +29,7 @@ final class MediaTransferSession: NSObject, URLSessionDataDelegate, @unchecked S
     session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegates)
   }
   func dataTask(with request: URLRequest, consumer: MediaTransferConsumer) -> URLSessionDataTask? {
-    guard !closed, consumers.count < 4 else { return nil }
+    guard !closed, consumers.count < Self.capacity else { return nil }
     let task = session.dataTask(with: request)
     consumers[task.taskIdentifier] = consumer
     return task

@@ -51,30 +51,8 @@ struct PlaybackScreen: View {
             #if os(iOS)
             TouchPlaybackView(failure: failure, retry: { revision += 1 }, close: { if let onClose { onClose() } else { dismiss() } })
             #else
-            if let failure { RetryState(message: failure) { revision += 1 }.onExitCommand { closePlayback() } }
-            else if let message = session.player.message, !session.player.recoveringNetwork {
-                RetryState(message: message) { revision += 1 }.onExitCommand { closePlayback() }
-            }
-            else if let player = session.player.player {
-                NativePlayerView(player: player, presentation: session.player.presentation,
-                                 options: { showsTools = true }, seekPreview: { showsSeekPreview = true },
-                                 close: { closePlayback() },
-                                 restore: { session.showsVideoPlayer = true })
-                    .onExitCommand { session.player.presentation.requestClose() }
-                    .background(.black)
-                    #if os(tvOS)
-                    .ignoresSafeArea()
-                    #else
-                    .ignoresSafeArea(edges: .bottom)
-                    #endif
-            } else {
-                ZStack {
-                    Color.black.ignoresSafeArea()
-                    Text("Opening video…").foregroundStyle(.white)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onExitCommand { closePlayback() }
-            }
+            TVPlaybackSurface(failure: failure, retry: { revision += 1 }, close: { closePlayback() },
+                              options: { showsTools = true }, seekPreview: { showsSeekPreview = true })
             #endif
         }
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
@@ -107,13 +85,61 @@ struct PlaybackScreen: View {
 }
 
 #if os(tvOS)
+struct TVPlaybackSurface: View {
+    let failure: String?
+    let retry: () -> Void
+    let close: () -> Void
+    var options: () -> Void = {}
+    var seekPreview: () -> Void = {}
+    @Environment(AppSession.self) private var session
+    @State private var mounted = false
+
+    private var message: String? {
+        if let failure { return failure }
+        if let message = session.player.message, !session.player.recoveringNetwork { return message }
+        return nil
+    }
+
+    var body: some View {
+        let message = message
+        let player = session.player.player
+        ZStack {
+            if mounted || player != nil {
+                NativePlayerView(player: player, presentation: session.player.presentation,
+                                 options: options, seekPreview: seekPreview, close: close,
+                                 restore: { session.showsVideoPlayer = true }, interactive: message == nil)
+                    .onExitCommand { session.player.presentation.requestClose() }
+                    .background(.black)
+                    .ignoresSafeArea()
+                    .accessibilityHidden(message != nil || player == nil)
+                    .onAppear { mounted = true }
+            }
+            if let message {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    RetryState(message: message, focusesRetry: true, retry: retry)
+                }
+                .onExitCommand { close() }
+            } else if player == nil {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    Text("Opening video…").foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onExitCommand { close() }
+            }
+        }
+    }
+}
+
 struct NativePlayerView: UIViewControllerRepresentable {
-    let player: AVPlayer
+    let player: AVPlayer?
     let presentation: PlayerPresentation
     let options: () -> Void
     let seekPreview: () -> Void
     let close: () -> Void
     let restore: () -> Void
+    var interactive = true
 
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         presentation.restore = restore
@@ -121,6 +147,7 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.showSeekPreview = seekPreview
         presentation.close = close
         presentation.controller.player = player
+        presentation.controller.view.isUserInteractionEnabled = interactive
         presentation.appeared()
         return presentation.controller
     }
@@ -130,6 +157,7 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.showSeekPreview = seekPreview
         presentation.close = close
         if controller.player !== player { controller.player = player }
+        if controller.view.isUserInteractionEnabled != interactive { controller.view.isUserInteractionEnabled = interactive }
     }
     func makeCoordinator() -> PlayerPresentation { presentation }
     static func dismantleUIViewController(_ controller: AVPlayerViewController, coordinator: PlayerPresentation) {
