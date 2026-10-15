@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 )
 
-func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error {
+func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:gocognit // One decode feeds the complete switchable presentation.
 	device := transcodehardware.DeviceKey(options)
 	release, err := manager.acquireHLSEncode(ctx, len(qualities), device, start, startNumber)
 	if err != nil {

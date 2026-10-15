@@ -164,7 +164,7 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 	return PlaybackQuality{Label: qualityLabel(width, height), Width: width, Height: height, Bitrate: max(1, bitrate), FrameRate: facts.Video.FrameRate}
 }
 
-func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop // One FFmpeg command is assembled from the validated playback recipe.
+func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,gocognit // One FFmpeg command is assembled from the validated playback recipe.
 	release, err := manager.acquireHLSEncode(ctx, 1, "", start, startNumber)
 	if err != nil {
 		return err
