@@ -2,13 +2,14 @@ package server_test
 
 import (
 	"fmt"
-	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )

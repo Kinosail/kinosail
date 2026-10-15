@@ -46,7 +46,7 @@ func (broker *quickConnectBroker) application(profiles *profileStore) *quickconn
 		adapter.RecentlyAuthenticated = profiles.recentlyAuthenticated
 		adapter.SignInPublic = profiles.sessionModule().SignInPublicGrant
 	}
-	return quickconnect.NewApplicationFor(broker.connections, quickconnect.Limiters{Requests: &broker.requests, Starts: &broker.starts, Polls: &broker.polls}, adapter, quickconnect.SubtitlesPage())
+	return quickconnect.NewApplicationFor(broker.connections, quickconnect.Limiters{Requests: &broker.requests, Starts: &broker.starts, Polls: &broker.polls}, adapter, quickConnectPage(quickconnect.SubtitlesPage()))
 }
 
 func (broker *quickConnectBroker) register(mux *http.ServeMux, profiles *profileStore) {

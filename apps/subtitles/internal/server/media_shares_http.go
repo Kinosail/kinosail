@@ -1,7 +1,6 @@
 package server
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
@@ -9,7 +8,7 @@ import (
 )
 
 var (
-	mediaShareViews     = mediashares.NewViews("Subtitles", "80", func(name, source string) *template.Template { return httpguard.NewCSRFTemplate(name, source, uiIcon) })
+	mediaShareViews     = mediashares.NewViews("Subtitles", "80", newCSRFTemplate)
 	mediaShareItemsView = mediaShareViews.Items
 )
 
