@@ -12,15 +12,15 @@ Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for development and Git workflo
 | Shared domain and application operations | [Packages](../packages/README.md) |
 | Cross-app design | [Current design direction](design/cinema-direction.md) |
 | Cross-app investigation | [Research](research/) |
-| Agent issue workflow | [Issue tracker](agents/issue-tracker.md) |
+| Agent domain vocabulary | [Domain docs](agents/domain.md) |
 
 ## Release and deployment
 
 Each app owns its binary, container, version, and release acceptance. The local deployment watcher can build and deploy development images from remote `main`; that does not create a signed customer release.
 
-GitHub Actions is disabled. The Player [release checklist](../apps/player/engineering/release-checklist.md) records the signed-image publishing dependency. Subtitles has its own [checklist](../apps/subtitles/engineering/release-checklist.md).
+GitHub Actions runs the required checks and publishes affected development containers from green `main` pushes. The Player [release checklist](../apps/player/engineering/release-checklist.md) records the signed-image publishing dependency. Subtitles has its own [checklist](../apps/subtitles/engineering/release-checklist.md).
 
-While `.gates-disabled` exists, do not run disabled suites or count skipped checks as passes. Record source, rendered/browser behavior, remote ancestry, deployed image revision, container health, TLS, and physical-device evidence separately.
+Do not count skipped checks as passes. Record source, rendered/browser behavior, remote ancestry, deployed image revision, container health, TLS, and physical-device evidence separately.
 
 ## Documentation maintenance
 
