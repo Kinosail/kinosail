@@ -38,11 +38,15 @@ final class NowPlayingController {
     }
 
     func update(seconds: Double, duration: Double, rate: Double) {
+        #if os(tvOS)
+        return
+        #else
         guard !metadata.isEmpty else { return }
         metadata[MPNowPlayingInfoPropertyElapsedPlaybackTime] = seconds
         metadata[MPMediaItemPropertyPlaybackDuration] = duration
         metadata[MPNowPlayingInfoPropertyPlaybackRate] = rate
         MPNowPlayingInfoCenter.default().nowPlayingInfo = metadata
+        #endif
     }
 
     private func add(_ command: MPRemoteCommand, handler: @escaping @Sendable (MPRemoteCommandEvent) -> MPRemoteCommandHandlerStatus) {
@@ -54,6 +58,8 @@ final class NowPlayingController {
         handlers.forEach { command, token in command.removeTarget(token); command.isEnabled = false }
         handlers.removeAll()
         metadata.removeAll()
+        #if !os(tvOS)
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        #endif
     }
 }
