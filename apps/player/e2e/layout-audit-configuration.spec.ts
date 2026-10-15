@@ -82,10 +82,11 @@ test("single sign-on configuration stays usable at every supported width", async
 			await page.goto(route);
 			const notice = page.locator("#restart-required");
 			await expect(notice).toBeVisible();
-			restartLabels.push({ route, width: viewport.width, labels: await notice.locator("li").allTextContents() });
+			const labels = await notice.locator("li").allTextContents();
+			restartLabels.push({ route, width: viewport.width, labels });
 			await notice.screenshot({ path: testInfo.outputPath(`restart-notice-${route.endsWith("configuration") ? "configuration" : "settings"}-${viewport.width}.png`) });
-			await expect.soft(notice, `${route} at ${viewport.width}px names the saved identity setting`).toContainText("Single sign-on identity claim");
-			await expect.soft(notice, `${route} at ${viewport.width}px keeps the internal key out of the notice`).not.toContainText("integrations.oidc.identity_claim");
+			expect.soft(labels, `${route} at ${viewport.width}px names the saved identity setting`).toContain("Single sign-on identity claim");
+			expect.soft(labels, `${route} at ${viewport.width}px keeps the internal key out of the notice`).not.toContain("integrations.oidc.identity_claim");
 		}
 	}
 	await testInfo.attach("restart-notice-labels.json", { body: JSON.stringify(restartLabels), contentType: "application/json" });

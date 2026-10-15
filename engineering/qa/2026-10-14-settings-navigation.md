@@ -22,3 +22,11 @@ The repair removes the content column's fixed row so it follows the category men
 It preserves the mobile single-column override and adds no production lines.
 Hosted baseline run `38653244717` and repaired exact-revision evidence are pending.
 Local product runtime remains paused by the workstation resource hold.
+
+The first baseline at `34cf21c9` passed all seven no-notice loaded controls.
+It did not intercept the later deferred bundle, so it never reached restart-state geometry.
+The retained trace allowed service workers; it does not identify the request-routing cause conclusively.
+The controlled pending/failure checks now use a fresh authenticated context with service workers blocked.
+Strict fixture TLS stays enabled, and the context closes after both observations.
+The ordinary loaded checks retain the original context with service workers allowed.
+Restart-label assertions now compare the captured server-rendered list immediately instead of waiting on immutable text.
