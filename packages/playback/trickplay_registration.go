@@ -1,6 +1,7 @@
 package playback
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -13,13 +14,14 @@ func MustTrickplayRegistration(
 	cache, ffmpeg string,
 	policy HLSRecipePolicy,
 	lookup func(*http.Request, string) (library.Item, bool),
+	acquire func(context.Context) (func(), error),
 	failure func(http.ResponseWriter, *http.Request, string, int),
 ) func(*http.ServeMux) {
-	if lookup == nil || failure == nil {
+	if lookup == nil || acquire == nil || failure == nil {
 		panic(errInvalidTrickplayRegistration)
 	}
 	frames, err := NewTrickplay(TrickplayDependencies{
-		Cache: cache, FFmpeg: ffmpeg, RecipePolicy: policy, Lookup: lookup,
+		Cache: cache, FFmpeg: ffmpeg, RecipePolicy: policy, Lookup: lookup, Acquire: acquire,
 		NotFound: func(writer http.ResponseWriter, request *http.Request) {
 			failure(writer, request, "not found", http.StatusNotFound)
 		},

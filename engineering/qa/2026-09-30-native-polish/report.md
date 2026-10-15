@@ -47,3 +47,18 @@ Run Android unit regressions from `apps/player/apps/android` with JDK 17 and the
 For Apple rendering, use a task-owned simulator and the existing `NativePreferencesUXTests` suite. Pass `TEST_RUNNER_KINOSAIL_POLISH_GALLERY=1` or `lifecycle` to `xcodebuild test`. Select the `Kinosail-iOS` scheme, that simulator's ID, and `-only-testing:Kinosail-iOSTests/NativePreferencesUXTests`. Preserve its `.xcresult` and the printed `NATIVE_POLISH_RENDER` images before deleting the simulator. Run TV UI suites separately when checking focus.
 
 The disposable Android journey validated a real fixture session, saved it through `SessionStore`, launched `MobileActivity`, clicked Library, asserted a loaded title, submitted an absent query, and asserted the resulting message. Its [source](PolishLiveJourneyTest.kt.txt) and [read-only loopback bridge](android-loopback-bridge.py.txt) are retained as evidence outside production targets. Credentials and raw device results remain outside Git. The structured run context records revision, commands, synthetic data, environment, and artifact hashes.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-native-polish/evidence/android-phone-library.png` | 267019 | `ae2de725cf11b5ad50c6ba8f820322db3302649203df48c46d9cad055646a172` |
+| `2026-09-30-native-polish/evidence/android-phone-search-empty.png` | 436615 | `64f988199f4666ce3415b97ce61ef095695fb8a30b9b53aca47353002fdaea7c` |
+| `2026-09-30-native-polish/evidence/native-ipad-lifecycle-contact.png` | 362176 | `362bf67a6a8df7cd2732095005480b48157327da79a5acec3eb61c599068e347` |
+| `2026-09-30-native-polish/evidence/native-lifecycle-contact.png` | 337347 | `164845dcedcbb4d0f9bca377c965a2a590109c875b7a6540f9c073cafbfdca1b` |
+| `2026-09-30-native-polish/evidence/native-tvos-home.png` | 1833223 | `74b34569618d5064b9ef408992b576cf04dfee87162292a50686e9389afb6179` |
+| `2026-09-30-native-polish/evidence/native-tvos-lifecycle-contact.png` | 149100 | `fa58a350e1c638152929c8498d18c1952171454bcf85fde6679fec63c65b46da` |
+| `2026-09-30-native-polish/evidence/supporter-failed.png` | 233767 | `3966d29ab299341f71dbc26a59691ffe6ba72a771af8562263f6e5e722ef1638` |
+| `2026-09-30-native-polish/gallery.html` | 4347 | `1feea9b5cdd55a8bf2b81f2ac1857c00b9d1b2b9e55af5f45fa7ba945f6e93db` |

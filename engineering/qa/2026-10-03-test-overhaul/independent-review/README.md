@@ -38,3 +38,12 @@ This is a review checkpoint. Required CI, genuine browser journeys and final
 merged-SHA artifacts must still be confirmed by the coordinator. Native device
 runtime is not inferred from declaration presence. No required check was changed
 to make a deletion pass.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-03-test-overhaul/independent-review/go-inventory.json` | 1394998 | `8c79429e5675f312898e017d4ede66ecf75eac421337516452731c4325ccc0ab` |
+| `2026-10-03-test-overhaul/independent-review/other-inventory.json` | 848389 | `f882fdf074144b66b4d1de1085af017df796362b2da873ab557a25e048d59bdc` |

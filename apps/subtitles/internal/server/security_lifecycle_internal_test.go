@@ -38,6 +38,7 @@ func TestFederationLinkRejectsRevokedOriginalAppSession(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
 func TestPasswordResetInvalidatesPreviouslyApprovedLocalGrant(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Owner", "owner-password", true)
@@ -58,6 +59,7 @@ func TestPasswordResetInvalidatesPreviouslyApprovedLocalGrant(t *testing.T) {
 		t.Fatal("rejected approval persisted a session")
 	}
 }
+
 func TestFederatedSignInCanEnrollAFirstFactor(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Owner", "owner-password", true)

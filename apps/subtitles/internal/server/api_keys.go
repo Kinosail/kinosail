@@ -9,7 +9,7 @@ import (
 )
 
 //nolint:gosec // G101: this is an HTML template for displaying a generated value once.
-const apiKeyCreatedHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>API key · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="auth"><main class="grant-card"><span class="eyebrow">Save your API key</span><h1>{{.Name}}</h1><p>Copy this key now. You cannot view it again after leaving this page.</p><code class="grant-link">{{.Secret}}</code><p><a href="/settings">Return to settings</a></p></main></body></html>`
+const apiKeyCreatedHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>API key · Kinosail Subtitles</title><script src="/static/theme.js"></script><link rel="stylesheet" href="/static/app.css"></head><body class="auth"><main class="grant-card"><span class="eyebrow">Save your API key</span><h1>{{.Name}}</h1><p>Copy this key now. You cannot view it again after leaving this page.</p><code class="grant-link">{{.Secret}}</code><p><a href="/settings">Return to settings</a></p></main></body></html>`
 
 var apiKeySecretView = newLocalizedTemplate("api-key", apiKeyCreatedHTML)
 

@@ -45,3 +45,23 @@ At committed `515ba5b3997988be3066a02a6677adf3a865ab72`, the actual native Serve
 The outer fixture guard rejected apply and restore with HTTP 405. Those probes deliberately used invalid JSON so they also remain harmless if the fixture guard regresses. Browser page traffic performed GET and the two preview POSTs only. The Server stopped cleanly; [integrity receipt](evidence/native-integrity.json) proves the installed subtitle stayed unchanged and no recovery copy was created. The clip and sidecar retained their supplied SHA256 hashes. Native cleanup/import screenshots were inspected at both widths and show actual playable media alongside truthful correspondence. Authentication was disabled in this disposable installation; managed jobs and provider credentials were absent, FFmpeg was `/usr/bin/false`, and no encoder, paid provider, deployment, Nox, or device was used.
 
 The first manual QA fixture lint found a missing context on `net.Listen` ([original finding](evidence/native-fixture-lint.log)). The narrow fixture-only repair uses `ListenConfig.Listen` with an explicit context; [retry](evidence/native-fixture-lint-retry.log) completed with exit 0 and 0 issues, and the corrected fixture rebuilt in 1.374 seconds ([build receipt](evidence/native-build-retry-context.json)). No application rule or test was suppressed. Required populated container/hosted checks and independent review remain with the integration owner.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-04-cue-pairing/evidence/browser-green.log` | 450 | `02bb102c531f14ef3e10c76eb1ca33ab813eb62ebc37003af7284e7c808a37ae` |
+| `2026-10-04-cue-pairing/evidence/browser-red.log` | 6873 | `72ea9695801b142fc8d2ecac128e15872db99476d07be7a114bca0a7373d82d0` |
+| `2026-10-04-cue-pairing/evidence/interior-red.log` | 1171 | `fc9ba0f519a3a0b02738a7a56237cb97bf8fb4d2f8935f32ce90d8df1026c5f6` |
+| `2026-10-04-cue-pairing/evidence/lint-retry.log` | 10 | `e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47` |
+| `2026-10-04-cue-pairing/evidence/lint.log` | 92 | `f5d0ae74449ffa219f2b725f3dd4e95afff909a4927d30a6ea0a60224ac03c06` |
+| `2026-10-04-cue-pairing/evidence/logic-green.log` | 2859 | `dd660b3279af8b0147cc43f7002073edaf548bd0ae9337d0a884ae3bff899ce5` |
+| `2026-10-04-cue-pairing/evidence/merged-logic-final-green.log.gz` | 889 | `3bbdcfd147f040260aa366744ec42c6befb3e8635c19dafa888ec51cf563679d` |
+| `2026-10-04-cue-pairing/evidence/native-fixture-lint-retry.log` | 10 | `e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47` |
+| `2026-10-04-cue-pairing/evidence/native-fixture-lint.log` | 223 | `74566ad4278b37435d4adc7145ac969de5f0c4c8ea5b900eea483da7887c849a` |
+| `2026-10-04-cue-pairing/evidence/native-green.log` | 478 | `1f0685093e078d0e51f886f7ce5e95cdba4e6b5337e8b8282ec5f9a58223c234` |
+| `2026-10-04-cue-pairing/evidence/pairing-green.log` | 65 | `35136462367747ce5dafb267cb826900dce27769afe7c22ffd8a447fd54f1053` |
+| `2026-10-04-cue-pairing/evidence/r07-api-red.log` | 1065 | `0a2da28aca650ec3c5208e0eb35cfeabd364c4c30dc89645e06223bc50f3a7c0` |
+| `2026-10-04-cue-pairing/evidence/verify-changed.log` | 847 | `3ed4025ebfbd1bc940e19d6c4924b9be4de1ad4656282b8fe9b55305a7a5c949` |

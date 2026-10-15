@@ -2,8 +2,6 @@ package server
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -95,9 +93,9 @@ func applicationShellView(pattern string) string {
 }
 
 func injectApplicationShell(page, navigation []byte) []byte {
-	page = applicationShellCSSVersion(page)
+	page = versionAssetReferenceBytes(page)
 	if !bytes.Contains(page, []byte(`/static/supporter.js?v=`)) {
-		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="/static/supporter.js?v=19-htmx4"></script></body>`), 1)
+		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="`+assetURL("supporter.js")+`"></script></body>`), 1)
 	}
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
@@ -140,21 +138,6 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	}
 	addition := append(append(append([]byte("\n"), prefix...), '\n'), navigation...)
 	return append(append(append([]byte(nil), page[:insertAt]...), addition...), page[insertAt:]...)
-}
-
-var applicationStyleVersion = fmt.Appendf(nil, "%x", sha256.Sum256(applicationStyle))
-
-func applicationShellCSSVersion(page []byte) []byte {
-	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
-		version := start + len(`/static/app.css?v=`)
-		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			if bytes.Equal(page[version:version+end], applicationStyleVersion) {
-				return page
-			}
-			page = append(append(append([]byte(nil), page[:version]...), applicationStyleVersion...), page[version+end:]...)
-		}
-	}
-	return page
 }
 
 type bufferedPage struct {

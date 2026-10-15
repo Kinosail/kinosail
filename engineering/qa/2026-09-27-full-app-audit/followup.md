@@ -57,3 +57,13 @@ On a fresh Player sign-in page, the automatic passkey offer received HTTP 503 fr
 The test was added first: `KINOSAIL_E2E_URL=http://127.0.0.1:38129 pnpm --dir apps/player/e2e exec playwright test passkeys.spec.ts --grep 'unavailable automatic' --project=chromium` failed on the original script. After the fix, the full passkey spec passed 24/24 across Chromium, Firefox, and WebKit. The updated sign-in script URL failed its Go server test before the version bump and passed afterward; the related `TestPasskey|TestPasswordLoginOffersPasskey` selection passed. A rebuilt isolated Player instance showed an empty status on first load at the previously cached `127.0.0.1` origin, then showed the error after the passkey button was clicked. The fixture used generated media and a fresh Owner; its container and volumes were removed after verification.
 
 The same iteration rendered a populated Chrome desktop library, a 390 px phone library and movie detail, and playing Arrival on the phone through its 12-second fixture. A current iOS simulator build succeeded and showed the Connect screen; simulator input control was unavailable, so this does not verify authenticated iOS playback. The task-created simulator was removed after capturing the setup state. No claim of 20/20 or complete device coverage follows from these checks.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-27-full-app-audit/evidence/android-api23-cast-after.png` | 140321 | `3af2533c2f1964c9aaa25bb68b4f076d5647599f1c8699fd12756c4e4e933971` |
+| `2026-09-27-full-app-audit/evidence/subtitles-badges-desktop.png` | 1191874 | `2e250d55a5fdfb5f453c063cf839f9e07844f8861d5db82eedfea1d90fda53ed` |
+| `2026-09-27-full-app-audit/evidence/subtitles-badges-phone.png` | 665643 | `648264e643f8358d12520d65b043546d20cb85d172e2fc0e3e0a86e699967634` |

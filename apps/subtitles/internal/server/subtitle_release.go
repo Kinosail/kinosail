@@ -4,10 +4,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
-	"strings"
 )
 
 var subtitleReleaseGroup = regexp.MustCompile(`(?i)-([a-z0-9]{2,24})(?:\.(?:srt|vtt|ass|ssa|mkv|mp4))?$`)

@@ -12,6 +12,7 @@ var assetContracts = servertest.AssetsFixture{
 	NewHandler: func(media, data string, auth bool) http.Handler {
 		return server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: auth})
 	},
+	SignIn: signInTestProfile, WebCall: requestWithCookie,
 }
 
 func TestHomeIsInstallableAsAWebApp(t *testing.T) {

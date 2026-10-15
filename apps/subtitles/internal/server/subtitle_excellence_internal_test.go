@@ -103,7 +103,7 @@ func TestSubtitleOriginalArchiveIsImmutableAndBounded(t *testing.T) {
 	if err := provider.retainSubtitleOriginal(data, &record); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(provider.originalPath(record.OriginalFingerprint), []byte("unexpected edit"), 0600); err != nil {
+	if err := os.WriteFile(provider.originalPath(record.OriginalFingerprint), []byte("unexpected edit"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := provider.retainSubtitleOriginal(data, &record); err == nil {
