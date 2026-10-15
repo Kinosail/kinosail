@@ -1,5 +1,5 @@
 name: Set up Go from the workspace toolchain
-description: Use the runner's Go to fetch the go.work toolchain from proxy.golang.org and restore module and build caches
+description: Install the go.work toolchain from go.dev when the runner has no Go, then restore module and build caches
 inputs:
   go-version-file:
     description: Module or workspace file whose toolchain the checkout requires
@@ -16,11 +16,44 @@ runs:
         GOTOOLCHAIN: auto
         VERSION_FILE: ${{ inputs.go-version-file }}
       run: |
+        set -euo pipefail
         test -f "$VERSION_FILE"
+        version="$(sed -n 's/^go \([0-9][0-9.]*\).*/\1/p' go.work | head -n 1)"
+        [[ "$version" =~ ^1\.[0-9]+(\.[0-9]+)?$ ]]
+        if ! command -v go >/dev/null; then
+          case "$(uname -s)-$(uname -m)" in
+            Linux-x86_64) platform=linux-amd64 ;;
+            Linux-aarch64) platform=linux-arm64 ;;
+            Darwin-arm64) platform=darwin-arm64 ;;
+            Darwin-x86_64) platform=darwin-amd64 ;;
+            *) echo "unsupported runner platform" >&2; exit 1 ;;
+          esac
+          archive="go$version.$platform.tar.gz"
+          target="$RUNNER_TOOL_CACHE/go/$version/${platform#*-}"
+          if [[ ! -x "$target/bin/go" ]]; then
+            curl --fail --silent --show-error --location --proto '=https' --max-time 300 \
+              --output "$RUNNER_TEMP/$archive" "https://go.dev/dl/$archive"
+            expected="$(curl --fail --silent --show-error --proto '=https' --max-time 60 \
+              "https://go.dev/dl/?mode=json&include=all" | python3 -c '
+        import json, sys
+        archive = sys.argv[1]
+        print(next(file["sha256"] for release in json.load(sys.stdin) for file in release["files"] if file["filename"] == archive))' "$archive")"
+            [[ "$expected" =~ ^[0-9a-f]{64}$ ]]
+            printf '%s  %s\n' "$expected" "$RUNNER_TEMP/$archive" | shasum -a 256 --check --status
+            mkdir -p "$target"
+            tar --extract --gzip --file "$RUNNER_TEMP/$archive" --directory "$target" --strip-components 1
+            rm -f "$RUNNER_TEMP/$archive"
+          fi
+          echo "$target/bin" >> "$GITHUB_PATH"
+          export PATH="$target/bin:$PATH"
+        fi
         echo "GOTOOLCHAIN=auto" >> "$GITHUB_ENV"
         echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-        echo "modcache=$(go env GOMODCACHE)" >> "$GITHUB_OUTPUT"
-        echo "buildcache=$(go env GOCACHE)" >> "$GITHUB_OUTPUT"
+        modcache="$(go env GOMODCACHE)"
+        buildcache="$(go env GOCACHE)"
+        test -n "$modcache" && test -n "$buildcache"
+        echo "modcache=$modcache" >> "$GITHUB_OUTPUT"
+        echo "buildcache=$buildcache" >> "$GITHUB_OUTPUT"
     - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
       with:
         path: |
