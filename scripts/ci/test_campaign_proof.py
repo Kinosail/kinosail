@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
+from proof_shard import load
+
 ROOT = Path(__file__).resolve().parents[2]
 ROUTER = ROOT / 'scripts/ci/run-campaign-proof.sh'
 LAYOUT = ROOT / '.github/workflows/layout-stability.yml'
@@ -62,26 +64,22 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('server.log', proof)
 
     def test_accepted_audio_regressions_run_in_required_player_suite(self):
-        source = (ROOT / '.github/workflows/app.yml').read_text()
-        step = source.split('      - name: Verify copied-video audio and legacy preparation\n')[1]
-        self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
-        self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite audio', step)
-        self.assertIn('name: player-hls-audio-conversion-evidence', step)
-        self.assertIn('.verification/hls-followon/*/receipt.json', step)
-        self.assertIn('.verification/hls-followon/*/SHA256SUMS', step)
+        followon = load()['player']['followon']
+        self.assertIn(['python3', 'apps/player/scripts/test-hls-followon.py', '--suite', 'audio'],
+                      [command['argv'] for command in followon['commands']])
+        self.assertIn('.verification/hls-followon/*/receipt.json', followon['evidence'])
+        self.assertIn('.verification/hls-followon/*/SHA256SUMS', followon['evidence'])
         manual = LAYOUT.read_text().split('  hls-followon:\n')[1]
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
         self.assertNotIn('--suite audio', manual)
 
     def test_hevc_preparation_adds_a_separate_required_public_gate(self):
-        source = (ROOT / '.github/workflows/app.yml').read_text()
-        step = source.split('      - name: Verify complete HEVC preparation\n')[1]
-        self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
-        self.assertIn('timeout-minutes: 10', step)
-        self.assertIn('python3 apps/player/scripts/test-hls-followon.py --suite hevc', step)
-        self.assertIn('name: player-hls-hevc-preparation-evidence', step)
-        self.assertIn('.verification/hls-hevc-startup/*/receipt.json', step)
-        self.assertIn('.verification/hls-hevc-startup/*/SHA256SUMS', step)
+        followon = load()['player']['followon']
+        self.assertIn(['python3', 'apps/player/scripts/test-hls-followon.py', '--suite', 'hevc'],
+                      [command['argv'] for command in followon['commands']])
+        self.assertGreaterEqual(followon['timeout'], 10)
+        self.assertIn('.verification/hls-hevc-startup/*/receipt.json', followon['evidence'])
+        self.assertIn('.verification/hls-hevc-startup/*/SHA256SUMS', followon['evidence'])
         driver = (ROOT / 'apps/player/scripts/test-hls-followon.py').read_text()
         self.assertIn("choices=['all', 'audio', 'hevc']", driver)
         self.assertIn("controls(ROOT, RUN, binary, receipt, include_hevc=suite != 'audio', include_audio=suite != 'hevc')", driver)
@@ -91,20 +89,14 @@ class CampaignProofTests(unittest.TestCase):
         self.assertIn('run: python3 apps/player/scripts/test-hls-followon.py\n', manual)
         self.assertNotIn('--suite', manual)
 
-    def test_media_proofs_survive_failure_but_stop_on_cancellation(self):
+    def test_media_proofs_survive_failure_as_independent_shards(self):
+        manifest = load()
+        self.assertEqual(set(manifest['player']), {'cache-reopen', 'prepared-timeline', 'followon', 'audio-splice', 'startup'})
+        self.assertEqual(set(manifest['subtitles']), {'copied-clocks', 'copied-plans', 'copied-long-resume'})
         source = (ROOT / '.github/workflows/app.yml').read_text()
-        for app, names in {
-            'subtitles': ('Verify Subtitles copied-video clocks', 'Verify Subtitles copied generation plans',
-                          'Verify Subtitles completed copied suffixes'),
-            'player': ('Verify cold and damaged HLS cache reopen', 'Verify prepared copied-video timeline',
-                       'Verify copied-video audio and legacy preparation', 'Verify continuous converted-audio recovery',
-                       'Verify complete HEVC preparation'),
-        }.items():
-            for name in names:
-                with self.subTest(step=name):
-                    step = source.split('      - name: ' + name + '\n')[1].split('      - ')[0]
-                    self.assertIn("if: ${{ !cancelled() && inputs.app == '" + app + "' && matrix.engine == 'chromium' }}", step)
-                    self.assertNotIn('continue-on-error:', step)
+        proofs = source.split('  proofs:\n', 1)[1].split('\n  required:\n', 1)[0]
+        self.assertIn('fail-fast: false', proofs)
+        self.assertNotIn('continue-on-error:', proofs)
         uploads = [step for step in source.split('      - ') if 'uses: actions/upload-artifact@' in step]
         self.assertTrue(uploads)
         for step in uploads:
