@@ -9,5 +9,5 @@ import (
 )
 
 func TestTOTPCodesCannotBeReplayed(t *testing.T) {
-	servertest.AssertTOTPCodesCannotBeReplayed(t, newJellyfinServer(t, server.Config{DataDir: t.TempDir(), RequireAuth: true}))
+	servertest.AssertTOTPCodesCannotBeReplayed(t, server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true}))
 }

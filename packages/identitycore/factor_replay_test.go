@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestFactorVerifyRejectsReplayedTOTPCounters(t *testing.T) { //nolint:cyclop // One lifecycle proves every counter transition at the factor boundary.
+func TestFactorVerifyRejectsReplayedTOTPCounters(t *testing.T) {
 	t.Parallel()
 	const secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" //nolint:gosec // Public RFC 6238 test key.
 	fixture := newFactorFixture(FactorProfile{ID: "owner", Secret: secret, Revision: 2})

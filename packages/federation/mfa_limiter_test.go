@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestSSOSecondFactorLimitsAttemptsAndConsumesChallenge(t *testing.T) { //nolint:cyclop // One journey proves the challenge, profile, and address limits together.
+func TestSSOSecondFactorLimitsAttemptsAndConsumesChallenge(t *testing.T) {
 	t.Parallel()
 	values := []webProfile{{ID: "viewer", MFA: true}, {ID: "second", MFA: true}, {ID: "third", MFA: true}, {ID: "fourth", MFA: true}, {ID: "fifth", MFA: true}}
 	effects := &webEffects{}
