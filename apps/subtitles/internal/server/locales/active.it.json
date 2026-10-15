@@ -8,14 +8,6 @@
     "other": "30 minuti"
   },
   {
-    "id": "45 minutes",
-    "other": "45 minuti"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60 minuti"
-  },
-  {
     "id": "Access",
     "other": "Accesso"
   },
@@ -44,20 +36,8 @@
     "other": "Aggiungi file multimediale o prova un'altra ricerca."
   },
   {
-    "id": "Add Profile",
-    "other": "Aggiungi profilo"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "Aggiungi questo segreto o URI alla tua app di autenticazione."
-  },
-  {
     "id": "Add to",
     "other": "Aggiungi a"
-  },
-  {
-    "id": "Administer server",
-    "other": "Amministra il server"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "Tutte le valutazioni"
   },
   {
-    "id": "Allow downloads",
-    "other": "Consenti download"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "Consenti transcodifica"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "Analizza i segmenti di riproduzione adesso"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "elemento/i analizzato/i"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "automatico"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "Automatico (rilevato meglio)"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "Automatico (browser)"
   },
@@ -176,24 +136,12 @@
     "other": "Manutenzione automatica"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "I dispositivi disponibili utilizzano una connessione diretta a questo server."
-  },
-  {
     "id": "Back to library",
     "other": "Torna alla libreria"
   },
   {
-    "id": "Back to settings",
-    "other": "Torna alle impostazioni"
-  },
-  {
     "id": "Back up now",
     "other": "Esegui il backup adesso"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "Backup e ripristino"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "I backup devono essere configurati."
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "I backup vengono eseguiti automaticamente senza crittografia."
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "Scegli la lingua per questo browser."
   },
   {
-    "id": "Clear transcode cache",
-    "other": "Svuota cache di transcodifica"
-  },
-  {
     "id": "Code",
     "other": "Codice"
   },
@@ -268,10 +208,6 @@
     "other": "Compatibilità"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "Connessione compatibile"
-  },
-  {
     "id": "Compatibility stream",
     "other": "Stream di compatibilità"
   },
@@ -280,28 +216,12 @@
     "other": "compatibile"
   },
   {
-    "id": "Concurrent streams",
-    "other": "Stream simultanei"
-  },
-  {
     "id": "Configuration error",
     "other": "Errore di configurazione"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "Configurazione · Kinosail Subtitles"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "Configurato; valore nascosto"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "Conferma eliminazione"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "Conferma rimozione"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "Connessione…"
   },
   {
-    "id": "Connection error",
-    "other": "Errore di connessione"
-  },
-  {
     "id": "Content",
     "other": "Contenuto"
   },
   {
-    "id": "Continue Watching",
-    "other": "Continua a guardare"
-  },
-  {
     "id": "Continue watching",
     "other": "Continua a guardare"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "da Continua a guardare"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "Crea una passkey"
   },
   {
-    "id": "Create API key",
-    "other": "Crea chiave API"
-  },
-  {
     "id": "Create passkey",
     "other": "Crea passkey"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "Crea playlist intelligente"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "Crea il tuo profilo proprietario"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "default"
   },
   {
-    "id": "Default playback",
-    "other": "Riproduzione predefinita"
-  },
-  {
     "id": "Delete",
     "other": "Elimina"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "rilevato, non disponibile"
-  },
-  {
-    "id": "Device or app",
-    "other": "Dispositivo o app"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "Connessione diretta non disponibile"
   },
   {
-    "id": "Direct from",
-    "other": "Diretto da"
-  },
-  {
     "id": "Direct stream",
     "other": "Streaming diretto"
   },
   {
     "id": "Directed by",
     "other": "Diretto da"
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "Disabilita e revoca"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "Disattiva l'autenticazione a due fattori"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "Scarica"
-  },
-  {
-    "id": "Download media",
-    "other": "Scarica file multimediali"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "download non sono abilitati per questo profilo visualizzatore"
   },
   {
-    "id": "Edit metadata",
-    "other": "Modifica metadati"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "Modifica indicatori di salto"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "i sottotitoli incorporati non sono disponibili"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "Abilita DLNA"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "Abilita autenticazione a due fattori"
   },
   {
     "id": "Enabled",
     "other": "Abilitato"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "I backup crittografati vengono eseguiti automaticamente."
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "La crittografia è disattivata per impostazione predefinita."
-  },
-  {
     "id": "Encryption is on.",
     "other": "La crittografia è attiva."
-  },
-  {
-    "id": "End in seconds",
-    "other": "Finisci tra secondi"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Inserisci il codice mostrato dalla tua TV o dall'app. Erediterà le tue norme sul profilo."
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "I valori ambientali e YAML sono autorevoli. Le modifiche alla GUI mostrate qui diventano effettive dopo il riavvio del server."
-  },
-  {
-    "id": "Environment default",
-    "other": "Ambiente predefinito"
-  },
-  {
-    "id": "Event webhook",
-    "other": "Webhook evento"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "Ogni 5 minuti"
   },
   {
-    "id": "Everything",
-    "other": "Tutto"
-  },
-  {
     "id": "Export full activity journal",
     "other": "Esporta diario completo delle attività"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Esponi gli URL dei media diretti ai dispositivi su questa rete locale. La disattivazione revoca la funzionalità di rilevamento."
-  },
-  {
-    "id": "Externally managed",
-    "other": "Gestito esternamente"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "Trova qualcosa"
-  },
-  {
-    "id": "Finish setup",
-    "other": "Termina la configurazione"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "Segui questo dispositivo o scegli un tema fisso."
-  },
-  {
-    "id": "Following the room leader",
-    "other": "Seguendo il leader della stanza"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "Generi"
   },
   {
-    "id": "Got it",
-    "other": "Capito"
-  },
-  {
     "id": "Group",
     "other": "Gruppo"
   },
@@ -660,24 +464,12 @@
     "other": "Home"
   },
   {
-    "id": "Hourly",
-    "other": "Ogni ora"
-  },
-  {
     "id": "if enabled",
     "other": "se abilitato"
   },
   {
     "id": "Install",
     "other": "Installa"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "Installa Kinosail"
-  },
-  {
-    "id": "Integrations",
-    "other": "Integrazioni"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "stato di visualizzazione non valido"
   },
   {
-    "id": "Invite link",
-    "other": "Link invito"
-  },
-  {
     "id": "Keep",
     "other": "Mantieni"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Conserva i backup nello spazio di archiviazione esterno a questo host. I backup non sono crittografati a meno che non venga configurata una chiave di backup. Ripristina mentre il server è arrestato."
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "Tieni Kinosail vicino"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Le chiavi vengono visualizzate una volta e archiviate come hash. L'accesso in navigazione è l'impostazione predefinita sicura."
-  },
-  {
     "id": "Kinosail",
     "other": "Kinosail"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail non può raggiungere questo server. Controlla la tua rete o la connessione diretta, quindi riprova."
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail si mantiene automaticamente."
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Lettore Kinosail"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "Ultimo errore"
   },
   {
-    "id": "Last scan error",
-    "other": "Errore ultima scansione"
-  },
-  {
     "id": "Last successful backup",
     "other": "Ultimo backup riuscito"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "Ultima scansione riuscita"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "Biblioteca"
   },
   {
-    "id": "Library discovery",
-    "other": "Scoperta libreria"
-  },
-  {
     "id": "Library folders",
     "other": "Cartelle della libreria"
   },
@@ -808,10 +560,6 @@
     "other": "Organizzazione della biblioteca"
   },
   {
-    "id": "Library views",
-    "other": "Visualizzazioni raccolta"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "Credenziali con licenza configurate"
   },
@@ -820,28 +568,8 @@
     "other": "Leggero"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
-  },
-  {
     "id": "Local account",
     "other": "Account locale"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "Playlist M3U"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "Gestisci lo stato della libreria personale"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "Gestito esternamente e di sola lettura."
-  },
-  {
-    "id": "Managed remote access",
-    "other": "Accesso remoto gestito"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "marker"
   },
   {
-    "id": "Match text",
-    "other": "Testo corrispondente"
-  },
-  {
     "id": "Media",
     "other": "Media"
-  },
-  {
-    "id": "Media information",
-    "other": "Informazioni per i media"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "metadati non validi"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "Fornitore di metadati"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "Musica"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "Musica e audiolibri"
-  },
-  {
     "id": "My List",
     "other": "La mia lista"
   },
@@ -908,36 +620,12 @@
     "other": "Nome"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "nome e una password di 12 caratteri"
-  },
-  {
     "id": "Never",
     "other": "Mai"
   },
   {
-    "id": "New Collection",
-    "other": "Nuova Collezione"
-  },
-  {
-    "id": "New Collection name",
-    "other": "Nuovo nome della raccolta"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Il nuovo supporto viene rilevato automaticamente al termine della copia. Le scansioni di sicurezza riparano gli eventi mancanti del file system su Windows, macOS, Linux, contenitori e montaggi di rete."
-  },
-  {
     "id": "New password",
     "other": "Nuova password"
-  },
-  {
-    "id": "New playlist",
-    "other": "Nuova playlist"
-  },
-  {
-    "id": "New playlist name",
-    "other": "Nuovo nome playlist"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "Nuovo segreto"
   },
   {
-    "id": "New smart playlist",
-    "other": "Nuova playlist intelligente"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "I nuovi visualizzatori iniziano con valutazioni per famiglia e senza librerie. Aggiungi nomi di cartelle o"
-  },
-  {
-    "id": "Newest",
-    "other": "Più recente"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "Nessuna attività ancora registrata."
   },
   {
-    "id": "No channels configured.",
-    "other": "Nessun canale configurato."
-  },
-  {
     "id": "No device selected",
     "other": "Nessun dispositivo selezionato"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "Nessun download offline ancora."
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "Nessuno"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "Nessuno; utilizza tutti o i nomi delle cartelle"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "Niente trovato."
   },
   {
-    "id": "Now viewing",
-    "other": "Ora visualizzo"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "Download offline"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "Download offline · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "Il"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "Su iPhone o iPad, tocca Condividi, scegli Aggiungi alla schermata iniziale, attiva Apri come app Web, quindi tocca Aggiungi."
-  },
-  {
-    "id": "One-time reveal",
-    "other": "Rivelazione una tantum"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "Gioca sul dispositivo"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "Riproduci automaticamente l'episodio successivo"
-  },
-  {
     "id": "Playback",
     "other": "Riproduzione"
   },
   {
     "id": "Playback history",
     "other": "Cronologia riproduzione"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "Analisi del segmento di riproduzione"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "Trama"
   },
   {
-    "id": "Polling for changes",
-    "other": "Sondaggio per modifiche"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "Preferisci la qualità"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "Preferisci la velocità"
-  },
-  {
     "id": "Preferred language",
     "other": "Lingua preferita"
   },
@@ -1164,20 +792,12 @@
     "other": "anteprima non disponibile"
   },
   {
-    "id": "Private by design",
-    "other": "Privato per design"
-  },
-  {
     "id": "Profile",
     "other": "Profilo"
   },
   {
     "id": "profile storage is unavailable",
     "other": "archiviazione del profilo non disponibile"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "Profilo da reimpostare"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "Connessione rapida"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "Connessione rapida · Kinosail Subtitles"
-  },
-  {
     "id": "Rating",
     "other": "Valutazione"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "lettore"
-  },
-  {
-    "id": "Reading order",
-    "other": "Ordine di lettura"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "Codici di recupero"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "Aggiorna da TMDB"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "Aggiorna metadati mancanti"
-  },
-  {
     "id": "Recommended",
     "other": "Consigliato"
   },
@@ -1296,10 +900,6 @@
     "other": "la richiesta è troppo grande"
   },
   {
-    "id": "Reset password",
-    "other": "Reimposta password"
-  },
-  {
     "id": "Return to settings",
     "other": "Torna alle impostazioni"
   },
@@ -1312,24 +912,8 @@
     "other": "Rockchip RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "Stanza connessa · segue il leader"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "Stanza connessa · sei tu a condurre"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "Stanza disconnessa · ricarica per riconnettersi"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "Esegui la scansione della libreria adesso"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "Esegui la manutenzione adesso"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "Salva"
-  },
-  {
-    "id": "Save file",
-    "other": "Salva file"
-  },
-  {
-    "id": "Save for restart",
-    "other": "Salva per il riavvio"
-  },
-  {
-    "id": "Save marker",
-    "other": "Salva indicatore"
-  },
-  {
-    "id": "Save metadata",
-    "other": "Salva metadati"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "Proteggi il tuo account · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Invia questo URL di connessione privata al visualizzatore. Viene mostrato solo una volta."
-  },
-  {
-    "id": "Server name",
-    "other": "Nome server"
-  },
-  {
     "id": "Server settings",
     "other": "Impostazioni server"
   },
   {
-    "id": "Server unavailable",
-    "other": "Server non disponibile"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "Server non disponibile · Kinosail Subtitles"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "Configura Kinosail"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "Imposta o sostituisci l'autenticatore"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "Imposta l'autenticazione a due fattori"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "Imposta l'autenticazione a due fattori · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "Impostazioni · Kinosail Subtitles"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Dai forma all'esperienza, proteggi la tua raccolta e mantieni ogni streaming in perfetta esecuzione."
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "Esci"
   },
   {
-    "id": "Sign out other devices",
-    "other": "Esci da altri dispositivi"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "Metodi di accesso"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Accesso, protezioni del browser della stessa origine, risposte private, richieste limitate e accesso revocabile sono sempre attivi. Non ci sono interruttori di sicurezza da gestire."
-  },
-  {
     "id": "Single sign-on",
     "other": "Accesso singolo"
   },
@@ -1488,44 +1012,8 @@
     "other": "Salta"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "Salta automaticamente la pubblicità"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "Salta i crediti automaticamente"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "Salta automaticamente le introduzioni"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "Salta gli outro automaticamente"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "Salta automaticamente i riepiloghi"
-  },
-  {
     "id": "Skip to content",
     "other": "Vai al contenuto"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "Sleeptimer"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "Timer spegnimento terminato"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "Playlist intelligente"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "Nome playlist intelligente"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "Convalida token SSO non riuscita"
   },
   {
-    "id": "Start in seconds",
-    "other": "Inizia in pochi secondi"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "Inizia a guardare insieme"
-  },
-  {
     "id": "Status",
     "other": "Stato"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "Ferme tra {minutes} minuti"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "Conserva questi codici in un posto sicuro. Ciascuno funziona una volta."
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "Memorizzato qui. Trasmesso direttamente in streaming."
-  },
-  {
-    "id": "Stream media",
-    "other": "Streaming multimediale"
-  },
-  {
-    "id": "Subscription required",
-    "other": "Abbonamento richiesto"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "fornitore di sottotitoli non disponibile"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "traccia/e sottotitoli"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "Slogan"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "Il backup contiene l'account e lo stato della sessione. Mantieni privato l'archivio di backup non crittografato o configura una chiave di backup."
-  },
-  {
     "id": "Theme",
     "other": "Tema"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "Queste impostazioni sono di sola lettura finché non vengono rimosse da YAML o dall'ambiente"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "Questo prodotto utilizza l'API TMDB ma non è approvato o certificato da TMDB."
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "In questo modo si esce dal profilo e lo si elimina."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "Traccia"
   },
   {
-    "id": "transcode cache",
-    "other": "transcodifica cache"
-  },
-  {
     "id": "Transcoder",
     "other": "Transcodificatore"
   },
@@ -1740,10 +1184,6 @@
     "other": "Digita"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "Scollega OpenID Connect"
-  },
-  {
     "id": "Until",
     "other": "Fino al"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "Utilizza predefinito"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Utilizza Face ID, Touch ID, Windows Hello o il PIN del tuo dispositivo per accedere. La tua password continuerà a funzionare."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "L'accesso come visualizzatore non è disponibile"
   },
   {
-    "id": "Viewer name",
-    "other": "Nome visualizzatore"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "In attesa della tua passkey…"
   },
@@ -1804,14 +1236,6 @@
     "other": "Guardato"
   },
   {
-    "id": "Watched ✓",
-    "other": "Guardato ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "Attenzione ai cambiamenti"
-  },
-  {
     "id": "Welcome aboard",
     "other": "Benvenuto a bordo"
   },
@@ -1820,35 +1244,11 @@
     "other": "quando sarà pronto."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV guida"
-  },
-  {
     "id": "Year",
     "other": "Anno"
   },
   {
-    "id": "You lead this room",
-    "other": "Conduci tu questa stanza"
-  },
-  {
     "id": "Your library",
     "other": "La tua libreria"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "La tua libreria e l'attività di visualizzazione rimangono su questo server."
-  },
-  {
-    "id": "← Books",
-    "other": "← Libri"
-  },
-  {
-    "id": "← Library",
-    "other": "← Biblioteca"
-  },
-  {
-    "id": "← Settings",
-    "other": "← Impostazioni"
   }
 ]

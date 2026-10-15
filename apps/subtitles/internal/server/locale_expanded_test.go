@@ -9,7 +9,3 @@ func TestInvalidLanguageSelectionHasNoSideEffects(t *testing.T) {
 func TestExpandedLanguageTagsPreserveRegionalAndRTLSemantics(t *testing.T) {
 	localeWebFixture.ExpandedLanguageTagsPreserveRegionalAndRTLSemantics(t)
 }
-
-func TestLanguagePickerOffersEveryLocaleOnTheHomePage(t *testing.T) {
-	localeWebFixture.LanguagePickerOffersEveryLocaleOnTheHomePage(t)
-}

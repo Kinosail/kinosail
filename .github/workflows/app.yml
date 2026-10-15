@@ -578,7 +578,7 @@ jobs:
 
   proof-plan:
     name: ${{ inputs.app }} media proof shards
-    if: fromJSON(inputs.plan)[inputs.app]
+    if: inputs.app == 'player' && fromJSON(inputs.plan)[inputs.app]
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
@@ -595,7 +595,7 @@ jobs:
   proofs:
     name: ${{ inputs.app }} media proof (${{ matrix.shard }})
     needs: proof-plan
-    if: fromJSON(inputs.plan)[inputs.app]
+    if: inputs.app == 'player' && fromJSON(inputs.plan)[inputs.app]
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ matrix.timeout }}
     strategy:

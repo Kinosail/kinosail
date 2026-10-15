@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -52,104 +51,6 @@ func TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable(t *testing.T) {
 		if response := serveRequest(handler, request); response.Code != http.StatusOK {
 			t.Fatalf("LAN alias %s = %d %q", host, response.Code, response.Body.String())
 		}
-	}
-}
-
-func TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, ProxyToken: "proxy-capability"})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	disableTestMFA(t, handler, owner.Value)
-	for _, input := range []string{
-		"name=Remote&password=remote-password&rating=all&libraries=all&remote=true",
-		"name=Local&password=local-password&rating=all&libraries=all",
-	} {
-		if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/settings/profiles", input, owner)); response.Code != http.StatusSeeOther {
-			t.Fatalf("create Viewer = %d %q", response.Code, response.Body.String())
-		}
-	}
-	remote := signInTestProfile(t, handler, "/login", "name=Remote&password=remote-password")
-	local := signInTestProfile(t, handler, "/login", "name=Local&password=local-password")
-	if response := serveRequest(server.Remote(handler), requestWithCookieRequest(t, http.MethodGet, "/", "", remote)); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "public sign-in") {
-		t.Fatalf("password-only public Viewer = %d %q", response.Code, response.Body.String())
-	}
-	enrollment := requestWithCookie(t, handler, http.MethodPost, "/account/mfa/setup", "", remote)
-	confirmTestFactor(t, handler, remote, enrollment)
-	if response := serveRequest(server.Remote(handler), requestWithCookieRequest(t, http.MethodGet, "/", "", remote)); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "public sign-in") {
-		t.Fatalf("LAN session reused publicly = %d %q", response.Code, response.Body.String())
-	}
-	if response := serveRequest(server.Remote(handler), requestWithCookieRequest(t, http.MethodGet, "/", "", local)); response.Code != http.StatusForbidden {
-		t.Fatalf("local-only Viewer = %d %q", response.Code, response.Body.String())
-	}
-	direct := requestWithCookieRequest(t, http.MethodGet, "/", "", local)
-	direct.Header.Set("X-Kinosail-Remote", "true")
-	if response := serveRequest(handler, direct); response.Code != http.StatusOK {
-		t.Fatalf("spoofed remote header changed local policy = %d %q", response.Code, response.Body.String())
-	}
-}
-
-func TestPublicTripwireQuarantinesScannerWithoutStoppingLocalAccess(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	public := server.Remote(handler)
-	for index, path := range []string{"/.env", "/.git/config", "/wp-login.php"} {
-		request := requestWithBody(t, http.MethodGet, path, "")
-		request.RemoteAddr = "203.0.113.8:4321"
-		request.Header.Set("X-Forwarded-For", fmt.Sprintf("198.51.100.%d", index+1))
-		response := serveRequest(public, request)
-		if response.Code != http.StatusNotFound {
-			t.Fatalf("tripwire %s = %d %q", path, response.Code, response.Body.String())
-		}
-	}
-	blockedRequest := requestWithBody(t, http.MethodGet, "/login", "")
-	blockedRequest.RemoteAddr = "203.0.113.8:4321"
-	blockedRequest.Header.Set("X-Forwarded-For", "198.51.100.200")
-	blocked := serveRequest(public, blockedRequest)
-	if blocked.Code != http.StatusTooManyRequests || blocked.Header().Get("Retry-After") == "" {
-		t.Fatalf("quarantined scanner = %d %q", blocked.Code, blocked.Body.String())
-	}
-	local := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/", "", owner))
-	if local.Code != http.StatusOK {
-		t.Fatalf("local access after tripwire = %d %q", local.Code, local.Body.String())
-	}
-	settings := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/settings", "", owner))
-	if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), "Public scanner quarantined") {
-		t.Fatalf("Owner tripwire warning = %d %q", settings.Code, settings.Body.String())
-	}
-}
-
-func TestOwnerCanPersistAndResetPublicKillSwitch(t *testing.T) {
-	t.Parallel()
-	dataDir := t.TempDir()
-	config := remoteaccess.Config{Enabled: true, PublicHTTPS: true, Domain: "family-media", Token: strings.Repeat("k", 32), Listen: "127.0.0.1:8443", DataDir: dataDir}
-	manager, err := remoteaccess.New(config, remoteaccess.Dependencies{Certificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return nil, nil }})
-	if err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, InternetAccess: manager})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	killed := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/api/v1/remote-access/kill", "", owner))
-	if killed.Code != http.StatusNoContent || manager.Status().State != "killed" {
-		t.Fatalf("kill switch = %d %q status=%#v", killed.Code, killed.Body.String(), manager.Status())
-	}
-	if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodGet, "/", "", owner)); response.Code != http.StatusOK {
-		t.Fatalf("local access after kill = %d %q", response.Code, response.Body.String())
-	}
-	assertAPIBody(t, requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner), http.StatusOK, "Allow public access now")
-	reopened, err := remoteaccess.New(config, remoteaccess.Dependencies{Certificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) { return nil, nil }})
-	if err != nil || reopened.Status().State != "killed" {
-		t.Fatalf("persisted kill switch = %#v, %v", reopened, err)
-	}
-	if _, err := os.Stat(filepath.Join(dataDir, "remote-access.disabled")); err != nil {
-		t.Fatal(err)
-	}
-	reset := serveRequest(handler, requestWithCookieRequest(t, http.MethodDelete, "/api/v1/remote-access/kill", "", owner))
-	if reset.Code != http.StatusNoContent || manager.Status().State != "starting" {
-		t.Fatalf("reset kill switch = %d %q status=%#v", reset.Code, reset.Body.String(), manager.Status())
-	}
-	if _, err := os.Stat(filepath.Join(dataDir, "remote-access.disabled")); !os.IsNotExist(err) {
-		t.Fatalf("kill marker remains after reset: %v", err)
 	}
 }
 

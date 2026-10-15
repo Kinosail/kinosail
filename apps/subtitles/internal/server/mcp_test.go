@@ -127,7 +127,7 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 
 	t.Run("read-only tool list", func(t *testing.T) {
 		response := mcpRequest(t, mux, "tools/list", "access-token", nil)
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"read_api"`) || !strings.Contains(response.Body.String(), `"name":"search_media"`) || !strings.Contains(response.Body.String(), `"name":"recommendation_context"`) || strings.Contains(response.Body.String(), `"name":"write_api"`) || strings.Contains(response.Body.String(), `"name":"manage_api"`) || !strings.Contains(response.Body.String(), `"readOnlyHint":true`) {
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"read_api"`) || !strings.Contains(response.Body.String(), `"name":"search_media"`) || strings.Contains(response.Body.String(), `"name":"recommendation_context"`) || strings.Contains(response.Body.String(), `"name":"write_api"`) || strings.Contains(response.Body.String(), `"name":"manage_api"`) || !strings.Contains(response.Body.String(), `"readOnlyHint":true`) {
 			t.Fatalf("tools = %d %q", response.Code, response.Body.String())
 		}
 	})
@@ -136,10 +136,6 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 		response := mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "search_media", "arguments": map[string]any{"query": "Halloween", "view": "movies", "limit": 10}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"title":"Halloween"`) {
 			t.Fatalf("search = %d %q", response.Code, response.Body.String())
-		}
-		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "recommendation_context", "arguments": map[string]any{"view": "shows", "limit": 10}})
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"history"`) || !strings.Contains(response.Body.String(), `"candidates"`) || !strings.Contains(response.Body.String(), `"id":"watched"`) {
-			t.Fatalf("recommendation context = %d %q", response.Code, response.Body.String())
 		}
 	})
 
@@ -171,23 +167,12 @@ func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	t.Run("write scope", func(t *testing.T) {
 		scope = mcpReadScope + " " + mcpWriteScope
 		response := mcpRequest(t, mux, "tools/list", "access-token", nil)
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"write_api"`) || !strings.Contains(response.Body.String(), `"name":"create_playlist"`) {
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"write_api"`) || strings.Contains(response.Body.String(), `"name":"create_playlist"`) {
 			t.Fatalf("tools = %d %q", response.Code, response.Body.String())
 		}
 		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "write_api", "arguments": map[string]any{"method": "PUT", "path": "/api/v1/me/language", "body": map[string]string{"language": "de"}}})
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"language":"de"`) {
 			t.Fatalf("write = %d %q", response.Code, response.Body.String())
-		}
-		response = mcpRequest(t, mux, "tools/call", "access-token", map[string]any{"name": "create_playlist", "arguments": map[string]any{"name": "Halloween", "ids": []string{"movie"}}})
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"Halloween"`) || !strings.Contains(response.Body.String(), `"movie"`) {
-			t.Fatalf("playlist = %d %q", response.Code, response.Body.String())
-		}
-		attributed := false
-		for _, event := range authentication.audit.Query("", 10) {
-			attributed = attributed || event.Action == "playlist.updated" && event.Actor == "MCP · Viewer"
-		}
-		if !attributed {
-			t.Fatalf("OAuth MCP mutation was not attributed: %#v", authentication.audit.Query("", 10))
 		}
 	})
 

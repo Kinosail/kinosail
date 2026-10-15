@@ -9,6 +9,6 @@ import (
 
 type maintenanceManager = sharedmaintenance.Manager
 
-func newMaintenanceManager(ctx context.Context, hls *hlsManager, backups *backupManager, metadata *metadataStore, markers *markerAnalyzer, interval time.Duration, limit int64) *maintenanceManager {
-	return sharedmaintenance.NewApplication(ctx, interval, limit, hls.cacheOps, backups, metadata.pruneExpiredArtwork, metadata.configured, markers)
+func newMaintenanceManager(ctx context.Context, backups *backupManager, metadata *metadataStore, interval time.Duration) *maintenanceManager {
+	return sharedmaintenance.NewSubtitles(ctx, interval, backups, metadata.pruneExpiredArtwork, metadata.configured)
 }

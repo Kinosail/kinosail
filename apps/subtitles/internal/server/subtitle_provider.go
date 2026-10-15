@@ -126,51 +126,6 @@ func validSubtitleProviderEndpoint(value string) bool {
 	return err == nil && validIntegrationEndpoint(endpoint)
 }
 
-func (provider *subtitleProvider) register(mux *http.ServeMux, auth *authentication) {
-	mux.Handle("POST /subtitles/{id}/fetch", auth.owner(provider.admission.legacyHandler(provider.fetchHandler())))
-	mux.HandleFunc("GET /subtitles/{id}/{language}", provider.serve)
-}
-
-func (provider *subtitleProvider) fetchHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		if !emptyMutationRequest(writer, request) {
-			localizedError(writer, request, "subtitle request is invalid", http.StatusBadRequest)
-			return
-		}
-		item, found := visibleItem(request, provider.index, request.PathValue("id"))
-		if !found || item.Kind != "video" {
-			localizedNotFound(writer, request)
-			return
-		}
-		if err := provider.fetch(request.Context(), item, provider.settings.subtitleLanguage()); err != nil {
-			localizedError(writer, request, "subtitle provider unavailable", http.StatusBadGateway)
-			return
-		}
-		http.Redirect(writer, request, "/watch/"+item.ID, http.StatusSeeOther)
-	}
-}
-
-func (provider *subtitleProvider) fetch(ctx context.Context, item library.Item, language string) error {
-	ctx, settled, admissionErr := provider.admission.enter(ctx)
-	if admissionErr != nil {
-		return admissionErr
-	}
-	defer settled()
-	canonical, err := validateSubtitleLanguages([]string{language})
-	if err != nil {
-		return errors.New("subtitle request is invalid")
-	}
-	language = canonical[0]
-	cleaned, record, err := provider.acquire(ctx, item, language, nil)
-	if err != nil {
-		return err
-	}
-	if err := provider.retainSubtitleOriginal(cleaned.Original, &record); err != nil {
-		return err
-	}
-	return saveSubtitle(provider.path(item.ID, language), cleaned.Data)
-}
-
 func (provider *subtitleProvider) fetchSidecar(ctx context.Context, item library.Item, language string) error {
 	ctx, settled, admissionErr := provider.admission.enter(ctx)
 	if admissionErr != nil {
@@ -284,10 +239,6 @@ func (provider *subtitleProvider) preference() string {
 		return "standard"
 	}
 	return provider.settings.subtitlePreference()
-}
-
-func saveSubtitle(target string, data []byte) error {
-	return writeAtomicFile(target, data)
 }
 
 func saveSubtitleExclusive(target string, data []byte) error {

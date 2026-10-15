@@ -19,7 +19,3 @@ var samlConfigurationContracts = servertest.SAMLConfiguration[configuration.Snap
 func TestOwnerCanConfigureSAMLWithProviderMetadataURL(t *testing.T) {
 	samlConfigurationContracts.OwnerCanConfigureSAMLWithProviderMetadataURL(t)
 }
-
-func TestSettingsShowDownloadedSAMLMetadataAsConfigured(t *testing.T) {
-	samlConfigurationContracts.SettingsShowDownloadedSAMLMetadataAsConfigured(t)
-}

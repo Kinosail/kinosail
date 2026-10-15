@@ -9,7 +9,7 @@ import (
 )
 
 func trustedHTTPSFixture() servertest.TrustedHTTPSFixture {
-	fixture := servertest.TrustedHTTPSFixture{Origin: configuration.TrustedOrigin, SignIn: signInTestProfile, Web: requestWithCookie, Token: trustedHTTPSTestToken, ExpectedOrigin: "https://family-media.duckdns.org:38128", InitialCopy: []string{"Trusted HTTPS (Recommended)", "Recommended for phones, TVs, and apps. Optional."}}
+	fixture := servertest.TrustedHTTPSFixture{Origin: configuration.TrustedOrigin, SignIn: signInTestProfile, Web: requestWithCookie, Token: trustedHTTPSTestToken, ExpectedOrigin: "https://family-media.duckdns.org:38128", InitialCopy: []string{"Trusted HTTPS (Recommended)", "Recommended for phones and browsers. Optional."}, NoOnboarding: true, RestartNoticePath: "/settings/configuration"}
 	return servertest.BindTrustedHTTPS(fixture, configuration.Load, func(directory string, configured configuration.Snapshot) http.Handler {
 		return server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})
 	})

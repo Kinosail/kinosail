@@ -44,7 +44,7 @@ func TestOwnerSeesOnlyUnappliedRestartChanges(t *testing.T) {
 
 func assertRestartPages(t *testing.T, handler http.Handler, owner *http.Cookie, want bool) {
 	t.Helper()
-	for _, path := range []string{"/settings", "/settings/configuration"} {
+	for _, path := range []string{"/settings/configuration"} {
 		page := requestWithCookie(t, handler, http.MethodGet, path, "", owner)
 		if page.Code != http.StatusOK || strings.Contains(page.Body.String(), `id="restart-required"`) != want {
 			t.Fatalf("%s restart status = %d, want visible=%t", path, page.Code, want)
@@ -72,7 +72,7 @@ func TestPendingRestartNoticeInPhoneAndDesktopBrowsers(t *testing.T) {
 		handler.ServeHTTP(writer, request)
 	}))
 	defer web.Close()
-	for _, path := range []string{"/settings", "/settings/configuration"} {
+	for _, path := range []string{"/settings/configuration"} {
 		for _, width := range []int{390, 1280} {
 			result := browserAudit(t, chrome, web.URL+path, width, 900)
 			if result.Overflow != 0 || result.Main != 1 || result.Unnamed != 0 {

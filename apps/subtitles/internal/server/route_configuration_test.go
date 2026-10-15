@@ -7,15 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func homeAssistantRouteConfiguration(t *testing.T, data string) configuration.Snapshot {
-	t.Helper()
-	configured, err := configuration.Load(data, "", servertest.HomeAssistantRouteEnvironment)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return configured
-}
-
 func duckDNSRouteConfiguration(t *testing.T, data string) configuration.Snapshot {
 	t.Helper()
 	configured, err := configuration.Load(data, "", servertest.JellyfinRouteEnvironment)

@@ -8,14 +8,6 @@
     "other": "30 minuter"
   },
   {
-    "id": "45 minutes",
-    "other": "45 minuter"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60 minuter"
-  },
-  {
     "id": "Access",
     "other": "Åtkomst"
   },
@@ -44,20 +36,8 @@
     "other": "Lägg till media eller försök en annan sökning."
   },
   {
-    "id": "Add Profile",
-    "other": "Lägg till profil"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "Lägg till denna hemlighet eller URI till din autentiseringsapp."
-  },
-  {
     "id": "Add to",
     "other": "Lägg till i"
-  },
-  {
-    "id": "Administer server",
-    "other": "Administrera server"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "Alla betyg"
   },
   {
-    "id": "Allow downloads",
-    "other": "Tillåt nedladdningar"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "Tillåt omkodning"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "Analysera uppspelningssegment nu"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "analyserade objekt(er)"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "automatisk"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "Automatisk (bäst upptäckt)"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "Automatisk (webbläsare)"
   },
@@ -176,24 +136,12 @@
     "other": "Automatiskt underhåll"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "Tillgängliga enheter använder en direkt anslutning till denna server."
-  },
-  {
     "id": "Back to library",
     "other": "Tillbaka till biblioteket"
   },
   {
-    "id": "Back to settings",
-    "other": "Tillbaka till inställningar"
-  },
-  {
     "id": "Back up now",
     "other": "Säkerhetskopiera nu"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "Säkerhetskopiering och återställning"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "Säkerhetskopieringar behöver konfigureras."
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "Säkerhetskopiering körs automatiskt utan kryptering."
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "Välj språk för den här webbläsaren."
   },
   {
-    "id": "Clear transcode cache",
-    "other": "Rensa omkodningscache"
-  },
-  {
     "id": "Code",
     "other": "Kod"
   },
@@ -268,10 +208,6 @@
     "other": "Kompatibilitet"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "Kompatibilitetsanslutning"
-  },
-  {
     "id": "Compatibility stream",
     "other": "Kompatibilitetsström"
   },
@@ -280,28 +216,12 @@
     "other": "kompatibel"
   },
   {
-    "id": "Concurrent streams",
-    "other": "Samtidiga strömmar"
-  },
-  {
     "id": "Configuration error",
     "other": "Konfigurationsfel"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "Konfiguration · Kinosail Subtitles"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "Konfigurerad; värde dolt"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "Bekräfta borttagning"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "Bekräfta borttagning"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "Ansluter..."
   },
   {
-    "id": "Connection error",
-    "other": "Anslutningsfel"
-  },
-  {
     "id": "Content",
     "other": "Innehåll"
   },
   {
-    "id": "Continue Watching",
-    "other": "Fortsätt titta"
-  },
-  {
     "id": "Continue watching",
     "other": "Fortsätt titta"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "från Fortsätt titta"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "Skapa en lösenordsnyckel"
   },
   {
-    "id": "Create API key",
-    "other": "Skapa API-nyckel"
-  },
-  {
     "id": "Create passkey",
     "other": "Skapa lösenord"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "Skapa smart spellista"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "Skapa din ägarprofil"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "standard"
   },
   {
-    "id": "Default playback",
-    "other": "Standarduppspelning"
-  },
-  {
     "id": "Delete",
     "other": "Ta bort"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "upptäckt, otillgänglig"
-  },
-  {
-    "id": "Device or app",
-    "other": "Enhet eller app"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "Direktanslutning otillgänglig"
   },
   {
-    "id": "Direct from",
-    "other": "Direkt från"
-  },
-  {
     "id": "Direct stream",
     "other": "Direktström"
   },
   {
     "id": "Directed by",
     "other": "Regisserad av"
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "Inaktivera och återkalla"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "Inaktivera tvåfaktorsautentisering"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "Ladda ner"
-  },
-  {
-    "id": "Download media",
-    "other": "Ladda ned media"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "nedladdningar är inte aktiverade för den här tittarprofilen"
   },
   {
-    "id": "Edit metadata",
-    "other": "Redigera metadata"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "Redigera överhoppningsmarkörer"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "inbäddade undertexter är inte tillgängliga"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "Aktivera DLNA"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "Aktivera tvåfaktorsautentisering"
   },
   {
     "id": "Enabled",
     "other": "Aktiverad"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "Krypterade säkerhetskopior körs automatiskt."
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "Kryptering är avstängd som standard."
-  },
-  {
     "id": "Encryption is on.",
     "other": "Kryptering är på."
-  },
-  {
-    "id": "End in seconds",
-    "other": "Slutar om sekunder"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Ange koden som visas av din TV eller app. Den kommer att ärva din profilpolicy."
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Miljö- och YAML-värden är auktoritativa. GUI-ändringar som visas här träder i kraft efter att servern startat om."
-  },
-  {
-    "id": "Environment default",
-    "other": "Miljöstandard"
-  },
-  {
-    "id": "Event webhook",
-    "other": "Event webhook"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "Var 5:e minut"
   },
   {
-    "id": "Everything",
-    "other": "Allt"
-  },
-  {
     "id": "Export full activity journal",
     "other": "Exportera fullständig aktivitetsdagbok"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Exponera direkta media-URL:er för enheter på det här lokala nätverket. Om du inaktiverar återkallas upptäcktsförmågan."
-  },
-  {
-    "id": "Externally managed",
-    "other": "Externt hanterad"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "Hitta något"
-  },
-  {
-    "id": "Finish setup",
-    "other": "Slutför installationen"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "Följ den här enheten eller välj ett fast tema."
-  },
-  {
-    "id": "Following the room leader",
-    "other": "Följer rumsledaren"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "Genrer"
   },
   {
-    "id": "Got it",
-    "other": "Fick det"
-  },
-  {
     "id": "Group",
     "other": "Grupp"
   },
@@ -660,24 +464,12 @@
     "other": "Hem"
   },
   {
-    "id": "Hourly",
-    "other": "Varje timme"
-  },
-  {
     "id": "if enabled",
     "other": "om aktiverat"
   },
   {
     "id": "Install",
     "other": "Installera"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "Installera Kinosail"
-  },
-  {
-    "id": "Integrations",
-    "other": "Integrationer"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "ogiltigt bevakat tillstånd"
   },
   {
-    "id": "Invite link",
-    "other": "Inbjudningslänk"
-  },
-  {
     "id": "Keep",
     "other": "Behåll"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Behåll säkerhetskopior på lagring utanför denna värd. Säkerhetskopieringar är okrypterade såvida inte en reservnyckel är konfigurerad. Återställ medan servern är stoppad."
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "Håll Kinosail nära"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Nycklar visas en gång och lagras som hash. Bläddringsåtkomst är den säkra standarden."
-  },
-  {
     "id": "Kinosail",
     "other": "Kinosail"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail kan inte nå denna server. Kontrollera ditt nätverk eller direktanslutning och försök sedan igen."
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail underhåller sig själv automatiskt."
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Kinosagelläsare"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "Senaste fel"
   },
   {
-    "id": "Last scan error",
-    "other": "Fel vid senaste genomsökning"
-  },
-  {
     "id": "Last successful backup",
     "other": "Senaste lyckade säkerhetskopiering"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "Senaste lyckade genomsökning"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "Bibliotek"
   },
   {
-    "id": "Library discovery",
-    "other": "Bibliotek upptäckt"
-  },
-  {
     "id": "Library folders",
     "other": "Bibliotekmappar"
   },
@@ -808,10 +560,6 @@
     "other": "Bibliotekets organisation"
   },
   {
-    "id": "Library views",
-    "other": "Bibliotekvisningar"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "Licensierad autentiseringsinformation konfigurerad"
   },
@@ -820,28 +568,8 @@
     "other": "Lätt"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
-  },
-  {
     "id": "Local account",
     "other": "Lokalt konto"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "M3U-spellista"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "Hantera personligt bibliotekstillstånd"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "Hanteras externt och skrivskyddad."
-  },
-  {
-    "id": "Managed remote access",
-    "other": "Hanterad fjärråtkomst"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "markör"
   },
   {
-    "id": "Match text",
-    "other": "Matchningstext"
-  },
-  {
     "id": "Media",
     "other": "Media"
-  },
-  {
-    "id": "Media information",
-    "other": "Medieinformation"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "metadata är ogiltig"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "Metadataleverantör"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "Musik"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "Musik och ljudböcker"
-  },
-  {
     "id": "My List",
     "other": "Min lista"
   },
@@ -908,36 +620,12 @@
     "other": "Namn"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "namn och ett 12-teckens lösenord krävs"
-  },
-  {
     "id": "Never",
     "other": "Aldrig"
   },
   {
-    "id": "New Collection",
-    "other": "Ny samling"
-  },
-  {
-    "id": "New Collection name",
-    "other": "Nytt samlingsnamn"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Nytt media upptäcks automatiskt efter att kopieringen är klar. Säkerhetsskanningar reparerar missade filsystemhändelser på Windows, macOS, Linux, containrar och nätverksfästen."
-  },
-  {
     "id": "New password",
     "other": "Nytt lösenord"
-  },
-  {
-    "id": "New playlist",
-    "other": "Ny spellista"
-  },
-  {
-    "id": "New playlist name",
-    "other": "Nytt spellistanamn"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "Ny hemlighet"
   },
   {
-    "id": "New smart playlist",
-    "other": "Ny smart spellista"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "Nya tittare börjar med familjebetyg och inga bibliotek. Lägg till mappnamn eller"
-  },
-  {
-    "id": "Newest",
-    "other": "Nyast"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "Ingen aktivitet registrerad ännu."
   },
   {
-    "id": "No channels configured.",
-    "other": "Inga kanaler har konfigurerats."
-  },
-  {
     "id": "No device selected",
     "other": "Ingen enhet har valts"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "Inga offlinenedladdningar ännu."
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "Ingen"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "Ingen; använd alla eller mappnamn"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "Inget hittades."
   },
   {
-    "id": "Now viewing",
-    "other": "Visar nu"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "Offlinenedladdningar"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "Offlinenedladdningar · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "På"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "På iPhone eller iPad trycker du på Dela, väljer Lägg till på startskärmen, aktiverar Öppna som webbapp och trycker sedan på Lägg till."
-  },
-  {
-    "id": "One-time reveal",
-    "other": "Engångsavslöjande"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "Spela på enheten"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "Spela nästa avsnitt automatiskt"
-  },
-  {
     "id": "Playback",
     "other": "Uppspelning"
   },
   {
     "id": "Playback history",
     "other": "Uppspelningshistorik"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "Uppspelningssegmentanalys"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "Plot"
   },
   {
-    "id": "Polling for changes",
-    "other": "Polaring för ändringar"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "Föredrar kvalitet"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "Föredrar hastighet"
-  },
-  {
     "id": "Preferred language",
     "other": "Önskat språk"
   },
@@ -1164,20 +792,12 @@
     "other": "förhandsgranskning ej tillgänglig"
   },
   {
-    "id": "Private by design",
-    "other": "Privat by design"
-  },
-  {
     "id": "Profile",
     "other": "Profil"
   },
   {
     "id": "profile storage is unavailable",
     "other": "profillagring är inte tillgänglig"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "Profil att återställa"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "Snabbanslutning"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "Snabbanslutning · Kinosail Subtitles"
-  },
-  {
     "id": "Rating",
     "other": "Betyg"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "läsare"
-  },
-  {
-    "id": "Reading order",
-    "other": "Läsbeställning"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "Återställningskoder"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "Uppdatera från TMDB"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "Uppdatera saknad metadata"
-  },
-  {
     "id": "Recommended",
     "other": "Rekommenderas"
   },
@@ -1296,10 +900,6 @@
     "other": "förfrågan är för stor"
   },
   {
-    "id": "Reset password",
-    "other": "Återställ lösenord"
-  },
-  {
     "id": "Return to settings",
     "other": "Återgå till inställningar"
   },
@@ -1312,24 +912,8 @@
     "other": "Rockchip RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "Rum anslutet · följer ledare"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "Rum anslutet · du leder"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "Rum frånkopplat · ladda om för att återansluta"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "Kör biblioteksskanning nu"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "Kör underhåll nu"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "Spara"
-  },
-  {
-    "id": "Save file",
-    "other": "Spara fil"
-  },
-  {
-    "id": "Save for restart",
-    "other": "Spara för omstart"
-  },
-  {
-    "id": "Save marker",
-    "other": "Spara markör"
-  },
-  {
-    "id": "Save metadata",
-    "other": "Spara metadata"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "Säkra ditt konto · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Skicka denna privata anslutnings-URL till Viewer. Den visas bara en gång."
-  },
-  {
-    "id": "Server name",
-    "other": "Servernamn"
-  },
-  {
     "id": "Server settings",
     "other": "Serverinställningar"
   },
   {
-    "id": "Server unavailable",
-    "other": "Server inte tillgänglig"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "Server inte tillgänglig · KinoSAIL"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "Konfigurera Kinosail"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "Konfigurera eller byt ut autentiseringsverktyg"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "Konfigurera tvåfaktorsautentisering"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "Konfigurera tvåfaktorsautentisering · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "Inställningar · Kinosail Subtitles"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Forma upplevelsen, skydda ditt bibliotek och se till att varje stream fungerar vackert."
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "Logga ut"
   },
   {
-    "id": "Sign out other devices",
-    "other": "Logga ut andra enheter"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "Inloggningsmetoder"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Inloggning, webbläsarskydd med samma ursprung, privata svar, begränsade förfrågningar och återkallbar åtkomst är alltid på. Det finns inga säkerhetsväxlar att hantera."
-  },
-  {
     "id": "Single sign-on",
     "other": "Enkel inloggning"
   },
@@ -1488,44 +1012,8 @@
     "other": "Hoppa över"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "Hoppa över reklam automatiskt"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "Hoppa över krediter automatiskt"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "Hoppa över intros automatiskt"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "Hoppa över outros automatiskt"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "Hoppa över sammanfattningar automatiskt"
-  },
-  {
     "id": "Skip to content",
     "other": "Hoppa till innehåll"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "Sömntimer"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "Sömntimer avslutad"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "Smart spellista"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "Smart spellista namn"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "SSO-tokenvalidering misslyckades"
   },
   {
-    "id": "Start in seconds",
-    "other": "Starta om sekunder"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "Börja titta tillsammans"
-  },
-  {
     "id": "Status",
     "other": "Status"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "Stoppar om {minutes} minuter"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "Förvara dessa koder på ett säkert ställe. Var och en fungerar en gång."
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "Lagrad här. Strömmas direkt."
-  },
-  {
-    "id": "Stream media",
-    "other": "Strömma media"
-  },
-  {
-    "id": "Subscription required",
-    "other": "Prenumeration krävs"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "undertextleverantör ej tillgänglig"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "undertextspår"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "Tagline"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "Säkerhetskopieringen innehåller konto- och sessionstillstånd. Håll okrypterad säkerhetskopieringslagring privat eller konfigurera en reservnyckel."
-  },
-  {
     "id": "Theme",
     "other": "Tema"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "Dessa inställningar är skrivskyddade tills de tas bort från YAML eller miljön"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "Denna produkt använder TMDB API men är inte godkänd eller certifierad av TMDB."
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "Detta loggar ut profilen och tar bort den."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "Spår"
   },
   {
-    "id": "transcode cache",
-    "other": "koda om cache"
-  },
-  {
     "id": "Transcoder",
     "other": "Transcoder"
   },
@@ -1740,10 +1184,6 @@
     "other": "Typ"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "Ta bort länken OpenID Connect"
-  },
-  {
     "id": "Until",
     "other": "Tills"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "Använd standard"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Använd Face ID, Touch ID, Windows Hello eller enhetens PIN-kod för att logga in. Ditt lösenord kommer fortfarande att fungera."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "Tittaråtkomst är inte tillgänglig"
   },
   {
-    "id": "Viewer name",
-    "other": "Tittarens namn"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "Väntar på ditt lösenord..."
   },
@@ -1804,14 +1236,6 @@
     "other": "Sedda"
   },
   {
-    "id": "Watched ✓",
-    "other": "Sedd ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "Bevakar ändringar"
-  },
-  {
     "id": "Welcome aboard",
     "other": "Välkommen ombord"
   },
@@ -1820,35 +1244,11 @@
     "other": "när redo."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV-guide"
-  },
-  {
     "id": "Year",
     "other": "År"
   },
   {
-    "id": "You lead this room",
-    "other": "Du leder det här rummet"
-  },
-  {
     "id": "Your library",
     "other": "Ditt bibliotek"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "Ditt bibliotek och visningsaktivitet stannar på den här servern."
-  },
-  {
-    "id": "← Books",
-    "other": "← Böcker"
-  },
-  {
-    "id": "← Library",
-    "other": "← Bibliotek"
-  },
-  {
-    "id": "← Settings",
-    "other": "← Inställningar"
   }
 ]

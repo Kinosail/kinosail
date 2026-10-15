@@ -7,9 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/apihttp"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/catalogapi"
-	"github.com/MikeO7/kinosail/packages/homeassistant"
 	"github.com/MikeO7/kinosail/packages/identitycore"
-	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
@@ -17,27 +15,21 @@ import (
 type clientItem = catalogapi.ClientItem
 
 type apiServices struct {
-	index         *libraryIndex
-	progress      *progressStore
-	lists         *listStore
-	auth          *authentication
-	settings      *settingsStore
-	hls           *hlsManager
-	probe         *mediaProbe
-	metadata      *metadataStore
-	subtitles     *subtitleProvider
-	backups       *backupManager
-	downloads     *downloadManager
-	maintenance   *maintenanceManager
-	imports       *viewingImportManager
-	connections   *mcpConnections
-	internet      *remoteaccess.Manager
-	trusted       *trustedhttps.Manager
-	supporter     *supporterProgram
-	updates       *updateChecker
-	homeAssistant *homeAssistantIntegration
-	authURL       string
-	events        *liveEventHub
+	index       *libraryIndex
+	auth        *authentication
+	settings    *settingsStore
+	probe       *mediaProbe
+	metadata    *metadataStore
+	subtitles   *subtitleProvider
+	backups     *backupManager
+	maintenance *maintenanceManager
+	connections *mcpConnections
+	internet    *remoteaccess.Manager
+	trusted     *trustedhttps.Manager
+	supporter   *supporterProgram
+	updates     *updateChecker
+	authURL     string
+	events      *liveEventHub
 }
 
 func (auth *authentication) createAPISession(writer http.ResponseWriter, request *http.Request) {
@@ -114,14 +106,11 @@ func registerAPI(mux *http.ServeMux, api apiServices) {
 func (api apiServices) RegisterFoundationAPI(mux *http.ServeMux) {
 	api.events.Register(mux, liveEventAccess(api.auth))
 	mux.HandleFunc("GET /api/v1/library", catalogapi.Library(func(request *http.Request) (catalog.Result, error) {
-		return browseLibrary(request, api.index, api.progress, api.lists)
-	}, api.progress.ClientItem))
-	registerMediaAPI(mux, api.index, api.progress, api.lists, api.auth)
+		return browseLibrary(request, api.index)
+	}, libraryClientItem))
 }
 
-func (api apiServices) RegisterDownloadsAPI(mux *http.ServeMux) {
-	api.downloads.registerAPI(mux, api.index)
-}
+func (api apiServices) RegisterDownloadsAPI(*http.ServeMux) {}
 
 func (api apiServices) RegisterAdminAPI(mux *http.ServeMux) {
 	registerAdminAPI(mux, api)
@@ -133,13 +122,6 @@ func (api apiServices) RegisterSupporterAPI(mux *http.ServeMux) {
 
 func (api apiServices) RegisterProductAPI(mux *http.ServeMux) {
 	registerProductAPI(mux, api)
-	api.homeAssistant.Register(mux, api.auth.owner, func(writer http.ResponseWriter, request *http.Request, view homeassistant.Approval) error {
-		return executeCSRFTemplate(homeAssistantApprovalView, writer, request, view)
-	})
-}
-
-func apiStoreStatus(err error) int {
-	return apihttp.StoreStatus(err, errInvalidProgressState)
 }
 
 var (
@@ -149,7 +131,3 @@ var (
 	apiNotFound = apihttp.NotFound
 	apiRouting  = apihttp.Routing
 )
-
-func toClientItem(request *http.Request, progress *progressStore, viewer viewerProfile, item library.Item) clientItem {
-	return catalogapi.ProjectViewerItem(item, progress.Get(request, item.ID), viewer)
-}

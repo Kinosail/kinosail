@@ -11,5 +11,5 @@ var auditFixture = servertest.AuditFixture{
 	New: func(media, data string) http.Handler {
 		return server.New(server.Config{MediaDir: media, DataDir: data, RequireAuth: true})
 	},
-	SignIn: signInTestProfile, CookieRequest: requestWithCookie, ProfileID: storedProfileID,
+	SignIn: signInTestProfile, CookieRequest: requestWithCookie, ProfileID: storedProfileID, NoPlayback: true,
 }

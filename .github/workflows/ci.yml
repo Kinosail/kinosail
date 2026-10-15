@@ -311,7 +311,6 @@ jobs:
           packages: 'platform-tools platforms;android-37.0'
       - if: matrix.language == 'javascript-typescript'
         run: |
-          node scripts/ci/prepare-codeql-js.mjs
           echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
           echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
       - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d

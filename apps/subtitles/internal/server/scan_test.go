@@ -22,7 +22,7 @@ func TestLibraryRefreshesOnSchedule(t *testing.T) {
 	}
 	for range 50 {
 		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
 		if strings.Contains(response.Body.String(), "Dune") {
 			return
 		}
@@ -31,7 +31,7 @@ func TestLibraryRefreshesOnSchedule(t *testing.T) {
 	t.Fatal("scheduled scan did not find Dune")
 }
 
-func TestLibraryAutomaticallyDetectsNewNestedMediaForWebAndAPI(t *testing.T) {
+func TestLibraryAutomaticallyDetectsNewNestedMedia(t *testing.T) {
 	t.Parallel()
 
 	mediaDir := t.TempDir()
@@ -47,16 +47,14 @@ func TestLibraryAutomaticallyDetectsNewNestedMediaForWebAndAPI(t *testing.T) {
 
 	deadline := time.Now().Add(8 * time.Second)
 	for time.Now().Before(deadline) {
-		web := httptest.NewRecorder()
-		handler.ServeHTTP(web, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 		api := httptest.NewRecorder()
 		handler.ServeHTTP(api, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-		if strings.Contains(web.Body.String(), "Severance") && strings.Contains(api.Body.String(), `"title":"S01E01 · Good News"`) {
+		if strings.Contains(api.Body.String(), `"title":"S01E01 · Good News"`) {
 			return
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
-	t.Fatal("filesystem change was not visible through the web and API Library adapters")
+	t.Fatal("filesystem change was not visible through the Library API")
 }
 
 func TestLibraryMonitoringWorksWithoutScheduledScans(t *testing.T) {
@@ -136,7 +134,7 @@ func TestOwnerCanDisableSafetyScansWithoutDisablingAutoDetection(t *testing.T) {
 	detected := false
 	for time.Now().Before(deadline) {
 		home := httptest.NewRecorder()
-		handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+		handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
 		if strings.Contains(home.Body.String(), "Dune") {
 			detected = true
 			break
@@ -145,10 +143,10 @@ func TestOwnerCanDisableSafetyScansWithoutDisablingAutoDetection(t *testing.T) {
 	}
 	handler = server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: dataDir, ScanInterval: 5 * time.Millisecond})
 	home, response := httptest.NewRecorder(), httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
+	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/settings", nil))
 
-	if !detected || !strings.Contains(home.Body.String(), "Dune") || !strings.Contains(response.Body.String(), `<option value="off" selected>Off`) {
+	if !detected || !strings.Contains(home.Body.String(), "Dune") || !strings.Contains(response.Body.String(), `"scanFrequency":"off"`) {
 		t.Fatalf("home = %q, settings = %q", home.Body.String(), response.Body.String())
 	}
 }
@@ -168,6 +166,6 @@ func assertLibraryEventuallyContains(t *testing.T, handler http.Handler, title s
 func libraryPage(t *testing.T, handler http.Handler) *httptest.ResponseRecorder {
 	t.Helper()
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
+	handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
 	return response
 }

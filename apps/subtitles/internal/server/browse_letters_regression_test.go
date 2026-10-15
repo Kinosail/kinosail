@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 )
@@ -35,27 +34,4 @@ func TestLetterJumpBucketsStayUniqueWithPunctuatedTitles(t *testing.T) {
 		t.Fatalf("letter buckets = %q", labels)
 	}
 
-	web := httptest.NewRecorder()
-	handler.ServeHTTP(web, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?view=movies&letter=M", nil))
-	body := web.Body.String()
-	toolbar := strings.Index(body, `<form class="browse-toolbar"`)
-	start := strings.Index(body, `<nav class="letter-jump"`)
-	if toolbar < 0 || start < toolbar {
-		t.Fatalf("title jump must follow browse controls for thumb reach: toolbar = %d, jump = %d", toolbar, start)
-	}
-	if start < 0 {
-		t.Fatalf("letter jump missing from web response = %d %q", web.Code, body)
-	}
-	end := strings.Index(body[start:], `</nav>`)
-	if end < 0 {
-		t.Fatalf("letter jump missing from web response = %d %q", web.Code, body)
-	}
-	matches := regexp.MustCompile(`data-title-letter="([^"]+)"`).FindAllStringSubmatch(body[start:start+end], -1)
-	rendered := make([]string, 0, len(matches))
-	for _, match := range matches {
-		rendered = append(rendered, match[1])
-	}
-	if web.Code != http.StatusOK || strings.Join(rendered, "") != "#ABCMT" || !strings.Contains(body[start:start+end], `href="/?view=movies" data-title-letter="M"`) || !strings.Contains(body[start:start+end], `aria-label="M, 1 title, selected; activate to show all titles"`) || !strings.Contains(body[start:start+end], `aria-current="true">M</a>`) {
-		t.Fatalf("web letter buckets = %q, status = %d", rendered, web.Code)
-	}
 }

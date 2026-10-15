@@ -3,8 +3,6 @@ import base64
 import hashlib
 import hmac
 import json
-import math
-import re
 import struct
 import time
 import urllib.error
@@ -74,30 +72,3 @@ def sha(path):
 def source_state(path):
     info = path.stat()
     return {"sizeBytes": info.st_size, "mtimeNanoseconds": str(info.st_mtime_ns), "sha256": sha(path)}
-
-
-def copied_playlist_evidence(cache):
-    """Bounded private cache observation; never changes the playback verdict."""
-    captured = []
-    try:
-        for number, playlist in enumerate(cache.rglob('index.m3u8')):
-            if number >= 16:
-                break
-            if not re.fullmatch(r'\d{2,4}p', playlist.parent.name):
-                continue
-            with playlist.open('rb') as handle:
-                data = handle.read(65537)
-            if len(data) > 65536:
-                captured.append({'state': 'oversized'})
-                continue
-            durations = [float(value) for value in re.findall(rb'^#EXTINF:(\d+(?:\.\d+)?),', data, re.M)]
-            if len(durations) > 64 or any(not math.isfinite(value) or not 0 < value <= 60 for value in durations):
-                captured.append({'state': 'invalid_durations'})
-                continue
-            captured.append({'state': 'captured', 'quality': playlist.parent.name,
-                'sha256': hashlib.sha256(data).hexdigest(), 'ended': b'#EXT-X-ENDLIST' in data,
-                'durations': durations, 'physicalSegments': [f'segment-{index:05d}.m4s' for index in range(64)
-                    if (playlist.parent / f'segment-{index:05d}.m4s').is_file()]})
-    except OSError:
-        captured.append({'state': 'unavailable'})
-    return captured

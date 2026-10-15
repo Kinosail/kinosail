@@ -8,14 +8,6 @@
     "other": "30 分钟"
   },
   {
-    "id": "45 minutes",
-    "other": "45 分钟"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60 分钟"
-  },
-  {
     "id": "Access",
     "other": "访问"
   },
@@ -44,20 +36,8 @@
     "other": "添加媒体或尝试其他搜索。"
   },
   {
-    "id": "Add Profile",
-    "other": "添加个人资料"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "将此机密或 URI 添加到您的身份验证器应用。"
-  },
-  {
     "id": "Add to",
     "other": "添加到"
-  },
-  {
-    "id": "Administer server",
-    "other": "管理服务器"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "所有评分"
   },
   {
-    "id": "Allow downloads",
-    "other": "允许下载"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "允许转码"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "立即分析播放片段"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "分析的项目"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "自动"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "自动（最佳检测）"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "自动（浏览器）"
   },
@@ -176,24 +136,12 @@
     "other": "自动维护"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "可用设备使用与此服务器的直接连接。"
-  },
-  {
     "id": "Back to library",
     "other": "返回库"
   },
   {
-    "id": "Back to settings",
-    "other": "返回设置"
-  },
-  {
     "id": "Back up now",
     "other": "立即备份"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "备份和恢复"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "需要设置备份。"
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "备份自动运行，无需加密。"
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "选择此浏览器的语言。"
   },
   {
-    "id": "Clear transcode cache",
-    "other": "清除转码缓存"
-  },
-  {
     "id": "Code",
     "other": "代码"
   },
@@ -268,10 +208,6 @@
     "other": "兼容性"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "兼容性连接"
-  },
-  {
     "id": "Compatibility stream",
     "other": "兼容性流"
   },
@@ -280,28 +216,12 @@
     "other": "兼容"
   },
   {
-    "id": "Concurrent streams",
-    "other": "并发流"
-  },
-  {
     "id": "Configuration error",
     "other": "配置错误"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "配置·Kinosail"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "已配置；隐藏值"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "确认删除"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "确认删除"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "正在连接..."
   },
   {
-    "id": "Connection error",
-    "other": "连接错误"
-  },
-  {
     "id": "Content",
     "other": "内容"
   },
   {
-    "id": "Continue Watching",
-    "other": "继续观看"
-  },
-  {
     "id": "Continue watching",
     "other": "继续观看"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "来自继续观看"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "创建密钥"
   },
   {
-    "id": "Create API key",
-    "other": "创建 API 密钥"
-  },
-  {
     "id": "Create passkey",
     "other": "创建密钥"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "创建智能播放列表"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "创建您的所有者个人资料"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "默认"
   },
   {
-    "id": "Default playback",
-    "other": "默认播放"
-  },
-  {
     "id": "Delete",
     "other": "删除"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "已检测到，不可用"
-  },
-  {
-    "id": "Device or app",
-    "other": "设备或应用"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "直接连接不可用"
   },
   {
-    "id": "Direct from",
-    "other": "直接来自"
-  },
-  {
     "id": "Direct stream",
     "other": "直接流"
   },
   {
     "id": "Directed by",
     "other": "导演："
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "禁用和撤销"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "禁用双因素身份验证"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "下载"
-  },
-  {
-    "id": "Download media",
-    "other": "下载媒体"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "此查看者个人资料未启用下载"
   },
   {
-    "id": "Edit metadata",
-    "other": "编辑元数据"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "编辑跳过标记"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "嵌入字幕不可用"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "启用 DLNA"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "启用双因素身份验证"
   },
   {
     "id": "Enabled",
     "other": "已启用"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "加密备份自动运行。"
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "加密默认处于关闭状态。"
-  },
-  {
     "id": "Encryption is on.",
     "other": "加密已开启。"
-  },
-  {
-    "id": "End in seconds",
-    "other": "几秒后结束"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "输入您的电视或应用程序显示的代码。它将继承您的个人资料政策。"
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "环境和 YAML 值具有权威性。此处显示的 GUI 更改将在服务器重新启动后生效。"
-  },
-  {
-    "id": "Environment default",
-    "other": "环境默认"
-  },
-  {
-    "id": "Event webhook",
-    "other": "事件网络钩子"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "每 5 分钟"
   },
   {
-    "id": "Everything",
-    "other": "一切"
-  },
-  {
     "id": "Export full activity journal",
     "other": "导出完整活动日志"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "向该本地网络上的设备公开直接媒体 URL。禁用会撤销发现功能。"
-  },
-  {
-    "id": "Externally managed",
-    "other": "外部管理"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "找东西"
-  },
-  {
-    "id": "Finish setup",
-    "other": "完成设置"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "关注此设备或选择固定主题。"
-  },
-  {
-    "id": "Following the room leader",
-    "other": "跟随房间负责人"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "流派"
   },
   {
-    "id": "Got it",
-    "other": "知道了"
-  },
-  {
     "id": "Group",
     "other": "组"
   },
@@ -660,24 +464,12 @@
     "other": "首页"
   },
   {
-    "id": "Hourly",
-    "other": "每小时"
-  },
-  {
     "id": "if enabled",
     "other": "如果启用"
   },
   {
     "id": "Install",
     "other": "安装"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "安装 Kinosail"
-  },
-  {
-    "id": "Integrations",
-    "other": "集成"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "观看状态无效"
   },
   {
-    "id": "Invite link",
-    "other": "邀请链接"
-  },
-  {
     "id": "Keep",
     "other": "保留"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "将备份保留在此主机外部的存储上。除非配置了备份密钥，否则备份不会加密。服务器停止时恢复。"
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "保持 Kinosail 关闭"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "密钥显示一次并存储为哈希值。浏览访问是安全的默认设置。"
-  },
-  {
     "id": "Kinosail",
     "other": "KinoSAIL"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail 无法访问此服务器。检查您的网络或直接连接，然后重试。"
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail 自动维护。"
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Kinosail 阅读器"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "最后一个错误"
   },
   {
-    "id": "Last scan error",
-    "other": "上次扫描错误"
-  },
-  {
     "id": "Last successful backup",
     "other": "上次成功备份"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "上次成功扫描"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "库"
   },
   {
-    "id": "Library discovery",
-    "other": "库发现"
-  },
-  {
     "id": "Library folders",
     "other": "库文件夹"
   },
@@ -808,10 +560,6 @@
     "other": "图书馆组织"
   },
   {
-    "id": "Library views",
-    "other": "库视图"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "已配置许可凭据"
   },
@@ -820,28 +568,8 @@
     "other": "光"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "链接 OpenID Connect"
-  },
-  {
     "id": "Local account",
     "other": "本地帐户"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "M3U 播放列表"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "管理个人库状态"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "外部管理且只读。"
-  },
-  {
-    "id": "Managed remote access",
-    "other": "托管远程访问"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "标记"
   },
   {
-    "id": "Match text",
-    "other": "匹配文本"
-  },
-  {
     "id": "Media",
     "other": "媒体"
-  },
-  {
-    "id": "Media information",
-    "other": "媒体信息"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "元数据无效"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "元数据提供商"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "音乐"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "音乐和有声读物"
-  },
-  {
     "id": "My List",
     "other": "我的列表"
   },
@@ -908,36 +620,12 @@
     "other": "名称"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "需要名称和 12 个字符的密码"
-  },
-  {
     "id": "Never",
     "other": "从不"
   },
   {
-    "id": "New Collection",
-    "other": "新系列"
-  },
-  {
-    "id": "New Collection name",
-    "other": "新集合名称"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "复制完成后会自动检测新媒体。安全扫描可修复 Windows、macOS、Linux、容器和网络挂载上丢失的文件系统事件。"
-  },
-  {
     "id": "New password",
     "other": "新密码"
-  },
-  {
-    "id": "New playlist",
-    "other": "新播放列表"
-  },
-  {
-    "id": "New playlist name",
-    "other": "新播放列表名称"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "新秘密"
   },
   {
-    "id": "New smart playlist",
-    "other": "新的智能播放列表"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "新观众从家庭分级开始，没有图书馆。添加文件夹名称或"
-  },
-  {
-    "id": "Newest",
-    "other": "最新"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "尚未记录任何活动。"
   },
   {
-    "id": "No channels configured.",
-    "other": "未配置通道。"
-  },
-  {
     "id": "No device selected",
     "other": "未选择任何设备"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "尚无离线下载。"
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "无"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "无；使用全部名称或文件夹名称"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "未找到任何内容。"
   },
   {
-    "id": "Now viewing",
-    "other": "正在查看"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "离线下载"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "离线下载 · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "于"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "在 iPhone 或 iPad 上，点按“共享”，选择“添加到主屏幕”，开启“作为网络应用程序打开”，然后点按“添加”。"
-  },
-  {
-    "id": "One-time reveal",
-    "other": "一次性揭示"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "在设备上播放"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "自动播放下一集"
-  },
-  {
     "id": "Playback",
     "other": "播放"
   },
   {
     "id": "Playback history",
     "other": "播放历史记录"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "播放片段分析"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "情节"
   },
   {
-    "id": "Polling for changes",
-    "other": "轮询更改"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "注重质量"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "首选速度"
-  },
-  {
     "id": "Preferred language",
     "other": "首选语言"
   },
@@ -1164,20 +792,12 @@
     "other": "预览不可用"
   },
   {
-    "id": "Private by design",
-    "other": "设计为私密"
-  },
-  {
     "id": "Profile",
     "other": "个人资料"
   },
   {
     "id": "profile storage is unavailable",
     "other": "配置文件存储不可用"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "要重置的个人资料"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "快速连接"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "快速连接·Kinosail"
-  },
-  {
     "id": "Rating",
     "other": "评级"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "读者"
-  },
-  {
-    "id": "Reading order",
-    "other": "阅读顺序"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "恢复代码"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "从 TMDB 刷新"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "刷新缺失的元数据"
-  },
-  {
     "id": "Recommended",
     "other": "推荐"
   },
@@ -1296,10 +900,6 @@
     "other": "请求太大"
   },
   {
-    "id": "Reset password",
-    "other": "重置密码"
-  },
-  {
     "id": "Return to settings",
     "other": "返回设置"
   },
@@ -1312,24 +912,8 @@
     "other": "瑞芯微RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "房间已连接·跟随领导"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "房间相连·由您领导"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "房间已断开连接·重新加载以重新连接"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "立即运行库扫描"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "立即运行维护"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "保存"
-  },
-  {
-    "id": "Save file",
-    "other": "保存文件"
-  },
-  {
-    "id": "Save for restart",
-    "other": "保存以重新启动"
-  },
-  {
-    "id": "Save marker",
-    "other": "保存标记"
-  },
-  {
-    "id": "Save metadata",
-    "other": "保存元数据"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "保护您的帐户 · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "将此专用连接 URL 发送到查看器。仅显示一次。"
-  },
-  {
-    "id": "Server name",
-    "other": "服务器名称"
-  },
-  {
     "id": "Server settings",
     "other": "服务器设置"
   },
   {
-    "id": "Server unavailable",
-    "other": "服务器不可用"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "服务器不可用 · Kinosail Subtitles"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "设置 Kinosail"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "设置或更换身份验证器"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "设置双因素身份验证"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "设置双因素身份验证 · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "设置·Kinosail"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "打造体验、保护您的媒体库并让每个直播都完美运行。"
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "退出"
   },
   {
-    "id": "Sign out other devices",
-    "other": "注销其他设备"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "登录方法"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "登录、同源浏览器保护、私有响应、有限请求和可撤销访问始终处于开启状态。没有需要管理的安全开关。"
-  },
-  {
     "id": "Single sign-on",
     "other": "单点登录"
   },
@@ -1488,44 +1012,8 @@
     "other": "跳过"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "自动跳过广告"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "自动跳过片尾"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "自动跳过介绍"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "自动跳过结尾"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "自动跳过回顾"
-  },
-  {
     "id": "Skip to content",
     "other": "跳至内容"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "睡眠定时器"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "睡眠定时器已结束"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "智能播放列表"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "智能播放列表名称"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "SSO 令牌验证失败"
   },
   {
-    "id": "Start in seconds",
-    "other": "几秒后开始"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "开始一起观看"
-  },
-  {
     "id": "Status",
     "other": "状态"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "在 {minutes} 分钟后停靠"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "将这些代码存储在安全的地方。每个工作一次。"
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "存储在这里。直接直播."
-  },
-  {
-    "id": "Stream media",
-    "other": "流媒体"
-  },
-  {
-    "id": "Subscription required",
-    "other": "需要订阅"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "字幕提供商不可用"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "字幕轨道"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "标语"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "备份包含帐户和会话状态。将未加密的备份存储保密，或配置备份密钥。"
-  },
-  {
     "id": "Theme",
     "other": "主题"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "这些设置在从 YAML 或环境中删除之前都是只读的"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "本产品使用 TMDB API，但未经 TMDB 认可或认证。"
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "这会注销配置文件并将其删除。"
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "跟踪"
   },
   {
-    "id": "transcode cache",
-    "other": "转码缓存"
-  },
-  {
     "id": "Transcoder",
     "other": "转码器"
   },
@@ -1740,10 +1184,6 @@
     "other": "类型"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "取消 OpenID Connect 链接"
-  },
-  {
     "id": "Until",
     "other": "直到"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "使用默认值"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "使用面容 ID、触摸 ID、Windows Hello 或您的设备 PIN 码登录。您的密码仍然有效。"
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "查看者访问权限不可用"
   },
   {
-    "id": "Viewer name",
-    "other": "观看者姓名"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "正在等待您的密钥..."
   },
@@ -1804,14 +1236,6 @@
     "other": "已观看"
   },
   {
-    "id": "Watched ✓",
-    "other": "已观看 ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "观察变化"
-  },
-  {
     "id": "Welcome aboard",
     "other": "欢迎加入"
   },
@@ -1820,35 +1244,11 @@
     "other": "准备好后."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV 指南"
-  },
-  {
     "id": "Year",
     "other": "年"
   },
   {
-    "id": "You lead this room",
-    "other": "您领导这个房间"
-  },
-  {
     "id": "Your library",
     "other": "您的图书馆"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "您的图书馆和查看活动保留在此服务器上。"
-  },
-  {
-    "id": "← Books",
-    "other": "← 书籍"
-  },
-  {
-    "id": "← Library",
-    "other": "← 库"
-  },
-  {
-    "id": "← Settings",
-    "other": "← 设置"
   }
 ]

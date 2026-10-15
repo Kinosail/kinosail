@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
@@ -19,9 +18,7 @@ func TestServingRejectsMediaReplacedBySymlink(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := server.New(server.Config{MediaDir: media})
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
+	id := firstAPIItemID(t, handler, "")
 	if err := os.WriteFile(outside, []byte("secret"), 0o600); err != nil {
 		t.Fatal(err)
 	}

@@ -7,19 +7,23 @@ import (
 	"os"
 	"testing"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/server"
 	"github.com/MikeO7/kinosail/packages/webassets"
 )
 
-func TestLibraryPrioritizesVisibleArtworkWithoutLayoutShift(t *testing.T) {
-	assetContracts.LibraryPrioritizesVisibleArtworkWithoutLayoutShift(t)
-}
-
 func TestVersionedStaticAssetsUseImmutableCaching(t *testing.T) {
-	assetContracts.VersionedStaticAssetsUseImmutableCaching(t)
-}
-
-func TestPlayerScriptURLTracksServedContents(t *testing.T) {
-	assetContracts.PlayerScriptURLTracksServedContents(t)
+	t.Parallel()
+	handler := server.New(server.Config{})
+	for target, expected := range map[string]string{
+		"/static/theme.js":      "public, max-age=86400",
+		"/static/theme.js?v=32": "public, max-age=31536000, immutable",
+	} {
+		response := httptest.NewRecorder()
+		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, target, nil))
+		if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != expected {
+			t.Fatalf("%s cache = %d %q", target, response.Code, response.Header().Get("Cache-Control"))
+		}
+	}
 }
 
 func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {

@@ -68,8 +68,8 @@ func configuredServerConfig(ctx context.Context, configured configuration.Snapsh
 	config := server.Config{
 		SubtitleApp: true, Lifecycle: ctx, MediaDir: values.MediaDir, DataDir: values.DataDir, CacheDir: values.CacheDir,
 		BackupDir: values.BackupDir, BackupKey: values.BackupKey, BackupInterval: values.BackupInterval, BackupRetention: values.BackupRetention,
-		FFmpeg: values.FFmpeg, FFprobe: values.FFprobe, ProbeHardware: true, FPCalc: values.FPCalc, RequireAuth: true,
-		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval, DLNAURL: values.DLNAURL,
+		FFmpeg: values.FFmpeg, FFprobe: values.FFprobe, FPCalc: values.FPCalc, RequireAuth: true,
+		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval,
 		Configuration: configured, Supporter: server.SupporterConfig{ActivationURL: values.SupporterActivationURL, SupportURL: values.SupportURL},
 		Subtitles: configuredSubtitleProviders(configured), Metadata: values.Metadata, OIDC: values.OIDC, SAML: values.SAML,
 		SCIM: values.SCIM, MCP: values.MCP, Notifications: values.Notifications,

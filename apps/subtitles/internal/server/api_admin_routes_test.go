@@ -11,11 +11,10 @@ import (
 func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) {
 	t.Parallel()
 	handler, token := apiServer(t)
-	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"transcoder":"automatic"`, `"accelerator":"auto"`, `"onboardingPending":true`, `"updates":{"automatic":true,"state":"not-checked"`)
+	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"onboardingPending":true`, `"updates":{"automatic":true,"state":"not-checked"`)
 	assertAPICalls(t, handler, token, []apiTestCall{
 		{Method: http.MethodPut, Path: "/api/v1/settings/onboarding", Body: map[string]any{"enabled": true}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/updates", Body: map[string]any{"automatic": true}, Status: http.StatusOK},
-		{Method: http.MethodPut, Path: "/api/v1/settings/transcoder", Body: map[string]any{"quality": "speed", "accelerator": "none", "toneMap": false}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "es", "preference": "sdh"}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"languages": []string{"en", "pt-br", "zh-cn", "es-419"}}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "off"}, Status: http.StatusOK},

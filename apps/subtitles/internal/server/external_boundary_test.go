@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
@@ -44,9 +43,8 @@ func TestSubtitleProviderRejectsMalformedSearchAndDownloads(t *testing.T) {
 			t.Fatal(err)
 		}
 		handler := server.New(server.Config{MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
-		id := firstWebItemID(t, handler)
-		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", nil))
+		id := firstAPIItemID(t, handler, "")
+		response := apiCall(t, handler, "", http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", map[string]any{})
 		if response.Code != http.StatusBadGateway {
 			t.Fatalf("%s fetch = %d %q", title, response.Code, response.Body.String())
 		}
@@ -67,12 +65,10 @@ func TestExternalProviderActionsRejectInputBeforeNetworkContact(t *testing.T) {
 		Metadata:  server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"},
 		Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"},
 	})
-	id := firstWebItemID(t, handler)
+	id := firstAPIItemID(t, handler, "")
 	metadata := httptest.NewRecorder()
 	handler.ServeHTTP(metadata, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/metadata/"+id+"/refresh?extra=true", nil))
-	subtitleRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", strings.NewReader("extra=true"))
-	subtitles := httptest.NewRecorder()
-	handler.ServeHTTP(subtitles, subtitleRequest)
+	subtitles := apiCall(t, handler, "", http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", map[string]any{"extra": true})
 	if metadata.Code != http.StatusBadRequest || subtitles.Code != http.StatusBadRequest || requests != 0 {
 		t.Fatalf("provider action validation = metadata %d, subtitles %d, network %d", metadata.Code, subtitles.Code, requests)
 	}
@@ -85,5 +81,3 @@ func TestOIDCRejectsUnsafeOriginsAndInvalidProtocolTransitions(t *testing.T) {
 		},
 	})
 }
-
-var firstWebItemID = servertest.ExternalBoundaryItemID

@@ -12,12 +12,6 @@ import (
 var (
 	//go:embed static/htmx.min.js
 	htmx []byte
-	//go:embed static/player_streaming_clock.js
-	playerStreamingClockJS []byte
-	//go:embed static/player_streaming_start.js
-	playerStreamingStartJS []byte
-	//go:embed static/player_streaming_end.js
-	playerStreamingEndJS []byte
 	//go:embed static/supporter.js
 	supporterAppJS []byte
 	//go:embed static/supporter.css
@@ -42,8 +36,6 @@ var (
 	//go:embed static/subtitle-dock-initial.js
 	subtitleDockInitialJS []byte
 	subtitleDashboardCSS  = append(append([]byte(nil), subtitleDashboardBaseCSS...), subtitleWorkspaceCSS...)
-	//go:embed static/hls.min.js
-	hlsJS []byte
 	//go:embed static/manifest.webmanifest
 	manifest []byte
 	//go:embed static/icon.svg
@@ -61,7 +53,7 @@ var (
 	//go:embed static/cinema-backdrop.jpg
 	cinemaBackdrop []byte
 	//go:embed static/service-worker.js
-	serviceWorkerApp []byte
+	serviceWorker []byte
 	//go:embed static/offline.html
 	offlineHTML []byte
 )
@@ -83,26 +75,16 @@ func serveScript(content []byte) http.HandlerFunc {
 }
 
 var (
-	passkeysJS          = webassets.Passkeys
-	downloadsCoreJS     = webassets.Downloads
-	downloadsTransferJS = webassets.DownloadsTransfer
-	downloadsUIJS       = webassets.DownloadsUI
-	playerCoreJS        = webassets.PlayerCore
-	playerControlsJS    = webassets.PlayerControls
-	playerDevicesJS     = webassets.PlayerDevices
-	playerProgressJS    = webassets.PlayerProgress
-	pwaCoreJS           = webassets.PWA
-	pwaNavigationJS     = webassets.PWANavigation
-	pwaSettingsJS       = webassets.PWASettings
-	shortcutsJS         = webassets.Shortcuts
-	themeJS             = joinScripts(subtitleDockInitialJS, webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress)
-	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS)
-	playerJS            = joinScripts(playerCoreJS, playerStreamingClockJS, playerStreamingStartJS, playerStreamingEndJS, playerControlsJS, playerDevicesJS, playerProgressJS)
-	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
-	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
-	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
-	mainBundle          = joinScripts(pwaJS, shortcutsJS)
-	applicationStyle    = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS}, nil)
+	passkeysJS       = webassets.Passkeys
+	pwaCoreJS        = webassets.PWA
+	pwaNavigationJS  = webassets.PWANavigation
+	pwaSettingsJS    = webassets.PWASettings
+	shortcutsJS      = webassets.Shortcuts
+	themeJS          = joinScripts(subtitleDockInitialJS, webassets.Theme)
+	supporterJS      = joinScripts(webassets.Supporter, supporterAppJS)
+	pwaJS            = joinScripts(pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
+	mainBundle       = joinScripts(pwaJS, shortcutsJS)
+	applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS}, nil)
 )
 
 func joinScripts(scripts ...[]byte) []byte {

@@ -56,19 +56,6 @@ func requestActivityID(ctx context.Context) string {
 	return ""
 }
 
-func setPlaybackSession(request *http.Request, session string) {
-	if facts, ok := request.Context().Value(requestActivityKey{}).(*requestActivity); ok && validPlaybackSession(session) {
-		facts.playbackSession = session
-	}
-}
-
-func requestPlaybackSession(ctx context.Context) string {
-	if facts, ok := ctx.Value(requestActivityKey{}).(*requestActivity); ok {
-		return facts.playbackSession
-	}
-	return ""
-}
-
 func acceptedPlaybackSession(request *http.Request) string {
 	for _, value := range []string{request.Header.Get("X-Playback-Session"), request.URL.Query().Get("playbackSession")} {
 		if validPlaybackSession(value) {

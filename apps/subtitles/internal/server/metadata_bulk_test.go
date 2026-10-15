@@ -3,32 +3,9 @@ package server_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 )
-
-func TestBulkMetadataEditUsesAPIAndWebAdapters(t *testing.T) {
-	t.Parallel()
-	handler, token := apiServer(t)
-	ids := apiVideoIDs(t, handler, token)
-
-	assertAPIBody(t, apiCall(t, handler, token, http.MethodPost, "/api/v1/metadata/bulk", map[string]any{
-		"ids": ids, "genres": "Drama",
-	}), http.StatusOK, `"updated":2`)
-	page := apiCall(t, handler, token, http.MethodGet, "/metadata/bulk", nil)
-	assertAPIBody(t, page, http.StatusOK, "Edit multiple items", ids[0], ids[1])
-
-	response := webFormCall(t, handler, token, "/metadata/bulk", url.Values{
-		"itemIds": ids, "tagline": {"Shared tagline"},
-	})
-	if response.Code != http.StatusSeeOther || response.Header().Get("Location") != "/" {
-		t.Fatalf("web bulk edit = %d %q", response.Code, response.Body.String())
-	}
-	for _, id := range ids {
-		assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/items/"+id, nil), http.StatusOK, `"tagline":"Shared tagline"`, `"genres":"Drama"`)
-	}
-}
 
 func TestBulkMetadataEditRejectsInvalidSelectionWithoutSideEffects(t *testing.T) {
 	t.Parallel()

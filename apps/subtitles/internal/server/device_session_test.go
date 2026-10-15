@@ -38,10 +38,11 @@ func TestNamedDeviceSessionsAreHashedVisibleAndRevocable(t *testing.T) {
 	if strings.Contains(string(stored), created.Token) {
 		t.Fatalf("persisted sessions expose secret: data=%q", stored)
 	}
-	settings := requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner)
-	match := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Living Room TV`).FindStringSubmatch(settings.Body.String())
+	devices := apiCall(t, handler, owner.Value, http.MethodGet, "/api/v1/devices", nil)
+	device := regexp.MustCompile(`\{[^{}]*"Living Room TV"[^{}]*\}`).FindString(devices.Body.String())
+	match := regexp.MustCompile(`"id":"([a-f0-9]+)"`).FindStringSubmatch(device)
 	if len(match) != 2 {
-		t.Fatalf("named device not visible: %q", settings.Body.String())
+		t.Fatalf("named device not visible: %q", devices.Body.String())
 	}
 	revoke := requestWithCookieRequest(t, http.MethodPost, "/settings/sessions/device", "id="+match[1], owner)
 	serveRequest(handler, revoke)

@@ -5,7 +5,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const states = ["api-key-created", "mfa-setup", "passkey-account", "passkey-prompt", "mfa-required", "oidc-mfa", "viewing-import-preview", "viewing-import-result", "mcp-approval", "supporter-populated-active", "supporter-populated-archived", "state-contracts"];
+const states = ["api-key-created", "mfa-setup", "passkey-account", "passkey-prompt", "mfa-required", "oidc-mfa", "mcp-approval", "supporter-populated-active", "supporter-populated-archived", "state-contracts"];
 const viewports = [
 	{ width: 1440, height: 900 },
 	{ width: 1024, height: 768 },

@@ -12,10 +12,10 @@ import subprocess
 import sys
 import time
 
-from affected import APPS
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "scripts/ci/proofs.json"
+PROOF_APPS = ("player",)
 SHARD_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 ENV_NAME = re.compile(r"^KINOSAIL_[A-Z0-9_]{1,60}$")
 
@@ -71,8 +71,8 @@ def load(path=MANIFEST):
     if path.stat().st_size > 256 * 1024:
         raise ValueError("proof manifest too large")
     manifest = json.loads(path.read_text())
-    if not isinstance(manifest, dict) or set(manifest) != set(APPS):
-        raise ValueError("proof manifest must cover exactly the supported apps")
+    if not isinstance(manifest, dict) or set(manifest) != set(PROOF_APPS):
+        raise ValueError("proof manifest must cover exactly the media-proof apps")
     loaded = {}
     for app, shards in manifest.items():
         if not isinstance(shards, dict) or not 0 < len(shards) <= 16:
@@ -82,7 +82,7 @@ def load(path=MANIFEST):
 
 
 def plan(app, manifest):
-    if app not in APPS:
+    if app not in PROOF_APPS:
         raise ValueError("invalid app")
     return [{"shard": name, "browser": shard["browser"], "timeout": shard["timeout"]}
             for name, shard in manifest[app].items()]
@@ -105,7 +105,7 @@ def _collect(patterns, destination):
 
 
 def run(app, name, manifest, evidence_dir):
-    if app not in APPS or name not in manifest[app]:
+    if app not in PROOF_APPS or name not in manifest[app]:
         raise ValueError("unknown proof shard")
     shard = manifest[app][name]
     evidence_dir = Path(evidence_dir)

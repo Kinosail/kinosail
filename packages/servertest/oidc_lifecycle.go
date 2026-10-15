@@ -52,7 +52,7 @@ func assertOIDCProfileLink(t *testing.T, fixture OIDCFixture, handler http.Handl
 	return profiles
 }
 
-func assertLinkedOIDCSessions(t *testing.T, fixture OIDCFixture, handler http.Handler, nonce *string, profiles []byte, secret string, owner *http.Cookie) {
+func assertLinkedOIDCSessions(t *testing.T, handler http.Handler, nonce *string, profiles []byte, secret string, owner *http.Cookie) {
 	t.Helper()
 	start := httptest.NewRecorder()
 	handler.ServeHTTP(start, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/session/oidc", nil))
@@ -71,16 +71,13 @@ func assertLinkedOIDCSessions(t *testing.T, fixture OIDCFixture, handler http.Ha
 	linkedFinish := httptest.NewRecorder()
 	handler.ServeHTTP(linkedFinish, linkedFinishRequest)
 	mustOIDCCallback(t, linkedFinish, profiles, nil)
-	assertOIDCRepeatSession(t, fixture, handler, nonce, secret, owner, callbackPath)
+	assertOIDCRepeatSession(t, handler, nonce, secret, owner, callbackPath)
 }
 
-func assertOIDCRepeatSession(t *testing.T, fixture OIDCFixture, handler http.Handler, nonce *string, secret string, owner *http.Cookie, callbackPath string) {
+func assertOIDCRepeatSession(t *testing.T, handler http.Handler, nonce *string, secret string, owner *http.Cookie, callbackPath string) {
 	t.Helper()
-	settingsRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil)
-	settingsRequest.AddCookie(owner)
-	settings := httptest.NewRecorder()
-	handler.ServeHTTP(settings, settingsRequest)
-	if !strings.Contains(settings.Body.String(), "OpenID Connect") || !strings.Contains(settings.Body.String(), "Enabled") {
+	settings := APICall(t, handler, owner.Value, http.MethodGet, "/api/v1/settings", nil)
+	if !strings.Contains(settings.Body.String(), `"sso":true`) {
 		t.Fatalf("SSO settings = %d %q", settings.Code, settings.Body.String())
 	}
 	start := httptest.NewRecorder()

@@ -13,8 +13,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/subtitlelanguage"
 	sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
-	"github.com/MikeO7/kinosail/packages/transcodehardware"
-	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
 var errManagedSetting = errors.New("setting is externally managed")
@@ -28,14 +26,8 @@ type settingsStore struct {
 	config           configuration.Snapshot
 	startupConfig    configuration.Snapshot
 	subtitleProvider *subtitleProvider
-	hardware         hardwareCapabilities
-	transcoderCheck  transcodepolicy.CheckResult
 	persist          func(string, any) error
 	err              error
-}
-
-func (store *settingsStore) transcoderState() transcodehardware.SelectionState {
-	return transcodehardware.SelectionState{Lock: &store.mu, Value: &store.value.Selection, Save: func() error { return store.save(store.value) }, Check: &store.transcoderCheck}
 }
 
 func (store *settingsStore) changeInstallationSettings(change func(*installationSettings)) error {
@@ -242,12 +234,6 @@ func (store *settingsStore) setRequireMFA(required bool) error {
 	}
 	store.value = settings
 	return nil
-}
-
-func (store *settingsStore) serverID() string {
-	store.mu.RLock()
-	defer store.mu.RUnlock()
-	return store.value.JellyfinID
 }
 
 func (store *settingsStore) save(settings installationSettings) error {

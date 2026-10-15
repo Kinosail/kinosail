@@ -12,7 +12,7 @@ import (
 var routeAuthorizationFixture = servertest.RouteAuthorizationFixture{
 	NewHandler: func(t *testing.T, data string) http.Handler {
 		t.Helper()
-		return New(Config{DataDir: data, RequireAuth: true, ProxyToken: "trusted-test-proxy", Configuration: homeAssistantRouteConfiguration(t, data)})
+		return New(Config{DataDir: data, RequireAuth: true, ProxyToken: "trusted-test-proxy", Configuration: duckDNSRouteConfiguration(t, data)})
 	},
 	LoginIP: &routeLoginIP,
 	AfterFlush: func(response *httptest.ResponseRecorder, cancel context.CancelFunc) http.ResponseWriter {

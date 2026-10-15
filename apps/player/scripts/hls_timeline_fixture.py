@@ -1,7 +1,5 @@
 """Bounded synthetic fixtures for authenticated copied-video timeline proof."""
 import json
-from pathlib import Path
-import shutil
 import subprocess
 from hls_timeline_http import sha
 
@@ -11,22 +9,6 @@ LONG_RESUME_KEYS = (0, 2, 4, 7, 9, 12, 14, 18, 21, 23, 27, 30, 34, 38, 42, 47, 4
 def check(condition, failure):
     if not condition:
         raise RuntimeError(failure)
-
-
-def paced_encoder(directory, source):
-    """Keep the real HLS producer active while the browser consumes its prefix."""
-    real = shutil.which('ffmpeg')
-    check(real is not None, 'ffmpeg_unavailable')
-    wrapper = directory / 'paced-ffmpeg'
-    marker = directory / 'pacing-invocation.json'
-    wrapper.write_text('#!/usr/bin/env python3\nimport os,sys,json\na=sys.argv[1:]\n'
-        + "if '-hls_time' in a and " + repr(str(source)) + " in a:\n"
-        + " if '-readrate' in a: a[a.index('-readrate')+1]='1'\n"
-        + " else: a[a.index('-i'):a.index('-i')]=['-readrate','1']\n"
-        + ' with open(' + repr(str(marker)) + ", 'w') as f: json.dump({'readrate':1,'sourceMatched':True,'parent':os.getppid()},f)\n"
-        + 'os.execv(' + repr(real) + ',[' + repr(real) + ']+a)\n')
-    wrapper.chmod(0o700)
-    return wrapper, {'readrate': 1, 'wrapperSHA256': sha(wrapper), 'executableSHA256': sha(Path(real))}
 
 
 def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv", noise=False, video_options=(), size="640x360"):

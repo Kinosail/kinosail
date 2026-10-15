@@ -5,33 +5,17 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
-	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, progress *progressStore, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, hls *hlsManager, subtitles *subtitleProvider, metadata *metadataStore, markers *markerAnalyzer, backups *backupManager, maintenance *maintenanceManager, imports *viewingImportManager, homeAssistant *homeAssistantIntegration, events *liveEventHub, authURL string, subtitleApp bool) {
-	registerOperations(mux, auth, settings, index, hls, metadata, maintenance, imports, events)
+func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, subtitles *subtitleProvider, metadata *metadataStore, backups *backupManager, maintenance *maintenanceManager, events *liveEventHub) {
+	registerOperations(mux, auth, settings, index, metadata, maintenance, events)
 	mux.Handle("GET /onboarding/finish", auth.owner(finishOnboarding(settings)))
 	registerSubtitleOnboardingActions(mux, auth, settings, index)
-	if subtitleApp {
-		registerSubtitleOnboarding(mux, auth, settings, subtitles)
-	} else {
-		mux.Handle("GET /onboarding", auth.owner(http.HandlerFunc(showOnboardingStart)))
-		mux.Handle("GET /onboarding/connection", auth.owner(showOnboardingConnection(settings, updates, authURL)))
-		mux.Handle("GET /onboarding/household", auth.owner(showOnboardingHousehold(auth.profiles)))
-		mux.Handle("POST /onboarding/household", auth.owner(addOnboardingViewer(auth.profiles)))
-		mux.Handle("POST /onboarding/trusted-https", auth.owner(saveTrustedHTTPS(settings, "/onboarding/connection")))
-		mux.Handle("POST /onboarding/home-assistant", auth.owner(saveHomeAssistant(homeAssistant, "/onboarding/connection")))
-		mux.Handle("POST /onboarding/updates", auth.owner(saveUpdatePreference(updates, "/onboarding/connection#updates")))
-		mux.Handle("POST /onboarding/updates/check", auth.owner(checkForUpdate(updates, "/onboarding/connection#updates")))
-	}
-	settingsPage := showSettings(settings, updates, auth.profiles, internet, trusted, auth.audit, index, hls, subtitles, metadata, markers, maintenance, imports, auth.notify.status, authURL)
-	if subtitleApp {
-		settingsPage = showSubtitleSettings(settings, subtitles, trusted)
-	}
+	registerSubtitleOnboarding(mux, auth, settings, subtitles)
 	mux.Handle("POST /api/v1/subtitles/cleanup/preview", auth.owner(apiPreviewSubtitleCleanup(index, settings)))
 	mux.Handle("POST /api/v1/subtitles/cleanup", auth.owner(apiApplySubtitleCleanup(index, settings)))
-	mux.Handle("GET /settings", auth.owner(settingsPage))
+	mux.Handle("GET /settings", auth.owner(showSubtitleSettings(settings, subtitles, trusted)))
 	mux.Handle("GET /settings/subtitles/cleanup", auth.owner(previewSubtitleCleanup(index, settings)))
 	mux.Handle("POST /settings/subtitles/cleanup", auth.owner(hideSubtitleCleanup(index, settings)))
 	mux.Handle("POST /settings/subtitles/picker", auth.owner(saveSubtitlePicker(settings)))
@@ -40,7 +24,7 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/trusted-https", auth.owner(saveTrustedHTTPS(settings, "/settings#trusted-https")))
 	mux.Handle("POST /settings/trusted-https/disable", auth.owner(disableTrustedHTTPS(settings)))
 	mux.Handle("GET /settings/remote-readiness", auth.owner(showRemoteReadiness(internet, auth.profiles)))
-	mux.Handle("GET /settings/system", auth.owner(showSystem(settings, index, progress, auth.profiles, hls, auth.audit)))
+	mux.Handle("GET /settings/system", auth.owner(showSystem(settings, index, auth.profiles, auth.audit)))
 	mux.Handle("GET /settings/configuration", auth.owner(showConfiguration(settings)))
 	mux.Handle("POST /settings/configuration", auth.owner(saveConfiguration(settings, false)))
 	mux.Handle("POST /settings/configuration/reset", auth.owner(saveConfiguration(settings, true)))
@@ -52,14 +36,9 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/navigation", auth.owner(saveNavigation(settings)))
 	mux.Handle("POST /settings/onboarding", auth.owner(restartOnboarding(settings)))
 	registerSecuritySettings(mux, settings, auth)
-	mux.Handle("POST /settings/playback", auth.owner(savePlayback(settings)))
-	mux.Handle("POST /settings/transcoder", auth.owner(saveTranscoder(settings)))
-	mux.Handle("POST /settings/transcoder/test", auth.owner(transcodepolicy.CheckHandler(settings.transcoderState().CheckCoordinator(settings.ffmpeg, settings.hardware).Run)))
 	mux.Handle("POST /settings/subtitles", auth.owner(saveSubtitleLanguage(settings, "/settings#language")))
 	registerSubSourceConfiguration(mux, auth, settings)
 	mux.Handle("POST /settings/scans", auth.owner(saveScanFrequency(settings, index, "/settings")))
-	mux.Handle("POST /settings/home-assistant", auth.owner(saveHomeAssistant(homeAssistant, "/settings#access")))
-	mux.Handle("POST /settings/home-assistant/pair", auth.owner(homeAssistant.pairingPage()))
 	mux.Handle("POST /settings/profiles", auth.owner(addViewer(auth.profiles)))
 	mux.Handle("POST /settings/profiles/remove", auth.owner(removeViewer(auth.profiles)))
 	mux.Handle("POST /settings/profiles/password", auth.owner(resetViewerPassword(auth.profiles)))
@@ -78,5 +57,4 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/sessions/device", auth.owner(revokeDevice(auth.profiles)))
 	mux.Handle("POST /settings/api-keys", auth.owner(createAPIKey(auth.profiles)))
 	mux.Handle("POST /settings/api-keys/revoke", auth.owner(revokeAPIKey(auth.profiles)))
-	mux.Handle("POST /settings/cache/clear", auth.owner(clearCache(hls)))
 }

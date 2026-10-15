@@ -13,7 +13,11 @@ import (
 
 func (fixture LibraryAPIFixture) InvalidDurableShapesFailClosed(t *testing.T) {
 	t.Helper()
-	for _, name := range []string{"settings.json", "metadata.json", "progress.json", "lists.json", "playlists.json", "playlist_order.json", "smart_playlists.json", "audit_key.json", "audit.jsonl"} {
+	files := []string{"settings.json", "metadata.json", "audit_key.json", "audit.jsonl"}
+	if !fixture.NoPlayback {
+		files = append(files, "progress.json", "lists.json", "playlists.json", "playlist_order.json", "smart_playlists.json")
+	}
+	for _, name := range files {
 		t.Run(name, func(t *testing.T) {
 			data := t.TempDir()
 			if err := os.WriteFile(filepath.Join(data, name), []byte(`"invalid shape"`), 0o600); err != nil {

@@ -12,10 +12,6 @@ func (store *settingsStore) navigationLinks(view, language string) (primary, mor
 	return store.navigationController().Links(view, language)
 }
 
-func (store *settingsStore) navigationPreferences(language string) []navigationPreference {
-	return store.navigationController().Preferences(language)
-}
-
 func (store *settingsStore) navigationController() sharednavigation.Controller {
 	return sharednavigation.NewController(store.navigation, store.setNavigation, func(language, name string) string {
 		return localeCatalog.Localize(language, name)

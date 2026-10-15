@@ -89,7 +89,7 @@ func TestPasswordLoginRotatesAnUntrustedBrowserSession(t *testing.T) {
 	if stale := requestWithCookie(t, handler, http.MethodGet, "/", "", attacker); stale.Code != http.StatusSeeOther || stale.Header().Get("Location") != "/login" {
 		t.Fatalf("attacker session became valid = %d %q", stale.Code, stale.Header().Get("Location"))
 	}
-	if current := requestWithCookie(t, handler, http.MethodGet, "/", "", cookies[0]); current.Code != http.StatusOK {
+	if current := requestWithCookie(t, handler, http.MethodGet, "/account", "", cookies[0]); current.Code != http.StatusOK {
 		t.Fatalf("rotated session = %d %q", current.Code, current.Body.String())
 	}
 }

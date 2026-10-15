@@ -83,6 +83,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     results.push({flow:"enlarged-dock-end-focus",viewport,control,tail,dock,endDock,header,reservation,focusRetained,overflow,stable:Boolean(control&&tail&&dock&&endDock&&header&&control.y+control.height<=dock.y+1&&tail.y+tail.height<=endDock.y+1&&control.y>=header.y+header.height-1)});
     await context.close();
   }
+  if(watchPath){
   const context = await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce"});
   probe.stage = "theater-idle-exit";
   const page = await probe.openPage(context);
@@ -111,6 +112,7 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     results.push({flow:"theater-idle-exit",framesBeforePlay:frames,beforeTheater,idleState,hiddenAfterIdle,visibleAfterExit,before,after,stable:hiddenAfterIdle&&visibleAfterExit&&JSON.stringify(before)===JSON.stringify(after)});
   } else results.push({flow:"theater-idle-exit",result:"native control mode has no Theater"});
   await context.close();
+  }
   if(inspectorPath){
     probe.stage = "inspector-refresh-failure-retry";
     const context=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});

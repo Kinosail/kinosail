@@ -5,11 +5,7 @@ import (
 )
 
 type (
-	audioTrack     = mediaprobe.AudioTrack
-	probeResult    = mediaprobe.Result
-	chapter        = mediaprobe.Chapter
-	playbackMarker = mediaprobe.Marker
-	replayGain     = mediaprobe.ReplayGain
+	probeResult = mediaprobe.Result
 )
 
 type mediaProbe struct {
@@ -17,8 +13,6 @@ type mediaProbe struct {
 	executable string
 	ffmpeg     string
 	cacheDir   string
-	markers    *markerAnalyzer
-	chapters   *chapterProvider
 }
 
 func newMediaProbe(executable string) *mediaProbe {

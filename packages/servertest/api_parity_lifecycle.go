@@ -41,7 +41,7 @@ func playbackAPIReturnsAutomaticNextEpisode(t *testing.T, fixture APIParityFixtu
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+show.Episodes[0].ID+"/playback", nil), http.StatusOK, `"autoSkip":[]`, `"next":"`+show.Episodes[1].ID+`"`)
 }
 
-func ownerCanBootstrapThroughAPI(t *testing.T, fixture APIParityFixture) {
+func OwnerCanBootstrapThroughAPI(t *testing.T, fixture APIParityFixture) {
 	t.Parallel()
 
 	handler := fixture.Bootstrap(t)

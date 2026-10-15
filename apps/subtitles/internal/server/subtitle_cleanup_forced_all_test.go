@@ -23,7 +23,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 `)
 	data := t.TempDir()
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir(), FFprobe: ffprobe})
-	id := firstSubtitleInventoryID(t, handler)
+	firstSubtitleInventoryID(t, handler)
 	preview := requestJSON(t, handler, http.MethodPost, "/api/v1/subtitles/cleanup/preview", `{"enabled":true,"languages":["en","es"],"forced":"keep"}`)
 	var plan struct {
 		Digest string `json:"digest"`
@@ -65,31 +65,5 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 		if _, err := os.Stat(filepath.Join(media, name)); err != nil {
 			t.Fatalf("kept subtitle missing %s: %v", name, err)
 		}
-	}
-	page := requestApp(t, handler, http.MethodGet, "/watch/"+id, "")
-	api := requestApp(t, handler, http.MethodGet, "/api/v1/items/"+id+"/playback", "")
-	var playback struct {
-		Subtitles []struct {
-			Language string `json:"language"`
-			Role     string `json:"role"`
-		} `json:"subtitles"`
-	}
-	if page.Code != http.StatusOK || strings.Count(page.Body.String(), "<track ") != 3 || api.Code != http.StatusOK || json.Unmarshal(api.Body.Bytes(), &playback) != nil || len(playback.Subtitles) != 3 {
-		t.Fatalf("playback choices: page=%d API=%d %s", page.Code, api.Code, api.Body.String())
-	}
-	for _, want := range []string{"en/translation", "es/translation", "en/forced"} {
-		found := false
-		for _, track := range playback.Subtitles {
-			found = found || track.Language+"/"+track.Role == want
-		}
-		if !found {
-			t.Errorf("missing playback option %s: %+v", want, playback.Subtitles)
-		}
-	}
-	restarted := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir(), FFprobe: ffprobe})
-	restartedID := firstSubtitleInventoryID(t, restarted)
-	reopened := requestApp(t, restarted, http.MethodGet, "/watch/"+restartedID, "")
-	if reopened.Code != http.StatusOK || strings.Count(reopened.Body.String(), "<track ") != 3 {
-		t.Fatalf("forced picker choice was not saved: %d tracks=%d", reopened.Code, strings.Count(reopened.Body.String(), "<track "))
 	}
 }

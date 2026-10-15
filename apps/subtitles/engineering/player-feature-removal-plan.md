@@ -152,7 +152,7 @@ Stages 2a and 2b ship together. Result:
 - The registered-route inventory in Go tests leaves out the listed routes. Its count changed from 473 to 379.
 - Stored settings keep the `jellyfinCompatibility`, `jellyfinId`, and `dlnaToken` fields, because strict decoding rejects unknown fields. `jellyfinId` is now the Server ID that Home Assistant uses.
 - The configuration keys `dlna.url`, `dlna.enabled`, and `integrations.jellyfin.enabled` stay accepted, but Subtitles ignores them. Removing them would make existing `kinosail.yaml` files fail to load.
-- Shared `servertest` contracts got opt-out fields (`NoJellyfin`, `NoJellyfinOrDLNA`, `NoRooms`, `NoQuickConnectOrShares`, `InitialCopy`). The defaults keep Player behavior unchanged.
+- Shared `servertest` contracts got opt-out fields (`NoJellyfin`, `NoQuickConnectOrShares`, `InitialCopy`). Stages 2c and 2d renamed or added others. The defaults keep Player behavior unchanged.
 - `identitycore.ValidSingleByteRange` replaces the copy in `mediashares` for request logging.
 
 Moved to Stage 2e, because they depend on the remote-access decision:
@@ -163,21 +163,26 @@ Moved to Stage 2e, because they depend on the remote-access decision:
 
 Moved to Stage 2c: the cleanup journey's `/watch` check, and `player.js` calls to removed routes.
 
-### Stage 2c: playback and transcoding
+### Stages 2c and 2d: playback and library browsing
 
-Remove HLS, `/watch`, trickplay, progress, markers, the transcoder settings, `player.js`, `hls.min.js`, and the hls.js license notice.
+These stages shipped together. They removed HLS, `/watch`, trickplay, progress, markers, transcoder settings, `player.js`, `hls.min.js`, downloads, offline pages, playlists, collections, lists, books, the reader, albums, shows, people, viewing imports and syncs, continue watching, playback history, and the Player home page.
 
-Also do these in the same pull request:
+Result:
 
-- Remove the three CI steps that run `test-hls-resume-browser.py` and `test-subtitles-copied-prefix.py` for Subtitles.
-- Remove the FFmpeg frame-scaling checks from `test-container.sh`.
-- Remove the inspector's `/watch` fallback link and the two `/watch` redirects.
-- Remove `compose.gpu.yaml`, `compose.rkmpp.yaml`, and the GPU driver packages.
-- Change `jellyfin-ffmpeg` to Debian `ffmpeg` only after alignment, OCR, and probe journeys pass on the new image.
+- 73 more routes are removed. `internal/server/testdata/removed-routes.txt` now lists 167 routes. The registered-route inventory changed from 379 to 249.
+- `/` serves only the subtitle dashboard. `/media/{id}` and `/art/{id}` stay for the inspector.
+- `api_openapi.json`, `mcp_route_policy.go`, and the API-key scopes match the remaining routes. API keys offer only the `admin`, `library`, and `stream` scopes.
+- The MCP gateway hides `recommendation_context` and `create_playlist` for Subtitles through `NoPlaylists`.
+- The service worker no longer stores offline media. It caches only the app shell and deletes the old offline database on activation.
+- Locale catalogs no longer carry 150 messages that no Subtitles page renders.
+- The Subtitles media proof shards and `test-subtitles-copied-prefix.py` are removed. Media proofs now run only for Player.
+- The hls.js license notice and the unused `ProbeHardware`, `HardwareDevices`, `DLNAURL`, `WatchRoomTTL`, and `TranscodeCacheLimit` server options are removed.
+- Shared `servertest` contracts use `NoPlayback`, `NoPlayerSettings`, and `NoOnboarding` for Subtitles. The Player defaults are unchanged.
 
-### Stage 2d: library-browsing features
+Still open:
 
-Remove downloads and offline pages, playlists, collections, lists, books, the reader, albums, shows, people, viewing imports and syncs, continue watching, playback history, and the Player home template in `server.go`.
+- Stored settings keep the playback, transcoder, Home Assistant, and navigation fields, because strict decoding rejects unknown fields. Removing them needs a stored-settings migration.
+- The container still ships `jellyfin-ffmpeg`, the GPU driver packages, `compose.gpu.yaml`, and `compose.rkmpp.yaml`, and `test-container.sh` still checks the encoders. Change to Debian `ffmpeg` only after alignment, OCR, and probe journeys pass on the new image.
 
 ### Stage 2e: decided groups
 

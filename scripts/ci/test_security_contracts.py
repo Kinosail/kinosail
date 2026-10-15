@@ -32,10 +32,8 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("timeout-minutes: 90", workflow)
         self.assertIn("queries: security-extended", workflow)
         self.assertIn("config-file: .github/codeql-config.yml", workflow)
-        self.assertLess(workflow.index("node scripts/ci/prepare-codeql-js.mjs"),
-                        workflow.index("uses: github/codeql-action/init@"))
         browser_step = workflow.split("- if: matrix.language == 'javascript-typescript'", 1)[1].split("- uses:", 1)[0]
-        self.assertIn("node scripts/ci/prepare-codeql-js.mjs", browser_step)
+        self.assertNotIn("prepare-codeql-js", workflow)
         for setting in ("CODEQL_ACTION_DIFF_INFORMED_QUERIES=false", "CODEQL_OVERLAY_DATABASE_MODE=none"):
             self.assertIn(setting, browser_step)
 

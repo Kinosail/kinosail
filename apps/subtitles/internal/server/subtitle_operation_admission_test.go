@@ -74,8 +74,6 @@ func subtitleLegacyAdmissionCases(base, plain, automatic string) []subtitleLegac
 		{"Wanted batch", "/api/v1/subtitle-library/fetch-wanted", `{"language":"fr","limit":1}`, "application/json"},
 		{"audio", base + "/audio", `{"language":"en"}`, "application/json"},
 		{"automatic preview", base + "/preview", automatic, "application/json"},
-		{"general API Fetch", "/api/v1/items/" + id + "/subtitles", `{"language":"fr"}`, "application/json"},
-		{"general web Fetch", "/subtitles/" + id + "/fetch", "", "application/x-www-form-urlencoded"},
 		{"web Restore", "/subtitles/manage/" + id + "/restore", "", "application/x-www-form-urlencoded"},
 		{"web replacement", "/subtitles/manage/" + id + "/replacement", "replaceable=true", "application/x-www-form-urlencoded"},
 		{"web Fetch", "/subtitles/manage/" + id + "/fetch", "", "application/x-www-form-urlencoded"},
@@ -142,15 +140,11 @@ func TestSubtitleRejectedBodyLeavesPreparedReceiptReusableAndLegacyValidationInt
 	assertSubtitleOperationFrozen(t, handler, true)
 }
 
-func TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetchAdapters(t *testing.T) {
-	for _, adapter := range []string{"library", "general"} {
-		t.Run(adapter, func(t *testing.T) {
-			assertSubtitlePreparedAudioWaitsForLegacyProvider(t, adapter)
-		})
-	}
+func TestSubtitlePreparedAudioCannotBypassActiveLegacyProviderFetch(t *testing.T) {
+	assertSubtitlePreparedAudioWaitsForLegacyProvider(t)
 }
 
-func assertSubtitlePreparedAudioWaitsForLegacyProvider(t *testing.T, adapter string) {
+func assertSubtitlePreparedAudioWaitsForLegacyProvider(t *testing.T) {
 	t.Helper()
 	config, target, calls, _ := subtitleOperationAudioConfig(t, false)
 	var providerCalls atomic.Int32
@@ -160,11 +154,7 @@ func assertSubtitlePreparedAudioWaitsForLegacyProvider(t *testing.T, adapter str
 	id := firstSubtitleInventoryID(t, handler)
 	base := "/api/v1/subtitle-library/" + id
 	prepared := prepareSubtitleOperation(t, handler, base, "audio")
-	path := base + "/fetch"
-	if adapter == "general" {
-		path = "/api/v1/items/" + id + "/subtitles"
-	}
-	finished := startSubtitleOperationLegacyProviderRequest(t, handler, path)
+	finished := startSubtitleOperationLegacyProviderRequest(t, handler, base+"/fetch")
 	select {
 	case <-started:
 	case <-time.After(2 * time.Second):
@@ -172,7 +162,7 @@ func assertSubtitlePreparedAudioWaitsForLegacyProvider(t *testing.T, adapter str
 	}
 	busy := activateSubtitleOperation(t, handler, base+"/audio", `{"language":"en"}`, []string{prepared.ID})
 	if busy.Code != http.StatusConflict || readSubtitleOperation(t, handler, prepared.ID).State != "prepared" {
-		t.Fatalf("exclusive activation bypassed active %s provider adapter: %d", adapter, busy.Code)
+		t.Fatalf("exclusive activation bypassed active provider fetch: %d", busy.Code)
 	}
 	if _, err := os.Stat(calls); !os.IsNotExist(err) || providerCalls.Load() != 1 {
 		t.Fatal("busy activation started audio or duplicated the provider request")

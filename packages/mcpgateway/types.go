@@ -68,6 +68,7 @@ type GatewayConfig struct {
 	API            APIInvoker
 	Routes         RoutePolicy
 	SubtitleEvents bool
+	NoPlaylists    bool
 }
 
 func (config GatewayConfig) validate() error {

@@ -29,6 +29,7 @@ type Gateway struct {
 	api        APIInvoker
 	routes     RoutePolicy
 	servers    [4]*mcp.Server
+	playlists  bool
 	eventGateway
 	requests, tools httpguard.Limiter
 }
@@ -94,7 +95,7 @@ func Register(mux *http.ServeMux, config GatewayConfig, connections *Connections
 }
 
 func newGateway(config GatewayConfig) *Gateway {
-	adapter := &Gateway{config: config.OAuth, principals: config.Principals, api: config.API, routes: config.Routes, eventGateway: newEventGateway(config)}
+	adapter := &Gateway{config: config.OAuth, principals: config.Principals, api: config.API, routes: config.Routes, playlists: !config.NoPlaylists, eventGateway: newEventGateway(config)}
 	for access := range adapter.servers {
 		adapter.servers[access] = adapter.newServer(access&1 != 0, access&2 != 0)
 	}
@@ -122,12 +123,14 @@ func (adapter *Gateway) newServer(writable, manageable bool) *mcp.Server {
 		Description: "Find visible media by title, year, genre, people, director, studio, artist, album, show, viewing state, and media section.",
 		Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true, IdempotentHint: true, OpenWorldHint: &closed},
 	}, adapter.searchMedia)
-	mcp.AddTool(server, &mcp.Tool{
-		Name:        "recommendation_context",
-		Title:       "Prepare personal recommendations",
-		Description: "Return recent viewing history and matching candidates so the connected agent can explain and rank personalized recommendations.",
-		Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true, IdempotentHint: true, OpenWorldHint: &closed},
-	}, adapter.recommendationContext)
+	if adapter.playlists {
+		mcp.AddTool(server, &mcp.Tool{
+			Name:        "recommendation_context",
+			Title:       "Prepare personal recommendations",
+			Description: "Return recent viewing history and matching candidates so the connected agent can explain and rank personalized recommendations.",
+			Annotations: &mcp.ToolAnnotations{ReadOnlyHint: true, IdempotentHint: true, OpenWorldHint: &closed},
+		}, adapter.recommendationContext)
+	}
 	if writable {
 		destructive := true
 		mcp.AddTool(server, &mcp.Tool{
@@ -136,12 +139,14 @@ func (adapter *Gateway) newServer(writable, manageable bool) *mcp.Server {
 			Description: "Call Viewer-owned JSON API mutations such as progress, My List, playlists, and language.",
 			Annotations: &mcp.ToolAnnotations{DestructiveHint: &destructive, OpenWorldHint: &closed},
 		}, adapter.writeAPI)
-		mcp.AddTool(server, &mcp.Tool{
-			Name:        "create_playlist",
-			Title:       "Create an AI-curated playlist",
-			Description: "Create one Viewer-owned playlist from an ordered list of media IDs selected by the connected agent.",
-			Annotations: &mcp.ToolAnnotations{DestructiveHint: &destructive, OpenWorldHint: &closed},
-		}, adapter.createPlaylist)
+		if adapter.playlists {
+			mcp.AddTool(server, &mcp.Tool{
+				Name:        "create_playlist",
+				Title:       "Create an AI-curated playlist",
+				Description: "Create one Viewer-owned playlist from an ordered list of media IDs selected by the connected agent.",
+				Annotations: &mcp.ToolAnnotations{DestructiveHint: &destructive, OpenWorldHint: &closed},
+			}, adapter.createPlaylist)
+		}
 	}
 	if manageable {
 		destructive := true

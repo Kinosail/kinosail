@@ -1,5 +1,1 @@
 name: Complete browser scopes
-
-paths-ignore:
-  - apps/subtitles/internal/server/static/player_streaming_start.js
-  - apps/subtitles/internal/server/static/player_streaming_end.js

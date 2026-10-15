@@ -31,9 +31,11 @@ func AssertTrustedHTTPSRejectsInvalidInputWithoutSideEffects(t *testing.T, fixtu
 	if duplicate.Code != http.StatusBadRequest {
 		t.Fatalf("duplicate web input = %d %q", duplicate.Code, duplicate.Body.String())
 	}
-	onboardingDuplicate := fixture.Web(t, handler, http.MethodPost, "/onboarding/trusted-https", "domain=family&domain=other&token="+fixture.Token+"&address=192.168.1.10&termsAccepted=true", owner)
-	if onboardingDuplicate.Code != http.StatusBadRequest {
-		t.Fatalf("duplicate onboarding input = %d %q", onboardingDuplicate.Code, onboardingDuplicate.Body.String())
+	if !fixture.NoOnboarding {
+		onboardingDuplicate := fixture.Web(t, handler, http.MethodPost, "/onboarding/trusted-https", "domain=family&domain=other&token="+fixture.Token+"&address=192.168.1.10&termsAccepted=true", owner)
+		if onboardingDuplicate.Code != http.StatusBadRequest {
+			t.Fatalf("duplicate onboarding input = %d %q", onboardingDuplicate.Code, onboardingDuplicate.Body.String())
+		}
 	}
 	if contents, readErr := os.ReadFile(filepath.Join(directory, "secrets.json")); readErr == nil && strings.Contains(string(contents), "tls.duckdns") {
 		t.Fatalf("invalid input changed secrets: %q", contents)

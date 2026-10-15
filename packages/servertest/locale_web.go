@@ -10,7 +10,7 @@ import (
 type LocaleWebFixture struct {
 	NewHandler func(*testing.T, bool) http.Handler
 	Server     func(*testing.T) (http.Handler, string)
-	NoRooms    bool
+	NoPlayback bool
 }
 
 func (fixture LocaleWebFixture) InvalidLanguageSelectionHasNoSideEffects(t *testing.T) {

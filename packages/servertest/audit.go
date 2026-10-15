@@ -19,6 +19,7 @@ type AuditFixture struct {
 	SignIn        func(*testing.T, http.Handler, string, string) *http.Cookie
 	CookieRequest func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 	ProfileID     func(*testing.T, string, string) string
+	NoPlayback    bool
 }
 
 func (fixture AuditFixture) IdentityAuditPersistsWithoutSecrets(t *testing.T) {
@@ -51,16 +52,20 @@ func (fixture AuditFixture) OwnerActivityRecordsSettingsDenialsAndPlaybackWithou
 	fixture.CookieRequest(t, handler, http.MethodPost, "/settings/configuration", "key=backup.key&value=correct-horse-battery-staple", owner)
 	denied := httptest.NewRecorder()
 	handler.ServeHTTP(denied, httptest.NewRequestWithContext(t.Context(), http.MethodPut, "/api/v1/settings/server", strings.NewReader(`{"name":"Stolen"}`)))
-	home := fixture.CookieRequest(t, handler, http.MethodGet, "/", "", owner)
-	id := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	fixture.CookieRequest(t, handler, http.MethodGet, "/watch/"+id, "", owner)
-	fixture.CookieRequest(t, handler, http.MethodPost, "/progress/"+id, "seconds=90&watched=true", owner)
+	expectedActivity := []string{`"action":"settings.server.updated"`, `"actor":"Owner"`, `"name":"Cabin"`, `"before.name":"Kinosail"`, `"after.name":"Cabin"`, `"key":"backup.key"`, `"value":"[redacted]"`, `"action":"access.denied"`, `"result":"denied"`}
+	if !fixture.NoPlayback {
+		home := fixture.CookieRequest(t, handler, http.MethodGet, "/", "", owner)
+		id := regexp.MustCompile(`/(?:watch|item)/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
+		fixture.CookieRequest(t, handler, http.MethodGet, "/watch/"+id, "", owner)
+		fixture.CookieRequest(t, handler, http.MethodPost, "/progress/"+id, "seconds=90&watched=true", owner)
+		expectedActivity = append(expectedActivity, `"action":"playback.started"`, `"action":"playback.completed"`, `"title":"Arrival"`)
+	}
 
 	if changed.Header().Get("X-Request-ID") == "" || denied.Header().Get("X-Request-ID") == "" {
 		t.Fatalf("request ids: changed=%q denied=%q", changed.Header().Get("X-Request-ID"), denied.Header().Get("X-Request-ID"))
 	}
 	activity := fixture.CookieRequest(t, handler, http.MethodGet, "/api/v1/activity?limit=100", "", owner)
-	for _, expected := range []string{`"action":"settings.server.updated"`, `"actor":"Owner"`, `"name":"Cabin"`, `"before.name":"Kinosail"`, `"after.name":"Cabin"`, `"key":"backup.key"`, `"value":"[redacted]"`, `"action":"access.denied"`, `"result":"denied"`, `"action":"playback.started"`, `"action":"playback.completed"`, `"title":"Arrival"`} {
+	for _, expected := range expectedActivity {
 		if !strings.Contains(activity.Body.String(), expected) {
 			t.Fatalf("activity lacks %q: %s", expected, activity.Body.String())
 		}
