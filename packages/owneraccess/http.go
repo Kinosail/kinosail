@@ -146,7 +146,7 @@ func (h HTTP) changeResponse(w http.ResponseWriter, r *http.Request, api bool, p
 		w.Header().Set("Content-Type", "application/x-wireguard-profile")
 		w.Header().Set("Content-Disposition", `attachment; filename="kinosail-owner.conf"`)
 		w.WriteHeader(http.StatusCreated)
-		_, _ = w.Write([]byte(profile))
+		_, _ = w.Write([]byte(profile)) // #nosec G705 -- attachment is a WireGuard configuration, never HTML.
 	default:
 		http.Redirect(w, r, "/settings/management", http.StatusSeeOther)
 	}

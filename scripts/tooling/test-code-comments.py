@@ -52,7 +52,7 @@ class CodeCommentsCommandTests(unittest.TestCase):
                     result = self.run_check(repo, 1)
                     self.assertIn(name + ':', result.stderr)
                     (repo / name).write_text(clean[name])
-            (repo / 'main.go').write_text('//go:build linux\n\npackage main\n//go:embed asset.txt\nvar asset string\n')
+            (repo / 'main.go').write_text('//go:build linux\n\npackage main\n//go:embed asset.txt\nvar asset string\nvar fixture = 0 // #nosec G101 -- Synthetic fixture data.\n')
             (repo / 'main.sh').write_text('#!/bin/sh\n# shellcheck disable=SC2016\necho ok\n')
             (repo / 'main.ts').write_text('/*! SPDX-License-Identifier: MIT */\nconst value = 1;\n')
             for name in ('third_party/vendor.js', 'engineering/qa/snapshot.py'):

@@ -25,7 +25,7 @@ COMMENT_TYPES = {'comment', 'line_comment', 'block_comment', 'multiline_comment'
 DIRECTIVE = re.compile(
     rb'(?://(?:go:|line | \+build |nolint\b|lint:|swift-tools-version:|swiftlint:)|'
     rb'(?://|/\*)\s*(?:eslint\b|global[s]?\b|@ts-(?:check|nocheck|ignore|expect-error)\b|'
-    rb'[#@]\s*source(?:Mapping)?URL=|[#@]__PURE__)|'
+    rb'[#@]\s*source(?:Mapping)?URL=|[#@]__PURE__|#nosec\b)|'
     rb'// Code generated [^\n]+ DO NOT EDIT\.|'
     rb'#\s*(?:shellcheck\b|(?:type|noqa|fmt|pragma|renovate):)|'
     rb'#\s*(?:syntax|escape|check)=)'
