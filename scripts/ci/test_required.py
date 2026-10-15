@@ -17,7 +17,7 @@ def case(scope, selected=True, app="player"):
     elif scope == "security":
         jobs = ("secrets", "codeql", "supply-chain", "findings")
     else:
-        jobs = ("static", "race", "security", "system", "browser", "tooling", "client", "android", "wear")
+        jobs = ("static", "race", "security", "system", "browser", "proofs", "tooling", "client", "android", "wear")
     needs.update({job: {"result": "success" if selected else "skipped"} for job in jobs})
     if scope == "repository":
         needs["static"]["result"] = "success"
@@ -71,7 +71,7 @@ class RequiredTests(unittest.TestCase):
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["client"] = True
         raw = json.dumps(plan)
-        needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "browser", "tooling")},
+        needs = {**{job: {"result": "skipped"} for job in ("static", "race", "security", "system", "browser", "proofs", "tooling")},
                  "client": {"result": "success"}, "android": {"result": "skipped"}, "wear": {"result": "skipped"}}
         verify("app", needs, raw, "player")
         needs["client"]["result"] = "skipped"
@@ -83,7 +83,7 @@ class RequiredTests(unittest.TestCase):
         plan["android"] = True
         raw = json.dumps(plan)
         needs = {job: {"result": "skipped"} for job in
-                 ("static", "race", "security", "system", "browser", "tooling", "client", "android", "wear")}
+                 ("static", "race", "security", "system", "browser", "proofs", "tooling", "client", "android", "wear")}
         needs["android"]["result"] = "success"
         verify("app", needs, raw, "player")
         needs["android"]["result"] = "skipped"
@@ -95,7 +95,7 @@ class RequiredTests(unittest.TestCase):
         plan["android"] = plan["deep"] = True
         raw = json.dumps(plan)
         needs = {job: {"result": "skipped"} for job in
-                 ("static", "race", "security", "system", "browser", "tooling", "client", "android", "wear")}
+                 ("static", "race", "security", "system", "browser", "proofs", "tooling", "client", "android", "wear")}
         needs["android"]["result"] = needs["wear"]["result"] = "success"
         verify("app", needs, raw, "player")
         for state in ("failure", "cancelled", "skipped", "missing"):

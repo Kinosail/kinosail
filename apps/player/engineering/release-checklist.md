@@ -2,7 +2,7 @@
 
 Use this checklist from a clean commit on `main`. Scope this launch to the Player server container and desktop web player; mobile is excluded. Native core archives below are optional for this container launch.
 
-While the root `.gates-disabled` marker exists, do not run the candidate gates below or treat skipped gates as passed. They require explicit user authorization to re-enable. GitHub Actions is currently disabled; the Nox deployment watcher deploys development images, not signed customer releases.
+Run the candidate gates below for each release candidate. Do not treat skipped gates as passed. GitHub Actions and the Nox deployment watcher publish and deploy development images, not signed customer releases.
 
 ## Local preparation
 

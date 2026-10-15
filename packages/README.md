@@ -12,7 +12,7 @@ Examples of shared ownership include [configuration](configurationcore/), [libra
 
 From this directory, `go build ./...` compiles the shared module. Changes can affect more than one app; review all callers and their observable behavior.
 
-When quality gates are enabled, run `make -C packages check` from the repository root and the affected app checks described in [CONTRIBUTING.md](../CONTRIBUTING.md#verification). While `.gates-disabled` exists, the suites remain disabled and skipped checks are not passes.
+Run `make -C packages check` from the repository root and the affected app checks described in [CONTRIBUTING.md](../CONTRIBUTING.md#verification). Skipped checks are not passes.
 
 ## License
 

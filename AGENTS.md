@@ -56,7 +56,6 @@
 - Use `debug` for routine detail, `info` for meaningful lifecycle events, `warn` for recoverable failures or rejected requests, and `error` for failed operations needing intervention. Keep normal polling and media segments quiet at the default `info` level.
 - Treat log fields as an external data boundary. Never log credentials, tokens, cookies, request or response bodies, raw URLs or query strings, personal data, or unbounded remote error text. Use bounded, validated identifiers and route patterns. Keep diagnostics private and redact before sharing.
 - For a changed failure path, verify the log level, useful correlation fields, and absence of secrets under both success and failure. Report server, browser, simulator, physical device, and deployment log evidence separately.
-- MCP may read only a bounded, explicitly safe diagnostic projection of logs. Keep raw process logs and activity records with private targets out of MCP responses; require Owner management access for diagnostic failure history.
 
 ## Delivery
 
@@ -69,7 +68,7 @@
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
 - GitHub Actions is the CI and container-publication authority. Green main pushes publish affected app containers automatically; version tags and major releases are not required. Keep the local deployment watcher separate from artifact publication.
 - Nox deployment requires successful CI and the selected app's production-image promotion for the exact current main commit. Its locally rebuilt ARM image must pass its own scan and remote health check; report that image separately from the published GHCR digest.
-- Current CI/CD decisions and evidence live in `engineering/research/ci-cd-reset-2026-09-22.md`; the 2026-09-20 note is historical.
+- Current CI/CD decisions and evidence live in `engineering/research/ci-cd-reset-2026-09-22.md`.
 - Treat source tests, browser checks, remote publication, deployed revision, container health, TLS, and physical-device proof as separate facts.
 - End implementation delivery reports with `MAIN: YES — <remote main SHA>` after proof, or `MAIN: NO — <specific blocker>`.
 
