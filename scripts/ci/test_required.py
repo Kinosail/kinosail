@@ -141,7 +141,7 @@ class RequiredTests(unittest.TestCase):
             block = job(ci, name)
             self.assertIn("    if: always()\n", block)
             self.assertRegex(block, r"    needs: \[plan, ")
-            self.assertTrue("required.py" in block or "test "$SELECTION" = success" in block)
+            self.assertTrue("required.py" in block or 'test "$SELECTION" = success' in block)
         with tempfile.TemporaryDirectory() as directory:
             run = lambda: subprocess.run(["bash", "-ec", guard], cwd=directory, check=False).returncode
             self.assertEqual(run(), 0)
