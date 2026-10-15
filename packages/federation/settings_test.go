@@ -14,7 +14,7 @@ type settingsEffects struct {
 	persistErr       error
 }
 
-func TestSettingsOIDCLifecycleAndValidationEffects(t *testing.T) { //nolint:cyclop // One lifecycle proves each mutation boundary.
+func TestSettingsOIDCLifecycleAndValidationEffects(t *testing.T) {
 	t.Parallel()
 	effects := &settingsEffects{}
 	settings := testSettings(effects)
@@ -56,7 +56,7 @@ func TestSettingsSAMLLifecycleAndPersistenceErrors(t *testing.T) {
 	}
 }
 
-func TestSettingsCrossFieldAndTextValidation(t *testing.T) { //nolint:cyclop // Related validators share one compact table-free contract.
+func TestSettingsCrossFieldAndTextValidation(t *testing.T) {
 	t.Parallel()
 	values := map[string]string{}
 	value := func(key string) string { return values[key] }
@@ -79,7 +79,7 @@ func TestSettingsCrossFieldAndTextValidation(t *testing.T) { //nolint:cyclop // 
 	}
 }
 
-func testSettings(effects *settingsEffects) Settings { //nolint:cyclop,gocognit // Test callbacks intentionally expose each storage effect.
+func testSettings(effects *settingsEffects) Settings {
 	var mutex sync.Mutex
 	if effects.regular == nil {
 		effects.regular = make(map[string]string)

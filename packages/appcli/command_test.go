@@ -171,7 +171,7 @@ func TestRunFailurePaths(t *testing.T) {
 	}
 }
 
-func TestAccessConfigurationUsesPlayerPolicy(t *testing.T) { //nolint:cyclop // One table verifies the complete shared access configuration.
+func TestAccessConfigurationUsesPlayerPolicy(t *testing.T) {
 	t.Parallel()
 	if remote, err := RemoteAccess(testSettings{"remote.mode": "off"}); err != nil || remote == nil {
 		t.Fatalf("disabled remote access = %#v, %v", remote, err)
@@ -191,7 +191,7 @@ func TestAccessConfigurationUsesPlayerPolicy(t *testing.T) { //nolint:cyclop // 
 	}
 }
 
-func TestRemoteAndShutdownFailuresCompleteLifecycle(t *testing.T) { //nolint:paralleltest // The test observes asynchronous lifecycle completion.
+func TestRemoteAndShutdownFailuresCompleteLifecycle(t *testing.T) {
 	duck := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		_, _ = writer.Write([]byte("OK"))
 	}))

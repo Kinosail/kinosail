@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (service *Service) decodeV1Certificate(record []byte, certificate *Certificate) bool { //nolint:cyclop // Strict legacy validation remains below the repository complexity ceiling.
+func (service *Service) decodeV1Certificate(record []byte, certificate *Certificate) bool {
 	object, err := jsonObject(record)
 	required := []string{"version", "tier", "supporterId", "supportedSince", "issuedAt", "expiresAt", "sustaining", "founding", "installationKey"}
 	sustaining, sustainingOK := jsonBool(object["sustaining"])
@@ -38,7 +38,7 @@ func (service *Service) validV1Times(certificate Certificate) bool {
 	return true
 }
 
-func (service *Service) decodeV2Certificate(record []byte, certificate *Certificate) bool { //nolint:cyclop // Strict legacy validation remains below the repository complexity ceiling.
+func (service *Service) decodeV2Certificate(record []byte, certificate *Certificate) bool {
 	object, err := jsonObject(record)
 	required := []string{"version", "audience", "tier", "supporterId", "supportedSince", "issuedAt", "expiresAt", "sustaining", "founding", "installationKey"}
 	optional := []string{"recognitionName"}
@@ -88,7 +88,7 @@ func (service *Service) validLegacyRecognition(object map[string]json.RawMessage
 	return !restrictTier || name == "" || Rank(certificate.Tier) >= 7
 }
 
-func (service *Service) validV2Times(certificate Certificate) bool { //nolint:cyclop // Two historical time profiles must remain visibly distinct and fail closed.
+func (service *Service) validV2Times(certificate Certificate) bool {
 	parse := func(value string) (time.Time, bool) {
 		if service.app.Legacy == LegacySubtitles {
 			return strictTime(value)

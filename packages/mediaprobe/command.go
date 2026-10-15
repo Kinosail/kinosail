@@ -34,7 +34,6 @@ func runProbe(ctx context.Context, executable string, arguments ...string) ([]by
 		return nil, errors.New("invalid probe executable")
 	}
 	output := boundedOutput{remaining: maximumProbeOutput}
-	//nolint:gosec // The executable is installation config. Arguments use scanned Library Content.
 	command := exec.CommandContext(ctx, executable, arguments...)
 	command.Stdout = &output
 	if err := command.Run(); err != nil {

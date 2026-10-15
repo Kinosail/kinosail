@@ -29,7 +29,7 @@ func TestOwnerFirstCredentialLoginOpensOnboarding(t *testing.T) {
 	onboardingFixture.OwnerFirstCredentialLoginOpensOnboarding(t)
 }
 
-func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) { //nolint:cyclop,funlen // One onboarding scenario covers preview-safe migration entry.
+func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) {
 	const sourceToken = "onboarding-source-secret"
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Header.Get("X-Emby-Token") != sourceToken {

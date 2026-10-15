@@ -82,7 +82,7 @@ func exchangeOAuthCode(t *testing.T, mux *http.ServeMux, connections *Connection
 	return token
 }
 
-func assertReopenedGrant(t *testing.T, principals *testPrincipals, store StateStore, owner Principal, accessToken string) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for one reopened-grant assertion.
+func assertReopenedGrant(t *testing.T, principals *testPrincipals, store StateStore, owner Principal, accessToken string) {
 	t.Helper()
 	reopened := testConnections("https://kino.test:38127", principals, store)
 	info, err := reopened.VerifyToken(t.Context(), accessToken, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", nil))

@@ -105,7 +105,7 @@ func TestProfileStoreDiscoverValidatesAndIsolates(t *testing.T) {
 	}
 }
 
-func TestProfileStoreAddRejectsBeforeEffectsAndCommitsAtomically(t *testing.T) { //nolint:cyclop // One atomicity scenario covers every rejected and committed effect.
+func TestProfileStoreAddRejectsBeforeEffectsAndCommitsAtomically(t *testing.T) {
 	first, second := credential("first"), credential("second")
 	fixture, store := newStoreFixture(storeProfile{ID: "profile", Credentials: []webauthn.Credential{first}})
 	for _, test := range []struct {
@@ -161,7 +161,7 @@ func TestProfileStoreAddRejectsGlobalDuplicateAndLimit(t *testing.T) {
 	}
 }
 
-func TestProfileStoreUpdateRejectsAndRollsBackBeforeCommit(t *testing.T) { //nolint:cyclop // One atomicity scenario covers validation, rollback, and commit.
+func TestProfileStoreUpdateRejectsAndRollsBackBeforeCommit(t *testing.T) {
 	first := credential("first")
 	fixture, store := newStoreFixture(storeProfile{ID: "profile", Credentials: []webauthn.Credential{first}})
 	unknown := credential("unknown")
@@ -192,7 +192,7 @@ func TestProfileStoreUpdateRejectsAndRollsBackBeforeCommit(t *testing.T) { //nol
 	}
 }
 
-func TestProfileStoreInventoryAndRemove(t *testing.T) { //nolint:cyclop,gocognit // Removal invariants share one stateful fixture.
+func TestProfileStoreInventoryAndRemove(t *testing.T) {
 	first, second := credential("first"), credential("second")
 	firstID, secondID := ID(first.ID), ID(second.ID)
 	fixture, store := newStoreFixture(storeProfile{ID: "profile", Owner: true, Credentials: []webauthn.Credential{first, second}, Usage: map[string]Usage{firstID: {Tracked: true}, secondID: {Tracked: true}}})

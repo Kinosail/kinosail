@@ -56,7 +56,7 @@ func openAuditJournal(path string) (*os.File, os.FileInfo, bool, error) {
 	if !exists {
 		flags |= os.O_CREATE | os.O_EXCL
 	}
-	file, err := os.OpenFile(path, flags, 0o600) //nolint:gosec // The journal path is fixed below the validated data directory.
+	file, err := os.OpenFile(path, flags, 0o600)
 	return file, linked, exists, err
 }
 

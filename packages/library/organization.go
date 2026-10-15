@@ -57,7 +57,7 @@ func newShow(item Item, key string, episodeCount int) *Show {
 	return &Show{ID: id, Title: title, Year: item.ShowYear, Plot: item.ShowPlot, Genres: item.ShowGenres, Studio: item.ShowStudio, Artwork: item.ShowArtwork, Backdrop: item.ShowBackdrop, Logo: item.ShowLogo, Cast: item.ShowCast, Episodes: make([]Item, 0, episodeCount)}
 }
 
-func mergeShow(show *Show, item Item) { //nolint:cyclop // Each condition fills one independent optional presentation field.
+func mergeShow(show *Show, item Item) {
 	if item.ShowTitle != "" {
 		show.Title = item.ShowTitle
 	}

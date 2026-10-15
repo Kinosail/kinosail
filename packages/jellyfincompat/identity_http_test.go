@@ -54,7 +54,7 @@ func identityFixture(effects *[]string) Identity[identityProfile] {
 	}
 }
 
-func TestIdentityOwnsServerUserAndLogoutHTTP(t *testing.T) { //nolint:cyclop // One protocol fixture checks all identity route fields and side effects.
+func TestIdentityOwnsServerUserAndLogoutHTTP(t *testing.T) {
 	t.Parallel()
 	effects := make([]string, 0)
 	identity := identityFixture(&effects)
@@ -90,7 +90,7 @@ func TestIdentityOwnsServerUserAndLogoutHTTP(t *testing.T) { //nolint:cyclop // 
 	}
 }
 
-func TestIdentityPasswordLoginPreservesOrderingAndErrors(t *testing.T) { //nolint:cyclop // One table protects all ordered exits.
+func TestIdentityPasswordLoginPreservesOrderingAndErrors(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
 		username, password string
@@ -118,7 +118,7 @@ func TestIdentityPasswordLoginPreservesOrderingAndErrors(t *testing.T) { //nolin
 	}
 }
 
-func TestQuickConnectAdaptersValidateBeforeMutation(t *testing.T) { //nolint:cyclop,funlen,gocognit // Negative inputs share one no-side-effect assertion.
+func TestQuickConnectAdaptersValidateBeforeMutation(t *testing.T) {
 	t.Parallel()
 	profile := identityProfile{id: "viewer", name: "Sam"}
 	approvedSecret := "qc_AAAAAAAAAAAAAAAAAAAAAAAAAA"

@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-func TestManagerObtainsAndServesTrustedCertificate(t *testing.T) { //nolint:cyclop // One test proves the complete obtain, persist, and serve lifecycle.
+func TestManagerObtainsAndServesTrustedCertificate(t *testing.T) {
 	t.Parallel()
 
 	now := time.Date(2026, time.August, 24, 12, 0, 0, 0, time.UTC)

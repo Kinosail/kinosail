@@ -17,7 +17,7 @@ type downloadVideoEncoding struct {
 	matroska, copyVideo bool
 }
 
-func (manager *Manager) videoEncoding(ctx context.Context, item library.Item, quality string, selection *TrackSelection, options transcodepolicy.Settings) (downloadVideoEncoding, error) { //nolint:cyclop // One plan validates the source and selected tracks before reserving encoding resources.
+func (manager *Manager) videoEncoding(ctx context.Context, item library.Item, quality string, selection *TrackSelection, options transcodepolicy.Settings) (downloadVideoEncoding, error) {
 	if options.Encoder == "" {
 		return downloadVideoEncoding{}, errors.New("download encoder is unavailable")
 	}

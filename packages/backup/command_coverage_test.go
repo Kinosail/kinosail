@@ -18,7 +18,7 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-func TestBackupCoverageClosesArchiveFailureEdges(t *testing.T) { //nolint:cyclop // One matrix covers archive input and output failures.
+func TestBackupCoverageClosesArchiveFailureEdges(t *testing.T) {
 	service := testService(t, func(string) (Database, error) { return nil, nil }, func([]byte) error { return nil })
 	directory := t.TempDir()
 	if err := os.Mkdir(filepath.Join(directory, service.databaseFilename), 0o700); err != nil {
@@ -95,7 +95,7 @@ func assertArchiveWriterFailures(t *testing.T, service *Service) {
 	}
 }
 
-func TestBackupCoverageClosesEncryptedFailureEdges(t *testing.T) { //nolint:cyclop // One matrix covers entropy, output, decrypt, and restore failures.
+func TestBackupCoverageClosesEncryptedFailureEdges(t *testing.T) {
 	service := testService(t, func(string) (Database, error) { return nil, nil }, func([]byte) error { return nil })
 	directory := t.TempDir()
 	if err := os.WriteFile(filepath.Join(directory, "settings.json"), []byte(`{}`), 0o600); err != nil {

@@ -27,7 +27,7 @@ type Manifest struct {
 }
 
 func sealManifestContext(ctx context.Context, path, id string) (Manifest, error) {
-	file, err := os.Open(path) //nolint:gosec // Manager-owned cache path.
+	file, err := os.Open(path)
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -82,7 +82,7 @@ func copyManifest(ctx context.Context, input, output, id string) (Manifest, erro
 	if err := ctx.Err(); err != nil {
 		return Manifest{}, err
 	}
-	source, err := os.Open(input) //nolint:gosec // Library-owned source.
+	source, err := os.Open(input)
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -91,7 +91,7 @@ func copyManifest(ctx context.Context, input, output, id string) (Manifest, erro
 	if err != nil || !validDownloadSource(info) || !validID(id) {
 		return Manifest{}, errors.New("download source is invalid")
 	}
-	destination, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600) //nolint:gosec // Manager-owned staging file.
+	destination, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -110,7 +110,7 @@ func copyManifest(ctx context.Context, input, output, id string) (Manifest, erro
 	return result, nil
 }
 
-func validManifest(value Manifest, job Job) bool { //nolint:cyclop // Validate the complete sealed identity and every bounded digest before use.
+func validManifest(value Manifest, job Job) bool {
 	if value.Version != 1 || value.ID != job.ID || value.Size != job.Size || value.SHA256 != job.SHA256 ||
 		value.ChunkSize != ChunkSize || value.Size <= 0 || value.Size > ChunkSize*MaximumChunks ||
 		len(value.Chunks) != int((value.Size+ChunkSize-1)/ChunkSize) || !validSHA256(value.SHA256) {
@@ -125,7 +125,7 @@ func validManifest(value Manifest, job Job) bool { //nolint:cyclop // Validate t
 }
 
 func readManifest(job Job) (Manifest, error) {
-	file, err := os.Open(job.File + ".manifest") //nolint:gosec // Validated cache job.
+	file, err := os.Open(job.File + ".manifest")
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -228,10 +228,10 @@ func (manager *Manager) manifestFlight(job Job) (*manifestFlight, error) {
 			manager.manifestMu.Unlock()
 			return nil, ErrQueueFull
 		}
-		work, cancel := context.WithCancel(manager.ctx) //nolint:contextcheck // Shared repair outlives individual requests; the last waiter cancels it.
+		work, cancel := context.WithCancel(manager.ctx)
 		flight = &manifestFlight{done: make(chan struct{}), cancel: cancel}
 		manager.manifestWork[job.ID] = flight
-		go manager.repairManifest(work, job, flight) //nolint:contextcheck // The last waiter cancels this shared repair, not the first request.
+		go manager.repairManifest(work, job, flight)
 	}
 	flight.waiters++
 	manager.manifestMu.Unlock()

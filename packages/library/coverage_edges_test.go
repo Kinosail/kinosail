@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestScanRemainingErrorAndCancellationEdges(t *testing.T) { //nolint:cyclop // One white-box matrix covers independent filesystem and cancellation failures.
+func TestScanRemainingErrorAndCancellationEdges(t *testing.T) {
 	t.Parallel()
 	want := errors.New("failed")
 	catalog := &scanCatalog{files: make(map[string]struct{}), media: make(map[string]struct{}), subtitles: make(map[string][]string)}

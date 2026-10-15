@@ -52,7 +52,7 @@ func serveConfiguredMCP(ctx context.Context, configured configuration.Snapshot, 
 	return serveMCPStdioCommand(ctx, configuredMCPServerConfig(configured), profileID)
 }
 
-func run(configured configuration.Snapshot) int { //nolint:cyclop // Startup keeps optional access managers and graceful shutdown in one lifecycle.
+func run(configured configuration.Snapshot) int {
 	return appcli.Run(configured, terminationSignals(), func(ctx context.Context, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
 		return newConfiguredHTTPServerWithAccess(ctx, configured, internet, trusted)
 	}, server.Remote)

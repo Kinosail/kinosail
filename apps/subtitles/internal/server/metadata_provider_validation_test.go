@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestProviderRejectsInvalidIMDbMatchesWithoutSideEffects(t *testing.T) { //nolint:cyclop,gocognit // One table proves every untrusted provider-response boundary without persistence.
+func TestProviderRejectsInvalidIMDbMatchesWithoutSideEffects(t *testing.T) {
 	t.Parallel()
 	for name, response := range map[string]string{
 		"missing":      `{}`,
@@ -104,7 +104,7 @@ func TestProviderRejectsInvalidEpisodeArtworkWithoutSideEffects(t *testing.T) {
 	}
 }
 
-func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) { //nolint:cyclop // A complete two-episode group proves validation precedes every image side effect.
+func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) {
 	t.Parallel()
 	imageRequests := 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -168,7 +168,7 @@ func TestProviderRejectsOversizedShowIdentityWithoutSideEffects(t *testing.T) {
 	}
 }
 
-func idFirstTMDB(token, prefix string, legacy bool, finds, searches *int) http.HandlerFunc { //nolint:cyclop // One fake serves both supported TMDB configuration adapters.
+func idFirstTMDB(token, prefix string, legacy bool, finds, searches *int) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request.Header.Get("Authorization") != "Bearer "+token {
 			http.Error(writer, "unauthorized", http.StatusUnauthorized)

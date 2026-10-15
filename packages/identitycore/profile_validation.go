@@ -63,7 +63,7 @@ func validUnmanagedSCIMProfile(profile Profile) bool {
 	return profile.SCIMUserName == "" && profile.SCIMExternalID == "" && !profile.SCIMDeleted && profile.SCIMCreatedAt.IsZero() && profile.SCIMUpdatedAt.IsZero() && profile.SCIMName == (scim.Name{}) && len(profile.SCIMEmails) == 0 && profile.SCIMEnterprise == (scim.EnterpriseProfile{})
 }
 
-func validManagedSCIMProfile(profile Profile) bool { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for one complete invariant predicate.
+func validManagedSCIMProfile(profile Profile) bool {
 	credentialsValid := !profile.Owner && profile.Credential == "" && profile.TOTPSecret == "" && len(profile.Recovery) == 0 && len(profile.Passkeys) == 0
 	identityValid := profile.SCIMUserName != "" && !profile.SCIMCreatedAt.IsZero() && !profile.SCIMUpdatedAt.IsZero() && !profile.SCIMUpdatedAt.Before(profile.SCIMCreatedAt) && (!profile.SCIMDeleted || profile.Disabled)
 	return credentialsValid && identityValid

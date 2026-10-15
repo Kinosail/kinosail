@@ -96,7 +96,7 @@ func (manager *Manager) Metrics() (int, uint64) {
 	return len(manager.syncSlots), manager.syncDeferred.Load()
 }
 
-func (manager *Manager) validate(input Input) (Input, Profile, error) { //nolint:cyclop // Validation keeps every source credential invariant together.
+func (manager *Manager) validate(input Input) (Input, Profile, error) {
 	input.Source, input.URL = strings.ToLower(strings.TrimSpace(input.Source)), strings.TrimSpace(input.URL)
 	input.Token, input.SourceUser, input.ProfileID = strings.TrimSpace(input.Token), strings.TrimSpace(input.SourceUser), strings.TrimSpace(input.ProfileID)
 	if input.Source != "plex" && input.Source != "jellyfin" {

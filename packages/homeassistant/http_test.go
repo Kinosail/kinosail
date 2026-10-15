@@ -37,7 +37,7 @@ func registeredHTTPTest(t *testing.T) (*testState, *Integration[testProfile], fu
 	return state, integration, call
 }
 
-func TestRegisteredPairingAndMediaHTTP(t *testing.T) { //nolint:cyclop,gocognit // One table verifies the registered pairing and media routes.
+func TestRegisteredPairingAndMediaHTTP(t *testing.T) {
 	state, _, call := registeredHTTPTest(t)
 	if got := call(http.MethodGet, "/api/v1/home-assistant", "", false); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"serverId":"server-id"`) {
 		t.Fatalf("probe = %d %s", got.Code, got.Body.String())
@@ -75,7 +75,7 @@ func TestRegisteredPairingAndMediaHTTP(t *testing.T) { //nolint:cyclop,gocognit 
 	}
 }
 
-func TestRegisteredPlayerHTTP(t *testing.T) { //nolint:cyclop // The score of 14 remains below the repository ceiling of 22 for the player route matrix.
+func TestRegisteredPlayerHTTP(t *testing.T) {
 	_, integration, call := registeredHTTPTest(t)
 	if got := call(http.MethodGet, "/api/v1/home-assistant/players", "", false); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"players":[]`) {
 		t.Fatalf("players = %d %s", got.Code, got.Body.String())

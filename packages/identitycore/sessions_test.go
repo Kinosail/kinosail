@@ -59,7 +59,7 @@ func (fixture *sessionFixture) sessions(options ...func(*SessionConfig)) *Sessio
 	return NewSessions(config)
 }
 
-func TestLoadSessionsSupportsDocumentsFilesAndLegacyState(t *testing.T) { //nolint:cyclop // One test covers all load adapters and formats.
+func TestLoadSessionsSupportsDocumentsFilesAndLegacyState(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, 9, 4, 10, 0, 0, 0, time.UTC)
 	loader := &sessionLoader{data: []byte(`{"raw":{"profileId":"viewer"}}`), found: true}
@@ -102,7 +102,7 @@ func TestLoadSessionsReturnsStorageAndDecodeFailures(t *testing.T) {
 	}
 }
 
-func TestSessionCreationPreservesPlayerPolicies(t *testing.T) { //nolint:cyclop // The table covers each independent profile policy.
+func TestSessionCreationPreservesPlayerPolicies(t *testing.T) {
 	t.Parallel()
 	for name, profile := range map[string]SessionProfile{
 		"missing": {}, "disabled": {ID: "viewer", Disabled: true}, "deleted": {ID: "viewer", Deleted: true},
@@ -135,7 +135,7 @@ func TestSessionCreationPreservesPlayerPolicies(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestSessionCreationCommitsEachSessionKind(t *testing.T) { //nolint:cyclop // Exact state assertions cover each session kind.
+func TestSessionCreationCommitsEachSessionKind(t *testing.T) {
 	t.Parallel()
 	for name, input := range map[string]struct {
 		browser, strong bool
@@ -163,7 +163,7 @@ func TestSessionCreationCommitsEachSessionKind(t *testing.T) { //nolint:cyclop /
 	}
 }
 
-func TestSessionAuthenticationAndRevocation(t *testing.T) { //nolint:cyclop // One lifecycle verifies mutation ordering and persistence rollback.
+func TestSessionAuthenticationAndRevocation(t *testing.T) {
 	t.Parallel()
 	fixture := newSessionFixture()
 	key := SessionKey("token")
@@ -196,7 +196,7 @@ func TestSessionAuthenticationAndRevocation(t *testing.T) { //nolint:cyclop // O
 	}
 }
 
-func TestSessionAdminViewsAndFailures(t *testing.T) { //nolint:cyclop // One lifecycle covers admin views and rollback.
+func TestSessionAdminViewsAndFailures(t *testing.T) {
 	t.Parallel()
 	fixture := newSessionFixture()
 	active := Session{ProfileID: "viewer", Name: "Chrome", CreatedAt: fixture.now.Add(-time.Hour).Unix(), LastSeen: fixture.now.Unix(), ExpiresAt: fixture.now.Add(time.Hour).Unix()}

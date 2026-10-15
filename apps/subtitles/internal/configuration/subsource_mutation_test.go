@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 )
 
-func TestSubSourceMutationPersistsAndDeletesThePair(t *testing.T) { //nolint:cyclop // One lifecycle proves paired persistence, deletion, validation, and secret separation.
+func TestSubSourceMutationPersistsAndDeletesThePair(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	if err := configuration.SetSubSource(directory, "app-key"); err != nil {

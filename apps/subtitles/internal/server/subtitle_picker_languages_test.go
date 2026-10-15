@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestPlaybackPickerShowsOnlySelectedSubtitleLanguages(t *testing.T) { //nolint:gocognit,cyclop,funlen // One public journey covers preferred-language default, cleanup opt-in, choices, invalid toggles, and reset.
+func TestPlaybackPickerShowsOnlySelectedSubtitleLanguages(t *testing.T) {
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.de.srt", "Film.nl.forced.srt"} {
@@ -102,7 +102,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"h264","wi
 	}
 }
 
-func TestSubtitlePickerDefaultsPreserveFilesAndSavedChoices(t *testing.T) { //nolint:gocognit // Each public playback case also proves saved choices and original files are preserved.
+func TestSubtitlePickerDefaultsPreserveFilesAndSavedChoices(t *testing.T) {
 	for _, test := range []struct {
 		name, saved string
 		want        int

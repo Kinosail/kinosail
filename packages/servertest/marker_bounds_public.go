@@ -37,7 +37,7 @@ func (fixture PlaybackAPIFixture) PlaybackMarkerBoundsPublicRealMedia(t *testing
 	defer cancel()
 	media := t.TempDir()
 	source := filepath.Join(media, "Fixture.mp4")
-	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "color=c=blue:s=32x32:r=25:d=304.96", "-c:v", "libx264", "-threads", "1", "-preset", "ultrafast", "-an", source) //nolint:gosec // Fixed bounded disposable media; the discovered codec is used unchanged.
+	command := exec.CommandContext(ctx, ffmpeg, "-nostdin", "-v", "error", "-f", "lavfi", "-i", "color=c=blue:s=32x32:r=25:d=304.96", "-c:v", "libx264", "-threads", "1", "-preset", "ultrafast", "-an", source)
 	if err := command.Run(); err != nil {
 		t.Fatal("real media fixture failed:", err)
 	}

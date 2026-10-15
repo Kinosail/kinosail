@@ -121,7 +121,7 @@ func TestPublicRequestClassifiersRejectAmbiguousInputs(t *testing.T) {
 	}
 }
 
-func TestPublicGuardRemainingCapacityAndExpiryEdges(t *testing.T) { //nolint:cyclop,gocognit // One bounded-state matrix covers independent capacity cleanup paths.
+func TestPublicGuardRemainingCapacityAndExpiryEdges(t *testing.T) {
 	t.Parallel()
 	now := time.Now()
 	tripwire := PublicTripwire{sources: make(map[string]tripwireSource, trackedSourceLimit)}

@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func TestStoredConfigurationValidationEdges(t *testing.T) { //nolint:cyclop // Each case targets one independent stored-state policy.
+func TestStoredConfigurationValidationEdges(t *testing.T) {
 	for name, stored := range map[string]struct {
 		regular map[string]string
 		secrets map[string]string

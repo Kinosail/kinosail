@@ -45,7 +45,7 @@ func (analyzer *Analyzer) creditFrames(ctx context.Context, item library.Item, s
 	return command.Output()
 }
 
-func creditFrameLikely(frame []byte) bool { //nolint:cyclop,gocognit // Spatial edge and background checks form one bounded frame classifier.
+func creditFrameLikely(frame []byte) bool {
 	if len(frame) != creditFrameWidth*creditFrameHeight {
 		return false
 	}
@@ -92,7 +92,7 @@ func absInt(value int) int {
 	return value
 }
 
-func creditMarkers(points []float64, offset, duration float64) []Marker { //nolint:cyclop // Consecutive text-like tail runs form one marker-classification pass.
+func creditMarkers(points []float64, offset, duration float64) []Marker {
 	markers := make([]Marker, 0)
 	for start := 0; start < len(points); {
 		end := start

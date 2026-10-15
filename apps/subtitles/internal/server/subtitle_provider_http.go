@@ -104,7 +104,7 @@ func readSubtitle(response *http.Response) ([]byte, error) {
 	return data, nil
 }
 
-func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, error) { //nolint:cyclop // Archive entries share one bounded, cancellable inflation budget.
+func readArchivedSubtitle(ctx context.Context, archive *zip.Reader) ([]byte, error) {
 	if len(archive.File) > 128 {
 		return nil, errors.New("subtitle archive has too many entries")
 	}

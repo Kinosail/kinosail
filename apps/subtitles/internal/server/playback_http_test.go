@@ -45,7 +45,7 @@ func TestPlaybackSubtitlesChoosesOnePreferredTrackPerLanguage(t *testing.T) {
 	}
 }
 
-func TestLimitedPickerDefaultsToFirstAvailablePreferredLanguage(t *testing.T) { //nolint:cyclop // One fixture verifies preference order, fallback, forced options, and subtitles off.
+func TestLimitedPickerDefaultsToFirstAvailablePreferredLanguage(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "film", Path: "Film.mkv", Subtitles: []string{"Film.fr.srt", "Film.en.srt", "Film.de.forced.srt", "Film.en.forced.srt"}}
 	provider := &subtitleProvider{cache: t.TempDir()}

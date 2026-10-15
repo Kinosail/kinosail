@@ -86,7 +86,7 @@ func synchronizedProgress(position float64, expected, update mediaProgressSnapsh
 func matchingProgressViewer(writer http.ResponseWriter, request *http.Request) bool {
 	values, supplied := request.Header["X-Kinosail-Viewer-Profile"]
 	if supplied && (len(values) != 1 || values[0] == "" || len(values[0]) > 128 || values[0] != currentViewer(request).ID) {
-		apiError(writer, errors.New("Viewer Profile changed. Open the Server again to sync progress."), http.StatusForbidden) //nolint:staticcheck // This complete recovery instruction is displayed directly to the viewer.
+		apiError(writer, errors.New("Viewer Profile changed. Open the Server again to sync progress."), http.StatusForbidden)
 		return false
 	}
 	return true

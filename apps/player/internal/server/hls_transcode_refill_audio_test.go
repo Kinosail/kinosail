@@ -15,7 +15,7 @@ import (
 func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, label string, parts [][]byte) ([]byte, []refillAudioPacket) {
 	t.Helper()
 	arguments := []string{"-nostdin", "-v", "error", "-i", "pipe:0", "-map", "0:a:0", "-c:a", "pcm_s16le", "-f", "s16le", "-"}
-	command := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed decoder arguments and owned synthetic public HTTP fragments.
+	command := exec.CommandContext(ctx, ffmpeg, arguments...)
 	command.Stdin = bytes.NewReader(bytes.Join(parts, nil))
 	var diagnostics bytes.Buffer
 	command.Stderr = &diagnostics
@@ -47,7 +47,7 @@ type refillAudioPacket struct {
 func transcodeRefillAudioPackets(t *testing.T, ctx context.Context, ffprobe, label string, parts [][]byte) []refillAudioPacket {
 	t.Helper()
 	arguments := []string{"-v", "error", "-select_streams", "a:0", "-show_entries", "stream=time_base,sample_rate,channels:packet=pts,dts,duration,flags:packet_side_data=skip_samples,discard_padding", "-of", "json", "pipe:0"}
-	command := exec.CommandContext(ctx, ffprobe, arguments...) //nolint:gosec // Fixed metadata projection of owned public HTTP fragments.
+	command := exec.CommandContext(ctx, ffprobe, arguments...)
 	command.Stdin = bytes.NewReader(bytes.Join(parts, nil))
 	var diagnostics bytes.Buffer
 	command.Stderr = &diagnostics

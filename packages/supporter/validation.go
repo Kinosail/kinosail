@@ -28,7 +28,7 @@ func ValidKey(value string) bool { return keyPattern.MatchString(value) }
 
 func Tiers() []string { return slices.Clone(tiers) }
 
-func ValidEndpoint(value string, allowLoopbackHTTP bool) bool { //nolint:cyclop // Endpoint trust rules are clearer as one predicate.
+func ValidEndpoint(value string, allowLoopbackHTTP bool) bool {
 	parsed, err := url.Parse(value)
 	if err != nil || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" {
 		return false

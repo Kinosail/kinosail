@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestPlaybackAdaptersBoundColdRandomAccessProbe(t *testing.T) { //nolint:gocognit // Both adapters must prove the same cold-probe boundary.
+func TestPlaybackAdaptersBoundColdRandomAccessProbe(t *testing.T) {
 	for _, adapter := range []string{"api", "web"} {
 		t.Run(adapter, func(t *testing.T) {
 			media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()

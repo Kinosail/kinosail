@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item) error { //nolint:cyclop,gocognit // Bounded group dispatch and ordered failures share one batch boundary.
+func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item) error {
 	groups := groupMarkerItems(items)
 	titles := make([][]library.Item, 0, len(groups.seasons)+len(groups.movies))
 	for _, group := range []map[string][]library.Item{groups.seasons, groups.movies} {
@@ -53,7 +53,7 @@ dispatch:
 	return nil
 }
 
-func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error { //nolint:cyclop // Group staging, Owner edits, and atomic persistence form one publication boundary.
+func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error {
 	analyzer.mu.RLock()
 	before := maps.Clone(analyzer.records)
 	staged := &Analyzer{

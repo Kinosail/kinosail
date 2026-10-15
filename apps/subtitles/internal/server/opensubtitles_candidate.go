@@ -89,7 +89,7 @@ type openSubtitlesCandidate struct {
 	HI           bool
 }
 
-func rankOpenSubtitlesCandidates(item library.Item, language string, response openSubtitlesResponse) []openSubtitlesCandidate { //nolint:cyclop,gocognit // Provider response filtering keeps every trust and cardinality boundary together.
+func rankOpenSubtitlesCandidates(item library.Item, language string, response openSubtitlesResponse) []openSubtitlesCandidate {
 	if len(response.Data) == 0 || len(response.Data) > 50 || response.TotalCount < len(response.Data) {
 		return nil
 	}

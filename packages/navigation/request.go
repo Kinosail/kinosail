@@ -11,7 +11,7 @@ const (
 	maximumMediaTypes   = 32
 )
 
-func IsBrowserRequest(request *http.Request, authenticationError bool) bool { //nolint:cyclop // The score of 15 remains below the repository ceiling of 22 for one HTTP negotiation predicate.
+func IsBrowserRequest(request *http.Request, authenticationError bool) bool {
 	if request == nil || authenticationError || request.Method != http.MethodGet && request.Method != http.MethodHead && request.Method != http.MethodPost {
 		return false
 	}
@@ -35,7 +35,7 @@ func IsBrowserRequest(request *http.Request, authenticationError bool) bool { //
 	return false
 }
 
-func positiveHTTPQuality(value string) bool { //nolint:cyclop // The score of 14 remains below the repository ceiling of 22 for one strict quality parser.
+func positiveHTTPQuality(value string) bool {
 	if value == "0" {
 		return false
 	}

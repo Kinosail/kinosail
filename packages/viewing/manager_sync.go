@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (manager *Manager) CreateSync(previewID, interval string) (SyncView, error) { //nolint:cyclop,funlen // Persistence and rollback keep sync creation atomic with its initial import.
+func (manager *Manager) CreateSync(previewID, interval string) (SyncView, error) {
 	duration, ok := syncIntervals[interval]
 	if !ok {
 		return SyncView{}, errors.New("sync interval must be 15m, 1h, 6h, or 24h")
@@ -99,7 +99,7 @@ func (manager *Manager) RunSync(ctx context.Context, id string) (SyncView, error
 	return manager.runReserved(ctx, id)
 }
 
-func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, error) { //nolint:contextcheck // A fetched sync batch is finalized durably once reconciliation begins.
+func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, error) {
 	manager.mu.Lock()
 	sync, found := manager.syncs[id]
 	if !found {
@@ -117,7 +117,7 @@ func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, e
 	result, seen := Summary{}, sync.Seen
 	var runErr error
 	if sync.Pending != nil {
-		result, runErr = manager.applyPending(sync) //nolint:contextcheck // A fetched batch is already accepted and must finalize durably.
+		result, runErr = manager.applyPending(sync)
 	} else {
 		input := Input{Source: sync.Source, URL: sync.URL, Token: sync.Token, SourceUser: sync.SourceUser, ProfileID: sync.ProfileID}
 		activities, fetchErr := Fetch(ctx, manager.config.Client, input, false)
@@ -179,7 +179,7 @@ func (manager *Manager) pull(sync Sync, activities []Activity, now time.Time) (S
 	}
 	items, err := manager.config.Snapshot()
 	if err != nil {
-		return Summary{}, sync.Seen, errors.New("Kinosail Library is unavailable") //nolint:staticcheck // Kinosail is a proper product name.
+		return Summary{}, sync.Seen, errors.New("Kinosail Library is unavailable")
 	}
 	result, changes, seen := Summary{SourceItems: len(activities)}, make([]ProgressChange, 0), CloneObservations(sync.Seen)
 	for _, activity := range activities {
@@ -190,7 +190,7 @@ func (manager *Manager) pull(sync Sync, activities []Activity, now time.Time) (S
 	return result, seen, err
 }
 
-func (manager *Manager) pullActivity(profile Profile, sync Sync, items []library.Item, activity Activity, now time.Time, result *Summary, changes *[]ProgressChange, seen map[string]Observation) { //nolint:cyclop // Activity reconciliation remains below the repository complexity ceiling.
+func (manager *Manager) pullActivity(profile Profile, sync Sync, items []library.Item, activity Activity, now time.Time, result *Summary, changes *[]ProgressChange, seen map[string]Observation) {
 	key, signature := ActivityKey(activity), Signature(activity)
 	previous, observed := sync.Seen[key]
 	if !activity.Watched && activity.Seconds <= 0 && !observed {

@@ -23,7 +23,7 @@ type webEffects struct {
 	signInErr                                   error
 }
 
-func TestOIDCHTTPRoutesMFAAndProfileEffects(t *testing.T) { //nolint:funlen // One adapter contract exercises each route-side effect.
+func TestOIDCHTTPRoutesMFAAndProfileEffects(t *testing.T) {
 	t.Parallel()
 	values := []webProfile{{ID: "viewer"}}
 	profiles := webProfiles(&values)
@@ -83,7 +83,7 @@ func TestOIDCHTTPRejectsAndMapsFailures(t *testing.T) {
 	}
 }
 
-func TestSAMLHTTPRoutesProfilesAndFailures(t *testing.T) { //nolint:funlen // One adapter contract covers local SAML HTTP boundaries.
+func TestSAMLHTTPRoutesProfilesAndFailures(t *testing.T) {
 	t.Parallel()
 	identity := Identity{Issuer: "issuer", Subject: "subject"}
 	values := []webProfile{{ID: "viewer", SAML: identity}}

@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestVisualCreditsParsingAndAnalysisBoundaries(t *testing.T) { //nolint:cyclop // Parser, duration floor, tool error, and successful execution are one analyzer boundary.
+func TestVisualCreditsParsingAndAnalysisBoundaries(t *testing.T) {
 	t.Parallel()
 	analyzer := &Analyzer{ffmpeg: "/path/that/does/not/exist"}
 	if markers, err := analyzer.visualCredits(t.Context(), library.Item{}, 50); err != nil || markers != nil {
@@ -17,7 +17,7 @@ func TestVisualCreditsParsingAndAnalysisBoundaries(t *testing.T) { //nolint:cycl
 		t.Fatal("missing analyzer executable succeeded")
 	}
 	analyzer.extractCredits = func(context.Context, library.Item, float64, float64) ([]byte, error) { return nil, nil }
-	if markers, err := analyzer.visualCredits(context.Background(), library.Item{}, 200); err != nil || markers != nil { //nolint:usetesting // Explicit background context proves the analyzer owns its timeout.
+	if markers, err := analyzer.visualCredits(context.Background(), library.Item{}, 200); err != nil || markers != nil {
 		t.Fatalf("successful empty analysis = %#v, %v", markers, err)
 	}
 }

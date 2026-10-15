@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestJellyfinClientCanUseExtendedBrowseAndPlaybackContracts(t *testing.T) { //nolint:cyclop,funlen,gocognit // One official-client workflow exercises related Jellyfin contracts end to end.
+func TestJellyfinClientCanUseExtendedBrowseAndPlaybackContracts(t *testing.T) {
 	media, data := t.TempDir(), t.TempDir()
 	season1, season2 := filepath.Join(media, "Show", "Season 1"), filepath.Join(media, "Show", "Season 2")
 	for _, directory := range []string{season1, season2} {

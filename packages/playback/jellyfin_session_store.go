@@ -10,7 +10,7 @@ const maximumJellyfinSessions = 1024
 
 var jellyfinSessionWrites sync.Mutex
 
-func StoreJellyfinPlaySession(store *sync.Map, now time.Time, newID func() (string, error), session JellyfinSession) (string, error) { //nolint:cyclop // Validation, pruning, and insertion form one bounded operation.
+func StoreJellyfinPlaySession(store *sync.Map, now time.Time, newID func() (string, error), session JellyfinSession) (string, error) {
 	if store == nil || newID == nil || session == nil || now.IsZero() || !session.JellyfinExpires().After(now) {
 		return "", errors.New("jellyfin play session input is invalid")
 	}

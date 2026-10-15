@@ -157,7 +157,7 @@ func (loader Loader) resolveYAMLSecret(key, raw, yamlPath string) (string, strin
 	return canonical, strings.TrimSuffix(string(data), "\n"), nil
 }
 
-func (loader Loader) applyEnvironment(values map[string]Value, lookup func(string) (string, bool)) error { //nolint:cyclop,gocognit // Scores of 11 and 19 remain below the repository ceiling of 22 for one precedence pass.
+func (loader Loader) applyEnvironment(values map[string]Value, lookup func(string) (string, bool)) error {
 	for _, field := range loader.Schema.Fields {
 		direct, directOK := lookup(field.Env)
 		file, fileOK := lookup(field.Env + "_FILE")

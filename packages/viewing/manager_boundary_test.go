@@ -40,7 +40,7 @@ func TestRunSyncRejectsCapacityMissingAndConcurrentRuns(t *testing.T) {
 	}
 }
 
-func TestManagerViewsAndRemovesSyncsWithoutSecrets(t *testing.T) { //nolint:cyclop // One lifecycle assertion covers every credential-redaction boundary.
+func TestManagerViewsAndRemovesSyncsWithoutSecrets(t *testing.T) {
 	manager := newTestManager(t.TempDir(), testManagerConfig())
 	now := time.Now()
 	manager.syncs["b"] = Sync{ID: "b", Token: "secret", ProfileID: "viewer", Interval: "1h", LastRun: now, NextRun: now.Add(time.Hour), Running: true}

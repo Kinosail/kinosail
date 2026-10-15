@@ -185,7 +185,7 @@ func scimResourceHeaders(writer http.ResponseWriter, profile viewerProfile, incl
 	}
 }
 
-func scimConditional(writer http.ResponseWriter, request *http.Request, profile viewerProfile, mutate bool) bool { //nolint:cyclop,gocognit // Conditional HTTP exits stay in protocol order.
+func scimConditional(writer http.ResponseWriter, request *http.Request, profile viewerProfile, mutate bool) bool {
 	resource := scimResource(profile)
 	ifMatch, ifNoneMatch := strings.TrimSpace(request.Header.Get("If-Match")), strings.TrimSpace(request.Header.Get("If-None-Match"))
 	if len(request.Header.Values("If-Match")) > 1 || len(request.Header.Values("If-None-Match")) > 1 || ifMatch != "" && ifNoneMatch != "" || !validSCIMETagHeader(ifMatch) || !validSCIMETagHeader(ifNoneMatch) {
@@ -207,7 +207,7 @@ func scimConditional(writer http.ResponseWriter, request *http.Request, profile 
 	return false
 }
 
-func validSCIMETagHeader(header string) bool { //nolint:cyclop,gocognit // Entity-tag grammar is deliberately explicit.
+func validSCIMETagHeader(header string) bool {
 	if header == "" {
 		return true
 	}

@@ -24,7 +24,7 @@ func ParseReplayGain(tags map[string]string) ReplayGain {
 	return result
 }
 
-func gainTag(tags map[string]string, name string, r128 bool) (float64, bool) { //nolint:cyclop // Tag formats are normalized at this parser seam.
+func gainTag(tags map[string]string, name string, r128 bool) (float64, bool) {
 	value := strings.TrimSpace(tagValue(tags, name))
 	if value == "" {
 		return 0, false

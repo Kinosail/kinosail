@@ -75,7 +75,7 @@ func (notification *Notification) Send(ctx context.Context, event Event) {
 	if notification.config.Token != "" {
 		request.Header.Set("Authorization", "Bearer "+notification.config.Token)
 	}
-	response, err := notification.client.Do(request) //nolint:gosec // The installation-owned URL is validated above.
+	response, err := notification.client.Do(request)
 	if err != nil {
 		slog.Warn("notification webhook failed", "error", err)
 		return

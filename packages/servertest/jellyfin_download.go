@@ -16,7 +16,7 @@ type JellyfinDownloadFixture struct {
 	Call   func(*testing.T, http.Handler, string, string, string, string) *httptest.ResponseRecorder
 }
 
-func (fixture JellyfinDownloadFixture) ResumesConditionallyAcrossReplacementAndRestart(t *testing.T) { //nolint:cyclop // One compatibility test covers conditional resumes across file replacement and restart.
+func (fixture JellyfinDownloadFixture) ResumesConditionallyAcrossReplacementAndRestart(t *testing.T) {
 	t.Parallel()
 	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
 	path := filepath.Join(media, "Film.mp4")

@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest(t *testing.T) { //nolint:cyclop,funlen,gocognit // One real HTTP matrix records target rejection, admitted credentials, query preservation, and listener cleanup.
+func TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest(t *testing.T) {
 	const key = "qa_synthetic_provider_key"
 	for _, providerMode := range []string{"SubSource", "SubDL", "SubDL-reconfigured", "OpenSubtitles"} {
 		for _, test := range []struct {

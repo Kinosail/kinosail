@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func assertGatewayProtocol(t *testing.T, mux *http.ServeMux) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the protocol assertion matrix.
+func assertGatewayProtocol(t *testing.T, mux *http.ServeMux) {
 	t.Helper()
 	metadata := httptest.NewRecorder()
 	mux.ServeHTTP(metadata, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/.well-known/oauth-protected-resource/mcp", nil))

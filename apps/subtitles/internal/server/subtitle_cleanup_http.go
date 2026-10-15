@@ -26,7 +26,7 @@ type subtitleCleanupDoneData struct {
 	Hidden          int
 }
 
-func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) { //nolint:cyclop // Reject every missing, repeated, and conflicting cleanup field before planning or hiding.
+func subtitleCleanupInput(request *http.Request, applying bool) ([]string, string, string, error) {
 	values, err := subtitleCleanupValues(request, applying)
 	if err != nil {
 		return nil, "", "", err
@@ -46,7 +46,7 @@ func subtitleCleanupInput(request *http.Request, applying bool) ([]string, strin
 	return canonical, forced, values.Get("digest"), nil
 }
 
-func subtitleCleanupValues(request *http.Request, applying bool) (url.Values, error) { //nolint:cyclop // Keep strict body, query, and CSRF field validation together at the request boundary.
+func subtitleCleanupValues(request *http.Request, applying bool) (url.Values, error) {
 	if applying {
 		request.Body = http.MaxBytesReader(nil, request.Body, 2048)
 		if request.Header.Get("Content-Type") != "application/x-www-form-urlencoded" || request.ParseForm() != nil || request.URL.RawQuery != "" {

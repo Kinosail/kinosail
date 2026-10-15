@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/operations"
 )
 
-func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) { //nolint:cyclop,funlen,gocognit // One fixture proves the complete MCP boundary.
+func TestMCPModernOAuthAndAPIDrivenTools(t *testing.T) {
 	scope, audience := mcpReadScope, "http://localhost/mcp"
 	libraryCalls, playlistCalls, configurationCalls := 0, 0, 0
 	issuer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

@@ -103,7 +103,7 @@ func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAM
 	return start, nil
 }
 
-func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (SAMLCallback, error) { //nolint:cyclop // Protocol checks must remain in this order.
+func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (SAMLCallback, error) {
 	request.Body = http.MaxBytesReader(writer, request.Body, maxSAMLBody)
 	if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !validSAMLForm(request.PostForm) {
 		return SAMLCallback{}, ErrInvalidCallback
@@ -184,7 +184,7 @@ func (flow *SAML) rootConfigured() bool {
 	return err == nil && TrustedURL(root) && (root.Path == "" || root.Path == "/")
 }
 
-func (flow *SAML) serviceProvider(ctx context.Context, withIDP, refresh bool) (*saml.ServiceProvider, error) { //nolint:cyclop,gocognit // Cache and metadata transitions share one lock.
+func (flow *SAML) serviceProvider(ctx context.Context, withIDP, refresh bool) (*saml.ServiceProvider, error) {
 	flow.mu.Lock()
 	defer flow.mu.Unlock()
 	if !flow.rootConfigured() || !validDataDirectory(flow.config.DataDir) || withIDP && !flow.Configured() {

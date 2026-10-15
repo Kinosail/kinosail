@@ -15,7 +15,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func TestMCPStdioUsesSoleOwnerAndSharedAPI(t *testing.T) { //nolint:cyclop,gocognit,funlen // One integration lifecycle proves setup, authentication, tools, mutation, and shutdown.
+func TestMCPStdioUsesSoleOwnerAndSharedAPI(t *testing.T) {
 	dataDir := t.TempDir()
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()

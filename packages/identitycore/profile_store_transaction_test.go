@@ -39,7 +39,7 @@ func newProfileStoreFixture(profiles ...Profile) (*profileStoreFixture, ProfileS
 	return fixture, store
 }
 
-func TestProfileStoreSetupAndAuthentication(t *testing.T) { //nolint:cyclop // The score of 13 remains below the repository ceiling of 22 for one setup/authentication matrix.
+func TestProfileStoreSetupAndAuthentication(t *testing.T) {
 	fixture, store := newProfileStoreFixture()
 	if store.HasProfiles() {
 		t.Fatal("empty store reports profiles")
@@ -76,7 +76,7 @@ func TestProfileStoreSetupAndAuthentication(t *testing.T) { //nolint:cyclop // T
 	}
 }
 
-func TestProfileStoreAddProfileBoundaries(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the add-profile boundary matrix.
+func TestProfileStoreAddProfileBoundaries(t *testing.T) {
 	fixture, store := newProfileStoreFixture(Profile{ID: "owner", Name: "Owner", Owner: true})
 	if _, err := store.AddProfile("Viewer", "password-password", false, ProfilePolicy{AccessStart: "10:00"}); err == nil {
 		t.Fatal("invalid policy was accepted")
@@ -103,7 +103,7 @@ func TestProfileStoreAddProfileBoundaries(t *testing.T) { //nolint:cyclop // The
 	}
 }
 
-func TestProfileStoreSetProfileTransactions(t *testing.T) { //nolint:cyclop // The score of 17 remains below the repository ceiling of 22 for the atomic update matrix.
+func TestProfileStoreSetProfileTransactions(t *testing.T) {
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "owner", Name: "Owner", Owner: true, Revision: 1},
 		Profile{ID: "viewer", Name: "Viewer", Revision: 2},
@@ -145,7 +145,7 @@ func TestProfileStoreSetProfileTransactions(t *testing.T) { //nolint:cyclop // T
 	}
 }
 
-func TestProfileStoreRemoveAndSnapshots(t *testing.T) { //nolint:cyclop // The score of 16 remains below the repository ceiling of 22 for the removal/snapshot matrix.
+func TestProfileStoreRemoveAndSnapshots(t *testing.T) {
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "owner", Name: "Owner", Owner: true},
 		Profile{ID: "viewer", Name: "Viewer", Libraries: []string{"Films"}},

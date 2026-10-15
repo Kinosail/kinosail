@@ -77,7 +77,7 @@ func newShowReference(item *library.Item) *library.Item {
 	return &copy
 }
 
-func mergeShowReference(show, item *library.Item) { //nolint:cyclop // Each condition fills one independent optional presentation field.
+func mergeShowReference(show, item *library.Item) {
 	if item.ShowTitle != "" {
 		show.ShowTitle, show.Title, show.SortTitle = item.ShowTitle, item.ShowTitle, item.ShowTitle
 	}

@@ -13,7 +13,7 @@ var testConfig = Config{
 	RetiredDocuments: []string{"live-tv.json"},
 }
 
-func TestStoreLifecycleAndLegacyMigration(t *testing.T) { //nolint:cyclop // One lifecycle test verifies the related durability contract.
+func TestStoreLifecycleAndLegacyMigration(t *testing.T) {
 	directory := t.TempDir()
 	legacy := filepath.Join(directory, "settings.json")
 	if err := os.WriteFile(legacy, []byte(`{"name":"Home"}`), 0o600); err != nil {
@@ -88,7 +88,7 @@ func TestPlayerConfigReturnsIndependentDocuments(t *testing.T) {
 	}
 }
 
-func TestOpenRejectsInvalidLegacyStateWithoutSideEffects(t *testing.T) { //nolint:gocognit // The score of 16 remains below the repository ceiling of 22 for the invalid-state matrix.
+func TestOpenRejectsInvalidLegacyStateWithoutSideEffects(t *testing.T) {
 	validator := func(_ string, data []byte) error {
 		if strings.Contains(string(data), "reject") {
 			return errors.New("rejected")
@@ -122,7 +122,7 @@ func TestOpenRejectsInvalidLegacyStateWithoutSideEffects(t *testing.T) { //nolin
 	}
 }
 
-func TestOpenRejectsInvalidDatabaseState(t *testing.T) { //nolint:cyclop // Cases cover distinct database trust boundaries.
+func TestOpenRejectsInvalidDatabaseState(t *testing.T) {
 	for name, prepare := range map[string]func(*testing.T, string){
 		"directory": func(t *testing.T, path string) {
 			if err := os.Mkdir(path, 0o700); err != nil {
@@ -159,7 +159,7 @@ func TestOpenRejectsInvalidDatabaseState(t *testing.T) { //nolint:cyclop // Case
 	}
 }
 
-func TestStoreRejectsInvalidOperationsWithoutWriting(t *testing.T) { //nolint:cyclop // Each assertion covers one public input boundary.
+func TestStoreRejectsInvalidOperationsWithoutWriting(t *testing.T) {
 	store, err := Open(t.TempDir(), false, testConfig)
 	if err != nil {
 		t.Fatal(err)
@@ -188,7 +188,7 @@ func TestStoreRejectsInvalidOperationsWithoutWriting(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestBatchRollbackAndPersistedValidation(t *testing.T) { //nolint:cyclop // One test verifies the transaction and validation boundaries together.
+func TestBatchRollbackAndPersistedValidation(t *testing.T) {
 	directory := t.TempDir()
 	store, err := Open(directory, false, testConfig)
 	if err != nil {
@@ -259,7 +259,7 @@ func TestValidationBeforeMigrationPreventsCleanup(t *testing.T) {
 	}
 }
 
-func TestNilStoreAndEmptyDirectoryAreNoOps(t *testing.T) { //nolint:cyclop // One test covers all nil-safe operations.
+func TestNilStoreAndEmptyDirectoryAreNoOps(t *testing.T) {
 	var store *Store
 	if opened, err := Open("", false, Config{}); err != nil || opened != nil {
 		t.Fatalf("Open empty = %#v, %v", opened, err)

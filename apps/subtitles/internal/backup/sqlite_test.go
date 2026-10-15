@@ -16,7 +16,7 @@ func TestSQLiteBackupContract(t *testing.T) {
 	})
 }
 
-func TestBackupRejectsInvalidLegacySettingsBeforeSQLiteOrArchiveEffects(t *testing.T) { //nolint:cyclop // One rejection contract proves every installation file remains unchanged.
+func TestBackupRejectsInvalidLegacySettingsBeforeSQLiteOrArchiveEffects(t *testing.T) {
 	directory := t.TempDir()
 	store, err := database.Open(directory, false)
 	if err != nil {

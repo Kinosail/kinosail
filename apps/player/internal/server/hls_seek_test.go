@@ -17,7 +17,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-func TestCompatiblePlaybackRestartsAtADistantRequestedSegment(t *testing.T) { //nolint:funlen // The process fixture proves the complete segment-request restart path.
+func TestCompatiblePlaybackRestartsAtADistantRequestedSegment(t *testing.T) {
 	t.Parallel()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {

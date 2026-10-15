@@ -157,7 +157,7 @@ func (manager *hlsManager) prepareDirectRanges(ctx context.Context, item library
 	if ctx.Err() != nil || !manager.index.Safe(item.Path) {
 		return
 	}
-	file, err := os.Open(item.Path) //nolint:gosec // A visible scanned item is revalidated immediately before opening.
+	file, err := os.Open(item.Path)
 	if err != nil {
 		return
 	}

@@ -42,7 +42,7 @@ func TestNewCheckerRejectsInvalidAdaptersBeforeEffects(t *testing.T) {
 	}
 }
 
-func TestCheckerComparesVersionsAndRetainsCachedRelease(t *testing.T) { //nolint:cyclop // One sequence verifies first-check and cached-check invariants together.
+func TestCheckerComparesVersionsAndRetainsCachedRelease(t *testing.T) {
 	t.Parallel()
 	var calls atomic.Int32
 	checker := mustChecker(t, CheckerConfig{
@@ -136,7 +136,7 @@ func TestCheckerMapsReleaseFailuresWithoutRequestingAnUpdate(t *testing.T) {
 	}
 }
 
-func TestAutomaticAndManualChecksPinTheAvailableRelease(t *testing.T) { //nolint:cyclop,gocognit // Paired policy modes share the same immutable-target assertions.
+func TestAutomaticAndManualChecksPinTheAvailableRelease(t *testing.T) {
 	t.Parallel()
 	for _, automatic := range []bool{false, true} {
 		t.Run(map[bool]string{false: "manual", true: "automatic"}[automatic], func(t *testing.T) {
@@ -167,7 +167,7 @@ func TestAutomaticAndManualChecksPinTheAvailableRelease(t *testing.T) { //nolint
 	}
 }
 
-func TestSetAutomaticPersistsBeforeTriggering(t *testing.T) { //nolint:cyclop // One sequence proves failed, disabled, enabled, and coalesced persistence behavior.
+func TestSetAutomaticPersistsBeforeTriggering(t *testing.T) {
 	t.Parallel()
 	var saved atomic.Int32
 	checker := mustChecker(t, CheckerConfig{

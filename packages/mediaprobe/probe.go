@@ -192,7 +192,7 @@ func (probe *Probe) randomAccess(ctx context.Context, path, intervals string) []
 	return points
 }
 
-func randomAccessIntervals(markers []Marker, duration float64) string { //nolint:gocognit,cyclop // Validation, bounding, sorting, and range merging form one operation.
+func randomAccessIntervals(markers []Marker, duration float64) string {
 	const padding, maximumBoundaries = 2.0, 64
 	if !finite(duration) || duration <= 0 {
 		return ""

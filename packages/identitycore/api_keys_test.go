@@ -71,7 +71,7 @@ func TestLoadedAPIKeys(t *testing.T) {
 	}
 }
 
-func TestIssueAPIKeyCommitsTemporaryAndPersistentKeys(t *testing.T) { //nolint:cyclop // Assertions cover each committed field.
+func TestIssueAPIKeyCommitsTemporaryAndPersistentKeys(t *testing.T) {
 	t.Parallel()
 	var temporary APIKey
 	secret, err := IssueAPIKey("owner", "Automation", []string{"library"}, false, func(value string, key APIKey) error {
@@ -115,7 +115,7 @@ func TestParseAPIScopes(t *testing.T) {
 	}
 }
 
-func TestCloneAndFormatAPIKeys(t *testing.T) { //nolint:cyclop // Assertions cover copy isolation and formatting.
+func TestCloneAndFormatAPIKeys(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, time.October, 1, 12, 0, 0, 0, time.UTC)
 	keys := map[string]APIKey{

@@ -78,7 +78,7 @@ func (r *Renderers) Discover(ctx context.Context) ([]Device, error) {
 	r.mu.Lock()
 	if r.scanning || r.now().Sub(r.lastScan) < 10*time.Second {
 		r.mu.Unlock()
-		return nil, errors.New("Wait a few seconds before searching for TVs again") //nolint:staticcheck // This complete sentence is displayed in the TV picker.
+		return nil, errors.New("Wait a few seconds before searching for TVs again")
 	}
 	r.scanning = true
 	r.lastScan = r.now()
@@ -189,7 +189,7 @@ func ssdpLocation(text string, source netip.Addr) string {
 	return parsed.String()
 }
 
-func validLocalURL(value *url.URL) bool { //nolint:cyclop // This flat endpoint allowlist must run before every renderer network request.
+func validLocalURL(value *url.URL) bool {
 	if value == nil || len(value.String()) > 2048 || value.Scheme != "http" || value.User != nil || value.Fragment != "" || value.Opaque != "" || strings.ContainsAny(value.String(), "\r\n") {
 		return false
 	}

@@ -26,7 +26,7 @@ type AccessInput struct {
 	LocalOwner, MFARequired, Secured, EnrollmentRoute           bool
 }
 
-func EvaluateAccess(input AccessInput) Denial { //nolint:cyclop,gocognit // The ordered policy stays explicit for security review.
+func EvaluateAccess(input AccessInput) Denial {
 	if input.Public {
 		if input.Owner {
 			return OwnerRemoteDenied

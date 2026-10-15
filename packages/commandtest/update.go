@@ -30,7 +30,7 @@ func (contract UpdateContract) recordReport(input io.Reader, directory string) e
 	return contract.Run(updatecontrol.CommandReport, input, nil, directory, "", "")
 }
 
-func (contract UpdateContract) Versioned(t *testing.T) { //nolint:cyclop // One adapter contract remains below the repository complexity ceiling.
+func (contract UpdateContract) Versioned(t *testing.T) {
 	dataDir := t.TempDir()
 	var output bytes.Buffer
 	if err := contract.writePlan(&output, dataDir); err != nil {

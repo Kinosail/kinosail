@@ -25,7 +25,7 @@ func advertiseHomeAssistant(name string, port int, text []string) (discovery, er
 	return zeroconf.Register(name, "_kinosail._tcp", "local.", port, text, nil)
 }
 
-func (integration *Integration[P]) startDiscoveryLocked() { //nolint:cyclop // Discovery setup keeps its lifecycle checks together.
+func (integration *Integration[P]) startDiscoveryLocked() {
 	if integration.discovery != nil || integration.config.Lifecycle == nil {
 		return
 	}

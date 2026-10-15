@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func BenchmarkNativeCatalogProfileProjection(b *testing.B) { //nolint:gocognit // Keep the public view, profile, and cardinality matrix together.
+func BenchmarkNativeCatalogProfileProjection(b *testing.B) {
 	for _, count := range []int{10_000, 100_000} {
 		for _, owner := range []bool{true, false} {
 			b.Run(fmt.Sprintf("%d/owner=%t", count, owner), func(b *testing.B) {
@@ -138,7 +138,7 @@ func projectionBenchmarkTotal(count int, owner bool, view string) int {
 	}
 }
 
-func projectionBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, total, count int, owner bool) { //nolint:cyclop // One response contract checks counts, IDs, visibility, and exact-search membership.
+func projectionBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, total, count int, owner bool) {
 	b.Helper()
 	var page struct {
 		Total int

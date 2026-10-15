@@ -83,7 +83,7 @@ type apiAdapter[P any, ViewerKey, OwnerKey comparable] struct {
 	serveAudited func(http.Handler, http.ResponseWriter, *http.Request)
 }
 
-func NewAPIAdapter[P any, ViewerKey, OwnerKey comparable](router *http.ServeMux, handler http.Handler, find func(string) (P, bool), viewerKey ViewerKey, ownerKey OwnerKey, serveAudited func(http.Handler, http.ResponseWriter, *http.Request)) APIInvoker { //nolint:lll // Keeping the typed callbacks together makes the private application boundary explicit.
+func NewAPIAdapter[P any, ViewerKey, OwnerKey comparable](router *http.ServeMux, handler http.Handler, find func(string) (P, bool), viewerKey ViewerKey, ownerKey OwnerKey, serveAudited func(http.Handler, http.ResponseWriter, *http.Request)) APIInvoker {
 	if router == nil || handler == nil || find == nil || serveAudited == nil {
 		return nil
 	}

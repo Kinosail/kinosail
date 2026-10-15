@@ -12,7 +12,7 @@ import (
 	"github.com/crewjam/saml"
 )
 
-func samlProviderEndpoint(metadata *saml.EntityDescriptor) (string, string, error) { //nolint:gocognit // Selection is ordered and fail-closed.
+func samlProviderEndpoint(metadata *saml.EntityDescriptor) (string, string, error) {
 	if metadata != nil {
 		for _, binding := range []string{saml.HTTPRedirectBinding, saml.HTTPPostBinding} {
 			for _, descriptor := range metadata.IDPSSODescriptors {
@@ -28,7 +28,7 @@ func samlProviderEndpoint(metadata *saml.EntityDescriptor) (string, string, erro
 	return "", "", ErrProviderUnavailable
 }
 
-func samlIdentityValue(assertion *saml.Assertion, attribute string) (string, error) { //nolint:cyclop,gocognit // Signed identity selection stays explicit.
+func samlIdentityValue(assertion *saml.Assertion, attribute string) (string, error) {
 	if strings.EqualFold(attribute, "NameID") {
 		if assertion.Subject != nil && assertion.Subject.NameID != nil && ValidSubject(assertion.Subject.NameID.Value) {
 			return assertion.Subject.NameID.Value, nil

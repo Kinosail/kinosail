@@ -62,9 +62,9 @@ func TestCleanSubtitleRemovesCreditsFromChronologicalEdges(t *testing.T) {
 	}
 }
 
-func TestCleanSubtitleRejectsMalformedInput(t *testing.T) { //nolint:gosec // Invalid subtitle fixtures intentionally contain URL-like text.
+func TestCleanSubtitleRejectsMalformedInput(t *testing.T) {
 	t.Parallel()
-	for name, input := range map[string]string{ //nolint:gosec // Fixture contains invalid subtitle text with URL-like noise.
+	for name, input := range map[string]string{
 		"binary":     "1\n00:00:01,000 --> 00:00:02,000\nhello\x00",
 		"reverse":    "1\n00:00:02,000 --> 00:00:01,000\nhello",
 		"bad minute": "1\n00:61:01,000 --> 00:61:02,000\nhello",

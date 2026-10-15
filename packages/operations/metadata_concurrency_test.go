@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-func TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation(t *testing.T) { //nolint:cyclop,funlen // Cancellation must stop launch while active provider work drains.
+func TestRefreshMetadataBoundsConcurrencyAndStopsOnCancellation(t *testing.T) {
 	items := make([]library.Item, 8)
 	for position := range items {
 		items[position] = library.Item{ID: string(rune('a' + position)), Kind: "video"}

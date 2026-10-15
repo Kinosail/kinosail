@@ -75,7 +75,7 @@ func (service *Service) decodeCertificate(record []byte, allowLegacy bool) (Cert
 	return certificate, version.Version, valid
 }
 
-func (service *Service) classifyCertificate(certificate Certificate, version int, expectedFamily string) decodedGrant { //nolint:cyclop // Certificate classification remains below the repository complexity ceiling.
+func (service *Service) classifyCertificate(certificate Certificate, version int, expectedFamily string) decodedGrant {
 	if version == 2 && certificate.Sustaining && expectedFamily == FamilyPatron {
 		certificate.Sustaining, certificate.ExpiresAt, certificate.SubscriptionTier = false, "", ""
 		return decodedGrant{certificate: certificate, family: FamilyPatron, valid: true}
@@ -145,7 +145,7 @@ func validCurrentExpiry(certificate Certificate, raw json.RawMessage) bool {
 	return string(raw) == "null" && certificate.ExpiresAt == ""
 }
 
-func (service *Service) validCertificateIdentity(certificate Certificate, object map[string]json.RawMessage) bool { //nolint:cyclop // Identity invariants must be evaluated together.
+func (service *Service) validCertificateIdentity(certificate Certificate, object map[string]json.RawMessage) bool {
 	if certificate.Audience != service.app.Audience || certificate.AppID != service.app.ID || Rank(certificate.Tier) == 0 ||
 		!supporterIDPattern.MatchString(certificate.SupporterID) ||
 		service.app.BindSupporterIDToInstallation && certificate.SupporterID != supporterMark(certificate.InstallationKey) {
@@ -162,7 +162,7 @@ func (service *Service) validCertificateIdentity(certificate Certificate, object
 	return true
 }
 
-func validCollection(collection *Collection, raw json.RawMessage, sustaining bool, appID string) bool { //nolint:cyclop // Collection validation is one exact signed-data predicate.
+func validCollection(collection *Collection, raw json.RawMessage, sustaining bool, appID string) bool {
 	if collection == nil {
 		return len(raw) == 0
 	}
@@ -182,7 +182,7 @@ func validCollection(collection *Collection, raw json.RawMessage, sustaining boo
 	return found
 }
 
-func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry bool) bool { //nolint:cyclop // Each term and timestamp condition is part of one certificate validity decision.
+func validCertificateTimes(certificate Certificate, now time.Time, boundExpiry bool) bool {
 	supportedSince, sinceOK := strictTime(certificate.SupportedSince)
 	issuedAt, issuedOK := strictTime(certificate.IssuedAt)
 	if !sinceOK || !issuedOK || supportedSince.After(issuedAt) || issuedAt.After(now.Add(5*time.Minute)) {

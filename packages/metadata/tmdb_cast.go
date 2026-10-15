@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (client *TMDBClient) downloadCast(ctx context.Context, cast []TMDBCastMember, directory string) []library.Person { //nolint:cyclop,gocognit // Bounded downloads preserve cast order and target naming.
+func (client *TMDBClient) downloadCast(ctx context.Context, cast []TMDBCastMember, directory string) []library.Person {
 	people := make([]library.Person, 0, min(15, len(cast)))
 	paths := make([]string, 0, cap(people))
 	for _, actor := range cast {

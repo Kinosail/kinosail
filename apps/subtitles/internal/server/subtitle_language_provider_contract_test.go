@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCriticalVariantsUseExactOpenSubtitlesCodes(t *testing.T) { //nolint:cyclop,gocognit // Exact provider mappings are checked as one contract.
+func TestCriticalVariantsUseExactOpenSubtitlesCodes(t *testing.T) {
 	tests := []struct{ tag, code string }{{"pt-BR", "pt-br"}, {"pt-PT", "pt-pt"}, {"zh-Hans", "zh-cn"}, {"zh-Hant", "zh-tw"}, {"es-419", "ea"}}
 	seen := make([]string, 0, len(tests))
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -38,7 +38,7 @@ func TestCriticalVariantsUseExactOpenSubtitlesCodes(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestCriticalVariantsUseOnlyExactSubDLAndSubSourceCodes(t *testing.T) { //nolint:cyclop,gocognit // Exact provider mappings are checked as one contract.
+func TestCriticalVariantsUseOnlyExactSubDLAndSubSourceCodes(t *testing.T) {
 	item := library.Item{Path: "/media/Movie.mkv", Title: "Movie", Year: "2024", ProviderIDs: map[string]string{"imdb": "tt1234567"}}
 	subDLSeen := make([]string, 0, 2)
 	subDLRemote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

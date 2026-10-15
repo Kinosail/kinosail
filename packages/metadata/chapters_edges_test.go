@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestChapterPresentationAndLookupBoundaries(t *testing.T) { //nolint:cyclop // One table exercises the chapter trust boundary without network side effects.
+func TestChapterPresentationAndLookupBoundaries(t *testing.T) {
 	t.Parallel()
 	if got := (Chapter{Start: 62}).Timestamp(); got != "1:02" {
 		t.Fatalf("short timestamp = %q", got)
@@ -57,7 +57,7 @@ func TestChapterPresentationAndLookupBoundaries(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestChapterProviderFetchFailuresAndEmptyResults(t *testing.T) { //nolint:cyclop // Remote failure classes must all fail closed.
+func TestChapterProviderFetchFailuresAndEmptyResults(t *testing.T) {
 	t.Parallel()
 	clientError := &ChapterProvider{baseURL: "https://example.com", client: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
 		return nil, errors.New("offline")
@@ -92,7 +92,7 @@ func TestChapterProviderFetchFailuresAndEmptyResults(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestChapterEntryAndTimeValidationEdges(t *testing.T) { //nolint:cyclop // Representative structural and grammar failures are individually asserted.
+func TestChapterEntryAndTimeValidationEdges(t *testing.T) {
 	t.Parallel()
 	tooMany := make([]chaptersDBEntry, maxChaptersDBEntries+1)
 	for name, entries := range map[string][]chaptersDBEntry{

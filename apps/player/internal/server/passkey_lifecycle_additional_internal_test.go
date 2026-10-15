@@ -10,7 +10,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-func TestPasskeyStoreLifecycleRejectsAmbiguousCredentialChanges(t *testing.T) { //nolint:cyclop // One store lifecycle proves every credential lookup and update boundary.
+func TestPasskeyStoreLifecycleRejectsAmbiguousCredentialChanges(t *testing.T) {
 	t.Parallel()
 	store := newProfileStore(t.TempDir())
 	profile, _ := newProfile("Viewer", "viewer-password", false)
@@ -60,7 +60,7 @@ func TestPasskeyStoreLifecycleRejectsAmbiguousCredentialChanges(t *testing.T) { 
 	}
 }
 
-func TestPasskeyManagementResponsesAreRedactedAndStable(t *testing.T) { //nolint:cyclop // The response contract and error mapping are one management boundary.
+func TestPasskeyManagementResponsesAreRedactedAndStable(t *testing.T) {
 	t.Parallel()
 	store := newProfileStore(t.TempDir())
 	profile, _ := newProfile("Viewer", "viewer-password", false)

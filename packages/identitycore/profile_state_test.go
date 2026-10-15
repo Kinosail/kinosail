@@ -25,7 +25,7 @@ func TestLoadProfileState(t *testing.T) {
 	}
 }
 
-func TestLoadProfileStateStopsOnLoaderFailure(t *testing.T) { //nolint:gocognit // The score of 19 remains below the repository ceiling of 22 for the ordered loader matrix.
+func TestLoadProfileStateStopsOnLoaderFailure(t *testing.T) {
 	loadErr := errors.New("load failed")
 	for name, fail := range map[string]string{"profiles": "profiles", "sessions": "sessions", "keys": "keys"} {
 		t.Run(name, func(t *testing.T) {

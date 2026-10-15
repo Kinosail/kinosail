@@ -114,7 +114,7 @@ func (tracker *HTTPTracker) ResolveTitle(id string) string {
 	return title(id)
 }
 
-func (tracker *HTTPTracker) Track(next http.Handler, writer http.ResponseWriter, request *http.Request) { //nolint:cyclop,gocognit,funlen // Audit enrichment keeps request outcomes explicit.
+func (tracker *HTTPTracker) Track(next http.Handler, writer http.ResponseWriter, request *http.Request) {
 	if !tracker.valid() || next == nil || writer == nil || request == nil {
 		return
 	}
@@ -239,7 +239,7 @@ func (tracker *HTTPTracker) validRequest(request *http.Request) bool {
 	return request != nil && tracker.valid()
 }
 
-func (tracker *HTTPTracker) valid() bool { //nolint:cyclop // Every required dependency must be present.
+func (tracker *HTTPTracker) valid() bool {
 	if tracker == nil || tracker.journal == nil {
 		return false
 	}

@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestOwnerCreatesClaimsStreamsAndRevokesMediaShare(t *testing.T) { //nolint:cyclop // One public-interface lifecycle proves scope, claiming, delivery, and revocation.
+func TestOwnerCreatesClaimsStreamsAndRevokesMediaShare(t *testing.T) {
 	handler, owner := apiServer(t)
 	library := apiCall(t, handler, owner, http.MethodGet, "/api/v1/library", nil)
 	var items struct {

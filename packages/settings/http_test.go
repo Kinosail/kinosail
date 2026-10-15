@@ -21,7 +21,7 @@ func (record *errorRecord) write(writer http.ResponseWriter, _ *http.Request, me
 	writer.WriteHeader(status)
 }
 
-func TestSavePlaybackResultPaths(t *testing.T) { //nolint:cyclop // One matrix proves successful and rejected HTTP side effects.
+func TestSavePlaybackResultPaths(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"mode": {"automatic"}, "subtitles": {"on"}, "autoplay": {"true"}, "markers": {"intro", "credits"}}
 	for _, test := range []struct {
@@ -122,7 +122,7 @@ func TestSaveScanFrequencyResultPaths(t *testing.T) {
 	}
 }
 
-func TestCreateAPIKeyResultPaths(t *testing.T) { //nolint:cyclop,gocognit // This covers the strict form, operation, and rendering boundaries.
+func TestCreateAPIKeyResultPaths(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"name": {"Remote"}, "scopes": {"library"}, "stream": {"stream"}}
 	for _, test := range []struct {
@@ -188,7 +188,7 @@ func TestDownloadBackupResultPaths(t *testing.T) {
 	}
 }
 
-func TestBackupPageAndVerificationHandlers(t *testing.T) { //nolint:cyclop,gocognit // One lifecycle keeps the paired backup handlers and failures together.
+func TestBackupPageAndVerificationHandlers(t *testing.T) {
 	t.Parallel()
 	t.Run("page", func(t *testing.T) {
 		for _, renderErr := range []error{nil, errors.New("render failed")} {

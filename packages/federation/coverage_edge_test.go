@@ -35,7 +35,7 @@ func TestProfilesReturnEverySafeEdgeOutcome(t *testing.T) {
 	}
 }
 
-func TestSettingsExposeEveryFailureWithoutPersistence(t *testing.T) { //nolint:funlen // Each callback failure proves a distinct atomicity boundary.
+func TestSettingsExposeEveryFailureWithoutPersistence(t *testing.T) {
 	t.Parallel()
 	sentinel := errors.New("sentinel")
 	base := func() Settings {
@@ -170,7 +170,7 @@ func TestOIDCProviderScopeAndStateCapacity(t *testing.T) {
 	}
 }
 
-func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) { //nolint:funlen // Each failure occurs after state consumption at a distinct provider boundary.
+func TestOIDCCompletionMapsUnavailableExchangeAndTokenFailures(t *testing.T) {
 	flow, state := oidcFlowWithPending("")
 	if _, err := flow.Complete(t.Context(), "code=approved&state="+state, state, true); !errors.Is(err, ErrProviderUnavailable) {
 		t.Fatalf("unconfigured callback provider = %v", err)

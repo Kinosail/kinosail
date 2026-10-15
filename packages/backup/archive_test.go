@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestArchiveRoundTrip(t *testing.T) { //nolint:cyclop // One round trip checks each expected and excluded state file.
+func TestArchiveRoundTrip(t *testing.T) {
 	t.Parallel()
 
 	source, restored := t.TempDir(), t.TempDir()
@@ -57,7 +57,7 @@ func TestArchiveRoundTrip(t *testing.T) { //nolint:cyclop // One round trip chec
 	}
 }
 
-func TestArchiveContainsRecoveryManifest(t *testing.T) { //nolint:cyclop // One archive fixture validates every recovery-manifest invariant.
+func TestArchiveContainsRecoveryManifest(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	if err := os.WriteFile(filepath.Join(directory, "settings.json"), []byte(`{"name":"Home"}`), 0o600); err != nil {

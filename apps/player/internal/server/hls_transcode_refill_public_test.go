@@ -38,7 +38,7 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 	t.Run("320x180-restarted-late-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, "320x180", true, 7) })
 }
 
-func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool, targetSegment int) { //nolint:funlen,cyclop,gocognit // One ordered HTTP lifecycle binds original and regenerated media to joined producers.
+func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audio bool, targetSegment int) {
 	defer func() {
 		command := "KINOSAIL_GO_TEST_MODE=deep ./scripts/ci/test-go.sh player"
 		if os.Getenv("KINOSAIL_TRANSCODE_REFILL_PREFLIGHT") == "1" {
@@ -57,7 +57,7 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		arguments = append(arguments, "-f", "lavfi", "-i", fmt.Sprintf("aevalsrc=0.25*sin(2*PI*(173*t+37*t*t))+0.1*sin(2*PI*(613*t+11*t*t)):s=48000:d=%d", duration), "-c:a", "flac")
 	}
 	arguments = append(arguments, "-c:v", "ffv1", "-threads", "2", source)
-	generate := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Fixed bounded synthetic source and discovered hosted executable.
+	generate := exec.CommandContext(ctx, ffmpeg, arguments...)
 	if err := generate.Run(); err != nil {
 		t.Fatal("bounded FFV1 fixture generation failed")
 	}

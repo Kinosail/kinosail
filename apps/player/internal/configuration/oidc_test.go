@@ -46,7 +46,7 @@ func TestOIDCConfigurationRequiresOneCompleteSafeSet(t *testing.T) {
 	}
 }
 
-func TestOIDCConfigurationChangesAtomically(t *testing.T) { //nolint:cyclop // One transaction scenario proves save, rejection without side effects, and removal.
+func TestOIDCConfigurationChangesAtomically(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	issuer, clientID, redirectURL := "https://identity.example", "kinosail", "https://media.example/login/oidc/callback"

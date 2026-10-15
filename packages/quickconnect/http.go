@@ -15,7 +15,7 @@ import (
 
 const RequestBodyMaximum = 4 << 10
 
-var errHTTPRequest = errors.New("Quick Connect request is invalid") //nolint:staticcheck // Product term starts with a capital.
+var errHTTPRequest = errors.New("Quick Connect request is invalid")
 
 func (application *Application) Start(writer http.ResponseWriter, request *http.Request) {
 	if !application.limiters.Requests.Allow(httpguard.RemoteHost(request.RemoteAddr), 60) {
@@ -39,7 +39,7 @@ func (application *Application) Start(writer http.ResponseWriter, request *http.
 			apihttp.Error(writer, errHTTPRequest, http.StatusBadRequest)
 			return
 		}
-		apihttp.Error(writer, errors.New("too many Quick Connect requests"), http.StatusTooManyRequests) //nolint:staticcheck // Product term starts with a capital.
+		apihttp.Error(writer, errors.New("too many Quick Connect requests"), http.StatusTooManyRequests)
 		return
 	}
 	apihttp.WriteJSON(writer, map[string]string{"code": pending.Code, "secret": secret}, http.StatusCreated)
@@ -192,7 +192,7 @@ func readPollSecret(writer http.ResponseWriter, request *http.Request) (string, 
 	return "", false
 }
 
-func readStringJSON(writer http.ResponseWriter, request *http.Request, wanted string, required bool) (string, bool) { //nolint:cyclop // Token parsing rejects duplicate and unknown fields before state changes.
+func readStringJSON(writer http.ResponseWriter, request *http.Request, wanted string, required bool) (string, bool) {
 	invalid := func() (string, bool) {
 		apihttp.Error(writer, errHTTPRequest, http.StatusBadRequest)
 		return "", false

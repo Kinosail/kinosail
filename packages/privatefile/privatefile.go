@@ -28,7 +28,7 @@ func Read(path string, maximum int64) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	file, err := openPrivateFile(path) //nolint:gosec // Callers pass installation-owned paths.
+	file, err := openPrivateFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func Remove(path string) error {
 	if path == "" {
 		return errInvalid
 	}
-	err := removePrivateFile(path) //nolint:gosec // Callers pass installation-owned paths.
+	err := removePrivateFile(path)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
 	}
@@ -81,12 +81,12 @@ func Remove(path string) error {
 	return syncRemovedFile(filepath.Dir(path))
 }
 
-func write(path string, data []byte, durable bool) error { //nolint:cyclop // Atomic durable writes require each cleanup boundary to remain explicit.
+func write(path string, data []byte, durable bool) error {
 	if path == "" {
 		return errInvalid
 	}
 	directory := filepath.Dir(path)
-	if err := os.MkdirAll(directory, 0o700); err != nil { //nolint:gosec // Callers pass installation-owned paths.
+	if err := os.MkdirAll(directory, 0o700); err != nil {
 		return err
 	}
 	file, err := createPrivateTemp(directory, "."+filepath.Base(path)+"-*")
@@ -96,7 +96,7 @@ func write(path string, data []byte, durable bool) error { //nolint:cyclop // At
 	temporary := file.Name()
 	defer func() {
 		_ = file.Close()
-		_ = os.Remove(temporary) //nolint:gosec // CreateTemp returned this exact path.
+		_ = os.Remove(temporary)
 	}()
 	if err = file.Chmod(0o600); err == nil {
 		_, err = file.Write(data)
@@ -110,7 +110,7 @@ func write(path string, data []byte, durable bool) error { //nolint:cyclop // At
 	if err != nil {
 		return err
 	}
-	if err = os.Rename(temporary, path); err != nil { //nolint:gosec // Callers pass installation-owned paths.
+	if err = os.Rename(temporary, path); err != nil {
 		return err
 	}
 	if durable {
@@ -124,10 +124,10 @@ func Create(path string) error {
 		return errInvalid
 	}
 	directory := filepath.Dir(path)
-	if err := os.MkdirAll(directory, 0o700); err != nil { //nolint:gosec // Callers pass installation-owned paths.
+	if err := os.MkdirAll(directory, 0o700); err != nil {
 		return err
 	}
-	file, err := openPrivateMarker(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600) //nolint:gosec // Callers pass installation-owned paths.
+	file, err := openPrivateMarker(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
 		return err
 	}

@@ -41,7 +41,7 @@ func TestQuickConnectDTOProjectsEveryPlayerField(t *testing.T) {
 	}
 }
 
-func TestStartQuickConnectPreservesValidationRateAndCreationErrors(t *testing.T) { //nolint:cyclop,funlen,gocognit // One lifecycle verifies ordering and exact HTTP translations.
+func TestStartQuickConnectPreservesValidationRateAndCreationErrors(t *testing.T) {
 	connections, limiter := quickconnect.New(time.Minute), &httpguard.Limiter{}
 	missing := httptest.NewRecorder()
 	StartQuickConnect(missing, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", nil), connections, limiter, false)
@@ -95,7 +95,7 @@ func TestStartQuickConnectPreservesValidationRateAndCreationErrors(t *testing.T)
 	}
 }
 
-func TestQuickConnectStatusPreservesPollingContract(t *testing.T) { //nolint:cyclop // Exact status fields protect the complete polling wire contract.
+func TestQuickConnectStatusPreservesPollingContract(t *testing.T) {
 	connections := quickconnect.New(time.Minute)
 	secret, _, err := connections.Create(quickconnect.Request{Device: "TV", DeviceID: "id", Client: "client", Version: "1"})
 	if err != nil {
@@ -135,7 +135,7 @@ func TestQuickConnectStatusPreservesPollingContract(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestAuthenticateQuickConnectPreservesJSONAndSessionContract(t *testing.T) { //nolint:cyclop // One table covers parser, failure, success, and rate ordering.
+func TestAuthenticateQuickConnectPreservesJSONAndSessionContract(t *testing.T) {
 	approvedSecret := "qc_AAAAAAAAAAAAAAAAAAAAAAAAAA"
 	missingSecret := "qc_BBBBBBBBBBBBBBBBBBBBBBBBBB"
 	callback := func(secret string) (Authentication, error) {

@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/transform"
 )
 
-func decodeSubtitleText(data []byte) ([]byte, error) { //nolint:cyclop // One bounded detector rejects ambiguous input before legacy decoding.
+func decodeSubtitleText(data []byte) ([]byte, error) {
 	if len(data) == 0 || len(data) > 4<<20 {
 		return nil, errors.New("subtitle text is invalid")
 	}

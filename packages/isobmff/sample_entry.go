@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func sampleEntry(format string, entry []byte) (Track, error) { //nolint:cyclop // Each sample-entry type validates its fixed header before reading child boxes.
+func sampleEntry(format string, entry []byte) (Track, error) {
 	var track Track
 	var offset int
 	switch format {

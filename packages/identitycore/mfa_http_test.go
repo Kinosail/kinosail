@@ -73,7 +73,7 @@ func (state *mfaHTTPState) config() MFAHTTPConfig {
 	}
 }
 
-func TestRegisterMFALifecycle(t *testing.T) { //nolint:gocognit // The table covers every endpoint ordering branch.
+func TestRegisterMFALifecycle(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name                                    string

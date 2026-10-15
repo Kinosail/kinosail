@@ -23,7 +23,7 @@ func validRegistrationRequest(t *testing.T) *http.Request {
 	return request
 }
 
-func TestRegistrationAvailabilityRateAndMediaTypeCauseNoAuthority(t *testing.T) { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for the rejection matrix.
+func TestRegistrationAvailabilityRateAndMediaTypeCauseNoAuthority(t *testing.T) {
 	unavailable := NewConnections(ConnectionConfig{})
 	response := httptest.NewRecorder()
 	unavailable.registerClient(response, validRegistrationRequest(t))

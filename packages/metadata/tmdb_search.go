@@ -63,7 +63,7 @@ func fetchTMDBMovieRating(ctx context.Context, baseURL string, id int, fetch fun
 	return movieCertification(movie.ReleaseDates)
 }
 
-func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, details func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) { //nolint:cyclop // Show identity, details, and two independent artwork targets form one result contract.
+func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, details func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) {
 	if !validMetadataID(item.ID) {
 		return Result{}, errors.New("metadata identity is invalid")
 	}

@@ -85,7 +85,7 @@ func TestShowUsesItsLandscapeArtworkAsTheBackdrop(t *testing.T) {
 	}
 }
 
-func TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain(t *testing.T) { //nolint:cyclop,gocognit // One table covers the fallback and no-art branches end to end.
+func TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain(t *testing.T) {
 	t.Parallel()
 
 	for _, test := range []struct {

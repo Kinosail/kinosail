@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestOrganizersBuildVideoAndMusicHierarchies(t *testing.T) { //nolint:cyclop // One compact fixture verifies both hierarchy builders.
+func TestOrganizersBuildVideoAndMusicHierarchies(t *testing.T) {
 	items := []Item{
 		{ID: "movie", Kind: "video", Title: "Movie"},
 		{ID: "e2", Kind: "video", Title: "Episode 2", Show: "Show", Season: 1, Episode: 2},

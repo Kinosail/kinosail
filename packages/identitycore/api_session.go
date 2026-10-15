@@ -95,6 +95,6 @@ func createAPISessionToken(config APISessionConfig, profile Profile, device stri
 	return config.CreateStrongSession(profile.ID, device, false)
 }
 
-func validAPISessionConfig(config APISessionConfig) bool { //nolint:cyclop // All adapters must exist before credential or session side effects.
+func validAPISessionConfig(config APISessionConfig) bool {
 	return config.Public != nil && config.ReadJSON != nil && config.AllowCredential != nil && config.Authenticate != nil && config.VerifySecondFactor != nil && config.CredentialSucceeded != nil && config.CreateSession != nil && config.CreateStrongSession != nil && config.MFARequired != nil && config.SetAudit != nil && config.Error != nil && config.JSON != nil
 }

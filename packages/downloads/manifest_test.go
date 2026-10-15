@@ -18,7 +18,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestManifestSealsExactBlocksAndFinalPartialBlock(t *testing.T) { //nolint:cyclop // Full and partial chunk assertions describe one sealed media file.
+func TestManifestSealsExactBlocksAndFinalPartialBlock(t *testing.T) {
 	t.Parallel()
 	content := append(bytes.Repeat([]byte{17}, int(ChunkSize)), []byte("last block")...)
 	path := filepath.Join(t.TempDir(), "media.mp4")
@@ -77,7 +77,7 @@ func TestManifestRejectsInvalidMetadataAndEmptyAssets(t *testing.T) {
 	}
 }
 
-func TestManifestAuthorizationAndSourceReplacement(t *testing.T) { //nolint:cyclop // Authorization and replacement checks share one admitted download.
+func TestManifestAuthorizationAndSourceReplacement(t *testing.T) {
 	t.Parallel()
 	source := filepath.Join(t.TempDir(), "film.mp4")
 	if err := os.WriteFile(source, []byte("original bytes"), 0o600); err != nil {
@@ -130,7 +130,7 @@ func TestManifestAuthorizationAndSourceReplacement(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestTrackSelectionRejectsBeforeQueueAndPreservesSubtitles(t *testing.T) { //nolint:cyclop // Track rejections must leave the same queue and output fixture untouched.
+func TestTrackSelectionRejectsBeforeQueueAndPreservesSubtitles(t *testing.T) {
 	t.Parallel()
 	facts := playback.MediaFacts{Video: playback.VideoFacts{Codec: "h264"}, Audio: []playback.AudioFacts{{Index: 0, SourceIndex: 1}, {Index: 1, SourceIndex: 2}}, Subtitles: []playback.SubtitleFacts{{Index: 0, SourceIndex: 3, Codec: "hdmv_pgs_subtitle"}, {Index: 1, SourceIndex: 4, Codec: "subrip", Text: true}}}
 	item := library.Item{ID: "film", Kind: "video", Title: "Film", Path: "/media/film.mkv", Added: time.Now()}

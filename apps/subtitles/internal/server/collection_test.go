@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestOwnerCanCreateAndCurateCollection(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves validation, persistence, and both adapters.
+func TestOwnerCanCreateAndCurateCollection(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(mediaDir, "Dune.mp4"), nil, 0o600); err != nil {

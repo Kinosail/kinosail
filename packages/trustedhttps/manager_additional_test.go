@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestManagerDefaultsAndErrorStateAreFailClosed(t *testing.T) { //nolint:cyclop // Constructor defaults and the renewal error state form one manager boundary.
+func TestManagerDefaultsAndErrorStateAreFailClosed(t *testing.T) {
 	t.Parallel()
 	if manager, err := New(Config{}, ""); err != nil || manager.Status().State != "disabled" || manager.Certificate("anything") != nil {
 		t.Fatalf("disabled manager = %#v, %v", manager, err)

@@ -9,8 +9,8 @@ import (
 
 var (
 	errPlayerDisabled  = errors.New("not found")
-	errPlayerOwnership = errors.New("Home Assistant player ownership is invalid") //nolint:staticcheck // Preserve product terminology.
-	errPlayerOccupied  = errors.New("Home Assistant player is already active")    //nolint:staticcheck // Preserve product terminology.
+	errPlayerOwnership = errors.New("Home Assistant player ownership is invalid")
+	errPlayerOccupied  = errors.New("Home Assistant player is already active")
 )
 
 type playerClaim struct {

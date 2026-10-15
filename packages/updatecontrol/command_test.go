@@ -33,7 +33,7 @@ func (database *commandMemoryDatabase) Close() error {
 	return database.closeErr
 }
 
-func TestBoundCommandRunsPlayerUpdateOperations(t *testing.T) { //nolint:cyclop // One command contract remains below the repository complexity ceiling.
+func TestBoundCommandRunsPlayerUpdateOperations(t *testing.T) {
 	database := &commandMemoryDatabase{memoryDocumentStore: newMemoryDocumentStore()}
 	database.documents["settings.json"] = []byte(`{"updateChecks":true}`)
 	command := BindCommand(CommandConfig{
@@ -67,7 +67,7 @@ func TestBoundCommandRunsPlayerUpdateOperations(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestBoundCommandRejectsUntrustedInputBeforeStorage(t *testing.T) { //nolint:cyclop // One table covers the complete command trust boundary.
+func TestBoundCommandRejectsUntrustedInputBeforeStorage(t *testing.T) {
 	opens := 0
 	command := BindCommand(CommandConfig{
 		Policy: PlayerPolicy(1, 1),
@@ -118,7 +118,7 @@ func TestBoundCommandRejectsUntrustedInputBeforeStorage(t *testing.T) { //nolint
 	}
 }
 
-func TestBoundCommandPropagatesStorageAndOutputFailures(t *testing.T) { //nolint:cyclop,gocognit // One table covers storage lifecycle failures.
+func TestBoundCommandPropagatesStorageAndOutputFailures(t *testing.T) {
 	openFailure := errors.New("open failed")
 	for name, config := range map[string]CommandConfig{
 		"open error":   {Policy: PlayerPolicy(1, 1), OpenDatabase: func(string) (CommandDatabase, error) { return nil, openFailure }, Version: func() string { return "dev" }},
@@ -162,7 +162,7 @@ func TestBoundCommandPropagatesStorageAndOutputFailures(t *testing.T) { //nolint
 	}
 }
 
-func TestCommandCoverageClosesStoreFailureEdges(t *testing.T) { //nolint:cyclop // One failure matrix proves every store operation remains atomic.
+func TestCommandCoverageClosesStoreFailureEdges(t *testing.T) {
 	database := newMemoryDocumentStore()
 	store, err := New(database, PlayerPolicy(1, 1))
 	if err != nil {
@@ -205,7 +205,7 @@ func TestCommandCoverageClosesStoreFailureEdges(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestCommandCoverageClosesHTTPAndReleaseEdges(t *testing.T) { //nolint:cyclop // One adapter matrix covers independent presentation failures.
+func TestCommandCoverageClosesHTTPAndReleaseEdges(t *testing.T) {
 	checker := newHTTPTestChecker(t, nil, nil, nil)
 	handlers := mustHTTPHandlers(t, checker)
 	response := httptest.NewRecorder()

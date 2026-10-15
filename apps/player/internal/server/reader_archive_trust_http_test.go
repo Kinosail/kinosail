@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestReaderRejectsDuplicateArchiveResourcesThroughHTTP(t *testing.T) { //nolint:cyclop,gocognit // Each archive order shares the same public rejection and recovery contract.
+func TestReaderRejectsDuplicateArchiveResourcesThroughHTTP(t *testing.T) {
 	red := readerTrustPNG(t, color.RGBA{R: 255, A: 255})
 	blue := readerTrustPNG(t, color.RGBA{B: 255, A: 255})
 	first := []byte("<html><body>first chapter</body></html>")
@@ -138,7 +138,7 @@ func TestReaderPreservesUnsupportedEPUBMediaTypeBehavior(t *testing.T) {
 	readerTrustAssetEquals(t, handler, id, "OEBPS/picture.png", picture)
 }
 
-func TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP(t *testing.T) { //nolint:cyclop,gocognit // Valid controls verify sequential metadata and every selected resource exactly.
+func TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP(t *testing.T) {
 	red := readerTrustPNG(t, color.RGBA{R: 255, A: 255})
 	blue := readerTrustPNG(t, color.RGBA{B: 255, A: 255})
 	first := []byte("<html><body>first chapter</body></html>")
@@ -181,7 +181,7 @@ func TestReaderPreservesDistinctPagesAndRelativeEPUBChaptersThroughHTTP(t *testi
 	}
 }
 
-func TestReaderPreservesSameBasenamesInDistinctComicFolders(t *testing.T) { //nolint:gocognit // Each format verifies metadata, exact selected bytes, and unchanged archive bytes.
+func TestReaderPreservesSameBasenamesInDistinctComicFolders(t *testing.T) {
 	red := readerTrustPNG(t, color.RGBA{R: 255, A: 255})
 	blue := readerTrustPNG(t, color.RGBA{B: 255, A: 255})
 	for _, format := range []string{"cbz", "cbt"} {
@@ -219,7 +219,7 @@ func TestReaderPreservesSameBasenamesInDistinctComicFolders(t *testing.T) { //no
 	}
 }
 
-func TestReaderRejectsCBTDuplicatesBeyondMetadataWindow(t *testing.T) { //nolint:gocognit // The boundary matrix verifies truncation, duplicate rejection, and selected asset behavior.
+func TestReaderRejectsCBTDuplicatesBeyondMetadataWindow(t *testing.T) {
 	red := readerTrustPNG(t, color.RGBA{R: 255, A: 255})
 	blue := readerTrustPNG(t, color.RGBA{B: 255, A: 255})
 	for _, duplicate := range []bool{false, true} {
@@ -259,7 +259,7 @@ func TestReaderRejectsCBTDuplicatesBeyondMetadataWindow(t *testing.T) { //nolint
 	}
 }
 
-func TestReaderRejectsMalformedProgressWithoutPersisting(t *testing.T) { //nolint:cyclop,gocognit // The public write and fresh-server read prove rejected progress has no durable effect.
+func TestReaderRejectsMalformedProgressWithoutPersisting(t *testing.T) {
 	for _, malformed := range []bool{false, true} {
 		t.Run(fmt.Sprintf("malformed=%t", malformed), func(t *testing.T) {
 			handler, id, reopen := readerTrustProgressFixture(t, malformed)

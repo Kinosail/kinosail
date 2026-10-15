@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop // One fixture verifies the three related dashboard projections.
+func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival (2016).mp4"), "video")
@@ -75,7 +75,7 @@ func TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries(t *testing.T) {
 	}
 }
 
-func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) { //nolint:cyclop // Browser and API error contracts are checked together.
+func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Needs Subtitles.mp4"), "video")
@@ -100,7 +100,7 @@ func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) { /
 	}
 }
 
-func TestSubtitleDashboardRequiresLocalTrackForUnsupportedLanguage(t *testing.T) { //nolint:cyclop // The test covers local/provider language fallback boundaries.
+func TestSubtitleDashboardRequiresLocalTrackForUnsupportedLanguage(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -148,7 +148,7 @@ func TestSubtitleCoverageClassifiesDefaultOtherAndDoubleDigitEpisodes(t *testing
 	}
 }
 
-func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //nolint:cyclop // Sister-app setup, settings, and onboarding stay one visible experience contract.
+func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir()})
@@ -188,7 +188,7 @@ func assertResponseContains(t *testing.T, name string, response *httptest.Respon
 	}
 }
 
-func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:cyclop,gocognit // The provider request, sidecar write, conflict, and refreshed projection form one vertical slice.
+func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

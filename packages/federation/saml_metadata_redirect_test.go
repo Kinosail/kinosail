@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func TestSAMLMetadataRedirectsBoundTargetsBeforeBegin(t *testing.T) { //nolint:cyclop,funlen,gocognit // One public metadata-loading matrix proves target admission, request bounds, and durable no-key controls.
+func TestSAMLMetadataRedirectsBoundTargetsBeforeBegin(t *testing.T) {
 	metadata := samlMetadataDocument("http://localhost", "/sso", samlMetadataCertificate(t))
 	for _, test := range []struct {
 		name                                           string

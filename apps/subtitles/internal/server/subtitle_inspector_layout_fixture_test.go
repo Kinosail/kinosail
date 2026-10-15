@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestWriteUIStateFixturesSubtitleInspector(t *testing.T) { //nolint:paralleltest // This opt-in test writes a shared browser fixture directory.
+func TestWriteUIStateFixturesSubtitleInspector(t *testing.T) {
 	dir := os.Getenv("KINOSAIL_UI_FIXTURE_DIR")
 	if dir == "" {
 		t.Skip("KINOSAIL_UI_FIXTURE_DIR is not set")

@@ -91,7 +91,7 @@ func validSubtitleItemID(id string) bool {
 	return true
 }
 
-func (manager *subtitleManager) fetchWantedLanguages(request *http.Request, languages []string, limit int) (int, int, error) { //nolint:cyclop,gocognit // Bounded batch work preserves provider and filesystem invariants.
+func (manager *subtitleManager) fetchWantedLanguages(request *http.Request, languages []string, limit int) (int, int, error) {
 	canonical, validationErr := validateSubtitleLanguages(languages)
 	if validationErr != nil {
 		return 0, 0, validationErr

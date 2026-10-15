@@ -23,7 +23,7 @@ func TestViewingImportAPIAndWebRejectSameInvalidInput(t *testing.T) {
 	}
 }
 
-func TestViewingActivityAPIAndWebUseTheSameImportOperation(t *testing.T) { //nolint:cyclop,funlen,gocognit // One adapter-parity scenario checks the full preview and apply journey.
+func TestViewingActivityAPIAndWebUseTheSameImportOperation(t *testing.T) {
 	const sourceToken = "source-token-that-must-stay-secret"
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Header.Get("X-Emby-Token") != sourceToken {

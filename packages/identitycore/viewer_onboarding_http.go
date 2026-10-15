@@ -35,7 +35,7 @@ func OnboardingViewerHandler(add func(string, string, bool, ProfilePolicy) (stri
 	}, writeError)
 }
 
-func onboardingViewerInput(values url.Values) (string, string, ProfilePolicy, string) { //nolint:cyclop // This is the complete household profile invariant boundary.
+func onboardingViewerInput(values url.Values) (string, string, ProfilePolicy, string) {
 	kind, validKind := httpguard.RequiredValue(values, "kind", 6)
 	if !validKind || kind != "parent" && kind != "child" {
 		return "", "", ProfilePolicy{}, householdProfileError

@@ -26,15 +26,15 @@ type Store struct {
 	config  Config
 }
 
-func Open(dataDir string, keepOpen bool, config Config) (*Store, error) { //nolint:contextcheck // Offline import and test callers have no request lifecycle.
+func Open(dataDir string, keepOpen bool, config Config) (*Store, error) {
 	return OpenContext(context.Background(), dataDir, keepOpen, config)
 }
 
-func OpenContext(ctx context.Context, dataDir string, keepOpen bool, config Config) (*Store, error) { //nolint:gocognit,cyclop,funlen // Startup validates each persisted state boundary before migration.
+func OpenContext(ctx context.Context, dataDir string, keepOpen bool, config Config) (*Store, error) {
 	return openContext(ctx, dataDir, keepOpen, config, systemDependencies())
 }
 
-func openContext(ctx context.Context, dataDir string, keepOpen bool, config Config, dependencies dependencies) (*Store, error) { //nolint:cyclop // Ordered database initialization remains below the repository complexity ceiling.
+func openContext(ctx context.Context, dataDir string, keepOpen bool, config Config, dependencies dependencies) (*Store, error) {
 	if dataDir == "" {
 		return nil, nil
 	}
@@ -172,7 +172,7 @@ func (store *Store) SaveJSON(name string, value any) error {
 	return store.SaveJSONBatchContext(context.Background(), map[string]any{name: value})
 }
 
-func (store *Store) SaveJSONBatch(values map[string]any) error { //nolint:contextcheck // Store adapters share this bounded local durability operation outside transport lifetimes.
+func (store *Store) SaveJSONBatch(values map[string]any) error {
 	return store.SaveJSONBatchContext(context.Background(), values)
 }
 
@@ -250,7 +250,7 @@ func readLegacy(dataDir string, config Config, allowed map[string]struct{}) (map
 		if err != nil || !info.Mode().IsRegular() || info.Size() > DocumentSizeLimit {
 			return nil, fmt.Errorf("invalid legacy state %s", name)
 		}
-		data, err := os.ReadFile(path) //nolint:gosec // The validated name is below the installation directory.
+		data, err := os.ReadFile(path)
 		if err != nil || !store.validDocument(name, data) {
 			return nil, fmt.Errorf("invalid legacy state %s", name)
 		}

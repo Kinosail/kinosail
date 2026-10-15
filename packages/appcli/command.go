@@ -109,7 +109,7 @@ type (
 	serverRunner   func(*http.Server, servertransport.TLSConfig) error
 )
 
-func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler, createRemote remoteFactory, createTrusted trustedFactory, serve serverRunner) int { //nolint:cyclop // Optional managers, remote serving, and shutdown form one process lifecycle.
+func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler, createRemote remoteFactory, createTrusted trustedFactory, serve serverRunner) int {
 	if configured == nil || build == nil || remoteHandler == nil || createRemote == nil || createTrusted == nil || serve == nil {
 		slog.Error("server lifecycle is not configured")
 		return 1

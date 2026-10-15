@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubSourceAcquisitionRequiresExactEpisode(t *testing.T) { //nolint:cyclop,funlen,gocognit // One acquisition matrix checks both provider boundaries and durable installation effects.
+func TestSubSourceAcquisitionRequiresExactEpisode(t *testing.T) {
 	t.Parallel()
 	for _, episode := range []struct {
 		name, token string

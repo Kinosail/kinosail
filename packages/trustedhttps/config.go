@@ -36,7 +36,7 @@ func NewProviderConfig(provider, hostname, token, address string, terms bool) (C
 	return config, config.Validate()
 }
 
-func Parse(raw string) (Config, error) { //nolint:cyclop,gocognit,funlen // Strict decoding and canonical validation share one persisted-input boundary.
+func Parse(raw string) (Config, error) {
 	if raw == "" {
 		return Config{}, nil
 	}

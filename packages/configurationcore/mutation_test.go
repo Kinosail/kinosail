@@ -54,7 +54,7 @@ func (fixture *mutationFixture) mutation() Mutation {
 	}
 }
 
-func TestMutationRejectsBeforePersistence(t *testing.T) { //nolint:funlen // One table verifies all validation failures precede persistence.
+func TestMutationRejectsBeforePersistence(t *testing.T) {
 	t.Parallel()
 	validation := errors.New("failed")
 	tests := map[string]func(*mutationFixture) error{
@@ -118,7 +118,7 @@ func TestMutationRejectsBeforePersistence(t *testing.T) { //nolint:funlen // One
 	}
 }
 
-func TestMutationPersistsPublicSecretAndSCIMChanges(t *testing.T) { //nolint:cyclop,funlen,gocognit // One transaction matrix verifies public, secret, and SCIM persistence.
+func TestMutationPersistsPublicSecretAndSCIMChanges(t *testing.T) {
 	t.Parallel()
 	for name, test := range map[string]struct {
 		operation                  func(Mutation) error

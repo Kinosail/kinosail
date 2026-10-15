@@ -138,7 +138,7 @@ func (sessions *Sessions) CreateLocalGrant(profileID, name string, revision uint
 	return sessions.create(profileID, name, false, false, channel, &revision, "")
 }
 
-func (sessions *Sessions) create(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string) (string, error) { //nolint:cyclop // One lock protects profile policy, limits, approval revision, and persistence.
+func (sessions *Sessions) create(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string) (string, error) {
 	if !sessions.valid() {
 		return "", ErrProfileNotFound
 	}

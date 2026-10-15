@@ -74,7 +74,7 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	<-done
 }
 
-func TestAutomaticMaintenanceBoundsOnlyTheTranscodeCache(t *testing.T) { //nolint:cyclop // One lifecycle test verifies eviction, accounting, and download preservation.
+func TestAutomaticMaintenanceBoundsOnlyTheTranscodeCache(t *testing.T) {
 	t.Parallel()
 
 	cacheDir := t.TempDir()
@@ -139,7 +139,7 @@ func TestAutomaticMaintenanceStatusIsAvailableThroughAPIAndWeb(t *testing.T) {
 	requireResponse(t, settings, http.StatusOK, "Kinosail maintains itself automatically", "Encrypted backups run automatically")
 }
 
-func TestOwnerCanDownloadBackupRevokeSessionsAndClearCache(t *testing.T) { //nolint:cyclop // One owner workflow verifies every explicit maintenance action.
+func TestOwnerCanDownloadBackupRevokeSessionsAndClearCache(t *testing.T) {
 	t.Parallel()
 
 	dataDir, cacheDir := t.TempDir(), t.TempDir()

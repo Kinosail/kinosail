@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestShowPosterDoesNotShareEpisodeStillCachePath(t *testing.T) { //nolint:cyclop // Show cards must keep their poster when the first episode also has artwork.
+func TestShowPosterDoesNotShareEpisodeStillCachePath(t *testing.T) {
 	provider := httptest.NewServer(showArtworkProvider(nil))
 	t.Cleanup(provider.Close)
 	handler := showArtworkHandler(t, provider.URL)
@@ -26,7 +26,7 @@ func TestShowPosterDoesNotShareEpisodeStillCachePath(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestShowPosterDownloadFailureRemainsMissingAndRetries(t *testing.T) { //nolint:cyclop // A successful episode still cannot hide a transiently missing Show poster.
+func TestShowPosterDownloadFailureRemainsMissingAndRetries(t *testing.T) {
 	var posterRequests atomic.Int32
 	provider := httptest.NewServer(showArtworkProvider(&posterRequests))
 	t.Cleanup(provider.Close)
@@ -40,7 +40,7 @@ func TestShowPosterDownloadFailureRemainsMissingAndRetries(t *testing.T) { //nol
 	}
 }
 
-func TestShowPosterRepairDoesNotRefetchExistingEpisodes(t *testing.T) { //nolint:cyclop // Repairing one shared poster must not block on every existing episode.
+func TestShowPosterRepairDoesNotRefetchExistingEpisodes(t *testing.T) {
 	var posterAvailable atomic.Bool
 	var episodeRequests atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

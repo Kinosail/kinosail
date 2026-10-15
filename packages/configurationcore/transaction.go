@@ -107,7 +107,7 @@ func (transaction Transaction) read(data []byte) ([]byte, []byte, error) {
 	return regularData, secretsData, nil
 }
 
-func decodeTransaction(data []byte) (transactionEnvelope, error) { //nolint:cyclop,gocognit // The strict envelope parser rejects every ambiguous journal shape before recovery writes.
+func decodeTransaction(data []byte) (transactionEnvelope, error) {
 	if len(data) > MaxTransactionSize || !utf8.Valid(data) {
 		return transactionEnvelope{}, errors.New("transaction is too large")
 	}

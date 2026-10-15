@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestProjectItemUsesPlayerCanonicalPublicPaths(t *testing.T) { //nolint:cyclop // One projection contract remains below the repository complexity ceiling.
+func TestProjectItemUsesPlayerCanonicalPublicPaths(t *testing.T) {
 	added := time.Date(2026, time.September, 4, 1, 2, 3, 0, time.UTC)
 	item := library.Item{ID: "episode", Kind: "video", Title: "Pilot", SortTitle: "Pilot, The", Year: "2026", Plot: "Plot", Rating: "PG", Tagline: "Tagline", Genres: "Drama", Director: "Director", Studio: "Studio", Artist: "Artist", Album: "Album", Track: 2, Show: "Series", Season: 1, Episode: 2, Artwork: "episode.jpg", ShowBackdrop: "show.jpg", Subtitles: []string{"one", "two"}, Container: "MKV", Size: 42, Added: added, Cast: []library.Person{{Name: "Actor", Role: "Lead", Image: "actor.jpg"}, {Name: "Voice"}}}
 	progress := catalog.PlaybackState{Seconds: 12}
@@ -37,7 +37,7 @@ func TestProjectItemUsesPlayerCanonicalPublicPaths(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) { //nolint:cyclop // One projection matrix remains below the repository complexity ceiling.
+func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) {
 	if ArtworkURL("") != "" || ArtworkURL("item") != "/art/item" {
 		t.Fatal("artwork route selection changed")
 	}
@@ -64,7 +64,7 @@ func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) { //
 	}
 }
 
-func TestPlaylistDocumentValidationBoundaries(t *testing.T) { //nolint:cyclop // One bounded document table covers every independent validation rule.
+func TestPlaylistDocumentValidationBoundaries(t *testing.T) {
 	valid := `{"format":"kinosail.playlist","version":1,"name":" Queue ","ids":["one"]}`
 	document, err := DecodePlaylistDocument(valid)
 	if err != nil || document.Name != " Queue " {
@@ -105,7 +105,7 @@ func TestPlaylistDocumentValidationBoundaries(t *testing.T) { //nolint:cyclop //
 	}
 }
 
-func TestCreatePlaylistDocumentValidatesBeforePersistence(t *testing.T) { //nolint:cyclop // One adapter test proves validation, persistence, and error ordering.
+func TestCreatePlaylistDocumentValidatesBeforePersistence(t *testing.T) {
 	document := PlaylistDocument{Format: PlaylistDocumentFormat, Version: 1, Name: " Queue ", IDs: []string{"one"}}
 	created := 0
 	visible := func(id string) (library.Item, bool) { return library.Item{ID: id}, id == "one" }

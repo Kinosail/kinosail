@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func SecurityClassificationAndMediaLimits(t *testing.T, collectionMatches func(string, []library.Item, string) bool, within func(string, string) bool) { //nolint:cyclop // One shared contract checks the related boundary helpers.
+func SecurityClassificationAndMediaLimits(t *testing.T, collectionMatches func(string, []library.Item, string) bool, within func(string, string) bool) {
 	t.Parallel()
 	for key, want := range map[string]bool{"database.password": true, "apiSecret": true, "refreshToken": true, "tls.key": true, "monkey": false, "hostname": false} {
 		if got := auditjournal.SecretSetting(key); got != want {

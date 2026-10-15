@@ -14,7 +14,7 @@ func (function roundTripFunc) RoundTrip(request *http.Request) (*http.Response, 
 	return function(request)
 }
 
-func TestGitHubReleaseCheckSendsOnlyFixedPrivacySafeMetadata(t *testing.T) { //nolint:cyclop // One contract verifies every fixed request and privacy header.
+func TestGitHubReleaseCheckSendsOnlyFixedPrivacySafeMetadata(t *testing.T) {
 	t.Parallel()
 	var captured *http.Request
 	source := githubReleaseSource{client: &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
@@ -65,7 +65,7 @@ func TestGitHubCheckerUsesApplicationReleaseIdentity(t *testing.T) {
 	}
 }
 
-func TestGitHubReleaseCheckRejectsUntrustedResponsesWithoutUpdateRequest(t *testing.T) { //nolint:funlen // Security cases stay together so every rejected response shares the side-effect assertion.
+func TestGitHubReleaseCheckRejectsUntrustedResponsesWithoutUpdateRequest(t *testing.T) {
 	t.Parallel()
 	release := `{"tag_name":"player-v1.2.3","draft":false,"prerelease":false}`
 	responses := map[string]func() *http.Response{
@@ -120,7 +120,7 @@ func TestGitHubReleaseCheckRejectsUntrustedResponsesWithoutUpdateRequest(t *test
 	}
 }
 
-func TestGitHubReleaseCheckHandlesCacheMissingAndTransportFailures(t *testing.T) { //nolint:cyclop // One table verifies the distinct non-release outcomes.
+func TestGitHubReleaseCheckHandlesCacheMissingAndTransportFailures(t *testing.T) {
 	t.Parallel()
 	for name, source := range map[string]githubReleaseSource{
 		"missing": {client: &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {

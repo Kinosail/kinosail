@@ -54,7 +54,7 @@ func adapterConfig(profiles *[]adapterProfile, stateErr *error, attributed *adap
 	}
 }
 
-func TestPrincipalAdapterPreservesIdentityDecisions(t *testing.T) { //nolint:cyclop,gocognit // One flow proves the complete principal adapter contract.
+func TestPrincipalAdapterPreservesIdentityDecisions(t *testing.T) {
 	profiles := []adapterProfile{
 		{id: "owner", name: "Owner", issuer: "https://identity.test", subject: "owner-subject", owner: true, allowed: true},
 		{id: "viewer", name: "Viewer"},
@@ -108,7 +108,7 @@ type (
 	adapterOwnerKey  struct{}
 )
 
-func TestAPIAdapterPreservesRoutingContextAndBytes(t *testing.T) { //nolint:cyclop // One flow verifies contexts, audit order, and the exact response.
+func TestAPIAdapterPreservesRoutingContextAndBytes(t *testing.T) {
 	profile := adapterProfile{id: "owner", name: "Owner", owner: true}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/v1/me", func(http.ResponseWriter, *http.Request) {})

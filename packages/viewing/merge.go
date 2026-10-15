@@ -61,7 +61,7 @@ func MergeProgress(values map[string]catalog.PlaybackState, profileID string, ow
 	return result, applied, conflicts
 }
 
-func MergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) { //nolint:cyclop,gocognit // Favorite and ordered playlist merges form one optimistic transaction.
+func MergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) {
 	type positionedItem struct {
 		id       string
 		position int

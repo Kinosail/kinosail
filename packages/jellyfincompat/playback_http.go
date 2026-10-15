@@ -41,7 +41,7 @@ func (module PlaybackHTTP) Register(mux *http.ServeMux, handlers playback.Jellyf
 	return playback.RegisterJellyfinPlayback(mux, handlers)
 }
 
-func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Ordered validation maps each Jellyfin protocol failure to its wire response.
+func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {
 		http.NotFound(writer, request)

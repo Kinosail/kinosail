@@ -58,7 +58,7 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 			}
 		}
 		writer.Header().Set("Content-Type", "image/jpeg")
-		http.ServeFile(writer, request, target) //nolint:gosec // The cache path uses a visible scanned item ID.
+		http.ServeFile(writer, request, target)
 	}
 }
 

@@ -15,7 +15,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 )
 
-func TestBuiltInMCPOAuthWorksWithOfficialClientAndDCR(t *testing.T) { //nolint:cyclop,funlen // Official discovery, DCR, PKCE, token, and MCP behavior are one interoperability flow.
+func TestBuiltInMCPOAuthWorksWithOfficialClientAndDCR(t *testing.T) {
 	profiles := newProfileStore("")
 	profile := viewerProfile{ID: "viewer", Name: "Viewer", Libraries: []string{"all"}, Rating: "all"}
 	profiles.profiles = []viewerProfile{profile}

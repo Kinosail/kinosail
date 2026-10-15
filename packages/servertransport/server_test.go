@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestNewServerAppliesSharedTransportLimits(t *testing.T) { //nolint:cyclop // The score of 19 remains below the repository ceiling of 22 for the transport matrix.
+func TestNewServerAppliesSharedTransportLimits(t *testing.T) {
 	server := NewServer("127.0.0.1:38127", http.NotFoundHandler())
 	if server.Addr != "127.0.0.1:38127" || server.ReadHeaderTimeout != 5*time.Second || server.ReadTimeout != 15*time.Second || server.IdleTimeout != 2*time.Minute || server.WriteTimeout != 0 {
 		t.Fatalf("HTTP limits = %#v", server)
@@ -58,7 +58,7 @@ func TestServeSelectsProtocolAndReportsCertificateFailure(t *testing.T) {
 	}
 }
 
-func TestCheckHealthCoversProtocolsAndInputFailures(t *testing.T) { //nolint:cyclop // Protocol and error branches share one loopback boundary.
+func TestCheckHealthCoversProtocolsAndInputFailures(t *testing.T) {
 	hostSeen := ""
 	plain := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		hostSeen = request.Host

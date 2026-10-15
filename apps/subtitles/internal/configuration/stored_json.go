@@ -26,7 +26,7 @@ func readJSON(path string) (map[string]string, error) {
 	return parseJSON(data, filepath.Base(path))
 }
 
-func parseJSON(data []byte, name string) (map[string]string, error) { //nolint:cyclop // The token loop rejects each ambiguous JSON shape at one boundary.
+func parseJSON(data []byte, name string) (map[string]string, error) {
 	if len(data) > maxStoredJSONSize || !utf8.Valid(data) {
 		return nil, storedJSONError(name)
 	}

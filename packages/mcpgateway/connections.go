@@ -114,7 +114,7 @@ type ConnectionConfig struct {
 	SessionKey       func(string) string
 }
 
-func NewConnections(config ConnectionConfig) *Connections { //nolint:contextcheck // Startup state loading is installation-owned.
+func NewConnections(config ConnectionConfig) *Connections {
 	issuer := strings.TrimSuffix(strings.TrimSpace(config.Issuer), "/")
 	if issuer == "" {
 		issuer = "http://localhost"

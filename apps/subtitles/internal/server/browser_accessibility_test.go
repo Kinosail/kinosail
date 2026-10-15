@@ -22,7 +22,7 @@ import (
 	"github.com/coder/websocket/wsjson"
 )
 
-func TestCoreJourneysInRepresentativeBrowserViewports(t *testing.T) { //nolint:cyclop,gocognit // Browser setup assertions intentionally stay in one release test.
+func TestCoreJourneysInRepresentativeBrowserViewports(t *testing.T) {
 	chrome := chromeExecutable(t)
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Home.mp4"), []byte("movie"), 0o600); err != nil {
@@ -119,7 +119,7 @@ type browserAuditResult struct {
 	Widest                                                                string
 }
 
-func browserAudit(t *testing.T, chrome, target string, width, height int) browserAuditResult { //nolint:cyclop,funlen,gocognit // CDP lifecycle failures are each asserted at their source.
+func browserAudit(t *testing.T, chrome, target string, width, height int) browserAuditResult {
 	t.Helper()
 	command, profile, port := startBrowser(t, chrome, target, width, height)
 	t.Cleanup(func() { removeBrowserProfile(t, profile) })

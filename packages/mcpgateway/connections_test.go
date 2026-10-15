@@ -76,7 +76,7 @@ func TestBuiltInOAuthLifecyclePersistsOnlyHashes(t *testing.T) {
 	assertReopenedGrant(t, principals, store, owner, token.AccessToken)
 }
 
-func TestBuiltInOAuthRejectsMalformedUnknownAndOversizedInputWithoutAuthority(t *testing.T) { //nolint:cyclop,funlen // Rejected inputs must not persist authority.
+func TestBuiltInOAuthRejectsMalformedUnknownAndOversizedInputWithoutAuthority(t *testing.T) {
 	viewer := Principal{ID: "viewer", Name: "Viewer"}
 	principals := &testPrincipals{values: map[string]Principal{"viewer": viewer}}
 	store := &memoryState{}
@@ -137,7 +137,7 @@ func TestBuiltInOAuthRejectsMalformedUnknownAndOversizedInputWithoutAuthority(t 
 	}
 }
 
-func TestOAuthRefreshRevocationAndManagementApproval(t *testing.T) { //nolint:cyclop,funlen,gocognit // Rotation, revocation, and recent-auth checks remain atomic.
+func TestOAuthRefreshRevocationAndManagementApproval(t *testing.T) {
 	owner := Principal{ID: "owner", Name: "Owner", Owner: true}
 	principals := &testPrincipals{values: map[string]Principal{"owner": owner}}
 	store := &memoryState{}

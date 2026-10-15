@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func TestNetworkBoundaryValidation(t *testing.T) { //nolint:cyclop // The assertions cover one network trust boundary.
+func TestNetworkBoundaryValidation(t *testing.T) {
 	t.Parallel()
 	for _, raw := range []string{"8.8.8.8", "2001:4860:4860::8888"} {
 		if !allowedOutboundIP(net.ParseIP(raw)) {

@@ -104,7 +104,7 @@ func (store *Store) restore(dataDir string, load func(string, any) (bool, error)
 	}
 }
 
-func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices int, rightsAcknowledged bool) (View, string, error) { //nolint:cyclop // Every grant policy check must pass before persistence.
+func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices int, rightsAcknowledged bool) (View, string, error) {
 	if store.err != nil {
 		return View{}, "", store.err
 	}
@@ -144,7 +144,7 @@ func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices 
 	return View{ID: share.ID, ItemIDs: append([]string(nil), share.ItemIDs...), ExpiresAt: share.ExpiresAt, MaxDevices: share.MaxDevices}, claim, nil
 }
 
-func (store *Store) Claim(token, device string) (string, time.Time, error) { //nolint:cyclop // Token, expiry, device capacity, and atomic persistence form one claim decision.
+func (store *Store) Claim(token, device string) (string, time.Time, error) {
 	if !validClaimInput(token, device) {
 		return "", time.Time{}, errors.New("media share claim is invalid")
 	}

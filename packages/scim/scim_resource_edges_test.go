@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestSCIMSchemaSelectionAndEntityTagEdges(t *testing.T) { //nolint:cyclop // Schema, mandatory projection, and entity-tag grammar have independent boundaries.
+func TestSCIMSchemaSelectionAndEntityTagEdges(t *testing.T) {
 	t.Parallel()
 	if err := validateSCIMSchema(nil, scimUserSchema); err == nil {
 		t.Fatal("missing SCIM schema accepted")

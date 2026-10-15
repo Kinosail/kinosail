@@ -30,7 +30,7 @@ func ProxyCapability(t *testing.T, secureProxyConfiguration func(string, string)
 	}
 }
 
-func HTTPBounds(t *testing.T, newHTTPServer func(context.Context) *http.Server, listen string) { //nolint:cyclop // One assertion protects the complete HTTP transport limit set.
+func HTTPBounds(t *testing.T, newHTTPServer func(context.Context) *http.Server, listen string) {
 	t.Parallel()
 	server := newHTTPServer(context.Background())
 	if server.Addr != listen || server.ReadHeaderTimeout != 5*time.Second || server.ReadTimeout != 15*time.Second || server.IdleTimeout != 2*time.Minute || server.MaxHeaderBytes != 64<<10 || server.MaxHeaderValueCount != 64 || server.WriteTimeout != 0 || server.ErrorLog == nil || server.HTTP2 == nil || server.HTTP2.MaxConcurrentStreams != 32 || server.HTTP2.MaxDecoderHeaderTableSize != 4096 || server.HTTP2.MaxEncoderHeaderTableSize != 4096 || server.HTTP2.MaxReadFrameSize != 16<<10 || server.HTTP2.MaxReceiveBufferPerConnection != 1<<20 || server.HTTP2.MaxReceiveBufferPerStream != 256<<10 || server.HTTP2.SendPingTimeout != 30*time.Second || server.HTTP2.PingTimeout != 10*time.Second || server.HTTP2.WriteByteTimeout != 30*time.Second {

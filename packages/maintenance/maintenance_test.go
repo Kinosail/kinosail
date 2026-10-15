@@ -155,7 +155,7 @@ func TestManagerLogsUpkeepResult(t *testing.T) {
 	}
 }
 
-func TestManagerTracksOnlyInteractiveMediaReads(t *testing.T) { //nolint:cyclop // The table enumerates every protected public media namespace.
+func TestManagerTracksOnlyInteractiveMediaReads(t *testing.T) {
 	manager := New(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies())
 	manager.now = func() time.Time { return time.Unix(0, 100) }
 	manager.quietUntil.Store(100)

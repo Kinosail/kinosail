@@ -12,7 +12,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-func TestNewProfile(t *testing.T) { //nolint:cyclop // One constructor matrix proves all validation and dependency outcomes.
+func TestNewProfile(t *testing.T) {
 	t.Parallel()
 	profile, err := NewProfile(" Owner ", "distinct-owner-password", true)
 	if err != nil || profile.ID == "" || profile.Credential == "" || profile.Name != "Owner" || !profile.Owner || profile.Revision != 1 {
@@ -41,7 +41,7 @@ func TestNewProfile(t *testing.T) { //nolint:cyclop // One constructor matrix pr
 	}
 }
 
-func TestCloneProfilesDetachesMutableState(t *testing.T) { //nolint:cyclop // Exact mutable-field assertions protect deep-copy semantics.
+func TestCloneProfilesDetachesMutableState(t *testing.T) {
 	t.Parallel()
 	original := []Profile{{
 		ID: "viewer", Libraries: []string{"movies"}, SCIMEmails: []scim.Email{{Value: "viewer@example.test"}},
@@ -73,7 +73,7 @@ func TestCloneProfilesDetachesMutableState(t *testing.T) { //nolint:cyclop // Ex
 	}
 }
 
-func TestFindAndFederateProfile(t *testing.T) { //nolint:cyclop // One identity matrix covers lookup and both federation protocols.
+func TestFindAndFederateProfile(t *testing.T) {
 	t.Parallel()
 	profiles := []Profile{{ID: "viewer", Libraries: []string{"all"}}}
 	found, ok := FindProfile(profiles, "viewer")

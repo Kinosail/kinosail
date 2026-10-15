@@ -42,7 +42,7 @@ func discoveryIntegration(t *testing.T, rawURL string, trusted TrustedHTTPS, adv
 	return integration, cancel
 }
 
-func TestDiscovery(t *testing.T) { //nolint:cyclop,funlen // One matrix proves every discovery trust and lifecycle branch.
+func TestDiscovery(t *testing.T) {
 	var gotName string
 	var gotPort int
 	var gotText []string

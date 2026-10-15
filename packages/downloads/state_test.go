@@ -27,7 +27,7 @@ func TestNewRejectsUnsafePersistedState(t *testing.T) {
 	}
 }
 
-func TestNewRecoversInterruptedAndCorruptJobs(t *testing.T) { //nolint:cyclop,gocognit // The table covers each persisted recovery state.
+func TestNewRecoversInterruptedAndCorruptJobs(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
 		name, state, digest string

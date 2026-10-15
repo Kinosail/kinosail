@@ -18,7 +18,7 @@ func configuredDatabase(databases []*database.Store) *database.Store {
 	return databases[0]
 }
 
-func loadState(stateDB *database.Store, path string, target any) (bool, error) { //nolint:cyclop // File, size, JSON, and database recovery checks are one boundary.
+func loadState(stateDB *database.Store, path string, target any) (bool, error) {
 	if stateDB != nil {
 		return stateDB.LoadJSON(filepath.Base(path), target)
 	}

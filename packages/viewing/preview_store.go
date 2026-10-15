@@ -91,7 +91,7 @@ func Prepare(ctx context.Context, store PreviewStore, fetch func(context.Context
 	}
 	items, err := snapshot()
 	if err != nil {
-		return Preview{}, errors.New("Kinosail Library is unavailable") //nolint:staticcheck // Kinosail is a proper product name.
+		return Preview{}, errors.New("Kinosail Library is unavailable")
 	}
 	preview := build(activities, items)
 	if err := store.Add(preview, time.Now()); err != nil {

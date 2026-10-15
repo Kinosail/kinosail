@@ -75,7 +75,7 @@ type sortReference struct {
 	key  []byte
 }
 
-func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cyclop // One parser owns the complete bounded browse vocabulary.
+func ParseBrowse(values url.Values, locale string) (Browse, error) {
 	for name := range values {
 		if !oneOf(name, "q", "view", "sort", "offset", "limit", "lang", "letter") {
 			return Browse{}, fmt.Errorf("%w: unknown library query", ErrInvalidBrowse)
@@ -158,7 +158,7 @@ func (result Result) NextURL() string {
 	return pageURL(result.values, result.Offset+result.Limit, result.Limit, result.Offset+result.Limit < result.pageEnd)
 }
 
-func viewMatches(candidate Candidate, view string) bool { //nolint:cyclop // The switch is the canonical browse-view vocabulary.
+func viewMatches(candidate Candidate, view string) bool {
 	switch view {
 	case "list":
 		return candidate.Listed

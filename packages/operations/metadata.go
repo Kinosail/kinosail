@@ -61,7 +61,7 @@ func missingMetadata(config MetadataRefresh) []library.Item {
 	return missing
 }
 
-func fetchMissing(ctx context.Context, config MetadataRefresh, missing []library.Item) (map[string]metadata.Record, error) { //nolint:cyclop,gocognit // Grouping episodes and bounding independent provider work share one cancellation seam.
+func fetchMissing(ctx context.Context, config MetadataRefresh, missing []library.Item) (map[string]metadata.Record, error) {
 	if len(missing) == 0 {
 		return nil, nil
 	}

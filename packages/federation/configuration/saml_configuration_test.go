@@ -20,7 +20,7 @@ type samlConfigurationEffects struct {
 	deleted                    map[string]bool
 }
 
-func TestSAMLConfigurationKeysAndView(t *testing.T) { //nolint:cyclop // One test proves the closely related key, view, and configured-state contract.
+func TestSAMLConfigurationKeysAndView(t *testing.T) {
 	t.Parallel()
 	keys := SAMLConfigurationKeys()
 	keys[0] = "changed"
@@ -78,7 +78,7 @@ func TestSAMLConfigurationKeysAndView(t *testing.T) { //nolint:cyclop // One tes
 	}
 }
 
-func TestSAMLConfigurationStoreLifecycle(t *testing.T) { //nolint:cyclop // One lifecycle proves every side-effect boundary.
+func TestSAMLConfigurationStoreLifecycle(t *testing.T) {
 	t.Parallel()
 	effects := &samlConfigurationEffects{}
 	store := testSAMLConfigurationStore(effects)
@@ -128,7 +128,7 @@ func testSAMLConfigurationStore(effects *samlConfigurationEffects) SAMLConfigura
 	}
 }
 
-func TestParseSAMLConfigurationForm(t *testing.T) { //nolint:cyclop // The matrix covers each strict field and envelope.
+func TestParseSAMLConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {SAMLConfigurationKey}, "metadataUrl": {"https://identity.example/metadata"}, "metadataXml": {""}, "identityAttribute": {"NameID"}}
 	config, err := ParseSAMLConfigurationForm(httptest.NewRecorder(), samlFormRequest(valid))
@@ -169,7 +169,7 @@ func TestBoundedFormFieldAcceptsExactMaximum(t *testing.T) {
 	}
 }
 
-func TestSaveSAMLConfigurationResultPaths(t *testing.T) { //nolint:cyclop // The result matrix proves each HTTP side-effect path.
+func TestSaveSAMLConfigurationResultPaths(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {SAMLConfigurationKey}, "metadataUrl": {"https://identity.example/metadata"}, "metadataXml": {""}, "identityAttribute": {"NameID"}}
 	for _, test := range []struct {

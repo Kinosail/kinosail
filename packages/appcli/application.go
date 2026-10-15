@@ -30,7 +30,7 @@ type Application[Configuration Settings] struct {
 	Run           func(Configuration) int
 }
 
-func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop // Keep command precedence explicit; the repository complexity gate still applies.
+func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int {
 	if len(args) > 0 && args[0] == "public-gateway" {
 		return executePublicGateway(args, getenv, signals)
 	}

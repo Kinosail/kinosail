@@ -9,7 +9,7 @@ import (
 
 func WriteZIP(t *testing.T, name string, files map[string]string) {
 	t.Helper()
-	file, err := os.Create(name) //nolint:gosec // Test archive path is inside t.TempDir.
+	file, err := os.Create(name)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -33,7 +33,7 @@ func WriteZIP(t *testing.T, name string, files map[string]string) {
 
 func WriteTar(t *testing.T, name string, files map[string]string) {
 	t.Helper()
-	file, err := os.Create(name) //nolint:gosec // Test archive path is inside t.TempDir.
+	file, err := os.Create(name)
 	if err != nil {
 		t.Fatal(err)
 	}

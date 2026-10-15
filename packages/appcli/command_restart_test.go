@@ -18,7 +18,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) { //nolint:cyclop,funlen,gocognit // The subprocess handshake verifies the real signal and request lifecycle.
+func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) {
 	if os.Getenv("KINOSAIL_LIFECYCLE_HELPER") == "1" {
 		listener, err := (&net.ListenConfig{}).Listen(t.Context(), "tcp", "127.0.0.1:0")
 		if err != nil {

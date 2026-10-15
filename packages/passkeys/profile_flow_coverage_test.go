@@ -38,7 +38,7 @@ func TestProfileFlowFinishesRegistrationOutcomes(t *testing.T) {
 	}
 }
 
-func TestProfileFlowFinishesLoginOutcomes(t *testing.T) { //nolint:cyclop // One table-like sequence covers the ordered login effects.
+func TestProfileFlowFinishesLoginOutcomes(t *testing.T) {
 	fixture, flow := newFlowFixture(t)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "http://localhost:38127/api/v1/passkeys/login/finish", nil)
 	credential := &webauthn.Credential{}

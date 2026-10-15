@@ -69,7 +69,7 @@ func secureRequest(request *http.Request) bool {
 	return request.TLS != nil || strings.EqualFold(strings.TrimSpace(strings.Split(request.Header.Get("X-Forwarded-Proto"), ",")[0]), "https")
 }
 
-func unsafeCrossOrigin(request *http.Request) bool { //nolint:cyclop // Browser request evidence is checked explicitly at this security boundary.
+func unsafeCrossOrigin(request *http.Request) bool {
 	if request.Method == http.MethodGet || request.Method == http.MethodHead || request.Method == http.MethodOptions {
 		return false
 	}

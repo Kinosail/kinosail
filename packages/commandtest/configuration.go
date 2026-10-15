@@ -13,7 +13,7 @@ type ConfigurationSnapshot interface {
 	String(string) string
 }
 
-func ConfigurationCommandSources[Snapshot any](t *testing.T, set func(string, string, string) error, load func(string, string, func(string) (string, bool)) (Snapshot, error), command func([]string, io.Writer, func(string) (Snapshot, error)) (bool, error)) { //nolint:cyclop // This shared contract keeps every CLI validation boundary in one scenario.
+func ConfigurationCommandSources[Snapshot any](t *testing.T, set func(string, string, string) error, load func(string, string, func(string) (string, bool)) (Snapshot, error), command func([]string, io.Writer, func(string) (Snapshot, error)) (bool, error)) {
 	t.Parallel()
 	directory := t.TempDir()
 	file := filepath.Join(directory, "kinosail.yaml")

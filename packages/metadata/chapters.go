@@ -204,7 +204,7 @@ func (provider *ChapterProvider) fetch(ctx context.Context, id string, duration 
 	return nil, true
 }
 
-func chaptersFromDBEntries(entries []chaptersDBEntry, duration float64) ([]Chapter, bool) { //nolint:cyclop // Entry validation and timeline construction must remain one atomic parse.
+func chaptersFromDBEntries(entries []chaptersDBEntry, duration float64) ([]Chapter, bool) {
 	if len(entries) == 0 || len(entries) > maxChaptersDBEntries || !finite(duration) || duration <= 0 {
 		return nil, false
 	}
@@ -229,7 +229,7 @@ func chaptersFromDBEntries(entries []chaptersDBEntry, duration float64) ([]Chapt
 	return chapters, true
 }
 
-func parseChapterDBTime(value string) (float64, bool) { //nolint:cyclop // The accepted clock components and bounds form one strict grammar.
+func parseChapterDBTime(value string) (float64, bool) {
 	parts := strings.SplitN(strings.TrimSpace(value), ".", 2)
 	clock := strings.Split(parts[0], ":")
 	if len(clock) != 3 || len(clock[0]) == 0 || len(clock[0]) > 3 || len(clock[1]) != 2 || len(clock[2]) != 2 {

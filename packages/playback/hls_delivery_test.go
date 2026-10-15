@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestHLSDeliveryValidatesBeforeCallbacks(t *testing.T) { //nolint:cyclop,gocognit,funlen // Route success and negative no-side-effect cases share one contract.
+func TestHLSDeliveryValidatesBeforeCallbacks(t *testing.T) {
 	t.Parallel()
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	selection, err := ParseHLSRequest("p/t-a0-s0-none-t0-b0/360p/index.m3u8", "1", policy)

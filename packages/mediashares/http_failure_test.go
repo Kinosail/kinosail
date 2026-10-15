@@ -27,7 +27,7 @@ func serveForm(t *testing.T, mux *http.ServeMux, path string, form url.Values) *
 	return response
 }
 
-func TestWebHandlersCoverOwnerAndFailurePaths(t *testing.T) { //nolint:cyclop,funlen // One route matrix covers each web response branch.
+func TestWebHandlersCoverOwnerAndFailurePaths(t *testing.T) {
 	store, _ := testStore(t, time.Now(), library.Item{ID: "item", Title: "Movie", Path: "movie"})
 	mux := testMux(store)
 	owner := httptest.NewRecorder()
@@ -72,7 +72,7 @@ func TestWebHandlersCoverOwnerAndFailurePaths(t *testing.T) { //nolint:cyclop,fu
 	}
 }
 
-func TestAPIHandlersCoverMutationFailurePaths(t *testing.T) { //nolint:cyclop,funlen // One API matrix covers strict decoding and mapped failures.
+func TestAPIHandlersCoverMutationFailurePaths(t *testing.T) {
 	now := time.Now()
 	store, state := testStore(t, now, library.Item{ID: "item", Path: "movie"})
 	invalidClaim := httptest.NewRecorder()

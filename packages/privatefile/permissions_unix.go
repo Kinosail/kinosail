@@ -9,7 +9,7 @@ func securePermissions(info os.FileInfo) bool {
 }
 
 func syncDirectory(path string) error {
-	directory, err := os.Open(path) //nolint:gosec // Callers pass installation-owned paths.
+	directory, err := os.Open(path)
 	if err != nil {
 		return err
 	}

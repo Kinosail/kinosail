@@ -56,7 +56,7 @@ func migrateSubtitleHistory(state subtitleLedgerState) subtitleLedgerState {
 	return state
 }
 
-func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, action, reason string) error { //nolint:cyclop // Snapshot validation and durable rollback stay in one atomic ledger operation.
+func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, action, reason string) error {
 	ledger.mu.Lock()
 	defer ledger.mu.Unlock()
 	previous, found := ledger.state.Records[key]

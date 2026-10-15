@@ -13,7 +13,7 @@ import (
 
 type StdioCommandExec func(string, []string, []string) error
 
-func RunStdioCommand(relayPath string, serve func() error, openRelay func() (*os.File, error), execute StdioCommandExec) error { //nolint:cyclop // Each relay resource boundary fails closed in one process handoff.
+func RunStdioCommand(relayPath string, serve func() error, openRelay func() (*os.File, error), execute StdioCommandExec) error {
 	if relayPath == "" || len(relayPath) > 4096 || !filepath.IsAbs(relayPath) || filepath.Clean(relayPath) != relayPath || serve == nil || openRelay == nil || execute == nil {
 		return errors.New("invalid MCP STDIO relay configuration")
 	}

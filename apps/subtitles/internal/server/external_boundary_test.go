@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestSubtitleProviderRejectsMalformedSearchAndDownloads(t *testing.T) { //nolint:cyclop,funlen // Each title selects one provider failure while all requests stay on the public fetch seam.
+func TestSubtitleProviderRejectsMalformedSearchAndDownloads(t *testing.T) {
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
 		query := request.URL.Query().Get("film_name")

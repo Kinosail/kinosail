@@ -199,7 +199,7 @@ func showConfiguration(settings *settingsStore) http.HandlerFunc {
 	}
 }
 
-func saveConfiguration(settings *settingsStore, reset bool) http.HandlerFunc { //nolint:cyclop,gocognit // Key-specific forms route to one validated application operation.
+func saveConfiguration(settings *settingsStore, reset bool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if !reset && request.FormValue("key") == oidcConfigurationKey {
 			saveOIDCConfiguration(writer, request, settings)

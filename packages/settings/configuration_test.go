@@ -20,7 +20,7 @@ type configurationEffects struct {
 	deleted                bool
 }
 
-func TestConfigurationStoreChangeLifecycle(t *testing.T) { //nolint:cyclop,gocognit // The lifecycle proves every authorization and storage branch.
+func TestConfigurationStoreChangeLifecycle(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name, file, key, value string
@@ -84,7 +84,7 @@ func testConfigurationStore(effects *configurationEffects, file string) Configur
 	}
 }
 
-func TestParseConfigurationForm(t *testing.T) { //nolint:cyclop // The matrix covers the full strict transport boundary.
+func TestParseConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {"backup.retention"}, "value": {"12"}}
 	key, value, err := ParseConfigurationForm(httptest.NewRecorder(), configurationRequest(valid), false)

@@ -82,7 +82,7 @@ func TestTierCatalogIsIsolated(t *testing.T) {
 	}
 }
 
-func TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy(t *testing.T) { //nolint:cyclop // One test covers the related empty derivative contract.
+func TestEmptyDerivativeStatusAndFingerprintUseSharedPolicy(t *testing.T) {
 	service, err := New(Config{App: App{
 		ID: "kino-subtitles", Name: "Kinosail Subtitles", Audience: "com.kinosail.subtitles", MasterworkName: "Perfect Sync",
 		EmptyBadges: true, NestedApp: true,

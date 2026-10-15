@@ -35,7 +35,7 @@ func TestEncodingCostIsReservedAtomically(t *testing.T) {
 	all()
 }
 
-func TestHardwareSessionBudgetAndInvalidCosts(t *testing.T) { //nolint:cyclop // Admission and rejected costs share the same occupied hardware budget.
+func TestHardwareSessionBudgetAndInvalidCosts(t *testing.T) {
 	governor := New(3)
 	release, err := governor.AcquireEncoding(t.Context(), Playback, 1, "gpu-0")
 	if err != nil {

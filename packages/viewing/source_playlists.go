@@ -14,7 +14,7 @@ type plexViewingPlaylist struct {
 	Smart                          bool
 }
 
-func addPlexPlaylists(ctx context.Context, client *http.Client, input Input, activities []Activity) ([]Activity, error) { //nolint:cyclop,gocognit // Every source page is bounded and attached before matching.
+func addPlexPlaylists(ctx context.Context, client *http.Client, input Input, activities []Activity) ([]Activity, error) {
 	byID := make(map[string]int, len(activities))
 	for index, activity := range activities {
 		byID[activity.SourceID] = index
@@ -32,7 +32,7 @@ func addPlexPlaylists(ctx context.Context, client *http.Client, input Input, act
 			return nil, err
 		}
 		if err := validateViewingPlaylistPage(len(page.MediaContainer.Metadata), page.MediaContainer.TotalSize, start); err != nil {
-			return nil, errors.New("Plex source returned too many playlists") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source returned too many playlists")
 		}
 		for _, playlist := range page.MediaContainer.Metadata {
 			var err error
@@ -46,12 +46,12 @@ func addPlexPlaylists(ctx context.Context, client *http.Client, input Input, act
 		}
 		start += len(page.MediaContainer.Metadata)
 		if start >= maximumViewingPlaylists {
-			return nil, errors.New("Plex source returned too many playlists") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source returned too many playlists")
 		}
 	}
 }
 
-func addPlexPlaylist(ctx context.Context, client *http.Client, input Input, playlist plexViewingPlaylist, names map[string]int, byID map[string]int, activities []Activity, memberships *int) ([]Activity, error) { //nolint:cyclop,gocognit // One playlist is paged and projected at the adapter seam.
+func addPlexPlaylist(ctx context.Context, client *http.Client, input Input, playlist plexViewingPlaylist, names map[string]int, byID map[string]int, activities []Activity, memberships *int) ([]Activity, error) {
 	name := strings.TrimSpace(playlist.Title)
 	if playlist.Smart {
 		name += " (snapshot)"
@@ -62,7 +62,7 @@ func addPlexPlaylist(ctx context.Context, client *http.Client, input Input, play
 	var nameErr error
 	name, nameErr = uniqueViewingPlaylistName(name, names)
 	if nameErr != nil || playlist.RatingKey == "" || len(playlist.RatingKey) > 512 {
-		return nil, errors.New("Plex source returned an invalid playlist") //nolint:staticcheck // Plex is a proper product name.
+		return nil, errors.New("Plex source returned an invalid playlist")
 	}
 	for start := 0; ; {
 		var page struct {
@@ -76,7 +76,7 @@ func addPlexPlaylist(ctx context.Context, client *http.Client, input Input, play
 			return nil, err
 		}
 		if err := validateViewingPage(len(page.MediaContainer.Metadata), page.MediaContainer.TotalSize); err != nil {
-			return nil, errors.New("Plex source returned invalid playlist pagination") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source returned invalid playlist pagination")
 		}
 		for offset, item := range page.MediaContainer.Metadata {
 			var itemErr error
@@ -90,7 +90,7 @@ func addPlexPlaylist(ctx context.Context, client *http.Client, input Input, play
 		}
 		start += len(page.MediaContainer.Metadata)
 		if start >= maximumViewingItems {
-			return nil, errors.New("Plex source playlist is too large") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source playlist is too large")
 		}
 	}
 }

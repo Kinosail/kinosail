@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleMaintenanceAPIUpgradesExactUnknownSidecarAndKeepsBackup(t *testing.T) { //nolint:cyclop // The versioned adapter proves exact-hash adoption, replacement, response, and recovery backup.
+func TestSubtitleMaintenanceAPIUpgradesExactUnknownSidecarAndKeepsBackup(t *testing.T) {
 	t.Parallel()
 	var provider *httptest.Server
 	provider = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -89,7 +89,7 @@ func TestSubtitleBatchAPIsDefaultToEveryPreferredLanguage(t *testing.T) {
 	}
 }
 
-func TestProviderAliasDoesNotSatisfyLocalCoverageOrSkipMutations(t *testing.T) { //nolint:cyclop,funlen,gocognit // One fixture proves the local and provider language trust boundaries across adapters.
+func TestProviderAliasDoesNotSatisfyLocalCoverageOrSkipMutations(t *testing.T) {
 	for _, mutation := range []struct {
 		name string
 		path string

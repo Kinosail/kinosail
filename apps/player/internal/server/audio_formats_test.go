@@ -113,7 +113,7 @@ func TestVideoFallbackStillDecodesWithAudioCompatibilityEnabled(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
 	defer cancel()
 	media := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=3", "-f", "lavfi", "-i", "sine=duration=3", "-c:v", "ffv1", "-c:a", "pcm_s16le", filepath.Join(media, "Movie.mkv")) //nolint:gosec // G204: tool paths come from LookPath; all arguments are fixed synthetic fixtures or httptest URLs.
+	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=3", "-f", "lavfi", "-i", "sine=duration=3", "-c:v", "ffv1", "-c:a", "pcm_s16le", filepath.Join(media, "Movie.mkv"))
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate video: %v: %s", err, output)
 	}
@@ -128,7 +128,7 @@ func TestVideoFallbackStillDecodesWithAudioCompatibilityEnabled(t *testing.T) {
 	}
 	host := httptest.NewServer(handler)
 	defer host.Close()
-	command = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-i", host.URL+info.Compatible, "-map", "0:v:0", "-map", "0:a:0", "-t", "2", "-f", "null", "-") //nolint:gosec // G204: tool paths come from LookPath; all arguments are fixed synthetic fixtures or httptest URLs.
+	command = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-i", host.URL+info.Compatible, "-map", "0:v:0", "-map", "0:a:0", "-t", "2", "-f", "null", "-")
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("decode compatible video and audio: %v: %s", err, output)
 	}

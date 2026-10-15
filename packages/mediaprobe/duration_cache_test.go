@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestDurationCoalescesAndPersistsSourceFacts(t *testing.T) { //nolint:cyclop // Concurrency, persistence, and restart assertions share one probe counter.
+func TestDurationCoalescesAndPersistsSourceFacts(t *testing.T) {
 	root := t.TempDir()
 	media, calls, executable := filepath.Join(root, "film.mp4"), filepath.Join(root, "calls"), filepath.Join(root, "ffprobe")
 	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {

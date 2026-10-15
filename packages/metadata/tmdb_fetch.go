@@ -39,7 +39,7 @@ func ValidTMDBPath(path string) bool {
 	return path == "" || len(path) <= 2048 && strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "//") && pathpkg.Clean(path) == path && !strings.ContainsAny(path, `\?#%`) && !hasControlText(path)
 }
 
-func (client *TMDBClient) fetch(ctx context.Context, item library.Item) (TMDBMetadata, error) { //nolint:cyclop,gocognit // One provider operation validates ID-first matching and the search fallback together.
+func (client *TMDBClient) fetch(ctx context.Context, item library.Item) (TMDBMetadata, error) { //nolint:cyclop // One provider operation validates ID-first matching and the search fallback together.
 	title, year := MovieIdentity(item)
 	if !validTMDBCacheID(item.ID) || title == "" || len(title) > 200 || !validMetadataYear(year) || hasControlText(title) {
 		return TMDBMetadata{}, errors.New("TMDB identity is invalid")

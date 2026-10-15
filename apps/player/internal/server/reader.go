@@ -101,7 +101,7 @@ type epubManifestItem struct {
 	Type string `xml:"media-type,attr"`
 }
 
-func epubSpine(item library.Item) []readerPage { //nolint:cyclop // EPUB container, manifest, and spine validation form one parser boundary.
+func epubSpine(item library.Item) []readerPage {
 	archive, err := zip.OpenReader(item.Path)
 	if err != nil {
 		return nil

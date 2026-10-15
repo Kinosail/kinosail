@@ -184,7 +184,7 @@ func (service *castService) viewer(session castSession) (viewerProfile, bool) {
 func (service *castService) setCastURL(session *castSession, itemPath, token string) error {
 	session.ContentType = map[string]string{".mp4": "video/mp4", ".m4v": "video/mp4", ".mov": "video/quicktime", ".mp3": "audio/mpeg", ".aac": "audio/aac", ".m4a": "audio/mp4", ".wav": "audio/wav"}[strings.ToLower(filepath.Ext(itemPath))]
 	if session.ContentType == "" && session.plan.Mode == "direct" {
-		return errors.New("This file format cannot play directly on the TV") //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		return errors.New("This file format cannot play directly on the TV")
 	}
 	path := "/cast/" + session.ID + "/media"
 	if session.plan.Mode != "direct" {

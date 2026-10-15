@@ -22,7 +22,7 @@ func testEngine(t *testing.T) *Engine {
 	return engine
 }
 
-func TestEngineConfigurationAndProtocolOptions(t *testing.T) { //nolint:cyclop // Configuration and protocol guarantees are verified as one contract.
+func TestEngineConfigurationAndProtocolOptions(t *testing.T) {
 	for _, config := range []Config{
 		{DefaultURL: "http://localhost", CookieName: "cookie"},
 		{DefaultURL: "http://localhost", DisplayName: strings.Repeat("x", 101), CookieName: "cookie"},
@@ -167,7 +167,7 @@ func TestCeremonyTakeRejectsMissingMalformedWrongAndExpiredCookies(t *testing.T)
 	}
 }
 
-func TestFinishMethodsConsumeCeremoniesAndWriteNoStoreJSON(t *testing.T) { //nolint:cyclop,gocognit // All finish entry points must prove identical one-use behavior.
+func TestFinishMethodsConsumeCeremoniesAndWriteNoStoreJSON(t *testing.T) {
 	engine := testEngine(t)
 	user := NewUser(struct{}{}, "owner", "Owner", nil)
 	_, registrationCookie, err := engine.BeginRegistration(user, Ceremony{Identity: "owner", CookiePath: "/"})

@@ -117,7 +117,7 @@ func (auth *passkeyAuth) removeAPI(writer http.ResponseWriter, request *http.Req
 		writeJSON(writer, map[string]any{"error": "recent authentication required", "stepUpRequired": true}, http.StatusForbidden)
 		return
 	}
-	if err := auth.profiles.removePasskey(currentViewer(request).ID, request.PathValue("id")); err != nil { //nolint:contextcheck // An authorized credential removal must finish despite client cancellation.
+	if err := auth.profiles.removePasskey(currentViewer(request).ID, request.PathValue("id")); err != nil {
 		apiError(writer, err, passkeyRemovalStatus(err))
 		return
 	}
@@ -129,7 +129,7 @@ func (auth *passkeyAuth) removeWeb(writer http.ResponseWriter, request *http.Req
 		http.Redirect(writer, request, stepUpLoginPath(request), http.StatusSeeOther)
 		return
 	}
-	if err := auth.profiles.removePasskey(currentViewer(request).ID, request.FormValue("id")); err != nil { //nolint:contextcheck // An authorized credential removal must finish despite client cancellation.
+	if err := auth.profiles.removePasskey(currentViewer(request).ID, request.FormValue("id")); err != nil {
 		localizedError(writer, request, err.Error(), passkeyRemovalStatus(err))
 		return
 	}

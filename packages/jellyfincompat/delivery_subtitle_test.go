@@ -52,7 +52,7 @@ func TestDeliverySubtitleSelectsExternalAndTimelineModes(t *testing.T) {
 	}
 }
 
-func TestDeliverySubtitleHandlesEmbeddedPlayerAndSubtitlesFailures(t *testing.T) { //nolint:cyclop // Both product error contracts use one policy.
+func TestDeliverySubtitleHandlesEmbeddedPlayerAndSubtitlesFailures(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	state.media.Facts.Subtitles = []playback.SubtitleFacts{{SourceIndex: 2, Text: true}}

@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) { //nolint:cyclop,funlen,gocognit // Each case creates one complete capability state.
+func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 	now := int64(10)
 	token, shareID := "session-token", indexedSecret(0)
 	base := func() *Store {

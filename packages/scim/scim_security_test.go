@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestSCIMRejectsInsecureAndAmbiguousRequestsWithoutMutation(t *testing.T) { //nolint:cyclop,funlen // Boundary failures are proven against the public protocol seam.
+func TestSCIMRejectsInsecureAndAmbiguousRequestsWithoutMutation(t *testing.T) {
 	t.Parallel()
 	handler := serverWithSCIM(t)
 	insecure := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/scim/v2/Users", nil)

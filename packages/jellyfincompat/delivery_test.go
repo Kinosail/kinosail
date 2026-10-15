@@ -146,7 +146,7 @@ func deliveryRequest(t *testing.T, stream, query string) *http.Request {
 	return request
 }
 
-func TestDeliverySessionAndContextEnforceEveryBinding(t *testing.T) { //nolint:cyclop,funlen,gocognit // One fixture varies each session boundary.
+func TestDeliverySessionAndContextEnforceEveryBinding(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	module := state.module()
@@ -237,7 +237,7 @@ func TestDeliveryHelpersPreservePlayerHLSForms(t *testing.T) {
 	}
 }
 
-func TestDeliveryDownloadMapsAllOutcomes(t *testing.T) { //nolint:cyclop // Each I/O outcome has a distinct response.
+func TestDeliveryDownloadMapsAllOutcomes(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	module := state.module()

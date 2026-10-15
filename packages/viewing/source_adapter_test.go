@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestFetchJellyfinProjectsProgressAndPlaylists(t *testing.T) { //nolint:cyclop,gocognit // One source fixture proves pagination, authentication, normalization, and lists.
+func TestFetchJellyfinProjectsProgressAndPlaylists(t *testing.T) {
 	const token = "jellyfin-secret-token"
 	var methods []string
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -68,7 +68,7 @@ func TestFetchJellyfinProjectsProgressAndPlaylists(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) { //nolint:cyclop // One source fixture proves both section kinds, de-duplication, and playlist snapshots.
+func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) {
 	token := strings.Join([]string{"plex", "fixture"}, "-")
 	var starts []string
 	calls := 0
@@ -122,7 +122,7 @@ func TestFetchPlexProjectsProviderIDsAndPlaylists(t *testing.T) { //nolint:cyclo
 	}
 }
 
-func TestSourceAdaptersRejectInvalidRemoteState(t *testing.T) { //nolint:cyclop,funlen,gocognit // Remote schemas are untrusted even after HTTP succeeds.
+func TestSourceAdaptersRejectInvalidRemoteState(t *testing.T) {
 	jellyPayloads := []string{
 		`{"Id":""}`,
 		`{"TotalRecordCount":1,"Items":[{"Id":"movie","Name":"Arrival","Type":"Movie","ProviderIds":` + objectWithEntries(17) + `}]}`,

@@ -128,7 +128,7 @@ func mcpRequest(t *testing.T, handler http.Handler, method string, fields map[st
 	return response
 }
 
-func TestGatewayUsesPlayerToolsAndFailClosedPolicies(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for one fail-closed policy matrix.
+func TestGatewayUsesPlayerToolsAndFailClosedPolicies(t *testing.T) {
 	scope, audience := ReadScope, "http://localhost/mcp"
 	issuer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		id, secret, basic := request.BasicAuth()

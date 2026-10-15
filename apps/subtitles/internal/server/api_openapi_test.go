@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce(t *testing.T) { //nolint:cyclop,gocognit // One contract test compares every registered route with the document.
+func TestOpenAPIDocumentsEveryVersionedRouteExactlyOnce(t *testing.T) {
 	t.Parallel()
 	_, file, _, _ := runtime.Caller(0)
 	directory := filepath.Dir(file)
