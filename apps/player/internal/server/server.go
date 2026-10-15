@@ -191,7 +191,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	management := newOwnerAccess(config, auth)
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	hls.startup = newStartupPreparation(hls, auth, config.TranscodeCacheLimit)
-	frames := newTrickplay(config.CacheDir, config.FFmpeg, index)
+	frames := newTrickplay(config.CacheDir, config.FFmpeg, index, workloads)
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
 	maintenance := newMaintenanceManager(lifecycle, hls, backups, metadata, markers, config.MaintenanceInterval, config.TranscodeCacheLimit)
 	markers.SetProbe(markerProbe(probe))
