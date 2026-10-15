@@ -116,8 +116,10 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), signals...)
 	defer stop()
+	lifecycle, endLifecycle := context.WithCancel(context.Background())
+	defer endLifecycle()
 	internet, trusted := accessManagers(configured, createRemote, createTrusted)
-	httpServer := build(ctx, internet, trusted)
+	httpServer := build(lifecycle, internet, trusted)
 	if httpServer == nil {
 		slog.Error("server lifecycle returned no HTTP server")
 		return 1
@@ -132,6 +134,7 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 	if ctx.Err() != nil {
 		<-shutdownDone
 	}
+	endLifecycle()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("server failed", "error", err)
 		return 1

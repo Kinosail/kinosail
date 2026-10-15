@@ -196,3 +196,17 @@ Post-commit Player/Subtitles checks stop at 94 identical baseline lint findings
 in 56 unchanged cited Go sources. Focused shared Go template tests pass. The
 required local container attempt cannot connect to the existing Podman socket.
 Final protected populated checks still gate merge; no local test was disabled.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-04-r03-progress/browser-lint.log` | 38 | `c3f22b54ffc1b5b24fd84371124e4c134c1ec7609d4c49fe031f96bb46994f91` |
+| `2026-10-04-r03-progress/ci-helper-green.log` | 101 | `5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d` |
+| `2026-10-04-r03-progress/ci-helper-red.log` | 3988 | `68105b8bebce39e558f4ec47a05dae0a8aa6f9a293105576fbc94daccb952f7e` |
+| `2026-10-04-r03-progress/close-red-browser.log` | 3147 | `b15a4b73da27c7aad236d25d49f37318773cb5488c15ccb353238a21738f0d7b` |
+| `2026-10-04-r03-progress/red-browser.log` | 13590 | `47bb1fa1af26269d45e6eeec8d47cfb982fdb013ed5edf0b2af9f104fa94d0bf` |
+| `2026-10-04-r03-progress/review-browser.log` | 3309 | `895985806345cb25051eb1fcd81bb25eb12937bc15410d9efe362cec147044a7` |
+| `2026-10-04-r03-progress/verified-browser.log` | 6263 | `0f00954726bac3406745bc677472f3bafe9d644e09e6a298e661a6b5023a9b56` |

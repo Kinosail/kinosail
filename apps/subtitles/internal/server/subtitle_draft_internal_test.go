@@ -18,9 +18,13 @@ import (
 func TestSubtitleDraftValidationPrecedesAllDependencies(t *testing.T) {
 	manager := &subtitleManager{}
 	for _, input := range []subtitleDraftInput{
-		{}, {Language: "en", Method: "ocr", Action: "unknown"}, {Language: "en", Method: "remote", Action: "start"},
-		{Language: "../en", Method: "ocr", Action: "start"}, {Language: "en", Method: "ocr", Action: "start", DraftID: strings.Repeat("a", 64)},
-		{Language: "en", Method: "ocr", Action: "cancel"}, {Language: "en", Method: "ocr", Action: "cancel", DraftID: strings.Repeat("x", 65)},
+		{},
+		{Language: "en", Method: "ocr", Action: "unknown"},
+		{Language: "en", Method: "remote", Action: "start"},
+		{Language: "../en", Method: "ocr", Action: "start"},
+		{Language: "en", Method: "ocr", Action: "start", DraftID: strings.Repeat("a", 64)},
+		{Language: "en", Method: "ocr", Action: "cancel"},
+		{Language: "en", Method: "ocr", Action: "cancel", DraftID: strings.Repeat("x", 65)},
 	} {
 		_, status, err := manager.localSubtitleDraft(httptest.NewRequest(http.MethodPost, "/", nil), "0123456789abcdef", input)
 		if err == nil || status != http.StatusBadRequest {
@@ -34,7 +38,7 @@ func TestSubtitleDraftValidationPrecedesAllDependencies(t *testing.T) {
 
 func TestSubtitleDraftIsBoundToItsVideoLanguageAndVersion(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "film.mp4")
-	if err := os.WriteFile(path, []byte("first video"), 0600); err != nil {
+	if err := os.WriteFile(path, []byte("first video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	item := library.Item{ID: "0123456789abcdef", Path: path}
@@ -57,7 +61,7 @@ func TestSubtitleDraftIsBoundToItsVideoLanguageAndVersion(t *testing.T) {
 			t.Fatal("accepted mismatched draft")
 		}
 	}
-	if err = os.WriteFile(path, []byte("replacement video is different"), 0600); err != nil {
+	if err = os.WriteFile(path, []byte("replacement video is different"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if _, _, err = manager.subtitleDraftData(item, "en", strings.Repeat("a", 64)); err == nil {
@@ -181,7 +185,7 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 	data := []byte("1\n00:00:01,000 --> 00:00:03,000\nDialogue\n")
 	target := subtitleSidecarPath(item, "en")
 	item.Subtitles = []string{target}
-	if err := os.WriteFile(target, data, 0600); err != nil {
+	if err := os.WriteFile(target, data, 0o600); err != nil {
 		t.Fatal(err)
 	}
 	settings := newSettingsStore(directory, t.TempDir(), "", nil)
@@ -202,7 +206,7 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 	if ready, _ := manager.sidecarPlanCoverage(item, "en"); !ready {
 		t.Fatal("explicitly reviewed captions did not satisfy coverage")
 	}
-	if err := os.WriteFile(target, []byte("changed dialogue"), 0600); err != nil {
+	if err := os.WriteFile(target, []byte("changed dialogue"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if ready, _ := manager.sidecarPlanCoverage(item, "en"); ready {
@@ -229,10 +233,10 @@ func TestSubtitleRecoveryKeepsBothFormatOriginals(t *testing.T) {
 	if err := provider.retainSubtitleRecoveryOriginal(first.Data, old, &next); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(target, second.Data, 0600); err != nil {
+	if err := os.WriteFile(target, second.Data, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(target+".kinosail.bak", first.Data, 0600); err != nil {
+	if err := os.WriteFile(target+".kinosail.bak", first.Data, 0o600); err != nil {
 		t.Fatal(err)
 	}
 	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), completeSubtitleRecord(target, second.Data, next)); err != nil {

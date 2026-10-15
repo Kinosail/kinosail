@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playerweb"
 )
 
-var curationTemplate = strings.NewReplacer("Kinosail Player", "Kinosail Subtitles", "theme.js?v=6", "theme.js?v=4", "app.css?v=81", "app.css?v=81")
+var curationTemplate = strings.NewReplacer("Kinosail Player", "Kinosail Subtitles")
 
 var collectionHTML = curationTemplate.Replace(playerweb.CollectionHTML)
 

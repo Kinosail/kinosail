@@ -60,16 +60,16 @@ func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
 	for _, version := range []string{"72", "80", "81", "82", "83", "84", "85", "91", "93", "94", "impeccable-1", "electric-1", "electric-4", "electric-18"} {
 		page := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + version + `">`)
 		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + current + `">`)
-		if actual := applicationShellCSSVersion(page); !bytes.Equal(actual, want) {
+		if actual := versionAssetReferenceBytes(page); !bytes.Equal(actual, want) {
 			t.Fatalf("stylesheet %s was not refreshed: %s", version, actual)
 		}
 	}
 }
 
 func TestApplicationShellLoadsRecognitionOnce(t *testing.T) {
-	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=19-htmx4"></script>`} {
+	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=19-htmx4"></script>`, `<script defer src="/static/supporter.js"></script>`} {
 		page := injectApplicationShell([]byte(`<html><body><main>Account</main>`+existing+`</body></html>`), nil)
-		if bytes.Count(page, []byte(`/static/supporter.js?v=19-htmx4`)) != 1 {
+		if bytes.Count(page, []byte(assetURL("supporter.js"))) != 1 || bytes.Count(page, []byte(`/static/supporter.js`)) != 1 {
 			t.Fatalf("recognition script missing or duplicated: %s", page)
 		}
 	}

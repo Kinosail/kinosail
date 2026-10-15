@@ -135,3 +135,11 @@ Final hosted run/artifact references belong in the PR; passing source checks
 do not establish runtime coverage. Recoverable download removal is recorded
 separately in `recoverable-download-removals.json`, preserving all earlier
 validation receipts and their limitations.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-03-test-overhaul/player-settings-real-keeper-receipt.json` | 75359 | `73bd0cc63f9c5e331cb2bccb83dbc8ec3d92ac8e25e41915461cc526f0ae5377` |

@@ -17,7 +17,7 @@ type metadataPatch = sharedmetadata.BulkPatch
 var bulkMetadataView = newLocalizedTemplate("bulk-metadata", sharedmetadata.BulkMetadataHTML)
 
 func (store *metadataStore) bulkEditor(index *libraryIndex) *sharedmetadata.BulkEditor {
-	return sharedmetadata.NewBulkEditor(index, store.mu.RLocker(), &store.records, store.setAll, bulkMetadataView.Execute, localizedError)
+	return sharedmetadata.NewBulkEditorFor(index, store.mu.RLocker(), &store.records, store.setAll, bulkMetadataPage(sharedmetadata.PlayerBulkPage()), bulkMetadataView.Execute, localizedError)
 }
 
 func (store *metadataStore) applyPatch(ctx context.Context, index *libraryIndex, ids []string, patch metadataPatch) (map[string]metadataRecord, error) {

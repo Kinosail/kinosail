@@ -1,6 +1,7 @@
 package playback
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -42,7 +43,7 @@ func TestTrickplayRegistrationOwnsRouteAndResponseMapping(t *testing.T) {
 		http.Error(writer, message, status)
 	}
 	mux := http.NewServeMux()
-	MustTrickplayRegistration(root, "/missing", HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}, lookup, failure)(mux)
+	MustTrickplayRegistration(root, "/missing", HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}, lookup, acquireImmediately, failure)(mux)
 
 	assertTrickplayResponse(t, mux, http.MethodGet, "/trickplay/video/27", http.StatusOK, "image/jpeg", "jpeg")
 	assertTrickplayResponse(t, mux, http.MethodGet, "/trickplay/missing/27", http.StatusNotFound, "text/plain; charset=utf-8", "not found\n")
@@ -72,9 +73,12 @@ func TestTrickplayRegistrationRejectsDependenciesBeforeCallbacks(t *testing.T) {
 	}
 	failure := func(http.ResponseWriter, *http.Request, string, int) { effects++ }
 	for name, register := range map[string]func(){
-		"lookup":  func() { MustTrickplayRegistration("cache", "ffmpeg", policy, nil, failure) },
-		"failure": func() { MustTrickplayRegistration("cache", "ffmpeg", policy, lookup, nil) },
-		"policy":  func() { MustTrickplayRegistration("cache", "ffmpeg", HLSRecipePolicy{}, lookup, failure) },
+		"lookup":  func() { MustTrickplayRegistration("cache", "ffmpeg", policy, nil, acquireImmediately, failure) },
+		"acquire": func() { MustTrickplayRegistration("cache", "ffmpeg", policy, lookup, nil, failure) },
+		"failure": func() { MustTrickplayRegistration("cache", "ffmpeg", policy, lookup, acquireImmediately, nil) },
+		"policy": func() {
+			MustTrickplayRegistration("cache", "ffmpeg", HLSRecipePolicy{}, lookup, acquireImmediately, failure)
+		},
 	} {
 		t.Run(name, func(t *testing.T) {
 			defer func() {
@@ -89,3 +93,5 @@ func TestTrickplayRegistrationRejectsDependenciesBeforeCallbacks(t *testing.T) {
 		})
 	}
 }
+
+func acquireImmediately(context.Context) (func(), error) { return func() {}, nil }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"embed"
 	"net/http"
 	"regexp"
@@ -101,6 +102,7 @@ var (
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
 	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
 	mainBundle          = joinScripts(pwaJS, shortcutsJS)
+	applicationStyle    = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS}, nil)
 )
 
 func joinScripts(scripts ...[]byte) []byte {
@@ -121,10 +123,7 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 func serveStyle(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "text/css; charset=utf-8")
 	cacheStatic(writer, request)
-	_, _ = writer.Write(appCSS)
-	_, _ = writer.Write(webassets.LastLightCSS)
-	_, _ = writer.Write(supporterCSS)
-	_, _ = writer.Write(subtitleDashboardCSS)
+	_, _ = writer.Write(applicationStyle)
 }
 
 func serveSupporterStyle(writer http.ResponseWriter, request *http.Request) {

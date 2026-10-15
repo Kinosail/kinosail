@@ -91,6 +91,7 @@ func TestTrickplayHandlerRejectsInvalidInputWithoutGeneration(t *testing.T) {
 		Lookup: func(*http.Request, string) (library.Item, bool) {
 			return library.Item{ID: "0123456789abcdef", Kind: "video", Path: "/missing"}, true
 		},
+		Acquire:     acquireImmediately,
 		NotFound:    func(http.ResponseWriter, *http.Request) { callback = "not-found" },
 		Unavailable: func(http.ResponseWriter, *http.Request) { callback = "unavailable" },
 	})

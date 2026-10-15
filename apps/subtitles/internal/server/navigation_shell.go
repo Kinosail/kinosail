@@ -26,8 +26,6 @@ func saveNavigation(settings *settingsStore) http.HandlerFunc {
 	return settings.navigationController().Handler(localizedError)
 }
 
-const applicationCSSVersion = "cinema-17-buffer-1"
-
 var applicationNavigationView = newLocalizedTemplate("application-navigation", subtitleAppHeader)
 
 type applicationNavigationData struct {
@@ -102,12 +100,7 @@ func applicationShellView(pattern string) string {
 }
 
 func injectApplicationShell(page, navigation []byte) []byte {
-	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
-		version := start + len(`/static/app.css?v=`)
-		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			page = append(append(append([]byte(nil), page[:version]...), []byte(applicationCSSVersion)...), page[version+end:]...)
-		}
-	}
+	page = versionAssetReferenceBytes(page)
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
 		return page

@@ -98,3 +98,18 @@ Exploration recorded certificate-related script errors and a `421` passkey begin
 ## Remaining verification boundaries
 
 The live browser exploration covered selected Player journeys, not every feature. Automated axe checked eight captured `main` regions and cannot prove complete accessibility; only the targeted keyboard actions above were checked. The full Firefox/WebKit journey matrix, authenticated native media use, tvOS remote focus, physical devices, Subtitles, Dashboard, production TLS, published containers, and deployment health were not checked. No production purchase, email, deletion, or record change was attempted.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-27-app-qa/evidence/more-phone.png` | 413413 | `425bc499b6e1d4aa0c747b5125fa7afd57a4ac232e81e380cb255c6f69a26f74` |
+| `2026-09-27-app-qa/evidence/offline-no-locks-red-trace.zip` | 56540 | `047ee0f572bf14ad2f63d6bd882e8e3fd170fb48b62add4b691724975469a28d` |
+| `2026-09-27-app-qa/evidence/offline-no-locks-red.png` | 8929 | `e6f03e046f8f846ae9db6e584d8c5c070071fd7b8df1d2879b5a09070653a784` |
+| `2026-09-27-app-qa/evidence/offline-no-locks-red.webm` | 5719 | `54824f195010f7b3653e71f1b9dc0e87b1ee3af354ca18f79ff14d138f931043` |
+| `2026-09-27-app-qa/evidence/passkey-offer-test-race.png` | 453415 | `78de78c0ef9c650a39d8809f5cfddb3681c6388b88498cfee7ccdfeedcef3dc4` |
+| `2026-09-27-app-qa/evidence/search-empty-phone.png` | 161103 | `05e96d0034890fff0f75ad05ad28847c4b1220980d4c3245a5a6742b1961f57d` |
+| `2026-09-27-app-qa/evidence/viewer-mfa-fixed.png` | 421460 | `888692bc3a5ca8133c0bbec2435fac4f7d55ec423fbb3524d045cef609da63af` |
+| `2026-09-27-app-qa/evidence/viewer-mfa-owner-copy.png` | 452952 | `679aa4b0d80c79d7d9458f1887e1f1afaa6530a8e1051abe62d343e68e1e1f26` |

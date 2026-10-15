@@ -51,3 +51,11 @@ Apple clients and web applications did not change in this batch. Their local sui
 The primary checkout remains intentionally dirty. The independent worktree audit reported 16 expired checkouts with unique commits. They were preserved and do not block this task's lease or commit.
 
 [View the responsive evidence gallery](gallery.html).
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-android-reader-feedback/gallery.html` | 5114 | `79554caf9012e9913f44b69b4947b8c502ee6dd5ee80a6821a20b8d4b4e45d70` |
