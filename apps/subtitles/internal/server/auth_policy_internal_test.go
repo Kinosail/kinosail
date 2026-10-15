@@ -3,21 +3,13 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestPublicRoutePolicyIsExactAndDefaultsProtected(t *testing.T) {
 	t.Parallel()
-	data := t.TempDir()
-	auth := newAuthentication(t.Context(), data, true, "", newSettingsStore("", data, "", nil), NotificationConfig{}, nil)
-	public := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/passkeys/login/begin", nil)
-	capability := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/Videos/media/stream?playSessionId=play", nil)
-	noCapability := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/Videos/media/stream", nil)
-
-	if !auth.public(public, "POST /api/v1/passkeys/login/begin") || !auth.public(capability, "GET /Videos/{id}/{stream}") {
+	if !publicPattern("POST /api/v1/passkeys/login/begin") || !publicPattern("GET /home-assistant/media/{id}") {
 		t.Fatal("explicit public routes were not public")
 	}
 	for _, pattern := range []string{
@@ -26,12 +18,9 @@ func TestPublicRoutePolicyIsExactAndDefaultsProtected(t *testing.T) {
 		"GET /static/{file...}",
 		"GET /api/v1/library",
 	} {
-		if auth.public(public, pattern) {
+		if publicPattern(pattern) {
 			t.Fatalf("unlisted route %q was public", pattern)
 		}
-	}
-	if auth.public(noCapability, "GET /Videos/{id}/{stream}") {
-		t.Fatal("playback capability route was public without its capability")
 	}
 }
 
@@ -53,10 +42,7 @@ func TestViewerRemotePolicyUsesServerRequestContext(t *testing.T) {
 func TestAnonymousRequestsReachOnlyExplicitPublicRoutes(t *testing.T) {
 	t.Parallel()
 	data := t.TempDir()
-	if err := os.WriteFile(filepath.Join(data, "settings.json"), []byte(`{"name":"Kinosail","libraries":["."],"jellyfinCompatibility":true}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
+	handler := New(Config{DataDir: data, RequireAuth: true})
 	tests := []struct {
 		method, path string
 		status       int
@@ -67,8 +53,7 @@ func TestAnonymousRequestsReachOnlyExplicitPublicRoutes(t *testing.T) {
 		{http.MethodGet, "/settings", http.StatusSeeOther, "/setup"},
 		{http.MethodPost, "/api/v1/passkeys/register/begin", http.StatusUnauthorized, ""},
 		{http.MethodPost, "/auth/passkeys/register/begin", http.StatusSeeOther, "/setup"},
-		{http.MethodGet, "/Videos/media/stream", http.StatusUnauthorized, ""},
-		{http.MethodGet, "/Videos/media/stream?playSessionId=invalid", http.StatusNotFound, ""},
+		{http.MethodGet, "/Videos/media/stream", http.StatusNotFound, ""},
 		{http.MethodGet, "/dlna/invalid/device.xml", http.StatusNotFound, ""},
 		{http.MethodGet, "/static/not-registered.js", http.StatusNotFound, ""},
 		{http.MethodGet, "/not-a-route", http.StatusNotFound, ""},

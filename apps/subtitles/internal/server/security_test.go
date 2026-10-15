@@ -19,7 +19,7 @@ func TestHTTPSecurityContract(t *testing.T) {
 
 func TestSessionTokensAreNeverAcceptedInQueryStrings(t *testing.T) {
 	t.Parallel()
-	servertest.SessionTokenSecurity(t, newJellyfinServer(t, server.Config{RequireAuth: true}), apiCall, mustJSON, assertAPIBody, testTOTP)
+	servertest.APISessionTokenSecurity(t, newTrustedServer(t, server.Config{RequireAuth: true}), apiCall, mustJSON, assertAPIBody, testTOTP)
 }
 
 func TestSameOriginChangesAreAcceptedWhenFetchSiteIsStale(t *testing.T) {

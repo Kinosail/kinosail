@@ -143,6 +143,26 @@ Remove Jellyfin compatibility, Quick Connect, DLNA, watch rooms, media shares, a
 
 Files: `jellyfin*.go`, `quick_connect*.go`, `dlna.go`, `settings_dlna*.go`, `settings_jellyfin_id.go`, `media_share*.go`, the `withDLNA` wrapper in `server.go`, the matching settings and onboarding routes, and the `/Sessions/Logout` check in `test-container.sh`.
 
+Stages 2a and 2b ship together. Result:
+
+- 94 routes are removed. They are listed in `internal/server/testdata/removed-routes.txt`.
+- `TestRemovedPlayerRoutesAreNotRegistered` proves that each listed route returns 404 from the running handler.
+- `TestRemovedPlayerPackagesAreNotImported` fails if production code imports `dlna`, `jellyfincompat`, `mediashares`, `quickconnect`, or `watchrooms` again.
+- `e2e/removed-routes.spec.ts` (`@smoke`) sends each route with an Owner session and with no session against a populated instance. It records the library, settings, and media checksums before and after.
+- The registered-route inventory in Go tests leaves out the listed routes. Its count changed from 473 to 379.
+- Stored settings keep the `jellyfinCompatibility`, `jellyfinId`, and `dlnaToken` fields, because strict decoding rejects unknown fields. `jellyfinId` is now the Server ID that Home Assistant uses.
+- The configuration keys `dlna.url`, `dlna.enabled`, and `integrations.jellyfin.enabled` stay accepted, but Subtitles ignores them. Removing them would make existing `kinosail.yaml` files fail to load.
+- Shared `servertest` contracts got opt-out fields (`NoJellyfin`, `NoJellyfinOrDLNA`, `NoRooms`, `NoQuickConnectOrShares`, `InitialCopy`). The defaults keep Player behavior unchanged.
+- `identitycore.ValidSingleByteRange` replaces the copy in `mediashares` for request logging.
+
+Moved to Stage 2e, because they depend on the remote-access decision:
+
+- Public session timeouts.
+- The public password-login message and remote-access setup text that mention Quick Connect.
+- Proof of remote playback through the public listener. Without Quick Connect, a public session needs a passkey.
+
+Moved to Stage 2c: the cleanup journey's `/watch` check, and `player.js` calls to removed routes.
+
 ### Stage 2c: playback and transcoding
 
 Remove HLS, `/watch`, trickplay, progress, markers, the transcoder settings, `player.js`, `hls.min.js`, and the hls.js license notice.
@@ -169,6 +189,6 @@ Recompute the identical-file list. Move the adapters in [Shared code for package
 
 ## Verification limits
 
-- The route list comes from a static scan. A route built at run time may be missing until the Stage 2a run-time test exists.
+- The route list comes from a static scan. The Stage 2a run-time test now checks every removed route against the running handler.
 - Stage 1 changed only documentation. No tests were run for it.
 - The Home Assistant repository and any native client may call Subtitles routes. This repository cannot show those callers. Check them before Stage 2b and Stage 2e.

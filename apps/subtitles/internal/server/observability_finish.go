@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/identitycore"
-	"github.com/MikeO7/kinosail/packages/mediashares"
 )
 
 type requestObservation struct {
@@ -87,7 +86,7 @@ func (observation requestObservation) attributes(status int, pattern string) []a
 		return attributes
 	}
 	attributes = append(attributes, "playback_session", observation.facts.playbackSession, "response_bytes", observation.capture.Bytes)
-	if value := observation.request.Header.Get("Range"); mediashares.ValidSingleByteRange(value) {
+	if value := observation.request.Header.Get("Range"); identitycore.ValidSingleByteRange(value) {
 		attributes = append(attributes, "request_range", value)
 	}
 	if value := observation.capture.Header().Get("Content-Range"); identitycore.ValidContentRange(value) {

@@ -13,12 +13,16 @@ type RouteAuthorizationFixture struct {
 	NewHandler func(*testing.T, string) http.Handler
 	LoginIP    *atomic.Uint32
 	AfterFlush func(*httptest.ResponseRecorder, context.CancelFunc) http.ResponseWriter
+	NoJellyfin bool
 }
 
 func (fixture RouteAuthorizationFixture) Server(t *testing.T) (http.Handler, string) {
 	t.Helper()
 	handler := fixture.NewHandler(t, t.TempDir())
 	secret, token := SetupRouteAuthorization(t, handler, ResponseJSONToken)
+	if !fixture.NoJellyfin {
+		EnableRouteAuthorizationJellyfin(t, handler, token)
+	}
 	return &RouteAuthorizationServer{Handler: handler, OwnerSecret: secret}, token
 }
 

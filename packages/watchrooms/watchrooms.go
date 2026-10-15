@@ -150,6 +150,9 @@ func (rooms *Rooms) ObserveDrift(subscription *Subscription, seconds float64) bo
 }
 
 func (rooms *Rooms) Metrics() Metrics {
+	if rooms == nil {
+		return Metrics{}
+	}
 	rooms.mu.Lock()
 	defer rooms.mu.Unlock()
 	rooms.prune(rooms.now())

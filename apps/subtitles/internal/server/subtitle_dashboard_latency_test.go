@@ -25,7 +25,7 @@ func subtitleFactsFixture(t *testing.T, script string) (*subtitleManager, librar
 	executable := filepath.Join(root, "ffprobe")
 	writeSubtitleFactsExecutable(t, executable, script)
 	index := memoryLibraryIndex([]library.Item{item}, true)
-	settings := newSettingsStore(root, t.TempDir(), "", nil)
+	settings := newSettingsStore(root, t.TempDir(), nil)
 	probe := newMediaProbe(executable)
 	probe.cacheDir, probe.ffmpeg = t.TempDir(), "unused"
 	provider := newSubtitleProvider(SubtitleConfig{}, probe.cacheDir, t.TempDir(), index, settings, "")

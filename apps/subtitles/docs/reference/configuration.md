@@ -2,7 +2,7 @@
 title: Configuration reference
 description: Understand Kinosail setting sources, precedence, validation, restart behavior, and secret handling.
 section: Reference
-last_reviewed: 2026-09-27
+last_reviewed: 2026-10-14
 ---
 
 # Configuration reference
@@ -143,7 +143,7 @@ The following table describes typed application settings. Use the running config
 
 Remote HTTPS requires a DuckDNS domain and token plus an exact `https://<domain>.duckdns.org` `auth.url`. Enabling DLNA requires `dlna.url`. SCIM requires both its token and a future expiration time. MCP requires all five MCP OAuth values and a resource URL ending in `/mcp`.
 
-`integrations.jellyfin.enabled` is `false` when it is unset. Setting it to `true` requires a valid trusted HTTPS value. Kinosail rejects the configuration before it exposes Jellyfin routes when trusted HTTPS is missing.
+Subtitles does not serve DLNA or Jellyfin routes. It still accepts `dlna.url`, `dlna.enabled`, and `integrations.jellyfin.enabled`, so existing configuration files keep loading. Subtitles ignores these values. The validation rules above still apply. Remove these keys when your configuration file is no longer shared with Kinosail Player.
 
 The Owner settings flow is the preferred setup. The historical `tls.duckdns` key now stores every supported trusted HTTPS provider. Its name remains for automatic upgrade compatibility.
 

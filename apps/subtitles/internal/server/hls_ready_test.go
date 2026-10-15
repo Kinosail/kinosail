@@ -104,7 +104,7 @@ func readyHLSFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string
 	if err := os.WriteFile(filepath.Join(directory, "index.m3u8"), []byte("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:4,\nsegment-00000.m4s\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	manager := &hlsManager{cache: cache, probe: newMediaProbe(probe), settings: newSettingsStore(filepath.Dir(source), "", "", nil), jobs: map[string]*hlsJob{key: {done: make(chan struct{})}}}
+	manager := &hlsManager{cache: cache, probe: newMediaProbe(probe), settings: newSettingsStore(filepath.Dir(source), "", nil), jobs: map[string]*hlsJob{key: {done: make(chan struct{})}}}
 	writeLegacyHLSPlan(t, manager, item, recipe, filepath.Dir(directory))
 	return manager, item, recipe, directory
 }

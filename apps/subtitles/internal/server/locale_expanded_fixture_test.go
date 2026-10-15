@@ -13,5 +13,6 @@ var localeWebFixture = servertest.LocaleWebFixture{
 		t.Helper()
 		return server.New(server.Config{DataDir: t.TempDir(), RequireAuth: requireAuth})
 	},
-	Server: apiServer,
+	Server:  apiServer,
+	NoRooms: true,
 }

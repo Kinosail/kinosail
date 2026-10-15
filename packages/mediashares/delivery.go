@@ -2,9 +2,9 @@ package mediashares
 
 import (
 	"net/http"
-	"regexp"
 	"slices"
 
+	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -87,8 +87,6 @@ func (store *Store) Serve(writer http.ResponseWriter, request *http.Request) {
 	http.ServeFile(writer, request, path)
 }
 
-var singleByteRange = regexp.MustCompile(`^bytes=(?:[0-9]+-[0-9]*|-[0-9]+)$`)
-
 func ValidSingleByteRange(value string) bool {
-	return len(value) <= 128 && singleByteRange.MatchString(value)
+	return identitycore.ValidSingleByteRange(value)
 }

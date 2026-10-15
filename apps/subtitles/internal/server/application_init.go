@@ -33,7 +33,7 @@ func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store
 }
 
 func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, string) {
-	settings := newSettingsStore(config.MediaDir, config.DataDir, config.DLNAURL, stateDB, config.Configuration)
+	settings := newSettingsStore(config.MediaDir, config.DataDir, stateDB, config.Configuration)
 	if settings.err != nil {
 		return nil, nil, "application state is unavailable"
 	}

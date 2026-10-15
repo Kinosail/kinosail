@@ -24,7 +24,7 @@ func TestOfflineDownloadsStartOnlyOneEncoderWhileWorkIsPending(t *testing.T) {
 		t.Fatal(err)
 	}
 	workloads := workload.New(workload.HeavyCapacity())
-	manager := newDownloadManager(t.Context(), root, executable, newSettingsStore("", "", "", nil), workloads)
+	manager := newDownloadManager(t.Context(), root, executable, newSettingsStore("", "", nil), workloads)
 	t.Cleanup(func() {
 		_ = os.WriteFile(release, nil, 0o600)
 		waitForDownloads(manager)

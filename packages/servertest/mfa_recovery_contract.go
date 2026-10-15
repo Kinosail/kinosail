@@ -13,6 +13,7 @@ type MFARecoveryFixture struct {
 	TOTP         func(*testing.T, string, time.Time) string
 	StoredState  func(*testing.T, string, string) []byte
 	LoginLabel   string
+	NoJellyfin   bool
 }
 
 func AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t *testing.T, fixture MFARecoveryFixture) {
@@ -60,6 +61,9 @@ func AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t *testing.T, fixture
 	profiles := fixture.StoredState(t, data, "profiles.json")
 	if strings.Contains(string(profiles), recovery) {
 		t.Fatalf("recovery code stored in plaintext: %q", profiles)
+	}
+	if fixture.NoJellyfin {
+		return
 	}
 	jellyfin := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/Users/AuthenticateByName", strings.NewReader(`{"Username":"Owner","Pw":"owner-password"}`))
 	jellyfin.Header.Set("Content-Type", "application/json")

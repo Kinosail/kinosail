@@ -3,14 +3,14 @@ package server
 import (
 	"context"
 	"crypto/rand"
-	"github.com/MikeO7/kinosail/packages/webassets"
 	"net/http"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/webassets"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
-	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
@@ -19,9 +19,9 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-const appMobileMore = `{{if or .NavigationMore .Owner .CanLogout}}<details class="nav-more"><summary {{range .NavigationMore}}{{if .Active}}class="active"{{end}}{{end}}>More</summary><div class="nav-more-menu">{{if .CanLogout}}<section class="nav-more-section nav-more-account" role="group" aria-labelledby="nav-more-profile"><span id="nav-more-profile" class="nav-more-heading">{{t "Profile"}}</span><a class="profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></section>{{end}}<section class="nav-more-section nav-more-actions" aria-labelledby="nav-more-actions"><span id="nav-more-actions" class="nav-more-heading">{{t "Actions"}}</span><button hidden class="quiet" type="button" data-install>{{t "Install"}}</button><a href="/quick-connect">{{t "Connect"}}</a>{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="nav-supporter" href="/supporter">Supporter</a><a href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a><a class="nav-edit-menu" href="/settings#navigation">Edit navigation</a>{{end}}</section>{{if .NavigationMore}}<section class="nav-more-section nav-more-library" aria-labelledby="nav-more-library"><span id="nav-more-library" class="nav-more-heading">{{t "Library"}}</span>{{if .CommandMenu}}<button class="quiet" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Browse library"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a href="/">{{t "Browse library"}}</a>{{end}}{{range .NavigationMore}}<a{{if .Active}} class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}</section>{{end}}</div></details>{{end}}`
+const appMobileMore = `{{if or .NavigationMore .Owner .CanLogout}}<details class="nav-more"><summary {{range .NavigationMore}}{{if .Active}}class="active"{{end}}{{end}}>More</summary><div class="nav-more-menu">{{if .CanLogout}}<section class="nav-more-section nav-more-account" role="group" aria-labelledby="nav-more-profile"><span id="nav-more-profile" class="nav-more-heading">{{t "Profile"}}</span><a class="profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></section>{{end}}<section class="nav-more-section nav-more-actions" aria-labelledby="nav-more-actions"><span id="nav-more-actions" class="nav-more-heading">{{t "Actions"}}</span><button hidden class="quiet" type="button" data-install>{{t "Install"}}</button>{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="nav-supporter" href="/supporter">Supporter</a><a href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a><a class="nav-edit-menu" href="/settings#navigation">Edit navigation</a>{{end}}</section>{{if .NavigationMore}}<section class="nav-more-section nav-more-library" aria-labelledby="nav-more-library"><span id="nav-more-library" class="nav-more-heading">{{t "Library"}}</span>{{if .CommandMenu}}<button class="quiet" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Browse library"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a href="/">{{t "Browse library"}}</a>{{end}}{{range .NavigationMore}}<a{{if .Active}} class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}</section>{{end}}</div></details>{{end}}`
 
-const appHeader = `<header class="app-header"><a class="brand-lockup" href="/"><img class="brand-icon" src="/static/icon.svg?v=11" alt=""><h1>{{.ServerName}}</h1></a><form class="search" action="/" role="search"><label for="library-search">Find something</label><input id="library-search" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Search library" name="q" value="{{.Query}}" placeholder="Search titles, people, genres…" hx-get="/" hx-target="#main" hx-select="#main" hx-swap="outerHTML" hx-push-url="true" hx-trigger="input changed delay:250ms, search" aria-keyshortcuts="/"><input type="hidden" name="sort" value="{{.Sort}}">{{if ne .View "all"}}<input type="hidden" name="view" value="{{.View}}">{{end}}</form><nav aria-label="Main navigation">{{range .NavigationPrimary}}<a {{if .Active}}class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{range .NavigationMore}}<a class="nav-main-overflow{{if .Active}} active{{end}}"{{if .Active}} aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{if .Owner}}<a class="nav-main-supporter" href="/supporter">Supporter</a><a class="nav-main-edit" href="/settings#navigation">Edit navigation</a>{{end}}` + appMobileMore + `</nav><div class="header-actions"><details class="header-compact-menu"><summary>{{t "Actions"}}</summary><div class="header-compact-panel">{{if .CommandMenu}}<button class="quiet command-open" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Actions"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a class="header-link command-open" href="/">{{t "Browse library"}}</a>{{end}}<button hidden class="quiet" type="button" data-install>{{t "Install"}}</button><div class="header-utility-links{{if .Owner}} owner-utilities{{end}}"><a class="header-link" href="/quick-connect">{{t "Connect"}}</a>{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="header-link" href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a>{{end}}</div>{{if .CanLogout}}<div class="header-account" role="group" aria-label="{{t "Profile"}}"><a class="header-link profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></div>{{end}}</div></details></div></header>`
+const appHeader = `<header class="app-header"><a class="brand-lockup" href="/"><img class="brand-icon" src="/static/icon.svg?v=11" alt=""><h1>{{.ServerName}}</h1></a><form class="search" action="/" role="search"><label for="library-search">Find something</label><input id="library-search" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Search library" name="q" value="{{.Query}}" placeholder="Search titles, people, genres…" hx-get="/" hx-target="#main" hx-select="#main" hx-swap="outerHTML" hx-push-url="true" hx-trigger="input changed delay:250ms, search" aria-keyshortcuts="/"><input type="hidden" name="sort" value="{{.Sort}}">{{if ne .View "all"}}<input type="hidden" name="view" value="{{.View}}">{{end}}</form><nav aria-label="Main navigation">{{range .NavigationPrimary}}<a {{if .Active}}class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{range .NavigationMore}}<a class="nav-main-overflow{{if .Active}} active{{end}}"{{if .Active}} aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{if .Owner}}<a class="nav-main-supporter" href="/supporter">Supporter</a><a class="nav-main-edit" href="/settings#navigation">Edit navigation</a>{{end}}` + appMobileMore + `</nav><div class="header-actions"><details class="header-compact-menu"><summary>{{t "Actions"}}</summary><div class="header-compact-panel">{{if .CommandMenu}}<button class="quiet command-open" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Actions"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a class="header-link command-open" href="/">{{t "Browse library"}}</a>{{end}}<button hidden class="quiet" type="button" data-install>{{t "Install"}}</button><div class="header-utility-links{{if .Owner}} owner-utilities{{end}}">{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="header-link" href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a>{{end}}</div>{{if .CanLogout}}<div class="header-account" role="group" aria-label="{{t "Profile"}}"><a class="header-link profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></div>{{end}}</div></details></div></header>`
 
 const home = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><meta name="htmx-config" content='{"includeIndicatorCSS":false,"noSwap":[204,304,"4xx","5xx"]}'><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/static/icon.svg?v=11"><link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=11">
@@ -75,7 +75,6 @@ type Config struct {
 	TMDBImageURL        string
 	DLNAURL             string
 	WatchRoomTTL        time.Duration
-	QuickConnectTTL     time.Duration
 	OIDC                OIDCConfig
 	SAML                SAMLConfig
 	MCP                 MCPConfig
@@ -196,8 +195,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if downloads.Err() != nil {
 		return unavailableApplication(config, "download cache is unavailable")
 	}
-	shares := newMediaShares(config.DataDir, stateDB, index)
-	mux, rooms := http.NewServeMux(), newWatchRooms(config.WatchRoomTTL, index, auth)
+	mux := http.NewServeMux()
 	mux.HandleFunc("GET /static/htmx.min.js", serveScript(htmx))
 	mux.HandleFunc("GET /static/hls.min.js", serveScript(hlsJS))
 	mux.HandleFunc("GET /static/player.js", serveScript(playerJS))
@@ -223,9 +221,8 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /service-worker.js", serveServiceWorker)
 	mux.HandleFunc("GET /offline", serveOffline)
 	mux.HandleFunc("GET /favicon.ico", serveAsset(icon, "image/svg+xml"))
-	registerMediaShares(mux, shares, auth)
-	quickConnect := registerIdentity(mux, auth, config.QuickConnectTTL, config.OIDC, config.SAML, config.SCIM)
-	registerSettings(mux, settings, updates, index, progress, auth, config.InternetAccess, config.TrustedHTTPS, quickConnect, shares, hls, subtitles, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, rooms, config.AuthURL, config.SubtitleApp)
+	registerIdentity(mux, auth, config.OIDC, config.SAML, config.SCIM)
+	registerSettings(mux, settings, updates, index, progress, auth, config.InternetAccess, config.TrustedHTTPS, hls, subtitles, metadata, markers, backups, maintenance, viewingImports, homeAssistant, events, config.AuthURL, config.SubtitleApp)
 	registerOwnerAccess(mux, auth, management, config.AuthURL)
 	registerSupporter(mux, auth, supporter)
 	registerAgentConnections(mux, auth, agentConnections, config.DataDir)
@@ -233,7 +230,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /healthz", health)
 	mux.HandleFunc("GET /language", showLanguage)
 	mux.HandleFunc("POST /language", saveWebLanguage)
-	registerPlayer(mux, index, progress, settings, lists, hls, probe, subtitles, metadata, rooms, auth)
+	registerPlayer(mux, index, progress, settings, lists, hls, probe, subtitles, metadata)
 	registerMarkerAdmin(mux, auth, index, probe, markers)
 	frames.register(mux)
 	subtitles.register(mux, auth)
@@ -243,11 +240,10 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if managedLifecycle {
 		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
-	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, subtitles, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, config.AuthURL, events})
+	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, subtitles, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, supporter, updates, homeAssistant, config.AuthURL, events})
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
 	mcpAdapter.ObserveEvents(config.Lifecycle, events)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
-	registerJellyfin(mux, settings, index, progress, lists, auth, quickConnect, probe, hls, downloads)
 	registerBrowsers(mux, index, progress, lists)
 	registerFiles(mux, index, probe)
 	downloads.registerWeb(mux, index)
@@ -257,7 +253,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	} else {
 		mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))
 	}
-	handler := withDLNA(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates, index)
+	handler := withApplicationRequests(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates)
 	if management != nil && managedLifecycle {
 		management.Attach(config.Lifecycle, handler)
 	}
@@ -265,12 +261,12 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	return handler
 }
 
-func withDLNA(app http.Handler, appMux *http.ServeMux, auth *authentication, config Config, settings *settingsStore, updates *updateChecker, index *libraryIndex) http.Handler {
-	root := http.NewServeMux()
-	registerDLNA(root, config.Lifecycle, config.DLNAURL, settings, index)
-	root.Handle("/", app)
-	pattern := httpguard.NestedRoutePattern(root, appMux)
-	return protectApplicationTransport(auth, config, pattern, applicationRequests(auth, settings, updates, pattern, root))
+func withApplicationRequests(app http.Handler, appMux *http.ServeMux, auth *authentication, config Config, settings *settingsStore, updates *updateChecker) http.Handler {
+	pattern := func(request *http.Request) string {
+		_, matched := appMux.Handler(request)
+		return matched
+	}
+	return protectApplicationTransport(auth, config, pattern, applicationRequests(auth, settings, updates, pattern, app))
 }
 
 func registerBrowsers(mux *http.ServeMux, index *libraryIndex, progress *progressStore, lists *listStore) {

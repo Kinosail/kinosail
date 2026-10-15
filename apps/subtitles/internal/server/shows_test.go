@@ -18,7 +18,7 @@ func TestViewerCanBrowseAShowsEpisodes(t *testing.T) {
 	t.Parallel()
 
 	servertest.ViewerCanBrowseAShowsEpisodes(t, func(t *testing.T, media string) http.Handler {
-		return newJellyfinServer(t, server.Config{MediaDir: media})
+		return newTrustedServer(t, server.Config{MediaDir: media})
 	}, "S01E01", "Good News", `aria-label="Watched"`)
 }
 
@@ -103,17 +103,14 @@ func TestViewerCanLoadLocalShowArtworkWithoutEpisodeArtwork(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	handler := newJellyfinServer(t, server.Config{MediaDir: mediaDir})
+	handler := newTrustedServer(t, server.Config{MediaDir: mediaDir})
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?view=shows", nil))
 	episodeID := regexp.MustCompile(`/art/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	showID := regexp.MustCompile(`/show/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
 	art := httptest.NewRecorder()
 	handler.ServeHTTP(art, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/art/"+episodeID, nil))
-	seriesArt := httptest.NewRecorder()
-	handler.ServeHTTP(seriesArt, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/Items/"+showID+strings.Repeat("0", 16)+"/Images/Primary", nil))
 
-	if art.Code != http.StatusOK || art.Body.String() != "show poster" || seriesArt.Code != http.StatusOK || seriesArt.Body.String() != "show poster" {
-		t.Fatalf("web art = %d %q, series art = %d %q", art.Code, art.Body.String(), seriesArt.Code, seriesArt.Body.String())
+	if art.Code != http.StatusOK || art.Body.String() != "show poster" {
+		t.Fatalf("web art = %d %q", art.Code, art.Body.String())
 	}
 }

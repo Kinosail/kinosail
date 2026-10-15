@@ -22,7 +22,11 @@ func (fixture LocaleWebFixture) WebFailuresUseTheSelectedLanguage(t *testing.T, 
 	assertSpanishFailure(t, invalidSetting, http.StatusBadRequest)
 	invalidPlaylist := web(t, handler, http.MethodPost, "/playlists?lang=es", "name=", owner)
 	assertSpanishFailure(t, invalidPlaylist, http.StatusBadRequest)
-	for path, message := range map[string]string{"/progress/missing?lang=es": "progreso no válido", "/watch-together?lang=es": "El estado Watch Together no es válido"} {
+	failures := map[string]string{"/progress/missing?lang=es": "progreso no válido"}
+	if !fixture.NoRooms {
+		failures["/watch-together?lang=es"] = "El estado Watch Together no es válido"
+	}
+	for path, message := range failures {
 		assertSpanishFailureMessage(t, web(t, handler, http.MethodPost, path, "seconds=0", owner), http.StatusBadRequest, message)
 	}
 	sso := httptest.NewRecorder()

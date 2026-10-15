@@ -19,7 +19,7 @@ test("administration uses a plain canvas while the dark subtitle workspace retai
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     expect(await hasCanvasArtwork(page)).toBe(true);
-    for (const route of ["/settings", "/settings/configuration", "/account", "/quick-connect"]) {
+    for (const route of ["/settings", "/settings/configuration", "/account"]) {
       await page.goto(route);
       await page.screenshot({ path: info.outputPath(`${width}-${route.replaceAll("/", "-")}.png`) });
       await expect(page.locator("body"), route).toHaveCSS("background-image", "none");

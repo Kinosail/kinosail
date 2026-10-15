@@ -24,10 +24,6 @@ func loadAPIKeys(path string, databases ...*database.Store) (map[string]apiKey, 
 	return identitycore.LoadedAPIKeys(keys, found, err)
 }
 
-func (store *profileStore) createJellyfinAPIKey(profile viewerProfile, app string) (string, error) {
-	return store.createPersistentAPIKey(profile, "Jellyseerr ("+app+")", []string{"library"})
-}
-
 func (store *profileStore) createPersistentAPIKey(profile viewerProfile, name string, scopes []string) (string, error) {
 	return identitycore.IssueAPIKey(profile.ID, name, scopes, true, store.commitAPIKey)
 }
@@ -117,14 +113,14 @@ func (store *profileStore) revokeAPIKey(id string) error {
 }
 
 func profileAllowsAPI(profile viewerProfile, pattern string) bool {
-	return profile.AllowsAPI(pattern, identitycore.APIRoutes{SessionOnly: apiSessionOnlyRoutes, JellyfinLibrary: jellyfinLibraryRoutes, Library: apiLibraryRoutes, Write: apiWriteRoutes, Stream: apiStreamRoutes, Download: apiDownloadRoutes})
+	return profile.AllowsAPI(pattern, identitycore.APIRoutes{SessionOnly: apiSessionOnlyRoutes, Library: apiLibraryRoutes, Write: apiWriteRoutes, Stream: apiStreamRoutes, Download: apiDownloadRoutes})
 }
 
 var apiSessionOnlyRoutes = routeSet(
 	"GET /api/v1/backup", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices",
 	"DELETE /api/v1/session", "GET /api/v1/me/oidc/link", "DELETE /api/v1/me/oidc", "GET /api/v1/me/saml/link", "DELETE /api/v1/me/saml",
 	"POST /api/v1/me/mfa/setup", "PUT /api/v1/me/mfa", "DELETE /api/v1/me/mfa",
-	"GET /api/v1/passkeys", "DELETE /api/v1/passkeys/{id}", "POST /api/v1/passkeys/register/begin", "POST /api/v1/passkeys/register/finish", "POST /api/v1/quick-connect/{code}",
+	"GET /api/v1/passkeys", "DELETE /api/v1/passkeys/{id}", "POST /api/v1/passkeys/register/begin", "POST /api/v1/passkeys/register/finish",
 )
 
 var apiLibraryRoutes = routeSet(
@@ -135,20 +131,19 @@ var apiLibraryRoutes = routeSet(
 	"GET /api/v1/playlists", "GET /api/v1/playlists/{name}",
 	"GET /api/v1/collections", "GET /api/v1/collections/{name}",
 	"GET /api/v1/shows", "GET /api/v1/shows/{id}", "GET /api/v1/albums", "GET /api/v1/albums/{id}",
-	"GET /api/v1/watch-rooms/{id}", "GET /art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}",
+	"GET /art/{id}", "GET /backdrop/{id}", "GET /person/{id}/{person}",
 )
 
 var apiWriteRoutes = routeSet(
 	"PUT /api/v1/items/{id}/progress", "PUT /api/v1/books/{id}/reader/progress", "DELETE /api/v1/items/{id}/continue-watching", "PUT /api/v1/items/{id}/list",
 	"POST /api/v1/playlists", "POST /api/v1/smart-playlists", "DELETE /api/v1/playlists/{name}",
-	"PUT /api/v1/playlists/{name}/items/{id}", "PUT /api/v1/playlists/{name}/order", "POST /api/v1/watch-rooms", "POST /api/v1/items/{id}/playback-events",
+	"PUT /api/v1/playlists/{name}/items/{id}", "PUT /api/v1/playlists/{name}/order", "POST /api/v1/items/{id}/playback-events",
 )
 
 var apiStreamRoutes = routeSet(
 	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}",
-	"GET /Videos/{id}/{stream...}",
 	"GET /subtitle/{id}", "GET /subtitle/{id}/{track}", "GET /subtitle/{id}/embedded/{stream}", "GET /subtitles/{id}/{language}", "GET /trickplay/{id}/{second}",
-	"GET /read/{id}/asset/{asset...}", "GET /read/{id}/file", "GET /api/v1/events", "GET /api/v1/watch-rooms/{id}/events",
+	"GET /read/{id}/asset/{asset...}", "GET /read/{id}/file", "GET /api/v1/events",
 )
 
 var apiDownloadRoutes = routeSet(

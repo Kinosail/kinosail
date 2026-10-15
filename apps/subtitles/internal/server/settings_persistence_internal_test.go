@@ -49,7 +49,7 @@ func TestSettingsRejectInvalidPersistedSubtitleLanguagesWithoutSave(t *testing.T
 			if err := os.WriteFile(path, original, 0o600); err != nil {
 				t.Fatal(err)
 			}
-			store := newSettingsStore("", directory, "", nil)
+			store := newSettingsStore("", directory, nil)
 			if store.err == nil {
 				t.Fatal("invalid persisted settings were accepted")
 			}

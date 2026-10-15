@@ -22,7 +22,7 @@ func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
 	items := benchmarkLibraryItems()
 	index := memoryLibraryIndex(items, true)
 	response := httptest.NewRecorder()
-	showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)(response, ownerRequest("/?view=movies"))
+	showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", nil), nil, false)(response, ownerRequest("/?view=movies"))
 	if cards := strings.Count(response.Body.String(), `/watch/`); response.Code != 200 || cards != catalog.DefaultPageSize || response.Body.Len() > 26_000 || !strings.Contains(response.Body.String(), `offset=100`) {
 		t.Fatalf("large Library page = status %d, cards %d, bytes %d", response.Code, cards, response.Body.Len())
 	}
@@ -31,7 +31,7 @@ func TestLargeLibraryWebResponseIsBounded(t *testing.T) {
 func TestLargeLetterBucketRemainsBoundedAndPageable(t *testing.T) {
 	items := benchmarkLibraryItems()
 	index := memoryLibraryIndex(items, true)
-	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
+	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", nil), nil, false)
 	response := httptest.NewRecorder()
 	handler(response, ownerRequest("/?view=movies&letter=M"))
 	if cards := strings.Count(response.Body.String(), `/watch/`); response.Code != http.StatusOK || cards != catalog.DefaultPageSize || !strings.Contains(response.Body.String(), `letter=M&amp;limit=100&amp;offset=100`) {
@@ -47,7 +47,7 @@ func TestLargeLetterBucketRemainsBoundedAndPageable(t *testing.T) {
 func BenchmarkLargeLibraryBrowse(b *testing.B) {
 	items := benchmarkLibraryItems()
 	index := memoryLibraryIndex(items, true)
-	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
+	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", nil), nil, false)
 	request := ownerRequest("/?view=movies")
 	b.ReportAllocs()
 	responseBytes := 0
@@ -62,7 +62,7 @@ func BenchmarkLargeLibraryBrowse(b *testing.B) {
 func BenchmarkLargeLibraryKnownTitleNavigation(b *testing.B) {
 	items := benchmarkLibraryItems()
 	index := memoryLibraryIndex(items, true)
-	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil), nil, false)
+	handler := showHome(index, newProgressStore(""), newListStore(""), newSettingsStore("", "", nil), nil, false)
 	for name, target := range map[string]string{"search": "/?view=movies&q=Movie+9999", "letter": "/?view=movies&letter=M"} {
 		b.Run(name, func(b *testing.B) {
 			request := ownerRequest(target)

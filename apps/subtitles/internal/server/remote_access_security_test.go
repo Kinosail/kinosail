@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -56,24 +55,6 @@ func TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable(t *testing.T) {
 	}
 }
 
-func TestPublicQuickConnectCannotInheritOwnerAccess(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	started := serveRequest(server.Remote(handler), requestWithBody(t, http.MethodPost, "/api/v1/quick-connect", "device=Internet+TV"))
-	if started.Code != http.StatusCreated {
-		t.Fatalf("start public Quick Connect = %d %q", started.Code, started.Body.String())
-	}
-	var state struct{ Code string }
-	if err := json.Unmarshal(started.Body.Bytes(), &state); err != nil {
-		t.Fatal(err)
-	}
-	approved := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/api/v1/quick-connect/"+state.Code, "", owner))
-	if approved.Code != http.StatusForbidden {
-		t.Fatalf("approve public Quick Connect as Owner = %d %q", approved.Code, approved.Body.String())
-	}
-}
-
 func TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true, ProxyToken: "proxy-capability"})
@@ -104,62 +85,6 @@ func TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers(t *testing.T) {
 	direct.Header.Set("X-Kinosail-Remote", "true")
 	if response := serveRequest(handler, direct); response.Code != http.StatusOK {
 		t.Fatalf("spoofed remote header changed local policy = %d %q", response.Code, response.Body.String())
-	}
-}
-
-func TestPublicQuickConnectRequiresStrongRemoteEnabledViewer(t *testing.T) { //nolint:cyclop,funlen // One scenario proves the full public Quick Connect policy and revocation path.
-	t.Parallel()
-	dataDir := t.TempDir()
-	handler := server.New(server.Config{DataDir: dataDir, RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	disableTestMFA(t, handler, owner.Value)
-	create := requestWithCookieRequest(t, http.MethodPost, "/settings/profiles", "name=Viewer&password=viewer-password&rating=all&libraries=all&remote=true", owner)
-	if response := serveRequest(handler, create); response.Code != http.StatusSeeOther {
-		t.Fatalf("create Viewer = %d %q", response.Code, response.Body.String())
-	}
-	viewer := signInTestProfile(t, handler, "/login", "name=Viewer&password=viewer-password")
-	public := server.Remote(handler)
-	start := func() (code, secret string) {
-		response := serveRequest(public, requestWithBody(t, http.MethodPost, "/api/v1/quick-connect", "device=Internet+TV"))
-		var state struct{ Code, Secret string }
-		if response.Code != http.StatusCreated || json.Unmarshal(response.Body.Bytes(), &state) != nil {
-			t.Fatalf("start Quick Connect = %d %q", response.Code, response.Body.String())
-		}
-		return state.Code, state.Secret
-	}
-	code, _ := start()
-	if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/api/v1/quick-connect/"+code, "", viewer)); response.Code != http.StatusForbidden {
-		t.Fatalf("password-only Quick Connect approval = %d %q", response.Code, response.Body.String())
-	}
-	enrollment := requestWithCookie(t, handler, http.MethodPost, "/account/mfa/setup", "", viewer)
-	confirmTestFactor(t, handler, viewer, enrollment)
-	code, secret := start()
-	if response := serveRequest(public, requestWithCookieRequest(t, http.MethodPost, "/api/v1/quick-connect/"+code, "", viewer)); response.Code != http.StatusNotFound {
-		t.Fatalf("public Quick Connect approval = %d %q", response.Code, response.Body.String())
-	}
-	if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/api/v1/quick-connect/"+code, "", viewer)); response.Code != http.StatusNoContent {
-		t.Fatalf("strong Quick Connect approval = %d %q", response.Code, response.Body.String())
-	}
-	connected := serveRequest(public, requestWithBody(t, http.MethodPost, "/api/v1/quick-connect/token", "secret="+secret))
-	var session struct{ Token string }
-	if connected.Code != http.StatusCreated || json.Unmarshal(connected.Body.Bytes(), &session) != nil || session.Token == "" {
-		t.Fatalf("Quick Connect token = %d %q", connected.Code, connected.Body.String())
-	}
-	if response := apiCall(t, public, session.Token, http.MethodGet, "/api/v1/library", nil); response.Code != http.StatusOK {
-		t.Fatalf("strong Quick Connect session = %d %q", response.Code, response.Body.String())
-	}
-	for _, route := range []struct{ method, path string }{{http.MethodGet, "/account"}, {http.MethodPost, "/api/v1/me/mfa/setup"}, {http.MethodGet, "/api/v1/openapi.json"}, {http.MethodGet, "/oauth/authorize"}, {http.MethodGet, "/dlna/token/device.xml"}} {
-		if response := apiCall(t, public, session.Token, route.method, route.path, nil); response.Code != http.StatusNotFound {
-			t.Fatalf("public administrative route %s = %d %q", route.path, response.Code, response.Body.String())
-		}
-	}
-	profileID := storedProfileID(t, dataDir, "Viewer")
-	disable := requestWithCookieRequest(t, http.MethodPost, "/settings/profiles/permissions", "id="+profileID+"&rating=all&libraries=all", owner)
-	if response := serveRequest(handler, disable); response.Code != http.StatusSeeOther {
-		t.Fatalf("disable remote Viewer = %d %q", response.Code, response.Body.String())
-	}
-	if response := apiCall(t, public, session.Token, http.MethodGet, "/api/v1/library", nil); response.Code != http.StatusUnauthorized {
-		t.Fatalf("revoked public session = %d %q", response.Code, response.Body.String())
 	}
 }
 

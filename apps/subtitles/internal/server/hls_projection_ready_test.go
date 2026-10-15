@@ -76,7 +76,7 @@ func projectionHLSFixture(t *testing.T, manifest string) (*hlsManager, library.I
 		t.Fatal(err)
 	}
 	manager.probe.inspect(t.Context(), item)
-	manager.settings = newSettingsStore(filepath.Dir(item.Path), "", "", nil)
+	manager.settings = newSettingsStore(filepath.Dir(item.Path), "", nil)
 	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {
 		t.Fatal(err)

@@ -137,7 +137,7 @@ func TestSubtitleRecoveryRestoresPreviousFileAndFreezesReplacement(t *testing.T)
 
 func TestSubtitlePlanPrefersSDHWithoutRenamingExistingFiles(t *testing.T) {
 	t.Parallel()
-	settings := newSettingsStore(t.TempDir(), "", "", nil)
+	settings := newSettingsStore(t.TempDir(), "", nil)
 	if err := settings.setSubtitlePlan("en", "sdh"); err != nil {
 		t.Fatal(err)
 	}

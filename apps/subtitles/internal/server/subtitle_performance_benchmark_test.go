@@ -21,7 +21,7 @@ func BenchmarkFetchWantedStopsAtLimit(b *testing.B) {
 	}
 	items[0].Subtitles = nil
 	index := memoryLibraryIndex(items, true)
-	settings := newSettingsStore("", "", "", nil)
+	settings := newSettingsStore("", "", nil)
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, b.TempDir(), b.TempDir(), index, settings, "")
 	manager := newSubtitleManager(index, settings, provider, nil)
 	request := ownerRequest("/")

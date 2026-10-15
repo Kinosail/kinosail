@@ -15,6 +15,7 @@ import (
 var (
 	compatibilityPathSegment = regexp.MustCompile(`^[A-Za-z][A-Za-z-]{0,31}$`)
 	contentRangePattern      = regexp.MustCompile(`^bytes (?:(\d+)-(\d+)|\*)/(\d+)$`)
+	singleByteRangePattern   = regexp.MustCompile(`^bytes=(?:[0-9]+-[0-9]*|-[0-9]+)$`)
 )
 
 func SafeCompatibilityPath(request *http.Request, pattern string) string {
@@ -31,6 +32,10 @@ func SafeCompatibilityPath(request *http.Request, pattern string) string {
 		}
 	}
 	return "/" + strings.Join(segments, "/")
+}
+
+func ValidSingleByteRange(value string) bool {
+	return len(value) <= 128 && singleByteRangePattern.MatchString(value)
 }
 
 func ValidContentRange(value string) bool {
