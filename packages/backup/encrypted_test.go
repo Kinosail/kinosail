@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestEncryptedBackupAuthenticatesAndRestoresExpandedState(t *testing.T) { //nolint:cyclop // One encrypted round trip checks state, secrets, and authentication.
+func TestEncryptedBackupAuthenticatesAndRestoresExpandedState(t *testing.T) {
 	source, destination := t.TempDir(), t.TempDir()
 	//nolint:gosec // G101: the fixture verifies that secret-shaped backup content is encrypted.
 	for name, content := range map[string]string{"settings.json": `{"name":"Home"}`, "collections.json": `{"Favorites":{"name":"Favorites"}}`, "history.json": `[]`, "secrets.json": `{"backup.key":"hidden"}`, "viewing_imports.json": `{"sync":{"token":"private"}}`} {

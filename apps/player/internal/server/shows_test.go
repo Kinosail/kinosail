@@ -80,7 +80,7 @@ func assertEpisodeArtworkBody(t *testing.T, response *httptest.ResponseRecorder,
 	}
 }
 
-func TestShowsBrowseCountsAndJumpsByShow(t *testing.T) { //nolint:cyclop // One browse contract covers counts, grouping, and title jumps.
+func TestShowsBrowseCountsAndJumpsByShow(t *testing.T) {
 	t.Parallel()
 
 	mediaDir := t.TempDir()

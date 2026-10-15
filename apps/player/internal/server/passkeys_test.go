@@ -13,7 +13,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-//nolint:cyclop // The integration assertion checks all security attributes of the one ceremony response.
 func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	t.Parallel()
 	handler := New(Config{DataDir: t.TempDir(), RequireAuth: true, AuthURL: "http://localhost:8080"})
@@ -93,7 +92,7 @@ func TestPasskeyLoginIsAvailableFromSignInPage(t *testing.T) {
 	servertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), "/static/passkeys.js?v=16")
 }
 
-func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T) { //nolint:cyclop,funlen,gocognit // One login boundary covers both inventory states and invalid offer input.
+func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T) {
 	t.Parallel()
 	for _, configured := range []bool{false, true} {
 		t.Run(map[bool]string{false: "not configured", true: "configured"}[configured], func(t *testing.T) {
@@ -201,7 +200,7 @@ func TestInvalidAuthURLDisablesOnlyPasskeys(t *testing.T) {
 	}
 }
 
-func TestPasskeyCredentialPersistsAndUpdates(t *testing.T) { //nolint:cyclop // One persistence test covers credential and usage metadata together.
+func TestPasskeyCredentialPersistsAndUpdates(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	store := newProfileStore(dataDir)

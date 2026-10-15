@@ -61,7 +61,7 @@ func eventResource(name, resource string) bool {
 	return resource == prefix
 }
 
-func eventURL(value string) (string, error) { //nolint:cyclop // Every URL component is checked before any outbound side effect.
+func eventURL(value string) (string, error) {
 	if len(value) == 0 || len(value) > 2048 || strings.ContainsAny(value, "\r\n\t ") {
 		return "", errors.New("invalid callback URL")
 	}
@@ -114,7 +114,7 @@ func eventID(subscription eventSubscription) string {
 	return "sub_" + hex.EncodeToString(hash[:])
 }
 
-func validateEventParams(params *eventParams, unsubscribe bool) error { //nolint:cyclop,gocognit // The boundary validates all cross-field invariants before callbacks.
+func validateEventParams(params *eventParams, unsubscribe bool) error {
 	if params == nil || params.Arguments == nil || params.Name == "" || len(params.Name) > 128 || len(params.Arguments) > 1 {
 		return eventError(-32602, "invalid event name or arguments", nil)
 	}
@@ -155,7 +155,7 @@ func validateEventParams(params *eventParams, unsubscribe bool) error { //nolint
 	return nil
 }
 
-func validEventState(subscriptions map[string]eventSubscription) bool { //nolint:cyclop // Every persisted record is bounded and validated before creating authority.
+func validEventState(subscriptions map[string]eventSubscription) bool {
 	if len(subscriptions) > eventSubscriptionLimit {
 		return false
 	}
@@ -176,7 +176,7 @@ func validEventState(subscriptions map[string]eventSubscription) bool { //nolint
 	return true
 }
 
-func validEventAuthority(subscription eventSubscription) bool { //nolint:cyclop // Persisted authority must match exactly one transport-specific identity.
+func validEventAuthority(subscription eventSubscription) bool {
 	profile := subscription.Principal.ID
 	switch {
 	case subscription.Scope == "host:"+profile:

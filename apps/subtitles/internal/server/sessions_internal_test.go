@@ -52,7 +52,7 @@ func TestBrowserSessionsHaveIdleAndAbsoluteTimeouts(t *testing.T) {
 }
 
 func TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts(t *testing.T) {
-	settings := newSettingsStore("", "", "", nil)
+	settings := newSettingsStore("", "", nil)
 	if err := settings.setSessionTimeouts(24, 168); err != nil {
 		t.Fatal(err)
 	}
@@ -84,7 +84,7 @@ func TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts(t *testing.T) {
 }
 
 func TestSessionTimeoutValidationHasNoSideEffects(t *testing.T) {
-	store := newSettingsStore("", "", "", nil)
+	store := newSettingsStore("", "", nil)
 	checkTimeouts := servertest.SessionTimeoutValidationHasNoSideEffects
 	checkTimeouts(t, store.sessionTimeouts, store.setSessionTimeouts)
 }
@@ -112,7 +112,7 @@ func TestSensitiveActionsRequireRecentHumanAuthentication(t *testing.T) {
 	}
 }
 
-func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cyclop // Every public-session invariant is asserted in one fixture.
+func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Viewer", "viewer-password", false)
 	if err != nil || store.addOwner(profile) != nil {

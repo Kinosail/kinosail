@@ -71,7 +71,7 @@ func (manifest Manifest) Compatible(stateSchema, configurationSchema int) error 
 	return nil
 }
 
-func validateManifest(manifest Manifest) error { //nolint:cyclop // Manifest trust-boundary checks remain explicit and fail-closed.
+func validateManifest(manifest Manifest) error {
 	if manifest.SchemaVersion != ManifestSchemaVersion || manifest.UpdateSchema != PlanSchemaVersion || !ValidReleaseVersion(manifest.Version) || !validSchemaRange(manifest.MinimumStateSchema, manifest.StateSchema) || !validSchemaRange(manifest.MinimumConfigurationSchema, manifest.ConfigurationSchema) || !slices.Equal(manifest.RuntimeCommands, []string{"ffmpeg", "ffprobe", "fpcalc"}) || !validInstallationContract(manifest.Installation) || len(manifest.Artifacts) != 6 {
 		return errors.New("invalid release manifest")
 	}

@@ -19,7 +19,7 @@ func TestOutboundClientRejectsResolutionAndProhibitedAddresses(t *testing.T) {
 	}
 }
 
-func TestAtomicSaveRejectsFilesystemFailures(t *testing.T) { //nolint:cyclop // Each filesystem stage must return its failure without replacing a target.
+func TestAtomicSaveRejectsFilesystemFailures(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	parentFile := filepath.Join(root, "parent")

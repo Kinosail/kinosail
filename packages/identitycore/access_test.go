@@ -48,7 +48,7 @@ func TestEvaluateAccessPrecedence(t *testing.T) {
 	}
 }
 
-func TestOwnerPolicyAndDenialPresentation(t *testing.T) { //nolint:cyclop // The denial presentation table covers every stable denial value.
+func TestOwnerPolicyAndDenialPresentation(t *testing.T) {
 	t.Parallel()
 	if EvaluateOwner(false, true, true, true, true) != OwnerRequired {
 		t.Fatal("non-Owner was allowed")

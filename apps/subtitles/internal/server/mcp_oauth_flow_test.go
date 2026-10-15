@@ -18,7 +18,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 )
 
-func TestMCPOAuthAuthorizationCodeFlowWithOfficialClient(t *testing.T) { //nolint:cyclop,funlen,gocognit // The full browserless OAuth redirect and MCP exchange are one interoperability fixture.
+func TestMCPOAuthAuthorizationCodeFlowWithOfficialClient(t *testing.T) {
 	var resourceURL string
 	var authorizationURL string
 	var mu sync.Mutex

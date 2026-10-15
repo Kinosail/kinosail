@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-func TestApplicationPollStatesAndTransports(t *testing.T) { //nolint:cyclop // The transport matrix remains below the repository complexity limit.
+func TestApplicationPollStatesAndTransports(t *testing.T) {
 	t.Parallel()
 	t.Run("pending", func(t *testing.T) {
 		fixture := newApplicationFixture(t)
@@ -107,7 +107,7 @@ func TestApplicationPollRejectsInvalidInputWithoutConsumption(t *testing.T) {
 	}
 }
 
-func TestApplicationApprovePageBoundaries(t *testing.T) { //nolint:cyclop,gocognit // The approval matrix keeps every no-side-effect boundary explicit.
+func TestApplicationApprovePageBoundaries(t *testing.T) {
 	t.Parallel()
 	t.Run("success", func(t *testing.T) {
 		fixture := newApplicationFixture(t)
@@ -161,7 +161,7 @@ func TestApplicationApprovePageBoundaries(t *testing.T) { //nolint:cyclop,gocogn
 	}
 }
 
-func TestApplicationApproveAPIBoundaries(t *testing.T) { //nolint:cyclop // The API boundary matrix remains below the repository complexity limit.
+func TestApplicationApproveAPIBoundaries(t *testing.T) {
 	t.Parallel()
 	fixture := newApplicationFixture(t)
 	_, connection, _ := fixture.broker.Create(Request{})

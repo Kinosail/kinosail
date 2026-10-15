@@ -21,7 +21,7 @@ type FailureLog struct {
 	events []FailureEvent
 }
 
-func (log *FailureLog) Record(requestID, method, path string, status int, duration time.Duration) { //nolint:cyclop // The checks bound each field before it enters Owner diagnostics.
+func (log *FailureLog) Record(requestID, method, path string, status int, duration time.Duration) {
 	if log == nil || status < 400 || status > 599 {
 		return
 	}
@@ -91,7 +91,7 @@ func (log *FailureLog) Recent() []FailureEvent {
 	return result
 }
 
-func failureOperation(rawPath string) string { //nolint:cyclop // Exact operation allowlists keep private path segments out of diagnostics.
+func failureOperation(rawPath string) string {
 	if len(rawPath) > 2048 {
 		return "other"
 	}

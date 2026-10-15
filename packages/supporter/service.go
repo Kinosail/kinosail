@@ -27,7 +27,7 @@ type Service struct {
 	now              func() time.Time
 }
 
-func New(config Config) (*Service, error) { //nolint:cyclop // Construction validates all adapter policy before network work.
+func New(config Config) (*Service, error) {
 	app := config.App
 	if !appIDPattern.MatchString(app.ID) || app.Name == "" || !audiencePattern.MatchString(app.Audience) || app.MasterworkName == "" ||
 		app.Legacy > LegacySubtitles ||
@@ -129,7 +129,7 @@ func (service *Service) prepareActivation(state State, key string) (State, strin
 	return state, activationID, keyHash, valid
 }
 
-func (service *Service) validateActivationOutput(original, state State, output activationResponse, activationID, keyHash string, recognitionName *string) (State, *Grant, decodedGrant, error) { //nolint:cyclop // One atomic response check must reject every invalid grant before state changes.
+func (service *Service) validateActivationOutput(original, state State, output activationResponse, activationID, keyHash string, recognitionName *string) (State, *Grant, decodedGrant, error) {
 	if !activationIDPattern.MatchString(output.ActivationID) || activationID != "" && output.ActivationID != activationID || !acceptsPublicKey(state, output.PublicKey) ||
 		service.trustedPublicKey != "" && subtle.ConstantTimeCompare([]byte(service.trustedPublicKey), []byte(output.PublicKey)) != 1 {
 		return state, nil, decodedGrant{}, invalid("supporter activation returned an invalid response")
@@ -146,7 +146,7 @@ func (service *Service) validateActivationOutput(original, state State, output a
 	return state, grant, decoded, nil
 }
 
-func (service *Service) applyActivation(original, state State, grant *Grant, decoded decodedGrant) (State, Status, error) { //nolint:gocognit // Activation precedence remains below the repository complexity ceiling.
+func (service *Service) applyActivation(original, state State, grant *Grant, decoded decodedGrant) (State, Status, error) {
 	rank := Rank(decoded.certificate.Tier)
 	if decoded.family == FamilyPatron {
 		if current := service.decodeGrant(state, state.PatronOrder, FamilyPatron, true); current.valid {

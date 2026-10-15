@@ -15,7 +15,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func TestDownloadsReserveExactlyOneSlot(t *testing.T) { //nolint:cyclop,gocognit // Each lifecycle case counts acquisition and release on the same reservation.
+func TestDownloadsReserveExactlyOneSlot(t *testing.T) {
 	for _, quality := range []string{"original", "compatible", "720p", "audio"} {
 		t.Run(quality, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)

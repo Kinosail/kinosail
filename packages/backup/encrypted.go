@@ -25,7 +25,7 @@ func (service *Service) WriteAuto(writer io.Writer, dataDir, passphrase, version
 	return service.Write(writer, dataDir, version)
 }
 
-func (service *Service) WriteEncrypted(writer io.Writer, dataDir, passphrase, version string) error { //nolint:cyclop // Encryption must fail closed at every archive and cipher boundary.
+func (service *Service) WriteEncrypted(writer io.Writer, dataDir, passphrase, version string) error {
 	if len(passphrase) < 16 || len(passphrase) > maxPassphraseSize {
 		return errors.New("backup passphrase must contain 16 to 4096 characters")
 	}
@@ -66,7 +66,7 @@ func (service *Service) RestoreEncrypted(reader io.Reader, dataDir, passphrase s
 	})
 }
 
-func (service *Service) decrypt(reader io.Reader, passphrase string, use func([]byte) error) error { //nolint:cyclop // Each authenticated-encryption boundary must fail closed.
+func (service *Service) decrypt(reader io.Reader, passphrase string, use func([]byte) error) error {
 	if len(passphrase) < 16 || len(passphrase) > maxPassphraseSize {
 		return errors.New("backup passphrase must contain 16 to 4096 characters")
 	}

@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestDLNATokenAndLabelPolicy(t *testing.T) { //nolint:cyclop,gocognit // The policy matrix remains below the repository ceiling of 22.
+func TestDLNATokenAndLabelPolicy(t *testing.T) {
 	t.Parallel()
 	if token, changed := ConfiguredDLNAToken(false, true, "existing"); token != "existing" || changed {
 		t.Fatalf("unmanaged token = %q, %t", token, changed)
@@ -36,7 +36,7 @@ func TestDLNATokenAndLabelPolicy(t *testing.T) { //nolint:cyclop,gocognit // The
 	}
 }
 
-func TestSaveDLNAValidatesAndAppliesChoice(t *testing.T) { //nolint:cyclop // One table protects every form boundary and result.
+func TestSaveDLNAValidatesAndAppliesChoice(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
 		name      string

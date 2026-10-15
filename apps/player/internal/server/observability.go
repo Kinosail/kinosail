@@ -23,14 +23,14 @@ type requestActivity struct {
 	securityRecorded bool
 }
 
-func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler { //nolint:contextcheck,cyclop,gocognit // Recovery and final logging intentionally retain the request context.
+func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		facts := &requestActivity{id: acceptedRequestID(request.Header.Get("X-Request-ID")), playbackSession: acceptedPlaybackSession(request)}
 		request = request.WithContext(context.WithValue(request.Context(), requestActivityKey{}, facts))
 		writer.Header().Set("X-Request-ID", facts.id)
 		capture := &auditWriter{ResponseWriter: writer}
 		started := time.Now()
-		defer func() { //nolint:contextcheck // Deferred recovery must report against the captured request context.
+		defer func() {
 			finishObservedRequest(activity, route, capture, request, facts, started, recover())
 		}()
 		next.ServeHTTP(capture, request)

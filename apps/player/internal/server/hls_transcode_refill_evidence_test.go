@@ -23,10 +23,10 @@ type refillFrameTimeline struct {
 	Frames                 []refillFrameClock
 }
 
-func transcodeRefillDecode(t *testing.T, ctx context.Context, ffmpeg, label string, parts [][]byte) refillFrameTimeline { //nolint:funlen,cyclop,gocognit // Parse one bounded real decoder receipt without rescaling the timestamp oracle.
+func transcodeRefillDecode(t *testing.T, ctx context.Context, ffmpeg, label string, parts [][]byte) refillFrameTimeline {
 	t.Helper()
 	arguments := []string{"-nostdin", "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0", "-enc_time_base", "demux", "-fps_mode", "passthrough", "-avoid_negative_ts", "disabled", "-f", "framehash", "-hash", "sha256", "-"}
-	command := exec.CommandContext(ctx, ffmpeg, arguments...) //nolint:gosec // Discovered hosted executable and fixed arguments decode owned synthetic HTTP media.
+	command := exec.CommandContext(ctx, ffmpeg, arguments...)
 	command.Stdin = bytes.NewReader(bytes.Join(parts, nil))
 	var diagnostics bytes.Buffer
 	command.Stderr = &diagnostics

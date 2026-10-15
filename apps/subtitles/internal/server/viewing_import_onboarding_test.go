@@ -29,7 +29,7 @@ func TestOwnerFirstCredentialLoginOpensOnboarding(t *testing.T) {
 	onboardingFixture.OwnerFirstCredentialLoginOpensOnboarding(t)
 }
 
-func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) { //nolint:cyclop,funlen // One onboarding scenario covers preview-safe migration entry.
+func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) {
 	const sourceToken = "onboarding-source-secret"
 	upstream := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Header.Get("X-Emby-Token") != sourceToken {
@@ -50,7 +50,7 @@ func TestOwnerCanStartViewingMigrationFromOnboarding(t *testing.T) { //nolint:cy
 
 	handler, token := apiServer(t)
 	connection := apiCall(t, handler, token, http.MethodGet, "/onboarding/connection", nil)
-	assertAPIBody(t, connection, http.StatusOK, "Connect the devices you already own.", "Ready on this Server", "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "Jellyfin routes stay unavailable.", "Remote access comes later", `aria-current="step"`, `aria-label="Account complete"`, `action="/onboarding/jellyfin"`, `action="/onboarding/trusted-https"`, `href="/onboarding/household"`)
+	assertAPIBody(t, connection, http.StatusOK, "Connect the devices you already own.", "Ready on this Server", "Secure local access", "On by default.", "Trusted HTTPS for phones and TVs", "Recommended for phones and TVs.", "Remote access comes later", `aria-current="step"`, `aria-label="Account complete"`, `action="/onboarding/trusted-https"`, `href="/onboarding/household"`)
 	if strings.Contains(connection.Body.String(), `href="/setup"`) {
 		t.Fatalf("completed account remained actionable in onboarding progress: %q", connection.Body.String())
 	}

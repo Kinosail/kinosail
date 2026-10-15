@@ -56,7 +56,7 @@ func TrustedProxy(token string, next http.Handler) http.Handler {
 	})
 }
 
-func AllowedHost(rawURL string, aliases []string, defaultPort string, next http.Handler, reject func(http.ResponseWriter, *http.Request, string, int)) http.Handler { //nolint:cyclop // Host validation stays explicit at this boundary.
+func AllowedHost(rawURL string, aliases []string, defaultPort string, next http.Handler, reject func(http.ResponseWriter, *http.Request, string, int)) http.Handler {
 	if next == nil || reject == nil || defaultPort == "" || len(defaultPort) > 5 {
 		return unavailableHandler()
 	}

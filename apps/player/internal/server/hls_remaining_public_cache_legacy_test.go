@@ -11,7 +11,7 @@ import (
 func remainingPublicLegacyRefill(t *testing.T, ctx context.Context, ffmpeg, source string) string {
 	t.Helper()
 	directory := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", //nolint:gosec // Discovered codec and fixed historical recipe on generated fixture paths.
+	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
 		"-avoid_negative_ts", "disabled", "-max_delay", "5000000", "-ss", "8.000", "-i", source,
 		"-map", "0:a:0", "-vn", "-sn", "-dn", "-c:a", "aac", "-ac", "2", "-b:a", "192000", "-output_ts_offset", "8.000",
 		"-f", "hls", "-hls_time", "2", "-hls_playlist_type", "event", "-hls_segment_type", "fmp4",

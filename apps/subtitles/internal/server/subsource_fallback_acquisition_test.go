@@ -19,7 +19,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubSourceAcquisitionRecoversFromInvalidCandidate(t *testing.T) { //nolint:cyclop,funlen,gocognit // One operation matrix distinguishes candidate rejection from provider availability and checks durable effects.
+func TestSubSourceAcquisitionRecoversFromInvalidCandidate(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
 		name      string

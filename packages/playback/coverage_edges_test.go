@@ -25,7 +25,7 @@ func (failingCacheEntry) IsDir() bool                      { return true }
 func (failingCacheEntry) Type() fs.FileMode                { return fs.ModeDir }
 func (entry failingCacheEntry) Info() (fs.FileInfo, error) { return nil, entry.infoErr }
 
-func TestHLSCacheErrorAndEvictionEdges(t *testing.T) { //nolint:cyclop,funlen,gocognit // One boundary matrix covers independent cache failures and eviction behavior.
+func TestHLSCacheErrorAndEvictionEdges(t *testing.T) {
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	missing := filepath.Join(t.TempDir(), "missing")
 	if size, err := HLSCacheStats(missing, policy); err != nil || size != 0 {
@@ -127,7 +127,7 @@ func TestPlaybackDecisionRemainingBranches(t *testing.T) {
 	}
 }
 
-func TestHLSPlaylistPublicationAndFreshnessEdges(t *testing.T) { //nolint:cyclop,funlen,gocognit // One boundary matrix covers independent publication and freshness failures.
+func TestHLSPlaylistPublicationAndFreshnessEdges(t *testing.T) {
 	root := t.TempDir()
 	source := filepath.Join(root, "source")
 	writeTestFile(t, source, "source")
@@ -201,7 +201,7 @@ func TestHLSPlaylistPublicationAndFreshnessEdges(t *testing.T) { //nolint:cyclop
 	}
 }
 
-func TestPlaybackRecipeProtocolAndSubtitleEdges(t *testing.T) { //nolint:cyclop // One boundary matrix covers independent recipe and subtitle constraints.
+func TestPlaybackRecipeProtocolAndSubtitleEdges(t *testing.T) {
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	if recipe := RecipeFor(PlaybackPlan{Mode: "transcode", SubtitleMode: "burn-in"}); recipe.Burn != "image" {
 		t.Fatalf("image recipe = %#v", recipe)
@@ -235,7 +235,7 @@ func TestPlaybackRecipeProtocolAndSubtitleEdges(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestHLSDeliveryAndJellyfinValidationEdges(t *testing.T) { //nolint:cyclop // One boundary matrix covers independent delivery and provider constraints.
+func TestHLSDeliveryAndJellyfinValidationEdges(t *testing.T) {
 	if _, err := HLSCodecArguments(HLSCodecInput{AudioRate: "128k", CopyInput: "0", Recipe: HLSRecipe{Mode: "transcode"}}); err == nil {
 		t.Fatal("accepted missing video rate")
 	}

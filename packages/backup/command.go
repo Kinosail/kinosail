@@ -20,7 +20,7 @@ func BindCommand(service *Service, version func() string) Command {
 	}
 }
 
-func (service *Service) command(args []string, input io.Reader, output io.Writer, dataDir, key string, version func() string) (bool, error) { //nolint:cyclop // The bounded command matrix remains below the repository complexity ceiling.
+func (service *Service) command(args []string, input io.Reader, output io.Writer, dataDir, key string, version func() string) (bool, error) {
 	if len(args) == 0 || args[0] != "backup" && args[0] != "restore" {
 		return false, nil
 	}

@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestSubtitleHistoryRejectsInvalidEvidenceWithoutSideEffects(t *testing.T) { //nolint:gocognit // One persistence boundary checks each malformed evidence case and unchanged state.
+func TestSubtitleHistoryRejectsInvalidEvidenceWithoutSideEffects(t *testing.T) {
 	t.Parallel()
 	for name, evidence := range map[string]string{
 		"unknown reason":                   `"reason":"better"`,

@@ -84,7 +84,7 @@ func (recipe HLSRecipe) Token() string {
 	return token
 }
 
-func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { //nolint:cyclop,gocognit // Every bounded token field is validated before use.
+func ParseHLSRecipe(value string, policy HLSRecipePolicy) (HLSRecipe, error) { //nolint:cyclop // Every bounded token field is validated before use.
 	if policy.MaxBitrate <= 0 || policy.OffsetStepMilliseconds <= 0 {
 		return HLSRecipe{}, errors.New("playback recipe policy is invalid")
 	}
@@ -153,7 +153,7 @@ func parseRecipeCodec(parts []string) ([]string, string, error) {
 	return append(parts[:6], parts[7:]...), codec, nil
 }
 
-func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSRecipe, error) { //nolint:cyclop // Compact recipe-field validation remains below the repository quality ceiling.
+func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSRecipe, error) {
 	mode := map[string]string{"r": "remux", "a": "audio-transcode", "t": "transcode"}[parts[0]]
 	if mode == "" || codec != "" && mode != "transcode" {
 		return HLSRecipe{}, errors.New("playback recipe is invalid")
@@ -183,7 +183,7 @@ func prefixedInt64(value, prefix string) (int64, error) {
 	return strconv.ParseInt(strings.TrimPrefix(value, prefix), 10, 64)
 }
 
-func parseOmittedRanges(parts []string) ([]Range, error) { //nolint:cyclop // Cardinality, ordering, and bounds form one validation pass.
+func parseOmittedRanges(parts []string) ([]Range, error) {
 	if len(parts) == 6 {
 		return nil, nil
 	}
@@ -232,7 +232,7 @@ func PlannedHLSFile(name string, policy HLSRecipePolicy) (HLSRecipe, string, boo
 	return recipe, strings.Join(parts[2:], "/"), err == nil
 }
 
-func HLSRecipeKey(id string, recipe HLSRecipe) string { //nolint:cyclop // Every non-default recipe field must prevent reuse of the legacy cache identity.
+func HLSRecipeKey(id string, recipe HLSRecipe) string {
 	if recipe.SingleQuality {
 		return id + "-plan-" + recipe.Token() + "-single"
 	}

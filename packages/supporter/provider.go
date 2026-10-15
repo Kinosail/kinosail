@@ -26,7 +26,7 @@ type activationResponse struct {
 	Error        string `json:"error"`
 }
 
-func (service *Service) send(ctx context.Context, input activationRequest) (activationResponse, error) { //nolint:cyclop // Provider validation remains below the repository complexity ceiling.
+func (service *Service) send(ctx context.Context, input activationRequest) (activationResponse, error) {
 	body, _ := json.Marshal(input)
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, service.endpoint, strings.NewReader(string(body)))
 	if err != nil {

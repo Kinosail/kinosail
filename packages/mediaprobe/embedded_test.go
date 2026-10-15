@@ -18,7 +18,7 @@ import (
 
 const testWebVTT = "WEBVTT\n\n00:00.000 --> 00:02.000\nDoor closes\n"
 
-func TestEmbeddedSubtitleExtractionCacheAndTimeline(t *testing.T) { //nolint:cyclop,funlen,gocognit // One lifecycle proves extraction, cache reuse, repair, and timeline mapping.
+func TestEmbeddedSubtitleExtractionCacheAndTimeline(t *testing.T) {
 	t.Parallel()
 	root, cache := t.TempDir(), t.TempDir()
 	media, calls, ffmpeg := filepath.Join(root, "film.mkv"), filepath.Join(root, "calls"), filepath.Join(root, "ffmpeg")
@@ -108,7 +108,7 @@ func TestEmbeddedSubtitleRejectsUnsupportedStreamsWithoutExtraction(t *testing.T
 	}
 }
 
-func TestEmbeddedHandlerPreservesPlayerHTTPFailuresAndBytes(t *testing.T) { //nolint:cyclop // One route matrix proves strict parsing, error copy, and exact subtitle bytes.
+func TestEmbeddedHandlerPreservesPlayerHTTPFailuresAndBytes(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	item := library.Item{ID: "film", Path: filepath.Join(root, "film.mkv")}
@@ -154,7 +154,7 @@ func TestEmbeddedHandlerPreservesPlayerHTTPFailuresAndBytes(t *testing.T) { //no
 	}
 }
 
-func TestEmbeddedSubtitleBoundsCancellationAndCleanup(t *testing.T) { //nolint:cyclop,funlen,gocognit // The matrix proves all command and cache failure paths without partial files.
+func TestEmbeddedSubtitleBoundsCancellationAndCleanup(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	item := library.Item{ID: "film", Path: filepath.Join(root, "film.mkv")}
@@ -216,7 +216,7 @@ func TestEmbeddedSubtitleBoundsCancellationAndCleanup(t *testing.T) { //nolint:c
 	}
 }
 
-func TestEmbeddedSubtitleRepairsUnsafeCacheAndRejectsUnsafeIDs(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the repair/rejection matrix.
+func TestEmbeddedSubtitleRepairsUnsafeCacheAndRejectsUnsafeIDs(t *testing.T) {
 	t.Parallel()
 	root, cache := t.TempDir(), t.TempDir()
 	media, ffmpeg := filepath.Join(root, "film.mkv"), filepath.Join(root, "ffmpeg")

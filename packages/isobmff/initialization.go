@@ -38,7 +38,7 @@ func (initialization Initialization) Video() (Track, bool) {
 }
 
 func Read(path string) (Initialization, error) {
-	file, err := os.Open(path) //nolint:gosec // Caller supplies a generated output path.
+	file, err := os.Open(path)
 	if err != nil {
 		return Initialization{}, err
 	}

@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) { //nolint:cyclop,gocognit,funlen // One test proves selection, backup, rollback, freeze, and ledger state.
+func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) {
 	t.Parallel()
 	var better atomic.Bool
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -121,7 +121,7 @@ func TestSubtitleMaintenanceAddsEveryPreferredLanguage(t *testing.T) {
 	}
 }
 
-func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) { //nolint:cyclop // The integration flow checks retry cursor semantics.
+func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) {
 	t.Parallel()
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path == "/api/v2/me" {
@@ -148,7 +148,7 @@ func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) { //
 		t.Fatal(err)
 	}
 	index := sidecarTestIndex(item)
-	settings := newSettingsStore(media, t.TempDir(), "", nil)
+	settings := newSettingsStore(media, t.TempDir(), nil)
 	settings.value.SubtitleLanguage, settings.value.SubtitleLanguages = "en", []string{"en", "es"}
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), index, settings, "")
 	if attempted, connected := provider.testCredentials(t.Context()); attempted != 1 || connected != 1 {
@@ -215,7 +215,7 @@ func TestSubtitleAutomationRetriesAfterMediaOrProviderChanges(t *testing.T) {
 	check(1, 3)
 }
 
-func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing.T) { //nolint:cyclop // One fake official API proves login, exact-match replacement, backup, and provenance.
+func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing.T) {
 	t.Parallel()
 	var remote *httptest.Server
 	remote = httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

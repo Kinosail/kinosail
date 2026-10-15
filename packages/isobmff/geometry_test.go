@@ -12,10 +12,10 @@ func geometryInitialization(aspects [][]byte, header []byte) []byte {
 	entry := make([]byte, 78, 256)
 	binary.BigEndian.PutUint16(entry[24:], 640)
 	binary.BigEndian.PutUint16(entry[26:], 360)
-	entry = append(entry, mp4fixture.Box("avcC", []byte{1, 100, 0, 42, 255, 225, 0})...) //nolint:makezero // The first 78 bytes are the required visual sample-entry header.
+	entry = append(entry, mp4fixture.Box("avcC", []byte{1, 100, 0, 42, 255, 225, 0})...)
 	for _, aspect := range aspects {
 		entry = append(entry, mp4fixture.Box("pasp", aspect)...)
-	} //nolint:makezero // Append boxes after the populated sample-entry header.
+	}
 	track := mp4fixture.Track("avc1", entry)
 	return mp4fixture.Box("moov", mp4fixture.Box("trak", append(track[8:], mp4fixture.Box("tkhd", header)...)))
 }

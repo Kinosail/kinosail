@@ -50,7 +50,7 @@ func (adapter *Gateway) ObserveEvents(ctx context.Context, hub *liveevents.Hub) 
 	hub.SetObserver(func(profile, name, resource string) { adapter.PublishEvent(ctx, profile, name, resource) })
 }
 
-func (adapter *Gateway) PublishEvent(ctx context.Context, profile, name, resource string) { //nolint:cyclop,gocognit // Profile filtering and bounded queue admission stay in one publication boundary.
+func (adapter *Gateway) PublishEvent(ctx context.Context, profile, name, resource string) {
 	if adapter == nil || adapter.connections == nil || ctx == nil || !eventResource(name, resource) || resource == "" {
 		return
 	}
@@ -89,7 +89,7 @@ func (adapter *Gateway) PublishEvent(ctx context.Context, profile, name, resourc
 	}
 }
 
-func (adapter *Gateway) deliverEvents(ctx context.Context, id string, delivery *eventDeliveryState) { //nolint:cyclop,gocognit // Queue state, refresh generations, and teardown stay in one worker loop.
+func (adapter *Gateway) deliverEvents(ctx context.Context, id string, delivery *eventDeliveryState) { //nolint:gocognit // Queue state, refresh generations, and teardown stay in one worker loop.
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
 	defer func() {
@@ -133,7 +133,7 @@ func (adapter *Gateway) deliverEvents(ctx context.Context, id string, delivery *
 	}
 }
 
-func (adapter *Gateway) deliverEvent(ctx context.Context, id string, event eventOccurrence) string { //nolint:cyclop,gocognit // Backoff, authority rechecks, and concurrency slots form one bounded delivery lifecycle.
+func (adapter *Gateway) deliverEvent(ctx context.Context, id string, event eventOccurrence) string { //nolint:gocognit // Backoff, authority rechecks, and concurrency slots form one bounded delivery lifecycle.
 	body, _ := json.Marshal(event)
 	failure := "connection_refused"
 	for attempt := 0; attempt < 3; attempt++ {

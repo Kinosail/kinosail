@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Classify(request *http.Request, overrides map[string]string) (string, string) { //nolint:cyclop,gocognit // Mutation names are intentionally centralized and exhaustive.
+func Classify(request *http.Request, overrides map[string]string) (string, string) {
 	if !auditMethod(request.Method) && request.URL.Path != "/login/oidc/callback" {
 		return "", ""
 	}
@@ -98,7 +98,7 @@ func playbackMutation(path string) bool {
 		path == "/Sessions/Capabilities" || path == "/Sessions/Capabilities/Full"
 }
 
-func apiAdministrativeChange(request *http.Request) bool { //nolint:cyclop // Administrative API prefixes are an explicit security boundary.
+func apiAdministrativeChange(request *http.Request) bool {
 	path := request.URL.Path
 	return strings.HasPrefix(path, "/api/v1/settings/") || strings.HasPrefix(path, "/api/v1/profiles") || strings.HasPrefix(path, "/api/v1/devices") ||
 		strings.HasPrefix(path, "/api/v1/sessions") || strings.HasPrefix(path, "/api/v1/api-keys") || strings.HasPrefix(path, "/api/v1/tasks") ||
@@ -115,7 +115,7 @@ func Target(request *http.Request) string {
 	return request.URL.Path
 }
 
-func Details(request *http.Request) map[string]string { //nolint:cyclop,gocognit // Form and JSON allowlisting share one redaction path.
+func Details(request *http.Request) map[string]string {
 	allowed := map[string]bool{
 		"key": true, "name": true, "mode": true, "autoplay": true, "subtitles": true, "markers": true, "autoSkip": true,
 		"quality": true, "codec": true, "accelerator": true, "toneMap": true, "language": true, "frequency": true, "enabled": true, "updateMode": true, "automatic": true,

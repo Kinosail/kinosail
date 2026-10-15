@@ -33,7 +33,7 @@ func TestConfigurationStoreRejectsBeforeSideEffects(t *testing.T) {
 	}
 }
 
-func TestConfigurationStoreSetAndReset(t *testing.T) { //nolint:cyclop // One lifecycle verifies retained, explicit, reset, and failed values.
+func TestConfigurationStoreSetAndReset(t *testing.T) {
 	t.Parallel()
 	effects := &scimConfigurationEffects{current: "current-token"}
 	store := testSCIMConfigurationStore(effects)

@@ -12,7 +12,7 @@ func (manager *subtitleManager) embeddedReady() bool {
 	return manager.probe != nil && manager.probe.executable != "" && manager.probe.ffmpeg != ""
 }
 
-func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.Item, language string) error { //nolint:gocognit // Embedded extraction and durable ledger rollback form one atomic operation.
+func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.Item, language string) error {
 	ctx, settled, admissionErr := manager.provider.admission.enter(ctx)
 	if admissionErr != nil {
 		return admissionErr
@@ -54,7 +54,7 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 	return err
 }
 
-func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item library.Item, language string) ([]byte, bool) { //nolint:cyclop // Track selection and probe-cache extraction are one embedded subtitle operation.
+func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item library.Item, language string) ([]byte, bool) {
 	best, found := manager.embeddedSubtitleTrack(ctx, item, language)
 	if !found {
 		return nil, false
@@ -64,12 +64,12 @@ func (manager *subtitleManager) embeddedSubtitle(ctx context.Context, item libra
 		return nil, false
 	}
 	if path != "" {
-		data, err = os.ReadFile(path) //nolint:gosec // The path is the probe-owned embedded subtitle cache.
+		data, err = os.ReadFile(path)
 	}
 	return data, err == nil && len(data) > 0
 }
 
-func (manager *subtitleManager) embeddedSubtitleTrack(ctx context.Context, item library.Item, language string) (SubtitleFacts, bool) { //nolint:cyclop // Embedded-track selection validates all media variants together.
+func (manager *subtitleManager) embeddedSubtitleTrack(ctx context.Context, item library.Item, language string) (SubtitleFacts, bool) {
 	if !manager.embeddedReady() {
 		return SubtitleFacts{}, false
 	}

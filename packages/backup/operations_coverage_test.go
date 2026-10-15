@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestBackupCoverageClosesManagerFailureEdges(t *testing.T) { //nolint:cyclop,funlen // One matrix covers scheduler and filesystem failures.
+func TestBackupCoverageClosesManagerFailureEdges(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 	_ = NewManager(ManagerConfig{Context: ctx, DataDir: "/data", Directory: "/backups", Key: "key", Retention: 1, Interval: time.Millisecond, WriteEncrypted: func(io.Writer, string, string) error { return nil }, VerifyAuto: func(io.Reader, string) error { return nil }})
@@ -79,7 +79,7 @@ func TestBackupCoverageClosesManagerFailureEdges(t *testing.T) { //nolint:cyclop
 	}
 }
 
-func TestBackupCoverageClosesRestoreFailureEdges(t *testing.T) { //nolint:cyclop,funlen,gocognit // One matrix covers each atomic restore failure.
+func TestBackupCoverageClosesRestoreFailureEdges(t *testing.T) {
 	base := testService(t, func(string) (Database, error) { return nil, nil }, func([]byte) error { return nil })
 	for name, file := range map[string]*restoreFailureFile{
 		"write": {writeErr: errors.New("write failed")},

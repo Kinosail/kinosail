@@ -71,8 +71,6 @@ func registerProductAPI(mux *http.ServeMux, api apiServices) {
 		media := api.probe.inspect(request.Context(), item)
 		return api.progress.Get(request, id).Seconds, media.Duration, true
 	}))
-	mux.HandleFunc("POST /api/v1/watch-rooms", productapi.CreateRoom(productRooms{api}))
-	mux.HandleFunc("GET /api/v1/watch-rooms/{id}", apiRoom(api))
 	owner("POST /api/v1/metadata/bulk", productapi.BulkEditMetadata(productapi.BulkMetadataFunc(func(ctx context.Context, ids []string, patch productapi.MetadataPatch) (int, error) {
 		updates, err := api.metadata.applyPatch(ctx, api.index, ids, metadataPatch(patch))
 		return len(updates), err
@@ -86,8 +84,8 @@ func registerProductAPI(mux *http.ServeMux, api apiServices) {
 	}, writeJSON))
 	contractError := func(message string) error { return apiContractError(message) }
 	owner("POST /api/v1/remote-access/kill", remoteaccess.KillAPI(api.internet, func() error {
-		return revokePublicAuthorization(api.auth.profiles, api.auth.passkeys, api.quick, api.shares)
-	}, contractError, apiError)) //nolint:contextcheck // Once the kill switch begins, revocation must finish despite request cancellation.
+		return revokePublicAuthorization(api.auth.profiles, api.auth.passkeys)
+	}, contractError, apiError))
 	owner("DELETE /api/v1/remote-access/kill", remoteaccess.ResetKillAPI(api.internet, contractError, apiError))
 	owner("GET /api/v1/activity", auditjournal.ActivityAPI(api.auth.audit.HTTPTracker, func() []playbackView {
 		return catalogapi.RecentAdminProgress(api.progress, api.index, api.auth.profiles.list())
@@ -152,34 +150,9 @@ type apiContractError string
 
 func (err apiContractError) Error() string { return string(err) }
 
-func apiRoom(api apiServices) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		event, found := api.rooms.rooms.Snapshot(request.PathValue("id"), currentViewer(request).ID)
-		if !found || !roomMediaVisible(request, api.index, event.Media) {
-			apiNotFound(writer)
-			return
-		}
-		writeJSON(writer, event, http.StatusOK)
-	}
-}
-
 type productMetadata struct {
 	index *libraryIndex
 	store *metadataStore
-}
-
-type productRooms struct{ apiServices }
-
-func (service productRooms) Visible(request *http.Request, id string) (library.Item, bool) {
-	return visibleItem(request, service.index, id)
-}
-
-func (service productRooms) Viewer(request *http.Request) viewerProfile {
-	return currentViewer(request)
-}
-
-func (service productRooms) Create(viewer viewerProfile, media string, seconds float64) (string, bool) {
-	return service.rooms.create(viewer, media, seconds)
 }
 
 func (service productMetadata) Find(id string) (library.Item, bool) { return service.index.Find(id) }

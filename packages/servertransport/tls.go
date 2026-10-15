@@ -37,7 +37,7 @@ func loadOrCreate(dataDir string, hosts []string, operations tlsOperations) (tls
 	return tls.X509KeyPair(contents, contents)
 }
 
-func serverCertificateWith(dataDir string, hosts []string, operations tlsOperations) (string, error) { //nolint:cyclop // Owner and generated identity paths must fail closed in one lifecycle.
+func serverCertificateWith(dataDir string, hosts []string, operations tlsOperations) (string, error) {
 	if err := validateIdentityInput(dataDir, hosts); err != nil {
 		return "", err
 	}

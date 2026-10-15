@@ -5,7 +5,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const states = ["api-key-created", "media-share-items", "mfa-setup", "passkey-account", "passkey-prompt", "mfa-required", "oidc-mfa", "viewing-import-preview", "viewing-import-result", "mcp-approval", "supporter-populated-active", "supporter-populated-archived", "state-contracts"];
+const states = ["api-key-created", "mfa-setup", "passkey-account", "passkey-prompt", "mfa-required", "oidc-mfa", "viewing-import-preview", "viewing-import-result", "mcp-approval", "supporter-populated-active", "supporter-populated-archived", "state-contracts"];
 const viewports = [
 	{ width: 1440, height: 900 },
 	{ width: 1024, height: 768 },
@@ -69,16 +69,6 @@ for (const viewport of viewports) {
 					oversizedGrant: viewportWidth >= 700 && grantCard ? grantCard.getBoundingClientRect().width > 600 : false,
 				};
 			});
-			if (state === "media-share-items") {
-				const stage = await page.locator(".media-stage").boundingBox();
-				const video = await page.locator(".media-stage video").boundingBox();
-				if (!stage || !video || video.width < stage.width * 0.9 || video.height < Math.min(180, stage.width * 0.5))
-					failures.push({
-						state,
-						viewport: viewport.width,
-						sharedMediaStage: { stage, video },
-					});
-			}
 			if (state === "supporter-populated-active") {
 				await expect(page.locator(".family-living-standard .badge-level.current")).toContainText("Yours");
 				await expect(page.getByLabel("Subscriber service marks").locator("span")).toHaveCount(6);

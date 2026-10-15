@@ -202,7 +202,7 @@ func validProbeCardinality(result Result) bool {
 	return len(result.Audio) <= 64 && len(result.AudioFacts) <= 64 && len(result.SubtitleFacts) <= 64 && len(result.Chapters) <= 4096 && len(result.Markers) <= 4096 && len(result.RandomAccess) <= 8192
 }
 
-func validVideoBounds(video playback.VideoFacts) bool { //nolint:cyclop // These independent persisted video fields share one flat bounds contract.
+func validVideoBounds(video playback.VideoFacts) bool {
 	return video.Rotation >= -360 && video.Rotation <= 360 && video.Rotation%90 == 0 && video.DolbyVisionProfile >= 0 && video.DolbyVisionProfile <= 10 && video.DolbyVisionCompatibility >= 0 && video.DolbyVisionCompatibility <= 15 && oneOf(video.FieldOrder, "", "unknown", "progressive", "tt", "bb", "tb", "bt") && video.Width >= 0 && video.Width <= 16384 && video.Height >= 0 && video.Height <= 16384 && video.BitDepth >= 0 && video.BitDepth <= 64 && finite(video.FrameRate) && video.FrameRate >= 0 && video.FrameRate <= 1000
 }
 

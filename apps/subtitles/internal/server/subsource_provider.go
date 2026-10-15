@@ -130,7 +130,7 @@ func (provider *subSourceProvider) download(ctx context.Context, candidate subSo
 	return readSubSourceArchive(archive, item)
 }
 
-func readSubSourceArchive(archive *zip.Reader, item library.Item) ([]byte, error) { //nolint:cyclop,gocognit // Archive selection validates every candidate before reading one bounded subtitle.
+func readSubSourceArchive(archive *zip.Reader, item library.Item) ([]byte, error) {
 	if len(archive.File) == 0 || len(archive.File) > 100 {
 		return nil, errors.New("SubSource archive has invalid cardinality")
 	}

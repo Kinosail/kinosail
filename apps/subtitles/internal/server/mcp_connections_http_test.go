@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func TestAgentConnectionAPIAndWebAdaptersRejectUnknownRevocation(t *testing.T) { //nolint:cyclop // One fixture proves projection and fail-closed revocation through both adapters.
+func TestAgentConnectionAPIAndWebAdaptersRejectUnknownRevocation(t *testing.T) {
 	profiles := newProfileStore("")
 	profiles.profiles = []viewerProfile{{ID: "owner", Name: "Owner", Owner: true}}
 	connections := newMCPConnections("https://kino.test:38128", t.TempDir(), profiles, nil)

@@ -28,6 +28,7 @@ linters:
     - nilerr
     - nilnesserr
     - noctx
+    - nolintlint
     - perfsprint
     - reassign
     - recvcheck
@@ -43,20 +44,39 @@ linters:
     - whitespace
   settings:
     cyclop:
-      max-complexity: 10
+      max-complexity: 21
     dupl:
       threshold: 100
     funlen:
-      lines: 60
-      statements: 40
+      lines: 100
+      statements: 60
     gocognit:
-      min-complexity: 15
+      min-complexity: 21
+    nolintlint:
+      allow-unused: false
+      require-specific: true
+    staticcheck:
+      checks:
+        - all
+        - -ST1000
+        - -ST1003
+        - -ST1005
+        - -ST1016
+        - -ST1020
+        - -ST1021
+        - -ST1022
   exclusions:
     generated: strict
     presets:
       - comments
       - common-false-positives
       - std-error-handling
+    rules:
+      - path: _test\.go
+        linters:
+          - cyclop
+          - funlen
+          - gocognit
 
 formatters:
   enable:

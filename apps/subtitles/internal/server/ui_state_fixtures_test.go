@@ -39,7 +39,7 @@ func supporterUIFixture(archived bool) supporterPageData {
 	}
 }
 
-func TestWriteUIStateFixtures(t *testing.T) { //nolint:paralleltest,funlen // This opt-in test writes a shared browser fixture directory.
+func TestWriteUIStateFixtures(t *testing.T) {
 	dir := os.Getenv("KINOSAIL_UI_FIXTURE_DIR")
 	if dir == "" {
 		t.Skip("KINOSAIL_UI_FIXTURE_DIR is not set")
@@ -82,9 +82,8 @@ func TestWriteUIStateFixtures(t *testing.T) { //nolint:paralleltest,funlen // Th
 		BackPath: "/settings#viewing-imports", BackLabel: "Settings", Step: "Migration preview", ApplyPath: "/settings/viewing-imports/apply", AllowSync: true,
 	}
 	fixtures := map[string]func(*bytes.Buffer) error{
-		"api-key-created":   localized(apiKeySecretView, map[string]string{"Name": "Living Room remote", "Secret": "ks_example_local_only"}),
-		"media-share-items": plain(mediaShareItemsView, []map[string]string{{"Title": "Signal Garden", "ID": "fixture"}}),
-		"mfa-setup":         localized(mfaSetupView, mfaSetupPage{mfaEnrollment: mfaEnrollment{Secret: strings.Repeat("A", 32), URI: "otpauth://totp/Kinosail:Owner", RecoveryCodes: []string{"AAAA-BBBB-CCCC-DDDD", "EEEE-FFFF-GGGG-HHHH"}}}),
+		"api-key-created": localized(apiKeySecretView, map[string]string{"Name": "Living Room remote", "Secret": "ks_example_local_only"}),
+		"mfa-setup":       localized(mfaSetupView, mfaSetupPage{mfaEnrollment: mfaEnrollment{Secret: strings.Repeat("A", 32), URI: "otpauth://totp/Kinosail:Owner", RecoveryCodes: []string{"AAAA-BBBB-CCCC-DDDD", "EEEE-FFFF-GGGG-HHHH"}}}),
 		"passkey-account": localized(accountView, struct {
 			Passkeys         []passkeySummary
 			HasPasskeys      bool

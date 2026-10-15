@@ -37,9 +37,9 @@ type (
 
 const publicSessionMaximumAge = 31 * 24 * time.Hour
 
-func newAuthentication(ctx context.Context, dataDir string, required bool, authURL string, settings *settingsStore, notifications NotificationConfig, stateDB *database.Store, retentions ...time.Duration) *authentication { //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
+func newAuthentication(ctx context.Context, dataDir string, required bool, authURL string, settings *settingsStore, notifications NotificationConfig, stateDB *database.Store, retentions ...time.Duration) *authentication {
 	notify := newNotification(notifications)
-	profiles := newProfileStore(dataDir, stateDB) //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
+	profiles := newProfileStore(dataDir, stateDB)
 	profiles.sessionTimeouts = settings.sessionTimeouts
 	profiles.publicSessionTimeouts = settings.publicSessionTimeouts
 	profiles.publicSessionLifetime = settings.publicSessionLifetime
@@ -50,7 +50,7 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	return auth
 }
 
-func (auth *authentication) protect(next http.Handler, pattern func(*http.Request) string) http.Handler { //nolint:cyclop,gocognit // Authentication decisions remain linear and auditable below the repository quality ceiling.
+func (auth *authentication) protect(next http.Handler, pattern func(*http.Request) string) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if !publicInternetRequest(request) && navigation.IsBrowserRequest(request, authenticationErrorRequest(request)) && !auth.passkeys.engine.RequirePageOrigin(writer, request, auth.passkeys.redirectPages && auth.passkeys.err == nil, secureRequest(request)) {
 			return
@@ -66,7 +66,7 @@ func (auth *authentication) protect(next http.Handler, pattern func(*http.Reques
 			localizedNotFound(writer, request)
 			return
 		}
-		if (matched == "" || auth.public(request, matched)) && (owneraccess.ProfileID(request) == "" || identitycore.ManagementBootstrapRoute(matched)) {
+		if (matched == "" || publicPattern(matched)) && (owneraccess.ProfileID(request) == "" || identitycore.ManagementBootstrapRoute(matched)) {
 			auth.audit.Track(next, writer, request)
 			return
 		}
@@ -122,37 +122,11 @@ func (auth *authentication) setRequireMFA(required bool) (bool, error) {
 }
 
 func authenticationErrorRequest(request *http.Request) bool {
-	return strings.HasPrefix(request.URL.Path, "/api/") || jellyfinPath(request.URL.Path)
+	return strings.HasPrefix(request.URL.Path, "/api/")
 }
 
-func (auth *authentication) public(request *http.Request, pattern string) bool { //nolint:cyclop // Route capability policy remains one auditable decision.
-	access := publicRoutes[pattern]
-	if access == publicRoute {
-		return true
-	}
-	if access == localCompatibilityRoute {
-		return sessionToken(request) == ""
-	}
-	if access != capabilityRoute {
-		return false
-	}
-	if pattern == "GET /Videos/{id}/{stream...}" {
-		path := strings.TrimPrefix(request.URL.Path, "/Videos/")
-		slash := strings.IndexByte(path, '/')
-		if slash < 0 {
-			return false
-		}
-		_, file, planned := plannedHLSFile(strings.ToLower(path[slash+1:]))
-		return planned && hlsFile(file) && validPlaybackSession(jellyfinPlaySessionID(request))
-	}
-	if strings.HasPrefix(pattern, "GET /Videos/") || pattern == "GET /Audio/{id}/{stream}" {
-		stream := strings.ToLower(request.URL.Path[strings.LastIndex(request.URL.Path, "/")+1:])
-		if stream != "master.m3u8" && !strings.HasPrefix(stream, "stream") {
-			return true
-		}
-		return jellyfinPlaySessionID(request) != ""
-	}
-	return true
+func publicPattern(pattern string) bool {
+	return publicRoutes[pattern] != 0
 }
 
 func (auth *authentication) identity(request *http.Request) (viewerProfile, bool) {
@@ -183,15 +157,12 @@ func (auth *authentication) register(mux *http.ServeMux) {
 	auth.passkeys.register(mux, auth.allowLogin)
 }
 
-func registerIdentity(mux *http.ServeMux, auth *authentication, quickTTL time.Duration, oidcConfig OIDCConfig, samlConfig SAMLConfig, scimConfig SCIMConfig) *quickConnectBroker {
+func registerIdentity(mux *http.ServeMux, auth *authentication, oidcConfig OIDCConfig, samlConfig SAMLConfig, scimConfig SCIMConfig) {
 	sso, saml := auth.configureFederation(oidcConfig, samlConfig)
 	auth.register(mux)
-	quickConnect := newQuickConnect(quickTTL)
-	quickConnect.register(mux, auth.profiles)
 	sso.Register(mux)
 	saml.Register(mux)
 	registerSCIM(mux, scimConfig, auth.profiles)
-	return quickConnect
 }
 
 func (auth *authentication) logout(writer http.ResponseWriter, request *http.Request) {

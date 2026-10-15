@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestExecuteDispatchesCommandsAndServerMode(t *testing.T) { //nolint:cyclop // One process-contract test covers precedence and exit codes.
+func TestExecuteDispatchesCommandsAndServerMode(t *testing.T) {
 	previous := runtime.GOMAXPROCS(0)
 	defer runtime.GOMAXPROCS(previous)
 	settings := testSettings{"paths.data": "/data", "backup.key": "key", "listen": ":1234", "logging.level": "info"}

@@ -12,7 +12,7 @@ import (
 	"testing/iotest"
 )
 
-func TestSubtitleProviderDownloadAndURLSafetyBranches(t *testing.T) { //nolint:cyclop // One fixture proves every download boundary and URL form.
+func TestSubtitleProviderDownloadAndURLSafetyBranches(t *testing.T) {
 	t.Parallel()
 	valid := []byte("1\n00:00:01,000 --> 00:00:02,000\nDialogue\n")
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

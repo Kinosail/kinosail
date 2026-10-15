@@ -20,7 +20,7 @@ type requestActivity struct {
 	securityRecorded bool
 }
 
-func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler { //nolint:contextcheck // Recovery and final logging intentionally retain the request context.
+func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		facts := &requestActivity{id: acceptedRequestID(request.Header.Get("X-Request-ID")), playbackSession: acceptedPlaybackSession(request)}
 		request = request.WithContext(context.WithValue(request.Context(), requestActivityKey{}, facts))
@@ -90,7 +90,7 @@ func markSecurityRecorded(request *http.Request) {
 	}
 }
 
-func acceptedRequestID(value string) string { //nolint:cyclop // The inline allowlist makes accepted request-ID characters explicit.
+func acceptedRequestID(value string) string {
 	if value != "" && len(value) <= 64 && strings.IndexFunc(value, func(character rune) bool {
 		return character != '-' && character != '_' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 	}) == -1 {

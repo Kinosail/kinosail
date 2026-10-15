@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem(t *testing.T) { //nolint:cyclop,funlen // One table proves every malformed transport case stays side-effect free.
+func TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -80,7 +80,7 @@ func TestSubtitleMutationsRejectInvalidInputBeforeProviderOrFilesystem(t *testin
 	}
 }
 
-func TestSubtitleWebAndBatchMutationsWriteWantedSidecars(t *testing.T) { //nolint:cyclop // Web, API, and batch adapters must prove the same write operation.
+func TestSubtitleWebAndBatchMutationsWriteWantedSidecars(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

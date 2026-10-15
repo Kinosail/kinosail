@@ -110,22 +110,13 @@ case "$action" in
   browser)
     fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
     KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR="$fixture_dir/subtitle-merged" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts test-instance.spec.ts subtitle-inspector-layout.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
-    ;;
-  playback)
-    fixture_dir="$KINOSAIL_TEST_ROOT/ui-fixtures"
-    results="$KINOSAIL_TEST_ROOT/playback-results"
-    KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-    playwright=(env KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_BROWSER_MATRIX=full pnpm --dir e2e exec playwright test)
-    "${playwright[@]}" player-experience.spec.ts player-direct-fallback.spec.ts player-seeking.spec.ts player-quality.spec.ts player-duration.spec.ts playback-pause-repro.spec.ts playback-startup.spec.ts instant-playback.spec.ts instant-show-play.spec.ts loading-review.spec.ts --workers=1 --reporter=line --output="$results/player-matrix"
-    "${playwright[@]}" playback-bandwidth.spec.ts --project=chromium --workers=1 --repeat-each=3 --reporter=line --output="$results/bandwidth"
-    "${playwright[@]}" layout-audit.spec.ts --grep 'player shows and switches|player stays accessible|artwork-backed media' --workers=1 --reporter=line --output="$results/accessibility"
+    KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR="$fixture_dir/subtitle-merged" KINOSAIL_TEST_TOTP_SECRET="$(<"$KINOSAIL_TEST_ROOT/totp-secret")" KINOSAIL_E2E_URL="$(url)" KINOSAIL_E2E_OUTPUT_DIR="$KINOSAIL_TEST_ROOT/playwright-results" pnpm --dir e2e test polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts test-instance.spec.ts subtitle-inspector-layout.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts removed-routes.spec.ts --workers="${KINOSAIL_E2E_WORKERS:-1}"
     ;;
   totp)
     totp_code
     ;;
   *)
-    printf 'usage: %s {up|down [--volumes]|url|verify|browser|playback|totp}\n' "$0" >&2
+    printf 'usage: %s {up|down [--volumes]|url|verify|browser|totp}\n' "$0" >&2
     exit 2
     ;;
 esac

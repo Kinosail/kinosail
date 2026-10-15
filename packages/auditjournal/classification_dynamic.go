@@ -14,7 +14,7 @@ func dynamicAuditAction(request *http.Request) string {
 	return ""
 }
 
-func identityAuditAction(request *http.Request) string { //nolint:cyclop // The route vocabulary remains explicit for audit review.
+func identityAuditAction(request *http.Request) string {
 	path := request.URL.Path
 	switch {
 	case strings.HasPrefix(path, "/scim/v2/Users"):
@@ -45,7 +45,7 @@ func identityAuditAction(request *http.Request) string { //nolint:cyclop // The 
 	}
 }
 
-func libraryAuditAction(request *http.Request) string { //nolint:cyclop // The route vocabulary remains explicit for audit review.
+func libraryAuditAction(request *http.Request) string {
 	path := request.URL.Path
 	if strings.Contains(path, "/items/") {
 		if strings.HasSuffix(path, "/list") {

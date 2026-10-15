@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -15,6 +16,7 @@ type TrustedHTTPSFixture struct {
 	SignIn                func(*testing.T, http.Handler, string, string) *http.Cookie
 	Web                   AuthCookieRequest
 	Token, ExpectedOrigin string
+	InitialCopy           []string
 }
 
 type trustedHTTPSFlow struct {
@@ -42,7 +44,11 @@ func (flow trustedHTTPSFlow) initial() {
 	t, fixture, handler, owner := flow.t, flow.fixture, flow.handler, flow.owner
 	t.Helper()
 	initial := fixture.Web(t, handler, http.MethodGet, "/settings", "", owner)
-	for _, expected := range []string{"Trusted HTTPS (Required for Jellyfin apps)", "Required for Jellyfin apps. Recommended for phones and TVs.", `action="/settings/trusted-https"`, "does not open a router port", "certificate-transparency logs"} {
+	expectedCopy := fixture.InitialCopy
+	if expectedCopy == nil {
+		expectedCopy = []string{"Trusted HTTPS (Required for Jellyfin apps)", "Required for Jellyfin apps. Recommended for phones and TVs."}
+	}
+	for _, expected := range append(slices.Clone(expectedCopy), `action="/settings/trusted-https"`, "does not open a router port", "certificate-transparency logs") {
 		if initial.Code != http.StatusOK || !strings.Contains(initial.Body.String(), expected) {
 			t.Fatalf("initial settings lacks %q: %d %q", expected, initial.Code, initial.Body.String())
 		}

@@ -25,7 +25,7 @@ func TestApplyStylePatchSupportsUnifiedHunks(t *testing.T) {
 	}
 }
 
-func TestStylePatchRejectsInvalidInput(t *testing.T) { //nolint:cyclop // One table covers each trusted patch format invariant.
+func TestStylePatchRejectsInvalidInput(t *testing.T) {
 	t.Parallel()
 
 	source := []byte("one\ntwo\n")
@@ -54,7 +54,7 @@ func TestStylePatchRejectsInvalidInput(t *testing.T) { //nolint:cyclop // One ta
 	}
 }
 
-func TestStylePatchParsersRejectInvalidRanges(t *testing.T) { //nolint:cyclop // One parser matrix remains below the repository complexity ceiling.
+func TestStylePatchParsersRejectInvalidRanges(t *testing.T) {
 	t.Parallel()
 
 	if _, _, err := (&stylePatchState{}).applyLine(nil); err == nil {

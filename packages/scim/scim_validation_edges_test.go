@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestSCIMUsernamePreparationAndEnterpriseValidationEdges(t *testing.T) { //nolint:cyclop // Each normalization layer is a separate trust boundary.
+func TestSCIMUsernamePreparationAndEnterpriseValidationEdges(t *testing.T) {
 	t.Parallel()
 	for _, userName := range []string{"a b", "\u200b"} {
 		if _, err := NormalizeProfileInput(ProfileInput{UserName: userName, Name: "Viewer"}); err == nil {
@@ -35,7 +35,7 @@ func TestSCIMUsernamePreparationAndEnterpriseValidationEdges(t *testing.T) { //n
 	}
 }
 
-func TestSCIMOptionalAttributeValidationEdges(t *testing.T) { //nolint:cyclop // Cardinality, shape, key, value, and scalar-type bounds fail independently.
+func TestSCIMOptionalAttributeValidationEdges(t *testing.T) {
 	t.Parallel()
 	if err := validateSCIMOptionalLists(json.RawMessage(`[]`), json.RawMessage(`[{"value":1}]`)); err == nil {
 		t.Fatal("invalid optional list in sequence accepted")
@@ -70,7 +70,7 @@ func TestSCIMOptionalAttributeValidationEdges(t *testing.T) { //nolint:cyclop //
 	}
 }
 
-func TestSCIMWireUnmarshalRejectsMalformedNestedValues(t *testing.T) { //nolint:cyclop // Nested wire types retain strict object and required-field semantics.
+func TestSCIMWireUnmarshalRejectsMalformedNestedValues(t *testing.T) {
 	t.Parallel()
 	for name, target := range map[string]any{
 		"name":  &scimName{},
@@ -115,7 +115,7 @@ func TestDecodeSCIMBodyRequiresBodyAndHandlesReadFailure(t *testing.T) {
 	}
 }
 
-func TestSCIMObjectRejectsNonObjectsMalformedValuesAndTrailingData(t *testing.T) { //nolint:cyclop // Token-level failures must not produce a partial object.
+func TestSCIMObjectRejectsNonObjectsMalformedValuesAndTrailingData(t *testing.T) {
 	t.Parallel()
 	for name, raw := range map[string]string{
 		"empty":           "",

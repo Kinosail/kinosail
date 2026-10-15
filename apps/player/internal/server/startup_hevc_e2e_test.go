@@ -105,7 +105,7 @@ func hevcPlaybackSource(t *testing.T, request func(string, string, any, int) []b
 func hevcCommand(t *testing.T, ctx context.Context, commands *[][]string, artifacts map[string][]byte, name, executable string, arguments ...string) []byte {
 	t.Helper()
 	*commands = append(*commands, append([]string{executable}, arguments...))
-	command := exec.CommandContext(ctx, executable, arguments...) //nolint:gosec // Fixed tool paths, synthetic media and the owned loopback server.
+	command := exec.CommandContext(ctx, executable, arguments...)
 	var diagnostic bytes.Buffer
 	command.Stderr = &diagnostic
 	output, err := command.Output()

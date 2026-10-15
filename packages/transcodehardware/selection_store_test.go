@@ -51,7 +51,7 @@ func TestSelectionStatePersistsBeforeCommit(t *testing.T) {
 	}
 }
 
-func TestSelectionStateReconcilesAndReads(t *testing.T) { //nolint:cyclop // One test covers each reconciliation outcome and read adapter.
+func TestSelectionStateReconcilesAndReads(t *testing.T) {
 	capabilities := settingsCapabilities()
 	value, check, saves := Selection{Transcoder: "quality", Codec: "auto", Accelerator: "qsv", ToneMap: true}, transcodepolicy.CheckResult{Status: "passed"}, 0
 	state := SelectionState{Lock: &sync.RWMutex{}, Value: &value, Check: &check, Save: func() error { saves++; return nil }}

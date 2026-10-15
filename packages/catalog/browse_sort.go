@@ -14,7 +14,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-func sortReferences(ctx context.Context, items []*library.Item, order, query, locale string) error { //nolint:cyclop,gocognit // All sort precedence stays explicit and deterministic.
+func sortReferences(ctx context.Context, items []*library.Item, order, query, locale string) error { //nolint:gocognit // All sort precedence stays explicit and deterministic.
 	if err := ctx.Err(); err != nil {
 		return err
 	}

@@ -54,7 +54,7 @@ func (manager *hlsManager) hlsSegmentPublished(request *http.Request, root *os.R
 	if err != nil {
 		return false
 	}
-	if playID := jellyfinPlaySessionID(request); playID != "" && !validPlaybackSession(playID) {
+	if playID := hlsPlaySessionID(request); playID != "" && !validPlaybackSession(playID) {
 		return strings.Contains("\n"+string(validated), "\n"+filepath.Base(name)+"\n")
 	}
 	duration := playback.HLSPlaybackDuration(sharedHLSRecipe(recipe), manager.probe.duration(request.Context(), item))

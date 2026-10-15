@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []library.Item) error { //nolint:cyclop // Extraction, comparison, and consensus form one movie-library pass.
+func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []library.Item) error {
 	titles := make([]episodeFingerprint, 0, len(items))
 	for _, item := range items {
 		media := analyzer.inspect(ctx, item)

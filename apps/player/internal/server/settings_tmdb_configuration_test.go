@@ -18,7 +18,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestTMDBTokenCheckRejectsCustomAPIAddressBeforeNetworkOrPersistence(t *testing.T) { //nolint:cyclop // One Owner journey verifies both rejected entry points and their side effects.
+func TestTMDBTokenCheckRejectsCustomAPIAddressBeforeNetworkOrPersistence(t *testing.T) {
 	const token = "tmdb-read-access-token-1234567890abcdef" //nolint:gosec // Deterministic fake token for a local HTTP fixture.
 	var requests atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -55,7 +55,7 @@ func TestTMDBTokenCheckRejectsCustomAPIAddressBeforeNetworkOrPersistence(t *test
 	}
 }
 
-func TestOwnerCanSetUpAndManageTMDBAccess(t *testing.T) { //nolint:cyclop,gocognit,funlen // One scenario proves provider validation, adapter parity, persistence, and secret handling.
+func TestOwnerCanSetUpAndManageTMDBAccess(t *testing.T) {
 	t.Parallel()
 	const token = "tmdb-read-access-token-1234567890abcdef" //nolint:gosec // This is a deterministic fake token for a local test server.
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

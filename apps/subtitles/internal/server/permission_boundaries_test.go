@@ -9,11 +9,11 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolint:cyclop,funlen // One known item is probed through every public content adapter.
+func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	setupPolicyMedia(t, mediaDir, dataDir)
-	handler := newJellyfinServer(t, server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
+	handler := newTrustedServer(t, server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 
 	catalog := apiCall(t, handler, owner.Value, http.MethodGet, "/api/v1/library", nil)
@@ -47,7 +47,7 @@ func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolin
 	mustJSON(t, login, &session)
 	enrollTestAPIFactor(t, handler, session.Token)
 
-	for _, path := range []string{"/", "/api/v1/library", "/Items", "/Items/Latest"} {
+	for _, path := range []string{"/", "/api/v1/library"} {
 		response := apiCall(t, handler, session.Token, http.MethodGet, path, nil)
 		if response.Code != http.StatusOK || strings.Contains(response.Body.String(), restrictedID) || strings.Contains(response.Body.String(), "Pilot") {
 			t.Fatalf("restricted browse %s = %d %q", path, response.Code, response.Body.String())
@@ -67,16 +67,6 @@ func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolin
 		{http.MethodPut, "/api/v1/items/" + restrictedID + "/progress", map[string]any{"seconds": 30}, http.StatusNotFound},
 		{http.MethodPut, "/api/v1/items/" + restrictedID + "/list", map[string]any{"listed": true}, http.StatusNotFound},
 		{http.MethodPost, "/api/v1/items/" + restrictedID + "/downloads", map[string]any{"quality": "original"}, http.StatusNotFound},
-		{http.MethodGet, "/Items/" + restrictedID, nil, http.StatusNotFound},
-		{http.MethodGet, "/Items/" + restrictedID + "/PlaybackInfo", nil, http.StatusNotFound},
-		{http.MethodPost, "/Items/" + restrictedID + "/PlaybackInfo", map[string]any{}, http.StatusNotFound},
-		{http.MethodGet, "/Items/" + restrictedID + "/File", nil, http.StatusNotFound},
-		{http.MethodGet, "/Items/" + restrictedID + "/Download", nil, http.StatusNotFound},
-		{http.MethodGet, "/UserItems/" + restrictedID + "/UserData", nil, http.StatusNotFound},
-		{http.MethodPost, "/UserFavoriteItems/" + restrictedID, nil, http.StatusNotFound},
-		{http.MethodPost, "/Users/" + viewer.ID + "/PlayedItems/" + restrictedID, nil, http.StatusNotFound},
-		{http.MethodPost, "/Sessions/Playing/Progress", map[string]any{"ItemId": restrictedID, "PositionTicks": 300000000}, http.StatusBadRequest},
-		{http.MethodGet, "/MediaSegments/" + restrictedID, nil, http.StatusNotFound},
 	}
 	for _, test := range cases {
 		t.Run(test.method+" "+test.path, func(t *testing.T) {
@@ -93,21 +83,25 @@ func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolin
 	if grant.Code != http.StatusOK {
 		t.Fatalf("grant second library = %d %q", grant.Code, grant.Body.String())
 	}
-	userData := apiCall(t, handler, session.Token, http.MethodGet, "/UserItems/"+restrictedID+"/UserData", nil)
+	item := apiCall(t, handler, session.Token, http.MethodGet, "/api/v1/items/"+restrictedID, nil)
 	var state struct {
-		PlaybackPositionTicks int64
-		IsFavorite            bool
+		Progress struct {
+			Seconds float64 `json:"seconds"`
+		} `json:"progress"`
 	}
-	if json.Unmarshal(userData.Body.Bytes(), &state) != nil || userData.Code != http.StatusOK || state.PlaybackPositionTicks != 0 || state.IsFavorite {
-		t.Fatalf("rejected writes changed hidden item state = %d %q", userData.Code, userData.Body.String())
+	if json.Unmarshal(item.Body.Bytes(), &state) != nil || item.Code != http.StatusOK || state.Progress.Seconds != 0 {
+		t.Fatalf("rejected writes changed hidden item progress = %d %q", item.Code, item.Body.String())
+	}
+	if listed := apiCall(t, handler, session.Token, http.MethodGet, "/api/v1/library?view=list", nil); listed.Code != http.StatusOK || strings.Contains(listed.Body.String(), restrictedID) {
+		t.Fatalf("rejected writes listed hidden item = %d %q", listed.Code, listed.Body.String())
 	}
 }
 
-func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) { //nolint:cyclop,funlen,gocognit // The same least-privilege profile is checked through web, API, and Jellyfin routes.
+func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	setupPolicyMedia(t, mediaDir, dataDir)
-	handler := newJellyfinServer(t, server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
+	handler := newTrustedServer(t, server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 
 	var catalog struct {
@@ -152,9 +146,7 @@ func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) { //nolint:cycl
 		{http.MethodPost, "/offline/" + itemID, map[string]any{"quality": "original"}, http.StatusNotFound},
 		{http.MethodGet, "/api/v1/downloads", nil, http.StatusForbidden},
 		{http.MethodPost, "/api/v1/items/" + itemID + "/downloads", map[string]any{"quality": "original"}, http.StatusNotFound},
-		{http.MethodGet, "/Items/" + itemID + "/Download", nil, http.StatusForbidden},
 		{http.MethodGet, "/hls/" + itemID + "/index.m3u8", nil, http.StatusForbidden},
-		{http.MethodGet, "/Videos/" + itemID + "/master.m3u8", nil, http.StatusForbidden},
 	}
 	for _, test := range denied {
 		t.Run("denied "+test.path, func(t *testing.T) {
@@ -168,10 +160,6 @@ func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) { //nolint:cycl
 	playback := apiCall(t, handler, session.Token, http.MethodGet, "/api/v1/items/"+itemID+"/playback", nil)
 	if playback.Code != http.StatusOK || strings.Contains(playback.Body.String(), `"compatible"`) || strings.Contains(playback.Body.String(), `"download"`) {
 		t.Fatalf("least-privilege playback contract = %d %q", playback.Code, playback.Body.String())
-	}
-	jellyfin := apiCall(t, handler, session.Token, http.MethodGet, "/Items/"+itemID+"/PlaybackInfo", nil)
-	if jellyfin.Code != http.StatusOK || !strings.Contains(jellyfin.Body.String(), `"SupportsTranscoding":false`) {
-		t.Fatalf("least-privilege Jellyfin playback = %d %q", jellyfin.Code, jellyfin.Body.String())
 	}
 
 	grant := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/profiles/"+viewer.ID, map[string]any{

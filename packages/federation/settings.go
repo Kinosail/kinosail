@@ -202,7 +202,7 @@ func ValidIdentityField(raw string) bool {
 	return true
 }
 
-func ValidSAMLMetadata(raw string) bool { //nolint:cyclop // Metadata structure, endpoint, and certificate validation stay together.
+func ValidSAMLMetadata(raw string) bool {
 	if raw == "" {
 		return true
 	}

@@ -94,7 +94,7 @@ func newSubtitleLedger(dataDir string) *subtitleLedger {
 	return ledger
 }
 
-func (ledger *subtitleLedger) load() error { //nolint:cyclop // One bounded loader validates and migrates both supported ledger versions.
+func (ledger *subtitleLedger) load() error {
 	info, err := os.Stat(ledger.path)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil
@@ -102,7 +102,7 @@ func (ledger *subtitleLedger) load() error { //nolint:cyclop // One bounded load
 	if err != nil || info.IsDir() || info.Size() > subtitleLedgerSizeLimit {
 		return errors.New("subtitle acquisition state is invalid")
 	}
-	file, err := os.Open(ledger.path) //nolint:gosec // The path is fixed installation-owned state.
+	file, err := os.Open(ledger.path)
 	if err != nil {
 		return errors.New("subtitle acquisition state is unavailable")
 	}
@@ -201,7 +201,7 @@ func (ledger *subtitleLedger) record(key string) (subtitleRecord, bool, error) {
 	return record, found, ledger.err
 }
 
-func (ledger *subtitleLedger) store(key string, record subtitleRecord) error { //nolint:dupl // Separate record map types need the same durable rollback sequence.
+func (ledger *subtitleLedger) store(key string, record subtitleRecord) error {
 	ledger.mu.Lock()
 	defer ledger.mu.Unlock()
 	available := ledger.err == nil && validSubtitleRecord(record) && (len(ledger.state.Records) < subtitleLedgerLimit || ledger.state.Records[key].Fingerprint != "")
@@ -215,7 +215,7 @@ func (ledger *subtitleLedger) search(key string) (subtitleSearchRecord, bool, er
 	return record, found, ledger.err
 }
 
-func (ledger *subtitleLedger) storeSearch(key string, record subtitleSearchRecord) error { //nolint:dupl // Separate record map types need the same durable rollback sequence.
+func (ledger *subtitleLedger) storeSearch(key string, record subtitleSearchRecord) error {
 	ledger.mu.Lock()
 	defer ledger.mu.Unlock()
 	available := ledger.err == nil && validSubtitleSearchRecord(record) && (len(ledger.state.Searches) < subtitleLedgerLimit || ledger.state.Searches[key].Outcome != "")

@@ -43,14 +43,14 @@ func (integration *Integration[P]) offer(profile Profile[P]) (string, error) {
 func (integration *Integration[P]) pair(code, name string) (string, error) {
 	code, name = strings.TrimSpace(code), strings.TrimSpace(name)
 	if len(code) != 8 || !allDigits(code) || name == "" || len(name) > 80 {
-		return "", errors.New("Home Assistant pairing code and name are invalid") //nolint:staticcheck // Preserve the integration error.
+		return "", errors.New("Home Assistant pairing code and name are invalid")
 	}
 	integration.mu.Lock()
 	defer integration.mu.Unlock()
 	offer, found := integration.pairs[code]
 	if !found || !offer.Expires.After(integration.now()) {
 		delete(integration.pairs, code)
-		return "", errors.New("Home Assistant pairing code is invalid or expired") //nolint:staticcheck // Preserve the integration error.
+		return "", errors.New("Home Assistant pairing code is invalid or expired")
 	}
 	delete(integration.pairs, code)
 	profile, found := integration.config.FindProfile(offer.Profile.ID)

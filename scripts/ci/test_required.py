@@ -2,10 +2,16 @@
 
 import copy
 import json
+import re
+import subprocess
+import tempfile
 import unittest
+from pathlib import Path
 
 from affected import FLAGS
 from required import verify
+
+WORKFLOWS = Path(__file__).resolve().parents[2] / ".github/workflows"
 
 
 def case(scope, selected=True, app="player"):
@@ -117,6 +123,30 @@ class RequiredTests(unittest.TestCase):
         needs["codeql"]["result"] = "skipped"
         with self.assertRaises(ValueError):
             verify("security", needs)
+
+    def test_gate_kill_switch_fails_required_checks_closed(self):
+        guard = "test ! -e .gates-disabled"
+        ci = (WORKFLOWS / "ci.yml").read_text()
+        app = (WORKFLOWS / "app.yml").read_text()
+
+        def job(source, name):
+            return re.split(r"\n  [a-z][a-z-]*:\n", source.split(f"\n  {name}:\n", 1)[1], maxsplit=1)[0]
+
+        plan = job(ci, "plan")
+        self.assertLess(plan.index(f"      - run: {guard}\n"), plan.index("scripts/ci/affected.py"))
+        for name in ("static", "repository-required", "security-required"):
+            self.assertIn(f"      - run: {guard}\n", job(ci, name))
+        self.assertIn(f"      - run: {guard}\n", job(app, "required"))
+        for name in ("repository-required", "player-required", "subtitles-required", "security-required"):
+            block = job(ci, name)
+            self.assertIn("    if: always()\n", block)
+            self.assertRegex(block, r"    needs: \[plan, ")
+            self.assertTrue("required.py" in block or 'test "$SELECTION" = success' in block)
+        with tempfile.TemporaryDirectory() as directory:
+            run = lambda: subprocess.run(["bash", "-ec", guard], cwd=directory, check=False).returncode
+            self.assertEqual(run(), 0)
+            (Path(directory) / ".gates-disabled").touch()
+            self.assertNotEqual(run(), 0)
 
 
 if __name__ == "__main__":

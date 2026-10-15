@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestProjectionHelpers(t *testing.T) { //nolint:cyclop // The helper contract covers each header and projection boundary.
+func TestProjectionHelpers(t *testing.T) {
 	items := []library.Item{
 		{ID: "movie", Kind: "video", Title: "Movie"},
 		{ID: "episode-art", Kind: "video", Title: "One", Show: "series", ShowTitle: "Series", ShowArtwork: "poster", Season: 1, Episode: 1},
@@ -68,7 +68,7 @@ func TestDestinationProjection(t *testing.T) {
 	}
 }
 
-func TestRecentShelfProjection(t *testing.T) { //nolint:cyclop // One fixture verifies the complete recent-shelf projection contract.
+func TestRecentShelfProjection(t *testing.T) {
 	now := time.Now()
 	items := []library.Item{
 		{ID: "episode-one", Kind: "video", Title: "Pilot", Show: "series", ShowTitle: "Series", Season: 1, Episode: 1, Container: "MKV", Year: "2025", Added: now},

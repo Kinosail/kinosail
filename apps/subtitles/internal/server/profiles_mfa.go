@@ -16,13 +16,13 @@ func (store *profileStore) factorTransaction() *identitycore.FactorTransaction[v
 	})
 }
 
-func (store *profileStore) enableMFA(id, secret string, recovery []string) error { //nolint:contextcheck // Factor and session changes must commit despite client cancellation.
+func (store *profileStore) enableMFA(id, secret string, recovery []string) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	return store.factorTransaction().Enable(id, secret, recovery)
 }
 
-func (store *profileStore) disableMFA(id string) error { //nolint:contextcheck // Factor and session changes must commit despite client cancellation.
+func (store *profileStore) disableMFA(id string) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	return store.factorTransaction().Disable(id)

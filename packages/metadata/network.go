@@ -90,7 +90,7 @@ func validMetadataYear(value string) bool {
 	return true
 }
 
-func validProviderEndpoint(endpoint *url.URL, officialHost, path string) bool { //nolint:cyclop // Official HTTPS and loopback test endpoints share one fail-closed policy.
+func validProviderEndpoint(endpoint *url.URL, officialHost, path string) bool {
 	if endpoint == nil || endpoint.User != nil || endpoint.RawQuery != "" || endpoint.Fragment != "" || endpoint.Path != path {
 		return false
 	}
@@ -101,7 +101,7 @@ func validProviderEndpoint(endpoint *url.URL, officialHost, path string) bool { 
 	return endpoint.Scheme == "http" && endpoint.Port() != "" && (endpoint.Hostname() == "localhost" || ip != nil && ip.IsLoopback())
 }
 
-func validProviderBaseURL(raw string) bool { //nolint:cyclop // Explicit HTTPS integrations and loopback fixtures share one bounded URL grammar.
+func validProviderBaseURL(raw string) bool {
 	if raw == "" || len(raw) > 2048 || strings.TrimSpace(raw) != raw {
 		return false
 	}

@@ -51,7 +51,7 @@ func (store *settingsStore) changeSubSourceConfiguration(apiKey string, reset bo
 	return nil
 }
 
-func saveSubSourceConfiguration(settings *settingsStore, reset bool) http.HandlerFunc { //nolint:cyclop,gocognit // Reset and accepted-form paths share one mutation boundary.
+func saveSubSourceConfiguration(settings *settingsStore, reset bool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if reset {
 			if !emptyMutationRequest(writer, request) {

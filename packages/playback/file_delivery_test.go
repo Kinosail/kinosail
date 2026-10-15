@@ -45,7 +45,7 @@ func TestLibraryFileHandler(t *testing.T) {
 	}
 }
 
-func TestLibraryFileHandlerRejectsBeforeSelection(t *testing.T) { //nolint:cyclop // Each rejection proves later callbacks do not run.
+func TestLibraryFileHandlerRejectsBeforeSelection(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/media/missing", nil)
 	request.SetPathValue("id", "missing")
@@ -97,7 +97,7 @@ func TestLibraryFileHandlerRejectsBeforeSelection(t *testing.T) { //nolint:cyclo
 	}
 }
 
-func TestLibraryPersonHandler(t *testing.T) { //nolint:cyclop // Success and all route boundaries share one fixture.
+func TestLibraryPersonHandler(t *testing.T) {
 	t.Parallel()
 	image := filepath.Join(t.TempDir(), "person.jpg")
 	if err := os.WriteFile(image, []byte("image"), 0o600); err != nil {
@@ -134,7 +134,7 @@ func TestLibraryPersonHandler(t *testing.T) { //nolint:cyclop // Success and all
 	}
 }
 
-func TestLibraryDownloadHandler(t *testing.T) { //nolint:cyclop // Authorization, visibility, and delivery order are one contract.
+func TestLibraryDownloadHandler(t *testing.T) {
 	t.Parallel()
 	path := filepath.Join(t.TempDir(), "Film.mp4")
 	if err := os.WriteFile(path, []byte("video"), 0o600); err != nil {

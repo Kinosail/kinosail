@@ -202,9 +202,9 @@ func TestMFAExpiryDiscardAndNilEngine(t *testing.T) {
 	}
 }
 
-func TestValidTOTPAndRecoveryNormalization(t *testing.T) { //nolint:cyclop,gocognit // Exact cryptographic and input boundaries share one fixed RFC fixture.
+func TestValidTOTPAndRecoveryNormalization(t *testing.T) {
 	t.Parallel()
-	totpKey := "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" //nolint:gosec // G101: this is the public RFC 6238 test key.
+	totpKey := "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ"
 	if !ValidTOTP(totpKey, "287082", time.Unix(59, 0)) || !ValidTOTP(totpKey, "287082 ", time.Unix(89, 0)) {
 		t.Fatal("RFC 6238 code or adjacent time step was rejected")
 	}

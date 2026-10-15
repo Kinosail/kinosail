@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleRecoveryWorksThroughWebAndVersionedAPI(t *testing.T) { //nolint:cyclop // Web policy and API restore use the same exact-byte recovery operation.
+func TestSubtitleRecoveryWorksThroughWebAndVersionedAPI(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	video := filepath.Join(media, "Arrival.mp4")
@@ -70,7 +70,7 @@ func TestSubtitleRecoveryWorksThroughWebAndVersionedAPI(t *testing.T) { //nolint
 	}
 }
 
-func TestSubtitleReadinessAndProviderHealthAreAvailableThroughTheAPI(t *testing.T) { //nolint:cyclop // One adapter test verifies every readiness and provider-health field.
+func TestSubtitleReadinessAndProviderHealthAreAvailableThroughTheAPI(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")

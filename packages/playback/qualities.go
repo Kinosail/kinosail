@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func AdaptiveQualities(maxWidth, maxHeight int, frameRate float64, maxBitrate int64) []PlaybackQuality { //nolint:cyclop,gocognit // Source fitting and pruning share one ordered ladder pass.
+func AdaptiveQualities(maxWidth, maxHeight int, frameRate float64, maxBitrate int64) []PlaybackQuality {
 	specs := []PlaybackQuality{{"360p", 640, 360, 493_000, frameRate}, {"432p", 768, 432, 1_228_000, frameRate}, {"540p", 960, 540, 2_128_000, frameRate}, {"720p", 1280, 720, 3_128_000, frameRate}, {"1080p", 1920, 1080, 6_128_000, frameRate}}
 	if maxWidth <= 0 || maxHeight <= 0 {
 		maxWidth, maxHeight = 1920, 1080

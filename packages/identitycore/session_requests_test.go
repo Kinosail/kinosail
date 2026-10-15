@@ -109,7 +109,7 @@ func TestRequestSessionsRejectInvalidKindsAndTokensBeforePersistence(t *testing.
 	}
 }
 
-func TestRequestSessionsIssueCookiesAfterPersistence(t *testing.T) { //nolint:cyclop,gocognit // Exact cookie and state checks preserve all sign-in modes.
+func TestRequestSessionsIssueCookiesAfterPersistence(t *testing.T) {
 	t.Parallel()
 	for name, signIn := range map[string]func(*RequestSessions, http.ResponseWriter, *http.Request) error{
 		"browser": func(sessions *RequestSessions, writer http.ResponseWriter, request *http.Request) error {
@@ -189,7 +189,7 @@ func TestBrowserCookieUsesConfiguredAbsoluteLifetime(t *testing.T) {
 	}
 }
 
-func TestRequestSessionsBindAuthenticationToValidatedRequestTokens(t *testing.T) { //nolint:cyclop // One request lifecycle covers every accepted and rejected token source.
+func TestRequestSessionsBindAuthenticationToValidatedRequestTokens(t *testing.T) {
 	t.Parallel()
 	fixture := newSessionFixture()
 	sessions := requestSessionFixture(fixture)

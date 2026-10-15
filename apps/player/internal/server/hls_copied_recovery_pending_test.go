@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCopiedRecoveryPendingMutationCannotPublish(t *testing.T) { //nolint:cyclop,gocognit // Serial integration assertions and injected filesystem failure cases.
+func TestCopiedRecoveryPendingMutationCannotPublish(t *testing.T) {
 	for _, action := range []string{"contents", "replacement", "identical-replacement", "cancel"} {
 		t.Run(action, func(t *testing.T) {
 			manager, _, recipe, directory := copiedRecoveryRefill(t)

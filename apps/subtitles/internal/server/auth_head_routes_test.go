@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) { //nolint:cyclop,funlen,gocognit // Go implicitly maps HEAD to GET, so every authorization dimension is repeated here.
+func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) {
 	handler, owner := newRouteAuthorizationServer(t)
 	createRouteProfile(t, handler, owner, map[string]any{
 		"name": "Viewer", "password": "viewer-password", "rating": "all", "libraries": []string{"all"},
@@ -30,19 +30,9 @@ func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) { //nol
 				}
 				return
 			}
-			if localAnonymousJellyfinRoutes[pattern] {
-				if globalAuthenticationDenied(anonymous) {
-					t.Fatalf("local Jellyfin compatibility HEAD was blocked: %d %q", anonymous.Code, anonymous.Body.String())
-				}
-				return
-			}
 			if explicitCapabilityRoutes[pattern] {
-				if strings.HasPrefix(pattern, "GET /Videos/") || pattern == "GET /Audio/{id}/{stream}" {
-					if !globalAuthenticationDenied(anonymous) {
-						t.Fatalf("HEAD accepted a missing playback capability: %d %q", anonymous.Code, anonymous.Body.String())
-					}
-				} else if globalAuthenticationDenied(anonymous) {
-					t.Fatalf("HEAD blocked DLNA capability routing: %d %q", anonymous.Code, anonymous.Body.String())
+				if globalAuthenticationDenied(anonymous) {
+					t.Fatalf("HEAD blocked capability routing: %d %q", anonymous.Code, anonymous.Body.String())
 				}
 				return
 			}

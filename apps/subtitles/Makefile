@@ -1,4 +1,4 @@
-.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test playback-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
+.PHONY: bootstrap deploy-nox hooks install-nox-autodeploy browser-test check check-fast container-test coverage deadcode installer-test native-build format lint local-pipeline local-pipeline-test performance-test test test-instance-check test-race tidy-check verify-changed verify-watch vuln secrets max-loc single-container shellcheck actionlint
 
 bootstrap:
 	brew bundle
@@ -54,9 +54,6 @@ performance-test:
 	@../../scripts/tooling/with-go-module.sh go test github.com/MikeO7/kinosail/packages/library -run '^$$' -bench '^(BenchmarkScan|BenchmarkOrganize)$$' -benchmem -count=3
 	@../../scripts/tooling/with-go-module.sh go test ./internal/server -run '^$$' -bench '^(BenchmarkLargeLibraryBrowse|BenchmarkSaveProgress10K|BenchmarkLibraryFind|BenchmarkLibrarySearch10K|BenchmarkProbeDecoration|BenchmarkPlaybackAdmissionWhileBackgroundWorkRuns)$$' -benchmem -count=3
 
-playback-test:
-	@./scripts/test-playback.sh
-
 test:
 	@../../scripts/tooling/with-go-module.sh go test ./...
 
@@ -93,4 +90,4 @@ shellcheck:
 actionlint:
 	actionlint
 
-browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)
+browser-test check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

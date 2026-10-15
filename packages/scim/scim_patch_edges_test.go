@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSCIMUserProfileRejectsMalformedOptionalFields(t *testing.T) { //nolint:cyclop // Roles, ignored strings, and nested names are validated before projection.
+func TestSCIMUserProfileRejectsMalformedOptionalFields(t *testing.T) {
 	t.Parallel()
 	base := scimUserPayload{Schemas: []string{scimUserSchema}, UserName: "viewer@example.com"}
 	for name, modify := range map[string]func(*scimUserPayload){
@@ -24,7 +24,7 @@ func TestSCIMUserProfileRejectsMalformedOptionalFields(t *testing.T) { //nolint:
 	}
 }
 
-func TestSCIMPatchOperationRejectsPathValueAndObjectErrors(t *testing.T) { //nolint:cyclop // Path presence, operation, value, and object fields fail independently without mutation.
+func TestSCIMPatchOperationRejectsPathValueAndObjectErrors(t *testing.T) {
 	t.Parallel()
 	base := scimProfileInput{UserName: "viewer@example.com", Name: "Viewer", Active: true}
 	for name, operation := range map[string]scimPatchOperation{
@@ -50,7 +50,7 @@ func TestSCIMPatchOperationRejectsPathValueAndObjectErrors(t *testing.T) { //nol
 	}
 }
 
-func TestSCIMCoreAndEnterprisePatchTypeErrors(t *testing.T) { //nolint:cyclop // Each writable scalar and complex enterprise field enforces its wire type.
+func TestSCIMCoreAndEnterprisePatchTypeErrors(t *testing.T) {
 	t.Parallel()
 	for path, value := range map[string]string{
 		"active":             `"true"`,
@@ -76,7 +76,7 @@ func TestSCIMCoreAndEnterprisePatchTypeErrors(t *testing.T) { //nolint:cyclop //
 	}
 }
 
-func TestSCIMEmailPatchRejectsInvalidTypesAndMissingTargets(t *testing.T) { //nolint:cyclop // Collection and first-value email patch forms preserve strict types and target rules.
+func TestSCIMEmailPatchRejectsInvalidTypesAndMissingTargets(t *testing.T) {
 	t.Parallel()
 	for path, value := range map[string]string{
 		"emails":         `true`,
@@ -110,7 +110,7 @@ func TestSCIMEmailPatchRejectsInvalidTypesAndMissingTargets(t *testing.T) { //no
 	}
 }
 
-func TestSCIMEmailPathParsingAndObjectFailures(t *testing.T) { //nolint:cyclop // ValuePath grammar, filter typing, object conversion, and replace targeting fail separately.
+func TestSCIMEmailPathParsingAndObjectFailures(t *testing.T) {
 	t.Parallel()
 	for _, raw := range []string{"", "emails[", "emailsx", "emails[type]", `emails[type eq true]`} {
 		if _, err := parseSCIMPatchPath(raw); err == nil {
@@ -139,7 +139,7 @@ func TestSCIMEmailPathParsingAndObjectFailures(t *testing.T) { //nolint:cyclop /
 	}
 }
 
-func TestSCIMEmailSubattributeAndFilterEdges(t *testing.T) { //nolint:cyclop // New and existing filtered targets propagate subattribute validation without partial writes.
+func TestSCIMEmailSubattributeAndFilterEdges(t *testing.T) {
 	t.Parallel()
 	path, err := parseSCIMPatchPath(`emails[value eq "viewer@example.com"].type`)
 	if err != nil {

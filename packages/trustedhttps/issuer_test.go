@@ -21,7 +21,7 @@ import (
 	"golang.org/x/crypto/acme"
 )
 
-func TestIssueCompletesDNSChallengeAndEncodesIdentity(t *testing.T) { //nolint:cyclop // One test proves the complete ACME adapter exchange.
+func TestIssueCompletesDNSChallengeAndEncodesIdentity(t *testing.T) {
 	now := time.Now()
 	config := Config{Domain: "family", Token: testToken, Address: "192.168.1.10", Terms: true}
 	queries := make([]url.Values, 0, 2)
@@ -115,7 +115,7 @@ func TestIssueRejectsACMEAdapterFailures(t *testing.T) {
 	}
 }
 
-func TestIssuerHelpersRejectInvalidBoundaries(t *testing.T) { //nolint:cyclop,gocognit // Independent negative adapter boundaries share one compact table.
+func TestIssuerHelpersRejectInvalidBoundaries(t *testing.T) {
 	config := Config{Domain: "family", Token: testToken, Address: "192.168.1.10", Terms: true}
 	for name, handler := range map[string]http.Handler{
 		"status": http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) { http.Error(writer, "no", http.StatusBadGateway) }),

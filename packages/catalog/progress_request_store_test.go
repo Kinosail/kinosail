@@ -84,7 +84,7 @@ func TestRequestProgressStoreRestoration(t *testing.T) {
 	}
 }
 
-func TestRequestProgressStoreProjectsViewerState(t *testing.T) { //nolint:cyclop // One projection contract covers every read view below the project ceiling.
+func TestRequestProgressStoreProjectsViewerState(t *testing.T) {
 	now := time.Now()
 	values := map[string]PlaybackState{
 		"legacy":       {Seconds: 7},
@@ -123,7 +123,7 @@ func TestRequestProgressStoreProjectsViewerState(t *testing.T) { //nolint:cyclop
 	}
 }
 
-func TestRequestProgressStoreMutationsAndHistory(t *testing.T) { //nolint:cyclop,gocognit // One stateful contract verifies mutation ordering and bounded history below the project ceiling.
+func TestRequestProgressStoreMutationsAndHistory(t *testing.T) {
 	request := progressRequest("viewer", false)
 	store := testProgressStore(t, nil)
 	persists := 0
@@ -185,7 +185,7 @@ func TestRequestProgressStoreAuditsAcceptedTransitions(t *testing.T) {
 	store.Stop(request, "movie", 10)
 }
 
-func TestReaderPositionValidationPreservesSavedSpot(t *testing.T) { //nolint:cyclop // The rejection table verifies one saved reader position remains unchanged.
+func TestReaderPositionValidationPreservesSavedSpot(t *testing.T) {
 	request := progressRequest("viewer", false)
 	store := testProgressStore(t, nil)
 	store.file = filepath.Join(t.TempDir(), "progress.json")

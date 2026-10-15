@@ -58,7 +58,7 @@ func TestMediaHTTP(t *testing.T) {
 	}
 }
 
-func TestValueAndProtocolHelpers(t *testing.T) { //nolint:cyclop // The score of 19 remains below the repository ceiling of 22 for the protocol helper matrix.
+func TestValueAndProtocolHelpers(t *testing.T) {
 	if !allDigits("012345679") || allDigits("01234a67") || !oneOf("a", "a", "b") || oneOf("c", "a", "b") {
 		t.Fatal("digit/enum helper mismatch")
 	}

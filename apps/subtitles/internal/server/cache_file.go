@@ -20,7 +20,7 @@ func writeAtomicFileExclusive(target string, data []byte) error {
 	temporary := file.Name()
 	defer func() {
 		_ = file.Close()
-		_ = os.Remove(temporary) //nolint:gosec // CreateTemp returned this exact path beside the target.
+		_ = os.Remove(temporary)
 	}()
 	if err := file.Chmod(0o600); err != nil {
 		return err
@@ -31,7 +31,7 @@ func writeAtomicFileExclusive(target string, data []byte) error {
 	if err := file.Close(); err != nil {
 		return err
 	}
-	return os.Link(temporary, target) //nolint:gosec // Linking fails atomically if the owner already has a sidecar at this exact path.
+	return os.Link(temporary, target)
 }
 
 func writeDurableFile(target string, data []byte) error {

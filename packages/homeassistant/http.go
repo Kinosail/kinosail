@@ -132,7 +132,7 @@ func (integration *Integration[P]) control(next http.Handler) http.Handler {
 			next.ServeHTTP(writer, request)
 			return
 		}
-		apiError(writer, errors.New("Owner access required"), http.StatusForbidden) //nolint:staticcheck // Preserve the public error.
+		apiError(writer, errors.New("Owner access required"), http.StatusForbidden)
 	})
 }
 
@@ -225,7 +225,7 @@ func (integration *Integration[P]) commandHTTP(writer http.ResponseWriter, reque
 	var command Command
 	if !playerID.MatchString(id) || !readJSON(writer, request, &command) {
 		if !playerID.MatchString(id) {
-			apiError(writer, errors.New("Home Assistant player ID is invalid"), http.StatusBadRequest) //nolint:staticcheck // Preserve the public error.
+			apiError(writer, errors.New("Home Assistant player ID is invalid"), http.StatusBadRequest)
 		}
 		return
 	}

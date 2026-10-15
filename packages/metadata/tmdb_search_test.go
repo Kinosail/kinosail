@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestFindTMDBCandidateUsesIDAndTitleFallbacks(t *testing.T) { //nolint:cyclop // One fake provider proves the ordered matching contract.
+func TestFindTMDBCandidateUsesIDAndTitleFallbacks(t *testing.T) {
 	t.Parallel()
 	requests := make([]*url.URL, 0, 3)
 	fetch := func(_ context.Context, endpoint string, target any) error {
@@ -85,7 +85,7 @@ func resolutionCandidate(candidate TMDBCandidate) func(context.Context, string, 
 	}
 }
 
-func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) { //nolint:cyclop,funlen,staticcheck // Invalid local and provider inputs share one fail-closed contract, including an intentional nil context.
+func TestFindTMDBCandidateRejectsInvalidBoundaries(t *testing.T) {
 	t.Parallel()
 	calls := 0
 	fetch := func(ctx context.Context, _ string, target any) error {
@@ -168,7 +168,7 @@ func TestFindTMDBCandidateRejectsAmbiguousIMDbMatch(t *testing.T) {
 	}
 }
 
-func TestResolveTMDBRecordBuildsMovieAndEpisodeResults(t *testing.T) { //nolint:cyclop // One provider fixture covers both shared result shapes.
+func TestResolveTMDBRecordBuildsMovieAndEpisodeResults(t *testing.T) {
 	t.Parallel()
 	fetch := func(_ context.Context, endpoint string, target any) error {
 		parsed, err := url.Parse(endpoint)
@@ -220,7 +220,7 @@ func TestResolveTMDBMovieRejectsInvalidCertificationBeforeMetadataEffects(t *tes
 	}
 }
 
-func TestResolveTMDBRecordRejectsInvalidAdaptersAndProviderData(t *testing.T) { //nolint:staticcheck // An intentional nil context proves the adapter boundary fails closed.
+func TestResolveTMDBRecordRejectsInvalidAdaptersAndProviderData(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "movie", Title: "Movie"}
 	fetch := func(_ context.Context, _ string, target any) error {

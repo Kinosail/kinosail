@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestSCIMFilterRejectsMalformedCompoundAndSingleExpressions(t *testing.T) { //nolint:cyclop // Compound, path, operator, and value grammar failures are independent.
+func TestSCIMFilterRejectsMalformedCompoundAndSingleExpressions(t *testing.T) {
 	t.Parallel()
 	for name, raw := range map[string]string{
 		"unclosed quote":            `userName eq "viewer`,
@@ -59,7 +59,7 @@ func TestSCIMCompoundFilterShortCircuitsAndAttributeFallbacks(t *testing.T) {
 	}
 }
 
-func TestSCIMQueryValuesRejectLengthEncodingAndSelectionEdges(t *testing.T) { //nolint:cyclop // Query size, encoding, value cardinality, and empty selection fail before use.
+func TestSCIMQueryValuesRejectLengthEncodingAndSelectionEdges(t *testing.T) {
 	t.Parallel()
 	tooLong := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?value="+strings.Repeat("x", maxSCIMQueryLength), nil)
 	if _, err := scimQueryValues(tooLong, "value"); err == nil {
@@ -94,7 +94,7 @@ func TestSCIMQueryValuesRejectLengthEncodingAndSelectionEdges(t *testing.T) { //
 	}
 }
 
-func TestSCIMPageAndAttributeSelectionRejectMalformedValues(t *testing.T) { //nolint:cyclop // Numeric parsing and attribute path normalization fail closed.
+func TestSCIMPageAndAttributeSelectionRejectMalformedValues(t *testing.T) {
 	t.Parallel()
 	if _, _, err := scimListPage(url.Values{"count": {"many"}}); err == nil {
 		t.Fatal("non-numeric page size accepted")
@@ -121,7 +121,7 @@ func TestSCIMPageAndAttributeSelectionRejectMalformedValues(t *testing.T) { //no
 	}
 }
 
-func TestSCIMCanonicalPathSchemaEdges(t *testing.T) { //nolint:cyclop // Core, enterprise, and foreign schema path forms remain distinct.
+func TestSCIMCanonicalPathSchemaEdges(t *testing.T) {
 	t.Parallel()
 	for raw, want := range map[string]string{
 		scimEnterpriseUser:                 "enterprise",

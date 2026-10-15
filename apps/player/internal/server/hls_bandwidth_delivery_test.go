@@ -21,7 +21,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) { //nolint:cyclop,funlen,gocognit // One real encoder lifecycle proves initial, cached, and completed delivery.
+func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) {
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
 		t.Skip("FFmpeg is required for the HLS bandwidth HTTP integration test")
@@ -34,7 +34,7 @@ func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) { //n
 	defer cancel()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	fixture := filepath.Join(media, "Black Intro.mkv")
-	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=12,drawbox=color=black:t=fill:enable='lt(t,4)'", "-c:v", "mpeg4", "-q:v", "3", fixture) //nolint:gosec // Fixed generated synthetic fixture and discovered tool.
+	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=12,drawbox=color=black:t=fill:enable='lt(t,4)'", "-c:v", "mpeg4", "-q:v", "3", fixture)
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate black-intro fixture: %v: %s", err, output)
 	}
@@ -133,7 +133,7 @@ func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) { //n
 	}
 	fragments := bandwidthHTTPGET(t, ctx, host.URL+rendering+"/"+strings.TrimSuffix(variant, "index.m3u8")+"init.mp4")
 	fragments = append(fragments, bandwidthHTTPGET(t, ctx, host.URL+rendering+"/"+strings.TrimSuffix(variant, "index.m3u8")+"segment-00000.m4s")...)
-	decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-f", "null", "-") //nolint:gosec // Real public HTTP bytes from a generated fixture and discovered tool.
+	decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-f", "null", "-")
 	decode.Stdin = bytes.NewReader(fragments)
 	if output, err := decode.CombinedOutput(); err != nil {
 		t.Fatalf("decode delivered first fragment: %v: %s", err, output)

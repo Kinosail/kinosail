@@ -98,7 +98,7 @@ func TestMarkerStateFileOpenAndDecodeFailures(t *testing.T) {
 	}
 }
 
-func TestMarkerDatabaseStateAndPersistence(t *testing.T) { //nolint:cyclop // One database lifecycle verifies every persisted marker field.
+func TestMarkerDatabaseStateAndPersistence(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	store, err := documentdb.Open(directory, false, documentdb.Config{Documents: []string{"state.json"}})
@@ -125,7 +125,7 @@ func TestMarkerDatabaseStateAndPersistence(t *testing.T) { //nolint:cyclop // On
 	}
 }
 
-func TestPersistedMarkerValidationBoundaries(t *testing.T) { //nolint:gocognit // One table covers the persisted document contract.
+func TestPersistedMarkerValidationBoundaries(t *testing.T) {
 	t.Parallel()
 	marker := Marker{Type: "intro", Label: "Intro", Start: 1, End: 2, Source: "manual"}
 	valid := Record{Revision: "revision", DetectorVersion: DetectorVersion, Markers: []Marker{marker}, Suppressed: []string{"credits"}}
@@ -153,7 +153,7 @@ func TestPersistedMarkerValidationBoundaries(t *testing.T) { //nolint:gocognit /
 	}
 }
 
-func TestSaveMarkerStateSuccessAndDeterministicFailures(t *testing.T) { //nolint:cyclop // One filesystem matrix proves all atomic-write failure boundaries.
+func TestSaveMarkerStateSuccessAndDeterministicFailures(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	path := filepath.Join(directory, "nested", "state.json")

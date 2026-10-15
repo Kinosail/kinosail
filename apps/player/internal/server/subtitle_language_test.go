@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves selection, filtering, and unchanged files across both adapters.
+func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) {
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
 	for name, contents := range map[string]string{

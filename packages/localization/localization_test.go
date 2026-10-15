@@ -90,7 +90,7 @@ func TestTranslatedCatalogSet(t *testing.T) {
 	}
 }
 
-func TestCatalogLocalizationAndHTMLTranslation(t *testing.T) { //nolint:cyclop // One contract test verifies all localized catalog surfaces.
+func TestCatalogLocalizationAndHTMLTranslation(t *testing.T) {
 	t.Parallel()
 	catalog := testCatalog(t)
 	if got := catalog.Localize("es", "Play"); got != "Reproducir" {
@@ -224,7 +224,7 @@ func TestTemplateRuntimeReportsCloneFailure(t *testing.T) {
 	}
 }
 
-func TestNewTemplateSetUsesPlayerScriptPolicy(t *testing.T) { //nolint:cyclop // One policy test verifies all allowed template script forms.
+func TestNewTemplateSetUsesPlayerScriptPolicy(t *testing.T) {
 	t.Parallel()
 	catalog := testCatalog(t)
 	runtime := TemplateRuntime{

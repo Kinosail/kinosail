@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func (store *settingsStore) auditSnapshot(request *http.Request) map[string]string { //nolint:cyclop,funlen // Each mutable settings projection is intentionally allowlisted.
+func (store *settingsStore) auditSnapshot(request *http.Request) map[string]string {
 	path := request.URL.Path
 	store.mu.RLock()
 	defer store.mu.RUnlock()
@@ -36,10 +36,6 @@ func (store *settingsStore) auditSnapshot(request *http.Request) map[string]stri
 		return map[string]string{"language": languages[0], "languages": strings.Join(languages, ",")}
 	case "/settings/scans", "/onboarding/subtitles/scans", "/api/v1/settings/scans":
 		return map[string]string{"frequency": store.value.ScanFrequency}
-	case "/settings/dlna", "/api/v1/settings/dlna":
-		return map[string]string{"enabled": strconv.FormatBool(store.value.DLNAToken != "")}
-	case "/settings/jellyfin", "/onboarding/jellyfin", "/api/v1/settings/jellyfin":
-		return map[string]string{"enabled": strconv.FormatBool(store.value.JellyfinCompatibility && trustedHTTPSConfigured(store.config.String("tls.duckdns")))}
 	case "/settings/updates", "/onboarding/updates", "/api/v1/settings/updates":
 		return map[string]string{"automatic": strconv.FormatBool(store.value.UpdateChecks)}
 	case "/settings/trusted-https", "/settings/trusted-https/disable", "/onboarding/trusted-https", "/api/v1/settings/trusted-https":

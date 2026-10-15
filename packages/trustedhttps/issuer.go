@@ -30,7 +30,7 @@ type acmeClient interface {
 	CreateOrderCert(context.Context, string, []byte, bool) ([][]byte, string, error)
 }
 
-func (config Config) withResolvedAddress(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error)) (Config, error) { //nolint:cyclop // Address resolution rejects every ambiguous or non-private result before mutation.
+func (config Config) withResolvedAddress(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error)) (Config, error) {
 	if _, err := netip.ParseAddr(config.Address); err == nil {
 		if err := validateAddress(config.Address); err != nil {
 			return Config{}, err
@@ -96,7 +96,7 @@ func issue(ctx context.Context, config Config, client acmeClient, provider dnsPr
 	return finalizeCertificate(ctx, client, order, hostname)
 }
 
-func authorizeDNS(ctx context.Context, config Config, client acmeClient, provider dnsProvider, waitTXT func(context.Context, string, string) error, authorizationURL string) error { //nolint:cyclop // ACME challenge setup and cleanup form one fail-closed transaction.
+func authorizeDNS(ctx context.Context, config Config, client acmeClient, provider dnsProvider, waitTXT func(context.Context, string, string) error, authorizationURL string) error {
 	authorization, err := client.GetAuthorization(ctx, authorizationURL)
 	if err != nil || authorization == nil || len(authorization.Challenges) > 32 {
 		return errors.New("read certificate authorization")
@@ -162,7 +162,7 @@ func finalizeCertificate(ctx context.Context, client acmeClient, order *acme.Ord
 	return finalizeCertificateWith(ctx, client, order, hostname, defaultIdentityOperations(), time.Now())
 }
 
-func updateDuckDNS(ctx context.Context, client *http.Client, updateURL string, config Config, txt string, clear bool) error { //nolint:cyclop // Query construction and bounded response validation share one adapter boundary.
+func updateDuckDNS(ctx context.Context, client *http.Client, updateURL string, config Config, txt string, clear bool) error {
 	endpoint, err := url.Parse(updateURL)
 	if err != nil {
 		return errors.New("create DuckDNS update")

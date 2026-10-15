@@ -73,7 +73,7 @@ func httpConfig(rooms *Rooms, index *httpIndexStub) HTTPConfig {
 	}
 }
 
-func TestHTTPRoutesValidateCreateRedirectAndPlayerProjection(t *testing.T) { //nolint:cyclop // One lifecycle protects create, redirect, and projection behavior.
+func TestHTTPRoutesValidateCreateRedirectAndPlayerProjection(t *testing.T) {
 	harness := newHTTPHarness(t)
 	mux := http.NewServeMux()
 	harness.handler.Register(mux)
@@ -137,7 +137,7 @@ func TestHTTPCreateReportsRoomCapacity(t *testing.T) {
 	}
 }
 
-func TestHTTPWebSocketPreservesLeaderAndValidationRules(t *testing.T) { //nolint:cyclop // One live socket lifecycle protects leader and viewer boundaries.
+func TestHTTPWebSocketPreservesLeaderAndValidationRules(t *testing.T) {
 	harness := newHTTPHarness(t)
 	mux := http.NewServeMux()
 	harness.handler.Register(mux)

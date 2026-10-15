@@ -85,7 +85,7 @@ func TestFailedDeviceEvidenceIsSharedAndExpires(t *testing.T) {
 	}
 }
 
-func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) { //nolint:cyclop // Recovery and subsequent cache reuse must share the same hardware evidence.
+func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) {
 	state := &verification{operations: map[string][]Operation{
 		"cuda": {{Codec: "h264", Device: "0", DecodeH264: true, Status: "passed"}},
 		"none": {{Codec: "h264", Status: "passed"}},
@@ -117,7 +117,7 @@ func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) { //nolint:
 	}
 }
 
-func TestRecoveryClassifiesFailureAndNeverChangesNegotiatedCodec(t *testing.T) { //nolint:cyclop // Each failure case checks classification and the original codec contract.
+func TestRecoveryClassifiesFailureAndNeverChangesNegotiatedCodec(t *testing.T) {
 	for _, detail := range []string{"No space left on device", "Permission denied", "Invalid data found when processing input", "Error opening input: device setup failed", "network timeout"} {
 		if HardwareFailure(detail) {
 			t.Fatalf("unrelated failure authorized a hardware retry: %s", detail)

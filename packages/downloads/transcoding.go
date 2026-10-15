@@ -60,11 +60,11 @@ func (manager *Manager) encodeSelectedContext(ctx context.Context, item library.
 	return exec.CommandContext(ctx, manager.ffmpeg, args...).Run()
 }
 
-func copyFileContext(ctx context.Context, inputPath, outputPath string) error { //nolint:cyclop // One copy checks source stability and reports copy, sync, and close failures in order.
+func copyFileContext(ctx context.Context, inputPath, outputPath string) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	input, err := os.Open(inputPath) //nolint:gosec // The Library scanner supplied this path.
+	input, err := os.Open(inputPath)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func copyFileContext(ctx context.Context, inputPath, outputPath string) error { 
 	if err != nil || !before.Mode().IsRegular() {
 		return errors.New("download source is invalid")
 	}
-	output, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600) //nolint:gosec // Manager derived this cache path.
+	output, err := os.OpenFile(outputPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
 	if err != nil {
 		return err
 	}

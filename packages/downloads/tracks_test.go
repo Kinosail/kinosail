@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestTrackBundlePreservesSelectionAndStyledSidecars(t *testing.T) { //nolint:cyclop // One output recipe must retain all selected track and sidecar arguments.
+func TestTrackBundlePreservesSelectionAndStyledSidecars(t *testing.T) {
 	facts := playback.MediaFacts{
 		Audio:     []playback.AudioFacts{{Index: 0, SourceIndex: 1}, {Index: 1, SourceIndex: 2}},
 		Subtitles: []playback.SubtitleFacts{{Index: 0, SourceIndex: 3, Text: true, Codec: "subrip"}, {Index: 1, External: true, ExternalIndex: 0, Text: true, Codec: "ass"}},

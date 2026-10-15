@@ -17,13 +17,13 @@ const (
 )
 
 var (
-	ErrPublicPasswordLogin = errors.New("public password login is disabled; use Quick Connect") //nolint:staticcheck // Product term starts with a capital.
+	ErrPublicPasswordLogin = errors.New("public password login is disabled; use Quick Connect")
 	ErrInvalidCredentials  = errors.New("invalid credentials")
 	ErrCredentialRateLimit = errors.New("too many login attempts")
-	ErrQuickConnectMFA     = errors.New("two-factor authentication requires Quick Connect") //nolint:staticcheck // Product term starts with a capital.
+	ErrQuickConnectMFA     = errors.New("two-factor authentication requires Quick Connect")
 	ErrCreateSession       = errors.New("could not create session")
-	ErrViewerUnavailable   = errors.New("Viewer Profile is not available")              //nolint:staticcheck // Product term is capitalized.
-	ErrPublicApproval      = errors.New("public Quick Connect approval is unavailable") //nolint:staticcheck // Product term starts with a capital.
+	ErrViewerUnavailable   = errors.New("Viewer Profile is not available")
+	ErrPublicApproval      = errors.New("public Quick Connect approval is unavailable")
 )
 
 var jellyfinPrefixes = []string{
@@ -201,12 +201,12 @@ func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connec
 	}
 	if !starts.Allow(httpguard.RemoteHost(request.RemoteAddr), 20) {
 		writer.Header().Set("Retry-After", "60")
-		http.Error(writer, "too many Quick Connect requests", http.StatusTooManyRequests) //nolint:staticcheck // Product term starts with a capital.
+		http.Error(writer, "too many Quick Connect requests", http.StatusTooManyRequests)
 		return
 	}
 	secret, pending, err := connections.Create(identity)
 	if err != nil {
-		http.Error(writer, "could not create Quick Connect request", http.StatusInternalServerError) //nolint:staticcheck // Product term starts with a capital.
+		http.Error(writer, "could not create Quick Connect request", http.StatusInternalServerError)
 		return
 	}
 	JSON(writer, QuickConnectDTO(secret, pending))
@@ -215,7 +215,7 @@ func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connec
 func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, connections *quickconnect.Broker, polls *httpguard.Limiter) {
 	if !polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		writer.Header().Set("Retry-After", "60")
-		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests) //nolint:staticcheck // Product term starts with a capital.
+		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests)
 		return
 	}
 	secret, valid := StrictQuery(request.URL.Query(), "secret", 128)
@@ -234,7 +234,7 @@ func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, conne
 func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request, polls *httpguard.Limiter, authenticate func(string) (Authentication, error)) {
 	if !polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		writer.Header().Set("Retry-After", "60")
-		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests) //nolint:staticcheck // Product term starts with a capital.
+		http.Error(writer, "too many Quick Connect polls", http.StatusTooManyRequests)
 		return
 	}
 	var input struct{ Secret string }

@@ -48,7 +48,6 @@ func TestBrowserPageRedirectPreservesNavigationAndCompatibility(t *testing.T) {
 		{name: "HEAD", method: http.MethodHead, url: "https://192.0.2.56:38128/login", headers: map[string]string{"Sec-Fetch-Dest": "document"}, wantStatus: http.StatusTemporaryRedirect, wantTarget: origin + "/login"},
 		{name: "insecure canonical host", method: http.MethodGet, url: "http://subtitles.example:38128/login", headers: map[string]string{"Sec-Fetch-Mode": "navigate"}, wantStatus: http.StatusTemporaryRedirect, wantTarget: origin + "/login"},
 		{name: "API", method: http.MethodGet, url: "https://192.0.2.56:38128/api/v1/library", headers: map[string]string{"Accept": "text/html"}, wantStatus: http.StatusUnauthorized},
-		{name: "Jellyfin", method: http.MethodGet, url: "https://192.0.2.56:38128/Users/Me", headers: map[string]string{"Accept": "text/html"}, wantStatus: http.StatusNotFound},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()

@@ -45,7 +45,7 @@ func newHLS(ctx context.Context, cache, ffmpeg string, index *libraryIndex, prob
 	return manager
 }
 
-func (manager *hlsManager) serve(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Legacy and planned HLS routes have distinct validation paths.
+func (manager *hlsManager) serve(writer http.ResponseWriter, request *http.Request) {
 	playback.ServeHLS(writer, request, manager.hlsHandlerDependencies())
 }
 
@@ -88,7 +88,7 @@ func hlsInvalidSeek(writer http.ResponseWriter, request *http.Request) {
 	localizedError(writer, request, "seek is outside the playable duration", http.StatusBadRequest)
 }
 
-func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error { //nolint:cyclop // Final cache, active job, and restart recovery are distinct playback states.
+func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error {
 	if manager.cache == "" {
 		return errors.New("compatible playback is not configured")
 	}
@@ -149,10 +149,8 @@ func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *h
 	softwareFallback := false
 	key := hlsRecipeKey(item.ID, recipe)
 	directory := filepath.Join(manager.cache, key)
-	//nolint:gosec // G703: key is a scanned hexadecimal ID plus a validated track number.
 	job.err = os.RemoveAll(directory)
 	if job.err == nil {
-		//nolint:gosec // G703: key is a scanned hexadecimal ID plus a validated track number.
 		job.err = os.MkdirAll(directory, 0o700)
 	}
 	if job.err == nil {
@@ -164,7 +162,6 @@ func (manager *hlsManager) encode(ctx context.Context, item library.Item, job *h
 		if job.err != nil {
 			job.err = newHLSDiagnosticError(job.err, hlsDiagnostic(job.err, item.Path, directory), item.Path, directory)
 			slog.Error("HLS transcode failed", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator, "software_fallback", softwareFallback, "duration_ms", time.Since(started).Milliseconds(), "error", hlsDiagnostic(job.err))
-			//nolint:gosec // G703: key is a scanned hexadecimal ID plus a validated track number.
 			if _, err := os.Stat(filepath.Join(directory, "index.m3u8")); err != nil {
 				_ = os.RemoveAll(directory)
 			}

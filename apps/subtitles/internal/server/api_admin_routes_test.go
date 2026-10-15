@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) { //nolint:cyclop // One route contract test checks all Owner operations.
+func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) {
 	t.Parallel()
 	handler, token := apiServer(t)
 	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"transcoder":"automatic"`, `"accelerator":"auto"`, `"onboardingPending":true`, `"updates":{"automatic":true,"state":"not-checked"`)
@@ -19,7 +19,6 @@ func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) { //nolint:cyclop // 
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "es", "preference": "sdh"}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"languages": []string{"en", "pt-br", "zh-cn", "es-419"}}, Status: http.StatusOK},
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "off"}, Status: http.StatusOK},
-		{Method: http.MethodPut, Path: "/api/v1/settings/dlna", Body: map[string]any{"enabled": false}, Status: http.StatusOK},
 		{Method: http.MethodPost, Path: "/api/v1/libraries", Body: map[string]any{"path": "/outside"}, Status: http.StatusBadRequest},
 		{Method: http.MethodDelete, Path: "/api/v1/libraries", Body: map[string]any{"path": "missing"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/tasks/metadata", Body: nil, Status: http.StatusNoContent},

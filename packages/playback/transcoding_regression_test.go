@@ -54,7 +54,7 @@ func TestSourceResolutionUsesSubtitleOrdinalAndScannedSidecar(t *testing.T) {
 	}
 }
 
-func TestSourceSpecificFramesColorAndDisplayGeometry(t *testing.T) { //nolint:cyclop // Each source plan checks both output geometry and color/frame arguments.
+func TestSourceSpecificFramesColorAndDisplayGeometry(t *testing.T) {
 	options := transcodepolicy.Settings{Accelerator: "cuda", Encoder: "h264_nvenc", Codec: "h264", ToneMap: true, HardwareDecode: true}
 	facts := MediaFacts{Video: VideoFacts{Codec: "h264", BitDepth: 8, Width: 720, Height: 576, SampleAspectRatio: "16:15", Rotation: 90, FieldOrder: "tt"}}
 	actual := SourceTranscoding(options, facts, HLSRecipe{Mode: "transcode", Burn: "text"})

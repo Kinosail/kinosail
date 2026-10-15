@@ -109,7 +109,7 @@ func TestSensitiveActionsRequireRecentHumanAuthentication(t *testing.T) {
 	}
 }
 
-func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) { //nolint:cyclop // Every public-session invariant is asserted in one fixture.
+func TestPublicSessionsAreStrongShortLivedAndBounded(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Viewer", "viewer-password", false)
 	if err != nil || addTestOwner(store, profile) != nil {

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface(t *testing.T) { //nolint:cyclop // One table-free compatibility journey covers v1 and v2.
+func TestLegacyCertificatesUseTheSharedStatusAndCertificateInterface(t *testing.T) {
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
 	service, err := New(Config{App: App{ID: "kino-player", Name: "Kinosail Player", Audience: "com.kinosail.player", MasterworkName: "Full Sail", GrantPublicKey: true, Legacy: LegacyPlayer}, Now: func() time.Time { return now }})
 	if err != nil {
@@ -57,7 +57,7 @@ func TestMalformedLegacyCertificateAndUnicodeFailClosed(t *testing.T) {
 	}
 }
 
-func TestLegacyCertificatesRejectMalformedSignedFieldsAndUnsupportedApps(t *testing.T) { //nolint:cyclop // Negative cases prove signed legacy data fails closed.
+func TestLegacyCertificatesRejectMalformedSignedFieldsAndUnsupportedApps(t *testing.T) {
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
 	installation := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	service, _ := New(Config{App: App{ID: "kino-player", Name: "Kinosail Player", Audience: "com.kinosail.player", MasterworkName: "Full Sail", Legacy: LegacyPlayer}, Now: func() time.Time { return now }})

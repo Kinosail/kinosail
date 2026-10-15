@@ -21,7 +21,7 @@ func indexedHash(index int) string {
 	return fmt.Sprintf("%064x", index+1)
 }
 
-func TestStateValidatorsEnforceEveryBoundary(t *testing.T) { //nolint:cyclop,funlen,gocognit // The table isolates every persisted field boundary.
+func TestStateValidatorsEnforceEveryBoundary(t *testing.T) {
 	secret, hash := indexedSecret(0), indexedHash(0)
 	base := Share{ID: secret, ItemIDs: []string{"item"}, ClaimHash: hash, ExpiresAt: 1, MaxDevices: 1, RightsAcknowledged: true}
 	for name, test := range map[string]struct {
@@ -105,7 +105,7 @@ func TestStateValidatorsEnforceEveryBoundary(t *testing.T) { //nolint:cyclop,fun
 	}
 }
 
-func TestStateCollectionAndPruneBoundaries(t *testing.T) { //nolint:cyclop,funlen // Exact collection limits need populated state.
+func TestStateCollectionAndPruneBoundaries(t *testing.T) {
 	shares := make(map[string]Share, 257)
 	for index := range 256 {
 		id := indexedSecret(index)
@@ -147,7 +147,7 @@ func TestStateCollectionAndPruneBoundaries(t *testing.T) { //nolint:cyclop,funle
 	}
 }
 
-func TestRequestValidatorsEnforceEveryBoundary(t *testing.T) { //nolint:funlen // The table isolates every request boundary.
+func TestRequestValidatorsEnforceEveryBoundary(t *testing.T) {
 	hundred := make([]string, 100)
 	for index := range hundred {
 		hundred[index] = fmt.Sprintf("item-%d", index)
@@ -183,7 +183,7 @@ func TestRequestValidatorsEnforceEveryBoundary(t *testing.T) { //nolint:funlen /
 	}
 }
 
-func TestHTTPValidatorsEnforceEveryBoundary(t *testing.T) { //nolint:cyclop,funlen,gocognit // The table isolates form and template token boundaries.
+func TestHTTPValidatorsEnforceEveryBoundary(t *testing.T) {
 	for name, test := range map[string]struct {
 		product string
 		asset   string

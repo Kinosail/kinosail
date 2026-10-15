@@ -25,7 +25,7 @@ type ConfigurationStore[S ~string] struct {
 	Check   func() error
 }
 
-func (store ConfigurationStore[S]) Change(key, value string, reset bool) error { //nolint:cyclop // Authorization, precondition, and persistence share one locked transaction.
+func (store ConfigurationStore[S]) Change(key, value string, reset bool) error {
 	store.Lock.Lock()
 	defer store.Lock.Unlock()
 	if store.File == "" {

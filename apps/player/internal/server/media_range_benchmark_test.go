@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func BenchmarkMediaRangeThroughServer(b *testing.B) { //nolint:cyclop,gocognit // Keep fixture discovery and full range validation in the measured server benchmark.
+func BenchmarkMediaRangeThroughServer(b *testing.B) {
 	media := b.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Stream.mp4"), make([]byte, 8<<20), 0o600); err != nil {
 		b.Fatal(err)

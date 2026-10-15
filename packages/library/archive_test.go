@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/archivetest"
 )
 
-func TestArchiveImagesAndZIPAssets(t *testing.T) { //nolint:cyclop // One fixture protects archive listing, bounds, traversal, and corruption behavior.
+func TestArchiveImagesAndZIPAssets(t *testing.T) {
 	archivePath := filepath.Join(t.TempDir(), "Comic.cbz")
 	writeArchiveZIP(t, archivePath, map[string]string{
 		"folder/a.jpg": "one", "b.WEBP": "two", "notes.txt": "ignored", "../escape.png": "unsafe",
@@ -54,7 +54,7 @@ func TestArchiveImagesAndZIPAssets(t *testing.T) { //nolint:cyclop // One fixtur
 	}
 }
 
-func TestArchiveEntryBoundsAndErrors(t *testing.T) { //nolint:cyclop // One bounded archive fixture covers every entry-limit failure.
+func TestArchiveEntryBoundsAndErrors(t *testing.T) {
 	root := t.TempDir()
 	archivePath := filepath.Join(root, "Bounded.cbz")
 	files := make(map[string]string, archiveEntryLimit+1)
@@ -81,7 +81,7 @@ func TestArchiveEntryBoundsAndErrors(t *testing.T) { //nolint:cyclop // One boun
 	}
 }
 
-func TestTarArchiveImagesAndAssets(t *testing.T) { //nolint:cyclop // One fixture protects tar listing, traversal, and corruption behavior.
+func TestTarArchiveImagesAndAssets(t *testing.T) {
 	if _, err := exec.LookPath("bsdtar"); err != nil {
 		t.Fatalf("bsdtar is required: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestTarArchiveImagesAndAssets(t *testing.T) { //nolint:cyclop // One fixtur
 	}
 }
 
-func TestBoundedArchiveCommand(t *testing.T) { //nolint:cyclop // One matrix protects every process and output boundary.
+func TestBoundedArchiveCommand(t *testing.T) {
 	if data, err := boundedCommand(t.Context(), "printf", 4, "%s", "four"); err != nil || string(data) != "four" {
 		t.Fatalf("bounded output = %q, %v", data, err)
 	}

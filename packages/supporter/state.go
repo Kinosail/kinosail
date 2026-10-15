@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (service *Service) matchingActivation(state State, keyHash string) (string, bool) { //nolint:cyclop,gocognit // Every persisted reference must agree before reuse.
+func (service *Service) matchingActivation(state State, keyHash string) (string, bool) {
 	matched := ""
 	for _, activation := range state.Activations {
 		if subtle.ConstantTimeCompare([]byte(activation.KeyHash), []byte(keyHash)) == 1 {

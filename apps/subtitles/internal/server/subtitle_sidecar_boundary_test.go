@@ -11,7 +11,7 @@ import (
 func TestSubtitleSidecarKeepsAuthorizedParentAfterRebind(t *testing.T) {
 	libraryPath, outside := t.TempDir(), t.TempDir()
 	parent := filepath.Join(libraryPath, "film")
-	if err := os.Mkdir(parent, 0700); err != nil {
+	if err := os.Mkdir(parent, 0o700); err != nil {
 		t.Fatal(err)
 	}
 	item := library.Item{ID: "film", Kind: "video", Path: filepath.Join(parent, "film.mp4")}

@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 )
 
-func TestSCIMTokenIsValidatedAndRedacted(t *testing.T) { //nolint:cyclop // The table covers configuration precedence and all SCIM token boundaries.
+func TestSCIMTokenIsValidatedAndRedacted(t *testing.T) {
 	t.Parallel()
 	valid := strings.Repeat("s", 32)
 	expires := time.Now().UTC().Add(time.Hour).Format(time.RFC3339)
@@ -47,7 +47,7 @@ func TestSCIMTokenIsValidatedAndRedacted(t *testing.T) { //nolint:cyclop // The 
 	}
 }
 
-func TestSCIMConfigurationMutationsValidateTheCompletePair(t *testing.T) { //nolint:cyclop,gocognit // The test keeps paired persistence and no-side-effect boundaries together.
+func TestSCIMConfigurationMutationsValidateTheCompletePair(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	token := strings.Repeat("s", 32)

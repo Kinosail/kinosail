@@ -70,7 +70,7 @@ func (tripwire *PublicTripwire) Strike(key string, now time.Time, maximum int) b
 	return blocked || tripwire.strikePrefix(key, now)
 }
 
-func (tripwire *PublicTripwire) strikePrefix(key string, now time.Time) bool { //nolint:cyclop,gocognit // Prefix lifecycle, capacity, and quarantine form one bounded abuse decision.
+func (tripwire *PublicTripwire) strikePrefix(key string, now time.Time) bool {
 	prefix := abusePrefix(key)
 	if prefix == "" {
 		return false
@@ -196,7 +196,7 @@ func CredentialAttempt(request *http.Request) bool {
 	return false
 }
 
-func ValidPublicRange(values []string) bool { //nolint:cyclop // Strict single-range parsing deliberately rejects every ambiguous shape.
+func ValidPublicRange(values []string) bool {
 	if len(values) == 0 {
 		return true
 	}

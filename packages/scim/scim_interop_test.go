@@ -112,7 +112,7 @@ func TestSCIMPersistsEntraManagerPatch(t *testing.T) {
 	}
 }
 
-func TestSCIMProjectsEnterpriseAttributes(t *testing.T) { //nolint:cyclop // One interoperability scenario covers enterprise projection fields.
+func TestSCIMProjectsEnterpriseAttributes(t *testing.T) {
 	t.Parallel()
 	handler := serverWithSCIM(t)
 	created := scimCall(t, handler, scimTestToken, http.MethodPost, "/scim/v2/Users", map[string]any{

@@ -47,7 +47,7 @@ func (index *Index) Watch(ctx context.Context) {
 	}()
 }
 
-func (index *Index) poll(ctx context.Context) { //nolint:gocognit // One loop owns polling, stability checks, refresh requests, and cancellation.
+func (index *Index) poll(ctx context.Context) {
 	previous, _ := index.snapshot(index.rootSet())
 	ticker := time.NewTicker(index.pollInterval)
 	defer ticker.Stop()
@@ -92,7 +92,7 @@ func (index *Index) rootSet() map[string]struct{} {
 	return result
 }
 
-func (index *Index) watchChanges(ctx context.Context) error { //nolint:cyclop,gocognit // Scores of 14 and 19 remain below the enforced repository ceiling of 22.
+func (index *Index) watchChanges(ctx context.Context) error {
 	watcher, err := index.openWatcher()
 	if err != nil {
 		return err

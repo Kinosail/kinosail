@@ -68,7 +68,7 @@ type DeliveryHTTP struct {
 	SubtitleUnavailable func(context.Context, library.Item, int, error)
 }
 
-func (module DeliveryHTTP) Stream(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // The order is the Player delivery contract.
+func (module DeliveryHTTP) Stream(writer http.ResponseWriter, request *http.Request) {
 	stream := strings.ToLower(request.PathValue("stream"))
 	if !validOptionalValue(stream, 2048) {
 		http.NotFound(writer, request)
@@ -97,7 +97,7 @@ func (module DeliveryHTTP) Stream(writer http.ResponseWriter, request *http.Requ
 	http.ServeFile(writer, request, item.Path)
 }
 
-func (module DeliveryHTTP) serveExplicitHLS(writer http.ResponseWriter, request *http.Request, item library.Item, viewer DeliveryViewer, stream string) bool { //nolint:cyclop,gocognit // Ordered route forms have distinct wire responses.
+func (module DeliveryHTTP) serveExplicitHLS(writer http.ResponseWriter, request *http.Request, item library.Item, viewer DeliveryViewer, stream string) bool {
 	if stream == "master.m3u8" {
 		if !viewer.Owner && !viewer.CanTranscode {
 			http.Error(writer, "transcoding is not allowed", http.StatusForbidden)

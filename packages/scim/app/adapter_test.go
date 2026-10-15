@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestRepositoryAdapterProjectsEveryStoreOperation(t *testing.T) { //nolint:cyclop // One repository lifecycle verifies every adapter method.
+func TestRepositoryAdapterProjectsEveryStoreOperation(t *testing.T) {
 	t.Parallel()
 	type record struct{ id string }
 	wantErr := errors.New("store failed")
@@ -55,7 +55,7 @@ func TestRepositoryAdapterProjectsEveryStoreOperation(t *testing.T) { //nolint:c
 	}
 }
 
-func TestNewRepositoryAndProfileProjection(t *testing.T) { //nolint:cyclop // One projection assertion verifies every protocol field.
+func TestNewRepositoryAndProfileProjection(t *testing.T) {
 	t.Parallel()
 	type record struct{ id string }
 	repository := NewRepository(

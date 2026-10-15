@@ -39,14 +39,14 @@ func fetchJellyfinViewingActivity(ctx context.Context, client *http.Client, inpu
 		}
 		start += len(page.Items)
 		if start >= maximumViewingItems {
-			return nil, errors.New("Jellyfin source returned too many items") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source returned too many items")
 		}
 	}
 }
 
 type jellyfinViewingPlaylist struct{ ID, Name, Type string }
 
-func addJellyfinPlaylists(ctx context.Context, client *http.Client, input Input, userID string, activities []Activity) ([]Activity, error) { //nolint:cyclop,gocognit // Every source page is bounded and attached before matching.
+func addJellyfinPlaylists(ctx context.Context, client *http.Client, input Input, userID string, activities []Activity) ([]Activity, error) {
 	byID := make(map[string]int, len(activities))
 	for index, activity := range activities {
 		byID[activity.SourceID] = index
@@ -62,7 +62,7 @@ func addJellyfinPlaylists(ctx context.Context, client *http.Client, input Input,
 			return nil, err
 		}
 		if err := validateViewingPlaylistPage(len(page.Items), page.TotalRecordCount, start); err != nil {
-			return nil, errors.New("Jellyfin source returned too many playlists") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source returned too many playlists")
 		}
 		for _, playlist := range page.Items {
 			var err error
@@ -76,18 +76,18 @@ func addJellyfinPlaylists(ctx context.Context, client *http.Client, input Input,
 		}
 		start += len(page.Items)
 		if start >= maximumViewingPlaylists {
-			return nil, errors.New("Jellyfin source returned too many playlists") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source returned too many playlists")
 		}
 	}
 }
 
-func addJellyfinPlaylist(ctx context.Context, client *http.Client, input Input, userID string, playlist jellyfinViewingPlaylist, names map[string]int, byID map[string]int, activities []Activity, memberships *int) ([]Activity, error) { //nolint:cyclop,gocognit // One playlist is paged and projected at the adapter seam.
+func addJellyfinPlaylist(ctx context.Context, client *http.Client, input Input, userID string, playlist jellyfinViewingPlaylist, names map[string]int, byID map[string]int, activities []Activity, memberships *int) ([]Activity, error) {
 	if !strings.EqualFold(playlist.Type, "Playlist") {
 		return activities, nil
 	}
 	name, nameErr := uniqueViewingPlaylistName(playlist.Name, names)
 	if nameErr != nil || playlist.ID == "" || len(playlist.ID) > 512 {
-		return nil, errors.New("Jellyfin source returned an invalid playlist") //nolint:staticcheck // Jellyfin is a proper product name.
+		return nil, errors.New("Jellyfin source returned an invalid playlist")
 	}
 	for start := 0; ; {
 		var page struct {
@@ -99,7 +99,7 @@ func addJellyfinPlaylist(ctx context.Context, client *http.Client, input Input, 
 			return nil, err
 		}
 		if err := validateViewingPage(len(page.Items), page.TotalRecordCount); err != nil {
-			return nil, errors.New("Jellyfin source returned invalid playlist pagination") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source returned invalid playlist pagination")
 		}
 		for offset, item := range page.Items {
 			var itemErr error
@@ -113,7 +113,7 @@ func addJellyfinPlaylist(ctx context.Context, client *http.Client, input Input, 
 		}
 		start += len(page.Items)
 		if start >= maximumViewingItems {
-			return nil, errors.New("Jellyfin source playlist is too large") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source playlist is too large")
 		}
 	}
 }
@@ -128,7 +128,7 @@ func fetchPlexViewingActivity(ctx context.Context, client *http.Client, input In
 		return nil, err
 	}
 	if len(sections.MediaContainer.Directory) > 1000 {
-		return nil, errors.New("Plex source returned too many Library sections") //nolint:staticcheck // Plex and Library are proper product names.
+		return nil, errors.New("Plex source returned too many Library sections")
 	}
 	result, err := fetchPlexSections(ctx, client, input, sections.MediaContainer.Directory)
 	if err != nil {
@@ -161,7 +161,7 @@ func fetchPlexSection(ctx context.Context, client *http.Client, input Input, key
 	return fetchPlexSectionReserved(ctx, client, input, key, kind, result, nil)
 }
 
-func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input Input, key, kind string, activities []Activity, reserve func(int) bool) ([]Activity, error) { //nolint:cyclop // Pagination, validation, and aggregate budget share one source operation.
+func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input Input, key, kind string, activities []Activity, reserve func(int) bool) ([]Activity, error) {
 	typeID, err := plexSectionType(key, kind)
 	if err != nil {
 		return nil, err
@@ -182,7 +182,7 @@ func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input In
 			return nil, pageErr
 		}
 		if reserve != nil && !reserve(len(activities)-before) {
-			return nil, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source returned too many items")
 		}
 		count := len(page.MediaContainer.Metadata)
 		if !added || viewingPageComplete(count, page.MediaContainer.TotalSize, start) {
@@ -190,14 +190,14 @@ func fetchPlexSectionReserved(ctx context.Context, client *http.Client, input In
 		}
 		start += count
 		if start >= maximumViewingItems {
-			return nil, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+			return nil, errors.New("Plex source returned too many items")
 		}
 	}
 }
 
 func plexSectionType(key, kind string) (string, error) {
 	if key == "" || len(key) > 512 {
-		return "", errors.New("Plex source returned an invalid Library section") //nolint:staticcheck // Plex and Library are proper product names.
+		return "", errors.New("Plex source returned an invalid Library section")
 	}
 	return map[string]string{"movie": "1", "show": "4"}[kind], nil
 }
@@ -227,7 +227,7 @@ func appendPlexViewingActivities(result []Activity, items []plexViewingItem, see
 			return nil, false, err
 		}
 		if len(result) >= maximumViewingItems {
-			return nil, false, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+			return nil, false, errors.New("Plex source returned too many items")
 		}
 		result, added = append(result, activity), true
 	}
@@ -236,11 +236,11 @@ func appendPlexViewingActivities(result []Activity, items []plexViewingItem, see
 
 func plexViewingActivity(item plexViewingItem) (Activity, error) {
 	if len(item.GuidList) > 32 || len(item.Media) > 8 {
-		return Activity{}, errors.New("Plex source returned invalid item metadata") //nolint:staticcheck // Plex is a proper product name.
+		return Activity{}, errors.New("Plex source returned invalid item metadata")
 	}
 	for _, media := range item.Media {
 		if len(media.Part) > 16 {
-			return Activity{}, errors.New("Plex source returned invalid item metadata") //nolint:staticcheck // Plex is a proper product name.
+			return Activity{}, errors.New("Plex source returned invalid item metadata")
 		}
 	}
 	path := ""

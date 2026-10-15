@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-func TestOriginalDownloadLifecycle(t *testing.T) { //nolint:cyclop,gocognit // One test follows the public lifecycle end to end.
+func TestOriginalDownloadLifecycle(t *testing.T) {
 	t.Parallel()
 	cache := t.TempDir()
 	media := filepath.Join(t.TempDir(), "Film.mkv")

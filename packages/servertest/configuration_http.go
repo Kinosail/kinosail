@@ -3,7 +3,6 @@ package servertest
 import (
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,6 +22,7 @@ type ConfigurationHTTP[Source ~string, S interface {
 	WebCall                                     AuthCookieRequest
 	GUI                                         Source
 	SCIMToken, TMDBSection, TMDBLabel, TMDBHelp string
+	NoJellyfinOrDLNA                            bool
 }
 
 func (fixture ConfigurationHTTP[Source, S]) Run(t *testing.T) {
@@ -34,7 +34,7 @@ func (fixture ConfigurationHTTP[Source, S]) Run(t *testing.T) {
 	t.Run("OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb", fixture.OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb)
 }
 
-func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLocksSettings(t *testing.T) { //nolint:cyclop,funlen // One scenario checks API and web rendering without weakening the secret boundary.
+func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLocksSettings(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	media := t.TempDir()
@@ -60,15 +60,18 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 	settings := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil)
 	locked := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/server", map[string]string{"name": "Changed"})
 	lockedMFA := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/mfa", map[string]bool{"required": true})
-	lockedJellyfin := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/jellyfin", map[string]bool{"enabled": true})
+	lockedJellyfin := locked
+	if !fixture.NoJellyfinOrDLNA {
+		lockedJellyfin = APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/jellyfin", map[string]bool{"enabled": true})
+	}
 	lockedSCIM := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/configuration/integrations.scim.token", map[string]string{"value": strings.Repeat("s", 32), "tokenExpiresAt": time.Now().UTC().Add(time.Hour).Format(time.RFC3339)})
 	afterRejectedChanges := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil)
 	settingsPage := APICall(t, handler, session.Token, http.MethodGet, "/settings", nil)
 	configurationResponse := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/configuration", nil)
 	configurationPage := APICall(t, handler, session.Token, http.MethodGet, "/settings/configuration", nil)
-	assertExternalSettingsLocked(t, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges)
+	assertExternalSettingsLocked(t, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges, !fixture.NoJellyfinOrDLNA)
 	page := settingsPage.Body.String()
-	for _, expected := range []string{
+	for _, expected := range fixture.withoutJellyfinOrDLNA([]string{
 		`Configured via Docker: <code>KINOSAIL_REQUIRE_MFA</code>.`, `Configured via Docker: <code>KINOSAIL_SERVER_NAME</code>.`,
 		`Configured via Docker: <code>KINOSAIL_PLAYBACK_MODE</code>.`, `Configured via Docker: <code>KINOSAIL_SUBTITLE_LANGUAGE</code>.`,
 		`Configured via Docker: <code>KINOSAIL_TRANSCODE_QUALITY</code>.`, `Configured via Docker: <code>KINOSAIL_JELLYFIN_ENABLED</code>.`,
@@ -82,7 +85,7 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 		`href="/settings/configuration#integrations.scim"`, `href="/settings/configuration#integrations.webhook.url"`,
 		`href="/settings/configuration#dlna.url"`, `href="/settings/configuration#backup.key"`,
 		`SCIM provisioning: <strong class="status">Enabled</strong>`, `Configured via Docker: <code>KINOSAIL_TMDB_TOKEN</code>.`,
-	} {
+	}) {
 		if settingsPage.Code != http.StatusOK || !strings.Contains(page, expected) {
 			t.Fatalf("settings page lacks %q: %d %q", expected, settingsPage.Code, page)
 		}
@@ -117,7 +120,7 @@ func (fixture ConfigurationHTTP[Source, S]) OwnerCanSaveRestartConfigurationThro
 	}
 }
 
-func (fixture ConfigurationHTTP[Source, S]) OwnerCanConfigureOIDCSetThroughAPIAndWeb(t *testing.T) { //nolint:cyclop,funlen,gocognit // API, web, secret retention, reset, and no-side-effect parity are one boundary.
+func (fixture ConfigurationHTTP[Source, S]) OwnerCanConfigureOIDCSetThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -231,12 +234,12 @@ func (fixture ConfigurationHTTP[Source, S]) StandaloneOperatorSettingsRemainEdit
 	handler := fixture.NewHandler("", directory, configured)
 	owner := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
 	settingsPage := fixture.WebCall(t, handler, http.MethodGet, "/settings", "", owner)
-	if settingsPage.Code != http.StatusOK || strings.Contains(settingsPage.Body.String(), "managed-setting") || !strings.Contains(settingsPage.Body.String(), `action="/settings/server" method="post"`) || !strings.Contains(settingsPage.Body.String(), `action="/settings/jellyfin" method="post"`) || !strings.Contains(settingsPage.Body.String(), `fieldset disabled aria-disabled="true"`) {
+	if settingsPage.Code != http.StatusOK || strings.Contains(settingsPage.Body.String(), "managed-setting") || !strings.Contains(settingsPage.Body.String(), `action="/settings/server" method="post"`) || (!fixture.NoJellyfinOrDLNA && (!strings.Contains(settingsPage.Body.String(), `action="/settings/jellyfin" method="post"`) || !strings.Contains(settingsPage.Body.String(), `fieldset disabled aria-disabled="true"`))) {
 		t.Fatalf("standalone settings = %d %q", settingsPage.Code, settingsPage.Body.String())
 	}
 }
 
-func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb(t *testing.T) { //nolint:cyclop // One adapter-parity scenario checks the API, web view, persistence, and default.
+func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -274,13 +277,4 @@ func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThro
 	if api.Code != http.StatusOK || !tlsDefault || web.Code != http.StatusOK || strings.Contains(page, `<h2><code>tls.enabled</code></h2>`) || strings.Contains(page, `<h2></h2>`) || saved.Code != http.StatusAccepted || loadErr != nil || reloaded.Bool("tls.enabled") || reloaded.Source("tls.enabled") != fixture.GUI {
 		t.Fatalf("api=%d default=%v web=%d rawHeading=%v emptyHeading=%v saved=%d TLS=%v source=%q err=%v", api.Code, tlsDefault, web.Code, strings.Contains(page, `<h2><code>tls.enabled</code></h2>`), strings.Contains(page, `<h2></h2>`), saved.Code, reloaded.Bool("tls.enabled"), reloaded.Source("tls.enabled"), loadErr)
 	}
-}
-
-func assertExternalSettingsLocked(t *testing.T, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges *httptest.ResponseRecorder) {
-	t.Helper()
-	AssertAPIBody(t, settings, http.StatusOK, `"name":"Environment Home"`, `"requireMfa":false`, `"jellyfinCompatibility":false`)
-	for _, response := range []*httptest.ResponseRecorder{locked, lockedMFA, lockedJellyfin, lockedSCIM} {
-		AssertAPIBody(t, response, http.StatusConflict)
-	}
-	AssertAPIBody(t, afterRejectedChanges, http.StatusOK, `"requireMfa":false`, `"jellyfinCompatibility":false`)
 }

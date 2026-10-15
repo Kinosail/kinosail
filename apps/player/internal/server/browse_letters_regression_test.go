@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestLetterJumpBucketsStayUniqueWithPunctuatedTitles(t *testing.T) { //nolint:cyclop // One fixture compares exact API and web projections.
+func TestLetterJumpBucketsStayUniqueWithPunctuatedTitles(t *testing.T) {
 	mediaDir := t.TempDir()
 	for _, name := range []string{"'Cruella.mp4", "'Twas.mp4", "2001.mp4", "Alpha.mp4", "Beta.mp4", "Cruella.mp4", "Movie.mp4", "Title.mp4"} {
 		if err := os.WriteFile(filepath.Join(mediaDir, name), []byte("video"), 0o600); err != nil {

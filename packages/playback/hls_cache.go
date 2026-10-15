@@ -87,7 +87,7 @@ func ClearHLSCache(cache string, policy HLSRecipePolicy) error {
 	}
 	for _, entry := range entries {
 		if entry.IsDir() && HLSCacheDirectory(entry.Name(), policy) {
-			if err := os.RemoveAll(filepath.Join(cache, entry.Name())); err != nil { //nolint:gosec // Validated cache key is below the configured root.
+			if err := os.RemoveAll(filepath.Join(cache, entry.Name())); err != nil {
 				return err
 			}
 		}
@@ -101,7 +101,7 @@ type hlsCacheEntry struct {
 	modified time.Time
 }
 
-func PruneHLSCache(cache string, limit int64, active func(string) bool, policy HLSRecipePolicy) (int64, error) { //nolint:cyclop,gocognit // Accounting and oldest-first eviction are one operation.
+func PruneHLSCache(cache string, limit int64, active func(string) bool, policy HLSRecipePolicy) (int64, error) {
 	if cache == "" {
 		return 0, nil
 	}
@@ -121,7 +121,7 @@ func evictHLSCacheEntries(cache string, candidates []hlsCacheEntry, total, limit
 		if total <= limit {
 			break
 		}
-		if err := os.RemoveAll(filepath.Join(cache, candidate.name)); err != nil { //nolint:gosec // Validated cache key is below the configured root.
+		if err := os.RemoveAll(filepath.Join(cache, candidate.name)); err != nil {
 			return total, err
 		}
 		total -= candidate.size

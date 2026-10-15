@@ -28,8 +28,12 @@ func SetupRouteAuthorization(t *testing.T, handler http.Handler, responseToken f
 	if confirmed.Code != http.StatusOK {
 		t.Fatalf("confirm API setup factor = %d %q", confirmed.Code, confirmed.Body.String())
 	}
+	return setup.TOTP.Secret, token
+}
+
+func EnableRouteAuthorizationJellyfin(t *testing.T, handler http.Handler, token string) {
+	t.Helper()
 	if enabled := RouteJSON(t, handler, token, http.MethodPut, "/api/v1/settings/jellyfin", map[string]bool{"enabled": true}); enabled.Code != http.StatusOK {
 		t.Fatalf("enable Jellyfin routes = %d %q", enabled.Code, enabled.Body.String())
 	}
-	return setup.TOTP.Secret, token
 }

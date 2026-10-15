@@ -30,7 +30,7 @@ func (manager *Manager) ServeContinuously(ctx context.Context, handler http.Hand
 	}
 }
 
-func (manager *Manager) Serve(ctx context.Context, handler http.Handler) error { //nolint:cyclop,funlen,gocognit // Listener startup is intentionally linear and fail-closed.
+func (manager *Manager) Serve(ctx context.Context, handler http.Handler) error { //nolint:funlen // Listener startup is intentionally linear and fail-closed.
 	if !manager.config.Enabled {
 		return nil
 	}
@@ -184,7 +184,7 @@ func (manager *Manager) update(ctx context.Context) error {
 	return nil
 }
 
-func (manager *Manager) trackConnection(connection net.Conn, state http.ConnState) { //nolint:cyclop // Connection accounting and close decisions must remain atomic.
+func (manager *Manager) trackConnection(connection net.Conn, state http.ConnState) {
 	manager.mu.Lock()
 	closeConnection := manager.killed
 	switch state {

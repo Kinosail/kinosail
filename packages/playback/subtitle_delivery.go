@@ -37,7 +37,7 @@ func SubtitlePath(paths []string, value string) (string, bool) {
 	return paths[track], true
 }
 
-func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path string, timelines []Timeline, dependencies SubtitleDeliveryDependencies) { //nolint:cyclop // Validation, direct delivery, and conversion form one response boundary.
+func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path string, timelines []Timeline, dependencies SubtitleDeliveryDependencies) {
 	if request == nil || dependencies.ParseTimeline == nil || dependencies.NotFound == nil || dependencies.Error == nil {
 		http.Error(writer, "subtitle delivery is unavailable", http.StatusInternalServerError)
 		return
@@ -57,7 +57,6 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 	vtt := strings.EqualFold(filepath.Ext(path), ".vtt")
 	if vtt && len(timelines) == 0 {
 		setSubtitleHeaders(writer)
-		//nolint:gosec // G703: the app validates that path belongs to scanned Library Content.
 		http.ServeFile(writer, request, path)
 		return
 	}
@@ -75,7 +74,6 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 		data = MapWebVTT(data, timelines[0])
 	}
 	setSubtitleHeaders(writer)
-	//nolint:gosec // G705: text/vtt with nosniff is rendered only as a media subtitle track.
 	_, _ = writer.Write(data)
 }
 
@@ -96,7 +94,6 @@ func LibrarySubtitleHandler(dependencies LibrarySubtitleDependencies) http.Handl
 }
 
 func readSubtitle(path string) ([]byte, error) {
-	//nolint:gosec // G304: the app validates that path belongs to scanned Library Content.
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err

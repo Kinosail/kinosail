@@ -58,7 +58,7 @@ func TestParseHLSRecipeRejectsEveryInvalidBoundary(t *testing.T) {
 	}
 }
 
-func TestHLSRecipeCacheAndTimelineHelpers(t *testing.T) { //nolint:cyclop // Related cache and timeline invariants share one table-driven contract test.
+func TestHLSRecipeCacheAndTimelineHelpers(t *testing.T) {
 	t.Parallel()
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	recipe := HLSRecipe{Mode: "transcode", Codec: "h264", Audio: 0}
@@ -98,7 +98,7 @@ func TestHLSRecipeCacheAndTimelineHelpers(t *testing.T) { //nolint:cyclop // Rel
 	}
 }
 
-func TestHLSFilterAndBitrateArguments(t *testing.T) { //nolint:cyclop // Related FFmpeg argument invariants share one focused contract test.
+func TestHLSFilterAndBitrateArguments(t *testing.T) {
 	t.Parallel()
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	ranges := []Range{{Start: 1, End: 2}}

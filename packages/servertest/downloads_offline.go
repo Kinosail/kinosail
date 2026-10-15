@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (fixture DownloadFixture) TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile(t *testing.T) { //nolint:cyclop,funlen // One end-to-end lifecycle proves the complete offline contract.
+func (fixture DownloadFixture) TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile(t *testing.T) {
 	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("source"), 0o600); err != nil {
 		t.Fatal(err)

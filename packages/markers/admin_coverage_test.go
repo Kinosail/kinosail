@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestAdminRemoveRejectsEveryBoundaryWithoutMutation(t *testing.T) { //nolint:gocognit // One table proves every removal boundary is side-effect free.
+func TestAdminRemoveRejectsEveryBoundaryWithoutMutation(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "movie", Size: 1, Added: time.Unix(1, 0)}
 	tests := []struct {

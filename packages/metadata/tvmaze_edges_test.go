@@ -52,7 +52,7 @@ func TestTVMazeShowIDRejectsRequestAndTransportFailures(t *testing.T) {
 	}
 }
 
-func TestTVMazeShowRejectsRequestTransportStatusAndPayloadFailures(t *testing.T) { //nolint:cyclop // Every provider failure mode returns no cached show.
+func TestTVMazeShowRejectsRequestTransportStatusAndPayloadFailures(t *testing.T) {
 	t.Parallel()
 	invalidRequest := &TVMazeProvider{baseURL: "http://[::1", client: http.DefaultClient, details: make(map[int]tvmazeShow)}
 	if show, ok := invalidRequest.show(t.Context(), 1); ok || show.ID != 0 {
@@ -72,7 +72,7 @@ func TestTVMazeShowRejectsRequestTransportStatusAndPayloadFailures(t *testing.T)
 	}
 }
 
-func TestTVMazeEpisodeRejectsRequestTransportStatusAndPayloadFailures(t *testing.T) { //nolint:cyclop // Every provider failure mode returns no cached episode.
+func TestTVMazeEpisodeRejectsRequestTransportStatusAndPayloadFailures(t *testing.T) {
 	t.Parallel()
 	invalidRequest := &TVMazeProvider{baseURL: "http://[::1", client: http.DefaultClient, episodes: make(map[string]tvmazeEpisode)}
 	if episode, ok := invalidRequest.episode(t.Context(), 1, 1, 1); ok || episode.ID != 0 {

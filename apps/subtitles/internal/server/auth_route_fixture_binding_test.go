@@ -18,4 +18,5 @@ var routeAuthorizationFixture = servertest.RouteAuthorizationFixture{
 	AfterFlush: func(response *httptest.ResponseRecorder, cancel context.CancelFunc) http.ResponseWriter {
 		return &cancelAfterFlushWriter{response, cancel}
 	},
+	NoJellyfin: true,
 }

@@ -19,7 +19,7 @@ func (provider *subtitleProvider) upgradeAvailable(item library.Item, language s
 	return provider.configured() && item.Kind == "video" && validLanguage(language)
 }
 
-func (provider *subtitleProvider) upgradeEligible(item library.Item, language string, now time.Time) bool { //nolint:cyclop // Eligibility rejects every unsafe managed-file and schedule state.
+func (provider *subtitleProvider) upgradeEligible(item library.Item, language string, now time.Time) bool {
 	if !provider.upgradeAvailable(item, language) {
 		return false
 	}
@@ -42,7 +42,7 @@ func (provider *subtitleProvider) upgradeEligible(item library.Item, language st
 	return true
 }
 
-func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item library.Item, language string) (bool, error) { //nolint:cyclop,gocognit // Upgrade validation, backup, write, and rollback form one atomic operation.
+func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item library.Item, language string) (bool, error) {
 	ctx, settled, admissionErr := provider.admission.enter(ctx)
 	if admissionErr != nil {
 		return false, admissionErr

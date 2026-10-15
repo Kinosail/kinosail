@@ -9,7 +9,7 @@ import (
 	"slices"
 )
 
-func jsonObject(data []byte) (map[string]json.RawMessage, error) { //nolint:cyclop // Strict duplicate-aware JSON parsing is one boundary.
+func jsonObject(data []byte) (map[string]json.RawMessage, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	token, err := decoder.Token()
 	if delimiter, ok := token.(json.Delim); err != nil || !ok || delimiter != '{' {
@@ -88,7 +88,7 @@ func validJSONUnicode(record []byte) bool {
 	return true
 }
 
-func validUnicodeEscape(record []byte, start int, inString bool) (int, bool) { //nolint:cyclop // Unicode escape validation remains below the repository complexity ceiling.
+func validUnicodeEscape(record []byte, start int, inString bool) (int, bool) {
 	if !inString || start+1 >= len(record) {
 		return start, true
 	}

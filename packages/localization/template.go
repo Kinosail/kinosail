@@ -31,7 +31,7 @@ func NewTemplateSet(name, source, scriptVersion string, catalog *Catalog, langua
 		tag := supported.Tag
 		views[tag] = template.Must(template.New(name).Funcs(template.FuncMap{
 			"t":              func(value string) string { return catalog.Localize(tag, value) },
-			"languagePicker": func() template.HTML { return catalog.PickerHTML(tag, tag, "", false) }, //nolint:gosec // Options are escaped from a fixed supported-language list.
+			"languagePicker": func() template.HTML { return catalog.PickerHTML(tag, tag, "", false) },
 		}).Funcs(parseFuncs).Parse(catalog.TranslateSource(source, tag)))
 	}
 	return &TemplateSet{views: views, catalog: catalog, runtime: runtime}
@@ -63,7 +63,7 @@ func (runtime TemplateRuntime) ExecuteTemplate(views map[string]*template.Templa
 			return catalog.PickerHTML(tag, preference, runtime.CSRFForRequest(request), true)
 		}
 	}
-	page.Funcs(template.FuncMap{"languagePicker": picker}).Funcs(runtime.CSRFTemplateFuncs(request)) //nolint:gosec // Catalog values are escaped before trusted markup is returned.
+	page.Funcs(template.FuncMap{"languagePicker": picker}).Funcs(runtime.CSRFTemplateFuncs(request))
 	if name != "" {
 		return page.ExecuteTemplate(writer, name, data)
 	}

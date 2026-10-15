@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (fixture TranscodeFixture) InterruptedCompatibleCacheIsRegeneratedAfterServerRestart(t *testing.T) { //nolint:funlen // Cancellation, restart, and regeneration must share the same server cache.
+func (fixture TranscodeFixture) InterruptedCompatibleCacheIsRegeneratedAfterServerRestart(t *testing.T) {
 	t.Helper()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {

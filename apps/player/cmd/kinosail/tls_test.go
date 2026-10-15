@@ -23,7 +23,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertransport"
 )
 
-func TestTrustedDuckDNSCertificateIsSelectedOnlyForItsSNI(t *testing.T) { //nolint:cyclop // One TLS fixture proves trusted-SNI selection and local fallback.
+func TestTrustedDuckDNSCertificateIsSelectedOnlyForItsSNI(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	hostname := "family-media.duckdns.org"

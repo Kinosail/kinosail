@@ -49,7 +49,7 @@ var subSourceCodes = map[string]string{
 	"ab": "Abkhazian", "af": "Afrikaans", "sq": "Albanian", "am": "Amharic", "ar": "Arabic", "an": "Aragonese", "hy": "Armenian", "as": "Assamese", "az": "Azerbaijani", "eu": "Basque", "be": "Belarusian", "bn": "Bengali", "bs": "Bosnian", "pt-BR": "Brazillian Portuguese", "br": "Breton", "bg": "Bulgarian", "my": "Burmese", "ca": "Catalan", "zh": "Chinese BG code", "hr": "Croatian", "cs": "Czech", "da": "Danish", "nl": "Dutch", "en": "English", "eo": "Espranto", "et": "Estonian", "fa": "Farsi_persian", "fi": "Finnish", "fr": "French", "gd": "Gaelic", "ka": "Georgian", "de": "German", "el": "Greek", "he": "Hebrew", "hi": "Hindi", "hu": "Hungarian", "is": "Icelandic", "ig": "Igbo", "id": "Indonesian", "ia": "Interlingua", "ga": "Irish", "it": "Italian", "ja": "Japanese", "kn": "Kannada", "kk": "Kazakh", "km": "Khmer", "ko": "Korean", "ku": "Kurdish", "lv": "Latvian", "lt": "Lithuanian", "lb": "Luxembourgish", "mk": "Macedonian", "ms": "Malay", "ml": "Malayalam", "mr": "Marathi", "mn": "Mongolian", "nv": "Navajo", "ne": "Nepali", "se": "Northern Sami", "no": "Norwegian", "oc": "Occitan", "pl": "Polish", "pt": "Portuguese", "pt-PT": "Portuguese", "ps": "Pushto", "ro": "Romanian", "ru": "Russian", "sr": "Serbian", "sd": "Sindhi", "si": "Sinhala", "sk": "Slovak", "sl": "Slovenian", "so": "Somali", "es": "Spanish", "sw": "Swahili", "sv": "Swedish", "tl": "Tagalog", "ta": "Tamil", "tt": "Tatar", "te": "Telugu", "th": "Thai", "tr": "Turkish", "tk": "Turkmen", "uk": "Ukrainian", "ur": "Urdu", "uz": "Uzbek", "vi": "Vietnamese", "cy": "Welsh",
 }
 
-func initCatalog() { //nolint:gocognit // The static catalog is initialized through one explicit normalization pass.
+func initCatalog() {
 	known = make(map[string]Choice)
 	common := make(map[string]bool, len(commonTags))
 	priority := make(map[string]int, len(commonTags)+len(tierTwoTags))
@@ -169,7 +169,7 @@ func NormalizeProvider(value string, provider Provider) (string, bool) {
 	return NormalizeLocal(value)
 }
 
-func validTagSyntax(value string) bool { //nolint:cyclop,gocognit // Tag syntax validation keeps all canonical constraints together.
+func validTagSyntax(value string) bool {
 	if value == "" || len(value) > 64 {
 		return false
 	}

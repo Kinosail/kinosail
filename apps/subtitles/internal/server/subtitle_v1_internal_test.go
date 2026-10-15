@@ -47,7 +47,7 @@ func TestSubtitleCleanupAcceptsPublicV1TextEncodingsAndFormats(t *testing.T) {
 	}
 }
 
-func TestSubtitleProviderHealthHonorsQuotaRetryAndCircuitState(t *testing.T) { //nolint:cyclop // One test proves the complete provider state transition.
+func TestSubtitleProviderHealthHonorsQuotaRetryAndCircuitState(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
 	registry := newSubtitleProviderHealthRegistry()
@@ -137,7 +137,7 @@ func TestSubtitleRecoveryRestoresPreviousFileAndFreezesReplacement(t *testing.T)
 
 func TestSubtitlePlanPrefersSDHWithoutRenamingExistingFiles(t *testing.T) {
 	t.Parallel()
-	settings := newSettingsStore(t.TempDir(), "", "", nil)
+	settings := newSettingsStore(t.TempDir(), "", nil)
 	if err := settings.setSubtitlePlan("en", "sdh"); err != nil {
 		t.Fatal(err)
 	}

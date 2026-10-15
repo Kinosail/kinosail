@@ -11,10 +11,10 @@ import (
 
 func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory string, preserve bool) {
 	if !preserve {
-		job.err = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+		job.err = os.RemoveAll(directory)
 	}
 	if job.err == nil {
-		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
+		job.err = os.MkdirAll(directory, 0o700)
 	}
 	if job.err == nil {
 		root, err := manager.openCopiedHLSRoot(directory)
@@ -34,7 +34,7 @@ func (manager *hlsManager) reportHLSEncode(job *hlsJob, item library.Item, direc
 		job.err = newHLSDiagnosticError(job.err, hlsDiagnostic(job.err, item.Path, directory), item.Path, directory)
 		logger.Error("HLS transcode failed", "request_id", job.requestID, "playback_session", job.playbackSession, "mode", recipe.mode, "accelerator", options.Accelerator, "software_fallback", outcome.softwareFallback, "duration_ms", time.Since(started).Milliseconds(), "error", hlsDiagnostic(job.err))
 		if !outcome.preserve {
-			_ = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+			_ = os.RemoveAll(directory)
 		}
 		return
 	}
@@ -47,7 +47,7 @@ func (manager *hlsManager) reportHLSEncode(job *hlsJob, item library.Item, direc
 
 func (manager *hlsManager) finishHLSEncode(job *hlsJob, key, directory string, startNumber int, preserve bool) {
 	if preserve {
-		_ = os.RemoveAll(filepath.Join(directory, hlsSeekDirectory(startNumber))) //nolint:gosec // The directory uses a validated segment number.
+		_ = os.RemoveAll(filepath.Join(directory, hlsSeekDirectory(startNumber)))
 	}
 	job.cancel(errHLSEncodeComplete)
 	manager.mu.Lock()

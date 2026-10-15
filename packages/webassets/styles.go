@@ -69,7 +69,7 @@ func (state *stylePatchState) apply() error {
 	return nil
 }
 
-func (state *stylePatchState) applyHunk() error { //nolint:cyclop // Unified hunk validation remains below the repository complexity ceiling.
+func (state *stylePatchState) applyHunk() error {
 	oldStart, oldCount, newCount, err := parseStyleHunk(state.patchLines[state.patchIndex])
 	if err != nil {
 		return err

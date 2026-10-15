@@ -6,7 +6,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, canStream, canTranscode bool) { //nolint:cyclop // Independent source capabilities remain below the repository complexity ceiling.
+func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.Item, media probeResult, viewer viewerProfile, facts MediaFacts, client ClientCapabilities, plan PlaybackPlan, canStream, canTranscode bool) {
 	if canStream && plan.MarkerMode != "server" {
 		result.Direct = "/media/" + item.ID
 		result.DirectType = directMediaType(item.Path, facts)

@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-func TestMeProjectsViewerCapabilities(t *testing.T) { //nolint:cyclop // The projection matrix keeps every response capability explicit and remains below the repository limit.
+func TestMeProjectsViewerCapabilities(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		viewer                              identitycore.Profile

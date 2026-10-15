@@ -52,9 +52,9 @@ func diagnostics(settings *settingsStore, index *libraryIndex, profiles *profile
 	return operationDiagnostics(settings, index, profiles, hls, audit).DiagnosticsHandler()
 }
 
-func operationMetrics(index *libraryIndex, profiles *profileStore, hls *hlsManager, audit *auditStore, imports *viewingImportManager, events *liveEventHub, rooms *watchRoomAdapter) sharedoperations.Binding {
+func operationMetrics(index *libraryIndex, profiles *profileStore, hls *hlsManager, audit *auditStore, imports *viewingImportManager, events *liveEventHub) sharedoperations.Binding {
 	return sharedoperations.NewBinding(sharedoperations.BindingConfig{
-		Rooms: rooms.rooms, Events: events, Viewing: imports.previewer, Activity: audit.HTTPTracker, Cache: hls.cacheOps, Index: index.Index,
+		Events: events, Viewing: imports.previewer, Activity: audit.HTTPTracker, Cache: hls.cacheOps, Index: index.Index,
 		Workload: func() sharedoperations.WorkloadSnapshot {
 			value := hls.workloads.Metrics()
 			return sharedoperations.WorkloadSnapshot{Capacity: value.Capacity, BackgroundCapacity: value.BackgroundCapacity, ActivePlayback: value.ActivePlayback, ActiveBackground: value.ActiveBackground, WaitingPlayback: value.WaitingPlayback, WaitingBackground: value.WaitingBackground}
@@ -65,8 +65,8 @@ func operationMetrics(index *libraryIndex, profiles *profileStore, hls *hlsManag
 	})
 }
 
-func metrics(index *libraryIndex, profiles *profileStore, hls *hlsManager, audit *auditStore, imports *viewingImportManager, events *liveEventHub, rooms *watchRoomAdapter) http.HandlerFunc {
-	return operationMetrics(index, profiles, hls, audit, imports, events, rooms).MetricsHandler()
+func metrics(index *libraryIndex, profiles *profileStore, hls *hlsManager, audit *auditStore, imports *viewingImportManager, events *liveEventHub) http.HandlerFunc {
+	return operationMetrics(index, profiles, hls, audit, imports, events).MetricsHandler()
 }
 
 func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIndex) error {
@@ -80,10 +80,10 @@ func operationTasks(index *libraryIndex, hls *hlsManager, metadata *metadataStor
 	}).Tasks()
 }
 
-func registerOperations(mux *http.ServeMux, auth *authentication, settings *settingsStore, index *libraryIndex, hls *hlsManager, metadata *metadataStore, maintenance *maintenanceManager, imports *viewingImportManager, events *liveEventHub, rooms *watchRoomAdapter) {
+func registerOperations(mux *http.ServeMux, auth *authentication, settings *settingsStore, index *libraryIndex, hls *hlsManager, metadata *metadataStore, maintenance *maintenanceManager, imports *viewingImportManager, events *liveEventHub) {
 	sharedoperations.RegisterWeb(mux, sharedoperations.Web{
 		Diagnostics: operationDiagnostics(settings, index, auth.profiles, hls, auth.audit).DiagnosticReport,
-		Metrics:     operationMetrics(index, auth.profiles, hls, auth.audit, imports, events, rooms).Metrics, Tasks: operationTasks(index, hls, metadata, maintenance),
+		Metrics:     operationMetrics(index, auth.profiles, hls, auth.audit, imports, events).Metrics, Tasks: operationTasks(index, hls, metadata, maintenance),
 		WriteError: func(writer http.ResponseWriter, request *http.Request, err error, status int) {
 			localizedError(writer, request, err.Error(), status)
 		}, Owner: auth.owner,

@@ -17,7 +17,7 @@ func validListen(address string) bool {
 	return err == nil && number > 0 && strconv.FormatUint(number, 10) == port
 }
 
-func validDomain(domain string) bool { //nolint:cyclop // The nested ASCII allowlist rejects Unicode lookalikes.
+func validDomain(domain string) bool {
 	if domain == "" || len(domain) > 63 || domain[0] == '-' || domain[len(domain)-1] == '-' {
 		return false
 	}
@@ -33,7 +33,7 @@ func validDomain(domain string) bool { //nolint:cyclop // The nested ASCII allow
 	return true
 }
 
-func validToken(token string) bool { //nolint:cyclop,gocognit // The nested ASCII allowlist rejects whitespace and Unicode lookalikes.
+func validToken(token string) bool {
 	if len(token) < 32 || len(token) > 128 {
 		return false
 	}

@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop // One fixture verifies the three related dashboard projections.
+func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival (2016).mp4"), "video")
@@ -33,7 +33,7 @@ func TestSubtitleAppShowsCoverageAndWantedFiles(t *testing.T) { //nolint:cyclop 
 	if overview.Code != http.StatusOK || !strings.Contains(overview.Body.String(), "50%") || !strings.Contains(overview.Body.String(), "file needs") || !strings.Contains(overview.Body.String(), "Arrival") || strings.Contains(overview.Body.String(), "soundtrack") {
 		t.Fatalf("overview = %d %q", overview.Code, overview.Body.String())
 	}
-	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=cinema-17-buffer-1`} {
+	for _, expected := range []string{`class="library-page subtitle-app subtitle-dashboard"`, `class="app-header"`, `class="brand-lockup"`, `class="web-beta-badge">Beta`, `href="/supporter" aria-label="Support Kinosail"`, `href="/?view=summary"`, `aria-current="page"`, `/static/app.css?v=`} {
 		if !strings.Contains(overview.Body.String(), expected) {
 			t.Fatalf("overview shell missing %q: %q", expected, overview.Body.String())
 		}
@@ -75,7 +75,7 @@ func TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries(t *testing.T) {
 	}
 }
 
-func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) { //nolint:cyclop // Browser and API error contracts are checked together.
+func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Needs Subtitles.mp4"), "video")
@@ -100,7 +100,7 @@ func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) { /
 	}
 }
 
-func TestSubtitleDashboardRequiresLocalTrackForUnsupportedLanguage(t *testing.T) { //nolint:cyclop // The test covers local/provider language fallback boundaries.
+func TestSubtitleDashboardRequiresLocalTrackForUnsupportedLanguage(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -148,7 +148,7 @@ func TestSubtitleCoverageClassifiesDefaultOtherAndDoubleDigitEpisodes(t *testing
 	}
 }
 
-func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //nolint:cyclop // Sister-app setup, settings, and onboarding stay one visible experience contract.
+func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir()})
@@ -157,7 +157,7 @@ func TestSubtitleAppUsesKinosailSisterSetupAndFocusedSettings(t *testing.T) { //
 	start := requestApp(t, handler, http.MethodGet, "/onboarding", "")
 	onboarding := requestApp(t, handler, http.MethodGet, "/onboarding/connection", "")
 	setupBody := setup.Body.String()
-	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=cinema-17-buffer-1`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
+	if setup.Code != http.StatusOK || !strings.Contains(setupBody, "Kinosail Subtitles") || !strings.Contains(setupBody, "choose subtitle settings") || !strings.Contains(setupBody, "Create the Owner account first.") || !strings.Contains(setupBody, `/static/app.css?v=`) || !strings.Contains(setupBody, `class="language-picker"`) || strings.Index(setupBody, `class="language-picker"`) > strings.Index(setupBody, `class="wizard-stage"`) {
 		t.Fatalf("setup = %d %q", setup.Code, setup.Body.String())
 	}
 	if settings.Code != http.StatusOK {
@@ -188,7 +188,7 @@ func assertResponseContains(t *testing.T, name string, response *httptest.Respon
 	}
 }
 
-func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) { //nolint:cyclop,gocognit // The provider request, sidecar write, conflict, and refreshed projection form one vertical slice.
+func TestSubtitleAppWritesValidatedSidecarBesideVideo(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

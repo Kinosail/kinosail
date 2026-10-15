@@ -146,7 +146,7 @@ func oauthError(writer http.ResponseWriter, code string, status int) {
 	writeJSON(writer, map[string]string{"error": code}, status)
 }
 
-func publicMetadataHTTPClient(timeout time.Duration) *http.Client { //nolint:cyclop // DNS resolution and every prohibited network range fail closed in one dial boundary.
+func publicMetadataHTTPClient(timeout time.Duration) *http.Client {
 	dialer := &net.Dialer{Timeout: timeout, KeepAlive: 30 * time.Second}
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil

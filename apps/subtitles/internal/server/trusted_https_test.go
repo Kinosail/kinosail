@@ -14,7 +14,7 @@ import (
 
 var trustedHTTPSTestToken = strings.Repeat("t", 32)
 
-func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) { //nolint:cyclop // The wizard test covers both provider branches.
+func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -57,7 +57,7 @@ func TestOwnerCanConfigureTrustedHTTPSDuringOnboarding(t *testing.T) {
 	handler := server.New(server.Config{DataDir: directory, RequireAuth: true, Configuration: configured})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	page := requestWithCookie(t, handler, http.MethodGet, "/onboarding/connection", "", owner)
-	assertAPIBody(t, page, http.StatusOK, "Secure local access", "On by default.", "Jellyfin apps", "Trusted HTTPS is required.", "Trusted HTTPS for phones, TVs, and Jellyfin apps", "Required for Jellyfin apps. Recommended for phones and TVs.", "Get the provider details", "Create a narrow token", "does not open a router port", "protected secrets file", "add your passkeys again", `action="/onboarding/trusted-https"`)
+	assertAPIBody(t, page, http.StatusOK, "Secure local access", "On by default.", "Trusted HTTPS for phones and TVs", "Recommended for phones and TVs.", "Get the provider details", "Create a narrow token", "does not open a router port", "protected secrets file", "add your passkeys again", `action="/onboarding/trusted-https"`)
 	saved := requestWithCookie(t, handler, http.MethodPost, "/onboarding/trusted-https", "domain=family-media&token="+trustedHTTPSTestToken+"&address=192.168.1.10&termsAccepted=true", owner)
 	if saved.Code != http.StatusSeeOther || saved.Header().Get("Location") != "/onboarding/connection" {
 		t.Fatalf("onboarding save = %d, location = %q", saved.Code, saved.Header().Get("Location"))
@@ -103,7 +103,7 @@ func TestTrustedHTTPSRejectsConflictingAccessWithoutWriting(t *testing.T) {
 	}
 }
 
-func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) { //nolint:cyclop // One settings flow verifies all read-only and secret-redaction boundaries.
+func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	raw := `{"domain":"family","token":"` + trustedHTTPSTestToken + `","address":"192.168.1.10","termsAccepted":true}`

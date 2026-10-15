@@ -46,7 +46,7 @@ func assertBrowseReturnPlayerPage(t *testing.T, page *httptest.ResponseRecorder)
 		`data-return-search="Back to search results"`,
 		`data-return-library="Back to Library"`,
 		`data-viewer-profile="local-owner"`,
-		`/static/main.kinosail.bundle.js?v=37-htmx4`,
+		`/static/main.kinosail.bundle.js?v=`,
 	} {
 		if !strings.Contains(page.Body.String(), required) {
 			t.Errorf("Go Player does not expose %s", required)

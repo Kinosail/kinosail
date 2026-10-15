@@ -154,11 +154,11 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertNotIn('actions/setup-go@', browser)
         self.assertNotIn('apps/player/scripts/', browser)
 
-    def test_subtitles_full_browser_selection_covers_progress_restoration(self):
+    def test_subtitles_full_browser_selection_covers_removed_routes(self):
         script = (ROOT / 'apps/subtitles/scripts/test-container.sh').read_text()
         selection = re.search(r'^  browser_args=\(([^)]+)\)', script, re.M)
         self.assertIsNotNone(selection)
-        self.assertIn('player-unplayed-progress.spec.ts', selection.group(1).split())
+        self.assertIn('removed-routes.spec.ts', selection.group(1).split())
 
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
         startup = load()['player']['startup']

@@ -22,7 +22,7 @@ const (
 	mcpStdioConnectionLimit = 32
 )
 
-func ServeStdio(ctx context.Context, dataDir, profileID string, input io.Reader, output io.Writer) error { //nolint:cyclop // Validation, handshake, cancellation, and bidirectional bridging form one transport lifecycle.
+func ServeStdio(ctx context.Context, dataDir, profileID string, input io.Reader, output io.Writer) error {
 	if ctx == nil || input == nil || output == nil {
 		return errors.New("MCP STDIO requires a context, input, and output")
 	}
@@ -60,7 +60,7 @@ func OpenStdioRelay(ctx context.Context, dataDir, profileID string) (*os.File, e
 	return unixConnection.File()
 }
 
-func openMCPStdio(ctx context.Context, dataDir, profileID string) (net.Conn, *bufio.Reader, error) { //nolint:cyclop // Validation, dialing, and the bounded Owner handshake form one transport operation.
+func openMCPStdio(ctx context.Context, dataDir, profileID string) (net.Conn, *bufio.Reader, error) {
 	if ctx == nil {
 		return nil, nil, errors.New("MCP STDIO requires a context")
 	}
@@ -111,7 +111,7 @@ func initializeMCPStdio(connection net.Conn, profileID string) (*bufio.Reader, e
 	return reader, nil
 }
 
-func StartStdioHost(ctx context.Context, dataDir string, adapter *Gateway, principals PrincipalRepository) error { //nolint:cyclop,gocognit // Safe stale-socket recovery and listener ownership form one startup decision.
+func StartStdioHost(ctx context.Context, dataDir string, adapter *Gateway, principals PrincipalRepository) error {
 	path, err := StdioSocketPath(dataDir)
 	if err != nil || adapter == nil || principals == nil {
 		return errors.Join(err, errors.New("MCP STDIO application state is unavailable"))

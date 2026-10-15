@@ -7,7 +7,7 @@ import (
 
 var scimPatchFieldOrder = []string{"active", "username", "displayname", "externalid", "name", "emails"}
 
-func (payload scimUserPayload) profile(requireSchema bool) (scimProfileInput, error) { //nolint:gocognit,cyclop // SCIM field validation and profile projection stay together.
+func (payload scimUserPayload) profile(requireSchema bool) (scimProfileInput, error) {
 	if requireSchema {
 		if err := validateSCIMUserSchemas(payload.Schemas); err != nil {
 			return scimProfileInput{}, err

@@ -20,7 +20,7 @@ type subtitleReadiness struct {
 	Checks        []subtitleReadinessCheck `json:"checks"`
 }
 
-func (manager *subtitleManager) readiness() subtitleReadiness { //nolint:cyclop // One projection must evaluate all public readiness checks together.
+func (manager *subtitleManager) readiness() subtitleReadiness {
 	readable, writable := manager.libraryAccess()
 	providers := manager.provider.healthViews()
 	configured := 0
@@ -87,7 +87,7 @@ func (manager *subtitleManager) libraryAccess() (bool, bool) {
 	}
 	readable, writable := true, true
 	for _, root := range roots {
-		directory, err := os.Open(root.Path) //nolint:gosec // The path was resolved inside the configured media root.
+		directory, err := os.Open(root.Path)
 		if err != nil {
 			readable = false
 		} else {
@@ -101,7 +101,7 @@ func (manager *subtitleManager) libraryAccess() (bool, bool) {
 }
 
 func subtitleDirectoryWritable(path string) bool {
-	probe, err := os.CreateTemp(path, ".kinosail-write-check-*") //nolint:gosec // The directory was resolved inside the configured media root.
+	probe, err := os.CreateTemp(path, ".kinosail-write-check-*")
 	if err != nil {
 		return false
 	}

@@ -31,17 +31,7 @@ func assertViewerPolicyDenied(t *testing.T, response *httptest.ResponseRecorder,
 
 func assertCapabilityRoute(t *testing.T, handler http.Handler, pattern string, withoutCapability *httptest.ResponseRecorder) {
 	t.Helper()
-	if strings.HasPrefix(pattern, "GET /Videos/") || pattern == "GET /Audio/{id}/{stream}" {
-		if !globalAuthenticationDenied(withoutCapability) {
-			t.Fatalf("Jellyfin playback route accepted a missing capability: %d %q", withoutCapability.Code, withoutCapability.Body.String())
-		}
-		withCapability := exerciseRoute(t, handler, pattern, "", true)
-		if globalAuthenticationDenied(withCapability) || withCapability.Code != http.StatusNotFound {
-			t.Fatalf("invalid Jellyfin capability did not reach the endpoint safely: %d %q", withCapability.Code, withCapability.Body.String())
-		}
-		return
-	}
 	if globalAuthenticationDenied(withoutCapability) || withoutCapability.Code != http.StatusNotFound {
-		t.Fatalf("invalid DLNA capability did not reach the endpoint safely: %d %q", withoutCapability.Code, withoutCapability.Body.String())
+		t.Fatalf("invalid %s capability did not reach the endpoint safely: %d %q", pattern, withoutCapability.Code, withoutCapability.Body.String())
 	}
 }

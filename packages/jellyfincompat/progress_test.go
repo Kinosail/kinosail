@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestProgressAndFavoriteSemanticsUsePlayerCopy(t *testing.T) { //nolint:cyclop,funlen,gocognit // One table covers every canonical operation outcome.
+func TestProgressAndFavoriteSemanticsUsePlayerCopy(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "1234567890abcdef"}
 	data := ProjectUserDataDTO(item, UserState{Seconds: 1.25, Watched: true}, true, nil)

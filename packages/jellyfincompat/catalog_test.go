@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) { //nolint:cyclop,funlen,gocognit // One catalog exercises every supported Jellyfin browse shape.
+func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 	t.Parallel()
 	items := catalogFixture()
 	catalog := fixtureCatalog(items)
@@ -111,7 +111,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) { //nolint:cyclop,f
 	}
 }
 
-func TestCatalogFeedsAndQueryHelpers(t *testing.T) { //nolint:cyclop // Related feed and query boundaries share one fixture.
+func TestCatalogFeedsAndQueryHelpers(t *testing.T) {
 	t.Parallel()
 	items := catalogFixture()
 	catalog := fixtureCatalog(items)
@@ -144,7 +144,7 @@ func TestCatalogFeedsAndQueryHelpers(t *testing.T) { //nolint:cyclop // Related 
 	}
 }
 
-func TestDTOProjectionUsesPlayerContract(t *testing.T) { //nolint:cyclop,funlen,gocognit // One table checks all canonical item variants and optional fields.
+func TestDTOProjectionUsesPlayerContract(t *testing.T) {
 	t.Parallel()
 	movie := catalogFixture()[0]
 	options := ItemOptions{CanDownload: true, UserData: map[string]any{"Played": true}, MediaSource: map[string]any{"Id": "source"}}

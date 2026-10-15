@@ -9,7 +9,7 @@ import (
 )
 
 func TestTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t *testing.T) {
-	servertest.AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t, servertest.MFARecoveryFixture{New: newMFARecoveryServer, Restart: restartMFARecoveryServer, TOTP: testTOTP, StoredState: storedState, LoginLabel: "6-digit code"})
+	servertest.AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t, servertest.MFARecoveryFixture{New: newMFARecoveryServer, Restart: restartMFARecoveryServer, TOTP: testTOTP, StoredState: storedState, LoginLabel: "6-digit code", NoJellyfin: true})
 }
 
 func TestDefaultMFADoesNotBlockOpenInitialServer(t *testing.T) {

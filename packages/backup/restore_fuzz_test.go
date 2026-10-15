@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func FuzzRestoreWritesOnlyConfigurationState(f *testing.F) { //nolint:cyclop,gocognit // One property checks every filesystem effect of the public restore boundary.
+func FuzzRestoreWritesOnlyConfigurationState(f *testing.F) {
 	f.Add([]byte("not a backup"))
 	f.Add(servertest.TarGzipFile(f, "settings.json", `{}`))
 	f.Add(servertest.TarGzipFile(f, "../escaped.json", `{}`))

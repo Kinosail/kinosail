@@ -15,7 +15,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestConcurrentSubtitleFetchNeverOverwritesSidecar(t *testing.T) { //nolint:cyclop // The race contract needs both concurrent responses and the final file state.
+func TestConcurrentSubtitleFetchNeverOverwritesSidecar(t *testing.T) {
 	t.Parallel()
 	var searches atomic.Int32
 	release := make(chan struct{})

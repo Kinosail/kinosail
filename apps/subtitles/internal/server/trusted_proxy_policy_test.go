@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"encoding/json"
 	"net/http"
 	"regexp"
 	"strings"
@@ -40,32 +39,6 @@ func TestTrustedProxyUsesPublicInternetPolicy(t *testing.T) {
 	if response := serveRequest(public, login); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "passkey or Quick Connect") {
 		t.Fatalf("trusted proxy password login = %d %q", response.Code, response.Body.String())
 	}
-}
-
-func trustedProxyPublicViewer(t *testing.T, handler http.Handler) (http.Handler, string) {
-	t.Helper()
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	create := requestWithCookieRequest(t, http.MethodPost, "/settings/profiles", "name=Viewer&password=viewer-password&rating=all&libraries=all&remote=true&transcode=true", owner)
-	if response := serveRequest(handler, create); response.Code != http.StatusSeeOther {
-		t.Fatalf("create Viewer = %d %q", response.Code, response.Body.String())
-	}
-	viewer := signInTestProfile(t, handler, "/login", "name=Viewer&password=viewer-password")
-	confirmTestFactor(t, handler, viewer, requestWithCookie(t, handler, http.MethodPost, "/account/mfa/setup", "", viewer))
-	public := trustedProxyHandler(handler)
-	started := serveRequest(public, requestWithBody(t, http.MethodPost, "/api/v1/quick-connect", "device=Internet+TV"))
-	var state struct{ Code, Secret string }
-	if started.Code != http.StatusCreated || json.Unmarshal(started.Body.Bytes(), &state) != nil {
-		t.Fatalf("start Quick Connect = %d %q", started.Code, started.Body.String())
-	}
-	if response := serveRequest(handler, requestWithCookieRequest(t, http.MethodPost, "/api/v1/quick-connect/"+state.Code, "", viewer)); response.Code != http.StatusNoContent {
-		t.Fatalf("approve Quick Connect = %d %q", response.Code, response.Body.String())
-	}
-	connected := serveRequest(public, requestWithBody(t, http.MethodPost, "/api/v1/quick-connect/token", "secret="+state.Secret))
-	var session struct{ Token string }
-	if connected.Code != http.StatusCreated || json.Unmarshal(connected.Body.Bytes(), &session) != nil || session.Token == "" {
-		t.Fatalf("connect Quick Connect = %d %q", connected.Code, connected.Body.String())
-	}
-	return public, session.Token
 }
 
 func trustedProxyHandler(handler http.Handler) http.Handler {

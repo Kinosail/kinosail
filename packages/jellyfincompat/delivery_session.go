@@ -25,7 +25,7 @@ func (module DeliveryHTTP) PlaySession(request *http.Request, itemID string) (De
 	return session, allowed
 }
 
-func (module DeliveryHTTP) PlaybackContext(request *http.Request) (library.Item, DeliveryViewer, bool) { //nolint:cyclop // Each authorization fact remains explicit.
+func (module DeliveryHTTP) PlaybackContext(request *http.Request) (library.Item, DeliveryViewer, bool) {
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {
 		return library.Item{}, DeliveryViewer{}, false
@@ -96,7 +96,7 @@ func (module DeliveryHTTP) Subtitle(writer http.ResponseWriter, request *http.Re
 	module.WriteSubtitle(writer, request, item.Subtitles[index], nil)
 }
 
-func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, request *http.Request, item library.Item, index int) bool { //nolint:cyclop,gocognit // Embedded and timeline subtitle paths share one ordered delivery boundary.
+func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, request *http.Request, item library.Item, index int) bool {
 	for _, track := range module.Playback.Inspect(request.Context(), item).Facts.Subtitles {
 		if track.SourceIndex != index || !track.Text {
 			continue

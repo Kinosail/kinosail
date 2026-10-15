@@ -98,7 +98,7 @@ func TestDecodeFormAcceptsOnlyBoundedSingleValues(t *testing.T) {
 	}
 }
 
-func TestFormValueValidation(t *testing.T) { //nolint:cyclop // The table asserts every bounded form-input outcome.
+func TestFormValueValidation(t *testing.T) {
 	t.Parallel()
 	form := map[string][]string{"required": {"value"}, "optional": {""}}
 	if value, ok := RequiredValue(form, "required", 5); !ok || value != "value" {

@@ -55,7 +55,7 @@ func NewManager(config ManagerConfig) *Manager {
 	return manager
 }
 
-func NewAutomaticManager(ctx context.Context, dataDir, directory, key string, interval time.Duration, retention int, acquire func(context.Context) (func(), error), write func(io.Writer, string, string) error, verify func(io.Reader, string) error) *Manager { //nolint:lll // A single factory keeps app adapters declarative.
+func NewAutomaticManager(ctx context.Context, dataDir, directory, key string, interval time.Duration, retention int, acquire func(context.Context) (func(), error), write func(io.Writer, string, string) error, verify func(io.Reader, string) error) *Manager {
 	return NewManager(ManagerConfig{
 		Context: ctx, DataDir: dataDir, Directory: directory, Key: key,
 		Retention: retention, Interval: interval, Acquire: acquire,
@@ -96,7 +96,7 @@ func (manager *Manager) recordError(err error) {
 	manager.mu.Unlock()
 }
 
-func (manager *Manager) writeLocked() error { //nolint:cyclop,gocognit // Archive creation, atomic replacement, and retention fail closed in one operation.
+func (manager *Manager) writeLocked() error {
 	if err := manager.validate(); err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (manager *Manager) verifyLocked() error {
 	if len(files) == 0 {
 		return errors.New("no backup is available")
 	}
-	file, err := os.Open(files[len(files)-1]) //nolint:gosec // Files returns only regular entries in the configured backup directory.
+	file, err := os.Open(files[len(files)-1])
 	if err == nil {
 		err = manager.verifyAuto(file, manager.key)
 	}

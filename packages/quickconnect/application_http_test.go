@@ -107,7 +107,7 @@ func (fixture *applicationFixture) approved(t *testing.T, request Request, profi
 	return secret
 }
 
-func TestApplicationConsumesEverySessionKind(t *testing.T) { //nolint:cyclop,gocognit // The three session modes stay together and remain below the repository complexity limit.
+func TestApplicationConsumesEverySessionKind(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name          string

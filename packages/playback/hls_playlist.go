@@ -27,7 +27,7 @@ func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
 	return true
 }
 
-func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest parsing and asset checks form one readiness decision.
+func VariantReady(source, directory string) bool {
 	playlist := filepath.Join(directory, "index.m3u8")
 	if !hlsSourceFresh(playlist, source, "") {
 		return false
@@ -42,11 +42,11 @@ func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest p
 		if strings.HasPrefix(line, `#EXT-X-MAP:URI="`) {
 			name := strings.TrimSuffix(strings.TrimPrefix(line, `#EXT-X-MAP:URI="`), `"`)
 			if VariantFile(name) {
-				_, err = os.Stat(filepath.Join(directory, name)) //nolint:gosec // Name passed the rendition allowlist.
+				_, err = os.Stat(filepath.Join(directory, name))
 				initReady = err == nil
 			}
 		} else if line != "" && !strings.HasPrefix(line, "#") && VariantFile(line) {
-			_, err = os.Stat(filepath.Join(directory, line)) //nolint:gosec // Line passed the rendition allowlist.
+			_, err = os.Stat(filepath.Join(directory, line))
 			if err == nil {
 				segments[line] = struct{}{}
 			}
@@ -55,7 +55,7 @@ func VariantReady(source, directory string) bool { //nolint:cyclop // Manifest p
 	return initReady && len(segments) > 0
 }
 
-func WriteMaster(path, transcoder string, qualities []PlaybackQuality, independent bool, write AtomicWriter) error { //nolint:cyclop // Validation and manifest construction form one atomic publication input.
+func WriteMaster(path, transcoder string, qualities []PlaybackQuality, independent bool, write AtomicWriter) error {
 	if write == nil || len(qualities) == 0 || len(transcoder) > hlsSourcePolicyLimit || strings.ContainsAny(transcoder, "\r\n") {
 		return errors.New("HLS master playlist input is invalid")
 	}
@@ -85,7 +85,7 @@ func VariantBandwidth(directory string, fallback int64) (int64, int64) {
 		if strings.HasPrefix(line, "#EXTINF:") {
 			segmentDuration, _ = strconv.ParseFloat(strings.TrimSuffix(strings.TrimPrefix(line, "#EXTINF:"), ","), 64)
 		} else if segmentDuration > 0 && VariantFile(line) {
-			info, statErr := os.Stat(filepath.Join(directory, line)) //nolint:gosec // Line passed the rendition allowlist.
+			info, statErr := os.Stat(filepath.Join(directory, line))
 			if statErr == nil {
 				bits := float64(info.Size() * 8)
 				total, duration = total+bits, duration+segmentDuration
@@ -104,8 +104,8 @@ func VariantBandwidth(directory string, fallback int64) (int64, int64) {
 }
 
 func Fresh(playlist, source string) bool {
-	manifest, manifestErr := os.Stat(playlist) //nolint:gosec // Callers use installation cache paths.
-	media, mediaErr := os.Stat(source)         //nolint:gosec // Source comes from the scanned library.
+	manifest, manifestErr := os.Stat(playlist)
+	media, mediaErr := os.Stat(source)
 	return manifestErr == nil && mediaErr == nil && manifest.Size() > 0 && !manifest.ModTime().Before(media.ModTime())
 }
 
@@ -155,11 +155,11 @@ func SeekCacheFresh(directory, source, transcoder string) bool {
 	if !MasterFresh(filepath.Join(directory, "index.m3u8"), source, transcoder) {
 		return false
 	}
-	marker, err := os.ReadFile(filepath.Join(directory, ".seekable")) //nolint:gosec // Marker is below a validated cache directory.
+	marker, err := os.ReadFile(filepath.Join(directory, ".seekable"))
 	return err == nil && string(marker) == transcoder
 }
 
-func FinalizedVariant(directory string) bool { //nolint:cyclop,gocognit // Playlist and asset validation are one trust-boundary check.
+func FinalizedVariant(directory string) bool {
 	manifest, err := ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
 	if err != nil || !PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") || !PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 		return false
@@ -179,7 +179,7 @@ func FinalizedVariant(directory string) bool { //nolint:cyclop,gocognit // Playl
 		if !VariantFile(name) || name != "init.mp4" && !strings.HasPrefix(name, "segment-") {
 			return false
 		}
-		info, statErr := os.Lstat(filepath.Join(directory, name)) //nolint:gosec // Name passed the rendition allowlist.
+		info, statErr := os.Lstat(filepath.Join(directory, name))
 		if statErr != nil || !info.Mode().IsRegular() || info.Size() == 0 {
 			return false
 		}
@@ -197,7 +197,7 @@ func PlaylistHas(manifest []byte, tag string) bool {
 }
 
 func SourceVersion(path string) string {
-	info, err := os.Stat(path) //nolint:gosec // Path comes from the scanned library.
+	info, err := os.Stat(path)
 	if err != nil {
 		return "missing"
 	}

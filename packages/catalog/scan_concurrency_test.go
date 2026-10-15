@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestScanRootsPreservesOrderAndFailureBoundary(t *testing.T) { //nolint:cyclop // One fixture checks ordered success, failure, cancellation, and empty roots.
+func TestScanRootsPreservesOrderAndFailureBoundary(t *testing.T) {
 	first := t.TempDir()
 	last := t.TempDir()
 	for directory, title := range map[string]string{first: "Zulu", last: "Alpha"} {
@@ -45,7 +45,7 @@ func TestScanRootsPreservesOrderAndFailureBoundary(t *testing.T) { //nolint:cycl
 	}
 }
 
-func BenchmarkScanRoots(b *testing.B) { //nolint:cyclop,gocognit // The benchmark builds representative roots and compares complete scans.
+func BenchmarkScanRoots(b *testing.B) {
 	b.StopTimer()
 	base := b.TempDir()
 	roots := make([]ScanRoot, 4)

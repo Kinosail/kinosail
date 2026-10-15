@@ -21,7 +21,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/watchrooms"
 )
 
-func TestBindingOwnsRegistrationAndTaskWiring(t *testing.T) { //nolint:cyclop,funlen // One binding proves deferred task selection, routes, handlers, and error propagation.
+func TestBindingOwnsRegistrationAndTaskWiring(t *testing.T) {
 	t.Parallel()
 	var ownerCalls, scanCalls, metadataCalls, cacheCalls, maintainCalls int
 	config := testBindingConfig(t, runtimeSnapshot{})
@@ -66,7 +66,7 @@ func TestBindingOwnsRegistrationAndTaskWiring(t *testing.T) { //nolint:cyclop,fu
 	}
 }
 
-func TestBindingPreservesTaskErrorsWithoutLaterSideEffects(t *testing.T) { //nolint:cyclop // One matrix proves each task stops at its own error boundary.
+func TestBindingPreservesTaskErrorsWithoutLaterSideEffects(t *testing.T) {
 	t.Parallel()
 	want := errors.New("failed")
 	var scanCalls, metadataCalls, cacheCalls, maintainCalls int
@@ -94,7 +94,7 @@ func TestBindingPreservesTaskErrorsWithoutLaterSideEffects(t *testing.T) { //nol
 	}
 }
 
-func TestBindingProjectsEveryMetric(t *testing.T) { //nolint:cyclop,funlen // Exact field checks protect the complete projection.
+func TestBindingProjectsEveryMetric(t *testing.T) {
 	t.Parallel()
 	snapshot := fullRuntimeSnapshot()
 	metrics := projectMetrics(snapshot)
@@ -120,7 +120,7 @@ func TestBindingProjectsEveryMetric(t *testing.T) { //nolint:cyclop,funlen // Ex
 	}
 }
 
-func TestBindingProjectsDiagnosticsAtRequestTime(t *testing.T) { //nolint:cyclop // One report protects identity, health, errors, and settings.
+func TestBindingProjectsDiagnosticsAtRequestTime(t *testing.T) {
 	t.Parallel()
 	started := time.Date(2026, time.September, 4, 12, 0, 0, 0, time.UTC)
 	snapshot := fullRuntimeSnapshot()

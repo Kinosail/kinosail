@@ -28,7 +28,7 @@ type HLSHandlerDependencies struct {
 	InvalidSeek func(http.ResponseWriter, *http.Request)
 }
 
-func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HLSHandlerDependencies) { //nolint:cyclop // Route validation and delegation form one side-effect boundary.
+func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HLSHandlerDependencies) {
 	if request == nil || dependencies.Lookup == nil || dependencies.Allowed == nil || dependencies.Legacy == nil || dependencies.Duration == nil || dependencies.Serve == nil || dependencies.NotFound == nil || dependencies.Forbidden == nil || dependencies.InvalidSeek == nil {
 		http.Error(writer, "compatible playback is unavailable", http.StatusInternalServerError)
 		return

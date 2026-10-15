@@ -15,7 +15,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestTMDBEnrichBoundsMovieRequestsAndPreservesOrder(t *testing.T) { //nolint:cyclop,gocognit // The barrier verifies bounded overlap and item order.
+func TestTMDBEnrichBoundsMovieRequestsAndPreservesOrder(t *testing.T) {
 	if runtime.GOMAXPROCS(0) < 4 {
 		t.Skip("three workers require at least four process CPUs")
 	}
@@ -91,7 +91,7 @@ func TestTMDBEnrichDuplicateIDsRetainSerialCacheBehavior(t *testing.T) {
 	}
 }
 
-func TestTMDBCastDownloadsAreBoundedAndOrdered(t *testing.T) { //nolint:cyclop,gocognit // The barrier verifies bounded image requests and cast order.
+func TestTMDBCastDownloadsAreBoundedAndOrdered(t *testing.T) {
 	if runtime.GOMAXPROCS(0) < 3 {
 		t.Skip("two image workers require at least three process CPUs")
 	}
@@ -142,7 +142,7 @@ func TestTMDBCastDownloadsAreBoundedAndOrdered(t *testing.T) { //nolint:cyclop,g
 	}
 }
 
-func BenchmarkTMDBEnrichMovies(b *testing.B) { //nolint:cyclop,gocognit // The benchmark compares complete uncached movie enrichment.
+func BenchmarkTMDBEnrichMovies(b *testing.B) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		time.Sleep(20 * time.Millisecond)
 		switch request.URL.Path {
@@ -189,7 +189,7 @@ func BenchmarkTMDBEnrichMovies(b *testing.B) { //nolint:cyclop,gocognit // The b
 	}
 }
 
-func BenchmarkTMDBCastImages(b *testing.B) { //nolint:gocognit // The benchmark compares all cast image requests and cache writes.
+func BenchmarkTMDBCastImages(b *testing.B) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		time.Sleep(20 * time.Millisecond)
 		writer.Header().Set("Content-Type", "image/jpeg")

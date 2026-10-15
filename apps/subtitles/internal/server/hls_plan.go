@@ -36,11 +36,6 @@ func timelineFromPlaybackToken(value string) (PlaybackTimeline, error) {
 
 func hlsPlanURL(id string, plan PlaybackPlan) string { return playback.HLSPlanURL(id, plan) }
 
-func plannedHLSFile(name string) (hlsRecipe, string, bool) {
-	recipe, file, ok := playback.PlannedHLSFile(name, hlsPolicy())
-	return localHLSRecipe(recipe), file, ok
-}
-
 func hlsRecipeKey(id string, recipe hlsRecipe) string {
 	return playback.HLSRecipeKey(id, sharedHLSRecipe(recipe))
 }

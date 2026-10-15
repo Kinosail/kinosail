@@ -31,7 +31,7 @@ func (store ProfileStore) SCIMProfile(id string) (Profile, bool) {
 	return Profile{}, false
 }
 
-func (store ProfileStore) CreateSCIMProfile(input scim.ProfileInput) (Profile, error) { //nolint:cyclop,gocognit // Scores of 16 and 17 remain below the repository ceiling of 22 for one atomic create transaction.
+func (store ProfileStore) CreateSCIMProfile(input scim.ProfileInput) (Profile, error) {
 	input, err := scim.NormalizeProfileInput(input)
 	if err != nil {
 		return Profile{}, err
@@ -97,7 +97,7 @@ func newSCIMID(profiles []Profile, next func() string) string {
 	}
 }
 
-func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, expected string) (Profile, error) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for one atomic update transaction.
+func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, expected string) (Profile, error) {
 	input, err := scim.NormalizeProfileInput(input)
 	if err != nil {
 		return Profile{}, err

@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestOwnerConfiguresSubSourceAtomicallyThroughWebAndAPI(t *testing.T) { //nolint:cyclop // One end-to-end test covers the shared atomic operation and both adapters.
+func TestOwnerConfiguresSubSourceAtomicallyThroughWebAndAPI(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })

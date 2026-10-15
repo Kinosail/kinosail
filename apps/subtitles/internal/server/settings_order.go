@@ -57,7 +57,7 @@ type settingsSectionBlock struct {
 	rank   int
 }
 
-func settingsGroupRank(section string) int { //nolint:cyclop // The fixed display order is intentionally explicit.
+func settingsGroupRank(section string) int {
 	const attribute = `data-settings-group="`
 	start := strings.Index(section, attribute)
 	if start < 0 {

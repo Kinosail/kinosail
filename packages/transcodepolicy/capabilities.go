@@ -16,7 +16,7 @@ type Backend struct {
 	Usable   bool
 }
 
-func Capabilities(backends []Backend) []Capability { //nolint:cyclop // One explicit mapping keeps every codec state consistent.
+func Capabilities(backends []Backend) []Capability {
 	result := make([]Capability, 0, len(codecs))
 	for _, definition := range codecs {
 		detected, usable := false, false

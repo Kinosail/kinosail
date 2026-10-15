@@ -15,7 +15,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestRunSyncPullsAndPersistsSourceState(t *testing.T) { //nolint:cyclop // One reconciliation assertion covers its coupled durable result.
+func TestRunSyncPullsAndPersistsSourceState(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		_, _ = writer.Write([]byte(`{"MediaContainer":{"Directory":[]}}`))
 	}))
@@ -44,7 +44,7 @@ func TestRunSyncPullsAndPersistsSourceState(t *testing.T) { //nolint:cyclop // O
 	}
 }
 
-func TestApplyPendingKeepsDurableRecoveryUntilFinalized(t *testing.T) { //nolint:cyclop // One recovery assertion covers each atomic failure point.
+func TestApplyPendingKeepsDurableRecoveryUntilFinalized(t *testing.T) {
 	config := testManagerConfig()
 	manager := newTestManager(t.TempDir(), config)
 	pending := &SyncPending{Summary: Summary{Importable: 1}, Changes: []ProgressChange{{TargetID: "movie"}}, ListChanges: []ListChange{{TargetID: "movie", Favorite: true}}}
@@ -79,7 +79,7 @@ func TestApplyPendingKeepsDurableRecoveryUntilFinalized(t *testing.T) { //nolint
 	}
 }
 
-func TestPullClassifiesEveryRecurringOutcome(t *testing.T) { //nolint:cyclop,funlen // One reconciliation batch proves observed identity and optimistic conflict rules.
+func TestPullClassifiesEveryRecurringOutcome(t *testing.T) {
 	items := []library.Item{
 		{ID: "same", Kind: "video", Title: "Same", Year: "2024"},
 		{ID: "conflict", Kind: "video", Title: "Conflict", Year: "2024"},

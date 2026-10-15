@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func (fixture HardwareTranscodeFixture[S]) HardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback(t *testing.T) { //nolint:cyclop,funlen // One end-to-end scenario proves selection, delivery, and diagnostics together.
+func (fixture HardwareTranscodeFixture[S]) HardwareCapabilitiesDriveAutomaticSelectionAndVisibleFallback(t *testing.T) {
 	t.Parallel()
 
 	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()

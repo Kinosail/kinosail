@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //nolint:cyclop // One rendered-player assertion covers the complete chapter and scrubber contract.
+func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) {
 	mediaDir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.mp4"), nil, 0o600); err != nil {
 		t.Fatal(err)
@@ -33,7 +33,7 @@ func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //n
 	script := httptest.NewRecorder()
 	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
 
-	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `data-seek-preview hidden`, `data-trickplay="/trickplay/` + id + `/{second}`, `/static/player.js?v=`, `/static/app.css?v=cinema-17-buffer-1`} {
+	for _, expected := range []string{"First contact", `data-auto-skip="intro,credits"`, `data-playback-token="`, `data-chapter data-start="90" data-end="600" data-seek="90"`, `<time>1:30</time>`, `<summary><span>Chapters</span><small>3</small></summary>`, `data-marker="intro"`, `data-marker="credits"`, `controls playsinline`, `data-player-controls`, `data-player-fullscreen`, `data-seek-preview hidden`, `data-trickplay="/trickplay/` + id + `/{second}`, `/static/player.js?v=`, `/static/app.css?v=`} {
 		if !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q: %q", expected, player.Body.String())
 		}

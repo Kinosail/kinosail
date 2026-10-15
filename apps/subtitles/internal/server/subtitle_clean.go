@@ -47,7 +47,7 @@ type cleanedSubtitle struct {
 	Synchronization string
 }
 
-func cleanSubtitle(data []byte) (cleanedSubtitle, error) { //nolint:gocognit,cyclop,funlen // One bounded parser owns normalization, validation, cleanup, ordering, and deduplication.
+func cleanSubtitle(data []byte) (cleanedSubtitle, error) {
 	if len(data) == 0 || len(data) > 4<<20 {
 		return cleanedSubtitle{}, errors.New("subtitle text is invalid")
 	}

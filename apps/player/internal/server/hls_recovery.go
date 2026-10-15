@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
 )
 
-func (manager *hlsManager) retrySoftwareHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) bool { //nolint:cyclop // Recovery must preserve published segments and stop on cancellation, filesystem errors, or a non-hardware failure.
+func (manager *hlsManager) retrySoftwareHLSEncode(ctx context.Context, item library.Item, job *hlsJob, directory string, options transcodeSettings, recipe hlsRecipe, startNumber int, preserve bool) bool {
 	if job.err == nil || recipe.mode != "transcode" || options.Accelerator == "none" || ctx.Err() != nil || !transcodehardware.HardwareFailure(hlsDiagnostic(job.err)) {
 		return false
 	}

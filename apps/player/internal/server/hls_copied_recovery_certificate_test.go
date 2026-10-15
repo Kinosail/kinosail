@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestCopiedRecoveryCertificateDamageRejectsWithoutWrites(t *testing.T) { //nolint:cyclop,gocognit // Serial damage scenarios retain exact no-write and certificate assertions.
+func TestCopiedRecoveryCertificateDamageRejectsWithoutWrites(t *testing.T) {
 	for _, damage := range []string{"missing", "malformed", "duplicate", "oversized", "symlink", "fifo"} {
 		t.Run(damage, func(t *testing.T) {
 			manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)

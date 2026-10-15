@@ -109,15 +109,17 @@ type (
 	serverRunner   func(*http.Server, servertransport.TLSConfig) error
 )
 
-func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler, createRemote remoteFactory, createTrusted trustedFactory, serve serverRunner) int { //nolint:cyclop // Optional managers, remote serving, and shutdown form one process lifecycle.
+func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler, createRemote remoteFactory, createTrusted trustedFactory, serve serverRunner) int {
 	if configured == nil || build == nil || remoteHandler == nil || createRemote == nil || createTrusted == nil || serve == nil {
 		slog.Error("server lifecycle is not configured")
 		return 1
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), signals...)
 	defer stop()
+	lifecycle, endLifecycle := context.WithCancel(context.Background())
+	defer endLifecycle()
 	internet, trusted := accessManagers(configured, createRemote, createTrusted)
-	httpServer := build(ctx, internet, trusted)
+	httpServer := build(lifecycle, internet, trusted)
 	if httpServer == nil {
 		slog.Error("server lifecycle returned no HTTP server")
 		return 1
@@ -132,6 +134,7 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 	if ctx.Err() != nil {
 		<-shutdownDone
 	}
+	endLifecycle()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("server failed", "error", err)
 		return 1

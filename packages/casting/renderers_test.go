@@ -45,7 +45,7 @@ func TestDiscoveryPinsDescriptionAndControlToLocalResponder(t *testing.T) {
 	}
 }
 
-func TestLoadValidatesBeforeNetworkAndEscapesMetadata(t *testing.T) { //nolint:cyclop // Invalid requests and valid SOAP actions share one recorded network boundary.
+func TestLoadValidatesBeforeNetworkAndEscapesMetadata(t *testing.T) {
 	r := NewRenderers()
 	device := Device{ID: strings.Repeat("a", 32), Name: "Living room", Protocol: "dlna", control: "http://192.168.1.20:1400/control", service: transportType, expires: time.Now().Add(time.Hour)}
 	r.devices[device.ID] = device

@@ -66,7 +66,7 @@ func cloneFactorRecords(profiles []factorRecord) []factorRecord {
 	return cloned
 }
 
-func TestFactorEnableHashesCodesAndCommitsRelatedState(t *testing.T) { //nolint:cyclop // Exact state assertions protect the complete atomic enrollment transaction.
+func TestFactorEnableHashesCodesAndCommitsRelatedState(t *testing.T) {
 	t.Parallel()
 	fixture := newFactorFixture(FactorProfile{ID: "owner", Owner: true, Revision: 4})
 	transaction := fixture.transaction(nil)
@@ -92,7 +92,7 @@ func TestFactorEnableHashesCodesAndCommitsRelatedState(t *testing.T) { //nolint:
 	}
 }
 
-func TestFactorEnableValidatesBeforePersistence(t *testing.T) { //nolint:gocognit // One table proves the complete input boundary has no side effects.
+func TestFactorEnableValidatesBeforePersistence(t *testing.T) {
 	t.Parallel()
 	oversizedRecovery := make([]string, recoveryCodeCount+1)
 	for index := range oversizedRecovery {
@@ -156,7 +156,7 @@ func TestFactorEnableAcceptsExactBounds(t *testing.T) {
 	}
 }
 
-func TestFactorDisablePreservesOwnerInvariantAndCommits(t *testing.T) { //nolint:cyclop // One transaction test proves the owner invariant and every committed field.
+func TestFactorDisablePreservesOwnerInvariantAndCommits(t *testing.T) {
 	t.Parallel()
 	blocked := newFactorFixture(FactorProfile{ID: "owner", Owner: true, Secret: "secret", Recovery: []string{"code"}, Revision: 7})
 	if err := blocked.transaction(time.Now).Disable("owner"); !errors.Is(err, ErrOwnerFactorNeeded) || fixtureChanged(blocked) {
@@ -212,7 +212,7 @@ func TestFactorPersistenceFailureDoesNotCommit(t *testing.T) {
 	}
 }
 
-func TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce(t *testing.T) { //nolint:cyclop // One verification lifecycle proves TOTP and one-use recovery behavior.
+func TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce(t *testing.T) {
 	t.Parallel()
 	const secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" //nolint:gosec // Public RFC 6238 test key.
 	totpFixture := newFactorFixture(FactorProfile{ID: "owner", Secret: secret, Recovery: make([]string, recoveryCodeCount+1)})

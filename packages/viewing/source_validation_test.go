@@ -44,7 +44,7 @@ func TestViewingPageValidationAndCompletion(t *testing.T) {
 	}
 }
 
-func TestNormalizeViewingActivityRejectsEveryUntrustedField(t *testing.T) { //nolint:cyclop,funlen // Each field is an independent remote trust boundary.
+func TestNormalizeViewingActivityRejectsEveryUntrustedField(t *testing.T) {
 	valid := Activity{SourceID: "id", Kind: "movie", Title: "Title", Year: "2024", ProviderIDs: map[string]string{"tmdb": "1"}, Seconds: 2, Duration: 3}
 	cases := map[string]func(*Activity){
 		"missing source":   func(value *Activity) { value.SourceID = "" },
@@ -114,7 +114,7 @@ func TestNormalizeViewingActivityRejectsEveryUntrustedField(t *testing.T) { //no
 	}
 }
 
-func TestViewingSourceNormalizationHelpers(t *testing.T) { //nolint:cyclop,gocognit // One table covers source normalization boundaries.
+func TestViewingSourceNormalizationHelpers(t *testing.T) {
 	ids := normalizeProviderIDs(map[string]string{" TMDB ": " 1 ", "tvdb": "2", "IMDB": "tt3", "other": "4", "ignored": ""}) //nolint:gocritic // Deliberate whitespace proves map-key normalization.
 	plex := plexProviderIDs("tmdb://1", []struct{ ID string }{{" IMDB://tt2 "}, {"tvdb://3"}, {"bad"}, {"other://4"}, {"tmdb://"}})
 	if len(ids) != 3 || ids["tmdb"] != "1" || ids["tvdb"] != "2" || ids["imdb"] != "tt3" || len(plex) != 3 || plex["imdb"] != "tt2" || plex["tvdb"] != "3" {
@@ -150,7 +150,7 @@ func TestViewingSourceNormalizationHelpers(t *testing.T) { //nolint:cyclop,gocog
 	}
 }
 
-func TestViewingPlaylistNamesAndMembershipsAreBounded(t *testing.T) { //nolint:cyclop,funlen,gocognit // One table covers the coupled name and membership limits.
+func TestViewingPlaylistNamesAndMembershipsAreBounded(t *testing.T) {
 	seen := make(map[string]int)
 	first, err := uniqueViewingPlaylistName(" Queue ", seen)
 	second, secondErr := uniqueViewingPlaylistName("Queue", seen)

@@ -57,7 +57,7 @@ func TestOpenSubtitlesCandidateBoundariesAndOrdering(t *testing.T) {
 	}
 }
 
-func TestOpenSubtitlesCandidateIdentityAndQualityBranches(t *testing.T) { //nolint:funlen // One table covers independent provider identity boundaries.
+func TestOpenSubtitlesCandidateIdentityAndQualityBranches(t *testing.T) {
 	t.Parallel()
 	movie := library.Item{Title: "Arrival", Year: "2016", Path: "Arrival.2016.mkv", ProviderIDs: map[string]string{"imdb": "tt2543164"}}
 	valid := openSubtitlesAttributes{Language: "en", Release: "Arrival.2016", Feature: openSubtitlesFeature{Type: "movie", Year: 2016, Title: "Arrival", IMDBID: 2543164}}
@@ -121,7 +121,7 @@ func TestOpenSubtitlesCandidateIdentityAndQualityBranches(t *testing.T) { //noli
 	}
 }
 
-func TestSubSourceMovieAndSubtitleBoundaryBranches(t *testing.T) { //nolint:funlen // One fixture covers provider movie and subtitle boundaries.
+func TestSubSourceMovieAndSubtitleBoundaryBranches(t *testing.T) {
 	t.Parallel()
 	item := library.Item{Title: "Arrival", Year: "2016", Path: "Arrival.2016.mkv", ProviderIDs: map[string]string{"imdb": "tt2543164", "tmdb": "329865"}}
 	if _, ok := selectSubSourceMovie(item, item.ProviderIDs, item.Title, item.Year, subSourceMovieResponse{}); ok {
@@ -157,7 +157,7 @@ func TestSubSourceMovieAndSubtitleBoundaryBranches(t *testing.T) { //nolint:funl
 	}
 }
 
-func TestSubDLCandidateBoundaryBranches(t *testing.T) { //nolint:cyclop,funlen // One fixture covers strict candidate filtering and ranking.
+func TestSubDLCandidateBoundaryBranches(t *testing.T) {
 	t.Parallel()
 	item := library.Item{Title: "Arrival", Year: "2016", Path: "Arrival.2016.mkv"}
 	if candidates := rankSubDLCandidates(item, "en", subDLResponse{}); candidates != nil {

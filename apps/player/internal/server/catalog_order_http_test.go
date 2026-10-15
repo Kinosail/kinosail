@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCatalogHTTPPublicationRejectsLateOldOrder(t *testing.T) { //nolint:cyclop,funlen // One forced interleaving checks old-response stability and new-response freshness.
+func TestCatalogHTTPPublicationRejectsLateOldOrder(t *testing.T) {
 	index := catalog.NewMemoryIndex([]library.Item{{ID: "a", Title: "Alpha"}, {ID: "b", Title: "Beta"}}, true)
 	var pm sync.Mutex
 	var lm sync.RWMutex

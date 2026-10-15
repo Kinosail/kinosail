@@ -47,7 +47,7 @@ func TestBackupRejectsSemanticInvalidSettingsBeforeArchiveOutput(t *testing.T) {
 	}
 }
 
-func TestRestoreAndVerifyRejectSemanticInvalidSettingsBeforeReplacement(t *testing.T) { //nolint:gocognit // Both archive modes prove rejection is side-effect free.
+func TestRestoreAndVerifyRejectSemanticInvalidSettingsBeforeReplacement(t *testing.T) {
 	invalid := servertest.TarGzipFile(t, "settings.json", `{"supporter":{"livingStandard":[]}}`)
 	encrypted := encryptTestArchive(t, invalid, "correct horse battery staple")
 	for name, test := range map[string]struct {

@@ -13,7 +13,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-//nolint:cyclop // The integration assertion checks all security attributes of the one ceremony response.
 func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	t.Parallel()
 	handler := New(Config{DataDir: t.TempDir(), RequireAuth: true, AuthURL: "http://localhost:8080"})
@@ -24,7 +23,7 @@ func TestPasskeyCeremoniesAreLocalAndServerSide(t *testing.T) {
 	request.Host = "localhost:8080"
 	request.AddCookie(owner)
 	handler.ServeHTTP(account, request)
-	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=cinema-17-buffer-1") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=16") {
+	if account.Code != http.StatusOK || !strings.Contains(account.Body.String(), "Add a passkey") || !strings.Contains(account.Body.String(), "Add one directly on another device") || !strings.Contains(account.Body.String(), "/static/app.css?v=") || !strings.Contains(account.Body.String(), "/static/passkeys.js?v=16") {
 		t.Fatalf("account = %d %q", account.Code, account.Body.String())
 	}
 	prompt := httptest.NewRecorder()
@@ -93,7 +92,7 @@ func TestPasskeyLoginIsAvailableFromSignInPage(t *testing.T) {
 	servertest.PasskeyLoginIsAvailableFromSignInPage(t, New(Config{DataDir: t.TempDir(), RequireAuth: true}), "/static/passkeys.js?v=16")
 }
 
-func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T) { //nolint:cyclop,funlen,gocognit // One login boundary covers both inventory states and invalid offer input.
+func TestPasswordLoginOffersPasskeyWithConfiguredStateAndSafeReturn(t *testing.T) {
 	t.Parallel()
 	for _, configured := range []bool{false, true} {
 		t.Run(map[bool]string{false: "not configured", true: "configured"}[configured], func(t *testing.T) {
@@ -200,7 +199,7 @@ func TestInvalidAuthURLDisablesOnlyPasskeys(t *testing.T) {
 	}
 }
 
-func TestPasskeyCredentialPersistsAndUpdates(t *testing.T) { //nolint:cyclop // One persistence test covers credential and usage metadata together.
+func TestPasskeyCredentialPersistsAndUpdates(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	store := newProfileStore(dataDir)

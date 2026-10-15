@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestListStorageAndRefreshBoundaries(t *testing.T) { //nolint:cyclop,gocognit,funlen // One test covers transactional restore and refresh coordination.
+func TestListStorageAndRefreshBoundaries(t *testing.T) {
 	values := map[string]bool{}
 	playlists := map[string]map[string]bool{}
 	order := map[string][]string{}

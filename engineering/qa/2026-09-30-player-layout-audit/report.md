@@ -60,3 +60,11 @@ KINOSAIL_BROWSER_MATRIX=full KINOSAIL_BROWSER_WORKERS=1 \
 This host used the production Go HTTPS entry point because shared Podman storage remains full. The baseline server was built at `7583b933e86b2380082c2804212e718acddf0cee`; its Player server and shared package sources matched base main `05da53145bc05235aa510fecc6392ec5928de061`. The server was rebuilt after the fix, and its served stylesheet was checked for the final rule. Exact production and test hashes are in the run context. A trusted loopback `/healthz` request returned `{"status":"ok"}`. No asynchronous production surface changed.
 
 These layout checks do not certify the full browser suite, physical devices, actual Cast receivers, wearable pairing, long playback, external provider operations, public TLS, or Nox deployment. The [native checkpoint](../2026-09-30-native-polish/report.md) retains those separate boundaries. Unrelated dirty primary-checkout work prevents automatic local-main cleanup and was preserved.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-player-layout-audit/gallery.html` | 2845 | `86acae232feef1097fabb94a2bc839ef1a015ce5eaf2cc3adb2fac526798a70b` |

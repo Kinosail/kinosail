@@ -44,7 +44,7 @@ func ReadTrace(writer http.ResponseWriter, request *http.Request, validSession f
 	return event, nil
 }
 
-func ValidTrace(event TraceEvent, validSession func(string) bool) bool { //nolint:cyclop // Every trace field is validated before logging.
+func ValidTrace(event TraceEvent, validSession func(string) bool) bool {
 	return validSession != nil && validSession(event.Session) && playbackTraceEvents[event.Event] && event.Sequence > 0 && event.Sequence <= 1_000_000 &&
 		oneOf(event.Method, "", "direct", "remux", "audio-transcode", "transcode", "native-hls", "offline") && SafeTraceText(event.Detail) && SafeTraceText(event.Quality) &&
 		oneOf(event.Visibility, "", "visible", "hidden") && boundedTraceNumber(event.ElapsedMS, maxPlaybackTraceMilliseconds) && boundedTraceNumber(event.PositionMS, maxPlaybackTraceMilliseconds) &&
@@ -52,7 +52,7 @@ func ValidTrace(event TraceEvent, validSession func(string) bool) bool { //nolin
 		event.NetworkState >= 0 && event.NetworkState <= 3 && event.ErrorCode >= 0 && event.ErrorCode <= 4 && boundedTraceNumber(event.DroppedFrames, 1_000_000_000) && boundedTraceNumber(event.TotalFrames, 1_000_000_000)
 }
 
-func SafeTraceText(value string) bool { //nolint:cyclop // The allowlist is deliberately explicit at this logging boundary.
+func SafeTraceText(value string) bool {
 	return len(value) <= 64 && strings.IndexFunc(value, func(character rune) bool {
 		return character != '-' && character != '_' && character != '.' && character != ':' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 	}) == -1

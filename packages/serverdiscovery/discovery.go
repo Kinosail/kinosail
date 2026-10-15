@@ -130,7 +130,7 @@ func validHostnameLabel(label string) bool {
 	return strings.IndexFunc(label, invalidHostnameCharacter) < 0
 }
 
-func validDiscoveryURL(parsed *url.URL, origin string) bool { //nolint:cyclop // Discovery accepts only a credential-free HTTP origin without query or fragment.
+func validDiscoveryURL(parsed *url.URL, origin string) bool {
 	return (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != "" && parsed.User == nil && (parsed.Path == "" || parsed.Path == "/") && parsed.RawQuery == "" && !parsed.ForceQuery && parsed.Fragment == "" && !strings.ContainsAny(origin, "\\#")
 }
 

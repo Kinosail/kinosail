@@ -105,7 +105,7 @@ func TestProfileFlowRejectsWrongOriginBeforeStarting(t *testing.T) {
 	nilFlow.BeginLogin(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "http://localhost:38127/", nil))
 }
 
-func TestProfileFlowMapsUnavailableAndExpiredWithoutAccountEffects(t *testing.T) { //nolint:cyclop // One scenario proves all account side effects stay absent.
+func TestProfileFlowMapsUnavailableAndExpiredWithoutAccountEffects(t *testing.T) {
 	fixture, flow := newFlowFixture(t)
 	for index := 0; index < maxCeremonies; index++ {
 		fixture.engine.ceremonies[string(rune(index+1))] = ceremonyState{}

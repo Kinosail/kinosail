@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestJellyfinClientCanDiscoverAndAuthenticate(t *testing.T) { //nolint:cyclop // One sequential client contract.
+func TestJellyfinClientCanDiscoverAndAuthenticate(t *testing.T) {
 	t.Parallel()
 
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
@@ -186,7 +186,7 @@ func checkJellyfinShow(t *testing.T, handler http.Handler, token string) {
 	}
 }
 
-func TestJellyfinClientCanPlayAndSyncProgress(t *testing.T) { //nolint:cyclop // One sequential client contract.
+func TestJellyfinClientCanPlayAndSyncProgress(t *testing.T) {
 	t.Parallel()
 
 	handler, token, _ := jellyfinTestServer(t)

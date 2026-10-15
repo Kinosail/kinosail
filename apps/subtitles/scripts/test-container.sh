@@ -211,7 +211,7 @@ expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   fixture_dir="$mcp_dir/ui-fixtures"
   KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" go test ./internal/server -run TestWriteUIStateFixtures -count=1
-  browser_args=(player-unplayed-progress.spec.ts polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
+  browser_args=(removed-routes.spec.ts polish-shell.spec.ts subtitle-dashboard.spec.ts subtitle-history.spec.ts subtitle-inspector-races.spec.ts subtitle-inspector-layout.spec.ts subtitle-inspector-loading.spec.ts subtitle-pairing.spec.ts subtitle-merged-group.spec.ts supporter-badge-layout.spec.ts test-instance.spec.ts session-resume.spec.ts test-instance-session-persistence.spec.ts)
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   KINOSAIL_TEST_INSTANCE=1 KINOSAIL_UI_FIXTURE_DIR="$fixture_dir" KINOSAIL_SUBTITLE_MERGED_FIXTURE_DIR="$fixture_dir/subtitle-merged" KINOSAIL_E2E_MEDIA_DIR="$media_dir" KINOSAIL_TEST_TOTP_SECRET="$secret" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}" pnpm --dir e2e test "${browser_args[@]}" --workers="${KINOSAIL_E2E_WORKERS:-1}"
   exit
@@ -240,7 +240,7 @@ mcp_jobs=()
 exec 9>&-
 expect_status 401 --cookie "$media_dir/cookies" --header 'Authorization: Bearer invalid' "$url/api/v1/settings"
 expect_status 403 --cookie "$media_dir/cookies" --request POST --header 'Origin: https://attacker.example' "$url/api/v1/backups"
-expect_status 404 --request POST --header 'Content-Type: application/json' --data '{}' "$url/Sessions/Logout?api_key=$session"
+expect_status 401 "$url/api/v1/settings?api_key=$session"
 curl --fail --silent --insecure --cookie "$media_dir/cookies" --request POST --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" "$url/api/v1/backups" --output /dev/null
 "$engine" "${run[@]}" --rm --entrypoint sh --volume "$backup_volume:/backups:ro" "$image" -c 'find /backups -name "kinosail-*.backup" -print -quit | grep -q .'
 home="$(curl --fail --silent --insecure --cookie "$media_dir/cookies" "$url/")"

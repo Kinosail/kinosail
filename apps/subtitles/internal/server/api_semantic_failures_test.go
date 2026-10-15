@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) { //nolint:funlen // The public failure table documents validation shared by API and web adapters.
+func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) {
 	handler, token := apiServer(t)
 	itemID := firstAPIItemID(t, handler, token)
 	calls := []apiTestCall{
@@ -42,7 +42,6 @@ func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) { //noli
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"languages": []string{"pt-br", "pt-BR"}}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "en", "languages": []string{"es"}}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "invalid"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/settings/dlna", Body: map[string]any{"enabled": true}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/libraries", Body: map[string]any{"path": "../outside"}, Status: http.StatusBadRequest},
 		{Method: http.MethodDelete, Path: "/api/v1/libraries", Body: map[string]any{"path": "missing"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/profiles", Body: map[string]any{"name": "", "password": "short"}, Status: http.StatusBadRequest},

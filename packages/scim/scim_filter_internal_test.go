@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSCIMFilterAndEmailSelectorBranches(t *testing.T) { //nolint:gocognit,cyclop // Direct unit coverage enumerates filter and multi-value selector branches.
+func TestSCIMFilterAndEmailSelectorBranches(t *testing.T) {
 	profile := viewerProfile{UserName: "viewer@example.com", ExternalID: "directory-id", Name: "Viewer Name", NameParts: scimProfileName{Formatted: "Viewer Name", GivenName: "Viewer", FamilyName: "Name"}}
 	for attribute, expected := range map[string]string{"username": profile.UserName, "externalid": profile.ExternalID, "displayname": profile.Name, "name.formatted": "Viewer Name", "name.givenname": "Viewer", "name.familyname": "Name", "unknown": ""} {
 		if actual := scimFilterAttribute(profile, attribute); actual != expected {

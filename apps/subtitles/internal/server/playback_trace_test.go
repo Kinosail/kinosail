@@ -17,7 +17,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) { //nolint:cyclop // One integration flow checks correlation and privacy together.
+func TestPlaybackTraceCorrelatesBrowserAndMediaWithoutPrivateData(t *testing.T) {
 	media := t.TempDir()
 	path := filepath.Join(media, "Private Film.mp4")
 	if err := os.WriteFile(path, []byte("video"), 0o600); err != nil {

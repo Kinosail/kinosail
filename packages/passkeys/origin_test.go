@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestOriginValidationAndMatching(t *testing.T) { //nolint:cyclop // One table verifies the complete origin trust boundary.
+func TestOriginValidationAndMatching(t *testing.T) {
 	origin, err := ParseOrigin("https://Media.Example:38127/")
 	if err != nil || origin.RPID() != "Media.Example" || origin.String() != "https://Media.Example:38127" || !origin.RedirectPages() {
 		t.Fatalf("origin = %#v, %v", origin, err)

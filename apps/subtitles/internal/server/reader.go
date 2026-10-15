@@ -28,7 +28,7 @@ type readerBook struct {
 	CurrentURL      string
 }
 
-const readerHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>{{.Title}} · Kinosail Subtitles Reader</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head><body class="detail-page"><main class="detail-shell"><a class="back" href="/book/{{.ID}}">{{icon "back"}} {{.Title}}</a><span class="eyebrow">{{.Type}} reader</span><h1>{{.Title}}</h1>{{if eq .Type "comic"}}<div class="reader-pages">{{range .Pages}}<img loading="lazy" src="{{.URL}}" alt="{{.Title}}">{{end}}</div>{{else}}<p role="status" data-reader-page="{{.CurrentPage}}">{{if eq .Type "epub"}}Chapter{{else}}Page{{end}} {{.CurrentPage}} of {{len .Pages}}</p><form class="chapter-actions" action="/read/{{.ID}}/progress" method="post" aria-label="Reading order">{{range .Pages}}<button class="mode" type="submit" name="page" value="{{.Number}}" {{if eq .Number $.CurrentPage}}aria-current="page"{{end}}>{{.Title}}</button>{{end}}</form><iframe class="book-reader" name="reader" title="{{.Title}}" src="{{.CurrentURL}}"></iframe>{{end}}</main></body></html>`
+const readerHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>{{.Title}} · Kinosail Subtitles Reader</title><script src="/static/theme.js"></script><link rel="stylesheet" href="/static/app.css"></head><body class="detail-page"><main class="detail-shell"><a class="back" href="/book/{{.ID}}">{{icon "back"}} {{.Title}}</a><span class="eyebrow">{{.Type}} reader</span><h1>{{.Title}}</h1>{{if eq .Type "comic"}}<div class="reader-pages">{{range .Pages}}<img loading="lazy" src="{{.URL}}" alt="{{.Title}}">{{end}}</div>{{else}}<p role="status" data-reader-page="{{.CurrentPage}}">{{if eq .Type "epub"}}Chapter{{else}}Page{{end}} {{.CurrentPage}} of {{len .Pages}}</p><form class="chapter-actions" action="/read/{{.ID}}/progress" method="post" aria-label="Reading order">{{range .Pages}}<button class="mode" type="submit" name="page" value="{{.Number}}" {{if eq .Number $.CurrentPage}}aria-current="page"{{end}}>{{.Title}}</button>{{end}}</form><iframe class="book-reader" name="reader" title="{{.Title}}" src="{{.CurrentURL}}"></iframe>{{end}}</main></body></html>`
 
 var readerView = newLocalizedTemplate("reader", readerHTML)
 
@@ -100,7 +100,7 @@ type epubManifestItem struct {
 	Type string `xml:"media-type,attr"`
 }
 
-func epubSpine(item library.Item) []readerPage { //nolint:cyclop // EPUB container, manifest, and spine validation form one parser boundary.
+func epubSpine(item library.Item) []readerPage {
 	archive, err := zip.OpenReader(item.Path)
 	if err != nil {
 		return nil

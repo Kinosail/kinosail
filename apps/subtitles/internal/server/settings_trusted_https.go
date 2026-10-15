@@ -3,9 +3,7 @@ package server
 import (
 	"errors"
 	"log/slog"
-	"net"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -42,7 +40,7 @@ func (store *settingsStore) trustedHTTPS() trustedHTTPSView {
 	return trustedHTTPSView{Provider: config.ProviderName(), Domain: config.Domain, Address: config.Address, Hostname: config.Hostname(), Configured: true, TokenSet: config.Token != ""}
 }
 
-func (store *settingsStore) setTrustedHTTPS(input trustedHTTPSInput) (trustedHTTPSView, error) { //nolint:cyclop,gocognit // Validation and conflict checks form one fail-closed settings transaction.
+func (store *settingsStore) setTrustedHTTPS(input trustedHTTPSInput) (trustedHTTPSView, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	if err := store.editableLocked("tls.duckdns"); err != nil {
@@ -115,18 +113,6 @@ func trustedHTTPSStatus(manager *trustedhttps.Manager) trustedhttps.Status {
 		return trustedhttps.Status{State: "disabled"}
 	}
 	return manager.Status()
-}
-
-func trustedConnectionURL(current, hostname string) string {
-	parsed, err := url.Parse(current)
-	if err != nil || hostname == "" {
-		return current
-	}
-	host := hostname
-	if port := parsed.Port(); port != "" {
-		host = net.JoinHostPort(hostname, port)
-	}
-	return (&url.URL{Scheme: "https", Host: host}).String()
 }
 
 func apiTrustedHTTPS(settings *settingsStore) http.HandlerFunc {

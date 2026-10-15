@@ -63,7 +63,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 				manager.mu.Unlock()
 				return nil, err
 			}
-			//nolint:gosec // Key is a scanned ID plus a validated recipe.
 			if err := os.RemoveAll(filepath.Join(manager.cache, key)); err != nil {
 				manager.mu.Unlock()
 				return nil, err
@@ -72,7 +71,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			job = created
 			job.cachePolicy = options.Cache
 			manager.jobs[key] = job
-			//nolint:contextcheck // The Server lifecycle owns shared output after this request ends.
 			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
 		}
 		manager.adoptStartupJob(ctx, job, key)
@@ -174,7 +172,7 @@ func (job *hlsJob) coversSegment(rendition string, segment int) bool {
 	if job.startNumber > 0 {
 		playlist = filepath.Join(filepath.Dir(rendition), hlsSeekDirectory(job.startNumber), filepath.Base(rendition), "index.m3u8")
 	}
-	manifest, err := os.ReadFile(playlist) //nolint:gosec // Rendition and seek paths use generated cache names only.
+	manifest, err := os.ReadFile(playlist)
 	if err != nil {
 		return false
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleHistoryMigratesLatestProviderInstall(t *testing.T) { //nolint:cyclop // One public migration journey verifies the page and API without invented provenance.
+func TestSubtitleHistoryMigratesLatestProviderInstall(t *testing.T) {
 	t.Parallel()
 	media, dataDir := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")

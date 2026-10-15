@@ -160,7 +160,7 @@ func TestStdioHostCancellationRemovesOwnedSocket(t *testing.T) {
 	}
 }
 
-func TestStartStdioHostReportsFilesystemFailures(t *testing.T) { //nolint:gocognit // The score of 17 remains below the repository ceiling of 22 for the filesystem failure matrix.
+func TestStartStdioHostReportsFilesystemFailures(t *testing.T) {
 	principals := &testPrincipals{values: map[string]Principal{"owner": {ID: "owner", Owner: true}}}
 	for _, test := range []struct {
 		name  string

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestActivityAndExportAPI(t *testing.T) { //nolint:cyclop // One compact contract test covers the two paired activity endpoints.
+func TestActivityAndExportAPI(t *testing.T) {
 	t.Parallel()
 	tracker, _ := trackerFixture(t)
 	now := time.Now().UTC()

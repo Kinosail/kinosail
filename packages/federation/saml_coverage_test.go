@@ -21,7 +21,7 @@ import (
 	"github.com/crewjam/saml"
 )
 
-func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) { //nolint:cyclop,funlen // Distinct trust-boundary failures remain side-effect free.
+func TestSAMLCoreRejectsProviderCallbackRootAndKeyEdges(t *testing.T) {
 	certificate := samlMetadataCertificate(t)
 	metadataXML := samlMetadataDocument("https://identity.example", "/sso", certificate)
 	flow := NewSAML(SAMLConfig{MetadataXML: metadataXML, RootURL: "http://localhost", DataDir: t.TempDir()})
@@ -97,7 +97,7 @@ func TestSAMLKeyLoaderRejectsMalformedAndNonRSAKeys(t *testing.T) {
 	}
 }
 
-func TestSAMLKeyGenerationAndPersistenceErrors(t *testing.T) { //nolint:cyclop // One matrix covers independent cryptographic failure seams.
+func TestSAMLKeyGenerationAndPersistenceErrors(t *testing.T) {
 	sentinel := errors.New("sentinel")
 	generateError := func() (*rsa.PrivateKey, *x509.Certificate, error) { return nil, nil, sentinel }
 	if _, _, err := loadOrCreateSAMLKeyPairWith(t.TempDir(), generateError, func(string, []byte) error { return nil }); !errors.Is(err, sentinel) {

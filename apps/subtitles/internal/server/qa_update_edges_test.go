@@ -9,7 +9,7 @@ import (
 )
 
 func qaUpdateSettings(data string) servertest.UpdateSettings {
-	settings := newSettingsStore("", data, "", nil)
+	settings := newSettingsStore("", data, nil)
 	return servertest.UpdateSettings{Automatic: settings.updateChecks, SaveAutomatic: settings.setUpdateChecks}
 }
 

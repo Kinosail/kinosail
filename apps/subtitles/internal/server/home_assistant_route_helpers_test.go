@@ -16,7 +16,7 @@ func homeAssistantRouteConfiguration(t *testing.T, data string) configuration.Sn
 	return configured
 }
 
-func jellyfinRouteConfiguration(t *testing.T, data string) configuration.Snapshot {
+func duckDNSRouteConfiguration(t *testing.T, data string) configuration.Snapshot {
 	t.Helper()
 	configured, err := configuration.Load(data, "", servertest.JellyfinRouteEnvironment)
 	if err != nil {

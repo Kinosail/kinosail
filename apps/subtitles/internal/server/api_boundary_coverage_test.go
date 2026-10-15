@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:funlen // The table keeps the JSON contract identical across every public mutation seam.
+func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) {
 	handler, token := apiServer(t)
 	itemID := firstAPIItemID(t, handler, token)
 	paths := []struct{ method, path string }{
@@ -36,8 +36,6 @@ func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:fun
 		{http.MethodPut, "/api/v1/settings/transcoder"},
 		{http.MethodPut, "/api/v1/settings/subtitles"},
 		{http.MethodPut, "/api/v1/settings/scans"},
-		{http.MethodPut, "/api/v1/settings/dlna"},
-		{http.MethodPut, "/api/v1/settings/jellyfin"},
 		{http.MethodPut, "/api/v1/settings/trusted-https"},
 		{http.MethodPost, "/api/v1/supporter/activate"},
 		{http.MethodPost, "/api/v1/libraries"},
@@ -48,8 +46,6 @@ func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:fun
 		{http.MethodPost, "/api/v1/api-keys"},
 		{http.MethodPost, "/api/v1/viewing-imports/preview"},
 		{http.MethodPost, "/api/v1/viewing-syncs"},
-		{http.MethodPost, "/api/v1/quick-connect"},
-		{http.MethodPost, "/api/v1/quick-connect/token"},
 		{http.MethodPost, "/api/v1/session"},
 		{http.MethodPost, "/api/v1/me/mfa/setup"},
 		{http.MethodPut, "/api/v1/me/mfa"},

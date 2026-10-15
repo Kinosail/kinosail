@@ -10,21 +10,27 @@ import (
 	"strconv"
 	"time"
 
+	"golang.org/x/sync/singleflight"
+
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 type TrickplayDependencies struct {
 	Cache, FFmpeg string
 	Lookup        func(*http.Request, string) (library.Item, bool)
+	Acquire       func(context.Context) (func(), error)
 	NotFound      func(http.ResponseWriter, *http.Request)
 	Unavailable   func(http.ResponseWriter, *http.Request)
 	RecipePolicy  HLSRecipePolicy
 }
 
-type Trickplay struct{ dependencies TrickplayDependencies }
+type Trickplay struct {
+	dependencies TrickplayDependencies
+	generating   singleflight.Group
+}
 
 func NewTrickplay(dependencies TrickplayDependencies) (*Trickplay, error) {
-	if dependencies.Lookup == nil || dependencies.NotFound == nil || dependencies.Unavailable == nil || dependencies.RecipePolicy.MaxBitrate <= 0 || dependencies.RecipePolicy.OffsetStepMilliseconds <= 0 {
+	if dependencies.Lookup == nil || dependencies.Acquire == nil || dependencies.NotFound == nil || dependencies.Unavailable == nil || dependencies.RecipePolicy.MaxBitrate <= 0 || dependencies.RecipePolicy.OffsetStepMilliseconds <= 0 {
 		return nil, errors.New("trickplay dependencies are invalid")
 	}
 	return &Trickplay{dependencies: dependencies}, nil
@@ -34,7 +40,7 @@ func (frames *Trickplay) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /trickplay/{id}/{second}", frames.Serve)
 }
 
-func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Validation and presentation mapping precede the cache side effect.
+func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request) {
 	if frames == nil || request == nil {
 		http.Error(writer, "preview unavailable", http.StatusServiceUnavailable)
 		return
@@ -61,13 +67,28 @@ func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request
 	second -= second % 10
 	target := filepath.Join(frames.dependencies.Cache, "trickplay", item.ID, strconv.Itoa(second)+".jpg")
 	if !Fresh(target, item.Path) {
-		if err := GenerateTrickplay(request.Context(), frames.dependencies.Cache, frames.dependencies.FFmpeg, item.Path, target, second); err != nil {
+		if err := frames.generate(request.Context(), item.Path, target, second); err != nil {
 			frames.dependencies.Unavailable(writer, request)
 			return
 		}
 	}
 	writer.Header().Set("Content-Type", "image/jpeg")
-	http.ServeFile(writer, request, target) //nolint:gosec // Target contains a scanned ID and validated integer.
+	http.ServeFile(writer, request, target)
+}
+
+func (frames *Trickplay) generate(ctx context.Context, source, target string, second int) error {
+	_, err, _ := frames.generating.Do(target, func() (any, error) {
+		release, acquireErr := frames.dependencies.Acquire(ctx)
+		if acquireErr != nil {
+			return nil, acquireErr
+		}
+		defer release()
+		if Fresh(target, source) {
+			return nil, nil
+		}
+		return nil, GenerateTrickplay(ctx, frames.dependencies.Cache, frames.dependencies.FFmpeg, source, target, second)
+	})
+	return err
 }
 
 func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
@@ -85,10 +106,18 @@ func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, se
 	if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
 		return err
 	}
-	temporary := target + ".tmp.jpg"
+	scratch, err := os.CreateTemp(filepath.Dir(target), filepath.Base(target)+".*.tmp.jpg")
+	if err != nil {
+		return err
+	}
+	temporary := scratch.Name()
+	if err := scratch.Close(); err != nil {
+		_ = os.Remove(temporary)
+		return err
+	}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	err := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
+	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
 	if err == nil {
 		err = os.Rename(temporary, target)
 	}

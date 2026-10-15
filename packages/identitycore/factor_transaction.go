@@ -86,7 +86,7 @@ func (transaction *FactorTransaction[P]) Disable(id string) error {
 	return ErrProfileNotFound
 }
 
-func (transaction *FactorTransaction[P]) Verify(id, code string) bool { //nolint:cyclop,gocognit // TOTP and one-time recovery verification share one atomic factor boundary.
+func (transaction *FactorTransaction[P]) Verify(id, code string) bool {
 	if !transaction.valid() || !validFactorIdentity(id) || code == "" || len(code) > maxSecretLength || strings.ContainsRune(code, '\x00') {
 		return false
 	}

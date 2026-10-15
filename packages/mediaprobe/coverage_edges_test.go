@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestProbeRemainingExecutionAndCancellationEdges(t *testing.T) { //nolint:cyclop // One white-box matrix covers independent command and coalescing edges.
+func TestProbeRemainingExecutionAndCancellationEdges(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "movie", Kind: "video", Path: "/missing/movie.mkv"}
 	if result := New("").Inspect(t.Context(), item, Enrichment{}); !reflect.DeepEqual(result, Result{}) {
@@ -41,7 +41,7 @@ func TestProbeRemainingExecutionAndCancellationEdges(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestProbeRemainingParsingEdges(t *testing.T) { //nolint:cyclop // One parser matrix covers independent normalized metadata alternatives.
+func TestProbeRemainingParsingEdges(t *testing.T) {
 	t.Parallel()
 	if result, valid := parse([]byte("{")); valid || !reflect.DeepEqual(result, Result{}) {
 		t.Fatalf("malformed probe = %#v", result)
@@ -75,7 +75,7 @@ func TestProbeRemainingParsingEdges(t *testing.T) { //nolint:cyclop // One parse
 	}
 }
 
-func TestReplayGainRemainingFormats(t *testing.T) { //nolint:cyclop // Every accepted and rejected tag grammar is explicit.
+func TestReplayGainRemainingFormats(t *testing.T) {
 	t.Parallel()
 	for name, test := range map[string]struct {
 		tags  map[string]string

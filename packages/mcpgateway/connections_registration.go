@@ -14,7 +14,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 )
 
-func (connections *Connections) registerClient(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Registration validation is one protocol boundary.
+func (connections *Connections) registerClient(writer http.ResponseWriter, request *http.Request) {
 	if connections.err != nil {
 		oauthError(writer, "temporarily_unavailable", http.StatusServiceUnavailable)
 		return
@@ -52,7 +52,7 @@ func (connections *Connections) registerClient(writer http.ResponseWriter, reque
 	writeJSON(writer, &oauthex.ClientRegistrationResponse{ClientRegistrationMetadata: metadata, ClientID: client.ID, ClientIDIssuedAt: time.Unix(client.CreatedAt, 0)}, http.StatusCreated)
 }
 
-func validateMCPClientMetadata(metadata *oauthex.ClientRegistrationMetadata) error { //nolint:cyclop // OAuth metadata fields are validated as one closed contract.
+func validateMCPClientMetadata(metadata *oauthex.ClientRegistrationMetadata) error {
 	metadata.ClientName = strings.TrimSpace(metadata.ClientName)
 	if !validMCPClientMetadataSizes(metadata) {
 		return errors.New("invalid client metadata")

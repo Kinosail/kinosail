@@ -8,7 +8,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func watchEvents(ctx context.Context, changes <-chan struct{}, events <-chan fsnotify.Event, failures <-chan error, quiet func() <-chan time.Time, clearQuiet func(), record func(fsnotify.Event) error, settle func() error) error { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for one select-driven lifecycle.
+func watchEvents(ctx context.Context, changes <-chan struct{}, events <-chan fsnotify.Event, failures <-chan error, quiet func() <-chan time.Time, clearQuiet func(), record func(fsnotify.Event) error, settle func() error) error {
 	for {
 		select {
 		case <-ctx.Done():

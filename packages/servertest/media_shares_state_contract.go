@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/mediashares"
 )
 
-func mediaSharePersistedStateRejectsEveryInvalidField(t *testing.T) { //nolint:funlen // Persisted capability state must validate every field before use.
+func mediaSharePersistedStateRejectsEveryInvalidField(t *testing.T) {
 	secret := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	hash := strings.Repeat("0", 64)
 	now := time.Now().Add(time.Hour).Unix()

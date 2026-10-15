@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies(t *testing.T) { //nolint:cyclop // One lifecycle test covers capacity, expiry, failure, and consumption.
+func TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies(t *testing.T) {
 	values := make(map[string]Preview)
 	var mutex sync.Mutex
 	var slots chan struct{}
@@ -62,7 +62,7 @@ func TestPreviewStoreBoundsWorkAndConsumesOnlySuccessfulApplies(t *testing.T) { 
 	}
 }
 
-func TestPrepareStopsBeforeLaterSideEffects(t *testing.T) { //nolint:cyclop // One test proves each failed stage prevents all later work.
+func TestPrepareStopsBeforeLaterSideEffects(t *testing.T) {
 	values := make(map[string]Preview)
 	var mutex sync.Mutex
 	var slots chan struct{}

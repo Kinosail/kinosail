@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) { //nolint:cyclop // One test covers validation, selection, and page boundaries.
+func TestBrowseValidatesBeforeSelectionAndBuildsStablePages(t *testing.T) {
 	bad := []url.Values{
 		{"unknown": {"x"}},
 		{"q": {"one", "two"}},
@@ -86,7 +86,7 @@ func TestBrowseLibraryValidatesBeforeLoading(t *testing.T) {
 	}
 }
 
-func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocognit // One table covers the complete public browse vocabulary.
+func TestBrowseViewsSortsLettersAndShows(t *testing.T) {
 	now := time.Now()
 	items := []library.Item{
 		{ID: "movie", Kind: "video", Title: "10 Things", Year: "1999", Added: now},
@@ -135,7 +135,7 @@ func TestBrowseViewsSortsLettersAndShows(t *testing.T) { //nolint:cyclop,gocogni
 	}
 }
 
-func TestSearchListAndProgressRules(t *testing.T) { //nolint:cyclop,gocognit // One table exercises the shared catalog rule surface.
+func TestSearchListAndProgressRules(t *testing.T) {
 	items := []library.Item{{ID: "b", Title: "B"}, {ID: "a", Title: "A", SortTitle: "Z", Plot: "Café", ShowCast: []library.Person{{Name: "Zoë"}}}}
 	if len(Filter(items, "cafe")) != 1 || !Matches(items[1], "zoe") || len(Filter(items, "")) != 2 {
 		t.Fatal("normalized search did not match metadata")
@@ -182,7 +182,7 @@ func TestSearchListAndProgressRules(t *testing.T) { //nolint:cyclop,gocognit // 
 	}
 }
 
-func TestStatePersistenceAndShowSelection(t *testing.T) { //nolint:cyclop // One transaction test covers success, rollback, and show selection.
+func TestStatePersistenceAndShowSelection(t *testing.T) {
 	values := map[string]PlaybackState{}
 	var mutex, persistMutex sync.Mutex
 	persisted := false

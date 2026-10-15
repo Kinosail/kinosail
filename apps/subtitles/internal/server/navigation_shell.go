@@ -26,8 +26,6 @@ func saveNavigation(settings *settingsStore) http.HandlerFunc {
 	return settings.navigationController().Handler(localizedError)
 }
 
-const applicationCSSVersion = "cinema-17-buffer-1"
-
 var applicationNavigationView = newLocalizedTemplate("application-navigation", subtitleAppHeader)
 
 type applicationNavigationData struct {
@@ -43,7 +41,7 @@ type applicationNavigationData struct {
 	CommandMenu                       bool
 }
 
-func withApplicationShell(settings *settingsStore, updates *updateChecker, pattern func(*http.Request) string, next http.Handler) http.Handler { //nolint:cyclop // Browser shell routing applies one ordered policy.
+func withApplicationShell(settings *settingsStore, updates *updateChecker, pattern func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		matched := pattern(request)
 		if matched == "" && request.Method == http.MethodGet && !strings.HasPrefix(request.URL.Path, "/api/") && !strings.HasPrefix(request.URL.Path, "/static/") {
@@ -76,7 +74,7 @@ func withApplicationShell(settings *settingsStore, updates *updateChecker, patte
 
 func applicationShellRoute(pattern string) bool {
 	switch pattern {
-	case "GET /account", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}", "GET /metadata/bulk", "GET /offline-downloads", "GET /playlist/{name}", "GET /quick-connect", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/media-shares", "GET /settings/remote-readiness", "GET /settings/management", "GET /settings/system", "GET /show/{id}", "GET /supporter":
+	case "GET /account", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}", "GET /metadata/bulk", "GET /offline-downloads", "GET /playlist/{name}", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/remote-readiness", "GET /settings/management", "GET /settings/system", "GET /show/{id}", "GET /supporter":
 		return true
 	}
 	return false
@@ -101,13 +99,8 @@ func applicationShellView(pattern string) string {
 	return ""
 }
 
-func injectApplicationShell(page, navigation []byte) []byte { //nolint:cyclop // Template injection validates each required shell boundary.
-	if start := bytes.Index(page, []byte(`/static/app.css?v=`)); start >= 0 {
-		version := start + len(`/static/app.css?v=`)
-		if end := bytes.IndexByte(page[version:], '"'); end >= 0 {
-			page = append(append(append([]byte(nil), page[:version]...), []byte(applicationCSSVersion)...), page[version+end:]...)
-		}
-	}
+func injectApplicationShell(page, navigation []byte) []byte {
+	page = versionAssetReferenceBytes(page)
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
 		return page

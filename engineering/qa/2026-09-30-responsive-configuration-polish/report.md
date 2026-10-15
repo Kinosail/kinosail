@@ -25,3 +25,11 @@ The preceding Android fix was merged through [PR #383](https://github.com/Kinosa
 Current main's catalog changes were reconciled before publication. The combined browser matrix passed 12/12 checks. The first combined Go run failed during temporary-directory cleanup after metadata assertions; three focused repetitions and the next full run passed. The final server run took 138.438s. The changed-app and tooling gates passed again. The cleanup failure remains recorded, without an unconfirmed source fix.
 
 The primary checkout's unrelated dirty files were preserved. They prevent automatic local-main cleanup; this task continues in its leased worktree.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-responsive-configuration-polish/gallery.html` | 1750 | `01bcf961d298cbfac045a1374676186a33f44bcc3fbbc9a2d9c9632fc46e317e` |

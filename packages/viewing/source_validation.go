@@ -55,7 +55,7 @@ func viewingPageComplete(count, total, start int) bool {
 	return count < 200
 }
 
-func normalizeViewingActivity(activity Activity) (Activity, error) { //nolint:cyclop // Remote activity fields form one trust boundary.
+func normalizeViewingActivity(activity Activity) (Activity, error) {
 	if !validViewingIdentity(activity) {
 		return Activity{}, errors.New("source returned invalid item identity")
 	}
@@ -80,7 +80,7 @@ func normalizeViewingActivity(activity Activity) (Activity, error) { //nolint:cy
 	return activity, nil
 }
 
-func validViewingIdentity(activity Activity) bool { //nolint:cyclop // Identity fields must satisfy all remote-data bounds together.
+func validViewingIdentity(activity Activity) bool {
 	return activity.SourceID != "" && len(activity.SourceID) <= 512 && activity.Title != "" && len(activity.Title) <= 512 && len(activity.Show) <= 512 && len(activity.Path) <= 4096 && activity.Season >= 0 && activity.Season <= 10000 && activity.Episode >= 0 && activity.Episode <= 100000 && len(activity.ProviderIDs) <= 16
 }
 

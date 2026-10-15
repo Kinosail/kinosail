@@ -51,7 +51,7 @@ func TestCredentialValidationRejectsEveryBoundWithoutSideEffects(t *testing.T) {
 	}
 }
 
-func TestCredentialCollectionsValidateCloneAndFind(t *testing.T) { //nolint:cyclop // One table covers collection, cloning, and WebAuthn user invariants.
+func TestCredentialCollectionsValidateCloneAndFind(t *testing.T) {
 	first, second := credential("first"), credential("second")
 	if err := ValidateCredentials([]webauthn.Credential{first, second}); err != nil {
 		t.Fatal(err)
@@ -112,7 +112,7 @@ func TestCredentialLookupAndRedactedIDs(t *testing.T) {
 	}
 }
 
-func TestInventoryAndUpdatePreserveRedactedMetadata(t *testing.T) { //nolint:cyclop // One scenario verifies all redacted inventory fields together.
+func TestInventoryAndUpdatePreserveRedactedMetadata(t *testing.T) {
 	first, second := credential("first"), credential("second")
 	first.Flags.BackupEligible, first.Flags.BackupState = true, true
 	first.Authenticator.SignCount, first.Authenticator.CloneWarning = 7, true

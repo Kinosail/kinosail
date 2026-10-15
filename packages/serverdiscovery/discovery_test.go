@@ -14,7 +14,7 @@ type fakeAdvertisement struct{ stopped chan struct{} }
 
 func (f *fakeAdvertisement) Shutdown() { close(f.stopped) }
 
-func TestAdvertisementLifecycle(t *testing.T) { //nolint:cyclop // Registration, invalid requests, and cleanup share one recorded advertisement.
+func TestAdvertisementLifecycle(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 	service := &fakeAdvertisement{make(chan struct{})}
@@ -78,7 +78,7 @@ func TestInvalidAdvertisementHasNoNetworkSideEffects(t *testing.T) {
 	}
 }
 
-func TestLoopbackUsesBonjourHostAndPreservesTLS(t *testing.T) { //nolint:cyclop // Each origin case verifies both advertised hostname and transport.
+func TestLoopbackUsesBonjourHostAndPreservesTLS(t *testing.T) {
 	for _, origin := range []string{"http://localhost:38127", "http://127.0.0.1:38127", "https://[::1]:38127"} {
 		port, txt, err := record("Player", origin)
 		if err != nil || port != 38127 || len(txt) != 2 {

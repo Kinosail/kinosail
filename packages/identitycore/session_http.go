@@ -15,6 +15,7 @@ import (
 var (
 	compatibilityPathSegment = regexp.MustCompile(`^[A-Za-z][A-Za-z-]{0,31}$`)
 	contentRangePattern      = regexp.MustCompile(`^bytes (?:(\d+)-(\d+)|\*)/(\d+)$`)
+	singleByteRangePattern   = regexp.MustCompile(`^bytes=(?:[0-9]+-[0-9]*|-[0-9]+)$`)
 )
 
 func SafeCompatibilityPath(request *http.Request, pattern string) string {
@@ -31,6 +32,10 @@ func SafeCompatibilityPath(request *http.Request, pattern string) string {
 		}
 	}
 	return "/" + strings.Join(segments, "/")
+}
+
+func ValidSingleByteRange(value string) bool {
+	return len(value) <= 128 && singleByteRangePattern.MatchString(value)
 }
 
 func ValidContentRange(value string) bool {
@@ -59,7 +64,7 @@ func SessionTokenSource(request *http.Request, query QuerySessionToken) string {
 	return source
 }
 
-func sessionToken(request *http.Request, query QuerySessionToken) (string, string) { //nolint:cyclop // Compatibility token sources use a fixed precedence.
+func sessionToken(request *http.Request, query QuerySessionToken) (string, string) {
 	if request == nil {
 		return "", "none"
 	}
