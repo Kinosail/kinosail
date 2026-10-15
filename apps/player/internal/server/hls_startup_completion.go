@@ -11,15 +11,11 @@ import (
 const startupCompletionMarker = ".startup-completion"
 const shortHEVCCompletionMarker = ".hevc-complete"
 
-// Called under manager.mu; the lifecycle also covers shutdown, idle expiry,
-// seek/identity replacement and encoder completion, not just startup DELETE.
 func startupJobStopping(job *hlsJob) bool {
 	return job != nil && job.preparation != nil &&
 		(job.preparation.stopping || job.lifecycle == nil || job.lifecycle.Err() != nil)
 }
 
-// HEVC is not admitted by the H264 IDR timeline scanner. Speculation can keep
-// its encoder for playback, but cannot stop at an uncertified refill boundary.
 func (manager *hlsManager) completeHEVCStartup(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
 	return recipe.mode == "audio-transcode" && recipe.offset == 0 && recipe.outputTime == 0 &&
 		!recipe.dialogueBoost && !recipe.normalizeLoudness &&
@@ -27,9 +23,6 @@ func (manager *hlsManager) completeHEVCStartup(ctx context.Context, item library
 		manager.probe.facts(ctx, item).Video.Codec == "hevc"
 }
 
-// Require short copied HEVC streams to finish within the readiness budget.
-// Their container duration does not certify a final segment: wait for actual
-// output instead of projecting an extra fractional tail during adoption.
 func (manager *hlsManager) shortHEVCNeedsCompletion(ctx context.Context, item library.Item, recipe hlsRecipe) bool {
 	duration := manager.probe.duration(ctx, item)
 	return duration > 0 && duration <= 30 && manager.completeHEVCStartup(ctx, item, recipe)
@@ -38,8 +31,6 @@ func (manager *hlsManager) shortHEVCNeedsCompletion(ctx context.Context, item li
 func (manager *hlsManager) shortHEVCOutputReady(ctx context.Context, item library.Item, directory, policy string) bool {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
-	// A muxer may write ENDLIST before exiting. Only a settled producer can
-	// publish its final output. Hold the lock against replacement while reading.
 	if manager.jobs[filepath.Base(directory)] != nil || ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) {
 		return false
 	}
@@ -57,8 +48,6 @@ func shortHEVCSourceMatches(root *os.Root, policy string) bool {
 	return err == nil && string(binding) == policy
 }
 
-// Missing or unwritable receipts fail closed, including legacy caches whose
-// missing source binding would otherwise fall back to timestamp freshness.
 func (manager *hlsManager) publishShortHEVCCompletion(ctx context.Context, item library.Item, recipe hlsRecipe, directory, policy string) error {
 	if err := manager.validateHLSPolicy(ctx, item, recipe, policy); err != nil {
 		return err
@@ -77,8 +66,6 @@ func (manager *hlsManager) publishShortHEVCCompletion(ctx context.Context, item 
 	return writeCopiedHLSMetadata(root, shortHEVCCompletionMarker, []byte(policy))
 }
 
-// Source binding precedes this atomic marker; no media has been published yet.
-// Adoption and the marker write share the same lock as cancellation.
 func (manager *hlsManager) bindStartupCompletion(ctx context.Context, directory, policy string) error {
 	preparation, ok := ctx.Value(startupEncodingKey{}).(*startupEncoding)
 	if !ok || !preparation.completeVideo {
@@ -123,9 +110,6 @@ func writeStartupCompletion(root *os.Root, policy string) error {
 	return root.Rename(startupCompletionMarker+".pending", startupCompletionMarker)
 }
 
-// A missing ownership marker preserves ordinary interrupted cold caches.
-// Only a live adoptable producer or genuine finalized output can admit an
-// owned cache. A stopped incomplete producer is joined before replacement.
 func (manager *hlsManager) startupCompletionReusable(ctx context.Context, item library.Item, directory, policy string) bool {
 	root, err := manager.openCopiedHLSRoot(directory)
 	if err != nil {
@@ -154,7 +138,6 @@ func startupCompletionMatches(root *os.Root, policy string) bool {
 	return err == nil && string(binding) == policy
 }
 
-// Called under manager.mu when an active producer becomes real playback.
 func (manager *hlsManager) clearStartupCompletion(key string) {
 	root, err := os.OpenRoot(manager.cache)
 	if err != nil {

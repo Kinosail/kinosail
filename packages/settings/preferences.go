@@ -1,4 +1,3 @@
-// Package settings owns shared Kinosail settings validation and HTTP operations.
 package settings
 
 import (
@@ -10,7 +9,6 @@ import (
 
 var playbackKeys = []string{"playback.mode", "playback.autoplay", "playback.subtitles", "playback.auto_skip"}
 
-// Playback contains the settings changed by the playback form.
 type Playback struct {
 	PlaybackMode string   `json:"playbackMode,omitempty"`
 	Autoplay     bool     `json:"autoplay,omitempty"`
@@ -18,15 +16,12 @@ type Playback struct {
 	Subtitles    string   `json:"subtitles,omitempty"`
 }
 
-// SubtitlesDefault reports whether subtitles should start enabled.
 func (playback Playback) SubtitlesDefault() bool { return playback.Subtitles != "off" }
 
-// AutoplayDefault reports whether playback should continue automatically.
 func (playback Playback) AutoplayDefault() bool {
 	return playback.PlaybackMode == "" || playback.Autoplay
 }
 
-// AutoSkipDefault returns a detached marker list and applies its default.
 func (playback Playback) AutoSkipDefault() []string {
 	if playback.AutoSkip == nil {
 		return markers.Types()
@@ -34,7 +29,6 @@ func (playback Playback) AutoSkipDefault() []string {
 	return append([]string(nil), playback.AutoSkip...)
 }
 
-// Merge preserves markers when an API update omits that optional field.
 func (playback Playback) Merge(current Playback) Playback {
 	if playback.AutoSkip == nil {
 		playback.AutoSkip = current.AutoSkip
@@ -42,7 +36,6 @@ func (playback Playback) Merge(current Playback) Playback {
 	return playback
 }
 
-// Persist applies one change to a copied app settings value and commits it after a successful save.
 func Persist[T any](lock sync.Locker, current func() T, apply func(*T), save func(T) error, commit func(T)) error {
 	lock.Lock()
 	defer lock.Unlock()
@@ -55,7 +48,6 @@ func Persist[T any](lock sync.Locker, current func() T, apply func(*T), save fun
 	return nil
 }
 
-// ChangePlayback validates one complete playback change before persisting it.
 func ChangePlayback(input Playback, editable func(...string) error, persist func(Playback) error) error {
 	if err := editable(playbackKeys...); err != nil {
 		return err
@@ -79,7 +71,6 @@ func ChangePlayback(input Playback, editable func(...string) error, persist func
 	return persist(input)
 }
 
-// PlaybackMode applies the default playback mode.
 func PlaybackMode(mode string) string {
 	if mode == "" {
 		return "automatic"
@@ -87,7 +78,6 @@ func PlaybackMode(mode string) string {
 	return mode
 }
 
-// ChangeScanFrequency validates one scan schedule before persisting it.
 func ChangeScanFrequency(frequency string, editable func(...string) error, persist func(string) error) error {
 	if err := editable("scanning.frequency"); err != nil {
 		return err
@@ -98,7 +88,6 @@ func ChangeScanFrequency(frequency string, editable func(...string) error, persi
 	return persist(frequency)
 }
 
-// ScanFrequency applies the default scan schedule.
 func ScanFrequency(frequency string) string {
 	switch frequency {
 	case "off", "5m", "15m", "1h":
@@ -113,7 +102,6 @@ type readLocker interface {
 	RUnlock()
 }
 
-// Read locks a shared app settings value while deriving one result.
 func Read[T any](lock readLocker, value func() T) T {
 	lock.RLock()
 	defer lock.RUnlock()

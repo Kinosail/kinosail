@@ -201,7 +201,6 @@ func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id stri
 	if err := validateSubtitleEdit(input, true); err != nil {
 		return subtitleReview{}, http.StatusBadRequest, err
 	}
-	// Serialize edits with automatic upgrades and re-read under the lock.
 	manager.provider.sidecar.Lock()
 	defer manager.provider.sidecar.Unlock()
 	review, document, status, err := manager.previewSubtitleEdit(request, id, input)

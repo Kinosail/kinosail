@@ -19,7 +19,6 @@ type embeddedCall struct {
 	err  error
 }
 
-// Background preparation and interactive requests share extraction for one source version.
 func (probe *Probe) embeddedData(ctx context.Context, item library.Item, stream int, options EmbeddedOptions, path string) ([]byte, error) {
 	version := playback.SourceVersion(item.Path)
 	key := item.Path + "\x00" + version + "\x00" + strconv.Itoa(stream) + "\x00" + path
@@ -48,7 +47,6 @@ func (probe *Probe) embeddedData(ctx context.Context, item library.Item, stream 
 			if !errors.Is(call.err, context.Canceled) && !errors.Is(call.err, context.DeadlineExceeded) {
 				return call.data, call.err
 			}
-			// An interrupted background owner must not fail a still-active viewer request.
 		}
 	}
 	return nil, ctx.Err()

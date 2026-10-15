@@ -8,12 +8,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// Renderer executes one localized application template.
 type Renderer interface {
 	Execute(http.ResponseWriter, *http.Request, any) error
 }
 
-// View is the offline-download page model.
 type View struct {
 	Jobs    []Job
 	Pending bool
@@ -28,7 +26,6 @@ type web struct {
 	notFound   func(http.ResponseWriter, *http.Request)
 }
 
-// RegisterWeb registers Player's HTML download lifecycle.
 func RegisterWeb(
 	mux *http.ServeMux,
 	manager *Manager,

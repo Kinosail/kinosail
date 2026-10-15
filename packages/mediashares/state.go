@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 )
 
-// CloneState copies all nested state before a durable mutation.
 func CloneState(value State) State {
 	copy := State{Shares: make(map[string]Share, len(value.Shares)), Sessions: make(map[string]Session, len(value.Sessions))}
 	for id, share := range value.Shares {
@@ -18,7 +17,6 @@ func CloneState(value State) State {
 	return copy
 }
 
-// RevokeAll removes all grants and active session accounting.
 func (store *Store) RevokeAll() error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
@@ -33,7 +31,6 @@ func (store *Store) RevokeAll() error {
 	return nil
 }
 
-// Prune removes expired grants and orphaned sessions.
 func Prune(state *State, now int64) {
 	for id, share := range state.Shares {
 		if share.ExpiresAt <= now {
@@ -47,7 +44,6 @@ func Prune(state *State, now int64) {
 	}
 }
 
-// ValidState checks every persisted grant and session boundary.
 func ValidState(state State) bool {
 	if len(state.Shares) > 256 || len(state.Sessions) > 2048 {
 		return false
@@ -95,13 +91,11 @@ func validSession(shares map[string]Share, key string, session Session) bool {
 	return ValidHash(key) && found && session.ExpiresAt > 0 && session.ExpiresAt <= share.ExpiresAt && len(session.Device) <= 80
 }
 
-// ValidSecret checks the public grant token encoding.
 func ValidSecret(value string) bool {
 	decoded, err := base64.RawURLEncoding.DecodeString(value)
 	return err == nil && len(decoded) == 32
 }
 
-// ValidHash checks a persisted SHA-256 capability hash.
 func ValidHash(value string) bool {
 	decoded, err := hex.DecodeString(value)
 	return err == nil && len(decoded) == 32

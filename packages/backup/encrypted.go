@@ -18,7 +18,6 @@ const (
 	maxPassphraseSize = 4096
 )
 
-// WriteAuto includes private state when an installation backup key is available.
 func (service *Service) WriteAuto(writer io.Writer, dataDir, passphrase, version string) error {
 	if passphrase != "" {
 		return service.WriteEncrypted(writer, dataDir, passphrase, version)
@@ -26,7 +25,6 @@ func (service *Service) WriteAuto(writer io.Writer, dataDir, passphrase, version
 	return service.Write(writer, dataDir, version)
 }
 
-// WriteEncrypted creates an authenticated encrypted configuration archive.
 func (service *Service) WriteEncrypted(writer io.Writer, dataDir, passphrase, version string) error { //nolint:cyclop // Encryption must fail closed at every archive and cipher boundary.
 	if len(passphrase) < 16 || len(passphrase) > maxPassphraseSize {
 		return errors.New("backup passphrase must contain 16 to 4096 characters")
@@ -58,7 +56,6 @@ func (service *Service) WriteEncrypted(writer io.Writer, dataDir, passphrase, ve
 	return err
 }
 
-// RestoreEncrypted authenticates and restores an encrypted archive.
 func (service *Service) RestoreEncrypted(reader io.Reader, dataDir, passphrase string) error {
 	return service.decrypt(reader, passphrase, func(plain []byte) error {
 		staged, err := service.read(bytes.NewReader(plain), true)
@@ -89,7 +86,6 @@ func (service *Service) decrypt(reader io.Reader, passphrase string, use func([]
 	return use(plain)
 }
 
-// VerifyEncrypted authenticates and validates an encrypted backup without restoring it.
 func (service *Service) VerifyEncrypted(reader io.Reader, passphrase string) error {
 	return service.decrypt(reader, passphrase, func(plain []byte) error {
 		_, err := service.read(bytes.NewReader(plain), true)
@@ -97,7 +93,6 @@ func (service *Service) VerifyEncrypted(reader io.Reader, passphrase string) err
 	})
 }
 
-// VerifyAuto validates either a plain archive or an authenticated encrypted archive.
 func (service *Service) VerifyAuto(reader io.Reader, passphrase string) error {
 	data, err := io.ReadAll(io.LimitReader(reader, maxArchiveSize+1))
 	if err != nil || len(data) > maxArchiveSize {
@@ -113,7 +108,6 @@ func (service *Service) VerifyAuto(reader io.Reader, passphrase string) error {
 	return err
 }
 
-// RestoreAuto restores either a plain archive or an authenticated encrypted archive.
 func (service *Service) RestoreAuto(reader io.Reader, dataDir, passphrase string) error {
 	data, err := io.ReadAll(io.LimitReader(reader, maxArchiveSize+1))
 	if err != nil || len(data) > maxArchiveSize {

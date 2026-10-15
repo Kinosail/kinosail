@@ -7,18 +7,15 @@ import (
 	"unicode/utf8"
 )
 
-// ValidCollectionPathName reports whether a web Collection path name is bounded and safe.
 func ValidCollectionPathName(name string) bool {
 	return name != "" && len(name) <= 200 && utf8.ValidString(name) && !strings.Contains(name, "/")
 }
 
-// ValidCurationItemID reports whether a web curation item identifier is canonical.
 func ValidCurationItemID(id string) bool {
 	_, err := hex.DecodeString(id)
 	return len(id) == 16 && err == nil
 }
 
-// ValidCurationItemForm validates the shared Collection and playlist membership form.
 func ValidCurationItemForm(form url.Values) bool {
 	if !validCurationItemFields(form) {
 		return false

@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// WebAuthnChallenge obtains real ceremony options and their session cookie.
 func WebAuthnChallenge(t testing.TB, handler http.HandlerFunc, request *http.Request) (string, *http.Cookie) {
 	t.Helper()
 	response := httptest.NewRecorder()

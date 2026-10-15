@@ -23,7 +23,6 @@ func (manager *Manager) schedule(ctx context.Context) {
 	}
 }
 
-// RunDue queues every due sync within the bounded worker capacity.
 func (manager *Manager) RunDue(ctx context.Context, now time.Time) {
 	manager.mu.Lock()
 	manager.expirePreviews(now)

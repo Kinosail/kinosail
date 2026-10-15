@@ -10,7 +10,6 @@ import (
 
 const ArtworkMaxAge = 6 * 30 * 24 * time.Hour
 
-// CurrentArtwork returns a regular, unexpired image inside the metadata cache.
 func CurrentArtwork(cache, path string) string {
 	if path == "" || cache == "" {
 		return ""
@@ -27,7 +26,6 @@ func CurrentArtwork(cache, path string) string {
 	return path
 }
 
-// PruneExpiredArtwork removes expired JPEGs without changing other cache files.
 func PruneExpiredArtwork(cache string) error {
 	return pruneExpiredArtwork(cache, os.ReadDir, os.Remove)
 }

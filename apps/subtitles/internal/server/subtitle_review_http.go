@@ -141,8 +141,6 @@ func readSubtitleEdit(writer http.ResponseWriter, request *http.Request, target 
 	return true
 }
 
-// Validate all nested objects before decoding: duplicate fields and null values
-// must not silently overwrite a language, anchor, or concurrency precondition.
 func validSubtitleEditJSON(data []byte) bool {
 	validator := subtitleEditJSONValidator{decoder: json.NewDecoder(bytes.NewReader(data))}
 	if !validator.value(0) {

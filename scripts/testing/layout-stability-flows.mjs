@@ -1,4 +1,3 @@
-// Real HTMX bodies; only the explicitly labelled transport failure is injected.
 import {measureSubtitleSearch} from "./layout-stability-subtitle-search.mjs";
 import {measureSubtitleBackground} from "./layout-stability-subtitle-background.mjs";
 import {measureSubtitleWebAppMetadata} from "./layout-stability-subtitle-web-app.mjs";
@@ -123,7 +122,6 @@ export async function measureFlows(browser, options, watchPath, inspectorPath, r
     const failedDisabled=await page.locator('#subtitle-edit-form button[type="submit"]').isDisabled();const qualityRows=await page.locator("#subtitle-quality p").count();const busy=await page.locator("#inspector-status").getAttribute("aria-busy");await page.unroute("**/inspect?*");await page.reload();await page.waitForFunction(()=>!document.querySelector('#subtitle-edit-form button[type="submit"]').disabled);
     results.push({flow:"inspector-refresh-failure-retry",injectedFailure:true,before,after,pendingDisabled,failedDisabled,busy,qualityRows,retryCompleted:true,stable:pendingDisabled&&failedDisabled&&!busy&&qualityRows>0&&JSON.stringify(before)===JSON.stringify(after)});
     await context.close();
-    // Reloads must keep using the explicitly delayed HTTP route for pending-state measurements.
     const editing=await browser.newContext({...options,viewport:{width:390,height:844},ignoreHTTPSErrors:false,reducedMotion:"reduce",serviceWorkers:"block"});
     probe.stage = "inspector-edit-during-refresh";
     const editor=await probe.openPage(editing);

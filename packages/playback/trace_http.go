@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/apihttp"
 )
 
-// TraceHTTPConfig binds app-owned visibility and session state to trace delivery.
 type TraceHTTPConfig struct {
 	Observe      func(*http.Request, TraceEvent)
 	Visible      func(*http.Request, string) bool
@@ -17,7 +16,6 @@ type TraceHTTPConfig struct {
 	SetSession   func(*http.Request, string)
 }
 
-// TraceHTTP returns Player's strict playback telemetry endpoint.
 func TraceHTTP(config TraceHTTPConfig) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if config.Visible == nil || config.ValidSession == nil || config.SetSession == nil {
@@ -61,7 +59,6 @@ func logTrace(request *http.Request, event TraceEvent) {
 }
 
 func safeTraceDetail(event TraceEvent) string {
-	// Retain named failures from known controls; arbitrary diagnostic text can contain credentials.
 	detail := ""
 	parts := strings.Split(event.Detail, ":")
 	if event.Event == "error" && len(parts) == 3 && parts[0] == "fullscreen" && parts[2] == "playback-retained" && oneOf(parts[1], "NotAllowedError", "InvalidStateError", "NotSupportedError", "TypeError", "Error") {

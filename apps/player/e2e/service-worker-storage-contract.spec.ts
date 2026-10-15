@@ -103,7 +103,6 @@ test("service worker streams verified IndexedDB chunks with backpressure", async
 					transaction.onerror = () => reject(transaction.error);
 				};
 			});
-			// Registration and readiness can identify the same page while its first media request waits.
 			const revision = Date.now();
 			handlers.get("message")?.({ origin: "https://kinosail.test", source: { type: "window", url: "https://kinosail.test/offline" }, data: { type: "profile", profile: "profile", revision }, waitUntil: () => {} } as WorkerMessage);
 			const firstMedia = requestMedia();

@@ -1,7 +1,5 @@
 import XCTest
 
-// The loopback fixture withholds media bytes, while allowing metadata and artwork.
-// Labels must match the next action in both Now playing and the mini player.
 final class RemoteAudioBufferingTests: RemoteTestCase {
     override func tearDown() async throws {
         _ = try await URLSession.shared.data(from: URL(string: "http://127.0.0.1:4279/qa/state?mode=loaded&delay=0&target=library&profile=qa")!)

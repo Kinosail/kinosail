@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// MFARecoveryFixture preserves the app's initial Jellyfin setup, restart, and login copy.
 type MFARecoveryFixture struct {
 	New, Restart func(*testing.T, string) http.Handler
 	TOTP         func(*testing.T, string, time.Time) string
@@ -16,7 +15,6 @@ type MFARecoveryFixture struct {
 	LoginLabel   string
 }
 
-// AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions preserves the complete real-handler MFA lifecycle.
 func AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t *testing.T, fixture MFARecoveryFixture) {
 	t.Parallel()
 

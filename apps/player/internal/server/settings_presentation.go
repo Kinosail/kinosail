@@ -5,7 +5,6 @@ import (
 	"strings"
 )
 
-// Keep specialist playback choices available without leading the everyday form.
 func simplifySettingsPlayback(page string) string {
 	const explanation = "Direct First starts the original file on every connection. Wi-Fi speed, slow startup, and buffering never trigger conversion. After a confirmed format failure, Kinosail uses the smallest compatible change. Video transcoding always asks first."
 	page = strings.Replace(page, "<p>"+explanation+"</p>", "", 1)

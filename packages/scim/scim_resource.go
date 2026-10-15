@@ -233,7 +233,6 @@ func validSCIMETagHeader(header string) bool { //nolint:cyclop,gocognit // Entit
 	return true
 }
 
-// ETagMatches compares a validated conditional header with one current entity tag.
 func ETagMatches(header, current string) bool {
 	if header == "*" {
 		return true

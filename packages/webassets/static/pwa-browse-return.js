@@ -17,8 +17,6 @@
   let generation = 0, running, historyReturn = false;
   const restored = new WeakMap();
 
-  // Go ParseBrowse remains authoritative; this rejects unsafe stored navigation
-  // before any href assignment, network request, focus or history operation.
   function browseURL(value) {
     if (typeof value !== "string" || value.length > 2048 || !/^\/(?:\?|$)/.test(value) || /[\\\x00-\x20]/.test(value)) return;
     const url = new URL(value, location.origin);
@@ -59,13 +57,13 @@
       const state = valid(JSON.parse(raw));
       if (!state) clear();
       return state;
-    } catch { clear(); /* Storage can be disabled; the Go Library fallback still works. */ }
+    } catch { clear();   }
   }
   function write(state) {
     try {
       const raw = JSON.stringify(state);
       if (valid(state) && new TextEncoder().encode(raw).length <= 4096) sessionStorage.setItem(key, raw);
-    } catch { /* Return enhancement is optional when session storage is denied. */ }
+    } catch {   }
   }
   function clear() { try { sessionStorage.removeItem(key); } catch {} }
   function updateBack() {
@@ -150,7 +148,6 @@
       if (!current()) return;
       const link = [...document.querySelectorAll(actions[state.area])].find(action => surface.contains(action) && action.getAttribute("href") === state.href);
       if (!link) { failed("title_unavailable"); return; }
-      // The real DOM must exist before focus/scroll, including HTMX's settlement.
       await new Promise(resolve => {
         run.settle = resolve;
         run.frames.push(requestAnimationFrame(() => { run.frames.push(requestAnimationFrame(resolve)); }));

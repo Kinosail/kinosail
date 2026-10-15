@@ -6,8 +6,6 @@ import unittest
 
 from campaign_r06_browser_projection import CASES, FILE
 
-# https://playwright.dev/docs/api/class-testconfig#test-config-grep
-# grep receives project/file/describe/test/tags joined by spaces, not test name alone.
 def suites_from_source(source):
     for node in ast.parse(source).body:
         if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "SUITES" for t in node.targets):

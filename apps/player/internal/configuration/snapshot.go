@@ -54,7 +54,6 @@ func (snapshot Snapshot) Fields() []PublicValue {
 	return result
 }
 
-// Clone returns an independent configuration snapshot.
 func (snapshot Snapshot) Clone() Snapshot {
 	values := make(map[string]value, len(snapshot.values))
 	maps.Copy(values, snapshot.values)

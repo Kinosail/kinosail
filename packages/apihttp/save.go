@@ -8,7 +8,6 @@ import (
 
 var errSaveUnavailable = errors.New("save unavailable")
 
-// Save decodes one request and returns Player's canonical saved response.
 func Save[T any](save func(T) error, conflictErrors ...error) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if save == nil {
@@ -36,7 +35,6 @@ func saveStatus(err error, conflictErrors []error) int {
 	return http.StatusBadRequest
 }
 
-// SaveLibraries applies one library path change and returns the refreshed list.
 func SaveLibraries(change func(string) error, refresh func(context.Context) (any, error)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if change == nil || refresh == nil {

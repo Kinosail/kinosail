@@ -12,7 +12,6 @@ import (
 	"testing"
 )
 
-// PlayerScriptURLTracksServedContents prevents immutable browser caches from retaining old playback code.
 func (fixture AssetsFixture) PlayerScriptURLTracksServedContents(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -44,7 +43,6 @@ func (fixture AssetsFixture) PlayerScriptURLTracksServedContents(t *testing.T) {
 	}
 }
 
-// LibraryPrioritizesVisibleArtworkWithoutLayoutShift preserves the shared app's asset performance contract.
 func (fixture AssetsFixture) LibraryPrioritizesVisibleArtworkWithoutLayoutShift(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -77,7 +75,6 @@ func (fixture AssetsFixture) LibraryPrioritizesVisibleArtworkWithoutLayoutShift(
 	}
 }
 
-// VersionedStaticAssetsUseImmutableCaching preserves the shared app's asset performance contract.
 func (fixture AssetsFixture) VersionedStaticAssetsUseImmutableCaching(t *testing.T) {
 	t.Helper()
 	t.Parallel()

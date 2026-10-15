@@ -7,15 +7,12 @@ import (
 	"net/http"
 )
 
-// ErrorWriter translates an operation failure to an application HTTP response.
 type ErrorWriter func(http.ResponseWriter, *http.Request, error, int)
 
-// Tasks contains the complete set of owner-run server tasks.
 type Tasks struct {
 	Scan, Metadata, ClearCache, Maintain func(context.Context) error
 }
 
-// Web configures the owner-only operational web routes.
 type Web struct {
 	Owner       func(http.Handler) http.Handler
 	WriteError  ErrorWriter
@@ -24,7 +21,6 @@ type Web struct {
 	Diagnostics func() DiagnosticReport
 }
 
-// RegisterWeb registers owner-only task, metrics, and diagnostic routes.
 func RegisterWeb(mux *http.ServeMux, config Web) {
 	mux.Handle("GET /settings/metrics", config.Owner(MetricsHandler(config.Metrics)))
 	mux.Handle("GET /settings/diagnostics.json", config.Owner(DiagnosticsHandler(config.Diagnostics)))
@@ -33,7 +29,6 @@ func RegisterWeb(mux *http.ServeMux, config Web) {
 	mux.Handle("POST /settings/tasks/maintain", config.Owner(TaskHandler(config.Tasks.Maintain, config.WriteError)))
 }
 
-// TaskHandler runs one web task and returns to settings after success.
 func TaskHandler(run func(context.Context) error, writeError ErrorWriter) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := run(request.Context()); err != nil {
@@ -44,7 +39,6 @@ func TaskHandler(run func(context.Context) error, writeError ErrorWriter) http.H
 	}
 }
 
-// APITaskHandler selects and runs one versioned server task.
 func APITaskHandler(tasks Tasks, writeError ErrorWriter, notFound http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var run func(context.Context) error
@@ -69,7 +63,6 @@ func APITaskHandler(tasks Tasks, writeError ErrorWriter, notFound http.HandlerFu
 	}
 }
 
-// MetricsHandler serves one current metrics snapshot.
 func MetricsHandler(snapshot func() Metrics) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		value := snapshot()
@@ -81,7 +74,6 @@ func MetricsHandler(snapshot func() Metrics) http.HandlerFunc {
 	}
 }
 
-// DiagnosticsHandler serves one downloadable safe diagnostic report.
 func DiagnosticsHandler(report func() DiagnosticReport) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")

@@ -1,6 +1,5 @@
 import XCTest
 
-// Uses the populated loopback QA session and its four genre shelves.
 final class RemoteHomeScrollingTests: RemoteTestCase {
     @MainActor
     func testDeepHomeTraversalPreservesFocusAndReturnsToSearch() {

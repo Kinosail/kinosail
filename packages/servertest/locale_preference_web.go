@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// WebLanguageSelectionUsesTheSharedPreferenceOperation preserves the original locale preference regression.
 func (fixture LocaleWebFixture) WebLanguageSelectionUsesTheSharedPreferenceOperation(t *testing.T) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, false)
@@ -38,7 +37,6 @@ func (fixture LocaleWebFixture) WebLanguageSelectionUsesTheSharedPreferenceOpera
 	}
 }
 
-// AuthenticatedLanguagePickerCarriesCSRFToken preserves the original locale preference regression.
 func (fixture LocaleWebFixture) AuthenticatedLanguagePickerCarriesCSRFToken(t *testing.T, signIn func(*testing.T, http.Handler, string, string) *http.Cookie, web AuthCookieRequest) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, true)

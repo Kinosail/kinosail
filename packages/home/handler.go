@@ -9,10 +9,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// InfiniteLibraryHeader requests only the bounded Library result fragment.
 const InfiniteLibraryHeader = "X-Kinosail-Library-Page"
 
-// NewHandler binds the shared projection to protected app state and templates.
 func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resume, Playlist, Collection], view View, tmdb bool, failure func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")

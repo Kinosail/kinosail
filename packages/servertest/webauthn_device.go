@@ -13,7 +13,6 @@ import (
 	"github.com/fxamacker/cbor/v2"
 )
 
-// WebAuthnDevice creates real signed credentials for application handler tests.
 type WebAuthnDevice struct {
 	key          *ecdsa.PrivateKey
 	id           []byte
@@ -21,7 +20,6 @@ type WebAuthnDevice struct {
 	rpID, origin string
 }
 
-// NewWebAuthnDevice binds a local test authenticator to an explicit relying party.
 func NewWebAuthnDevice(t testing.TB, rpID, origin, credentialID string) WebAuthnDevice {
 	t.Helper()
 	size := len(credentialID)
@@ -36,7 +34,6 @@ func NewWebAuthnDevice(t testing.TB, rpID, origin, credentialID string) WebAuthn
 	return WebAuthnDevice{key: key, id: []byte(credentialID), idLength: uint16(size), rpID: rpID, origin: origin}
 }
 
-// Registration supplies a discoverable ES256 credential with user verification.
 func (device WebAuthnDevice) Registration(t testing.TB, challenge string) string {
 	t.Helper()
 	publicKey := map[int]any{1: 2, 3: -7, -1: 1, -2: device.key.X.FillBytes(make([]byte, 32)), -3: device.key.Y.FillBytes(make([]byte, 32))}
@@ -52,7 +49,6 @@ func (device WebAuthnDevice) Registration(t testing.TB, challenge string) string
 	})
 }
 
-// Assertion signs the challenge and the relying party data with the device key.
 func (device WebAuthnDevice) Assertion(t testing.TB, challenge, owner string) string {
 	t.Helper()
 	clientData := device.clientData(t, "webauthn.get", challenge)

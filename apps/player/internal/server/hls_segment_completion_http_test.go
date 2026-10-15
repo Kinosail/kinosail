@@ -10,9 +10,6 @@ import (
 	"time"
 )
 
-// Real-media E2E covers healthy refill completion. These public-handler controls
-// cover canceled ownership at a precisely held join; an external encoder
-// cannot deterministically arrange this cancellation and completion ordering.
 func TestMissingHLSSegmentDoesNotReplaceCanceledProducer(t *testing.T) {
 	for _, cause := range []error{errHLSInactive, errHLSSeekRestart, errHLSIdentityChanged, context.Canceled} {
 		t.Run(cause.Error(), func(t *testing.T) {

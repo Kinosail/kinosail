@@ -1,4 +1,3 @@
-// Package quickconnect coordinates one-time device authorization.
 package quickconnect
 
 import (
@@ -29,20 +28,17 @@ var (
 	ErrInvalidRequest  = errors.New("Quick Connect request is invalid")                      //nolint:staticcheck // Product term starts with a capital.
 )
 
-// Request describes the device that needs authorization.
 type Request struct {
 	Device, DeviceID, Client, Version string
 	Numeric, Remote                   bool
 }
 
-// Connection is the current state exposed to protocol adapters.
 type Connection struct {
 	Code, Device, DeviceID, Client, Version string
 	Created                                 time.Time
 	Approved                                bool
 }
 
-// Viewer contains the authorization facts needed for approval.
 type Viewer struct {
 	ID               string
 	Revision         uint64
@@ -52,7 +48,6 @@ type Viewer struct {
 	StronglyVerified bool
 }
 
-// Grant identifies the approved Viewer and session to create.
 type Grant struct {
 	ProfileID, Device string
 	ProfileRevision   uint64
@@ -60,7 +55,6 @@ type Grant struct {
 	Owner             bool
 }
 
-// Broker owns pending Quick Connect state.
 type Broker struct {
 	mu      sync.Mutex
 	byCode  map[string]string
@@ -79,7 +73,6 @@ type pendingConnection struct {
 	owner           bool
 }
 
-// New returns an empty Broker.
 func New(ttl time.Duration) *Broker {
 	if ttl <= 0 {
 		ttl = defaultTTL
@@ -90,7 +83,6 @@ func New(ttl time.Duration) *Broker {
 	}
 }
 
-// Create starts one bounded authorization request.
 func (broker *Broker) Create(request Request) (string, Connection, error) {
 	if !validRequest(request) {
 		return "", Connection{}, ErrInvalidRequest
@@ -118,7 +110,6 @@ func (broker *Broker) Create(request Request) (string, Connection, error) {
 	return secret, connection, nil
 }
 
-// Status returns an unexpired authorization request.
 func (broker *Broker) Status(secret string) (Connection, bool) {
 	if !validField(secret, 128) {
 		return Connection{}, false
@@ -135,7 +126,6 @@ func (broker *Broker) Status(secret string) (Connection, bool) {
 	return connection, true
 }
 
-// Approve binds one request to a Viewer.
 func (broker *Broker) Approve(value string, viewer Viewer) error {
 	code, err := approvalCode(value, viewer)
 	if err != nil {
@@ -174,7 +164,6 @@ func approvalCode(value string, viewer Viewer) (string, error) {
 	return strings.ToUpper(strings.TrimSpace(value)), nil
 }
 
-// Consume removes one approved request and returns its grant.
 func (broker *Broker) Consume(secret string) (Grant, error) {
 	if !validField(secret, 128) {
 		return Grant{}, ErrNotFound
@@ -194,7 +183,6 @@ func (broker *Broker) Consume(secret string) (Grant, error) {
 	return Grant{ProfileID: pending.profileID, Device: pending.connection.Device, ProfileRevision: pending.profileRevision, Remote: pending.remote, Owner: pending.owner}, nil
 }
 
-// RevokeRemote removes every public authorization request.
 func (broker *Broker) RevokeRemote() {
 	if broker == nil {
 		return

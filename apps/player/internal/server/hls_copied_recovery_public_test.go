@@ -20,7 +20,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Hosted codecs and real public routes under trusted configuration protect refill.
 func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	if os.Getenv("KINOSAIL_COPIED_RECOVERY_MEDIA") != "1" {
 		t.Skip("The designated pinned-codec hosted job runs this strict media proof")

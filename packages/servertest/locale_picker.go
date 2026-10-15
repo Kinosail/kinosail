@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/localization"
 )
 
-// LanguagePickerShowsEverySupportedLocale verifies automatic selection and every native locale name.
 func LanguagePickerShowsEverySupportedLocale(t *testing.T, handler http.Handler, languages []localization.Language) {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/language", nil)
@@ -38,7 +37,6 @@ func LanguagePickerShowsEverySupportedLocale(t *testing.T, handler http.Handler,
 	}
 }
 
-// AutomaticDetectionCoversEverySupportedLanguage checks detection and rendered language selection.
 func AutomaticDetectionCoversEverySupportedLanguage(t *testing.T, handler http.Handler, languages []localization.Language, automaticLanguage func(*http.Request) string) {
 	t.Helper()
 	for _, supported := range languages {

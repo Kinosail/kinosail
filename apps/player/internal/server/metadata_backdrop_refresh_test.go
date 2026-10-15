@@ -19,10 +19,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// This journey uses the real public Owner API, profile authorization, metadata
-// store and image delivery. A disposable provider avoids production accounts.
-// Canonical TMDB variant selection is covered separately because this custom
-// provider must retain its existing image-base behavior.
 func TestOwnerBackdropRefreshReplacesDerivedImageAndPreservesItOnFailure(t *testing.T) {
 	poster := refreshedBackdropJPEG(t, 780, 1170)
 	legacy := refreshedBackdropJPEG(t, 780, 439)

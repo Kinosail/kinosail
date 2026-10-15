@@ -38,7 +38,6 @@ type copiedHLSClockCertificate struct {
 	First          [32]byte `json:"first"`
 }
 
-// Nonblocking open also rejects a regular-file-to-FIFO race without hanging.
 func copiedHLSOpenFile(root *os.Root, name string, limit int64) (*os.File, os.FileInfo, error) {
 	info, err := root.Lstat(name)
 	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > limit {
@@ -128,7 +127,7 @@ func verifyCopiedHLSRenditionAssets(ctx context.Context, rendition *os.Root, cer
 		if err != nil || first != certificate.First {
 			return errCopiedHLSIndex
 		}
-	} // Missing lazy media retains the certified init and cuts.
+	}
 	return nil
 }
 
@@ -170,8 +169,6 @@ func (manager *hlsManager) openCopiedHLSRoot(directory string) (*os.Root, error)
 	return root.OpenRoot(relative)
 }
 
-// One small one-thread metadata probe may accompany the existing owner encoder.
-// A second encoding reservation here would deadlock a capacity-one Server.
 func (manager *hlsManager) copiedHLSMetadataAdmission(parent context.Context) (context.Context, func(), error) {
 	ctx, cancel := context.WithTimeout(parent, 2*time.Second)
 	metadata := &manager.copiedMetadata

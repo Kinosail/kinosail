@@ -66,8 +66,6 @@ func videoAudioEnhancementFixture(t *testing.T, ctx context.Context) (http.Handl
 		t.Skip("FFprobe is required for the video enhancement integration test")
 	}
 	media := t.TempDir()
-	// MPEG-4 video requires conversion; quiet speech-frequency audio exposes
-	// ignored enhancement settings through the delivered PCM, not argument text.
 	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=960x540:rate=24:duration=6", "-f", "lavfi", "-i", "sine=frequency=1600:sample_rate=48000:duration=6", "-af", "volume=0.2", "-c:v", "mpeg4", "-q:v", "8", "-c:a", "pcm_s16le", filepath.Join(media, "Dialog.mkv")) //nolint:gosec // Fixed synthetic media and tool paths from LookPath.
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate video: %v: %s", err, output)

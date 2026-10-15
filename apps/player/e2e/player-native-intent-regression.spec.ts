@@ -3,10 +3,6 @@ import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {playerSource} from './static-sources';
 
-// Isolation exception: live e30 reproduced saved-progress loss, but real-media
-// E2E cannot deterministically queue WebKit playing or interrupt a managed seek.
-// These controlled clocks retain production listeners and public HTTP writes.
-// KINOSAIL_REGRESSION_PLAYER_SOURCE selects an immutable source for RED replay.
 const source = process.env.KINOSAIL_REGRESSION_PLAYER_SOURCE
   ? await readFile(process.env.KINOSAIL_REGRESSION_PLAYER_SOURCE, 'utf8') : playerSource;
 const sourceHash = createHash('sha256').update(source).digest('hex');
@@ -45,7 +41,6 @@ function decoderFixture(preparation: boolean) {
     load: {value: () => {}},
     play: {value: () => {
       playCalls++; paused = false; video.dispatchEvent(new Event('play'));
-      // Preparation remains pending until the test delivers its decoder events.
       return new Promise<void>(() => {});
     }},
     pause: {value: () => {paused = true; video.dispatchEvent(new Event('pause'));}},
@@ -65,8 +60,6 @@ function decoderFixture(preparation: boolean) {
       loaded = true; ready = 4; time = value;
       video.dispatchEvent(new Event('loadedmetadata'));
     },
-    // Native controls mutate the decoder and publish events; they do not call
-    // the application's explicit custom-control or MediaSession callbacks.
     beginNativeSeek: (value: number) => {seeking = true; time = value; video.dispatchEvent(new Event('seeking'));},
     endNativeSeek: () => {seeking = false; video.dispatchEvent(new Event('seeked'));},
     snapshot: () => ({time, ready, paused, seeking, playCalls, events: [...events]}),
@@ -153,8 +146,6 @@ for (const completion of ['same playing dispatch', 'queued playing after canplay
 for (const {target, restore} of [{target: 0, restore: 20}, {target: 35, restore: 20}, {target: 0, restore: 0.05}]) {
   test(`first paused native seek to ${target} supersedes pending managed restoration${restore === 20 ? "" : " at 0.05"} and saves`, async ({page}, info) => {
     const state = await install(page);
-    // Exercise the real automatic source-change restore, withholding only the
-    // decoder's seeked completion until the user's native seek supersedes it.
     await page.evaluate(`resumeAfterSourceChange(false, true, ${restore})`);
     await page.evaluate(value => (window as TestWindow).intentDecoder.configure(value, 4, 60), restore === 20 ? 0 : 20);
     await page.locator('video').dispatchEvent('loadedmetadata');
@@ -199,8 +190,6 @@ for (const target of [undefined, 0, 35]) {
     await page.locator('video').dispatchEvent('loadedmetadata');
     await expect(page.locator('video')).toHaveJSProperty('seeking', true);
     expect(state.writes).toEqual([]);
-    // The decoder cancels the old source's unfinished seek without seeked. The
-    // replacement has metadata but no application restore or user play intent.
     await page.evaluate(() => (window as TestWindow).intentDecoder.replaceSource(10));
     await expect(page.locator('video')).toHaveJSProperty('currentTime', 10);
     await expect(page.locator('video')).toHaveJSProperty('seeking', false);

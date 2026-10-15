@@ -18,8 +18,6 @@ test("cross-origin Window messages cannot reach dedicated worker channels", asyn
   const result = await page.evaluate(async source => {
     const api = new Function(source + ";return {streamingOfflineDigest,offlineStorageWorkerScope}")();
     const digest = api.streamingOfflineDigest();
-    // Keep the browser-owned channel and production handler real. The in-memory
-    // filesystem isolates message security from browser OPFS availability.
     const storageFixture = `let bytes=new Uint8Array(3),closed=false;
       const handle={flush(){},close(){closed=true},truncate(){},
         read(target){if(closed)throw Error('closed');target.set(bytes);return bytes.length;},

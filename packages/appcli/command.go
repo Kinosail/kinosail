@@ -1,4 +1,3 @@
-// Package appcli defines Player's process-level command contract for media apps.
 package appcli
 
 import (
@@ -21,10 +20,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-// Command dispatches one process command.
 type Command func([]string, io.Reader, io.Writer, string, string, string, bool, string) (bool, error)
 
-// Bind returns Player's command dispatcher with app-specific backup and update adapters.
 func Bind(backupCommand backup.Command, updateCommand updatecontrol.Command, version string) Command {
 	if backupCommand == nil || updateCommand == nil {
 		return func([]string, io.Reader, io.Writer, string, string, string, bool, string) (bool, error) {
@@ -84,29 +81,24 @@ func usageError() error {
 	return errors.New("usage: kinosail [backup|config|healthcheck|mcp-stdio|restore|tls-certificate|update-artifact|update-plan|update-report|version]")
 }
 
-// ConfigureMCPRuntime reserves the process for a bounded STDIO server.
 func ConfigureMCPRuntime(args []string) {
 	if len(args) >= 1 && len(args) <= 2 && args[0] == "mcp-stdio" {
 		runtime.GOMAXPROCS(1)
 	}
 }
 
-// LogLevel resolves Player's validated logging choice.
 func LogLevel(value string) slog.Level {
 	return map[string]slog.Level{"debug": slog.LevelDebug, "warn": slog.LevelWarn, "error": slog.LevelError}[value]
 }
 
-// Settings is the process configuration used by Player-derived applications.
 type Settings interface {
 	Bool(string) bool
 	String(string) string
 	Strings(string) []string
 }
 
-// ServerBuilder creates an application's HTTP server around the shared access managers.
 type ServerBuilder func(context.Context, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server
 
-// Run owns Player's server lifecycle for Player-derived applications.
 func Run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler) int {
 	return run(configured, signals, build, remoteHandler, RemoteAccess, TrustedHTTPS, servertransport.Serve)
 }
@@ -183,13 +175,11 @@ func shutdownOnCancel(ctx context.Context, server *http.Server) {
 	}
 }
 
-// RemoteAccess creates Player's validated remote-access manager.
 func RemoteAccess(configured Settings) (*remoteaccess.Manager, error) {
 	mode := configured.String("remote.mode")
 	return remoteaccess.New(remoteaccess.Config{Enabled: mode != "off", PublicHTTPS: mode == "https", Gateway: configured.Bool("remote.gateway"), Domain: configured.String("remote.duckdns_domain"), Token: configured.String("remote.duckdns_token"), Listen: configured.String("remote.listen"), DataDir: configured.String("paths.data")})
 }
 
-// TrustedHTTPS creates Player's validated trusted-HTTPS manager.
 func TrustedHTTPS(configured Settings) (*trustedhttps.Manager, error) {
 	trusted, err := trustedhttps.Parse(configured.String("tls.duckdns"))
 	if err != nil || trusted == (trustedhttps.Config{}) {

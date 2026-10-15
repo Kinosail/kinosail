@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// APISessionConfig binds Player's API sign-in flow to app-owned state.
 type APISessionConfig struct {
 	Public              func(*http.Request) bool
 	ReadJSON            func(http.ResponseWriter, *http.Request, any) bool
@@ -24,7 +23,6 @@ type APISessionConfig struct {
 
 type apiSessionInput struct{ Name, Password, Device, Code string }
 
-// CreateAPISession applies Player's credential, MFA, and session order.
 func CreateAPISession(writer http.ResponseWriter, request *http.Request, config APISessionConfig) {
 	if !validAPISessionConfig(config) {
 		http.Error(writer, "API sign-in is unavailable", http.StatusInternalServerError)

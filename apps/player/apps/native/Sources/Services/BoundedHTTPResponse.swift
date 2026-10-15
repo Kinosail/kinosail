@@ -1,8 +1,6 @@
 import Foundation
 import Synchronization
 
-/// Accumulate URLSession chunks without a per-byte async iteration. Each task
-/// owns its buffer; limits apply before appending, including chunked responses.
 final class BoundedHTTPResponse: NSObject, URLSessionDataDelegate, Sendable {
     private typealias Output = (Data, HTTPURLResponse)
     private struct State {

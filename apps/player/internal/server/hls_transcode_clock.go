@@ -43,8 +43,6 @@ type transcodeHLSRecovery struct {
 
 type transcodeHLSRecoveryKey struct{}
 
-// Completion has not yet released the generation owner. Missing or unsupported
-// source proof leaves the ordinary streaming generation uncommitted.
 func (manager *hlsManager) certifyTranscodeHLS(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, committed chan<- string) error {
 	observation := ctx
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)

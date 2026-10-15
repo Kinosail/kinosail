@@ -8,7 +8,6 @@ export function registerNewerDestinationCheckpoint(flows: NavigationCheckpointFl
   const {phase, browsePath, checkpoint, openMovie} = flows;
   test("a newer same-tab destination withdraws a pending Library checkpoint navigation", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
-    // Both destinations/store are populated. Held transports expose the otherwise brief intent race.
     const {media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-newer-destination", iteration: 0, testInfo});
     await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -63,7 +62,6 @@ export function registerNewerDestinationCheckpoint(flows: NavigationCheckpointFl
       await page.getByRole("link", {name: "Other Library view", exact: true}).click({noWaitAfter: true});
       await expect.poll(() => destinationRequested).toBe(true);
       releaseProgress();
-      // A pending document navigation can freeze old-page DOM queries. Read the real store instead.
       await expect.poll(async () => {
         const state = await checkpoint(page, id, session);
         return state.sessionMatches && state.seconds >= start + 0.3 - 0.1;
@@ -71,7 +69,6 @@ export function registerNewerDestinationCheckpoint(flows: NavigationCheckpointFl
       expect(unexpectedLibraryRequests).toBe(0);
       releaseDestination();
       await expect(page).toHaveURL(url => url.pathname === "/" && url.searchParams.get("view") === "movies");
-      // Join our callbacks, not Playwright bookkeeping left pending by a canceled old route.
       await expect.poll(() => pendingProgress).toBe(0);
       await page.unrouteAll();
       const saved = await checkpoint(page, id, session);

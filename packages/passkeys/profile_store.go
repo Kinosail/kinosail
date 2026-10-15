@@ -7,7 +7,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-// ProfileAccess maps one application profile to shared passkey state.
 type ProfileAccess[T any] struct {
 	ID                func(*T) string
 	Name              func(*T) string
@@ -19,7 +18,6 @@ type ProfileAccess[T any] struct {
 	Clone             func([]T) []T
 }
 
-// ProfileStoreConfig connects shared passkey rules to application persistence.
 type ProfileStoreConfig[T, S, K any] struct {
 	Mutex                 *sync.RWMutex
 	Profiles              *[]T
@@ -32,10 +30,8 @@ type ProfileStoreConfig[T, S, K any] struct {
 	Now                   func() time.Time
 }
 
-// ProfileStore owns shared profile passkey operations.
 type ProfileStore[T, S, K any] struct{ config ProfileStoreConfig[T, S, K] }
 
-// NewProfileStore creates one adapter-backed profile store.
 func NewProfileStore[T, S, K any](config ProfileStoreConfig[T, S, K]) *ProfileStore[T, S, K] {
 	if config.Now == nil {
 		config.Now = time.Now
@@ -43,7 +39,6 @@ func NewProfileStore[T, S, K any](config ProfileStoreConfig[T, S, K]) *ProfileSt
 	return &ProfileStore[T, S, K]{config: config}
 }
 
-// Discover returns an isolated profile for a discoverable credential.
 func (store *ProfileStore[T, S, K]) Discover(rawID, userHandle []byte) (webauthn.User, error) {
 	if err := ValidateLookup(rawID, userHandle); err != nil || !store.valid() {
 		return nil, ErrInvalidCredential
@@ -60,7 +55,6 @@ func (store *ProfileStore[T, S, K]) Discover(rawID, userHandle []byte) (webauthn
 	return nil, ErrNotFound
 }
 
-// Add validates and commits one unique credential.
 func (store *ProfileStore[T, S, K]) Add(profileID string, credential *webauthn.Credential) error {
 	if err := ValidateCredential(credential); err != nil || !store.valid() {
 		return ErrInvalidCredential
@@ -99,7 +93,6 @@ func (store *ProfileStore[T, S, K]) Add(profileID string, credential *webauthn.C
 	return ErrNotFound
 }
 
-// Update validates and commits one verified credential counter.
 func (store *ProfileStore[T, S, K]) Update(profileID string, credential *webauthn.Credential) error {
 	if err := ValidateCredential(credential); err != nil || !store.valid() {
 		return ErrInvalidCredential
@@ -127,7 +120,6 @@ func (store *ProfileStore[T, S, K]) Update(profileID string, credential *webauth
 	return ErrNotFound
 }
 
-// Inventory returns redacted passkey details for one profile.
 func (store *ProfileStore[T, S, K]) Inventory(profileID string) []Summary {
 	if !store.valid() {
 		return []Summary{}
@@ -143,7 +135,6 @@ func (store *ProfileStore[T, S, K]) Inventory(profileID string) []Summary {
 	return []Summary{}
 }
 
-// Remove validates and commits one credential removal.
 func (store *ProfileStore[T, S, K]) Remove(profileID, id string) error {
 	if err := ValidateID(id); err != nil || !store.valid() {
 		return ErrInvalidID

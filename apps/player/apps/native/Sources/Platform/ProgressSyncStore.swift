@@ -27,8 +27,6 @@ struct PendingProgress: Identifiable, Sendable {
     }
 }
 
-/// Canonical source positions only. Tokens and account credentials never enter
-/// this file. The scope includes Server origin, Server identity and Viewer Profile.
 actor ProgressSyncStore {
     private let file: URL
     private let scope: String
@@ -80,8 +78,6 @@ actor ProgressSyncStore {
                 do { result = try await client.syncProgress(itemID: entry.itemID, progress: entry.progress, expected: entry.expected, playbackToken: "") }
                 catch ClientError.http(404) { continue }
                 catch ClientError.http(410) { continue }
-                // Keep unavailable titles on disk, but let other titles synchronize.
-                // Authentication, transport and persistence errors still stop this attempt.
                 guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { continue }
                 var next = entries
                 if result.conflict { next[index].conflict = result.progress }

@@ -36,7 +36,7 @@ export function prepareCodeQLJavaScript(repo, destination) {
     throw new Error('Missing or invalid Subtitles player bundle');
   }
   const source = bundle.files.map(read).join('');
-  new Script(source, { filename: 'subtitles-player.js' }); // Parse only; never execute app code.
+  new Script(source, { filename: 'subtitles-player.js' });
   mkdirSync(destination, { recursive: true });
   writeFileSync(path.join(destination, 'subtitles-player.js'), source);
 }

@@ -218,8 +218,6 @@ test("an explicit direct link overrides the saved browser policy", async ({ page
 });
 
 
-// An encoder cannot emit deliberately malformed init data. This isolated error
-// control covers the parser rejection path that generated-media journeys miss.
 test("unsupported copied clocks stop with a visible error instead of retrying direct playback", async ({ page }) => {
   await startDirectPlayer(page, { playbackPolicy: "compatible" });
   await expect.poll(() => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);

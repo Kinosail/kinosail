@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/federation"
 )
 
-// PrincipalAdapterConfig contains one application's private profile operations.
 type PrincipalAdapterConfig[P any] struct {
 	CurrentProfile       func(*http.Request) P
 	FindProfile          func(string) (P, bool)
@@ -26,7 +25,6 @@ type PrincipalAdapterConfig[P any] struct {
 
 type principalAdapter[P any] struct{ PrincipalAdapterConfig[P] }
 
-// NewPrincipalAdapter validates and builds the identity boundary used by MCP transports.
 func NewPrincipalAdapter[P any](config PrincipalAdapterConfig[P]) PrincipalRepository {
 	if config.CurrentProfile == nil || config.FindProfile == nil || config.FederatedProfiles == nil || config.AllowProfile == nil || config.RecentAuthentication == nil || config.Profiles == nil || config.StateError == nil || config.AttributeProfile == nil || config.ConvertProfile == nil {
 		return nil
@@ -85,7 +83,6 @@ type apiAdapter[P any, ViewerKey, OwnerKey comparable] struct {
 	serveAudited func(http.Handler, http.ResponseWriter, *http.Request)
 }
 
-// NewAPIAdapter validates and builds one application's routed and audited API boundary.
 func NewAPIAdapter[P any, ViewerKey, OwnerKey comparable](router *http.ServeMux, handler http.Handler, find func(string) (P, bool), viewerKey ViewerKey, ownerKey OwnerKey, serveAudited func(http.Handler, http.ResponseWriter, *http.Request)) APIInvoker { //nolint:lll // Keeping the typed callbacks together makes the private application boundary explicit.
 	if router == nil || handler == nil || find == nil || serveAudited == nil {
 		return nil
@@ -111,7 +108,6 @@ func (adapter apiAdapter[P, ViewerKey, OwnerKey]) Invoke(writer http.ResponseWri
 	return nil
 }
 
-// RegisterApplication installs one application gateway and reports invalid startup configuration.
 func RegisterApplication(mux *http.ServeMux, config GatewayConfig, connections *Connections) *Gateway {
 	gateway, err := Register(mux, config, connections)
 	if err != nil {

@@ -21,7 +21,6 @@ func (store *settingsStore) resetPublicSessionTimeouts() error {
 }
 
 func (store *settingsStore) updateSessionTimeouts(inactive, absolute float64, public bool) error {
-	// Request validation/issuance already locks profiles before reading settings.
 	if store.profiles != nil {
 		store.profiles.mu.Lock()
 		defer store.profiles.mu.Unlock()
@@ -67,8 +66,6 @@ func (store *settingsStore) commitSessionTimeouts(next installationSettings) err
 			return err
 		}
 	} else {
-		// File-only adapters cannot transact two files. Pin durable ceilings first;
-		// a failed settings write leaves the previous policy and stricter sessions.
 		if err := profiles.persist(profiles.sessionFile, sessions); err != nil {
 			return err
 		}

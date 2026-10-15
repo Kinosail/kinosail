@@ -14,13 +14,11 @@ import (
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 )
 
-// OAuthConfig configures the protected resource and token introspection.
 type OAuthConfig struct {
 	ResourceURL, AuthorizationServer, IntrospectionURL string
 	ClientID, ClientSecret                             string
 }
 
-// Configured reports whether all external OAuth values form a valid configuration.
 func (config OAuthConfig) Configured() bool {
 	resource, resourceErr := url.Parse(config.ResourceURL)
 	authorizationServer, authorizationErr := url.Parse(config.AuthorizationServer)

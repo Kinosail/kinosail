@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// PlaybackAPIConfig describes the app configuration used by playback API contracts.
 type PlaybackAPIConfig struct {
 	Lifecycle                                                    context.Context
 	CacheDir                                                     string
@@ -17,13 +16,11 @@ type PlaybackAPIConfig struct {
 	HardwareDevices                                              []string
 }
 
-// PlaybackAPIFixture binds playback requests to the actual app handler.
 type PlaybackAPIFixture struct {
 	New    func(PlaybackAPIConfig) http.Handler
 	SignIn func(*testing.T, http.Handler, string, string) *http.Cookie
 }
 
-// PlaybackAPIExposesSelectableAudioSources checks the real app's playback API response.
 func (fixture PlaybackAPIFixture) PlaybackAPIExposesSelectableAudioSources(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -48,7 +45,6 @@ func (fixture PlaybackAPIFixture) PlaybackAPIExposesSelectableAudioSources(t *te
 	AssertAPIBody(t, APICall(t, handler, session.Token, http.MethodGet, "/api/v1/items/"+catalog.Items[0].ID+"/playback", nil), http.StatusOK, `"index":0,"label":"ENG · AAC","source":"/hls/`, `"index":1,"label":"SPA · AC3","source":"/hls/`+catalog.Items[0].ID+`/audio/1/index.m3u8"`)
 }
 
-// PlaybackAPIUsesTheSmallestClientSupportedTransformation checks the real app's playback API response.
 func (fixture PlaybackAPIFixture) PlaybackAPIUsesTheSmallestClientSupportedTransformation(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -71,7 +67,6 @@ func (fixture PlaybackAPIFixture) PlaybackAPIUsesTheSmallestClientSupportedTrans
 	AssertAPIBody(t, transcode, http.StatusOK, `"compatible":"/hls/`+id+`/p/t-a0-s0-none-t0-b0/index.m3u8"`)
 }
 
-// AssertProbe checks playback output for controlled media evidence.
 func (fixture PlaybackAPIFixture) AssertProbe(t *testing.T, probe string, expected ...string) {
 	t.Helper()
 	media, tools := t.TempDir(), t.TempDir()

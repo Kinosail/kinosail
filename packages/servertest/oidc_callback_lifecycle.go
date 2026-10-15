@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// AssertOIDCRequestsOnlyTheIdentityScopeItUses checks the minimal identity scope.
 func AssertOIDCRequestsOnlyTheIdentityScopeItUses(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, false)
@@ -19,7 +18,6 @@ func AssertOIDCRequestsOnlyTheIdentityScopeItUses(t *testing.T, fixture OIDCFixt
 	}
 }
 
-// AssertOIDCRejectsMissingConfiguredIdentityClaimWithoutLinking checks durable identity state after rejected claims.
 func AssertOIDCRejectsMissingConfiguredIdentityClaimWithoutLinking(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)
@@ -34,7 +32,6 @@ func AssertOIDCRejectsMissingConfiguredIdentityClaimWithoutLinking(t *testing.T,
 	}
 }
 
-// AssertOIDCSupportsClientSecretPostProviders checks the existing token authentication fallback.
 func AssertOIDCSupportsClientSecretPostProviders(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)
@@ -47,7 +44,6 @@ func AssertOIDCSupportsClientSecretPostProviders(t *testing.T, fixture OIDCFixtu
 	}
 }
 
-// AssertOIDCCallbackHandlesProviderErrorWithoutExchange checks privacy, cookie clearing, and transaction consumption.
 func AssertOIDCCallbackHandlesProviderErrorWithoutExchange(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)

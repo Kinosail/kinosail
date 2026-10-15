@@ -21,8 +21,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Real synthetic media and public HTTP expose the same unfinished/stale master
-// failure as the observed black intro. This is not Safari or physical-device proof.
 func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) { //nolint:cyclop,funlen,gocognit // One real encoder lifecycle proves initial, cached, and completed delivery.
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
@@ -71,7 +69,6 @@ func TestRealBlackIntroHLSBandwidthSurvivesCachedMasterReuse(t *testing.T) { //n
 	}
 	assertBandwidthFloor(t, initial, target)
 
-	// Reproduce an old retained master without altering the real media fragments.
 	identity := ""
 	for _, line := range strings.Split(string(initial), "\n") {
 		if strings.HasPrefix(line, "#KINOSAIL-TRANSCODER:") {

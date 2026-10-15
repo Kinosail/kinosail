@@ -56,7 +56,7 @@ async function ceremony(kind, {conditional = false, signal} = {}) {
   if (kind === "register" && finish.status === 403) return location.assign("/login?stepup=1&next=%2Faccount");
   if (!finish.ok) throw new Error(await finish.text() || "Could not verify your passkey. Try again.");
   if (kind === "login" && status) status.textContent = message("passkeySignedIn", "Signed in. Opening your library…");
-  try { localStorage.setItem(storageKey, "1"); } catch { /* Passkey use must not depend on browser storage. */ }
+  try { localStorage.setItem(storageKey, "1"); } catch {   }
   if (kind === "login") return location.replace(safeLoginNext(finish.headers.get("X-Kinosail-Login-Next") || loginNext));
   const query = new URLSearchParams(location.search);
   if (query.get("setup") === "1") return location.replace("/onboarding/connection");
@@ -97,13 +97,13 @@ async function offerConditionalLogin() {
         !await PublicKeyCredential.isConditionalMediationAvailable() || manualLogin) return;
     conditionalLogin = new AbortController();
     await login({conditional: true, signal: conditionalLogin.signal});
-  } catch { /* A passive passkey offer should not show a sign-in error. */ }
+  } catch {   }
 }
 
 async function offerLogin() {
   if (await resumeSession() || manualLogin) return;
   let returning = false;
-  try { returning = localStorage.getItem(storageKey) === "1"; } catch { /* Conditional autofill remains available below. */ }
+  try { returning = localStorage.getItem(storageKey) === "1"; } catch {   }
   if (returning && document.querySelector("[data-passkey-login]")) {
     try {
       await login();
@@ -120,8 +120,6 @@ async function resumeSession() {
   const query = new URLSearchParams(location.search);
   if (!document.querySelector("[data-passkey-login]") || query.get("stepup") === "1" || query.get("switch") === "1") return false;
   try {
-    // Strict cookies can be absent on the initial navigation from another site.
-    // A same-origin request checks the existing session against Server policy.
     const response = await fetch("/api/v1/me", {credentials: "same-origin", cache: "no-store", headers: {Accept: "application/json"}, signal: AbortSignal.timeout(3000)});
     if (!response.ok || manualLogin) return false;
     const next = new URL(loginNext, location.origin).pathname === "/login" ? "/" : loginNext;

@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
-// GetProviderJSON reads one bounded response using the configured provider client.
 func GetProviderJSON(ctx context.Context, client *http.Client, endpoint, token string, target any) error {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
@@ -28,7 +27,6 @@ func GetProviderJSON(ctx context.Context, client *http.Client, endpoint, token s
 	return decodeExternalJSON(response.Body, 2<<20, target)
 }
 
-// DownloadProviderImage validates a bounded image response before replacing its cache file.
 func DownloadProviderImage(ctx context.Context, client *http.Client, baseURL, path, target string) error {
 	return downloadProviderImage(ctx, client, baseURL, path, target, nil)
 }

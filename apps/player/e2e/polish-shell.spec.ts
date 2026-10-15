@@ -111,7 +111,6 @@ test("TMDB connection instructions remain readable without horizontal scrolling"
 	}
 });
 
-// Compare rendered canvas pixels; WebKit can report a painted body background as "none".
 async function hasCanvasArtwork(page: Page): Promise<boolean> {
   const clip = { x: page.viewportSize()!.width - 4, y: 200, width: 4, height: 40 };
   const painted = await page.screenshot({ clip, animations: "disabled" });

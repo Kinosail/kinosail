@@ -2,8 +2,6 @@ import UIKit
 import XCTest
 
 extension RemoteArtworkScrollTests {
-    // Run these controls explicitly before admitting a sampling-helper repair.
-    // The two negative controls intentionally fail the existing helper assertion.
     @MainActor
     func testFocusSamplingControlRequiresTwoSecondsBeforeCompleting() throws {
         let app = try launchFocusSamplingControl()
@@ -82,7 +80,6 @@ extension RemoteArtworkScrollTests {
                 && ProcessInfo.processInfo.systemUptime - stableSince >= 2
                 && ProcessInfo.processInfo.systemUptime < deadline
         }
-        // Capture the first sample now; keep three samples over at least two seconds.
         _ = predicate.evaluate(with: nil)
         let focused = XCTNSPredicateExpectation(predicate: predicate, object: nil)
         let remaining = max(0, deadline - ProcessInfo.processInfo.systemUptime)

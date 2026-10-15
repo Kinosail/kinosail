@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// NavigationFixture keeps real app construction and explicit app navigation policies.
 type NavigationFixture struct {
 	Library                                   LibraryAPIFixture
 	Web                                       AuthCookieRequest
@@ -15,7 +14,6 @@ type NavigationFixture struct {
 	LibraryLink, RequiredCSS, ForbiddenCSS    string
 }
 
-// MainNavigationMarkup isolates the original main-bar fragment.
 func MainNavigationMarkup(page string) string {
 	start := strings.Index(page, `<nav aria-label="Main navigation"`)
 	if start < 0 {

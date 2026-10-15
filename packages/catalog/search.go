@@ -10,7 +10,6 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-// Filter returns items that match a normalized Library search.
 func Filter(items []library.Item, query string) []library.Item {
 	if query == "" {
 		return items
@@ -25,7 +24,6 @@ func Filter(items []library.Item, query string) []library.Item {
 	return matched
 }
 
-// Matches reports whether searchable item metadata contains the query.
 func Matches(item library.Item, query string) bool {
 	return matchesNormalized(item, searchText(query))
 }
@@ -37,7 +35,6 @@ func matchesNormalized(item library.Item, normalized string) bool {
 	return matchesMetadata(item, normalized)
 }
 
-// Sort orders Library items by the supported smart-list order.
 func Sort(items []library.Item, order string) []library.Item {
 	switch order {
 	case "added":
@@ -126,7 +123,6 @@ func isASCII(value string) bool {
 	return true
 }
 
-// Media selects items of one media kind, preserving their input order.
 func Media(items []library.Item, kind string) []library.Item {
 	matched := make([]library.Item, 0)
 	for _, item := range items {

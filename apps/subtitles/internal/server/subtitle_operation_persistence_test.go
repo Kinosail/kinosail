@@ -99,8 +99,6 @@ func assertSubtitleOperationNoProcess(t *testing.T, calls string) {
 	}
 }
 
-// This is a file-system fault at the durable boundary, not a replacement of
-// the registry. The previous bytes and blocking directory both remain intact.
 func blockSubtitleOperationDurablePath(t *testing.T, data string) func() {
 	t.Helper()
 	path := filepath.Join(data, "subtitle_operations.json")

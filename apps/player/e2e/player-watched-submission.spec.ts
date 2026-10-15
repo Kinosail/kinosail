@@ -49,8 +49,6 @@ for (const mode of ["cancelled", "late-cancelled", "form-target", "form-method",
       const control = window as Window & {pauseFixture(seconds: number): void; watchedSubmissionReplays: number};
       form.addEventListener("submit", () => {control.watchedSubmissionReplays++;});
       if (playedBefore) document.querySelector("video")!.dispatchEvent(new Event("playing"));
-      // Exercise delivered submit listeners without an unrelated browser form
-      // navigation. A checkpoint replay still invokes the real requestSubmit.
       const notification = new SubmitEvent("submit", {bubbles: true, cancelable: true, submitter: button});
       Object.defineProperty(notification, "target", {value: form});
       document.dispatchEvent(notification);

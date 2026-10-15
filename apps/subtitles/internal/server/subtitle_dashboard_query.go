@@ -95,7 +95,6 @@ func (options subtitleDashboardOptions) valid() bool {
 		!oneOf(options.Status, "all", "ready", "wanted", "checking", "unavailable") || !oneOf(options.Kind, "all", "movie", "episode") || !oneOf(options.Sort, "title", "modified") {
 		return false
 	}
-	// Overview is a six-file preview; Wanted has an unambiguous status.
 	if options.View == "summary" && (options.Page != 1 || options.Status != "all") || options.View == "wanted" && !oneOf(options.Status, "all", "wanted") {
 		return false
 	}

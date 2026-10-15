@@ -22,7 +22,6 @@ type AutomaticSkipFixture struct {
 	CopiedHLSSegments     int
 }
 
-// NewAutomaticSkipFixture keeps both app factories on the same fixture policy.
 func NewAutomaticSkipFixture[Config any](configure func(AutomaticSkipConfig) Config, plain func(Config) http.Handler, jellyfin func(*testing.T, Config) http.Handler, totp func(*testing.T, string, time.Time) string, unescape bool, segments int) AutomaticSkipFixture {
 	return AutomaticSkipFixture{
 		New: func(t *testing.T, fixture AutomaticSkipConfig) http.Handler {

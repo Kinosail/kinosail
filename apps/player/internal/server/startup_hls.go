@@ -18,7 +18,6 @@ func startupActualPlayback(ctx context.Context) bool {
 	return ctx.Value(startupEncodingKey{}) == nil && ctx.Value(startupMetadataKey{}) == nil
 }
 
-// Called while holding manager.mu when an actual request joins shared output.
 func (manager *hlsManager) adoptStartupJob(ctx context.Context, job *hlsJob, key string) {
 	if startupActualPlayback(ctx) && job != nil && job.preparation != nil && !startupJobStopping(job) {
 		job.preparation.adopted.Store(true)
@@ -35,7 +34,6 @@ func startupWorkClass(ctx context.Context) workload.Class {
 
 func startupInputArguments(ctx context.Context, arguments []string) []string {
 	if ctx.Value(startupEncodingKey{}) != nil {
-		// Bound speculative read-ahead and CPU. Adoption retains this same stream.
 		return append(arguments, "-readrate", "4", "-threads", "2")
 	}
 	return arguments
@@ -149,7 +147,7 @@ func startupDirectoryBytes(directory string) int64 {
 		return nil
 	})
 	if err != nil {
-		return 64 << 20 // Unknown size cannot grant speculative headroom.
+		return 64 << 20
 	}
 	return size
 }

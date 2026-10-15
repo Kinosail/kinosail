@@ -82,7 +82,7 @@ try:
         command = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-itsoffset', str(args.video_offset),
                    '-i', str(source), '-map', '1:v:0', '-map', '0:a:0', '-c', 'copy', str(shifted)]
         subprocess.run(command, check=True, capture_output=True, timeout=60)
-        source.unlink()  # Replace only this owned synthetic input before startup.
+        source.unlink()
         source = shifted
         metadata.update(shiftCommand=command, sha256=sha(source), durationSeconds=frames / frame_rate + args.video_offset)
     before = source_state(source)
@@ -147,13 +147,11 @@ try:
             stable = [prepared / name for name in ['index.m3u8', '.copy-timeline', '.copy-clock']]
             stable += [rendition / 'index.m3u8', rendition / 'init.mp4']
             stable_hashes = {p.name + str(n): sha(p) for n, p in enumerate(stable)}
-            fragment.unlink()  # Only the missing segment in this run's disposable cache.
+            fragment.unlink()
             receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm))
             settled(server, source)
             receipt['neighborHashesAfterRecovery'] = {p.name: sha(p) for p in neighbors}
             if args.recovery != 'tail':
-                # A client may already hold the old following fragment. Restore
-                # only these owned fixture bytes to test both old/new joins.
                 for p in neighbors:
                     temporary = p.with_suffix('.qa-pending')
                     temporary.write_bytes(saved[p.name])

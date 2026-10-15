@@ -54,13 +54,9 @@ for (const scenario of ['pending', 'probing', 'negotiating', 'empty-target', 'se
         await page.evaluate(() => Reflect.get(window, 'releaseCodec')());
         await expect.poll(() => journal.filter(row => row.method === 'POST').length).toBe(1);
       }
-      // Signal through the console: WebKit blocks even fixture fetches once
-      // native navigation starts. Node checks the actual server accepted it.
       await page.evaluate(restored => {
         window.addEventListener('click', () => {setTimeout(() => {void (async () => {
           if (restored) {
-            // Model a persisted return after stopping the actual held departure.
-            // This exercises departing=true; it is not native BFcache proof.
             window.stop();
             window.dispatchEvent(new PageTransitionEvent('pagehide', {persisted: true}));
             window.dispatchEvent(new PageTransitionEvent('pageshow', {persisted: true}));
@@ -82,7 +78,6 @@ for (const scenario of ['pending', 'probing', 'negotiating', 'empty-target', 'se
       await expect.poll(() => observed).toBe(true);
       expect(navigationStarted).toBe(true);
       expect(controlAfterNavigation).toBe(true);
-      // Observe one complete 600ms scheduling window after releasing the probe.
       await new Promise(resolve => setTimeout(resolve, 900));
       if (scenario === 'restored') {
         await clicked;
@@ -167,15 +162,12 @@ for (const control of ['prevented', 'prevented-late', 'persisted', 'missing', 'b
         const event = new MouseEvent('click', {bubbles: true, cancelable: true, button: control === 'middle' ? 1 : 0,
           ctrlKey: control === 'ctrl', metaKey: control === 'meta', shiftKey: control === 'shift', altKey: control === 'alt'});
         if (control === 'prevented') event.preventDefault();
-        // Stop the fixture's default navigation after the production listener.
-        // Other-tab, download and malformed inputs must leave this job running.
         window.addEventListener('click', event => event.preventDefault(), {once: true});
         link.dispatchEvent(event);
         if (control === 'base-origin' || control === 'base-credentials') document.querySelector('base')!.remove();
         Reflect.get(window, 'releaseCodec')();
       }, control);
       if (control === 'prevented-late' || control === 'persisted') {
-        // Allow a cancelled ordinary click to restart the existing 600ms scheduler.
         await page.waitForTimeout(750);
         await page.evaluate(() => Reflect.get(window, 'releaseCodec')());
       }

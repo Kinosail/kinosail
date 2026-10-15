@@ -44,9 +44,6 @@ internal class PlaybackMediaSourceFactory(private val data: DataSource.Factory) 
             val format = Format.Builder().setSampleMimeType(subtitle.mimeType)
                 .setId(subtitle.id).setLanguage(subtitle.language).setLabel(subtitle.label)
                 .setSelectionFlags(subtitle.selectionFlags).setRoleFlags(subtitle.roleFlags).build()
-            // Passing the original format lets the extractor publish its measured cue
-            // end through the seek map. A null format loses it in Media3 1.11.1, so
-            // re-selection beyond the last cue START incorrectly ends the text stream.
             val extractors = ExtractorsFactory { arrayOf(SubtitleExtractor(parsers.create(format), format)) }
             val output = format.buildUpon().setSampleMimeType(MimeTypes.APPLICATION_MEDIA3_CUES)
                 .setCodecs(format.sampleMimeType)
@@ -55,7 +52,6 @@ internal class PlaybackMediaSourceFactory(private val data: DataSource.Factory) 
             errorPolicy?.let(factory::setLoadErrorHandlingPolicy)
             sources.add(factory.createMediaSource(MediaItem.fromUri(subtitle.uri)))
         }
-        // Preserve the primary duration and timeline; captions may finish before the movie.
         return MergingMediaSource(*sources.toTypedArray())
     }
 }

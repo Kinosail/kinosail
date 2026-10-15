@@ -16,8 +16,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// Opt-in: native browse, Show, watch, and Back journeys use an unmodified real
-// Server with fictional files. The outer peer observes requests only.
 func TestBrowseReturnBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_BROWSE_RETURN_BROWSER") != "1" {
 		t.Skip("KINOSAIL_BROWSE_RETURN_BROWSER is not set")
@@ -50,7 +48,6 @@ func TestBrowseReturnBrowserJourney(t *testing.T) {
 	arguments := append([]string{"node_modules/@playwright/test/cli.js", "test"}, specs...)
 	arguments = append(arguments, "--workers=1", "--retries=0", "--project="+project)
 	if os.Getenv("KINOSAIL_BROWSE_RETURN_PROOF") == "1" {
-		// Hosted diagnosis publishes bounded fixture observations, never raw logs.
 		arguments = append(arguments, "--reporter=./browse-return-proof-reporter.ts", "--trace=off")
 	}
 	command := exec.CommandContext(t.Context(), "node", arguments...) //nolint:gosec // Fixed installed test CLI and explicitly disposable local Server; no package-manager resolution.
@@ -122,8 +119,6 @@ func writeBrowseReturnFixture(root *os.Root, name string, data []byte) error {
 	return root.WriteFile(name, data, 0o600)
 }
 
-// Public browser fixtures only use controlled valid names. This isolated guard
-// protects the writer boundary their populated journeys cannot exercise.
 func TestBrowseReturnFixtureRejectsEscapingPaths(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()

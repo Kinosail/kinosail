@@ -4,7 +4,6 @@ import {gotoPaginationCatalog} from "./library-navigation";
 export function registerLibraryNavigationControls(origin: string | undefined) {
   for (const scenario of ["ready", "ready-shows", "missing-catalog", "missing-bootstrap", "wrong-query", "wrong-url", "invalid-card", "invalid-next", "skipped-offset", "busy", "failed", "pending-resource", "http-error", "redirect", "slow-response", "other-error", "repeated-timeout", "multiple-documents", "unchanged-document"] as const) {
     test(`catalog navigation recovery preserves original evidence: ${scenario}`, async ({page, browser}, info) => {
-      // Inject faults after automatic paging settles beyond its 600px observer margin.
       await page.setViewportSize({width: 390, height: 844});
       const target = `${origin}/${scenario === "ready-shows" ? "?view=shows&limit=4" : "?q=Pagination&limit=4"}`;
       let gets = 0, posts = 0, calls = 0, redirects = 0, requested = false, release!: () => void;
@@ -22,8 +21,6 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
       });
       if (["http-error", "redirect", "slow-response"].includes(scenario)) await page.route(target, async route => {
         if (scenario === "http-error") return route.fulfill({status: 500, body: "Unavailable"});
-        // WebKit cannot fulfill synthetic redirects. The Go Server canonicalizes
-        // this real HTTP path, preserving an actual redirect response and chain.
         if (scenario === "redirect") return route.continue({url: `${origin}//?view=shows&limit=4`});
         await new Promise(resolve => setTimeout(resolve, 2100));
         return route.continue();
@@ -55,8 +52,6 @@ export function registerLibraryNavigationControls(origin: string | undefined) {
           try { response = await original(...args); }
           catch (error) {
             const documentResponse = documentResponses.at(-1);
-            // A real Firefox bookkeeping timeout must not bypass fault injection.
-            // Require the original successful document before preparing the control.
             if (browser.browserType().name() !== "firefox" || !(error instanceof Error) || error.name !== "TimeoutError" ||
                 documentResponses.length !== previousResponses + 1 || !documentResponse || documentResponse.status() !== 200 || documentResponse.request().redirectedFrom() ||
                 documentResponse.request().redirectedTo() || !await page.evaluate(({target, previousDocument}) =>

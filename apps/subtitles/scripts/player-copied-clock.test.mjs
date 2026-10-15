@@ -3,9 +3,6 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {runInNewContext} from 'node:vm';
 
-// Real FFmpeg journeys cover valid playback. They cannot produce malformed
-// initialization boxes or deterministically select every Hls timing anchor.
-// These isolated controls require rejection before the media consumer runs.
 const source = readFileSync(new URL('../internal/server/static/player_streaming_clock.js', import.meta.url), 'utf8');
 const configure = runInNewContext(source + '\n;copiedHLSClock', {Uint8Array, DataView, Map, Error});
 const box = (name, ...contents) => {
@@ -52,8 +49,6 @@ test('video and later audio timing anchors preserve per-track edits', () => {
   for (const timing of [{id: 1, scale: 90000, pts: 7200}, {id: 2, scale: 48000, pts: -2560}]) {
     const run = harness(), bytes = box('moov', track(), track({id: 2, scale: 48000, edit: 1024, video: false, version: 1}));
     const value = result(bytes, timing), before = Buffer.from(bytes);
-    // Pinned passthrough-remuxer normalizes raw video ticks using the selected
-    // timing track's scale, which can be audio's different scale.
     value.remuxResult.video.firstKeyFramePTS = (99000 - timing.pts) / timing.scale;
     value.remuxResult.text = {samples: [{pts: 1, dts: .9}]};
     run.controller._handleTransmuxComplete(value);
@@ -150,10 +145,6 @@ test('media without its timing initialization fails closed', () => {
 });
 
 
-// Failure inventory for the new MSE-only byte normalization: wrong movie scale,
-// fractional track ticks, malformed or ambiguous edits, duplicate/absent track
-// timing, integer overflow, skipped later moofs, mutated cached initialization,
-// repeated callback shifts, or changed media payload/fragment addressing.
 function delayedInitialization({version = 0, delay = 130, movieScale = 1000, scale = 90000, leadingMedia = -1} = {}) {
   const original = track({scale}), at = original.indexOf('elst') + 4;
   const width = version === 1 ? 20 : 12, list = Buffer.alloc(8 + 2 * width);

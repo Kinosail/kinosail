@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-// CurrentTOTP returns the current RFC 6238 test code for a valid shared secret.
 func CurrentTOTP(secret string) string {
 	key, _ := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(secret)
 	var counter [8]byte
@@ -28,7 +27,6 @@ func CurrentTOTP(secret string) string {
 	return fmt.Sprintf("%06d", value%1_000_000)
 }
 
-// RouteJSON sends a JSON request while preserving the all-routes fixture semantics.
 func RouteJSON(t *testing.T, handler http.Handler, token, method, path string, body any) *httptest.ResponseRecorder {
 	t.Helper()
 	var payload bytes.Buffer
@@ -45,7 +43,6 @@ func RouteJSON(t *testing.T, handler http.Handler, token, method, path string, b
 	return response
 }
 
-// CreateRouteAPIKey creates and validates the scoped key used by route inventory tests.
 func CreateRouteAPIKey(t *testing.T, handler http.Handler, owner, scope string) string {
 	t.Helper()
 	response := RouteJSON(t, handler, owner, http.MethodPost, "/api/v1/api-keys", map[string]string{"name": scope + " route test", "scopes": scope})

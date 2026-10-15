@@ -2,7 +2,6 @@ package playerweb
 
 import "strings"
 
-// Audio queue controls use existing page styles; item actions remain Server-rendered.
 func audioQueueTemplate(source string) string {
 	source = strings.Replace(source, `<audio aria-label="{{.Title}}"`, `{{if .Queue}}<img class="viewer" width="320" height="320" data-now-playing-artwork alt="" {{if .Artwork}}src="/art/{{.ID}}"{{end}} hidden>{{end}}<audio aria-label="{{.Title}}" data-track="{{.Track}}"`, 1)
 	source = strings.Replace(source, `<p class="title-byline">`, `<p class="title-byline" data-now-playing-byline>`, 1)

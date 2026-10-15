@@ -1,4 +1,3 @@
-// Package casting owns validated TV playback requests and local renderer control.
 package casting
 
 import (
@@ -13,7 +12,6 @@ var (
 	sessionID  = regexp.MustCompile(`^[a-f0-9]{32}$`)
 )
 
-// Start names a protocol, never an arbitrary network address or media URL.
 type Start struct {
 	Protocol      string  `json:"protocol"`
 	DeviceID      string  `json:"deviceId,omitempty"`

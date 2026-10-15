@@ -12,8 +12,6 @@ struct LibrarySnapshot {
 
 @MainActor
 enum AppLaunchCache {
-    /// Decode only the first visible tab before the shell appears. The screen
-    /// then revalidates this saved content without holding up its first frame.
     static func hydrate(client: ServerClient, profileKey: String, snapshots: ResourceSnapshotCache,
                         defaults: UserDefaults = .standard, ifCurrent: () -> Bool = { true }) async {
         guard ifCurrent() else { return }

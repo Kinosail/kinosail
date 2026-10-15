@@ -93,8 +93,6 @@ def validate_snapshot(value, app, root=None):
         for target in package['imports']:
             if target in identifiers:
                 expected_edges.append({'source': package['id'], 'target': target}); incoming[target] += 1
-    # The official generator computes edges before sorting its package table.
-    # Keep that exact edge order for rendering; verify identities and multiplicity.
     for edge in value['edges']:
         exact(edge, 'source target')
         if edge['source'] not in identifiers or edge['target'] not in identifiers:

@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-// ManagerConfig supplies app archive adapters and backup policy.
 type ManagerConfig struct {
 	Context        context.Context
 	DataDir        string
@@ -26,7 +25,6 @@ type ManagerConfig struct {
 	VerifyAuto     func(io.Reader, string) error
 }
 
-// Manager owns automatic encrypted backups, retention, and verification.
 type Manager struct {
 	mu                      sync.Mutex
 	dataDir, directory, key string
@@ -41,7 +39,6 @@ type Manager struct {
 	remove                  func(string) error
 }
 
-// NewManager constructs a backup manager and starts its optional schedule.
 func NewManager(config ManagerConfig) *Manager {
 	manager := &Manager{
 		dataDir: config.DataDir, directory: config.Directory, key: config.Key,
@@ -58,7 +55,6 @@ func NewManager(config ManagerConfig) *Manager {
 	return manager
 }
 
-// NewAutomaticManager adapts an app archive implementation to the shared manager.
 func NewAutomaticManager(ctx context.Context, dataDir, directory, key string, interval time.Duration, retention int, acquire func(context.Context) (func(), error), write func(io.Writer, string, string) error, verify func(io.Reader, string) error) *Manager { //nolint:lll // A single factory keeps app adapters declarative.
 	return NewManager(ManagerConfig{
 		Context: ctx, DataDir: dataDir, Directory: directory, Key: key,
@@ -158,7 +154,6 @@ func (manager *Manager) validate() error {
 	return nil
 }
 
-// Status describes the current automatic backup state.
 type Status struct {
 	Enabled      bool   `json:"enabled"`
 	Encrypted    bool   `json:"encrypted"`
@@ -171,7 +166,6 @@ type Status struct {
 	LastError    string `json:"lastError,omitempty"`
 }
 
-// Status returns a safe snapshot of the current backup state.
 func (manager *Manager) Status() Status {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
@@ -192,7 +186,6 @@ func (manager *Manager) Status() Status {
 	return status
 }
 
-// Verify checks the newest available backup.
 func (manager *Manager) Verify() error {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
@@ -225,7 +218,6 @@ func (manager *Manager) verifyLocked() error {
 	return nil
 }
 
-// Files returns sorted regular Kinosail backup paths from the configured directory.
 func (manager *Manager) Files() ([]string, error) {
 	entries, err := manager.readDirectory(manager.directory)
 	if errors.Is(err, os.ErrNotExist) {

@@ -2,8 +2,6 @@ import type {Page, Request, Response, TestInfo} from "@playwright/test";
 import {createHash} from "node:crypto";
 import {downloadsSource} from "./static-sources";
 
-// A usable Firefox document can be missing its automation commit notification.
-// Preserve direct native bootstrap proof before permitting one replacement GET.
 export async function gotoDownloadPage(page: Page, origin: string, info: TestInfo, timeout = 10_000) {
   const url = `${origin}/offline-downloads`, workerURL = `${origin}/service-worker.js?v=56`;
   const previousDocument = await page.evaluate(() => performance.timeOrigin);

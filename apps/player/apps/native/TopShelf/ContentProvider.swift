@@ -26,7 +26,6 @@ final class ContentProvider: TVTopShelfContentProvider {
                 sections.append(collection)
             }
         }
-        // A sign-out or privacy change may have removed/replaced the snapshot while loading.
         guard let current = try? ShelfSnapshot.read(), current.scope == snapshot.scope,
               current.saved == snapshot.saved else { return nil }
         return sections.isEmpty ? nil : TVTopShelfSectionedContent(sections: sections)

@@ -129,8 +129,6 @@ def replay_refill(run, run_deadline, directory, source, case, executable):
     match = [v['data_hash'] for v in actual] == [v['data_hash'] for v in packets]
     result.update(packets=actual, payloadSequenceMatchesActualRefill=match, stage='native-decode')
     check(match and source_snapshot(source) == before, 'refill_replay_payload_source_binding')
-    # Same actual fragment bytes and replay-produced init; packet and decoded
-    # frame multiplicities remain separate evidence.
     path.write_bytes(fresh + retained)
     pcm, facts = native_pcm(path, run_deadline, directory)
     result.update(nativeEOF=facts, pcmSHA256=hashlib.sha256(pcm).hexdigest(), stage='final-identity')

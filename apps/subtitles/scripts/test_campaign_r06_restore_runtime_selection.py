@@ -61,7 +61,6 @@ class RestoreSelectionControls(unittest.TestCase):
                 commands(suite, binary, root)
 
     def test_official_full_playwright_titles_select_exact_pair(self):
-        # Playwright grep uses project/file/describe/test title separated by spaces.
         import re
         titles = {
             "restore-headers": ("R06 Restore held headers releases desktop editor", "R06 Restore held headers releases phone editor"),

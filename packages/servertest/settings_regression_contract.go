@@ -6,10 +6,8 @@ import (
 	"testing"
 )
 
-// SettingsFixture preserves each real server's local test configuration.
 type SettingsFixture struct{ MediaDir, DataDir, CacheDir, FFmpeg, FFprobe string }
 
-// SettingsRegression binds common settings scenarios to the app's real server.
 type SettingsRegression struct {
 	New            func(SettingsFixture) http.Handler
 	PlayableHLS    func() string
@@ -18,7 +16,6 @@ type SettingsRegression struct {
 	ProtectionText string
 }
 
-// RunSettings verifies the shared playback and server settings workflows.
 func RunSettings(t *testing.T, suite SettingsRegression) {
 	t.Run("OwnerCanPreferHighQualityTranscoding", suite.OwnerCanPreferHighQualityTranscoding)
 	t.Run("TranscoderDefaultsToRecommendedAutomaticSelections", suite.TranscoderDefaultsToRecommendedAutomaticSelections)
@@ -32,7 +29,6 @@ func RunSettings(t *testing.T, suite SettingsRegression) {
 	t.Run("OwnerCanNameTheirServer", suite.OwnerCanNameTheirServer)
 }
 
-// RunLibrarySettings verifies library persistence, boundaries, and diagnostics.
 func RunLibrarySettings(t *testing.T, suite SettingsRegression) {
 	t.Run("OwnerCanOpenLibrarySettings", suite.OwnerCanOpenLibrarySettings)
 	t.Run("SettingsShowLibraryDiagnostics", suite.SettingsShowLibraryDiagnostics)

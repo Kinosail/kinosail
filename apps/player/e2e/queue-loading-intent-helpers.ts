@@ -24,8 +24,6 @@ export async function tracks(page: Page, albumTitle = "R08 Fictional Session"): 
   return observed;
 }
 
-// Only delay the real Server media request. Media, authorization, state,
-// commands, browser events and progress acknowledgements remain genuine.
 export async function runLoadingIntent(page: Page, info: TestInfo, command: "seek" | "stop", albumTitle = "R08 Fictional Session", savedPosition = 5) {
   await page.goto("/", {waitUntil: "domcontentloaded"});
   const [first, second] = await tracks(page, albumTitle);
@@ -120,8 +118,6 @@ export async function runLoadingIntent(page: Page, info: TestInfo, command: "see
       expect(progress, "accepted progress must remain an object").toBeTruthy();
       expect(typeof progress).toBe("object");
       expect(Array.isArray(progress)).toBe(false);
-      // PlaybackState omits zero seconds. This branch is reached only after
-      // the current track's zero write received 204 with a positive revision.
       if (command === "stop" && !Object.hasOwn(progress, "seconds")) publicReadback = 0;
       else {
         expect(typeof progress.seconds, "seek and present seconds must be numeric").toBe("number");

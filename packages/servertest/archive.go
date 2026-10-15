@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// TarGzipFile builds one regular-file archive for a test fixture.
 func TarGzipFile(t testing.TB, name, data string) []byte {
 	t.Helper()
 	var result bytes.Buffer

@@ -4,8 +4,6 @@ import Synchronization
 import Testing
 @testable import KinosailPlayer
 
-// An isolated HTTP listener exercises the production client and playback
-// coordinator. Only fictional identity and bounded JSON cross this interface.
 final class PlaybackStartupFixture: @unchecked Sendable {
     struct ProgressReceipt: Sendable {
         let itemID: String; let seconds: Double; let watched: Bool; let revision: Int
@@ -124,8 +122,6 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         if !head { response.append(data) }
         connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
     }
-    // Capture only bounded scalar fields at the actual HTTP response boundary.
-    // Media requests need not carry X-Request-ID; null is not invented correlation.
     private func recordProgressSafety(_ operation: PlaybackFailureHTTPReceipt.Operation, status: Int, header: String) {
         let values = header.components(separatedBy: "\r\n").dropFirst().compactMap { line -> String? in
             guard let colon = line.firstIndex(of: ":"),
@@ -190,15 +186,11 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 return (state.counts[path]!, state.delayed, state.denied)
             }
             if let resource = self.hlsResources[path] {
-                // Whole-segment fixture: a Range may receive 200/full content;
-                // this playlist contains no byte-range resources.
                 self.send(resource, type: path.hasSuffix(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp2t",
                           head: parts[0] == "HEAD", connection: connection)
                 return
             }
             if path.hasPrefix("/media/"), let status = self.progressSafetyMediaStatus {
-                // A real origin denial after successful API negotiation. Never inject
-                // an AVPlayer completion result or assign the transport failure.
                 guard status == 403 else { connection.cancel(); return }
                 self.recordProgressSafety(.media, status: status, header: header)
                 let response = Data("HTTP/1.1 403 Fixture denial\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".utf8)
@@ -252,7 +244,6 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 self.heldPreferences.withLock { $0.append((connection, response)) }
                 return
             }
-            // Different source/preference delays exercise overlapping A-B-A readers.
             let delay = !delayed ? 0.0 : preferences ? 0.5 : id == "a" && count > 1 ? 1.0 : 0.2
             self.queue.asyncAfter(deadline: .now() + delay) {
                 connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })

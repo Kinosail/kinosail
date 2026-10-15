@@ -19,10 +19,8 @@ const (
 	archiveAssetLimit = 64 << 20
 )
 
-// ArchiveImage identifies one safe image entry inside a comic archive.
 type ArchiveImage struct{ Name, Title string }
 
-// ArchiveImages returns the bounded, sorted image entries in one library item.
 func ArchiveImages(ctx context.Context, item Item) []ArchiveImage {
 	images := make([]ArchiveImage, 0)
 	for _, name := range archiveEntries(ctx, item) {
@@ -79,7 +77,6 @@ func uniqueArchiveEntries(entries []string) []string {
 	return entries[:min(len(entries), archiveEntryLimit)]
 }
 
-// ReadArchiveAsset returns one validated and bounded entry from a reader archive.
 func ReadArchiveAsset(ctx context.Context, item Item, name string) ([]byte, error) {
 	name = CleanArchivePath(name)
 	if name == "" {
@@ -144,7 +141,6 @@ func boundedOutput(reader io.Reader, limit int64) ([]byte, error) {
 	return data, nil
 }
 
-// CleanArchivePath accepts one relative archive path without traversal segments.
 func CleanArchivePath(name string) string {
 	if name == "" || strings.HasPrefix(name, "/") || strings.Contains(name, "\\") {
 		return ""
@@ -157,7 +153,6 @@ func CleanArchivePath(name string) string {
 	return path.Clean(name)
 }
 
-// ReadArchive returns one bounded entry from an open ZIP-compatible archive.
 func ReadArchive(files []*zip.File, name string, limit int64) ([]byte, error) {
 	name = CleanArchivePath(name)
 	if name == "" || limit <= 0 {

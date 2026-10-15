@@ -53,7 +53,6 @@ const home = `<!doctype html>
 
 var homeView = newLocalizedTemplate("home", homeWithPlaylistImport)
 
-// Config describes the installation-owned paths used by the HTTP interface.
 type Config struct {
 	Lifecycle           context.Context
 	MediaDir            string
@@ -98,7 +97,6 @@ type Config struct {
 	SubtitleOperationTime SubtitleOperationTime
 }
 
-// New returns Kinosail's HTTP interface.
 func New(config Config) http.Handler {
 	return newApplication(config)
 }
@@ -155,7 +153,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
-		// Keep LAN administration local. Passkey ceremonies still require their exact origin.
 		auth.passkeys.redirectPages = false
 	}
 	if !auth.audit.Healthy() {

@@ -14,7 +14,6 @@ import (
 	"golang.org/x/crypto/acme"
 )
 
-// ServeContinuously reopens the listener after an Owner resets the kill switch.
 func (manager *Manager) ServeContinuously(ctx context.Context, handler http.Handler) error {
 	if manager == nil || !manager.config.Enabled {
 		return nil
@@ -31,7 +30,6 @@ func (manager *Manager) ServeContinuously(ctx context.Context, handler http.Hand
 	}
 }
 
-// Serve updates DuckDNS before opening a TLS-only listener and closes with ctx.
 func (manager *Manager) Serve(ctx context.Context, handler http.Handler) error { //nolint:cyclop,funlen,gocognit // Listener startup is intentionally linear and fail-closed.
 	if !manager.config.Enabled {
 		return nil
@@ -194,7 +192,7 @@ func (manager *Manager) trackConnection(connection net.Conn, state http.ConnStat
 		source := remoteHost(connection.RemoteAddr().String())
 		sourceLimit := 32
 		if manager.config.Gateway && connection.RemoteAddr().Network() == "unix" {
-			sourceLimit = 256 // The gateway enforces per-client limits before multiplexing onto this socket.
+			sourceLimit = 256
 		}
 		if !closeConnection && len(manager.connections) < 256 && manager.sources[source] < sourceLimit {
 			manager.connections[connection] = source

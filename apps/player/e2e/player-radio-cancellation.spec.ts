@@ -1,10 +1,6 @@
 import {expect, test, type Page, type TestInfo} from '@playwright/test';
 import {installRadioCancellation, radioSourceHash, type RadioWindow} from './player-radio-cancellation-fixture';
 
-// Failures: unfinished direct restoration owns the cancelled source, native
-// replacement projects the saved position without another setter, and stale
-// ownership suppresses its first native seek. Automatic replacement must never
-// write progress. Existing raw replacement tests cannot reach the radio adapter.
 async function proof(page: Page, info: TestInfo, state: Awaited<ReturnType<typeof installRadioCancellation>>, stage: string) {
   const decoder = await page.evaluate(() => (window as RadioWindow).radioDecoder.snapshot());
   const publicProgress = await page.evaluate(async () => (await (await fetch('/api/v1/items/movie', {cache: 'no-store'})).json()).item.progress);
@@ -38,8 +34,6 @@ for (const raw of [undefined, 0, 15]) {
     expect(replacement.decoder.seeking).toBe(false);
     expect(state.writes).toEqual([]);
     if (raw !== undefined) {
-      // Decoder clock is independent of the production projected getter/setter.
-      // Synthetic clip-zero is movie20, not trusted physical native-zero proof.
       await page.evaluate(value => (window as RadioWindow).radioDecoder.nativeSeek(value), raw);
       await expect.poll(() => state.writes.length).toBe(1);
       expect(state.writes[0]).toMatchObject({seconds: String(20 + raw), session: 'radio-test-session', revision: '1', watched: 'false'});

@@ -130,7 +130,7 @@ struct ArtworkLoaderTests {
         for _ in 0..<1_000 where fixture.requests.filter({ $0.url?.path == "/art/old" }).count < 2 {
             try await Task.sleep(for: .milliseconds(5))
         }
-        #expect(fixture.requests.filter { $0.url?.path == "/art/old" }.count == 2) // original plus one shared refresh
+        #expect(fixture.requests.filter { $0.url?.path == "/art/old" }.count == 2)
         let visible = Task { try await loader.image(path: "/art/visible", client: reopened) }
         for _ in 0..<1_000 where !fixture.requests.contains(where: { $0.url?.path == "/art/visible" }) {
             try await Task.sleep(for: .milliseconds(5))
@@ -149,8 +149,6 @@ struct ArtworkLoaderTests {
         let data = try artworkImageData(width: 1600, height: 1600)
         for index in 0..<4 { installArtwork(fixture, path: "/art/\(index)", data: data) }
         let loader = ArtworkLoader()
-        // Four highly compressed images fit in the old encoded cache, but their
-        // decoded pixels exceed 32 MiB. Touching the first protects it from eviction.
         for index in 0..<3 { _ = try await loader.image(path: "/art/\(index)", client: fixture.client) }
         _ = try await loader.image(path: "/art/0", client: fixture.client)
         _ = try await loader.image(path: "/art/3", client: fixture.client)

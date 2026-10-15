@@ -11,8 +11,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// This opt-in journey keeps the real Server alive while Playwright browses its
-// disposable catalog. Fault interception is documented separately in the spec.
 func TestLibraryPaginationBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_LIBRARY_BROWSER") != "1" {
 		t.Skip("KINOSAIL_LIBRARY_BROWSER is not set")

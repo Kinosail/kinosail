@@ -2,8 +2,6 @@ import Foundation
 import ImageIO
 
 extension ArtworkLoader {
-    // Only the full-resolution backdrop path bypasses fresh legacy downloads.
-    // URL validation, authorization and network sharing still use the real URL.
     static func artworkStorageKey(url: URL, dimension: Int) -> String {
         guard dimension == 4096, url.path.hasPrefix("/backdrop/"),
               URLComponents(url: url, resolvingAgainstBaseURL: false).map(ServerClient.cacheableMediaURL) == true else {
@@ -19,8 +17,6 @@ extension ArtworkLoader {
         try Task.checkCancellation()
         let image = try? await decode(saved.data, dimension: dimension)
         try Task.checkCancellation()
-        // Return a temporary image. Do not remember it or write v2 bytes; a
-        // later visit must retry. The caller suppresses automatic refresh here.
         return image
     }
 }

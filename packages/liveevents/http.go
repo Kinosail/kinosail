@@ -9,19 +9,16 @@ import (
 	"time"
 )
 
-// Access adapts app-owned identity and error presentation to the event stream.
 type Access struct {
 	Profile func(*http.Request) string
 	Allowed func(*http.Request) bool
 	Error   func(http.ResponseWriter, *http.Request, error, int)
 }
 
-// Register adds the versioned live event route.
 func (hub *Hub) Register(mux *http.ServeMux, access Access) {
 	mux.HandleFunc("GET /api/v1/events", hub.Handler(access))
 }
 
-// Handler serves the live event stream.
 func (hub *Hub) Handler(access Access) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		subscription, controller, ok := hub.openStream(writer, request, access)

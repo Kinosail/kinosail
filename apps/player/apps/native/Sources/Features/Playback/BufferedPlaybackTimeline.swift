@@ -63,7 +63,6 @@ struct BufferedPlaybackSlider: UIViewRepresentable {
         @objc func began() { parent.onEditingChanged(true) }
         @objc func ended() { parent.onEditingChanged(false) }
         @objc func changed(_ slider: UISlider) {
-            // VoiceOver and keyboard changes have no touch-down/up events.
             if !slider.isTracking { parent.onEditingChanged(true) }
             parent.value = Double(slider.value)
             slider.setNeedsDisplay()

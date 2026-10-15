@@ -19,8 +19,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// A real HTTP refill must retain the clock of fragments already buffered by a
-// client. Browser startup tests do not identify which encoder produced a fragment.
 func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 	if os.Getenv("KINOSAIL_GO_TEST_MODE") != "deep" {
 		t.Skip("The designated pinned-codec deep job runs this public media proof")
@@ -35,8 +33,6 @@ func TestRealTranscodedHLSRefillPreservesFrameClock(t *testing.T) {
 	}
 	for _, size := range []string{"320x180", "1280x720"} {
 		t.Run(size, func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, false, 1) })
-		// AAC priming can affect a muxer's video clock. The video-only cases
-		// cannot prove that the output policy is also stable with an audio track.
 		t.Run(size+"-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, size, true, 1) })
 	}
 	t.Run("320x180-restarted-late-audio", func(t *testing.T) { transcodeRefillPublicClock(t, ffmpeg, ffprobe, "320x180", true, 7) })
@@ -107,8 +103,6 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 	}
 	beforeOwned := copiedRecoveryJoinedCodecs(t, ctx, owned)
 	if audio {
-		// Encoder exit alone does not join post-encode metadata. The completed
-		// master is the public handoff before restart or deliberate cache loss.
 		for !bytes.Contains(bandwidthHTTPGET(t, ctx, host.URL+info.Compatible), []byte("#KINOSAIL-TRANSCODE-REFILL:")) {
 			select {
 			case <-ctx.Done():
@@ -150,8 +144,6 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 		host = httptest.NewServer(restarted)
 		prefix = host.URL + strings.TrimSuffix(info.Compatible, "index.m3u8")
 	}
-	// Evict one owned cache entry after its producer has exited. Public HTTP must
-	// start a real refill. The restart case also checks retained cache bytes.
 	if err := os.Remove(filepath.Join(root, filepath.Dir(variants[0]), fragmentNames[2])); err != nil {
 		t.Fatal(err)
 	}
@@ -187,7 +179,6 @@ func transcodeRefillPublicClock(t *testing.T, ffmpeg, ffprobe, size string, audi
 				}
 			}
 			refilled := bandwidthHTTPGET(t, ctx, base+fragmentNames[2])
-			// The last fragment is the original snapshot, as if already buffered.
 			mixed := [][]byte{original[0], original[1], refilled, original[3]}
 			control := transcodeRefillDecode(t, ctx, ffmpeg, "original", original)
 			actual := transcodeRefillDecode(t, ctx, ffmpeg, "mixed", mixed)

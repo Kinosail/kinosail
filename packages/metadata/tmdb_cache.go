@@ -52,7 +52,7 @@ func (client *TMDBClient) Load(id string) (TMDBMetadata, bool) {
 	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 1<<20 {
 		return TMDBMetadata{}, false
 	}
-	file, err := os.Open(path) // #nosec G304 -- fixed cache path beneath the installation cache directory.
+	file, err := os.Open(path)
 	if err != nil {
 		return TMDBMetadata{}, false
 	}

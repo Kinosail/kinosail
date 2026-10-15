@@ -2,7 +2,6 @@ package apihttp
 
 import "net/http"
 
-// Application supplies product-owned adapters to Player's API route order.
 type Application interface {
 	RegisterFoundationAPI(*http.ServeMux)
 	RegisterDownloadsAPI(*http.ServeMux)
@@ -11,7 +10,6 @@ type Application interface {
 	RegisterProductAPI(*http.ServeMux)
 }
 
-// Register installs Player's canonical top-level API groups.
 func Register(mux *http.ServeMux, application Application) {
 	application.RegisterFoundationAPI(mux)
 	application.RegisterDownloadsAPI(mux)

@@ -20,8 +20,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-// Controlled adapters force launch/admission boundaries that moving-media E2E
-// cannot force repeatably. These are isolated public HTTP checks, not decode proof.
 func TestHLSPhasePublicHTTP(t *testing.T) {
 	previousCapacity := runtime.GOMAXPROCS(4)
 	t.Cleanup(func() { runtime.GOMAXPROCS(previousCapacity) })
@@ -100,7 +98,6 @@ func phaseFixture(t *testing.T, count int, executable bool) phaseHTTPFixture {
 	}
 	return fixture
 }
-
 
 func (fixture phaseHTTPFixture) events(requestID string) []map[string]any {
 	var result []map[string]any

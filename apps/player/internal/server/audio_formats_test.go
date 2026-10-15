@@ -16,7 +16,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Exercise actual encoders, HTTP playlists and decoded samples, not file extensions alone.
 func TestAudioFormatsDecodeThroughCompatiblePlayback(t *testing.T) {
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
@@ -77,7 +76,6 @@ func TestAudioHLSRejectsInvalidRecipesBeforeEncoding(t *testing.T) {
 	marker := filepath.Join(tools, "encoded")
 	writeExecutable(t, ffmpeg, "#!/bin/sh\ntouch '"+marker+"'\n")
 	handler, id := formatTestItem(t, server.Config{Lifecycle: t.Context(), MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
-	// Populate source facts before comparing output directories after rejected requests.
 	apiCall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
 	before, err := os.ReadDir(cache)
 	if err != nil {

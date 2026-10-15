@@ -68,8 +68,6 @@ extension PlaybackEngine {
         #endif
         nextItem.audioTimePitchAlgorithm = .spectral
         let next = AVPlayer(playerItem: nextItem)
-        // The authenticated transport is device-local. Keep video on this
-        // device for screen mirroring; system audio routes remain available.
         next.allowsExternalPlayback = false
         next.automaticallyWaitsToMinimizeStalling = true
         player = next
@@ -77,17 +75,11 @@ extension PlaybackEngine {
         if item.kind == .video, presentation.pictureInPicture { presentation.attach(next) }
         #endif
         let intent = NativePlaybackIntent(); nativeIntent = intent
-        // AVKit controls call AVPlayer directly; retain their intent while the
-        // replacement is loading, before periodic progress observation starts.
         rateObservation = next.observe(\.rate, options: [.new]) { [weak next] _, change in
             guard let next, next.currentItem?.status != .failed, let rate = change.newValue else { return }
-            // Record synchronously: an actor hop could arrive after the final
-            // automatic resume and override a pause from native controls.
             intent.playing.withLock { $0 = rate > 0 }
         }
         #if os(tvOS)
-        // AVPlayer also jumps automatically while loading. Only AVKit's
-        // user-navigation delegate represents a native scrub to retain.
         presentation.userNavigated = { [weak self, weak next] active, time in
             guard let self, let next, active === next, self.player === next, self.generation == attempt, self.installation == installation,
                   self.loading || self.recoveringNetwork, (try? Input.position(time)) != nil else { return }
@@ -115,8 +107,6 @@ extension PlaybackEngine {
         try check(attempt, installation: installation)
         try await applyPreferences(preferences)
         try check(attempt, installation: installation)
-        // An endpoint restore can emit EOF before its awaited seek returns.
-        // Capture synchronously, then publish only after the final seek commits.
         let completion = Mutex((restoring: true, ended: false))
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
         endObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nextItem, queue: nil) { [weak self, weak next, weak nextItem] _ in
@@ -137,7 +127,6 @@ extension PlaybackEngine {
             try check(attempt, installation: installation)
             guard player === next, next.currentItem === nextItem else { throw CancellationError() }
             guard let requested = recoveryPosition ?? nativeRecoveryPosition, abs(requested - target) >= 0.01 else { break }
-            // A native scrub superseded the endpoint that emitted EOF.
             completion.withLock { $0.ended = false }
             target = requested
         }
@@ -280,7 +269,6 @@ extension PlaybackEngine {
         guard depth < 8 else { return false }
         guard let error = error as NSError? else { return false }
         if error.domain == AVFoundationErrorDomain, [AVError.fileFormatNotRecognized.rawValue, AVError.fileFailedToParse.rawValue, AVError.decoderNotFound.rawValue, AVError.decodeFailed.rawValue, AVError.operationNotSupportedForAsset.rawValue].contains(error.code) { return true }
-        // Vorbis files can surface a parser rejection through this wrapped load error.
         if error.domain == AVFoundationErrorDomain, error.code == AVError.failedToLoadMediaData.rawValue,
            let cause = error.userInfo[NSUnderlyingErrorKey] as? NSError,
            cause.domain == NSOSStatusErrorDomain, cause.code == -12873 { return true }

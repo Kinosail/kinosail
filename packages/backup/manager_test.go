@@ -157,7 +157,6 @@ func testManager(dataDir, directory string) *Manager {
 	)
 }
 
-// A failed candidate must never occupy a retention slot or claim success.
 func TestManagerVerifiesCandidateBeforePublicationAndRetention(t *testing.T) {
 	manager := testManager(t.TempDir(), t.TempDir())
 	manager.retention = 1

@@ -40,7 +40,6 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	// Explicit upkeep tests the streaming guard; lifecycle tests cover background scheduling.
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: cacheDir, MaintenanceInterval: time.Hour, TranscodeCacheLimit: 1})
 	home := httptest.NewRecorder()
 	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
@@ -64,7 +63,6 @@ func TestAutomaticMaintenanceDefersHeavyWorkWhileStreaming(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("media stream did not start")
 	}
-	// Establish an over-budget cache while the stream is blocked and active.
 	if err := os.MkdirAll(filepath.Dir(cacheFile), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +129,6 @@ func TestAutomaticMaintenanceBoundsOnlyTheTranscodeCache(t *testing.T) { //nolin
 func TestAutomaticMaintenanceStatusIsAvailableThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 
-	// Status and explicit maintenance calls do not need background schedules.
 	handler := server.New(server.Config{DataDir: t.TempDir(), CacheDir: t.TempDir(), BackupDir: t.TempDir(), BackupKey: strings.Repeat("a", 64), BackupInterval: time.Hour, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	var session struct {

@@ -49,8 +49,6 @@ test('an obsolete Apple Play rejection respects later fullscreen dismissal @smok
 });
 
 
-// Native Pause is an Apple platform action unavailable in populated Chromium.
-// This existing simulated-Apple fixture isolates the event seam; physical/Toy Story attribution stays separate.
 for (const delivery of ['immediate', 'queued pause']) test(`simulated native Apple Pause cancels pending Play without a startup failure with ${delivery} @smoke`, async ({page}, info) => {
   const observations: Array<JSONObject> = [];
   const observe = async (stage: string) => observations.push(await page.evaluate(label => {
@@ -83,7 +81,6 @@ for (const delivery of ['immediate', 'queued pause']) test(`simulated native App
 });
 
 
-// Current errors are the counter-control: cancellation must not suppress a genuine rejection.
 for (const failure of ['AbortError', 'NotSupportedError']) test(`current Apple Play ${failure} retains feedback and a fresh Play gesture @smoke`, async ({page}, info) => {
   await pendingPlay(page);
   await page.evaluate(name => (window as Window & {rejectPendingPlay: (value: string) => void}).rejectPendingPlay(name), failure);
@@ -102,7 +99,6 @@ for (const failure of ['AbortError', 'NotSupportedError']) test(`current Apple P
 });
 
 
-// One event-loop turn injects platform ordering; this does not assert a physical trusted gesture.
 test('queued pause from an older attempt cannot cancel newer Apple control Play @smoke', async ({page}) => {
   await pendingPlay(page);
   await page.evaluate(() => {

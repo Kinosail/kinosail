@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// WebhookReceivesRedactedAdministrativeEvents runs the corresponding app regression contract.
 func WebhookReceivesRedactedAdministrativeEvents(t *testing.T, newHandler func(string, string, string) http.Handler, createProfile func(*testing.T, http.Handler)) {
 	t.Parallel()
 	events := make(chan string, 1)

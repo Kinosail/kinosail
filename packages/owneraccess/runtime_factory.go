@@ -14,9 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-// RuntimeConfig contains the application-owned inputs needed to attach private
-// management. Certificate sources are callbacks so this package does not know
-// which public or LAN listener supplied them.
 type RuntimeConfig struct {
 	Directory, Origin           string
 	DuckDNSDomain, DuckDNSToken string
@@ -26,9 +23,6 @@ type RuntimeConfig struct {
 	InternetCertificate         func(string) *tls.Certificate
 }
 
-// OpenRuntime assembles private management around the application boundary.
-// It returns nil when management is not configured or cannot be opened; the
-// application remains usable and reports that state through its management UI.
 func OpenRuntime(config RuntimeConfig) *Manager {
 	if config.Directory == "" {
 		return nil

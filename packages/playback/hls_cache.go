@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-// HLSCacheControl serializes application cache inspection and mutation.
 type HLSCacheControl struct {
 	Cache  string
 	Lock   sync.Locker
@@ -21,19 +20,16 @@ type HLSCacheControl struct {
 	Policy HLSRecipePolicy
 }
 
-// NewHLSCacheControl binds one application's cache state to shared operations.
 func NewHLSCacheControl(cache string, lock sync.Locker, active func(string) bool, busy func() bool, policy HLSRecipePolicy) HLSCacheControl {
 	return HLSCacheControl{Cache: cache, Lock: lock, Active: active, Busy: busy, Policy: policy}
 }
 
-// Stats returns the current cache size while holding the application lock.
 func (control HLSCacheControl) Stats() (int64, error) {
 	control.Lock.Lock()
 	defer control.Lock.Unlock()
 	return HLSCacheStats(control.Cache, control.Policy)
 }
 
-// Clear removes inactive cache entries when no transcodes are active.
 func (control HLSCacheControl) Clear() error {
 	control.Lock.Lock()
 	defer control.Lock.Unlock()
@@ -43,7 +39,6 @@ func (control HLSCacheControl) Clear() error {
 	return ClearHLSCache(control.Cache, control.Policy)
 }
 
-// Prune evicts old inactive entries while holding the application lock.
 func (control HLSCacheControl) Prune(limit int64) (int64, error) {
 	control.Lock.Lock()
 	defer control.Lock.Unlock()

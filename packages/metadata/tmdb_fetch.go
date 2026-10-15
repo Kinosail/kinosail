@@ -35,7 +35,6 @@ type TMDBCandidates struct {
 	TVResults    []TMDBCandidate `json:"tv_results"`
 }
 
-// ValidTMDBPath validates one relative provider asset path.
 func ValidTMDBPath(path string) bool {
 	return path == "" || len(path) <= 2048 && strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "//") && pathpkg.Clean(path) == path && !strings.ContainsAny(path, `\?#%`) && !hasControlText(path)
 }
@@ -155,12 +154,10 @@ func addMovieCertification(current, value string) (string, error) {
 	return rating, nil
 }
 
-// MovieIdentity returns a normalized title and optional release year.
 func MovieIdentity(item library.Item) (string, string) {
 	title, year := strings.TrimSpace(item.Title), strings.TrimSpace(item.Year)
 	if match := movieYear.FindStringSubmatch(title); match != nil {
 		candidate := strings.TrimSpace(match[1])
-		// A numeric title such as "1917" is a title, not a missing-title year.
 		if candidate != "" {
 			title = candidate
 			if year == "" {
@@ -171,5 +168,4 @@ func MovieIdentity(item library.Item) (string, string) {
 	return title, year
 }
 
-// ValidIMDbID reports whether value is a bounded movie identity.
 func ValidIMDbID(value string) bool { return imdbProviderID.MatchString(value) }

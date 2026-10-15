@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// TrustedHTTPSFixture binds each app's real configuration and HTTP handlers.
 type TrustedHTTPSFixture struct {
 	New                   func(*testing.T, string) http.Handler
 	Load                  func(string) (raw, listen string, err error)
@@ -26,7 +25,6 @@ type trustedHTTPSFlow struct {
 	directory string
 }
 
-// AssertOwnerCanConfigureTrustedHTTPSThroughAPIAndWeb preserves persistence, redaction and disablement parity.
 func AssertOwnerCanConfigureTrustedHTTPSThroughAPIAndWeb(t *testing.T, fixture TrustedHTTPSFixture) {
 	t.Parallel()
 	directory := t.TempDir()

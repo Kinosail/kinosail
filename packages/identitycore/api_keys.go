@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// APIKey is the shared persisted API-key metadata.
 type APIKey struct {
 	Name       string   `json:"name"`
 	ProfileID  string   `json:"profileId"`
@@ -19,7 +18,6 @@ type APIKey struct {
 	Persistent bool     `json:"persistent,omitempty"`
 }
 
-// APIKeyView is the shared API-key presentation model.
 type APIKeyView struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -29,7 +27,6 @@ type APIKeyView struct {
 	LastUsed string `json:"lastUsed,omitempty"`
 }
 
-// LoadedAPIKeys completes legacy API-key expiry migration after app storage loading.
 func LoadedAPIKeys(keys map[string]APIKey, found bool, loadErr error) (map[string]APIKey, error) {
 	if loadErr != nil {
 		return keys, loadErr
@@ -46,7 +43,6 @@ func LoadedAPIKeys(keys map[string]APIKey, found bool, loadErr error) (map[strin
 	return keys, nil
 }
 
-// IssueAPIKey validates key metadata before generating and committing a secret.
 func IssueAPIKey(profileID, name string, scopes []string, persistent bool, commit func(string, APIKey) error) (string, error) {
 	if !validAPIKeyInput(profileID, name, scopes, commit) {
 		return "", errors.New("API key name and scopes are required")
@@ -74,7 +70,6 @@ func validAPIKeyInput(profileID, name string, scopes []string, commit func(strin
 	return profileID != "" && len(profileID) <= maxIdentityLength && name != "" && len(name) <= 80 && len(scopes) > 0 && len(scopes) <= 5 && commit != nil
 }
 
-// ParseAPIScopes validates and canonicalizes a bounded API-key scope list.
 func ParseAPIScopes(value string) ([]string, error) {
 	if len(value) > 256 {
 		return nil, errors.New("API key scope must be library, write, stream, download, or admin")
@@ -95,7 +90,6 @@ func ParseAPIScopes(value string) ([]string, error) {
 	return result, nil
 }
 
-// CloneAPIKeys copies API-key metadata and its mutable scopes.
 func CloneAPIKeys(keys map[string]APIKey) map[string]APIKey {
 	result := make(map[string]APIKey, len(keys))
 	for id, key := range keys {
@@ -105,7 +99,6 @@ func CloneAPIKeys(keys map[string]APIKey) map[string]APIKey {
 	return result
 }
 
-// APIKeyViews formats API-key metadata for settings and API responses.
 func APIKeyViews(keys map[string]APIKey) []APIKeyView {
 	result := make([]APIKeyView, 0, len(keys))
 	ids := make([]string, 0, len(keys))

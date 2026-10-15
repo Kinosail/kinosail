@@ -3,8 +3,6 @@ import Observation
 import SwiftUI
 import UIKit
 
-// Disposable, opt-in app entry point. Only the temporary fixture project
-// compiles this file; the production app and its entry point are unchanged.
 @main @MainActor struct LargeTextFixtureApp: App {
     private let identity: String
     @State private var session: AppSession?
@@ -25,8 +23,6 @@ import UIKit
     }
 
     var body: some Scene {
-        // Match the production App/WindowGroup lifecycle. SwiftUI owns the
-        // scene and window; the fixture never creates or replaces a UIWindow.
         WindowGroup {
             Group {
                 if let session {
@@ -54,8 +50,6 @@ import UIKit
             let viewer = try await client.viewer()
             try Task.checkCancellation()
             guard viewer.id == "qa", viewer.serverID == identity else { throw ClientError.invalidResponse }
-            // This distinct fixture bundle has no shared Keychain entitlement.
-            // Save only the known synthetic session; never read an existing credential.
             try await SessionKeychain().save(SavedSession(server: server, token: "tv-polish-fixture-token", viewer: viewer))
         } catch {
             await client.close()

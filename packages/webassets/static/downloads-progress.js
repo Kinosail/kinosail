@@ -1,5 +1,3 @@
-// Progress lives with the verified, profile-owned download. Never create a job
-// while saving progress: removal or a replacement transfer wins the race.
 function offlineProgress(value, required = false) {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Saved progress is invalid.");
   if (Object.keys(value).sort().join(",") !== "revision,seconds,session,watched") throw new Error("Saved progress is invalid.");
@@ -77,8 +75,6 @@ async function downloadProgressBaseline(itemID, profileID, signal) {
 }
 let syncingOfflineProgress = false;
 async function syncOfflineProgress() {
-  // Only an online, Server-rendered page supplies an authoritative profile and
-  // CSRF token. The cached offline shell must never pick a sync identity.
   const profile = currentOfflineProfile(), csrf = document.querySelector('meta[name="kinosail-csrf"]')?.content;
   if (syncingOfflineProgress || !profile || !hasOfflineStorage || !navigator.locks?.request || !navigator.onLine) return;
   syncingOfflineProgress = true;
@@ -110,14 +106,12 @@ async function syncOfflineProgress() {
       await updateOfflineProgress(job, current => {
         if (current.pendingProgress?.session !== progress.session || current.pendingProgress?.revision !== progress.revision) return;
         current.progressBaseline = saved;
-        // Match native reconciliation: keep a further local position queued,
-        // retrying against the fresh server baseline on the next pass.
         if (response.status === 409 && progress.seconds > saved.seconds) return;
         current.localProgress = saved;
         delete current.pendingProgress;
       });
     }
-  } catch (_) { /* Local progress remains queued for the next connection. */ }
+  } catch (_) {   }
   finally { syncingOfflineProgress = false; }
 }
 function bindOfflineProgress(media, job, status, enabled = () => true) {
@@ -137,7 +131,6 @@ function bindOfflineProgress(media, job, status, enabled = () => true) {
     const progress = offlineProgress({seconds: media.currentTime, watched, session, revision: ++revision}, true);
     writes = writes.catch(() => {}).then(() => updateOfflineProgress(job, current => {
       current.localProgress = progress;
-      // Old downloads resume locally until an online page captures their baseline.
       if (current.progressBaseline) {
         offlineProgress(current.progressBaseline);
         current.pendingProgress = progress;

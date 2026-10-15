@@ -35,7 +35,6 @@ test("Owner hides other languages and English forced subtitles from a populated 
   await writeFile(forced, "1\n00:00:01,000 --> 00:00:02,000\nSigns\n");
   if (addedEnglish) await writeFile(addedEnglish, "1\n00:00:01,000 --> 00:00:02,000\nHello\n");
   if (containerMedia) {
-    // The container UID needs write access for Linux's protected no-overwrite hardlink move.
     const permissions = [];
     for (const path of [spanish, forced, ...(addedEnglish ? [addedEnglish] : [])]) {
       const before = await stat(path);
@@ -259,7 +258,6 @@ test("Owner manages an ordered preferred-language list at every supported width"
         };
       });
       expect(geometry, `${viewport.width}px language controls`).toEqual({ pageOverflow: 0, rowOverflow: false, controlsOutside: false, outsideSection: false, smallTouchTarget: false });
-      // Short landscape screens must make each control reachable by scrolling.
       expect(await occludedTargets(page, ["#language button", "#language select"], [".app-header", ".app-header nav"])).toEqual([]);
       expect((await new AxeBuilder({ page }).include("#language").analyze()).violations).toEqual([]);
       await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-subtitle-languages.png`), fullPage: true });

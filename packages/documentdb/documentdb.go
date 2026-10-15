@@ -1,4 +1,3 @@
-// Package documentdb owns Kinosail's embedded SQLite document store.
 package documentdb
 
 import (
@@ -20,7 +19,6 @@ const (
 	DocumentSizeLimit = 16 << 20
 )
 
-// Store persists bounded JSON documents in one transactional database.
 type Store struct {
 	db      *sql.DB
 	path    string
@@ -28,12 +26,10 @@ type Store struct {
 	config  Config
 }
 
-// Open initializes the database and atomically imports legacy JSON files.
 func Open(dataDir string, keepOpen bool, config Config) (*Store, error) { //nolint:contextcheck // Offline import and test callers have no request lifecycle.
 	return OpenContext(context.Background(), dataDir, keepOpen, config)
 }
 
-// OpenContext initializes the database within the application lifecycle.
 func OpenContext(ctx context.Context, dataDir string, keepOpen bool, config Config) (*Store, error) { //nolint:gocognit,cyclop,funlen // Startup validates each persisted state boundary before migration.
 	return openContext(ctx, dataDir, keepOpen, config, systemDependencies())
 }
@@ -130,7 +126,6 @@ func (store *Store) validDocument(name string, data []byte) bool {
 	return store.config.Validate == nil || store.config.Validate(name, data) == nil
 }
 
-// Close releases database resources.
 func (store *Store) Close() error {
 	if store == nil {
 		return nil
@@ -138,7 +133,6 @@ func (store *Store) Close() error {
 	return store.db.Close()
 }
 
-// LoadJSON decodes one known document. Missing documents leave target unchanged.
 func (store *Store) LoadJSON(name string, target any) (bool, error) {
 	data, found, err := store.Load(name)
 	if err != nil || !found {
@@ -150,7 +144,6 @@ func (store *Store) LoadJSON(name string, target any) (bool, error) {
 	return true, nil
 }
 
-// Load returns a validated copy of one known document.
 func (store *Store) Load(name string) ([]byte, bool, error) {
 	if store == nil {
 		return nil, false, nil
@@ -172,7 +165,6 @@ func (store *Store) Load(name string) ([]byte, bool, error) {
 	return data, true, nil
 }
 
-// SaveJSON atomically replaces one known document.
 func (store *Store) SaveJSON(name string, value any) error {
 	if store == nil {
 		return nil
@@ -180,12 +172,10 @@ func (store *Store) SaveJSON(name string, value any) error {
 	return store.SaveJSONBatchContext(context.Background(), map[string]any{name: value})
 }
 
-// SaveJSONBatch validates then commits related documents in one transaction.
 func (store *Store) SaveJSONBatch(values map[string]any) error { //nolint:contextcheck // Store adapters share this bounded local durability operation outside transport lifetimes.
 	return store.SaveJSONBatchContext(context.Background(), values)
 }
 
-// SaveJSONBatchContext validates then commits related documents in one transaction.
 func (store *Store) SaveJSONBatchContext(ctx context.Context, values map[string]any) error {
 	if store == nil {
 		return nil
@@ -217,12 +207,10 @@ func (store *Store) SaveJSONBatchContext(ctx context.Context, values map[string]
 	return tx.Commit()
 }
 
-// Export returns a consistent snapshot of every stored logical document.
 func (store *Store) Export() (map[string][]byte, error) {
 	return store.ExportContext(context.Background())
 }
 
-// ExportContext returns a consistent snapshot within the caller lifecycle.
 func (store *Store) ExportContext(ctx context.Context) (map[string][]byte, error) {
 	result := make(map[string][]byte)
 	if store == nil {

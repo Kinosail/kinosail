@@ -3,9 +3,6 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
 
-// Actual delivered controller, isolated external HTTP/clock. Coverage gaps and
-// failure modes were written first in engineering/qa/2026-10-06-r06-restore-frontend.md.
-// These controls are not populated-server or browser rendering evidence.
 const source = readFileSync(new URL("../internal/server/static/subtitle-save-operation.js", import.meta.url), "utf8");
 const item = "0000000000000001", base = "/api/v1/subtitle-library/" + item;
 const flush = async () => { for (let i = 0; i < 30; i++) await Promise.resolve(); };

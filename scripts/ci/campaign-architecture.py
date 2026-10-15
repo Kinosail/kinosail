@@ -91,7 +91,6 @@ def bounded_go_list(go, command, *, cwd, **_ignored):
     environment = {k: v for k, v in os.environ.items() if not k.startswith(('KINOSAIL_', 'GO'))}
     environment.update(GOOS='linux', GOARCH='amd64', CGO_ENABLED='0', GOMAXPROCS='2',
                        GOTOOLCHAIN='local', GOPROXY='off', GOWORK=str(ROOT / 'go.work'))
-    # Keep the normal checksum verifier; no network access is needed after warmup.
     if 'GOSUMDB' in os.environ: environment['GOSUMDB'] = os.environ['GOSUMDB']
     with tempfile.TemporaryFile() as output:
         process = subprocess.Popen([go, *command[1:]], cwd=cwd, env=environment,
@@ -133,7 +132,6 @@ def write_json(path, value):
 
 
 def json_bytes(value):
-    # Nested snapshot key order contributes to the unchanged generator's HTML.
     body = (json.dumps(value, separators=(',', ':')) + '\n').encode()
     if len(body) > 4 * 1024 * 1024: raise ValueError('safe metadata file bound')
     return body
@@ -162,7 +160,6 @@ def attach(identifier):
                                                     'bytes': len(encoded), 'sha256': hashlib.sha256(encoded).hexdigest()}
     bodies = {name: json_bytes(values[name]) for name in SAFE_NAMES[:3]}
     pins = {name: {'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()} for name, body in bodies.items()}
-    # Validate all encodings, bounds and the selected original schema before writes.
     bodies['artifact-manifest.json'] = json_bytes(refresh_manifest(values['artifact-manifest.json'], pins))
     for name in SAFE_NAMES: (output / name).write_bytes(bodies[name])
 
@@ -179,7 +176,6 @@ def reproduce(manifest_path):
         if record['renderedHTML'] != {'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}:
             raise ValueError('canonical rendered bytes differ')
         outputs[app] = body
-    # Both bytes are validated before the first tracked document write.
     for app, body in outputs.items():
         (ROOT / 'apps' / app / 'docs/architecture-explorer/index.html').write_bytes(body)
 

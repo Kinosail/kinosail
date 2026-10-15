@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Library returns Player's canonical Library browse endpoint.
 func Library(browse func(*http.Request) (catalog.Result, error), project func(*http.Request, library.Item) any) http.HandlerFunc {
 	if browse == nil || project == nil {
 		return func(writer http.ResponseWriter, _ *http.Request) {

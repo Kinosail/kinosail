@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/isobmff"
 )
 
-// CheckResult describes one Player-compatible synthetic transcoder check.
 type CheckResult struct {
 	Status          string `json:"status"`
 	Stage           string `json:"stage,omitempty"`
@@ -26,18 +25,15 @@ type CheckResult struct {
 	DurationMS      int64  `json:"durationMs,omitempty"`
 }
 
-// Check runs Player's bounded synthetic transcoder check without library media.
 func Check(ctx context.Context, ffmpeg string, options Settings, backend string) CheckResult {
 	return runCheck(ctx, ffmpeg, options, backend, func() (string, error) { return os.MkdirTemp("", "kinosail-transcoder-check-") }, runFFmpeg)
 }
 
-// PendingCheck returns the stable view before the first synthetic check.
 func PendingCheck(options Settings, backend string) CheckResult {
 	return CheckResult{Status: "not-run", Codec: options.Codec, CodecName: Definition(options.Codec).Name, Accelerator: options.Accelerator, Backend: checkBackend(options, backend)}
 }
 
 func runCheck(ctx context.Context, ffmpeg string, options Settings, backend string, temporary func() (string, error), run func(context.Context, string, ...string) error) CheckResult {
-	// Ordinary encoder checks remain SDR.
 	if options.HardwareToneMap == "" {
 		options.ToneMap = false
 	}

@@ -7,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// PlaylistSummary is the canonical playlist card and API projection.
 type PlaylistSummary struct {
 	Name       string         `json:"name"`
 	ItemCount  int            `json:"itemCount"`
@@ -17,7 +16,6 @@ type PlaylistSummary struct {
 	Preview    []library.Item `json:"-"`
 }
 
-// PlaylistSummaries projects the viewer's playlists and their first four members.
 func (storage ListStorage) PlaylistSummaries(viewer string, items []library.Item, query string) []PlaylistSummary {
 	summaries := make([]PlaylistSummary, 0)
 	for _, name := range storage.PlaylistNames(viewer) {
@@ -36,13 +34,11 @@ func (storage ListStorage) PlaylistSummaries(viewer string, items []library.Item
 	return summaries
 }
 
-// PlaylistRule returns a viewer's stored smart-list rule.
 func (storage ListStorage) PlaylistRule(viewer, name string) (PlaylistRule, bool) {
 	rule, found := (*storage.Smart)[viewer+":"+name]
 	return rule, found
 }
 
-// DescribePlaylistRule returns Player's user-facing smart-list description.
 func DescribePlaylistRule(rule PlaylistRule) string {
 	parts := make([]string, 0, 2)
 	if rule.Query != "" {

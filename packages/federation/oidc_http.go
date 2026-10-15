@@ -6,7 +6,6 @@ import (
 	"net/url"
 )
 
-// OIDCHTTP adapts the shared OIDC protocol to one app's profiles and sessions.
 type OIDCHTTP[T any] struct {
 	flow      *OIDC
 	profiles  Profiles[T]
@@ -14,15 +13,12 @@ type OIDCHTTP[T any] struct {
 	renderMFA func(http.ResponseWriter, *http.Request, string) error
 }
 
-// NewOIDCHTTP creates an OIDC HTTP adapter without moving product session or audit state into the protocol package.
 func NewOIDCHTTP[T any](config OIDCConfig, profiles Profiles[T], hooks WebHooks[T], renderMFA func(http.ResponseWriter, *http.Request, string) error) *OIDCHTTP[T] {
 	return &OIDCHTTP[T]{flow: NewOIDC(config), profiles: profiles, hooks: hooks, renderMFA: renderMFA}
 }
 
-// Configured reports whether the OIDC flow can be registered as available.
 func (login *OIDCHTTP[T]) Configured() bool { return login.flow.Configured() }
 
-// Register adds the Player-compatible OIDC login, link, MFA, and unlink routes.
 func (login *OIDCHTTP[T]) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/session/oidc", login.start)
 	mux.HandleFunc("GET /api/v1/me/oidc/link", login.startLink)
@@ -98,7 +94,6 @@ func (login *OIDCHTTP[T]) acceptCallback(writer http.ResponseWriter, request *ht
 	login.SignInProfile(writer, request, profile)
 }
 
-// SignInProfile completes app-local MFA and session work for a verified federated profile.
 func (login *OIDCHTTP[T]) SignInProfile(writer http.ResponseWriter, request *http.Request, profile T) {
 	if login.hooks.RequiresMFA(profile) {
 		challenge, err := login.BeginMFA(login.hooks.ProfileID(profile))
@@ -114,7 +109,6 @@ func (login *OIDCHTTP[T]) SignInProfile(writer http.ResponseWriter, request *htt
 	}
 }
 
-// BeginMFA creates a challenge reusable by the SAML HTTP adapter.
 func (login *OIDCHTTP[T]) BeginMFA(profileID string) (string, error) {
 	return login.flow.BeginMFA(profileID)
 }

@@ -1,4 +1,3 @@
-// Package supporter owns Player's optional supporter certificate protocol and state policy.
 package supporter
 
 import (
@@ -18,7 +17,6 @@ const (
 	completeFleetID = "complete-fleet"
 )
 
-// LegacyPolicy selects the historical certificate formats an app already persisted.
 type LegacyPolicy uint8
 
 const (
@@ -34,7 +32,6 @@ var (
 	ErrConflict    = errors.New("supporter activation conflicts with saved recognition")
 )
 
-// App identifies one Kinosail derivative while Player owns the protocol rules.
 type App struct {
 	ID, Name, Audience, MasterworkName                                                                         string
 	FamilyPatron, FamilyLiving                                                                                 string
@@ -43,7 +40,6 @@ type App struct {
 	Legacy                                                                                                     LegacyPolicy
 }
 
-// Config supplies one app identity and the explicit remote activation adapter.
 type Config struct {
 	App              App
 	ActivationURL    string
@@ -53,7 +49,6 @@ type Config struct {
 	Now              func() time.Time
 }
 
-// Grant is one signed, app-bound supporter certificate.
 type Grant struct {
 	ActivationID string `json:"activationId,omitempty"`
 	Certificate  string `json:"certificate,omitempty"`
@@ -62,13 +57,11 @@ type Grant struct {
 	KeyHash      string `json:"keyHash,omitempty"`
 }
 
-// Activation preserves a bounded key-to-provider reference without storing the key.
 type Activation struct {
 	ActivationID string `json:"activationId,omitempty"`
 	KeyHash      string `json:"keyHash,omitempty"`
 }
 
-// State is the complete local supporter record.
 type State struct {
 	InstallationKey string                      `json:"installationKey,omitempty"`
 	PublicKey       string                      `json:"publicKey,omitempty"`
@@ -87,7 +80,6 @@ type State struct {
 	KeyHash         string                      `json:"keyHash,omitempty"`
 }
 
-// Collection describes a certificate that recognizes support across applications.
 type Collection struct {
 	ID      string   `json:"id"`
 	Name    string   `json:"name"`
@@ -95,7 +87,6 @@ type Collection struct {
 	AppIDs  []string `json:"appIds"`
 }
 
-// Certificate is the verified signed record used by local presentation adapters.
 type Certificate struct {
 	Edition          string      `json:"edition,omitempty"`
 	Version          int         `json:"version"`
@@ -116,7 +107,6 @@ type Certificate struct {
 	Collection       *Collection `json:"collection,omitempty"`
 }
 
-// Badge is one verified local presentation of a grant.
 type Badge struct {
 	Edition          string      `json:"edition,omitempty"`
 	Family           string      `json:"family"`
@@ -139,7 +129,6 @@ type Badge struct {
 	Collection       *Collection `json:"collection,omitempty"`
 }
 
-// BadgeCase summarizes historical progress across both badge families.
 type BadgeCase struct {
 	MonthlyLevel     int    `json:"monthlyLevel,omitempty"`
 	YearlyLevel      int    `json:"yearlyLevel,omitempty"`
@@ -153,13 +142,11 @@ type BadgeCase struct {
 	MasterworkActive bool   `json:"masterworkActive"`
 }
 
-// AppStatus names the application in status documents that use a nested identity.
 type AppStatus struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// Status is the shared supporter projection returned by all application adapters.
 type Status struct {
 	Monthly             *Badge     `json:"monthly,omitempty"`
 	Yearly              *Badge     `json:"yearly,omitempty"`
@@ -187,7 +174,6 @@ type Status struct {
 	SupportURL          string     `json:"supportUrl"`
 }
 
-// ViewerBadge is the privacy-safe subset exposed outside the owner interface.
 type ViewerBadge struct {
 	Edition  string `json:"edition,omitempty"`
 	Family   string `json:"family"`
@@ -198,13 +184,11 @@ type ViewerBadge struct {
 	Archived bool   `json:"archived"`
 }
 
-// ActivationInput contains the only user values sent to the supporter provider.
 type ActivationInput struct {
 	Key             string  `json:"key"`
 	RecognitionName *string `json:"recognitionName,omitempty"`
 }
 
-// RotationInput confirms an explicit local public-key rotation.
 type RotationInput struct {
 	Version   int    `json:"version"`
 	PublicKey string `json:"publicKey"`

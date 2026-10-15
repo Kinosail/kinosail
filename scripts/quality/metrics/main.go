@@ -1,4 +1,3 @@
-// Command metrics owns Kinosail's deterministic source metric gates.
 package main
 
 import (

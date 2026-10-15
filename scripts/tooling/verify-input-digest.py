@@ -6,7 +6,6 @@ import sys
 
 
 def digest():
-    # A new key format cannot reuse entries written by the old shell hasher.
     key = hashlib.sha256(b'kinosail-verify-input-v2\0')
     for argument in sys.argv[1:]:
         value = os.fsencode(argument)

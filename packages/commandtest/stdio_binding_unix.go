@@ -12,7 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/mcpgateway"
 )
 
-// StdioBindings verifies both real application operations without replacing a process.
 func StdioBindings[Config any](t *testing.T, config Config, serve func(context.Context, Config, string, io.Reader, io.Writer) error, open func(context.Context, Config, string) (*os.File, error)) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()

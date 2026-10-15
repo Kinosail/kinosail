@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// TestTOTP produces the canonical RFC 6238 code at the supplied test time.
 func TestTOTP(t *testing.T, secret string, now time.Time) string {
 	t.Helper()
 	key, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(secret)

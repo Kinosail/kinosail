@@ -10,8 +10,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-// The populated browser fixture has readable media. This HTTP regression creates
-// a failed track check and follows its rendered recovery link to real Settings.
 func TestSubtitleUnavailableRecoveryReachesMediaLibraries(t *testing.T) {
 	t.Parallel()
 	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")

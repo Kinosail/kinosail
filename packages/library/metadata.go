@@ -53,7 +53,7 @@ func readMetadataWith(path string, open func(string) (*os.File, error)) localMet
 	if info, err := os.Lstat(path); err != nil || !info.Mode().IsRegular() {
 		return localMetadata{}
 	}
-	file, err := open(path) // #nosec G304 -- fixed sidecar beside scanned Library Content.
+	file, err := open(path)
 	if err != nil {
 		return localMetadata{}
 	}

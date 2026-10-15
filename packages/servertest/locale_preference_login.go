@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// LanguageSelectorIsAvailableBeforeSignInAndSupportsRTL preserves the original locale preference regression.
 func (fixture LocaleWebFixture) LanguageSelectorIsAvailableBeforeSignInAndSupportsRTL(t *testing.T) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, true)
@@ -28,7 +27,6 @@ func (fixture LocaleWebFixture) LanguageSelectorIsAvailableBeforeSignInAndSuppor
 	}
 }
 
-// SupportedLanguagesRenderTheLoginSurface preserves the original locale preference regression.
 func (fixture LocaleWebFixture) SupportedLanguagesRenderTheLoginSurface(t *testing.T) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, true)

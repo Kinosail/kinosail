@@ -32,7 +32,6 @@ test("passwords can be shown and hidden without changing their value", async ({ 
 	await page.getByRole("button", { name: "Hide secret" }).click();
 	await expect(password).toHaveAttribute("type", "password");
 	await password.focus();
-	// macOS WebKit uses Option-Tab to include buttons in keyboard navigation.
 	await page.keyboard.press(browserName === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
 	await expect(reveal).toBeFocused();
 	await page.keyboard.press("Space");

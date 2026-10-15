@@ -97,8 +97,6 @@ build_image() {
     --build-arg "VERSION=nox-${sha:0:12}" --build-arg "REVISION=$sha" "$tmp"
 }
 if ! build_image >"$log" 2>&1; then
-  # A stopped VM can leave an unusable cached intermediate layer. Rebuild it
-  # without deleting images or interrupting another app's build.
   if ! grep -Fq "can't stat (or find?) lower layer" "$log" || ! build_image --no-cache >>"$log" 2>&1; then
     printf 'Nox image build failed; log: %s\n' "$log" >&2
     tail -60 "$log" >&2
@@ -115,8 +113,6 @@ if [[ "$latest" != "$expected_main" ]]; then
 fi
 
 podman save --format docker-archive "$image" >"$tmp/image.tar"
-# Persistent local evidence belongs to this immutable source revision. Scanner
-# failure or a fixable high/critical finding stops before the remote image load.
 "$script_dir/scan-deployment-image.sh" "$tmp/image.tar" "$repo/.verification/supply-chain/$app-$sha"
 ssh -o BatchMode=yes "$host" docker load <"$tmp/image.tar" >/dev/null
 ssh -o BatchMode=yes "$host" bash -s -- "$sha" "$image" "$stable_image" "$service" "$container" "$image_repo" <"$script_dir/deploy-nox-remote.sh"

@@ -23,8 +23,6 @@ func TestSubtitlePreparedReceiptExpiryCannotReactivateOrChangeFiles(t *testing.T
 	assertSubtitleOperationNoProcess(t, calls)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 	_ = subtitleActionHistory(t, handler, nil, nil)
-	// An explicitly requested fresh operation is allowed. Expiry cannot make
-	// the old ID a factory for replacement work.
 	fresh := prepareSubtitleOperation(t, handler, base, "audio")
 	if fresh.ID == prepared.ID {
 		t.Fatal("expiry reused an unavailable operation identity")

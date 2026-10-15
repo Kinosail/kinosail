@@ -35,7 +35,6 @@ func TestSubtitleCorruptOperationRegistryFailsClosedWithoutChangingLegacyOwnerWo
 			assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))
 			assertSubtitleActionBytes(t, path, []byte(test.data))
 			_ = subtitleActionHistory(t, handler, nil, nil)
-			// A failed receipt service cannot remove existing Owner capabilities.
 			subtitleOperationSetupSave(t, handler, base)
 			assertSubtitleActionBytes(t, target+".kinosail.bak", []byte(subtitleActionInitial))
 			_ = subtitleActionHistory(t, handler, []string{"updated"}, []string{"manual"})

@@ -1,5 +1,3 @@
-// Package routeinventory discovers method-qualified HTTP routes in application
-// and shared-package Go sources for security policy tests.
 package routeinventory
 
 import (
@@ -21,8 +19,6 @@ const (
 
 var sharedPackages = [...]string{"federation", "downloads", "playback", "identitycore", "markers", "mediashares", "dlna", "viewing", "operations", "homeassistant", "liveevents", "watchrooms", "catalogapi", "jellyfincompat", "metadata"}
 
-// Discover returns the unique method-qualified routes registered by an app,
-// its shared route packages, and packages that expose explicit route patterns.
 func Discover(appDir, packagesDir string, explicit ...[]string) ([]string, error) {
 	if strings.TrimSpace(appDir) == "" || strings.TrimSpace(packagesDir) == "" {
 		return nil, errors.New("app and packages directories are required")

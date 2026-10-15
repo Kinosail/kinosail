@@ -2,8 +2,6 @@ package playerweb
 
 import "strings"
 
-// StablePlayerLayout renders the native controls' final structure before scripts
-// load. Custom controls retain their established inline layout.
 func StablePlayerLayout(source string) string {
 	anchor := `<p class="playback-device-status"`
 	if !strings.Contains(source, anchor) {
@@ -30,7 +28,6 @@ func StablePlayerLayout(source string) string {
 	toolbar = strings.TrimSuffix(toolbar, `</div>`) + settingsButton + `</div>`
 	source = strings.Replace(source, settingsButton, `{{if not .NativeControls}}`+settingsButton+`{{end}}`, 1)
 	source = strings.Replace(source, settings, `{{if not .NativeControls}}`+settings+`{{end}}`, 1)
-	// The unmodified toolbar is still present once in the original stage.
 	originalToolbar := source[toolbarStart:controlsStart]
 	source = strings.Replace(source, originalToolbar, `{{if not .NativeControls}}`+originalToolbar+`{{end}}`, 1)
 	options := `{{if and (eq .Kind "video") .NativeControls}}<div class="player-native-options">` + toolbar + settings + `</div>{{end}}`

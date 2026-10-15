@@ -12,7 +12,6 @@ import (
 
 const maximumRecipeDurationMilliseconds = 7 * 24 * 60 * 60 * 1000
 
-// HLSRecipe is the validated, cache-safe representation of one playback plan.
 type HLSRecipe struct {
 	Mode, Burn, Codec      string
 	Audio, Subtitle        int
@@ -29,7 +28,6 @@ type HLSRecipe struct {
 	OutputTime             float64
 }
 
-// HLSRecipePolicy keeps the few legacy product differences outside the grammar.
 type HLSRecipePolicy struct {
 	MaxBitrate              int64
 	OffsetStepMilliseconds  int64
@@ -148,7 +146,6 @@ func parseRecipeCodec(parts []string) ([]string, string, error) {
 	if len(parts) <= 6 || !strings.HasPrefix(parts[6], "c") {
 		return parts, "", nil
 	}
-	// Return a server-owned catalog value, never a request string used in a cache path.
 	codec := map[string]string{"h264": "h264", "hevc": "hevc", "av1": "av1", "vp9": "vp9"}[strings.TrimPrefix(parts[6], "c")]
 	if codec == "" {
 		return nil, "", errors.New("invalid codec")
@@ -165,7 +162,6 @@ func parseRecipeFields(parts []string, codec string, maximumBitrate int64) (HLSR
 	subtitle, subtitleErr := prefixedInt(parts[2], "s")
 	toneMap, toneErr := prefixedInt(parts[4], "t")
 	bitrate, bitrateErr := prefixedInt64(parts[5], "b")
-	// Cache tokens contain only these canonical burn values after this boundary.
 	burn, validBurn := map[string]string{"none": "", "text": "text", "image": "image", "external": "external"}[parts[3]]
 	if audioErr != nil || subtitleErr != nil || toneErr != nil || bitrateErr != nil || audio < 0 || audio > 31 || subtitle < 0 || subtitle > 255 || !validBurn || toneMap < 0 || toneMap > 1 || bitrate < 0 || bitrate > maximumBitrate {
 		return HLSRecipe{}, errors.New("invalid fields")

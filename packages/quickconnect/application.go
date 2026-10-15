@@ -9,15 +9,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// ApprovalMaximumAge is Player's recent-authentication window for device approval.
 const ApprovalMaximumAge = 10 * time.Minute
 
-// Limiters separates request, creation, and polling budgets.
 type Limiters struct {
 	Requests, Starts, Polls *httpguard.Limiter
 }
 
-// Profiles connects the shared flow to product profile and session storage.
 type Profiles struct {
 	Find          func(string) (identitycore.Profile, bool)
 	Compatibility func(identitycore.Profile) identitycore.Profile
@@ -25,7 +22,6 @@ type Profiles struct {
 	CreatePublic  func(string, string, uint64) (string, error)
 }
 
-// Adapter supplies the true product-specific Quick Connect behavior.
 type Adapter struct {
 	Profiles              Profiles
 	Current               func(*http.Request) identitycore.Profile
@@ -36,7 +32,6 @@ type Adapter struct {
 	Error                 func(http.ResponseWriter, *http.Request, string, int)
 }
 
-// Application owns Player's Quick Connect protocol and session flow.
 type Application struct {
 	broker   *Broker
 	limiters Limiters
@@ -44,22 +39,18 @@ type Application struct {
 	page     Page
 }
 
-// NewApplication connects adapters to Player's canonical Quick Connect flow.
 func NewApplication(broker *Broker, limiters Limiters, adapter Adapter) *Application {
 	return NewApplicationFor(broker, limiters, adapter, PlayerPage())
 }
 
-// NewApplicationFor connects one derivative product page to Player's canonical flow.
 func NewApplicationFor(broker *Broker, limiters Limiters, adapter Adapter, page Page) *Application {
 	return &Application{broker: broker, limiters: limiters, adapter: adapter, page: page}
 }
 
-// Consume creates one normal Viewer session from an approved request.
 func (application *Application) Consume(secret string) (string, identitycore.Profile, error) {
 	return application.consumeSession(secret, false)
 }
 
-// ConsumeCompatibility creates one compatibility session from an approved request.
 func (application *Application) ConsumeCompatibility(secret string) (string, identitycore.Profile, error) {
 	return application.consumeSession(secret, true)
 }
@@ -85,7 +76,6 @@ func (application *Application) consumeSession(secret string, compatibility bool
 	return token, profile, err
 }
 
-// Approve binds one pending request to a validated Viewer.
 func (application *Application) Approve(profile identitycore.Profile, value string, strong bool) error {
 	return application.broker.Approve(value, Viewer{
 		ID: profile.ID, Revision: profile.Revision, Owner: profile.Owner, Remote: profile.Remote,
@@ -93,7 +83,6 @@ func (application *Application) Approve(profile identitycore.Profile, value stri
 	})
 }
 
-// RevokeRemote removes all public pending requests.
 func (application *Application) RevokeRemote() {
 	application.broker.RevokeRemote()
 }

@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// Public media cannot inject untrusted metadata or an interrupted two-file commit.
 func TestCopiedRecoveryCertificateDamageRejectsWithoutWrites(t *testing.T) { //nolint:cyclop,gocognit // Serial damage scenarios retain exact no-write and certificate assertions.
 	for _, damage := range []string{"missing", "malformed", "duplicate", "oversized", "symlink", "fifo"} {
 		t.Run(damage, func(t *testing.T) {

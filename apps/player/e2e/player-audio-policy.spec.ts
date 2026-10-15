@@ -100,8 +100,6 @@ test("queue source load ignores its delayed pause until new metadata belongs to 
   await expect.poll(() => nextWrites.length).toBe(1);
 });
 
-// Isolated source failure: deterministically reject after source assignment but
-// before metadata without deleting media or changing Server authorization.
 test("failed queue source cannot replace its saved position with reset zero before metadata", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
   await openAudio(page, "");
   const nextWrites: string[] = [];

@@ -77,8 +77,6 @@ if (!downloadServer) test(`a pending Resume wait preserves the ${boundary} bound
       await other.goto(`${peer.origin}/offline-downloads?profile=${boundary === "profile" ? "other" : "profile"}`);
       await expect.poll(() => second.evaluate(() => (window as Window & {profileRevisions: number}).profileRevisions)).toBeGreaterThan(0);
       if (boundary === "same-profile") {
-        // Replay the public identity notification after tab bootstrap settles.
-        // It changes the identity revision while preserving the Viewer Profile.
         await second.evaluate(() => dispatchEvent(new Event("kinosail:offline-profile")));
       }
     }
@@ -114,7 +112,6 @@ test("same Viewer Profile in another tab preserves the transfer owner until expl
     await expect(page.locator("[data-download-device-status]")).toContainText("Keep this page open", {timeout: 2_000});
     expect((await peer.stats()).closed).toBe(0);
     expect((await inspectDownload(page, served.jobID)).job?.transferID).toBe(retained.job?.transferID);
-    // Only the owning tab exposes Pause. A status broadcast is not cancellation authority.
     await expect(second.getByRole("button", {name: "Pause download", exact: true})).toHaveCount(0);
     await page.getByRole("button", {name: "Pause download", exact: true}).click();
     await expect.poll(async () => (await peer.stats()).closed).toBe(1);

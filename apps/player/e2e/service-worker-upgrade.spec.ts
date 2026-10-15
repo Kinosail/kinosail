@@ -7,7 +7,6 @@ import type { AddressInfo } from "node:net";
 import { downloadsSource, readStaticSource } from "./static-sources";
 
 const test = base.extend({
-  // A real disk cache is required; ephemeral WebKit contexts have none.
   context: async ({ playwright, browserName, contextOptions, launchOptions, channel, headless, video }, use, testInfo) => {
     const directory = await mkdtemp(join(tmpdir(), "kinosail-worker-upgrade-"));
     const mode = typeof video === "string" ? video : video.mode;
@@ -22,7 +21,6 @@ const test = base.extend({
       try { await use(context); } finally {
         try {
           await Promise.all(context.pages().map(page => page.close()));
-          // Save videos before closing the persistent context's browser connection.
           if (record && (mode !== "retain-on-failure" || testInfo.status !== testInfo.expectedStatus)) {
             for (const [index, capture] of videos.entries()) {
               const path = testInfo.outputPath(`video-${index}.webm`);
@@ -65,8 +63,6 @@ for (const app of [
     const hits = new Map<string, number>();
     const shell: Record<string, string> = JSON.parse(workerSource.match(/const shell = (\{.*\});/)![1]);
     let deployed = false;
-    // Real worker lifecycle, profile storage, and shell validation run in the browser.
-    // No request interception: the browser's actual immutable HTTP cache must run.
     const server = createServer((request, response) => {
       const path = request.url!;
       if (path.startsWith("/service-worker.js")) {

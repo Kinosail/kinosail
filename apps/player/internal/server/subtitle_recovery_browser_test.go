@@ -16,8 +16,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// Opt-in: the real Server renders watch HTML and serves its composed player asset
-// and sidecar caption bytes. A disposable HTTP wrapper injects transport stalls.
 func TestSubtitleRecoveryBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_CAPTION_BROWSER") != "1" {
 		t.Skip("KINOSAIL_CAPTION_BROWSER is not set")

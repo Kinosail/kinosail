@@ -22,7 +22,6 @@ test("Collections keep poster geometry while artwork loads", async ({ page, brow
 		await expect.poll(() => image.evaluate((image: HTMLImageElement) => image.complete)).toBe(false);
 		const before = await poster.boundingBox();
 		expect(before!.height / before!.width).toBeCloseTo(1.5, 1);
-		// WebKit waits for document.fonts.ready until held image loads finish.
 		if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("collections-pending.png") });
 		release();
 		await expect.poll(() => image.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);

@@ -1,4 +1,3 @@
-// Isolated gap: deterministic late CDP allocation is unavailable in populated E2E.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
@@ -22,7 +21,6 @@ assert.equal(await diagnostic.finish(began+150),result,'completion closure must 
 assert.ok(performance.now()-began<180,'cleanup must be bounded');
 console.log('actual observer late allocation, partial start, invalid inference and bounded detach controls pass');
 
-// Independent delivery scheduling cannot be forced reliably in populated E2E.
 const schemaText=readFileSync(new URL('./subtitle-restore-causal-schema.ts',import.meta.url),'utf8').replace(/^import .*\n/gm,'').replace(/^export /gm,'');
 const validators=new Function(stripTypeScriptTypes(schemaText)+'\nreturn {validCausal,validNative,validServer};')();
 const joinedObserve=factory(installFetchWitness,equalDiagnosticHeaders,value=>value==='net::ERR_ABORTED'?'aborted':'unclassified',

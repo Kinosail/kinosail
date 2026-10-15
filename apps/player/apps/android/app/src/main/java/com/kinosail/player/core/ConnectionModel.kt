@@ -80,7 +80,7 @@ class ConnectionModel(application: Application) : AndroidViewModel(application) 
             } catch (error: IllegalArgumentException) {
                 forgetSaved(attempt, "The saved connection changed. Connect again.")
                 return
-            } catch (_: Exception) { /* Keep the last verified Viewer while the Server restarts. */ }
+            } catch (_: Exception) {   }
             if (attempt != generation) return
             if (saved.viewer == null) notice = "Waiting for your Server to return."
             delay(wait)

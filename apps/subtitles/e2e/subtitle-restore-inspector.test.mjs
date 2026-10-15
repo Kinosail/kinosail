@@ -2,9 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { flush, inspectorFixture } from "./subtitle-inspector-race-fixture.ts";
 
-// Actual delivered scripts, existing synthetic DOM/controlled external HTTP.
-// Written-first lifecycle gaps are documented in the R06 frontend design.
-// No browser rendering, layout or populated-server evidence is claimed here.
 async function heldRestore(view) {
   const pending = view.node("restore-subtitle").listeners.click(); await flush();
   view.respond(view.requests.at(-1), view.receipt("prepared", undefined, undefined, "restore"), 201);

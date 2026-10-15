@@ -5,12 +5,10 @@ const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.pla
 const appleNativePlayback = player.tagName === "VIDEO" && appleTouch && typeof player.webkitEnterFullscreen === "function";
 let applePlaybackRequested = false;
 if (appleNativePlayback) {
-  // Safari presents playback in its own player, including a cold first Play tap.
   player.removeAttribute("playsinline");
   player.removeAttribute("webkit-playsinline");
   player.controls = false;
 }
-// Keep the first touch Play gesture available for browser fullscreen in either control mode.
 if (player.tagName === "VIDEO" && (appleNativePlayback || navigator.maxTouchPoints > 0)) {
   player.autoplay = false;
   delete player.dataset.autoplay;
@@ -32,7 +30,6 @@ const bufferedAhead = () => {
   const rounding = Number.EPSILON * Math.max(1, playbackTimelineOffset);
   for (let index = 0; index < player.buffered.length; index++) {
     const start = player.buffered.start(index);
-    // HLS can place its first frame a few milliseconds after time zero.
     if ((start <= current + rounding || current === 0 && start <= 0.05) && player.buffered.end(index) >= current) return player.buffered.end(index) - Math.max(current, start);
   }
   return 0;
@@ -51,7 +48,6 @@ const playbackTrace = (event, detail = "", quality = "") => {
   playbackTraceQueue.push(JSON.stringify({session: playbackSession, event, sequence: ++playbackTraceSequence, elapsedMs: traceNumber(performance.now() - playbackTraceStarted), positionMs: traceNumber(player.currentTime * 1000), durationMs: traceNumber(player.duration * 1000), bufferedAheadMs: traceNumber(bufferedAhead() * 1000), readyState: player.readyState, networkState: player.networkState, paused: player.paused, method: playbackTraceMethod, detail: traceToken(detail), quality: traceToken(quality), visibility: document.visibilityState, errorCode: player.error?.code || 0, droppedFrames: frames?.droppedVideoFrames || 0, totalFrames: frames?.totalVideoFrames || 0}));
   if (["playing", "waiting", "stalled", "error", "hls-error", "play-rejected"].includes(event)) setTimeout(flushPlaybackTrace);
 };
-// The browser also restores a direct source's saved #t fragment without a setter.
 let managedSeek = Boolean(player.getAttribute("src")?.includes("#t=") && (player.seeking || !player.readyState));
 let managedSeekTarget = managedSeek ? Number(player.dataset.start) || 0 : undefined;
 const setPlayerTime = (seconds, user = false) => {
@@ -84,7 +80,6 @@ player.addEventListener("pause", () => {
   const attempt = pendingApplePlay;
   if (!appleNativePlayback || !player.paused || player.ended || player.error || !attempt ||
       attempt.request !== playbackRequest || attempt.source !== (player.currentSrc || player.src)) return;
-  // Native Pause withdraws a pending Play without dismissing Apple's presentation.
   withdrawPlaybackRequest();
 });
 const requestPlay = (detail) => {

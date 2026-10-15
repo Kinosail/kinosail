@@ -13,8 +13,6 @@ import (
 	"testing"
 )
 
-// A completed certified generation cannot silently downgrade to a legacy writer
-// after its proof disappears. Ordinary browser journeys cannot evict this state.
 func transcodeRefillRejectDamagedProof(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment, source string, beforeOwned int) {
 	t.Helper()
 	proofPath := filepath.Join(root, ".transcode-clock")

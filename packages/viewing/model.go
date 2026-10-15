@@ -1,4 +1,3 @@
-// Package viewing owns source-neutral viewing import matching and change planning.
 package viewing
 
 import (
@@ -8,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-// Input selects one remote source and one destination Viewer Profile.
 type Input struct {
 	Source     string `json:"source"`
 	URL        string `json:"url"`
@@ -18,7 +16,6 @@ type Input struct {
 	Overwrite  bool   `json:"overwriteExisting,omitempty"`
 }
 
-// Activity is one normalized item returned by a supported source.
 type Activity struct {
 	SourceID, Kind, Title, Year, Show, Path string
 	Season, Episode                         int
@@ -29,7 +26,6 @@ type Activity struct {
 	Updated                                 time.Time
 }
 
-// Item describes one preview decision without source credentials.
 type Item struct {
 	SourceTitle string   `json:"sourceTitle"`
 	TargetID    string   `json:"targetId,omitempty"`
@@ -42,7 +38,6 @@ type Item struct {
 	Playlists   []string `json:"playlists,omitempty"`
 }
 
-// Summary counts every source, match, conflict, and applied outcome.
 type Summary struct {
 	SourceItems   int `json:"sourceItems"`
 	Activity      int `json:"activity"`
@@ -58,21 +53,18 @@ type Summary struct {
 	ListsApplied  int `json:"listsApplied,omitempty"`
 }
 
-// ProgressChange is an optimistic per-item playback update.
 type ProgressChange struct {
 	TargetID string
 	State    catalog.PlaybackState
 	Expected catalog.PlaybackState
 }
 
-// ListChange adds a matched item to My List or source playlists.
 type ListChange struct {
 	TargetID  string
 	Favorite  bool
 	Playlists map[string]int
 }
 
-// Plan is the public preview and its private optimistic change set.
 type Plan struct {
 	Summary     Summary
 	Items       []Item
@@ -81,7 +73,6 @@ type Plan struct {
 	ListChanges []ListChange
 }
 
-// Preview is one expiring source snapshot and its optimistic change plan.
 type Preview struct {
 	ID          string           `json:"id"`
 	Source      string           `json:"source"`
@@ -98,7 +89,6 @@ type Preview struct {
 	Timer       *time.Timer      `json:"-"`
 }
 
-// PreviewStore coordinates bounded work and expiring previews under an app-owned lock.
 type PreviewStore struct {
 	Mutex          *sync.Mutex
 	Values         *map[string]Preview
@@ -106,20 +96,17 @@ type PreviewStore struct {
 	Limit, Workers int
 }
 
-// Observation records the last source signature and its stable destination match.
 type Observation struct {
 	TargetID  string `json:"targetId"`
 	Signature string `json:"signature"`
 }
 
-// SyncPending is a durable fetched batch awaiting finalization.
 type SyncPending struct {
 	Summary     Summary          `json:"summary"`
 	Changes     []ProgressChange `json:"changes,omitempty"`
 	ListChanges []ListChange     `json:"listChanges,omitempty"`
 }
 
-// Sync is one durable recurring source reconciliation.
 type Sync struct {
 	ID         string                 `json:"id"`
 	Source     string                 `json:"source"`
@@ -138,7 +125,6 @@ type Sync struct {
 	Queued     bool                   `json:"-"`
 }
 
-// SyncView is the credential-free presentation of one recurring import.
 type SyncView struct {
 	ID          string  `json:"id"`
 	Source      string  `json:"source"`

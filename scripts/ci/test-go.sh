@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Execute each affected module once, including races, then inspect that profile.
 set -euo pipefail
 [[ $# == 1 ]] || { echo 'expected one Go module' >&2; exit 2; }
 case "$1" in
@@ -18,9 +17,7 @@ fi
 mkdir -p .verification
 profile=.verification/coverage.out
 rm -f "$profile"
-# Count production paths exercised by tests in another package of this module.
 go test -race -count=1 -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...
-# Test-support packages are exercised by consumers, not standalone coverage.
 if [[ "$1" == packages ]]; then
   awk 'NR == 1 || $1 !~ /\/(archivetest|commandtest|configurationtest|servertest)\//' "$profile" > "$profile.filtered"
   mv "$profile.filtered" "$profile"

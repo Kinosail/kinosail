@@ -9,8 +9,6 @@ test.setTimeout(25_000);
 test.beforeEach(async ({ page }) => observe(page));
 const selected = (value: string) => mode === value || mode === "all";
 
-// A separate file gives this worker its own launch configuration. Cached full
-// Chromium's new headless mode still must demonstrate real native admission.
 test.use({ serviceWorkers: "block", video: "off", channel: "chromium", launchOptions: { ignoreDefaultArgs: ["--disable-back-forward-cache"] } });
 
 
@@ -59,7 +57,7 @@ if (selected("bfcache")) test.describe("observed native browser cache", () => {
       expect(settledPeer, "native cached return does not start delayed continuation").toHaveLength(leaving.length);
     } finally {
       await record(page, info, "returned", href);
-      try { await info.attach("native-cache-diagnostic", { body: JSON.stringify(await cacheDiagnostic(page)), contentType: "application/json" }); } catch { /* Preserve the original assertion outcome. */ }
+      try { await info.attach("native-cache-diagnostic", { body: JSON.stringify(await cacheDiagnostic(page)), contentType: "application/json" }); } catch {   }
     }
   });
 });

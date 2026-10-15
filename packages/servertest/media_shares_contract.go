@@ -14,10 +14,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/mediashares"
 )
 
-// MediaShareFactory binds the real app's library index and persisted share store.
 type MediaShareFactory func(string, []library.Item, bool) *mediashares.Store
 
-// MediaShareContract checks grant delivery and persisted-state validation.
 func MediaShareContract(t *testing.T, newStore MediaShareFactory) {
 	t.Helper()
 	t.Run("MediaShareCapabilityBoundaries", func(t *testing.T) { mediaShareCapabilityBoundaries(t, newStore) })

@@ -6,9 +6,6 @@ import UIKit
 @testable import KinosailPlayer
 
 struct PlaybackChapterTests {
-    // The real Nox Resume journey rejected this additive server plan field.
-    // Retain this isolated HTTP-contract regression because the remote fixture
-    // has no incompatible audio and cannot emit or vary this field reliably.
     private func audioRequirementBody(_ requirement: String, compatiblePlan: Bool) -> String {
         let evidence = "\"audioCompatibilityRequired\":\(requirement),"
         return """

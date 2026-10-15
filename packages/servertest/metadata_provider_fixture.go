@@ -11,7 +11,6 @@ type metadataProviderContract struct {
 	idFirst   func(string, string, bool, *int, *int) http.HandlerFunc
 }
 
-// RunMetadataProvider runs every provider regression against the real app server.
 func RunMetadataProvider(t *testing.T, newServer func(*testing.T, string, string) http.Handler, idFirst func(string, string, bool, *int, *int) http.HandlerFunc) {
 	suite := metadataProviderContract{newServer, idFirst}
 	t.Run("OwnerCanRefreshProviderMetadataAndArtwork", suite.OwnerCanRefreshProviderMetadataAndArtwork)
@@ -22,7 +21,6 @@ func RunMetadataProvider(t *testing.T, newServer func(*testing.T, string, string
 	t.Run("ProviderFallsBackToCleanTitleAndYearWhenIMDbHasNoMatch", suite.ProviderFallsBackToCleanTitleAndYearWhenIMDbHasNoMatch)
 }
 
-// MetadataProviderFixture serves movie metadata and artwork for server tests.
 func MetadataProviderFixture(writer http.ResponseWriter, request *http.Request) {
 	if request.URL.Path != "/poster.jpg" && request.Header.Get("Authorization") != "Bearer token" {
 		http.Error(writer, "unauthorized", http.StatusUnauthorized)

@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// RunAutomaticMetadataFeedback verifies real scan/provider behavior when
-// optional credits fail, remain unchanged, and later become available.
 func RunAutomaticMetadataFeedback(t *testing.T, newServer func(context.Context, string, string, string) http.Handler) {
 	t.Helper()
 	ctx, cancel := context.WithCancel(t.Context())

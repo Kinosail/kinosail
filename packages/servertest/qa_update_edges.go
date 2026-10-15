@@ -10,13 +10,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-// UpdateSettings binds the app's persisted update preference.
 type UpdateSettings struct {
 	Automatic     func() bool
 	SaveAutomatic func(bool) error
 }
 
-// AssertManualUpdateCheckValidatesEmptyFormAndRedirects preserves the Player regression against the supplied app bindings.
 func AssertManualUpdateCheckValidatesEmptyFormAndRedirects(t *testing.T, settings UpdateSettings, check func(*updatecontrol.Checker, string) http.HandlerFunc) {
 	checker, err := updatecontrol.NewChecker(updatecontrol.CheckerConfig{
 		CurrentVersion: "v1.0.0", Automatic: settings.Automatic, SaveAutomatic: settings.SaveAutomatic,
@@ -43,7 +41,6 @@ func AssertManualUpdateCheckValidatesEmptyFormAndRedirects(t *testing.T, setting
 	}
 }
 
-// AssertUpdateAdaptersPersistPreference preserves the Player regression against the supplied app bindings.
 func AssertUpdateAdaptersPersistPreference(t *testing.T, app string, newSettings func(string) UpdateSettings, policy updatecontrol.Policy, stateSchema, configurationSchema int) {
 	dataDir := t.TempDir()
 	settings := newSettings(dataDir)

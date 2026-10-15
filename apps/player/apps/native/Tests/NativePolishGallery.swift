@@ -4,8 +4,6 @@ import UIKit
 import WebKit
 @testable import KinosailPlayer
 
-/// Render evidence accompanies the native control regression, using fictional
-/// library data served over loopback and the production SwiftUI screens.
 @MainActor enum NativePolishGallery {
     static func record(session: AppSession, fixture: PreferencesLoopbackFixture) async throws {
         let mode = ProcessInfo.processInfo.environment["KINOSAIL_POLISH_GALLERY"]
@@ -56,14 +54,10 @@ import WebKit
         for (name, screen) in screens.filter({ ["settings", "playback-preferences", "download-preferences", "reader-preferences", "tabs", "supporter", "episodes"].contains($0.0) }) {
             try await render(AnyView(screen.environment(\.dynamicTypeSize, .accessibility3)), name: name + "-large-text", scene: scene, session: session)
         }
-        // Pending and terminal states use an uncached operation, so the Server
-        // really is outstanding when the placeholder is captured.
         fixture.delay = 1.5
         try await render(AnyView(SupporterScreen()), name: "supporter-pending", scene: scene, session: session, wait: 0.2)
         fixture.delay = 0
         fixture.fails = true
-        // A 503 read retries after 250ms and 500ms. Capture the terminal error,
-        // rather than labeling the still-pending retry as a failed screen.
         try await render(AnyView(SupporterScreen()), name: "supporter-failed", scene: scene, session: session, wait: 1.5)
         fixture.fails = false
         fixture.populated = false
@@ -95,7 +89,6 @@ import WebKit
             try await Task.sleep(for: .milliseconds(300))
         }
         window.layoutIfNeeded()
-        // UIKit hierarchy capture omits the reader's out-of-process web layer.
         let web = name == "reader" ? descendants(window).compactMap { $0 as? WKWebView }.first : nil
         let chapter: UIImage?
         if let web {

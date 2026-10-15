@@ -1,5 +1,3 @@
-// Isolated gap: a populated journey cannot prove native Promise/argument identity
-// or absence of response-body reads by its passive diagnostic wrapper.
 import assert from 'node:assert/strict';
 import { installFetchWitness, equalDiagnosticHeaders } from './subtitle-restore-causal-witness.mjs';
 import * as authority from './subtitle-restore-causal-witness.mjs';
@@ -51,7 +49,6 @@ try {
   globalThis.fetch = originalFetch; globalThis.addEventListener = originalAdd; globalThis.removeEventListener = originalRemove;
 }
 
-// Isolated inverse gap: populated journeys cannot force every stale/mismatched witness.
 assert.equal(typeof authority.nativeBodylessCompletion,'function');
 const native204={outcome:'fulfilled',status:204,signalPresent:false,signalAborted:false,pagehide:false};
 const aborted={terminal:'request-failed',failureCode:'aborted',resourceType:'Fetch',cancelled:true,navigation:false};

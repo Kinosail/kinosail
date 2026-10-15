@@ -11,10 +11,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// WriteError preserves one app's localized error response.
 type WriteError func(http.ResponseWriter, *http.Request, string, int)
 
-// SaveOnboardingAPI handles the shared onboarding preference mutation.
 func SaveOnboardingAPI(change func(bool) error, read func(http.ResponseWriter, *http.Request, any) bool, write func(http.ResponseWriter, any, int), writeError func(http.ResponseWriter, error, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var input struct {
@@ -35,7 +33,6 @@ func SaveOnboardingAPI(change func(bool) error, read func(http.ResponseWriter, *
 	}
 }
 
-// SavePlayback handles the shared playback settings form.
 func SavePlayback(change func(Playback) error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := decodeForm(writer, request, 4096, map[string]int{"mode": 1, "autoplay": 1, "subtitles": 1, "markers": 5}); err != nil {
@@ -56,7 +53,6 @@ func SavePlayback(change func(Playback) error, writeError WriteError) http.Handl
 	}
 }
 
-// SaveScanFrequency handles the shared scan schedule form.
 func SaveScanFrequency(change func(string) error, apply func(string), destination string, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := decodeForm(writer, request, 1024, map[string]int{"frequency": 1}); err != nil {
@@ -73,7 +69,6 @@ func SaveScanFrequency(change func(string) error, apply func(string), destinatio
 	}
 }
 
-// CreateAPIKey handles the shared owner API-key form and one-time secret response.
 func CreateAPIKey(create func(*http.Request, string, string) (string, error), render func(http.ResponseWriter, *http.Request, string, string) error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		limits := map[string]int{"name": 1, "scopes": 1, "write": 1, "stream": 1, "download": 1, "admin": 1}
@@ -110,7 +105,6 @@ func CreateAPIKey(create func(*http.Request, string, string) (string, error), re
 	}
 }
 
-// DownloadBackup writes one portable application state archive.
 func DownloadBackup(available bool, archive func(io.Writer) error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var data bytes.Buffer
@@ -124,7 +118,6 @@ func DownloadBackup(available bool, archive func(io.Writer) error, writeError Wr
 	}
 }
 
-// ShowBackups renders one application's localized backup status page.
 func ShowBackups[T any](status func() T, render func(http.ResponseWriter, *http.Request, any) error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -134,7 +127,6 @@ func ShowBackups[T any](status func() T, render func(http.ResponseWriter, *http.
 	}
 }
 
-// VerifyBackup runs verification and returns to the backup page on success.
 func VerifyBackup(verify func() error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := verify(); err != nil {

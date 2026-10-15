@@ -37,7 +37,6 @@ try {
       readyState:video.readyState, seeking:video.seeking, paused:video.paused});
     if (video.dataset.compatibilityMode !== 'audio-transcode') throw new Error('capture_mode');
     checkpoint('ready');
-    // Settle initial autoplay and saved-position restoration before pausing.
     await new Promise((resolve, reject) => {
       let callback, previous;
       const timer = setTimeout(() => {
@@ -70,8 +69,6 @@ try {
     checkpoint('seek-complete');
     ac = new AudioContext({sampleRate:48000});
     const source = ac.createMediaElementSource(video);
-    // Start the render clock only after play is accepted. Otherwise a paused
-    // startup block can precede a gap while the media element starts playback.
     await ac.suspend();
     const module = URL.createObjectURL(new Blob([`
       class Capture extends AudioWorkletProcessor {
@@ -90,7 +87,6 @@ try {
     await ac.audioWorklet.addModule(module);URL.revokeObjectURL(module);
     const worklet = new AudioWorkletNode(ac,'qa-long-audio',{channelCount:1,channelCountMode:'explicit'});
     const done = new Promise(resolve => worklet.port.onmessage = event => {
-      // This is message receipt time, not the worklet's render instant.
       if(event.data.first)checkpoint('first-worklet-message',event.data.frame);else resolve(event.data);
     });
     source.connect(worklet);worklet.connect(ac.destination);

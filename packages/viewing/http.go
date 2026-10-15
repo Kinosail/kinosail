@@ -2,7 +2,6 @@ package viewing
 
 import "net/http"
 
-// HTTPHandlers is the complete viewing import and recurring-sync transport surface.
 type HTTPHandlers interface {
 	APIPreview(http.ResponseWriter, *http.Request)
 	APIApply(http.ResponseWriter, *http.Request)
@@ -18,7 +17,6 @@ type HTTPHandlers interface {
 	WebDeleteSync(http.ResponseWriter, *http.Request)
 }
 
-// RegisterHTTP installs the Player-canonical viewing import route set.
 func RegisterHTTP(mux *http.ServeMux, owner func(http.Handler) http.Handler, handlers HTTPHandlers) {
 	handle := func(pattern string, handler http.HandlerFunc) { mux.Handle(pattern, owner(handler)) }
 	handle("POST /api/v1/viewing-imports/preview", handlers.APIPreview)

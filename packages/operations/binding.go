@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/watchrooms"
 )
 
-// BindingConfig supplies app-owned state to the shared operations module.
 type BindingConfig struct {
 	Version          string
 	Started          time.Time
@@ -34,13 +33,10 @@ type BindingConfig struct {
 	Workload         func() WorkloadSnapshot
 }
 
-// Binding owns task wiring, projections, and metadata refresh orchestration.
 type Binding struct{ config BindingConfig }
 
-// NewBinding binds app-owned state to shared operational behavior.
 func NewBinding(config BindingConfig) Binding { return Binding{config} }
 
-// Tasks returns the complete set of shared task operations.
 func (binding Binding) Tasks() Tasks {
 	return Tasks{
 		Scan:       binding.config.Index.Refresh,
@@ -50,18 +46,14 @@ func (binding Binding) Tasks() Tasks {
 	}
 }
 
-// RefreshMetadata runs the canonical metadata refresh sequence.
 func (binding Binding) RefreshMetadata(ctx context.Context) error {
 	return RefreshMetadata(ctx, binding.config.Metadata())
 }
 
-// Metrics projects current app state to the public metrics model.
 func (binding Binding) Metrics() Metrics { return projectMetrics(binding.metricSnapshot()) }
 
-// MetricsHandler serves the current projected metrics.
 func (binding Binding) MetricsHandler() http.HandlerFunc { return MetricsHandler(binding.Metrics) }
 
-// DiagnosticReport projects current app state with process identity and time.
 func (binding Binding) DiagnosticReport() DiagnosticReport {
 	report := projectDiagnosticReport(binding.config.Version, binding.config.Started, binding.config.Now(), binding.diagnosticSnapshot())
 	if binding.config.Failures != nil {
@@ -70,7 +62,6 @@ func (binding Binding) DiagnosticReport() DiagnosticReport {
 	return report
 }
 
-// DiagnosticsHandler serves the current projected diagnostic report.
 func (binding Binding) DiagnosticsHandler() http.HandlerFunc {
 	return DiagnosticsHandler(binding.DiagnosticReport)
 }

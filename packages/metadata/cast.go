@@ -33,7 +33,6 @@ func applyRecordCast(item *library.Item, record Record) {
 	}
 }
 
-// Cast is optional enrichment: unavailable credits must not prevent title lookup.
 func enrichTMDBCast(ctx context.Context, baseURL, kind string, id int, fetch func(context.Context, string, any) error, artwork func(string) string, result Result) (Result, error) {
 	var credits struct {
 		Cast []TMDBCastMember `json:"cast"`

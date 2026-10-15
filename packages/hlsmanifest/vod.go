@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// CompleteVOD preserves observed segments and projects only an established cadence.
 func CompleteVOD(manifest []byte, duration, cadence float64) ([]byte, bool) {
 	if !bytes.Contains(manifest, []byte("#EXT-X-PLAYLIST-TYPE:EVENT")) {
 		return manifest, true

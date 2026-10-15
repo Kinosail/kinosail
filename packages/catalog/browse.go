@@ -1,4 +1,3 @@
-// Package catalog owns shared Library browsing, curation, and viewing state rules.
 package catalog
 
 import (
@@ -19,13 +18,10 @@ const (
 	maximumOffset   = 1_000_000
 )
 
-// DefaultPageSize is the canonical number of Library cards per page.
 const DefaultPageSize = defaultPageSize
 
-// ErrInvalidBrowse reports a malformed or unsupported Library query.
 var ErrInvalidBrowse = errors.New("invalid library browse input")
 
-// Candidate is one Viewer-visible Library item and its profile state.
 type Candidate struct {
 	Item    *library.Item
 	Listed  bool
@@ -33,7 +29,6 @@ type Candidate struct {
 	Updated time.Time
 }
 
-// BrowseAccess projects app-owned visibility and Viewer state under stable read locks.
 type BrowseAccess struct {
 	ProgressMutex *sync.Mutex
 	ListMutex     *sync.RWMutex
@@ -44,12 +39,10 @@ type BrowseAccess struct {
 	Visible       func(library.Item) bool
 }
 
-// NewBrowseAccess binds app-owned profile state to the canonical browse projection.
 func NewBrowseAccess(progressMutex *sync.Mutex, listMutex *sync.RWMutex, progress *map[string]PlaybackState, listed *map[string]bool, profileID string, owner bool, visible func(library.Item) bool) BrowseAccess {
 	return BrowseAccess{ProgressMutex: progressMutex, ListMutex: listMutex, Progress: progress, Listed: listed, ProfileID: profileID, Owner: owner, Visible: visible}
 }
 
-// Letter is one locale-aware title jump in a Library result.
 type Letter struct {
 	Label   string `json:"label"`
 	Count   int    `json:"count"`
@@ -58,7 +51,6 @@ type Letter struct {
 	Current bool   `json:"-"`
 }
 
-// Browse is a validated Library query that can be applied after an index read.
 type Browse struct {
 	values             url.Values
 	query, view, order string
@@ -67,7 +59,6 @@ type Browse struct {
 	titleOrdered       bool
 }
 
-// Result is one bounded, stable Library browse page.
 type Result struct {
 	Items                []library.Item
 	Query, View, Sort    string
@@ -84,7 +75,6 @@ type sortReference struct {
 	key  []byte
 }
 
-// ParseBrowse strictly parses a Library query before any caller side effect.
 func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cyclop // One parser owns the complete bounded browse vocabulary.
 	for name := range values {
 		if !oneOf(name, "q", "view", "sort", "offset", "limit", "lang", "letter") {
@@ -121,7 +111,6 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) { //nolint:cy
 	return Browse{values: cloneValues(values), query: query, view: view, order: order, letter: letter, locale: locale, offset: offset, limit: limit}, nil
 }
 
-// BrowseLibrary validates a query before loading and projecting app-owned Library state.
 func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
 	return browseLibrary(ctx, values, locale, func(Browse) ([]*library.Item, bool, error) { items, err := load(); return items, false, err }, access)
 }
@@ -145,7 +134,6 @@ func browseLibrary(ctx context.Context, values url.Values, locale string, load f
 	return browse.ApplyAccess(ctx, items, access())
 }
 
-// ProfileProgress returns profile state with the owner's legacy fallback.
 func ProfileProgress(values map[string]PlaybackState, profileID string, owner bool, itemID string) PlaybackState {
 	state, found := values[profileID+":"+itemID]
 	if !found && owner {
@@ -154,7 +142,6 @@ func ProfileProgress(values map[string]PlaybackState, profileID string, owner bo
 	return state
 }
 
-// AllItems returns detached values for the complete selected result.
 func (result Result) AllItems() []library.Item {
 	items := make([]library.Item, len(result.references))
 	for position, item := range result.references {
@@ -163,12 +150,10 @@ func (result Result) AllItems() []library.Item {
 	return items
 }
 
-// PreviousURL returns the preceding page URL when it exists.
 func (result Result) PreviousURL() string {
 	return pageURL(result.values, max(result.pageStart, result.Offset-result.Limit), result.Limit, result.Offset > result.pageStart)
 }
 
-// NextURL returns the following page URL when it exists.
 func (result Result) NextURL() string {
 	return pageURL(result.values, result.Offset+result.Limit, result.Limit, result.Offset+result.Limit < result.pageEnd)
 }

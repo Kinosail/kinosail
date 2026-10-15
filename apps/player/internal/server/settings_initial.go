@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-// The existing synchronous theme asset projects the bookmarked category before
-// body paint. Derive its anchors from the same catalog as the rendered sections.
 func prepareSettingsInitial(source []byte) []byte {
 	anchors := make(map[string]string)
 	levels := make(map[string]string)

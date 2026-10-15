@@ -2,7 +2,6 @@ package catalog
 
 import "time"
 
-// ProgressRevision applies one ordered playback event.
 func ProgressRevision(seconds float64, watched *bool, session string, revision uint64, now time.Time) ProgressChange {
 	return func(state PlaybackState) (PlaybackState, bool, error) {
 		if session != "" && revision > 0 && state.Session == session && revision <= state.Revision {
@@ -22,7 +21,6 @@ func ProgressRevision(seconds float64, watched *bool, session string, revision u
 	}
 }
 
-// ProgressAudit identifies transitions from a committed playback event.
 func ProgressAudit(previous, state PlaybackState, seconds float64, watched *bool, accepted bool, err error) (started, completed bool) {
 	if err != nil || !accepted {
 		return false, false

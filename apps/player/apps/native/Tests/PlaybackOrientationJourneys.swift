@@ -4,8 +4,6 @@ import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
-// Defined before production edits. Isolated UIKit/real decoded-media journeys;
-// system Portrait Orientation Lock and physical iPhone behavior need device proof.
 @Suite(.serialized) @MainActor
 struct PlaybackOrientationJourneys {
     @Test func detachedLandscapeRequestIsRecoverable() {
@@ -125,7 +123,6 @@ struct PlaybackOrientationJourneys {
         try await snapshot(window, name: "portrait-returned")
         window.rootViewController = UIHostingController(rootView: TouchPlaybackView(failure: nil, retry: {}, close: {})
             .environment(session).environment(\.dynamicTypeSize, .accessibility3))
-        // A replacement test host must decode a fresh frame before a loaded capture.
         try await Task.sleep(for: .milliseconds(200))
         session.player.presentation.attach(player)
         session.player.resume()
@@ -175,8 +172,6 @@ struct PlaybackOrientationJourneys {
             try #require(landscapeButton(window, label: "Watch in landscape")).sendActions(for: .touchUpInside)
             try await until { scene.effectiveGeometry.interfaceOrientation.isLandscape && landscapeButton(window, label: "Return to previous orientation")?.isEnabled == true }
             let dismissal = PlaybackDismissal()
-            // Exercise the accepted drag policy and the actual NavigationStack close
-            // callback. Touch injection and physical hit testing remain device checks.
             dismissal.dragEnded(translation: CGSize(width: 5, height: 140), start: CGPoint(x: 80, y: 100),
                                 size: window.bounds.size, excludedBottom: 144, close: { route.path = [] })
             dismissal.requestClose { route.path = [] }
@@ -213,7 +208,6 @@ struct PlaybackOrientationJourneys {
             guard let scene = window.windowScene else { return false }
             return scene.effectiveGeometry.interfaceOrientation.isLandscape == (window.bounds.width > window.bounds.height)
         }
-        // Scene geometry changes before SwiftUI's rotation animation finishes.
         try await Task.sleep(for: .milliseconds(450))
         window.layoutIfNeeded()
         let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in window.drawHierarchy(in: window.bounds, afterScreenUpdates: true) }

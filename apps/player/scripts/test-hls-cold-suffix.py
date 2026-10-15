@@ -134,8 +134,6 @@ def exercise(source_fixture, source_facts, fault):
                 wait_for(lambda: settled(directory), 5, 'index_probe_not_settled')
                 metadata = [cache / name for name in ['.copy-timeline', '.copy-clock', '.source', 'index.m3u8']]
                 metadata += [rendition / name for name in ['init.mp4', 'index.m3u8']]
-                # Completion finalizes the master's measured bandwidth. Capture
-                # the immutable cache only after the original producer finishes.
                 wait_for(lambda: settled(directory, 'encoder-pids') and first_encoder_completed(directory), 5, 'initial_encoder_not_completed')
                 case['initialProducerState'] = {'encoderSettled': settled(directory, 'encoder-pids'),
                     'completionLogged': first_encoder_completed(directory)}

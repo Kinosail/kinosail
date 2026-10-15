@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// AssertOIDCCallbackRejectsInvalidQueriesBeforeExchange preserves pending transactions after malformed callbacks.
 func AssertOIDCCallbackRejectsInvalidQueriesBeforeExchange(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)
@@ -37,7 +36,6 @@ func AssertOIDCCallbackRejectsInvalidQueriesBeforeExchange(t *testing.T, fixture
 	}
 }
 
-// AssertOIDCCallbackAcceptsBoundedProviderExtensions preserves accepted provider response extensions.
 func AssertOIDCCallbackAcceptsBoundedProviderExtensions(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)
@@ -50,7 +48,6 @@ func AssertOIDCCallbackAcceptsBoundedProviderExtensions(t *testing.T, fixture OI
 	}
 }
 
-// AssertOIDCCallbackValidatesAuthorizationResponseIssuer rejects a mismatched issuer without consuming the valid transaction.
 func AssertOIDCCallbackValidatesAuthorizationResponseIssuer(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	provider := newOIDCCallbackProvider(t, true)

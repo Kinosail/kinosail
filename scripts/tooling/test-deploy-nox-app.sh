@@ -91,7 +91,6 @@ for entry in \
   grep -Fq "archive $sha -- apps/$app packages" "$tmp/git.log"
 done
 
-# A manual deployment without a revision resolves the current main before validation.
 : >"$tmp/git.log"; : >"$tmp/podman.log"; : >"$tmp/ssh.log"
 PATH="$tmp/positive-bin:$PATH" KINOSAIL_TEST_ARCHIVE="$tmp/empty.tar" \
   KINOSAIL_TEST_GIT_LOG="$tmp/git.log" KINOSAIL_TEST_PODMAN_LOG="$tmp/podman.log" \
@@ -103,7 +102,6 @@ grep -Fq "archive $sha -- apps/player packages" "$tmp/git.log"
 positive player KINOSAIL_DEPLOY_GIT_DIR 0
 grep -Fq "archive $sha:apps/player" "$tmp/git.log"
 
-# A newer main with only unrelated changes may deploy the latest published ancestor.
 new_main=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 : >"$tmp/git.log"; : >"$tmp/ssh.log"
 KINOSAIL_DEPLOY_EXPECT_MAIN="$new_main" KINOSAIL_TEST_REMOTE_SHA="$new_main" positive player KINOSAIL_DEPLOY_GIT_DIR 1
@@ -116,7 +114,6 @@ if KINOSAIL_DEPLOY_EXPECT_MAIN="$new_main" KINOSAIL_TEST_REMOTE_SHA="$new_main" 
 fi
 [[ ! -s "$tmp/ssh.log" && ! -s "$tmp/podman.log" ]] || { echo 'non-ancestor deployment caused a side effect' >&2; exit 1; }
 
-# A scanner rejection must stop before loading or switching the remote image.
 : >"$tmp/ssh.log"
 if KINOSAIL_TEST_SCAN_FAIL=1 positive player KINOSAIL_DEPLOY_GIT_DIR 1; then
   echo 'scanner rejection was ignored' >&2; exit 1
@@ -125,8 +122,6 @@ if grep -Eq 'docker load|bash -s --' "$tmp/ssh.log"; then
   echo 'scanner rejection reached deployment' >&2; exit 1
 fi
 
-# Tool discovery is a host CLI boundary, outside populated application E2E.
-# A missing scanner must fail before building an image or changing Nox.
 mkdir "$tmp/base-bin"
 for command in bash dirname awk jq env cat mktemp mkdir tar rm grep date tail shasum xargs; do
   ln -s "$(command -v "$command")" "$tmp/base-bin/$command"
@@ -143,14 +138,12 @@ for scanner in trivy syft; do
   if grep -Eq 'archive ' "$tmp/git.log" || grep -Eq 'docker load|bash -s --' "$tmp/ssh.log"; then
     echo 'missing scanner caused a deployment side effect' >&2; exit 1
   fi
-  # An already healthy deployment needs no scanner or image build.
   : >"$tmp/podman.log"; : >"$tmp/ssh.log"
   PATH="$tmp/base-bin" KINOSAIL_TEST_CURRENT="$sha" positive player KINOSAIL_DEPLOY_GIT_DIR 1
   [[ ! -s "$tmp/podman.log" ]] || { echo 'healthy deployment rebuilt an image' >&2; exit 1; }
   mv "$tmp/positive-bin/$scanner.hidden" "$tmp/positive-bin/$scanner"
 done
 
-# A paused marker cannot bypass the deployment scanner.
 : >"$tmp/ssh.log"
 if KINOSAIL_TEST_PAUSED=1 KINOSAIL_TEST_SCAN_FAIL=1 positive player KINOSAIL_DEPLOY_GIT_DIR 1; then
   echo 'paused revision bypassed deployment scanner' >&2; exit 1
@@ -176,7 +169,6 @@ for condition in failed-ci pending-ci missing-ci wrong-sha malformed-ci unpublis
 done
 printf 'Nox deployment input and scan-gate tests passed\n'
 
-# Only a missing cached layer triggers a cache-free rebuild.
 : >"$tmp/ssh.log"; : >"$tmp/podman.log"
 KINOSAIL_TEST_BUILD_FAIL=cache positive player KINOSAIL_DEPLOY_GIT_DIR 1
 grep -Fq 'build --no-cache' "$tmp/podman.log"

@@ -70,8 +70,6 @@ export async function assetReceipt(page: Page, info: TestInfo) {
   await info.attach("served-browse-asset", { body: JSON.stringify({ src, bytes: body.length, sha256: createHash("sha256").update(body).digest("hex") }), contentType: "application/json" });
 }
 
-// Observe native smooth scrolling through three equal real geometry samples.
-// No CSS, scrolling implementation, storage, app state, or lifecycle is mocked.
 export async function settle(page: Page, selected: string) {
   let previous = "", equal = 0;
   await expect.poll(async () => {

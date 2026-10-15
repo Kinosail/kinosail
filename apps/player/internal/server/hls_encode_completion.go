@@ -17,8 +17,6 @@ func (manager *hlsManager) prepareHLSEncodeDirectory(job *hlsJob, directory stri
 		job.err = os.MkdirAll(directory, 0o700) //nolint:gosec // The key is a validated cache name.
 	}
 	if job.err == nil {
-		// Every writer, including a preserved refill, revokes prior completion
-		// before changing media. Failure to revoke prevents the new encoding.
 		root, err := manager.openCopiedHLSRoot(directory)
 		if err == nil {
 			err = root.Remove(shortHEVCCompletionMarker)

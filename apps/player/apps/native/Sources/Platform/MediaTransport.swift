@@ -28,9 +28,6 @@ actor MediaTransport {
         gateway?.close(); gateway = nil
         guard let previous = departure else { return }
         departure = nil
-        // Release only this viewer's departed stream. Local closure must not wait
-        // for a Server outage; its idle timeout remains the cleanup fallback.
-        // ServerClient records bounded request diagnostics if delivery fails.
         Task {
             _ = try? await previous.client.request("/api/v1/items/\(previous.itemID)/playback-events", method: .post,
                 body: .object(["session": .string(previous.session), "event": .string("session-end"), "sequence": .number(1)]),
@@ -39,8 +36,6 @@ actor MediaTransport {
     }
 }
 
-/// All mutable state and delegate callbacks belong to this serial queue.
-/// Only start and close cross that boundary; neither exposes credentials.
 private final class MediaGateway: @unchecked Sendable {
     private let queue = DispatchQueue(label: "com.kinosail.player.media")
     private let listener: NWListener

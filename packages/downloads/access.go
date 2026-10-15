@@ -12,7 +12,6 @@ type requestAccess struct {
 	item    func(*http.Request, string) (library.Item, bool)
 }
 
-// NewAccess applies Player's offline-download policy to app-owned request state.
 func NewAccess(profile func(*http.Request) identitycore.Profile, item func(*http.Request, string) (library.Item, bool)) Access {
 	return requestAccess{profile: profile, item: item}
 }

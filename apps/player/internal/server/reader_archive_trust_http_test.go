@@ -16,7 +16,7 @@ func TestReaderRejectsDuplicateArchiveResourcesThroughHTTP(t *testing.T) { //nol
 	for _, format := range []string{"cbz", "cbt", "epub"} {
 		for _, variant := range []string{"different", "identical", "oversized"} {
 			if format == "cbt" && variant == "oversized" {
-				continue // Oversized central-directory declarations are ZIP-specific.
+				continue
 			}
 			for _, reverse := range []bool{false, true} {
 				name := format + "/" + variant + "/first"
@@ -34,8 +34,6 @@ func TestReaderRejectsDuplicateArchiveResourcesThroughHTTP(t *testing.T) { //nol
 					}
 					entries := []readerTrustEntry{{name: asset, body: bodies[0]}, {name: asset, body: bodies[1]}}
 					if variant == "oversized" {
-						// The central directory declares one duplicate above the public asset cap;
-						// its stored bytes stay small so this test never inflates 64MiB.
 						entries[0].declaredSize = 64<<20 + 1
 					}
 					if reverse {
@@ -65,7 +63,6 @@ func TestReaderRejectsDuplicateEPUBManifestIDsThroughHTTP(t *testing.T) {
 				readerTrustEntry{name: "OEBPS/two.xhtml", body: last})
 			handler, id, _ := readerTrustFixture(t, "epub", entries)
 			readerTrustUnavailable(t, handler, id)
-			// The independent asset route still returns unambiguous resources by exact name.
 			readerTrustAssetEquals(t, handler, id, "OEBPS/one.xhtml", first)
 			readerTrustAssetEquals(t, handler, id, "OEBPS/two.xhtml", last)
 		})

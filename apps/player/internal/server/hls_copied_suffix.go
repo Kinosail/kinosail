@@ -37,8 +37,6 @@ func (manager *hlsManager) bindCopiedHLSIndex(ctx context.Context, item library.
 		return manager.bindCopiedHLSTimeline(ctx, directory, number)
 	}
 	if manager.copiedHLSTimelinePresent(directory) {
-		// Refills retain the original source cuts and mux clock. Never replace
-		// a present certificate with a newly scanned view of the same path.
 		_, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 		return err
 	}
@@ -68,15 +66,11 @@ func (manager *hlsManager) bindCopiedHLSIndex(ctx context.Context, item library.
 }
 
 func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item library.Item, recipe hlsRecipe, policy string) (timeline *copiedHLSTimeline, result error) {
-	// Acquisition and all three probes share one deadline. The encoding job
-	// owns this work; requests reuse the job instead of starting more probes.
 	ctx, cancel := context.WithTimeout(parent, 8*time.Second)
 	defer cancel()
 	phase := "duration"
 	defer func() {
 		if result != nil {
-			// The existing encoder boundary logs this bounded operation and phase
-			// with its owning request/session. No source or process output escapes.
 			result = fmt.Errorf("copied HLS suffix %s: %w", phase, result)
 		}
 	}()
@@ -89,7 +83,7 @@ func (manager *hlsManager) indexCopiedHLSSuffix(parent context.Context, item lib
 	if err != nil {
 		return nil, err
 	}
-	defer release() // Settles before the media encoder acquires its reservation.
+	defer release()
 	if !manager.index.Safe(item.Path) || manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
 		return nil, errHLSIdentityChanged
 	}
@@ -113,7 +107,7 @@ func (manager *hlsManager) copiedHLSCacheUnwritten(directory string) bool {
 	defer root.Close()
 	for _, name := range []string{"index.m3u8", ".copy-clock"} {
 		if _, err := root.Lstat(name); !os.IsNotExist(err) {
-			return false // A retained output cannot acquire a new origin.
+			return false
 		}
 	}
 	return true
@@ -123,7 +117,5 @@ func copiedHLSSuffixSpan(duration float64, mode string) float64 {
 	if mode == "audio-transcode" {
 		return maximumCopiedHLSAudioReplay
 	}
-	// Remux scans retain the format/video EOF tolerance within the shared
-	// deadline and output limits. Audio replay keeps its encoder-history bound.
 	return duration + 0.1
 }

@@ -6,9 +6,6 @@ import { join } from "node:path";
 import { login } from "./test-instance-helpers";
 import { test } from "./test-instance-network";
 
-// This opt-in journey needs a dedicated generated >2 GiB MP4 and disk space.
-// It uses the production transfer, hash worker, OPFS, and service worker unchanged.
-// Tracing buffers network bodies; retain small receipts and explicit screenshots.
 test.use({ trace: "off", screenshot: "off", video: "off" });
 test("real large transfer survives browser restart and plays with the Server disconnected", async ({ connection }, info) => {
   test.skip(process.env.KINOSAIL_LAUNCH_READINESS !== "1", "requires the isolated large-file launch fixture");

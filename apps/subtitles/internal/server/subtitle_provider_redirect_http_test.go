@@ -148,7 +148,6 @@ func TestSubtitleCredentialRedirectsBoundTargetsBeforeRequest(t *testing.T) { //
 				case "foreign-origin":
 					location = outside.URL + "/final"
 				}
-				// The forbidden sinks are independently reachable with valid JSON and no credentials.
 				for _, server := range []*httptest.Server{outside, remote} {
 					request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, server.URL+"/reachability-control", nil)
 					if err != nil {

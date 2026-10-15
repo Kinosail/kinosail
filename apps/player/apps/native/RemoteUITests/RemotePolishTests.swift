@@ -1,7 +1,6 @@
 import UIKit
 import XCTest
 
-// Uses the populated loopback QA session. Keep screenshot attachments in the result bundle.
 final class RemotePolishTests: RemoteTestCase {
     @MainActor
     func testPlayPauseStartsTheFocusedHomeTitle() {
@@ -48,15 +47,11 @@ final class RemotePolishTests: RemoteTestCase {
         XCTAssertGreaterThanOrEqual(comparisons, 2)
     }
 
-    // A label query can report focus while the rendered card only zooms its
-    // already-clipped artwork. The TV design requires a visible light outline.
     @MainActor
     private func assertVisibleArtworkFocus(_ element: XCUIElement, in app: XCUIApplication) {
         let visible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             let frame = element.frame
             let screenshot = app.screenshot().image
-            // Allow small focus-bound/rasterization differences. Require a
-            // light edge on multiple rows across three separated points.
             let lightRows = (-6...8).filter { offset in
                 [0.25, 0.5, 0.75].allSatisfy { fraction in
                     let color = self.pixel(screenshot,
@@ -144,7 +139,6 @@ final class RemotePolishTests: RemoteTestCase {
     private func assertBlueFixtureArtwork(_ app: XCUIApplication, name: String) {
         let predicate = NSPredicate { _, _ in
             let image = app.screenshot().image
-            // Sample the artwork away from controls; the moon and crop vary with hero height.
             return [0.65, 0.9].contains { x in
                 [0.14, 0.25, 0.38].contains { y in
                     let color = self.pixel(image, x: x, y: y)

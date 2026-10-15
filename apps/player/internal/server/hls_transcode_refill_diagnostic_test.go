@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// Preserve a bounded safe failure projection even when the public request fails
-// before the ordinary clock receipts. Raw process and request logs stay private.
 func transcodeRefillDiagnostics(t *testing.T, logs *copiedLogBuffer, tools string) {
 	t.Helper()
 	if !t.Failed() {

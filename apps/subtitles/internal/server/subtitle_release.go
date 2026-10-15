@@ -12,8 +12,6 @@ import (
 
 var subtitleReleaseGroup = regexp.MustCompile(`(?i)-([a-z0-9]{2,24})(?:\.(?:srt|vtt|ass|ssa|mkv|mp4))?$`)
 
-// Title identity and release timing are separate evidence. A matching title
-// alone must never bypass audio verification.
 func subtitleReleaseSimilarity(left, right string) float64 {
 	score := subtitleTokenSimilarity(left, right)
 	l, r := subtitleReleaseParts(left), subtitleReleaseParts(right)
@@ -70,8 +68,6 @@ func subtitleReleaseParts(value string) map[string]string {
 
 var subtitleReleaseResolution = regexp.MustCompile(`(?i)^\d{3,4}[pi]$`)
 
-// Clean only a filename-derived movie title with recognizable release metadata.
-// Curated titles remain authoritative; release details still rank separately.
 func subtitleSearchIdentity(item library.Item) (string, string) {
 	base := strings.TrimSuffix(filepath.Base(item.Path), filepath.Ext(item.Path))
 	words := func(value string) []string {

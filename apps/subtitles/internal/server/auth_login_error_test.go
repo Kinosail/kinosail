@@ -9,8 +9,6 @@ import (
 
 func TestPublicPasswordLoginExplainsPasskeyRecoveryWithoutCreatingSession(t *testing.T) {
 	t.Parallel()
-	// No profile store is needed: public password submissions must be rejected
-	// before credential verification or session creation can be reached.
 	auth := &authentication{}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "https://subtitles.example/login", strings.NewReader("name=owner&password=not-a-real-password"))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")

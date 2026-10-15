@@ -8,11 +8,6 @@ import (
 	"time"
 )
 
-// A live Server lifecycle schedules its initial automatic-maintenance pass.
-// These two restart fixtures must reach their durable-write/child-start
-// boundary after that existing work settles. Every busy response must leave
-// the same public receipt reusable and start no analysis or file/history work.
-// Deliberate busy/replay controls retain the ordinary activation helper.
 func activateSubtitleOperationAfterStartup(t *testing.T, handler http.Handler, base, id, target, calls string) *httptest.ResponseRecorder {
 	t.Helper()
 	deadline := time.Now().Add(2 * time.Second)

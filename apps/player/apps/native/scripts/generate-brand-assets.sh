@@ -14,7 +14,6 @@ render() {
   unlink "$temporary"
 }
 
-# Render directly into the active Swift asset catalogs.
 ios="$root/Resources/iOS.xcassets/AppIcon.appiconset/AppIcon.png"
 icon="$scratch/icon.png"
 render "$source_dir/icon.svg" "$icon" 1024 1024

@@ -68,8 +68,6 @@ class Peer(BaseHTTPRequestHandler):
         elif path.endswith("/draft"):
             self.respond(b'{"state":"idle","words":[]}', "application/json")
         elif path == "/static/theme.js":
-            # Delay only the audit's next sample. Initialize the production dock
-            # after the first recorded frame; leave real geometry and time intact.
             script = """const nativeFrame = requestAnimationFrame;
 let initialized = false, delayed = false;
 window.requestAnimationFrame = callback => {

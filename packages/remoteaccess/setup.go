@@ -2,7 +2,6 @@ package remoteaccess
 
 import "strings"
 
-// SetupStep gives Owners the same ordered instructions in the API and UI.
 type SetupStep struct {
 	Title       string       `json:"title"`
 	Instruction string       `json:"instruction"`
@@ -10,13 +9,11 @@ type SetupStep struct {
 	Links       []SetupLink  `json:"links,omitempty"`
 }
 
-// SetupField matches a field in a router's port-forwarding form.
 type SetupField struct {
 	Label string `json:"label"`
 	Value string `json:"value"`
 }
 
-// SetupLink points to a maintained manufacturer's guide, never a detected router.
 type SetupLink struct {
 	Label string `json:"label"`
 	URL   string `json:"url"`

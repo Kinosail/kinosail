@@ -68,7 +68,6 @@ func RunHLSCommand(command *exec.Cmd, private ...string) error {
 	return RunHLSCommandObserved(command, nil, private...)
 }
 
-// RunHLSCommandObserved reports a successful child launch before waiting for its exit.
 func RunHLSCommandObserved(command *exec.Cmd, started func(), private ...string) error {
 	if command == nil {
 		return NewHLSDiagnosticError(errors.New("transcoder command is missing"), "")

@@ -13,18 +13,15 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// CollectionIndex exposes Viewer-filtered Library reads to the shared API adapter.
 type CollectionIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 
-// CollectionProgress projects Library items into the app's public client shape.
 type CollectionProgress interface {
 	ClientItems(*http.Request, []library.Item) any
 }
 
-// CollectionStore owns Collection queries and durable mutations.
 type CollectionStore interface {
 	CollectionNames([]library.Item) []string
 	CollectionSummaries([]library.Item) any
@@ -34,41 +31,34 @@ type CollectionStore interface {
 	DeleteCollection(context.Context, string, []library.Item) error
 }
 
-// CollectionHandlers is the shared Player-canonical Collection API.
 type CollectionHandlers struct {
 	Index    CollectionIndex
 	Progress CollectionProgress
 	Lists    CollectionStore
 }
 
-// List serves the visible Collection index.
 func (handlers CollectionHandlers) List(writer http.ResponseWriter, request *http.Request) {
 	items := handlers.Index.VisibleLibrary(request)
 	writeCollectionJSON(writer, map[string]any{"collections": handlers.Lists.CollectionNames(items), "summaries": handlers.Lists.CollectionSummaries(items)}, http.StatusOK)
 }
 
-// Create validates and creates one Collection.
 func (handlers CollectionHandlers) Create(writer http.ResponseWriter, request *http.Request) {
 	CreateCollectionAPI(request, handlers.Lists.CreateCollection).serve(writer)
 }
 
-// Get serves one visible Collection.
 func (handlers CollectionHandlers) Get(writer http.ResponseWriter, request *http.Request) {
 	items, name := handlers.Index.VisibleLibrary(request), request.PathValue("name")
 	CollectionAPI(name, func() []library.Item { return items }, handlers.Lists.CollectionNames, handlers.Lists.Collection, func(values []library.Item) any { return handlers.Progress.ClientItems(request, values) }).serve(writer)
 }
 
-// Save validates and updates one Collection item.
 func (handlers CollectionHandlers) Save(writer http.ResponseWriter, request *http.Request) {
 	SaveCollectionAPI(request, func(id string) (library.Item, bool) { return handlers.Index.VisibleItem(request, id) }, handlers.Lists.SetCollection, collectionStoreStatus).serve(writer)
 }
 
-// Delete removes one visible Collection.
 func (handlers CollectionHandlers) Delete(writer http.ResponseWriter, request *http.Request) {
 	DeleteCollectionAPI(request, func() []library.Item { return handlers.Index.VisibleLibrary(request) }, handlers.Lists.DeleteCollection).serve(writer)
 }
 
-// APIAction is one shared JSON mutation or query response.
 type APIAction struct {
 	Body     any
 	Err      error
@@ -104,7 +94,6 @@ func collectionStoreStatus(err error) int {
 	return http.StatusInternalServerError
 }
 
-// CreateCollectionAPI strictly parses and creates one Collection.
 func CreateCollectionAPI(request *http.Request, create func(context.Context, string) error) APIAction {
 	var input struct {
 		Name string `json:"name"`
@@ -122,7 +111,6 @@ func CreateCollectionAPI(request *http.Request, create func(context.Context, str
 	return APIAction{Body: map[string]string{"name": input.Name}, Status: http.StatusCreated}
 }
 
-// CollectionAPI builds one visible Collection response or a not-found result.
 func CollectionAPI(name string, items func() []library.Item, names func([]library.Item) []string, collection func(string, []library.Item) []library.Item, project func([]library.Item) any) APIAction {
 	if !validCollectionReadName(name) {
 		return APIAction{NotFound: true}
@@ -146,7 +134,6 @@ func validCollectionReadName(name string) bool {
 	return true
 }
 
-// SaveCollectionAPI validates a visible item before mutating Collection membership.
 func SaveCollectionAPI(request *http.Request, visible func(string) (library.Item, bool), save func(context.Context, string, library.Item, bool) error, status func(error) int) APIAction {
 	var input struct {
 		Included bool `json:"included"`
@@ -168,7 +155,6 @@ func SaveCollectionAPI(request *http.Request, visible func(string) (library.Item
 	return APIAction{Body: map[string]bool{"included": input.Included}, Status: http.StatusOK}
 }
 
-// DeleteCollectionAPI resolves visible items before deleting one Collection.
 func DeleteCollectionAPI(request *http.Request, items func() []library.Item, remove func(context.Context, string, []library.Item) error) APIAction {
 	name := request.PathValue("name")
 	if !ValidListName(name) {

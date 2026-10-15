@@ -51,7 +51,6 @@ class NativeResultsTests(unittest.TestCase):
                 self.assertEqual(receipt['summarySHA256'], hashlib.sha256(raw).hexdigest())
 
     def test_fresh_backup_contract_requires_exactly_one_executed_test(self):
-        # A fresh-container test cannot create missing/duplicate/skipped receipt inputs.
         for passed, skipped, wanted in [(1, 0, 0), (0, 1, 1), (2, 0, 1), (1, 1, 1), (0, 0, 1)]:
             with self.subTest(passed=passed, skipped=skipped):
                 data = summary()
@@ -134,8 +133,6 @@ class NativeResultsTests(unittest.TestCase):
             self.assertNotIn('private-secret', result.stdout + result.stderr)
 
     def test_workflow_checks_both_platforms_and_preserves_any_failure(self):
-        # The CLI cannot prove CI calls it after a failed xcodebuild or continues
-        # to retain the second platform when the first export/check fails.
         root = SCRIPT.parents[2]
         source = (root / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Inspect native contract results\n', 1)[1].split('      - name:', 1)[0]

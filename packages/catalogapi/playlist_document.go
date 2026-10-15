@@ -20,7 +20,6 @@ const (
 	maximumPlaylistBytes   = 1 << 20
 )
 
-// PlaylistDocument is the portable Player playlist format.
 type PlaylistDocument struct {
 	Format  string   `json:"format,omitempty"`
 	Version int      `json:"version,omitempty"`
@@ -28,7 +27,6 @@ type PlaylistDocument struct {
 	IDs     []string `json:"ids"`
 }
 
-// NewListHandlers binds portable playlist documents to the canonical web mutations.
 func NewListHandlers(index MediaIndex, lists MediaLists, viewer func(*http.Request) string, failure func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request)) catalog.ListHandlers {
 	return catalog.NewListHandlers(index, lists, viewer, func(request *http.Request, raw string) (string, error) {
 		document, err := DecodePlaylistDocument(raw)
@@ -41,7 +39,6 @@ func NewListHandlers(index MediaIndex, lists MediaLists, viewer func(*http.Reque
 	}, failure, notFound)
 }
 
-// DecodePlaylistDocument strictly decodes one bounded playlist document.
 func DecodePlaylistDocument(raw string) (PlaylistDocument, error) {
 	if len(raw) == 0 || len(raw) > maximumPlaylistBytes {
 		return PlaylistDocument{}, errors.New("playlist document is invalid")
@@ -58,12 +55,10 @@ func DecodePlaylistDocument(raw string) (PlaylistDocument, error) {
 	return document, nil
 }
 
-// ValidatePlaylist validates one named playlist and its stable item order.
 func ValidatePlaylist(name string, ids []string) (string, error) {
 	return catalog.ValidatePlaylist(name, ids)
 }
 
-// ValidatePlaylistDocument accepts legacy named playlists and version one exports.
 func ValidatePlaylistDocument(document PlaylistDocument) (string, error) {
 	if document.Format == "" && document.Version == 0 {
 		return ValidatePlaylist(document.Name, document.IDs)
@@ -74,7 +69,6 @@ func ValidatePlaylistDocument(document PlaylistDocument) (string, error) {
 	return ValidatePlaylist(document.Name, document.IDs)
 }
 
-// CreatePlaylistDocument validates every visible item before persistence.
 func CreatePlaylistDocument(ctx context.Context, viewer string, document PlaylistDocument, visible func(string) (library.Item, bool), create func(context.Context, string, string, ...string) error) (string, error) {
 	name, err := ValidatePlaylistDocument(document)
 	if err != nil {
@@ -91,7 +85,6 @@ func CreatePlaylistDocument(ctx context.Context, viewer string, document Playlis
 	return name, nil
 }
 
-// ExportPlaylistDocument builds one stable manual-playlist document.
 func ExportPlaylistDocument(name string, selected map[string]bool, order []string, smart bool) (PlaylistDocument, error) {
 	if selected == nil || smart {
 		return PlaylistDocument{}, os.ErrNotExist

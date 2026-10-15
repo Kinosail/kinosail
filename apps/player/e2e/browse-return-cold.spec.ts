@@ -9,8 +9,6 @@ test.setTimeout(25_000);
 test.beforeEach(async ({ page }) => observe(page));
 const selected = (value: string) => mode === value || mode === "all";
 
-// Worker-scoped browser options must stay at file scope. Pinned Playwright
-// already supplies this switch; it also states this cold boundary explicitly.
 test.use({ serviceWorkers: "block", video: "off", launchOptions: { args: ["--disable-back-forward-cache"] } });
 
 if (selected("cold")) test.describe("native Back without browser cache", () => {
@@ -39,8 +37,6 @@ if (selected("search")) test.describe("live HTMX search then cold playback Back"
     const initial = await record(page, info, "original-url", "");
     await page.locator('form.search input[type="search"]').fill("Return Movie");
     await expect(page).toHaveURL(/q=Return(?:\+|%20)Movie/);
-    // Search's public form resets scope/offset/limit. The 32-title search result
-    // fits its default 100 limit; this guards the changed-URL key, not extent.
     const expected = Array.from({ length: 32 }, (_, position) => `Return Movie ${String(position + 1).padStart(2, "0")}`);
     await expect(page.locator("#library .card h2")).toHaveText(expected);
     const link = page.locator("#library a.card").filter({ hasText: "Return Movie 25" });

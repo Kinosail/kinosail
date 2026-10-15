@@ -14,7 +14,6 @@ import (
 	"github.com/go-jose/go-jose/v4/jwt"
 )
 
-// OIDCStateCookie provides the shared OIDC protocol fixture.
 func OIDCStateCookie(t *testing.T, response *httptest.ResponseRecorder) *http.Cookie {
 	t.Helper()
 	for _, cookie := range response.Result().Cookies() {
@@ -26,7 +25,6 @@ func OIDCStateCookie(t *testing.T, response *httptest.ResponseRecorder) *http.Co
 	return nil
 }
 
-// OIDCCallbackRequest provides the shared OIDC protocol fixture.
 func OIDCCallbackRequest(t *testing.T, path string, state *http.Cookie) *http.Request {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil)
@@ -43,7 +41,6 @@ func mustOIDCLogin(t *testing.T, response *httptest.ResponseRecorder) {
 	}
 }
 
-// MustOIDCAuthorization provides the shared OIDC protocol fixture.
 func MustOIDCAuthorization(t *testing.T, response *httptest.ResponseRecorder) *url.URL {
 	t.Helper()
 	location, err := url.Parse(response.Header().Get("Location"))
@@ -60,7 +57,6 @@ func mustOIDCCallback(t *testing.T, response *httptest.ResponseRecorder, profile
 	}
 }
 
-// FakeOIDC provides the shared OIDC protocol fixture.
 func FakeOIDC(t *testing.T, writer http.ResponseWriter, request *http.Request, issuer, nonce string, private *rsa.PrivateKey) {
 	t.Helper()
 	writer.Header().Set("Content-Type", "application/json")

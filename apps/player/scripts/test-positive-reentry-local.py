@@ -58,8 +58,6 @@ if borrowed_link.exists() or borrowed_link.is_symlink():
         raise RuntimeError('Preserve existing dependency path; pass its exact --dependencies value')
     borrowed_link = None
 
-# Observe actual Node spawn/fork calls, including Playwright's detached browser.
-# Record only owned PID ancestry and creation identity, never command arguments.
 observer = run / 'owned-node-processes.cjs'
 process_log = run / 'owned-node-processes.jsonl'
 observer.write_text('''const cp = require('node:child_process');

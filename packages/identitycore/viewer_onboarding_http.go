@@ -19,7 +19,6 @@ const (
 
 var householdProfileKeys = []string{"name", "password", "owner", "rating", "libraries", "start", "end", "remote", "transcode", "downloads", "kind"}
 
-// OnboardingViewerHandler applies Player's household profile policy before app persistence.
 func OnboardingViewerHandler(add func(string, string, bool, ProfilePolicy) (string, error), writeError func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	if add == nil {
 		return unavailableViewerMutationHandler()

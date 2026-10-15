@@ -1,6 +1,5 @@
 import Foundation
 
-/// System surfaces carry identifiers only. The active session authorizes content again.
 struct MediaLink: Hashable, Identifiable, Sendable {
     enum Action: String, Sendable { case play, detail, search }
     let action: Action

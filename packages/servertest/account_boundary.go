@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// AccountSecurityRejectsAnonymousChanges verifies every security mutation redirects before effects.
 func (fixture LibraryAPIFixture) AccountSecurityRejectsAnonymousChanges(t *testing.T) {
 	handler := fixture.NewHandler("", t.TempDir(), true)
 	for _, path := range []string{"/account/mfa/setup", "/account/mfa/enable", "/account/mfa/disable", "/account/oidc/unlink", "/account/saml/unlink"} {
@@ -20,7 +19,6 @@ func (fixture LibraryAPIFixture) AccountSecurityRejectsAnonymousChanges(t *testi
 	}
 }
 
-// PasskeyInventoryRejectsMalformedRemoval verifies strict identifiers and no side effects.
 func (fixture LibraryAPIFixture) PasskeyInventoryRejectsMalformedRemoval(t *testing.T) {
 	t.Parallel()
 	handler, token := fixture.Server(t)

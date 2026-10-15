@@ -6,8 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// HardwareFailure excludes input, storage and unrelated muxing failures. Only
-// diagnostic evidence of device/frame/encoder initialization authorizes a retry.
 func HardwareFailure(detail string) bool {
 	detail = strings.ToLower(detail)
 	for _, excluded := range []string{"no space left", "permission denied", "invalid data found", "no such file", "error opening input"} {
@@ -23,8 +21,6 @@ func HardwareFailure(detail string) bool {
 	return false
 }
 
-// Recovery keeps the negotiated codec immutable. Software fallback is bounded
-// to H.264; expensive formats require a newly negotiated presentation.
 func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []transcodepolicy.Settings {
 	var result []transcodepolicy.Settings
 	if options.HardwareToneMap != "" {
@@ -55,7 +51,6 @@ func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []tr
 	return result
 }
 
-// DeviceKey shares the session budget between APIs targeting the same DRM GPU.
 func DeviceKey(options transcodepolicy.Settings) string {
 	if options.Accelerator == "none" {
 		return ""

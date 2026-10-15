@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// Persisted evidence can fail through unknown reasons, invalid types or bounds,
-// incomplete score pairs, contradictory actions, or invented previous scores.
 func TestSubtitleHistoryRejectsInvalidEvidenceWithoutSideEffects(t *testing.T) { //nolint:gocognit // One persistence boundary checks each malformed evidence case and unchanged state.
 	t.Parallel()
 	for name, evidence := range map[string]string{

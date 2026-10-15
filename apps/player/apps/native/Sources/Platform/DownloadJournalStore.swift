@@ -2,8 +2,6 @@
   import Foundation
   import UIKit
 
-  /// Owns protected journals, path confinement, quarantine and durable deletion.
-  /// Called only on the download engine's serial queue.
   struct DownloadJournalStore: Sendable {
     private let root: URL
 
@@ -47,7 +45,6 @@
               jobs[job.id] = job
             }
           } catch {
-            // Isolate one bad journal; never follow its contents to a different path.
             let quarantine = file.appendingPathExtension("invalid")
             if !FileManager.default.fileExists(atPath: quarantine.path) { try? FileManager.default.moveItem(at: file, to: quarantine) }
           }
@@ -118,7 +115,6 @@
       let marker = folder.appendingPathComponent(key + ".deleting")
       guard marker.resolvingSymlinksInPath().standardizedFileURL == marker.standardizedFileURL else { throw failure() }
       try Data().write(to: marker, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-      // Keep the durable intent until both payloads and journals are gone.
       for suffix in [".media", ".media.part", ".transfer", ".planning", ".transfer.invalid", ".planning.invalid"] {
         let file = folder.appendingPathComponent(key + suffix)
         if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }

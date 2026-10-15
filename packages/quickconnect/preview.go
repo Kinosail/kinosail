@@ -5,15 +5,12 @@ import (
 	"time"
 )
 
-// Preview contains only the information a Viewer needs to approve a device.
-// The polling secret and session credentials never leave the requesting device.
 type Preview struct {
 	Code      string    `json:"code"`
 	Device    string    `json:"device"`
 	ExpiresAt time.Time `json:"expiresAt"`
 }
 
-// Preview returns an unapproved, local request identified by its displayed code.
 func (broker *Broker) Preview(code string, viewer Viewer) (Preview, error) {
 	if !numericCode(code) || !validViewer(viewer) {
 		return Preview{}, ErrInvalidRequest
@@ -27,8 +24,6 @@ func (broker *Broker) Preview(code string, viewer Viewer) (Preview, error) {
 	return preview(pending), nil
 }
 
-// PendingTVs lists at most eight local native TV requests for an authenticated Viewer.
-// Other clients and remote requests remain on the explicit code approval flow.
 func (broker *Broker) PendingTVs(viewer Viewer) ([]Preview, error) {
 	if !validViewer(viewer) {
 		return nil, ErrInvalidRequest

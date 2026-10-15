@@ -23,7 +23,6 @@ const (
 	mcpAPIResponseLimit = 4 << 20
 )
 
-// Gateway provides the shared MCP protocol and API-tool implementation.
 type Gateway struct {
 	config     OAuthConfig
 	principals PrincipalRepository
@@ -55,7 +54,6 @@ type mcpAPIOutput struct {
 	Body   any `json:"body,omitempty"`
 }
 
-// Register installs the protected resource and MCP transport routes.
 func Register(mux *http.ServeMux, config GatewayConfig, connections *Connections) (*Gateway, error) {
 	if mux == nil {
 		return nil, errors.New("MCP gateway requires an HTTP router")

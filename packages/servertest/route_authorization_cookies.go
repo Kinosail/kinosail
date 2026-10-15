@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// PostRouteLoginCookie preserves the original form encoding, address, and cookie checks.
 func PostRouteLoginCookie(t *testing.T, handler http.Handler, form url.Values, remoteAddress string) *http.Cookie {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader(form.Encode()))
@@ -26,7 +25,6 @@ func PostRouteLoginCookie(t *testing.T, handler http.Handler, form url.Values, r
 	return nil
 }
 
-// ExerciseRouteWithCookie sends the original concrete route and cancels event streams after flush.
 func ExerciseRouteWithCookie(t *testing.T, handler http.Handler, pattern string, cookie *http.Cookie, concretePath func(string) string, afterFlush func(*httptest.ResponseRecorder, context.CancelFunc) http.ResponseWriter) *httptest.ResponseRecorder {
 	t.Helper()
 	method, path, found := strings.Cut(pattern, " ")
@@ -47,13 +45,11 @@ func ExerciseRouteWithCookie(t *testing.T, handler http.Handler, pattern string,
 	return response
 }
 
-// RouteAuthorizationServer retains enrollment secrets beside the real app handler.
 type RouteAuthorizationServer struct {
 	http.Handler
 	OwnerSecret, ViewerSecret string
 }
 
-// LoginRouteCookie preserves factor enrollment and cookie login for the route test server.
 func LoginRouteCookie(t *testing.T, handler http.Handler, name, password string, loginProfile func(*testing.T, http.Handler, string, string) string, nextAddress func() string) *http.Cookie {
 	t.Helper()
 	form := url.Values{"name": {name}, "password": {password}}

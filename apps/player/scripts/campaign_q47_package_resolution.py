@@ -29,7 +29,6 @@ def container(path, boundary):
         return None
     if not (stat.S_ISDIR(details.st_mode) or stat.S_ISLNK(details.st_mode)):
         raise ValueError("dependency_kind")
-    # Existing broken/escaped links are failures; only missing lstat may continue.
     check_budget()
     selected = path.resolve(strict=True)
     if not selected.is_relative_to(boundary) or not selected.is_dir():
@@ -55,8 +54,6 @@ def select(modules, name, boundary):
 
 
 def candidates(app, importer):
-    # Mirrors Node 26 POSIX _nodeModulePaths, stopping at the declared APP.
-    # No global folders, NODE_PATH, package exports or arbitrary package names.
     ancestor, steps, emitted = importer, 0, 0
     while True:
         check_budget()

@@ -217,7 +217,6 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
         "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-native-intent" \
         "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/native-intent-$project"
     fi
-    # Prepared-Owner journeys need fresh state after the installation journey.
     start_fresh_server "$port"
     run_populated_player_journeys "$project" "$url" \
       "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/settings-$project"
@@ -240,7 +239,6 @@ code="$(printf '%06d' "$(((16#$chunk & 0x7fffffff) % 1000000))")"
 expect_status 303 --cookie "$media_dir/cookies" --header "Origin: $url" --header "X-Kinosail-CSRF: $csrf" --data "code=$code" "$url/account/mfa/enable"
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-# One exec starts all relays concurrently; retain stderr for startup failures.
 # shellcheck disable=SC2016 # Expansion belongs to the container shell.
 "$engine" exec --interactive "$container" sh -c 'exec 3<&0; for index in $(seq 1 12); do kinosail mcp-stdio <&3 & done; wait' <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay.log" &
 mcp_jobs+=("$!")
@@ -290,7 +288,6 @@ for _ in {1..240}; do
   sleep 0.25
 done
 grep --quiet '720p/index.m3u8' "$media_dir/compatible.m3u8"
-# Lower renditions depend on the host's encoding capacity.
 grep --quiet '#EXT-X-INDEPENDENT-SEGMENTS' "$media_dir/compatible.m3u8"
 curl --fail --silent --insecure --cookie "$media_dir/cookies" "$url/hls/$id/720p/init.mp4" --output "$media_dir/init.mp4"
 curl --fail --silent --insecure --cookie "$media_dir/cookies" "$url/hls/$id/720p/segment-00000.m4s" --output "$media_dir/segment.m4s"

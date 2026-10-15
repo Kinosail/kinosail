@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// LegacyTMDBUsesFilenameIMDbIDBeforeTitleSearch checks metadata through the real app server.
 func (fixture MetadataFixture) LegacyTMDBUsesFilenameIMDbIDBeforeTitleSearch(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -29,7 +28,6 @@ func (fixture MetadataFixture) LegacyTMDBUsesFilenameIMDbIDBeforeTitleSearch(t *
 	}
 }
 
-// TMDBAttributionIsVisibleWhenEnabled checks metadata through the real app server.
 func (fixture MetadataFixture) TMDBAttributionIsVisibleWhenEnabled(t *testing.T) {
 	t.Helper()
 	t.Parallel()

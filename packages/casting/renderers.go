@@ -34,8 +34,6 @@ type Device struct {
 	expires  time.Time
 }
 
-// Renderers only controls endpoints learned from bounded local SSDP responses.
-// Callers receive opaque IDs; they cannot choose an arbitrary destination URL.
 type Renderers struct {
 	mu       sync.Mutex
 	devices  map[string]Device

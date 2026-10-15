@@ -36,7 +36,6 @@ type Probe struct {
 	embeddedCalls map[string]*embeddedCall
 }
 
-// Enrichment connects probe results to app-owned chapter and marker stores.
 type Enrichment struct {
 	Chapters func(context.Context, library.Item, float64, []Chapter) []Chapter
 	Markers  func(library.Item, []Marker) []Marker
@@ -60,7 +59,6 @@ type Result struct {
 	ReplayGain    ReplayGain
 }
 
-// MediaFacts adapts one probe result to the shared playback decision model.
 func (result Result) MediaFacts(item library.Item, fileVersion string, subtitleLanguage func(string, string) string, subtitleRole func(string) string) playback.MediaFacts {
 	container := result.Container
 	if container == "" {

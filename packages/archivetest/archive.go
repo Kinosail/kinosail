@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// WriteZIP creates a ZIP fixture without filtering intentionally invalid test entries.
 func WriteZIP(t *testing.T, name string, files map[string]string) {
 	t.Helper()
 	file, err := os.Create(name) //nolint:gosec // Test archive path is inside t.TempDir.
@@ -32,7 +31,6 @@ func WriteZIP(t *testing.T, name string, files map[string]string) {
 	}
 }
 
-// WriteTar creates a TAR fixture with the original Player entry modes and content.
 func WriteTar(t *testing.T, name string, files map[string]string) {
 	t.Helper()
 	file, err := os.Create(name) //nolint:gosec // Test archive path is inside t.TempDir.

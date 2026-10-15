@@ -1,4 +1,3 @@
-// Package watchrooms coordinates synchronized playback rooms.
 package watchrooms
 
 import (
@@ -16,13 +15,10 @@ const (
 	eventQueue     = 8
 )
 
-// MaximumSeconds bounds every shared playback position.
 const MaximumSeconds = 366 * 24 * 60 * 60
 
-// MaximumDriftSeconds bounds one client synchronization observation.
 const MaximumDriftSeconds = 60 * 60
 
-// Event is one authoritative playback state.
 type Event struct {
 	Action      string    `json:"action"`
 	Media       string    `json:"media"`
@@ -33,7 +29,6 @@ type Event struct {
 	Drift       float64   `json:"drift,omitempty"`
 }
 
-// Metrics reports aggregate room coordination state without Viewer or media identifiers.
 type Metrics struct {
 	Connections       int
 	Joins             uint64
@@ -43,7 +38,6 @@ type Metrics struct {
 	DriftSeconds      float64
 }
 
-// Rooms owns active room state and bounded subscriber queues.
 type Rooms struct {
 	mu                                              sync.Mutex
 	rooms                                           map[string]*room
@@ -68,7 +62,6 @@ type subscriber struct {
 	events chan Event
 }
 
-// Subscription receives ordered room events.
 type Subscription struct {
 	rooms  *Rooms
 	roomID string
@@ -77,7 +70,6 @@ type Subscription struct {
 	once   sync.Once
 }
 
-// New returns an empty room collection.
 func New(ttl time.Duration) *Rooms {
 	if ttl <= 0 {
 		ttl = defaultTTL
@@ -85,7 +77,6 @@ func New(ttl time.Duration) *Rooms {
 	return &Rooms{rooms: make(map[string]*room), ttl: ttl, now: time.Now, newID: rand.Text}
 }
 
-// Create starts one bounded room and returns its identifier.
 func (rooms *Rooms) Create(leader, media string, seconds float64) (string, bool) {
 	if !validIdentity(leader) || !validState("pause", media, seconds) {
 		return "", false
@@ -110,7 +101,6 @@ func (rooms *Rooms) Create(leader, media string, seconds float64) (string, bool)
 	return id, true
 }
 
-// Snapshot returns the current state for one Viewer.
 func (rooms *Rooms) Snapshot(id, viewer string) (Event, bool) {
 	rooms.mu.Lock()
 	defer rooms.mu.Unlock()
@@ -123,7 +113,6 @@ func (rooms *Rooms) Snapshot(id, viewer string) (Event, bool) {
 	return event, true
 }
 
-// Join adds one Viewer and returns the current state plus its event stream.
 func (rooms *Rooms) Join(id, viewer string) (Event, *Subscription, bool) {
 	rooms.mu.Lock()
 	defer rooms.mu.Unlock()
@@ -145,7 +134,6 @@ func (rooms *Rooms) Join(id, viewer string) (Event, *Subscription, bool) {
 	return event, &Subscription{rooms: rooms, roomID: id, id: rooms.nextID, events: events}, true
 }
 
-// ObserveDrift records one bounded client synchronization difference.
 func (rooms *Rooms) ObserveDrift(subscription *Subscription, seconds float64) bool {
 	if subscription == nil || subscription.rooms != rooms || seconds < 0 || seconds > MaximumDriftSeconds || math.IsNaN(seconds) || math.IsInf(seconds, 0) {
 		return false
@@ -161,7 +149,6 @@ func (rooms *Rooms) ObserveDrift(subscription *Subscription, seconds float64) bo
 	return true
 }
 
-// Metrics returns bounded aggregate room metrics.
 func (rooms *Rooms) Metrics() Metrics {
 	rooms.mu.Lock()
 	defer rooms.mu.Unlock()
@@ -173,7 +160,6 @@ func (rooms *Rooms) Metrics() Metrics {
 	return Metrics{connections, rooms.joins, rooms.reconnects, rooms.slowDrops, rooms.driftObservations, rooms.driftSeconds}
 }
 
-// Update accepts one authorized event and queues the resulting state.
 func (rooms *Rooms) Update(subscription *Subscription, event Event, authorized bool) bool { //nolint:cyclop // One locked transition preserves ordering, authorization, revision, and queue invariants.
 	if subscription == nil || subscription.rooms != rooms {
 		return false
@@ -207,10 +193,8 @@ func (rooms *Rooms) Update(subscription *Subscription, event Event, authorized b
 	return keep
 }
 
-// Events returns the ordered event stream.
 func (subscription *Subscription) Events() <-chan Event { return subscription.events }
 
-// Close leaves the room and closes the event stream.
 func (subscription *Subscription) Close() {
 	if subscription == nil || subscription.rooms == nil {
 		return

@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// A real media decoder does not retain inherited pipes in a descendant. These
-// configured-process controls cover cancellation while stdin delivery is blocked.
 func TestInputProbeJoinsBlockedInputAndDescendant(t *testing.T) {
 	if runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
 		ctx, cancel := context.WithTimeout(t.Context(), time.Second)

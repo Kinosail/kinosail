@@ -35,7 +35,6 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 		await element.play();
 		const state = { currentTime: element.currentTime, duration: element.duration };
 		element.pause();
-		// Exercise the retained failure's late-resume condition on every run.
 		element.currentTime = element.duration * 0.85;
 		return state;
 	});
@@ -43,8 +42,6 @@ test("player stage stays visible across loading and bandwidth changes", async ({
 		!element.seeking && Math.abs(element.currentTime - element.duration * 0.85) < 0.05 && element.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA)).toBe(true);
 	const resumed = await video.evaluate((element: HTMLVideoElement) => {
 		const state = { currentTime: element.currentTime, duration: element.duration };
-		// Earlier journeys retain real progress. Start this synthetic buffer review
-		// at zero so its fixed 60% buffered range contains the playback position.
 		element.currentTime = 0;
 		return state;
 	});

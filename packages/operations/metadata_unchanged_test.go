@@ -11,8 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// Unchanged optional metadata must stop scan feedback. Restored artwork must
-// still republish the library, and failed artwork must remain retryable.
 func TestRefreshMetadataDoesNotRepublishUnchangedProviderResults(t *testing.T) {
 	t.Parallel()
 	for _, scenario := range []struct {
@@ -89,7 +87,6 @@ func TestRefreshMetadataPublishesItsResultWhenConcurrentStoreChanges(t *testing.
 	records := make(map[string]metadata.Record)
 	config := metadataFixture([]library.Item{{ID: "movie", Kind: "video"}}, records)
 	config.Resolve = func(context.Context, library.Item) (metadata.Result, error) {
-		// Another refresh persists before publishing its index snapshot.
 		records["movie"] = record
 		return metadata.Result{Record: record}, nil
 	}

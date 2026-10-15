@@ -92,7 +92,7 @@ type subtitleDashboardData struct {
 }
 
 type subtitleManager struct {
-	factFailures     sync.Map // Item ID to the source version whose track check failed.
+	factFailures     sync.Map
 	index            *libraryIndex
 	settings         *settingsStore
 	provider         *subtitleProvider
@@ -139,7 +139,6 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 		localizedPageError(writer, request, "Request could not be completed.", "Check the view and search values, then try again.", http.StatusBadRequest)
 		return
 	}
-	// Send usable navigation before library, readiness, and recovery-file checks.
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	writer.Header().Set("X-Accel-Buffering", "no")
 	shell := subtitleDashboardData{ServerName: manager.settings.serverName(), Owner: true, subtitleDashboardOptions: options}
@@ -156,7 +155,6 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 	if err != nil {
 		data = subtitleDashboardData{LoadFailed: true}
 	}
-	// Headers are already committed; report projection failures inside the page.
 	_ = subtitleDashboardView.ExecuteTemplate(writer, request, "content", data)
 }
 

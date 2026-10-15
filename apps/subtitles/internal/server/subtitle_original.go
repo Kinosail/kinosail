@@ -36,8 +36,6 @@ func (provider *subtitleProvider) retainSubtitleOriginal(data []byte, record *su
 	return nil
 }
 
-// Archive a recovery file's original before replacing it. Existing provenance is
-// used only when it still describes these exact sidecar bytes.
 func (provider *subtitleProvider) retainSubtitleRecoveryOriginal(data []byte, previous subtitleRecord, record *subtitleRecord) error {
 	original := data
 	if previous.Fingerprint == subtitleFingerprint(data) && previous.OriginalFingerprint != "" {

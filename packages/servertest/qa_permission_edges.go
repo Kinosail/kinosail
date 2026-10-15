@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// AssertPasskeyBeginRoutesFailClosedWhenConfigurationIsInvalid preserves the Player regression against the supplied app bindings.
 func AssertPasskeyBeginRoutesFailClosedWhenConfigurationIsInvalid(t *testing.T, register, login http.HandlerFunc) {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/passkeys/register/begin", nil)
 	response := httptest.NewRecorder()

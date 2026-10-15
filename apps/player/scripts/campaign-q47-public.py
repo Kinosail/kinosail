@@ -115,7 +115,6 @@ def artifacts(receipt, results, sources):
                 "files": [{"name": name, "bytes": len(encoded[name]), "sha256": hashlib.sha256(encoded[name]).hexdigest()}
                           for name in FILES[:3]]}
     encoded["artifact-manifest.json"] = canonical(manifest)
-    # Preserve every private temporary, report and binary; only safe JSON is eligible for upload.
     for name in (".verification", "campaign-proof", "Q47"):
         path = ROOT / name if name == ".verification" else path / name
         path.mkdir(mode=0o700, exist_ok=True)
@@ -169,7 +168,6 @@ def main():
         built, pins = generated(site); sources["generated"] = built
         phase = "fixture-compile"
         binary = temporary / "q47-peer"
-        # Explicit declared reviewed paths, never a glob or an arbitrary environment filename.
         command = [str(tools["go"]), "build", "-p", "1", "-tags", "q47proof", "-o", str(binary),
                    *[str(ROOT / name) for name in FIXTURE_FILES]]
         terminal = command_phase(phase, command, ROOT, environment())

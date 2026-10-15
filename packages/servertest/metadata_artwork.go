@@ -9,13 +9,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// ArtworkExpiryFixture binds projection and pruning on the same real store.
 type ArtworkExpiryFixture struct {
 	Apply func([]library.Item) []library.Item
 	Prune func() error
 }
 
-// ArtworkExpiresAndIsNotApplied checks both cache visibility and file cleanup.
 func ArtworkExpiresAndIsNotApplied(t *testing.T, maximumAge time.Duration, build func(string, string) ArtworkExpiryFixture) {
 	t.Helper()
 	cache := t.TempDir()

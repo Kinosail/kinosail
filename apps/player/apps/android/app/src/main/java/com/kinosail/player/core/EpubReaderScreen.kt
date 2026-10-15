@@ -51,7 +51,6 @@ internal fun EpubReaderScreen(item: CatalogItem, viewer: Viewer, close: () -> Un
     val displayDensity = LocalDensity.current
     val readerFontSize = (fontSize * displayDensity.fontScale).toInt().coerceIn(16, 96)
     val columnWidth = remember(readerFontSize, displayDensity.density) {
-        // measureText rounds up; retain the fractional advance across the 68ch column.
         val glyph = FloatArray(1)
         Paint(Paint.ANTI_ALIAS_FLAG or Paint.LINEAR_TEXT_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
             .apply { typeface = Typeface.DEFAULT; textSize = readerFontSize * displayDensity.density }.getTextWidths("0", glyph)

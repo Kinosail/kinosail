@@ -36,7 +36,6 @@ extension PlaybackSource {
         } else { primary = try MediaTimeline(sourceDuration: reportedDuration, duration: reportedDuration) }
         duration = mediaDuration
         let requestedStart = try value.number("start")
-        // Saved progress can outlive a replaced or shortened media file.
         start = primary.sourceTime(requestedStart < primary.duration ? requestedStart : 0)
         progressToken = try value.text("progressToken", max: 8192)
         let preview = try value.text("trickplay", max: 16_384)

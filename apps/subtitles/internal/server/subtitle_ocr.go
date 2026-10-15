@@ -30,8 +30,6 @@ var subtitleFrameTime = regexp.MustCompile(`\bn:\s*\d+\s+pts:\s*\S+\s+pts_time:(
 func localSubtitleOCR(ctx context.Context, ffmpeg, tesseract, media string, stream int, language string, duration float64) (cleanedSubtitle, []subtitleDraftWord, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	// Render only the bitmap subtitle plane onto a plain canvas. Film pixels
-	// never reach OCR. Identical frames disappear; clear frames close each cue.
 	filter := fmt.Sprintf("color=c=black:s=1920x1080:r=25:d=%.3f[bg];[0:%d]scale=1920:1080[subs];[bg][subs]overlay=eof_action=pass:repeatlast=0,format=gray,negate,mpdecimate=hi=1:lo=1:frac=0,showinfo[out]", duration, stream)
 	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-nostdin", "-loglevel", "info", "-i", media, "-filter_complex", filter, "-map", "[out]", "-an", "-t", strconv.FormatFloat(duration, 'f', 3, 64), "-fps_mode", "vfr", "-pix_fmt", "gray", "-f", "rawvideo", "pipe:1")
 	output, err := command.StdoutPipe()

@@ -31,8 +31,6 @@ struct NearbyServer: Identifiable, Sendable {
     }
 }
 
-// NetService delegates are scheduled on the main run loop. Swift 6's isolated
-// conformances express that ownership without unchecked cross-thread access.
 @MainActor @Observable
 final class BonjourDiscovery: NSObject, @MainActor NetServiceBrowserDelegate, @MainActor NetServiceDelegate {
     private(set) var servers: [NearbyServer] = []

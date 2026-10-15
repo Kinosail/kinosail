@@ -13,7 +13,6 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-// ActorTitle is a visible movie or deduplicated show credit.
 type ActorTitle struct {
 	ID      string `json:"id"`
 	Title   string `json:"title"`
@@ -23,7 +22,6 @@ type ActorTitle struct {
 	URL     string `json:"url"`
 }
 
-// ActorPage contains only public links and metadata from the supplied visible library.
 type ActorPage struct {
 	Name   string       `json:"name"`
 	Image  string       `json:"image,omitempty"`
@@ -31,7 +29,6 @@ type ActorPage struct {
 	Shows  []ActorTitle `json:"shows"`
 }
 
-// ActorQuery rejects ambiguous or oversized transport input before a library read.
 func ActorQuery(raw string) (string, error) {
 	if len(raw) > 2048 {
 		return "", errors.New("actor is invalid")
@@ -54,7 +51,6 @@ func actorName(name string) (string, error) {
 	return name, nil
 }
 
-// ActorLibrary matches exact normalized cast names, never titles or role substrings.
 func ActorLibrary(items []library.Item, name string) (ActorPage, error) {
 	name, err := actorName(name)
 	if err != nil {

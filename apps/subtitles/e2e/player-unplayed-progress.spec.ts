@@ -1,6 +1,5 @@
 import {expect,test} from '@playwright/test';
 import {playerSource} from './static-sources';
-// A controlled source replacement isolates decoder restoration from user seeks.
 for(const replacementClock of [0,3]) test(`unplayed source replacement clock ${replacementClock} restores without progress and keeps native zero seeks`,async({page})=>{
   const writes:URLSearchParams[]=[];
   await page.route('**/progress/movie',route=>{writes.push(new URLSearchParams(route.request().postData()||''));return route.fulfill({status:204});});
@@ -29,7 +28,6 @@ for(const replacementClock of [0,3]) test(`unplayed source replacement clock ${r
   await expect(page.locator('video')).toHaveJSProperty('currentTime',3);
   await page.waitForTimeout(100);
   expect(writes).toEqual([]);
-  // Native controls produce ordinary seeking/seeked events, without the custom chapter signal.
   await page.locator('video').evaluate((video:HTMLVideoElement)=>video.currentTime=0);
   await expect.poll(()=>writes.length).toBe(1);
   expect(writes[0].get('seconds')).toBe('0');

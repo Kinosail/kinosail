@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Read-only inspection never holds the job lock needed by real playback.
-// Concurrent eviction can make inspection fail; preparation then yields.
 func (startup *startupPreparation) cacheHeadroom(ctx context.Context) bool {
 	size, err := playback.HLSCacheStats(startup.hls.cache, hlsPolicy())
 	if err != nil || size+(64<<20) >= startup.limit || ctx.Err() != nil {

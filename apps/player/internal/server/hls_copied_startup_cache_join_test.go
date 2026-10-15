@@ -12,9 +12,6 @@ import (
 	"time"
 )
 
-// The public real-codec proof exposed this unschedulable publication boundary.
-// A canceled startup producer must finish publishing its preservation marker
-// before playback decides whether to reuse or replace its certified cache.
 func TestCopiedStartupHTTPMasterRechecksCacheAfterProducerJoin(t *testing.T) {
 	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
 	copiedStartupUnfinishedCache(t, directory)

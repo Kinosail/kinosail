@@ -170,7 +170,6 @@ func (r *Renderers) Status(ctx context.Context, id string) (Status, error) {
 	if err != nil {
 		return Status{}, err
 	}
-	// Successful polling keeps an actively controlled endpoint available without rescanning.
 	r.mu.Lock()
 	device.expires = r.now().Add(10 * time.Minute)
 	r.devices[id] = device

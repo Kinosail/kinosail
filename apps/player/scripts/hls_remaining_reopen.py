@@ -29,7 +29,6 @@ def cold_reopen(run, binary, directory, source, before, api, hls, environment, d
         row['resources'] = resources
         wrapper = stage / 'paced-ffmpeg'
         code = bounded_bytes(directory / 'paced-ffmpeg', 8192, 'installation_wrapper_bound').decode()
-        # Keep every original private argv/certificate/invocation file immutable.
         for name in ['pacing-invocations.jsonl', 'refill-recipe-private.json']:
             code = code.replace(repr(str(directory / name)), repr(str(stage / name)))
         wrapper.write_text(code)

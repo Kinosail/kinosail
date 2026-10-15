@@ -16,7 +16,6 @@ for (const width of [390, 1440]) {
     expect(createHash("sha256").update(original).digest("hex")).toBe(manifest.sidecarSHA256);
     const rejectedMutations = [];
     for (const action of ["apply", "restore"]) {
-      // Invalid JSON remains harmless if this fixture's outer mutation guard ever regresses.
       const response = await page.request.post(`${manifest.url}/api/v1/subtitle-library/${manifest.id}/${action}`, { data: "invalid-json", headers: { "Content-Type": "application/json" } });
       expect(response.status()).toBe(405);
       expect(await response.text()).toContain("disposable fixture permits reads and previews only");

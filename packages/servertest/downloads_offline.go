@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-// TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile verifies conversion, integrity, range resume, UI state, and restart persistence.
 func (fixture DownloadFixture) TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile(t *testing.T) { //nolint:cyclop,funlen // One end-to-end lifecycle proves the complete offline contract.
 	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("source"), 0o600); err != nil {
@@ -81,7 +80,6 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	}
 }
 
-// RestartDoesNotTrustMissingOrChangedReadyDownload verifies persisted integrity before serving bytes.
 func (fixture DownloadFixture) RestartDoesNotTrustMissingOrChangedReadyDownload(t *testing.T) {
 	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("original-media"), 0o600); err != nil {

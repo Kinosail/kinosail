@@ -11,8 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// Verification blocks are independent of transfer extents. Clients may request
-// several adjacent blocks together without losing block-sized recovery.
 const (
 	ChunkSize            int64 = 8 << 20
 	MaximumChunks              = 16384
@@ -147,12 +145,10 @@ type manifestFlight struct {
 	err     error
 }
 
-// Manifest returns a sealed description only for the authorized, ready job.
 func (manager *Manager) Manifest(profile, id string) (Manifest, error) {
 	return manager.ManifestContext(context.Background(), profile, id)
 }
 
-// ManifestContext shares work per revision with bounded aggregate disk I/O.
 func (manager *Manager) ManifestContext(ctx context.Context, profile, id string) (Manifest, error) {
 	if !validID(id) {
 		return Manifest{}, os.ErrNotExist

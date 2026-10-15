@@ -3,8 +3,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Runs alone before other native contracts in a fresh hosted app container.
-// Never remove an existing root to manufacture the first-write precondition.
 @Suite(.enabled(if: ProcessInfo.processInfo.environment["KINOSAIL_FRESH_BACKUP_TEST"] == "1"))
 struct OfflineCatalogBackupTests {
     @Test func firstCompletionAndExistingHistoryStayExcludedFromBackup() async throws {
@@ -32,7 +30,6 @@ struct OfflineCatalogBackupTests {
         #expect(restored[0].nextID == "backup-next")
         #expect(restored[0].quality == .compatible)
 
-        // Model an older directory whose journal exists without the flag.
         var attributes = URLResourceValues(); attributes.isExcludedFromBackup = false
         try root.setResourceValues(attributes)
         try #require(try excludedFromBackup(root) == false)
@@ -48,7 +45,6 @@ struct OfflineCatalogBackupTests {
         #expect(try excludedFromBackup(root) == true)
         #expect(try await reopened.completions().isEmpty)
 
-        // The existing catalog writer proves that this filesystem supports the flag.
         try root.setResourceValues(attributes)
         try await reopened.save(OfflineCatalog())
         #expect(try excludedFromBackup(root) == true)

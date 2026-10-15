@@ -170,7 +170,6 @@ final class ProtectedReaderView: UIView, WKNavigationDelegate, UIScrollViewDeleg
         let travel = max(0, scrollView.contentSize.height - scrollView.bounds.height)
         onOffset(travel > 0 ? min(1, max(0, scrollView.contentOffset.y / travel)) : 0)
     }
-    // PDF links are delegated instead of opening the browser or another file.
     func pdfViewWillClick(onLink sender: PDFView, with url: URL) { onFailure("External links cannot open in the reader. You can still follow links within this document.") }
     func pdfViewOpenPDF(_ sender: PDFView, forRemoteGoToAction action: PDFActionRemoteGoTo) { onFailure("This link points outside the current document.") }
 

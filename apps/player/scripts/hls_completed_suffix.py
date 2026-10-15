@@ -101,7 +101,7 @@ def completed_suffix(api, plan, run, source, receipt, scenario, state, env, log)
         if scenario in ('missing-plan', 'mismatched-plan'):
             metadata = root / '.copied-cuts'
             if scenario == 'missing-plan':
-                metadata.unlink()  # Only this disposable fixture's completion policy.
+                metadata.unlink()
             else:
                 data['Policy'] = 'mismatched-test-policy'
                 metadata.write_text(json.dumps(data, separators=(',', ':')))

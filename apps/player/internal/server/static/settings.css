@@ -1,4 +1,3 @@
-/* Owner settings: a compact task menu beside one readable working column. */
 .settings-page main.settings-shell:has([data-settings-organized]){display:grid;grid-template-columns:14rem minmax(0,1fr);gap:0 2.5rem;max-width:72rem;align-items:start;padding:0 0 3rem}
 .settings-shell:has([data-settings-organized])>.back{grid-column:1/-1;margin-bottom:1rem}
 .settings-shell:has([data-settings-organized])>.settings-intro{grid-column:1;grid-row:2;margin:0;padding:0 0 1.25rem;border:0}
@@ -44,7 +43,6 @@
 .settings-shell .settings-compatibility>p{font-size:.875rem;line-height:1.6;color:var(--muted);max-width:65ch}
 .settings-shell .settings-flow label:has(>input[type=checkbox]){display:flex;align-items:center;gap:.75rem;min-height:44px}
 
-/* Match native fragment navigation before the deferred bundle arrives. */
 [data-settings-description-category]{display:none}
 [data-settings-description-category=playback]{display:inline}
 .settings-shell[data-settings-ready] [data-settings-description-category]:not([hidden]){display:inline}

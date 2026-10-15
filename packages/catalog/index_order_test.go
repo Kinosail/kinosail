@@ -38,8 +38,6 @@ func TestDecoratorPublicationPreservesPreviousReferences(t *testing.T) {
 	}
 }
 
-// The index-owned path must preserve the existing public browse operation,
-// including fields derived after selection rather than just returned item IDs.
 func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix compares every selected result field across locales, views, and changing profile state.
 	items := []library.Item{
 		{ID: "z", Title: "Zebra", Kind: "video", Year: "2024"},
@@ -70,7 +68,6 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 		}
 		for _, locale := range []string{"en", "sv", "fr", "tr", "ja", "en"} {
 			for _, values := range []url.Values{
-				// Native entry routes must work before an all-title order exists.
 				{"view": {"movies"}},
 				{"view": {"music"}},
 				{"view": {"books"}},
@@ -88,7 +85,6 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 				{"q": {"Episode"}},
 			} {
 				want, wantErr := catalog.BrowseLibrary(t.Context(), values, locale, index.References, access)
-				// Read immediately again before other view keys can evict this order.
 				for repetition := range 2 {
 					got, gotErr := index.BrowseLibrary(t.Context(), values, locale, access)
 					if !reflect.DeepEqual(gotErr, wantErr) || !reflect.DeepEqual(got.AllItems(), want.AllItems()) ||
@@ -100,7 +96,6 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 			}
 		}
 	}
-	// Repeated warm reads cannot cache current list or watched state.
 	profile, hidden = "guest", "a"
 	listed["guest:z"] = false
 	result, err := index.BrowseLibrary(t.Context(), url.Values{"view": {"list"}}, "en", access)

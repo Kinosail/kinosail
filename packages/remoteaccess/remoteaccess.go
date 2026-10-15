@@ -1,4 +1,3 @@
-// Package remoteaccess exposes one optional, direct HTTPS listener backed by DuckDNS.
 package remoteaccess
 
 import (
@@ -21,7 +20,6 @@ import (
 
 const duckDNSUpdateURL = "https://www.duckdns.org/update"
 
-// Config is the complete interface for secure public access.
 type Config struct {
 	Enabled, PublicHTTPS  bool
 	Gateway               bool
@@ -29,14 +27,12 @@ type Config struct {
 	DataDir               string
 }
 
-// Dependencies contains internal seams used to verify network and certificate behavior.
 type Dependencies struct {
 	Client      *http.Client
 	UpdateURL   string
 	Certificate func(*tls.ClientHelloInfo) (*tls.Certificate, error)
 }
 
-// Status contains no credentials and is safe to expose to an Owner.
 type Status struct {
 	Isolation          string `json:"isolation,omitempty"`
 	State              string `json:"state"`
@@ -49,13 +45,12 @@ type Status struct {
 	Error              string `json:"error,omitempty"`
 }
 
-// Manager owns dynamic DNS, public certificates, and the dedicated listener.
 type Manager struct {
 	config      Config
 	client      *http.Client
 	updateURL   string
 	certificate func(*tls.ClientHelloInfo) (*tls.Certificate, error)
-	control     sync.Mutex // Serializes kill/reset and their durable marker changes.
+	control     sync.Mutex
 	mu          sync.RWMutex
 	status      Status
 	server      *http.Server
@@ -69,7 +64,6 @@ type Manager struct {
 	hostname    string
 }
 
-// New validates all input before creating files or making network requests.
 func New(config Config, dependencies ...Dependencies) (*Manager, error) {
 	if !config.Enabled {
 		return &Manager{config: config, status: Status{State: "disabled", Mode: "off"}}, nil
@@ -215,7 +209,6 @@ func (manager *Manager) certificateError() error {
 	return err
 }
 
-// Kill closes the dedicated public listener immediately and persists fail-closed state.
 func (manager *Manager) Kill() error { //nolint:cyclop // Every resource is closed even when persistence fails.
 	manager.control.Lock()
 	defer manager.control.Unlock()
@@ -249,7 +242,6 @@ func (manager *Manager) Kill() error { //nolint:cyclop // Every resource is clos
 	return nil
 }
 
-// ResetKill permits the existing Server to resume public HTTPS.
 func (manager *Manager) ResetKill() error {
 	manager.control.Lock()
 	defer manager.control.Unlock()
@@ -275,7 +267,6 @@ func (manager *Manager) ResetKill() error {
 	return nil
 }
 
-// Status reports current readiness without secrets.
 func (manager *Manager) Status() Status {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()

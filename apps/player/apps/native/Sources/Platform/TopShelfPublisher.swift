@@ -42,7 +42,7 @@ struct TopShelfPublishing: ViewModifier {
                 guard session.profileKey == scope, enabled else { return }
                 try ShelfSnapshot(scope: scope, saved: Date(), items: items).write()
                 TVTopShelfContentProvider.topShelfContentDidChange()
-            } catch { /* No private catalog is exposed when authentication or refresh fails. */ }
+            } catch {   }
         }
     }
 }

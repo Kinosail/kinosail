@@ -21,7 +21,6 @@ final class PlaybackDismissal {
     }
 }
 
-/// Only the video-background hit surface receives this gesture; controls stay above it.
 struct PlaybackSwipeDismiss: ViewModifier {
     let dismissal: PlaybackDismissal
     let size: CGSize

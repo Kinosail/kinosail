@@ -48,7 +48,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 	}
 }
 
-// Called under manager.mu so one replacement produces one diagnostic.
 func replaceHLSIdentity(ctx context.Context, job *hlsJob, recipe hlsRecipe) {
 	if job.replacing {
 		return
@@ -89,7 +88,6 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	return options, nil
 }
 
-// Recheck the complete settings, subtitle, and source snapshot under manager.mu.
 func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.Item, recipe hlsRecipe, expected string) error {
 	if err := ctx.Err(); err != nil {
 		return err

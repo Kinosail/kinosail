@@ -10,8 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/mediaprobe"
 )
 
-// Completion certification is optional. Only a closed, zero-origin fixed-block
-// FLAC clock currently supports reconstructing samples before accurate trimming.
 type transcodeSourceClock struct {
 	Rate, Base, Quantum, Samples int64
 }
@@ -94,7 +92,6 @@ func transcodeSourceFrame(line string) (int64, int64, string, error) {
 	pts, ptsErr := strconv.ParseInt(fields["pts"], 10, 64)
 	count, countErr := strconv.ParseInt(fields["nb_samples"], 10, 32)
 	format, valid := copiedHLSAudioFrameShape(fields)
-	// Unknown frame/side-data fields are not admitted as a trimming contract.
 	if ptsErr != nil || countErr != nil || !valid || count <= 0 || count > 65536 || len(fields) != 5 {
 		return 0, 0, "", errTranscodeHLSClock
 	}

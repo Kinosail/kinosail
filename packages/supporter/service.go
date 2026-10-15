@@ -17,7 +17,6 @@ import (
 
 var audiencePattern = regexp.MustCompile(`^[a-z][A-Za-z0-9.-]{2,127}$`)
 
-// Service applies Player's supporter policy to caller-owned state.
 type Service struct {
 	mu               sync.Mutex
 	app              App
@@ -28,7 +27,6 @@ type Service struct {
 	now              func() time.Time
 }
 
-// New validates all external configuration before it can cause network work.
 func New(config Config) (*Service, error) { //nolint:cyclop // Construction validates all adapter policy before network work.
 	app := config.App
 	if !appIDPattern.MatchString(app.ID) || app.Name == "" || !audiencePattern.MatchString(app.Audience) || app.MasterworkName == "" ||
@@ -62,10 +60,8 @@ func validTrustedPublicKey(value string) bool {
 	return ok
 }
 
-// ActivationAvailable reports whether the user configured the remote adapter.
 func (service *Service) ActivationAvailable() bool { return service.endpoint != "" }
 
-// ValidateInput validates and normalizes no state.
 func (service *Service) ValidateInput(input ActivationInput) error {
 	if !keyPattern.MatchString(strings.TrimSpace(input.Key)) || input.RecognitionName != nil && !ValidRecognitionName(*input.RecognitionName, true) {
 		return ErrInvalid
@@ -73,7 +69,6 @@ func (service *Service) ValidateInput(input ActivationInput) error {
 	return nil
 }
 
-// Prepare creates one installation identity before a caller persists it.
 func (service *Service) Prepare(state State) (State, error) {
 	if state.InstallationKey != "" {
 		if _, ok := decodeValue(state.InstallationKey, 32, 64); ok {
@@ -92,7 +87,6 @@ func (service *Service) Prepare(state State) (State, error) {
 	return state, nil
 }
 
-// Activate validates one provider response and returns the next state without persisting it.
 func (service *Service) Activate(ctx context.Context, state State, input ActivationInput) (State, Status, error) {
 	input.Key = strings.TrimSpace(input.Key)
 	if service.ValidateInput(input) != nil {
@@ -178,7 +172,6 @@ func (service *Service) applyActivation(original, state State, grant *Grant, dec
 	return state, service.Status(state), nil
 }
 
-// ActivateAndSave commits a changed activation through one caller-owned persistence boundary.
 func (service *Service) ActivateAndSave(ctx context.Context, state State, input ActivationInput, save func(State) error) (State, Status, error) {
 	next, status, err := service.Activate(ctx, state, input)
 	if err != nil || reflect.DeepEqual(state, next) {

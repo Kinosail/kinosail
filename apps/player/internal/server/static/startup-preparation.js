@@ -55,7 +55,7 @@
             const negotiated = await boundedJSON(await fetch(`${api}?videoCodecs=${encodeURIComponent(codecs.filter(Boolean).join(","))}`, {signal: attempt.signal, credentials: "same-origin", redirect: "error"}));
             if (!attempt.signal.aborted) result = negotiated || result;
           }
-        } catch { /* Use the same default rendition as playback after its deadline. */ }
+        } catch {   }
         finally { clearTimeout(expire); signal.removeEventListener("abort", abort); }
       }
       if (!eligible() || current !== generation || signal.aborted || !result?.plan?.allowed) return;
@@ -70,7 +70,7 @@
       }
       active.add(id);
       await fetch(`/api/v1/items/${id}/playback-prepare`, {method: "POST", headers: headers(), body: JSON.stringify({source}), signal, credentials: "same-origin", redirect: "error"});
-    } catch { /* Cold playback remains available after preparation failure. */ }
+    } catch {   }
   }
   function schedule(ids) {
     if (!eligible()) return;
@@ -123,7 +123,6 @@
     if (!(target instanceof HTMLFormElement)) return;
     const action = new URL(target.action, location.href);
     if (action.origin !== location.origin || action.pathname !== "/logout") return;
-    // A fresh document recovers after a failed logout, cancelled submit, or retry.
     signingOut = true;
     cancel(false);
   }, true);

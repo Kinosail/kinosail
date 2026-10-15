@@ -32,12 +32,10 @@ var transcoderCopy = strings.NewReplacer(
 	`Test again`, `Check again`,
 )
 
-// EnhanceSettingsPage applies Player's hardware presentation to a settings template.
 func EnhanceSettingsPage(page string) string {
 	return transcoderCopy.Replace(page)
 }
 
-// FriendlyName returns Player's plain-language backend name.
 func (backend Backend) FriendlyName() string {
 	if name := map[string]string{"none": "Processor", "qsv": "Intel graphics", "cuda": "NVIDIA graphics", "vaapi": "AMD or Intel graphics", "rkmpp": "Rockchip graphics", "v4l2m2m": "Built-in Linux video hardware", "videotoolbox": "Apple graphics", "amf": "AMD graphics", "mf": "Windows video hardware", "asahi": "Apple Silicon"}[backend.ID]; name != "" {
 		return name
@@ -45,7 +43,6 @@ func (backend Backend) FriendlyName() string {
 	return backend.Name
 }
 
-// SimpleStatus returns the status shown in Player settings.
 func (backend Backend) SimpleStatus() string {
 	if backend.currentlyUsable() {
 		if backend.ID == "none" {
@@ -66,7 +63,6 @@ func (backend Backend) SimpleStatus() string {
 	return "Other system"
 }
 
-// SimpleReason returns the explanation shown in Player settings.
 func (backend Backend) SimpleReason() string {
 	if backend.ID == "none" {
 		if backend.currentlyUsable() {
@@ -90,7 +86,6 @@ func (backend Backend) SimpleReason() string {
 	}
 }
 
-// SimpleStatus returns the status shown in Player settings.
 func (codec Codec) SimpleStatus() string {
 	if codec.Usable {
 		if codec.ID == "h264" {
@@ -104,7 +99,6 @@ func (codec Codec) SimpleStatus() string {
 	return "Not available"
 }
 
-// SimpleReason returns the explanation shown in Player settings.
 func (codec Codec) SimpleReason() string {
 	if !codec.Usable {
 		if !codec.Supported {

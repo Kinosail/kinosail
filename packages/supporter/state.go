@@ -57,7 +57,6 @@ func (service *Service) raiseLevels(state *State) {
 	}
 }
 
-// Recover removes invalid grants and retains bounded activation references.
 func (service *Service) Recover(state State) (State, bool) {
 	next := cloneState(state)
 	changed := false
@@ -75,7 +74,6 @@ func (service *Service) Recover(state State) (State, bool) {
 	return next, changed
 }
 
-// RotatePublicKey clears grants only after strict explicit confirmation.
 func (service *Service) RotatePublicKey(state State, input RotationInput) (State, error) {
 	if input.Version != 1 || !input.Confirm {
 		return state, ErrInvalid
@@ -96,7 +94,6 @@ func (service *Service) RotatePublicKey(state State, input RotationInput) (State
 	return state, nil
 }
 
-// Fingerprint identifies one in-flight activation without exposing its values.
 func (service *Service) Fingerprint(input ActivationInput) string {
 	marker := "absent"
 	if input.RecognitionName != nil {
@@ -117,7 +114,6 @@ func validLevels(state State) bool {
 	return state.PatronLevel >= 0 && state.PatronLevel <= MaximumLevel && state.LivingLevel >= 0 && state.LivingLevel <= MaximumLevel && state.MonthlyLevel >= 0 && state.MonthlyLevel <= MaximumLevel && state.YearlyLevel >= 0 && state.YearlyLevel <= MaximumLevel
 }
 
-// ValidateState rejects malformed persisted state before network or storage side effects.
 func (service *Service) ValidateState(state State) error {
 	if emptyState(state) {
 		return nil

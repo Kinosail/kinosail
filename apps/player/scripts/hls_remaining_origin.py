@@ -59,9 +59,6 @@ def origin_refill_witness(directory, source, case):
         'installedArgvSHA256': hashlib.sha256(raw).hexdigest(), 'outputOffsetSeconds': float(offset),
         'actualSourceSeekSeconds': 0, 'logicalRefillCutSeconds': 8, 'selectedAudio': selected,
         'testOnlyReadrate': 0.75, 'originOptionsTransformedByHarness': False}
-    # The existing raw control consumes observed argv, without changing the
-    # production worker or its retained artifacts. Only that later replay drops
-    # the packet filter so all raw encoded packets remain independently visible.
     with (directory / 'installed-recipe-private.json').open('xb') as output:
         output.write(raw)
 

@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-// These public controls protect the receipt preparation boundary. Browser
-// deadline cases cannot prove that malformed input starts no server work.
 func TestSubtitleOperationPreparationRejectsUntrustedInputWithoutEffects(t *testing.T) {
 	t.Parallel()
 	handler, base, target := subtitleInspectorFixture(t, subtitleActionInitial)

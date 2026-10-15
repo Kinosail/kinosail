@@ -38,7 +38,7 @@ for (const completion of ['htmx:finally:request']) {
     assert.equal(classes.has('request-skeleton'), false);
     flush();
     emit(completion, first);
-    emit('htmx:finally:request', first); // Duplicate completion must not clear a newer request.
+    emit('htmx:finally:request', first);
     assert.equal(classes.has('request-skeleton'), true);
     emit(completion, second);
     assert.equal(classes.size, 0);

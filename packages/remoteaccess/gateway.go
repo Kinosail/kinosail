@@ -13,9 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertransport"
 )
 
-// serveGateway never binds an IP listener in the process holding Owner state.
-// Socket ownership and the gateway's read-only mount provide the transport boundary;
-// the application independently enforces Remote on every request, including forged headers.
 func (manager *Manager) serveGateway(ctx context.Context, handler http.Handler) error {
 	listener, err := privateListener(publicgateway.HTTPPath)
 	if err != nil {

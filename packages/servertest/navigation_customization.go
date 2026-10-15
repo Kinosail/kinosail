@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// AssertOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb retains the original navigation regression.
 func AssertOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb(t *testing.T, fixture NavigationFixture) {
 	t.Parallel()
 	handler, token := fixture.Library.Server(t)
@@ -47,7 +46,6 @@ func AssertOwnerCanCustomizeLibraryNavigationThroughAPIAndWeb(t *testing.T, fixt
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/activity", nil), http.StatusOK, `"action":"settings.navigation.updated"`)
 }
 
-// AssertNavigationValidationRejectsInvalidValuesWithoutSideEffects retains the original navigation regression.
 func AssertNavigationValidationRejectsInvalidValuesWithoutSideEffects(t *testing.T, fixture NavigationFixture) {
 	t.Parallel()
 	handler, token := fixture.Library.Server(t)
@@ -82,7 +80,6 @@ func AssertNavigationValidationRejectsInvalidValuesWithoutSideEffects(t *testing
 	}
 }
 
-// AssertCustomizedNavigationPersistsAcrossRestart retains the original navigation regression.
 func AssertCustomizedNavigationPersistsAcrossRestart(t *testing.T, fixture NavigationFixture) {
 	t.Parallel()
 	data := t.TempDir()

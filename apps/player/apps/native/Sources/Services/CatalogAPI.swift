@@ -185,7 +185,6 @@ extension ServerClient {
     func musicQueue(item: MediaItem) async throws -> [MediaItem] {
         guard item.kind == .music else { throw ClientError.invalidInput("This title is not a music track.") }
         let id = try Input.id(item.id)
-        // The Server only exposes queues for album tracks; loose tracks play on their own.
         if item.album.isEmpty { return [item] }
         let value = try await request("/api/v1/audio/\(id)/queue").body.object(allowing: ["items"])
         let items = try mediaItems(value.required("items"))

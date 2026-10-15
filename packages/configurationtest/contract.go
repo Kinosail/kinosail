@@ -1,4 +1,3 @@
-// Package configurationtest runs common regression scenarios against an app's configuration implementation.
 package configurationtest
 
 import (
@@ -50,7 +49,6 @@ type contract[Source ~string, Value publicValue[Source], Snapshot snapshot[Snaps
 	Port                            string
 }
 
-// Run executes the full common suite against the supplied app operations.
 func Run[Source ~string, Value publicValue[Source], Snapshot snapshot[Snapshot, Value, Source]](
 	t *testing.T,
 	load func(string, string, func(string) (string, bool)) (Snapshot, error),
@@ -82,10 +80,8 @@ func Run[Source ~string, Value publicValue[Source], Snapshot snapshot[Snapshot, 
 	t.Run("YAMLUsesNativeTypes", contract.testYAMLUsesNativeTypes)
 }
 
-// NoEnvironment supplies an empty environment to configuration tests.
 func NoEnvironment(string) (string, bool) { return "", false }
 
-// Lookup exposes a test environment map.
 func Lookup(values map[string]string) func(string) (string, bool) {
 	return func(name string) (string, bool) {
 		value, ok := values[name]
@@ -93,7 +89,6 @@ func Lookup(values map[string]string) func(string) (string, bool) {
 	}
 }
 
-// WriteConfigFile creates a private fixture in a new test directory.
 func WriteConfigFile(t *testing.T, name, contents string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), name)
@@ -101,7 +96,6 @@ func WriteConfigFile(t *testing.T, name, contents string) string {
 	return path
 }
 
-// WriteAt writes a private configuration fixture.
 func WriteAt(t *testing.T, path, contents string) {
 	t.Helper()
 	if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {

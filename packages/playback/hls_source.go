@@ -10,8 +10,6 @@ import (
 
 var ErrHLSSource = errors.New("playback recipe does not match the source")
 
-// ResolveHLSSource validates a URL recipe against scanned source facts before
-// creating output. File paths are resolved only from the library's sidecars.
 func ResolveHLSSource(recipe HLSRecipe, facts MediaFacts, sidecars []string) (HLSRecipe, error) {
 	invalid := ErrHLSSource
 	recipe.SubtitlePath, recipe.SubtitleOrdinal, recipe.SubtitleTime, recipe.OutputTime = "", 0, 0, 0
@@ -36,8 +34,6 @@ func ResolveHLSSource(recipe HLSRecipe, facts MediaFacts, sidecars []string) (HL
 	return resolveHLSSubtitle(recipe, facts.Subtitles, sidecars)
 }
 
-// SourceTranscoding restricts accelerated decode evidence to its tested input
-// and chooses color/CPU filters from this source, never a global HDR switch.
 func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recipe HLSRecipe) transcodepolicy.Settings {
 	options.ToneMap = recipe.ToneMap
 	options.OutputHDR = ""

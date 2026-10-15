@@ -1,7 +1,5 @@
 import type {Page, Response, TestInfo} from "@playwright/test";
 
-// Firefox can commit a usable document while its automation navigation remains pending.
-// A second GET is permitted only after preserving proof that the first form works.
 export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" | "/setup", info: TestInfo) {
   const previousDocument = await page.evaluate(() => performance.timeOrigin);
   const started = Date.now();
@@ -17,7 +15,6 @@ export async function gotoAuthForm(page: Page, path: "/login" | "/login?next=/" 
   };
   const navigate = async () => {
     const response = await page.goto(path, {waitUntil: "commit", timeout: 10_000});
-    // Setup immediately branches on the rendered heading; preserve its loaded-document contract.
     if (path === "/setup") await page.waitForLoadState("load", {timeout: 10_000});
     return response;
   };

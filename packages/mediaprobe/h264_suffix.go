@@ -18,9 +18,6 @@ func (probe *Probe) scanH264Suffix(ctx context.Context, options H264Scan) (*h264
 		"-show_entries", "packet=pts,pts_time,dts,duration,duration_time,flags:stream=time_base:format=start_time:format_tags=:stream_tags=:stream_disposition=",
 		"-of", "compact=p=0", options.Path,
 	}
-	// Stream time_base arrives after packets. Check decimal packet times while
-	// reading, so a demux seek far before the requested point cannot scan a
-	// whole long file before the rational end/window validation rejects it.
 	err := ProbeLines(ctx, options.Logger, probe.executable, arguments, options.MaximumPacketBytes, options.MaximumPacketLines, func(line string) error {
 		fields := CompactFields(line)
 		if value, ok := fields["start_time"]; ok {

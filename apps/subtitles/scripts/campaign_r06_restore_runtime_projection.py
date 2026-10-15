@@ -117,7 +117,6 @@ def valid_completion(value):
 
 
 def causal_ready(value):
-    # Diagnostic readiness alone grants no completion authority; v2 adds exact binding.
     if (value is None or not valid_causal(value) or not value["valid"] or value["reason"] != "none" or
             not all(value[key] for key in ("headersEqual", "framingEqual", "stopped"))): return False
     native, network = value["restoreNative"], value["restoreNetwork"]

@@ -1,5 +1,3 @@
-// Runs inside the real page. Record viewport geometry separately from document
-// coordinates: a scroll-only bookmark error is invisible to element-size checks.
 export function bookmarkSnapshot() {
   if (location.pathname !== "/settings" || !location.hash) return undefined;
   let id;

@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// WebSurfacesCanUseSpanish preserves localized chrome, account controls and cookie-selected settings.
 func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn func(*testing.T, http.Handler, string, string) *http.Cookie, web AuthCookieRequest, settingsMarker, protectionMarker string) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, false)
@@ -42,7 +41,6 @@ func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn fu
 	}
 }
 
-// SetupAndLoginCanUseSpanish retains the original Spanish setup and login assertions.
 func (fixture LocaleWebFixture) SetupAndLoginCanUseSpanish(t *testing.T) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, false)

@@ -11,7 +11,6 @@ const (
 	maximumMediaTypes   = 32
 )
 
-// IsBrowserRequest reports whether a bounded request expects an HTML navigation.
 func IsBrowserRequest(request *http.Request, authenticationError bool) bool { //nolint:cyclop // The score of 15 remains below the repository ceiling of 22 for one HTTP negotiation predicate.
 	if request == nil || authenticationError || request.Method != http.MethodGet && request.Method != http.MethodHead && request.Method != http.MethodPost {
 		return false

@@ -21,14 +21,12 @@ const (
 
 var claimScript = []byte(`(()=>{const status=document.getElementById("status"),token=location.hash.slice(1),csrf=document.querySelector('meta[name="kinosail-csrf"]')?.content;history.replaceState(null,"",location.pathname);if(!token){status.textContent="This Media Share link is incomplete.";return}const headers={"Content-Type":"application/json"};if(csrf)headers["X-Kinosail-CSRF"]=csrf;fetch("/api/v1/media-shares/claim",{method:"POST",headers,body:JSON.stringify({token,device:navigator.userAgent.slice(0,80)})}).then(r=>{if(!r.ok)throw 0;location.replace("/share/items")}).catch(()=>status.textContent="This Media Share is unavailable or expired.")})()`)
 
-// Views contains the Player-derived media-share templates for one application brand.
 type Views struct {
 	Claim *template.Template
 	Items *template.Template
 	Owner *template.Template
 }
 
-// NewViews derives one application's media-share pages from Player's canonical markup.
 func NewViews(product, assetVersion string, csrfTemplate func(string, string) *template.Template) Views {
 	if !validViewConfiguration(product, assetVersion, csrfTemplate != nil) {
 		panic("invalid media share view configuration")
@@ -59,7 +57,6 @@ type web struct {
 	localized localizedError
 }
 
-// Register installs the public and owner web routes around a shared Store.
 func Register(mux *http.ServeMux, store *Store, views Views, owner func(http.Handler) http.Handler, script func([]byte) http.HandlerFunc, execute executeCSRF, localized localizedError) {
 	if !validHTTPDependencies(mux != nil, store != nil, owner != nil, script != nil, execute != nil, localized != nil) {
 		panic("invalid media share HTTP dependencies")
@@ -137,7 +134,6 @@ func (handlers web) revoke(writer http.ResponseWriter, request *http.Request) {
 	http.Redirect(writer, request, "/settings/media-shares", http.StatusSeeOther)
 }
 
-// CreateHTTP validates and creates an owner API grant.
 func (store *Store) CreateHTTP(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
 		ItemIDs            []string `json:"itemIds"`
@@ -161,7 +157,6 @@ func (store *Store) CreateHTTP(writer http.ResponseWriter, request *http.Request
 	writeJSON(writer, map[string]any{"id": share.ID, "itemIds": share.ItemIDs, "expiresAt": share.ExpiresAt, "maxDevices": share.MaxDevices, "claimToken": token, "claimURL": "/share#" + token}, http.StatusCreated)
 }
 
-// ListHTTP returns active grants to an owner.
 func (store *Store) ListHTTP(writer http.ResponseWriter, _ *http.Request) {
 	shares, err := store.List()
 	if err != nil {
@@ -171,7 +166,6 @@ func (store *Store) ListHTTP(writer http.ResponseWriter, _ *http.Request) {
 	writeJSON(writer, map[string]any{"shares": shares}, http.StatusOK)
 }
 
-// RevokeHTTP removes one owner grant.
 func (store *Store) RevokeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if err := store.Revoke(request.PathValue("id")); err != nil {
 		writeError(writer, errors.New("not found"), http.StatusNotFound)
@@ -180,7 +174,6 @@ func (store *Store) RevokeHTTP(writer http.ResponseWriter, request *http.Request
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-// ClaimHTTP exchanges a public claim token for a secure cookie.
 func (store *Store) ClaimHTTP(writer http.ResponseWriter, request *http.Request) {
 	var input struct{ Token, Device string }
 	if err := httpguard.DecodeRequestJSON(writer, request, &input); err != nil {

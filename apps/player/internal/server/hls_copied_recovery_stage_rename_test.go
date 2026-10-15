@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// The real-codec public refill journey intermittently returns 404. It cannot
-// control preemption between directory enumeration and FFmpeg's atomic rename.
-// This check protects valid temporary output from being treated as a violation.
 func TestCopiedRecoveryStageAcceptsConcurrentTemporaryFileReplacement(t *testing.T) {
 	directory := t.TempDir()
 	stage, err := os.OpenRoot(directory)

@@ -11,22 +11,18 @@ import (
 
 const maximumFormBytes = 1 << 20
 
-// ErrPreviewRender is the stable public error for an app-owned preview template failure.
 var ErrPreviewRender = errors.New("viewing activity preview failed")
 
-// WebPreviewPage describes the shared route-specific preview navigation policy.
 type WebPreviewPage struct {
 	BackPath, BackLabel, Step, ApplyPath string
 	AllowSync                            bool
 }
 
-// WebPreview is the complete shared model rendered by an app-owned template.
 type WebPreview struct {
 	Preview
 	WebPreviewPage
 }
 
-// PreviewPage selects settings or onboarding navigation without changing preview data.
 func PreviewPage(path string) WebPreviewPage {
 	if path == "/onboarding/viewing-imports/preview" {
 		return WebPreviewPage{BackPath: "/onboarding/migrate", BackLabel: "Connection", Step: "Step 4 of 4", ApplyPath: "/onboarding/viewing-imports/apply"}
@@ -34,7 +30,6 @@ func PreviewPage(path string) WebPreviewPage {
 	return WebPreviewPage{BackPath: "/settings#viewing-imports", BackLabel: "Settings", Step: "Migration preview", ApplyPath: "/settings/viewing-imports/apply", AllowSync: true}
 }
 
-// ServeWebPreview validates and prepares one preview before invoking the renderer.
 func ServeWebPreview(ctx context.Context, writer http.ResponseWriter, request *http.Request, preview func(context.Context, Input) (Preview, error), render func(WebPreview) error) (int, error) {
 	result, status, err := PreviewForm(ctx, request, preview)
 	if err != nil {
@@ -48,7 +43,6 @@ func ServeWebPreview(ctx context.Context, writer http.ResponseWriter, request *h
 	return http.StatusOK, nil
 }
 
-// ParseImportForm strictly parses one source import request.
 func ParseImportForm(request *http.Request) (Input, error) {
 	if err := parseForm(request, "source", "url", "token", "sourceUser", "profileId", "overwriteExisting"); err != nil {
 		return Input{}, errors.New("invalid viewing import form")
@@ -70,7 +64,6 @@ func ParseImportForm(request *http.Request) (Input, error) {
 	return Input{Source: source, URL: endpoint, Token: token, SourceUser: sourceUser, ProfileID: profileID, Overwrite: overwrite == "true"}, nil
 }
 
-// PreviewForm validates a source form before invoking any remote or destination read.
 func PreviewForm(ctx context.Context, request *http.Request, preview func(context.Context, Input) (Preview, error)) (Preview, int, error) {
 	input, err := ParseImportForm(request)
 	if err != nil {
@@ -83,7 +76,6 @@ func PreviewForm(ctx context.Context, request *http.Request, preview func(contex
 	return result, http.StatusOK, nil
 }
 
-// ParseActionForm strictly parses one preview or sync identifier.
 func ParseActionForm(request *http.Request) (string, error) {
 	if err := parseForm(request, "id"); err != nil {
 		return "", errors.New("invalid viewing activity form")
@@ -95,7 +87,6 @@ func ParseActionForm(request *http.Request) (string, error) {
 	return id, nil
 }
 
-// ApplyForm validates an action identifier before invoking a mutating preview operation.
 func ApplyForm(request *http.Request, apply func(string) (Summary, error)) (Summary, int, error) {
 	id, err := ParseActionForm(request)
 	if err != nil {
@@ -108,7 +99,6 @@ func ApplyForm(request *http.Request, apply func(string) (Summary, error)) (Summ
 	return result, http.StatusOK, nil
 }
 
-// ParseSyncForm strictly parses one preview identifier and sync interval.
 func ParseSyncForm(request *http.Request) (string, string, error) {
 	if err := parseForm(request, "id", "interval"); err != nil {
 		return "", "", errors.New("invalid viewing activity form")
@@ -121,7 +111,6 @@ func ParseSyncForm(request *http.Request) (string, string, error) {
 	return id, interval, nil
 }
 
-// ValidID reports whether an import preview or sync identifier is bounded base32.
 func ValidID(id string) bool {
 	if id == "" || len(id) > 128 {
 		return false

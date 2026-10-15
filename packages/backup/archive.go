@@ -1,4 +1,3 @@
-// Package backup archives installation state without Library Content or cache data.
 package backup
 
 import (
@@ -39,7 +38,6 @@ type manifest struct {
 	MediaIncluded   bool     `json:"mediaIncluded"`
 }
 
-// Write creates a compressed archive of Kinosail's configuration state.
 func (service *Service) Write(writer io.Writer, dataDir, version string) error {
 	return service.write(writer, dataDir, version, false)
 }
@@ -176,7 +174,6 @@ func readStateFileWith(path string, maximum int, lstat func(string) (os.FileInfo
 	return data, nil
 }
 
-// Restore validates and atomically replaces configuration files from an archive.
 func (service *Service) Restore(reader io.Reader, dataDir string) error {
 	staged, err := service.read(reader, false)
 	if err != nil {

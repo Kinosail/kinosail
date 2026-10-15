@@ -1,4 +1,3 @@
-// Package homeassistant provides the local Home Assistant integration protocol.
 package homeassistant
 
 import (
@@ -19,7 +18,6 @@ const (
 	maxPlayers               = 64
 )
 
-// Profile is the identity state used by the integration.
 type Profile[P any] struct {
 	Source   P
 	ID, Name string
@@ -28,26 +26,21 @@ type Profile[P any] struct {
 	Scopes   []string
 }
 
-// Item is one direct media item.
 type Item struct{ ID, Path string }
 
-// Library is one Home Assistant browse response.
 type Library struct {
 	Items                any
 	View                 string
 	Total, Offset, Limit int
 }
 
-// Server identifies one Kinosail server.
 type Server struct{ Name, ID string }
 
-// TrustedHTTPS contains the discovery trust state.
 type TrustedHTTPS struct {
 	Hostname   string
 	Configured bool
 }
 
-// Config connects the shared protocol to one app.
 type Config[P any] struct {
 	Lifecycle      context.Context
 	AuthURL        string
@@ -66,7 +59,6 @@ type Config[P any] struct {
 	SafePath       func(string) bool
 }
 
-// Integration owns one Home Assistant protocol lifecycle.
 type Integration[P any] struct {
 	mu        sync.Mutex
 	config    Config[P]
@@ -82,7 +74,6 @@ type Integration[P any] struct {
 	text      func() string
 }
 
-// New creates one integration and applies its configured startup state.
 func New[P any](config Config[P]) (*Integration[P], error) {
 	if config.Random == nil {
 		config.Random = rand.Reader
@@ -105,10 +96,8 @@ func New[P any](config Config[P]) (*Integration[P], error) {
 	return integration, nil
 }
 
-// Enabled reports the configured feature state.
 func (integration *Integration[P]) Enabled() bool { return integration.config.Enabled() }
 
-// SetEnabled applies one complete feature-state transition.
 func (integration *Integration[P]) SetEnabled(enabled bool) error {
 	integration.mu.Lock()
 	defer integration.mu.Unlock()
@@ -132,7 +121,6 @@ func (integration *Integration[P]) SetEnabled(enabled bool) error {
 	return nil
 }
 
-// SetPublisher sets the app event adapter.
 func (integration *Integration[P]) SetPublisher(publish func(string, string, string)) {
 	integration.mu.Lock()
 	integration.publish = publish

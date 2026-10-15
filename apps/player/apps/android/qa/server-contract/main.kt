@@ -10,7 +10,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-/** Real loopback Server contract journey; no Android UI or codec invocation. */
 fun main(args: Array<String>) {
     val server = ServerAddress(args[0])
     val output = Path.of(args[1])

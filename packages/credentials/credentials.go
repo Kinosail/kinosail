@@ -1,4 +1,3 @@
-// Package credentials owns Kinosail's local password policy and credential format.
 package credentials
 
 import (
@@ -67,7 +66,6 @@ var dummyHash = sync.OnceValue(func() string {
 	return value
 })
 
-// Validate applies Kinosail's password policy without changing state.
 func Validate(password string) error {
 	if len(password) < 12 {
 		return errors.New("password must contain at least 12 characters")
@@ -81,7 +79,6 @@ func Validate(password string) error {
 	return nil
 }
 
-// Hash validates and encodes a password with Kinosail's current Argon2id policy.
 func Hash(password string) (string, error) {
 	if err := Validate(password); err != nil {
 		return "", err
@@ -102,7 +99,6 @@ func hashWithReader(password string, random io.Reader) (string, error) {
 	return fmt.Sprintf("$argon2id$v=%d$%s$%s$%s", argon2.Version, parameterString, base64.RawStdEncoding.EncodeToString(salt), base64.RawStdEncoding.EncodeToString(digest)), nil
 }
 
-// Verify accepts the current PHC format and Kinosail's legacy salt.hash format.
 func Verify(encoded, password string) bool {
 	if len(encoded) > maximumCredentialBytes || len(password) > maximumPasswordBytes {
 		return false
@@ -123,7 +119,6 @@ func Verify(encoded, password string) bool {
 	return subtle.ConstantTimeCompare(got, want) == 1
 }
 
-// DummyVerify performs equivalent password work when no profile can be checked.
 func DummyVerify(password string) {
 	_ = Verify(dummyHash(), password)
 }

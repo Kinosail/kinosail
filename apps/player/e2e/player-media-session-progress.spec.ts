@@ -12,12 +12,9 @@ installPlayerExperienceFixture(false,false,'iPhone',async (page,title)=>{
   },title.includes('settled direct'));
 
 });
-// The platform invokes these registered public MediaSession callbacks directly.
 for(const action of ['seekto','seekbackward','seekforward','stop']) test(`unplayed MediaSession ${action} progress save preserves explicit intent during managed restoration`,async({page})=>{
   const writes:URLSearchParams[]=[];
   page.on('request',request=>{if(new URL(request.url()).pathname==='/progress/movie')writes.push(new URLSearchParams(request.postData()||''));});
-  // Automatic room clock correction uses the managed setter; a no-op decoder
-  // setter produces no seeking event before the system user action arrives.
   await page.evaluate('setPlayerTime(20)');
   await page.evaluate(action=>{
     (window as Window & {systemMediaAction(name:string,detail:object):void}).systemMediaAction(action,{seekTime:0,seekOffset:20});

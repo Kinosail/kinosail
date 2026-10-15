@@ -7,7 +7,6 @@ type Checkpoint = {seconds: number; revision: number; sessionMatches?: boolean};
 type Observation = {key: string; iteration: number; testInfo: TestInfo};
 type Movie = {watch: string; media: Locator; id: string; session?: string};
 
-// Share the existing real-media flow without duplicating setup or changing required suite selection.
 export type NavigationCheckpointFlows = {
   phase: string;
   browsePath: string;
@@ -19,8 +18,6 @@ export function registerNavigationCheckpoints(flows: NavigationCheckpointFlows) 
   const {phase, checkpoint, openMovie, browsePath} = flows;
 test.describe("acknowledged Library navigation", () => {
   test.use({serviceWorkers: "block"});
-  // The populated media and progress store remain real. Only transport acknowledgement is held:
-  // an unload keepalive cannot prove this important pending-response navigation boundary.
   test("Library waits for a real checkpoint acknowledgement before leaving moving media", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
     const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-ack-observation", iteration: 0, testInfo});
@@ -49,7 +46,6 @@ test.describe("acknowledged Library navigation", () => {
       await page.screenshot({path: testInfo.outputPath("pending-library-save.png"), fullPage: true});
       const whileHeld = await checkpoint(page, id, session);
       expect(whileHeld).toEqual(before);
-      // The server receives every original validated request only after this bounded hold.
       release();
       await page.unrouteAll({behavior: "wait"});
       await expect(page).toHaveURL(browsePath);
@@ -77,8 +73,6 @@ test.describe("acknowledged Library navigation", () => {
 
   test("failed Library checkpoint stays recoverable and resumed playback cancels departure", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
-    // The populated Server/media are real; a synthetic 503 isolates the unique failed-navigation
-    // continuation boundary that successful populated journeys cannot reliably produce.
     const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-failed-navigation", iteration: 0, testInfo});
     await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -95,7 +89,6 @@ test.describe("acknowledged Library navigation", () => {
       await expect(page.getByRole("button", {name: "Continue without saving", exact: true})).toBeVisible();
       expect(await checkpoint(page, id, session)).toEqual(before);
       await page.screenshot({path: testInfo.outputPath("failed-library-save.png"), fullPage: true});
-      // Continuing playback withdraws the Library intent; the next successful save must stay here.
       fail = false;
       await startPlaying(media);
       const resumed = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -110,7 +103,6 @@ test.describe("acknowledged Library navigation", () => {
       expect(recovered.revision).toBeGreaterThan(before.revision);
       await expect(page.locator("[data-progress-notice]")).toBeHidden();
       await expect(page).toHaveURL(url => url.pathname === watch);
-      // A fresh failed exit still permits an explicit departure without discarding valid progress.
       await startPlaying(media);
       await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(paused + 0.3);
       fail = true;
@@ -138,7 +130,6 @@ test.describe("acknowledged Library navigation", () => {
 
   test("an existing authentication or policy failure still allows an explicit Library departure", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
-    // Synthetic HTTP failures protect the pending-navigation recovery seam; media/store remain real.
     for (const [iteration, status] of [401, 403].entries()) {
       const {watch, media, id, session} = await openMovie(page, {key: `kinosail:checkpoint-terminal-navigation:${iteration}`, iteration, testInfo});
       await startPlaying(media);
@@ -172,7 +163,6 @@ test.describe("acknowledged Library navigation", () => {
 
   test("Library deadline expires without online renewal and explicit Retry gets a fresh bounded attempt", {tag: "@smoke"}, async ({page}, testInfo) => {
     test.skip(phase !== "candidate", "historical sources are reserved for the original checkpoint reproductions");
-    // A held public transport is the sole isolation: replay cannot rely on a naturally stalled Server.
     const {watch, media, id, session} = await openMovie(page, {key: "kinosail:checkpoint-navigation-deadline", iteration: 0, testInfo});
     await startPlaying(media);
     const start = await media.evaluate((video: HTMLVideoElement) => video.currentTime);
@@ -186,7 +176,6 @@ test.describe("acknowledged Library navigation", () => {
       writes.push({seconds: Number(form.get("seconds")), revision: Number(form.get("revision")),
         sessionMatches: form.get("session") === session});
       await held;
-      // An expired original request may already be cancelled; durable assertions verify the fresh retry.
       await route.continue().catch(() => {});
     });
     const began = await page.evaluate(() => performance.now());

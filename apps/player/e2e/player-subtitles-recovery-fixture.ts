@@ -20,7 +20,6 @@ export async function captionPeer(page: Page, mode: "headers" | "body") {
   const pending = new Set<ServerResponse>();
   let calls = 0;
   let closed = 0;
-  // Isolated real HTTP transport. The shell does not establish Go rendering or media decode.
   const web = createServer((request, response) => {
     if (request.url === "/captions.vtt") {
       calls += 1;
@@ -62,8 +61,6 @@ export async function openCaptionPlayer(page: Page, origin: string) {
     const library = await response.json();
     expect(library.items).toHaveLength(1);
     expect(library.items[0].title).toBe("Caption Recovery");
-    // The caption body is deliberately held. Admit the document before waiting
-    // on the media and recovery controls below; window load can wait on that body.
     await page.goto(`${origin}/watch/${library.items[0].id}?playback=direct`, {waitUntil: "domcontentloaded"});
     const bundle = await page.locator('script[src^="/static/player.js"]').getAttribute("src");
     const asset = new URL(bundle!, origin);

@@ -40,7 +40,6 @@ test.afterEach(async ({browserName}, info) => {
 test('compatible attachment respects Pause during resumed autoplay @smoke', async ({page}) => {
   const media = page.locator('video');
   await expect(media).toHaveJSProperty('paused', false);
-  // Use keyboard activation while the pending-source status covers the stage.
   await page.getByRole('button', {name: 'Pause', exact: true}).first().press('Enter');
   await expect(media).toHaveJSProperty('paused', true);
   releaseAdapter();

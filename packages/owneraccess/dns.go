@@ -10,8 +10,6 @@ import (
 	"golang.org/x/net/dns/dnsmessage"
 )
 
-// The tunnel resolves only A/AAAA records. The Server name stays inside the tunnel;
-// ordinary device DNS lookups use the host resolver, with bounded work and replies.
 func (m *Manager) serveDNS(ctx context.Context, runtime *runtime, hostname string) {
 	var limiter httpguard.Limiter
 	capacity := make(chan struct{}, 8)

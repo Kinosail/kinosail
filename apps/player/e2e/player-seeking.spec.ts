@@ -89,7 +89,6 @@ for (const ranges of ["seekable", "buffered"]) test(`native HLS on touch devices
     await page.locator("video").evaluate((video, target) => { video.currentTime = target; video.dispatchEvent(new Event("seeking")); video.dispatchEvent(new Event("seeked")); }, seconds);
     await expect(page.locator("video")).toHaveAttribute("src", originalSource!);
   }
-  // A gap between loaded ranges also needs a new server window.
   await page.locator("video").evaluate((video) => { video.currentTime = 279.25; video.dispatchEvent(new Event("seeking")); });
   await expect(page.locator("video")).toHaveAttribute("src", /-o279200\/index.m3u8/);
   await page.locator("video").dispatchEvent("loadedmetadata");

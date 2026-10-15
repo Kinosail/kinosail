@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// TimelineForAutomaticSkip returns one normalized presentation timeline.
 func TimelineForAutomaticSkip(duration float64, values []markers.Marker, enabled []string) Timeline { //nolint:cyclop // Normalization must reject and merge every marker boundary in one pass.
 	ranges := make([]Range, 0, len(values))
 	for _, marker := range values {
@@ -37,7 +36,6 @@ func TimelineForAutomaticSkip(duration float64, values []markers.Marker, enabled
 	return Timeline{SourceDuration: duration, Duration: max(0, presented), Omitted: omitted}
 }
 
-// AutomaticSkipTypes returns marker types whose full set is trusted.
 func AutomaticSkipTypes(values []markers.Marker, enabled []string) []string {
 	result := make([]string, 0, len(enabled))
 	for _, markerType := range enabled {
@@ -54,7 +52,6 @@ func AutomaticSkipTypes(values []markers.Marker, enabled []string) []string {
 	return result
 }
 
-// AutomaticStart returns a trusted opening marker offset for new playback.
 func AutomaticStart(current, duration float64, values []markers.Marker, enabled []string) float64 { //nolint:cyclop,gocognit // Intro trust decisions remain one auditable sequence.
 	if !finiteTimelineValue(current) || current < 0 {
 		return 0
@@ -80,7 +77,6 @@ func AutomaticStart(current, duration float64, values []markers.Marker, enabled 
 	return offset
 }
 
-// RemainingMarkers maps non-omitted markers onto one presentation timeline.
 func RemainingMarkers(values []markers.Marker, enabled []string, timeline Timeline) []markers.Marker {
 	result := make([]markers.Marker, 0, len(values))
 	if !finiteTimelineValue(timeline.SourceDuration) || !finiteTimelineValue(timeline.Duration) || timeline.SourceDuration <= 0 || timeline.Duration <= 0 {
@@ -105,7 +101,6 @@ func validMarkerRange(marker markers.Marker) bool {
 	return finiteTimelineValue(marker.Start) && finiteTimelineValue(marker.End) && marker.Start >= 0 && marker.End > marker.Start
 }
 
-// TimelineChapters maps chapters onto one presentation timeline.
 func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.Chapter {
 	result := make([]metadata.Chapter, 0, len(values))
 	for _, chapter := range values {
@@ -118,7 +113,6 @@ func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.C
 	return result
 }
 
-// DecideWithAutomaticSkip applies Player's server-side marker policy.
 func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan { //nolint:cyclop,gocognit // Ordered compatibility and timeline fallbacks remain one auditable operation.
 	if intent.PreferDirect {
 		plan := Decide(facts, client, policy, intent, product)
@@ -158,7 +152,6 @@ func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy
 	return plan
 }
 
-// JellyfinMarkers returns markers on the timeline visible to one Jellyfin viewer.
 func JellyfinMarkers(duration float64, values []markers.Marker, enabled []string, serverTimeline bool) []markers.Marker {
 	timeline := TimelineForAutomaticSkip(duration, values, enabled)
 	if serverTimeline && len(timeline.Omitted) > 0 {
@@ -171,8 +164,6 @@ type TimelineResponse interface {
 	SetPlaybackTimeline(float64, float64, []metadata.Chapter, []markers.Marker, []string, string)
 }
 
-// ApplyAPIPlaybackTimeline projects source media onto the timeline returned to API clients.
-// It reports whether malformed source marker bounds required normalization.
 func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, start, duration float64, chapters []metadata.Chapter, values []markers.Marker, enabled, autoSkip []string, progressToken func() string) bool {
 	bounded := RemainingMarkers(values, nil, Timeline{SourceDuration: duration, Duration: duration})
 	normalized := !slices.Equal(values, bounded)

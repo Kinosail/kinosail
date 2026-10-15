@@ -266,8 +266,6 @@ grep -q '^KINOSAIL_IMAGE=ghcr.io/kinosail/kinosail-player@sha256:a\{64\}$' "$fix
 grep -q 'stop kinosail' "$fixture/compose.log"
 grep -q 'run --rm --no-deps -T kinosail restore' "$fixture/compose.log"
 
-# Compose may fail after replacing the container and changing persistent state.
-# Even unavailable logs must not prevent restoring the old image and backup.
 for failure in start logs both; do
   unset KINOSAIL_INSTALL_TEST_FAIL_START KINOSAIL_INSTALL_TEST_FAIL_LOGS
   [[ "$failure" == logs ]] || export KINOSAIL_INSTALL_TEST_FAIL_START=1
@@ -285,7 +283,6 @@ for failure in start logs both; do
 done
 unset KINOSAIL_INSTALL_TEST_FAIL_START KINOSAIL_INSTALL_TEST_FAIL_LOGS
 
-# A failed first install has no previous state to restore.
 rm "$fixture/running" "$fixture/app/.env"
 : >"$fixture/compose.log"
 export KINOSAIL_INSTALL_TEST_FAIL_START=1

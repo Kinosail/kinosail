@@ -1,7 +1,6 @@
 import Foundation
 import Synchronization
 
-/// Bounded JSON with duplicate-key detection before domain decoding.
 enum StrictJSON {
     static func decode(_ data: Data, maximum: Int = 2 * 1024 * 1024) throws -> JSONValue {
         guard !data.isEmpty, data.count <= maximum else { throw ClientError.invalidResponse }

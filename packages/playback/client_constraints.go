@@ -159,8 +159,6 @@ func compatibleDelivery(client ClientCapabilities, plan PlaybackPlan) bool {
 	return false
 }
 
-// Converted output is checked too: a decoder limited to a lower profile/level
-// must not receive a conversion whose fixed encoder contract exceeds it.
 func outputConstraints(client ClientCapabilities, plan PlaybackPlan, source MediaFacts) bool {
 	output := source
 	audio := selectedAudioFacts(source.Audio, plan.AudioIndex)

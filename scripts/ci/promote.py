@@ -15,7 +15,6 @@ def main():
             or not re.fullmatch(r"[a-f0-9]{40}", commit)
             or os.environ["GITHUB_EVENT_NAME"] != "push" or os.environ["GITHUB_REF"] != "refs/heads/main"):
         raise ValueError("invalid production promotion")
-    # Checkout tokens are not persisted. Fetch the public main ref without credentials.
     subprocess.run(["git", "fetch", "origin", "main"], check=True, timeout=60)
     subprocess.run(["git", "merge-base", "--is-ancestor", commit, "origin/main"], check=True)
     result = subprocess.run(["git", "diff", "--name-only", "--no-renames", "-z", commit, "origin/main", "--"],

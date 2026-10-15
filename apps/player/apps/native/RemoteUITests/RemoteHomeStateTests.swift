@@ -1,7 +1,5 @@
 import XCTest
 
-// Isolated navigation checks for the disposable loopback catalog. These do not
-// establish live-server or real-library playback coverage.
 final class RemoteHomeStateTests: RemoteTestCase {
     private var fixtureEnabled = false
     override func setUpWithError() throws {

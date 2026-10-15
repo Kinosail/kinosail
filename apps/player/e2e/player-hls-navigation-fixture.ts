@@ -6,9 +6,6 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {playerSource, readStaticSource} from './static-sources';
 
-// Failure matrix before implementation: HLS retries outlive committed departure;
-// an unacknowledged checkpoint, cancelled submit, or PiP must keep its owner alive.
-// Real H264/transport/Hls.js isolates lifecycle; it does not exercise Go storage.
 const adapter = await readStaticSource(['../internal/server/static/hls.min.js']);
 
 export async function hlsNavigationPeer(contextual = false) {

@@ -85,8 +85,6 @@ def stop_observed_node_children(browser, process_log, receipt):
             os.killpg(group, 0)
         except ProcessLookupError:
             return False
-        # A PGID remains reserved while its group survives its leader. If a
-        # current leader exists, reject a changed creation identity before kill.
         try:
             current = subprocess.check_output(['/bin/ps', '-p', str(pid), '-o', 'lstart='], text=True).strip()
             if current and current != identity:

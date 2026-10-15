@@ -142,7 +142,6 @@ export async function searchPlaceholderFits(page: Page, label: string) {
 		const canvas = document.createElement("canvas");
 		const context = canvas.getContext("2d")!;
 		context.font = style.font;
-		// Firefox search inputs report clientWidth without padding; measure the border box consistently.
 		const available = input.getBoundingClientRect().width - Number.parseFloat(style.borderLeftWidth) - Number.parseFloat(style.borderRightWidth) - Number.parseFloat(style.paddingLeft) - Number.parseFloat(style.paddingRight);
 		return {
 			available,

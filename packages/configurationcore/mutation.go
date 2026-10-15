@@ -7,13 +7,10 @@ import (
 )
 
 const (
-	// SCIMTokenKey is the atomic SCIM token setting.
-	SCIMTokenKey = "integrations.scim.token"
-	// SCIMExpirationKey is the atomic SCIM token expiry setting.
+	SCIMTokenKey      = "integrations.scim.token"
 	SCIMExpirationKey = "integrations.scim.token_expires_at"
 )
 
-// Mutation adapts app storage and validation to shared configuration changes.
 type Mutation struct {
 	Lock           sync.Locker
 	Find           func(string) (bool, bool)
@@ -24,7 +21,6 @@ type Mutation struct {
 	Persist        func(string, map[string]string, map[string]string, bool, bool) error
 }
 
-// Set validates and persists one setting.
 func (mutation Mutation) Set(dataDir, key, raw string) error {
 	secret, ok := mutation.Find(key)
 	if !ok {
@@ -39,7 +35,6 @@ func (mutation Mutation) Set(dataDir, key, raw string) error {
 	return mutation.change(dataDir, key, raw, false, secret)
 }
 
-// Delete validates and removes one setting.
 func (mutation Mutation) Delete(dataDir, key string) error {
 	secret, ok := mutation.Find(key)
 	if !ok {
@@ -51,7 +46,6 @@ func (mutation Mutation) Delete(dataDir, key string) error {
 	return mutation.change(dataDir, key, "", true, secret)
 }
 
-// SetSCIM validates and persists the SCIM token and expiry atomically.
 func (mutation Mutation) SetSCIM(dataDir, token, expiresAt string) error {
 	if token == "" || expiresAt == "" {
 		return fmt.Errorf("%s and %s must be configured together", SCIMTokenKey, SCIMExpirationKey)
@@ -70,7 +64,6 @@ func (mutation Mutation) SetSCIM(dataDir, token, expiresAt string) error {
 	return mutation.changeSCIM(dataDir, token, expiresAt, false)
 }
 
-// DeleteSCIM removes the SCIM token and expiry atomically.
 func (mutation Mutation) DeleteSCIM(dataDir string) error {
 	return mutation.changeSCIM(dataDir, "", "", true)
 }

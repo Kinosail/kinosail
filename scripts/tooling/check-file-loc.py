@@ -11,7 +11,6 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 SUFFIXES = {'.go', '.ts', '.tsx', '.js', '.mjs', '.py', '.sh', '.css', '.html', '.swift'}
 EXCLUDED = {'.codex', 'third_party', 'testdata', 'docs', 'engineering', 'assets'}
-# Remove each exception when its responsibility-based refactor lands. Never grow it.
 LEGACY = {
     'apps/player/apps/native/Sources/Platform/PlaybackCoordinator.swift': 616,
     'apps/player/e2e/player-direct-fallback.spec.ts': 313,

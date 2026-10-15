@@ -23,7 +23,6 @@ func copiedHLSProbeContext(parent context.Context) (context.Context, context.Can
 		return nil, nil, parent.Err()
 	}
 	if deadline, ok := parent.Deadline(); ok {
-		// Reserve settlement within the caller's existing deadline, exactly once.
 		deadline = deadline.Add(-100 * time.Millisecond)
 		if !time.Now().Before(deadline) {
 			return nil, nil, context.DeadlineExceeded
@@ -63,9 +62,6 @@ func watchCopiedHLSProbe(ctx context.Context, probe copiedHLSProbe, output io.Cl
 
 func (watch *copiedHLSProbeWatch) completionError(ctx context.Context, waitErr, settleErr error) error {
 	stopErr := watch.terminateErr
-	// Darwin can report EPERM for an exited, zombie-only group. Acceptance
-	// still requires an active context, successful observation and Wait, and
-	// proven settlement. Metadata rejection remains independent of ownership.
 	if runtime.GOOS == "darwin" && errors.Is(stopErr, syscall.EPERM) && watch.lifecycleCompleted(ctx, waitErr, settleErr) {
 		stopErr = nil
 	}
@@ -114,8 +110,6 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 		if settled {
 			break
 		}
-		// No ownership is released on an unproven settlement. Unix observation
-		// after Wait is read-only; numeric process-group signaling has ended.
 		time.Sleep(time.Millisecond)
 	}
 	if deadline, ok := parent.Deadline(); ok && time.Now().After(deadline) {
@@ -127,8 +121,6 @@ func settleCopiedHLSProbe(parent context.Context, probe copiedHLSProbe) error {
 }
 
 func reportCopiedHLSProbeCompletion(ctx context.Context, scanErr, watchErr, waitErr, settleErr error) {
-	// Rejected metadata and cancelled optional scans can intentionally stop the
-	// process. Only unexpected exits and uncertified ownership need an error.
 	if !errors.Is(watchErr, ErrProbeLifecycle) && (ctx.Err() != nil || scanErr != nil || waitErr == nil) {
 		return
 	}

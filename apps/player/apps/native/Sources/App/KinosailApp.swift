@@ -18,8 +18,6 @@ struct KinosailApp: App {
         AppDependencyManager.shared.add(dependency: session)
         #endif
         #if os(tvOS)
-        // tvOS requires the legacy bar API even though the newer appearance
-        // properties compile; setting standardAppearance raises at runtime.
         let bar = UINavigationBar.appearance()
         bar.titleTextAttributes = [.foregroundColor: UIColor(KinoTheme.text).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))]
         bar.isTranslucent = true

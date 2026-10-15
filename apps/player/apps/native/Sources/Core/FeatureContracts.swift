@@ -5,8 +5,6 @@ struct ItemDetail: Sendable {
     let listed: Bool
 }
 
-// These are UI-facing contracts. Implement the wire decoders beside each API
-// operation; do not expose unvalidated remote or persisted JSON to a screen.
 struct HomeSnapshot: Sendable {
     let viewer: Viewer
     let continueWatching: [MediaItem]
@@ -75,10 +73,6 @@ struct PlaybackSource: Sendable {
     func allowsSubtitleLanguage(_ language: String) -> Bool { subtitlePolicy.allows(language) }
 
     #if os(tvOS)
-    /// Automatic playback may offer an original file first even when its
-    /// container is outside AVPlayer's tvOS contract. Prefer the validated
-    /// compatible source instead of waiting for a black surface and a late
-    /// decoder failure.
     var shouldPreferCompatibleOnAppleTV: Bool {
         guard compatible != nil else { return false }
         let mediaType = contentType.split(separator: ";", maxSplits: 1, omittingEmptySubsequences: true).first.map(String.init)?.lowercased() ?? ""

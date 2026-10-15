@@ -11,17 +11,14 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// SameState compares the source-controlled watched and resume fields.
 func SameState(left, right catalog.PlaybackState) bool {
 	return left.Watched == right.Watched && math.Abs(left.Seconds-right.Seconds) < .5
 }
 
-// Conflict reports whether the destination has newer meaningful state.
 func Conflict(destination, source catalog.PlaybackState) bool {
 	return !destination.Updated.IsZero() && (source.Updated.IsZero() || destination.Updated.After(source.Updated))
 }
 
-// Match resolves one activity by provider ID, semantic identity, then filename.
 func Match(activity Activity, items []library.Item) (library.Item, string, string) { //nolint:cyclop // Conservative matching keeps every identity boundary in one decision.
 	providerMatches := matchingItems(items, func(item library.Item) bool {
 		if !sameKind(activity, item) {
@@ -59,7 +56,6 @@ func Match(activity Activity, items []library.Item) (library.Item, string, strin
 	}
 }
 
-// ActivityKey returns a stable source observation key without credentials.
 func ActivityKey(activity Activity) string {
 	providers := make([]string, 0, len(activity.ProviderIDs))
 	for provider, id := range activity.ProviderIDs {
@@ -75,12 +71,10 @@ func ActivityKey(activity Activity) string {
 	return activity.Kind + "|" + normalizedText(activity.Show+activity.Title) + fmt.Sprintf("|%s|%d|%d", activity.Year, activity.Season, activity.Episode)
 }
 
-// Signature returns the source fields that trigger a sync update.
 func Signature(activity Activity) string {
 	return fmt.Sprintf("%t|%.3f", activity.Watched, activity.Seconds)
 }
 
-// Label returns a human-readable source item label.
 func Label(activity Activity) string {
 	if activity.Kind == "episode" {
 		return fmt.Sprintf("%s · S%02dE%02d · %s", activity.Show, activity.Season, activity.Episode, activity.Title)

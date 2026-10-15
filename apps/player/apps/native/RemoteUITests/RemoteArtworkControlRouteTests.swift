@@ -1,8 +1,6 @@
 import UIKit
 import XCTest
 
-// Run identical bytes on the original and candidate production layouts.
-// This observation proves a route comparison, not cast scrolling acceptance.
 final class RemoteArtworkControlRouteTests: RemoteTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -85,7 +83,6 @@ final class RemoteArtworkControlRouteTests: RemoteTestCase {
         XCTAssertGreaterThanOrEqual(destination.frame.minY, app.frame.minY + 58)
         XCTAssertLessThanOrEqual(destination.frame.maxY, app.frame.maxY - 58)
 
-        // Preserve first-Down observations above before testing secondary reachability.
         let myList = app.buttons["My List"]
         for attempt in 1...2 where !myList.hasFocus {
             remote.press(.left)

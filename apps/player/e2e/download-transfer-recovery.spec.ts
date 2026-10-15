@@ -24,7 +24,6 @@ for (const failure of ['network', '503', '401', 'range', 'digest', 'oversized', 
       const offlineDigest = async () => 'good';
       const contentDigest = (value: string) => value;
       const notifyOffline = (_id: string, detail: { state: string }) => notices.push(detail.state);
-      // Skip backoff in the fixture, but do not trigger idle deadlines.
       const setTimeout = (callback: () => void, delay: number) => { if (delay !== 30000) queueMicrotask(callback); return 1; };
       const clearTimeout = () => {};
       const run = new Function('fetch', 'offlineMessage', 'offlineDigest', 'contentDigest', 'notifyOffline', 'setTimeout', 'clearTimeout', 'offlineDelay', `${helper}; return fetchOfflineChunk({id: 'aaaaaaaaaaaaaaaa', size: 8}, 4, 4);`);

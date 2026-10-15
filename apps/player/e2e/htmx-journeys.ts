@@ -46,7 +46,6 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
 
   test("HTMX delays visual placeholders while keeping pending content inert @smoke", async ({ page }, info) => {
     await open(page);
-    // Keep the pause target ahead while the installed clock is still running.
     await page.clock.install({ time: new Date("2026-01-01T00:00:00Z") });
     await page.clock.pauseAt(new Date("2026-01-01T01:00:00Z"));
     let release!: () => void;
@@ -90,7 +89,6 @@ export function registerHtmxJourneys(app: "player" | "subtitles", test: typeof i
       page.on("console", collectError);
       const capture = async (name: string) => {
         expect(errors).toEqual([]);
-        // WebKit reports Playwright's injected screenshot stylesheet under strict CSP.
         page.off("console", collectError);
         await page.screenshot({ caret: "initial", path: info.outputPath(name) });
         page.on("console", collectError);

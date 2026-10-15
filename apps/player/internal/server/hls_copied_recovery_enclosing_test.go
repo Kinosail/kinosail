@@ -64,7 +64,6 @@ func copiedRecoveryRunEnclosing(ctx context.Context, manager *hlsManager, item l
 	return manager.encodeVariants(ctx, item, directory, options, recipe, 0)
 }
 
-// Public media cannot schedule early selection or replacement-generation races.
 func TestCopiedRecoveryEnclosingRefillPreservesMaster(t *testing.T) {
 	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
 	check := copiedRecoveryEnclosingMaster(t, directory)

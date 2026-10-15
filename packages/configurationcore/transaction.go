@@ -14,10 +14,8 @@ import (
 )
 
 const (
-	// TransactionFilename is the durable two-file recovery journal.
 	TransactionFilename = ".kinosail-configuration-transaction"
-	// MaxTransactionSize bounds a configuration recovery journal.
-	MaxTransactionSize = 3 << 20
+	MaxTransactionSize  = 3 << 20
 )
 
 type transactionEnvelope struct {
@@ -25,7 +23,6 @@ type transactionEnvelope struct {
 	Secrets []byte `json:"secrets"`
 }
 
-// Transaction owns atomic recovery for Player's public and secret configuration pair.
 type Transaction struct {
 	RegularFile string
 	SecretsFile string
@@ -33,7 +30,6 @@ type Transaction struct {
 	Validate    func(map[string]string, map[string]string) error
 }
 
-// Write writes one complete recovery journal before the paired files are replaced.
 func (transaction Transaction) Write(dataDir string, regular, secrets []byte) error {
 	if err := transaction.valid(dataDir); err != nil {
 		return err
@@ -48,7 +44,6 @@ func (transaction Transaction) Write(dataDir string, regular, secrets []byte) er
 	return privatefile.Write(filepath.Join(dataDir, TransactionFilename), data)
 }
 
-// Recover validates and restores a pending configuration transaction.
 func (transaction Transaction) Recover(dataDir string) error {
 	if err := transaction.valid(dataDir); err != nil {
 		return err
@@ -73,7 +68,6 @@ func (transaction Transaction) Recover(dataDir string) error {
 	return privatefile.Remove(filepath.Join(dataDir, TransactionFilename))
 }
 
-// Remove removes a recovery journal after the paired replacement commits or rolls back.
 func (transaction Transaction) Remove(dataDir string) error {
 	if err := transaction.valid(dataDir); err != nil {
 		return err

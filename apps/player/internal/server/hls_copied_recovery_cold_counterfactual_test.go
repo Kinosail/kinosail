@@ -75,14 +75,12 @@ func copiedRecoveryInitializationBytes(t *testing.T, path, expected string) {
 	}
 }
 
-// A held owned printf exposes the shell redirection window without media/UI work.
 func TestCopiedRecoveryEncoderInitializationRemainsCommittedUntilReplacement(t *testing.T) {
 	manager, _, _, _, initialization := copiedRecoveryEnclosingFixture(t)
 	marker := filepath.Join(t.TempDir(), "held")
 	action := "held=0\nprintf() {\n if [ \"$held\" -eq 0 ]; then\n held=1\n command printf held > " + copiedRecoveryQuote(marker)
 	action += "\n IFS= read -r held_input\n fi\n command printf \"$@\"\n}\n"
 	copiedRecoveryEncoderOutput(t, manager, action, initialization, "first fragment", copiedRecoveryManifest)
-	// Constant argv targets an owned relative output under the script's directory.
 	rendition := filepath.Join(filepath.Dir(manager.ffmpeg), "rendition")
 	writeHLSLoadingFile(t, filepath.Join(rendition, "init.mp4"), initialization)
 	ctx, cancel := context.WithTimeout(t.Context(), 3*time.Second)
@@ -163,8 +161,6 @@ func copiedRecoveryInitializationMaster(t *testing.T, directory string, err erro
 	}
 }
 
-// Schedule only the initialization-read boundary; this is not media proof or
-// a diagnosis of the original intermittent failure, whose error was hidden.
 func TestCopiedRecoveryOrdinaryPublicationInitializationCounterfactual(t *testing.T) {
 	for _, sample := range []struct {
 		name          string

@@ -26,7 +26,6 @@ var (
 	ErrCeremonyLimit   = errors.New("too many passkey ceremonies")
 )
 
-// Config defines one WebAuthn engine.
 type Config struct {
 	URL         string
 	DefaultURL  string
@@ -35,7 +34,6 @@ type Config struct {
 	newWebAuthn func(*webauthn.Config) (*webauthn.WebAuthn, error)
 }
 
-// Ceremony defines request-specific cookie and revocation data.
 type Ceremony struct {
 	Identity   string
 	CookiePath string
@@ -49,7 +47,6 @@ type ceremonyState struct {
 	public   bool
 }
 
-// Engine owns WebAuthn protocol options and one-use ceremony state.
 type Engine struct {
 	mu                sync.Mutex
 	web               *webauthn.WebAuthn
@@ -61,12 +58,10 @@ type Engine struct {
 	beginLogin        func(...webauthn.LoginOption) (*protocol.CredentialAssertion, *webauthn.SessionData, error)
 }
 
-// MatchesRequest reports whether a request uses this engine's configured origin.
 func (engine *Engine) MatchesRequest(request *http.Request, secure bool) bool {
 	return engine != nil && engine.Origin().Matches(request, secure)
 }
 
-// RequirePageOrigin redirects an enabled browser page to this engine's canonical origin.
 func (engine *Engine) RequirePageOrigin(writer http.ResponseWriter, request *http.Request, enabled, secure bool) bool {
 	if !enabled || engine == nil || engine.MatchesRequest(request, secure) {
 		return true
@@ -76,7 +71,6 @@ func (engine *Engine) RequirePageOrigin(writer http.ResponseWriter, request *htt
 	return false
 }
 
-// New creates an engine from one validated origin and cookie name.
 func New(config Config) (*Engine, error) {
 	rawURL := config.URL
 	if rawURL == "" {
@@ -104,7 +98,6 @@ func New(config Config) (*Engine, error) {
 	return &Engine{web: web, ceremonies: make(map[string]ceremonyState), origin: origin, cookieName: config.CookieName, now: time.Now, beginRegistration: web.BeginRegistration, beginLogin: web.BeginDiscoverableLogin}, nil
 }
 
-// Origin returns the engine's validated origin.
 func (engine *Engine) Origin() Origin {
 	if engine == nil {
 		return Origin{}
@@ -112,7 +105,6 @@ func (engine *Engine) Origin() Origin {
 	return engine.origin
 }
 
-// BeginRegistration creates registration data and a server-side ceremony cookie.
 func (engine *Engine) BeginRegistration(user webauthn.User, ceremony Ceremony) (*protocol.CredentialCreation, *http.Cookie, error) {
 	if engine == nil || user == nil || ceremony.Identity == "" {
 		return nil, nil, ErrInvalidCeremony
@@ -125,7 +117,6 @@ func (engine *Engine) BeginRegistration(user webauthn.User, ceremony Ceremony) (
 	return creation, cookie, err
 }
 
-// FinishRegistrationRequest verifies a registration response from net/http.
 func (engine *Engine) FinishRegistrationRequest(user webauthn.User, identity string, request *http.Request) (*webauthn.Credential, error) {
 	session, err := engine.take(request, identity)
 	if err != nil {
@@ -134,7 +125,6 @@ func (engine *Engine) FinishRegistrationRequest(user webauthn.User, identity str
 	return engine.web.FinishRegistration(user, session, request)
 }
 
-// FinishRegistration verifies a strictly parsed registration response.
 func (engine *Engine) FinishRegistration(user webauthn.User, identity string, request *http.Request, response *protocol.ParsedCredentialCreationData) (*webauthn.Credential, error) {
 	session, err := engine.take(request, identity)
 	if err != nil {
@@ -143,7 +133,6 @@ func (engine *Engine) FinishRegistration(user webauthn.User, identity string, re
 	return engine.web.CreateCredential(user, session, response)
 }
 
-// BeginLogin creates discoverable-login data and a server-side ceremony cookie.
 func (engine *Engine) BeginLogin(ceremony Ceremony) (*protocol.CredentialAssertion, *http.Cookie, error) {
 	if engine == nil || ceremony.Identity != "" {
 		return nil, nil, ErrInvalidCeremony
@@ -156,7 +145,6 @@ func (engine *Engine) BeginLogin(ceremony Ceremony) (*protocol.CredentialAsserti
 	return assertion, cookie, err
 }
 
-// FinishLoginRequest verifies a discoverable login response from net/http.
 func (engine *Engine) FinishLoginRequest(request *http.Request, discover webauthn.DiscoverableUserHandler) (webauthn.User, *webauthn.Credential, error) {
 	session, err := engine.take(request, "")
 	if err != nil {
@@ -165,7 +153,6 @@ func (engine *Engine) FinishLoginRequest(request *http.Request, discover webauth
 	return engine.web.FinishPasskeyLogin(discover, session, request)
 }
 
-// FinishLogin verifies a strictly parsed discoverable login response.
 func (engine *Engine) FinishLogin(request *http.Request, response *protocol.ParsedCredentialAssertionData, discover webauthn.DiscoverableUserHandler) (webauthn.User, *webauthn.Credential, error) {
 	session, err := engine.take(request, "")
 	if err != nil {
@@ -174,7 +161,6 @@ func (engine *Engine) FinishLogin(request *http.Request, response *protocol.Pars
 	return engine.web.ValidatePasskeyLogin(discover, session, response)
 }
 
-// RevokePublic removes every in-flight public ceremony.
 func (engine *Engine) RevokePublic() {
 	if engine == nil {
 		return
@@ -188,7 +174,6 @@ func (engine *Engine) RevokePublic() {
 	}
 }
 
-// WriteJSON writes a no-store WebAuthn response.
 func WriteJSON(writer http.ResponseWriter, value any) {
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.Header().Set("Content-Type", "application/json")

@@ -16,7 +16,6 @@ struct ProgressTransportTests {
         #expect(!result.conflict && result.progress.seconds == 12)
         let request = try #require(fixture.requests.first)
         let body = try StrictJSON.decode(requestBody(request)).object()
-        // The Server's progress/sync contract excludes locally persisted dismissal state.
         #expect(body["progress"] == .object(["seconds": .number(12), "watched": .bool(false),
                                             "session": .string("native-playback"), "revision": .number(1)]))
         #expect(body["expected"] == .object(["seconds": .number(0), "watched": .bool(false),

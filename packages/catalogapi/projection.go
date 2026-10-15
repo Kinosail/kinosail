@@ -8,13 +8,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// ItemAccess contains the Viewer decisions needed for public item links.
 type ItemAccess struct {
 	Stream   bool
 	Download bool
 }
 
-// ClientItem is the Player-canonical public Library item projection.
 type ClientItem struct {
 	ID        string                `json:"id"`
 	Kind      string                `json:"kind"`
@@ -46,14 +44,12 @@ type ClientItem struct {
 	Progress  catalog.PlaybackState `json:"progress"`
 }
 
-// ClientPerson is one public cast member projection.
 type ClientPerson struct {
 	Name  string `json:"name"`
 	Role  string `json:"role,omitempty"`
 	Image string `json:"image,omitempty"`
 }
 
-// ProjectItem applies canonical public paths after app-owned Viewer authorization.
 func ProjectItem(item library.Item, progress catalog.PlaybackState, access ItemAccess) ClientItem {
 	result := ClientItem{ID: item.ID, Kind: item.Kind, Title: item.Title, SortTitle: item.SortTitle, Year: item.Year, Plot: item.Plot, Rating: item.Rating, Tagline: item.Tagline, Genres: item.Genres, Director: item.Director, Studio: item.Studio, Artist: item.Artist, Album: item.Album, Track: item.Track, Show: item.Show, Season: item.Season, Episode: item.Episode, Subtitles: len(item.Subtitles), Container: item.Container, Size: item.Size, Added: item.Added, Cast: projectCast(item), Progress: progress}
 	if item.Kind == "video" && item.Show != "" {
@@ -100,7 +96,6 @@ func projectCast(item library.Item) []ClientPerson {
 	return cast
 }
 
-// ArtworkURLForItem selects the canonical episode or item artwork route.
 func ArtworkURLForItem(item library.Item) string {
 	if item.Show != "" {
 		return "/art/" + item.ID + "?variant=episode"
@@ -108,7 +103,6 @@ func ArtworkURLForItem(item library.Item) string {
 	return "/art/" + item.ID
 }
 
-// ShowCast exposes cast through visible episodes without leaking cached paths.
 func ShowCast(show library.Show) []ClientPerson {
 	for _, episode := range show.Episodes {
 		if len(episode.ShowCast) == 0 {

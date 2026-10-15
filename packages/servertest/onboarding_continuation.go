@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// OwnerCanRerunOnboardingFromSettings preserves the original real-handler onboarding continuation scenario.
 func (fixture OnboardingFixture) OwnerCanRerunOnboardingFromSettings(t *testing.T) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	owner := fixture.Library.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
@@ -31,7 +30,6 @@ func (fixture OnboardingFixture) OwnerCanRerunOnboardingFromSettings(t *testing.
 	AssertAPIBody(t, settings, http.StatusOK, "Revisit your Server setup choices whenever you like.")
 }
 
-// OwnerFirstCredentialLoginOpensOnboarding preserves the original real-handler onboarding continuation scenario.
 func (fixture OnboardingFixture) OwnerFirstCredentialLoginOpensOnboarding(t *testing.T) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	owner, secret := fixture.setupOwnerForLogin(t, handler)

@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-// ValidateProfiles rejects ambiguous or malformed persisted identity state.
 func ValidateProfiles(profiles []Profile) error {
 	ids := make(map[string]struct{}, len(profiles))
 	userNames := make(map[string]struct{})

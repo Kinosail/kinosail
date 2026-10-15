@@ -19,7 +19,6 @@ func waitEmbeddedFile(t *testing.T, path string, owner <-chan error) {
 	ticker := time.NewTicker(5 * time.Millisecond)
 	defer ticker.Stop()
 	for {
-		// Opening the marker precedes writing it; cancellation must wait for the write.
 		if info, err := os.Stat(path); err == nil && info.Size() > 0 {
 			return
 		}

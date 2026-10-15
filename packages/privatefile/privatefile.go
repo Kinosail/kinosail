@@ -1,4 +1,3 @@
-// Package privatefile owns bounded reads and durable replacement of owner-only files.
 package privatefile
 
 import (
@@ -21,7 +20,6 @@ var (
 	syncRemovedFile   = syncDirectory
 )
 
-// Read returns one bounded regular file that only its owner can access.
 func Read(path string, maximum int64) ([]byte, error) {
 	if path == "" || maximum < 1 {
 		return nil, errInvalid
@@ -61,17 +59,14 @@ func valid(info os.FileInfo, maximum int64) bool {
 	return info.Mode().IsRegular() && securePermissions(info) && info.Size() <= maximum
 }
 
-// Write atomically replaces one owner-only file and syncs its directory entry.
 func Write(path string, data []byte) error {
 	return write(path, data, true)
 }
 
-// WriteCache atomically replaces owner-only cache data without a durability sync.
 func WriteCache(path string, data []byte) error {
 	return write(path, data, false)
 }
 
-// Remove durably removes one owner-only file if it exists.
 func Remove(path string) error {
 	if path == "" {
 		return errInvalid
@@ -124,7 +119,6 @@ func write(path string, data []byte, durable bool) error { //nolint:cyclop // At
 	return nil
 }
 
-// Create commits one empty owner-only marker without replacing an existing file.
 func Create(path string) error {
 	if path == "" {
 		return errInvalid

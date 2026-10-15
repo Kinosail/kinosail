@@ -115,5 +115,4 @@ shellcheck:
 actionlint:
 	actionlint
 
-# The file cap is enabled; preserve the pause for all other gates.
 browser-test client-check check check-fast container-test coverage deadcode installer-test native-build local-pipeline local-pipeline-test lint performance-test media-server-benchmark-test playback-test test test-instance-check test-race verify-changed verify-watch tidy-check vuln secrets single-container shellcheck actionlint: SHELL := $(abspath ../../scripts/tooling/gate-shell.sh)

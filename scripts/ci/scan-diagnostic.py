@@ -62,7 +62,6 @@ def scan(scanner, output):
             report = Path(directory) / "report.json"
             command = [scanner, "git", "--redact", "--no-banner", "--log-opts=--all",
                        "--report-format=json", "--report-path=" + str(report)]
-            # Scanner output can contain remote/private context. Never forward it.
             result = subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                                     timeout=SCAN_SECONDS, check=False)
             if result.returncode not in (0, 1) or not report.is_file() or report.is_symlink():
@@ -76,7 +75,6 @@ def scan(scanner, output):
                              "findings": findings})
             return result.returncode
     except (OSError, ValueError, subprocess.TimeoutExpired):
-        # Do not interpolate exception text: it can contain private report content.
         return 2
 
 

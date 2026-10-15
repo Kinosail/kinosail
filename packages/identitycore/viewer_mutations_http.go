@@ -15,7 +15,6 @@ const (
 
 type viewerFormMutation func(url.Values) (invalid string, err error)
 
-// ViewerPasswordResetHandler applies Player's bounded Viewer password reset HTTP contract.
 func ViewerPasswordResetHandler(reset func(string, string) error, writeError func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	if reset == nil {
 		return unavailableViewerMutationHandler()
@@ -30,7 +29,6 @@ func ViewerPasswordResetHandler(reset func(string, string) error, writeError fun
 	}, writeError)
 }
 
-// ViewerRemovalHandler applies Player's bounded Viewer removal HTTP contract.
 func ViewerRemovalHandler(remove func(string) error, writeError func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	if remove == nil {
 		return unavailableViewerMutationHandler()

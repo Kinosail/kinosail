@@ -1,5 +1,3 @@
-// Align a bookmarked section before the first body paint. Native fragment
-// scrolling can otherwise wait for unrelated deferred scripts to finish.
 if (location.hash) (() => {
   let id;
   try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }

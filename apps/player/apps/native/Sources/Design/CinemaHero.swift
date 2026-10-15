@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Artwork and information keep separate, readable space on every device.
 struct CinemaHero<Actions: View>: View {
     let item: MediaItem
     var title: String?

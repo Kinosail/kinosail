@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// Organize separates movies and grouped shows.
 func Organize(items []Item) ([]Item, []Show) {
 	movies := make([]Item, 0)
 	grouped := make(map[string]*Show)
@@ -44,7 +43,6 @@ func videoGroupKeys(items []Item) ([]string, map[string]int) {
 	return keys, episodes
 }
 
-// ShowID returns the same stable identity used to group a Show's episodes.
 func ShowID(name string) string {
 	sum := sha256.Sum256([]byte(strings.ToLower(name)))
 	return hex.EncodeToString(sum[:8])
@@ -110,7 +108,6 @@ func fill(target *string, value string) {
 	}
 }
 
-// OrganizeMusic separates loose tracks from albums.
 func OrganizeMusic(items []Item) ([]Item, []Album) {
 	loose := make([]Item, 0)
 	grouped := make(map[string]*Album)

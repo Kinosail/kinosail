@@ -9,7 +9,6 @@ const css = (await Promise.all([
 const artwork = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600"><rect width="400" height="600" fill="#345678"/></svg>')}`;
 const image = `<img src="${artwork}" alt="" width="400" height="600">`;
 
-// Check the painted perimeter: a computed outline can be hidden beneath artwork.
 async function perimeter(page: Page, poster: Locator, token: string) {
 	const color = await poster.evaluate((element, name) => {
 		const canvas = document.createElement("canvas");

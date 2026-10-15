@@ -1,4 +1,3 @@
-// Package webassets owns browser behavior shared by Kinosail applications.
 package webassets
 
 import _ "embed"

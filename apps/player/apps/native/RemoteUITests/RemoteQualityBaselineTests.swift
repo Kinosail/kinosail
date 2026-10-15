@@ -97,7 +97,6 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
     }
 
     @MainActor func testOneHundredDetailReturnsPreserveOriginatingShelf() {
-        // A measured 100-return run takes ten minutes before its final held-input checks.
         executionTimeAllowance = 900
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")

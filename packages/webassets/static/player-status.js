@@ -47,7 +47,6 @@ if (playerStatus) {
     if (appleNativePlayback) return revealPlayControl();
     if (!appleTouch || player.tagName !== "VIDEO" || player.dataset.room || startupPaused || startupFinished || hasPlayed || playbackPreparation || !player.paused || player.error ||
       !(player.currentSrc || player.getAttribute("src"))) return;
-    // Muted inline playback lets Safari fetch media before the viewer's Play tap.
     player.autoplay = false;
     delete player.dataset.autoplay;
     if (readyForPlay()) return revealPlayControl();
@@ -56,7 +55,6 @@ if (playerStatus) {
       if (!player.paused) preparationPausePending++;
       player.pause();
       let position = preparation.position;
-      // Copied HLS video can begin after the requested timestamp.
       for (let index = 0; index < player.buffered.length; index++) {
         const start = player.buffered.start(index) + playbackTimelineOffset;
         const end = player.buffered.end(index) + playbackTimelineOffset;
@@ -157,7 +155,6 @@ if (playerStatus) {
     if (!playerStatus.classList.contains("is-recovery")) showPlayerState("error", "Playback unavailable");
   });
   bufferedPercent();
-  // Parser-started media can emit loadstart before this deferred script runs.
   if (!player.error && player.networkState === HTMLMediaElement.NETWORK_LOADING && player.readyState === HTMLMediaElement.HAVE_NOTHING) showPlayerState("loading", "Loading video…");
   if (player.hasAttribute("data-native-controls")) revealPlayControl();
   if (appleNativePlayback) revealPlayControl();

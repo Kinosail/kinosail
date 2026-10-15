@@ -18,7 +18,6 @@ import (
 func TestDownloadsReserveExactlyOneSlot(t *testing.T) { //nolint:cyclop,gocognit // Each lifecycle case counts acquisition and release on the same reservation.
 	for _, quality := range []string{"original", "compatible", "720p", "audio"} {
 		t.Run(quality, func(t *testing.T) {
-			// Bound a double-reservation deadlock without treating loaded-host disk latency as a failure.
 			ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 			defer cancel()
 			root := t.TempDir()

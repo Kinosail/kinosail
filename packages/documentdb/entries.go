@@ -20,11 +20,8 @@ CREATE TABLE state_entries (
 ) STRICT, WITHOUT ROWID;
 PRAGMA user_version=2;`
 
-// Export/Load retain the logical JSON document contract used by backups/imports.
 const logicalValue = `CASE WHEN entry_mode = 1 THEN CASE WHEN (SELECT coalesce(sum(length(value)+length(CAST(json_quote(key) AS BLOB))+2),0) FROM state_entries WHERE state_entries.name=state.name) < 16777216 THEN CAST((SELECT coalesce(json_group_object(key,json(CAST(value AS TEXT))),'{}') FROM state_entries WHERE state_entries.name = state.name) AS BLOB) ELSE NULL END ELSE value END`
 
-// EnableEntries atomically migrates a JSON object of independent records. Whole
-// document saves and backup export keep their existing representation and semantics.
 func (store *Store) EnableEntries(name string) error {
 	if store == nil {
 		return nil
@@ -54,8 +51,6 @@ func (store *Store) EnableEntries(name string) error {
 	return tx.Commit()
 }
 
-// SaveEntry validates one independent record before committing it. The enclosing
-// object byte/cardinality budgets are enforced by the same transaction.
 func (store *Store) SaveEntry(name, key string, value any) error {
 	if store == nil {
 		return nil
@@ -122,8 +117,6 @@ func (store *Store) saveDocument(ctx context.Context, tx *sql.Tx, name string, d
 
 func (store *Store) validateEntries(ctx context.Context) error {
 	var invalid bool
-	// Validate aggregate bounds before constructing logical documents from an
-	// imported database. SQL counters alone are not trusted restoration input.
 	err := store.db.QueryRowContext(ctx, `SELECT EXISTS(
         SELECT 1 FROM state_entries e LEFT JOIN state s ON s.name=e.name WHERE s.name IS NULL OR s.entry_mode<>1 OR e.cost < length(e.value)+length(CAST(json_quote(e.key) AS BLOB))+2 OR NOT json_valid(CAST(e.value AS TEXT))
         UNION ALL SELECT 1 FROM state s LEFT JOIN (SELECT name,count(*) AS n,sum(cost) AS bytes FROM state_entries GROUP BY name) e ON e.name=s.name

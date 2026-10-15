@@ -133,8 +133,6 @@ try:
             (RUN / 'public-prefix.m3u8').write_bytes(public)
             if args.held_source_change or args.held_fault:
                 held_fault(api, path, RUN, source, args.held_fault or 'source', receipt)
-                # Rejection can precede encoder exit. Let the fixture wrapper
-                # reap its real child before stopping the owning Server.
                 wait_for(lambda: joined.exists(), 'fault_producer_not_joined')
                 raise HeldFaultComplete()
             if args.native:
@@ -157,8 +155,6 @@ try:
             check(status == 200 and b'#EXT-X-ENDLIST' in completed, 'completed_status')
             receipt['completedKeyframeCuts'] = None if expected is None else [round(x, 6) for x in receipt['completedCuts']] == expected
             receipt['immutablePlaylist'] = cuts(public) == cuts(completed)
-            # A completed URI must retain its exact VOD map across warm reads
-            # and process restart, without starting another encoder.
             encoded = len(list(RUN.glob('*.joined')))
             status, warm, _ = api.http(path)
             receipt['warmStable'] = status == 200 and warm == public

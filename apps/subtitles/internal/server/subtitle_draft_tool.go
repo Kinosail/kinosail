@@ -60,7 +60,6 @@ func selectSubtitleTranscriptionTool(config configuration.Snapshot, facts probeR
 	return tool, nil
 }
 
-// Transcription is not translation: select matching main audio, preferring its default track.
 func subtitleTranscriptionStream(facts probeResult, language string) int {
 	stream := -1
 	for _, track := range facts.AudioFacts {

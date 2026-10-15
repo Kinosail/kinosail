@@ -88,7 +88,6 @@ actor ArtworkLoader {
                     } catch is CancellationError { throw CancellationError() }
                     catch { await store?.remove(storageKey, kind: .artwork) }
                 }
-                // Local hits must not queue behind slow network artwork requests.
                 let (data, type): (Data, String)
                 do { (data, type) = try await download(url: url, client: client, background: background) }
                 catch {
@@ -161,7 +160,6 @@ actor ArtworkLoader {
         }
     }
 
-    // Reader resources need encoded bytes; native artwork keeps decoded pixels.
     static func thumbnail(_ data: Data, dimension: Int) throws -> Data {
         let image = try decodedThumbnail(data, dimension: dimension)
         let output = NSMutableData()
@@ -223,7 +221,6 @@ actor ArtworkLoader {
     }
 
     private func remember(_ image: CGImage, key: Key, saved: Date, background: Bool = false) {
-        // Account for decoded pixels, not the much smaller compressed file.
         let cost = image.bytesPerRow * image.height
         guard cost <= 32 * 1024 * 1024 else {
             if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
@@ -234,7 +231,6 @@ actor ArtworkLoader {
             let protected = cache.lazy.filter { $0.key != key && !$0.value.background }
             guard protected.count < 96,
                   protected.reduce(cost, { $0 + $1.value.image.bytesPerRow * $1.value.image.height }) <= 32 * 1024 * 1024 else {
-                // The next foreground visit can decode fresh disk bytes rather than stale pixels.
                 if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
                 return
             }
@@ -243,7 +239,6 @@ actor ArtworkLoader {
             bytes -= previous.image.bytesPerRow * previous.image.height
         }
         while bytes + cost > 32 * 1024 * 1024 || cache.count >= 96 {
-            // Speculation may replace speculation, but never displace displayed pixels.
             let oldest = cache.lazy.filter { $0.value.background }.min(by: { $0.value.used < $1.value.used })
                 ?? (background ? nil : cache.min(by: { $0.value.used < $1.value.used }))
             guard let oldest else { return }

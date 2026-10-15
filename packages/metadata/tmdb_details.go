@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// TMDBDetails applies Player's optional collection and episode enrichment policy.
 type TMDBDetails struct {
 	BaseURL string
 	Fetch   func(context.Context, string, any) error

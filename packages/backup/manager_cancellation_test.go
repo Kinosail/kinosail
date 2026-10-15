@@ -11,9 +11,6 @@ import (
 	"testing"
 )
 
-// Cancellation can precede admission, arrive during capacity acquisition, or
-// arrive while another archive owns the write lock. None may start a new write.
-// Once writing has begun, the atomic recovery operation must finish normally.
 func TestManagerCancelledWriteDoesNotCreateBackupDirectory(t *testing.T) {
 	for _, duringAcquire := range []bool{false, true} {
 		t.Run(map[bool]string{false: "before admission", true: "during acquisition"}[duringAcquire], func(t *testing.T) {

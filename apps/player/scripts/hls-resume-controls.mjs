@@ -11,8 +11,6 @@ const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.pl
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const cases = [];
 const check = (condition, failure) => { if (!condition) throw new Error(failure); };
-// The Server cannot emit malformed certified clocks. Injection protects that
-// browser trust boundary; it is isolated evidence, not a Server input journey.
 const faults = [['invalid-origin', 390], ['future-origin', 1920], ...(native ? [['http-503', 1440]] :
   [['invalid-clock', 390], ['negative-clock', 1440], ['excess-clock', 1920], ['duplicate-clock', 390], ['missing-origin', 1440], ['missing-clock', 390]])];
 try {

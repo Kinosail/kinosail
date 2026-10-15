@@ -17,11 +17,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-// Registered HTTP operations own these tests. External process fixtures isolate
-// malformed demux/IDR/configuration responses and missing cache fragments, which
-// the real-codec decode suite cannot reliably generate. Failures to guard: unsafe
-// timeline admission, guessed segment cuts, speculative encodes after rejection,
-// stale cache reuse, refill clock drift, and missing full-duration manifests.
 const copiedPackets = "time_base=1/1000\nstart_time=0\npts=0|dts=0|duration=4000|flags=K_\npts=4000|dts=4000|duration=4000|flags=K_\npts=8000|dts=8000|duration=4000|flags=K_\n"
 
 var (
@@ -121,7 +116,6 @@ func TestCopiedHLSHTTPPreparationProjectsAndRefillsCertifiedTimeline(t *testing.
 	if err != nil || string(after) != string(before) {
 		t.Fatalf("restart re-encoded reusable copied cache: %q -> %q (%v)", before, after, err)
 	}
-	// Evicted media retains its certified timeline and is refilled on the public segment request.
 	if err := os.Remove(filepath.Join(f.directory, "360p", "segment-00002.m4s")); err != nil {
 		t.Fatal(err)
 	}

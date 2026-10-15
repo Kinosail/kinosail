@@ -13,8 +13,6 @@ TITLE = 'Connection choices stay optional and secure by default'
 
 class PopulatedInstanceTests(unittest.TestCase):
     def test_populated_instance_admission_is_explicit_and_retains_failures(self):
-        # A browser cannot prove that a workflow omitted its fixture or failed
-        # to retain evidence after setup failed before the browser launched.
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         self.assertIn("inputs.campaign_proof != 'INSTANCE'", source)
         section = source.split('  populated-instance:\n', 1)[1].split('\n  hls-followon:', 1)[0]
@@ -34,7 +32,6 @@ class PopulatedInstanceTests(unittest.TestCase):
         self.assertNotIn('ignoreHTTPSErrors', section)
 
     def test_selected_mode_reuses_the_existing_suite_and_keeps_artifacts(self):
-        # A browser cannot prove that workflow routing omitted the whole suite.
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         self.assertIn('populated_suite:', source)
         self.assertIn('options: [admission, selected, browse, configuration]', source)
@@ -139,8 +136,6 @@ elif name=='pnpm':
         self.assertIsNone(receipt)
 
     def test_failure_still_cleans_owned_fixture_and_preserves_nonzero_result(self):
-        # Actual E2E cannot deterministically make setup, teardown, or the
-        # container inventory command fail without losing the hosted runner.
         for failure in ['up', 'verify', 'browser', 'down', 'leftover', 'empty']:
             with self.subTest(failure=failure):
                 result, commands, receipt = self.run_fixture(failure)
@@ -181,8 +176,6 @@ elif name=='pnpm':
         self.assertIn('C,,', names[added][1])
 
     def test_trust_failures_do_not_admit_the_browser_or_hide_cleanup_failure(self):
-        # Browser E2E reproduces untrusted TLS. Stand-ins inject certificate
-        # export, NSS collision, import and teardown failures before browser use.
         for failure in ['export', 'private-ca', 'collision', 'import', 'remove-trust']:
             with self.subTest(failure=failure):
                 result, commands, receipt = self.run_fixture(failure)
@@ -216,8 +209,6 @@ elif name=='pnpm':
                 self.assertFalse(any(row['name'] == 'pnpm' for row in commands))
 
     def test_browse_suite_runs_fixed_cases_and_rejects_incomplete_or_extra_results(self):
-        # Actual browser E2E cannot prove that its runner omitted or added a
-        # case, or preserved cleanup after a browser-process admission failure.
         expected = ["browse-readability.spec.ts", "collections-loading.spec.ts", "curation-count.spec.ts", "dependency-thanks.spec.ts",
                     "layout-audit-library.spec.ts", "layout-audit-shell.spec.ts", "mobile-quick-connect.spec.ts",
                     "navigation-repeat.spec.ts", "show-card-viewer-policy.spec.ts", "show-episode-ledger.spec.ts",
@@ -238,8 +229,6 @@ elif name=='pnpm':
                     '--project=chromium', '--workers=1', '--retries=0', '--max-failures=1'])
 
     def test_configuration_suite_runs_fixed_cases_and_rejects_incomplete_or_extra_results(self):
-        # Browser E2E cannot verify that its runner rejected a missing/extra
-        # result, or cleaned the owned fixture when the browser failed to start.
         for failure in ['', 'browser', 'empty', 'omitted', 'extra']:
             with self.subTest(failure=failure):
                 result, commands, receipt = self.run_fixture(failure, suite='configuration')
@@ -263,8 +252,6 @@ elif name=='pnpm':
         self.assertIsNone(receipt)
 
     def test_forwarded_browser_options_cannot_bypass_the_single_worker_guard(self):
-        # The real browser command must reject unsafe selection before starting
-        # Go fixture generation, which actual browser E2E cannot inspect first.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             effects = root / 'effects'

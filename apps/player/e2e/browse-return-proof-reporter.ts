@@ -2,7 +2,6 @@ import type {JSONValue, JSONObject} from "../../../scripts/testing/json-value";
 import { createHash } from "node:crypto";
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestError, TestResult } from "@playwright/test/reporter";
 
-// Opt-in fictional-Server proof only. Normal E2E reporters remain unchanged.
 const files = ["browse-return.spec.ts", "browse-return-cold.spec.ts", "browse-return-bfcache.spec.ts", "browse-return-safety.spec.ts", "browse-return-home.spec.ts"];
 const modes = ["primary", "cold", "bfcache", "htmx", "shows", "search", "safety", "home", "all"];
 const requested = process.env.KINOSAIL_BROWSE_RETURN_CASES || "primary";
@@ -151,13 +150,13 @@ export default class BrowseReturnProofReporter implements Reporter {
         try {
           const diagnostic = cacheDiagnosticObservation(JSON.parse(item.body.toString("utf8")));
           if (diagnostic) console.log("Q14_CACHE_DIAGNOSTIC " + JSON.stringify(diagnostic));
-        } catch { /* Diagnostic rejection never changes product assertions. */ }
+        } catch {   }
       }
       if (!item.body || item.contentType !== "application/json" || !attachmentNames.includes(item.name)) continue;
       if (item.body.length < 1 || item.body.length > 1_000_000 || names.has(item.name) || attachments.length >= 16) { this.invalid(); continue; }
       names.add(item.name);
       let decoded: ReturnType<typeof observation> = null;
-      try { decoded = observation(JSON.parse(item.body.toString("utf8")), item.name); } catch { /* Missing observations never certify a boundary. */ }
+      try { decoded = observation(JSON.parse(item.body.toString("utf8")), item.name); } catch {   }
       attachments.push({ name: item.name, bytes: item.body.length, sha256: digest(item.body), observation: decoded });
     }
     this.cases.push({ file, title: test.title, status: result.status, retry: result.retry, durationMs: result.duration,

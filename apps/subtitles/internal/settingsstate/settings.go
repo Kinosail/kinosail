@@ -1,4 +1,3 @@
-// Package settingsstate validates persisted installation settings at every state boundary.
 package settingsstate
 
 import (
@@ -14,13 +13,10 @@ import (
 )
 
 const (
-	// MaximumDocumentSize bounds persisted installation settings.
-	MaximumDocumentSize = 1 << 20
-	// MaximumSubtitleLanguages bounds ordered language preferences.
+	MaximumDocumentSize      = 1 << 20
 	MaximumSubtitleLanguages = 20
 )
 
-// Preferences is the canonical persisted subtitle language state.
 type Preferences struct {
 	Primary   string
 	Languages []string
@@ -87,7 +83,6 @@ var allowedFields = map[string]bool{
 	"onboardingpending": true, "updatechecks": true, "supporter": true,
 }
 
-// Parse validates one settings document and returns canonical language preferences.
 func Parse(data []byte) (Preferences, error) {
 	fields, err := validateDocument(data)
 	if err != nil {
@@ -184,13 +179,11 @@ func parseSingularLanguage(singular string, present bool) (Preferences, error) {
 	return Preferences{Primary: canonical[0], Languages: canonical}, nil
 }
 
-// Validate checks one installation settings document.
 func Validate(data []byte) error {
 	_, err := Parse(data)
 	return err
 }
 
-// ValidateSubtitleLanguages canonicalizes one complete ordered preference list.
 func ValidateSubtitleLanguages(languages []string) ([]string, error) {
 	if len(languages) == 0 || len(languages) > MaximumSubtitleLanguages {
 		return nil, errors.New("choose 1 to 20 subtitle languages")
@@ -214,7 +207,6 @@ func ValidateSubtitleLanguages(languages []string) ([]string, error) {
 	return canonical, nil
 }
 
-// Overlap reports whether a base language and one of its variants conflict.
 func Overlap(left, right string) bool {
 	leftBase, rightBase := strings.SplitN(left, "-", 2)[0], strings.SplitN(right, "-", 2)[0]
 	return leftBase == rightBase && (left == leftBase || right == rightBase)

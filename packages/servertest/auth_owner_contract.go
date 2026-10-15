@@ -7,10 +7,8 @@ import (
 	"testing"
 )
 
-// AuthCookieRequest preserves each app's existing authenticated form request helper.
 type AuthCookieRequest func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 
-// AssertOwnerCanManageOwnerProfilesThroughWeb preserves the original real-handler authentication regression.
 func AssertOwnerCanManageOwnerProfilesThroughWeb(t *testing.T, fixture LibraryAPIFixture, web AuthCookieRequest) {
 	t.Parallel()
 
@@ -32,7 +30,6 @@ func AssertOwnerCanManageOwnerProfilesThroughWeb(t *testing.T, fixture LibraryAP
 	}
 }
 
-// AssertAdditionalOwnerPersistsAcrossRestart preserves the original real-handler authentication regression.
 func AssertAdditionalOwnerPersistsAcrossRestart(t *testing.T, fixture LibraryAPIFixture, web AuthCookieRequest) {
 	t.Parallel()
 

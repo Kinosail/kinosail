@@ -13,8 +13,6 @@ async function loadAll(page: Page) {
 	}, { timeout: 20_000 }).toBe("All titles are loaded.");
 }
 
-// Isolated fault checks: the normal Server does not return overlapping or
-// malformed pages. Each modified response starts with its actual Go fragment.
 test("overlapping and repeated Show cards deduplicate in existing and new mixed groups", async ({ page }) => {
 	const first = await (await page.request.get(pageURL)).text();
 	const overlap = first.match(/<article class="card show-card">[\s\S]*?<\/article>/)![0];
@@ -108,7 +106,7 @@ test("late Show continuation cannot append after the real HTMX search replacemen
 		if (!continuation(route.request())) return route.continue();
 		const response = await route.fetch();
 		await held;
-		try { await route.fulfill({ response }); } catch { /* The replaced request may already be aborted. */ }
+		try { await route.fulfill({ response }); } catch {   }
 		finished();
 	});
 	await page.goto(pageURL, {waitUntil: "commit"});

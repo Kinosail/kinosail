@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Item reserves one stream slot for an authorized item.
 func (store *Store) Item(request *http.Request, id string) (string, bool) {
 	cookie, _ := request.Cookie("__Host-kinosail_share")
 	if cookie == nil {
@@ -29,7 +28,6 @@ func (store *Store) Item(request *http.Request, id string) (string, bool) {
 	return item.Path, true
 }
 
-// Items returns the authorized library projection for a claimed session.
 func (store *Store) Items(request *http.Request) ([]library.Item, bool) {
 	cookie, _ := request.Cookie("__Host-kinosail_share")
 	if cookie == nil {
@@ -62,7 +60,6 @@ func canRead(found, active bool, session Session, share Share, now int64) bool {
 	return found && active && session.ExpiresAt > now && share.ExpiresAt > now
 }
 
-// Release returns one active stream slot.
 func (store *Store) Release(request *http.Request) {
 	cookie, _ := request.Cookie("__Host-kinosail_share")
 	if cookie == nil {
@@ -75,7 +72,6 @@ func (store *Store) Release(request *http.Request) {
 	}
 }
 
-// Serve delivers one authorized local media file with strict range syntax.
 func (store *Store) Serve(writer http.ResponseWriter, request *http.Request) {
 	if value := request.Header.Get("Range"); value != "" && !ValidSingleByteRange(value) {
 		http.Error(writer, "invalid media range", http.StatusRequestedRangeNotSatisfiable)
@@ -93,7 +89,6 @@ func (store *Store) Serve(writer http.ResponseWriter, request *http.Request) {
 
 var singleByteRange = regexp.MustCompile(`^bytes=(?:[0-9]+-[0-9]*|-[0-9]+)$`)
 
-// ValidSingleByteRange accepts exactly one bounded byte range.
 func ValidSingleByteRange(value string) bool {
 	return len(value) <= 128 && singleByteRange.MatchString(value)
 }

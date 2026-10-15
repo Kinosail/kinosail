@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// Public completed cold playlists may correct the existing final cut from
-// generated packets. Missing/corrupt metadata must never invent media or URIs.
 func copiedColdPlaylist(t *testing.T) (copiedHTTPFixture, string) {
 	t.Helper()
 	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
@@ -149,8 +147,6 @@ func assertCopiedEndpointRejected(t *testing.T, f copiedHTTPFixture, path, outsi
 	}
 }
 
-// Bound cache writes to the owned disposable root even when HTTP item identity
-// determines the selected cache subdirectory.
 func writeCopiedCacheFile(cache, path string, data []byte) error {
 	root, err := os.OpenRoot(cache)
 	if err != nil {
@@ -164,8 +160,6 @@ func writeCopiedCacheFile(cache, path string, data []byte) error {
 	return root.WriteFile(name, data, 0o600)
 }
 
-// A valid cached rendition can be temporarily unpublished while its producer
-// finishes a fragment. Missing index metadata must not turn that wait into 404.
 func TestCopiedHLSHTTPWaitsForValidMediaDuringRenditionPublication(t *testing.T) {
 	f := newCopiedHTTPFixture(t, copiedPackets, copiedIDRs, copiedConfiguration)
 	awaitCopiedReady(t, f)

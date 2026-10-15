@@ -63,8 +63,6 @@ func (capabilities Capabilities) toneMapSettings(options transcodepolicy.Setting
 	return options
 }
 
-// RecordProcessingFailure quarantines only the failed stage. A tone mapper
-// failure must not discard independently verified encoding on the same GPU.
 func (capabilities Capabilities) RecordProcessingFailure(options transcodepolicy.Settings) {
 	if options.HardwareToneMap != "" && capabilities.verification != nil {
 		state := capabilities.verification
@@ -85,8 +83,6 @@ func (capabilities Capabilities) RecordProcessingFailure(options transcodepolicy
 	}
 }
 
-// Optional HDR checks have their own bounded budget after codec/decode/output
-// checks, so a slow tone mapper cannot remove an otherwise usable codec.
 func (state *verification) verifyToneMaps(parent context.Context, options ProbeOptions, backends []Backend, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	ctx, cancel := context.WithTimeout(parent, 30*time.Second)
 	defer cancel()

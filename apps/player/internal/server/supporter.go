@@ -24,7 +24,6 @@ const (
 	livingStandardFamily          = supporterengine.FamilyLiving
 )
 
-// SupporterConfig configures the optional, user-initiated supporter activation adapter.
 type SupporterConfig struct {
 	ActivationURL string
 	SupportURL    string

@@ -145,7 +145,6 @@ test("Jellyfin setup stays blocked until trusted HTTPS is saved", async ({ page,
 	await expect(choice).toBeEnabled();
 	await expect(jellyfin.getByText("You can now enable Jellyfin apps, then restart Kinosail once.")).toBeVisible();
 	await choice.check();
-	// macOS WebKit uses Option-Tab to include buttons in keyboard navigation.
 	await choice.press(browserName === "webkit" && process.platform === "darwin" ? "Alt+Tab" : "Tab");
 	await expect(jellyfin.getByRole("button", { name: "Save Jellyfin choice" })).toBeFocused();
 	await jellyfin.getByRole("button", { name: "Save Jellyfin choice" }).click();

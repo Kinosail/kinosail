@@ -2,7 +2,6 @@ package federation
 
 import "net/http"
 
-// WebHooks keeps product sessions, local MFA verification, audit context, and error rendering app-owned.
 type WebHooks[T any] struct {
 	CurrentProfileID   func(*http.Request) string
 	LinkSession        func(*http.Request) string

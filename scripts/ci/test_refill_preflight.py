@@ -7,8 +7,6 @@ WORKFLOWS = Path(__file__).resolve().parents[2] / ".github/workflows"
 
 class RefillPreflightTests(unittest.TestCase):
     def test_refill_preflight_cannot_replace_full_race_acceptance(self):
-        # Failure model: a narrow or zero-test preflight becomes full acceptance,
-        # its diagnostics overwrite complete receipts, or a failure becomes green.
         source = (WORKFLOWS / 'layout-stability.yml').read_text().split('  hls-followon:', 1)[1]
         focus = source.split('      - name: Probe restarted transcode refill\n', 1)[1].split('      - name:', 1)[0]
         self.assertIn('id: refill_preflight', focus)

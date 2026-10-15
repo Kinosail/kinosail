@@ -12,14 +12,12 @@ import (
 	"time"
 )
 
-// BackupAPIConfig supplies the original encrypted and automatic backup fixtures.
 type BackupAPIConfig struct {
 	Lifecycle               context.Context
 	DataDir, BackupDir, Key string
 	Interval                time.Duration
 }
 
-// BackupAPIFixture binds real application handlers and their existing cookie helpers.
 type BackupAPIFixture struct {
 	New    func(BackupAPIConfig) http.Handler
 	SignIn func(*testing.T, http.Handler, string, string) *http.Cookie
@@ -27,7 +25,6 @@ type BackupAPIFixture struct {
 	Web    func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 }
 
-// AssertAutomaticBackupsFailClosed preserves the no-key API and web regression.
 func AssertAutomaticBackupsFailClosed(t *testing.T, fixture BackupAPIFixture) {
 	t.Helper()
 	t.Parallel()
@@ -59,7 +56,6 @@ func assertBackupDisabled(t *testing.T, backupDir string, status *httptest.Respo
 	}
 }
 
-// AssertEncryptedBackupAPIAndWeb checks both adapters and the encrypted file format.
 func AssertEncryptedBackupAPIAndWeb(t *testing.T, fixture BackupAPIFixture) {
 	t.Helper()
 	backupDir := t.TempDir()

@@ -1,4 +1,3 @@
-// Reserve the fixed navigation's actual height before fragment alignment.
 (() => {
   const mobile = matchMedia("(max-width: 900px)");
   let nav, bootstrap;

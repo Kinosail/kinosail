@@ -17,8 +17,6 @@ type copiedHLSWindowsProbe struct {
 	process windows.ProcessInformation
 }
 
-// WinSDK WinBase.h: ProcThreadAttributeJobList (13) | INPUT (0x20000).
-// https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/um/WinBase.h
 const copiedHLSJobListAttribute = 0x2000d
 
 func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
@@ -135,7 +133,6 @@ func copiedHLSWindowsCreate(ctx context.Context, job windows.Handle, path string
 	if ctx.Err() != nil {
 		return process, ctx.Err()
 	}
-	// Membership is atomic with creation; no unmanaged child or breakaway fallback.
 	err = windows.CreateProcess(application, line, nil, nil, true, windows.EXTENDED_STARTUPINFO_PRESENT, nil, nil, &startup.StartupInfo, &process)
 	runtime.KeepAlive(jobs)
 	runtime.KeepAlive(handles)
@@ -165,7 +162,6 @@ func (probe *copiedHLSWindowsProbe) wait() error {
 	return nil
 }
 
-// ABI-defined JOBOBJECT_BASIC_ACCOUNTING_INFORMATION, including ActiveProcesses.
 type copiedHLSJobAccounting struct {
 	totalUserTime       int64
 	totalKernelTime     int64

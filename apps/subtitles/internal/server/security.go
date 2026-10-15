@@ -12,7 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-// Remote marks every request from a dedicated public listener without trusting caller headers.
 func Remote(next http.Handler) http.Handler {
 	return identitycore.Remote(next)
 }

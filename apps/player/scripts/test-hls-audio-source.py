@@ -94,8 +94,6 @@ def perform(case, base):
     elif case in ['gap', 'delay', 'coarse-gap']:
         extra = ['-af', 'asetpts=PTS+if(gte(T\\,1)\\,0.5/TB\\,0)'] if case == 'gap' else ['-af', 'asetpts=PTS+0.5/TB']
         if case == 'coarse-gap':
-            # One timestamp tick must remain a real discontinuity, even when
-            # a remux changes the phase of the container's rounding rule.
             extra = ['-af', 'asetpts=PTS+if(gte(T\\,1)\\,0.001/TB\\,0)']
         command(['ffmpeg', '-nostdin', '-v', 'error', '-i', str(base), '-map', '0:v:0', '-c:v', 'copy',
                  '-map', '0:a:0', '-c:a', 'ac3', '-ar', '44100' if case == 'coarse-gap' else '48000', *extra, '-t', '74.5', str(source)])
@@ -121,8 +119,6 @@ def perform(case, base):
             + ('    raise SystemExit(23)\n' if case == 'probe-error' else '    time.sleep(20)\n')
             + f'os.execv({shutil.which("ffprobe")!r}, [{shutil.which("ffprobe")!r}, *sys.argv[1:]])\n')
         if case == 'coarse-resolution':
-            # Existing E2E media uses millisecond or sample clocks. This fault
-            # protects ambiguous metadata that cannot identify an AC3 block.
             wrapper.write_text('#!' + sys.executable + '\nimport os, re, subprocess, sys\n'
                 + f'real = {shutil.which("ffprobe")!r}\n'
                 + "selected = '-select_streams' in sys.argv and sys.argv[sys.argv.index('-select_streams')+1] == 'a:0'\n"

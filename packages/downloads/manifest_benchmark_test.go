@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-// Run only after quality gates are explicitly enabled. This isolates response
-// startup from network throughput; physical-device goodput remains a separate test.
 func BenchmarkSealedDownloadHEAD(b *testing.B) {
 	path := filepath.Join(b.TempDir(), "media.mp4")
 	file, err := os.Create(path)

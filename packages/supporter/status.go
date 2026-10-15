@@ -2,7 +2,6 @@ package supporter
 
 import "time"
 
-// Status returns a private owner projection without changing state.
 func (service *Service) Status(state State) Status { //nolint:cyclop,gocognit // One projection preserves cross-version badge precedence.
 	state = service.migrateLegacy(cloneState(state))
 	patron := service.badge(service.decodeGrant(state, state.PatronOrder, FamilyPatron, true))
@@ -127,7 +126,6 @@ func serviceMonths(certificate Certificate, now time.Time) (int, []int) {
 	return months, marks
 }
 
-// CertificateForFamily returns verified certificate data for local rendering.
 func (service *Service) CertificateForFamily(state State, family string) (Certificate, *Badge, bool) {
 	if family != FamilyPatron && family != FamilyLiving && !validEdition(family) {
 		return Certificate{}, nil, false
@@ -151,7 +149,6 @@ func (service *Service) CertificateForFamily(state State, family string) (Certif
 	return decoded.certificate, badge, badge != nil
 }
 
-// ViewerStatus removes private certificate and installation data.
 func (service *Service) ViewerStatus(state State) []ViewerBadge {
 	status := service.Status(state)
 	result := make([]ViewerBadge, 0, 2)

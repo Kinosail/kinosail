@@ -6,7 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// Backend describes one FFmpeg hardware or software encoding backend.
 type Backend struct {
 	ID           string   `json:"id"`
 	Name         string   `json:"name"`
@@ -25,7 +24,6 @@ type Backend struct {
 	verification *verification
 }
 
-// EncoderFor returns the backend's discovered encoder for a codec.
 func (backend Backend) EncoderFor(codec string) string {
 	if backend.verification != nil {
 		if _, ok := backend.operation(codec, ""); !ok {
@@ -35,10 +33,8 @@ func (backend Backend) EncoderFor(codec string) string {
 	return backend.encoders[codec]
 }
 
-// Codec describes the presented readiness of one video codec.
 type Codec transcodepolicy.Capability
 
-// Capabilities is one coherent snapshot of codec and hardware readiness.
 type Capabilities struct {
 	Backends     []Backend `json:"backends"`
 	Codecs       []Codec   `json:"codecs"`
@@ -66,7 +62,6 @@ func codecCapabilities(hardware Capabilities) []Codec {
 	return result
 }
 
-// Resolve applies automatic backend selection.
 func (capabilities Capabilities) Resolve(configured string) string {
 	if configured != "auto" {
 		return configured
@@ -82,7 +77,6 @@ func (capabilities Capabilities) Resolve(configured string) string {
 	return capabilities.Selected
 }
 
-// Backend returns the named backend or a stable unknown-backend view.
 func (capabilities Capabilities) Backend(id string) Backend {
 	for _, backend := range capabilities.Backends {
 		if backend.ID == id {
@@ -95,12 +89,10 @@ func (capabilities Capabilities) Backend(id string) Backend {
 	return Backend{ID: id, Name: id}
 }
 
-// Supports reports whether a configured backend is valid for this system.
 func (capabilities Capabilities) Supports(id string) bool {
 	return id == "auto" || capabilities.Backend(id).Supported
 }
 
-// Codec returns the named codec or a stable unknown-codec view.
 func (capabilities Capabilities) Codec(id string) Codec {
 	for _, codec := range capabilities.CurrentCodecs() {
 		if codec.ID == id {
@@ -110,7 +102,6 @@ func (capabilities Capabilities) Codec(id string) Codec {
 	return Codec{ID: id, Name: id}
 }
 
-// SupportsCodec reports whether the codec setting can currently be used.
 func (capabilities Capabilities) SupportsCodec(id string) bool {
 	if id == "auto" || (!capabilities.Probed && transcodepolicy.ValidCodec(id)) {
 		return true
@@ -126,7 +117,6 @@ func (capabilities Capabilities) SupportsCodec(id string) bool {
 	return false
 }
 
-// ResolveEncoder applies Player's automatic and fallback encoder policy.
 func (capabilities Capabilities) ResolveEncoder(configured, codec string) (string, string) {
 	codec = transcodepolicy.NormalizeCodec(codec)
 	if !capabilities.Probed {
@@ -148,7 +138,6 @@ func (capabilities Capabilities) ResolveEncoder(configured, codec string) (strin
 	return "none", capabilities.Backend("none").EncoderFor(codec)
 }
 
-// PreferredCodec selects Player's best mutually supported client/hardware codec.
 func (capabilities Capabilities) PreferredCodec(configured, accelerator string, client []string) string {
 	if configured != "auto" {
 		return transcodepolicy.NormalizeCodec(configured)

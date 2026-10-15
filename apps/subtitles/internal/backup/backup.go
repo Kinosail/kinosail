@@ -1,4 +1,3 @@
-// Package backup adapts Subtitles state validation to the shared archive service.
 package backup
 
 import (
@@ -9,7 +8,6 @@ import (
 	sharedbackup "github.com/MikeO7/kinosail/packages/backup"
 )
 
-// ApplicationVersion is set by the executable before producing recovery archives.
 var ApplicationVersion = "dev"
 
 var service = sharedbackup.MustNew(sharedbackup.Config{
@@ -20,7 +18,6 @@ var service = sharedbackup.MustNew(sharedbackup.Config{
 	ValidateSettings: settingsstate.Validate,
 })
 
-// Command runs Player's backup and restore command contract.
 var Command = sharedbackup.BindCommand(service, func() string { return ApplicationVersion })
 
 func Write(writer io.Writer, dataDir string) error {

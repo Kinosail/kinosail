@@ -6,8 +6,6 @@ type PageError = {document: number; documentURL: string; time: number; name: str
 type WatchedAction = {document: number; time: number; item: string; timeOrigin: number};
 export type PlaybackErrorEvidence = PageError & {browser: string; origin: string; action?: WatchedAction; failures: Failure[]; navigations: Navigation[]};
 
-// WebKit can report a navigation-cancelled same-origin XHR as an access error.
-// Require the original failed request and committed watched redirect; text alone is insufficient.
 export function cancelledWatchedHLS(value: PlaybackErrorEvidence): boolean {
   if (value.browser !== "webkit" || value.stack.length > 8192 || value.failures.length > 1024 || value.navigations.length > 1024) return false;
   const match = /^XMLHttpRequest cannot load (https?:\/\/\S+) due to access control checks\.\n\s+at unknown \((https?:\/\/\S+):\d+:\d+\)/.exec(value.stack);
@@ -45,12 +43,11 @@ export function captureHappyPathErrors(page: Page, browser: string) {
   };
   page.on("console", message => {
     if (!enabled || message.type() !== "error") return;
-    // An unauthenticated login page probes its session before offering WebAuthn.
     try {
       const source = new URL(message.location().url), current = new URL(page.url());
       if (source.origin === current.origin && source.pathname === "/api/v1/me" && !source.search && current.pathname === "/login" &&
           /^Failed to load resource: the server responded with a status of 401 \([^)]*\)$/.test(message.text())) return;
-    } catch { /* Messages without a URL remain failures. */ }
+    } catch {   }
     record(message.text());
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));

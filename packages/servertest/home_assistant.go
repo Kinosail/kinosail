@@ -11,7 +11,6 @@ import (
 	"testing"
 )
 
-// HomeAssistantIsDarkByDefault verifies the disabled API and both visible setup surfaces.
 func (fixture LibraryAPIFixture) HomeAssistantIsDarkByDefault(t *testing.T) {
 	t.Parallel()
 	handler, owner := fixture.Server(t)
@@ -32,7 +31,6 @@ func (fixture LibraryAPIFixture) HomeAssistantIsDarkByDefault(t *testing.T) {
 	}
 }
 
-// HomeAssistantBrowserApproval verifies PKCE, replay protection, and scoped access.
 func (fixture LibraryAPIFixture) HomeAssistantBrowserApproval(t *testing.T) { //nolint:cyclop // One flow proves approval, PKCE, replay, and scope.
 	t.Parallel()
 	handler, owner := fixture.Server(t)
@@ -92,7 +90,6 @@ func homeAssistantFormCall(t *testing.T, handler http.Handler, token, path strin
 	return response
 }
 
-// HomeAssistantRouteEnvironment returns the bounded test configuration values.
 func HomeAssistantRouteEnvironment(key string) (string, bool) {
 	values := map[string]string{
 		"KINOSAIL_HOME_ASSISTANT_ENABLED": "true",
@@ -102,7 +99,6 @@ func HomeAssistantRouteEnvironment(key string) (string, bool) {
 	return value, ok
 }
 
-// JellyfinRouteEnvironment returns only the HTTPS value used by its route fixture.
 func JellyfinRouteEnvironment(key string) (string, bool) {
 	if key == "KINOSAIL_DUCKDNS_HTTPS" {
 		return testDuckDNSHTTPS, true

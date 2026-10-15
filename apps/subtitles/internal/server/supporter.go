@@ -27,7 +27,6 @@ const (
 
 var supporterTiers = supporterengine.Tiers()
 
-// SupporterConfig configures the optional, user-initiated supporter activation adapter.
 type SupporterConfig struct {
 	ActivationURL string
 	SupportURL    string

@@ -25,9 +25,6 @@ test("fresh installation controls the populated app and serves its complete shel
 });
 
 test("populated library views stay accessible at desktop and phone sizes", async ({ page, browserName }, testInfo) => {
-  // WebKit can report empty inherited variables for memory-cached CSS while
-  // rendering the correct colors. Identical fresh CSS produces identical pixels
-  // and correct computed styles. Warm-worker/offline flows are tested separately.
   if (browserName === "webkit") await page.route("**/static/app.css*", (route) => route.continue());
   await login(page);
   for (const width of [1440, 390]) {

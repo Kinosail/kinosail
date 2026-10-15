@@ -48,7 +48,7 @@
           try output.write(contentsOf: block)
           try output.synchronize()
           job.verified[index] = true
-          try persist(job) // Data is durable before its verified bit.
+          try persist(job)
         }
         if corrupt {
           job.retries += 1; if job.retries > 5 {

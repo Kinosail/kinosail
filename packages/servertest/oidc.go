@@ -20,21 +20,18 @@ const (
 	oidcSCIMUserSchema = "urn:ietf:params:scim:schemas:core:2.0:User"
 )
 
-// OIDCFixture binds protocol contracts to each app's real server and account fixtures.
 type OIDCFixture struct {
 	NewHandler  func(string, federation.OIDCConfig, scim.Config) http.Handler
 	StoredState func(*testing.T, string, string) []byte
 	TOTP        func(*testing.T, string, time.Time) string
 }
 
-// OIDCContract runs the linking and provisioned-identity scenarios against a real app.
 func OIDCContract(t *testing.T, fixture OIDCFixture) {
 	t.Helper()
 	t.Run("ValidatesAuthorizationCodeAndLinksProfile", func(t *testing.T) { AssertOIDCLinksProfile(t, fixture) })
 	t.Run("LinksSCIMProfileByConfiguredIdentityClaim", func(t *testing.T) { AssertOIDCSCIMIdentity(t, fixture) })
 }
 
-// AssertOIDCLinksProfile checks explicit linking, session creation, MFA, and replay rejection.
 func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	private, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -61,7 +58,6 @@ func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 	if enabled.Code != http.StatusOK || !strings.Contains(enabled.Body.String(), `"enabled":true`) {
 		t.Fatalf("MFA setup = %d %q", enabled.Code, enabled.Body.String())
 	}
-	// Linking requires a recently authenticated session, not the enrollment session.
 	confirmedLogin := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": fixture.TOTP(t, result.TOTP.Secret, time.Now())})
 	AssertAPIBody(t, confirmedLogin, http.StatusCreated, `"mfaEnrollmentRequired":false`)
 	var authenticated struct{ Token string }
@@ -77,7 +73,6 @@ func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 	assertLinkedOIDCSessions(t, fixture, handler, &nonce, profiles, result.TOTP.Secret, owner)
 }
 
-// AssertOIDCSCIMIdentity checks profile linking through the configured identity claim.
 func AssertOIDCSCIMIdentity(t *testing.T, fixture OIDCFixture) {
 	t.Parallel()
 	private, err := rsa.GenerateKey(rand.Reader, 2048)

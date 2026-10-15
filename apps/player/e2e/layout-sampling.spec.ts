@@ -8,9 +8,6 @@ import {fileURLToPath} from "node:url";
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const geometryCSS = "body{margin:0}main{padding:16px}h1{font-size:24px}.card{height:80px;background:#ddd}";
 
-// A populated Server cannot deterministically hold native first paint beyond
-// the recorder's old cutoff. This isolated CLI contract uses a real critical
-// stylesheet response and native browser clocks; it does not prove product UI.
 for (const delay of [0, 8500]) {
   test(`layout CLI samples fresh frames after ${delay ? "slow" : "normal"} first paint`, {tag: "@smoke"}, async ({browserName}, info) => {
     test.setTimeout(90_000);
@@ -40,8 +37,6 @@ for (const delay of [0, 8500]) {
       } else if (path === "/") {
         documents++;
         response.writeHead(200, {"Content-Type": "text/html"});
-        // The first document completes authentication. Measurement documents
-        // load the slow stylesheet through the actual layout CLI's route.
         response.end(`<!doctype html><head><style>${geometryCSS}${documents > 1 ? "body{visibility:hidden}" : ""}</style>${documents > 1 ? `<link rel="stylesheet" href="/critical.css?document=${documents}">` : ""}</head><body><main><h1>Layout example</h1><div class="card">Stable content</div></main></body>`);
       } else {
         response.writeHead(204); response.end();

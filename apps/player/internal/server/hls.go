@@ -214,8 +214,6 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	if timeline != nil && recipe.mode == "audio-transcode" && (timeline.AudioSource != nil && timeline.AudioSource.Quantum > 0 ||
 		startNumber > 0 && !copiedHLSAudioFromOrigin(timeline, startNumber, recipe.mode) && !copiedHLSWarmAudio(timeline, startNumber, recipe.mode)) {
-		// Decode audio preroll for a continuous splice; copied video is still
-		// trimmed at its certified key and the output filter bounds the overlap.
 		arguments = append(arguments, "-noaccurate_seek")
 	}
 	arguments = append(arguments, "-i", item.Path)

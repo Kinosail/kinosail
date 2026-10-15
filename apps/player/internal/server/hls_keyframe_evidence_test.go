@@ -12,8 +12,6 @@ import (
 	"testing"
 )
 
-// Completed-file browser tests cannot locate a producer/request ordering failure.
-// Observe this real-media journey before canceling its producer, without retries.
 func copiedKeyframeFailureEvidence(t *testing.T, cache string, logs *copiedLogBuffer) {
 	t.Helper()
 	files, unavailable := copiedKeyframeCache(cache)

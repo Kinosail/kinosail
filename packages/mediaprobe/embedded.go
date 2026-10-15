@@ -26,7 +26,6 @@ var (
 	errEmbeddedSubtitleOutput = errors.New("subtitle output is empty or too large")
 )
 
-// EmbeddedOptions supplies installation tools and optional presentation mapping.
 type EmbeddedOptions struct {
 	FFmpeg     string
 	CacheDir   string
@@ -34,21 +33,18 @@ type EmbeddedOptions struct {
 	Timeline   *playback.Timeline
 }
 
-// EmbeddedSubtitle is either a secure cache file or in-memory WebVTT data.
 type EmbeddedSubtitle struct {
 	Path   string
 	Data   []byte
 	Mapped bool
 }
 
-// EmbeddedHTTPAdapter keeps app-owned visibility and localization at the HTTP seam.
 type EmbeddedHTTPAdapter struct {
 	Item    func(*http.Request, string) (library.Item, bool)
 	Options func() EmbeddedOptions
 	Error   func(http.ResponseWriter, *http.Request, string, int)
 }
 
-// EmbeddedHandler serves Player's canonical embedded subtitle route.
 func (probe *Probe) EmbeddedHandler(adapter EmbeddedHTTPAdapter, policy playback.HLSRecipePolicy) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := adapter.Item(request, request.PathValue("id"))
@@ -63,7 +59,6 @@ func (probe *Probe) EmbeddedHandler(adapter EmbeddedHTTPAdapter, policy playback
 	}
 }
 
-// ServeEmbedded writes one validated playback subtitle and returns a localized error input.
 func (probe *Probe) ServeEmbedded(writer http.ResponseWriter, request *http.Request, item library.Item, stream int, policy playback.HLSRecipePolicy, options EmbeddedOptions) (string, int) {
 	started := time.Now()
 	subtitle, err := probe.EmbeddedPlayback(request.Context(), item, stream, request.URL.Query().Get("playbackToken"), policy, options)
@@ -78,7 +73,6 @@ func (probe *Probe) ServeEmbedded(writer http.ResponseWriter, request *http.Requ
 	return "", 0
 }
 
-// ServeHTTP writes the extracted subtitle with Player's canonical HTTP behavior.
 func (subtitle EmbeddedSubtitle) ServeHTTP(writer http.ResponseWriter, request *http.Request, modified time.Time) {
 	writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
 	if subtitle.Mapped {
@@ -92,7 +86,6 @@ func (subtitle EmbeddedSubtitle) ServeHTTP(writer http.ResponseWriter, request *
 	http.ServeContent(writer, request, "subtitle.vtt", modified, bytes.NewReader(subtitle.Data))
 }
 
-// EmbeddedPlayback validates a playback token before it extracts a subtitle.
 func (probe *Probe) EmbeddedPlayback(ctx context.Context, item library.Item, stream int, token string, policy playback.HLSRecipePolicy, options EmbeddedOptions) (EmbeddedSubtitle, error) {
 	timeline, err := playback.TimelineFromPlaybackToken(token, policy)
 	if err != nil {
@@ -102,7 +95,6 @@ func (probe *Probe) EmbeddedPlayback(ctx context.Context, item library.Item, str
 	return probe.Embedded(ctx, item, stream, options)
 }
 
-// Embedded validates, extracts, caches, and optionally maps one text subtitle stream.
 func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int, options EmbeddedOptions) (EmbeddedSubtitle, error) {
 	if stream < 0 || stream > 65535 {
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream

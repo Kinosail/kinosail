@@ -78,7 +78,6 @@ def tracked_sources():
 
 
 def inspector_identity():
-    # Exact existing Go append order; no inserted delimiter or token change.
     paths = tuple(APP/"internal/server/static"/name for name in
                   ("subtitle-source-cues.js","subtitle-save-operation.js","subtitle-inspector.js"))
     for path in paths: fingerprint(path,256*1024)

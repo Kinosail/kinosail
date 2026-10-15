@@ -2,7 +2,6 @@ package identitycore
 
 import "net/http"
 
-// SecurityConfig connects shared HTTP security to app-specific request policy.
 type SecurityConfig struct {
 	MaxBody             int64
 	Secure              func(*http.Request) bool
@@ -12,7 +11,6 @@ type SecurityConfig struct {
 	Reject              func(http.ResponseWriter, *http.Request, string, int)
 }
 
-// Security applies Player's response, request-size, origin, and CSRF policy.
 func Security(next http.Handler, config SecurityConfig) http.Handler {
 	if !validSecurity(next, config) {
 		return http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {

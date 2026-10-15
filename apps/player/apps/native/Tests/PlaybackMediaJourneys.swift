@@ -3,8 +3,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Opt-in decoded-media E2E. Generate the bounded fictional sample using the
-// command in the failure-analysis note, then run this suite with StartupJourneys.
 @Suite(.serialized, .enabled(if: FileManager.default.fileExists(atPath: "/tmp/kinosail-appletv-task7-media.mp4")))
 @MainActor struct PlaybackMediaJourneys {
     @Test func coldAndPreparedPlaybackDecodeResumeSeekPauseAndRepeat() async throws {

@@ -7,14 +7,12 @@ import (
 	"testing"
 )
 
-// APIDurableStateFixture binds real-app initialization and authentication.
 type APIDurableStateFixture struct {
 	NewHandler  func(string, string) http.Handler
 	SignIn      func(*testing.T, http.Handler, string, string) *http.Cookie
 	FirstItemID func(*testing.T, http.Handler, string) string
 }
 
-// APIDurableStateFailures checks failed persistence through the real API.
 func APIDurableStateFailures(t *testing.T, fixture APIDurableStateFixture) {
 	media, data := t.TempDir(), filepath.Join(t.TempDir(), "data")
 	if err := os.Mkdir(data, 0o700); err != nil {

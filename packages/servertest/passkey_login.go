@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// PasskeyLoginIsAvailableFromSignInPage verifies the safe return target and passkey-first login actions.
 func PasskeyLoginIsAvailableFromSignInPage(t *testing.T, handler http.Handler, scriptPath string) {
 	_ = SetupOwnerCookie(t, handler)
 	response := httptest.NewRecorder()
@@ -21,7 +20,6 @@ func PasskeyLoginIsAvailableFromSignInPage(t *testing.T, handler http.Handler, s
 	}
 }
 
-// PasskeyLoginBeginIsPublic verifies the unauthenticated passkey discovery response.
 func PasskeyLoginBeginIsPublic(t *testing.T, handler http.Handler, origin string) {
 	response := httptest.NewRecorder()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/passkeys/login/begin", nil)
@@ -32,7 +30,6 @@ func PasskeyLoginBeginIsPublic(t *testing.T, handler http.Handler, origin string
 	}
 }
 
-// PasskeyLoginIgnoresStaleSession verifies public ceremonies do not reject stale cookies.
 func PasskeyLoginIgnoresStaleSession(t *testing.T, handler http.Handler, origin string) {
 	for path, want := range map[string]int{
 		"/api/v1/passkeys/login/begin":  http.StatusOK,
@@ -54,7 +51,6 @@ func PasskeyLoginIgnoresStaleSession(t *testing.T, handler http.Handler, origin 
 	}
 }
 
-// PasskeyBeginRedirectsToConfiguredOrigin verifies an alternate trusted host cannot mint ceremony state.
 func PasskeyBeginRedirectsToConfiguredOrigin(t *testing.T, handler http.Handler, authOrigin, requestOrigin string) {
 	setup := httptest.NewRequestWithContext(t.Context(), http.MethodPost, authOrigin+"/setup", strings.NewReader("name=Owner&password=owner-password"))
 	setup.Header.Set("Content-Type", "application/x-www-form-urlencoded")

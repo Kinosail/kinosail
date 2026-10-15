@@ -6,7 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// SelectionState adapts transcoder policy to an application's persisted settings.
 type SelectionState struct {
 	Lock  *sync.RWMutex
 	Value *Selection
@@ -14,12 +13,10 @@ type SelectionState struct {
 	Check *transcodepolicy.CheckResult
 }
 
-// ConfiguredSources identifies choices supplied outside built-in defaults.
 func ConfiguredSources(accelerator, codec string) SelectionSources {
 	return SelectionSources{Accelerator: accelerator != "" && accelerator != "default", Codec: codec != "" && codec != "default"}
 }
 
-// Set validates and persists one untrusted transcoder selection.
 func (state SelectionState) Set(capabilities Capabilities, selection Selection, editable func(...string) error) error {
 	if err := editable("transcoding.quality", "transcoding.codec", "transcoding.accelerator", "transcoding.tone_map"); err != nil {
 		return err
@@ -33,7 +30,6 @@ func (state SelectionState) Set(capabilities Capabilities, selection Selection, 
 	return state.persist(validated, true)
 }
 
-// Reconcile repairs unavailable defaults and persists the result.
 func (state SelectionState) Reconcile(capabilities Capabilities, sources SelectionSources) error {
 	state.Lock.Lock()
 	defer state.Lock.Unlock()
@@ -44,12 +40,10 @@ func (state SelectionState) Reconcile(capabilities Capabilities, sources Selecti
 	return state.persist(selection, false)
 }
 
-// Settings resolves the current selection for one output codec.
 func (state SelectionState) Settings(capabilities Capabilities, codec string) (transcodepolicy.Settings, error) {
 	return capabilities.Settings(state.current(), codec)
 }
 
-// PreferredCodec selects the best client codec for the current selection.
 func (state SelectionState) PreferredCodec(capabilities Capabilities, client []string) string {
 	selection := state.current()
 	return capabilities.PreferredCodec(NormalizeCodec(selection.Codec), NormalizeAccelerator(selection.Accelerator), client)
@@ -74,8 +68,6 @@ func (state SelectionState) persist(selection Selection, reset bool) error {
 	return nil
 }
 
-// CheckSettings permits an explicit diagnostic to recheck discovered operations
-// without making those unverified operations available to normal playback.
 func (state SelectionState) CheckSettings(capabilities Capabilities) (transcodepolicy.Settings, error) {
 	candidates := capabilities
 	candidates.verification = nil
@@ -88,8 +80,6 @@ func (state SelectionState) CheckSettings(capabilities Capabilities) (transcodep
 	return candidates.Settings(state.current(), "")
 }
 
-// CheckCoordinator binds persisted selection and hardware evidence to the
-// shared explicit-check lifecycle.
 func (state SelectionState) CheckCoordinator(ffmpeg string, capabilities Capabilities) transcodepolicy.CheckCoordinator {
 	return transcodepolicy.NewCheckCoordinator(transcodepolicy.CheckCoordinatorDependencies{
 		Lock: state.Lock, Result: state.Check, FFmpeg: ffmpeg,

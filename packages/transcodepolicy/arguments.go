@@ -1,6 +1,5 @@
 package transcodepolicy
 
-// Settings contains validated Player transcoder selections.
 type Settings struct {
 	Name                   string
 	Preset                 string
@@ -20,8 +19,6 @@ type Settings struct {
 	OutputHDR              string
 }
 
-// VideoArguments builds a complete frame path. Hardware encoding does not imply
-// hardware decoding: sources and CPU filters can use software frames safely.
 func VideoArguments(options Settings, width string) ([]string, []string) {
 	codec := NormalizeCodec(options.Codec)
 	encoderName := options.Encoder
@@ -61,7 +58,6 @@ func encoderArguments(name string, options Settings) []string {
 	}
 }
 
-// CompatibilityArguments returns Player's browser compatibility requirements.
 func CompatibilityArguments(codec string) []string {
 	if NormalizeCodec(codec) == "h264" {
 		return []string{"-profile:v", "high", "-level:v", "4.2"}

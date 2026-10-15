@@ -93,8 +93,6 @@ func (output *transcodeHLSOutput) linkTarget(manager *hlsManager, ctx context.Co
 	if linkErr != nil && !errors.Is(linkErr, os.ErrExist) {
 		return transcodeClockError("refill-link", linkErr)
 	}
-	// A race winner remains untouched. Its clock must independently agree with
-	// the original generation before this waiter can accept it.
 	committed, err := manager.probeTranscodeFragments(ctx, media, []string{name}, recovery.number == len(original.Cuts)-1)
 	if err != nil || !matchesTranscodeFragment(committed, original, recovery.number) || !current() {
 		if linkErr == nil {

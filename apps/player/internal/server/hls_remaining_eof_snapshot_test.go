@@ -15,8 +15,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// These isolated controls cover source/route, cancellation and replacement paths
-// absent from the public ten-second fixture; fake assets do not prove AAC content.
 func TestRemainingColdAACManifestCannotSubstituteJoinForEOF(t *testing.T) {
 	for _, state := range []string{"complete", "incomplete-event", "short-false-eof", "missing-tail", "copy-index"} {
 		t.Run(state, func(t *testing.T) {
@@ -180,7 +178,6 @@ func faultRemainingColdAACManifest(t *testing.T, state, directory, manifest stri
 func checkRemainingColdAACPendingReaders(t *testing.T, manager *hlsManager, key string, job *hlsJob, completed <-chan error) {
 	t.Helper()
 	waitRemainingColdAACReaders(t, 2)
-	// A pending worker must leave the metadata lock available to other requests.
 	select {
 	case <-job.done:
 		t.Fatal("worker joined before the lock oracle")

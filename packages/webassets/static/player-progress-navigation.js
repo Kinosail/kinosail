@@ -1,5 +1,3 @@
-// Keep explicit browse return navigation alive until its latest owned checkpoint is acknowledged.
-// Browser Back and tab close still use the separate pagehide keepalive fallback.
 function progressNavigationAllowed() {
   return progressChanged() && !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
     player.dataset.offline !== "true" && player.readyState >= HTMLMediaElement.HAVE_METADATA &&
@@ -51,11 +49,8 @@ document.addEventListener("click", event => {
   progressContinuation = navigation.leave;
   if (progressNotice) progressNotice.hidden = false;
   void save(false, true);
-  // An existing authentication/policy failure can return before sendProgress refreshes the notice.
   if (progressFailure && !retryableProgress()) showProgressFailure();
 });
-// Wait for every listener's cancellation decision before stopping an accepted
-// departure. Watched submissions replay here after their checkpoint is saved.
 document.addEventListener("click", event => {
   const link = event.target.closest?.('a[href]');
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
@@ -79,7 +74,6 @@ document.addEventListener("submit", event => {
   watchedSubmission = event;
   setTimeout(() => { if (!event.defaultPrevented) player.dispatchEvent(new Event("kinosail:navigation")); });
 });
-// Manual watched status must follow the current page's final position write.
 document.addEventListener("submit", event => {
   if (watchedSubmission !== event || event.defaultPrevented || watchedReplay || watchedDeparture || !progressNavigationAllowed()) return;
   const form = event.target;

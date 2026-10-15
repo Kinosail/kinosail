@@ -10,9 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// CompleteCuts projects a caller-certified cut map only when the observed
-// prefix agrees. Cuts contains each segment start followed by the genuine EOF.
-// The caller owns source identity, generated-media clocks, and delivery readiness.
 func CompleteCuts(manifest []byte, cuts []float64) ([]byte, bool) {
 	if !playback.PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") ||
 		!bytes.Contains(manifest, []byte("#EXT-X-MAP:URI=\"init.mp4\"")) || !MatchesCuts(manifest, cuts) {
@@ -31,8 +28,6 @@ func CompleteCuts(manifest []byte, cuts []float64) ([]byte, bool) {
 	return []byte(output.String()), true
 }
 
-// MatchesCuts checks a bounded sequential prefix, including its final duration
-// when complete. It does not certify media bytes or source identity.
 func MatchesCuts(manifest []byte, cuts []float64) bool {
 	if len(manifest) > 1<<20 || !validCuts(cuts) {
 		return false
@@ -82,7 +77,6 @@ func validCuts(cuts []float64) bool {
 	return true
 }
 
-// MatchesCutLength retains the demuxer's bounded final-GOP rounding tolerance.
 func MatchesCutLength(expected, observed float64, final bool) bool {
 	if invalidHLSSegmentDuration(expected) || observed <= 0 {
 		return false

@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Repair masters retained before the unfinished-bandwidth floor was introduced.
-// Keep their rendition set and media fragments, including after a seek restart.
 func refreshCachedVideoHLSMaster(playlist string, facts MediaFacts, recipe hlsRecipe, identity string) error {
 	if facts.Kind != "video" || recipe.mode != "transcode" {
 		return nil

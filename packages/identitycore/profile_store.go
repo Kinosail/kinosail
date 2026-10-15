@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/federation"
 )
 
-// ProfileStoreConfig binds Player's profile transactions to app-owned state.
 type ProfileStoreConfig struct {
 	Mutex       *sync.RWMutex
 	Profiles    *[]Profile
@@ -23,10 +22,8 @@ type ProfileStoreConfig struct {
 	NewID       func() string
 }
 
-// ProfileStore owns Player's canonical profile transaction policy.
 type ProfileStore struct{ config ProfileStoreConfig }
 
-// NewProfileStore returns the shared profile transaction module.
 func NewProfileStore(config ProfileStoreConfig) ProfileStore {
 	if config.Create == nil {
 		config.Create = NewProfile
@@ -40,14 +37,12 @@ func NewProfileStore(config ProfileStoreConfig) ProfileStore {
 	return ProfileStore{config: config}
 }
 
-// HasProfiles reports whether setup has created an owner.
 func (store ProfileStore) HasProfiles() bool {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
 	return len(*store.config.Profiles) > 0
 }
 
-// Authenticate verifies one active profile credential.
 func (store ProfileStore) Authenticate(name, password string) (Profile, bool) {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
@@ -61,7 +56,6 @@ func (store ProfileStore) Authenticate(name, password string) (Profile, bool) {
 	return Profile{}, false
 }
 
-// AddOwner persists a prebuilt first owner during app setup.
 func (store ProfileStore) AddOwner(profile Profile) error {
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
@@ -76,7 +70,6 @@ func (store ProfileStore) AddOwner(profile Profile) error {
 	return nil
 }
 
-// AddProfile validates, persists, and commits one profile.
 func (store ProfileStore) AddProfile(name, password string, owner bool, policy ProfilePolicy) (string, error) {
 	if err := policy.Valid(); err != nil {
 		return "", err
@@ -101,7 +94,6 @@ func (store ProfileStore) AddProfile(name, password string, owner bool, policy P
 	return profile.ID, nil
 }
 
-// SetProfile atomically applies Player's owner and access policy.
 func (store ProfileStore) SetProfile(id string, owner bool, policy ProfilePolicy) error {
 	if err := policy.Valid(); err != nil {
 		return err
@@ -145,7 +137,6 @@ func (store ProfileStore) commitProfilePolicy(profiles []Profile, index int, own
 	return nil
 }
 
-// RemoveProfile atomically removes a local profile and its credentials.
 func (store ProfileStore) RemoveProfile(id string) error { //nolint:cyclop,gocognit // Scores of 12 and 18 remain below the repository ceiling of 22 for one atomic removal transaction.
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
@@ -187,21 +178,18 @@ func (store ProfileStore) RemoveProfile(id string) error { //nolint:cyclop,gocog
 	return nil
 }
 
-// ByID returns a detached profile by identifier.
 func (store ProfileStore) ByID(id string) (Profile, bool) {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
 	return FindProfile(*store.config.Profiles, id)
 }
 
-// List returns a detached profile snapshot.
 func (store ProfileStore) List() []Profile {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
 	return CloneProfiles(*store.config.Profiles)
 }
 
-// FederatedProfiles adapts profile state to the shared federation engine.
 func (store ProfileStore) FederatedProfiles() federation.Profiles[Profile] {
 	return federation.Profiles[Profile]{
 		Lock: store.config.Mutex.Lock, Unlock: store.config.Mutex.Unlock,

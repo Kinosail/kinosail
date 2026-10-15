@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# WebKit rejects Secure cookies on HTTP localhost. Use real TLS on its disposable
-# Linux runner; browser contexts continue to reject untrusted certificates.
-# Only trust installed by this invocation belongs to its cleanup lifecycle.
 BROWSER_FIXTURE_CA_PATH=""
 BROWSER_FIXTURE_NODE_CA_PREVIOUS=""
 BROWSER_FIXTURE_NODE_CA_WAS_SET=""
@@ -30,7 +27,6 @@ trust_browser_fixture_tls() {
   local certificate="$3/browser-fixture-ca.crt"
   local trust="/usr/local/share/ca-certificates/kinosail-browser-fixture-$4.crt"
   if [[ -e "$trust" ]]; then echo 'browser fixture trust path already exists' >&2; return 2; fi
-  # The app command exports its public CA only, never its private identity.
   if [[ -L "$certificate" ]]; then echo 'invalid browser fixture export path' >&2; return 2; fi
   "$1" exec "$2" kinosail tls-certificate >"$certificate" || return
   install_browser_fixture_ca "$certificate" "$4"
@@ -60,7 +56,6 @@ install_browser_fixture_ca() {
   BROWSER_FIXTURE_CA_PATH="$trust"
   sudo install -m 0644 "$certificate" "$trust" || return
   sudo update-ca-certificates >/dev/null || return
-  # Playwright's APIRequestContext runs in Node, outside the browser trust store.
   BROWSER_FIXTURE_NODE_CA_PREVIOUS="${NODE_EXTRA_CA_CERTS-}"
   BROWSER_FIXTURE_NODE_CA_WAS_SET="${NODE_EXTRA_CA_CERTS+x}"
   BROWSER_FIXTURE_NODE_CA_PATH="$certificate"

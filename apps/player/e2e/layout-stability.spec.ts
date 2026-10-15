@@ -26,7 +26,6 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {w
     await page.locator("#save").evaluate(button => button.removeAttribute("aria-busy"));
     await page.locator("#save").focus();
     await expect(page.locator("#save")).toBeFocused();
-    // Safari's default macOS keyboard preference tabs to buttons with Option.
     await page.keyboard.press(info.project.name === "webkit" ? "Alt+Tab" : "Tab");
     await expect(page.locator("#cancel")).toBeFocused();
     await page.emulateMedia({reducedMotion: "reduce"});

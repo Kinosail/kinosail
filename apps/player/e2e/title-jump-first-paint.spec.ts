@@ -23,7 +23,6 @@ test("populated mobile library keeps the compact title jump while navigation loa
       viewport: page.viewportSize(), revision: process.env.KINOSAIL_TEST_REVISION,
     }), contentType: "application/json" });
   } finally {
-    // Screenshots wait for fonts; their readiness depends on deferred scripts.
     releaseNavigation();
   }
   await page.waitForLoadState("domcontentloaded");

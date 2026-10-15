@@ -97,7 +97,6 @@ func TestSubtitleTranscriptionToolRequiresModelAndMatchingAudio(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Verify the configured model was actually consumed before exercising selection.
 	if config.String("subtitles.transcription_model") != model {
 		t.Fatal("model fixture did not configure transcription")
 	}

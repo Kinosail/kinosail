@@ -21,7 +21,6 @@ func TestEncodingCostIsReservedAtomically(t *testing.T) {
 	if next, err := governor.AcquireEncoding(cancelled, Playback, 2, ""); next != nil || !errors.Is(err, context.Canceled) {
 		t.Fatalf("oversubscribed reservation = %v", err)
 	}
-	// A blocked/cancelled two-encoder request must not keep the last permit.
 	last, err := governor.AcquireEncoding(t.Context(), Playback, 1, "")
 	if err != nil {
 		t.Fatal(err)

@@ -45,5 +45,3 @@ func TestThreeEditionCollectionAndVisibility(t *testing.T) {
 	}
 	assertAPIBody(t, apiCall(t, handler, token, "GET", "/api/v1/supporter/certificate.svg", nil), http.StatusOK, "Monthly")
 }
-
-// Opt-in loopback preview uses synthetic signed certificates and temporary storage.

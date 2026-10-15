@@ -273,8 +273,6 @@ const directTypeUnsupported = codecCapabilities.appleMatroska(directType);
 const knownAudioIncompatibility = codecCapabilities.audioIncompatible(playbackPolicy, player.dataset.compatibilityMode, player.dataset.audioCompatibilityRequired === "true");
 if (player.dataset.hls) {
   if (knownAudioIncompatibility) {
-    // A pre-planned compatible playlist is already available when the server knows the
-    // original audio will be dropped by the browser; do not switch back to the silent source.
     startAdaptive(false);
   } else if (playbackPolicy !== "compatible" && direct) {
     if (player.getAttribute("src") !== direct) useOriginal();
@@ -290,9 +288,6 @@ if (player.dataset.hls) {
     if (player.dataset.compatibilityMode === "transcode") recoverDirectFailure(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED, false, false);
     else startAdaptive(false);
   } else if (knownAudioIncompatibility) {
-    // Browsers can render a video stream while silently dropping an unsupported audio codec.
-    // The server has already confirmed that the audio needs conversion, so do not wait for a
-    // media error that may never arrive before starting the audio-only compatible rendition.
     startAdaptive(false);
   } else if (direct && !player.getAttribute("src")) player.src = direct;
 }

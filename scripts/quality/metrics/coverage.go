@@ -99,8 +99,6 @@ func parseBlock(line string) (string, block, error) {
 	return fields[1], block{int(numbers[0]), int(numbers[2]), numbers[5] > 0}, nil
 }
 
-// The established CRAP gate measures covered blocks, rather than weighting
-// statements. Duplicate line spans are merged with logical OR, as before.
 func coveredFraction(blocks []block, start, end int) float64 {
 	seen := map[[2]int]bool{}
 	for _, b := range blocks {

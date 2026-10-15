@@ -1,4 +1,3 @@
-// Render exported application fixtures without loading external scripts.
 export function fixtureDocument({ source, css, dark = false }: { source: string; css: string; dark?: boolean }): string {
   const document = new DOMParser().parseFromString(source, "text/html");
   if (dark) document.documentElement.dataset.theme = "dark";

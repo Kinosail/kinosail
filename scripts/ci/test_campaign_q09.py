@@ -111,8 +111,6 @@ class Q09ProofTests(unittest.TestCase):
                     except ProcessLookupError: pass
 
     def test_group_settlement_requires_absence_after_transient_permission_errors(self):
-        # A real process test cannot force Darwin's short-lived EPERM window
-        # while an exiting group disappears, or a persistent permission denial.
         for outcomes, expected in (([None, PermissionError(), ProcessLookupError()], True),
                                    ([PermissionError(), ProcessLookupError()], True),
                                    ([PermissionError()] * 8, False), ([None] * 8, False)):
@@ -134,8 +132,6 @@ class Q09ProofTests(unittest.TestCase):
         self.assertIn('"--retries=0", "--forbid-only"', source)
 
     def test_real_go_launcher_preserves_package_relative_browser_directory(self):
-        # The public fixture cannot reach Playwright when its test-binary cwd is
-        # the app root. Model admission/commands only; execute no Go or browser.
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             e2e = root / 'apps/player/e2e'; e2e.mkdir(parents=True)

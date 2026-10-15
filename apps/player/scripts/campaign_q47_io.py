@@ -25,7 +25,6 @@ def descriptor(path, limit, mode=None):
         if stable(os.fstat(fd)) != stable(details):
             raise ValueError("descriptor_changed")
     finally:
-        # A close failure is a failed prerequisite, including during another failure.
         os.close(fd)
 
 

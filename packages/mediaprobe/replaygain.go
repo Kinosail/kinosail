@@ -13,7 +13,6 @@ type ReplayGain struct {
 	AlbumSet bool
 }
 
-// ParseReplayGain normalizes standard and R128 gain tags.
 func ParseReplayGain(tags map[string]string) ReplayGain {
 	result := ReplayGain{}
 	if result.Track, result.TrackSet = gainTag(tags, "replaygain_track_gain", false); !result.TrackSet {

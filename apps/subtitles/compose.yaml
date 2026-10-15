@@ -104,7 +104,6 @@ services:
       - kinosail-config:/config
       - kinosail-cache:/cache
       - "${KINOSAIL_BACKUP_PATH:-kinosail-backups}:/backups"
-      # Kinosail Subtitles writes validated sidecar files beside each video.
       - "${KINOSAIL_MEDIA_PATH:-./media}:/media:rw"
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=256m

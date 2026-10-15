@@ -1,6 +1,5 @@
 import Foundation
 
-/// Share encoded bytes across thumbnail sizes, while retaining independent cancellation.
 actor ArtworkDownloads {
     private struct Key: Hashable, Sendable { let clientID: UUID; let path: String }
     private struct Pending {

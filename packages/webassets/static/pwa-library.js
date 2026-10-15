@@ -44,7 +44,6 @@ function bindInfiniteLibrary() {
   libraryObserver.observe(status);
 }
 
-// Both automatic paging and browse return use the same validated Go fragment.
 async function loadLibraryPage(next, current = () => true) {
   const status = document.querySelector("[data-library-status]");
   const library = document.querySelector("#library");

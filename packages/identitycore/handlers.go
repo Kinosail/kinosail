@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// DenialConfig connects shared access denials to app presentation and auditing.
 type DenialConfig struct {
 	Denied              func(*http.Request, string)
 	NotFound            func(http.ResponseWriter, *http.Request)
@@ -15,7 +14,6 @@ type DenialConfig struct {
 	JSON                func(http.ResponseWriter, any, int)
 }
 
-// RespondDenial renders and audits one access denial.
 func RespondDenial(writer http.ResponseWriter, request *http.Request, denial Denial, config DenialConfig) {
 	if !validDenialConfig(config) || denial == Allowed {
 		http.Error(writer, "access denial is unavailable", http.StatusInternalServerError)
@@ -41,7 +39,6 @@ func validDenialConfig(config DenialConfig) bool {
 	return config.Denied != nil && config.NotFound != nil && config.AuthenticationError != nil && config.Error != nil && config.JSON != nil
 }
 
-// OwnerConfig connects shared Owner authorization to app identity and presentation.
 type OwnerConfig struct {
 	Identity              func(*http.Request) (owner, local bool)
 	Managed               func(*http.Request) bool
@@ -52,7 +49,6 @@ type OwnerConfig struct {
 	JSON                  func(http.ResponseWriter, any, int)
 }
 
-// Owner applies Player's Owner and recent-authentication middleware.
 func Owner(next http.Handler, config OwnerConfig) http.Handler {
 	if next == nil || !validOwnerConfig(config) {
 		return unavailableHandler()
@@ -60,7 +56,6 @@ func Owner(next http.Handler, config OwnerConfig) http.Handler {
 	return ownerHandler(next, config, false)
 }
 
-// OwnerSensitive requires fresh authentication even for a read that exports private state.
 func OwnerSensitive(next http.Handler, config OwnerConfig) http.Handler {
 	if next == nil || !validOwnerConfig(config) {
 		return unavailableHandler()
@@ -97,7 +92,6 @@ func validOwnerConfig(config OwnerConfig) bool {
 	return config.Identity != nil && config.Managed != nil && config.RecentlyAuthenticated != nil && config.AuthenticationError != nil && config.StepUpPath != nil && config.Error != nil && config.JSON != nil
 }
 
-// PasswordLoginConfig connects password authentication to app sessions and presentation.
 type PasswordLoginConfig[T any] struct {
 	Authenticate func(string, string) (T, bool)
 	ProfileID    func(T) string
@@ -107,7 +101,6 @@ type PasswordLoginConfig[T any] struct {
 	Error        func(http.ResponseWriter, *http.Request, string, int)
 }
 
-// Login renders a login page or completes its password submission.
 func Login[T any](writer http.ResponseWriter, request *http.Request, next string, render func(http.ResponseWriter, *http.Request, any) error, config PasswordLoginConfig[T]) {
 	if render == nil {
 		http.Error(writer, "password login is unavailable", http.StatusInternalServerError)
@@ -121,7 +114,6 @@ func Login[T any](writer http.ResponseWriter, request *http.Request, next string
 	PasswordLoginRequest(writer, request, next, config)
 }
 
-// PasswordLoginRequest completes one password login request in Player order.
 func PasswordLoginRequest[T any](writer http.ResponseWriter, request *http.Request, next string, config PasswordLoginConfig[T]) {
 	if config.Authenticate == nil || config.ProfileID == nil || config.SignIn == nil || config.SetAudit == nil || config.ReturnPath == nil || config.Error == nil {
 		http.Error(writer, "password login is unavailable", http.StatusInternalServerError)
@@ -142,7 +134,6 @@ func PasswordLoginRequest[T any](writer http.ResponseWriter, request *http.Reque
 	http.Redirect(writer, request, config.ReturnPath(next), http.StatusSeeOther)
 }
 
-// MFAHTTPConfig connects shared MFA endpoints to app identity and persistence.
 type MFAHTTPConfig struct {
 	RecentlyAuthenticated func(*http.Request, time.Duration) bool
 	ReadJSON              func(http.ResponseWriter, *http.Request, any) bool
@@ -158,12 +149,10 @@ type MFAHTTPConfig struct {
 	WebDisableSuccess     func(http.ResponseWriter, *http.Request)
 }
 
-// MFAHandlers contains shared MFA HTTP behavior for app-owned routes.
 type MFAHandlers struct {
 	Setup, Confirm, Disable, WebConfirm, WebDisable http.HandlerFunc
 }
 
-// NewMFAHandlers creates Player's shared MFA enrollment lifecycle.
 func NewMFAHandlers(config MFAHTTPConfig) (MFAHandlers, error) {
 	if !validMFAHTTPConfig(config) {
 		return MFAHandlers{}, ErrInvalidConfig

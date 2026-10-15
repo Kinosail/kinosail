@@ -5,8 +5,6 @@ import (
 	"reflect"
 )
 
-// ServerConfigAdapter maps explicit fixture fields to either app's configuration.
-// Missing or incompatible fields fail immediately rather than skipping setup.
 func ServerConfigAdapter[C, F any](newHandler func(C) http.Handler) func(F) http.Handler {
 	return func(config F) http.Handler {
 		var target C

@@ -1,4 +1,3 @@
-// Package servertest runs shared browser-server contracts against each app.
 package servertest
 
 import (
@@ -9,7 +8,6 @@ import (
 	"testing"
 )
 
-// AssertInstallableWebApp verifies the common PWA resources exposed by an app.
 func AssertInstallableWebApp(t *testing.T, handler http.Handler) {
 	t.Helper()
 	home := request(t, handler, "/")

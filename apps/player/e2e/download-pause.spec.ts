@@ -42,7 +42,6 @@ for (const storage of ["opfs", "indexeddb"] as const) {
 for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 390 : 1440]) {
   test(`${downloadServer ? "real Server" : "isolated native browser"}: Pause retains verified ${storage} blocks and Resume continues missing ranges at ${width}px`, async ({page: fixturePage, context: fixtureContext, browser}, info) => {
     test.setTimeout(60_000);
-    // WebKit's ephemeral contexts expose OPFS but cannot open its directory.
     const context = storage === "opfs" ? await browser.browserType().launchPersistentContext("", {
       serviceWorkers: "allow", channel: info.project.use.channel,
     }) : fixtureContext;
@@ -50,7 +49,6 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
     let peer: Awaited<ReturnType<typeof downloadPeer>> | undefined;
     let failed = false;
     try {
-      // Playwright Test records every context, including this persistent one.
       await page.setViewportSize({width, height: width === 1920 ? 1080 : 844});
       const transport = await downloadPeer();
       peer = transport;
@@ -88,8 +86,6 @@ for (const width of downloadServer ? [390, 1440, 1920] : [storage === "opfs" ? 3
       await expect(resume).toBeEnabled();
       await expect(status).not.toHaveText("Download paused. Resume to continue where it stopped.");
       await page.screenshot({path: info.outputPath(`${storage}-${width}-offline-failure.png`), fullPage: true});
-      // WebKit's network emulation also blocks native File reads. Inspect after
-      // restoring transport, before the user explicitly resumes the transfer.
       await context.setOffline(false);
       expect((await inspectDownload(page, served.jobID)).chunks).toEqual(before.chunks);
       expect((await transport.stats()).ranges).toEqual([0, downloadChunk]);

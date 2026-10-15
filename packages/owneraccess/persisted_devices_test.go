@@ -17,7 +17,7 @@ func TestManagementReloadValidatesEveryPersistedPeerBeforeUse(t *testing.T) {
 	peer := Device{Label: "Phone", ProfileID: "owner", Revision: 1, PublicKey: key, PresharedKey: key, Address: "10.92.0.2"}
 	valid := state{Enabled: true, Endpoint: "home.example:51821", PrivateKey: key, Devices: []Device{peer}}
 	path := filepath.Join(config.Directory, "owner-access.json")
-	raw, err := json.Marshal(valid) // #nosec G117 -- Synthetic keys are persisted to a private test directory.
+	raw, err := json.Marshal(valid)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestManagementReloadValidatesEveryPersistedPeerBeforeUse(t *testing.T) {
 
 func assertInvalidPersistedState(t *testing.T, config Config, path string, candidate state) {
 	t.Helper()
-	data, err := json.Marshal(candidate) // #nosec G117 -- Synthetic invalid state exercises private-file loading.
+	data, err := json.Marshal(candidate)
 	if err != nil {
 		t.Fatal(err)
 	}

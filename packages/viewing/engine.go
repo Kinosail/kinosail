@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Engine owns the source-neutral preview lifecycle while an app supplies policy adapters.
 type Engine[P any] struct {
 	Store         PreviewStore
 	TTL           time.Duration
@@ -25,7 +24,6 @@ type Engine[P any] struct {
 	Commit        func(P, []ProgressChange, []ListChange) (int, int, int, error)
 }
 
-// Preview validates the source before fetching or reading destination state.
 func (engine Engine[P]) Preview(ctx context.Context, input Input) (Preview, error) {
 	input, profile, err := engine.Validate(input)
 	if err != nil {
@@ -36,7 +34,6 @@ func (engine Engine[P]) Preview(ctx context.Context, input Input) (Preview, erro
 	})
 }
 
-// Build creates one expiring optimistic preview using destination policy callbacks.
 func (engine Engine[P]) Build(input Input, profile P, activities []Activity, items []library.Item) Preview {
 	return NewPreview(rand.Text(), time.Now().Add(engine.TTL), input, engine.ProfileID(profile), engine.ProfileName(profile), activities, items, func(id string) catalog.PlaybackState {
 		return engine.Progress(profile, id)
@@ -45,7 +42,6 @@ func (engine Engine[P]) Build(input Input, profile P, activities []Activity, ite
 	})
 }
 
-// Apply durably commits and consumes a current preview.
 func (engine Engine[P]) Apply(id string) (Summary, error) {
 	return ApplyPreview(engine.Store, id, func(preview Preview) (int, int, int, error) {
 		profile, found := engine.Profile(preview.ProfileID)

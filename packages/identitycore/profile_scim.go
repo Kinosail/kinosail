@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-// SCIMProfiles returns active provisioned profiles.
 func (store ProfileStore) SCIMProfiles() []Profile {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
@@ -21,7 +20,6 @@ func (store ProfileStore) SCIMProfiles() []Profile {
 	return result
 }
 
-// SCIMProfile returns one active provisioned profile.
 func (store ProfileStore) SCIMProfile(id string) (Profile, bool) {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
@@ -33,7 +31,6 @@ func (store ProfileStore) SCIMProfile(id string) (Profile, bool) {
 	return Profile{}, false
 }
 
-// CreateSCIMProfile atomically provisions or rehydrates a profile.
 func (store ProfileStore) CreateSCIMProfile(input scim.ProfileInput) (Profile, error) { //nolint:cyclop,gocognit // Scores of 16 and 17 remain below the repository ceiling of 22 for one atomic create transaction.
 	input, err := scim.NormalizeProfileInput(input)
 	if err != nil {
@@ -100,7 +97,6 @@ func newSCIMID(profiles []Profile, next func() string) string {
 	}
 }
 
-// UpdateSCIMProfile atomically replaces a provisioned profile.
 func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, expected string) (Profile, error) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for one atomic update transaction.
 	input, err := scim.NormalizeProfileInput(input)
 	if err != nil {
@@ -167,7 +163,6 @@ func conflictingSCIMProfile(profiles []Profile, id string, input scim.ProfileInp
 	return false
 }
 
-// DeleteSCIMProfile atomically deprovisions a profile.
 func (store ProfileStore) DeleteSCIMProfile(id, expected string) error {
 	now := store.config.Now().UTC()
 	store.config.Mutex.Lock()

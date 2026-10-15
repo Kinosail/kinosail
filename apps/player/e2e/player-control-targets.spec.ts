@@ -32,7 +32,6 @@ for (const viewport of [{width: 320, height: 568}, {width: 390, height: 844}, {w
       const box = await play.boundingBox();
       await play.tap({position: {x: box!.width / 2, y: box!.height * .9}});
       await expect(page.locator("video")).toHaveJSProperty("paused", false);
-      // Touch Play may enter fullscreen and move the transport targets.
       const playingBox = await play.boundingBox();
       await play.tap({position: {x: playingBox!.width / 2, y: playingBox!.height * .1}});
       await expect(page.locator("video")).toHaveJSProperty("paused", true);
@@ -75,7 +74,6 @@ for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}]) {
     const video = page.locator("video");
     const controls = page.locator("[data-player-controls]");
     await page.locator(".player-center-control[data-player-toggle]").tap();
-    // Cover the picture, title, and empty transport-row space, not just <video>.
     for (const target of [video, page.locator(".player-stage-toolbar strong"), page.locator("[data-player-time]")]) {
       const box = await target.boundingBox();
       const point = {x: box!.x + box!.width * .1, y: box!.y + box!.height * .2};

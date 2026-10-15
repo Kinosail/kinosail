@@ -9,7 +9,6 @@ import (
 
 const settingsFormMaxBody = 16 << 10
 
-// LimitSettingsForms applies the form bound before middleware can parse the body.
 func LimitSettingsForms(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method == http.MethodPost && (request.URL.Path == "/settings/trusted-https" || request.URL.Path == "/onboarding/trusted-https") && request.Body != nil {
@@ -19,13 +18,11 @@ func LimitSettingsForms(next http.Handler) http.Handler {
 	})
 }
 
-// SettingsInput contains the fields accepted by the trusted HTTPS operation.
 type SettingsInput struct {
 	Provider, Domain, Token, Address string
 	TermsAccepted                    bool
 }
 
-// SettingsForm connects the shared form flow to an application's settings operation.
 type SettingsForm struct {
 	Save                       func(SettingsInput) error
 	Managed, Conflict, Storage error
@@ -33,7 +30,6 @@ type SettingsForm struct {
 	Redirect                   string
 }
 
-// ServeHTTP validates input, saves settings, and maps the operation result.
 func (form SettingsForm) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	input, err := ParseSettingsForm(writer, request)
 	if err != nil {
@@ -53,7 +49,6 @@ func (form SettingsForm) ServeHTTP(writer http.ResponseWriter, request *http.Req
 	http.Redirect(writer, request, form.Redirect, http.StatusSeeOther)
 }
 
-// ParseSettingsForm decodes Player's bounded trusted HTTPS form before any save.
 func ParseSettingsForm(writer http.ResponseWriter, request *http.Request) (SettingsInput, error) {
 	if err := httpguard.DecodeForm(writer, request, settingsFormMaxBody, "provider", "domain", "token", "address", "termsAccepted", "_csrf"); err != nil {
 		return SettingsInput{}, errors.New("invalid trusted HTTPS form")

@@ -2,7 +2,6 @@
 import AVKit
 import SwiftUI
 
-/// AVFoundation owns rendering, aspect ratio and HDR; captions stay inside the visible picture.
 final class TouchVideoSurface: UIView {
     override class var layerClass: AnyClass { AVPlayerLayer.self }
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }

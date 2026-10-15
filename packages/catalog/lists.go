@@ -9,19 +9,16 @@ import (
 	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
-// PlaylistRule defines one saved smart-list query.
 type PlaylistRule struct {
 	Kind  string `json:"kind,omitempty"`
 	Query string `json:"query,omitempty"`
 	Sort  string `json:"sort,omitempty"`
 }
 
-// ValidListName reports whether a playlist or Collection name is bounded and path-safe.
 func ValidListName(name string) bool {
 	return name != "" && len(name) <= 64 && !strings.Contains(name, "/")
 }
 
-// ListAdditions counts import changes that are not already present.
 func ListAdditions(state ListState, viewer, id string, favorite bool, playlists map[string]int) int {
 	count := 0
 	if favorite && !state.Values[viewer+":"+id] {
@@ -36,7 +33,6 @@ func ListAdditions(state ListState, viewer, id string, favorite bool, playlists 
 	return count
 }
 
-// ListState is the complete durable Library curation state.
 type ListState struct {
 	Values        map[string]bool
 	Playlists     map[string]map[string]bool
@@ -44,27 +40,19 @@ type ListState struct {
 	Smart         map[string]PlaylistRule
 }
 
-// ListPaths names the legacy JSON documents for curation state.
 type ListPaths struct {
 	Values, Playlists, PlaylistOrder, Smart string
 }
 
-// DocumentMask selects durable curation documents for one atomic commit.
 type DocumentMask uint8
 
 const (
-	// ListedDocument stores My List membership.
 	ListedDocument DocumentMask = 1 << iota
-	// PlaylistsDocument stores playlist and Collection membership.
 	PlaylistsDocument
-	// PlaylistOrderDocument stores stable playlist ordering.
 	PlaylistOrderDocument
-	// SmartListDocument stores smart playlist rules.
 	SmartListDocument
 )
 
-// ListStorage binds shared curation operations to app-owned fields.
-// Callers must hold their state lock across each operation.
 type ListStorage struct {
 	Values        *map[string]bool
 	Playlists     *map[string]map[string]bool
@@ -77,7 +65,6 @@ type ListStorage struct {
 	LoadError     *error
 }
 
-// Restore loads and publishes all valid curation state at once.
 func (storage ListStorage) Restore() error {
 	state, err := LoadListState(storage.Paths, storage.Load)
 	if err == nil {
@@ -86,12 +73,10 @@ func (storage ListStorage) Restore() error {
 	return err
 }
 
-// State returns one detached initialized curation snapshot.
 func (storage ListStorage) State() ListState {
 	return CloneListState(*storage.Values, *storage.Playlists, *storage.PlaylistOrder, *storage.Smart)
 }
 
-// Commit persists and then publishes the selected curation documents.
 func (storage ListStorage) Commit(ctx context.Context, state ListState, documents DocumentMask) error {
 	if *storage.LoadError != nil {
 		return *storage.LoadError
@@ -103,12 +88,10 @@ func (storage ListStorage) Commit(ctx context.Context, state ListState, document
 	return nil
 }
 
-// Assign publishes a complete detached curation state.
 func (storage ListStorage) Assign(state ListState) {
 	*storage.Values, *storage.Playlists, *storage.PlaylistOrder, *storage.Smart = state.Values, state.Playlists, state.PlaylistOrder, state.Smart
 }
 
-// LoadListState reads and validates all canonical curation documents.
 func LoadListState(paths ListPaths, load func(string, any) (bool, error)) (ListState, error) {
 	state := ListState{}
 	for _, document := range []struct {
@@ -131,7 +114,6 @@ func LoadListState(paths ListPaths, load func(string, any) (bool, error)) (ListS
 	return state, nil
 }
 
-// CloneListState returns a detached, initialized state snapshot.
 func CloneListState(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]PlaylistRule) ListState {
 	state := ListState{maps.Clone(values), make(map[string]map[string]bool, len(playlists)), make(map[string][]string, len(order)), maps.Clone(smart)}
 	for key, selected := range playlists {
@@ -149,7 +131,6 @@ func CloneListState(values map[string]bool, playlists map[string]map[string]bool
 	return state
 }
 
-// ValidateListState rejects unbounded or malformed durable curation state.
 func ValidateListState(state ListState) error {
 	if !validListCardinality(state) || !validListValues(state.Values) || !validPlaylists(state.Playlists) || !validPlaylistOrder(state.PlaylistOrder) || !validSmartLists(state.Smart) {
 		return errors.New("persisted list state is invalid")
@@ -197,7 +178,6 @@ func validSmartLists(smart map[string]PlaylistRule) bool {
 	return true
 }
 
-// ListDocuments returns the selected canonical document values.
 func ListDocuments(state ListState, mask uint8) map[string]any {
 	updates := make(map[string]any, 4)
 	if mask&1 != 0 {
@@ -215,7 +195,6 @@ func ListDocuments(state ListState, mask uint8) map[string]any {
 	return updates
 }
 
-// CommitListState persists all selected documents as one database transaction or ordered file writes.
 func CommitListState(ctx context.Context, database *documentdb.Store, paths ListPaths, persist func(string, any) error, state ListState, mask uint8) error {
 	if err := ValidateListState(state); err != nil {
 		return err

@@ -8,13 +8,11 @@ import (
 	"strings"
 )
 
-// JellyfinSegment is one marker in the Jellyfin media-segment contract.
 type JellyfinSegment struct {
 	ID, ItemID, Type     string
 	StartTicks, EndTicks int64
 }
 
-// JellyfinHandler serves one bounded media-segment request through app policy callbacks.
 func JellyfinHandler(resolve func(*http.Request) (string, []Marker, bool), write func(http.ResponseWriter, any)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if !validMarkerItemID(request.PathValue("id")) {
@@ -31,7 +29,6 @@ func JellyfinHandler(resolve func(*http.Request) (string, []Marker, bool), write
 	}
 }
 
-// JellyfinSegments converts authoritative markers into stable Jellyfin segments.
 func JellyfinSegments(itemID string, markers []Marker) []JellyfinSegment {
 	segments := make([]JellyfinSegment, 0, len(markers))
 	for index, marker := range markers {

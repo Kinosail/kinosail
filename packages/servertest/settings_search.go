@@ -1,4 +1,3 @@
-// Package servertest shares regression contracts between real app adapters.
 package servertest
 
 import (
@@ -8,7 +7,6 @@ import (
 	"testing"
 )
 
-// SettingsExposeSmartSearch runs the corresponding app regression contract.
 func SettingsExposeSmartSearch(t *testing.T, newHandler func(string) http.Handler) {
 	t.Parallel()
 	handler := newHandler("")
@@ -33,7 +31,6 @@ func SettingsExposeSmartSearch(t *testing.T, newHandler func(string) http.Handle
 	}
 }
 
-// SettingsBookmarksFollowTheRenderedSectionOrder runs the corresponding app regression contract.
 func SettingsBookmarksFollowTheRenderedSectionOrder(t *testing.T, newHandler func(string) http.Handler) {
 	t.Parallel()
 	handler := newHandler(t.TempDir())

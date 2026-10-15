@@ -10,13 +10,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/mcpgateway"
 )
 
-// MCPPolicyInput describes route access flags checked by the app policy.
 type MCPPolicyInput struct {
 	Pattern       string
 	Write, Manage bool
 }
 
-// AssertMCPAPIRoutePolicy checks common policy cases and explicit app additions.
 func AssertMCPAPIRoutePolicy(t *testing.T, allows func(string, mcpgateway.AccessClass) bool, additional map[MCPPolicyInput]bool) {
 	t.Helper()
 	cases := map[MCPPolicyInput]bool{
@@ -55,7 +53,6 @@ func AssertMCPAPIRoutePolicy(t *testing.T, allows func(string, mcpgateway.Access
 	}
 }
 
-// AssertMCPRouteInventory checks bidirectional, exclusive classification of every API route.
 func AssertMCPRouteInventory(t *testing.T, inventory []string, classes ...map[string]bool) {
 	t.Helper()
 	registered := make(map[string]bool)
@@ -88,7 +85,6 @@ func countMCPClassifications(pattern string, classes []map[string]bool) int {
 	return count
 }
 
-// MCPRequest sends the canonical MCP request envelope to the real handler.
 func MCPRequest(t *testing.T, protocolVersion string, handler http.Handler, method, token string, fields map[string]any) *httptest.ResponseRecorder {
 	t.Helper()
 	params := map[string]any{"_meta": map[string]any{

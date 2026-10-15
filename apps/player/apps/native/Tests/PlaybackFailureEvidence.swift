@@ -2,8 +2,6 @@ import AVFoundation
 import Foundation
 @testable import KinosailPlayer
 
-// Test-only safe failure projection. It never encodes an Error, header, URL,
-// response body, item ID, arbitrary description, or userInfo dictionary.
 struct PlaybackSafeFailure: Encodable, Sendable {
     enum Kind: String, Encodable, Sendable {
         case none, cancelled, http, invalidInput, invalidResponse, unavailable

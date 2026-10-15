@@ -29,7 +29,6 @@ func transcodeRefillAudio(t *testing.T, ctx context.Context, ffmpeg, ffprobe, la
 		"pcmBytes": len(pcm), "pcmSHA256": fmt.Sprintf("%x", sha256.Sum256(pcm)),
 		"diagnosticBytes": diagnostics.Len(), "diagnosticSHA256": fmt.Sprintf("%x", sha256.Sum256(diagnostics.Bytes())),
 	})
-	// The caller compares clocks and decoded content separately.
 	if err != nil || len(pcm) == 0 || diagnostics.Len() != 0 {
 		t.Fatal("public audio fragment sequence did not decode cleanly")
 	}

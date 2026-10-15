@@ -9,13 +9,11 @@ import (
 	"time"
 )
 
-// MFAPolicyFixture binds the existing real server and authenticated web helper.
 type MFAPolicyFixture struct {
 	Library LibraryAPIFixture
 	Web     AuthCookieRequest
 }
 
-// AssertSingleOwnerMustEnrollOneAuthenticationFactor preserves the original MFA enrollment and policy assertions.
 func AssertSingleOwnerMustEnrollOneAuthenticationFactor(t *testing.T, fixture MFAPolicyFixture) {
 	t.Parallel()
 
@@ -35,7 +33,6 @@ func AssertSingleOwnerMustEnrollOneAuthenticationFactor(t *testing.T, fixture MF
 	}
 }
 
-// AssertOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI preserves both original signup scenarios.
 func AssertOwnerCanChooseTOTPWhenSigningUpThroughWebAndAPI(t *testing.T, fixture MFAPolicyFixture) {
 	t.Run("web", func(t *testing.T) { assertWebMFASignup(t, fixture) })
 	t.Run("API", func(t *testing.T) { assertAPIMFASignup(t, fixture) })

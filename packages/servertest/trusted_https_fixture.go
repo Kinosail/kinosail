@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// BindTrustedHTTPS keeps construction and reloads on the same real app configuration loader.
 func BindTrustedHTTPS[Config interface{ String(string) string }](fixture TrustedHTTPSFixture, load func(string, string, func(string) (string, bool)) (Config, error), newHandler func(string, Config) http.Handler) TrustedHTTPSFixture {
 	read := func(directory string) (Config, error) {
 		return load(directory, "", func(string) (string, bool) { return "", false })

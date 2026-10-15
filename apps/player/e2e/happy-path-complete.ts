@@ -49,7 +49,6 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 	if (testInfo.project.name === "chromium") {
 		await page.getByRole("button", { name: "Back up now" }).click();
 		await expect(page).toHaveURL("/settings/backups");
-		// Fresh password authentication permits the backup; also exercise passkey reauthentication.
 		await page.goto("/login?stepup=1&next=%2Fsettings%2Fbackups");
 		await page.getByRole("button", { name: "Sign in with passkey" }).click();
 		await expect(page).toHaveURL("/settings/backups");
@@ -124,7 +123,6 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
   await page.locator("a[data-browse-return]").click();
   await expect(page.getByRole("heading", { name: "My List" })).toBeVisible();
   await expect(page.getByRole("link", { name: /\bResume\b/ })).toHaveCount(0);
-  // Retry playback persists fixture progress; run after the original empty-Resume assertion.
   if (testInfo.project.name === "chromium") await verifyAuthenticatedDirectRetryWidths(page, testInfo);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

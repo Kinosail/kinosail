@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// LiveSearchReplacesLibraryRegion verifies the shared live-search accessibility contract.
 func LiveSearchReplacesLibraryRegion(t *testing.T, handler http.Handler) {
 	t.Helper()
 	response := httptest.NewRecorder()

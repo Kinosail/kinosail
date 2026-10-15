@@ -84,7 +84,6 @@ struct ReaderScreen: View {
                         HStack {
                             Button("Previous", systemImage: "chevron.left") { turn(to: position.page - 1) }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().controlSize(.large).disabled(position.page <= 1)
                             Spacer()
-                            // Catalog format keys: "Chapter %lld of %lld", "Page %lld of %lld".
                             Button { showsContents = true } label: {
                                 if book.kind == .pdf { Text("Document") }
                                 else if book.kind == .epub { Text("Chapter \(position.page) of \(position.total)") }

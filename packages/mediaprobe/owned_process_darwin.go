@@ -28,7 +28,6 @@ func (exit *copiedHLSExitObservation) bind(pid int) error {
 	exit.pid = uint64(pid)
 	change := unix.Kevent_t{Ident: exit.pid, Filter: unix.EVFILT_PROC, Flags: unix.EV_ADD | unix.EV_ONESHOT, Fflags: unix.NOTE_EXIT}
 	_, err := unix.Kevent(exit.queue, []unix.Kevent_t{change}, nil, nil)
-	// This is our still-unreaped child, not a subsequently looked-up PID.
 	if errors.Is(err, unix.ESRCH) {
 		exit.done = true
 		return nil

@@ -64,8 +64,6 @@ def presentation(trial, directory, rate):
         cuts.append({"number": number, "ptsSeconds": str(video[0]["pts"] * video_base),
                      "dtsSeconds": str(video[0]["dts"] * video_base), "firstAudioPTS": audio[0]["pts"],
                      "videoPackets": len(video), "audioPackets": len(audio)})
-    # Missing intervals must retain the surviving fragments' absolute clocks.
-    # This changes the actual demuxed bytes, not just a metadata projection.
     sparse = {number: fragment for number, fragment in fragments.items() if number != 4}
     sparse_groups, sparse_clocks, sparse_hash = joined(trial, initialization, sparse, rate)
     if sparse_clocks != clocks or any(sparse_groups[number] != groups[number] for number in sparse):

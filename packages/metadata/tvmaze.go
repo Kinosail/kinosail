@@ -62,7 +62,6 @@ func NewTVMazeProvider(rawURL string, versions ...string) *TVMazeProvider { //no
 	return &TVMazeProvider{baseURL: strings.TrimRight(rawURL, "/"), userAgent: "Kinosail/" + version, client: client, shows: make(map[string]int), details: make(map[int]tvmazeShow), episodes: make(map[string]tvmazeEpisode)}
 }
 
-// ValidTVMazeEndpoint reports whether endpoint is official or local test infrastructure.
 func ValidTVMazeEndpoint(endpoint *url.URL) bool {
 	return validProviderEndpoint(endpoint, "api.tvmaze.com", "")
 }

@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// PlaylistNames returns the viewer's manual and smart playlists in name order.
-// The caller must hold its state read lock for all ListStorage read operations.
 func (storage ListStorage) PlaylistNames(viewer string) []string {
 	prefix := viewer + ":"
 	names := storage.EditablePlaylistNames(viewer)
@@ -22,7 +20,6 @@ func (storage ListStorage) PlaylistNames(viewer string) []string {
 	return names
 }
 
-// EditablePlaylistNames excludes collections and smart playlists.
 func (storage ListStorage) EditablePlaylistNames(viewer string) []string {
 	prefix := viewer + ":"
 	names := make([]string, 0)
@@ -35,7 +32,6 @@ func (storage ListStorage) EditablePlaylistNames(viewer string) []string {
 	return names
 }
 
-// Playlist selects visible members using Player's manual ordering or smart rule.
 func (storage ListStorage) Playlist(viewer, name string, items []library.Item) []library.Item { //nolint:cyclop // Ordered and smart playlists share one small read path.
 	key := viewer + ":" + name
 	if rule, ok := (*storage.Smart)[key]; ok {

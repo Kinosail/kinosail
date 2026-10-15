@@ -94,7 +94,6 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         this.player = engine
         useController = true
         controllerShowTimeoutMs = if (accessibleControls) 0 else 4_000
-        // Keep video edge-to-edge while the caption canvas avoids system UI.
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or
                 WindowInsetsCompat.Type.displayCutout())

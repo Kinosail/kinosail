@@ -1,8 +1,6 @@
 import Foundation
 import CryptoKit
 
-/// Disposable, profile-scoped data. Only validated catalog JSON and artwork enter
-/// this store; credentials, playback URLs with capabilities, and media files do not.
 actor LocalMediaCache {
     static let artworkFreshLifetime: TimeInterval = 24 * 60 * 60
 
@@ -120,14 +118,12 @@ actor LocalMediaCache {
         } catch { diskEntries = [:] }
     }
 
-    /// Keep the saved screen visible, but require a refresh after a local mutation.
     func invalidateCatalog() {
         revision = UUID()
         freshAfter = Date()
         saveInvalidation(freshAfter!, name: "catalog-invalidation")
     }
 
-    /// A changed first page only makes later offsets stale, not sibling queries.
     func invalidatePages() {
         pagesRevision = UUID()
         pagesFreshAfter = Date()
@@ -143,7 +139,7 @@ actor LocalMediaCache {
             var bits = date.timeIntervalSince1970.bitPattern.bigEndian
             let data = withUnsafeBytes(of: &bits) { Data($0) }
             try data.write(to: file, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
-        } catch { /* Cache failure must not turn a successful Server mutation into failure. */ }
+        } catch {   }
     }
 
     func close(purge: Bool) async {

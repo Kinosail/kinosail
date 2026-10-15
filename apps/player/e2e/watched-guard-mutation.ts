@@ -3,7 +3,6 @@ import {expect, type Page} from "@playwright/test";
 
 type MutationFetches = {armed: boolean[]; overflow: boolean};
 
-// Only the served browser script is mutated; production source stays unchanged.
 export async function installWatchedGuardMutation(page: Page) {
   const receipt = {replacements: 0, originalSHA256: "", mutatedSHA256: ""};
   await page.addInitScript(() => {

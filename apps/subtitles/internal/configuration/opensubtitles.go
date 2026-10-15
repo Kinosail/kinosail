@@ -31,7 +31,6 @@ func validateOpenSubtitles(configured Snapshot) error {
 	return nil
 }
 
-// SetOpenSubtitles saves the complete provider credential as one operation.
 func SetOpenSubtitles(dataDir, apiKey, username, password string) error {
 	values := map[string]string{openSubtitlesAPIKey: apiKey, openSubtitlesUsername: username, openSubtitlesPassword: password}
 	for key, value := range values {
@@ -55,7 +54,6 @@ func SetOpenSubtitles(dataDir, apiKey, username, password string) error {
 	return persistStoredConfiguration(dataDir, regular, secrets, false, true)
 }
 
-// DeleteOpenSubtitles removes the complete provider credential as one operation.
 func DeleteOpenSubtitles(dataDir string) error {
 	configurationMutationMu.Lock()
 	defer configurationMutationMu.Unlock()

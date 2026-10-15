@@ -8,13 +8,11 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-// RemoteAuthorizationFuzzFixture uses one real app broker and its profile-backed application.
 type RemoteAuthorizationFuzzFixture struct {
 	Broker      *quickconnect.Broker
 	Application *quickconnect.Application
 }
 
-// RemoteAuthorizationFuzzFactory constructs isolated real-app state for each fuzz input.
 type RemoteAuthorizationFuzzFactory func(identitycore.Profile) RemoteAuthorizationFuzzFixture
 
 func (suite SecurityFuzz) RemoteAuthorizationStateMachine(f *testing.F) {

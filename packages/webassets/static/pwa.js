@@ -219,7 +219,6 @@ function bindTitleJump() {
 bindTitleJump();
 document.body.addEventListener("htmx:after:swap", (event) => {
   const request = mainRequests.get(event.detail?.ctx);
-  // A title filter starts at the page top, independently of the main offset.
   if (request?.titleJump && request.generation === mainRequestGeneration) window.scrollTo({ top: 0, behavior: "instant" });
   if (event.detail?.ctx?.target?.id === "main") animateMotion(document.getElementById("main"), "motion-enter");
   bindInfiniteLibrary();
@@ -234,7 +233,6 @@ document.body.addEventListener("htmx:after:swap", () => {
   if (status && active) status.textContent = `${active.getAttribute("aria-label")}.`;
 });
 
-// Error recovery and title details preserve the preceding browse/form position.
 for (const control of document.querySelectorAll('[data-return-to-form], [data-browse-back]')) {
   let previous;
   try { previous = new URL(document.referrer); } catch (_) { continue; }

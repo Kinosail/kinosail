@@ -7,8 +7,6 @@ import androidx.compose.ui.test.captureToImage
 import androidx.core.graphics.ColorUtils
 import org.junit.Assert.assertTrue
 
-// Compose accessibility checks missed black headings on the dark library background.
-// Check rendered pixels at the journey boundary instead of asserting theme tokens.
 @RequiresApi(26)
 internal fun assertReadableHeading(node: SemanticsNodeInteraction) {
     val image = node.captureToImage().asAndroidBitmap()

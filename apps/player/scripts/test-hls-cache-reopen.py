@@ -73,12 +73,9 @@ def cold_scene(api, hls, item_id, cache, server, case):
     physical = variants[0]
     wait_until(lambda: b"segment-00000.m4s" in read(physical), "cold_prefix_missing")
     check(b"#EXT-X-ENDLIST" not in read(physical) and owned_encoder(server) == 1, "cold_not_interrupted")
-    # Abandon the public stream. Its documented 45-second inactivity watchdog
-    # cancels the owner without requiring an optional Jellyfin integration.
     case["interruption"] = "Public cold HLS request abandoned; 45-second owner inactivity watchdog"
     case["stage"] = "cold-idle-join"
     wait_until(lambda: owned_encoder(server) == 0 and (root / ".seekable").exists(), "cold_stop_not_joined", seconds=50)
-    # Let the owner finish publishing its pause receipt and remove the joined job.
     for _ in range(3):
         time.sleep(0.05)
         check(owned_encoder(server) == 0, "cold_stop_restarted")
@@ -112,7 +109,6 @@ def corrupt_scene(api, hls, item_id, cache, server, case, damage):
                 "ownedEncoders": owned_encoder(server), "variant": manifest_facts(read(physical))[0],
                 "timelinePresent": (root / ".copy-timeline").is_file(), "startupPresent": (root / ".startup").is_file()}
         except Exception as error:
-            # Keep the primary failure; never include a path, body, or raw log in diagnostics.
             case["completionObservationFailure"] = type(error).__name__
     check((root / ".copy-timeline").is_file(), "indexed_map_missing")
     case["completedIndexedCacheBeforeDamage"] = True
@@ -145,7 +141,6 @@ def journey(name, original, metadata, corrupt=False):
         KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(directory / "cache"),
         KINOSAIL_BACKUP_DIR=str(directory / "backups"), KINOSAIL_BACKUP_KEY="synthetic-reopen-key")
     if not corrupt:
-        # Installation-supported executable seam; exec preserves the Server child PID.
         real = shutil.which("ffmpeg")
         check(real is not None, "ffmpeg_unavailable")
         wrapper = directory / "paced-ffmpeg"

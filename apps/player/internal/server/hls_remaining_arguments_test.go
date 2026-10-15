@@ -6,10 +6,6 @@ import (
 	"testing"
 )
 
-// The public origin replay proves one valid aligned refill. These guards cover
-// the important gap: unrelated seeks must never acquire replay work or a new
-// AAC phase. The failure inventory was written before these tests and code in
-// remaining-playback-production-argument-plan-20261007.json.
 type remainingAudioOriginGuard struct {
 	name string
 	edit func(*MediaFacts, *hlsRecipe, *hlsRecipe, *float64, *int, *string)
@@ -141,8 +137,6 @@ func TestRemainingAudioOriginRefillRetainsSamplePrecision(t *testing.T) {
 	}
 }
 
-// Four real AAC EXTINF values add to 7.999998999999999, while the existing
-// encoder command seeks 8.000. Preserve that actual codec target.
 func TestRemainingAudioOriginRefillUsesMeasuredCadenceRounding(t *testing.T) {
 	facts := MediaFacts{
 		Kind: "audio", Container: "flac", Duration: 10,
@@ -174,7 +168,6 @@ func TestRemainingAudioOriginRefillUsesMeasuredCadenceRounding(t *testing.T) {
 	}
 }
 
-// The ten-second public control cannot cover a normalized cut at source EOF.
 func TestRemainingAudioOriginRefillRejectsRoundedSourceEOF(t *testing.T) {
 	facts := MediaFacts{
 		Kind: "audio", Container: "flac", Duration: 8,

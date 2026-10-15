@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Run against a site built by build.py: node e2e-install-builder.cjs /path/to/site
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const { mkdtempSync, readFileSync, writeFileSync } = require('node:fs');

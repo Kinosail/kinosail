@@ -96,8 +96,6 @@ func (output *copiedHLSEndpointOutput) Write(data []byte) (int, error) {
 	return output.Buffer.Write(data)
 }
 
-// Read the actual generated final fragment to EOF. Container format duration
-// alone never authorizes extra media or a new URI.
 func (manager *hlsManager) completedCopiedHLSEndpoint(ctx context.Context, root *os.Root, manifest []byte) (float64, error) {
 	last := copiedHLSLastSegment(manifest)
 	if last == "" || !playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") || ctx.Err() != nil {
@@ -177,8 +175,6 @@ func copiedHLSPacketEnd(ptsValue, durationValue string) (float64, error) {
 	return pts + duration, nil
 }
 
-// A genuine final segment can have a shortened mux EXTINF after demux packet
-// durations round down. Correct only that existing URI against known duration.
 func completedCopiedHLSManifest(manifest []byte, duration float64) []byte {
 	lines := strings.Split(string(manifest), "\n")
 	sum, last, final, valid := copiedHLSManifestExtents(lines)

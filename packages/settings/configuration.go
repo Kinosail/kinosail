@@ -9,12 +9,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// ConfigurationField is the storage metadata needed to authorize one change.
 type ConfigurationField struct {
 	Known, Restart bool
 }
 
-// ConfigurationStore adapts app storage to one settings operation.
 type ConfigurationStore[S ~string] struct {
 	File    string
 	Lock    sync.Locker
@@ -27,7 +25,6 @@ type ConfigurationStore[S ~string] struct {
 	Check   func() error
 }
 
-// Change validates and persists one restart configuration field.
 func (store ConfigurationStore[S]) Change(key, value string, reset bool) error { //nolint:cyclop // Authorization, precondition, and persistence share one locked transaction.
 	store.Lock.Lock()
 	defer store.Lock.Unlock()
@@ -67,7 +64,6 @@ func (store ConfigurationStore[S]) Change(key, value string, reset bool) error {
 	return nil
 }
 
-// ParseConfigurationForm decodes one bounded restart configuration form.
 func ParseConfigurationForm(writer http.ResponseWriter, request *http.Request, reset bool) (string, string, error) {
 	keys := []string{"key"}
 	if !reset {

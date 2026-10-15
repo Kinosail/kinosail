@@ -11,7 +11,6 @@ import (
 	sharedpasskeys "github.com/MikeO7/kinosail/packages/passkeys"
 )
 
-// PublicAuthorizationArtifacts captures the public artifacts after the real app's kill switch runs.
 type PublicAuthorizationArtifacts struct {
 	Sessions                  int
 	QuickPresent              bool
@@ -20,7 +19,6 @@ type PublicAuthorizationArtifacts struct {
 	Shares                    *mediashares.Store
 }
 
-// AssertPublicAuthorizationRevoked checks revocation while retaining local passkey ceremonies.
 func AssertPublicAuthorizationRevoked(t *testing.T, artifacts PublicAuthorizationArtifacts) {
 	t.Helper()
 	if artifacts.Sessions != 0 || artifacts.QuickPresent {

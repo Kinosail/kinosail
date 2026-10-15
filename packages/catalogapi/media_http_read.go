@@ -18,7 +18,6 @@ func (handlers MediaHandlers) audioQueue(writer http.ResponseWriter, request *ht
 	apiAction{body: map[string]any{"items": handlers.Progress.ClientItems(request, queue)}, status: http.StatusOK}.serve(writer)
 }
 
-// AudioQueue returns the selected track and every later track in its album.
 func AudioQueue(items []library.Item, id string) ([]library.Item, bool) {
 	_, albums := library.OrganizeMusic(items)
 	for _, album := range albums {

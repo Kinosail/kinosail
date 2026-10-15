@@ -29,7 +29,6 @@ type scanCatalog struct {
 	subtitles     map[string][]string
 }
 
-// ScanContext returns the playable files below root and stops when ctx is canceled.
 func ScanContext(ctx context.Context, root, namespace string) ([]Item, error) {
 	return scanContextWith(ctx, root, namespace, scanFiles)
 }

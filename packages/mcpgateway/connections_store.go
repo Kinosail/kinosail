@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// Views returns the safe active-grant projection.
 func (connections *Connections) Views() []ConnectionView {
 	connections.mu.Lock()
 	defer connections.mu.Unlock()
@@ -41,7 +40,6 @@ func formatConnectionTime(value int64) string {
 	return time.Unix(value, 0).Local().Format(time.RFC3339)
 }
 
-// Revoke removes one grant by its opaque identifier.
 func (connections *Connections) Revoke(id string) error {
 	if id == "" || len(id) > 128 {
 		return errors.New("connection was not found")
@@ -112,7 +110,6 @@ func (connections *Connections) pruneLocked() {
 	}
 }
 
-// Caller holds mu; a replay invalidates the entire connection, even if storage fails.
 func (connections *Connections) rejectRefreshFamily(writer http.ResponseWriter, id string) {
 	state := connections.stateLocked()
 	delete(state.Grants, id)

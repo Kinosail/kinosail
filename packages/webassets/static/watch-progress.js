@@ -30,7 +30,6 @@
           bar.setAttribute("aria-valuetext", label.textContent);
           container.hidden = false;
         } catch {
-          // Unknown runtime never becomes a fabricated percentage.
         } finally { clearTimeout(timeout); }
       }
       main?.addEventListener("kinosail:feature", (event) => load(event.detail?.id));

@@ -15,7 +15,6 @@ import (
 
 const metadataWorkers = 4
 
-// MetadataRefresh adapts provider and storage behavior to shared refresh coordination.
 type MetadataRefresh struct {
 	Available, Configured bool
 	Items                 []library.Item
@@ -27,7 +26,6 @@ type MetadataRefresh struct {
 	RefreshLibrary        func(context.Context) error
 }
 
-// RefreshMetadata resolves missing records, persists partial success, and refreshes the library index.
 func RefreshMetadata(ctx context.Context, config MetadataRefresh) error {
 	if !config.Available {
 		return errors.New("metadata provider is not configured")

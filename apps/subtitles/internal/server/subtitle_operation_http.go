@@ -155,8 +155,6 @@ func (manager *subtitleManager) operationActivationStatus(request *http.Request,
 	return status
 }
 
-// Typed adapters call this after their existing request validation. Invalid
-// bodies leave preparation untouched; jobs reuse the same application work.
 func (manager *subtitleManager) runPrepared(writer http.ResponseWriter, request *http.Request, work http.HandlerFunc) bool {
 	activation, found := request.Context().Value(subtitleActivationKey{}).(subtitleActivation)
 	if !found {

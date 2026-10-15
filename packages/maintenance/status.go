@@ -1,18 +1,15 @@
 package maintenance
 
-// Mode describes one automatic upkeep area.
 type Mode struct {
 	Mode string `json:"mode"`
 }
 
-// CacheStatus describes bounded transcode cache use.
 type CacheStatus struct {
 	Mode  string `json:"mode"`
 	Bytes int64  `json:"bytes"`
 	Limit int64  `json:"limit"`
 }
 
-// BackupStatus is the safe backup state needed by maintenance.
 type BackupStatus struct {
 	State     string `json:"state,omitempty"`
 	Enabled   bool   `json:"-"`
@@ -20,13 +17,11 @@ type BackupStatus struct {
 	LastError string `json:"-"`
 }
 
-// AnalysisStatus describes automatic marker analysis.
 type AnalysisStatus struct {
 	Mode  string `json:"mode"`
 	State string `json:"state"`
 }
 
-// Status is the complete safe maintenance projection.
 type Status struct {
 	Mode      string         `json:"mode"`
 	Activity  string         `json:"activity"`
@@ -38,7 +33,6 @@ type Status struct {
 	Backups   BackupStatus   `json:"backups"`
 }
 
-// Status returns the current maintenance projection.
 func (manager *Manager) Status() Status {
 	cacheBytes, cacheErr := manager.dependencies.CacheStats()
 	backup := manager.dependencies.BackupStatus()

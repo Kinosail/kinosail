@@ -8,14 +8,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// ProfileState binds Player's canonical profile state to application adapters.
 type ProfileState struct {
 	Mutex    *sync.RWMutex
 	Profiles *[]identitycore.Profile
 	Error    *error
 }
 
-// ProfilePrincipalConfig contains the application-specific HTTP identity operations.
 type ProfilePrincipalConfig struct {
 	State                 ProfileState
 	CurrentProfile        func(*http.Request) identitycore.Profile
@@ -25,7 +23,6 @@ type ProfilePrincipalConfig struct {
 	MFARequired           func() bool
 }
 
-// NewProfilePrincipals binds canonical Player profiles to MCP authorization.
 func NewProfilePrincipals(config ProfilePrincipalConfig) PrincipalRepository {
 	if config.State.Mutex == nil || config.State.Profiles == nil || config.State.Error == nil || config.CurrentProfile == nil || config.RecentlyAuthenticated == nil || config.AttributeProfile == nil || config.PublicRequest == nil || config.MFARequired == nil {
 		return nil

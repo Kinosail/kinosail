@@ -89,8 +89,6 @@ async function indexedDBOfflineAllocation(job, record) {
   return bytes;
 }
 
-// Retry only transport failures and temporary server responses. Each attempt is
-// bounded in memory and has an idle deadline, including while reading the body.
 async function fetchOfflineChunk(job, offset, length, signal) {
   for (let attempt = 0; ; attempt++) {
     signal?.throwIfAborted();

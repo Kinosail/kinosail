@@ -52,7 +52,6 @@ func (api apiServices) preparePlayback(writer http.ResponseWriter, request *http
 }
 
 func (api apiServices) startupSource(writer http.ResponseWriter, request *http.Request, item library.Item, source string) (startupRequest, bool) {
-	// Own the queued request before post-handler audit middleware parses its forms.
 	value := startupRequest{request: request.Clone(request.Context()), item: item, viewer: currentViewer(request).ID, key: "direct:" + item.ID}
 	value.direct = source == "/media/"+item.ID
 	if value.direct {

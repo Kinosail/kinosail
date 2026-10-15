@@ -26,7 +26,6 @@ func supporterCertificateArt(family string, rank int) template.HTML {
 	if err != nil {
 		return ""
 	}
-	// Only repository-owned, embedded SVG artwork reaches this trusted template fragment.
 	content := strings.Replace(string(art), `id="title"`, `id="badge-title"`, 1)
 	return template.HTML(content) //nolint:gosec // Fixed embedded artwork; no user content.
 }

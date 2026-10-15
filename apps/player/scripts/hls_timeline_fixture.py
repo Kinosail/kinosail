@@ -38,8 +38,6 @@ def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"
     command = ["ffmpeg", "-nostdin", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=s={size}:r={rate}:d={expected_duration}",
         "-f", "lavfi", "-i", audio,
         "-c:v", "libx264", "-threads", "2", "-preset", "veryfast", "-crf", "32", "-pix_fmt", "yuv420p",
-        # Define the generated SD fixture's color interpretation. Chromium's
-        # original-file and MSE demuxers use different defaults when it is absent.
         "-vf", "setparams=range=limited:colorspace=smpte170m:color_primaries=smpte170m:color_trc=smpte170m",
         "-g", str(gop), "-keyint_min", "1", "-sc_threshold", "0", "-force_key_frames", keys,
         "-frames:v", str(frames), *video_options, *(["-af", "lowpass=f=6000"] if noise else []), "-c:a", "aac", "-ac", "2", str(path)]
@@ -55,7 +53,6 @@ def fixture(directory, name, gop, keys, rate="24", frames=2304, extension=".mkv"
     check(color == {"color_space": "smpte170m", "color_transfer": "smpte170m", "color_primaries": "smpte170m", "color_range": "tv"}, "fixture_color_metadata")
     check(abs(float(actual_rate[0]) / float(actual_rate[1]) - frame_rate) < 0.001, "fixture_frame_rate")
     expected = [float(v) for v in keys.split(",")]
-    # A forced key is rounded to an available frame, including low frame rates.
     check(len(times) == len(expected) and all(abs(a-b) < max(0.05, 1 / frame_rate) for a, b in zip(times, expected)), "fixture_keyframes")
     check(abs(duration - expected_duration) < 0.1, "fixture_duration")
     if name == "fractional15s":

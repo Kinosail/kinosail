@@ -1,4 +1,3 @@
-// Package liveevents provides the Player server-sent event stream.
 package liveevents
 
 import (
@@ -12,7 +11,6 @@ const (
 	subscriberQueue = 16
 )
 
-// Event is one versioned server event.
 type Event struct {
 	ID       uint64    `json:"id"`
 	Type     string    `json:"type"`
@@ -31,7 +29,6 @@ type subscription struct {
 	events <-chan Event
 }
 
-// Metrics describes live stream use and pressure.
 type Metrics struct {
 	Subscribers int
 	Published   uint64
@@ -45,7 +42,6 @@ type subscriber struct {
 	events  chan Event
 }
 
-// Hub owns event history and active streams.
 type Hub struct {
 	mu          sync.Mutex
 	nextEvent   uint64
@@ -62,7 +58,6 @@ type Hub struct {
 	observer    func(string, string, string)
 }
 
-// New creates an empty live event hub.
 func New() *Hub {
 	return &Hub{
 		subscribers: make(map[uint64]subscriber),
@@ -72,7 +67,6 @@ func New() *Hub {
 	}
 }
 
-// Publish records and delivers an event within its optional profile scope.
 func (hub *Hub) Publish(profile, eventType, resource string) {
 	hub.mu.Lock()
 	hub.nextEvent++
@@ -101,7 +95,6 @@ func (hub *Hub) Publish(profile, eventType, resource string) {
 	}
 }
 
-// SetObserver connects an additional application delivery adapter.
 func (hub *Hub) SetObserver(observer func(string, string, string)) {
 	hub.mu.Lock()
 	defer hub.mu.Unlock()
@@ -130,7 +123,6 @@ func (hub *Hub) subscribe(profile string, after uint64) ([]Event, *subscription,
 	return backlog, &subscription{hub: hub, id: hub.nextClient, events: events}, true
 }
 
-// Metrics returns a consistent stream metrics snapshot.
 func (hub *Hub) Metrics() Metrics {
 	hub.mu.Lock()
 	defer hub.mu.Unlock()

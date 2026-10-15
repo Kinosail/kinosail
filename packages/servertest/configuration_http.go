@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// ConfigurationHTTP runs the same persistence, secret, and adapter contracts for both apps.
 type ConfigurationHTTP[Source ~string, S interface {
 	String(string) string
 	Int(string) int

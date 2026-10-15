@@ -13,9 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-// Failure modes: a closed page retains admission; malformed, unrelated-item,
-// unrelated-session, or pause events cancel live work; the next movie stays queued.
-// Controlled processes isolate admission and departure without claiming decode proof.
 func phaseSessionDeparture(t *testing.T) {
 	fixture := phaseFixture(t, 2, true)
 	holdDepartureEncoder(t, fixture)
@@ -38,7 +35,6 @@ func phaseSessionDeparture(t *testing.T) {
 		t.Fatalf("departure interrupted a shared viewing session: %d", status)
 	case <-time.After(50 * time.Millisecond):
 	}
-	// A request already dispatched by the departed page cannot reopen its attachment.
 	if status := phaseStatus(t, fixture.request(t, 0, "t-a0-s0-none-t0-b0", "departure-late", "closing-session")); status != http.StatusOK {
 		t.Fatalf("late cached request = %d", status)
 	}

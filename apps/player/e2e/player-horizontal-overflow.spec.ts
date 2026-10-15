@@ -36,7 +36,6 @@ for (const width of [320, 390, 393, 430, 700, 768, 1440]) {
 
   test(`playback controls with Picture-in-Picture remain inside the picture at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    // Exercise the longest time label and optional Picture-in-Picture control.
     await page.locator("[data-player-time]").evaluate(element => element.textContent = "1:23:45 / 2:34:56");
     for (const theater of [false, true]) {
       if (theater) await page.getByRole("button", { name: "Theater", exact: true }).click();

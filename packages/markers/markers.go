@@ -11,7 +11,6 @@ import (
 
 var markerTypes = []string{"intro", "recap", "commercial", "outro", "credits"}
 
-// Marker describes one skippable playback range.
 type Marker struct {
 	Type   string  `json:"type,omitempty"`
 	Label  string  `json:"label"`
@@ -20,7 +19,6 @@ type Marker struct {
 	Source string  `json:"source,omitempty"`
 }
 
-// DetectPlaybackMarkers classifies named chapters as playback markers.
 func DetectPlaybackMarkers(chapters []metadata.Chapter) []Marker { //nolint:cyclop // All supported chapter-name classes are explicit here.
 	markers := make([]Marker, 0)
 	if len(chapters) > 4096 {
@@ -51,7 +49,6 @@ func DetectPlaybackMarkers(chapters []metadata.Chapter) []Marker { //nolint:cycl
 	return markers
 }
 
-// NormalizeAutoSkip validates and orders selected marker types.
 func NormalizeAutoSkip(values []string) ([]string, error) {
 	selected := make(map[string]bool, len(values))
 	for _, value := range values {
@@ -73,5 +70,4 @@ func NormalizeAutoSkip(values []string) ([]string, error) {
 	return result, nil
 }
 
-// Types returns all supported marker types in display order.
 func Types() []string { return append([]string(nil), markerTypes...) }

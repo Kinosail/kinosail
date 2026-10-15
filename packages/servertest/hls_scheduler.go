@@ -25,11 +25,8 @@ type HLSSchedulerFixture struct {
 	PlayableHLS string
 }
 
-// HLSScheduler checks scheduling, complete publication, and hardware recovery through the app handler.
-// Call it from a nonparallel test because it temporarily changes the process CPU budget.
 func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler, playableHLS string) {
 	t.Helper()
-	// This fixture requires three rendition encoders and one reserved CPU.
 	previous := runtime.GOMAXPROCS(4)
 	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
 	fixture := HLSSchedulerFixture{New: func(config HLSSchedulerConfig) http.Handler {
@@ -52,7 +49,7 @@ func (fixture HLSSchedulerFixture) LimitsConcurrentFFmpegWork(t *testing.T) {
 	starts, release, ffmpeg := filepath.Join(tools, "starts"), filepath.Join(tools, "release"), filepath.Join(tools, "ffmpeg")
 	WriteExecutable(t, ffmpeg, fmt.Sprintf("#!/bin/sh\nprintf 'start\\n' >> '%s'\nwhile [ ! -f '%s' ]; do sleep 0.02; done\n", starts, release)+fixture.PlayableHLS)
 	handler := fixture.New(HLSSchedulerConfig{MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg})
-	expected := 1 // One adaptive job reserves all available rendition encoders.
+	expected := 1
 	ids := scheduledWatchIDs(t, handler)
 	var wait sync.WaitGroup
 	for _, id := range ids {
@@ -160,7 +157,6 @@ func FirstWebItem(t *testing.T, handler http.Handler) (http.Handler, string) {
 	return handler, match[1]
 }
 
-// WebItemFactory binds the app constructor for fixtures that accept its configuration.
 func WebItemFactory[C any](newHandler func(C) http.Handler) func(*testing.T, C) (http.Handler, string) {
 	return func(t *testing.T, config C) (http.Handler, string) {
 		t.Helper()

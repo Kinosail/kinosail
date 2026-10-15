@@ -86,7 +86,6 @@ func eventError(code int64, message string, data any) error {
 }
 
 func (adapter *Gateway) registerEvents(server *mcp.Server) { //nolint:gocognit // Capability wrapping and access/rate checks share the protocol boundary.
-	// These names belong to the draft extension and cannot shadow SDK methods.
 	_ = mcp.AddReceivingCustomMethod(server, "events/list", adapter.listEvents)
 	_ = mcp.AddReceivingCustomMethod(server, "events/subscribe", adapter.subscribeEvent)
 	_ = mcp.AddReceivingCustomMethod(server, "events/unsubscribe", adapter.unsubscribeEvent)

@@ -11,8 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// AssertBrowserSessionCookieIsolation checks real app handlers with a shared host cookie jar.
-//
 //nolint:cyclop,gocognit,funlen // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertBrowserSessionCookieIsolation(t *testing.T, handler http.Handler, origin, ownName, siblingName string) {
 	t.Helper()
@@ -110,8 +108,6 @@ func assertScopedBrowserCSRF(t *testing.T, handler http.Handler, origin string, 
 	}
 }
 
-// AssertLegacyBrowserCookieMigration checks migration through the real access boundary.
-//
 //nolint:cyclop // One real-handler lifecycle checks migration attributes and invalid-cookie precedence.
 func AssertLegacyBrowserCookieMigration(t *testing.T, handler http.Handler, origin, ownName string) {
 	t.Helper()
@@ -137,7 +133,6 @@ func AssertLegacyBrowserCookieMigration(t *testing.T, handler http.Handler, orig
 	if migrated.Name != ownName || migrated.Value != legacy.Value || !migrated.Expires.Equal(original.Expires) || migrated.MaxAge > original.MaxAge {
 		t.Fatal("migration changed the token or extended its expiry")
 	}
-	// A revoked app cookie must not fall through to a still-valid legacy credential.
 	request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, origin+"/account", nil)
 	request.AddCookie(&legacy)
 	invalid := original //nolint:gosec // This negative fixture retains the secure cookie attributes.

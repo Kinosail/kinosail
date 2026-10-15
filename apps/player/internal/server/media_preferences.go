@@ -9,8 +9,6 @@ import (
 	"unicode"
 )
 
-// Playback preferences belong to a Viewer. Item overrides are shared by episodes
-// in the same show, while books and standalone titles keep their own choices.
 type playbackPreferences struct {
 	AudioTrack       string  `json:"audioTrack"`
 	SubtitleTrack    string  `json:"subtitleTrack"`
@@ -45,7 +43,6 @@ func preferenceLanguageValid(value string, subtitle bool) bool {
 	return value == "auto" || (subtitle && value == "off") || (len(value) <= 32 && preferenceLanguage.MatchString(value))
 }
 
-// Both comparisons must succeed, which also rejects NaN and infinities.
 func inMediaRange(value, minimum, maximum float64) bool {
 	return value >= minimum && value <= maximum
 }

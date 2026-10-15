@@ -1,4 +1,3 @@
-// Package servertransport owns Kinosail's hardened HTTP and local TLS boundary.
 package servertransport
 
 import (
@@ -22,7 +21,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
-// LoadOrCreate returns an owner identity or a current Kinosail local identity.
 func LoadOrCreate(dataDir string, hosts ...string) (tls.Certificate, error) {
 	return loadOrCreate(dataDir, hosts, defaultTLSOperations())
 }
@@ -243,7 +241,6 @@ func certificateMatches(certificate *x509.Certificate, hosts []string) bool {
 	return true
 }
 
-// WriteTrustAnchor writes only the public certificate users can install.
 func WriteTrustAnchor(writer io.Writer, dataDir string) error {
 	return writeTrustAnchor(writer, dataDir, defaultTLSOperations())
 }

@@ -6,7 +6,6 @@ import java.security.MessageDigest
 
 internal data class PendingReading(val position: ReaderPosition, val baseline: ReaderPosition)
 
-/** Positions only; books, credentials and addresses are never stored here. */
 internal class ReadingJournal(context: Context, saved: SavedSession, viewer: Viewer, itemId: String) {
     private val preferences = context.getSharedPreferences("kinosail_reading_pending", Context.MODE_PRIVATE)
     private val key = MessageDigest.getInstance("SHA-256")

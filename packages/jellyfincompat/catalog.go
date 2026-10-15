@@ -10,16 +10,12 @@ import (
 )
 
 const (
-	// MoviesID is the stable Jellyfin collection identifier for movies.
 	MoviesID = "00000000000000000000000000000001"
-	// ShowsID is the stable Jellyfin collection identifier for series.
-	ShowsID = "00000000000000000000000000000002"
+	ShowsID  = "00000000000000000000000000000002"
 )
 
-// ProjectItem adds app-owned state and media details to one shared item DTO.
 type ProjectItem func(library.Item) map[string]any
 
-// Catalog owns Jellyfin library projection, filtering, hierarchy, and feeds.
 type Catalog struct {
 	items   []library.Item
 	movies  []library.Item
@@ -27,13 +23,11 @@ type Catalog struct {
 	project ProjectItem
 }
 
-// NewCatalog organizes one visible library behind the Jellyfin catalog interface.
 func NewCatalog(items []library.Item, project ProjectItem) Catalog {
 	movies, shows := library.Organize(items)
 	return Catalog{items: items, movies: movies, shows: shows, project: project}
 }
 
-// Result returns one Jellyfin paging envelope.
 func Result(items []map[string]any, start int, totals ...int) map[string]any {
 	total := len(items)
 	if len(totals) > 0 {
@@ -42,7 +36,6 @@ func Result(items []map[string]any, start int, totals ...int) map[string]any {
 	return map[string]any{"Items": items, "StartIndex": start, "TotalRecordCount": total}
 }
 
-// Query returns the first case-insensitive query value.
 func Query(values url.Values, name string) string {
 	for key, candidates := range values {
 		if strings.EqualFold(key, name) && len(candidates) > 0 {
@@ -52,13 +45,11 @@ func Query(values url.Values, name string) string {
 	return ""
 }
 
-// Int returns one case-insensitive integer query value or zero.
 func Int(values url.Values, name string) int {
 	value, _ := strconv.Atoi(Query(values, name))
 	return value
 }
 
-// Includes reports whether a comma-separated value contains one case-insensitive item.
 func Includes(values, value string) bool {
 	for _, candidate := range strings.Split(values, ",") {
 		if strings.EqualFold(strings.TrimSpace(candidate), value) {
@@ -68,7 +59,6 @@ func Includes(values, value string) bool {
 	return false
 }
 
-// Views returns visible movie and series folders.
 func (catalog Catalog) Views() map[string]any {
 	views := make([]map[string]any, 0, 2)
 	if len(catalog.movies) > 0 {
@@ -80,7 +70,6 @@ func (catalog Catalog) Views() map[string]any {
 	return Result(views, 0)
 }
 
-// Items filters and pages the visible Jellyfin catalog.
 func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
@@ -99,7 +88,6 @@ func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	return Result(result, start, total), nil
 }
 
-// Latest returns visible items ordered by descending creation time.
 func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
@@ -115,7 +103,6 @@ func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
 	return result, nil
 }
 
-// Resume returns visible videos with unfinished playback.
 func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any {
 	result := make([]map[string]any, 0)
 	for _, item := range catalog.items {
@@ -127,7 +114,6 @@ func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any
 	return Result(result, 0)
 }
 
-// NextUp returns the first unwatched episode from each visible series.
 func (catalog Catalog) NextUp(watched func(library.Item) bool) map[string]any {
 	result := make([]map[string]any, 0, len(catalog.shows))
 	for _, show := range catalog.shows {
@@ -141,7 +127,6 @@ func (catalog Catalog) NextUp(watched func(library.Item) bool) map[string]any {
 	return Result(result, 0)
 }
 
-// Item returns one visible item, series, or season DTO.
 func (catalog Catalog) Item(id string) (map[string]any, bool) {
 	if item, found := findItem(catalog.items, RawID(id)); found {
 		return catalog.project(item), true
@@ -159,7 +144,6 @@ func (catalog Catalog) Item(id string) (map[string]any, bool) {
 	return nil, false
 }
 
-// SeasonsResult returns the visible seasons for one series.
 func (catalog Catalog) SeasonsResult(id string) (map[string]any, bool) {
 	show, found := catalog.show(RawID(id))
 	if !found {
@@ -172,7 +156,6 @@ func (catalog Catalog) SeasonsResult(id string) (map[string]any, bool) {
 	return Result(result, 0), true
 }
 
-// Episodes returns visible episodes, optionally filtered by season.
 func (catalog Catalog) Episodes(id string, values url.Values) (map[string]any, bool) {
 	show, found := catalog.show(RawID(id))
 	if !found {

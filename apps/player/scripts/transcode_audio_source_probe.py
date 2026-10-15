@@ -19,8 +19,6 @@ def certify(facts, rate):
     if not 3 <= len(frames) <= 1024:
         raise FixtureClockError("fixture-frame-count")
     quantum = frames[0].get("nb_samples", 0)
-    # A millisecond source clock plus sample/microsecond rescaling uncertainty
-    # must identify a unique fixed block before any reconstruction is allowed.
     uncertainty = 2 * ((rate + 999) // 1000) + 2
     if not 2 * uncertainty < quantum <= 65536:
         raise FixtureClockError("fixture-clock-not-unique")
@@ -78,8 +76,6 @@ def seek_text(rate, warm):
 def seek_filter(clock, rate, warm, target):
     quantum = clock["blockSamples"]
     micros = warm * 1_000_000 // rate
-    # Restore decoded frame origins BEFORE sample selection. No waveform result
-    # participates in this filter or in the fixed-position splice acceptance.
     return (f"asettb=1/{rate},asetpts=round((PTS+{micros}*{rate}/1000000)/{quantum})*{quantum},"
             f"atrim=start_pts={warm},asetpts=PTS-{target}")
 

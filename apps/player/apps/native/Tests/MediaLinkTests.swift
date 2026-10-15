@@ -44,7 +44,6 @@ struct MediaLinkTests {
     ])
     @MainActor func rejectsMalformedLinksWithoutStartingPlayback(query: String) throws {
         let session = AppSession()
-        // The final variant is syntactically valid but belongs to no active session.
         session.handleIncomingURL(try #require(URL(string: "kinosail://media?" + query + scope)))
         #expect(session.pendingMediaLink == nil)
         #expect(session.player.currentItem == nil)

@@ -15,7 +15,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Real filesystem/probe processes inject races unavailable to ordinary media E2E.
 func copiedRecoveryFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string, string, *copiedHLSTimeline) {
 	t.Helper()
 	manager, item, _, _ := hlsLoadingFixture(t)

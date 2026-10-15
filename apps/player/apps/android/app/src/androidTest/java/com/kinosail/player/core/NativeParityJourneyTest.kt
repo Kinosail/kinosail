@@ -37,7 +37,6 @@ class NativeParityJourneyTest {
     private val tv get() = InstrumentationRegistry.getArguments().getString("tv") == "true"
     private var automationFlags = 0
 
-    // Only a native journey can interleave a rendered chapter change with the device's durable journal.
     @Test fun epubKeepsLatestPositionWhilePreviousSaveFinishes() = journey { fixture ->
         org.junit.Assume.assumeFalse(tv)
         waitText("Watching")
@@ -63,8 +62,6 @@ class NativeParityJourneyTest {
         waitText("Chapter 1 of 2")
     }
 
-    // Native WebView rendering, script isolation, and chapter navigation have no browser E2E owner.
-    // Exercise malformed manifests, failed chapters, escaped resources, and persisted progress.
     @Test fun epubReadsChaptersSafelyAndRestoresSavedPosition() = journey { fixture ->
         org.junit.Assume.assumeFalse(tv)
         waitText("Watching")
@@ -190,8 +187,6 @@ class NativeParityJourneyTest {
         }
     }
 
-    // Native navigation, D-pad focus, and stale-detail recovery are not covered by web E2E.
-    // The fixture also rejects unsafe collection names before any detail request can occur.
     @Test fun collectionsRecoverAndReturnFromDetailsWithoutLosingTheirPlace() = journey { fixture ->
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.collectionMode = "pending"
@@ -235,8 +230,6 @@ class NativeParityJourneyTest {
         waitText("Family & friends")
     }
 
-    // The populated Go Server browser journeys cannot inspect Compose geometry or remote focus.
-    // Keep this device journey for portrait-only continuation artwork and fixed TV navigation.
     @Test fun homeMatchesAppleLandscapeShelvesAndPersistentTvNavigation() = journey {
         waitText(if (tv) "Continue watching" else "Watching")
         compose.onNodeWithText("Continue watching").performScrollTo()
@@ -342,7 +335,6 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
     }
 
-    // The native player must retain accessible controls while a service is active.
     @Test fun playbackChromeRemainsVisibleToAccessibilityServices() = journey {
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) compose.onAllNodesWithContentDescription("Continuing Film")[0].activate()
@@ -631,7 +623,6 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                     } } catch (_: InterruptedException) {
                         Thread.currentThread().interrupt()
                     } catch (_: java.io.IOException) {
-                        // A cancelled request or fixture shutdown can close the client socket.
                     }
                 }
             } catch (_: Exception) { }

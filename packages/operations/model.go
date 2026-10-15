@@ -1,4 +1,3 @@
-// Package operations owns Kinosail owner tasks, metrics, diagnostics, and metadata refresh coordination.
 package operations
 
 import (
@@ -9,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/watchrooms"
 )
 
-// WorkloadSnapshot contains scheduler capacity and pressure.
 type WorkloadSnapshot struct {
 	Capacity, BackgroundCapacity                                         int
 	ActivePlayback, ActiveBackground, WaitingPlayback, WaitingBackground int64
@@ -31,7 +29,6 @@ type runtimeSnapshot struct {
 	WatchRooms                              watchrooms.Metrics
 }
 
-// Metrics is one safe Prometheus snapshot of server activity.
 type Metrics struct {
 	Healthy, LibraryMonitoring                                                          bool
 	LibraryItems, Sessions                                                              int
@@ -61,7 +58,6 @@ func projectMetrics(snapshot runtimeSnapshot) Metrics {
 	}
 }
 
-// DiagnosticSnapshot contains the current values used to build a safe report.
 type DiagnosticSnapshot struct {
 	LastScan                                               time.Time
 	PlaybackMode, Transcoder, ScanFrequency                string
@@ -71,7 +67,6 @@ type DiagnosticSnapshot struct {
 	HTTPRequests, HTTPErrors, HTTPPanics, ActivityFailures uint64
 }
 
-// DiagnosticReport is the safe downloadable server diagnostic document.
 type DiagnosticReport struct {
 	Version             string         `json:"version"`
 	Generated           string         `json:"generated"`
@@ -94,7 +89,6 @@ type DiagnosticReport struct {
 	RecentFailures      []FailureEvent `json:"recentFailures,omitempty"`
 }
 
-// BuildDiagnosticReport adds process identity and time values to a diagnostic snapshot.
 func BuildDiagnosticReport(version string, started, now time.Time, snapshot DiagnosticSnapshot) DiagnosticReport {
 	monitoring := "polling"
 	if snapshot.LibraryMonitoring {

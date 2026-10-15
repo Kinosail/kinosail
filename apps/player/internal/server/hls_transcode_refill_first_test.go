@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-// Certifying late recovery must not make the independently missing first
-// fragment unrecoverable. Start it only after proving the late path left it absent.
 func transcodeRefillRecoverFirst(t *testing.T, ctx context.Context, ffmpeg, ffprobe, base, owned string, original [][]byte, beforeOwned int) {
 	t.Helper()
 	refilled := bandwidthHTTPGET(t, ctx, base+"segment-00000.m4s")

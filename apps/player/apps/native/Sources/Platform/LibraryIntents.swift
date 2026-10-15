@@ -4,7 +4,6 @@ import Foundation
 
 @MainActor enum IntentLibrary {
     static func open(action: MediaLink.Action, value: String, resume: Bool = false, session: AppSession) async throws {
-        // Validate the request before reading credentials or making a request.
         let value = try Input.text(value, max: 512, label: "title or search", empty: resume)
         await session.restore()
         guard let client = session.client else { throw ClientError.invalidInput("Connect to your Server in Kinosail first.") }

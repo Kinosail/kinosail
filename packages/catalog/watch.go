@@ -19,7 +19,6 @@ const (
 	libraryPollInterval   = 30 * time.Second
 )
 
-// Watch monitors configured roots and requests stable, coalesced refreshes.
 func (index *Index) Watch(ctx context.Context) {
 	select {
 	case <-index.watchChange:
@@ -105,7 +104,7 @@ func (index *Index) watchChanges(ctx context.Context) error { //nolint:cyclop,go
 		}
 	}
 	index.setMonitoring(true, nil)
-	index.RequestRefresh() // Close the gap between the startup scan and watcher registration.
+	index.RequestRefresh()
 
 	cycle := newWatchCycle()
 	defer cycle.close()
@@ -218,7 +217,6 @@ func (index *Index) setMonitoring(watching bool, err error) {
 	index.mu.Unlock()
 }
 
-// Monitoring reports whether filesystem events are active and their last error.
 func (index *Index) Monitoring() (bool, error) {
 	index.mu.RLock()
 	defer index.mu.RUnlock()

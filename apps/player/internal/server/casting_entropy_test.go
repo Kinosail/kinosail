@@ -22,7 +22,6 @@ type failedCastEntropy struct{}
 
 func (failedCastEntropy) Read([]byte) (int, error) { return 0, errors.New("entropy unavailable") }
 
-// Confine global entropy replacement to one test, away from earlier TLS cleanup.
 func entropyFailureIsolated(t *testing.T) bool {
 	t.Helper()
 	if os.Getenv("KINOSAIL_ENTROPY_TEST") == t.Name() {
@@ -34,7 +33,6 @@ func entropyFailureIsolated(t *testing.T) bool {
 		if cover == nil || cover.Value.String() == "" {
 			t.Fatal("entropy isolation requires the parent test coverage directory")
 		}
-		// The same instrumented binary writes child counters for the parent's final merge.
 		args = append(args, "-test.gocoverdir="+cover.Value.String())
 	}
 	ctx, cancel := context.WithTimeout(t.Context(), 35*time.Second)

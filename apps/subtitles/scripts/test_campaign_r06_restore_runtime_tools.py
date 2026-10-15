@@ -216,9 +216,6 @@ class RestoreDependencyDiagnosticControls(unittest.TestCase):
 
 class RestoreRegistryNamespaceControls(unittest.TestCase):
     def test_selected_registry_program_handles_packaged_namespace_export(self):
-        # Actual 1.63.0 coreBundle exports the registry module namespace; that
-        # namespace exports the instance. Prior hosted browserResolution failed
-        # before browser/control launch; literal-path checks missed this boundary.
         import json
         import subprocess
         harness = """const vm=require('node:vm'),chunks=[],calls=[];

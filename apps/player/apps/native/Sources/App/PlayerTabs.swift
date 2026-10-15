@@ -51,8 +51,6 @@ struct PlayerTabs: View {
     var body: some View {
         Group {
             #if os(tvOS)
-            // An outer safe-area inset can cover a pushed tvOS destination.
-            // Reserve the banner's actual height before laying out navigation.
             VStack(spacing: 0) {
                 connectionBanner.fixedSize(horizontal: false, vertical: true)
                 stack(tab: .home) {

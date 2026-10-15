@@ -14,7 +14,6 @@ struct ArtworkCancellationTests {
         first.cancel()
         for _ in 0..<200 where HeldArtworkProtocol.stopped(host) == 0 { try await Task.sleep(for: .milliseconds(5)) }
         #expect(HeldArtworkProtocol.stopped(host) == 1)
-        // Always release the held response, including on the unfixed code.
         HeldArtworkProtocol.respond(host)
         await #expect(throws: CancellationError.self) { try await first.value }
         await loader.clear()

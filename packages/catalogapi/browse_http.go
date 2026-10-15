@@ -7,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// MediaGroup is the Player-canonical Show or Album summary.
 type MediaGroup struct {
 	ID       string              `json:"id"`
 	Title    string              `json:"title"`
@@ -68,7 +67,6 @@ func (handlers MediaHandlers) album(writer http.ResponseWriter, request *http.Re
 	apiAction{notFound: true}.serve(writer)
 }
 
-// ArtworkURL builds one canonical artwork route.
 func ArtworkURL(id string) string {
 	if id == "" {
 		return ""
@@ -76,7 +74,6 @@ func ArtworkURL(id string) string {
 	return "/art/" + id
 }
 
-// BackdropURL builds one available canonical backdrop route.
 func BackdropURL(id string, available bool) string {
 	if id == "" || !available {
 		return ""
@@ -84,7 +81,6 @@ func BackdropURL(id string, available bool) string {
 	return "/backdrop/" + id
 }
 
-// ShowBackdropID selects the best Show-level backdrop route identifier.
 func ShowBackdropID(show library.Show) string {
 	if len(show.Episodes) != 0 && show.Backdrop != "" {
 		return show.Episodes[0].ID

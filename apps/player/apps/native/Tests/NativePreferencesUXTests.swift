@@ -37,7 +37,6 @@ struct NativePreferencesUXTests {
             }
             let greenPixels = stride(from: 0, to: pixels.count, by: 4).filter { pixels[$0] > 140 && pixels[$0 + 1] > 180 && pixels[$0 + 2] < 130 }.count
             if greenPixels <= 40 {
-                // Preserve the exact first image and asserted bytes; do not redraw or retry.
                 let facts: [String: Any] = ["width": image.width, "height": image.height,
                     "bytesPerRow": image.width * 4, "format": "RGBA8-premultiplied-last-deviceRGB",
                     "greenPixels": greenPixels,

@@ -1,8 +1,6 @@
 import UIKit
 import XCTest
 
-// The loaded artwork fixture opts into twelve cast cards. Actual app pixels
-// protect scroll clipping; an isolated renderer cannot model the TV safe area.
 final class RemoteArtworkScrollTests: RemoteTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -52,8 +50,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         XCTAssertLessThan(title.frame.minY, initialTitle.minY - 20,
                           "Cast focus must exercise vertical scrolling")
         try assertInsideVerticalSafeArea(actor(1, app), app)
-        // The fixture's left scrim is dark. Bright title/body/metadata pixels
-        // must stay out of the inherited top safe area while content scrolls.
         XCTAssertEqual(try foregroundPixels(scrolled.image,
             rect: CGRect(x: 140, y: 0, width: 800, height: 60)), 0,
             "Scrolled foreground must stay clipped to the content safe area")
@@ -105,8 +101,6 @@ final class RemoteArtworkScrollTests: RemoteTestCase {
         record("artwork cast journey returns to the Movies Browse focus", app)
     }
 
-    // Isolate vertical restoration before the longer horizontal Cast journey.
-    // The full journey above remains required for artwork acceptance.
     @MainActor
     func testCastReturnRestoresInitialHeroFrames() throws {
         continueAfterFailure = false

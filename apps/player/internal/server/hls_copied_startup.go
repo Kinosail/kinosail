@@ -36,8 +36,6 @@ func (manager *hlsManager) preparedHLSOrigin(writer http.ResponseWriter, request
 	if timeline.Clock == nil {
 		return false
 	}
-	// The requested position remains in the recipe. This header identifies
-	// the certified source key from which the copied decoder timeline starts.
 	writer.Header().Set("X-Kinosail-HLS-Origin", copiedHLSTime(timeline.point(0)))
 	writer.Header().Set("X-Kinosail-HLS-Clock", copiedHLSTime(*timeline.Clock))
 	return true
@@ -57,7 +55,6 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 		if manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
 			return false
 		}
-		// Ordinary cold streams retain their pre-index cache and seek behavior.
 		return true
 	}
 	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
@@ -89,8 +86,6 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 	if copiedHLSWarmAudio(timeline, number, mode) {
 		return copiedHLSWarmArguments(arguments, timeline, number)
 	}
-	// Trim the initial audio preroll so the first retained video frame defines
-	// the decoder origin. Refills retain overlapping audio to avoid a gap.
 	trim := "-copypriorss"
 	if number > 0 {
 		trim = "-copypriorss:v"
@@ -103,11 +98,7 @@ func copiedHLSSeekArguments(arguments []string, timeline *copiedHLSTimeline, num
 		start := timeline.point(number)
 		floor := math.Floor(start*1_000_000) / 1_000_000
 		offset := start - timeline.point(0) + *timeline.Clock - (start - floor)
-		// Keep copied video and audio on the same mux clock. Shifting only audio
-		// makes it end early and native HLS can stop seeking before the last frame.
 		arguments = append(arguments, "-output_ts_offset", copiedHLSTime(offset))
-		// Bound container preroll without changing timestamps. Converted AAC
-		// also needs a frame for decoder warm-up and one for its new packet grid.
 		threshold := "-" + copiedHLSTime(*timeline.Clock)
 		if mode == "audio-transcode" {
 			threshold = "max(" + threshold + "-2*duration*tb\\,-" + copiedHLSTime(offset) + ")"
@@ -131,14 +122,11 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 			if valid {
 				return result
 			}
-			return nil // A present index never falls back to an uncertified EOF.
+			return nil
 		}
 		if playback.PlaylistHas(manifest, "#EXT-X-ENDLIST") {
-			// EOF correction reads generated media, not container format duration.
 			manifest = manager.completedCopiedHLSProjection(ctx, filepath.Join(directory, rendition), policy, manifest)
 		} else if err != nil {
-			// Preserve the existing established-cadence projection for unindexed
-			// cold caches; these cuts do not acquire an indexed-source certificate.
 			manifest = completeHLSVOD(manifest, hlsPlaybackDuration(recipe, manager.probe.duration(ctx, item)))
 		}
 		if manager.validateHLSPolicy(ctx, item, recipe, policy) != nil {
@@ -235,7 +223,6 @@ func copiedHLSRendition(root *os.Root) (string, error) {
 	return selected, nil
 }
 
-// The actual retained output selection controls the enclosing master writer.
 type copiedHLSOutputDecisionKey struct{}
 
 type copiedHLSOutputDecision struct {
@@ -251,10 +238,10 @@ func (manager *hlsManager) publishCopiedHLSWorker(ctx context.Context, source, d
 	decision := &copiedHLSOutputDecision{ready: make(chan bool, 1)}
 	ctx = context.WithValue(ctx, copiedHLSOutputDecisionKey{}, decision)
 	results, stop := playback.StartHLSWorker(ctx, func(ctx context.Context) error {
-		defer decision.set(true) // Early admission/selection failure never publishes a master.
+		defer decision.set(true)
 		return encode(ctx)
 	})
-	defer stop() // Preserve the existing cancellation and worker join owner.
+	defer stop()
 	if number > 0 {
 		return <-results
 	}

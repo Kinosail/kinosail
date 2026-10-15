@@ -22,13 +22,11 @@ const (
 	syncWorkers    = 2
 )
 
-// Profile is the minimum destination identity used by viewing import policy.
 type Profile struct {
 	ID, Name string
 	Owner    bool
 }
 
-// Config supplies app-private storage and profile adapters to one Manager.
 type Config struct {
 	Client         *http.Client
 	Persist        func(string, any) error
@@ -40,7 +38,6 @@ type Config struct {
 	Commit         func(Profile, []ProgressChange, []ListChange) (int, int, int, error)
 }
 
-// Manager owns preview, source, persistence, and recurring-sync lifecycles.
 type Manager struct {
 	mu           sync.Mutex
 	file         string
@@ -54,7 +51,6 @@ type Manager struct {
 	engine       Engine[Profile]
 }
 
-// NewManager restores durable sync state and starts its bounded scheduler.
 func NewManager(ctx context.Context, dataDir string, config Config) *Manager {
 	manager := &Manager{
 		file: filepath.Join(dataDir, "viewing_imports.json"), config: config,
@@ -84,22 +80,18 @@ func NewManager(ctx context.Context, dataDir string, config Config) *Manager {
 	return manager
 }
 
-// Preview validates and fetches one credential-safe import plan.
 func (manager *Manager) Preview(ctx context.Context, input Input) (Preview, error) {
 	return manager.engine.Preview(ctx, input)
 }
 
-// Build creates a preview from already normalized source activity.
 func (manager *Manager) Build(input Input, profile Profile, activities []Activity, items []library.Item) Preview {
 	return manager.engine.Build(input, profile, activities, items)
 }
 
-// Apply commits and consumes one current preview.
 func (manager *Manager) Apply(id string) (Summary, error) {
 	return manager.engine.Apply(id)
 }
 
-// Metrics returns active worker and deferred-run counts.
 func (manager *Manager) Metrics() (int, uint64) {
 	return len(manager.syncSlots), manager.syncDeferred.Load()
 }

@@ -8,7 +8,6 @@ import { configureTestInstance, downloadsSource, firstPlayable, login } from "./
 configureTestInstance();
 test.use({ serviceWorkers: "block" });
 
-// WebKit advertises OPFS in ephemeral contexts but cannot open its directory there.
 const opfsTest = test.extend({
   context: async ({ playwright, browserName, launchOptions, channel, headless, contextOptions, baseURL, viewport, userAgent, deviceScaleFactor, isMobile, hasTouch, colorScheme, locale, ignoreHTTPSErrors, serviceWorkers, video }, use, testInfo) => {
     const profile = await mkdtemp(join(tmpdir(), "kinosail-opfs-quota-"));
@@ -26,7 +25,6 @@ const opfsTest = test.extend({
       const pages = context?.pages() ?? [];
       const recordings = pages.map((page) => page.video()).filter((recording) => recording !== null);
       try {
-        // Finish recordings while the persistent browser connection is still open.
         await Promise.all(pages.map((page) => page.close()));
         if (videoMode === "on" || testInfo.status !== testInfo.expectedStatus) {
           for (const [index, recording] of recordings.entries()) {
@@ -96,7 +94,6 @@ test.describe("large offline transfers", () => {
       });
     });
     const supportsOPFS = await page.evaluate(async (id) => {
-      // Match the production writer's worker API; Window createWritable is not portable.
       const scope = async (jobID: string) => {
         if (typeof FileSystemFileHandle === "undefined" || !FileSystemFileHandle.prototype.createSyncAccessHandle) return self.postMessage({ supported: false });
         try {

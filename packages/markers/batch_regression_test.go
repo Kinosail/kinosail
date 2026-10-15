@@ -125,7 +125,6 @@ func TestWorkerReportsExtractionFailureAndRecovery(t *testing.T) {
 	if state, _, message := analyzer.Status(); state != "failed" || message == "" {
 		t.Fatal("unchanged scan hid failure")
 	}
-	// The next job needs no extraction, allowing recovery without changing worker dependencies.
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 50} })
 	analyzer.Enqueue(movieItems(1))
 	waitForMarkerState(t, analyzer, "complete")

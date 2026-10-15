@@ -1,7 +1,5 @@
 import { writeFile } from "node:fs/promises";
 
-// DOM evidence, not a substitute for an accessibility tree or human review.
-// Deliberately excludes field values, URLs, and arbitrary status text.
 export function uiElementInventory() {
   const selector =
     "button,input:not([type=hidden]),select,textarea,a[href],summary,dialog,nav,video,audio,progress,img,h1,h2,h3,[role],[tabindex]";

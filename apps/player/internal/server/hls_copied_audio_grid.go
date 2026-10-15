@@ -82,7 +82,7 @@ func decodeCopiedHLSAudioGrid(data []byte) (*copiedHLSAudioGrid, error) {
 		return nil, err
 	}
 	if len(*facts.Packets) == 0 {
-		return nil, nil // A successful empty probe preserves delayed-audio compatibility.
+		return nil, nil
 	}
 	if grid.Rate == 0 || len(*facts.Packets) > 8 {
 		return nil, errCopiedHLSAudioGrid
@@ -130,8 +130,6 @@ func copiedHLSWarmStart(timeline *copiedHLSTimeline, number int) float64 {
 	if target-origin <= 3 {
 		return origin
 	}
-	// The observed initial AAC phase also includes the source origin and mux
-	// clock. Align the input samples; changing only output PTS retimes content.
 	phase := grid.Phase - copiedHLSAudioClockOffset(timeline)
 	limit := int64(math.Floor((target - 3) * float64(grid.Rate)))
 	samples := limit - ((limit-phase)%1024+1024)%1024
@@ -146,8 +144,6 @@ func copiedHLSWarmArguments(arguments []string, timeline *copiedHLSTimeline, num
 	}
 	micros := int64(math.Floor(copiedHLSWarmStart(timeline, number) * 1_000_000))
 	seconds, remainder := micros/1_000_000, micros%1_000_000
-	// Split before multiplying by the sample rate. Absolute source times can
-	// be large; every rational remainder stays below the exact-double bound.
 	ticks := seconds * timeline.Denominator
 	fraction := ticks%timeline.Numerator*1_000_000 + remainder*timeline.Denominator
 	divisor := timeline.Numerator * 1_000_000
@@ -165,8 +161,6 @@ func copiedHLSWarmArguments(arguments []string, timeline *copiedHLSTimeline, num
 }
 
 func copiedHLSAudioClockOffset(timeline *copiedHLSTimeline) int64 {
-	// Initial trimming and per-stream mux shifts use different rescaling.
-	// The observed AAC phase retains precision lost by the video-clock probe.
 	clock, _ := copiedHLSAudioClockSamples(timeline)
 	micros := int64(math.Floor(timeline.point(0) * 1_000_000))
 	inputSamples := copiedHLSAudioSeekSamples(micros, timeline.AudioGrid.Rate)
@@ -178,8 +172,6 @@ func copiedHLSAudioClockSamples(timeline *copiedHLSTimeline) (int64, bool) {
 	micros := int64(math.Round(*timeline.Clock * 1_000_000))
 	clock := copiedHLSAudioSeekSamples(micros, grid.Rate)
 	delta := (grid.Phase-clock%1024+1536)%1024 - 512
-	// Video quantization and the printed microsecond clock may differ from
-	// the audio shift. The certified video quantum keeps the phase unique.
 	bound := int64(math.Ceil(timeline.TimeBase*float64(grid.Rate))) + 2
 	return clock + delta, delta >= -bound && delta <= bound
 }

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Admit the existing synthetic catalog before expanding populated browser QA.
 set -euo pipefail
 
 if [[ "${CI:-}" != true || "${GITHUB_ACTIONS:-}" != true || "${RUNNER_OS:-}" != Linux || "$(uname -s)" != Linux || "${CONTAINER_ENGINE:-docker}" != docker ]]; then

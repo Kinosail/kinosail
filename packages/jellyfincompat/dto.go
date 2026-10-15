@@ -11,17 +11,14 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// ItemOptions contains app-owned details for one shared Jellyfin item DTO.
 type ItemOptions struct {
 	CanDownload bool
 	UserData    map[string]any
 	MediaSource any
 }
 
-// ID expands one local item identifier into Jellyfin's 32-character form.
 func ID(id string) string { return id + "0000000000000000" }
 
-// RawID removes Kinosail's Jellyfin identifier suffix.
 func RawID(id string) string {
 	if len(id) == 32 && id[16:] == "0000000000000000" {
 		return id[:16]
@@ -29,19 +26,16 @@ func RawID(id string) string {
 	return id
 }
 
-// ShowID returns the stable local identifier for one series name.
 func ShowID(name string) string {
 	sum := sha256.Sum256([]byte(strings.ToLower(name)))
 	return hex.EncodeToString(sum[:8])
 }
 
-// SeasonID returns the stable Jellyfin identifier for one series season.
 func SeasonID(showID string, season int) string {
 	encoded := strconv.FormatInt(int64(season), 16)
 	return showID + strings.Repeat("0", 16-len(encoded)) + encoded
 }
 
-// Seasons returns the sorted season numbers in one series.
 func Seasons(show library.Show) []int {
 	set := make(map[int]bool)
 	for _, item := range show.Episodes {
@@ -55,12 +49,10 @@ func Seasons(show library.Show) []int {
 	return seasons
 }
 
-// FolderDTO projects one Jellyfin collection folder.
 func FolderDTO(id, name, collection string) map[string]any {
 	return map[string]any{"Id": id, "Name": name, "Type": "CollectionFolder", "CollectionType": collection, "IsFolder": true, "SortName": name}
 }
 
-// ItemDTO projects one library item with app-owned playback details.
 func ItemDTO(item library.Item, options ItemOptions) map[string]any {
 	kind, mediaType, parent := "Movie", "Video", MoviesID
 	switch {
@@ -98,7 +90,6 @@ func ItemDTO(item library.Item, options ItemOptions) map[string]any {
 	return dto
 }
 
-// SeriesDTO projects one series folder.
 func SeriesDTO(show library.Show) map[string]any {
 	id := ID(show.ID)
 	dto := map[string]any{
@@ -112,7 +103,6 @@ func SeriesDTO(show library.Show) map[string]any {
 	return dto
 }
 
-// SeasonDTO projects one series season folder.
 func SeasonDTO(show library.Show, season int) map[string]any {
 	count, art := 0, ""
 	for _, item := range show.Episodes {

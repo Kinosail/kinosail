@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// QueueCapacity bounds pending work while playback keeps priority.
 const QueueCapacity = 32
 
 var (
@@ -27,7 +26,6 @@ type attempt struct {
 	cancel context.CancelFunc
 }
 
-// Job describes one private offline download.
 type Job struct {
 	SourceVersion string          `json:"sourceVersion,omitempty"`
 	Tracks        *TrackSelection `json:"tracks,omitempty"`
@@ -62,7 +60,6 @@ type task struct {
 	attempt *attempt
 }
 
-// Config injects application policy into the shared download lifecycle.
 type Config struct {
 	ServerID        string
 	Context         context.Context
@@ -76,7 +73,6 @@ type Config struct {
 	Publish         func(Job)
 }
 
-// Manager owns durable jobs, bounded work, integrity, and delivery.
 type Manager struct {
 	serverID        string
 	manifestMu      sync.Mutex
@@ -101,7 +97,6 @@ type Manager struct {
 	err             error
 }
 
-// New loads durable state and starts one bounded worker.
 func New(config Config) *Manager { //nolint:cyclop // Startup wires bounded workers and recovery state together.
 	ctx := config.Context
 	if ctx == nil {
@@ -125,7 +120,6 @@ func New(config Config) *Manager { //nolint:cyclop // Startup wires bounded work
 	return manager
 }
 
-// Start validates, persists, and queues an idempotent job.
 func (manager *Manager) work() {
 	for {
 		select {
@@ -222,7 +216,6 @@ func (manager *Manager) prepareFile(ctx context.Context, item library.Item, job 
 	return manifest, err
 }
 
-// publishPrepared runs with manager.mu held after checking attempt ownership.
 func (manager *Manager) publishPrepared(ctx context.Context, job Job, temporary string, manifest Manifest, err error) Job {
 	if err == nil {
 		err = ctx.Err()

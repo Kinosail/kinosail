@@ -1,14 +1,11 @@
 package configurationcore
 
-// ApplicationField describes a setting shared by the Player-derived apps.
 type ApplicationField struct {
 	Key, Env, Default string
 	Kind              string
 	Secret, Restart   bool
 }
 
-// CommonApplicationFields returns the common process configuration catalog.
-// The caller supplies the app-owned listen port and support URL.
 func CommonApplicationFields(listen, supportURL string) []ApplicationField {
 	return []ApplicationField{
 		{"listen", "KINOSAIL_LISTEN", listen, "text", false, true},

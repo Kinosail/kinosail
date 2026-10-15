@@ -104,7 +104,6 @@ func TestManagementRejectsInvalidPersistedStateWithoutChangingIt(t *testing.T) {
 }
 
 func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t *testing.T) {
-	// One real UDP listener, intentionally not parallel with another management runtime.
 	config, p, lock := ownerFixture(t)
 	m, err := Open(config)
 	if err != nil {
@@ -159,7 +158,6 @@ func TestManagementTunnelBindsPeerRevokesLiveStreamAndPreservesPrivateBoundary(t
 	if err != nil || string(body) != "owner" {
 		t.Fatalf("management = %q %v", body, err)
 	}
-	// Altering an HTTP header on the LAN never produces a paired-device context.
 	r := httptest.NewRequestWithContext(t.Context(), "GET", config.Origin, nil)
 	r.Header.Set("X-Kinosail-Owner-Device", "owner")
 	if ProfileID(r) != "" {

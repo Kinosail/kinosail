@@ -193,7 +193,6 @@ try {
     if(traced)await context.tracing.start({screenshots:true,snapshots:true});
     await context.addInitScript(observe);
     const page = activePage = await context.newPage();
-    // Delay real response bytes, without substituting mock markup or media.
     await page.route("**/*", async route => {
       const request = route.request(), url = new URL(request.url());
       if (url.protocol !== "http:" && url.protocol !== "https:") { await route.continue(); return; }
@@ -216,8 +215,6 @@ try {
     await page.locator("body").waitFor({state: "visible"});
     if(variant==="slow-css") {await page.waitForFunction(()=>[...document.querySelectorAll('link[rel~="stylesheet"]')].every(link=>link.sheet));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));}
     await page.waitForTimeout(200);
-    // Observe a fresh frame after native paint/resize initialization. A cached
-    // prepaint sample can otherwise disagree with already settled dock padding.
     const baselineAfter = await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now())))));
     await page.waitForFunction(after => window.layoutAudit.frames.at(-1)?.time >= after, baselineAfter);
     const initialState = await page.evaluate(inspect);
@@ -226,8 +223,6 @@ try {
     const initialFrame=await page.evaluate(()=>window.layoutAudit.frames.at(-1));
     const initialBoxes=initialFrame.boxes;
     if (engine === "chromium") {
-      // CDP captures pixels without Playwright's font-readiness hook, which can
-      // itself force an optional font swap and contaminate layout measurements.
       const cdp = await context.newCDPSession(page);
       const capture = await cdp.send("Page.captureScreenshot", {format: "png"});
       await writeFile(join(run, name + "-initial.png"), Buffer.from(capture.data, "base64"));

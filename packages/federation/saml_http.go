@@ -6,7 +6,6 @@ import (
 	"net/url"
 )
 
-// SAMLHTTP adapts the shared SAML protocol to one app's profiles and sessions.
 type SAMLHTTP[T any] struct {
 	flow     *SAML
 	profiles Profiles[T]
@@ -14,7 +13,6 @@ type SAMLHTTP[T any] struct {
 	mfa      *OIDCHTTP[T]
 }
 
-// NewSAMLHTTP creates a SAML HTTP adapter and optionally reuses OIDC's bounded MFA challenges.
 func NewSAMLHTTP[T any](config SAMLConfig, profiles Profiles[T], hooks WebHooks[T], mfa ...*OIDCHTTP[T]) *SAMLHTTP[T] {
 	login := &SAMLHTTP[T]{flow: NewSAML(config), profiles: profiles, hooks: hooks}
 	if len(mfa) != 0 {
@@ -23,10 +21,8 @@ func NewSAMLHTTP[T any](config SAMLConfig, profiles Profiles[T], hooks WebHooks[
 	return login
 }
 
-// Configured reports whether the SAML flow can be registered as available.
 func (login *SAMLHTTP[T]) Configured() bool { return login.flow.Configured() }
 
-// Register adds the Player-compatible SAML metadata, login, link, and unlink routes.
 func (login *SAMLHTTP[T]) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/session/saml", login.start)
 	mux.HandleFunc("GET /api/v1/me/saml/link", login.startLink)

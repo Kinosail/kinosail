@@ -22,6 +22,7 @@
 
 ## Implementation
 
+- Do not add explanatory code comments. Follow `engineering/agents/code-comments.md` for required directives, legal notices, and source-policy verification.
 - For product and API changes, consider the user experience, developer clarity, and reproducible agent verification. Preserve app-specific behavior; do not add process or abstractions just to satisfy a checklist.
 - Before changing behavior, identify the affected public interface and failure path. Report material tradeoffs and verification limits.
 - Make the smallest complete production change. Reuse existing seams and avoid unrelated refactors or compatibility layers.

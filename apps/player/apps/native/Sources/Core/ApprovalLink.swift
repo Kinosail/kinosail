@@ -1,6 +1,5 @@
 import Foundation
 
-// A link can select a request to review. It cannot change Server or approve it.
 enum ApprovalLink {
     static func code(_ url: URL, server: ServerAddress) throws -> String {
         guard url.absoluteString.utf8.count <= 4096,

@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-// Generated documents contain one ordinary dialogue cue and valid bounded
-// timings. Conversion must preserve millisecond timing and remain readable.
 func FuzzSubtitleTimingConversionRoundtrip(f *testing.F) {
 	for _, start := range []uint32{0, 1, 1001, 3599999, 3600001} {
 		for format := uint8(0); format < 4; format++ {

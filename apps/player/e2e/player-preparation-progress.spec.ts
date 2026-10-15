@@ -5,8 +5,6 @@ installPlayerExperienceFixture(false, false, "iPhone", async (page) => {
   await page.route("**/progress/movie", route => route.fulfill({status: 204}));
 });
 
-// Isolated exception: queued preparation callbacks cannot be forced reliably on a real decoder.
-// The populated checkpoint journey covers viewer seeks; this protects preparation-only history writes.
 test("Safari startup preparation restore skips queued seeking progress saves but retains chapter seeks", {tag: "@smoke"}, async ({page}) => {
   const writes: number[] = [];
   page.on("request", request => {

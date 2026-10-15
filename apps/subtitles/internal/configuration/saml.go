@@ -25,10 +25,8 @@ func coupledSettingError(key string) error {
 	return nil
 }
 
-// SetSAML changes the provider metadata source as one validated operation.
 func SetSAML(dataDir, metadataURL, metadataXML, identityAttribute string) error {
 	return federationSettings(dataDir).SetSAML(federation.SAMLConfig{MetadataURL: metadataURL, MetadataXML: metadataXML, IdentityAttribute: identityAttribute})
 }
 
-// DeleteSAML removes the provider metadata source as one operation.
 func DeleteSAML(dataDir string) error { return federationSettings(dataDir).DeleteSAML() }

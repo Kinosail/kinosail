@@ -147,7 +147,6 @@ func (state *remainingColdAACState) same(other *remainingColdAACState) bool {
 	return true
 }
 
-// Capture the recipe and rendition identities before waiting for publication.
 func remainingColdAACFragmentDuration(line string) (float64, error) {
 	value, _, _ := strings.Cut(strings.TrimPrefix(line, "#EXTINF:"), ",")
 	length, err := strconv.ParseFloat(value, 64)

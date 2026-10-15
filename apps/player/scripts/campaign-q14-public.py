@@ -126,7 +126,6 @@ def run(command, cwd, environment, seconds, label, command_seconds=None, suite="
     except (ValueError, TypeError):
         report = None
     receipt["reportAdmitted"] = report is not None
-    # Raw stdout/stderr, Go panic text and Playwright errors never reach artifacts.
     return receipt, report
 
 

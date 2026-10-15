@@ -13,7 +13,6 @@ var (
 	ErrOwnerFactorNeeded  = errors.New("owner must retain a passkey or authenticator")
 )
 
-// FactorProfile contains only the profile fields used by factor mutations.
 type FactorProfile struct {
 	ID       string
 	Owner    bool
@@ -23,7 +22,6 @@ type FactorProfile struct {
 	Revision uint64
 }
 
-// FactorConfig connects one app-owned profile store to the shared transaction.
 type FactorConfig[P any] struct {
 	Profiles *[]P
 	Sessions *map[string]Session
@@ -33,10 +31,8 @@ type FactorConfig[P any] struct {
 	Now      func() time.Time
 }
 
-// FactorTransaction owns factor mutation, verification, persistence, and commit order.
 type FactorTransaction[P any] struct{ config FactorConfig[P] }
 
-// NewFactorTransaction creates one transaction for app-owned locked state.
 func NewFactorTransaction[P any](config FactorConfig[P]) *FactorTransaction[P] {
 	if config.Now == nil {
 		config.Now = time.Now
@@ -44,7 +40,6 @@ func NewFactorTransaction[P any](config FactorConfig[P]) *FactorTransaction[P] {
 	return &FactorTransaction[P]{config: config}
 }
 
-// Enable stores one authenticator and hashed recovery codes.
 func (transaction *FactorTransaction[P]) Enable(id, secret string, recovery []string) error {
 	if !transaction.valid() || !validFactorIdentity(id) || !validFactorSecret(secret) {
 		return ErrInvalidFactorInput
@@ -68,7 +63,6 @@ func (transaction *FactorTransaction[P]) Enable(id, secret string, recovery []st
 	return ErrProfileNotFound
 }
 
-// Disable removes one authenticator while preserving the Owner recovery invariant.
 func (transaction *FactorTransaction[P]) Disable(id string) error {
 	if !transaction.valid() || !validFactorIdentity(id) {
 		return ErrProfileNotFound
@@ -91,7 +85,6 @@ func (transaction *FactorTransaction[P]) Disable(id string) error {
 	return ErrProfileNotFound
 }
 
-// Verify accepts TOTP or consumes one matching recovery code.
 func (transaction *FactorTransaction[P]) Verify(id, code string) bool { //nolint:cyclop,gocognit // TOTP and one-time recovery verification share one atomic factor boundary.
 	if !transaction.valid() || !validFactorIdentity(id) || code == "" || len(code) > maxSecretLength || strings.ContainsRune(code, '\x00') {
 		return false

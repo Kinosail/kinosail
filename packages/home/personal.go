@@ -6,7 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Personal builds Player's Viewer-specific home shelves and counts.
 func Personal[Resume any](
 	request *http.Request,
 	items []library.Item,

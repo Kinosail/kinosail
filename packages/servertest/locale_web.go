@@ -7,13 +7,11 @@ import (
 	"testing"
 )
 
-// LocaleWebFixture binds shared locale behavior to a real app handler.
 type LocaleWebFixture struct {
 	NewHandler func(*testing.T, bool) http.Handler
 	Server     func(*testing.T) (http.Handler, string)
 }
 
-// InvalidLanguageSelectionHasNoSideEffects checks API and web rejection without cookie mutation.
 func (fixture LocaleWebFixture) InvalidLanguageSelectionHasNoSideEffects(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -43,7 +41,6 @@ func (fixture LocaleWebFixture) InvalidLanguageSelectionHasNoSideEffects(t *test
 	}
 }
 
-// ExpandedLanguageTagsPreserveRegionalAndRTLSemantics checks regional and right-to-left rendering.
 func (fixture LocaleWebFixture) ExpandedLanguageTagsPreserveRegionalAndRTLSemantics(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -69,7 +66,6 @@ func (fixture LocaleWebFixture) ExpandedLanguageTagsPreserveRegionalAndRTLSemant
 	}
 }
 
-// LanguagePickerOffersEveryLocaleOnTheHomePage checks full and compact picker parity.
 func (fixture LocaleWebFixture) LanguagePickerOffersEveryLocaleOnTheHomePage(t *testing.T) {
 	t.Helper()
 	t.Parallel()

@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Real media tests are serial. This observer waits before their lifecycle cleanup.
 func observeRealHLSEncoder(t *testing.T) {
 	t.Helper()
 	state := &realHLSEncoderState{started: make(map[string]bool)}
@@ -31,7 +30,6 @@ func observeRealHLSEncoder(t *testing.T) {
 func installRealHLSObserver(state *realHLSEncoderState) func() {
 	previous, output, flags := slog.Default(), log.Writer(), log.Flags()
 	slog.SetDefault(slog.New(realHLSEncoderObserver{Handler: previous.Handler(), state: state}))
-	// The default slog handler writes through log. Preserve its original sink.
 	log.SetOutput(output)
 	log.SetFlags(flags)
 	return func() {

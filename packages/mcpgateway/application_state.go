@@ -8,7 +8,6 @@ type applicationState struct {
 	save    func(string, any) error
 }
 
-// ApplicationState binds connection state to the installation's persistence operations.
 func ApplicationState(dataDir string, load func(string, any) (bool, error), save func(string, any) error) StateStore {
 	return applicationState{dataDir: dataDir, load: load, save: save}
 }

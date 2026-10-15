@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// WaitHLSReady follows Player's readiness cadence without retrying permanent errors.
 func WaitHLSReady(ctx context.Context, probe func() error) bool {
 	ticker := time.NewTicker(25 * time.Millisecond)
 	defer ticker.Stop()

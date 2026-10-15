@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// RoomService is the app-owned visibility and watch-room port.
 type RoomService interface {
 	Visible(*http.Request, string) (library.Item, bool)
 	Viewer(*http.Request) identitycore.Profile
@@ -22,7 +21,6 @@ type roomInput struct {
 	Seconds float64
 }
 
-// CreateRoom validates and creates one Player watch room.
 func CreateRoom(service RoomService) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.RawQuery != "" || !jsonRequest(request) {

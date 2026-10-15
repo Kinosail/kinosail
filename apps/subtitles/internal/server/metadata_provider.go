@@ -12,7 +12,6 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// MetadataConfig configures optional metadata providers and built-in fallbacks.
 type MetadataConfig = sharedmetadata.Config
 
 type metadataRecord = sharedmetadata.Record

@@ -10,14 +10,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-// ServerSettings exposes the typed values needed by both HTTP applications.
 type ServerSettings interface {
 	String(string) string
 	Int(string) int
 	Duration(string) time.Duration
 }
 
-// ServerValues contains the shared part of each application's server wiring.
 type ServerValues struct {
 	MediaDir, DataDir, CacheDir string
 	BackupDir, BackupKey        string
@@ -37,7 +35,6 @@ type ServerValues struct {
 	SupportURL                  string
 }
 
-// BuildServerValues translates the shared configuration surface once.
 func BuildServerValues(config ServerSettings, authURL string) ServerValues {
 	dataDir := config.String("paths.data")
 	values := ServerValues{

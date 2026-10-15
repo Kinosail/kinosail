@@ -51,8 +51,6 @@ extension SessionRefreshTests {
             let currentAccess = try backgroundAccess(paired)
             try await probe.engine.authorize(currentAccess)
             try await probe.engine.authorize(backgroundAccess(restored), ifCurrent: staleRevision)
-            // Both missing-credential and restore-error fallbacks use this same
-            // conditional operation. Neither may lock the newer pairing.
             await probe.engine.lock(ifCurrent: staleRevision)
             #expect(try await probe.engine.snapshot(currentAccess.scope).isEmpty)
             if !sameProfile {
@@ -143,7 +141,6 @@ extension SessionRefreshTests {
             let revision = await probe.engine.authorizationRevision()
             let saved = try #require(await probe.keychain.restore())
             if failsJournalWrite {
-                // A nonempty directory cannot be replaced by an atomic journal write.
                 try FileManager.default.removeItem(at: journal)
                 try FileManager.default.createDirectory(at: journal, withIntermediateDirectories: false)
                 try Data([0]).write(to: journal.appendingPathComponent("write-blocker"))
@@ -155,7 +152,6 @@ extension SessionRefreshTests {
                 threw = true
                 let failure = error as NSError
                 #expect(failure.domain == NSCocoaErrorDomain || failure.domain == NSPOSIXErrorDomain)
-                // Match the stock delegate's restore/authorize error fallback.
                 await probe.engine.lock(ifCurrent: revision)
             }
             #expect(threw == failsJournalWrite)
@@ -231,7 +227,6 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
     let enqueued = ContinuousClock.now
     var lastPoll = enqueued, longestGap = Duration.zero
     var polls = 0
-    // Protocol delivery is asynchronous; bound elapsed time rather than poll count.
     let readinessDeadline = enqueued.advanced(by: .seconds(10))
     while probe.fixture.requests.isEmpty && ContinuousClock.now < readinessDeadline {
         try await Task.sleep(for: .milliseconds(5))
@@ -240,10 +235,8 @@ private func backgroundManifestRequest(_ probe: BackgroundAuthorizationProbe, ac
         lastPoll = now
         polls += 1
     }
-    // Freeze the original readiness decision before emitting the timing receipt.
     let observed = probe.fixture.requests
     let readinessFinished = ContinuousClock.now
-    // Observe late delivery without changing the original readiness assertion.
     let diagnosticDeadline = readinessFinished.advanced(by: .seconds(10))
     var diagnosticInterrupted = false
     if observed.isEmpty {

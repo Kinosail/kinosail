@@ -1,5 +1,4 @@
 
-/* Playback comes first; inline utility actions sit beneath the picture. */
 .player-page .title-block{margin:1.5rem 0 1rem;padding:0;border-radius:0;background:none;backdrop-filter:none;width:auto}
 .player-page .title-block h1{max-width:100%;font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.15;letter-spacing:-.035em;text-shadow:none;overflow-wrap:anywhere;text-wrap:pretty}
 .player-page .title-block h1 small{font-size:.5em;white-space:nowrap}
@@ -33,7 +32,6 @@
 .onboarding-first-value{border-top:2px solid var(--signal)!important}.onboarding-ready-label,.onboarding-optional-label{display:block;margin-bottom:.45rem;color:var(--signal);font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.onboarding-optional-label{color:var(--muted)}.onboarding-optional{background:color-mix(in srgb,var(--surface-2) 28%,transparent)!important}.onboarding-actions{display:flex;flex-wrap:wrap;gap:.4rem}.onboarding-actions .mode{margin:0!important}
 @media(max-width:700px){.wizard-progress a,.wizard-progress>span{flex:1;justify-content:center;padding-inline:.45rem}.onboarding-actions{align-items:stretch;flex-direction:column}.onboarding-actions .mode{width:100%}}
 
-/* Browser fullscreen must fill the screen, independent of inline/theater geometry. */
 .player-page .media-stage:fullscreen:has(>video){width:100%;height:100%;max-width:none;max-height:none;aspect-ratio:auto;margin:0;border:0;border-radius:0;background:#000}
 .player-page .media-stage:fullscreen>video{width:100%;height:100%;max-height:none;object-fit:contain}
 .media-stage:fullscreen .player-stage-toolbar{padding-top:max(.8rem,env(safe-area-inset-top));padding-inline:max(.8rem,env(safe-area-inset-left)) max(.8rem,env(safe-area-inset-right))}

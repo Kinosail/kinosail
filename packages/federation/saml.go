@@ -22,7 +22,6 @@ const (
 	metadataRefreshInterval = time.Hour
 )
 
-// SAMLConfig configures SAML 2.0 Web Browser SSO.
 type SAMLConfig struct{ MetadataURL, MetadataXML, IdentityAttribute, RootURL, DataDir string }
 
 type samlTransaction struct {
@@ -32,7 +31,6 @@ type samlTransaction struct {
 	expires     time.Time
 }
 
-// SAML owns service-provider keys, provider metadata, request state, and assertion validation.
 type SAML struct {
 	config           SAMLConfig
 	mu               sync.Mutex
@@ -41,20 +39,17 @@ type SAML struct {
 	pending          map[string]samlTransaction
 }
 
-// SAMLStart contains the validated provider response for one authentication request.
 type SAMLStart struct {
 	IDPURL, RedirectURL string
 	PostHTML            []byte
 }
 
-// SAMLCallback is the verified result of one assertion response.
 type SAMLCallback struct {
 	Identity    Identity
 	ProfileID   string
 	LinkSession string
 }
 
-// NewSAML creates an isolated SAML flow.
 func NewSAML(config SAMLConfig) *SAML {
 	if config.IdentityAttribute == "" {
 		config.IdentityAttribute = "NameID"
@@ -62,7 +57,6 @@ func NewSAML(config SAMLConfig) *SAML {
 	return &SAML{config: config, pending: make(map[string]samlTransaction)}
 }
 
-// Configured reports whether exactly one trusted metadata source and one valid root URL exist.
 func (flow *SAML) Configured() bool {
 	if flow == nil || !ValidIdentityField(flow.config.IdentityAttribute) || !validDataDirectory(flow.config.DataDir) {
 		return false
@@ -73,7 +67,6 @@ func (flow *SAML) Configured() bool {
 	return metadataURLConfigured != metadataXMLConfigured && flow.rootConfigured()
 }
 
-// Begin creates one bounded request after it validates provider metadata and its destination.
 func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAMLStart, error) {
 	sp, err := flow.serviceProvider(ctx, true, true)
 	if err != nil {
@@ -110,7 +103,6 @@ func (flow *SAML) Begin(ctx context.Context, profileID, linkSession string) (SAM
 	return start, nil
 }
 
-// Complete rejects malformed input before provider work, then validates and consumes one assertion.
 func (flow *SAML) Complete(writer http.ResponseWriter, request *http.Request) (SAMLCallback, error) { //nolint:cyclop // Protocol checks must remain in this order.
 	request.Body = http.MaxBytesReader(writer, request.Body, maxSAMLBody)
 	if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !validSAMLForm(request.PostForm) {
@@ -162,7 +154,6 @@ func (flow *SAML) takeTransaction(requestID string) (samlTransaction, bool) {
 	return transaction, found && time.Now().Before(transaction.expires)
 }
 
-// Metadata returns this service provider's XML metadata.
 func (flow *SAML) Metadata(ctx context.Context) ([]byte, error) {
 	sp, err := flow.serviceProvider(ctx, false, false)
 	if err != nil {

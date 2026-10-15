@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// AssertNewInstallationCreatesOwnerProfile preserves the original real-handler authentication regression.
 func AssertNewInstallationCreatesOwnerProfile(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
@@ -62,7 +61,6 @@ func assertOneYearBrowserSessionAfterRestart(t *testing.T, fixture LibraryAPIFix
 	}
 }
 
-// AssertViewerCanSignOut preserves the original real-handler authentication regression.
 func AssertViewerCanSignOut(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
@@ -83,7 +81,6 @@ func AssertViewerCanSignOut(t *testing.T, fixture LibraryAPIFixture) {
 	}
 }
 
-// AssertRepeatedLoginAttemptsAreLimited preserves the original real-handler authentication regression.
 func AssertRepeatedLoginAttemptsAreLimited(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 

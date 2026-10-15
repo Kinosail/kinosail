@@ -16,8 +16,6 @@ func ApplyBurnIn(video []string, itemPath string, recipe HLSRecipe, policy HLSRe
 	if recipe.Burn == "" {
 		return []string{"-map", "0:v:0", "-vf", joinFilters(timeline, filter)}, remaining
 	}
-	// Color conversion and deinterlacing run before drawing SDR subtitles;
-	// scaling and hardware upload stay after all software-only operations.
 	beforeBurn := ""
 	if index := strings.Index(filter, "scale=w="); index > 0 {
 		beforeBurn, filter = strings.TrimSuffix(filter[:index], ","), filter[index:]
@@ -49,8 +47,6 @@ func AutomaticSkipAudioArguments(recipe HLSRecipe, policy HLSRecipePolicy) []str
 	return []string{"-af", filter}
 }
 
-// AudioFilterArguments keeps timeline and opt-in listening effects in one
-// filter graph so later arguments cannot silently replace an earlier effect.
 func AudioFilterArguments(recipe HLSRecipe, policy HLSRecipePolicy) []string {
 	filters := []string{automaticSkipAudioFilter(recipe, policy)}
 	if recipe.DialogueBoost {
@@ -129,7 +125,6 @@ func oneOf(value string, allowed ...string) bool {
 	return false
 }
 
-// The option parser and filtergraph parser each consume one escaping layer.
 func subtitleFilterPath(path string) string {
 	option := strings.NewReplacer(`\`, `\\`, `:`, `\:`, `'`, `\'`).Replace(path)
 	return strings.NewReplacer(`\`, `\\`, `'`, `\'`, `,`, `\,`, `;`, `\;`, `[`, `\[`, `]`, `\]`).Replace(option)

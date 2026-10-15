@@ -19,7 +19,6 @@ APP = ROOT / "apps/player/e2e"
 FIXTURE_FILES = ("apps/player/e2e/compose-template-fixture.go", "apps/player/e2e/compose-template-peer.go")
 FORMAT_INPUTS = (*FIXTURE_FILES, "apps/player/scripts/campaign_q47_format.py", "apps/player/scripts/test_campaign_q47_format.py",
                  ".github/workflows/layout-stability.yml", "scripts/ci/run-campaign-proof.sh", "go.work")
-# Historical canonical pair binding admitted and independently reviewed by root.
 FORMAT_BINDING = {"schemaVersion":1,"mode":"source-format","revision":"3a2322a68a6c8580b915cb53fe7b43f70479c868","tree":"20f5734476261834800074221846891c1b1489cc","runId":"37309852573","artifactId":"11344634805","sourceManifestSHA256":"c6c95e6956617e379c29dc78a4c315bae6c20c5373eb4308bf9f7d1ab7fb51e1","formatter":{"bytes":3144728,"sha256":"86dd91f69254432a37ca365f964720677040fd6f049a412c23e25f8b3812f342"},"inputs":[{"path":"apps/player/e2e/compose-template-fixture.go","bytes":2869,"sha256":"1078f61a5cff0926d0a4a592d337ce64751e232b6162adde1548da2c5c064a80"},{"path":"apps/player/e2e/compose-template-peer.go","bytes":5716,"sha256":"b9d6e06e0251bf0c743e2d614de2c38129695db1b18abdd3003703b95cd7fdac"},{"path":"apps/player/scripts/campaign_q47_format.py","bytes":12799,"sha256":"b95de5e642b334f48fc9c60f6c35c662316992333b3a5cd44df8e85371950741"},{"path":"apps/player/scripts/test_campaign_q47_format.py","bytes":17683,"sha256":"f64854acb41536a4c1b22f0e066089d51c46e7b42ed398481d78ac9d90e7d088"},{"path":".github/workflows/layout-stability.yml","bytes":10545,"sha256":"de61497ec3b6d2efe642b84650b5dd1efe9bee00047368226acd251d05cb4066"},{"path":"scripts/ci/run-campaign-proof.sh","bytes":922,"sha256":"32ae097e0512fe4bebecd7eb5cb8228228d969deb9fcaaab7acae6dc1e328b50"},{"path":"go.work","bytes":62,"sha256":"765a0af6b5ad93fa49fb0bae0fdc444df2d775393a2aa7e4d4aacfd4da567390"}],"outputs":[{"path":"apps/player/e2e/compose-template-fixture.go","bytes":2869,"lines":103,"sha256":"1078f61a5cff0926d0a4a592d337ce64751e232b6162adde1548da2c5c064a80"},{"path":"apps/player/e2e/compose-template-peer.go","bytes":5718,"lines":210,"sha256":"245ec58619efa6e17a230c39dfaacad796691412418586880e63f7dab7caab45"}]}
 BASE = "bd1ea2e148787ae8d4a0a46640bc2a965e10fe6a"
 FROZEN = {
@@ -214,7 +213,6 @@ def dependencies():
     diagnostics.record_stage("cache-validation")
     if str(cache) == "/" or not cache.is_dir():
         raise ValueError("browser_cache")
-    # Pinned Playwright 1.63.0 registry, Linux x64; no guessed legacy executable names.
     for name, suffix, executable in (("chromium", "chrome-linux64", "chrome"),
                                      ("chromium-headless-shell", "chrome-headless-shell-linux64", "chrome-headless-shell")):
         label = "chromium" if name == "chromium" else "headless"

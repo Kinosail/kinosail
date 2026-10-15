@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// This exception recognizes the observed four-cut AAC clock, not source EOF.
-// Inspect the physical manifest before ordinary VOD projection adds absent cuts.
 func remainingRoundedAACStartup(manifest []byte, playableDuration float64) ([]string, bool, bool) {
 	if math.IsNaN(playableDuration) || playableDuration <= 8.000002 || playableDuration > 7*24*60*60 {
 		return nil, false, false

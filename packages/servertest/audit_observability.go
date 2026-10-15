@@ -95,7 +95,6 @@ func JellyfinSourceHLSFileRejectsUnsafeChildren(t *testing.T, sourceFile func(st
 	}
 }
 
-// RequestLoggingCannotForgeRecords exercises the same JSON handler installed by appcli.Execute.
 func RequestLoggingCannotForgeRecords(t *testing.T, observe ObservedAuditHandler) {
 	t.Helper()
 	const attack = "untrusted\r\n{\"level\":\"ERROR\",\"msg\":\"forged\"}\x1b[2J<script>alert(1)</script>"

@@ -66,7 +66,7 @@ export async function stopFixture(fixture: Fixture, end: number): Promise<boolea
   catch {
     try { fixture.child.kill("SIGKILL"); } catch { return false; }
     try { await bounded(fixture.closed, remaining()); } catch { return false; }
-    return false; // Forced termination never proves graceful Server cleanup.
+    return false;
   }
 }
 export async function cleanupCase(scope: PhaseScope, page: Page, fixture: Fixture | undefined, end = performance.now() + 5000): Promise<boolean> {

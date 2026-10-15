@@ -15,12 +15,10 @@ var mcpKeys = [...]string{
 
 var errMCPURL = errors.New("MCP URLs must use HTTPS (or localhost HTTP), and the resource URL must end at /mcp")
 
-// StringSnapshot exposes resolved string configuration values.
 type StringSnapshot interface {
 	String(string) string
 }
 
-// ValidateMCP validates a complete OAuth resource configuration when MCP is enabled.
 func ValidateMCP[S StringSnapshot](configured S) error {
 	values := make([]string, len(mcpKeys))
 	configuredValues := 0

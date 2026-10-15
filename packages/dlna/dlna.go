@@ -1,4 +1,3 @@
-// Package dlna serves Player's local-network media discovery protocol.
 package dlna
 
 import (
@@ -19,13 +18,11 @@ import (
 
 const contentDirectory = "urn:schemas-upnp-org:service:ContentDirectory:1"
 
-// Settings returns the current DLNA capability and display name.
 type Settings interface {
 	Token() string
 	ServerName() string
 }
 
-// SettingsFuncs adapts app-owned settings functions.
 type SettingsFuncs struct {
 	TokenFunc      func() string
 	ServerNameFunc func() string
@@ -34,14 +31,12 @@ type SettingsFuncs struct {
 func (adapter SettingsFuncs) Token() string      { return adapter.TokenFunc() }
 func (adapter SettingsFuncs) ServerName() string { return adapter.ServerNameFunc() }
 
-// Library provides safe, indexed media access.
 type Library interface {
 	Snapshot() ([]library.Item, error)
 	Find(string) (library.Item, bool)
 	Safe(string) bool
 }
 
-// LibraryFuncs adapts app-owned library functions.
 type LibraryFuncs struct {
 	SnapshotFunc func() ([]library.Item, error)
 	FindFunc     func(string) (library.Item, bool)
@@ -54,7 +49,6 @@ func (adapter LibraryFuncs) Find(id string) (library.Item, bool) {
 }
 func (adapter LibraryFuncs) Safe(path string) bool { return adapter.SafeFunc(path) }
 
-// Config connects shared DLNA behavior to app-owned state and presentation.
 type Config struct {
 	Base     string
 	Settings Settings
@@ -63,7 +57,6 @@ type Config struct {
 	discover func(context.Context, string, Settings)
 }
 
-// Register adds Player's DLNA routes and local discovery listener.
 func Register(mux *http.ServeMux, ctx context.Context, config Config) error {
 	if mux == nil || ctx == nil || config.Settings == nil || config.Library == nil || config.NotFound == nil {
 		return errors.New("invalid DLNA configuration")
@@ -86,7 +79,6 @@ func Register(mux *http.ServeMux, ctx context.Context, config Config) error {
 
 type server struct{ config Config }
 
-// ValidURL reports whether a deployment value is a safe absolute HTTP URL.
 func ValidURL(value string) bool {
 	if value == "" || len(value) > 2048 || strings.ContainsAny(value, "\r\n\x00") {
 		return false
@@ -150,7 +142,6 @@ func (server server) media(writer http.ResponseWriter, request *http.Request) {
 	http.ServeFile(writer, request, item.Path)
 }
 
-// Class returns the UPnP class for one library item.
 func Class(item library.Item) string {
 	if item.Kind == "audio" {
 		return "object.item.audioItem.musicTrack"
@@ -171,7 +162,6 @@ func safeItems(index Library, items []library.Item) []library.Item {
 	return result
 }
 
-// MediaType maps Player's scanned formats to DLNA response types.
 func MediaType(item library.Item) string {
 	if mime := map[string]string{
 		"3G2": "video/3gpp2", "3GP": "video/3gpp", "ASF": "video/x-ms-asf", "AVI": "video/x-msvideo", "FLV": "video/x-flv", "M2TS": "video/mp2t", "M4V": "video/mp4", "MKV": "video/x-matroska", "MOV": "video/quicktime", "MP4": "video/mp4", "MPEG": "video/mpeg", "MPG": "video/mpeg", "MTS": "video/mp2t", "OGV": "video/ogg", "TS": "video/mp2t", "VOB": "video/mpeg", "WEBM": "video/webm", "WMV": "video/x-ms-wmv",
@@ -219,7 +209,6 @@ func serveSSDPConnection(ctx context.Context, base string, settings Settings, co
 	}
 }
 
-// SSDPResponse returns one local-network discovery reply.
 func SSDPResponse(base, token string) string {
 	return "HTTP/1.1 200 OK\r\nCACHE-CONTROL: max-age=1800\r\nEXT:\r\nLOCATION: " + strings.TrimRight(base, "/") + "/dlna/" + token + "/device.xml\r\nSERVER: Kinosail/1 UPnP/1.0\r\nST: urn:schemas-upnp-org:device:MediaServer:1\r\nUSN: uuid:" + identifier(base) + "::urn:schemas-upnp-org:device:MediaServer:1\r\n\r\n"
 }

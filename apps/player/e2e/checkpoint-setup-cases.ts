@@ -15,8 +15,6 @@ export async function startPlaying(media: Locator) {
     const attempt = video.checkpointPlayAttempt;
     if (!attempt || attempt.rejected) return "rejected";
     const frames = video.getVideoPlaybackQuality().totalVideoFrames;
-    // Native HLS can reset this counter after pause or seek. Require three
-    // newly decoded frames after the lowest count observed in this attempt.
     attempt.minimumFrames = Math.min(attempt.minimumFrames, frames);
     return !video.paused && !video.ended && frames > attempt.minimumFrames + 2
       && video.currentTime > before.seconds + 0.2 ? "moving" : "pending";

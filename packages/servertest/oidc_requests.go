@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// APICall sends the canonical app test request with its original transport semantics.
 func APICall(t *testing.T, handler http.Handler, token, method, path string, body any) *httptest.ResponseRecorder {
 	t.Helper()
 	var payload bytes.Buffer
@@ -30,7 +29,6 @@ func APICall(t *testing.T, handler http.Handler, token, method, path string, bod
 	return response
 }
 
-// SCIMCall sends the canonical app test request with its original transport semantics.
 func SCIMCall(t *testing.T, handler http.Handler, token, method, path string, body any) *httptest.ResponseRecorder {
 	t.Helper()
 	payload, err := json.Marshal(body)

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# The verified pin in this install directory controls every start and rollback.
 unset KINOSAIL_IMAGE
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

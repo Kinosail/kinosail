@@ -14,23 +14,19 @@ const (
 	reportLimit     = 4 << 10
 )
 
-// CommandDatabase is the storage required by update commands.
 type CommandDatabase interface {
 	DocumentStore
 	Close() error
 }
 
-// CommandConfig supplies one app's release and storage adapters.
 type CommandConfig struct {
 	Policy       Policy
 	OpenDatabase func(string) (CommandDatabase, error)
 	Version      func() string
 }
 
-// Command runs one update adapter command.
 type Command func(string, io.Reader, io.Writer, string, string, string) error
 
-// BindCommand binds Player's update command contract to one app.
 func BindCommand(config CommandConfig) Command {
 	if validatePolicy(config.Policy) != nil || config.OpenDatabase == nil || config.Version == nil {
 		return func(string, io.Reader, io.Writer, string, string, string) error {

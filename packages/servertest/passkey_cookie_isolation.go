@@ -14,8 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// AssertPasskeyCookieIsolation exercises signed enrollment and login through app handlers.
-//
 //nolint:cyclop,gocognit,funlen // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, sessionName, ceremonyName, siblingCeremony string) {
 	t.Helper()
@@ -57,11 +55,9 @@ func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, se
 	}
 	legacy := *setup.Result().Cookies()[0] //nolint:gosec // Preserve the real secure session response while changing only its legacy name.
 	legacy.Name = httpguard.LegacySessionCookieName
-	// Retain an earlier valid pre-upgrade cookie while creating a fresh app session.
 	jar.SetCookies(base, []*http.Cookie{&legacy})
 	begin = call("/api/v1/passkeys/login/begin", "", "application/json")
 	challenge, _ = passkeyOptions(t, begin, ceremonyName)
-	// Another app starts its own ceremony on the same hostname, on another port.
 	jar.SetCookies(base, []*http.Cookie{{Name: siblingCeremony, Value: "sibling-ceremony-fixture", Path: "/api/v1/passkeys/", Secure: true, HttpOnly: true, SameSite: http.SameSiteStrictMode, MaxAge: 60}})
 	loginStarted := time.Now().Unix()
 	signedIn := call("/api/v1/passkeys/login/finish", device.Assertion(t, challenge, user), "application/json")
@@ -75,8 +71,6 @@ func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, se
 		if cookie.Name == sessionName {
 			t.Logf("session cookie attributes: secure=%t httpOnly=%t sameSite=%d path=%q domain=%q maxAge=%d expires=%d loginInterval=%d..%d", cookie.Secure, cookie.HttpOnly, cookie.SameSite, cookie.Path, cookie.Domain, cookie.MaxAge, cookie.Expires.Unix(), loginStarted, loginFinished)
 		}
-		// Persistence can cross a second. Remaining lifetime must refer to the
-		// committed expiry instead of restarting eight hours at cookie issuance.
 		if cookie.Name == sessionName && cookie.Secure && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode && cookie.Path == "/" && cookie.Domain == "" && !cookie.Expires.IsZero() &&
 			remaining > 0 && remaining <= 8*60*60 && expires >= loginStarted+8*60*60 && expires <= loginFinished+8*60*60 &&
 			remaining >= expires-loginFinished && remaining <= expires-loginStarted {

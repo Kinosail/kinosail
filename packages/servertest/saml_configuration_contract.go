@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// SAMLConfiguration binds the settings contracts to actual app loading and authentication.
 type SAMLConfiguration[S interface{ String(string) string }] struct {
 	Load        func(string, string, func(string) (string, bool)) (S, error)
 	New         func(string, S) http.Handler
@@ -16,7 +15,6 @@ type SAMLConfiguration[S interface{ String(string) string }] struct {
 	IDPMetadata func(*testing.T, string) string
 }
 
-// OwnerCanConfigureSAMLWithProviderMetadataURL checks the actual app's SAML configuration boundary.
 func (fixture SAMLConfiguration[S]) OwnerCanConfigureSAMLWithProviderMetadataURL(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -44,7 +42,6 @@ func (fixture SAMLConfiguration[S]) OwnerCanConfigureSAMLWithProviderMetadataURL
 	fixture.assertRejectedSAMLConfiguration(t, handler, owner.Value, directory, metadataURL)
 }
 
-// SettingsShowDownloadedSAMLMetadataAsConfigured checks the actual app's SAML configuration boundary.
 func (fixture SAMLConfiguration[S]) SettingsShowDownloadedSAMLMetadataAsConfigured(t *testing.T) {
 	t.Helper()
 	t.Parallel()

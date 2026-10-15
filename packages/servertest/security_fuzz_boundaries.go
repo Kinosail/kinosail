@@ -12,7 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/mediashares"
 )
 
-// SecurityFuzz binds parser checks and per-input authorization fixtures once per app.
 type SecurityFuzz struct {
 	AllowedOutboundIP func(net.IP) bool
 	UnsafeCrossOrigin func(*http.Request) bool

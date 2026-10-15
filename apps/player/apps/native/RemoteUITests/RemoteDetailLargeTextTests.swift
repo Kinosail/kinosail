@@ -1,8 +1,6 @@
 import XCTest
 
 extension RemoteArtworkStateTests {
-    // Isolated production-view fixture with public traits, not system Settings.
-    // XCUI uses the same accessibility/focus path as the accepted normal case.
     @MainActor
     func testAccessibilityXXXLDetailActionsAlignAndPreserveNavigation() async throws {
         try requireCase("large-text-fixture")

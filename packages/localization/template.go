@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// TemplateRuntime connects shared template execution to product request state.
 type TemplateRuntime struct {
 	PreferredLanguage  func(*http.Request) string
 	LanguagePreference func(*http.Request) string
@@ -16,14 +15,12 @@ type TemplateRuntime struct {
 	CSRFTemplateFuncs  func(*http.Request) template.FuncMap
 }
 
-// TemplateSet stores each translated rendering of one product template.
 type TemplateSet struct {
 	views   map[string]*template.Template
 	catalog *Catalog
 	runtime TemplateRuntime
 }
 
-// NewTemplateSet compiles a template with Player's shared localization policy.
 func NewTemplateSet(name, source, scriptVersion string, catalog *Catalog, languages []Language, preprocess func(string) string, parseFuncs template.FuncMap, runtime TemplateRuntime) *TemplateSet {
 	if strings.Contains(source, `rel="stylesheet" href="/static/app.css`) && !strings.Contains(source, `class="auth`) && !strings.Contains(source, "/static/main.kinosail.bundle.js") {
 		source = strings.Replace(source, "</head>", `<script defer src="/static/main.kinosail.bundle.js?v=`+scriptVersion+`"></script></head>`, 1)
@@ -40,17 +37,14 @@ func NewTemplateSet(name, source, scriptVersion string, catalog *Catalog, langua
 	return &TemplateSet{views: views, catalog: catalog, runtime: runtime}
 }
 
-// Execute renders the root template with request locale state.
 func (view *TemplateSet) Execute(writer http.ResponseWriter, request *http.Request, data any) error {
 	return view.runtime.ExecuteTemplate(view.views, view.catalog, writer, request, "", data)
 }
 
-// ExecuteTemplate renders a named template with request locale state.
 func (view *TemplateSet) ExecuteTemplate(writer http.ResponseWriter, request *http.Request, name string, data any) error {
 	return view.runtime.ExecuteTemplate(view.views, view.catalog, writer, request, name, data)
 }
 
-// ExecuteTemplate applies request locale state and executes a translated view.
 func (runtime TemplateRuntime) ExecuteTemplate(views map[string]*template.Template, catalog *Catalog, writer http.ResponseWriter, request *http.Request, name string, data any) error {
 	tag, preference := runtime.PreferredLanguage(request), runtime.LanguagePreference(request)
 	runtime.SetLanguageHeaders(writer, tag)

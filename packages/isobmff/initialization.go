@@ -1,4 +1,3 @@
-// Package isobmff reads the bounded codec configuration of generated MP4 files.
 package isobmff
 
 import (
@@ -139,7 +138,6 @@ func trackRotation(payload []byte) (bool, error) {
 	}
 	a, b := binary.BigEndian.Uint32(payload[offset:]), binary.BigEndian.Uint32(payload[offset+4:])
 	c, d := binary.BigEndian.Uint32(payload[offset+12:]), binary.BigEndian.Uint32(payload[offset+16:])
-	// ISO BMFF stores this matrix as signed 16.16 fixed point.
 	return a == 0 && d == 0 && (b == 0x00010000 && c == 0xffff0000 || b == 0xffff0000 && c == 0x00010000), nil
 }
 

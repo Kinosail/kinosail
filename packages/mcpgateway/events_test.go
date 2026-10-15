@@ -18,9 +18,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/liveevents"
 )
 
-// This HTTP contract owns event discovery and lifecycle coverage. Existing tool
-// tests cannot detect absent event methods, forged callbacks, leaked profile
-// events, forgotten subscriptions after restart, or delivery after revocation.
 func TestEventsRPCDiscovery(t *testing.T) {
 	principal := Principal{ID: "viewer", Name: "Viewer", Revision: 1}
 	principals := &testPrincipals{values: map[string]Principal{principal.ID: principal}}

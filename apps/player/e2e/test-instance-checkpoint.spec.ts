@@ -6,7 +6,6 @@ import { configureTestInstance, login } from "./test-instance-helpers";
 import { registerNavigationCheckpoints } from "./checkpoint-navigation-cases";
 import { registerCheckpointSetup, startPlaying } from "./checkpoint-setup-cases";
 
-// Read-only diagnostics for the page's existing playback state; these declarations emit no JavaScript.
 declare const playbackPreparation: object | undefined;
 declare const progressFlight: object | undefined;
 declare const pendingProgress: {watched?: boolean} | undefined;
@@ -55,9 +54,9 @@ async function observeExit(page: Page, id: string, key: string) {
           seeking: video.seeking, visibility: document.visibilityState,
           serviceWorkerControlled: Boolean(navigator.serviceWorker?.controller), ...detail});
         sessionStorage.setItem(key, JSON.stringify(observations.slice(-32)));
-      } catch { /* Observation must not change the playback or navigation outcome. */ }
+      } catch {   }
     };
-    try { sessionStorage.removeItem(key); } catch { /* Storage can be unavailable. */ }
+    try { sessionStorage.removeItem(key); } catch {   }
     const originalFetch = window.fetch;
     window.fetch = function(input, init) {
       let matches = false;
@@ -68,7 +67,7 @@ async function observeExit(page: Page, id: string, key: string) {
         const body = init?.body instanceof URLSearchParams ? init.body : new URLSearchParams();
         if (matches) record("progress-dispatch", {submittedSeconds: Number(body.get("seconds")),
           revision: Number(body.get("revision")), keepalive: init?.keepalive === true});
-      } catch { /* Preserve the original fetch behavior, including invalid input handling. */ }
+      } catch {   }
       const flight = originalFetch.call(this, input, init);
       if (matches) void flight.then(response => record("progress-response", {status: response.status}),
         () => record("progress-rejected"));
@@ -109,7 +108,6 @@ async function openMovie(page: Page, observation?: {key: string; iteration: numb
   const session = await media.getAttribute("data-playback-session") || undefined;
   expect(Boolean(session && /^[a-zA-Z0-9_-]{8,64}$/.test(session))).toBe(true);
   if (observation?.resumeAt !== undefined) await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThanOrEqual(observation.resumeAt - 0.1);
-  // Previous cases can leave this shared real item near its end. Establish a fresh baseline.
   await media.evaluate((video: HTMLVideoElement) => {video.pause(); video.currentTime = 0;});
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeLessThan(0.1);
@@ -169,7 +167,6 @@ test("completed paused seek persists before Library navigation and resumes actua
 });
 
 test("Library exit checkpoints actual playing time before teardown without reset-position overwrite", {tag: "@smoke"}, async ({page}, testInfo) => {
-  // Repeat the reported failure flow within one populated journey, without retrying away a failure.
   for (let iteration = 0; iteration < (phase === "candidate" ? 3 : 1); iteration++) {
     const observationKey = `kinosail:checkpoint-exit-observation:${iteration}`;
     const {watch, media, id, session} = await openMovie(page, {key: observationKey, iteration, testInfo});

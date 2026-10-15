@@ -1,4 +1,3 @@
-// Isolated JSDOM fault controls; real generated-docs/browser proof is separate.
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');

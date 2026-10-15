@@ -217,7 +217,7 @@
         const update = document.getElementById("subtitle-update");
         if (update) update.hidden = false;
       }
-    } catch { /* A failed background check never replaces the current library. */ }
+    } catch {   }
     finally { clearTimeout(timeout); pollRequest = null; schedulePoll(); }
   }
   addEventListener("pageshow", event => { if (event.persisted) schedulePoll(); });

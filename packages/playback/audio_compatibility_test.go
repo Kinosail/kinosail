@@ -41,7 +41,6 @@ func TestAudioMasterDescribesOnlyObservedAAC(t *testing.T) { //nolint:cyclop // 
 	if err := os.Mkdir(directory, 0o700); err != nil {
 		t.Fatal(err)
 	}
-	// Strip the video track from the standard sample-description fixture.
 	combined := mp4fixture.Initialization(640, 360, "h264", "aac", "")
 	audio := mp4fixture.Box("moov", combined[8+binary.BigEndian.Uint32(combined[8:12]):])
 	quality := PlaybackQuality{Label: "audio", Bitrate: 192000}

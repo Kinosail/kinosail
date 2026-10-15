@@ -10,7 +10,6 @@ const baseline = process.env.KINOSAIL_R03_BASELINE === "1";
 const currentSource = await readFile(new URL("../../../packages/webassets/static/player-progress.js", import.meta.url), "utf8");
 const queueSource = await readFile(new URL("../../../packages/webassets/static/player-audio-queue.js", import.meta.url), "utf8");
 const baselineSource = baseline ? execFileSync("git", ["show", "2e9ede47:packages/webassets/static/player-progress.js"], {encoding: "utf8"}) : "";
-// Controlled HTTP responses must reach Playwright before the native fetch consumes them.
 test.use({serviceWorkers: "block"});
 async function serverProgress(page: Page, id: string) {
   const response = await page.request.get(`/api/v1/items/${id}`);
@@ -21,8 +20,6 @@ async function serverProgress(page: Page, id: string) {
   return body.item.progress;
 }
 
-// Real Go markup and the delivered CSS are required: bare progress fixtures miss
-// the mobile primary-player-actions rule overriding the notice's hidden state.
 async function inspectNotice(page: Page, testInfo: TestInfo, state: string, visible: boolean) {
   const projections = [];
   for (const viewport of [{width: 360, height: 800}, {width: 390, height: 844},
@@ -83,13 +80,11 @@ test("real Server rejects invalid progress without changing stored state and web
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
   await media.evaluate((video: HTMLVideoElement) => video.pause());
   await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.paused)).toBe(true);
-  // Settle the pause's valid save before injecting a rejected public request.
   await page.waitForTimeout(300);
   const id = watch.split("/").at(-1)!;
   const before = await serverProgress(page, id);
   await media.evaluate(video => video.dataset.progress = video.dataset.progress!.split("?")[0] + "?playbackToken=invalid");
   const rejected = page.waitForResponse(response => new URL(response.url()).pathname === `/progress/${id}` && response.status() === 400);
-  // Advance the position so deduplication cannot suppress the rejected request.
   await media.evaluate((video: HTMLVideoElement) => { video.currentTime = Math.min(video.duration, video.currentTime + 1); video.dispatchEvent(new Event("pause")); });
   await rejected;
   const after = await serverProgress(page, id);
@@ -166,7 +161,6 @@ test('Mark watched waits for an older played-position request before changing st
   await page.goto(watch);
   const media=page.locator('video');
   await media.evaluate((video:HTMLVideoElement)=>{video.muted=true;});
-  // The HLS source attaches asynchronously after the document loads.
   await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.readyState)).toBeGreaterThanOrEqual(2);
   await media.evaluate(async(video:HTMLVideoElement)=>{await video.play();});
   await expect.poll(()=>media.evaluate((video:HTMLVideoElement)=>video.getVideoPlaybackQuality().totalVideoFrames)).toBeGreaterThan(2);

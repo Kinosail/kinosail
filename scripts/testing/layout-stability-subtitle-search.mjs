@@ -1,5 +1,3 @@
-// Actual native fetch navigation, with real Server HTML. Only failure transport
-// is injected; result-list changes after a requested search are expected.
 export async function measureSubtitleSearch(page, viewport, results, probe) {
   probe.stage = "subtitle-native-search";
   const search = page.locator("#subtitle-search");
@@ -46,7 +44,6 @@ export async function measureSubtitleSearch(page, viewport, results, probe) {
     const control = state === "retry-real-link" ? page.getByRole("link", {name: "Reload view", exact: true}) : search;
     await control.scrollIntoViewIfNeeded();
     await control.focus();
-    // Native focus scrolling must settle before measuring request-induced shifts.
     const focusBefore = await control.evaluate(node => new Promise((resolve, reject) => {
       let previous, stable = 0, finished = false, animation;
       const finish = (error, result) => {

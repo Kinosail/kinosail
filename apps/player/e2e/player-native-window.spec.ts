@@ -3,9 +3,6 @@ import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {writeFile} from "node:fs/promises";
 
-// Isolated exception: a populated Chromium decoder cannot deterministically retain
-// old native-HLS metadata while a replacement window is selected. Real public
-// checkpoint journeys separately prove accepted storage and direct decoded reentry.
 async function nativeTimelineWindow(page: Page, duration: number, start: number) {
   const writes: number[] = [];
   await page.route("**/progress/movie", async route => {
@@ -34,7 +31,6 @@ async function nativeTimelineWindow(page: Page, duration: number, start: number)
       canPlayType: {value: (type: string) => type === "application/vnd.apple.mpegurl" ? "probably" : ""},
       src: {configurable: true, get: () => state.source, set: (value: string) => {
         state.source = new URL(value, document.baseURI).href;
-        // A replacement can queue a Pause from the still-visible old decoder.
         if (state.loads) {
           video.dispatchEvent(new Event("pause"));
           video.dispatchEvent(new Event("seeked"));

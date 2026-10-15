@@ -9,7 +9,6 @@ import (
 
 var errInvalidTrickplayRegistration = errors.New("trickplay dependencies are invalid")
 
-// MustTrickplayRegistration binds Player's trickplay route to app visibility and localization adapters.
 func MustTrickplayRegistration(
 	cache, ffmpeg string,
 	policy HLSRecipePolicy,

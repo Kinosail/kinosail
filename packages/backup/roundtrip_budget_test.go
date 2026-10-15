@@ -15,10 +15,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
-// Isolated failure cases: tar overhead crosses the decoded limit; independently
-// valid documents exceed the aggregate limit; incompressible state exceeds the
-// encoded limit; encryption overhead crosses that same limit. Rejection must
-// publish no bytes, and accepted archives must restore the persisted snapshot.
 func TestPersistedBackupDecodedBoundaryRoundtrip(t *testing.T) {
 	for _, test := range []struct {
 		name, key string
@@ -184,7 +180,6 @@ func saveOversizedSnapshot(t *testing.T, dataDir string) {
 
 func incompressibleJSON() []byte {
 	raw := make([]byte, 11<<20)
-	// This fixed PRNG seed is test data, never an encryption key or nonce.
 	rng := rand.New(rand.NewPCG(1, 2)) //nolint:gosec // Reproducible compression fixture, not cryptography.
 	for i := range raw {
 		raw[i] = byte(rng.Uint32() & 255)

@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// JellyfinDownloadFixture supplies authenticated, trusted compatibility handlers.
 type JellyfinDownloadFixture struct {
 	New    func(*testing.T, string, string, string, bool) http.Handler
 	SignIn func(*testing.T, http.Handler, string, string) *http.Cookie

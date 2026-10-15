@@ -8,7 +8,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Bound retained reference storage independently of library size and locale count.
 const titleOrderReferenceBudget = 1 << 20
 
 type titleOrder struct {
@@ -20,7 +19,6 @@ type titleOrderKey struct {
 	locale, view string
 }
 
-// BrowseLibrary reuses immutable title order while projecting current Viewer state.
 func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale string, access func() BrowseAccess) (Result, error) {
 	var key titleOrderKey
 	var version uint64
@@ -41,13 +39,9 @@ func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale
 		owner = viewer.Owner
 		return viewer
 	})
-	// Only a complete intrinsic projection can seed shared order. Every hit still
-	// applies current visibility; restricted requests never add sorting work.
 	if err == nil && key.locale != "" && !ordered && result.View != "shows" && ctx.Err() == nil {
 		complete := len(references)
 		if key.view != "all" {
-			// Restricted cold requests keep the original projection work. Only
-			// Owner results attempt new intrinsic admission, after profile locks.
 			if !owner {
 				return result, err
 			}
@@ -125,11 +119,9 @@ func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, comple
 		index.evictTitleOrder()
 	}
 	index.titleOrderUse++
-	// Completed result references are immutable and never exposed as a slice.
 	index.titleOrders[key] = &titleOrder{items: items, used: index.titleOrderUse}
 }
 
-// evictTitleOrder removes the least recently read completed order under mu.
 func (index *Index) evictTitleOrder() {
 	var key titleOrderKey
 	var oldest *titleOrder

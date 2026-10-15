@@ -10,13 +10,11 @@ import (
 	"golang.org/x/text/secure/precis"
 )
 
-// Config configures the optional SCIM 2.0 provisioning endpoint.
 type Config struct {
 	Token          string
 	TokenExpiresAt time.Time
 }
 
-// Repository commits validated profile operations and their app-specific invariants.
 type Repository interface {
 	List() []Profile
 	Get(string) (Profile, bool)
@@ -25,7 +23,6 @@ type Repository interface {
 	Delete(string, string) error
 }
 
-// Profile is the protocol view of one provisioned viewer profile.
 type Profile struct {
 	ID, Name, UserName, ExternalID string
 	NameParts                      Name
@@ -36,7 +33,6 @@ type Profile struct {
 	Revision                       uint64
 }
 
-// ProfileInput is one validated create or update operation.
 type ProfileInput struct {
 	UserName, Name, Formatted, GivenName, FamilyName, ExternalID string
 	Emails                                                       []Email
@@ -44,18 +40,15 @@ type ProfileInput struct {
 	Active                                                       bool
 }
 
-// Name contains the persisted SCIM name parts.
 type Name struct {
 	Formatted, GivenName, FamilyName string
 }
 
-// Email contains one persisted SCIM email value.
 type Email struct {
 	Value, Type string
 	Primary     bool
 }
 
-// EnterpriseProfile contains the supported enterprise user extension.
 type EnterpriseProfile struct {
 	EmployeeNumber string  `json:"employeeNumber,omitempty"`
 	CostCenter     string  `json:"costCenter,omitempty"`
@@ -65,7 +58,6 @@ type EnterpriseProfile struct {
 	Manager        Manager `json:"manager,omitempty"`
 }
 
-// Manager contains the supported enterprise manager attributes.
 type Manager struct {
 	Value       string `json:"value,omitempty"`
 	Ref         string `json:"$ref,omitempty"`
@@ -86,17 +78,12 @@ type scimValidationError struct{ detail string }
 func (err *scimValidationError) Error() string { return err.detail }
 
 var (
-	// ErrProfileNotFound reports a missing provisioned profile.
 	ErrProfileNotFound = errors.New("SCIM Viewer Profile was not found")
-	// ErrConflict reports a userName or display-name conflict.
-	ErrConflict = errors.New("SCIM Viewer Profile conflicts with an existing Profile")
-	// ErrPrecondition reports an atomic If-Match conflict.
-	ErrPrecondition = errors.New("SCIM Viewer Profile precondition failed")
-	// ErrSetupRequired reports that no owner can recover the installation.
-	ErrSetupRequired = errors.New("setup must be completed before SCIM provisioning")
+	ErrConflict        = errors.New("SCIM Viewer Profile conflicts with an existing Profile")
+	ErrPrecondition    = errors.New("SCIM Viewer Profile precondition failed")
+	ErrSetupRequired   = errors.New("setup must be completed before SCIM provisioning")
 )
 
-// NormalizeProfileInput validates and normalizes all writable SCIM fields.
 func NormalizeProfileInput(input ProfileInput) (ProfileInput, error) { //nolint:gocognit,cyclop // All SCIM attributes share one semantic validation operation.
 	var err error
 	input.UserName, err = scimString(input.UserName, 256, true, "userName")
@@ -149,7 +136,6 @@ func NormalizeProfileInput(input ProfileInput) (ProfileInput, error) { //nolint:
 	return input, nil
 }
 
-// SameUserName compares prepared SCIM user names.
 func SameUserName(left, right string) bool {
 	return precis.UsernameCaseMapped.Compare(left, right)
 }

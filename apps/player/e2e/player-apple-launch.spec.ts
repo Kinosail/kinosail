@@ -82,7 +82,6 @@ test.describe("Apple launch policy @smoke", () => {
     await page.getByRole("button", {name: "Settings", exact: true}).tap();
     await page.locator("[data-subtitles]").selectOption("0");
     await page.locator("[data-player-settings-close]").tap();
-    // Keep gesture evidence outside the page if its execution context stops responding.
     type GestureEvent = {event: string; milliseconds: number; trusted: boolean; fullscreen: boolean};
     const events: GestureEvent[] = [];
     const started = performance.now();

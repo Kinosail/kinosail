@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// These exports exercise the real show template in the browser layout regression.
 func TestWriteShowActionFixtures(t *testing.T) {
 	t.Parallel()
 	dir := os.Getenv("KINOSAIL_UI_FIXTURE_DIR")

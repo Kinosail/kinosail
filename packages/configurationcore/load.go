@@ -1,4 +1,3 @@
-// Package configurationcore resolves validated configuration values from files and the environment.
 package configurationcore
 
 import (
@@ -8,67 +7,51 @@ import (
 )
 
 const (
-	maxYAMLSize = 1 << 20
-	// SchemaVersion is the configuration file schema understood by the shared loader.
+	maxYAMLSize   = 1 << 20
 	SchemaVersion = 1
 )
 
-// Kind identifies the YAML scalar shape accepted by one field.
 type Kind string
 
 const (
-	// Text accepts only YAML strings.
-	Text Kind = "text"
-	// Boolean accepts YAML booleans and strings.
+	Text    Kind = "text"
 	Boolean Kind = "boolean"
-	// Number accepts YAML integers and strings.
-	Number Kind = "number"
-	// List accepts YAML string lists and strings.
-	List Kind = "list"
+	Number  Kind = "number"
+	List    Kind = "list"
 )
 
-// Source records which configuration layer supplied a value.
 type Source string
 
 const (
-	// Default is the built-in schema value.
-	Default Source = "default"
-	// GUI is a persisted owner setting.
-	GUI Source = "gui"
-	// YAML is a configuration file setting.
-	YAML Source = "yaml"
-	// Environment is an environment variable or secret file setting.
+	Default     Source = "default"
+	GUI         Source = "gui"
+	YAML        Source = "yaml"
 	Environment Source = "environment"
 )
 
-// Field describes one app-owned configuration setting.
 type Field struct {
 	Key, Env, Default string
 	Kind              Kind
 	Secret            bool
 }
 
-// Value is one resolved raw setting and its source.
 type Value struct {
 	Raw    string
 	Source Source
 }
 
-// Schema adapts an app's fields and validation to the shared loader.
 type Schema struct {
 	Fields   []Field
 	Retired  func(string) bool
 	Validate func(string, string) error
 }
 
-// Loader resolves one app's configuration layers.
 type Loader struct {
 	Schema     Schema
 	ReadStored func(string) (map[string]string, map[string]string, error)
 	ReadSecret func(string) ([]byte, error)
 }
 
-// Load resolves defaults, stored values, YAML, and environment values in precedence order.
 func (loader Loader) Load(dataDir, yamlPath string, lookup func(string) (string, bool)) (map[string]Value, error) {
 	yamlValues, err := loader.readYAML(yamlPath)
 	if err != nil {
@@ -97,7 +80,6 @@ func (loader Loader) Load(dataDir, yamlPath string, lookup func(string) (string,
 	return values, nil
 }
 
-// ResolveStored validates stored maps and overlays them on the schema defaults.
 func (loader Loader) ResolveStored(regular, secrets map[string]string) (map[string]Value, error) {
 	values := loader.defaults()
 	if err := loader.applyStored(values, regular, secrets); err != nil {

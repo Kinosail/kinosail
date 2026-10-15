@@ -8,14 +8,12 @@ import (
 	"time"
 )
 
-// APIParityFixture binds populated and empty real-app handlers.
 type APIParityFixture struct {
 	Server    func(*testing.T) (http.Handler, string)
 	Bootstrap func(*testing.T) http.Handler
 	TOTP      func(*testing.T, string, time.Time) string
 }
 
-// APIParityContract exercises shared browser and API capabilities.
 func APIParityContract(t *testing.T, fixture APIParityFixture) {
 	t.Helper()
 	t.Run("ViewerMediaStateAndCurationAreAvailableThroughAPI", func(t *testing.T) { viewerMediaStateAndCurationAreAvailableThroughAPI(t, fixture) })
@@ -86,8 +84,6 @@ func ownerCanManagePlaybackMarkersThroughAPI(t *testing.T, fixture APIParityFixt
 	invalidForm := WebFormCall(t, handler, token, "/markers/"+id, url.Values{"type": {"recap"}, "start": {"not-a-number"}, "end": {"43"}})
 	AssertAPIBody(t, invalidForm, http.StatusBadRequest, "playback marker is invalid")
 	playback := APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
-	// This five-byte fixture has no probe duration. Saved markers remain editable,
-	// but the playback response cannot emit a range on an unknown timeline.
 	AssertAPIBody(t, playback, http.StatusOK, `"markers":[]`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/watch/"+id, nil), http.StatusOK, `value="recap" selected`, `name="start" type="number" min="0" step="0.1" value="2"`, `name="end" type="number" min="0" step="0.1" value="42"`)
 	updated := WebFormCall(t, handler, token, "/markers/"+id, url.Values{"type": {"recap"}, "start": {"3"}, "end": {"43"}})

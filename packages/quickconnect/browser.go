@@ -12,7 +12,6 @@ import (
 
 const browserCookieName = "__Host-kinosail_quick_connect"
 
-// StartBrowser keeps the one-time secret in an HttpOnly cookie, never page or URL data.
 func (application *Application) StartBrowser(writer http.ResponseWriter, request *http.Request) {
 	if !browserRequest(writer, request) {
 		return
@@ -40,7 +39,6 @@ func (application *Application) StartBrowser(writer http.ResponseWriter, request
 	apihttp.WriteJSON(writer, map[string]any{"code": pending.Code, "expiresIn": int(application.broker.ttl.Seconds())}, http.StatusCreated)
 }
 
-// PollBrowser issues a public browser session only after local strong Viewer approval.
 func (application *Application) PollBrowser(writer http.ResponseWriter, request *http.Request) {
 	if !browserRequest(writer, request) {
 		return
@@ -76,7 +74,6 @@ func (application *Application) PollBrowser(writer http.ResponseWriter, request 
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-// CancelBrowser withdraws this browser's request without accepting a caller-supplied secret.
 func (application *Application) CancelBrowser(writer http.ResponseWriter, request *http.Request) {
 	if !browserRequest(writer, request) {
 		return

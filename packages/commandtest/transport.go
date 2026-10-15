@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// HTTPFactory binds configuration loading to the app's real HTTP constructor.
 func HTTPFactory[Snapshot, Internet, Trusted any](load func() (Snapshot, error), build func(context.Context, Snapshot, *Internet, *Trusted) *http.Server) func(context.Context) *http.Server {
 	return func(ctx context.Context) *http.Server {
 		configured, _ := load()

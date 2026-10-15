@@ -29,7 +29,6 @@ if operation == 'snapshot':
     for profile in profiles:
         for key in profile.get('passkeys',[]): key.get('authenticator',{}).pop('signCount',None)
         for usage in profile.get('passkeyUsage',{}).values(): usage.pop('lastUsed',None)
-    # Fresh authentication changes only counters/activity; retain all identity and credential material in the digest.
     stable_digests=dict(data_digests,**{'profiles.json':hashlib.sha256(json.dumps(profiles,sort_keys=True).encode()).hexdigest()})
     print(json.dumps({'compatibleSettingsSHA256':settings_digest,'unrelatedDataSHA256':data_digests,'stableDataSHA256':stable_digests,'ownerPasskeyCounters':owner_counters,'requiredMFA':settings.get('requireMfa'),'sessions':safe,'policies':{k:v for k,v in settings.items() if 'Session' in k or 'session' in k}}))
     connection.close()

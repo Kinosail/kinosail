@@ -16,7 +16,6 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// MetadataConfig configures optional metadata providers and built-in fallbacks.
 type MetadataConfig = sharedmetadata.Config
 
 type metadataRecord = sharedmetadata.Record
@@ -61,7 +60,6 @@ func (store *metadataStore) configured() bool {
 	return sharedmetadata.Configured(store.cache, config.Token, config.URL, config.ImageURL)
 }
 
-// providerSnapshot keeps one provider configuration throughout a metadata request.
 func (store *metadataStore) providerSnapshot() *metadataStore {
 	config := store.config
 	if current := store.active.Load(); current != nil {

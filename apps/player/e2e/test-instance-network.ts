@@ -3,8 +3,6 @@ import { connect, createServer, type Socket } from 'node:net';
 
 type Connection = { url: string; disconnect: () => Promise<void> };
 
-// Close the real connection to the fixture. WebKit's simulated offline mode also
-// blocks service-worker navigation, including a minimal non-Kinosail test page.
 export const test = base.extend<{ connection: Connection }>({
   connection: async ({}, use) => {
     const target = new URL(process.env.KINOSAIL_E2E_URL ?? 'https://127.0.0.1:38127');

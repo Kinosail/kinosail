@@ -2,7 +2,6 @@ package server
 
 import "github.com/MikeO7/kinosail/packages/federation"
 
-// SAMLConfig configures optional SAML 2.0 Web Browser SSO.
 type (
 	SAMLConfig = federation.SAMLConfig
 	samlLogin  = federation.SAMLHTTP[viewerProfile]

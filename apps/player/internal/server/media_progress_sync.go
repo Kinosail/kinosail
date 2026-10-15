@@ -73,8 +73,6 @@ func (value *mediaProgressSnapshot) UnmarshalJSON(raw []byte) error {
 
 func synchronizedProgress(position float64, expected, update mediaProgressSnapshot) func(playbackState) (playbackState, bool, error) {
 	return func(state playbackState) (playbackState, bool, error) {
-		// Retrying a request after a lost response must not create a conflict or
-		// rewind a newer event from this same playback session.
 		if state.Session == update.Session && state.Revision >= update.Revision {
 			return state, false, nil
 		}

@@ -6,7 +6,6 @@ import (
 	"io"
 )
 
-// ConfigurationCounts describes the origins reported by config validation.
 type ConfigurationCounts struct {
 	Defaults    int
 	UI          int
@@ -14,7 +13,6 @@ type ConfigurationCounts struct {
 	Environment int
 }
 
-// BindConfigurationCommand adapts an application's typed snapshot to the shared command.
 func BindConfigurationCommand[Snapshot, Field any, Source comparable](fields func(Snapshot) []Field, source func(Field) Source, defaults, ui, file, environment Source) func([]string, io.Writer, func(string) (Snapshot, error)) (bool, error) {
 	return func(args []string, output io.Writer, load func(string) (Snapshot, error)) (bool, error) {
 		return ConfigurationCommand(args, output, func(path string) (ConfigurationCounts, error) {
@@ -27,7 +25,6 @@ func BindConfigurationCommand[Snapshot, Field any, Source comparable](fields fun
 	}
 }
 
-// ConfigurationCommand validates a configuration file through an app adapter.
 func ConfigurationCommand(args []string, output io.Writer, validate func(string) (ConfigurationCounts, error)) (bool, error) {
 	if len(args) == 0 || args[0] != "config" {
 		return false, nil
@@ -50,7 +47,6 @@ func ConfigurationCommand(args []string, output io.Writer, validate func(string)
 	return true, err
 }
 
-// CountConfigurationSources classifies fields without depending on an app's configuration types.
 func CountConfigurationSources[Field any, Source comparable](fields []Field, source func(Field) Source, defaults, ui, file, environment Source) ConfigurationCounts {
 	counts := make(map[Source]int, 4)
 	for _, field := range fields {

@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Admin adapts marker operations to one application's routing and response policy.
 type Admin struct {
 	Analyzer *Analyzer
 	Owner    func(http.Handler) http.Handler
@@ -25,7 +24,6 @@ type Admin struct {
 	NotFound func(http.ResponseWriter, *http.Request)
 }
 
-// RegisterAdmin registers the owner-only marker management contract.
 func RegisterAdmin(mux *http.ServeMux, admin Admin) {
 	save := admin.Owner(http.HandlerFunc(admin.saveManual))
 	remove := admin.Owner(http.HandlerFunc(admin.removeManual))

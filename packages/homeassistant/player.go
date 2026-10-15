@@ -12,7 +12,6 @@ var playerID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)
 
 var errPlayerLimit = errors.New("too many active Home Assistant players")
 
-// Player is one active Kinosail player state.
 type Player struct {
 	ID       string  `json:"id"`
 	Name     string  `json:"name"`
@@ -25,7 +24,6 @@ type Player struct {
 	Muted    bool    `json:"muted"`
 }
 
-// Command is one queued player command.
 type Command struct {
 	Command  string  `json:"command"`
 	Position float64 `json:"position,omitempty"`

@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-// Fresh corrected public fixtures do not schedule malformed retained manifests.
-// These isolated cases protect admission before the cached-file shortcut.
 func TestRemainingAACManifestCannotBeBypassed(t *testing.T) {
 	for _, invalid := range []string{"missing", "malformed", "oversized", "symlink", "undeclared", "duplicate", "bad-duration", "nonzero-sequence"} {
 		t.Run(invalid, func(t *testing.T) {

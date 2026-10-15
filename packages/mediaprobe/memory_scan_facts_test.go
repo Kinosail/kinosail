@@ -36,7 +36,6 @@ func TestMemoryScanFactsDoesNotHydrateFromDiskOrRunProbe(t *testing.T) { //nolin
 	if facts, found := warm.MemoryScanFacts(item); !found || facts.Video.Codec != "h264" {
 		t.Fatal("memory lookup touched removed media")
 	}
-	// The explicit background cache reader can still hydrate a fresh process.
 	if _, found := cold.CachedScanFacts(item); !found {
 		t.Fatal("persistent scan facts were lost")
 	}

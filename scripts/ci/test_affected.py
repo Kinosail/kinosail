@@ -24,8 +24,6 @@ class SelectionTests(unittest.TestCase):
                 self.assertFalse(plan[f"{app}_browsers"])
 
     def test_architecture_inputs_select_snapshot_verification(self):
-        # Populated app journeys cannot catch a stale generated code atlas.
-        # Go source, test-file inventory, and the published atlas all feed it.
         paths = ("apps/player/internal/server/show.go", "apps/subtitles/cmd/kinosail/main.go",
                  "apps/player/internal/server/show_test.go", "packages/httpguard/limiter.go",
                  "packages/httpguard/limiter_test.go", "packages/go.mod", "packages/go.sum",

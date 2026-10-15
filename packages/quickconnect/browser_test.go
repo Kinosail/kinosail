@@ -199,7 +199,6 @@ func TestQuickConnectRevisionChangeDuringIssuanceCreatesNoSession(t *testing.T) 
 		t.Run(map[bool]string{false: "native", true: "browser"}[browser], func(t *testing.T) {
 			f := newApplicationFixture(t)
 			secret := f.approved(t, Request{Remote: true}, f.current)
-			// Simulate revocation after the approval lookup but before session issuance.
 			f.application.adapter.Profiles.Find = func(id string) (identitycore.Profile, bool) {
 				before := f.profiles[id]
 				after := before

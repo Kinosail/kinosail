@@ -20,7 +20,6 @@ for (const scenario of [
     if (mode === "native") Object.defineProperty(navigator, "vendor", {configurable: true, value: "Apple Computer, Inc."});
     const video = document.querySelector("video")!;
     let time = 0, ready = 4, paused = true, source = "", start = 0, count = 1;
-    // Keep the native timeline adapter in use while controlling decoder events.
     Object.defineProperty(HTMLMediaElement.prototype, "currentTime", {
       configurable: true, get: () => time, set: (value: number) => {
         const next = Math.max(0, value);
@@ -81,7 +80,6 @@ for (const scenario of [
     media.dispatchEvent(new Event("loadedmetadata"));
   }, { time: scenario.position, start: scenario.start, count: scenario.count });
   if ("target" in scenario) {
-    // A real gap must remain pending until native readiness moves into the range.
     await video.evaluate((media) => {
       (window as Window & {setDecoder: (state: {time: number}) => void}).setDecoder({time: 0.083 - 0.000001});
       media.dispatchEvent(new Event("progress"));

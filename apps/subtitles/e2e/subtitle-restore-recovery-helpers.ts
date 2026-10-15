@@ -115,7 +115,7 @@ async function settleHeld(page: Page, fixture: Fixture, network: ReturnType<type
     } else result.inspectionBodyDelivered = state.inspectionResponseDelivered;
     if (!(mode === "headers" ? result.restoreBodyDelivered : result.inspectionBodyDelivered)) throw new Error("fixed-terminal-boundary");
   } else if(mode==="headers"&&native204) {
-    result.restoreBodyDelivered=true; // Actual captured zero-byte204 plus unchanged native fulfillment; raw terminal retained.
+    result.restoreBodyDelivered=true;
   } else if (!(mode === "headers" ? state.restoreClientCancelled : state.inspectionClientCancelled)) {
     throw new Error("fixed-terminal-boundary");
   }

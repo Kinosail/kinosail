@@ -9,8 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// The bound master is the durable success receipt. This strategy has no early
-// master publication: genuine ENDLIST alone cannot certify successful exit.
 func publishCompletedCopiedHLS(ctx context.Context, source, directory, policy string, qualities []PlaybackQuality, results <-chan error, expected int, plan *copiedHLSPlan) error {
 	if expected != 1 || len(qualities) != 1 {
 		return errCopiedHLSPlan
