@@ -28,7 +28,7 @@ type subtitleCleanupPlan struct {
 	Languages []string
 }
 
-func planSubtitleCleanup(index *libraryIndex, languages []string, forced string) (subtitleCleanupPlan, error) { //nolint:cyclop,gocognit // Selection, deduplication, and skipped-file accounting belong to one preview plan.
+func planSubtitleCleanup(index *libraryIndex, languages []string, forced string) (subtitleCleanupPlan, error) {
 	canonical, err := validateSubtitleLanguages(languages)
 	if err != nil || !oneOf(forced, "keep", "hide") {
 		return subtitleCleanupPlan{}, errors.New("choose a supported language and forced subtitle option")

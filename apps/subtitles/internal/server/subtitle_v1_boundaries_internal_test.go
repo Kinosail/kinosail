@@ -16,7 +16,7 @@ import (
 	xunicode "golang.org/x/text/encoding/unicode"
 )
 
-func TestSubtitleEncodingAndIdentifierBoundaries(t *testing.T) { //nolint:cyclop // One table proves every public v1 encoding and identifier boundary.
+func TestSubtitleEncodingAndIdentifierBoundaries(t *testing.T) {
 	t.Parallel()
 	for name, input := range map[string][]byte{
 		"empty":          nil,
@@ -59,7 +59,7 @@ func TestSubtitleDirectoryWritableUsesPortableProbe(t *testing.T) {
 	}
 }
 
-func TestSubtitleProviderHealthAuthenticationDateAndPersistenceBoundaries(t *testing.T) { //nolint:cyclop,gocognit // One test covers bounded authentication, date, and persisted-state failures.
+func TestSubtitleProviderHealthAuthenticationDateAndPersistenceBoundaries(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, 8, 30, 12, 0, 0, 0, time.UTC)
 	registry := newSubtitleProviderHealthRegistry()
@@ -142,7 +142,7 @@ func TestSubtitleAutomationStopsDuringCircuitDelay(t *testing.T) {
 	}
 }
 
-func TestSubtitleOperationsRejectMissingItemsAndEmptyLibraries(t *testing.T) { //nolint:cyclop // One empty index proves shared operation status and no-side-effect branches.
+func TestSubtitleOperationsRejectMissingItemsAndEmptyLibraries(t *testing.T) {
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
 	settings := newSettingsStore(media, data, "", nil)
@@ -173,7 +173,7 @@ func TestSubtitleOperationsRejectMissingItemsAndEmptyLibraries(t *testing.T) { /
 	}
 }
 
-func TestSubtitleUpgradeEligibilityAndRecoveryRollback(t *testing.T) { //nolint:cyclop,gocognit // One fixture proves freeze, perfect score, recency, ledger failure, and restore rollback.
+func TestSubtitleUpgradeEligibilityAndRecoveryRollback(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	item := library.Item{Kind: "video", ID: "0123456789abcdef", Path: filepath.Join(media, "Movie.mp4")}
@@ -226,7 +226,7 @@ func TestSubtitleUpgradeEligibilityAndRecoveryRollback(t *testing.T) { //nolint:
 	}
 }
 
-func TestSubtitleOperationsReportProviderAndRecoveryFailures(t *testing.T) { //nolint:cyclop,gocognit // One scanned item proves conflict and upstream failure status mappings.
+func TestSubtitleOperationsReportProviderAndRecoveryFailures(t *testing.T) {
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
 	video := filepath.Join(media, "Movie.mp4")
@@ -269,7 +269,7 @@ func TestSubtitleOperationsReportProviderAndRecoveryFailures(t *testing.T) { //n
 	}
 }
 
-func TestSubtitleTimingParserRejectsAmbiguousBoundaries(t *testing.T) { //nolint:cyclop // One table proves timing syntax and ordering boundaries.
+func TestSubtitleTimingParserRejectsAmbiguousBoundaries(t *testing.T) {
 	t.Parallel()
 	for _, value := range []string{
 		"missing arrow",

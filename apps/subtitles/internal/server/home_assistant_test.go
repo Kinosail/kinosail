@@ -18,7 +18,7 @@ func TestHomeAssistantBrowserApprovalUsesPKCEAndCreatesOneScopedToken(t *testing
 	libraryAPIFixture.HomeAssistantBrowserApproval(t)
 }
 
-func TestOwnerCanEnablePairAndRevokeHomeAssistant(t *testing.T) { //nolint:cyclop // One lifecycle proves the feature gate and credential revocation together.
+func TestOwnerCanEnablePairAndRevokeHomeAssistant(t *testing.T) {
 	t.Parallel()
 	handler, owner := apiServer(t)
 	assertAPIBody(t, apiCall(t, handler, owner, http.MethodPut, "/api/v1/settings/home-assistant", map[string]any{"enabled": true}), http.StatusOK, `"status":"saved"`)
@@ -86,7 +86,7 @@ func TestHomeAssistantPairingRejectsBadInputWithoutCreatingKeys(t *testing.T) {
 	}
 }
 
-func TestHomeAssistantPlayerCommandsAndDirectCapabilitiesAreBounded(t *testing.T) { //nolint:cyclop // State, command, and stream capabilities form one control flow.
+func TestHomeAssistantPlayerCommandsAndDirectCapabilitiesAreBounded(t *testing.T) {
 	t.Parallel()
 	handler, owner := apiServer(t)
 	assertAPIBody(t, apiCall(t, handler, owner, http.MethodPut, "/api/v1/settings/home-assistant", map[string]any{"enabled": true}), http.StatusOK, `"status":"saved"`)

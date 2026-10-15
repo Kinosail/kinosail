@@ -74,7 +74,7 @@ func (api *jellyfinAPI) played(writer http.ResponseWriter, request *http.Request
 	jellyfinJSON(writer, api.userDataDTO(request, item))
 }
 
-func (api *jellyfinAPI) favorite(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // The callback passes the captured request context to storage.
+func (api *jellyfinAPI) favorite(writer http.ResponseWriter, request *http.Request) {
 	item, found := visibleItem(request, api.index, jellyfinRawID(request.PathValue("id")))
 	operationErr := sharedjellyfin.SaveFavorite(found, func() error { //nolint:contextcheck // The callback passes the captured request context to storage.
 		return api.lists.SetListed(request.Context(), currentViewer(request).ID, item.ID, request.Method == http.MethodPost)

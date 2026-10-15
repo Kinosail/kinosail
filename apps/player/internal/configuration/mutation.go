@@ -96,7 +96,7 @@ func readStoredConfiguration(dataDir string) (map[string]string, map[string]stri
 	return regular, secrets, nil
 }
 
-func validateStoredConfiguration(regular, secrets map[string]string) error { //nolint:cyclop // Stored configuration is validated by source file and then by cross-field policy.
+func validateStoredConfiguration(regular, secrets map[string]string) error {
 	loaded, err := (configurationcore.Loader{Schema: configurationSchema()}).ResolveStored(regular, secrets)
 	if err != nil {
 		return err

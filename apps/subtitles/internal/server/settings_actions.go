@@ -125,7 +125,7 @@ func invalidSubtitleLanguageAction(primary, actionPresent bool, action string, p
 	return preferencePresent
 }
 
-func saveSubtitleLanguageForm(settings *settingsStore, destination string, primary bool) http.HandlerFunc { //nolint:cyclop,gocritic // Form variants share one validation and mutation boundary.
+func saveSubtitleLanguageForm(settings *settingsStore, destination string, primary bool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		request.Body = http.MaxBytesReader(writer, request.Body, 4096)
 		if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !onlyFormKeys(request.PostForm, "language", "action", "preference") || len(request.PostForm["language"]) != 1 || len(request.PostForm["action"]) > 1 || len(request.PostForm["preference"]) > 1 {

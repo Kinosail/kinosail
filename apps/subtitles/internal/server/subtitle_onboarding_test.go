@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleOnboardingUsesSharedValidatedSettingsOperations(t *testing.T) { //nolint:cyclop // The flow proves web and API settings share validation.
+func TestSubtitleOnboardingUsesSharedValidatedSettingsOperations(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
 	if err := os.Mkdir(filepath.Join(media, "Movies"), 0o700); err != nil {

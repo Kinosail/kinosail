@@ -20,7 +20,7 @@ func (client *TMDBClient) Active() bool {
 }
 
 func HasTMDBCache(directory string) bool {
-	root, err := os.Open(directory) //nolint:gosec // The installation owns the configured cache directory.
+	root, err := os.Open(directory)
 	if err != nil {
 		return false
 	}
@@ -31,7 +31,6 @@ func HasTMDBCache(directory string) bool {
 			if !entry.IsDir() {
 				continue
 			}
-			//nolint:gosec // ReadDir returns one base name below the installation-owned cache directory.
 			info, statErr := os.Lstat(filepath.Join(directory, entry.Name(), "metadata.json"))
 			if statErr == nil && info.Mode().IsRegular() {
 				return true

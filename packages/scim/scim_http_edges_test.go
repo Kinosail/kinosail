@@ -53,7 +53,7 @@ func TestSCIMCreateAndGetRejectSelectionBeforeRepositorySideEffects(t *testing.T
 	}
 }
 
-func TestSCIMReplaceRejectsEachBoundaryWithoutUpdate(t *testing.T) { //nolint:cyclop // ID, query, body, conditional, and semantic failures all precede persistence.
+func TestSCIMReplaceRejectsEachBoundaryWithoutUpdate(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name, id, target, body string
@@ -88,7 +88,7 @@ func TestSCIMReplaceRejectsEachBoundaryWithoutUpdate(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestSCIMPatchRejectsEachBoundaryWithoutUpdate(t *testing.T) { //nolint:cyclop // ID, query, schema, action count, and store failures remain atomic.
+func TestSCIMPatchRejectsEachBoundaryWithoutUpdate(t *testing.T) {
 	t.Parallel()
 	tooMany := make([]map[string]any, maxSCIMPatchActions+1)
 	for index := range tooMany {
@@ -123,7 +123,7 @@ func TestSCIMPatchRejectsEachBoundaryWithoutUpdate(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestSCIMDeleteRejectsEachBoundaryAndStoreFailure(t *testing.T) { //nolint:cyclop // Invalid delete requests never call persistence.
+func TestSCIMDeleteRejectsEachBoundaryAndStoreFailure(t *testing.T) {
 	t.Parallel()
 	for name, request := range map[string]*http.Request{
 		"invalid id":    scimEdgeRequest(t, http.MethodDelete, "/scim/v2/Users/profile", "", "bad\n"),

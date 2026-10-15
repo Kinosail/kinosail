@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-func parseEnterprise(data json.RawMessage) (scimEnterpriseProfile, error) { //nolint:cyclop // The standard extension remains strictly bounded and typed.
+func parseEnterprise(data json.RawMessage) (scimEnterpriseProfile, error) {
 	if len(data) == 0 || bytes.Equal(bytes.TrimSpace(data), []byte("null")) {
 		return scimEnterpriseProfile{}, nil
 	}

@@ -63,7 +63,7 @@ func TestYearRequiresAtLeastFourCharacters(t *testing.T) {
 	}
 }
 
-func TestRecordStateAndFormOperations(t *testing.T) { //nolint:cyclop // The assertions cover one record state boundary.
+func TestRecordStateAndFormOperations(t *testing.T) {
 	t.Parallel()
 	base := Record{Artwork: "art", ProviderIDs: map[string]string{"tmdb": "1"}, ShowProviderIDs: map[string]string{"tvmaze": "2"}}
 	record, ok := RecordFromForm(url.Values{"title": {" Movie "}, "year": {"2020"}, "plot": {" Plot "}}, base)
@@ -111,7 +111,7 @@ func TestMergeRecordsClonesAndOverrides(t *testing.T) {
 	}
 }
 
-func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) { //nolint:cyclop,staticcheck // The assertions cover one shared episode resolution contract, including an intentional nil context.
+func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "episode", Season: 1, Episode: 2, ProviderIDs: map[string]string{"tvdb": "123"}, Year: "local"}
 	record := Record{Year: "2020", Plot: "Plot", Artwork: "poster", Backdrop: "landscape", ShowTitle: "Show", ShowYear: "2019", ShowPlot: "Show plot", ShowArtwork: "show-poster", ShowBackdrop: "show-landscape", BackdropChecked: true, ShowProviderIDs: map[string]string{"tmdb": "42"}}
@@ -160,7 +160,7 @@ func TestApplyMissingAndResolveTMDBEpisode(t *testing.T) { //nolint:cyclop,stati
 	}
 }
 
-func TestApplyOwnerMetadata(t *testing.T) { //nolint:cyclop // One mutation fixture verifies all owner-editable metadata fields.
+func TestApplyOwnerMetadata(t *testing.T) {
 	t.Parallel()
 	item := library.Item{Title: "original", Year: "original", Plot: "original", Rating: "original", Tagline: "original", Genres: "original", Artwork: "original", ShowTitle: "original", ShowYear: "original", ShowPlot: "original", ShowArtwork: "original"}
 	Apply(&item, Record{Title: "title", Year: "2026", Plot: "plot", Rating: "PG", Tagline: "tagline", Genres: "genre", Artwork: "art", Collection: "collection", ProviderIDs: map[string]string{"tmdb": "1"}, ShowTitle: "show", ShowYear: "2025", ShowPlot: "show plot", ShowArtwork: "show art", ShowProviderIDs: map[string]string{"tmdb": "2"}})

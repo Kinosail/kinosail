@@ -98,7 +98,7 @@ func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Stor
 	return store
 }
 
-func (store *settingsStore) applyConfiguration() { //nolint:cyclop,gocognit // Each supported live setting is mapped explicitly from typed configuration.
+func (store *settingsStore) applyConfiguration() {
 	settings := store.value
 	configured := func(key string) bool {
 		source := store.config.Source(key)

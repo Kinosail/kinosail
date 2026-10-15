@@ -20,7 +20,7 @@ func capabilityRequest(t *testing.T, token string) *http.Request {
 	return request
 }
 
-func TestStoreCoversFailClosedBranches(t *testing.T) { //nolint:cyclop,funlen,gocognit // This matrix covers independent persistence and capability failures.
+func TestStoreCoversFailClosedBranches(t *testing.T) {
 	now := time.Date(2026, 9, 4, 12, 0, 0, 0, time.UTC)
 	missing := New("", Dependencies{})
 	request := capabilityRequest(t, strings.Repeat("x", 43))
@@ -88,7 +88,7 @@ func TestStoreCoversFailClosedBranches(t *testing.T) { //nolint:cyclop,funlen,go
 	}
 }
 
-func TestNewAndStateValidationFailureBranches(t *testing.T) { //nolint:cyclop,funlen // Each case proves one persisted-state boundary.
+func TestNewAndStateValidationFailureBranches(t *testing.T) {
 	now := time.Now().Unix()
 	secret := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	hash := strings.Repeat("0", 64)

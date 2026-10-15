@@ -69,7 +69,7 @@ func (auth *mfaAuth) setupRequest(request *http.Request) (mfaEnrollment, error) 
 }
 
 func (auth *mfaAuth) confirmRequest(request *http.Request, code string) error {
-	return auth.confirm(currentViewer(request), code) //nolint:contextcheck // Factor changes must finish after authenticator confirmation.
+	return auth.confirm(currentViewer(request), code)
 }
 
 func (auth *mfaAuth) verifyRequest(request *http.Request, code string) bool {
@@ -77,7 +77,7 @@ func (auth *mfaAuth) verifyRequest(request *http.Request, code string) bool {
 }
 
 func (auth *mfaAuth) disableRequest(request *http.Request) error {
-	return auth.profiles.disableMFA(currentViewer(request).ID) //nolint:contextcheck // Factor changes must finish after validation.
+	return auth.profiles.disableMFA(currentViewer(request).ID)
 }
 
 const mfaSetupHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Add extra sign-in protection · Kinosail Player</title><script src="/static/theme.js"></script><link rel="stylesheet" href="/static/app.css"></head><body class="auth"><main class="grant-card"><h1>Add extra sign-in protection</h1><p>Open your authenticator app and add Kinosail. Enter the setup key below, or use the setup link if your app supports it.</p><p><strong>Setup key</strong><br><code>{{.Secret}}</code></p><p><strong>Setup link</strong><br><code>{{.URI}}</code></p><h2>Recovery codes</h2>{{range .RecoveryCodes}}<code>{{.}}</code><br>{{end}}<p>Store these codes somewhere safe. Each works once.</p><form action="/account/mfa/enable" method="post">{{if .Next}}<input type="hidden" name="next" value="{{.Next}}">{{end}}<label>{{t "Authentication code"}}<input name="code" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><button>Turn on extra sign-in protection</button></form></main></body></html>`

@@ -124,7 +124,7 @@ func (manager *Manager) Track(next http.Handler) http.Handler {
 	})
 }
 
-func mediaWorkPath(path string) bool { //nolint:cyclop // Cache namespaces are enumerated explicitly to protect durable data.
+func mediaWorkPath(path string) bool {
 	return strings.HasPrefix(path, "/media/") || strings.HasPrefix(path, "/hls/") || strings.HasPrefix(path, "/download/") ||
 		strings.HasPrefix(path, "/Videos/") || strings.HasPrefix(path, "/Audio/") ||
 		strings.HasPrefix(path, "/api/v1/downloads/") && strings.HasSuffix(path, "/file") ||

@@ -139,7 +139,7 @@ func (manager *subtitleManager) fetchAPI(writer http.ResponseWriter, request *ht
 	}
 }
 
-func (manager *subtitleManager) fetchWantedAPI(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Missing fields receive defaults while explicit malformed values are rejected independently.
+func (manager *subtitleManager) fetchWantedAPI(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
 		Language json.RawMessage `json:"language"`
 		Limit    json.RawMessage `json:"limit"`
@@ -179,7 +179,7 @@ func (manager *subtitleManager) fetchWantedAPI(writer http.ResponseWriter, reque
 	}
 }
 
-func (manager *subtitleManager) maintainAPI(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // The API validates one bounded request before the shared maintenance operation.
+func (manager *subtitleManager) maintainAPI(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
 		Language json.RawMessage `json:"language"`
 		Limit    json.RawMessage `json:"limit"`

@@ -107,7 +107,7 @@ func TestPublicInternetListenerAllowsOnlyRemoteEnabledViewers(t *testing.T) {
 	}
 }
 
-func TestPublicQuickConnectRequiresStrongRemoteEnabledViewer(t *testing.T) { //nolint:cyclop,funlen // One scenario proves the full public Quick Connect policy and revocation path.
+func TestPublicQuickConnectRequiresStrongRemoteEnabledViewer(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	handler := server.New(server.Config{DataDir: dataDir, RequireAuth: true})
@@ -194,7 +194,7 @@ func TestPublicTripwireQuarantinesScannerWithoutStoppingLocalAccess(t *testing.T
 	}
 }
 
-func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) { //nolint:cyclop // One scenario proves immediate, local-safe, persistent kill behavior.
+func TestOwnerKillSwitchFailsPublicAccessClosedAndPersists(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	config := remoteaccess.Config{Enabled: true, PublicHTTPS: true, Domain: "family-media", Token: strings.Repeat("k", 32), Listen: "127.0.0.1:8443", DataDir: dataDir}

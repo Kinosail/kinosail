@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-func TestRefreshMetadataGroupsEpisodesAndReusesValidRecords(t *testing.T) { //nolint:cyclop,funlen // One refresh proves grouping, reuse, downloads, storage, and index refresh.
+func TestRefreshMetadataGroupsEpisodesAndReusesValidRecords(t *testing.T) {
 	t.Parallel()
 	items := []library.Item{
 		{ID: "movie", Kind: "video", Title: "Movie"},
@@ -64,7 +64,7 @@ func TestRefreshMetadataGroupsEpisodesAndReusesValidRecords(t *testing.T) { //no
 	}
 }
 
-func TestRefreshMetadataSelectsOnlyEligibleMissingVideo(t *testing.T) { //nolint:funlen // The candidate table protects owner artwork and free provider rules.
+func TestRefreshMetadataSelectsOnlyEligibleMissingVideo(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	movieArtwork := filepath.Join(directory, "movie.jpg")
@@ -104,7 +104,7 @@ func TestRefreshMetadataSelectsOnlyEligibleMissingVideo(t *testing.T) { //nolint
 	}
 }
 
-func TestRefreshMetadataPreservesPartialSuccessAndFailureOrder(t *testing.T) { //nolint:funlen // One table proves each ordered persistence failure boundary.
+func TestRefreshMetadataPreservesPartialSuccessAndFailureOrder(t *testing.T) {
 	t.Parallel()
 	failure := errors.New("failure")
 	item := library.Item{ID: "movie", Kind: "video"}

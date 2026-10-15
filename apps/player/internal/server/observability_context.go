@@ -70,7 +70,7 @@ func markSecurityRecorded(request *http.Request) {
 	}
 }
 
-func acceptedRequestID(value string) string { //nolint:cyclop // The inline allowlist makes accepted request-ID characters explicit.
+func acceptedRequestID(value string) string {
 	if value != "" && len(value) <= 64 && strings.IndexFunc(value, func(character rune) bool {
 		return character != '-' && character != '_' && (character < '0' || character > '9') && (character < 'A' || character > 'Z') && (character < 'a' || character > 'z')
 	}) == -1 {

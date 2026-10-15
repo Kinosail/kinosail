@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestPairing(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix proves pairing validation, limits, and entropy failures.
+func TestPairing(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{Source: testProfile{"owner"}, ID: "owner", Owner: true}}
 	integration := newTestIntegration(t, state)
 	integration.pairs["expired"] = pairing[testProfile]{Expires: state.now}
@@ -92,7 +92,7 @@ func TestPairingPage(t *testing.T) {
 	}
 }
 
-func TestPlayerAndCommandLifecycle(t *testing.T) { //nolint:cyclop,gocognit // Scores of 21 and 17 remain below the repository ceiling of 22 for one command lifecycle.
+func TestPlayerAndCommandLifecycle(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{ID: "owner"}, items: map[string]Item{"item": {ID: "item"}}}
 	integration := newTestIntegration(t, state)
 	valid := Player{Name: " Player ", State: "playing", Position: 1, Duration: 2, Volume: .5}
@@ -132,7 +132,7 @@ func TestPlayerAndCommandLifecycle(t *testing.T) { //nolint:cyclop,gocognit // S
 	}
 }
 
-func TestPlayerValidationBoundaries(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the validation matrix.
+func TestPlayerValidationBoundaries(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{ID: "owner"}, items: map[string]Item{"item": {ID: "item"}}}
 	integration := newTestIntegration(t, state)
 	valid := Player{Name: "Player", State: "playing", Position: 1, Duration: 2, Volume: .5}

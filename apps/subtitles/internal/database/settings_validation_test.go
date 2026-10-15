@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestOpenRejectsSemanticInvalidDatabaseBeforeInitializationWrites(t *testing.T) { //nolint:cyclop // Every invalid persisted-settings boundary is checked without side effects.
+func TestOpenRejectsSemanticInvalidDatabaseBeforeInitializationWrites(t *testing.T) {
 	directory := t.TempDir()
 	store, err := Open(directory, false)
 	if err != nil {

@@ -22,7 +22,7 @@ func (manager *downloadManager) registerWeb(mux *http.ServeMux, index *libraryIn
 	downloads.RegisterWeb(mux, manager.Manager, downloadAccess(index), downloadsView, localizedError, localizedNotFound)
 }
 
-func (manager *downloadManager) registerAPI(mux *http.ServeMux, index *libraryIndex) { //nolint:cyclop,gocognit // Registration keeps the download API lifecycle together.
+func (manager *downloadManager) registerAPI(mux *http.ServeMux, index *libraryIndex) {
 	downloads.RegisterAPI(mux, manager.Manager, downloadAccess(index))
 }
 

@@ -66,7 +66,7 @@ func checkTMDBToken(ctx context.Context, baseURL, token string) error {
 	return nil
 }
 
-func (store *settingsStore) changeTMDBConfiguration(ctx context.Context, token string, reset bool) error { //nolint:cyclop,gocognit // Validation and the guarded configuration transaction stay together.
+func (store *settingsStore) changeTMDBConfiguration(ctx context.Context, token string, reset bool) error {
 	store.mu.RLock()
 	file, baseURL, managed := store.file, store.config.String("integrations.tmdb.url"), store.config.Managed(tmdbTokenKey)
 	store.mu.RUnlock()

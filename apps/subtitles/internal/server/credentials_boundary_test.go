@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestUnsafePasswordsAreRejectedWithoutAccountSideEffects(t *testing.T) { //nolint:cyclop // The table covers all password trust-boundary cases.
+func TestUnsafePasswordsAreRejectedWithoutAccountSideEffects(t *testing.T) {
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	rejected := map[string]string{"common": "qwertyqwerty", "oversized": strings.Repeat("x", 1025)}
 	for name, password := range rejected {

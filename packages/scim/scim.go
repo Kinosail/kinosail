@@ -48,7 +48,7 @@ func (api *scimAPI) register(mux *http.ServeMux) {
 	mux.Handle(deleteUserPattern, api.protect(http.HandlerFunc(api.deleteProfile)))
 }
 
-func (api *scimAPI) protect(next http.Handler) http.Handler { //nolint:cyclop // Authentication failures stay in wire-protocol order.
+func (api *scimAPI) protect(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer = scimResponseWriter{ResponseWriter: writer, json: scimWantsJSON(request)}
 		if api.config.Token == "" {
@@ -145,7 +145,7 @@ func (api *scimAPI) createProfile(writer http.ResponseWriter, request *http.Requ
 		writeSCIMValidationError(writer, err)
 		return
 	}
-	profile, err := api.repository.Create(input) //nolint:contextcheck // The validated SCIM write and related session revocation must commit together.
+	profile, err := api.repository.Create(input)
 	if err != nil {
 		writeSCIMStoreError(writer, err)
 		return
@@ -204,7 +204,7 @@ func (api *scimAPI) replaceProfile(writer http.ResponseWriter, request *http.Req
 		writeSCIMValidationError(writer, err)
 		return
 	}
-	profile, err := api.repository.Update(id, input, expected) //nolint:contextcheck // The validated SCIM write must finish durably after client cancellation.
+	profile, err := api.repository.Update(id, input, expected)
 	if err != nil {
 		writeSCIMStoreError(writer, err)
 		return
@@ -212,7 +212,7 @@ func (api *scimAPI) replaceProfile(writer http.ResponseWriter, request *http.Req
 	writeSCIMResource(writer, profile, selection, http.StatusOK, false)
 }
 
-func (api *scimAPI) patchProfile(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Request validation precedes the single atomic patch operation.
+func (api *scimAPI) patchProfile(writer http.ResponseWriter, request *http.Request) {
 	id, err := scimPathID(request)
 	if err != nil {
 		writeSCIMValidationError(writer, err)
@@ -249,7 +249,7 @@ func (api *scimAPI) patchProfile(writer http.ResponseWriter, request *http.Reque
 		writeSCIMValidationError(writer, err)
 		return
 	}
-	profile, err = api.repository.Update(id, input, expected) //nolint:contextcheck // The validated SCIM write must finish durably after client cancellation.
+	profile, err = api.repository.Update(id, input, expected)
 	if err != nil {
 		writeSCIMStoreError(writer, err)
 		return
@@ -276,7 +276,7 @@ func (api *scimAPI) deleteProfile(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 	expected := strings.TrimSpace(request.Header.Get("If-Match"))
-	if err := api.repository.Delete(id, expected); err != nil { //nolint:contextcheck // Deprovisioning, precondition, and session revocation must commit together.
+	if err := api.repository.Delete(id, expected); err != nil {
 		writeSCIMStoreError(writer, err)
 		return
 	}

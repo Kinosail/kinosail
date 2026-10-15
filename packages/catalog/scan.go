@@ -92,7 +92,7 @@ func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan 
 	}
 }
 
-func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) { //nolint:cyclop,gocognit // Bounded dispatch and ordered publication share one cancellation boundary.
+func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) {
 	items := make([]library.Item, 0)
 	if len(roots) == 0 {
 		if decorate != nil {

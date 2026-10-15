@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestScanBuildsRichLibraryItemsFromLocalSidecars(t *testing.T) { //nolint:cyclop,gocognit,funlen // One filesystem fixture specifies the complete public scan result.
+func TestScanBuildsRichLibraryItemsFromLocalSidecars(t *testing.T) {
 	root := t.TempDir()
 	for _, directory := range []string{"Shows/Season 1", "Music", "Audiobooks/Novel", "Photos"} {
 		if err := os.MkdirAll(filepath.Join(root, directory), 0o700); err != nil {
@@ -85,7 +85,7 @@ func TestScanHandlesEmptyAndUnavailableLibraries(t *testing.T) {
 	}
 }
 
-func TestOrganizersHandleFallbackMetadata(t *testing.T) { //nolint:cyclop // One workflow covers organizer fallback metadata.
+func TestOrganizersHandleFallbackMetadata(t *testing.T) {
 	items := []library.Item{
 		{ID: "episode-1", Kind: "video", Show: "Show", ShowTitle: "The Show", ShowArtwork: "poster", ShowBackdrop: "backdrop", ShowLogo: "logo", Season: 2, Episode: 2},
 		{ID: "episode-2", Kind: "video", Show: "Show", Artwork: "fallback", SeasonArtwork: "season", Season: 2, Episode: 1},

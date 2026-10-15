@@ -138,7 +138,7 @@ func validatePreference(fields map[string]json.RawMessage) error {
 	return nil
 }
 
-func parseLanguages(fields map[string]json.RawMessage) (Preferences, error) { //nolint:cyclop // Legacy and current language fields require joint compatibility validation.
+func parseLanguages(fields map[string]json.RawMessage) (Preferences, error) {
 	singularRaw, singularPresent := fields["subtitlelanguage"]
 	listRaw, listPresent := fields["subtitlelanguages"]
 	if singularPresent && bytes.Equal(bytes.TrimSpace(singularRaw), []byte("null")) || listPresent && bytes.Equal(bytes.TrimSpace(listRaw), []byte("null")) {
@@ -212,7 +212,7 @@ func Overlap(left, right string) bool {
 	return leftBase == rightBase && (left == leftBase || right == rightBase)
 }
 
-func fields(data []byte) (map[string]json.RawMessage, error) { //nolint:cyclop // Strict document parsing checks all structural boundaries together.
+func fields(data []byte) (map[string]json.RawMessage, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	token, err := decoder.Token()
 	if err != nil || token != json.Delim('{') {

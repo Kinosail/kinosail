@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestShowMetadataUsesFilenameIMDbIDAndDownloadsPosterOnce(t *testing.T) { //nolint:cyclop // One public task proves Show identity, provider lookup, caching, API, web, and artwork delivery.
+func TestShowMetadataUsesFilenameIMDbIDAndDownloadsPosterOnce(t *testing.T) {
 	finds, posters := 0, 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/tumble.jpg" && request.Header.Get("Authorization") != "Bearer token" {
@@ -70,7 +70,7 @@ func TestShowMetadataUsesFilenameIMDbIDAndDownloadsPosterOnce(t *testing.T) { //
 	}
 }
 
-func TestShowMetadataFallsBackFromRegionSuffixToUniqueYearMatch(t *testing.T) { //nolint:cyclop,gocognit // The live malformed-ID pattern remains strict while recovering a unique provider match.
+func TestShowMetadataFallsBackFromRegionSuffixToUniqueYearMatch(t *testing.T) {
 	searches, posters := 0, 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/golden.jpg" && request.Header.Get("Authorization") != "Bearer token" {
@@ -118,7 +118,7 @@ func TestShowMetadataFallsBackFromRegionSuffixToUniqueYearMatch(t *testing.T) { 
 	}
 }
 
-func TestShowMetadataFallsBackFromWrongYearToUniqueTitle(t *testing.T) { //nolint:cyclop,gocognit // A uniquely named Show can recover from a stale folder year without weakening ambiguous matching.
+func TestShowMetadataFallsBackFromWrongYearToUniqueTitle(t *testing.T) {
 	searches := 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/tumble.jpg" && request.Header.Get("Authorization") != "Bearer token" {
@@ -169,7 +169,7 @@ func TestShowMetadataFallsBackFromWrongYearToUniqueTitle(t *testing.T) { //nolin
 	}
 }
 
-func TestShowMetadataRejectsAmbiguousFallbackWithoutSideEffects(t *testing.T) { //nolint:cyclop // Ambiguous provider data cannot write metadata or artwork.
+func TestShowMetadataRejectsAmbiguousFallbackWithoutSideEffects(t *testing.T) {
 	images := 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.URL.Path {
@@ -205,7 +205,7 @@ func TestShowMetadataRejectsAmbiguousFallbackWithoutSideEffects(t *testing.T) { 
 	}
 }
 
-func TestShowMetadataPersistsSuccessfulGroupsWhenAnotherGroupFails(t *testing.T) { //nolint:cyclop // A partial provider failure remains visible without discarding valid independent work.
+func TestShowMetadataPersistsSuccessfulGroupsWhenAnotherGroupFails(t *testing.T) {
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.URL.Path {
 		case "/search/tv":

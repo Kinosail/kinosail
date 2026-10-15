@@ -16,7 +16,7 @@ func (adapter *Gateway) eventManage(ctx context.Context) bool {
 	return token != nil && contains(token.Scopes, ManageScope)
 }
 
-func (adapter *Gateway) eventIdentity(ctx context.Context, name string) (eventSubscription, error) { //nolint:cyclop // Host, grant, and external authority require distinct fail-closed checks.
+func (adapter *Gateway) eventIdentity(ctx context.Context, name string) (eventSubscription, error) {
 	profile, err := adapter.apiPrincipal(ctx)
 	if err != nil {
 		return eventSubscription{}, eventError(-32012, "event access is unavailable", nil)
@@ -48,7 +48,7 @@ func (adapter *Gateway) eventIdentity(ctx context.Context, name string) (eventSu
 	return identity, nil
 }
 
-func (adapter *Gateway) eventAllowed(ctx context.Context, subscription eventSubscription) bool { //nolint:cyclop,gocognit // Current profile, grant, and network policy must all authorize each delivery.
+func (adapter *Gateway) eventAllowed(ctx context.Context, subscription eventSubscription) bool {
 	now := adapter.connections.now()
 	if subscription.Expires <= now.Unix() || subscription.AuthorityExpires != 0 && subscription.AuthorityExpires <= now.Unix() {
 		return false

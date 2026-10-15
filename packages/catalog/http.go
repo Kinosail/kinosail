@@ -90,7 +90,7 @@ func (action WebAction) Serve(writer http.ResponseWriter, request *http.Request,
 	}
 }
 
-func CreatePlaylist(request *http.Request, viewer string, document func(string) (string, error), create func(context.Context, string, string, ...string) error) WebAction { //nolint:cyclop // Document and named creation share one strict boundary.
+func CreatePlaylist(request *http.Request, viewer string, document func(string) (string, error), create func(context.Context, string, string, ...string) error) WebAction {
 	values, err := listForm(request, "document", "name")
 	if err != nil {
 		return badListAction("invalid playlist document")

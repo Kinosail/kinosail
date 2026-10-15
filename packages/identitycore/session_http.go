@@ -59,7 +59,7 @@ func SessionTokenSource(request *http.Request, query QuerySessionToken) string {
 	return source
 }
 
-func sessionToken(request *http.Request, query QuerySessionToken) (string, string) { //nolint:cyclop // Compatibility token sources use a fixed precedence.
+func sessionToken(request *http.Request, query QuerySessionToken) (string, string) {
 	if request == nil {
 		return "", "none"
 	}

@@ -109,7 +109,7 @@ func restartOnboarding(settings *settingsStore) http.HandlerFunc {
 	}
 }
 
-func showSettings(settings *settingsStore, updates *updateChecker, profiles *profileStore, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, audit *auditStore, index *libraryIndex, hls *hlsManager, metadata *metadataStore, markers *markerAnalyzer, maintenance *maintenanceManager, imports *viewingImportManager, notifications, authURL string) http.HandlerFunc { //nolint:funlen,gocognit // The settings view assembles one read-only projection.
+func showSettings(settings *settingsStore, updates *updateChecker, profiles *profileStore, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, audit *auditStore, index *libraryIndex, hls *hlsManager, metadata *metadataStore, markers *markerAnalyzer, maintenance *maintenanceManager, imports *viewingImportManager, notifications, authURL string) http.HandlerFunc { //nolint:funlen // The settings view assembles one read-only projection.
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		transcoding := settings.transcoding()
@@ -218,7 +218,7 @@ func showSettings(settings *settingsStore, updates *updateChecker, profiles *pro
 	}
 }
 
-func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, progress *progressStore, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, quick *quickConnectBroker, shares *mediaShareStore, hls *hlsManager, metadata *metadataStore, markers *markerAnalyzer, backups *backupManager, maintenance *maintenanceManager, imports *viewingImportManager, homeAssistant *homeAssistantIntegration, events *liveEventHub, rooms *watchRoomAdapter, authURL string) { //nolint:funlen // Keep settings routes together for review.
+func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, progress *progressStore, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, quick *quickConnectBroker, shares *mediaShareStore, hls *hlsManager, metadata *metadataStore, markers *markerAnalyzer, backups *backupManager, maintenance *maintenanceManager, imports *viewingImportManager, homeAssistant *homeAssistantIntegration, events *liveEventHub, rooms *watchRoomAdapter, authURL string) {
 	registerOperations(mux, auth, settings, index, hls, metadata, maintenance, imports, events, rooms)
 	mux.Handle("GET /onboarding", auth.owner(http.HandlerFunc(showOnboardingStart)))
 	mux.Handle("GET /onboarding/connection", auth.owner(showOnboardingConnection(settings, updates, authURL)))
@@ -265,7 +265,7 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/profiles/remove", auth.owner(removeViewer(auth.profiles)))
 	mux.Handle("POST /settings/profiles/password", auth.owner(resetViewerPassword(auth.profiles)))
 	mux.Handle("POST /settings/profiles/permissions", auth.owner(setViewerPermissions(auth.profiles)))
-	mux.Handle("POST /settings/remote/kill", auth.owner(remoteaccess.KillHTTP(internet, func() error { return revokePublicAuthorization(auth.profiles, auth.passkeys, quick, shares) }, localizedError))) //nolint:contextcheck // Once the kill switch begins, revocation must finish despite request cancellation.
+	mux.Handle("POST /settings/remote/kill", auth.owner(remoteaccess.KillHTTP(internet, func() error { return revokePublicAuthorization(auth.profiles, auth.passkeys, quick, shares) }, localizedError)))
 	mux.Handle("POST /settings/remote/enable", auth.owner(remoteaccess.ResetKillHTTP(internet, localizedError)))
 	mux.Handle("GET /settings/backup", auth.freshOwner(downloadBackup(settings)))
 	mux.Handle("POST /settings/encrypted-backup", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

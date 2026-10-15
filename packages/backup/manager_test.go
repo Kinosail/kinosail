@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestManagerWritesVerifiesAndReportsEncryptedBackup(t *testing.T) { //nolint:cyclop // One test verifies the public backup lifecycle.
+func TestManagerWritesVerifiesAndReportsEncryptedBackup(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	manager := testManager(t.TempDir(), directory)

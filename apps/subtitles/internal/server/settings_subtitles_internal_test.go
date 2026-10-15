@@ -237,7 +237,7 @@ func TestSubtitleCoverageKeepsProviderAliasesOutOfLocalSidecars(t *testing.T) {
 	}
 }
 
-func TestEmbeddedToolsDoNotAdvertiseMissingItemLanguage(t *testing.T) { //nolint:cyclop // The table covers every embedded-tool language boundary.
+func TestEmbeddedToolsDoNotAdvertiseMissingItemLanguage(t *testing.T) {
 	root := t.TempDir()
 	item := library.Item{ID: "movie", Kind: "video", Path: filepath.Join(root, "Movie.mkv"), Title: "Movie"}
 	if err := os.WriteFile(item.Path, []byte("media"), 0o600); err != nil {

@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-//nolint:cyclop,gocognit,funlen // The complete real-handler browser journey preserves its cookie and security assertions together.
+//nolint:cyclop // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertPasskeyCookieIsolation(t *testing.T, handler http.Handler, origin, sessionName, ceremonyName, siblingCeremony string) {
 	t.Helper()
 	base, err := url.Parse(origin)

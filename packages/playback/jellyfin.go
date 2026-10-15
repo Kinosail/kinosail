@@ -39,7 +39,7 @@ type JellyfinMediaProfile struct {
 
 type JellyfinSubtitleProfile struct{ Format, Method string }
 
-func ReadJellyfinPlaybackRequest(request *http.Request) (JellyfinPlaybackRequest, bool, bool) { //nolint:cyclop // Strict decoding and semantic validation share one request boundary.
+func ReadJellyfinPlaybackRequest(request *http.Request) (JellyfinPlaybackRequest, bool, bool) {
 	if request == nil || request.Method != http.MethodPost || request.Body == nil {
 		return JellyfinPlaybackRequest{}, false, true
 	}
@@ -92,7 +92,7 @@ func validJellyfinSubtitleProfiles(profiles []JellyfinSubtitleProfile) bool {
 	return true
 }
 
-func JellyfinCapabilities(profile JellyfinDeviceProfile, facts MediaFacts) ClientCapabilities { //nolint:cyclop // Profile fields map explicitly onto the canonical planner.
+func JellyfinCapabilities(profile JellyfinDeviceProfile, facts MediaFacts) ClientCapabilities {
 	capabilities := ClientCapabilities{HDRFormats: []string{"sdr"}, DirectProfiles: profile.DirectPlayProfiles, CodecProfiles: profile.CodecProfiles, DeliveryProfiles: append(append([]JellyfinMediaProfile(nil), profile.DirectStreamProfiles...), profile.TranscodingProfiles...)}
 	for _, value := range profile.DirectPlayProfiles {
 		if !strings.EqualFold(value.Type, facts.Kind) && (facts.Kind != "video" || !strings.EqualFold(value.Type, "Video")) {
@@ -137,7 +137,7 @@ type JellyfinMediaSourceOptions struct {
 	TranscodingProtocolField string
 }
 
-func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan, options JellyfinMediaSourceOptions) (map[string]any, error) { //nolint:cyclop // The Jellyfin wire object is built from one validated playback plan.
+func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan, options JellyfinMediaSourceOptions) (map[string]any, error) {
 	if len(options.PlaySessionID) > 256 || len(options.Token) > 256 || options.TranscodingProtocolField != "TranscodingProtocol" && options.TranscodingProtocolField != "TranscodingSubProtocol" {
 		return nil, errors.New("jellyfin media source options are invalid")
 	}

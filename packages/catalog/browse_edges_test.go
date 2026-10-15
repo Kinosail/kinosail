@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestBrowseOrderingAndPagingEdges(t *testing.T) { //nolint:cyclop // One compact matrix executes every deterministic ordering fallback.
+func TestBrowseOrderingAndPagingEdges(t *testing.T) {
 	t.Parallel()
 	items := []*library.Item{{ID: "b", Title: "Beta"}, {ID: "a", Title: "Alpha"}}
 	if page := browsePage(items, len(items), len(items), 1); page != nil {
@@ -71,7 +71,7 @@ func TestSearchRankCoversEveryMatchShape(t *testing.T) {
 	}
 }
 
-func TestShowAndLetterProjectionEdges(t *testing.T) { //nolint:cyclop // Exact optional-field assertions protect the merged show projection.
+func TestShowAndLetterProjectionEdges(t *testing.T) {
 	t.Parallel()
 	cast := []library.Person{{Name: "Actor"}}
 	item := &library.Item{

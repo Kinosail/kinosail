@@ -19,13 +19,13 @@ const (
 )
 
 var (
-	ErrCapacity        = errors.New("too many Quick Connect requests")                       //nolint:staticcheck // Product term starts with a capital.
-	ErrPending         = errors.New("Quick Connect is pending")                              //nolint:staticcheck // Product term starts with a capital.
-	ErrNotFound        = errors.New("Quick Connect request was not found")                   //nolint:staticcheck // Product term starts with a capital.
-	ErrInvalidCode     = errors.New("Quick Connect code is invalid or expired")              //nolint:staticcheck // Product term starts with a capital.
-	ErrAlreadyApproved = errors.New("Quick Connect code is already approved")                //nolint:staticcheck // Product term starts with a capital.
-	ErrRemoteViewer    = errors.New("public Quick Connect requires a remote-enabled Viewer") //nolint:staticcheck // Product terms start with capitals.
-	ErrInvalidRequest  = errors.New("Quick Connect request is invalid")                      //nolint:staticcheck // Product term starts with a capital.
+	ErrCapacity        = errors.New("too many Quick Connect requests")
+	ErrPending         = errors.New("Quick Connect is pending")
+	ErrNotFound        = errors.New("Quick Connect request was not found")
+	ErrInvalidCode     = errors.New("Quick Connect code is invalid or expired")
+	ErrAlreadyApproved = errors.New("Quick Connect code is already approved")
+	ErrRemoteViewer    = errors.New("public Quick Connect requires a remote-enabled Viewer")
+	ErrInvalidRequest  = errors.New("Quick Connect request is invalid")
 )
 
 type Request struct {

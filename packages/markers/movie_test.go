@@ -79,7 +79,7 @@ func TestMovieOpeningRequiresThreeTitlesAndVisualConsensus(t *testing.T) {
 func TestMarkerCandidatePairsAndStaleDetectorVersion(t *testing.T) {
 	items := make([]episodeFingerprint, 1000)
 	for index := range items {
-		items[index].opening = sequence(300, uint32(index+1)*1000000) //nolint:gosec // Fixture index is bounded.
+		items[index].opening = sequence(300, uint32(index+1)*1000000)
 		items[index].openingVisual = visualSequence(300, uint64(index+1)*1000000)
 	}
 	if pairs := markerCandidatePairs(items); len(pairs) != 0 {

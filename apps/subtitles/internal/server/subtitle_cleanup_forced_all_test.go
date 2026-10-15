@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages(t *testing.T) { //nolint:gocognit,funlen,cyclop // One public journey proves the preview, hidden files, saved choice, and playback options agree.
+func TestCleanupKeepsForcedInEveryLanguageButHidesUnselectedLanguages(t *testing.T) {
 	media, tools := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mp4"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt", "Film.it.srt", "Film.en.forced.srt", "Film.fr.forced.srt", "Film.de.forced.vtt"} {

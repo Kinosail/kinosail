@@ -101,7 +101,7 @@ func TestTrustedProxyPreservesRemoteListenerWithoutTrustingForwardedHeaders(t *t
 	}))).ServeHTTP(httptest.NewRecorder(), request)
 }
 
-func TestAllowedHost(t *testing.T) { //nolint:cyclop,gocognit // One host-policy fixture covers origin, alias, loopback, and invalid configuration paths.
+func TestAllowedHost(t *testing.T) {
 	t.Parallel()
 	reject := func(writer http.ResponseWriter, _ *http.Request, message string, status int) {
 		http.Error(writer, message, status)

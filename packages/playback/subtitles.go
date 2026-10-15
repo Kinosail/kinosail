@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func MapWebVTT(data []byte, timeline Timeline) []byte { //nolint:cyclop,gocognit // Each independent cue is parsed, mapped, or removed in one pass.
+func MapWebVTT(data []byte, timeline Timeline) []byte {
 	blocks := strings.Split(normalizeSubtitleNewlines(data), "\n\n")
 	result := make([]string, 0, len(blocks))
 	for _, block := range blocks {

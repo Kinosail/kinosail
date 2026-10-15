@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestInvalidStoredJSONCausesNoConfigurationMutation(t *testing.T) { //nolint:gocognit // One matrix proves identical no-side-effect behavior for every invalid stored document.
+func TestInvalidStoredJSONCausesNoConfigurationMutation(t *testing.T) {
 	for name, document := range invalidStoredJSONDocuments(t) {
 		t.Run(name, func(t *testing.T) {
 			directory := t.TempDir()

@@ -18,7 +18,7 @@ func TestMediaShareContract(t *testing.T) {
 	})
 }
 
-func TestKillSwitchRevokesEveryPublicAuthorizationArtifact(t *testing.T) { //nolint:cyclop // One integration flow proves every public authorization artifact is revoked together.
+func TestKillSwitchRevokesEveryPublicAuthorizationArtifact(t *testing.T) {
 	directory := t.TempDir()
 	profiles := newProfileStore(directory)
 	owner, err := newProfile("Owner", "owner-password", true)

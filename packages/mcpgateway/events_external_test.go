@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestExternalEventsRequireBoundedClientIdentityAndExpireWithToken(t *testing.T) { //nolint:cyclop,gocognit // The introspected-token journey owns rejection and expiry behavior for every client case.
+func TestExternalEventsRequireBoundedClientIdentityAndExpireWithToken(t *testing.T) {
 	for _, clientID := range []string{"", strings.Repeat("x", 2049), "external-client"} {
 		t.Run(clientID[:min(len(clientID), 16)], func(t *testing.T) {
 			fixture := newEventFixture(t)

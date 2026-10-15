@@ -96,7 +96,7 @@ func checkBackend(options Settings, backend string) string {
 }
 
 func runFFmpeg(ctx context.Context, ffmpeg string, arguments ...string) error {
-	return exec.CommandContext(ctx, ffmpeg, arguments...).Run() //nolint:gosec // FFmpeg is explicit installation configuration.
+	return exec.CommandContext(ctx, ffmpeg, arguments...).Run()
 }
 
 func checkSetup(ffmpeg string, options Settings) string {

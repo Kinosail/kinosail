@@ -60,7 +60,7 @@ func TestTraceReaderRejectsBeforeCallerSideEffects(t *testing.T) {
 	}
 }
 
-func TestJellyfinPlaybackRequestAndCapabilities(t *testing.T) { //nolint:cyclop // Strict wire input and its capability result share one contract.
+func TestJellyfinPlaybackRequestAndCapabilities(t *testing.T) {
 	t.Parallel()
 	body := `{"DeviceProfile":{"DirectPlayProfiles":[{"Container":"matroska,mp4","Type":"Video","VideoCodec":"h264,hevc","AudioCodec":"aac"}],"DirectStreamProfiles":[{"Container":"mp4"}],"TranscodingProfiles":[{"VideoCodec":"hevc,h264"}],"SubtitleProfiles":[{"Format":"vtt","Method":"External"}]},"MaxStreamingBitrate":4000000}`
 	input, provided, valid := ReadJellyfinPlaybackRequest(httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/", strings.NewReader(body)))
@@ -87,7 +87,7 @@ func TestJellyfinPlaybackRequestAndCapabilities(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestJellyfinMediaSourcePreservesBothProductContracts(t *testing.T) { //nolint:cyclop // Player and Subtitles wire compatibility is compared together.
+func TestJellyfinMediaSourcePreservesBothProductContracts(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "0123456789abcdef", Title: "Film", Size: 42, Subtitles: []string{"film.en.srt"}}
 	facts := MediaFacts{Container: "mkv", Duration: 100, Video: VideoFacts{Codec: "h264", Profile: "high", Level: "4.1", Width: 1920, Height: 1080, BitDepth: 8}, Audio: []AudioFacts{{Index: 2, SourceIndex: 4, Codec: "aac", Default: true}}, Subtitles: []SubtitleFacts{{SourceIndex: 6, Codec: "vtt", Text: true}}}
@@ -112,7 +112,7 @@ func TestJellyfinMediaSourcePreservesBothProductContracts(t *testing.T) { //noli
 	}
 }
 
-func TestJellyfinRoutesSessionsAndBitrate(t *testing.T) { //nolint:cyclop // Related Jellyfin protocol adapters share one focused test.
+func TestJellyfinRoutesSessionsAndBitrate(t *testing.T) {
 	called := 0
 	handler := func(http.ResponseWriter, *http.Request) { called++ }
 	mux := http.NewServeMux()
@@ -176,7 +176,7 @@ func (session testJellyfinSession) JellyfinProfile() (string, uint64) {
 func (session testJellyfinSession) JellyfinExpires() time.Time { return session.expires }
 func (session testJellyfinSession) JellyfinPublic() bool       { return session.public }
 
-func TestSubtitlesAndTrickplay(t *testing.T) { //nolint:cyclop // Presentation-time helpers are tested together.
+func TestSubtitlesAndTrickplay(t *testing.T) {
 	timeline := Timeline{SourceDuration: 20, Duration: 10, Omitted: []Range{{Start: 5, End: 15}}}
 	input := []byte("WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nkeep\n\n00:00:06.000 --> 00:00:08.000\ndrop\n\n00:00:16.000 --> 00:00:18.000 line:0\nshift")
 	output := string(MapWebVTT(input, timeline))

@@ -48,7 +48,7 @@ func jellyfinCompatibility(settings *settingsStore, next http.Handler) http.Hand
 	})
 }
 
-func saveJellyfinCompatibility(settings *settingsStore, redirect string) http.HandlerFunc { //nolint:cyclop,gocognit // Compatibility settings use one validated web mutation path.
+func saveJellyfinCompatibility(settings *settingsStore, redirect string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := request.ParseForm(); err != nil {
 			localizedError(writer, request, "invalid Jellyfin form", http.StatusBadRequest)

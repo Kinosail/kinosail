@@ -78,7 +78,7 @@ func (loader Loader) flatten(prefix string, input map[string]any, output map[str
 	return nil
 }
 
-func (loader Loader) yamlValue(name string, item any) (string, error) { //nolint:cyclop,gocognit // Scores of 19 and 21 remain below the repository ceiling of 22 for one strict scalar decoder.
+func (loader Loader) yamlValue(name string, item any) (string, error) {
 	invalid := func() (string, error) { return "", fmt.Errorf("invalid %s: wrong YAML value type", name) }
 	if loader.retired(name) {
 		if value, ok := item.(string); ok {

@@ -137,7 +137,7 @@ func (store ProfileStore) commitProfilePolicy(profiles []Profile, index int, own
 	return nil
 }
 
-func (store ProfileStore) RemoveProfile(id string) error { //nolint:cyclop,gocognit // Scores of 12 and 18 remain below the repository ceiling of 22 for one atomic removal transaction.
+func (store ProfileStore) RemoveProfile(id string) error {
 	store.config.Mutex.Lock()
 	defer store.config.Mutex.Unlock()
 	profiles := make([]Profile, 0, len(*store.config.Profiles))

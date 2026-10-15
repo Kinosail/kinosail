@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestParseOIDCConfigurationForm(t *testing.T) { //nolint:cyclop // The matrix covers each strict form field and envelope.
+func TestParseOIDCConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{
 		"key": {OIDCConfigurationKey}, "issuer": {"https://identity.example"}, "clientId": {"client"},

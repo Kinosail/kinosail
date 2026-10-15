@@ -63,7 +63,7 @@ func TestCoreAndQuickConnectRoutesPreserveContract(t *testing.T) {
 	}
 }
 
-func TestEntryProjectionsPreservePlayerContract(t *testing.T) { //nolint:cyclop // One projection test protects the complete compatibility response.
+func TestEntryProjectionsPreservePlayerContract(t *testing.T) {
 	info := SystemInfo("server", "Kinosail", "https://media.test", true)
 	wantInfo := map[string]any{"Id": "server", "ServerName": "Kinosail", "Version": Version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux", "StartupWizardCompleted": true, "LocalAddress": "https://media.test"}
 	if !reflect.DeepEqual(info, wantInfo) {
@@ -98,7 +98,7 @@ func TestJSONHelpersWriteExactUncachedResponses(t *testing.T) {
 	}
 }
 
-func TestPasswordAuthenticationPreservesValidationAndErrors(t *testing.T) { //nolint:cyclop,gocognit // One table proves every canonical HTTP translation.
+func TestPasswordAuthenticationPreservesValidationAndErrors(t *testing.T) {
 	called := 0
 	login := func(_ *http.Request, credentials Credentials) (Authentication, error) {
 		called++

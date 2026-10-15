@@ -18,7 +18,7 @@ type auditErrorWriter struct{}
 
 func (auditErrorWriter) Write([]byte) (int, error) { return 0, io.ErrClosedPipe }
 
-func TestJournalValidationAndViewFailureBranches(t *testing.T) { //nolint:cyclop // Exact validation assertions cover independent trust-boundary failures.
+func TestJournalValidationAndViewFailureBranches(t *testing.T) {
 	journal := New(t.Context(), Config{})
 	if journal.TripwireWarning() != "" {
 		t.Fatal("empty journal reported a tripwire warning")
@@ -47,7 +47,7 @@ func TestJournalValidationAndViewFailureBranches(t *testing.T) { //nolint:cyclop
 	}
 }
 
-func TestJournalDecoderFailureBranches(t *testing.T) { //nolint:cyclop,funlen // Direct decoder states cover otherwise malformed persisted inputs.
+func TestJournalDecoderFailureBranches(t *testing.T) {
 	journal := &Journal{}
 	line, err := json.Marshal(testEvent("event", "security", time.Now().UTC()))
 	if err != nil {
@@ -107,7 +107,7 @@ func TestJournalDecoderFailureBranches(t *testing.T) { //nolint:cyclop,funlen //
 	}
 }
 
-func TestJournalKeyAndLoadFailureBranches(t *testing.T) { //nolint:cyclop // Storage failures prove every load stage fails closed.
+func TestJournalKeyAndLoadFailureBranches(t *testing.T) {
 	directory := t.TempDir()
 	if err := os.Mkdir(filepath.Join(directory, "audit_key.json"), 0o700); err != nil {
 		t.Fatal(err)
@@ -165,7 +165,7 @@ func testRewriteFailureDuringLoad(t *testing.T) {
 	}
 }
 
-func TestJournalStorageFailureBranches(t *testing.T) { //nolint:cyclop,funlen,gocognit // Direct file states cover rollback and validation branches.
+func TestJournalStorageFailureBranches(t *testing.T) {
 	directory := t.TempDir()
 	oversized := testEvent("oversized", "security", time.Now().UTC())
 	oversized.Details = map[string]string{"value": strings.Repeat("x", maxAuditEventBytes)}
@@ -258,7 +258,7 @@ func TestJournalStorageFailureBranches(t *testing.T) { //nolint:cyclop,funlen,go
 	}
 }
 
-func TestJournalPruneRewriteAndOpenedValidationBranches(t *testing.T) { //nolint:cyclop // Limit and file-shape assertions cover bounded storage helpers.
+func TestJournalPruneRewriteAndOpenedValidationBranches(t *testing.T) {
 	events := make([]Event, maxActivityEvents+1)
 	for index := range events {
 		events[index] = testEvent("event", "security", time.Now().UTC())

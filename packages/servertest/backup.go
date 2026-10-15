@@ -31,7 +31,7 @@ func SQLiteBackupContract[Database SQLiteDatabase](t *testing.T, fixture SQLiteB
 	t.Run("restore rejects a non-regular SQLite target before changing state", fixture.rejectNonRegularRestoreTarget)
 }
 
-func (fixture SQLiteBackupFixture[Database]) sqliteRoundTrip(t *testing.T) { //nolint:cyclop // One end-to-end contract verifies every restored document below the project ceiling.
+func (fixture SQLiteBackupFixture[Database]) sqliteRoundTrip(t *testing.T) {
 	source := t.TempDir()
 	store, err := fixture.Open(source, false)
 	if err != nil {
@@ -74,7 +74,7 @@ func (fixture SQLiteBackupFixture[Database]) sqliteRoundTrip(t *testing.T) { //n
 	fixture.assertRestoredDocuments(t, destination, largeMetadata)
 }
 
-func (fixture SQLiteBackupFixture[Database]) assertRestoredDocuments(t *testing.T, destination, largeMetadata string) { //nolint:cyclop // One assertion covers the complete logical document set below the project ceiling.
+func (fixture SQLiteBackupFixture[Database]) assertRestoredDocuments(t *testing.T, destination, largeMetadata string) {
 	t.Helper()
 	restored, err := fixture.Open(destination, false)
 	if err != nil {

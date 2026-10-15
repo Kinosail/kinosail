@@ -79,7 +79,7 @@ func (probe *mfaDisableProbe) config() MFAHTTPConfig {
 	}
 }
 
-func TestMFADisableConfigurationFailsClosedBeforeCallbacks(t *testing.T) { //nolint:cyclop // The score of 13 remains below the repository ceiling of 22 for the callback matrix.
+func TestMFADisableConfigurationFailsClosedBeforeCallbacks(t *testing.T) {
 	validProbe := &mfaDisableProbe{}
 	valid := validProbe.config()
 	if !validMFAHTTPConfig(valid) {

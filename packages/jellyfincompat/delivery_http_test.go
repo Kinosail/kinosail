@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestDeliveryStreamPreservesPlayerSelectionOrder(t *testing.T) { //nolint:cyclop // Each route form selects one delivery mode.
+func TestDeliveryStreamPreservesPlayerSelectionOrder(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	module := state.module()
@@ -51,7 +51,7 @@ func TestDeliveryStreamPreservesPlayerSelectionOrder(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestDeliveryExplicitHLSValidatesBeforeServing(t *testing.T) { //nolint:cyclop // The table protects explicit Player HLS forms.
+func TestDeliveryExplicitHLSValidatesBeforeServing(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	module := state.module()
@@ -89,7 +89,7 @@ func TestDeliveryExplicitHLSValidatesBeforeServing(t *testing.T) { //nolint:cycl
 	}
 }
 
-func TestDeliverySessionHLSAndAutomaticSkipUseAppPolicy(t *testing.T) { //nolint:cyclop // Player and Subtitles choose distinct session policies.
+func TestDeliverySessionHLSAndAutomaticSkipUseAppPolicy(t *testing.T) {
 	t.Parallel()
 	state := newDeliveryState(t)
 	module := state.module()

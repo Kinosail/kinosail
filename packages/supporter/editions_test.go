@@ -38,7 +38,7 @@ func TestActivationRequiresConfiguredIssuerKey(t *testing.T) {
 	}
 }
 
-func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) { //nolint:cyclop,gocognit // Each permutation checks persistence, downgrade and expiry together.
+func TestThreeEditionsCoexistInEveryActivationOrder(t *testing.T) {
 	for _, order := range [][]string{{EditionOnce, EditionMonthly, EditionYearly}, {EditionOnce, EditionYearly, EditionMonthly}, {EditionMonthly, EditionOnce, EditionYearly}, {EditionMonthly, EditionYearly, EditionOnce}, {EditionYearly, EditionOnce, EditionMonthly}, {EditionYearly, EditionMonthly, EditionOnce}} {
 		t.Run(strings.Join(order, "-"), func(t *testing.T) {
 			fixture := newSigningFixture(t)
@@ -99,7 +99,7 @@ func TestEditionClaimsRejectInvalidAndConflictingValues(t *testing.T) {
 	}
 }
 
-func TestEditionSaveFailureAndActivePrecedence(t *testing.T) { //nolint:cyclop // Public state transitions include failure and recovery.
+func TestEditionSaveFailureAndActivePrecedence(t *testing.T) {
 	fixture := newSigningFixture(t)
 	fixture.edition = EditionMonthly
 	fixture.family = FamilyLiving
@@ -125,7 +125,7 @@ func TestEditionSaveFailureAndActivePrecedence(t *testing.T) { //nolint:cyclop /
 	}
 }
 
-func TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds(t *testing.T) { //nolint:cyclop // This table verifies all edition term bounds and persistence effects together.
+func TestYearlyCertificateCoversPaidYearWithoutWeakeningMonthlyOrLegacyBounds(t *testing.T) {
 	fixture := newSigningFixture(t)
 	fixture.edition, fixture.family, fixture.expiresIn = EditionYearly, FamilyLiving, 365*24*time.Hour
 	service, _ := fixtureService(t, fixture)

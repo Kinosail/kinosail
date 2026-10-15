@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestCapabilityLookupAndEncoderResolution(t *testing.T) { //nolint:cyclop,gocognit // One capability snapshot exercises the mutually dependent lookup and fallback policy.
+func TestCapabilityLookupAndEncoderResolution(t *testing.T) {
 	t.Parallel()
 	capabilities := Capabilities{
 		Backends: []Backend{

@@ -123,7 +123,7 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 		return nil, manager.remainingAACCacheAsset(ctx, item, recipe, name)
 	}
 	duration := manager.probe.duration(ctx, item)
-	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8")) //nolint:gosec // The path passed the HLS file allowlist.
+	manifest, err := os.ReadFile(filepath.Join(filepath.Dir(path), "index.m3u8"))
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +218,6 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 		job.cachePolicy = options.Cache
 		manager.jobs[key] = job
 		manager.mu.Unlock()
-		//nolint:contextcheck // Encoding uses the Server lifecycle so a disconnected segment request does not destroy shared output.
 		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
 		return job, nil
 	}
@@ -287,7 +286,7 @@ func preserveInactiveHLS(job *hlsJob, directory, source, cache string) bool {
 		preserve = job.err == nil
 	}
 	if !preserve {
-		_ = os.RemoveAll(directory) //nolint:gosec // The key is a validated cache name.
+		_ = os.RemoveAll(directory)
 	}
 	return preserve
 }

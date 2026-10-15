@@ -48,7 +48,7 @@ func showCards(request *http.Request, progress *progressStore, shows []library.S
 	return result
 }
 
-func browseShow(index *libraryIndex, progress *progressStore) http.HandlerFunc { //nolint:gocognit,cyclop // One projection preserves episode order, seasons, and next-up choice.
+func browseShow(index *libraryIndex, progress *progressStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		items, _ := visibleLibrary(request, index)
 		_, shows := library.Organize(items)

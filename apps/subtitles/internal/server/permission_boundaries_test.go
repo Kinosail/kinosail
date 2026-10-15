@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolint:cyclop,funlen // One known item is probed through every public content adapter.
+func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	setupPolicyMedia(t, mediaDir, dataDir)
@@ -103,7 +103,7 @@ func TestViewerCannotReachContentOutsideGrantedLibraries(t *testing.T) { //nolin
 	}
 }
 
-func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) { //nolint:cyclop,funlen,gocognit // The same least-privilege profile is checked through web, API, and Jellyfin routes.
+func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	setupPolicyMedia(t, mediaDir, dataDir)

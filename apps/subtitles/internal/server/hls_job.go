@@ -32,7 +32,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			continue
 		}
 		if job == nil {
-			//nolint:gosec // Key is a scanned ID plus a validated recipe.
 			if err := os.RemoveAll(filepath.Join(manager.cache, key)); err != nil {
 				manager.mu.Unlock()
 				return nil, err

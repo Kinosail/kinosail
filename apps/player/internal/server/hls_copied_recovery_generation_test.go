@@ -111,7 +111,7 @@ func copiedRecoveryProbe(t *testing.T, manager *hlsManager, action string) {
 	body := "#!/bin/sh\nset -eu\ncat >/dev/null\n" + action + "\nprintf '%s' '{\"packets\":[{\"pts_time\":\"0.083333\",\"flags\":\"K\"}]}'\n"
 	if err := os.WriteFile(probe, []byte(body), 0o700); err != nil { //nolint:gosec // Owned executable probe stand-in, not data-file permissions.
 		t.Fatal(err)
-	} //nolint:gosec // Fixed local stand-in, never real media.
+	}
 	manager.probe.executable = probe
 }
 

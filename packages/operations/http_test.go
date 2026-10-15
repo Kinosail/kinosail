@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestRegisterWebServesPlayerOperationalContract(t *testing.T) { //nolint:cyclop,funlen // One route test proves the complete shared registry.
+func TestRegisterWebServesPlayerOperationalContract(t *testing.T) {
 	t.Parallel()
 	mux := http.NewServeMux()
 	var ownerCalls, scanCalls, metadataCalls, maintainCalls int
@@ -49,7 +49,7 @@ func TestRegisterWebServesPlayerOperationalContract(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestTaskHandlersTranslateFailuresAndSelections(t *testing.T) { //nolint:cyclop,funlen // One table proves all task names and shared failure behavior.
+func TestTaskHandlersTranslateFailuresAndSelections(t *testing.T) {
 	t.Parallel()
 	failure := errors.New("task failed")
 	var errorValue error
@@ -89,7 +89,7 @@ func TestTaskHandlersTranslateFailuresAndSelections(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestMetricsHandlerWritesEveryPlayerMetric(t *testing.T) { //nolint:funlen // Exact body comparison protects every stable metric name and value.
+func TestMetricsHandlerWritesEveryPlayerMetric(t *testing.T) {
 	t.Parallel()
 	value := Metrics{
 		Healthy: true, LibraryMonitoring: true, LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6, ActivityFailures: 7,

@@ -7,7 +7,7 @@ type hardwareDefinition struct {
 	reason, action        string
 }
 
-func hardwareDefinitions(goos, goarch string, hasDevice func(...string) bool, platform string) []hardwareDefinition { //nolint:cyclop,gocognit // Platform capability mapping stays explicit and fail-closed.
+func hardwareDefinitions(goos, goarch string, hasDevice func(...string) bool, platform string) []hardwareDefinition {
 	return []hardwareDefinition{
 		{id: "qsv", name: "Intel Quick Sync", encoder: "h264_qsv", hw: "qsv", device: goos == "windows" || hasDevice("render"), supported: qsvSupported(goos, goarch), reason: "Use an x86-64 Linux or Windows Server.", action: "Make /dev/dri available on the host, then rerun the installer. It adds container access automatically."},
 		{id: "cuda", name: "NVIDIA NVENC/NVDEC", encoder: "h264_nvenc", hw: "cuda", device: goos == "windows" || hasDevice("nvidia"), supported: cudaSupported(goos, goarch), reason: "Use a Linux or x86-64 Windows Server.", action: "Install the NVIDIA driver and Container Toolkit, then rerun the installer."},

@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCollectionHandlersValidateBeforeMutation(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix proves the complete shared API boundary.
+func TestCollectionHandlersValidateBeforeMutation(t *testing.T) {
 	index := &collectionIndexStub{items: []library.Item{{ID: "one"}}, visible: library.Item{ID: "one"}, found: true}
 	progress := &collectionProgressStub{}
 	store := &collectionStoreStub{names: []string{"Favorites"}, selected: []library.Item{{ID: "one"}}}
@@ -82,7 +82,7 @@ func TestCollectionHandlersValidateBeforeMutation(t *testing.T) { //nolint:cyclo
 	assertResponse(http.MethodDelete, "/collections/Favorites", "", handlers.Delete, http.StatusInternalServerError)
 }
 
-func TestListActionsValidateBeforePersistence(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix covers each web mutation and its rejection boundary.
+func TestListActionsValidateBeforePersistence(t *testing.T) {
 	calls := 0
 	create := func(context.Context, string, string, ...string) error { calls++; return nil }
 	document := func(raw string) (string, error) { calls++; return raw, nil }

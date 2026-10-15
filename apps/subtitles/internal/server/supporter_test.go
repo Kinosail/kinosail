@@ -56,7 +56,7 @@ func newSupporterSigner(t *testing.T) *supporterSigner {
 	}
 }
 
-func (signer *supporterSigner) handler(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // The test provider emits one complete certificate fixture.
+func (signer *supporterSigner) handler(writer http.ResponseWriter, request *http.Request) {
 	signer.mu.Lock()
 	defer signer.mu.Unlock()
 	signer.calls.Add(1)

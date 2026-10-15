@@ -160,7 +160,7 @@ func (rooms *Rooms) Metrics() Metrics {
 	return Metrics{connections, rooms.joins, rooms.reconnects, rooms.slowDrops, rooms.driftObservations, rooms.driftSeconds}
 }
 
-func (rooms *Rooms) Update(subscription *Subscription, event Event, authorized bool) bool { //nolint:cyclop // One locked transition preserves ordering, authorization, revision, and queue invariants.
+func (rooms *Rooms) Update(subscription *Subscription, event Event, authorized bool) bool {
 	if subscription == nil || subscription.rooms != rooms {
 		return false
 	}

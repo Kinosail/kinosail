@@ -21,7 +21,7 @@ func TestRunStdioCommandFallsBackWhenRelayIsUnavailable(t *testing.T) {
 	}
 }
 
-func TestRunStdioCommandValidatesAndExecutesRelay(t *testing.T) { //nolint:cyclop,funlen // Each relay resource boundary is verified together.
+func TestRunStdioCommandValidatesAndExecutesRelay(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	path := filepath.Join(directory, "socat")

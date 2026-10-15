@@ -97,11 +97,11 @@ type Album struct {
 	Tracks    []Item
 }
 
-func scanItem(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog) (Item, error) { //nolint:cyclop,funlen,gocognit // One scanned path is normalized into one complete library item.
+func scanItem(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog) (Item, error) {
 	return scanItemWithRelative(root, namespace, path, entry, kind, catalog, filepath.Rel)
 }
 
-func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog, relativePath func(string, string) (string, error)) (Item, error) { //nolint:cyclop,funlen,gocognit // One scanned path is normalized into one complete library item.
+func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog, relativePath func(string, string) (string, error)) (Item, error) {
 	relative, err := relativePath(root, path)
 	if err != nil {
 		return Item{}, err
@@ -246,7 +246,7 @@ func mediaKind(extension string) string {
 	}
 }
 
-func (catalog *scanCatalog) sidecarArtwork(path string) bool { //nolint:cyclop // Fixed artwork names and suffixes remain an explicit allowlist.
+func (catalog *scanCatalog) sidecarArtwork(path string) bool {
 	base := strings.TrimSuffix(path, filepath.Ext(path))
 	if catalog.hasMedia(base) {
 		return true

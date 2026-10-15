@@ -109,7 +109,7 @@ func (manager *Manager) readJob(entry os.DirEntry) (Job, bool, error) {
 }
 
 func (manager *Manager) loadJob(path string) (Job, error) {
-	file, err := os.Open(path) //nolint:gosec // Path is a direct child of the download cache.
+	file, err := os.Open(path)
 	if err != nil {
 		return Job{}, err
 	}

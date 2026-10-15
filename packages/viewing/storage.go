@@ -22,8 +22,8 @@ const (
 	maximumSyncSeconds   = 31_622_400
 )
 
-func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sync, error) { //nolint:cyclop // Restore validates every persisted invariant before accepting any state.
-	reader, err := os.Open(file) //nolint:gosec // The app owns the configured durable-state path.
+func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sync, error) {
+	reader, err := os.Open(file)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return make(map[string]Sync), nil
@@ -53,7 +53,7 @@ func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sy
 	return syncs, nil
 }
 
-func normalizeSync(id string, sync Sync, normalize func(Input) (Input, error)) (Sync, error) { //nolint:cyclop // Durable state validates every invariant before admission.
+func normalizeSync(id string, sync Sync, normalize func(Input) (Input, error)) (Sync, error) {
 	input, inputErr := normalize(Input{Source: sync.Source, URL: sync.URL, Token: sync.Token, SourceUser: sync.SourceUser, ProfileID: sync.ProfileID})
 	if inputErr != nil || id != sync.ID || !ValidID(id) || !ValidSyncInterval(sync.Interval) {
 		return Sync{}, errors.New("viewing activity sync state is invalid")
@@ -77,7 +77,7 @@ func validObservation(key string, observation Observation) bool {
 	return withinMaximum(len(observation.TargetID), 512) && withinMaximum(len(observation.Signature), 2048)
 }
 
-func ValidPending(pending *SyncPending) bool { //nolint:cyclop,gocognit // Persisted recovery state is a trust boundary.
+func ValidPending(pending *SyncPending) bool {
 	if pending == nil {
 		return true
 	}

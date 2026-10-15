@@ -88,7 +88,7 @@ type manualMarkerInput struct {
 	End   float64 `json:"end"`
 }
 
-func readManualMarker(writer http.ResponseWriter, request *http.Request) (manualMarkerInput, error) { //nolint:cyclop // JSON and form transports share one bounded marker parser.
+func readManualMarker(writer http.ResponseWriter, request *http.Request) (manualMarkerInput, error) {
 	request.Body = http.MaxBytesReader(writer, request.Body, 4<<10)
 	if request.Method == http.MethodPut {
 		mediaType, _, err := mime.ParseMediaType(request.Header.Get("Content-Type"))
@@ -114,7 +114,7 @@ func readManualMarker(writer http.ResponseWriter, request *http.Request) (manual
 	return manualMarkerInput{Type: markerType, Start: start, End: end}, nil
 }
 
-func (admin Admin) removeManual(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Both API and form routes enforce the same bounded removal operation.
+func (admin Admin) removeManual(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	if !validMarkerItemID(id) {
 		admin.NotFound(writer, request)

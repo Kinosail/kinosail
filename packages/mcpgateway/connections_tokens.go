@@ -17,7 +17,7 @@ import (
 	mcpauth "github.com/modelcontextprotocol/go-sdk/auth"
 )
 
-func (connections *Connections) token(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Grant-specific validation stays ordered and consumes one-use credentials.
+func (connections *Connections) token(writer http.ResponseWriter, request *http.Request) {
 	if !formEncoded(request) || request.Header.Get("Authorization") != "" || request.URL.RawQuery != "" || request.ContentLength > 64<<10 {
 		oauthError(writer, "invalid_request", http.StatusBadRequest)
 		return
@@ -44,7 +44,7 @@ func (connections *Connections) token(writer http.ResponseWriter, request *http.
 	}
 }
 
-func (connections *Connections) exchangeCode(writer http.ResponseWriter, request *http.Request, clientID string) { //nolint:cyclop // The one-use authorization grant is validated and consumed as one boundary.
+func (connections *Connections) exchangeCode(writer http.ResponseWriter, request *http.Request, clientID string) {
 	form := request.PostForm
 	code, codeOK := oneValue(form, "code", 128)
 	redirectURI, redirectOK := oneValue(form, "redirect_uri", 2048)
@@ -70,7 +70,7 @@ func (connections *Connections) exchangeCode(writer http.ResponseWriter, request
 	connections.issue(writer, transaction.Client, profile, transaction.Scopes)
 }
 
-func (connections *Connections) refresh(writer http.ResponseWriter, request *http.Request, clientID string) { //nolint:cyclop // Refresh lookup, profile authorization, and rotation are one atomic operation.
+func (connections *Connections) refresh(writer http.ResponseWriter, request *http.Request, clientID string) {
 	form := request.PostForm
 	refresh, ok := oneValue(form, "refresh_token", 128)
 	if !ok || !onlyFormKeys(form, "grant_type", "client_id", "resource", "refresh_token") {
@@ -176,7 +176,7 @@ func (connections *Connections) VerifyToken(_ context.Context, token string, req
 	return nil, mcpauth.ErrInvalidToken
 }
 
-func (connections *Connections) revokeToken(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Strict revocation validation and token lookup stay together at the protocol boundary.
+func (connections *Connections) revokeToken(writer http.ResponseWriter, request *http.Request) {
 	request.Body = http.MaxBytesReader(writer, request.Body, 16<<10)
 	if !formEncoded(request) || request.Header.Get("Authorization") != "" || request.URL.RawQuery != "" || request.ParseForm() != nil || !onlyFormKeys(request.PostForm, "token", "token_type_hint", "client_id") {
 		oauthError(writer, "invalid_request", http.StatusBadRequest)

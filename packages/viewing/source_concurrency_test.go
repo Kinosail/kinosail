@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestPlexSectionsAreBoundedAndOrdered(t *testing.T) { //nolint:cyclop,gocognit // The barrier verifies bounded overlap and source order.
+func TestPlexSectionsAreBoundedAndOrdered(t *testing.T) {
 	entered := make(chan struct{}, 4)
 	release := make(chan struct{})
 	var active, maximum atomic.Int32
@@ -119,7 +119,7 @@ func TestPlexSectionsStopOnCancellation(t *testing.T) {
 	}
 }
 
-func BenchmarkPlexSections(b *testing.B) { //nolint:gocognit // The benchmark compares complete serial and concurrent section fetches.
+func BenchmarkPlexSections(b *testing.B) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path == "/library/sections" {
 			_, _ = writer.Write([]byte(`{"MediaContainer":{"Directory":[{"Key":"1","Type":"movie"},{"Key":"2","Type":"movie"},{"Key":"3","Type":"movie"},{"Key":"4","Type":"movie"}]}}`))

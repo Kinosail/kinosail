@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubSourceRejectsAmbiguousJSONBeforeAcquisition(t *testing.T) { //nolint:cyclop,funlen,gocognit // One real acquisition matrix checks ambiguity rejection and durable no-write controls.
+func TestSubSourceRejectsAmbiguousJSONBeforeAcquisition(t *testing.T) {
 	t.Parallel()
 	for _, fixture := range []struct {
 		name, fields string

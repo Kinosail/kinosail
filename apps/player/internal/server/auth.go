@@ -37,9 +37,9 @@ type (
 
 const publicSessionMaximumAge = 31 * 24 * time.Hour
 
-func newAuthentication(ctx context.Context, dataDir string, required bool, authURL string, settings *settingsStore, notifications NotificationConfig, stateDB *database.Store, retentions ...time.Duration) *authentication { //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
+func newAuthentication(ctx context.Context, dataDir string, required bool, authURL string, settings *settingsStore, notifications NotificationConfig, stateDB *database.Store, retentions ...time.Duration) *authentication {
 	notify := newNotification(notifications)
-	profiles := newProfileStore(dataDir, stateDB) //nolint:contextcheck // Startup state loading must finish independently of lifecycle cancellation.
+	profiles := newProfileStore(dataDir, stateDB)
 	profiles.sessionTimeouts = settings.sessionTimeouts
 	profiles.publicSessionTimeouts = settings.publicSessionTimeouts
 	profiles.publicSessionLifetime = settings.publicSessionLifetime
@@ -51,7 +51,7 @@ func newAuthentication(ctx context.Context, dataDir string, required bool, authU
 	return auth
 }
 
-func (auth *authentication) protect(next http.Handler, pattern func(*http.Request) string) http.Handler { //nolint:cyclop,gocognit // Authentication decisions remain linear and below the repository complexity ceiling.
+func (auth *authentication) protect(next http.Handler, pattern func(*http.Request) string) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if !auth.pageOriginAllowed(writer, request) {
 			return

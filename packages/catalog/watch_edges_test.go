@@ -11,7 +11,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func TestWatchEventsEdges(t *testing.T) { //nolint:cyclop,funlen,gocognit // Each table row drives one select result through the shared watcher loop.
+func TestWatchEventsEdges(t *testing.T) {
 	wantErr := errors.New("failed")
 	event := fsnotify.Event{Name: "movie.mp4", Op: fsnotify.Write}
 	tests := []struct {
@@ -138,7 +138,7 @@ func TestWatchFailureAndRetryEdges(t *testing.T) {
 	cancel()
 }
 
-func TestPollErrorAndCancellationEdges(t *testing.T) { //nolint:funlen // The three subtests cover independent polling failure/cancellation phases.
+func TestPollErrorAndCancellationEdges(t *testing.T) {
 	wantErr := errors.New("snapshot failed")
 	t.Run("current snapshot error", func(t *testing.T) {
 		index := NewMemoryIndex(nil, true)
@@ -193,7 +193,7 @@ func TestPollErrorAndCancellationEdges(t *testing.T) { //nolint:funlen // The th
 	})
 }
 
-func TestWatchChangesAndCycleEdges(t *testing.T) { //nolint:cyclop,funlen // Startup, filesystem, and settle errors share the watcher lifecycle.
+func TestWatchChangesAndCycleEdges(t *testing.T) {
 	wantErr := errors.New("open failed")
 	index := NewMemoryIndex(nil, true)
 	index.openWatcher = func() (*fsnotify.Watcher, error) { return nil, wantErr }

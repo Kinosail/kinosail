@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-func TestActualInitializationCodecAndColor(t *testing.T) { //nolint:cyclop // Each codec fixture checks its complete observed stream identity.
+func TestActualInitializationCodecAndColor(t *testing.T) {
 	for _, test := range []struct {
 		codec, audio, hdr, want, videoRange string
 		depth                               int

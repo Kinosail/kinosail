@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestSupporterShareCertificatesUseEveryGallerySilhouette(t *testing.T) { //nolint:gocognit // The table verifies every public certificate silhouette.
+func TestSupporterShareCertificatesUseEveryGallerySilhouette(t *testing.T) {
 	t.Parallel()
 	if marks := supporterServiceMarkText([]int{3, 6, 12, 24, 36, 60}); marks != "3M · 6M · 12M · 24M · 36M · 60M" {
 		t.Fatalf("service marks = %q", marks)

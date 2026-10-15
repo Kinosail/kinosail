@@ -49,7 +49,7 @@ func TestClassifyUsesPlayerDefaultsAndApplicationOverrides(t *testing.T) {
 	}
 }
 
-func TestDynamicAuditActionsCoverEveryRouteFamily(t *testing.T) { //nolint:cyclop // The table fixes each route family to its stable event name.
+func TestDynamicAuditActionsCoverEveryRouteFamily(t *testing.T) {
 	t.Parallel()
 	cases := []struct{ method, path, action, category string }{
 		{http.MethodPost, "/scim/v2/Users", "scim.profile.provisioned", "administration"},
@@ -125,7 +125,7 @@ type failingReader struct{}
 
 func (failingReader) Read([]byte) (int, error) { return 0, errors.New("read failed") }
 
-func TestAuditTargetAndDetailsRedactUntrustedInput(t *testing.T) { //nolint:cyclop,gocognit // The cases cover every supported input representation.
+func TestAuditTargetAndDetailsRedactUntrustedInput(t *testing.T) {
 	t.Parallel()
 	for key := range map[string]bool{"key": true, "name": true, "device": true, "path": true, "id": true} {
 		request := auditRequest(t, http.MethodPost, "/target")

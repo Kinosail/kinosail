@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/federation"
 )
 
-func TestSAMLIdentityLinkingRejectsConflictsAndPersistsValidLinks(t *testing.T) { //nolint:cyclop,funlen // One lifecycle contract covers invalid, conflict, ownership, and persistence paths.
+func TestSAMLIdentityLinkingRejectsConflictsAndPersistsValidLinks(t *testing.T) {
 	store := &profileStore{
 		file:    "profiles.json",
 		persist: func(string, any) error { return nil },
@@ -58,7 +58,7 @@ func TestSAMLIdentityLinkingRejectsConflictsAndPersistsValidLinks(t *testing.T) 
 	}
 }
 
-func TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch(t *testing.T) { //nolint:cyclop,funlen // One contract covers empty, missing, ambiguous, conflicting, and valid matches.
+func TestSCIMSAMLIdentityAutoLinkingRequiresOneActiveStableMatch(t *testing.T) {
 	identity := federation.Identity{Issuer: "https://idp.example", Subject: "directory-1"}
 	store := &profileStore{file: "profiles.json", persist: func(string, any) error { return nil }}
 	profiles := store.federatedProfiles()

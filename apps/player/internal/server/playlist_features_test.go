@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestPlaylistsSupportPersistentOrderAndDynamicRules(t *testing.T) { //nolint:cyclop,funlen // One workflow test covers the persistent playlist contract.
+func TestPlaylistsSupportPersistentOrderAndDynamicRules(t *testing.T) {
 	t.Parallel()
 
 	media, data := t.TempDir(), t.TempDir()
@@ -82,7 +82,7 @@ func TestPlaylistsSupportPersistentOrderAndDynamicRules(t *testing.T) { //nolint
 	assertAPIBody(t, audio, http.StatusOK, "Ambient", "Ancillary")
 }
 
-func TestPlaylistDocumentsRoundTripThroughVersionedAPI(t *testing.T) { //nolint:cyclop // One scenario covers validation, persistence, and export.
+func TestPlaylistDocumentsRoundTripThroughVersionedAPI(t *testing.T) {
 	t.Parallel()
 
 	handler, token := apiServer(t)

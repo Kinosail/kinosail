@@ -72,7 +72,7 @@ func TestQueryLogTripwireAndStatusExactBounds(t *testing.T) {
 	}
 }
 
-func TestEventValidationExactBoundsAndMarshalLimit(t *testing.T) { //nolint:cyclop // Exact field and encoded-size boundaries share one event fixture.
+func TestEventValidationExactBoundsAndMarshalLimit(t *testing.T) {
 	now := time.Now().UTC()
 	event := testEvent(strings.Repeat("i", 128), strings.Repeat("c", 64), now)
 	event.Action = strings.Repeat("a", 256)
@@ -201,7 +201,7 @@ func TestJSONArrayConsumesEveryValueAndStopsOnError(t *testing.T) {
 	}
 }
 
-func TestStorageExactSizeAndOpenedFilePredicates(t *testing.T) { //nolint:cyclop,funlen,gocognit // One file fixture isolates each opened-journal trust predicate.
+func TestStorageExactSizeAndOpenedFilePredicates(t *testing.T) {
 	event := testEvent("event", "security", time.Now().UTC())
 	encoded, _ := json.Marshal(event)
 	lineLength := int64(len(encoded) + 1)

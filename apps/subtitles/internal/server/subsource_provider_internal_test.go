@@ -97,7 +97,7 @@ func TestSubSourceArchiveNeedsOneExactEpisodeSRT(t *testing.T) {
 	}
 }
 
-func newSubSourceTestServer(t *testing.T, subtitle []byte) *httptest.Server { //nolint:cyclop // The fixture serves each provider endpoint contract.
+func newSubSourceTestServer(t *testing.T, subtitle []byte) *httptest.Server {
 	t.Helper()
 	archive := zipSubSourceFiles(t, map[string][]byte{"Arrival.2016.1080p.WEB-DL.srt": subtitle})
 	return httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

@@ -98,7 +98,7 @@ func remainingPublicGet(t *testing.T, ctx context.Context, handler http.Handler,
 
 func remainingPublicPCM(t *testing.T, ctx context.Context, ffmpeg string, data []byte) []byte {
 	t.Helper()
-	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-xerror", "-threads", "1", "-i", "pipe:0", "-map", "0:a:0", "-f", "s16le", "-") //nolint:gosec // Discovered codec and actual bounded generated public bytes.
+	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-xerror", "-threads", "1", "-i", "pipe:0", "-map", "0:a:0", "-f", "s16le", "-")
 	command.Stdin = bytes.NewReader(data)
 	pcm, diagnostic := &remainingPublicBoundedOutput{maximum: 2 << 20}, &remainingPublicBoundedOutput{maximum: 65536}
 	command.Stdout, command.Stderr = pcm, diagnostic
@@ -137,7 +137,7 @@ func remainingPublicWaitEOF(t *testing.T, ctx context.Context, root string) {
 
 func remainingPublicRead(t *testing.T, path string) []byte {
 	t.Helper()
-	file, err := os.Open(path) //nolint:gosec // Only owned disposable fixture paths.
+	file, err := os.Open(path)
 	if err != nil {
 		t.Fatal(err)
 	}

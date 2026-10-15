@@ -97,7 +97,7 @@ type Manager struct {
 	err             error
 }
 
-func New(config Config) *Manager { //nolint:cyclop // Startup wires bounded workers and recovery state together.
+func New(config Config) *Manager {
 	ctx := config.Context
 	if ctx == nil {
 		ctx = context.Background()

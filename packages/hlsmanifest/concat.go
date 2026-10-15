@@ -23,7 +23,6 @@ func WriteSkipConcat(directory, source string, duration float64, omitted []playb
 	}
 	writeSpan(&manifest, source, start, duration)
 	path := filepath.Join(directory, "skip.ffconcat")
-	//nolint:gosec // The caller supplies a generated rendition below the validated cache root.
 	return path, os.WriteFile(path, []byte(manifest.String()), 0o600)
 }
 

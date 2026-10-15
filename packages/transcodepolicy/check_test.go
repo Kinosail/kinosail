@@ -36,7 +36,7 @@ func TestPendingCheckProjectsStableBackend(t *testing.T) {
 	}
 }
 
-func TestRunCheckPreservesSetupSourceEncodeAndSuccessResults(t *testing.T) { //nolint:cyclop,gocognit // One workflow table verifies every stable stage and message.
+func TestRunCheckPreservesSetupSourceEncodeAndSuccessResults(t *testing.T) {
 	options := Settings{Codec: "h264", Accelerator: "qsv", Encoder: "h264_qsv", Preset: "veryfast", CRF: "22"}
 	original := options
 	setup := runCheck(t.Context(), "ffmpeg", options, "Intel", func() (string, error) { return "", errors.New("no temporary storage") }, func(context.Context, string, ...string) error { return nil })

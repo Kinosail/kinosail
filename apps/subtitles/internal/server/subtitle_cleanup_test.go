@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) { //nolint:cyclop,gocognit,funlen // The matrix checks both forced choices and every kept or hidden sidecar.
+func TestSubtitleCleanupPreviewsAndHidesOnlySelectedSidecars(t *testing.T) {
 	dir := t.TempDir()
 	media := filepath.Join(dir, "Film.mkv")
 	if err := os.WriteFile(media, []byte("video"), 0o600); err != nil {
@@ -116,7 +116,7 @@ func TestSubtitleCleanupRejectsInvalidPolicyAndChangedFiles(t *testing.T) {
 	}
 }
 
-func TestSubtitleCleanupRestoresLanguagesWhenHidingFails(t *testing.T) { //nolint:cyclop // One failed hide must preserve both the file and playback settings.
+func TestSubtitleCleanupRestoresLanguagesWhenHidingFails(t *testing.T) {
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {
@@ -180,7 +180,7 @@ func TestSubtitleCleanupLeavesSymlinksAndPathsOutsideTheVideoDirectory(t *testin
 	}
 }
 
-func TestSubtitleCleanupWebPreviewAndHide(t *testing.T) { //nolint:cyclop,gocognit,funlen // The route journey covers malformed requests and hiding real files.
+func TestSubtitleCleanupWebPreviewAndHide(t *testing.T) {
 	dir := t.TempDir()
 	media, sidecar := filepath.Join(dir, "Film.mkv"), filepath.Join(dir, "Film.es.srt")
 	for _, path := range []string{media, sidecar} {

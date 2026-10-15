@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func findSubtitleAlignment(audio []float64, cues []subtitleCue) (subtitleAlignment, bool) { //nolint:gocognit,cyclop // Coarse search, refinement, and confidence margin are one bounded alignment operation.
+func findSubtitleAlignment(audio []float64, cues []subtitleCue) (subtitleAlignment, bool) {
 	if len(audio) < int(time.Minute/subtitleFrame) || len(cues) < 5 {
 		return subtitleAlignment{}, false
 	}

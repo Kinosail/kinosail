@@ -25,7 +25,7 @@ import (
 	"github.com/crewjam/saml/samlsp"
 )
 
-func TestSAMLPublishesMetadataAndStartsProviderLogin(t *testing.T) { //nolint:cyclop,gocognit,funlen // One protocol scenario covers metadata, redirect, POST, and restart behavior.
+func TestSAMLPublishesMetadataAndStartsProviderLogin(t *testing.T) {
 	t.Parallel()
 	metadata := samlIDPMetadata(t, "")
 	idp := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -104,7 +104,7 @@ func TestSAMLPublishesMetadataAndStartsProviderLogin(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) { //nolint:cyclop,funlen // One protocol scenario covers signed response validation and provisioning.
+func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) {
 	t.Parallel()
 	key, certificate := samlTestKeyPair(t)
 	provider := &samlTestServiceProvider{}

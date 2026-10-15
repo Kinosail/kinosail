@@ -39,7 +39,6 @@ func ProbeInputLines(parent context.Context, logger *slog.Logger, executable str
 		return err
 	}
 	defer cancel()
-	//nolint:gosec // Executable is installation config; media comes from a revalidated scanned item.
 	command := exec.CommandContext(ctx, executable, arguments...)
 	command.Stdin = input
 	command.Cancel = nil

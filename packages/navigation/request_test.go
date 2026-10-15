@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBrowserRequestClassification(t *testing.T) { //nolint:cyclop // The table covers each independent request classification boundary.
+func TestBrowserRequestClassification(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
 		name    string

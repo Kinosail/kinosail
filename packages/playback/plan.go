@@ -111,7 +111,7 @@ func applySubtitle(plan *PlaybackPlan, tracks []SubtitleFacts, requested *int, c
 	}
 }
 
-func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio AudioFacts, limit int64) compatibility { //nolint:cyclop // The compatibility vector keeps each independent media capability explicit.
+func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio AudioFacts, limit int64) compatibility {
 	width, height := DisplayDimensions(facts.Video)
 	hdr := Lower(facts.Video.HDR)
 	return compatibility{
@@ -124,7 +124,7 @@ func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio Au
 	}
 }
 
-func choosePlaybackMode(plan *PlaybackPlan, intent NetworkIntent, client ClientCapabilities, compatible compatibility) { //nolint:cyclop // Ordered playback policy remains below the repository quality ceiling.
+func choosePlaybackMode(plan *PlaybackPlan, intent NetworkIntent, client ClientCapabilities, compatible compatibility) {
 	forceDirect := intent.ForceDirect || intent.PreferDirect && !intent.ForceTranscode
 	videoCompatible := compatible.video && compatible.size && compatible.bitrate && compatible.hdr && plan.SubtitleMode != "burn-in"
 	plan.AudioCompatibilityRequired = !compatible.audio && videoCompatible
@@ -167,7 +167,7 @@ func applyPlaybackConversion(plan *PlaybackPlan, facts MediaFacts, client Client
 	}
 }
 
-func selectAudio(tracks []AudioFacts, codecs []string, intent NetworkIntent, product DecisionPolicy) AudioFacts { //nolint:cyclop // Ordered audio policy is intentionally evaluated in one pass.
+func selectAudio(tracks []AudioFacts, codecs []string, intent NetworkIntent, product DecisionPolicy) AudioFacts {
 	selected := AudioFacts{}
 	for _, track := range tracks {
 		if intent.AudioIndex != nil && track.Index == *intent.AudioIndex || intent.AudioIndex == nil && track.Default {

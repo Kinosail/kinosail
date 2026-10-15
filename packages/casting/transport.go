@@ -86,7 +86,7 @@ func (r *Renderers) Load(ctx context.Context, id, source, mime, title string, po
 	if position > 0 {
 		if _, err := r.action(ctx, device, "Seek", "<Unit>REL_TIME</Unit><Target>"+transportTime(position)+"</Target>"); err != nil {
 			_, _ = r.action(ctx, device, "Stop", "")
-			return errors.New("This TV could not resume the title; start from the beginning or choose another casting option") //nolint:staticcheck // This complete sentence is displayed in the TV picker.
+			return errors.New("This TV could not resume the title; start from the beginning or choose another casting option")
 		}
 	}
 	return nil

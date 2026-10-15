@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestTMDBClientFailureBoundaries(t *testing.T) { //nolint:cyclop // Request construction and transport failures are separate provider boundaries.
+func TestTMDBClientFailureBoundaries(t *testing.T) {
 	t.Parallel()
 	if got := (*TMDBClient)(nil).Enrich(t.Context(), []library.Item{{Title: "Local"}}); got[0].Title != "Local" {
 		t.Fatalf("nil client enrichment = %#v", got)
@@ -66,7 +66,7 @@ func TestTMDBDownloadUsesDefaultExtensionAndCastLimit(t *testing.T) {
 	}
 }
 
-func TestTMDBImageCacheReturnsFilesystemAndReaderFailures(t *testing.T) { //nolint:cyclop // Atomic image caching must surface every reachable local failure.
+func TestTMDBImageCacheReturnsFilesystemAndReaderFailures(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	parentFile := filepath.Join(root, "parent")
@@ -100,7 +100,7 @@ func TestTMDBImageCacheReturnsFilesystemAndReaderFailures(t *testing.T) { //noli
 	}
 }
 
-func TestTMDBCacheRejectsMalformedAndInaccessibleEntries(t *testing.T) { //nolint:cyclop // Cache directory, file, JSON, and cast validation fail independently.
+func TestTMDBCacheRejectsMalformedAndInaccessibleEntries(t *testing.T) {
 	t.Parallel()
 	if (*TMDBClient)(nil).Active() || (&TMDBClient{}).Active() || !(&TMDBClient{token: "token"}).Active() {
 		t.Fatal("TMDB activity without a cache was misreported")

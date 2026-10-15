@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestTVMazeFallbackSharesMetadataThroughWebAndAPI(t *testing.T) { //nolint:cyclop,funlen,gocognit // One integration flow checks provider fallback and both adapters.
+func TestTVMazeFallbackSharesMetadataThroughWebAndAPI(t *testing.T) {
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		switch request.URL.Path {
 		case "/lookup/shows":

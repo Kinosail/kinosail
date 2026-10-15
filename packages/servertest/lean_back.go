@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func (fixture LibraryAPIFixture) LeanBackPlaybackDefaults(t *testing.T) { //nolint:cyclop // One lifecycle proves defaults, overrides, and restart persistence.
+func (fixture LibraryAPIFixture) LeanBackPlaybackDefaults(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	season := filepath.Join(mediaDir, "Severance", "Season 01")

@@ -27,7 +27,7 @@ func stdioFixture(t *testing.T, principals *testPrincipals) *Gateway {
 	}))
 }
 
-func TestStdioTransportUsesOwnerAndSharedTools(t *testing.T) { //nolint:cyclop,funlen // One lifecycle covers host, selector, bridge, tools, and shutdown.
+func TestStdioTransportUsesOwnerAndSharedTools(t *testing.T) {
 	owner := Principal{ID: "owner", Name: "Owner", Owner: true}
 	principals := &testPrincipals{values: map[string]Principal{"owner": owner}}
 	dataDir := t.TempDir()
@@ -69,7 +69,7 @@ func TestStdioTransportUsesOwnerAndSharedTools(t *testing.T) { //nolint:cyclop,f
 	}
 }
 
-func TestStdioRelayAndSelectionFailClosed(t *testing.T) { //nolint:cyclop,funlen // Selector and relay checks share one host fixture.
+func TestStdioRelayAndSelectionFailClosed(t *testing.T) {
 	first := Principal{ID: "first", Name: "First", Owner: true}
 	second := Principal{ID: "second", Name: "Second", Owner: true}
 	principals := &testPrincipals{values: map[string]Principal{"first": first, "second": second, "viewer": {ID: "viewer"}}}
@@ -117,7 +117,7 @@ func TestStdioRelayAndSelectionFailClosed(t *testing.T) { //nolint:cyclop,funlen
 	_ = session.Close()
 }
 
-func TestStdioRejectsInvalidInputsWithoutSideEffects(t *testing.T) { //nolint:cyclop // One table-free test proves each invalid transport input is side-effect free.
+func TestStdioRejectsInvalidInputsWithoutSideEffects(t *testing.T) {
 	dataDir := t.TempDir()
 	if _, err := StdioSocketPath(""); err == nil {
 		t.Fatal("empty data directory was accepted")

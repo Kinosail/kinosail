@@ -26,7 +26,7 @@ func (store *settingsStore) openSubtitlesConfiguration() openSubtitlesConfigurat
 	return openSubtitlesConfigurationView{store.config.Public("integrations.opensubtitles.api_key").Configured, configurationControl(store.config, openSubtitlesConfigurationKeys...)}
 }
 
-func (store *settingsStore) changeOpenSubtitlesConfiguration(apiKey, username, password string, reset bool) error { //nolint:cyclop,gocognit // Provider configuration is validated and persisted atomically.
+func (store *settingsStore) changeOpenSubtitlesConfiguration(apiKey, username, password string, reset bool) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	if store.file == "" {

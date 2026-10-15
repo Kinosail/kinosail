@@ -28,7 +28,7 @@ func viewingTestClientLimit(limit int, handler func(*http.Request) (int, string)
 	})}
 }
 
-func TestJellyfinAdapterFailurePaths(t *testing.T) { //nolint:cyclop,funlen,gocognit // Each remote page stage fails closed without a partial snapshot.
+func TestJellyfinAdapterFailurePaths(t *testing.T) {
 	transportFailure := &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) { return nil, io.ErrUnexpectedEOF })}
 	input := Input{Source: "jellyfin", URL: "https://source.example", Token: "token"}
 	if _, err := fetchJellyfinViewingActivity(t.Context(), transportFailure, input, false); err == nil {
@@ -100,7 +100,7 @@ func TestJellyfinAdapterFailurePaths(t *testing.T) { //nolint:cyclop,funlen,goco
 	}
 }
 
-func TestPlexAdapterFailurePaths(t *testing.T) { //nolint:cyclop,funlen,gocognit // Each Plex page stage fails closed without a partial snapshot.
+func TestPlexAdapterFailurePaths(t *testing.T) {
 	transportFailure := &http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) { return nil, io.ErrUnexpectedEOF })}
 	input := Input{Source: "plex", URL: "https://source.example", Token: "token"}
 	if _, err := fetchPlexViewingActivity(t.Context(), transportFailure, input, false); err == nil {

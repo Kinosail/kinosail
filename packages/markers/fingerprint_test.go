@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestFingerprintCacheAndToolFailuresAreDeterministic(t *testing.T) { //nolint:cyclop,funlen,gocognit // Cache, tool output, extraction, and filesystem failures are one analysis boundary.
+func TestFingerprintCacheAndToolFailuresAreDeterministic(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	media := filepath.Join(directory, "media.mp4")

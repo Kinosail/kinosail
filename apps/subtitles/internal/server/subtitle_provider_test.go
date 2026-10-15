@@ -86,7 +86,7 @@ func TestSubtitleAutomationBoundsEachProviderCycle(t *testing.T) {
 	t.Fatal("automatic provider cycle did not write ten sidecars")
 }
 
-func fakeSubDL(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // One fixture emulates every bounded SubDL response used by tests.
+func fakeSubDL(writer http.ResponseWriter, request *http.Request) {
 	if request.URL.Query().Get("api_key") != "key" && request.URL.Path != "/arrival.zip" {
 		http.Error(writer, "unauthorized", http.StatusUnauthorized)
 		return
@@ -205,7 +205,7 @@ func TestSubtitleProviderRejectsInvalidEndpointWithoutPanic(t *testing.T) {
 	}
 }
 
-func TestOwnerCanChooseSubtitleLanguage(t *testing.T) { //nolint:cyclop // One settings scenario covers selection and provider behavior.
+func TestOwnerCanChooseSubtitleLanguage(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.BluRay-GROUP.mp4"), nil, 0o600); err != nil {

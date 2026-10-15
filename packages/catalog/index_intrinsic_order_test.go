@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestIndexedIntrinsicBrowseRejectsLatePublicationOrder(t *testing.T) { //nolint:cyclop // One public lifecycle contract checks old in-flight data and repeated fresh results.
+func TestIndexedIntrinsicBrowseRejectsLatePublicationOrder(t *testing.T) {
 	index := catalog.NewMemoryIndex([]library.Item{
 		{ID: "a", Title: "Alpha", Kind: "video"},
 		{ID: "b", Title: "Beta", Kind: "video"},

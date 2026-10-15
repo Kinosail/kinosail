@@ -85,7 +85,7 @@ func eventError(code int64, message string, data any) error {
 	return &jsonrpc.Error{Code: code, Message: message, Data: encoded}
 }
 
-func (adapter *Gateway) registerEvents(server *mcp.Server) { //nolint:gocognit // Capability wrapping and access/rate checks share the protocol boundary.
+func (adapter *Gateway) registerEvents(server *mcp.Server) {
 	_ = mcp.AddReceivingCustomMethod(server, "events/list", adapter.listEvents)
 	_ = mcp.AddReceivingCustomMethod(server, "events/subscribe", adapter.subscribeEvent)
 	_ = mcp.AddReceivingCustomMethod(server, "events/unsubscribe", adapter.unsubscribeEvent)

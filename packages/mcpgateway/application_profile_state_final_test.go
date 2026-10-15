@@ -29,7 +29,7 @@ func profilePrincipalTestConfig(mutex *sync.RWMutex, profiles *[]identitycore.Pr
 	}
 }
 
-func TestProfilePrincipalsOwnCanonicalIdentityPolicy(t *testing.T) { //nolint:cyclop // One flow covers the shared identity contract.
+func TestProfilePrincipalsOwnCanonicalIdentityPolicy(t *testing.T) {
 	var mutex sync.RWMutex
 	profiles := []identitycore.Profile{
 		{ID: "owner", Name: "Owner", Owner: true, TOTPSecret: "secret", OIDCIssuer: "https://identity.test", OIDCSubject: "subject"},

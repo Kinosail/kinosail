@@ -77,7 +77,7 @@ func subtitleHistorySourceLabel(source string) string {
 	}
 }
 
-func subtitleHistoryDescription(event subtitleHistoryEvent) (string, string, string) { //nolint:cyclop // Each recorded operation has one factual explanation.
+func subtitleHistoryDescription(event subtitleHistoryEvent) (string, string, string) {
 	action, explanation := "Recorded", "The reason for this earlier change was not recorded."
 	switch event.Action {
 	case "added":

@@ -91,7 +91,7 @@ func (integration *Integration[P]) updatePlayer(id string, state Player, profile
 
 func validatePlayer(state Player) error {
 	if strings.TrimSpace(state.Name) == "" || len(state.Name) > 80 || !oneOf(state.State, "idle", "playing", "paused", "buffering") || len(state.Title) > 256 || len(state.ItemID) > 128 || invalidNumber(state.Position, 1e9) || invalidNumber(state.Duration, 1e9) || invalidNumber(state.Volume, 1) {
-		return errors.New("Home Assistant player state is invalid") //nolint:staticcheck // Preserve the public error.
+		return errors.New("Home Assistant player state is invalid")
 	}
 	return nil
 }
@@ -122,13 +122,13 @@ func (integration *Integration[P]) queueCommand(id string, command Command) (str
 	return record.Profile, found, nil
 }
 
-func (integration *Integration[P]) validateCommand(command Command) error { //nolint:cyclop // One rule set validates each command type.
+func (integration *Integration[P]) validateCommand(command Command) error {
 	if !oneOf(command.Command, "play", "pause", "stop", "seek", "volume", "mute", "play_media") || command.Command == "seek" && invalidNumber(command.Position, 1e9) || command.Command == "volume" && invalidNumber(command.Volume, 1) || command.Command == "play_media" && (command.ItemID == "" || len(command.ItemID) > 128) {
-		return errors.New("Home Assistant player command is invalid") //nolint:staticcheck // Preserve the public error.
+		return errors.New("Home Assistant player command is invalid")
 	}
 	if command.Command == "play_media" {
 		if _, found := integration.config.FindItem(command.ItemID); !found {
-			return errors.New("Home Assistant media item was not found") //nolint:staticcheck // Preserve the public error.
+			return errors.New("Home Assistant media item was not found")
 		}
 	}
 	return nil

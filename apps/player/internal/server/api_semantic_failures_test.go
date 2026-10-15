@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) { //nolint:funlen // The public failure table documents validation shared by API and web adapters.
+func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) {
 	handler, token := apiServer(t)
 	itemID := firstAPIItemID(t, handler, token)
 	calls := []apiTestCall{

@@ -41,7 +41,7 @@ func (fixture *dlnaFixture) library() LibraryFuncs {
 	}
 }
 
-func TestRegisterServesDeviceBrowseAndMedia(t *testing.T) { //nolint:cyclop // One fixture verifies the related DLNA protocol surface.
+func TestRegisterServesDeviceBrowseAndMedia(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	video := filepath.Join(root, "film.mp4")

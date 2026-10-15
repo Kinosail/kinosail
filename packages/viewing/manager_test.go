@@ -30,7 +30,7 @@ func testManagerConfig() Config {
 	}
 }
 
-func newTestManager(dataDir string, config Config) *Manager { //nolint:staticcheck // A nil context intentionally disables the background scheduler in deterministic tests.
+func newTestManager(dataDir string, config Config) *Manager {
 	return NewManager(nil, dataDir, config) //nolint:staticcheck // A nil context intentionally disables the background scheduler.
 }
 
@@ -48,7 +48,7 @@ func testPreview() Preview {
 	}
 }
 
-func TestManagerValidatesInputsBeforeSourceWork(t *testing.T) { //nolint:cyclop // Each independent input bound must fail before network or storage callbacks.
+func TestManagerValidatesInputsBeforeSourceWork(t *testing.T) {
 	config := testManagerConfig()
 	manager := newTestManager("", config)
 	valid := Input{Source: "plex", URL: "https://plex.example", Token: "secret", ProfileID: "viewer"}
@@ -87,7 +87,7 @@ func TestManagerValidatesInputsBeforeSourceWork(t *testing.T) { //nolint:cyclop 
 	}
 }
 
-func TestManagerPreviewBuildApplyAndMetrics(t *testing.T) { //nolint:cyclop // One lifecycle assertion covers the coupled manager projections.
+func TestManagerPreviewBuildApplyAndMetrics(t *testing.T) {
 	calls := 0
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		calls++
@@ -125,7 +125,7 @@ func TestManagerPreviewBuildApplyAndMetrics(t *testing.T) { //nolint:cyclop // O
 	<-manager.syncSlots
 }
 
-func TestCreateSyncIsAtomicAcrossPersistenceAndCommit(t *testing.T) { //nolint:cyclop,funlen,gocognit // Every failure point keeps a recoverable preview or durable pending batch.
+func TestCreateSyncIsAtomicAcrossPersistenceAndCommit(t *testing.T) {
 	config := testManagerConfig()
 	manager := newTestManager(t.TempDir(), config)
 	if _, err := manager.CreateSync("missing", "bad"); err == nil {

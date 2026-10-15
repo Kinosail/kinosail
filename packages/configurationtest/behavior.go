@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (configuration contract[Source, PublicValue, Snapshot]) testOwnerCanInspectUpdateAndDeleteGUIConfiguration(t *testing.T) { //nolint:cyclop // One cross-layer contract deliberately sequences the complete lifecycle; exact policy remains below 22.
+func (configuration contract[Source, PublicValue, Snapshot]) testOwnerCanInspectUpdateAndDeleteGUIConfiguration(t *testing.T) {
 	directory := t.TempDir()
 	loaded, err := configuration.Load(directory, "", NoEnvironment)
 	if err != nil {
@@ -43,7 +43,7 @@ func (configuration contract[Source, PublicValue, Snapshot]) testOwnerCanInspect
 	}
 }
 
-func (configuration contract[Source, PublicValue, Snapshot]) testConfigurationRejectsInvalidStoredAndExternalValues(t *testing.T) { //nolint:cyclop,funlen // The table documents independent public validation cases.
+func (configuration contract[Source, PublicValue, Snapshot]) testConfigurationRejectsInvalidStoredAndExternalValues(t *testing.T) {
 	for name, setup := range map[string]func(*testing.T) (string, string, map[string]string){
 		"missing YAML": func(t *testing.T) (string, string, map[string]string) {
 			return t.TempDir(), filepath.Join(t.TempDir(), "missing.yaml"), nil

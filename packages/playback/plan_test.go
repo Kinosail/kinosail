@@ -114,7 +114,7 @@ func TestDecideExplainsEachVideoConstraint(t *testing.T) {
 	}
 }
 
-func TestPlaybackHelpersReturnCanonicalValues(t *testing.T) { //nolint:cyclop // The canonical helper matrix is intentionally checked together.
+func TestPlaybackHelpersReturnCanonicalValues(t *testing.T) {
 	t.Parallel()
 	if NormalizeContainer(" MATROSKA ") != "mkv" || NormalizeContainer("mov,mp4,m4a,3gp,3g2,mj2") != "mp4" || NormalizeContainer("ogg") != "ogg" {
 		t.Fatal("container normalization changed")

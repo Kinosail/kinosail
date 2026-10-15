@@ -36,7 +36,7 @@ func TestLifetimeCapacityRejectsBeforePersistence(t *testing.T) {
 	}
 }
 
-func TestRemoveCancelsPreparationAndSameIdentityCanRestart(t *testing.T) { //nolint:cyclop // Cancellation and restart must exercise the same download identity.
+func TestRemoveCancelsPreparationAndSameIdentityCanRestart(t *testing.T) {
 	input := filepath.Join(t.TempDir(), "movie.mp4")
 	if err := os.WriteFile(input, []byte("original media"), 0o600); err != nil {
 		t.Fatal(err)
@@ -86,7 +86,7 @@ func TestRemoveCancelsPreparationAndSameIdentityCanRestart(t *testing.T) { //nol
 	}
 }
 
-func TestCopyAndSealUseSameIntegrityContract(t *testing.T) { //nolint:cyclop // Copy, verification, and rejection assertions share one source fixture.
+func TestCopyAndSealUseSameIntegrityContract(t *testing.T) {
 	root := t.TempDir()
 	input, output := filepath.Join(root, "input"), filepath.Join(root, "output")
 	if err := os.WriteFile(input, []byte(strings.Repeat("media", int(ChunkSize)/5+1)), 0o600); err != nil {
@@ -122,7 +122,7 @@ func TestCopyAndSealUseSameIntegrityContract(t *testing.T) { //nolint:cyclop // 
 	}
 }
 
-func TestRestoredMediaIsUnavailableUntilVerified(t *testing.T) { //nolint:cyclop,gocognit // Each restored-state case checks preparation, verification, and final visibility.
+func TestRestoredMediaIsUnavailableUntilVerified(t *testing.T) {
 	for _, corrupt := range []bool{false, true} {
 		t.Run(strconv.FormatBool(corrupt), func(t *testing.T) {
 			manager := startManager(t, t.Context())

@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-func (store *profileStore) profile(request *http.Request) (viewerProfile, bool) { //nolint:cyclop,gocognit,funlen // Session and compatibility-token resolution share one identity boundary.
+func (store *profileStore) profile(request *http.Request) (viewerProfile, bool) {
 	token := sessionToken(request)
 	if token == "" {
 		return viewerProfile{}, false

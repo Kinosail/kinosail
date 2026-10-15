@@ -26,7 +26,7 @@ func TestJellyfinViewingSkipsNonPlaybackItems(t *testing.T) {
 	}
 }
 
-func TestSourceAdaptersEnforceAggregateItemLimits(t *testing.T) { //nolint:gocognit // Each source limit is asserted against its independent request sequence.
+func TestSourceAdaptersEnforceAggregateItemLimits(t *testing.T) {
 	jellyCalls := 0
 	jellyfin := viewingTestClientLimit(510, func(*http.Request) (int, string) { jellyCalls++; return http.StatusOK, jellyfinActivityPage(200) })
 	if _, err := fetchJellyfinViewingActivity(t.Context(), jellyfin, Input{Source: "jellyfin", URL: "https://source.example", Token: "token", SourceUser: "viewer"}, false); err == nil {
@@ -62,7 +62,7 @@ func TestSourceAdaptersEnforceAggregateItemLimits(t *testing.T) { //nolint:gocog
 	}
 }
 
-func TestSourceAdapterBoundaryValuesAreAccepted(t *testing.T) { //nolint:cyclop,funlen,gocognit // Exact maxima separate valid remote state from rejected oversize state.
+func TestSourceAdapterBoundaryValuesAreAccepted(t *testing.T) {
 	if maximumViewingSourceBody != 16_777_216 || maximumViewingItems != 100000 || maximumViewingPlaylists != 1000 || maximumViewingSeconds != 31_622_400 {
 		t.Fatal("viewing source limits changed")
 	}
@@ -153,7 +153,7 @@ func TestSourceAdapterBoundaryValuesAreAccepted(t *testing.T) { //nolint:cyclop,
 	}
 }
 
-func TestPlaylistPositionsContinueAcrossPages(t *testing.T) { //nolint:cyclop // Both source adapters share the same cross-page ordering invariant.
+func TestPlaylistPositionsContinueAcrossPages(t *testing.T) {
 	jellyfin := viewingTestClient(func(request *http.Request) (int, string) {
 		if request.URL.Query().Get("StartIndex") == "1" {
 			return http.StatusOK, `{"TotalRecordCount":3,"Items":[{"Id":"two"},{"Id":"three"}]}`

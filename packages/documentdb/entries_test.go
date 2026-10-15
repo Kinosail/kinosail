@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestSchemaOneProgressUpgradeAndReopen(t *testing.T) { //nolint:cyclop // Migration, record update, and reopen form one persistence regression.
+func TestSchemaOneProgressUpgradeAndReopen(t *testing.T) {
 	root := t.TempDir()
 	raw := openRaw(t, filepath.Join(root, Filename))
 	if _, err := raw.ExecContext(t.Context(), `CREATE TABLE state(name TEXT PRIMARY KEY NOT NULL, value BLOB NOT NULL CHECK(length(value)<=16777216)) STRICT; PRAGMA user_version=1;`); err != nil {
@@ -45,7 +45,7 @@ func TestSchemaOneProgressUpgradeAndReopen(t *testing.T) { //nolint:cyclop // Mi
 	}
 }
 
-func TestEntryValidationPrecedesRetiredCleanup(t *testing.T) { //nolint:cyclop // Corrupt imports must preserve both active and retired durable rows.
+func TestEntryValidationPrecedesRetiredCleanup(t *testing.T) {
 	root := t.TempDir()
 	config := Config{Documents: []string{"progress.json"}, RetiredDocuments: []string{"retired.json"}, ValidateBeforeMigration: true}
 	store, err := Open(root, true, config)
@@ -101,7 +101,7 @@ func TestAmbiguousEntryMigrationHasNoSideEffects(t *testing.T) {
 	}
 }
 
-func TestEntriesPreserveWholeDocumentAndBackupContract(t *testing.T) { //nolint:cyclop,gocognit // Record updates, document replacement, and backup restore share one fixture.
+func TestEntriesPreserveWholeDocumentAndBackupContract(t *testing.T) {
 	root := t.TempDir()
 	config := Config{Documents: []string{"progress.json", "settings.json"}}
 	store, err := Open(root, true, config)
@@ -151,7 +151,7 @@ func TestEntriesPreserveWholeDocumentAndBackupContract(t *testing.T) { //nolint:
 	}
 }
 
-func TestRejectedEntriesDoNotChangeDurableState(t *testing.T) { //nolint:cyclop // The rejection table checks the same baseline document after every attempt.
+func TestRejectedEntriesDoNotChangeDurableState(t *testing.T) {
 	store, err := Open(t.TempDir(), true, Config{Documents: []string{"progress.json"}})
 	if err != nil {
 		t.Fatal(err)

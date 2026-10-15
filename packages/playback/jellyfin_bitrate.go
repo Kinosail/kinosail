@@ -28,7 +28,7 @@ func JellyfinBitrateTest(writer http.ResponseWriter, request *http.Request) {
 	_, _ = io.CopyN(writer, zeroReader{}, int64(size))
 }
 
-func JellyfinBitrateTestSize(request *http.Request) (int, bool) { //nolint:cyclop // Alias and cardinality validation form one strict query parser.
+func JellyfinBitrateTestSize(request *http.Request) (int, bool) {
 	if request == nil || request.URL == nil {
 		return 0, false
 	}

@@ -21,7 +21,7 @@ func TestHomeHasSelfHostedFrontendAssets(t *testing.T) {
 	assetContracts.HomeHasSelfHostedFrontendAssets(t)
 }
 
-func TestPrimaryPagesExposeTheInstallExperience(t *testing.T) { //nolint:cyclop // The shared install contract checks each primary page explicitly.
+func TestPrimaryPagesExposeTheInstallExperience(t *testing.T) {
 	assetContracts.PrimaryPagesExposeTheInstallExperience(t)
 }
 

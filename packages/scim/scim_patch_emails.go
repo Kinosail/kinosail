@@ -25,7 +25,7 @@ func (path scimPatchPath) canonical() string {
 	return path.name + "." + path.subattribute
 }
 
-func parseSCIMPatchPath(raw string) (scimPatchPath, error) { //nolint:cyclop,gocognit // ValuePath parsing has independent grammar and bounds checks.
+func parseSCIMPatchPath(raw string) (scimPatchPath, error) {
 	var err error
 	raw, err = canonicalSCIMPatchPath(raw)
 	if err != nil {
@@ -71,7 +71,7 @@ type scimEmailFilter struct {
 	primary, isBool  bool
 }
 
-func parseSCIMEmailFilter(raw string) (scimEmailFilter, error) { //nolint:cyclop // The bounded email valuePath grammar is explicit by attribute type.
+func parseSCIMEmailFilter(raw string) (scimEmailFilter, error) {
 	separator := strings.IndexAny(strings.TrimSpace(raw), " \t\r\n")
 	if separator <= 0 {
 		return scimEmailFilter{}, &scimValidationError{detail: "SCIM email filter is invalid"}
@@ -181,7 +181,7 @@ func applySCIMEmailFilter(email *scimProfileEmail, path scimPatchPath) {
 	}
 }
 
-func setSCIMEmailSubattribute(email *scimProfileEmail, subattribute string, value json.RawMessage) error { //nolint:cyclop // Each writable email subattribute has strict independent typing.
+func setSCIMEmailSubattribute(email *scimProfileEmail, subattribute string, value json.RawMessage) error {
 	if bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
 		return &scimValidationError{detail: "PatchOp values must not be null"}
 	}

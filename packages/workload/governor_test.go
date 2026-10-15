@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestGovernorReservesPlaybackCapacity(t *testing.T) { //nolint:cyclop // The score of 13 remains below the repository ceiling of 22 for the capacity matrix.
+func TestGovernorReservesPlaybackCapacity(t *testing.T) {
 	governor := New(3)
 	releaseBackground, err := governor.Acquire(t.Context(), Background)
 	if err != nil {

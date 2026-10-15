@@ -19,7 +19,7 @@ func writeTestFile(t *testing.T, path, content string) {
 	}
 }
 
-func requestApp(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder { //nolint:unparam // Uniform helper mirrors requestJSON while current web cases have empty bodies.
+func requestApp(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), method, path, strings.NewReader(body))
 	response := httptest.NewRecorder()
@@ -27,7 +27,7 @@ func requestApp(t *testing.T, handler http.Handler, method, path, body string) *
 	return response
 }
 
-func requestJSON(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder { //nolint:unparam // Keeping the method explicit makes mutation call sites self-describing.
+func requestJSON(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), method, path, strings.NewReader(body))
 	request.Header.Set("Content-Type", "application/json")

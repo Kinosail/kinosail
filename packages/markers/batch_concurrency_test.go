@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestMarkerBatchBoundsConcurrentGroupsAndPersistsSuccess(t *testing.T) { //nolint:cyclop // The barrier proves bounded overlap and durable publication.
+func TestMarkerBatchBoundsConcurrentGroupsAndPersistsSuccess(t *testing.T) {
 	if runtime.GOMAXPROCS(0) < 3 {
 		t.Skip("one worker is expected with fewer than three process CPUs")
 	}
@@ -85,7 +85,7 @@ func TestMarkerBatchFailureStillPublishesOtherGroups(t *testing.T) {
 	}
 }
 
-func BenchmarkMarkerBatch(b *testing.B) { //nolint:cyclop,gocognit // Real FFmpeg extraction compares the complete serial and concurrent batches.
+func BenchmarkMarkerBatch(b *testing.B) {
 	b.StopTimer()
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {

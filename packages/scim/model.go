@@ -84,7 +84,7 @@ var (
 	ErrSetupRequired   = errors.New("setup must be completed before SCIM provisioning")
 )
 
-func NormalizeProfileInput(input ProfileInput) (ProfileInput, error) { //nolint:gocognit,cyclop // All SCIM attributes share one semantic validation operation.
+func NormalizeProfileInput(input ProfileInput) (ProfileInput, error) {
 	var err error
 	input.UserName, err = scimString(input.UserName, 256, true, "userName")
 	if err != nil {

@@ -114,7 +114,6 @@ func boundedCommand(parent context.Context, executable string, limit int64, argu
 	}
 	ctx, cancel := context.WithTimeout(parent, 10*time.Second)
 	defer cancel()
-	//nolint:gosec // Arguments are fixed flags, a scanned library path, and a validated archive entry.
 	command := exec.CommandContext(ctx, executable, arguments...)
 	command.Stderr = io.Discard
 	output, err := command.StdoutPipe()
@@ -167,7 +166,7 @@ func ReadArchive(files []*zip.File, name string, limit int64) ([]byte, error) {
 		return nil, errors.New("archive entry not found")
 	}
 	for _, file := range files {
-		if CleanArchivePath(file.Name) != name || file.UncompressedSize64 > uint64(limit) { //nolint:gosec // Positive limits are validated above.
+		if CleanArchivePath(file.Name) != name || file.UncompressedSize64 > uint64(limit) {
 			continue
 		}
 		reader, err := file.Open()

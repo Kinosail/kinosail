@@ -63,7 +63,7 @@ func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, reques
 		flow.config.WriteError(writer, errors.New("passkey registration is unavailable"), http.StatusServiceUnavailable)
 		return
 	}
-	http.SetCookie(writer, cookie) //nolint:gosec // Plaintext localhost must complete a passkey ceremony.
+	http.SetCookie(writer, cookie)
 	WriteJSON(writer, creation)
 }
 
@@ -98,7 +98,7 @@ func (flow *ProfileFlow[T]) BeginLogin(writer http.ResponseWriter, request *http
 		flow.config.WriteError(writer, errors.New("passkey login is unavailable"), http.StatusServiceUnavailable)
 		return
 	}
-	http.SetCookie(writer, cookie) //nolint:gosec // Plaintext localhost must complete a passkey ceremony.
+	http.SetCookie(writer, cookie)
 	WriteJSON(writer, assertion)
 }
 

@@ -34,7 +34,7 @@ func TestSubtitleLedgerPersistsRecordsAndDailyLimits(t *testing.T) {
 	}
 }
 
-func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T) { //nolint:cyclop // One lifecycle proves state validation and rollback at each persistence failure.
+func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T) {
 	t.Parallel()
 	ledger := newSubtitleLedger("")
 	if err := ledger.store("0123456789abcdef:en", subtitleRecord{}); err == nil {

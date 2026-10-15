@@ -42,7 +42,7 @@ func (store *settingsStore) trustedHTTPS() trustedHTTPSView {
 	return trustedHTTPSView{Provider: config.ProviderName(), Domain: config.Domain, Address: config.Address, Hostname: config.Hostname(), Configured: true, TokenSet: config.Token != ""}
 }
 
-func (store *settingsStore) setTrustedHTTPS(input trustedHTTPSInput) (trustedHTTPSView, error) { //nolint:cyclop,gocognit // Validation and conflict checks form one fail-closed settings transaction.
+func (store *settingsStore) setTrustedHTTPS(input trustedHTTPSInput) (trustedHTTPSView, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	if err := store.editableLocked("tls.duckdns"); err != nil {

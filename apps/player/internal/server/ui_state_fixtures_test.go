@@ -20,7 +20,7 @@ func supporterBadgeCaseFixture() supporterPageData {
 	return supporterPageData{MonthlyLevels: supporterLevels("monthly", nil, 0), YearlyLevels: supporterLevels("yearly", nil, 0), Status: status, Living: supporterOwnedBadge(living), Patron: supporterOwnedBadge(patron), LivingLevels: supporterLevels(livingStandardFamily, living, 8), PatronLevels: supporterLevels(patronOrderFamily, patron, 6), Masterwork: &supporterBadgeArt{Family: "masterwork", FamilyName: "Full Sail", Tier: "lighthouse", Name: "Lighthouse", Title: masterworkTitles[5], Rank: 6, Active: true}, HasBadges: true}
 }
 
-func TestWriteUIStateFixtures(t *testing.T) { //nolint:paralleltest,funlen // This opt-in test writes a shared browser fixture directory.
+func TestWriteUIStateFixtures(t *testing.T) {
 	dir := os.Getenv("KINOSAIL_UI_FIXTURE_DIR")
 	if dir == "" {
 		t.Skip("KINOSAIL_UI_FIXTURE_DIR is not set")

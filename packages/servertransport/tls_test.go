@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func TestGeneratedIdentityPersistsAndRotatesForChangedHosts(t *testing.T) { //nolint:cyclop // One lifecycle verifies creation, persistence, rotation, and trust export.
+func TestGeneratedIdentityPersistsAndRotatesForChangedHosts(t *testing.T) {
 	directory := t.TempDir()
 	first, err := LoadOrCreate(directory, "server.nox", "192.168.1.10")
 	if err != nil {
@@ -153,7 +153,7 @@ func TestIdentityRejectsUnsafePrivateFilesWithoutMutation(t *testing.T) {
 	}
 }
 
-func TestIdentityRejectsInvalidInputsBeforeEffects(t *testing.T) { //nolint:gocognit // Table covers each bounded identity input class.
+func TestIdentityRejectsInvalidInputsBeforeEffects(t *testing.T) {
 	for _, dataDir := range []string{"", strings.Repeat("x", 4097), "invalid\x00path"} {
 		if _, err := LoadOrCreate(dataDir); err == nil {
 			t.Fatal("invalid data directory was accepted")

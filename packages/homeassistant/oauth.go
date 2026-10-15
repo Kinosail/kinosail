@@ -59,7 +59,7 @@ func (integration *Integration[P]) authorizeHTTP(writer http.ResponseWriter, req
 	_ = approval(writer, request, Approval{profile.Name, requestID, destination.Host})
 }
 
-func (integration *Integration[P]) authorizationRequest(request *http.Request, profile Profile[P]) (authorization, error) { //nolint:cyclop // OAuth request validation remains explicit and fail-closed.
+func (integration *Integration[P]) authorizationRequest(request *http.Request, profile Profile[P]) (authorization, error) {
 	query := request.URL.Query()
 	if !onlyValues(query, "response_type", "client_id", "redirect_uri", "state", "code_challenge", "code_challenge_method") {
 		return authorization{}, errors.New("invalid authorization request")
@@ -84,7 +84,7 @@ func validRedirect(raw string) bool {
 	return err == nil && len(raw) <= 2048 && parsed.Host != "" && parsed.User == nil && parsed.Fragment == "" && parsed.RawQuery == "" && parsed.Path == "/auth/external/callback" && (parsed.Scheme == "https" || parsed.Scheme == "http")
 }
 
-func (integration *Integration[P]) approveAuthorization(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Approval validates the request before issuing a code.
+func (integration *Integration[P]) approveAuthorization(writer http.ResponseWriter, request *http.Request) {
 	if err := httpguard.DecodeForm(writer, request, 16<<10, "request", "decision"); err != nil {
 		oauthError(writer, "invalid_request", http.StatusBadRequest)
 		return
@@ -134,7 +134,7 @@ func redirectAuthorization(writer http.ResponseWriter, request *http.Request, tr
 	}
 	query.Set("state", transaction.State)
 	redirect.RawQuery = query.Encode()
-	http.Redirect(writer, request, redirect.String(), http.StatusFound) //nolint:gosec // The callback was validated before storage.
+	http.Redirect(writer, request, redirect.String(), http.StatusFound)
 }
 
 func (integration *Integration[P]) tokenHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -162,7 +162,7 @@ func (integration *Integration[P]) tokenHTTP(writer http.ResponseWriter, request
 	writeJSON(writer, map[string]any{"access_token": token, "token_type": "Bearer", "serverId": server.ID, "name": server.Name}, http.StatusOK)
 }
 
-func decodeTokenRequest(writer http.ResponseWriter, request *http.Request) (tokenRequest, string) { //nolint:cyclop // Token input validation is explicit and fail-closed.
+func decodeTokenRequest(writer http.ResponseWriter, request *http.Request) (tokenRequest, string) {
 	if !formEncoded(request) || request.Header.Get("Authorization") != "" || request.URL.RawQuery != "" || request.ContentLength > 16<<10 {
 		return tokenRequest{}, "invalid_request"
 	}

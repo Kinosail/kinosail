@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func BenchmarkNativeMixedCatalog(b *testing.B) { //nolint:gocognit,cyclop // Keep route, profile seed, cardinality, and cold/warm controls in one fixture.
+func BenchmarkNativeMixedCatalog(b *testing.B) {
 	for _, count := range []int{10_000, 100_000} {
 		for _, owner := range []bool{true, false} {
 			for _, view := range []string{"movies", "shows", "music"} {
@@ -87,7 +87,7 @@ func mixedBenchmarkItems(items []library.Item) {
 	}
 }
 
-func mixedBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, count int, owner bool, view string) { //nolint:gocognit,cyclop // One public response contract checks counts, permitted IDs, and intrinsic kinds.
+func mixedBenchmarkResponse(b *testing.B, response *httptest.ResponseRecorder, count int, owner bool, view string) {
 	b.Helper()
 	total := count / 2
 	if view == "music" {

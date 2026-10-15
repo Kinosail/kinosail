@@ -50,7 +50,7 @@ type Manager struct {
 	leaf            *x509.Certificate
 }
 
-func New(config Config, dataDir string, dependencies ...Dependencies) (*Manager, error) { //nolint:cyclop // Dependency defaults and cached-certificate validation form one constructor boundary.
+func New(config Config, dataDir string, dependencies ...Dependencies) (*Manager, error) {
 	if len(dependencies) > 1 {
 		return nil, errors.New("trusted HTTPS accepts at most one dependency set")
 	}

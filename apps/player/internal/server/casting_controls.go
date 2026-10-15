@@ -120,7 +120,7 @@ func (service *castService) checkedStatus(writer http.ResponseWriter, request *h
 		return casting.Status{}, false
 	}
 	if status.Source != service.base+"/cast/"+session.ID+"/media" {
-		apiError(writer, errors.New("The TV is playing a different title; connect again"), http.StatusConflict) //nolint:staticcheck // This complete sentence is displayed directly in the TV picker.
+		apiError(writer, errors.New("The TV is playing a different title; connect again"), http.StatusConflict)
 		return casting.Status{}, false
 	}
 	return status, true

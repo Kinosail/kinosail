@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) { //nolint:funlen // The table keeps the JSON contract identical across every public mutation seam.
+func TestVersionedAPIRejectsMalformedMutationBodies(t *testing.T) {
 	handler, token := apiServer(t)
 	itemID := firstAPIItemID(t, handler, token)
 	paths := []struct{ method, path string }{

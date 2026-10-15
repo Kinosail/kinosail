@@ -107,7 +107,7 @@ func TestEditMetadataValidatesBeforePersistence(t *testing.T) {
 	}
 }
 
-func TestEditMetadataOutcomeOrdering(t *testing.T) { //nolint:cyclop // The outcome matrix keeps persistence ordering explicit and remains below the repository limit.
+func TestEditMetadataOutcomeOrdering(t *testing.T) {
 	t.Parallel()
 	body := `{"title":" Title ","year":"2024","plot":"Plot","rating":"PG","tagline":"Tag","genres":"Drama"}`
 	for name, service := range map[string]*metadataService{
@@ -142,7 +142,7 @@ func TestEditMetadataAcceptsExactBoundaries(t *testing.T) {
 	}
 }
 
-func TestBulkEditMetadataValidatesAndTranslatesOutcomes(t *testing.T) { //nolint:cyclop,gocognit // One bounded matrix proves validation happens before mutation for every transport outcome.
+func TestBulkEditMetadataValidatesAndTranslatesOutcomes(t *testing.T) {
 	t.Parallel()
 	invalidSelection := errors.New("invalid selection")
 	tests := map[string]struct {

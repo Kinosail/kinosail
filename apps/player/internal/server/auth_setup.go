@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	errInvalidOwnerSetup = errors.New("Choose a name and a password with at least 12 characters.") //nolint:staticcheck // ST1005: preserve the existing user-facing setup guidance and localization contract.
+	errInvalidOwnerSetup = errors.New("Choose a name and a password with at least 12 characters.")
 	errSetupComplete     = errors.New("server setup is already complete")
 )
 

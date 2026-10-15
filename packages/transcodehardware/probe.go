@@ -77,7 +77,7 @@ func ffmpegEvidence(ctx context.Context, options ProbeOptions) (string, error) {
 	return available, encoderError
 }
 
-func softwareBackend(options ProbeOptions, available string, encoderError error) Backend { //nolint:cyclop // Player's existing FFmpeg state contract stays explicit.
+func softwareBackend(options ProbeOptions, available string, encoderError error) Backend {
 	softwareEncoders := make(map[string]string)
 	for _, definition := range transcodepolicy.Codecs() {
 		if encoder := transcodepolicy.FirstEncoder(available, definition.Software); encoder != "" {
@@ -117,7 +117,7 @@ func hardwareDevices(devices []string) []string {
 	return devices
 }
 
-func detectedBackend(definition hardwareDefinition, options ProbeOptions, available string, deviceKinds map[string]string) Backend { //nolint:cyclop // One backend is assembled from the coherent probe evidence.
+func detectedBackend(definition hardwareDefinition, options ProbeOptions, available string, deviceKinds map[string]string) Backend {
 	detected := definition.encoder != "" && transcodepolicy.HasCapability(available, definition.encoder) && (definition.hw == "" || transcodepolicy.HasCapability(available, definition.hw))
 	usable := definition.supported && detected && definition.device
 	status, reason, action := hardwareMessage(definition, options.Application, options.Enabled && options.FFmpeg != "", detected, usable)
@@ -139,7 +139,7 @@ func detectedBackend(definition hardwareDefinition, options ProbeOptions, availa
 
 func ffmpegCapabilities(ctx context.Context, ffmpeg, argument string) (string, error) {
 	stdout, stderr := cappedBuffer{remaining: 256 << 10}, cappedBuffer{remaining: 256 << 10}
-	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", argument) //nolint:gosec // Executable is installation configuration.
+	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", argument)
 	command.Stdout, command.Stderr = &stdout, &stderr
 	err := command.Run()
 	return stdout.String() + "\n" + stderr.String(), err
@@ -161,7 +161,7 @@ func (buffer *cappedBuffer) Write(value []byte) (int, error) {
 func (buffer *cappedBuffer) String() string { return buffer.content.String() }
 
 func canOpenHardwareDevice(path string) bool {
-	device, err := os.OpenFile(path, os.O_RDWR, 0) //nolint:gosec // Paths are fixed GPU device nodes or explicit installation configuration.
+	device, err := os.OpenFile(path, os.O_RDWR, 0)
 	if err != nil {
 		return false
 	}

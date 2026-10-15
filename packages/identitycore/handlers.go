@@ -160,7 +160,7 @@ func NewMFAHandlers(config MFAHTTPConfig) (MFAHandlers, error) {
 	return MFAHandlers{Setup: mfaSetupHandler(config), Confirm: mfaConfirmHandler(config), Disable: mfaDisableHandler(config), WebConfirm: mfaWebConfirmHandler(config), WebDisable: mfaWebDisableHandler(config)}, nil
 }
 
-func validMFAHTTPConfig(config MFAHTTPConfig) bool { //nolint:cyclop // Every required adapter must be present before any MFA side effect.
+func validMFAHTTPConfig(config MFAHTTPConfig) bool {
 	return config.RecentlyAuthenticated != nil && config.ReadJSON != nil && config.Setup != nil && config.Confirm != nil && config.MarkStrong != nil && config.Verify != nil && config.Disable != nil && config.Error != nil && config.JSON != nil && config.WebError != nil && config.WebConfirmSuccess != nil && config.WebDisableSuccess != nil
 }
 

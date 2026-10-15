@@ -14,7 +14,7 @@ func (manager *subtitleManager) planCoverage(ctx context.Context, item library.I
 	return manager.planCoverageFacts(item, language, media)
 }
 
-func (manager *subtitleManager) planCoverageFacts(item library.Item, language string, media probeResult) (bool, []string) { //nolint:cyclop,gocognit // This projection keeps embedded, sidecar, and audio plan rules together.
+func (manager *subtitleManager) planCoverageFacts(item library.Item, language string, media probeResult) (bool, []string) {
 	ready, tracks := manager.sidecarPlanCoverage(item, language)
 	preference := manager.preference()
 	for _, track := range media.SubtitleFacts {

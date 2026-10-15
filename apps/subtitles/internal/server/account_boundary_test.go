@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestViewerCanReachAccountSecurityThroughWebAndAPI(t *testing.T) { //nolint:cyclop // One boundary test keeps the web and API account workflow together.
+func TestViewerCanReachAccountSecurityThroughWebAndAPI(t *testing.T) {
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	cookie := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	home := requestWithCookie(t, handler, http.MethodGet, "/", "", cookie)

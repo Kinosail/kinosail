@@ -10,8 +10,8 @@ import (
 
 const openSubtitlesHashBlock = 64 << 10
 
-func openSubtitlesHash(path string) (string, error) { //nolint:cyclop // The bounded file hash validates open, size, both reads, and concurrent mutation.
-	file, err := os.Open(path) //nolint:gosec // The path is scanned Library Content.
+func openSubtitlesHash(path string) (string, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return "", errors.New("media hash is unavailable")
 	}

@@ -14,7 +14,7 @@ type Snapshot interface {
 	Bool(string) bool
 }
 
-func ValidateTrustedHTTPS(configured Snapshot) error { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for one cross-field validator.
+func ValidateTrustedHTTPS(configured Snapshot) error {
 	trusted, err := trustedhttps.Parse(configured.String("tls.duckdns"))
 	if err != nil || trusted == (trustedhttps.Config{}) {
 		return err

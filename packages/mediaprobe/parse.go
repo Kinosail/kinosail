@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-func parse(data []byte) (Result, bool) { //nolint:cyclop,funlen,gocognit // Preserve rejection separately from empty normalized facts.
+func parse(data []byte) (Result, bool) {
 	if len(data) > maximumProbeOutput {
 		return Result{}, false
 	}

@@ -133,7 +133,7 @@ func Serve(writer http.ResponseWriter, request *http.Request, job Job) error {
 }
 
 func serve(writer http.ResponseWriter, request *http.Request, job Job, files deliveryFiles) error {
-	file, err := files.open(job.File) //nolint:gosec // A validated job owns this path.
+	file, err := files.open(job.File)
 	if err != nil {
 		return err
 	}

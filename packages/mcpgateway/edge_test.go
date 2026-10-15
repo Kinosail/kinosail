@@ -39,7 +39,7 @@ func TestToolInputsAndOutputsStayBounded(t *testing.T) {
 	}
 }
 
-func TestOAuthValidationRejectsAmbiguousExternalData(t *testing.T) { //nolint:funlen // Tables cover bounded OAuth metadata and token contracts.
+func TestOAuthValidationRejectsAmbiguousExternalData(t *testing.T) {
 	resource := "https://kino.test/mcp"
 	for name, raw := range map[string]json.RawMessage{
 		"empty": nil, "unknown": json.RawMessage(`{"bad":true}`), "empty list": json.RawMessage(`[]`),
@@ -94,7 +94,7 @@ func TestClientMetadataDocumentAndRedirectRules(t *testing.T) {
 	}
 }
 
-func TestConnectionConfigurationAndMetadataValidation(t *testing.T) { //nolint:funlen // Configuration and registration metadata stay closed.
+func TestConnectionConfigurationAndMetadataValidation(t *testing.T) {
 	connections := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{}}, &memoryState{})
 	config := OAuthConfig{ResourceURL: "https://resource.test/mcp", AuthorizationServer: "https://identity.test", IntrospectionURL: "https://identity.test/introspect", ClientID: "id", ClientSecret: "secret"}
 	connections.Configure(config)

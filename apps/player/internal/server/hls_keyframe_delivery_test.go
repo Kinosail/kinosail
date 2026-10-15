@@ -80,7 +80,7 @@ func assertCopiedHLSAudio(t *testing.T, ffmpeg, ffprobe, audio string) {
 func independentHLSMedia(t *testing.T, ctx context.Context, ffmpeg, audio string) string {
 	t.Helper()
 	media := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=36", "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=36", "-c:v", "libx264", "-preset", "veryfast", "-g", "120", "-keyint_min", "120", "-sc_threshold", "0", "-c:a", audio, filepath.Join(media, "Episode.S01E01.mkv")) //nolint:gosec // Fixed synthetic media and discovered local tools.
+	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24:duration=36", "-f", "lavfi", "-i", "sine=frequency=440:sample_rate=48000:duration=36", "-c:v", "libx264", "-preset", "veryfast", "-g", "120", "-keyint_min", "120", "-sc_threshold", "0", "-c:a", audio, filepath.Join(media, "Episode.S01E01.mkv"))
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate long-GOP fixture: %v: %s", err, output)
 	}
@@ -117,14 +117,14 @@ func assertIndependentHLSFragment(t *testing.T, ctx context.Context, fragment []
 	if err := os.WriteFile(path, fragment, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	probe := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "packet=flags", "-of", "csv=p=0", path) //nolint:gosec // Generated fixture paths and discovered local tools.
+	probe := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "packet=flags", "-of", "csv=p=0", path)
 	packets, err := probe.CombinedOutput()
 	first := strings.SplitN(string(packets), "\n", 2)[0]
 	if err != nil || !strings.Contains(first, "K") {
 		t.Errorf("%s first video packet is not a keyframe: %q (%v)", segment, first, err)
 		return
 	}
-	decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-err_detect", "explode", "-i", path, "-map", "0:v:0", "-enc_time_base", "1:1000000", "-fps_mode", "passthrough", "-f", "rawvideo", "-") //nolint:gosec // Generated fixture paths and discovered local tools.
+	decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-err_detect", "explode", "-i", path, "-map", "0:v:0", "-enc_time_base", "1:1000000", "-fps_mode", "passthrough", "-f", "rawvideo", "-")
 	var errors bytes.Buffer
 	decode.Stdout, decode.Stderr = io.Discard, &errors
 	if err := decode.Run(); err != nil || errors.Len() != 0 {

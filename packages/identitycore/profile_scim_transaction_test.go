@@ -30,7 +30,7 @@ func configureSCIMStore(store ProfileStore, ids ...string) ProfileStore {
 	return store
 }
 
-func TestProfileStoreSCIMReadAndCreate(t *testing.T) { //nolint:cyclop,gocognit // The read/create matrix remains below the repository ceiling of 22.
+func TestProfileStoreSCIMReadAndCreate(t *testing.T) {
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "owner", Name: "Owner", Owner: true},
 		Profile{ID: "active", Name: "Active", SCIMManaged: true, SCIMUserName: "active@example.com"},
@@ -74,7 +74,7 @@ func TestProfileStoreSCIMReadAndCreate(t *testing.T) { //nolint:cyclop,gocognit 
 	}
 }
 
-func TestProfileStoreSCIMCreateFailuresAndRehydrate(t *testing.T) { //nolint:cyclop // The score of 16 remains below the repository ceiling of 22 for the failure matrix.
+func TestProfileStoreSCIMCreateFailuresAndRehydrate(t *testing.T) {
 	deleted := Profile{
 		ID: "deleted", Name: "Old", Credential: "credential", OIDCIssuer: "issuer", OIDCSubject: "subject",
 		SAMLIssuer: "issuer", SAMLSubject: "subject", TOTPSecret: "totp", Recovery: []string{"code"},
@@ -111,7 +111,7 @@ func TestProfileStoreSCIMCreateFailuresAndRehydrate(t *testing.T) { //nolint:cyc
 	}
 }
 
-func TestProfileStoreSCIMUpdate(t *testing.T) { //nolint:cyclop,gocognit // The update matrix remains below the repository ceiling of 22.
+func TestProfileStoreSCIMUpdate(t *testing.T) {
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "owner", Name: "Owner", Owner: true},
 		Profile{ID: "target", Name: "Target", SCIMManaged: true, SCIMUserName: "target@example.com", SCIMExternalID: "directory-id", Revision: 2},
@@ -156,7 +156,7 @@ func TestProfileStoreSCIMUpdate(t *testing.T) { //nolint:cyclop,gocognit // The 
 	}
 }
 
-func TestProfileStoreSCIMDelete(t *testing.T) { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for the delete transaction matrix.
+func TestProfileStoreSCIMDelete(t *testing.T) {
 	fixture, store := newProfileStoreFixture(
 		Profile{ID: "target", Name: "Target", SCIMManaged: true, SCIMUserName: "target@example.com", Revision: 2},
 		Profile{ID: "deleted", SCIMManaged: true, SCIMDeleted: true},

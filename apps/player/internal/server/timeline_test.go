@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) { //nolint:cyclop // One rendered-player assertion covers the complete chapter and scrubber contract.
+func TestDirectPlayerShowsSourceChaptersAndClientSkipMarkers(t *testing.T) {
 	mediaDir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.mp4"), nil, 0o600); err != nil {
 		t.Fatal(err)

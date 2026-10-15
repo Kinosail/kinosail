@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func (configuration contract[Source, PublicValue, Snapshot]) testLoadPrecedenceSourcesAndSecretFiles(t *testing.T) { //nolint:cyclop // One precedence contract deliberately covers every source; exact policy remains below 22.
+func (configuration contract[Source, PublicValue, Snapshot]) testLoadPrecedenceSourcesAndSecretFiles(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	WriteAt(t, filepath.Join(directory, "configuration.json"), `{"server.name":"GUI","playback.autoplay":"true"}`)
@@ -85,7 +85,7 @@ func (configuration contract[Source, PublicValue, Snapshot]) testTLSHostsAreStri
 	}
 }
 
-func (configuration contract[Source, PublicValue, Snapshot]) testTrustedHTTPSConfigurationIsSecretAndCanonical(t *testing.T) { //nolint:cyclop // One lifecycle proves canonicalization, public redaction, and secret persistence.
+func (configuration contract[Source, PublicValue, Snapshot]) testTrustedHTTPSConfigurationIsSecretAndCanonical(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	raw := `{"domain":"family-media","token":"` + strings.Repeat("t", 32) + `","address":"192.168.1.10","termsAccepted":true}`

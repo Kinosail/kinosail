@@ -14,7 +14,7 @@ import (
 
 var errInjected = errors.New("injected failure")
 
-func TestOpenContextSurfacesDependencyFailures(t *testing.T) { //nolint:cyclop // The table covers each injected operating-system boundary.
+func TestOpenContextSurfacesDependencyFailures(t *testing.T) {
 	cases := map[string]struct {
 		legacy bool
 		change func(*dependencies)
@@ -138,7 +138,7 @@ func TestValidateExistingSurfacesDatabaseFailures(t *testing.T) {
 	}
 }
 
-func TestInitializeSurfacesDatabaseFailures(t *testing.T) { //nolint:cyclop,funlen // The table covers each transaction stage without production side effects.
+func TestInitializeSurfacesDatabaseFailures(t *testing.T) {
 	for name, configure := range map[string]func(sqlmock.Sqlmock){
 		"version": func(mock sqlmock.Sqlmock) {
 			mock.ExpectQuery(versionPattern()).WillReturnError(errInjected)

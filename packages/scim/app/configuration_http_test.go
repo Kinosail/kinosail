@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestParseConfigurationForm(t *testing.T) { //nolint:cyclop // The matrix covers each strict form field and envelope.
+func TestParseConfigurationForm(t *testing.T) {
 	t.Parallel()
 	valid := url.Values{"key": {ConfigurationKey}, "token": {"token"}, "tokenExpiresOn": {"2026-09-06"}}
 	input, err := ParseConfigurationForm(httptest.NewRecorder(), scimFormRequest(valid))

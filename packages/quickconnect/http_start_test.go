@@ -31,7 +31,7 @@ func serveRemote(handler http.HandlerFunc, recorder *httptest.ResponseRecorder, 
 	identitycore.Remote(handler).ServeHTTP(recorder, request)
 }
 
-func TestApplicationStartAcceptsPlayerTransports(t *testing.T) { //nolint:cyclop // The accepted transport matrix remains below the repository complexity limit.
+func TestApplicationStartAcceptsPlayerTransports(t *testing.T) {
 	t.Parallel()
 	tests := []struct{ name, contentType, body string }{
 		{"empty", "", ""},
@@ -118,7 +118,7 @@ func TestApplicationStartRejectsInvalidInputBeforeCreation(t *testing.T) {
 	}
 }
 
-func TestApplicationStartLimitsAndBrokerFailures(t *testing.T) { //nolint:cyclop,gocognit // One bounded matrix keeps request, start, and broker limits explicit.
+func TestApplicationStartLimitsAndBrokerFailures(t *testing.T) {
 	t.Parallel()
 	t.Run("request limit", func(t *testing.T) {
 		fixture := newApplicationFixture(t)

@@ -19,7 +19,7 @@ func Conflict(destination, source catalog.PlaybackState) bool {
 	return !destination.Updated.IsZero() && (source.Updated.IsZero() || destination.Updated.After(source.Updated))
 }
 
-func Match(activity Activity, items []library.Item) (library.Item, string, string) { //nolint:cyclop // Conservative matching keeps every identity boundary in one decision.
+func Match(activity Activity, items []library.Item) (library.Item, string, string) {
 	providerMatches := matchingItems(items, func(item library.Item) bool {
 		if !sameKind(activity, item) {
 			return false
