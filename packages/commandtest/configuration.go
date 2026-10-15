@@ -70,16 +70,3 @@ func ConfigurationEdges[Snapshot ConfigurationSnapshot](t *testing.T, load func(
 		t.Fatalf("remote configuration = %q, %q", configured.String("remote.mode"), authURL(configured))
 	}
 }
-
-func DefaultConfigurationFile[Snapshot ConfigurationSnapshot](t *testing.T, load func(string) (Snapshot, error)) {
-	directory := t.TempDir()
-	if err := os.WriteFile(filepath.Join(directory, "kinosail.yaml"), []byte("version: 1\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("KINOSAIL_DATA_DIR", directory)
-	t.Setenv("KINOSAIL_CONFIG_FILE", "")
-	configured, err := load("")
-	if err != nil || configured.String("paths.data") != directory {
-		t.Fatalf("default data directory=%q error=%v", configured.String("paths.data"), err)
-	}
-}

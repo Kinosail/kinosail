@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/url"
 	"sync"
 	"time"
 
@@ -82,10 +81,6 @@ func (program *supporterProgram) activate(ctx context.Context, key, recognitionN
 
 func (program *supporterProgram) status() supporterStatus {
 	return program.service.Status(program.settings.supporter())
-}
-
-func validIntegrationEndpoint(endpoint *url.URL) bool {
-	return endpoint != nil && supporterengine.ValidEndpoint(endpoint.String(), true)
 }
 
 func supporterName(tier string) string { return supporterengine.Name(tier) }

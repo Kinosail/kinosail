@@ -189,10 +189,6 @@ func copiedHLSTime(value float64) string {
 	return strconv.FormatFloat(value, 'f', 6, 64)
 }
 
-func matchesCopiedHLSManifest(manifest []byte, timeline *copiedHLSTimeline) bool {
-	return hlsmanifest.MatchesCuts(manifest, copiedHLSCuts(timeline))
-}
-
 func matchesCopiedHLSLength(timeline *copiedHLSTimeline, number int, length float64) bool {
 	return hlsmanifest.MatchesCutLength(timeline.segmentEnd(number)-timeline.point(number), length, number+1 == len(timeline.Keys))
 }
