@@ -106,7 +106,7 @@ elif name=='certutil':
   print((nickname+' C,,') if state.exists() or failure=='collision' else '')
 elif name=='pnpm':
  if failure=='browser':sys.exit(8)
- report((21 if failure=='omitted' else 23 if failure=='extra' else 22) if os.environ.get('KINOSAIL_POPULATED_SUITE')=='browse' else 1)
+ report((22 if failure=='omitted' else 24 if failure=='extra' else 23) if os.environ.get('KINOSAIL_POPULATED_SUITE')=='browse' else 1)
 '''
             for name in ['uname', 'git', 'docker', 'pnpm', 'mkdir', 'certutil']:
                 path = binaries / name
