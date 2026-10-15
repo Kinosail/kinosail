@@ -93,7 +93,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -195,7 +195,7 @@ jobs:
             Q14|Q09|Q47) echo app=player >> "$GITHUB_OUTPUT" ;;
             *) exit 2 ;;
           esac
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -336,7 +336,7 @@ jobs:
         with:
           persist-credentials: false
       - run: test ! -e .gates-disabled
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: go.work
           cache-dependency-path: '**/go.sum'
@@ -404,7 +404,7 @@ jobs:
           if [ '${{ inputs.campaign_proof }}' = AAC ]; then
             test '${{ inputs.hls_transcoded_refill }}' != true
           fi
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         if: inputs.campaign_proof == 'HLS'
         with:
           go-version-file: go.work
