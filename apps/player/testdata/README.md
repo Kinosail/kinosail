@@ -12,4 +12,4 @@ The local catalogue is an API-compatibility fixture, not TMDB data. A real TMDB 
 
 Run the generator from the app directory; read its usage before selecting an output path. Use an empty disposable directory, never your real library. [The fixture harness](../scripts/test-instance.sh) manages an isolated populated Server for development. The dedication is recorded in [CC0-1.0.txt](CC0-1.0.txt).
 
-While the repository's `.gates-disabled` marker exists, do not run disabled fixture verification or browser suites. Fixture credentials and generated media must stay confined to the local disposable instance.
+Fixture credentials and generated media must stay confined to the local disposable instance.

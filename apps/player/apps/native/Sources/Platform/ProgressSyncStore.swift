@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let progressSyncLog = Logger(subsystem: "com.kinosail.player", category: "progress-sync")
 
 struct PendingProgress: Identifiable, Sendable {
     let itemID: String
@@ -55,7 +58,8 @@ actor ProgressSyncStore {
         var next = entries
         if let index = next.firstIndex(where: { $0.itemID == entry.itemID }) {
             if next[index].progress.session == entry.progress.session, next[index].progress.revision >= entry.progress.revision { return }
-            next[index].progress = entry.progress
+            if next[index].progress.session == entry.progress.session { next[index].progress = entry.progress }
+            else { next[index] = entry }
         } else {
             guard next.count < 50 else { throw ClientError.invalidInput("Open Progress sync to save your pending positions before starting more titles.") }
             next.append(entry)
@@ -76,8 +80,11 @@ actor ProgressSyncStore {
                 try Task.checkCancellation()
                 let result: ProgressSyncResult
                 do { result = try await client.syncProgress(itemID: entry.itemID, progress: entry.progress, expected: entry.expected, playbackToken: "") }
-                catch ClientError.http(404) { continue }
-                catch ClientError.http(410) { continue }
+                catch ClientError.http(let status) where status == 404 || status == 410 {
+                    progressSyncLog.warning("operation=progress-sync outcome=dropped failure_class=item-unavailable status=\(status, privacy: .public) item=\(entry.itemID, privacy: .public)")
+                    try persist(entries.filter { $0.itemID != entry.itemID || $0.progress != entry.progress })
+                    continue
+                }
                 guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { continue }
                 var next = entries
                 if result.conflict { next[index].conflict = result.progress }

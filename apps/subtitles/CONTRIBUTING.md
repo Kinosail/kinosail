@@ -10,7 +10,7 @@ Read the [Individual Contributor License Agreement](CLA.md) and accept it in the
 
 Clone the full monorepo and work in `apps/subtitles/`. The shared `packages/` module and repository-root container context are required. The [app README](README.md) covers local setup; [engineering](engineering/README.md) contains architecture and release guidance.
 
-When quality gates are enabled, run the focused regressions and `make verify-changed` for this app, plus applicable release checks. While the root `.gates-disabled` marker exists, suites remain disabled and skipped checks are not passes. GitHub Actions is disabled; do not infer CI results from workflow files.
+Run the focused regressions and `make verify-changed` for this app, plus applicable release checks. Skipped checks are not passes. GitHub Actions runs the complete selected suites; read the run results, not the workflow files.
 
 ## Synthetic media
 
