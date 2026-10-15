@@ -73,6 +73,20 @@ test("single sign-on configuration stays usable at every supported width", async
 	await expect(page.getByLabel("Single sign-on client secret")).toHaveAttribute("placeholder", "Leave blank to keep the configured secret");
 	await expect(page.getByRole("button", { name: "Disable single sign-on" })).toBeVisible();
 	await page.locator('section[id="integrations.oidc"]').screenshot({ path: testInfo.outputPath("oidc-configuration-configured-1440.png") });
+	const restartLabels: { route: string; width: number; labels: string[] }[] = [];
+	for (const route of ["/settings/configuration", "/settings"]) {
+		for (const viewport of [{ width: 320, height: 800 }, { width: 390, height: 844 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {
+			await page.setViewportSize(viewport);
+			await page.goto(route);
+			const notice = page.locator("#restart-required");
+			await expect(notice).toBeVisible();
+			restartLabels.push({ route, width: viewport.width, labels: await notice.locator("li").allTextContents() });
+			await notice.screenshot({ path: testInfo.outputPath(`restart-notice-${route.endsWith("configuration") ? "configuration" : "settings"}-${viewport.width}.png`) });
+			await expect.soft(notice, `${route} at ${viewport.width}px names the saved identity setting`).toContainText("Single sign-on identity claim");
+			await expect.soft(notice, `${route} at ${viewport.width}px keeps the internal key out of the notice`).not.toContainText("integrations.oidc.identity_claim");
+		}
+	}
+	await testInfo.attach("restart-notice-labels.json", { body: JSON.stringify(restartLabels), contentType: "application/json" });
 });
 
 test("SAML configuration stays usable at every supported width", async ({ page }, testInfo) => {
