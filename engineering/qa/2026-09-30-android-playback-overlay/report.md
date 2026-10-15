@@ -50,3 +50,11 @@ The branch incorporates main `2d00b19a6b9502b6fd02149c8c13dd1f80e96410`. Upstrea
 ## Fixture input guard
 
 Before the guard, an unsafe capture prefix was accepted and generated-title progress changed. The saved negative control failed. The test now parses strict JSON and rejects missing, unknown, malformed, duplicate, oversized and conflicting seed inputs before any application action. It accepts only the isolated emulator bridge, the two generated titles and a bounded filename prefix. Eleven negative controls pass with authoritative generated-title progress unchanged. All eight valid mobile journeys pass again with this exact test source. The app production code is unchanged by this fixture guard.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-android-playback-overlay/gallery.html` | 3589 | `3d62b80bc2ed4ce926cb1355e8e619a4e3ac913afb483096b2758d50400ebfd3` |

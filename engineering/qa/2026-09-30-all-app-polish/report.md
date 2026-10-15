@@ -45,3 +45,21 @@ The broader Player layout baseline passed 2 tests and failed 11. The search over
 Apple iPhone/iPad, Apple TV, Apple Watch, Android phone/tablet, Android TV, and Wear OS have no fresh rendered or device evidence from this batch. Host storage fluctuated below 1GiB during verification, and the shared container VM remained full. Host storage later recovered, allowing native verification to continue after this web checkpoint. No Android device was attached. Existing simulators belonged to other work and were left alone. Native builds, authenticated native journeys, physical remotes, casting, long playback, real provider operations, deployment, and public TLS remain separate verification boundaries.
 
 The primary checkout's unrelated dirty work and inactive unique worktrees were preserved. Hosted CI, protected-main integration, and container publication are separate from the local source and browser results.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-all-app-polish/evidence/player-browser-matrix.log` | 1357 | `1ed4dd03c0a08a33a0f5bee07b2378a5d714df1b3de7936388128c077aef1c57` |
+| `2026-09-30-all-app-polish/evidence/player-phone-landscape-after.png` | 33465 | `b227692964b5303db69aaeac2905bd4469151f3fd007961f1818acdc046ef8b5` |
+| `2026-09-30-all-app-polish/evidence/player-search-before.png` | 150207 | `2005cc04a9c7002b5ac836250bfd558a34928c2a6a0ca024a23125ca119e0378` |
+| `2026-09-30-all-app-polish/evidence/player-search-focus-after.png` | 150120 | `795f320188e753d4ef46def1503fb9c218f9b5ef2a2c2a98d3c765db57a35986` |
+| `2026-09-30-all-app-polish/evidence/player-settings-after.png` | 112156 | `33a73ebe12cc5b32329e401242a42d78d0f5402d86fb821b743263034711960a` |
+| `2026-09-30-all-app-polish/evidence/player-settings-before.png` | 757129 | `7313c497d461a067b37ffdc4b53fc03d61a5e387cddc516b65a1e87a84228aed` |
+| `2026-09-30-all-app-polish/evidence/player-verify-changed.log` | 297 | `4c78bb698bc6f93f8b0b8e29c74e495ba5fef83b313d5a9d6a0cb6d989a05a0a` |
+| `2026-09-30-all-app-polish/evidence/subtitles-browser-matrix.log` | 985 | `116b3ec3fa4723f3677638145f7e9eb5ca7ba44f2e9a211875c333554fd70e53` |
+| `2026-09-30-all-app-polish/evidence/subtitles-settings-after.png` | 86374 | `1c8b14030c783d29b9e74fe617f9b4e8ca170582f88f5a4892e8f49da57e7894` |
+| `2026-09-30-all-app-polish/evidence/subtitles-settings-before.png` | 664619 | `546e1157a9cbcebad7652f2e1865c7be94d925830a69080bf9bfa6b347f9c5f3` |
+| `2026-09-30-all-app-polish/evidence/subtitles-verify-changed.log` | 652 | `38bac2621942dbaf7f3a4c35a414cc1d4b3c883dddf53d93c786531cdcea7d96` |

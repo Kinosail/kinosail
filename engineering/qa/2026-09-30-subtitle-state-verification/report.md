@@ -35,3 +35,11 @@ Regenerate the production fixtures with `TestWriteUIStateFixtures` and `TestWrit
 The previous [Player layout and runtime fix](../2026-09-30-player-layout-audit/report.md) merged through [PR #387](https://github.com/Kinosail/kinosail/pull/387). All four required PR checks passed, and all four fresh runtime builds installed the fixed OpenSSL package. The exact main run [36774578971](https://github.com/Kinosail/kinosail/actions/runs/36774578971) also passed and promoted both production images. Published manifest digests are retained in the checkpoint.
 
 A local full Go run was not repeated for this test-only change. Hosted required suites remain the publication authority. Full browser-suite certification, Nox deployment, public TLS, physical devices, actual Cast receivers, wearable pairing, long playback and external-provider operations remain separate boundaries. Shared Podman storage is full; unrelated resources and dirty primary-checkout work were preserved.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-30-subtitle-state-verification/gallery.html` | 3700 | `806c4d394bf458e43f552aaf98dfade3f982d710c2379d923e4cc7dc2c58b8d9` |

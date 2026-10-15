@@ -69,3 +69,11 @@ PY
 Container/platform cross-builds, real installer packages, browser project
 selection, and populated journeys belong to the parent's full required checks.
 The ledger explicitly retains their protections and records local run limits.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-10-03-test-overhaul/tooling.json` | 386646 | `04ed4cc853453e3070694caf075267ebb578ce9da863919d4af2fcefb8061f78` |

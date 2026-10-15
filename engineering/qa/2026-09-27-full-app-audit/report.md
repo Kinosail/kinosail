@@ -90,3 +90,24 @@ The audit report, screenshots, and observation JSON are the repeatable E2E run a
 This is a sampled full-product audit, not a claim that every feature is tested. Automated axe scans cover the observed `main` regions and do not establish complete accessibility. Targeted keyboard and D-pad interaction do not replace a physical accessibility or remote review. The Android TV and Wear checks used emulators. Apple authenticated flows, real providers, Cast on API 23, physical devices, production TLS, publication, deployment health, and long-running resilience were not verified. Test data stayed isolated; no purchase, email, or destructive production workflow was attempted.
 
 Hosted CI and remote-main integration are separate delivery evidence. They are not established by the local checks above.
+
+## Removed evidence
+
+These referenced files were removed from the working tree. Each remains in Git history at commit `3f292de8c5d13b14c67ce8d7cdd5c1a12db2c022`. See [REMOVED-EVIDENCE.md](../REMOVED-EVIDENCE.md).
+
+| Path | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `2026-09-27-full-app-audit/evidence/android-phone-empty-search-after.png` | 479424 | `169364ab730d4ef944bd37265275193bde12e976a9455a3807c3bbfb65bca968` |
+| `2026-09-27-full-app-audit/evidence/android-phone-empty-search-before.png` | 479840 | `398cb647bf585a85a57abb2dd46ac9ea06d23a2b66f14ad88cc3e8208e43e631` |
+| `2026-09-27-full-app-audit/evidence/android-phone-home.png` | 532191 | `a6acdb3500fe4295fe560fc5f924bfff94f5ec9c674578f9cf6222a68cb05355` |
+| `2026-09-27-full-app-audit/evidence/android-tv-detail.png` | 792830 | `736db40cff70cd604ca74274d3c521b1946fa636bb09169e387a39824e386ad4` |
+| `2026-09-27-full-app-audit/evidence/android-tv-playback-end.png` | 299255 | `18b921670059bcc77f452f1b347e41ea195340d4b932c290fbb6d928a14c0be4` |
+| `2026-09-27-full-app-audit/evidence/android-wear-connect.png` | 21656 | `da9b656f040de1c5bf210dc032dbf35f42e214b07c6144979ca06b37e198cd01` |
+| `2026-09-27-full-app-audit/evidence/apple-watch-unpaired.png` | 29836 | `ec949907e81ef54c1c6acf516d12556f21b791302f506b90340c8db07e2a784d` |
+| `2026-09-27-full-app-audit/evidence/player-browser-matrix-reconciled.log` | 1601 | `7bef3ce77b95a24816d6d6a7a53afc3b11ffa39077836845e61a342f3b619038` |
+| `2026-09-27-full-app-audit/evidence/player-browser-reconciled.log` | 15062 | `1f66f4e125ad85c75b7d360c3916f5f2b2eec3cca7b509e8ae1fe3715548efe7` |
+| `2026-09-27-full-app-audit/evidence/subtitles-browser-matrix-reconciled.log` | 1585 | `e27a6d462dced1ca5023a2bc3e422c417924fad89f1104d7605aeda02e89a971` |
+| `2026-09-27-full-app-audit/evidence/subtitles-browser-reconciled.log` | 3669 | `218f5f07e4629e79019828db0904ffd1629edc41f00ccf4b061913d0bfb20a60` |
+| `2026-09-27-full-app-audit/evidence/subtitles-nine-settings-links.png` | 175580 | `3e21a47e8aece92b8b681e5ff8c1fd64f9e66ff7d26ec799c45653ec8ffad00f` |
+| `2026-09-27-full-app-audit/evidence/subtitles-viewer-mfa-after.png` | 380515 | `6983e7feab6b1c5f05dd59c2974951893870ab1de9f42ffd6a36dfe414dc9da3` |
+| `2026-09-27-full-app-audit/evidence/subtitles-viewer-mfa-before.png` | 362589 | `da6f91bbee88105c4756d80315ef74d241b656a318623cda6e78e519352cd36d` |
