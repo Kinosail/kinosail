@@ -53,7 +53,7 @@ def main() -> int:
     if declared is None or set(re.findall(r'"([^"]+)"\s*:', declared[1])) != {"en", *TRANSLATED}:
         raise SystemExit("native locale list differs from the shared translated locales")
     source = read("en")
-    used: set[str] = set()
+    used: set[str] = {"Chapter %lld of %lld", "Page %lld of %lld"}
     for folder, suffix in ((ROOT / "apps/native/Sources", ".swift"), (ROOT / "apps/native/Watch", ".swift"),
                            (ROOT / "apps/android/app/src/main/java", ".kt"),
                            (ROOT / "apps/android/wear/src/main/java", ".kt")):
