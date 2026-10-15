@@ -1,7 +1,10 @@
 import AVFoundation
 import AVKit
 import Foundation
+import OSLog
 import Synchronization
+
+private let recoveryLog = Logger(subsystem: "com.kinosail.player", category: "playback-recovery")
 
 extension PlaybackEngine {
     func install(details: PlaybackSource, compatible: Bool, at position: Double, attempt: UUID, installation: UUID, failure: Error? = nil) async throws {
@@ -65,6 +68,8 @@ extension PlaybackEngine {
         nextItem = url.isFileURL ? AVPlayerItem(asset: try OfflineProbe.asset(url)) : AVPlayerItem(url: url)
         #else
         nextItem = AVPlayerItem(url: url)
+        nextItem.externalMetadata = PlaybackExternalMetadata.items(for: item)
+        publishArtwork(for: item, on: nextItem)
         #endif
         nextItem.audioTimePitchAlgorithm = .spectral
         let next = AVPlayer(playerItem: nextItem)
@@ -97,6 +102,7 @@ extension PlaybackEngine {
             try check(attempt, installation: installation)
             throw failure ?? nextItem.error ?? ClientError.unavailable
         }
+        recoveryLog.info("operation=playback-install outcome=ready compatible=\(self.usingCompatibility, privacy: .public) live=\(nextItem.duration.isIndefinite, privacy: .public) session=\(attempt.uuidString, privacy: .public)")
         let actual = nextItem.duration.seconds
         if duration == 0, actual.isFinite, actual > 0 {
             let validated = try MediaTimeline(sourceDuration: actual, duration: actual)
@@ -157,6 +163,9 @@ extension PlaybackEngine {
                     let failure = await self.transport.failure() ?? item.error
                     guard self.generation == attempt, self.installation == installation, self.player?.currentItem === item else { return }
                     guard let source = self.source else { self.message = Self.playbackMessage(failure); return }
+                    let failureClass = Self.isNetworkFailure(failure) ? "network" : Self.isFormatFailure(failure) ? "format" : "terminal"
+                    let code = (failure as NSError?)?.code ?? 0
+                    recoveryLog.warning("operation=playback-recovery failure_class=\(failureClass, privacy: .public) code=\(code, privacy: .public) compatible=\(self.usingCompatibility, privacy: .public) recoveries=\(self.networkRecoveries, privacy: .public) session=\(attempt.uuidString, privacy: .public)")
                     do {
                         if Self.isNetworkFailure(failure) {
                             installation = self.beginInstallation()
