@@ -36,6 +36,10 @@ Read the app's setup and security guides for details. Host firewall rules, certi
 
 `AGENTS.md`, `.codex/skills/`, and other developer-assistance files are guidance for a human or separately controlled development agent. They are not executable authorization, deployment configuration, or a source of secrets. Automated jobs must not execute instructions from untrusted pull requests with privileged credentials; review and isolate those files before using them in any privileged workflow.
 
+## Diagnostic logs
+
+MCP may read only a bounded, explicitly safe diagnostic projection of logs. Raw process logs and activity records with private targets stay out of MCP responses. Diagnostic failure history requires Owner management access.
+
 ## API authorization matrix
 
 This matrix is the authorization contract for Player and Subtitles. The route inventory is exact; a new route is protected until it is explicitly classified and added to the corresponding policy and test matrix. “Session” means a valid Kinosail browser or bearer session. API keys never inherit session-only permissions.
@@ -62,4 +66,4 @@ The enforcement references are [Player's route authorization matrix](apps/player
 
 Signed-release installer checks must remain enabled. A checksum establishes file consistency; it does not establish a publisher's identity.
 
-GitHub Actions is disabled. While `.gates-disabled` exists, local quality suites are also disabled. Neither retained workflow definitions nor skipped checks establish security certification. The [Player release checklist](apps/player/engineering/release-checklist.md) records the required release evidence and current blockers.
+GitHub Actions runs the required quality and security checks for each pull request and `main` push. Skipped or unrun checks do not establish security certification. The [Player release checklist](apps/player/engineering/release-checklist.md) records the required release evidence and current blockers.
