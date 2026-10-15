@@ -76,6 +76,14 @@ final class MediaConnection: MediaTransferConsumer, @unchecked Sendable {
         task = transfer.dataTask(with: next, consumer: self)
         guard let task else { throw ClientError.unavailable }
         task.resume()
+        watchDeparture()
+    }
+
+    private func watchDeparture() {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 1) { [weak self] _, _, complete, error in
+            guard let self, !self.closed else { return }
+            if complete || error != nil { self.close() } else { self.watchDeparture() }
+        }
     }
 
     func receive(_ response: URLResponse, completion: @escaping @Sendable (URLSession.ResponseDisposition) -> Void) {

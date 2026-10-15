@@ -14,9 +14,9 @@ TITLE = 'Connection choices stay optional and secure by default'
 class PopulatedInstanceTests(unittest.TestCase):
     def test_populated_instance_admission_is_explicit_and_retains_failures(self):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
-        self.assertIn("inputs.campaign_proof != 'INSTANCE'", source)
-        section = source.split('  populated-instance:\n', 1)[1].split('\n  hls-followon:', 1)[0]
-        self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.campaign_proof == 'INSTANCE'", section)
+        self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.populated_suite == 'none'", source)
+        section = source.split('  populated-instance:\n', 1)[1]
+        self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.populated_suite != 'none'", section)
         self.assertIn('runs-on: ubuntu-24.04', section)
         self.assertIn("timeout-minutes: ${{ inputs.populated_suite != 'admission' && 40 || 30 }}", section)
         self.assertIn('persist-credentials: false', section)
@@ -34,7 +34,7 @@ class PopulatedInstanceTests(unittest.TestCase):
     def test_selected_mode_reuses_the_existing_suite_and_keeps_artifacts(self):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
         self.assertIn('populated_suite:', source)
-        self.assertIn('options: [admission, selected, browse, configuration, beta]', source)
+        self.assertIn('options: [none, admission, selected, browse, configuration, beta]', source)
         self.assertIn('KINOSAIL_POPULATED_SUITE: ${{ inputs.populated_suite }}', source)
         self.assertIn("timeout-minutes: ${{ inputs.populated_suite != 'admission' && 24 || 12 }}", source)
         helper = (ROOT / 'apps/player/scripts/test-instance.sh').read_text()
