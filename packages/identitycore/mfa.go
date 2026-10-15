@@ -106,31 +106,26 @@ func (mfa *MFA) PendingCount() int {
 }
 
 func ValidTOTP(secret, code string, now time.Time) bool {
+	_, valid := TOTPCounter(secret, code, now)
+	return valid
+}
+
+func TOTPCounter(secret, code string, now time.Time) (int64, bool) {
 	code = strings.TrimSpace(code)
-	if len(secret) == 0 {
-		return false
-	}
-	if len(secret) > maxSecretLength {
-		return false
-	}
-	if len(code) != 6 {
-		return false
-	}
-	if !decimal(code) {
-		return false
+	if len(secret) == 0 || len(secret) > maxSecretLength || len(code) != 6 || !decimal(code) {
+		return 0, false
 	}
 	key, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(secret)
 	if err != nil {
-		return false
+		return 0, false
 	}
 	counter := now.Unix() / 30
-	if hmac.Equal([]byte(totp(key, counter)), []byte(code)) {
-		return true
+	for _, candidate := range []int64{counter, counter - 1, counter + 1} {
+		if hmac.Equal([]byte(totp(key, candidate)), []byte(code)) {
+			return candidate, true
+		}
 	}
-	if hmac.Equal([]byte(totp(key, counter-1)), []byte(code)) {
-		return true
-	}
-	return hmac.Equal([]byte(totp(key, counter+1)), []byte(code))
+	return 0, false
 }
 
 func NormalizeRecovery(code string) string {

@@ -88,3 +88,7 @@ c13394050e8a2c220d18f431199f9496cd84bc96:engineering/qa/2026-10-09-hls-version1-
 a27a554bf3fc371c2ed17cbbcaccc9fba3bb3ea7:engineering/qa/2026-10-09-hls-version1-partial-read.md:generic-api-key:123
 4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:284
 4411ef094b56457b24d1f2ee3eaa52ff05dedc7a:engineering/qa/2026-10-09-hls-aac-version1-compatibility.md:generic-api-key:288
+
+# Public RFC 6238 TOTP test key in the factor replay tests.
+ff35b43c7aac571084c98319647ca246595c471d:packages/identitycore/factor_replay_test.go:generic-api-key:13
+ff35b43c7aac571084c98319647ca246595c471d:packages/identitycore/factor_replay_test.go:generic-api-key:43

@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-	"time"
 )
 
 func assertUnlinkedOIDCIdentity(t *testing.T, handler http.Handler, nonce *string) {
@@ -67,7 +66,7 @@ func assertLinkedOIDCSessions(t *testing.T, fixture OIDCFixture, handler http.Ha
 	if callback.Code != http.StatusSeeOther || linkedMFA.Path != "/login/mfa" || linkedMFA.Query().Get("challenge") == "" {
 		t.Fatalf("linked SSO challenge = %d %q", callback.Code, callback.Header().Get("Location"))
 	}
-	linkedFinishRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/mfa", strings.NewReader(url.Values{"challenge": {linkedMFA.Query().Get("challenge")}, "code": {fixture.TOTP(t, secret, time.Now())}}.Encode()))
+	linkedFinishRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/mfa", strings.NewReader(url.Values{"challenge": {linkedMFA.Query().Get("challenge")}, "code": {NextTOTP(t, secret)}}.Encode()))
 	linkedFinishRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	linkedFinish := httptest.NewRecorder()
 	handler.ServeHTTP(linkedFinish, linkedFinishRequest)
@@ -95,7 +94,7 @@ func assertOIDCRepeatSession(t *testing.T, fixture OIDCFixture, handler http.Han
 	if mfaCallback.Code != http.StatusSeeOther || mfaLocation.Path != "/login/mfa" || mfaLocation.Query().Get("challenge") == "" {
 		t.Fatalf("SSO MFA challenge = %d %q cookies=%v", mfaCallback.Code, mfaCallback.Header().Get("Location"), mfaCallback.Result().Cookies())
 	}
-	mfaRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/mfa", strings.NewReader(url.Values{"challenge": {mfaLocation.Query().Get("challenge")}, "code": {fixture.TOTP(t, secret, time.Now())}}.Encode()))
+	mfaRequest := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login/mfa", strings.NewReader(url.Values{"challenge": {mfaLocation.Query().Get("challenge")}, "code": {NextTOTP(t, secret)}}.Encode()))
 	mfaRequest.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	mfaFinish := httptest.NewRecorder()
 	handler.ServeHTTP(mfaFinish, mfaRequest)

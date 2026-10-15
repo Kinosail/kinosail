@@ -216,8 +216,8 @@ func TestFactorVerifyAcceptsTOTPAndConsumesRecoveryOnce(t *testing.T) {
 	t.Parallel()
 	const secret = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" //nolint:gosec // Public RFC 6238 test key.
 	totpFixture := newFactorFixture(FactorProfile{ID: "owner", Secret: secret, Recovery: make([]string, recoveryCodeCount+1)})
-	if !totpFixture.transaction(func() time.Time { return time.Unix(59, 0) }).Verify("owner", "287082") || totpFixture.writes != 0 {
-		t.Fatal("valid TOTP was not accepted without persistence")
+	if !totpFixture.transaction(func() time.Time { return time.Unix(59, 0) }).Verify("owner", "287082") || totpFixture.writes != 1 || totpFixture.profiles[0].factor.Counter != 1 {
+		t.Fatalf("valid TOTP acceptance = writes %d factor %#v", totpFixture.writes, totpFixture.profiles[0].factor)
 	}
 	recoveryFixture := newFactorFixture(FactorProfile{ID: "owner", Secret: secret, Recovery: []string{SessionKey("AABBCCDD"), SessionKey("unused")}})
 	transaction := recoveryFixture.transaction(func() time.Time { return time.Unix(59, 0) })

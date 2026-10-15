@@ -34,7 +34,7 @@ func (fixture OnboardingFixture) OwnerFirstCredentialLoginOpensOnboarding(t *tes
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	owner, secret := fixture.setupOwnerForLogin(t, handler)
 
-	login := WebFormCall(t, handler, "", "/login", url.Values{"name": {"Owner"}, "password": {"owner-password"}, "code": {fixture.TOTP(t, secret, time.Now())}})
+	login := WebFormCall(t, handler, "", "/login", url.Values{"name": {"Owner"}, "password": {"owner-password"}, "code": {NextTOTP(t, secret)}})
 	if login.Code != http.StatusSeeOther || login.Header().Get("Location") != "/account?passkey=offer&next=%2Fonboarding" {
 		t.Fatalf("first credential login = %d, location = %q", login.Code, login.Header().Get("Location"))
 	}
@@ -42,7 +42,7 @@ func (fixture OnboardingFixture) OwnerFirstCredentialLoginOpensOnboarding(t *tes
 	if finish.Code != http.StatusSeeOther {
 		t.Fatalf("finish onboarding = %d, location = %q", finish.Code, finish.Header().Get("Location"))
 	}
-	login = WebFormCall(t, handler, "", "/login", url.Values{"name": {"Owner"}, "password": {"owner-password"}, "code": {fixture.TOTP(t, secret, time.Now())}})
+	login = WebFormCall(t, handler, "", "/login", url.Values{"name": {"Owner"}, "password": {"owner-password"}, "code": {NextTOTP(t, secret)}})
 	if login.Code != http.StatusSeeOther || login.Header().Get("Location") != "/account?passkey=offer&next=%2F" {
 		t.Fatalf("later credential login = %d, location = %q", login.Code, login.Header().Get("Location"))
 	}

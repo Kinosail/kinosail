@@ -58,7 +58,7 @@ func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 	if enabled.Code != http.StatusOK || !strings.Contains(enabled.Body.String(), `"enabled":true`) {
 		t.Fatalf("MFA setup = %d %q", enabled.Code, enabled.Body.String())
 	}
-	confirmedLogin := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": fixture.TOTP(t, result.TOTP.Secret, time.Now())})
+	confirmedLogin := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": NextTOTP(t, result.TOTP.Secret)})
 	AssertAPIBody(t, confirmedLogin, http.StatusCreated, `"mfaEnrollmentRequired":false`)
 	var authenticated struct{ Token string }
 	MustJSON(t, confirmedLogin, &authenticated)

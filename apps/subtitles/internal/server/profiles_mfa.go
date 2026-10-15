@@ -35,10 +35,10 @@ func (store *profileStore) verifySecondFactor(id, code string) bool {
 }
 
 func factorProfile(profile viewerProfile) identitycore.FactorProfile {
-	return identitycore.FactorProfile{ID: profile.ID, Owner: profile.Owner, Passkeys: len(profile.Passkeys), Secret: profile.TOTPSecret, Recovery: profile.Recovery, Revision: profile.Revision}
+	return identitycore.FactorProfile{ID: profile.ID, Owner: profile.Owner, Passkeys: len(profile.Passkeys), Secret: profile.TOTPSecret, Recovery: profile.Recovery, Counter: profile.TOTPCounter, Revision: profile.Revision}
 }
 
 func applyFactorProfile(profile viewerProfile, factor identitycore.FactorProfile) viewerProfile {
-	profile.TOTPSecret, profile.Recovery, profile.Revision = factor.Secret, factor.Recovery, factor.Revision
+	profile.TOTPSecret, profile.Recovery, profile.TOTPCounter, profile.Revision = factor.Secret, factor.Recovery, factor.Counter, factor.Revision
 	return profile
 }

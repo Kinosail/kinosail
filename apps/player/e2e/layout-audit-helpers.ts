@@ -1,7 +1,8 @@
+import { reuseSignedInSession } from "../../../scripts/testing/owner-session";
+import { fixtureTotp } from "../../../scripts/testing/fixture-totp";
 import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { uiElementAttachment, uiElementInventory } from "../../../scripts/testing/ui-element-inventory";
-import { createHmac } from "node:crypto";
 import { gotoAuthForm } from "../../../scripts/testing/auth-form-navigation";
 
 export const viewports = [
@@ -18,17 +19,14 @@ export function configureLayoutAudit() {
 }
 
 export function totp(secretBase32 = process.env.KINOSAIL_TEST_TOTP_SECRET ?? ""): string {
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-	const bits = [...secretBase32].map((character) => alphabet.indexOf(character).toString(2).padStart(5, "0")).join("");
-	const secret = Buffer.from(bits.match(/.{8}/g)?.map((byte) => Number.parseInt(byte, 2)) ?? []);
-	const counter = Buffer.alloc(8);
-	counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));
-	const digest = createHmac("sha1", secret).update(counter).digest();
-	const offset = digest[19] & 15;
-	return ((digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000).toString().padStart(6, "0");
+	return fixtureTotp(secretBase32);
 }
 
 export async function login(page: Page, name = "Owner", password = "test-instance-password") {
+	await reuseSignedInSession(page, name, () => signIn(page, name, password));
+}
+
+async function signIn(page: Page, name: string, password: string) {
 	const response = await gotoAuthForm(page, "/login", test.info());
 	expect(response?.status()).toBe(200);
 	expect(response!.request().redirectedFrom()).toBeNull();

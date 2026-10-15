@@ -33,14 +33,7 @@ wait_ready() {
 }
 
 totp_code() {
-  local secret secret_hex counter digest offset chunk
-  secret="$(<"$KINOSAIL_TEST_ROOT/totp-secret")"
-  secret_hex="$(printf %s "$secret" | "$engine" run --rm --interactive --entrypoint base32 localhost/kinosail-subtitles:dev --decode | xxd -p -c 256)"
-  counter="$(printf '%016x' "$(($(date +%s) / 30))")"
-  digest="$(printf %s "$counter" | xxd -r -p | openssl dgst -sha1 -mac HMAC -macopt "hexkey:$secret_hex" -binary | xxd -p -c 256)"
-  offset=$((16#${digest:39:1}))
-  chunk="${digest:$((offset * 2)):8}"
-  printf '%06d\n' "$(((16#$chunk & 0x7fffffff) % 1000000))"
+  python3 "$app/../../scripts/testing/fixture-totp.py" "$(<"$KINOSAIL_TEST_ROOT/totp-secret")"
 }
 
 prepare() {
