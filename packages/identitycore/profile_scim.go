@@ -76,7 +76,7 @@ func (store ProfileStore) rehydrateSCIMProfile(profiles []Profile, index int, in
 	existing := profiles[index]
 	existing.Name, existing.SCIMUserName, existing.SCIMExternalID = input.Name, input.UserName, input.ExternalID
 	existing.SCIMName, existing.SCIMEmails, existing.SCIMEnterprise = scim.Name{Formatted: input.Formatted, GivenName: input.GivenName, FamilyName: input.FamilyName}, append([]scim.Email(nil), input.Emails...), input.Enterprise
-	existing.Credential, existing.OIDCIssuer, existing.OIDCSubject, existing.SAMLIssuer, existing.SAMLSubject, existing.TOTPSecret, existing.Recovery, existing.Passkeys, existing.PasskeyUsage = "", "", "", "", "", "", nil, nil, nil
+	existing.Credential, existing.OIDCIssuer, existing.OIDCSubject, existing.SAMLIssuer, existing.SAMLSubject, existing.TOTPSecret, existing.TOTPCounter, existing.Recovery, existing.Passkeys, existing.PasskeyUsage = "", "", "", "", "", "", 0, nil, nil, nil
 	existing.Disabled, existing.SCIMDeleted, existing.SCIMUpdatedAt = !input.Active, false, now
 	existing.Revision++
 	profiles[index] = existing
@@ -119,7 +119,7 @@ func (store ProfileStore) UpdateSCIMProfile(id string, input scim.ProfileInput, 
 		wasDisabled := existing.Disabled
 		identityChanged := existing.SCIMExternalID != input.ExternalID
 		if identityChanged {
-			existing.Credential, existing.TOTPSecret, existing.Recovery, existing.Passkeys, existing.PasskeyUsage = "", "", nil, nil, nil
+			existing.Credential, existing.TOTPSecret, existing.TOTPCounter, existing.Recovery, existing.Passkeys, existing.PasskeyUsage = "", "", 0, nil, nil, nil
 			existing.OIDCIssuer, existing.OIDCSubject, existing.SAMLIssuer, existing.SAMLSubject = "", "", "", ""
 		}
 		existing.Name, existing.SCIMUserName, existing.SCIMExternalID = input.Name, input.UserName, input.ExternalID

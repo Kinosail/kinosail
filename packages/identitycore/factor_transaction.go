@@ -19,6 +19,7 @@ type FactorProfile struct {
 	Passkeys int
 	Secret   string
 	Recovery []string
+	Counter  int64
 	Revision uint64
 }
 
@@ -54,7 +55,7 @@ func (transaction *FactorTransaction[P]) Enable(id, secret string, recovery []st
 		if factor.ID != id {
 			continue
 		}
-		factor.Secret, factor.Recovery = secret, hashed
+		factor.Secret, factor.Recovery, factor.Counter = secret, hashed, 0
 		factor.Revision++
 		profiles[index] = transaction.config.Apply(profile, factor)
 		sessions := WithoutProfile(*transaction.config.Sessions, id, true)
@@ -76,7 +77,7 @@ func (transaction *FactorTransaction[P]) Disable(id string) error {
 		if factor.Owner && factor.Passkeys == 0 {
 			return ErrOwnerFactorNeeded
 		}
-		factor.Secret, factor.Recovery = "", nil
+		factor.Secret, factor.Recovery, factor.Counter = "", nil, 0
 		factor.Revision++
 		profiles[index] = transaction.config.Apply(profile, factor)
 		sessions := WithoutProfile(*transaction.config.Sessions, id, true)
@@ -94,8 +95,12 @@ func (transaction *FactorTransaction[P]) Verify(id, code string) bool { //nolint
 		if factor.ID != id || factor.Secret == "" {
 			continue
 		}
-		if ValidTOTP(factor.Secret, code, transaction.config.Now()) {
-			return true
+		if counter, valid := TOTPCounter(factor.Secret, code, transaction.config.Now()); valid {
+			if counter <= factor.Counter {
+				return false
+			}
+			factor.Counter = counter
+			return transaction.commitFactor(index, profile, factor)
 		}
 		if len(factor.Recovery) > recoveryCodeCount {
 			continue
@@ -109,13 +114,17 @@ func (transaction *FactorTransaction[P]) Verify(id, code string) bool { //nolint
 			if !hmac.Equal([]byte(recovery), []byte(hashed)) {
 				continue
 			}
-			profiles := slices.Clone(*transaction.config.Profiles)
 			factor.Recovery = append(slices.Clone(factor.Recovery[:position]), factor.Recovery[position+1:]...)
-			profiles[index] = transaction.config.Apply(profile, factor)
-			return transaction.commit(profiles, *transaction.config.Sessions, false) == nil
+			return transaction.commitFactor(index, profile, factor)
 		}
 	}
 	return false
+}
+
+func (transaction *FactorTransaction[P]) commitFactor(index int, profile P, factor FactorProfile) bool {
+	profiles := slices.Clone(*transaction.config.Profiles)
+	profiles[index] = transaction.config.Apply(profile, factor)
+	return transaction.commit(profiles, *transaction.config.Sessions, false) == nil
 }
 
 func (transaction *FactorTransaction[P]) valid() bool {

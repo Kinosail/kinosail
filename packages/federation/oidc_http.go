@@ -4,6 +4,13 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
+)
+
+const (
+	mfaAttemptsPerAddress = 30
+	mfaAttemptsPerProfile = 10
 )
 
 type OIDCHTTP[T any] struct {
@@ -11,6 +18,7 @@ type OIDCHTTP[T any] struct {
 	profiles  Profiles[T]
 	hooks     WebHooks[T]
 	renderMFA func(http.ResponseWriter, *http.Request, string) error
+	attempts  httpguard.Limiter
 }
 
 func NewOIDCHTTP[T any](config OIDCConfig, profiles Profiles[T], hooks WebHooks[T], renderMFA func(http.ResponseWriter, *http.Request, string) error) *OIDCHTTP[T] {
@@ -125,10 +133,21 @@ func (login *OIDCHTTP[T]) finishMFA(writer http.ResponseWriter, request *http.Re
 		_ = login.renderMFA(writer, request, challenge)
 		return
 	}
-	if !found || !login.hooks.VerifySecondFactor(profileID, request.FormValue("code")) {
+	if !found {
 		login.hooks.Error(writer, request, "invalid authentication code", http.StatusUnauthorized)
 		return
 	}
+	if !login.allowMFAAttempt(request, profileID) {
+		writer.Header().Set("Retry-After", "60")
+		login.hooks.Error(writer, request, "too many authentication attempts", http.StatusTooManyRequests)
+		return
+	}
+	if !login.hooks.VerifySecondFactor(profileID, request.FormValue("code")) {
+		login.flow.FailMFA(challenge)
+		login.hooks.Error(writer, request, "invalid authentication code", http.StatusUnauthorized)
+		return
+	}
+	login.attempts.Reset("profile:" + profileID)
 	consumedProfile, consumed := login.flow.ConsumeMFA(challenge)
 	if !consumed || consumedProfile != profileID {
 		login.hooks.Error(writer, request, "invalid authentication code", http.StatusUnauthorized)
@@ -143,6 +162,12 @@ func (login *OIDCHTTP[T]) finishMFA(writer http.ResponseWriter, request *http.Re
 		return
 	}
 	http.Redirect(writer, request, "/", http.StatusSeeOther)
+}
+
+func (login *OIDCHTTP[T]) allowMFAAttempt(request *http.Request, profileID string) bool {
+	address := login.attempts.Allow("ip:"+httpguard.RemoteHost(request.RemoteAddr), mfaAttemptsPerAddress)
+	profile := login.attempts.Allow("profile:"+profileID, mfaAttemptsPerProfile)
+	return address && profile
 }
 
 func (login *OIDCHTTP[T]) unlinkAPI(writer http.ResponseWriter, request *http.Request) {

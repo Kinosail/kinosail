@@ -2,29 +2,16 @@ package servertest
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/sha1" //nolint:gosec // TOTP test helper follows RFC 6238.
 	"encoding/base32"
-	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 )
 
 func CurrentTOTP(secret string) string {
 	key, _ := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(secret)
-	var counter [8]byte
-	//nolint:gosec // Current Unix time is nonnegative.
-	binary.BigEndian.PutUint64(counter[:], uint64(time.Now().Unix()/30))
-	mac := hmac.New(sha1.New, key)
-	_, _ = mac.Write(counter[:])
-	digest := mac.Sum(nil)
-	offset := digest[len(digest)-1] & 0x0f
-	value := binary.BigEndian.Uint32(digest[offset:offset+4]) & 0x7fffffff
-	return fmt.Sprintf("%06d", value%1_000_000)
+	return totpForCounter(key, nextTOTPCounter(secret))
 }
 
 func RouteJSON(t *testing.T, handler http.Handler, token, method, path string, body any) *httptest.ResponseRecorder {

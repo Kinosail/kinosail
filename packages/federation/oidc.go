@@ -16,6 +16,7 @@ import (
 
 const (
 	maxPendingStates    = 256
+	maxMFAFailures      = 5
 	transactionTTL      = 10 * time.Minute
 	OIDCStateCookieName = "kinosail_oidc_state"
 )
@@ -43,6 +44,7 @@ type oidcTransaction struct {
 type mfaChallenge struct {
 	profileID string
 	expires   time.Time
+	failures  int
 }
 
 type OIDC struct {
@@ -148,6 +150,23 @@ func (flow *OIDC) MFAProfile(challenge string) (string, bool) {
 	defer flow.mu.Unlock()
 	entry, found := flow.mfa[tokenKey(challenge)]
 	return entry.profileID, found && time.Now().Before(entry.expires)
+}
+
+func (flow *OIDC) FailMFA(challenge string) bool {
+	flow.mu.Lock()
+	defer flow.mu.Unlock()
+	key := tokenKey(challenge)
+	entry, found := flow.mfa[key]
+	if !found {
+		return false
+	}
+	entry.failures++
+	if entry.failures >= maxMFAFailures || !time.Now().Before(entry.expires) {
+		delete(flow.mfa, key)
+		return false
+	}
+	flow.mfa[key] = entry
+	return true
 }
 
 func (flow *OIDC) ConsumeMFA(challenge string) (string, bool) {

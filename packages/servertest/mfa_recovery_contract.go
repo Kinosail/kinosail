@@ -36,11 +36,11 @@ func AssertTOTPAndOneTimeRecoveryCodesGatePasswordSessions(t *testing.T, fixture
 	code := fixture.TOTP(t, enrollment.Secret, time.Now())
 	confirmed := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": code})
 	AssertAPIBody(t, confirmed, http.StatusOK, `"enabled":true`)
-	lastFactor := APICall(t, handler, session.Token, http.MethodDelete, "/api/v1/me/mfa", map[string]any{"code": fixture.TOTP(t, enrollment.Secret, time.Now())})
+	lastFactor := APICall(t, handler, session.Token, http.MethodDelete, "/api/v1/me/mfa", map[string]any{"code": NextTOTP(t, enrollment.Secret)})
 	AssertAPIBody(t, lastFactor, http.StatusConflict, "owner must retain a passkey or authenticator")
 	missing := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password"})
 	AssertAPIBody(t, missing, http.StatusUnauthorized, `"mfaRequired":true`)
-	valid := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": fixture.TOTP(t, enrollment.Secret, time.Now())})
+	valid := APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": NextTOTP(t, enrollment.Secret)})
 	if valid.Code != http.StatusCreated {
 		t.Fatalf("TOTP login = %d %q", valid.Code, valid.Body.String())
 	}

@@ -44,6 +44,7 @@ type Profile struct {
 	SCIMCreatedAt  time.Time                 `json:"scimCreatedAt,omitempty"`
 	SCIMUpdatedAt  time.Time                 `json:"scimUpdatedAt,omitempty"`
 	TOTPSecret     string                    `json:"totpSecret,omitempty"`
+	TOTPCounter    int64                     `json:"totpCounter,omitempty"`
 	Recovery       []string                  `json:"recoveryCodes,omitempty"`
 	APIKey         bool                      `json:"-"`
 	Scopes         []string                  `json:"-"`
