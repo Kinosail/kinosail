@@ -145,7 +145,7 @@ class OwnedBridgeServer(ThreadingHTTPServer):
 def fixture(root, run, receipt):
     media = run / "media" / "Movies"
     media.mkdir(parents=True)
-    source = root / "engineering/qa/2026-09-30-android-playback-overlay/fixtures"
+    source = root / "apps/player/scripts/fixtures/android-captions"
     receipt["fixtureSHA256"] = {}
     for path in sorted(source.iterdir()):
         if not path.is_file() or path.suffix not in (".mp4", ".srt", ".nfo"):
