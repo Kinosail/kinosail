@@ -192,6 +192,7 @@ enum HLSManifest {
             }
             output.append(line)
         }
+        mediaProxyLog.debug("operation=media-proxy-manifest playlist_type=\(lines.contains("#EXT-X-PLAYLIST-TYPE:VOD") ? "vod" : lines.contains("#EXT-X-PLAYLIST-TYPE:EVENT") ? "event" : "none", privacy: .public) endlist=\(lines.contains("#EXT-X-ENDLIST"), privacy: .public) variants=\(lines.filter { $0.hasPrefix("#EXT-X-STREAM-INF") }.count, privacy: .public) segments=\(lines.filter { $0.hasPrefix("#EXTINF") }.count, privacy: .public)")
         let rewritten = Data(output.joined(separator: "\n").utf8)
         guard rewritten.count <= 8 * 1024 * 1024 else { throw ClientError.invalidResponse }
         return rewritten

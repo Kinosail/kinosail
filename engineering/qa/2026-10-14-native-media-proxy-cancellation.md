@@ -1,4 +1,4 @@
-# Native media proxy cancellation QA
+# Native media proxy cancellation and tvOS playback QA
 
 ## Confirmed failure
 
@@ -80,9 +80,83 @@ Log SHA-256 values:
   `MediaDepartureJourneys` (4 tests, all passed):
   `83eeaeff7afe3998a3973f921f220c0c0ef1bc65b95fd271231c95d452c41599`
 
+## Follow-up tvOS repairs
+
+Physical Apple TV testing found four more defects.
+
+1. **Player view removed during replacement.** The tvOS playback screen removed
+   the system player view while a new title or a recovery loaded. A remote
+   touch in progress then reached a removed view, which can crash UIKit. The
+   screen now mounts the player view when the first player arrives. It keeps the
+   view mounted through each replacement and covers it with the opening or retry
+   overlay.
+2. **Blank Now Playing card.** On tvOS, AVKit owns `MPNowPlayingInfoCenter`.
+   The app wrote Now Playing info there, but AVKit replaced it, so the iPhone card
+   showed only the room name. Each player item now carries `externalMetadata`:
+   title, subtitle (show and episode, or artist and year), description, and
+   JPEG artwork.
+3. **Progress retried forever for a removed title.** A pending position for a
+   title that returns HTTP 404 or 410 stayed in the queue. Every sync retried it,
+   and nothing could clear it. The store now drops that entry and emits a
+   `progress-sync` warning with the status and item ID.
+4. **Progress conflicts after playback from a cached title.** Playback used the
+   cached title's progress as the expected server state. When another device
+   had changed it, every save conflicted. Playback now reads the current title
+   first. Playing a title again also replaces its unresolved conflict.
+
+New diagnostics:
+
+- `playback-recovery` warning: `failure_class`, error `code`, `compatible`,
+  recovery count, and `session`.
+- `playback-install` info: `compatible`, `live`, and `session`.
+- `media-proxy-manifest` debug: playlist type, end-list flag, and variant and
+  segment counts. It logs no URL.
+
+### Isolated checks
+
+`TVPlayerSurfaceStabilityJourneys`, `NowPlayingMetadataJourneys`, and
+`ProgressSyncRecoveryJourneys` use `PlaybackStartupFixture` on loopback. The
+fixture applies the Server's progress conflict rules. These are isolated
+native checks. Existing E2E journeys cannot hold a replacement title in the
+loading state, read `AVPlayerItem.externalMetadata`, or return 404 for one title.
+
+`ResilienceTests.oneMissingTitleDoesNotBlockOtherProgress` now expects the
+missing title to be dropped, not kept.
+
+### Physical Apple TV evidence
+
+Device: Apple TV 4K, tvOS 27.0, "Living Room", against the Nox Server.
+Debug build from this branch, run through the `Kinosail-tvOS-Remote` scheme.
+
+| Check | Result |
+| --- | --- |
+| Start 1917 from Continue Watching | Compatible HLS ready, `live=false` |
+| Stale 404 progress entry | Dropped on first sync, one warning |
+| Transport bar | Title and year shown, VOD timeline 1:59:00 |
+| Skip ×3, hold Right 3 s, Select, pause, resume, Menu | App stayed in the foreground |
+| `RemotePlaybackCrashTests` (3 rounds of play, options, held seek, back) | Passed |
+| New crash logs on the device | None |
+
+With title metadata, AVKit shows an Info tab below the transport bar. The
+action buttons are reached with Up, not Down. `RemotePlaybackCrashTests` now
+uses that route. On the base commit, without metadata, the old route passed.
+
+Log SHA-256 values:
+
+- Full tvOS simulator target (325 tests in 74 suites, all passed):
+  `1e319d57c8d5fdc89bbf1f3d60dda15b614da7decf3420b8d58529c38a536d5f`
+- Full iOS 27 simulator target (341 tests in 73 suites, all passed):
+  `c89c111e4c3838a80596360e2316b0d91845c787015ab72e24df1b3a51603622`
+- Moved-code tvOS checks after the line-cap split (8 tests, all passed):
+  `9764b89b0dd01b6dd15790cbcfd2a61ee57c2061d8f531700a8320a5dc8a2fc4`
+- Physical Apple TV `RemotePlaybackCrashTests`:
+  `3404836ff5f9c6b9da0e966fbc48ecee45738dd350497ed101533e35fad823c4`
+
 ## Not verified
 
-- Playback on the physical Apple TV against the deployed Server.
-- Seek recovery with a real Server transcode. The Server log on Nox had no
-  playback traffic after its latest restart, so the original failure was not
-  read from Server logs.
+- Touchpad swipe scrubbing on the physical Apple TV. XCUIRemote can press
+  buttons but cannot swipe the touchpad.
+- The iPhone Now Playing card for the Apple TV. The tvOS transport bar showed
+  the new metadata, but the iPhone card was not checked.
+- Seek recovery with a forced Server transcode failure. The Server log on Nox
+  had no playback failures after its latest restart.
