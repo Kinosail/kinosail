@@ -41,10 +41,10 @@ async function ownerState(page: Page): Promise<string> {
   return createHash("sha256").update(await library.text()).update("\0").update(await settings.text()).digest("hex");
 }
 
-async function probe(context: APIRequestContext, route: Route, csrf: string): Promise<number> {
+async function probe(context: APIRequestContext, route: Route, csrf: string, origin: string): Promise<number> {
   const response = await context.fetch(route.path, {
     method: route.method,
-    headers: { "Content-Type": "application/json", Accept: "application/json", ...(csrf ? { "X-Kinosail-CSRF": csrf } : {}) },
+    headers: { "Content-Type": "application/json", Accept: "application/json", ...(csrf ? { Origin: origin, "X-Kinosail-CSRF": csrf } : {}) },
     data: route.method === "GET" || route.method === "HEAD" ? undefined : "{}",
     maxRedirects: 0,
   });
@@ -62,11 +62,12 @@ test("removed Player routes return 404 without changing Subtitles state @smoke",
   expect(csrf).not.toBe("");
   const beforeState = await ownerState(page);
   const beforeMedia = await mediaChecksum(media!);
+  const origin = new URL(page.url()).origin;
   const anonymous = await playwrightRequest.newContext({ baseURL, ignoreHTTPSErrors: true });
   const results: Array<{ route: string; owner: number; anonymous: number }> = [];
   try {
     for (const route of routes) {
-      results.push({ route: `${route.method} ${route.pattern}`, owner: await probe(page.request, route, csrf), anonymous: await probe(anonymous, route, "") });
+      results.push({ route: `${route.method} ${route.pattern}`, owner: await probe(page.request, route, csrf, origin), anonymous: await probe(anonymous, route, "", origin) });
     }
   } finally {
     await anonymous.dispose();
