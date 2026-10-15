@@ -51,8 +51,8 @@ tooling-check:
 	@node --test apps/subtitles/e2e/subtitle-restore-operation.test.mjs apps/subtitles/e2e/subtitle-restore-inspector.test.mjs
 	@node apps/subtitles/e2e/subtitle-restore-causal-witness.test.mjs
 	@node apps/subtitles/e2e/subtitle-restore-causal-lifecycle.test.mjs
-	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-operation.test.cjs
-	@node --test apps/subtitles/engineering/qa/2026-10-05-save-browser/subtitle-save-attachment-reader.test.cjs
+	@node --test apps/subtitles/e2e/subtitle-save-operation.test.cjs
+	@node --test apps/subtitles/e2e/subtitle-save-attachment-reader.test.cjs
 	@python3 scripts/tooling/test-verify-deleted-e2e.py
 	@python3 scripts/tooling/test-verify-live-e2e.py
 	@python3 scripts/tooling/test-verify-native-copy.py

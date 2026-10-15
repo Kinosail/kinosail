@@ -65,7 +65,7 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["stage"] = "seed"
         case["videoOrientation"] = "landscape" if landscape and not tablet else "portrait"
         case["fixtureTitle"] = "Native " + case["videoOrientation"] + " contrast 01a0f2ab"
-        case["fixtureSHA256"] = {suffix: sha(ROOT / "engineering/qa/2026-09-30-android-playback-overlay/fixtures" /
+        case["fixtureSHA256"] = {suffix: sha(ROOT / "apps/player/scripts/fixtures/android-captions" /
             (case["fixtureTitle"] + suffix)) for suffix in (".mp4", ".en.srt", ".nfo")}
         seed = {"version": 1, "server": "http://10.0.2.2:39231", "token": token,
                 "title": case["fixtureTitle"],
