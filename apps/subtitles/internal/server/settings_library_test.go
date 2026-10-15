@@ -1,11 +1,12 @@
 package server_test
 
-import (
-	"testing"
-
-	"github.com/MikeO7/kinosail/packages/servertest"
-)
+import "testing"
 
 func TestLibrarySettingsRegression(t *testing.T) {
-	servertest.RunLibrarySettings(t, settingsRegression())
+	suite := settingsRegression()
+	t.Run("SettingsShowLibraryDiagnostics", suite.SettingsShowLibraryDiagnostics)
+	t.Run("OwnerCanPersistALibraryFolder", suite.OwnerCanPersistALibraryFolder)
+	t.Run("LibraryFolderCannotEscapeMediaMount", suite.LibraryFolderCannotEscapeMediaMount)
+	t.Run("LibrarySettingPathsRejectAmbiguousInputWithoutSideEffects", suite.LibrarySettingPathsRejectAmbiguousInputWithoutSideEffects)
+	t.Run("OwnerCanRemoveALibraryFolder", suite.OwnerCanRemoveALibraryFolder)
 }

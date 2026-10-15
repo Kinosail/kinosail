@@ -8,7 +8,7 @@ import (
 )
 
 func (probe *mediaProbe) embeddedOptions() mediaprobe.EmbeddedOptions {
-	return mediaprobe.EmbeddedOptions{FFmpeg: probe.ffmpeg, CacheDir: probe.cacheDir, Enrichment: probe.enrichment()}
+	return mediaprobe.EmbeddedOptions{FFmpeg: probe.ffmpeg, CacheDir: probe.cacheDir}
 }
 
 func (probe *mediaProbe) extractEmbedded(ctx context.Context, item library.Item, stream int) (string, []byte, error) {

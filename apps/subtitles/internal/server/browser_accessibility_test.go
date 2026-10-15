@@ -4,16 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"regexp"
 	"strings"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -21,65 +17,6 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 )
-
-func TestCoreJourneysInRepresentativeBrowserViewports(t *testing.T) {
-	chrome := chromeExecutable(t)
-	media := t.TempDir()
-	if err := os.WriteFile(filepath.Join(media, "Home.mp4"), []byte("movie"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	data := t.TempDir()
-	app := server.New(server.Config{DataDir: data, MediaDir: media, RequireAuth: true})
-	owner := signInTestProfile(t, app, "/setup", "name=Owner&password=test-password")
-	app = server.New(server.Config{DataDir: data, MediaDir: media, RequireAuth: true})
-	var csrf atomic.Value
-	web := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		request.AddCookie(owner)
-		if request.URL.Path == "/test-api-key" {
-			request.Method, request.URL.Path, request.URL.RawQuery, request.Body, request.ContentLength = http.MethodPost, "/settings/api-keys", "", io.NopCloser(strings.NewReader("name=Phone&scopes=library")), int64(len("name=Phone&scopes=library"))
-			request.AddCookie(&http.Cookie{Name: "kinosail_language", Value: "es", Path: "/", HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode})
-			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			request.Header.Set("Origin", "http://"+request.Host)
-			request.Header.Set("X-Kinosail-CSRF", csrf.Load().(string))
-		}
-		app.ServeHTTP(writer, request)
-	}))
-	t.Cleanup(web.Close)
-	home, err := http.Get(web.URL + "/?lang=es") //nolint:noctx // Test server request is bounded by the test lifecycle.
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer home.Body.Close()
-	body, err := io.ReadAll(home.Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	csrfMatch := regexp.MustCompile(`name="kinosail-csrf" content="([A-Za-z0-9_-]+)"`).FindSubmatch(body)
-	if len(csrfMatch) != 2 {
-		t.Fatalf("home lacks CSRF token: %q", body)
-	}
-	csrf.Store(string(csrfMatch[1]))
-	match := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(string(body))
-	if len(match) != 2 {
-		t.Fatalf("home lacks playable media: status=%d body=%q", home.StatusCode, body)
-	}
-	id := match[1]
-	for _, test := range []struct {
-		name, path, language string
-		width, height, card  int
-	}{{"phone Library", "/?lang=es", "es", 390, 844, 0}, {"phone onboarding", "/onboarding/migrate?lang=en", "en", 390, 844, 0}, {"phone onboarding household", "/onboarding/household?lang=en", "en", 390, 844, 0}, {"phone settings", "/settings?lang=en", "en", 390, 844, 0}, {"phone settings playback", "/settings?lang=en#playback", "en", 390, 844, 0}, {"phone settings access", "/settings?lang=en#access", "en", 390, 844, 0}, {"phone settings system", "/settings?lang=en#system", "en", 390, 844, 0}, {"phone API key", "/test-api-key?lang=es", "es", 390, 844, 1}, {"tablet settings access", "/settings?lang=en#access", "en", 720, 450, 0}, {"laptop Library", "/?lang=zh-Hans", "zh-Hans", 1280, 900, 0}, {"laptop onboarding", "/onboarding/migrate?lang=en", "en", 1280, 900, 0}, {"laptop onboarding household", "/onboarding/household?lang=en", "en", 1280, 900, 0}, {"laptop settings", "/settings?lang=en", "en", 1280, 900, 0}, {"laptop settings playback", "/settings?lang=en#playback", "en", 1280, 900, 0}, {"laptop settings access", "/settings?lang=en#access", "en", 1280, 900, 0}, {"laptop settings system", "/settings?lang=en#system", "en", 1280, 900, 0}, {"desktop settings access", "/settings?lang=en#access", "en", 1440, 900, 0}, {"TV player", "/watch/" + id + "?lang=ar", "ar", 1920, 1080, 0}} {
-		t.Run(test.name, func(t *testing.T) {
-			result := browserAudit(t, chrome, web.URL+test.path, test.width, test.height)
-			wantActions := 0
-			if test.name == "laptop onboarding" || test.name == "laptop onboarding household" {
-				wantActions = 1
-			}
-			if result.Width != test.width || result.Height != test.height || result.Overflow != 0 || result.Main != 1 || result.Unnamed != 0 || result.StatusOverlaps != 0 || result.Language != test.language || result.Card != test.card || result.Actions != wantActions {
-				t.Fatalf("browser audit = %+v", result)
-			}
-		})
-	}
-}
 
 func TestAgentConnectionSettingsInRepresentativeBrowserViewports(t *testing.T) {
 	chrome := chromeExecutable(t)

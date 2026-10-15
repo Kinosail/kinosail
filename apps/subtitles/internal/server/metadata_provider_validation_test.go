@@ -50,13 +50,11 @@ func TestProviderRejectsInvalidIMDbMatchesWithoutSideEffects(t *testing.T) {
 				t.Fatal(err)
 			}
 			handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, CacheDir: t.TempDir(), Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
-			home := httptest.NewRecorder()
-			handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-			id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
+			id := firstAPIItemID(t, handler, "")
 			refresh := httptest.NewRecorder()
 			handler.ServeHTTP(refresh, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/metadata/"+id+"/refresh", nil))
 			player := httptest.NewRecorder()
-			handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
+			handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
 			metadata, _ := os.ReadFile(filepath.Join(dataDir, "metadata.json"))
 			if refresh.Code != http.StatusBadGateway || imageRequests != 0 || len(metadata) != 0 || strings.Contains(player.Body.String(), "Wrong") || strings.Contains(player.Body.String(), strings.Repeat("x", 201)) {
 				t.Fatalf("refresh = %d, images = %d, metadata = %q, player = %q", refresh.Code, imageRequests, metadata, player.Body.String())
@@ -96,7 +94,7 @@ func TestProviderRejectsInvalidEpisodeArtworkWithoutSideEffects(t *testing.T) {
 	refresh := httptest.NewRecorder()
 	handler.ServeHTTP(refresh, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/items/"+id+"/metadata/refresh", nil))
 	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
+	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
 	metadata, _ := os.ReadFile(filepath.Join(dataDir, "metadata.json"))
 
 	if refresh.Code != http.StatusBadGateway || imageRequests != 0 || len(metadata) != 0 || strings.Contains(player.Body.String(), "Good News About Hell") {

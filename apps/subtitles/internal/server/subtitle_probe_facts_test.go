@@ -1,12 +1,9 @@
 package server
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
-	"sync/atomic"
 	"testing"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -14,12 +11,6 @@ import (
 
 func TestSubtitleCoverageDoesNotRunPlaybackEnrichment(t *testing.T) {
 	t.Parallel()
-	var chapterCalls atomic.Int32
-	chapters := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-		chapterCalls.Add(1)
-		http.Error(w, "unexpected chapter lookup", http.StatusServiceUnavailable)
-	}))
-	defer chapters.Close()
 	root := t.TempDir()
 	calls := filepath.Join(root, "calls")
 	executable := filepath.Join(root, "ffprobe")
@@ -33,7 +24,6 @@ func TestSubtitleCoverageDoesNotRunPlaybackEnrichment(t *testing.T) {
 	}
 	probe := newMediaProbe(executable)
 	probe.ffmpeg = "unused"
-	probe.chapters = newChapterProvider(chapters.URL)
 	manager := &subtitleManager{probe: probe}
 	item := library.Item{ID: "episode", Path: media, Kind: "video", Show: "Show", Episode: 1, ProviderIDs: map[string]string{"tvdb": "123"}}
 	for range 2 {
@@ -44,9 +34,6 @@ func TestSubtitleCoverageDoesNotRunPlaybackEnrichment(t *testing.T) {
 		if _, found := manager.embeddedSubtitleTrack(t.Context(), item, "en"); !found {
 			t.Fatal("embedded subtitle missing")
 		}
-	}
-	if chapterCalls.Load() != 0 {
-		t.Fatalf("chapter lookups = %d", chapterCalls.Load())
 	}
 	data, err := os.ReadFile(calls)
 	if err != nil {

@@ -51,17 +51,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("GET /api/v1/agent-connections", apiAgentConnections(api.connections))
 	owner("DELETE /api/v1/agent-connections/{id}", apiRevokeAgentConnection(api.connections))
 	owner("GET /api/v1/agent-connections/certificate", apiAgentConnectionCertificate(api.connections))
-	owner("GET /api/v1/hardware", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writeJSON(writer, api.settings.hardware, http.StatusOK)
-	}))
-	owner("POST /api/v1/transcoder/test", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		result := api.settings.transcoderState().CheckCoordinator(api.settings.ffmpeg, api.settings.hardware).Run(request.Context())
-		status := http.StatusOK
-		if result.Status != "passed" {
-			status = http.StatusServiceUnavailable
-		}
-		writeJSON(writer, result, status)
-	}))
 	owner("GET /api/v1/configuration", apiConfiguration(api.settings))
 	owner("PUT /api/v1/configuration/{key}", apiChangeConfiguration(api.settings, false))
 	owner("DELETE /api/v1/configuration/{key}", apiChangeConfiguration(api.settings, true))
@@ -72,12 +61,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("PUT /api/v1/settings/session-timeouts", apiSessionTimeouts(api.settings))
 	owner("PUT /api/v1/settings/public-session-timeouts", apiSessionTimeouts(api.settings, true))
 	owner("DELETE /api/v1/settings/public-session-timeouts", resetPublicSessionTimeouts(api.settings, true))
-	owner("PUT /api/v1/settings/playback", apiSetting(func(input apiSettingInput) error {
-		return api.settings.setPlayback(input.Mode, input.Autoplay, input.Subtitles, input.AutoSkip)
-	}))
-	owner("PUT /api/v1/settings/transcoder", apiSetting(func(input apiSettingInput) error {
-		return api.settings.setTranscoder(input.Quality, input.Codec, input.Accelerator, input.ToneMap)
-	}))
 	owner("PUT /api/v1/settings/subtitles", apiSubtitleLanguages(api.settings))
 	owner("PUT /api/v1/settings/scans", apiSetting(func(input apiSettingInput) error {
 		if err := api.settings.setScanFrequency(input.Frequency); err != nil {
@@ -86,7 +69,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 		api.index.SetFrequency(input.Frequency)
 		return nil
 	}))
-	owner("PUT /api/v1/settings/home-assistant", api.homeAssistant.SettingHandler())
 	owner("PUT /api/v1/settings/trusted-https", apiTrustedHTTPS(api.settings))
 	owner("DELETE /api/v1/settings/trusted-https", apiDisableTrustedHTTPS(api.settings))
 	owner("POST /api/v1/libraries", apiLibrarySetting(api.settings, api.index, api.settings.add))
@@ -104,18 +86,18 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("DELETE /api/v1/devices/{id}", apiAction(func(request *http.Request) error { return api.auth.profiles.revokeDevice(request.PathValue("id")) }))
 	owner("DELETE /api/v1/sessions", apiAction(api.auth.profiles.revokeOtherSessions))
 	owner("GET /api/v1/api-keys", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writeJSON(writer, map[string]any{"keys": api.auth.profiles.apiKeyViews(), "scopes": []string{"admin", "download", "library", "stream", "write"}}, http.StatusOK)
+		writeJSON(writer, map[string]any{"keys": api.auth.profiles.apiKeyViews(), "scopes": []string{"admin", "library", "stream"}}, http.StatusOK)
 	}))
 	owner("POST /api/v1/api-keys", apiCreateKey(api.auth.profiles))
 	owner("DELETE /api/v1/api-keys/{id}", apiAction(func(request *http.Request) error { return api.auth.profiles.revokeAPIKey(request.PathValue("id")) }))
-	owner("POST /api/v1/tasks/{task}", apiTask(api.index, api.hls, api.metadata, api.maintenance))
+	owner("POST /api/v1/tasks/{task}", apiTask(api.index, api.metadata, api.maintenance))
 	owner("POST /api/v1/backups", apiBackup(api.backups))
 	owner("GET /api/v1/backups", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		writeJSON(writer, api.backups.Status(), http.StatusOK)
 	}))
 	owner("POST /api/v1/backups/verify", apiBackupVerify(api.backups))
-	owner("GET /api/v1/diagnostics", diagnostics(api.settings, api.index, api.auth.profiles, api.hls, api.auth.audit))
-	owner("GET /api/v1/metrics", metrics(api.index, api.auth.profiles, api.hls, api.auth.audit, api.imports, api.events))
+	owner("GET /api/v1/diagnostics", diagnostics(api.settings, api.index, api.auth.profiles, api.auth.audit))
+	owner("GET /api/v1/metrics", metrics(api.index, api.auth.profiles, api.auth.audit, api.events))
 	owner("GET /api/v1/maintenance", api.maintenance.StatusHandler())
 }
 
@@ -231,8 +213,8 @@ func apiAction(action func(*http.Request) error) http.HandlerFunc {
 	}
 }
 
-func apiTask(index *libraryIndex, hls *hlsManager, metadata *metadataStore, maintenance *maintenanceManager) http.HandlerFunc {
-	return sharedoperations.APITaskHandler(operationTasks(index, hls, metadata, maintenance),
+func apiTask(index *libraryIndex, metadata *metadataStore, maintenance *maintenanceManager) http.HandlerFunc {
+	return sharedoperations.APITaskHandler(operationTasks(index, metadata, maintenance),
 		func(writer http.ResponseWriter, _ *http.Request, err error, status int) {
 			apiError(writer, err, status)
 		},

@@ -8,14 +8,6 @@
     "other": "30 хвилин"
   },
   {
-    "id": "45 minutes",
-    "other": "45 хвилин"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60 хвилин"
-  },
-  {
     "id": "Access",
     "other": "Доступ"
   },
@@ -44,20 +36,8 @@
     "other": "Додайте медіафайли або спробуйте інший пошук."
   },
   {
-    "id": "Add Profile",
-    "other": "Додати профіль"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "Додайте цей секрет або URI до програми автентифікації."
-  },
-  {
     "id": "Add to",
     "other": "Додати до"
-  },
-  {
-    "id": "Administer server",
-    "other": "Сервер адміністрування"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "Усі оцінки"
   },
   {
-    "id": "Allow downloads",
-    "other": "Дозволити завантаження"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "Дозволити перекодування"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "Проаналізуйте сегменти відтворення зараз"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "проаналізовані елементи"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "автоматичний"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "Автоматично (найкраще розпізнається)"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "Автоматично (браузер)"
   },
@@ -176,24 +136,12 @@
     "other": "Автоматичне обслуговування"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "Доступні пристрої використовують пряме з’єднання з цим сервером."
-  },
-  {
     "id": "Back to library",
     "other": "Назад до бібліотеки"
   },
   {
-    "id": "Back to settings",
-    "other": "Назад до налаштувань"
-  },
-  {
     "id": "Back up now",
     "other": "Створити резервну копію"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "Резервне копіювання та відновлення"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "Потрібно налаштувати резервні копії."
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "Резервні копії запускаються автоматично без шифрування."
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "Виберіть мову для цього браузера."
   },
   {
-    "id": "Clear transcode cache",
-    "other": "Очистити кеш перекодування"
-  },
-  {
     "id": "Code",
     "other": "Код"
   },
@@ -268,10 +208,6 @@
     "other": "Сумісність"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "Підключення сумісності"
-  },
-  {
     "id": "Compatibility stream",
     "other": "Потік сумісності"
   },
@@ -280,28 +216,12 @@
     "other": "сумісний"
   },
   {
-    "id": "Concurrent streams",
-    "other": "Параллельні потоки"
-  },
-  {
     "id": "Configuration error",
     "other": "Помилка конфігурації"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "Конфігурація · Kinosail Subtitles"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "Налаштовано; значення приховано"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "Підтвердити видалення"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "Підтвердити видалення"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "Підключення…"
   },
   {
-    "id": "Connection error",
-    "other": "Помилка підключення"
-  },
-  {
     "id": "Content",
     "other": "Зміст"
   },
   {
-    "id": "Continue Watching",
-    "other": "Продовжити перегляд"
-  },
-  {
     "id": "Continue watching",
     "other": "Продовжити перегляд"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "з Продовжити перегляд"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "Створити ключ"
   },
   {
-    "id": "Create API key",
-    "other": "Створити ключ API"
-  },
-  {
     "id": "Create passkey",
     "other": "Створити ключ"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "Створіть розумний список відтворення"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "Створіть свій профіль власника"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "за умовчанням"
   },
   {
-    "id": "Default playback",
-    "other": "Відтворення за умовчанням"
-  },
-  {
     "id": "Delete",
     "other": "Видалити"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "виявлено, недоступно"
-  },
-  {
-    "id": "Device or app",
-    "other": "Пристрій або програма"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "Пряме підключення недоступне"
   },
   {
-    "id": "Direct from",
-    "other": "Прямо від"
-  },
-  {
     "id": "Direct stream",
     "other": "Прямий потік"
   },
   {
     "id": "Directed by",
     "other": "Режисер"
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "Вимкнути та відкликати"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "Вимкнути двофакторну автентифікацію"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "Завантажити"
-  },
-  {
-    "id": "Download media",
-    "other": "Завантажити медіа"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "завантаження не увімкнено для цього профілю глядача"
   },
   {
-    "id": "Edit metadata",
-    "other": "Редагувати метадані"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "Редагувати маркери пропуску"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "вбудовані субтитри недоступні"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "Увімкнути DLNA"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "Увімкнути двофакторну автентифікацію"
   },
   {
     "id": "Enabled",
     "other": "Увімкнено"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "Зашифровані резервні копії виконуються автоматично."
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "Шифрування вимкнено за умовчанням."
-  },
-  {
     "id": "Encryption is on.",
     "other": "Шифрування ввімкнено."
-  },
-  {
-    "id": "End in seconds",
-    "other": "Закінчити за секунд"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Введіть код, який відображається на телевізорі чи в додатку. Він успадкує вашу політику профілю."
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Значення середовища та YAML є авторитетними. Показані тут зміни GUI вступають в силу після перезапуску Сервера."
-  },
-  {
-    "id": "Environment default",
-    "other": "Середовище за замовчуванням"
-  },
-  {
-    "id": "Event webhook",
-    "other": "Вебхук подій"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "Кожні 5 хвилин"
   },
   {
-    "id": "Everything",
-    "other": "Усе"
-  },
-  {
     "id": "Export full activity journal",
     "other": "Експортувати повний журнал активності"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Надати прямі медіа-URL для пристроїв у цій локальній мережі. Вимкнення скасовує можливість виявлення."
-  },
-  {
-    "id": "Externally managed",
-    "other": "Зовнішнє керування"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "Знайти щось"
-  },
-  {
-    "id": "Finish setup",
-    "other": "Завершити налаштування"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "Слідкуйте за цим пристроєм або виберіть фіксовану тему."
-  },
-  {
-    "id": "Following the room leader",
-    "other": "За лідером кімнати"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "Жанри"
   },
   {
-    "id": "Got it",
-    "other": "Зрозуміло"
-  },
-  {
     "id": "Group",
     "other": "Група"
   },
@@ -660,24 +464,12 @@
     "other": "Домашня"
   },
   {
-    "id": "Hourly",
-    "other": "Щогодинно"
-  },
-  {
     "id": "if enabled",
     "other": "якщо ввімкнено"
   },
   {
     "id": "Install",
     "other": "Установити"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "Установити Kinosail"
-  },
-  {
-    "id": "Integrations",
-    "other": "Інтеграції"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "недійсний стан перегляду"
   },
   {
-    "id": "Invite link",
-    "other": "Посилання для запрошення"
-  },
-  {
     "id": "Keep",
     "other": "Зберегти"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Зберігайте резервні копії в сховищі за межами цього хосту. Резервні копії не зашифровані, якщо не налаштовано резервний ключ. Відновлення, коли сервер зупинено."
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "Тримайте Kinosail поруч"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Ключі показуються один раз і зберігаються як хеші. Доступ до перегляду є безпечним за умовчанням."
-  },
-  {
     "id": "Kinosail",
     "other": "Kinosail"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail не може підключитися до цього сервера. Перевірте мережу чи пряме підключення, а потім повторіть спробу."
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail підтримує себе автоматично."
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Kinosail Subtitles Reader"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "Остання помилка"
   },
   {
-    "id": "Last scan error",
-    "other": "Помилка останнього сканування"
-  },
-  {
     "id": "Last successful backup",
     "other": "Останнє успішне резервне копіювання"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "Останнє успішне сканування"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "Бібліотека"
   },
   {
-    "id": "Library discovery",
-    "other": "Відкриття бібліотеки"
-  },
-  {
     "id": "Library folders",
     "other": "Папки бібліотеки"
   },
@@ -808,10 +560,6 @@
     "other": "Організація бібліотеки"
   },
   {
-    "id": "Library views",
-    "other": "Перегляди бібліотеки"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "Ліцензійні облікові дані налаштовано"
   },
@@ -820,28 +568,8 @@
     "other": "Light"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "Посилання OpenID Connect"
-  },
-  {
     "id": "Local account",
     "other": "Локальний обліковий запис"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "M3U список відтворення"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "Керувати станом особистої бібліотеки"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "Керується ззовні та доступний лише для читання."
-  },
-  {
-    "id": "Managed remote access",
-    "other": "Керований віддалений доступ"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "маркер"
   },
   {
-    "id": "Match text",
-    "other": "Відповідність тексту"
-  },
-  {
     "id": "Media",
     "other": "Медіа"
-  },
-  {
-    "id": "Media information",
-    "other": "Інформація про ЗМІ"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "метадані недійсні"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "Постачальник метаданих"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "Музика"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "Музика та аудіокниги"
-  },
-  {
     "id": "My List",
     "other": "Мій список"
   },
@@ -908,36 +620,12 @@
     "other": "Назва"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "ім’я та пароль із 12 символів"
-  },
-  {
     "id": "Never",
     "other": "Ніколи"
   },
   {
-    "id": "New Collection",
-    "other": "Нова колекція"
-  },
-  {
-    "id": "New Collection name",
-    "other": "Назва нової колекції"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Нові носії виявляються автоматично після завершення копіювання. Сканування безпеки виправляє пропущені події файлової системи в Windows, macOS, Linux, контейнерах і мережевих підключеннях."
-  },
-  {
     "id": "New password",
     "other": "Новий пароль"
-  },
-  {
-    "id": "New playlist",
-    "other": "Новий список відтворення"
-  },
-  {
-    "id": "New playlist name",
-    "other": "Нова назва списку відтворення"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "Новий секрет"
   },
   {
-    "id": "New smart playlist",
-    "other": "Новий розумний список відтворення"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "Нові глядачі починають із сімейних рейтингів і без бібліотек. Додайте назви папок або"
-  },
-  {
-    "id": "Newest",
-    "other": "Найновіший"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "Дії ще не зареєстровано."
   },
   {
-    "id": "No channels configured.",
-    "other": "Канали не налаштовано."
-  },
-  {
     "id": "No device selected",
     "other": "Не вибрано жодного пристрою"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "Поки що немає офлайн-завантажень."
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "Жодного"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "Немає; використовувати всі або назви папок"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "Нічого не знайдено."
   },
   {
-    "id": "Now viewing",
-    "other": "Зараз переглядаю"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "Офлайн-завантаження"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "Офлайн-завантаження · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "На"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "На iPhone або iPad натисніть «Поділитися», виберіть «Додати на головний екран», увімкніть «Відкрити як веб-програму», а потім торкніть «Додати»."
-  },
-  {
-    "id": "One-time reveal",
-    "other": "Одноразове відкриття"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "Грати на пристрої"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "Автоматично відтворити наступну серію"
-  },
-  {
     "id": "Playback",
     "other": "Відтворення"
   },
   {
     "id": "Playback history",
     "other": "Історія відтворення"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "Аналіз сегментів відтворення"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "Сюжет"
   },
   {
-    "id": "Polling for changes",
-    "other": "Опитування змін"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "Віддавайте перевагу якості"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "Надаю перевагу швидкості"
-  },
-  {
     "id": "Preferred language",
     "other": "Бажана мова"
   },
@@ -1164,20 +792,12 @@
     "other": "попередній перегляд недоступний"
   },
   {
-    "id": "Private by design",
-    "other": "Приватний за дизайном"
-  },
-  {
     "id": "Profile",
     "other": "Профіль"
   },
   {
     "id": "profile storage is unavailable",
     "other": "сховище профілю недоступне"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "Профіль для скидання"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "Швидке підключення"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "Швидке підключення · Kinosail Subtitles"
-  },
-  {
     "id": "Rating",
     "other": "Рейтинг"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "читач"
-  },
-  {
-    "id": "Reading order",
-    "other": "Порядок читання"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "Коди відновлення"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "Оновити з TMDB"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "Оновити відсутні метадані"
-  },
-  {
     "id": "Recommended",
     "other": "Рекомендовано"
   },
@@ -1296,10 +900,6 @@
     "other": "запит занадто великий"
   },
   {
-    "id": "Reset password",
-    "other": "Скинути пароль"
-  },
-  {
     "id": "Return to settings",
     "other": "Повернутися до налаштувань"
   },
@@ -1312,24 +912,8 @@
     "other": "Rockchip RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "Кімната підключена · стежить за лідером"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "Кімната підключена · ви ведете"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "Кімнату відключено · перезавантажте, щоб повторно підключитися"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "Запустити сканування бібліотеки зараз"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "Запустити технічне обслуговування зараз"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "Зберегти"
-  },
-  {
-    "id": "Save file",
-    "other": "Зберегти файл"
-  },
-  {
-    "id": "Save for restart",
-    "other": "Зберегти для перезапуску"
-  },
-  {
-    "id": "Save marker",
-    "other": "Зберегти маркер"
-  },
-  {
-    "id": "Save metadata",
-    "other": "Зберегти метадані"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "Захистіть свій обліковий запис · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Надішліть цю URL-адресу приватного з’єднання програмі перегляду. Показується лише один раз."
-  },
-  {
-    "id": "Server name",
-    "other": "Назва сервера"
-  },
-  {
     "id": "Server settings",
     "other": "Налаштування сервера"
   },
   {
-    "id": "Server unavailable",
-    "other": "Сервер недоступний"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "Сервер недоступний · Kinosail Subtitles"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "Налаштувати Kinosail"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "Налаштувати або замінити автентифікатор"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "Налаштувати двофакторну автентифікацію"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "Налаштувати двофакторну автентифікацію · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "Налаштування · Kinosail Subtitles"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Створюйте враження, захищайте свою бібліотеку та забезпечуйте чудову роботу кожного потоку."
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "Вийти"
   },
   {
-    "id": "Sign out other devices",
-    "other": "Вийти з інших пристроїв"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "Способи входу"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Вхід, захист веб-переглядача того самого джерела, приватні відповіді, обмежені запити та відкликаний доступ завжди ввімкнено. Немає перемикачів безпеки, якими можна керувати."
-  },
-  {
     "id": "Single sign-on",
     "other": "Єдиний вхід"
   },
@@ -1488,44 +1012,8 @@
     "other": "Пропустити"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "Автоматично пропускати рекламу"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "Автоматично пропускати титри"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "Автоматично пропускати введення"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "Автоматично пропускати вихідні"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "Автоматично пропускати підсумки"
-  },
-  {
     "id": "Skip to content",
     "other": "Перейти до вмісту"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "Таймер сну"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "Таймер сну закінчився"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "Розумний список відтворення"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "Назва розумного списку відтворення"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "Не вдалося перевірити маркер SSO"
   },
   {
-    "id": "Start in seconds",
-    "other": "Початок за секунди"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "Почніть дивитися разом"
-  },
-  {
     "id": "Status",
     "other": "Статус"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "Зупиняється через {minutes} хвилин"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "Зберігайте ці коди в безпечному місці. Кожен працює один раз."
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "Зберігається тут. Пряма трансляція."
-  },
-  {
-    "id": "Stream media",
-    "other": "Потокове медіа"
-  },
-  {
-    "id": "Subscription required",
-    "other": "Потрібна підписка"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "постачальник субтитрів недоступний"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "доріжки субтитрів"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "Слоган"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "Резервна копія містить обліковий запис і стан сеансу. Зберігайте незашифроване резервне сховище приватним або налаштуйте резервний ключ."
-  },
-  {
     "id": "Theme",
     "other": "Тема"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "Ці налаштування доступні лише для читання, доки їх не буде видалено з YAML або середовища"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "Цей продукт використовує API TMDB, але не схвалений і не сертифікований TMDB."
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "Це виходить із профілю та видаляє його."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "Track"
   },
   {
-    "id": "transcode cache",
-    "other": "перекодувати кеш"
-  },
-  {
     "id": "Transcoder",
     "other": "Транскодер"
   },
@@ -1740,10 +1184,6 @@
     "other": "Тип"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "Від’єднати OpenID Connect"
-  },
-  {
     "id": "Until",
     "other": "До"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "Використовувати за умовчанням"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Використовуйте Face ID, Touch ID, Windows Hello або PIN-код свого пристрою для входу. Ваш пароль усе одно працюватиме."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "Доступ для перегляду недоступний"
   },
   {
-    "id": "Viewer name",
-    "other": "Ім’я глядача"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "Очікуємо на ваш ключ доступу…"
   },
@@ -1804,14 +1236,6 @@
     "other": "Переглянув"
   },
   {
-    "id": "Watched ✓",
-    "other": "Переглянули ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "Чекаємо змін"
-  },
-  {
     "id": "Welcome aboard",
     "other": "Ласкаво просимо на борт"
   },
@@ -1820,35 +1244,11 @@
     "other": "коли буде готово."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV посібник"
-  },
-  {
     "id": "Year",
     "other": "Рік"
   },
   {
-    "id": "You lead this room",
-    "other": "Ви керуєте цією кімнатою"
-  },
-  {
     "id": "Your library",
     "other": "Ваша бібліотека"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "Ваша бібліотека та активність перегляду залишаються на цьому сервері."
-  },
-  {
-    "id": "← Books",
-    "other": "← Книги"
-  },
-  {
-    "id": "← Library",
-    "other": "← Бібліотека"
-  },
-  {
-    "id": "← Settings",
-    "other": "← Налаштування"
   }
 ]

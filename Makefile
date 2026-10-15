@@ -47,7 +47,6 @@ tooling-check:
 	@node --test scripts/quality/browser-script-bundles.test.mjs
 	@node --test scripts/quality/quality-typescript.test.mjs
 	@node --test scripts/ci/prepare-codeql-js.test.mjs
-	@node --test apps/subtitles/scripts/player-copied-clock.test.mjs
 	@node --test apps/subtitles/e2e/subtitle-restore-operation.test.mjs apps/subtitles/e2e/subtitle-restore-inspector.test.mjs
 	@node apps/subtitles/e2e/subtitle-restore-causal-witness.test.mjs
 	@node apps/subtitles/e2e/subtitle-restore-causal-lifecycle.test.mjs

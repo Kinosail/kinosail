@@ -10,11 +10,9 @@ import (
 
 type liveEventHub = sharedlive.Hub
 
-func wireLiveEvents(index *libraryIndex, downloads *downloadManager, homeAssistant *homeAssistantIntegration) *liveEventHub {
+func wireLiveEvents(index *libraryIndex) *liveEventHub {
 	hub := sharedlive.New()
 	index.AddAnalyzer(func([]library.Item) { hub.Publish("", "library.updated", "/api/v1/library") })
-	downloads.SetPublisher(func(job downloadJob) { hub.Publish(job.Profile, "download.updated", "/api/v1/downloads/"+job.ID) })
-	homeAssistant.SetPublisher(hub.Publish)
 	return hub
 }
 

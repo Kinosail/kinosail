@@ -79,19 +79,19 @@ func TestMCPStdioUsesSoleOwnerAndSharedAPI(t *testing.T) {
 	if err != nil || !bytes.Contains([]byte(result.Content[0].(*mcp.TextContent).Text), []byte(`"name":"Owner"`)) {
 		t.Fatalf("read_api = %#v, %v", result, err)
 	}
-	result, err = session.CallTool(ctx, &mcp.CallToolParams{Name: "create_playlist", Arguments: map[string]any{"name": "From MCP", "ids": []string{}}})
+	result, err = session.CallTool(ctx, &mcp.CallToolParams{Name: "manage_api", Arguments: map[string]any{"method": "PUT", "path": "/api/v1/settings/server", "body": map[string]any{"name": "From MCP"}}})
 	if err != nil || result.IsError {
-		t.Fatalf("create_playlist = %#v, %v", result, err)
+		t.Fatalf("manage_api = %#v, %v", result, err)
 	}
-	playlistsRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/playlists", nil)
-	playlistsRequest.Header.Set("Authorization", "Bearer "+owner.Token)
-	playlists := httptest.NewRecorder()
-	app.ServeHTTP(playlists, playlistsRequest)
-	if playlists.Code != http.StatusOK || !strings.Contains(playlists.Body.String(), `"From MCP"`) {
-		t.Fatalf("running Server did not observe MCP mutation: %d %q", playlists.Code, playlists.Body.String())
+	settingsRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/settings", nil)
+	settingsRequest.Header.Set("Authorization", "Bearer "+owner.Token)
+	settings := httptest.NewRecorder()
+	app.ServeHTTP(settings, settingsRequest)
+	if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), `"From MCP"`) {
+		t.Fatalf("running Server did not observe MCP mutation: %d %q", settings.Code, settings.Body.String())
 	}
 	audit, err := os.ReadFile(dataDir + "/audit.jsonl")
-	if err != nil || !bytes.Contains(audit, []byte(`"action":"playlist.updated"`)) || !bytes.Contains(audit, []byte(`"actor":"Host MCP · Owner"`)) {
+	if err != nil || !bytes.Contains(audit, []byte(`"actor":"Host MCP · Owner"`)) {
 		t.Fatalf("MCP audit attribution = %q, %v", audit, err)
 	}
 	cancel()

@@ -29,10 +29,6 @@ func sessionTimeoutHours(settings installationSettings) (float64, float64) {
 	return inactive, absolute
 }
 
-func (store *settingsStore) setSessionTimeouts(inactive, absolute float64) error {
-	return store.changeSessionTimeouts(inactive, absolute, false)
-}
-
 func validSessionTimeouts(inactive, absolute float64) bool {
 	finite := func(value float64) bool { return !math.IsNaN(value) && !math.IsInf(value, 0) }
 	return finite(inactive) && finite(absolute) && inactive >= .25 && inactive <= 365*24 && absolute >= 4 && absolute <= 365*24 && inactive <= absolute

@@ -48,10 +48,6 @@ func addViewer(profiles *profileStore) http.HandlerFunc {
 	}
 }
 
-func addOnboardingViewer(profiles *profileStore) http.HandlerFunc {
-	return identitycore.OnboardingViewerHandler(profiles.addProfile, localizedError)
-}
-
 func setViewerPermissions(profiles *profileStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := profiles.setProfile(request.FormValue("id"), request.FormValue("owner") == "true", identitycore.ProfilePolicyFromRequest(request)); err != nil {

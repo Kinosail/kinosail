@@ -17,6 +17,8 @@ type TrustedHTTPSFixture struct {
 	Web                   AuthCookieRequest
 	Token, ExpectedOrigin string
 	InitialCopy           []string
+	NoOnboarding          bool
+	RestartNoticePath     string
 }
 
 type trustedHTTPSFlow struct {
@@ -76,6 +78,9 @@ func (flow trustedHTTPSFlow) render() {
 	page := fixture.Web(t, handler, http.MethodGet, "/settings", "", owner)
 	if settings.Code != http.StatusOK || page.Code != http.StatusOK || strings.Contains(settings.Body.String(), fixture.Token) || strings.Contains(page.Body.String(), fixture.Token) || !strings.Contains(settings.Body.String(), `"tokenConfigured":true`) || !strings.Contains(page.Body.String(), `value="family-media"`) || !strings.Contains(page.Body.String(), `value="192.168.1.10"`) || !strings.Contains(page.Body.String(), "Leave blank to keep the current token") {
 		t.Fatalf("settings=%d %q page=%d %q", settings.Code, settings.Body.String(), page.Code, page.Body.String())
+	}
+	if fixture.RestartNoticePath != "" {
+		page = fixture.Web(t, handler, http.MethodGet, fixture.RestartNoticePath, "", owner)
 	}
 	assertTrustedRestartNotice(t, page.Body.String())
 }

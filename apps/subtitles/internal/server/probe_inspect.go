@@ -6,11 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (probe *mediaProbe) inspect(ctx context.Context, item library.Item) probeResult {
-	probe.core.ConfigureCache(probe.cacheDir)
-	return probe.core.Inspect(ctx, item, probe.enrichment())
-}
-
 func (probe *mediaProbe) facts(ctx context.Context, item library.Item) probeResult {
 	probe.core.ConfigureCache(probe.cacheDir)
 	return probe.core.Facts(ctx, item)

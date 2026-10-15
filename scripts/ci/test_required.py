@@ -33,6 +33,7 @@ def case(scope, selected=True, app="player"):
         needs["client"]["result"] = "skipped"
         needs["android"]["result"] = "skipped"
         needs["wear"]["result"] = "skipped"
+        needs["proofs"]["result"] = "skipped"
     return raw, needs
 
 

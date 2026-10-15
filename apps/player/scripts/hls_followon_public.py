@@ -27,14 +27,6 @@ def encoder_count(server, source):
                and 'ffmpeg' in row and '-hls_time' in row and str(source) in row)
 
 
-def encoder_count_or_unavailable(server, source):
-    """Best-effort observation must not replace the playback verdict."""
-    try:
-        return encoder_count(server, source)
-    except (OSError, subprocess.SubprocessError):
-        return 'unavailable'
-
-
 def sample_resources(server, source, stop, resources):
     while not stop.is_set():
         try:

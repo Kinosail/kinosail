@@ -1,12 +1,6 @@
 package server_test
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
@@ -17,23 +11,4 @@ func TestAgentConnectionsExposeAccessibleConsentAndSettingsLandmarks(t *testing.
 	t.Parallel()
 	origin := "https://kino.test:38128"
 	servertest.AgentConnectionsExposeAccessibleConsentAndSettingsLandmarks(t, server.New(server.Config{DataDir: t.TempDir(), AuthURL: origin}), origin)
-}
-
-func TestPlayerStatusUpdatesAreAnnounced(t *testing.T) {
-	t.Parallel()
-	media := t.TempDir()
-	if err := os.WriteFile(filepath.Join(media, "Movie.mp4"), []byte("movie"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{DataDir: t.TempDir(), MediaDir: media})
-	library := httptest.NewRecorder()
-	handler.ServeHTTP(library, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-	id := regexp.MustCompile(`"id":"([a-f0-9]+)"`).FindStringSubmatch(library.Body.String())[1]
-	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	for _, value := range []string{`role="status" aria-live="polite" data-cast-state`, `video aria-label="Movie"`} {
-		if !strings.Contains(player.Body.String(), value) {
-			t.Fatalf("player missing %q", value)
-		}
-	}
 }

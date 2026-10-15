@@ -93,6 +93,9 @@ func (manager *Manager) Apply(id string) (Summary, error) {
 }
 
 func (manager *Manager) Metrics() (int, uint64) {
+	if manager == nil {
+		return 0, 0
+	}
 	return len(manager.syncSlots), manager.syncDeferred.Load()
 }
 

@@ -10,7 +10,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -18,30 +17,6 @@ import (
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
-
-func TestOwnerCanFetchProviderSubtitle(t *testing.T) {
-	t.Parallel()
-	provider := httptest.NewServer(http.HandlerFunc(fakeSubDL))
-	t.Cleanup(provider.Close)
-	mediaDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.BluRay-GROUP.mp4"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	fetch := httptest.NewRecorder()
-	handler.ServeHTTP(fetch, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", nil))
-	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	track := httptest.NewRecorder()
-	handler.ServeHTTP(track, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/subtitles/"+id+"/en", nil))
-
-	if fetch.Code != http.StatusSeeOther || !strings.Contains(player.Body.String(), `label="EN · Provider"`) || track.Header().Get("Content-Type") != "text/vtt; charset=utf-8" || !strings.Contains(track.Body.String(), "WEBVTT") {
-		t.Fatalf("fetch = %d %q, player = %q, track = %d %q", fetch.Code, fetch.Body.String(), player.Body.String(), track.Code, track.Body.String())
-	}
-}
 
 func TestSubtitleAutomationBoundsEachProviderCycle(t *testing.T) {
 	t.Parallel()
@@ -122,29 +97,6 @@ func writeSubDLSearch(writer http.ResponseWriter, host, path, title string) {
 	})
 }
 
-func TestSubtitleProviderFailureDoesNotBlockPlayback(t *testing.T) {
-	t.Parallel()
-	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		http.Error(writer, "down", http.StatusServiceUnavailable)
-	}))
-	t.Cleanup(provider.Close)
-	mediaDir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.BluRay-GROUP.mp4"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{MediaDir: mediaDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	fetch := httptest.NewRecorder()
-	handler.ServeHTTP(fetch, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", nil))
-	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	if fetch.Code != http.StatusBadGateway || player.Code != http.StatusOK || !strings.Contains(player.Body.String(), "Arrival") {
-		t.Fatalf("fetch = %d, player = %d %q", fetch.Code, player.Code, player.Body.String())
-	}
-}
-
 func TestSubtitleProviderRejectsInvalidResponsesBeforeDownload(t *testing.T) {
 	t.Parallel()
 	for name, response := range map[string]func(string) string{
@@ -176,11 +128,8 @@ func TestSubtitleProviderRejectsInvalidResponsesBeforeDownload(t *testing.T) {
 				t.Fatal(err)
 			}
 			handler := server.New(server.Config{MediaDir: media, CacheDir: cache, Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"}})
-			home := httptest.NewRecorder()
-			handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-			id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-			fetch := httptest.NewRecorder()
-			handler.ServeHTTP(fetch, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", nil))
+			id := firstAPIItemID(t, handler, "")
+			fetch := apiCall(t, handler, "", http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", map[string]any{})
 			if fetch.Code != http.StatusBadGateway || downloads != 0 {
 				t.Fatalf("invalid subtitle response = %d, downloads = %d", fetch.Code, downloads)
 			}
@@ -195,11 +144,8 @@ func TestSubtitleProviderRejectsInvalidEndpointWithoutPanic(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := server.New(server.Config{MediaDir: media, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{URL: "://invalid", APIKey: "key"}})
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	fetch := httptest.NewRecorder()
-	handler.ServeHTTP(fetch, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/subtitles/"+id+"/fetch", nil))
+	id := firstAPIItemID(t, handler, "")
+	fetch := apiCall(t, handler, "", http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", map[string]any{})
 	if fetch.Code != http.StatusBadGateway {
 		t.Fatalf("invalid subtitle endpoint = %d %q", fetch.Code, fetch.Body.String())
 	}
@@ -229,17 +175,9 @@ func TestOwnerCanChooseSubtitleLanguage(t *testing.T) {
 	handler.ServeHTTP(settings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
 	configuration := httptest.NewRecorder()
 	handler.ServeHTTP(configuration, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings/configuration", nil))
-	home := httptest.NewRecorder()
-	handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
-	subtitleSettings := httptest.NewRecorder()
-	subtitleHandler := server.New(server.Config{SubtitleApp: true, MediaDir: mediaDir, DataDir: dataDir, CacheDir: t.TempDir(), Subtitles: server.SubtitleConfig{APIKey: "key"}})
-	subtitleHandler.ServeHTTP(subtitleSettings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
 
-	if response.Code != http.StatusSeeOther || !strings.Contains(subtitleSettings.Body.String(), `name="preference" value="sdh" checked`) || !strings.Contains(settings.Body.String(), `name="language" value="es"`) || !strings.Contains(settings.Body.String(), "Embedded first · SubDL · OpenSubtitles · SubSource") || !strings.Contains(settings.Body.String(), `href="/settings/configuration#integrations.subdl.api_key"`) || !strings.Contains(settings.Body.String(), "Credentials configured") || strings.Contains(settings.Body.String(), `value="key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.subdl.api_key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.opensubtitles"`) || !strings.Contains(player.Body.String(), `<span>Subtitles</span><strong>Find es</strong>`) {
-		t.Fatalf("save = %d, settings = %q, configuration = %q, player = %q", response.Code, settings.Body.String(), configuration.Body.String(), player.Body.String())
+	if response.Code != http.StatusSeeOther || !strings.Contains(settings.Body.String(), `name="preference" value="sdh" checked`) || strings.Contains(settings.Body.String(), `value="key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.subdl.api_key"`) || !strings.Contains(configuration.Body.String(), `id="integrations.opensubtitles"`) {
+		t.Fatalf("save = %d, settings = %q, configuration = %q", response.Code, settings.Body.String(), configuration.Body.String())
 	}
 }
 

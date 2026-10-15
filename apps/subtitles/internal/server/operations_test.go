@@ -5,14 +5,13 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
+func TestOwnerCanInspectMetricsAndRedactedDiagnostics(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(mediaDir, "Arrival.mp4"), nil, 0o600); err != nil {
@@ -21,9 +20,6 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	viewer := addAndSignInViewer(t, handler, owner, "Sam", "viewer-password")
-	home := getWithCookie(t, handler, "/", owner)
-	id := regexp.MustCompile(`/watch/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())[1]
-	requestWithCookie(t, handler, http.MethodPost, "/progress/"+id, "seconds=90", owner)
 	failedRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/private-title?token=private-secret", nil)
 	failedRequest.Header.Set("X-Request-ID", "550e8400-e29b-41d4-a716-446655440000")
 	failed := httptest.NewRecorder()
@@ -32,7 +28,6 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 		t.Fatalf("failed request = %d", failed.Code)
 	}
 
-	settings := getWithCookie(t, handler, "/settings", owner)
 	system := getWithCookie(t, handler, "/settings/system", owner)
 	activityAPI := getWithCookie(t, handler, "/api/v1/activity", owner)
 	diagnosticsAPI := getWithCookie(t, handler, "/api/v1/diagnostics", owner)
@@ -40,18 +35,15 @@ func TestOwnerCanInspectMetricsPlaybackAndRedactedDiagnostics(t *testing.T) {
 	diagnostics := getWithCookie(t, handler, "/settings/diagnostics.json", owner)
 	denied, deniedDiagnostics := getWithCookie(t, handler, "/settings/system", viewer), getWithCookie(t, handler, "/settings/diagnostics.json", viewer)
 
-	requireResponse(t, settings, http.StatusOK, `href="/settings/system"`, "Open System")
-	requireResponse(t, system, http.StatusOK, "Recent activity", "Recent playback", "Diagnostics", "Arrival", "Download safe diagnostics", `class="activity-list"`, `class="activity-row"`)
-	requireResponse(t, activityAPI, http.StatusOK, `"playback":`, `"progress":`, `"title":"Arrival"`)
+	requireResponse(t, system, http.StatusOK, "Recent activity", "Diagnostics", "Download safe diagnostics", `class="activity-list"`, `class="activity-row"`)
+	requireResponse(t, activityAPI, http.StatusOK, `"audit":`)
 	requireResponse(t, diagnosticsAPI, http.StatusOK, `"libraryItems":1`, `"activityHealthy":true`, `"recentFailures":`, `"requestId":"550e8400-e29b-41d4-a716-446655440000"`, `"status":404`)
 	requireResponse(t, metrics, http.StatusOK, "kinosail_library_items 1", "kinosail_http_requests_total", "kinosail_audit_write_failures_total")
 	requireResponse(t, diagnostics, http.StatusOK, `"libraryItems":1`, `"httpRequests":`, `"activityHealthy":true`)
 	requireResponse(t, denied, http.StatusForbidden)
 	requireResponse(t, deniedDiagnostics, http.StatusForbidden)
-	_, logs, found := strings.Cut(system.Body.String(), `id="logs"`)
-	logs, _, closed := strings.Cut(logs, `id="playback"`)
-	if !found || !closed || strings.Contains(logs, "playback.started") || strings.Contains(system.Body.String(), "owner-password") || strings.Contains(system.Body.String(), mediaDir) {
-		t.Fatalf("system page mixed playback into logs or exposed sensitive data: %s", system.Body.String())
+	if strings.Contains(system.Body.String(), "owner-password") || strings.Contains(system.Body.String(), mediaDir) {
+		t.Fatalf("system page exposed sensitive data: %s", system.Body.String())
 	}
 	if diagnostics.Header().Get("Content-Disposition") == "" || strings.Contains(diagnostics.Body.String(), "owner-password") || strings.Contains(diagnostics.Body.String(), mediaDir) {
 		t.Fatalf("unsafe diagnostics: headers=%v body=%s", diagnostics.Header(), diagnostics.Body.String())

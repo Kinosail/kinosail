@@ -18,7 +18,6 @@ func TestPlayerBrandingIsUsedByTheWebAppShell(t *testing.T) {
 		must   []string
 		legacy string
 	}{
-		{path: "/", must: []string{"<title>Kinosail · Kinosail Subtitles</title>"}, legacy: "<title>Kinosail · Kinosail</title>"},
 		{path: "/login", must: []string{"<title>Sign in · Kinosail Subtitles</title>", "<h1>Kinosail Subtitles</h1>"}, legacy: "<title>Sign in · Kinosail</title>"},
 		{path: "/setup", must: []string{"<title>Set up Kinosail Subtitles</title>", "<strong>Kinosail Subtitles</strong>"}, legacy: "Set up Kinosail</title>"},
 		{path: "/manifest.webmanifest", must: []string{`"name":"Kinosail Subtitles"`, `"short_name":"Subtitles"`}, legacy: `"name":"Kinosail"`},

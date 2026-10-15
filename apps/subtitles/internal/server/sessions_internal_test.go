@@ -53,7 +53,7 @@ func TestBrowserSessionsHaveIdleAndAbsoluteTimeouts(t *testing.T) {
 
 func TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts(t *testing.T) {
 	settings := newSettingsStore("", "", nil)
-	if err := settings.setSessionTimeouts(24, 168); err != nil {
+	if err := settings.changeSessionTimeouts(24, 168, false); err != nil {
 		t.Fatal(err)
 	}
 	store := newProfileStore(t.TempDir())
@@ -86,7 +86,9 @@ func TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts(t *testing.T) {
 func TestSessionTimeoutValidationHasNoSideEffects(t *testing.T) {
 	store := newSettingsStore("", "", nil)
 	checkTimeouts := servertest.SessionTimeoutValidationHasNoSideEffects
-	checkTimeouts(t, store.sessionTimeouts, store.setSessionTimeouts)
+	checkTimeouts(t, store.sessionTimeouts, func(inactive, absolute float64) error {
+		return store.changeSessionTimeouts(inactive, absolute, false)
+	})
 }
 
 func TestSensitiveActionsRequireRecentHumanAuthentication(t *testing.T) {

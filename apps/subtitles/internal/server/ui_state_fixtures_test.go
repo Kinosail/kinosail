@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
 func supporterUIFixture(archived bool) supporterPageData {
@@ -73,14 +72,6 @@ func TestWriteUIStateFixtures(t *testing.T) {
 		}
 	}
 
-	preview := viewingImportWebPage{
-		viewingImportPreview: viewingImportPreview{
-			ID: "fixture", Source: "Jellyfin", ProfileName: "Living Room", ExpiresAt: time.Date(2030, 1, 2, 15, 4, 0, 0, time.UTC),
-			Summary: viewingImportSummary{Activity: 2, Favorites: 1, PlaylistItems: 1, Importable: 2},
-			Items:   []viewingImportItem{{SourceTitle: "Signal Garden", TargetTitle: "Signal Garden", Status: "ready", Reason: "matched by provider ID", Watched: true, Favorite: true, Playlists: []string{"Weekend"}}},
-		},
-		BackPath: "/settings#viewing-imports", BackLabel: "Settings", Step: "Migration preview", ApplyPath: "/settings/viewing-imports/apply", AllowSync: true,
-	}
 	fixtures := map[string]func(*bytes.Buffer) error{
 		"api-key-created": localized(apiKeySecretView, map[string]string{"Name": "Living Room remote", "Secret": "ks_example_local_only"}),
 		"mfa-setup":       localized(mfaSetupView, mfaSetupPage{mfaEnrollment: mfaEnrollment{Secret: strings.Repeat("A", 32), URI: "otpauth://totp/Kinosail:Owner", RecoveryCodes: []string{"AAAA-BBBB-CCCC-DDDD", "EEEE-FFFF-GGGG-HHHH"}}}),
@@ -92,8 +83,6 @@ func TestWriteUIStateFixtures(t *testing.T) {
 		"passkey-prompt":               localized(passkeyPromptView, nil),
 		"mfa-required":                 localized(mfaRequiredView, nil),
 		"oidc-mfa":                     localized(oidcMFAView, "fixture-challenge"),
-		"viewing-import-preview":       localized(viewingImportPreviewView, preview),
-		"viewing-import-result":        localized(viewingImportResultView, viewingImportSummary{Applied: 2, ListsApplied: 1, Unchanged: 3}),
 		"mcp-approval":                 csrf(mcpApprovalView, mcpApprovalData{ClientName: "Living Room agent", ProfileName: "Owner", RequestID: "fixture-request", Write: true, Manage: true}),
 		"supporter-populated-active":   localized(supporterView, supporterUIFixture(false)),
 		"supporter-populated-archived": localized(supporterView, supporterUIFixture(true)),

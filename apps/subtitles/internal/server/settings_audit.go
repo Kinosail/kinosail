@@ -25,12 +25,6 @@ func (store *settingsStore) auditSnapshot(request *http.Request) map[string]stri
 	case "/settings/session-timeouts", "/api/v1/settings/session-timeouts":
 		inactive, absolute := sessionTimeoutHours(store.value)
 		return map[string]string{"inactiveHours": strconv.FormatFloat(inactive, 'f', -1, 64), "absoluteHours": strconv.FormatFloat(absolute, 'f', -1, 64)}
-	case "/settings/playback", "/api/v1/settings/playback":
-		return map[string]string{"mode": normalizePlayback(store.value.PlaybackMode), "autoplay": strconv.FormatBool(store.value.Autoplay), "subtitles": store.value.Subtitles, "autoSkip": strings.Join(store.value.AutoSkip, ",")}
-	case "/settings/transcoder", "/api/v1/settings/transcoder":
-		return map[string]string{"quality": store.value.Transcoder, "codec": normalizeCodecSetting(store.value.Codec), "accelerator": normalizeAccelerator(store.value.Accelerator), "toneMap": strconv.FormatBool(store.value.ToneMap)}
-	case "/settings/transcoder/test", "/api/v1/transcoder/test":
-		return map[string]string{"status": store.transcoderCheck.Status, "codec": store.transcoderCheck.Codec, "accelerator": store.transcoderCheck.Accelerator, "stage": store.transcoderCheck.Stage}
 	case "/settings/subtitles", "/onboarding/subtitles/language", "/api/v1/settings/subtitles":
 		languages := subtitleLanguages(store.value)
 		return map[string]string{"language": languages[0], "languages": strings.Join(languages, ",")}

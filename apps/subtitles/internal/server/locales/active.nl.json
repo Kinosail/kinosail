@@ -8,14 +8,6 @@
     "other": "30 minuten"
   },
   {
-    "id": "45 minutes",
-    "other": "45 minuten"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60 minuten"
-  },
-  {
     "id": "Access",
     "other": "Toegang"
   },
@@ -44,20 +36,8 @@
     "other": "Voeg media toe of probeer een andere zoekopdracht."
   },
   {
-    "id": "Add Profile",
-    "other": "Profiel toevoegen"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "Voeg dit geheim of deze URI toe aan uw authenticator-app."
-  },
-  {
     "id": "Add to",
     "other": "Toevoegen aan"
-  },
-  {
-    "id": "Administer server",
-    "other": "Beheerserver"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "Alle beoordelingen"
   },
   {
-    "id": "Allow downloads",
-    "other": "Downloads toestaan"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "Transcodering toestaan"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "Analyseer nu afspeelsegmenten"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "geanalyseerde artikel(en)"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "automatisch"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "Automatisch (best gedetecteerd)"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "Automatisch (browser)"
   },
@@ -176,24 +136,12 @@
     "other": "Automatisch onderhoud"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "Beschikbare apparaten gebruiken een directe verbinding met deze server."
-  },
-  {
     "id": "Back to library",
     "other": "Terug naar bibliotheek"
   },
   {
-    "id": "Back to settings",
-    "other": "Terug naar instellingen"
-  },
-  {
     "id": "Back up now",
     "other": "Maak nu een back-up"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "Back-up en herstel"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "Back-ups moeten worden ingesteld."
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "Back-ups worden automatisch uitgevoerd zonder codering."
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "Kies de taal voor deze browser."
   },
   {
-    "id": "Clear transcode cache",
-    "other": "Transcode-cache wissen"
-  },
-  {
     "id": "Code",
     "other": "Code"
   },
@@ -268,10 +208,6 @@
     "other": "Compatibiliteit"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "Compatibiliteitsverbinding"
-  },
-  {
     "id": "Compatibility stream",
     "other": "Compatibiliteitsstroom"
   },
@@ -280,28 +216,12 @@
     "other": "compatibel"
   },
   {
-    "id": "Concurrent streams",
-    "other": "Gelijktijdige streams"
-  },
-  {
     "id": "Configuration error",
     "other": "Configuratiefout"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "Configuratie · Kinosail Subtitles"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "Geconfigureerd; waarde verborgen"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "Bevestigen verwijderen"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "Bevestigen verwijderen"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "Verbinden…"
   },
   {
-    "id": "Connection error",
-    "other": "Verbindingsfout"
-  },
-  {
     "id": "Content",
     "other": "Inhoud"
   },
   {
-    "id": "Continue Watching",
-    "other": "Verder kijken"
-  },
-  {
     "id": "Continue watching",
     "other": "Ga verder met kijken"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "van Doorgaan met kijken"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "Maak een toegangssleutel"
   },
   {
-    "id": "Create API key",
-    "other": "API-sleutel maken"
-  },
-  {
     "id": "Create passkey",
     "other": "Maak toegangssleutel"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "Maak slimme afspeellijst"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "Maak uw eigenaarsprofiel"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "standaard"
   },
   {
-    "id": "Default playback",
-    "other": "Standaard afspelen"
-  },
-  {
     "id": "Delete",
     "other": "Verwijderen"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "gedetecteerd, niet beschikbaar"
-  },
-  {
-    "id": "Device or app",
-    "other": "Apparaat of app"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "Directe verbinding niet beschikbaar"
   },
   {
-    "id": "Direct from",
-    "other": "Rechtstreeks van"
-  },
-  {
     "id": "Direct stream",
     "other": "Directe stream"
   },
   {
     "id": "Directed by",
     "other": "Geregisseerd door"
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "Uitschakelen en intrekken"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "Tweefactorauthenticatie uitschakelen"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "Downloaden"
-  },
-  {
-    "id": "Download media",
-    "other": "Media downloaden"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "downloads zijn niet ingeschakeld voor dit kijkersprofiel"
   },
   {
-    "id": "Edit metadata",
-    "other": "Metagegevens bewerken"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "Overslaanmarkeringen bewerken"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "ingebedde ondertitels zijn niet beschikbaar"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "DLNA inschakelen"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "Two-factor authenticatie inschakelen"
   },
   {
     "id": "Enabled",
     "other": "Ingeschakeld"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "Gecodeerde back-ups worden automatisch uitgevoerd."
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "Encryptie is standaard uitgeschakeld."
-  },
-  {
     "id": "Encryption is on.",
     "other": "Codering is ingeschakeld."
-  },
-  {
-    "id": "End in seconds",
-    "other": "Eind over seconden"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "Voer de code in die wordt weergegeven door uw tv of app. Het neemt uw profielbeleid over."
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "Omgevings- en YAML-waarden zijn gezaghebbend. GUI-wijzigingen die hier worden weergegeven, worden van kracht nadat de server opnieuw is opgestart."
-  },
-  {
-    "id": "Environment default",
-    "other": "Standaardomgeving"
-  },
-  {
-    "id": "Event webhook",
-    "other": "Evenementwebhook"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "Elke 5 minuten"
   },
   {
-    "id": "Everything",
-    "other": "Alles"
-  },
-  {
     "id": "Export full activity journal",
     "other": "Volledig activiteitenlogboek exporteren"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "Laat directe media-URL's zien aan apparaten op dit lokale netwerk. Als u het uitschakelt, wordt de detectiemogelijkheid ingetrokken."
-  },
-  {
-    "id": "Externally managed",
-    "other": "Extern beheerd"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "Vind iets"
-  },
-  {
-    "id": "Finish setup",
-    "other": "Installatie voltooien"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "Volg dit apparaat of kies een vast thema."
-  },
-  {
-    "id": "Following the room leader",
-    "other": "Volg de leider van de kamer"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "Genres"
   },
   {
-    "id": "Got it",
-    "other": "Begrepen"
-  },
-  {
     "id": "Group",
     "other": "Groep"
   },
@@ -660,24 +464,12 @@
     "other": "Home"
   },
   {
-    "id": "Hourly",
-    "other": "Per uur"
-  },
-  {
     "id": "if enabled",
     "other": "indien ingeschakeld"
   },
   {
     "id": "Install",
     "other": "Installeren"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "Kinosail installeren"
-  },
-  {
-    "id": "Integrations",
-    "other": "Integraties"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "ongeldige bekeken status"
   },
   {
-    "id": "Invite link",
-    "other": "Uitnodigingslink"
-  },
-  {
     "id": "Keep",
     "other": "Behouden"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "Bewaar back-ups op opslag buiten deze host. Back-ups zijn niet-versleuteld, tenzij er een back-upsleutel is geconfigureerd. Herstellen terwijl de server is gestopt."
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "Houd Kinosail dichtbij"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "Sleutels worden één keer weergegeven en opgeslagen als hashes. Browsetoegang is de veilige standaard."
-  },
-  {
     "id": "Kinosail",
     "other": "Kinosail"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail kan deze server niet bereiken. Controleer uw netwerk of directe verbinding en probeer het opnieuw."
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail onderhoudt zichzelf automatisch."
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Kinosail-lezer"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "Laatste fout"
   },
   {
-    "id": "Last scan error",
-    "other": "Laatste scanfout"
-  },
-  {
     "id": "Last successful backup",
     "other": "Laatste succesvolle back-up"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "Laatste succesvolle scan"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "Bibliotheek"
   },
   {
-    "id": "Library discovery",
-    "other": "Bibliotheek ontdekken"
-  },
-  {
     "id": "Library folders",
     "other": "Bibliotheekmappen"
   },
@@ -808,10 +560,6 @@
     "other": "Bibliotheekorganisatie"
   },
   {
-    "id": "Library views",
-    "other": "Bibliotheekweergaven"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "Gelicentieerde inloggegevens geconfigureerd"
   },
@@ -820,28 +568,8 @@
     "other": "Licht"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "Link OpenID Connect"
-  },
-  {
     "id": "Local account",
     "other": "Lokaal account"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "M3U-afspeellijst"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "Beheer persoonlijke bibliotheekstatus"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "Extern beheerd en alleen-lezen."
-  },
-  {
-    "id": "Managed remote access",
-    "other": "Beheerde toegang op afstand"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "markering"
   },
   {
-    "id": "Match text",
-    "other": "Tekst matchen"
-  },
-  {
     "id": "Media",
     "other": "Media"
-  },
-  {
-    "id": "Media information",
-    "other": "Media-informatie"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "metagegevens zijn ongeldig"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "Metadataprovider"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "Muziek"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "Muziek en audioboeken"
-  },
-  {
     "id": "My List",
     "other": "Mijn lijst"
   },
@@ -908,36 +620,12 @@
     "other": "Naam"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "naam en een wachtwoord van 12 tekens zijn vereist"
-  },
-  {
     "id": "Never",
     "other": "Nooit"
   },
   {
-    "id": "New Collection",
-    "other": "Nieuwe collectie"
-  },
-  {
-    "id": "New Collection name",
-    "other": "Naam nieuwe collectie"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "Nieuwe media worden automatisch gedetecteerd nadat het kopiëren is voltooid. Veiligheidsscans repareren gemiste bestandssysteemgebeurtenissen op Windows, macOS, Linux, containers en netwerkkoppelingen."
-  },
-  {
     "id": "New password",
     "other": "Nieuw wachtwoord"
-  },
-  {
-    "id": "New playlist",
-    "other": "Nieuwe afspeellijst"
-  },
-  {
-    "id": "New playlist name",
-    "other": "Nieuwe afspeellijstnaam"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "Nieuw geheim"
   },
   {
-    "id": "New smart playlist",
-    "other": "Nieuwe slimme afspeellijst"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "Nieuwe kijkers beginnen met gezinsbeoordelingen en geen bibliotheken. Voeg mapnamen toe of"
-  },
-  {
-    "id": "Newest",
-    "other": "Nieuwste"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "Nog geen activiteit geregistreerd."
   },
   {
-    "id": "No channels configured.",
-    "other": "Geen kanalen geconfigureerd."
-  },
-  {
     "id": "No device selected",
     "other": "Geen apparaat geselecteerd"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "Nog geen offline downloads."
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "Geen"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "Geen; gebruik alle namen of mapnamen"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "Niets gevonden."
   },
   {
-    "id": "Now viewing",
-    "other": "Nu aan het bekijken"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "Offline downloads"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "Offline downloads · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "Aan"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "Op iPhone of iPad tikt u op Delen, kiest u 'Voeg toe aan startscherm', schakelt u 'Openen als webapp' in en tikt u vervolgens op 'Toevoegen'."
-  },
-  {
-    "id": "One-time reveal",
-    "other": "Eenmalige onthulling"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "Afspelen op apparaat"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "Speel de volgende aflevering automatisch af"
-  },
-  {
     "id": "Playback",
     "other": "Afspelen"
   },
   {
     "id": "Playback history",
     "other": "Afspeelgeschiedenis"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "Analyse van afspeelsegmenten"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "Verhaal"
   },
   {
-    "id": "Polling for changes",
-    "other": "Polling voor wijzigingen"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "Geef voorkeur aan kwaliteit"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "Voorkeur voor snelheid"
-  },
-  {
     "id": "Preferred language",
     "other": "Voorkeurstaal"
   },
@@ -1164,20 +792,12 @@
     "other": "voorbeeld niet beschikbaar"
   },
   {
-    "id": "Private by design",
-    "other": "Privé ontwerp"
-  },
-  {
     "id": "Profile",
     "other": "Profiel"
   },
   {
     "id": "profile storage is unavailable",
     "other": "profielopslag is niet beschikbaar"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "Profiel om te resetten"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "Snel verbinden"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "Snelle verbinding · Kinosail Subtitles"
-  },
-  {
     "id": "Rating",
     "other": "Beoordeling"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "lezer"
-  },
-  {
-    "id": "Reading order",
-    "other": "Leesopdracht"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "Herstelcodes"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "Vernieuwen vanuit TMDB"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "Vernieuw ontbrekende metagegevens"
-  },
-  {
     "id": "Recommended",
     "other": "Aanbevolen"
   },
@@ -1296,10 +900,6 @@
     "other": "verzoek is te groot"
   },
   {
-    "id": "Reset password",
-    "other": "Wachtwoord opnieuw instellen"
-  },
-  {
     "id": "Return to settings",
     "other": "Terug naar instellingen"
   },
@@ -1312,24 +912,8 @@
     "other": "Rockchip RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "Kamer verbonden · leider volgt"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "Kamer verbonden · jij leidt"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "Verbinding met kamer verbroken · Laad opnieuw om opnieuw verbinding te maken"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "Voer nu een bibliotheekscan uit"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "Voer nu onderhoud uit"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "Opslaan"
-  },
-  {
-    "id": "Save file",
-    "other": "Bestand opslaan"
-  },
-  {
-    "id": "Save for restart",
-    "other": "Opslaan voor opnieuw opstarten"
-  },
-  {
-    "id": "Save marker",
-    "other": "Markering opslaan"
-  },
-  {
-    "id": "Save metadata",
-    "other": "Metagegevens opslaan"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "Beveilig uw account · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "Stuur deze privéverbindings-URL naar de Viewer. Het wordt slechts één keer getoond."
-  },
-  {
-    "id": "Server name",
-    "other": "Servernaam"
-  },
-  {
     "id": "Server settings",
     "other": "Serverinstellingen"
   },
   {
-    "id": "Server unavailable",
-    "other": "Server niet beschikbaar"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "Server niet beschikbaar · Kinosail Subtitles"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "Kinosail instellen"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "Authenticator instellen of vervangen"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "Two-factor authenticatie instellen"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "Two-factor authenticatie instellen · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "Instellingen · Kinosail Subtitles"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "Geef vorm aan de ervaring, bescherm uw bibliotheek en zorg ervoor dat elke stream prachtig blijft draaien."
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "Afmelden"
   },
   {
-    "id": "Sign out other devices",
-    "other": "Afmelden bij andere apparaten"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "Aanmeldmethoden"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "Aanmelding, browserbeveiliging van dezelfde oorsprong, privéreacties, begrensde verzoeken en herroepbare toegang zijn altijd ingeschakeld. Er zijn geen beveiligingsschakelaars om te beheren."
-  },
-  {
     "id": "Single sign-on",
     "other": "Eenmalige aanmelding"
   },
@@ -1488,44 +1012,8 @@
     "other": "Overslaan"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "Sla reclames automatisch over"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "Tegoeden automatisch overslaan"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "Intro's automatisch overslaan"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "Outro's automatisch overslaan"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "Sla samenvattingen automatisch over"
-  },
-  {
     "id": "Skip to content",
     "other": "Ga naar inhoud"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "Slaaptimer"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "Slaaptimer beëindigd"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "Slimme afspeellijst"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "Naam van slimme afspeellijst"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "SSO-tokenvalidatie mislukt"
   },
   {
-    "id": "Start in seconds",
-    "other": "Start binnen enkele seconden"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "Begin samen kijken"
-  },
-  {
     "id": "Status",
     "other": "Status"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "Stopt over {minutes} minuten"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "Bewaar deze codes op een veilige plek. Elk werkt één keer."
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "Hier opgeslagen. Rechtstreeks gestreamd."
-  },
-  {
-    "id": "Stream media",
-    "other": "Streammedia"
-  },
-  {
-    "id": "Subscription required",
-    "other": "Abonnement vereist"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "ondertitelingsprovider niet beschikbaar"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "ondertiteltrack(s)"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "Slogan"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "De back-up bevat de account- en sessiestatus. Houd ongecodeerde back-upopslag privé of configureer een back-upsleutel."
-  },
-  {
     "id": "Theme",
     "other": "Thema"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "Deze instellingen zijn alleen-lezen totdat ze worden verwijderd uit YAML of de omgeving"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "Dit product maakt gebruik van de TMDB API, maar is niet goedgekeurd of gecertificeerd door TMDB."
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "Hiermee wordt het profiel afgemeld en verwijderd."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "Track"
   },
   {
-    "id": "transcode cache",
-    "other": "transcodecache"
-  },
-  {
     "id": "Transcoder",
     "other": "Transcoder"
   },
@@ -1740,10 +1184,6 @@
     "other": "Type"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "OpenID ontkoppelen Verbinden"
-  },
-  {
     "id": "Until",
     "other": "Tot"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "Gebruik standaard"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Gebruik Face ID, Touch ID, Windows Hello of de pincode van uw apparaat om in te loggen. Uw wachtwoord werkt nog steeds."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "Kijkertoegang is niet beschikbaar"
   },
   {
-    "id": "Viewer name",
-    "other": "Naam van kijker"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "Wachten op uw toegangssleutel…"
   },
@@ -1804,14 +1236,6 @@
     "other": "Bekeken"
   },
   {
-    "id": "Watched ✓",
-    "other": "Gekeken ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "Kijken naar wijzigingen"
-  },
-  {
     "id": "Welcome aboard",
     "other": "Welkom aan boord"
   },
@@ -1820,35 +1244,11 @@
     "other": "wanneer klaar."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV-gids"
-  },
-  {
     "id": "Year",
     "other": "Jaar"
   },
   {
-    "id": "You lead this room",
-    "other": "Jij leidt deze kamer"
-  },
-  {
     "id": "Your library",
     "other": "Je bibliotheek"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "Je bibliotheek en kijkactiviteit blijven op deze server."
-  },
-  {
-    "id": "← Books",
-    "other": "← Boeken"
-  },
-  {
-    "id": "← Library",
-    "other": "← Bibliotheek"
-  },
-  {
-    "id": "← Settings",
-    "other": "← Instellingen"
   }
 ]

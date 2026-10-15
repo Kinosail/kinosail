@@ -11,10 +11,6 @@ import (
 func TestViewerCanReachAccountSecurityThroughWebAndAPI(t *testing.T) {
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	cookie := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	home := requestWithCookie(t, handler, http.MethodGet, "/", "", cookie)
-	if !strings.Contains(home.Body.String(), `href="/account">Owner</a>`) {
-		t.Fatalf("home does not expose account security: %q", home.Body.String())
-	}
 	for _, path := range []string{"/account", "/account?setup=1"} {
 		response := requestWithCookie(t, handler, http.MethodGet, path, "", cookie)
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "passkey") {

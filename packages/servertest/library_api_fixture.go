@@ -12,4 +12,5 @@ type LibraryAPIFixture struct {
 	Server          func(*testing.T) (http.Handler, string)
 	StoredState     func(*testing.T, string, string) []byte
 	StoredProfileID func(*testing.T, string, string) string
+	NoPlayback      bool
 }

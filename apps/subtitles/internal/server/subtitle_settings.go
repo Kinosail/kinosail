@@ -82,9 +82,9 @@ func subtitleSettingsPageData(settings *settingsStore, provider *subtitleProvide
 	data.PublicSessionInactiveHours, data.PublicSessionAbsoluteHours = publicSessionTimeoutHours(value)
 	data.PublicSessionTimeoutsConfigured = value.PublicSessionAbsoluteHours != 0
 	data.ProviderSetup = subtitleProviderSetupViews(data.Providers)
+	data.Trusted = settings.trustedHTTPS()
+	data.TrustedControl = configurationControl(configured, "tls.duckdns")
 	if manager != nil {
-		data.Trusted = settings.trustedHTTPS()
-		data.TrustedControl = configurationControl(configured, "tls.duckdns")
 		data.TrustedStatus = trustedHTTPSStatus(manager)
 	}
 	return data

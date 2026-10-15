@@ -2,21 +2,7 @@ package server_test
 
 import (
 	"testing"
-
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
-
-func TestWebSurfacesCanUseSpanish(t *testing.T) {
-	localeWebFixture.WebSurfacesCanUseSpanish(t, signInTestProfile, requestWithCookie, "SubDL", "Protección automática")
-}
-
-func TestLocalizationDoesNotTranslateLibraryContent(t *testing.T) {
-	servertest.AssertLocalizationDoesNotTranslateLibraryContent(t, libraryAPIFixture)
-}
-
-func TestLocalizedPlayerUsesCatalogedPlaybackMode(t *testing.T) {
-	servertest.AssertLocalizedPlayerUsesCatalogedPlaybackMode(t, libraryAPIFixture)
-}
 
 func TestSetupAndLoginCanUseSpanish(t *testing.T) { localeWebFixture.SetupAndLoginCanUseSpanish(t) }
 
@@ -42,8 +28,4 @@ func TestSupportedLanguagesRenderTheLoginSurface(t *testing.T) {
 
 func TestWebLanguageSelectionUsesTheSharedPreferenceOperation(t *testing.T) {
 	localeWebFixture.WebLanguageSelectionUsesTheSharedPreferenceOperation(t)
-}
-
-func TestAuthenticatedLanguagePickerCarriesCSRFToken(t *testing.T) {
-	localeWebFixture.AuthenticatedLanguagePickerCarriesCSRFToken(t, signInTestProfile, requestWithCookie)
 }

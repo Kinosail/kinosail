@@ -9,7 +9,7 @@ import (
 )
 
 func TestMCPAPIRoutePolicy(t *testing.T) {
-	servertest.AssertMCPAPIRoutePolicy(t, (mcpRoutePolicy{}).Allows, nil)
+	servertest.AssertMCPAPIRoutePolicy(t, (mcpRoutePolicy{}).Allows, map[servertest.MCPPolicyInput]bool{{Pattern: "PUT /api/v1/items/{id}/progress", Write: true}: false})
 }
 
 func TestEveryVersionedAPIRouteHasExactlyOneMCPPolicy(t *testing.T) {

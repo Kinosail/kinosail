@@ -62,13 +62,26 @@ func NewBound(ctx context.Context, interval time.Duration, limit int64, dependen
 func NewApplication(ctx context.Context, interval time.Duration, limit int64, cache playback.HLSCacheControl, backups *sharedbackup.Manager, pruneMetadata func() error, metadataConfigured func() bool, analysis *markers.Analyzer) *Manager {
 	return NewBound(ctx, interval, limit, Dependencies{
 		PruneCache: cache.Prune, PruneMetadata: pruneMetadata, CacheStats: cache.Stats,
-		BackupStatus: func() BackupStatus {
-			status := backups.Status()
-			return BackupStatus{Enabled: status.Enabled, Encrypted: status.Encrypted, LastError: status.LastError}
-		},
+		BackupStatus:       backupStatus(backups),
 		MetadataConfigured: metadataConfigured,
 		AnalysisStatus:     func() string { state, _, _ := analysis.Status(); return state },
 	}, analysis.SetWait)
+}
+
+func NewSubtitles(ctx context.Context, interval time.Duration, backups *sharedbackup.Manager, pruneMetadata func() error, metadataConfigured func() bool) *Manager {
+	return New(ctx, interval, 0, Dependencies{
+		PruneCache: func(int64) (int64, error) { return 0, nil }, PruneMetadata: pruneMetadata, CacheStats: func() (int64, error) { return 0, nil },
+		BackupStatus:       backupStatus(backups),
+		MetadataConfigured: metadataConfigured,
+		AnalysisStatus:     func() string { return "off" },
+	})
+}
+
+func backupStatus(backups *sharedbackup.Manager) func() BackupStatus {
+	return func() BackupStatus {
+		status := backups.Status()
+		return BackupStatus{Enabled: status.Enabled, Encrypted: status.Encrypted, LastError: status.LastError}
+	}
 }
 
 func (manager *Manager) schedule(ctx context.Context) {

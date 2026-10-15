@@ -8,14 +8,6 @@
     "other": "30분"
   },
   {
-    "id": "45 minutes",
-    "other": "45분"
-  },
-  {
-    "id": "60 minutes",
-    "other": "60분"
-  },
-  {
     "id": "Access",
     "other": "액세스"
   },
@@ -44,20 +36,8 @@
     "other": "미디어를 추가하거나 다른 검색을 시도해 보세요."
   },
   {
-    "id": "Add Profile",
-    "other": "프로필 추가"
-  },
-  {
-    "id": "Add this secret or URI to your authenticator app.",
-    "other": "이 비밀 번호 또는 URI를 인증 앱에 추가하세요."
-  },
-  {
     "id": "Add to",
     "other": "추가"
-  },
-  {
-    "id": "Administer server",
-    "other": "서버 관리"
   },
   {
     "id": "Album",
@@ -76,24 +56,8 @@
     "other": "모든 평가"
   },
   {
-    "id": "Allow downloads",
-    "other": "다운로드 허용"
-  },
-  {
-    "id": "Allow transcoding",
-    "other": "트랜스코딩 허용"
-  },
-  {
     "id": "AMD AMF",
     "other": "AMD AMF"
-  },
-  {
-    "id": "Analyze playback segments now",
-    "other": "지금 재생 세그먼트 분석"
-  },
-  {
-    "id": "analyzed item(s)",
-    "other": "분석된 항목"
   },
   {
     "id": "API key name",
@@ -160,10 +124,6 @@
     "other": "자동"
   },
   {
-    "id": "Automatic (best detected)",
-    "other": "자동(최적 감지)"
-  },
-  {
     "id": "Automatic (browser)",
     "other": "자동(브라우저)"
   },
@@ -176,24 +136,12 @@
     "other": "자동 유지관리"
   },
   {
-    "id": "Available devices use a direct connection to this Server.",
-    "other": "사용 가능한 장치는 이 서버에 대한 직접 연결을 사용합니다."
-  },
-  {
     "id": "Back to library",
     "other": "도서관으로 돌아가기"
   },
   {
-    "id": "Back to settings",
-    "other": "설정으로 돌아가기"
-  },
-  {
     "id": "Back up now",
     "other": "지금 백업"
-  },
-  {
-    "id": "Backup and recovery",
-    "other": "백업 및 복구"
   },
   {
     "id": "backup is unavailable",
@@ -202,10 +150,6 @@
   {
     "id": "Backups need setup.",
     "other": "백업 설정이 필요합니다."
-  },
-  {
-    "id": "Backups run automatically without encryption.",
-    "other": "백업은 암호화 없이 자동으로 실행됩니다."
   },
   {
     "id": "Backups · Kinosail Subtitles",
@@ -244,10 +188,6 @@
     "other": "이 브라우저의 언어를 선택하세요."
   },
   {
-    "id": "Clear transcode cache",
-    "other": "트랜스코드 캐시 지우기"
-  },
-  {
     "id": "Code",
     "other": "코드"
   },
@@ -268,10 +208,6 @@
     "other": "호환성"
   },
   {
-    "id": "Compatibility Connection",
-    "other": "호환성 연결"
-  },
-  {
     "id": "Compatibility stream",
     "other": "호환성 스트림"
   },
@@ -280,28 +216,12 @@
     "other": "호환"
   },
   {
-    "id": "Concurrent streams",
-    "other": "동시 스트림"
-  },
-  {
     "id": "Configuration error",
     "other": "구성 오류"
   },
   {
     "id": "Configuration · Kinosail Subtitles",
     "other": "구성 · Kinosail Subtitles"
-  },
-  {
-    "id": "Configured; value hidden",
-    "other": "구성됨; 숨겨진 값"
-  },
-  {
-    "id": "Confirm delete",
-    "other": "삭제 확인"
-  },
-  {
-    "id": "Confirm remove",
-    "other": "제거 확인"
   },
   {
     "id": "Connect",
@@ -324,24 +244,12 @@
     "other": "연결 중…"
   },
   {
-    "id": "Connection error",
-    "other": "연결 오류"
-  },
-  {
     "id": "Content",
     "other": "콘텐츠"
   },
   {
-    "id": "Continue Watching",
-    "other": "계속 시청하기"
-  },
-  {
     "id": "Continue watching",
     "other": "계속 시청하기"
-  },
-  {
-    "id": "from Continue Watching",
-    "other": "계속 시청 중"
   },
   {
     "id": "Copy this key now. Kinosail stores only its hash.",
@@ -376,20 +284,8 @@
     "other": "패스키 만들기"
   },
   {
-    "id": "Create API key",
-    "other": "API 키 생성"
-  },
-  {
     "id": "Create passkey",
     "other": "비밀번호 생성"
-  },
-  {
-    "id": "Create smart playlist",
-    "other": "스마트 재생목록 만들기"
-  },
-  {
-    "id": "Create your Owner Profile",
-    "other": "소유자 프로필 만들기"
   },
   {
     "id": "Created once",
@@ -420,10 +316,6 @@
     "other": "default"
   },
   {
-    "id": "Default playback",
-    "other": "기본 재생"
-  },
-  {
     "id": "Delete",
     "other": "삭제"
   },
@@ -438,10 +330,6 @@
   {
     "id": "detected, unavailable",
     "other": "감지됨, 사용할 수 없음"
-  },
-  {
-    "id": "Device or app",
-    "other": "기기 또는 앱"
   },
   {
     "id": "Diagnostics",
@@ -460,24 +348,12 @@
     "other": "직접 연결 불가"
   },
   {
-    "id": "Direct from",
-    "other": "직접"
-  },
-  {
     "id": "Direct stream",
     "other": "직접 스트림"
   },
   {
     "id": "Directed by",
     "other": "감독"
-  },
-  {
-    "id": "Disable and revoke",
-    "other": "비활성화 및 취소"
-  },
-  {
-    "id": "Disable two-factor authentication",
-    "other": "2단계 인증 비활성화"
   },
   {
     "id": "Disaster recovery",
@@ -490,10 +366,6 @@
   {
     "id": "Download",
     "other": "다운로드"
-  },
-  {
-    "id": "Download media",
-    "other": "미디어 다운로드"
   },
   {
     "id": "Download original",
@@ -516,60 +388,16 @@
     "other": "이 뷰어 프로필에서는 다운로드가 활성화되지 않습니다"
   },
   {
-    "id": "Edit metadata",
-    "other": "메타데이터 수정"
-  },
-  {
-    "id": "Edit skip markers",
-    "other": "건너뛰기 마커 수정"
-  },
-  {
     "id": "embedded subtitles are unavailable",
     "other": "내장된 자막을 사용할 수 없습니다"
-  },
-  {
-    "id": "Enable DLNA",
-    "other": "DLNA 활성화"
-  },
-  {
-    "id": "Enable two-factor authentication",
-    "other": "2단계 인증 활성화"
   },
   {
     "id": "Enabled",
     "other": "활성화됨"
   },
   {
-    "id": "Encrypted backups run automatically.",
-    "other": "암호화된 백업이 자동으로 실행됩니다."
-  },
-  {
-    "id": "Encryption is off by default.",
-    "other": "암호화는 기본적으로 꺼져 있습니다."
-  },
-  {
     "id": "Encryption is on.",
     "other": "암호화가 켜져 있습니다."
-  },
-  {
-    "id": "End in seconds",
-    "other": "초 안에 종료"
-  },
-  {
-    "id": "Enter the code shown by your TV or app. It will inherit your Profile Policy.",
-    "other": "TV 또는 앱에 표시된 코드를 입력하세요. 프로필 정책이 상속됩니다."
-  },
-  {
-    "id": "Environment and YAML values are authoritative. GUI changes shown here take effect after the Server restarts.",
-    "other": "환경 및 YAML 값은 신뢰할 수 있습니다. 여기에 표시된 GUI 변경 사항은 서버가 다시 시작된 후에 적용됩니다."
-  },
-  {
-    "id": "Environment default",
-    "other": "환경 기본값"
-  },
-  {
-    "id": "Event webhook",
-    "other": "이벤트 웹훅"
   },
   {
     "id": "Every 15 minutes",
@@ -580,20 +408,8 @@
     "other": "5분마다"
   },
   {
-    "id": "Everything",
-    "other": "모든 것"
-  },
-  {
     "id": "Export full activity journal",
     "other": "전체 활동 일지 내보내기"
-  },
-  {
-    "id": "Expose direct media URLs to devices on this local network. Disabling revokes the discovery capability.",
-    "other": "이 로컬 네트워크의 장치에 직접 미디어 URL을 노출합니다. 비활성화하면 검색 기능이 취소됩니다."
-  },
-  {
-    "id": "Externally managed",
-    "other": "외부 관리"
   },
   {
     "id": "Find",
@@ -602,10 +418,6 @@
   {
     "id": "Find something",
     "other": "뭔가 찾기"
-  },
-  {
-    "id": "Finish setup",
-    "other": "설정 완료"
   },
   {
     "id": "Finish sign in",
@@ -618,10 +430,6 @@
   {
     "id": "Follow this device or choose a fixed theme.",
     "other": "이 기기를 팔로우하거나 고정 테마를 선택하세요."
-  },
-  {
-    "id": "Following the room leader",
-    "other": "방장을 따라가기"
   },
   {
     "id": "From",
@@ -640,10 +448,6 @@
     "other": "장르"
   },
   {
-    "id": "Got it",
-    "other": "알겠습니다"
-  },
-  {
     "id": "Group",
     "other": "그룹"
   },
@@ -660,24 +464,12 @@
     "other": "홈"
   },
   {
-    "id": "Hourly",
-    "other": "시간별"
-  },
-  {
     "id": "if enabled",
     "other": "활성화된 경우"
   },
   {
     "id": "Install",
     "other": "설치"
-  },
-  {
-    "id": "Install Kinosail Subtitles",
-    "other": "Kinosail 설치"
-  },
-  {
-    "id": "Integrations",
-    "other": "통합"
   },
   {
     "id": "Intel Quick Sync",
@@ -716,40 +508,12 @@
     "other": "감시 상태가 잘못되었습니다"
   },
   {
-    "id": "Invite link",
-    "other": "초대 링크"
-  },
-  {
     "id": "Keep",
     "other": "Keep"
   },
   {
-    "id": "Keep backups on storage outside this host. Backups are unencrypted unless a backup key is configured. Restore while the Server is stopped.",
-    "other": "이 호스트 외부의 스토리지에 백업을 유지합니다. 백업 키가 구성되지 않으면 백업이 암호화되지 않습니다. 서버가 중지된 동안 복원합니다."
-  },
-  {
-    "id": "Keep Kinosail Subtitles close",
-    "other": "Kinosail을 가까이 두세요"
-  },
-  {
-    "id": "Keys are shown once and stored as hashes. Browse access is the safe default.",
-    "other": "키는 한 번 표시되고 해시로 저장됩니다. 찾아보기 액세스는 안전한 기본값입니다."
-  },
-  {
     "id": "Kinosail",
     "other": "Kinosail"
-  },
-  {
-    "id": "Kinosail Subtitles cannot reach this Server. Check your network or Direct Connection, then try again.",
-    "other": "Kinosail이 이 서버에 연결할 수 없습니다. 네트워크 또는 직접 연결을 확인한 후 다시 시도하세요."
-  },
-  {
-    "id": "Kinosail maintains itself automatically.",
-    "other": "Kinosail은 자동으로 유지 관리됩니다."
-  },
-  {
-    "id": "Kinosail Subtitles Reader",
-    "other": "Kinosail 리더"
   },
   {
     "id": "Language",
@@ -764,16 +528,8 @@
     "other": "마지막 오류"
   },
   {
-    "id": "Last scan error",
-    "other": "마지막 검사 오류"
-  },
-  {
     "id": "Last successful backup",
     "other": "마지막으로 성공한 백업"
-  },
-  {
-    "id": "Last successful scan",
-    "other": "마지막으로 성공한 스캔"
   },
   {
     "id": "Last verified",
@@ -792,10 +548,6 @@
     "other": "도서관"
   },
   {
-    "id": "Library discovery",
-    "other": "라이브러리 검색"
-  },
-  {
     "id": "Library folders",
     "other": "라이브러리 폴더"
   },
@@ -808,10 +560,6 @@
     "other": "도서관 조직"
   },
   {
-    "id": "Library views",
-    "other": "라이브러리 보기"
-  },
-  {
     "id": "Licensed credential configured",
     "other": "라이센스 자격 증명이 구성됨"
   },
@@ -820,28 +568,8 @@
     "other": "Light"
   },
   {
-    "id": "Link OpenID Connect",
-    "other": "OpenID Connect 연결"
-  },
-  {
     "id": "Local account",
     "other": "로컬 계정"
-  },
-  {
-    "id": "M3U playlist",
-    "other": "M3U 재생 목록"
-  },
-  {
-    "id": "Manage personal library state",
-    "other": "개인 라이브러리 상태 관리"
-  },
-  {
-    "id": "Managed externally and read-only.",
-    "other": "외부에서 관리되며 읽기 전용입니다."
-  },
-  {
-    "id": "Managed remote access",
-    "other": "관리형 원격 액세스"
   },
   {
     "id": "Mark",
@@ -852,16 +580,8 @@
     "other": "marker"
   },
   {
-    "id": "Match text",
-    "other": "텍스트 일치"
-  },
-  {
     "id": "Media",
     "other": "미디어"
-  },
-  {
-    "id": "Media information",
-    "other": "미디어 정보"
   },
   {
     "id": "Media mount",
@@ -874,10 +594,6 @@
   {
     "id": "metadata is invalid",
     "other": "메타데이터가 잘못되었습니다"
-  },
-  {
-    "id": "Metadata provider",
-    "other": "메타데이터 제공자"
   },
   {
     "id": "metadata provider unavailable",
@@ -896,10 +612,6 @@
     "other": "음악"
   },
   {
-    "id": "Music and audiobooks",
-    "other": "음악 및 오디오북"
-  },
-  {
     "id": "My List",
     "other": "내 목록"
   },
@@ -908,36 +620,12 @@
     "other": "이름"
   },
   {
-    "id": "name and a 12-character password are required",
-    "other": "이름과 12자리 비밀번호가 필요합니다"
-  },
-  {
     "id": "Never",
     "other": "사용하지 않음"
   },
   {
-    "id": "New Collection",
-    "other": "새 컬렉션"
-  },
-  {
-    "id": "New Collection name",
-    "other": "새 컬렉션 이름"
-  },
-  {
-    "id": "New media is detected automatically after copying finishes. Safety scans repair missed filesystem events on Windows, macOS, Linux, containers, and network mounts.",
-    "other": "복사가 완료된 후 새 미디어가 자동으로 감지됩니다. 안전 검사는 Windows, macOS, Linux, 컨테이너 및 네트워크 마운트에서 누락된 파일 시스템 이벤트를 복구합니다."
-  },
-  {
     "id": "New password",
     "other": "새 비밀번호"
-  },
-  {
-    "id": "New playlist",
-    "other": "새 재생목록"
-  },
-  {
-    "id": "New playlist name",
-    "other": "새 재생목록 이름"
   },
   {
     "id": "New profile name",
@@ -952,32 +640,12 @@
     "other": "새 비밀"
   },
   {
-    "id": "New smart playlist",
-    "other": "새로운 스마트 재생목록"
-  },
-  {
-    "id": "New Viewers start with family ratings and no libraries. Add folder names or",
-    "other": "신규 시청자는 라이브러리 없이 가족 등급으로 시작합니다. 폴더 이름 추가 또는"
-  },
-  {
-    "id": "Newest",
-    "other": "최신"
-  },
-  {
     "id": "No activity recorded yet.",
     "other": "아직 기록된 활동이 없습니다."
   },
   {
-    "id": "No channels configured.",
-    "other": "구성된 채널이 없습니다."
-  },
-  {
     "id": "No device selected",
     "other": "선택한 기기 없음"
-  },
-  {
-    "id": "No offline downloads yet.",
-    "other": "아직 오프라인 다운로드가 없습니다."
   },
   {
     "id": "No playback recorded yet.",
@@ -986,10 +654,6 @@
   {
     "id": "None",
     "other": "없음"
-  },
-  {
-    "id": "None; use all or folder names",
-    "other": "없음; 전체 또는 폴더 이름 사용"
   },
   {
     "id": "Not configured",
@@ -1012,10 +676,6 @@
     "other": "아무 것도 찾을 수 없습니다."
   },
   {
-    "id": "Now viewing",
-    "other": "지금 보는 중"
-  },
-  {
     "id": "NVIDIA NVENC/NVDEC",
     "other": "NVIDIA NVENC/NVDEC"
   },
@@ -1032,20 +692,8 @@
     "other": "오프라인 다운로드"
   },
   {
-    "id": "Offline downloads · Kinosail Subtitles",
-    "other": "오프라인 다운로드 · Kinosail Subtitles"
-  },
-  {
     "id": "On",
     "other": "켜기"
-  },
-  {
-    "id": "On iPhone or iPad, tap Share, choose Add to Home Screen, turn on Open as Web App, then tap Add.",
-    "other": "iPhone 또는 iPad에서 공유를 탭하고 홈 화면에 추가를 선택한 다음 웹 앱으로 열기를 켠 다음 추가를 탭하세요."
-  },
-  {
-    "id": "One-time reveal",
-    "other": "일회성 공개"
   },
   {
     "id": "OpenID Connect",
@@ -1100,20 +748,12 @@
     "other": "기기에서 재생"
   },
   {
-    "id": "Play the next Episode automatically",
-    "other": "다음 에피소드 자동으로 재생"
-  },
-  {
     "id": "Playback",
     "other": "재생"
   },
   {
     "id": "Playback history",
     "other": "재생 기록"
-  },
-  {
-    "id": "Playback segment analysis",
-    "other": "재생 세그먼트 분석"
   },
   {
     "id": "Playback speed",
@@ -1140,18 +780,6 @@
     "other": "플롯"
   },
   {
-    "id": "Polling for changes",
-    "other": "변경 사항 폴링"
-  },
-  {
-    "id": "Prefer quality",
-    "other": "품질 선호"
-  },
-  {
-    "id": "Prefer speed",
-    "other": "속도 선호"
-  },
-  {
     "id": "Preferred language",
     "other": "기본 언어"
   },
@@ -1164,20 +792,12 @@
     "other": "미리보기를 사용할 수 없습니다"
   },
   {
-    "id": "Private by design",
-    "other": "비공개 설계"
-  },
-  {
     "id": "Profile",
     "other": "프로필"
   },
   {
     "id": "profile storage is unavailable",
     "other": "프로필 저장을 사용할 수 없습니다"
-  },
-  {
-    "id": "Profile to reset",
-    "other": "재설정할 프로필"
   },
   {
     "id": "Profile type",
@@ -1204,10 +824,6 @@
     "other": "빠른 연결"
   },
   {
-    "id": "Quick Connect · Kinosail Subtitles",
-    "other": "빠른 연결 · Kinosail Subtitles"
-  },
-  {
     "id": "Rating",
     "other": "등급"
   },
@@ -1218,10 +834,6 @@
   {
     "id": "reader",
     "other": "독자"
-  },
-  {
-    "id": "Reading order",
-    "other": "읽기 순서"
   },
   {
     "id": "ready",
@@ -1260,14 +872,6 @@
     "other": "복구 코드"
   },
   {
-    "id": "Refresh from TMDB",
-    "other": "TMDB에서 새로 고침"
-  },
-  {
-    "id": "Refresh missing metadata",
-    "other": "누락된 메타데이터 새로고침"
-  },
-  {
     "id": "Recommended",
     "other": "권장"
   },
@@ -1296,10 +900,6 @@
     "other": "요청이 너무 큽니다"
   },
   {
-    "id": "Reset password",
-    "other": "비밀번호 재설정"
-  },
-  {
     "id": "Return to settings",
     "other": "설정으로 돌아가기"
   },
@@ -1312,24 +912,8 @@
     "other": "록칩 RKMPP"
   },
   {
-    "id": "Room connected · following leader",
-    "other": "방이 연결됨 · 리더를 팔로우"
-  },
-  {
-    "id": "Room connected · you lead",
-    "other": "방이 연결됨 · 당신이 이끄는"
-  },
-  {
     "id": "Room disconnected · reload to reconnect",
     "other": "방 연결이 끊어졌습니다. 다시 연결하려면 새로고침하세요"
-  },
-  {
-    "id": "Run library scan now",
-    "other": "지금 라이브러리 스캔 실행"
-  },
-  {
-    "id": "Run maintenance now",
-    "other": "지금 유지 관리 실행"
   },
   {
     "id": "Safety scan",
@@ -1338,22 +922,6 @@
   {
     "id": "Save",
     "other": "저장"
-  },
-  {
-    "id": "Save file",
-    "other": "파일 저장"
-  },
-  {
-    "id": "Save for restart",
-    "other": "다시 시작하기 위해 저장"
-  },
-  {
-    "id": "Save marker",
-    "other": "마커 저장"
-  },
-  {
-    "id": "Save metadata",
-    "other": "메타데이터 저장"
   },
   {
     "id": "Save schedule",
@@ -1384,40 +952,12 @@
     "other": "계정을 보호하세요 · Kinosail Subtitles"
   },
   {
-    "id": "Send this private connection URL to the Viewer. It is shown only once.",
-    "other": "이 비공개 연결 URL을 뷰어에게 보냅니다. 한 번만 표시됩니다."
-  },
-  {
-    "id": "Server name",
-    "other": "서버 이름"
-  },
-  {
     "id": "Server settings",
     "other": "서버 설정"
   },
   {
-    "id": "Server unavailable",
-    "other": "서버를 사용할 수 없습니다"
-  },
-  {
-    "id": "Server unavailable · Kinosail Subtitles",
-    "other": "서버를 사용할 수 없음 · Kinosail Subtitles"
-  },
-  {
     "id": "Set up Kinosail Subtitles",
     "other": "Kinosail 설정"
-  },
-  {
-    "id": "Set up or replace authenticator",
-    "other": "인증자 설정 또는 교체"
-  },
-  {
-    "id": "Set up two-factor authentication",
-    "other": "2단계 인증 설정"
-  },
-  {
-    "id": "Set up two-factor authentication · Kinosail Subtitles",
-    "other": "2단계 인증 설정 · Kinosail Subtitles"
   },
   {
     "id": "Settings",
@@ -1430,10 +970,6 @@
   {
     "id": "Settings · Kinosail Subtitles",
     "other": "설정 · Kinosail Subtitles"
-  },
-  {
-    "id": "Shape the experience, protect your library, and keep every stream running beautifully.",
-    "other": "경험을 형성하고, 라이브러리를 보호하고, 모든 스트림을 아름답게 실행하세요."
   },
   {
     "id": "Show",
@@ -1468,18 +1004,6 @@
     "other": "로그아웃"
   },
   {
-    "id": "Sign out other devices",
-    "other": "다른 기기에서 로그아웃"
-  },
-  {
-    "id": "Sign-in methods",
-    "other": "로그인 방법"
-  },
-  {
-    "id": "Sign-in, same-origin browser protections, private responses, bounded requests, and revocable access are always on. There are no security switches to manage.",
-    "other": "로그인, 동일 출처 브라우저 보호, 비공개 응답, 제한된 요청 및 취소 가능한 액세스가 항상 켜져 있습니다. 관리할 보안 스위치가 없습니다."
-  },
-  {
     "id": "Single sign-on",
     "other": "싱글 사인온"
   },
@@ -1488,44 +1012,8 @@
     "other": "건너뛰기"
   },
   {
-    "id": "Skip commercials automatically",
-    "other": "광고 자동 건너뛰기"
-  },
-  {
-    "id": "Skip credits automatically",
-    "other": "크레딧 자동 건너뛰기"
-  },
-  {
-    "id": "Skip intros automatically",
-    "other": "소개를 자동으로 건너뛰기"
-  },
-  {
-    "id": "Skip outros automatically",
-    "other": "아웃로스 자동 건너뛰기"
-  },
-  {
-    "id": "Skip recaps automatically",
-    "other": "자동으로 요약 건너뛰기"
-  },
-  {
     "id": "Skip to content",
     "other": "콘텐츠로 건너뛰기"
-  },
-  {
-    "id": "Sleep timer",
-    "other": "취침 타이머"
-  },
-  {
-    "id": "Sleep timer ended",
-    "other": "취침 타이머가 종료되었습니다"
-  },
-  {
-    "id": "Smart playlist",
-    "other": "스마트 재생목록"
-  },
-  {
-    "id": "Smart playlist name",
-    "other": "스마트 재생목록 이름"
   },
   {
     "id": "Software",
@@ -1572,36 +1060,12 @@
     "other": "SSO 토큰 검증 실패"
   },
   {
-    "id": "Start in seconds",
-    "other": "곧 시작"
-  },
-  {
-    "id": "Start Watch Together",
-    "other": "함께 시청 시작"
-  },
-  {
     "id": "Status",
     "other": "상태"
   },
   {
-    "id": "Stops in {minutes} minutes",
-    "other": "{minutes}분 후에 정차"
-  },
-  {
     "id": "Store these codes somewhere safe. Each works once.",
     "other": "이 코드를 안전한 곳에 보관하세요. 각각은 한 번만 작동합니다."
-  },
-  {
-    "id": "Stored here. Streamed directly.",
-    "other": "여기에 저장되어 있습니다. 직접 스트리밍했습니다."
-  },
-  {
-    "id": "Stream media",
-    "other": "스트림 미디어"
-  },
-  {
-    "id": "Subscription required",
-    "other": "구독 필요"
   },
   {
     "id": "Subtitle provider",
@@ -1610,10 +1074,6 @@
   {
     "id": "subtitle provider unavailable",
     "other": "자막 제공업체를 사용할 수 없음"
-  },
-  {
-    "id": "subtitle track(s)",
-    "other": "자막 트랙"
   },
   {
     "id": "Subtitles",
@@ -1636,16 +1096,8 @@
     "other": "태그라인"
   },
   {
-    "id": "The backup contains account and session state. Keep unencrypted backup storage private, or configure a backup key.",
-    "other": "백업에는 계정 및 세션 상태가 포함됩니다. 암호화되지 않은 백업 저장소를 비공개로 유지하거나 백업 키를 구성하세요."
-  },
-  {
     "id": "Theme",
     "other": "테마"
-  },
-  {
-    "id": "These settings are read-only until removed from YAML or the environment",
-    "other": "이러한 설정은 YAML 또는 환경에서 제거될 때까지 읽기 전용입니다"
   },
   {
     "id": "This Collection is empty.",
@@ -1666,10 +1118,6 @@
   {
     "id": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
     "other": "이 제품은 TMDB API를 사용하지만 TMDB에서 보증하거나 인증하지 않습니다."
-  },
-  {
-    "id": "This signs out the profile and deletes it.",
-    "other": "이렇게 하면 프로필이 로그아웃되고 삭제됩니다."
   },
   {
     "id": "Through PG / TV-PG",
@@ -1712,10 +1160,6 @@
     "other": "추적"
   },
   {
-    "id": "transcode cache",
-    "other": "트랜스코드 캐시"
-  },
-  {
     "id": "Transcoder",
     "other": "트랜스코더"
   },
@@ -1740,10 +1184,6 @@
     "other": "유형"
   },
   {
-    "id": "Unlink OpenID Connect",
-    "other": "OpenID Connect 연결 해제"
-  },
-  {
     "id": "Until",
     "other": "기한"
   },
@@ -1758,10 +1198,6 @@
   {
     "id": "Use default",
     "other": "기본값 사용"
-  },
-  {
-    "id": "Use Face ID, Touch ID, Windows Hello, or your device PIN to sign in. Your password will still work.",
-    "other": "Face ID, Touch ID, Windows Hello 또는 기기 PIN을 사용하여 로그인하세요. 비밀번호는 계속 작동합니다."
   },
   {
     "id": "VA-API (AMD/Intel)",
@@ -1784,10 +1220,6 @@
     "other": "뷰어 액세스를 사용할 수 없습니다"
   },
   {
-    "id": "Viewer name",
-    "other": "뷰어 이름"
-  },
-  {
     "id": "Waiting for your passkey…",
     "other": "패스키를 기다리는 중…"
   },
@@ -1804,14 +1236,6 @@
     "other": "시청함"
   },
   {
-    "id": "Watched ✓",
-    "other": "시청함 ✓"
-  },
-  {
-    "id": "Watching for changes",
-    "other": "변경 사항 관찰 중"
-  },
-  {
     "id": "Welcome aboard",
     "other": "탑승을 환영합니다"
   },
@@ -1820,35 +1244,11 @@
     "other": "준비되면."
   },
   {
-    "id": "XMLTV guide",
-    "other": "XMLTV 가이드"
-  },
-  {
     "id": "Year",
     "other": "연도"
   },
   {
-    "id": "You lead this room",
-    "other": "당신이 이 방을 이끌고 있습니다"
-  },
-  {
     "id": "Your library",
     "other": "내 도서관"
-  },
-  {
-    "id": "Your library and viewing activity stay on this Server.",
-    "other": "귀하의 라이브러리 및 시청 활동은 이 서버에 유지됩니다."
-  },
-  {
-    "id": "← Books",
-    "other": "← 도서"
-  },
-  {
-    "id": "← Library",
-    "other": "← 도서관"
-  },
-  {
-    "id": "← Settings",
-    "other": "← 설정"
   }
 ]

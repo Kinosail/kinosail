@@ -85,7 +85,6 @@ if "$engine" "${run[@]}" --rm --entrypoint fpcalc "$image" -json /etc/os-release
   exit 1
 fi
 "$engine" "${run[@]}" --rm --entrypoint test "$image" -r /licenses/LICENSE
-"$engine" "${run[@]}" --rm --entrypoint test "$image" -r /licenses/third_party/hls.js/LICENSE
 "$engine" "${run[@]}" --rm --entrypoint test "$image" -r /licenses/third_party/htmx/LICENSE
 encoders="$("$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -encoders 2>/dev/null)"
 filters="$("$engine" "${run[@]}" --rm --entrypoint ffmpeg "$image" -hide_banner -filters 2>/dev/null)"

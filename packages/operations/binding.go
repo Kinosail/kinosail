@@ -41,7 +41,7 @@ func (binding Binding) Tasks() Tasks {
 	return Tasks{
 		Scan:       binding.config.Index.Refresh,
 		Metadata:   binding.RefreshMetadata,
-		ClearCache: func(context.Context) error { return binding.config.Cache.Clear() },
+		ClearCache: func(context.Context) error { return binding.clearCache() },
 		Maintain:   func(context.Context) error { return binding.config.Maintenance.Run() },
 	}
 }
@@ -69,8 +69,8 @@ func (binding Binding) DiagnosticsHandler() http.HandlerFunc {
 func (binding Binding) metricSnapshot() runtimeSnapshot {
 	items, _, scanErr := binding.config.Index.Status()
 	monitoring, _ := binding.config.Index.Monitoring()
-	cache, _ := binding.config.Cache.Stats()
-	workload, live, rooms, activity := binding.config.Workload(), binding.config.Events.Metrics(), binding.config.Rooms.Metrics(), binding.config.Activity.Status()
+	cache, _ := binding.cacheStats()
+	workload, live, rooms, activity := binding.workload(), binding.config.Events.Metrics(), binding.config.Rooms.Metrics(), binding.config.Activity.Status()
 	syncActive, syncDeferred := binding.config.Viewing.Metrics()
 	sessions := binding.config.Sessions()
 	requests, requestErrors, panics := binding.config.HTTPActivity()
@@ -84,9 +84,9 @@ func (binding Binding) metricSnapshot() runtimeSnapshot {
 func (binding Binding) diagnosticSnapshot() runtimeSnapshot {
 	items, scanned, scanErr := binding.config.Index.Status()
 	monitoring, _ := binding.config.Index.Monitoring()
-	cache, cacheErr := binding.config.Cache.Stats()
+	cache, cacheErr := binding.cacheStats()
 	activity := binding.config.Activity.Status()
-	playback, transcoder, frequency := binding.config.PlaybackSettings()
+	playback, transcoder, frequency := binding.playbackSettings()
 	sessions := binding.config.Sessions()
 	requests, requestErrors, panics := binding.config.HTTPActivity()
 	return runtimeSnapshot{
@@ -94,4 +94,32 @@ func (binding Binding) diagnosticSnapshot() runtimeSnapshot {
 		ScanError: scanErr, CacheError: cacheErr, LibraryItems: items, Sessions: sessions, TranscodeCacheBytes: cache,
 		HTTPRequests: requests, HTTPErrors: requestErrors, HTTPPanics: panics, Activity: activity,
 	}
+}
+
+func (binding Binding) cacheStats() (int64, error) {
+	if binding.config.Cache.Lock == nil {
+		return 0, nil
+	}
+	return binding.config.Cache.Stats()
+}
+
+func (binding Binding) clearCache() error {
+	if binding.config.Cache.Lock == nil {
+		return nil
+	}
+	return binding.config.Cache.Clear()
+}
+
+func (binding Binding) workload() WorkloadSnapshot {
+	if binding.config.Workload == nil {
+		return WorkloadSnapshot{}
+	}
+	return binding.config.Workload()
+}
+
+func (binding Binding) playbackSettings() (string, string, string) {
+	if binding.config.PlaybackSettings == nil {
+		return "", "", ""
+	}
+	return binding.config.PlaybackSettings()
 }

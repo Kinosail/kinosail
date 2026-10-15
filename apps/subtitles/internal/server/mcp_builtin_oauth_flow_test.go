@@ -75,7 +75,7 @@ func TestBuiltInMCPOAuthWorksWithOfficialClientAndDCR(t *testing.T) {
 	}
 	defer session.Close()
 	tools, err := session.ListTools(t.Context(), nil)
-	if err != nil || len(tools.Tools) != 3 {
+	if err != nil || len(tools.Tools) != 2 {
 		t.Fatalf("tools = %#v, %v", tools, err)
 	}
 	result, err := session.CallTool(t.Context(), &mcp.CallToolParams{Name: "read_api", Arguments: map[string]any{"path": "/api/v1/me"}})

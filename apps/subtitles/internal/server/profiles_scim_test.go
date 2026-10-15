@@ -1,6 +1,7 @@
 package server
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestSCIMManagedProfileAllowsLocalPolicyButRejectsIdentityLifecycleChanges(t
 	if err := store.setProfile("scim-profile", false, profilePolicy{Rating: "all", Libraries: []string{"all"}}); err != nil {
 		t.Fatalf("setProfile(SCIM-managed) error = %v", err)
 	}
-	if !contains(store.profiles[0].Libraries, "all") || store.profiles[0].Rating != "all" {
+	if !slices.Contains(store.profiles[0].Libraries, "all") || store.profiles[0].Rating != "all" {
 		t.Fatalf("SCIM-managed profile policy = %+v", store.profiles[0])
 	}
 	if err := store.removeProfile("scim-profile"); err == nil || !strings.Contains(err.Error(), "SCIM-managed") {

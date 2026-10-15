@@ -22,7 +22,7 @@ type ConfigurationHTTP[Source ~string, S interface {
 	WebCall                                     AuthCookieRequest
 	GUI                                         Source
 	SCIMToken, TMDBSection, TMDBLabel, TMDBHelp string
-	NoJellyfinOrDLNA                            bool
+	NoPlayerSettings                            bool
 }
 
 func (fixture ConfigurationHTTP[Source, S]) Run(t *testing.T) {
@@ -61,7 +61,7 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 	locked := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/server", map[string]string{"name": "Changed"})
 	lockedMFA := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/mfa", map[string]bool{"required": true})
 	lockedJellyfin := locked
-	if !fixture.NoJellyfinOrDLNA {
+	if !fixture.NoPlayerSettings {
 		lockedJellyfin = APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/jellyfin", map[string]bool{"enabled": true})
 	}
 	lockedSCIM := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/configuration/integrations.scim.token", map[string]string{"value": strings.Repeat("s", 32), "tokenExpiresAt": time.Now().UTC().Add(time.Hour).Format(time.RFC3339)})
@@ -69,9 +69,9 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 	settingsPage := APICall(t, handler, session.Token, http.MethodGet, "/settings", nil)
 	configurationResponse := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/configuration", nil)
 	configurationPage := APICall(t, handler, session.Token, http.MethodGet, "/settings/configuration", nil)
-	assertExternalSettingsLocked(t, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges, !fixture.NoJellyfinOrDLNA)
+	assertExternalSettingsLocked(t, settings, locked, lockedMFA, lockedJellyfin, lockedSCIM, afterRejectedChanges, !fixture.NoPlayerSettings)
 	page := settingsPage.Body.String()
-	for _, expected := range fixture.withoutJellyfinOrDLNA([]string{
+	expectedPage := []string{
 		`Configured via Docker: <code>KINOSAIL_REQUIRE_MFA</code>.`, `Configured via Docker: <code>KINOSAIL_SERVER_NAME</code>.`,
 		`Configured via Docker: <code>KINOSAIL_PLAYBACK_MODE</code>.`, `Configured via Docker: <code>KINOSAIL_SUBTITLE_LANGUAGE</code>.`,
 		`Configured via Docker: <code>KINOSAIL_TRANSCODE_QUALITY</code>.`, `Configured via Docker: <code>KINOSAIL_JELLYFIN_ENABLED</code>.`,
@@ -85,7 +85,11 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 		`href="/settings/configuration#integrations.scim"`, `href="/settings/configuration#integrations.webhook.url"`,
 		`href="/settings/configuration#dlna.url"`, `href="/settings/configuration#backup.key"`,
 		`SCIM provisioning: <strong class="status">Enabled</strong>`, `Configured via Docker: <code>KINOSAIL_TMDB_TOKEN</code>.`,
-	}) {
+	}
+	if fixture.NoPlayerSettings {
+		expectedPage = nil
+	}
+	for _, expected := range expectedPage {
 		if settingsPage.Code != http.StatusOK || !strings.Contains(page, expected) {
 			t.Fatalf("settings page lacks %q: %d %q", expected, settingsPage.Code, page)
 		}
@@ -234,7 +238,7 @@ func (fixture ConfigurationHTTP[Source, S]) StandaloneOperatorSettingsRemainEdit
 	handler := fixture.NewHandler("", directory, configured)
 	owner := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
 	settingsPage := fixture.WebCall(t, handler, http.MethodGet, "/settings", "", owner)
-	if settingsPage.Code != http.StatusOK || strings.Contains(settingsPage.Body.String(), "managed-setting") || !strings.Contains(settingsPage.Body.String(), `action="/settings/server" method="post"`) || (!fixture.NoJellyfinOrDLNA && (!strings.Contains(settingsPage.Body.String(), `action="/settings/jellyfin" method="post"`) || !strings.Contains(settingsPage.Body.String(), `fieldset disabled aria-disabled="true"`))) {
+	if settingsPage.Code != http.StatusOK || strings.Contains(settingsPage.Body.String(), "managed-setting") || (!fixture.NoPlayerSettings && (!strings.Contains(settingsPage.Body.String(), `action="/settings/server" method="post"`) || !strings.Contains(settingsPage.Body.String(), `action="/settings/jellyfin" method="post"`) || !strings.Contains(settingsPage.Body.String(), `fieldset disabled aria-disabled="true"`))) {
 		t.Fatalf("standalone settings = %d %q", settingsPage.Code, settingsPage.Body.String())
 	}
 }

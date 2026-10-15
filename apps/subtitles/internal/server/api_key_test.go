@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
-	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
@@ -33,8 +32,19 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	}
 	handler = server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	library := apiKeyRequest(t, handler, "/api/v1/library", secret)
-	id := servertest.AssertLibraryKeyContract(t, handler, library, secret)
-	servertest.AssertLibraryKeyCannotMutate(t, handler, id, secret)
+	match := regexp.MustCompile(`"id":"([a-f0-9]+)"`).FindStringSubmatch(library.Body.String())
+	if library.Code != http.StatusOK || len(match) != 2 {
+		t.Fatalf("library scope = %d %q", library.Code, library.Body.String())
+	}
+	id := match[1]
+	mutation := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", strings.NewReader(`{}`))
+	mutation.Header.Set("Authorization", "Bearer "+secret)
+	mutation.Header.Set("Content-Type", "application/json")
+	mutated := httptest.NewRecorder()
+	handler.ServeHTTP(mutated, mutation)
+	if mutated.Code != http.StatusForbidden {
+		t.Fatalf("library key mutation = %d %q", mutated.Code, mutated.Body.String())
+	}
 	stream := apiKeyRequest(t, handler, "/media/"+id, secret)
 	if stream.Code != http.StatusForbidden {
 		t.Fatalf("stream without scope = %d %q", stream.Code, stream.Body.String())
@@ -45,8 +55,12 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	if metrics := apiKeyRequest(t, handler, "/api/v1/metrics", secret); metrics.Code != http.StatusForbidden {
 		t.Fatalf("metrics without scope = %d %q", metrics.Code, metrics.Body.String())
 	}
-	settings := requestWithCookie(t, handler, http.MethodGet, "/settings", "", owner)
-	keyID := regexp.MustCompile(`name="id" value="([a-f0-9]+)">Revoke Automation`).FindStringSubmatch(settings.Body.String())[1]
+	keys := apiCall(t, handler, owner.Value, http.MethodGet, "/api/v1/api-keys", nil)
+	keyMatch := regexp.MustCompile(`"id":"([a-f0-9]+)"`).FindStringSubmatch(keys.Body.String())
+	if keys.Code != http.StatusOK || len(keyMatch) != 2 || !strings.Contains(keys.Body.String(), `"name":"Automation"`) {
+		t.Fatalf("keys = %d %q", keys.Code, keys.Body.String())
+	}
+	keyID := keyMatch[1]
 	revoke := requestWithCookieRequest(t, http.MethodPost, "/settings/api-keys/revoke", "id="+keyID, owner)
 	serveRequest(handler, revoke)
 	if revoked := apiKeyRequest(t, handler, "/api/v1/library", secret); revoked.Code != http.StatusUnauthorized {

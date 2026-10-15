@@ -27,9 +27,7 @@ that the license file appeared in those historical commits.
 
 Third-party material remains under its own license. See the repository's
 [third-party notices](THIRD_PARTY_NOTICES.md) for the runtime inventory,
-including
-[`hls.js`](third_party/hls.js/LICENSE) and
-[`htmx`](third_party/htmx/LICENSE). The Kinosail licenses do not replace or
+including [`htmx`](third_party/htmx/LICENSE). The Kinosail licenses do not replace or
 restrict those terms. Recipients must preserve all applicable third-party
 notices.
 

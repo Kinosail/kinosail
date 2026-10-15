@@ -169,34 +169,8 @@ func revokeSessions(profiles *profileStore) http.HandlerFunc {
 	}
 }
 
-func clearCache(hls *hlsManager) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		if err := hls.cacheOps.Clear(); err != nil {
-			localizedError(writer, request, err.Error(), http.StatusConflict)
-			return
-		}
-		http.Redirect(writer, request, "/settings", http.StatusSeeOther)
-	}
-}
-
 func saveScanFrequency(settings *settingsStore, index *libraryIndex, destination string) http.HandlerFunc {
 	return settingsops.SaveScanFrequency(settings.setScanFrequency, index.SetFrequency, destination, localizedError)
-}
-
-func saveTranscoder(settings *settingsStore) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		if err := settings.setTranscoder(request.FormValue("quality"), request.FormValue("codec"), request.FormValue("accelerator"), request.FormValue("toneMap") == "true"); err != nil {
-			localizedError(writer, request, err.Error(), http.StatusBadRequest)
-			return
-		}
-		http.Redirect(writer, request, "/settings", http.StatusSeeOther)
-	}
-}
-
-func savePlayback(settings *settingsStore) http.HandlerFunc {
-	return settingsops.SavePlayback(func(value settingsops.Playback) error {
-		return settings.setPlayback(value.PlaybackMode, value.Autoplay, value.Subtitles, value.AutoSkip)
-	}, localizedError)
 }
 
 func saveServerName(settings *settingsStore) http.HandlerFunc {
