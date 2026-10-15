@@ -74,6 +74,11 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	}
 	handler = fixture.NewTranscodeHandler(media, data, cache, ffmpeg)
 	restored := fixture.APICall(t, handler, token, http.MethodGet, "/api/v1/downloads/"+job.ID, nil)
+	for deadline := time.Now().Add(3 * time.Second); strings.Contains(restored.Body.String(), `"state":"preparing"`) && time.Now().Before(deadline); {
+		AssertAPIBody(t, restored, http.StatusOK, `"readyOffline":false`)
+		time.Sleep(10 * time.Millisecond)
+		restored = fixture.APICall(t, handler, token, http.MethodGet, "/api/v1/downloads/"+job.ID, nil)
+	}
 	var decoded map[string]any
 	if json.Unmarshal(restored.Body.Bytes(), &decoded) != nil || decoded["state"] != "ready" {
 		t.Fatalf("restored job = %d %q", restored.Code, restored.Body.String())
