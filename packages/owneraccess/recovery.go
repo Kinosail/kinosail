@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
-// Recover disables management from the local CLI without needing a working login,
-// device, or pairing file. A running service observes the marker within two seconds.
 func Recover(directory string) error {
 	if !filepath.IsAbs(directory) || filepath.Clean(directory) != directory {
 		return errors.New("invalid Server data directory")

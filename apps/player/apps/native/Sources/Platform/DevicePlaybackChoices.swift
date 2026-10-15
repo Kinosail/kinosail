@@ -1,6 +1,5 @@
 import Foundation
 
-/// Playback controls are remembered on this device for the connected Viewer Profile.
 struct DevicePlaybackChoices: Equatable {
     var rate: Double?
     var audioLanguage: String?

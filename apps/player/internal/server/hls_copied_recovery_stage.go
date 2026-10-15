@@ -35,7 +35,6 @@ func (output *copiedHLSVariantOutput) stagedFileSize(name string) (int64, bool) 
 		return 0, false
 	}
 	info, err := output.stage.Lstat(name)
-	// FFmpeg can rename a recognized temporary entry after ReadDir sees it.
 	if os.IsNotExist(err) && strings.HasSuffix(name, ".tmp") {
 		slog.DebugContext(output.observation, "HLS copied temporary output replaced", "request_id", requestActivityID(output.observation), "playback_session", requestPlaybackSession(output.observation), "outcome", "stage-scan-continues")
 		return 0, true

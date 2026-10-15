@@ -132,7 +132,6 @@ try:
     if exit_code == 0:
         receipt['journeys'] = verify_results(args.output / f'results-{project}.json', args.required_title)
 except (RuntimeError, KeyError, OSError, ValueError) as error:
-    # Setup response bodies and credentials are deliberately absent from diagnostics.
     receipt['errorClass'] = type(error).__name__
     print('Populated settings preparation or verification failed; inspect the private E2E artifact.', flush=True)
     exit_code = 1

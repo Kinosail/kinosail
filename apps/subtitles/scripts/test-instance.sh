@@ -16,7 +16,6 @@ compose=("$engine" compose --project-name "${KINOSAIL_TEST_PROJECT:-kinosail-tes
 url() {
   local address scheme=https host=127.0.0.1
   address="$("${compose[@]}" port kinosail 38128)"
-  # Playwright's API client permits Secure cookies on HTTP localhost only.
   case "${KINOSAIL_TLS_ENABLED:-true}" in 0|f|F|false|False|FALSE) scheme=http; host=localhost ;; esac
   printf '%s://%s:%s\n' "$scheme" "$host" "${address##*:}"
 }
@@ -96,7 +95,6 @@ case "$action" in
     "${compose[@]}" down --volumes --remove-orphans
     "${compose[@]}" up --detach
     if [[ -z "${KINOSAIL_AUTH_URL:-}" ]]; then
-      # Pin Compose's assigned port before configuring the canonical login URL.
       KINOSAIL_AUTH_URL="$(url)"
       KINOSAIL_PORT="${KINOSAIL_AUTH_URL##*:}"
       KINOSAIL_AUTH_URL="${KINOSAIL_AUTH_URL/127.0.0.1/localhost}"

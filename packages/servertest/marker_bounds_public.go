@@ -23,8 +23,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/markers"
 )
 
-// Real codecs, persisted fixture metadata and the production HTTP endpoint protect
-// the strict native-client contract. This is not a deployed Nox playback test.
 func (fixture PlaybackAPIFixture) PlaybackMarkerBoundsPublicRealMedia(t *testing.T, wantDirectAllowed bool) {
 	t.Helper()
 	ffmpeg, err := exec.LookPath("ffmpeg")
@@ -77,8 +75,6 @@ func (fixture PlaybackAPIFixture) markerBoundsPublicCase(t *testing.T, ctx conte
 	}
 	defer db.Close()
 	analyzer := markers.NewAnalyzer(markers.Config{DataDir: data, Database: db}) //nolint:contextcheck // Persisted fixture setup uses the existing synchronous analyzer/store APIs, which accept no context.
-	// Deliberately seed stale marker metadata against a longer fixture duration.
-	// The production probe must still derive 304.96 from the actual source file.
 	if err := analyzer.SetManual(item, "credits", test.start, test.end, 305); err != nil {
 		t.Fatal(err)
 	}

@@ -34,7 +34,7 @@ for (const native of [false, true]) {
     f.player.readyState = 4;
     f.player.duration = 12;
     f.player.buffered = {length: 1, end: () => 12};
-    f.emit('playing'); // A paused media event must not pretend playback started.
+    f.emit('playing');
     assert.equal(f.attrs.get('aria-busy'), 'true');
     f.player.paused = false;
     f.emit('playing');

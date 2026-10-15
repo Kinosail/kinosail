@@ -29,7 +29,6 @@ type listMutations interface {
 	SetListed(context.Context, string, string, bool) error
 }
 
-// ListHandlers owns the Player-canonical playlist and My List web mutations.
 type ListHandlers struct {
 	index    listIndex
 	lists    listMutations
@@ -39,7 +38,6 @@ type ListHandlers struct {
 	notFound func(http.ResponseWriter, *http.Request)
 }
 
-// RescanHandler refreshes an index and redirects successful requests home.
 func RescanHandler(index *Index, fail func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := index.Refresh(request.Context()); err != nil {
@@ -50,37 +48,30 @@ func RescanHandler(index *Index, fail func(http.ResponseWriter, *http.Request, s
 	}
 }
 
-// NewListHandlers binds shared list operations to app-owned Viewer and error adapters.
 func NewListHandlers(index listIndex, lists listMutations, viewer func(*http.Request) string, document func(*http.Request, string) (string, error), failure func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request)) ListHandlers {
 	return ListHandlers{index: index, lists: lists, viewer: viewer, document: document, failure: failure, notFound: notFound}
 }
 
-// CreatePlaylist validates and creates one imported or named playlist.
 func (handlers ListHandlers) CreatePlaylist(writer http.ResponseWriter, request *http.Request) {
 	CreatePlaylist(request, handlers.viewer(request), func(raw string) (string, error) { return handlers.document(request, raw) }, handlers.lists.Create).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
-// CreateSmart validates and creates one smart playlist.
 func (handlers ListHandlers) CreateSmart(writer http.ResponseWriter, request *http.Request) {
 	CreateSmartPlaylist(request, handlers.viewer(request), handlers.lists.CreateSmart).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
-// SavePlaylist validates and persists one playlist membership change.
 func (handlers ListHandlers) SavePlaylist(writer http.ResponseWriter, request *http.Request) {
 	SavePlaylist(request, handlers.viewer(request), func(id string) (library.Item, bool) { return handlers.index.VisibleItem(request, id) }, handlers.lists.SetPlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
-// DeletePlaylist validates and deletes one playlist.
 func (handlers ListHandlers) DeletePlaylist(writer http.ResponseWriter, request *http.Request) {
 	DeletePlaylist(request, handlers.viewer(request), handlers.lists.DeletePlaylist).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
-// SaveList validates and persists one My List membership change.
 func (handlers ListHandlers) SaveList(writer http.ResponseWriter, request *http.Request) {
 	SaveList(request, handlers.viewer(request), func(id string) (library.Item, bool) { return handlers.index.VisibleItem(request, id) }, handlers.lists.SetListed).Serve(writer, request, handlers.failure, handlers.notFound)
 }
 
-// WebAction is one transport-neutral mutation response.
 type WebAction struct {
 	Redirect string
 	Err      error
@@ -88,7 +79,6 @@ type WebAction struct {
 	NotFound bool
 }
 
-// Serve writes a shared mutation response through app-owned localization hooks.
 func (action WebAction) Serve(writer http.ResponseWriter, request *http.Request, failure func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request)) {
 	switch {
 	case action.NotFound:
@@ -100,7 +90,6 @@ func (action WebAction) Serve(writer http.ResponseWriter, request *http.Request,
 	}
 }
 
-// CreatePlaylist validates one document or named-playlist form before persistence.
 func CreatePlaylist(request *http.Request, viewer string, document func(string) (string, error), create func(context.Context, string, string, ...string) error) WebAction { //nolint:cyclop // Document and named creation share one strict boundary.
 	values, err := listForm(request, "document", "name")
 	if err != nil {
@@ -130,7 +119,6 @@ func CreatePlaylist(request *http.Request, viewer string, document func(string) 
 	return WebAction{Redirect: "/playlist/" + url.PathEscape(name)}
 }
 
-// CreateSmartPlaylist validates a complete smart rule before persistence.
 func CreateSmartPlaylist(request *http.Request, viewer string, create func(context.Context, string, string, PlaylistRule) error) WebAction {
 	values, err := listForm(request, "name", "kind", "query", "sort")
 	if err != nil {
@@ -153,7 +141,6 @@ func CreateSmartPlaylist(request *http.Request, viewer string, create func(conte
 	return WebAction{Redirect: "/playlist/" + url.PathEscape(name)}
 }
 
-// SavePlaylist validates membership before resolving or mutating an item.
 func SavePlaylist(request *http.Request, viewer string, visible func(string) (library.Item, bool), save func(context.Context, string, string, string, bool) error) WebAction {
 	values, err := listForm(request, "included")
 	included, includedOK := listBool(values, "included")
@@ -177,7 +164,6 @@ func SavePlaylist(request *http.Request, viewer string, visible func(string) (li
 	return WebAction{Redirect: target}
 }
 
-// DeletePlaylist validates a playlist path before persistence.
 func DeletePlaylist(request *http.Request, viewer string, remove func(context.Context, string, string) error) WebAction {
 	if _, err := listForm(request); err != nil || !ValidListName(request.PathValue("name")) {
 		return badListAction("invalid playlist state")
@@ -188,7 +174,6 @@ func DeletePlaylist(request *http.Request, viewer string, remove func(context.Co
 	return WebAction{Redirect: "/?view=playlists"}
 }
 
-// SaveList validates My List membership before resolving or mutating an item.
 func SaveList(request *http.Request, viewer string, visible func(string) (library.Item, bool), save func(context.Context, string, string, bool) error) WebAction {
 	values, err := listForm(request, "listed")
 	listed, listedOK := listBool(values, "listed")
@@ -206,7 +191,6 @@ func SaveList(request *http.Request, viewer string, visible func(string) (librar
 	return WebAction{Redirect: "/watch/" + item.ID}
 }
 
-// ListedItems selects every item accepted by the app-owned Viewer predicate.
 func ListedItems(items []library.Item, has func(string) bool) []library.Item {
 	listed := make([]library.Item, 0)
 	for _, item := range items {

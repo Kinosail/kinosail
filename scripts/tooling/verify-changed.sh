@@ -187,7 +187,6 @@ if [[ -n "$e2e_files" ]]; then
   while IFS= read -r file; do [[ -z "$file" ]] || e2e_args+=("$file"); done <<<"$e2e_files"
   run_stage e2e-list "$(git ls-files 'e2e/*')" pnpm --dir e2e exec playwright test --list "${e2e_args[@]}"
   if [[ -n "${KINOSAIL_E2E_URL:-}" ]]; then
-    # A live target can change without any source input changing.
     run_required e2e-changed pnpm --dir e2e exec playwright test "${e2e_args[@]}" --project=chromium
   fi
 fi

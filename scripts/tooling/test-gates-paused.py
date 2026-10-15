@@ -23,7 +23,6 @@ class GatePauseTests(unittest.TestCase):
         archive = subprocess.check_output(['git', 'archive', 'HEAD'], cwd=ROOT)
         with tarfile.open(fileobj=io.BytesIO(archive)) as files:
             files.extractall(target, filter='data')
-        # Overlay tracked working changes, including deletions.
         for name in subprocess.check_output(['git', 'ls-files'], cwd=ROOT, text=True).splitlines():
             source, destination = ROOT / name, target / name
             if source.is_file():

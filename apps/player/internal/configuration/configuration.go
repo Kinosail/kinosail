@@ -1,4 +1,3 @@
-// Package configuration resolves typed Server configuration from GUI state, YAML, and the environment.
 package configuration
 
 import "github.com/MikeO7/kinosail/packages/configurationcore"

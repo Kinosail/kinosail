@@ -183,7 +183,6 @@ func validatePositiveDuration(raw string) error {
 	return nil
 }
 
-// ValidTranscodingAccelerator reports whether every configuration and settings adapter accepts value.
 func ValidTranscodingAccelerator(value string) bool {
 	return oneOf(value, "", "none", "auto", "vaapi", "qsv", "cuda", "videotoolbox", "rkmpp", "v4l2m2m", "amf", "mf") == nil
 }

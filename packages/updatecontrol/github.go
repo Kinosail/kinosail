@@ -21,7 +21,6 @@ const (
 
 var errNoPublicRelease = errors.New("GitHub has no public release")
 
-// HTTPClient sends the fixed GitHub release request.
 type HTTPClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
@@ -59,7 +58,6 @@ type githubRelease struct {
 	Reactions       json.RawMessage `json:"reactions"`
 }
 
-// NewGitHubChecker creates a checker for the app release identity in policy.
 func NewGitHubChecker(client HTTPClient, policy Policy, config CheckerConfig) (*Checker, error) {
 	if client == nil || validatePolicy(policy) != nil || config.Source != nil {
 		return nil, errors.New("invalid GitHub update checker configuration")

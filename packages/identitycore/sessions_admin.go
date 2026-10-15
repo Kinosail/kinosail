@@ -128,7 +128,6 @@ func WithoutProfile(sessions map[string]Session, profileID string, publicOnly bo
 	return copy
 }
 
-// WithoutPublicSessions returns a copy without public Internet sessions.
 func WithoutPublicSessions(sessions map[string]Session) map[string]Session {
 	copy := CloneSessions(sessions)
 	for token, session := range copy {

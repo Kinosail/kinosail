@@ -45,7 +45,6 @@ class SearchFeedbackJourneyTest {
         await { !catalog.state.loading && catalog.hasActiveSearch }
         capture("phone-clear-baseline")
         compose.onNodeWithText("Clear search").assertIsDisplayed().performClick()
-        // Cached rows can settle the screen before the clear request completes.
         await { !catalog.state.loading && !catalog.hasActiveSearch && catalog.state.resultQuery == "" }
         assertTrue(catalog.searchInput.isEmpty())
         assertEquals("", fixture.catalogQueries.last())

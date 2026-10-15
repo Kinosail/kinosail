@@ -62,8 +62,6 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('server.log', proof)
 
     def test_accepted_audio_regressions_run_in_required_player_suite(self):
-        # The repaired scope must be gated while the full manual counterevidence
-        # remains strict; a workflow dispatch cannot substitute for required CI.
         source = (ROOT / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Verify copied-video audio and legacy preparation\n')[1]
         self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
@@ -76,8 +74,6 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('--suite audio', manual)
 
     def test_hevc_preparation_adds_a_separate_required_public_gate(self):
-        # Completed, stopped and adopted ownership can pass audio6 while losing
-        # HEVC tail media. Require their own strict public proof and safe receipt.
         source = (ROOT / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Verify complete HEVC preparation\n')[1]
         self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
@@ -96,9 +92,6 @@ class CampaignProofTests(unittest.TestCase):
         self.assertNotIn('--suite', manual)
 
     def test_media_proofs_survive_failure_but_stop_on_cancellation(self):
-        # Populated browser journeys cannot exercise the hosting workflow's
-        # cancellation condition. These exact bindings retain failure evidence
-        # without letting superseded runs launch more real media producers.
         source = (ROOT / '.github/workflows/app.yml').read_text()
         for app, names in {
             'subtitles': ('Verify Subtitles copied-video clocks', 'Verify Subtitles copied generation plans',

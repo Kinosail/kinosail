@@ -24,7 +24,6 @@ type TMDBClient struct {
 	http                               *http.Client
 }
 
-// TMDBConfig contains the optional legacy movie enrichment settings.
 type TMDBConfig struct {
 	Token, URL, ImageURL, CacheDir string
 }
@@ -70,7 +69,6 @@ type TMDBCastMember struct {
 	ProfilePath string `json:"profile_path"`
 }
 
-// NewTMDB returns a bounded movie metadata client.
 func NewTMDB(config TMDBConfig) *TMDBClient {
 	if config.Token == "" && config.CacheDir == "" {
 		return nil

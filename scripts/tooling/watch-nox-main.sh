@@ -57,7 +57,6 @@ while true; do
   if [[ "$sha" != "$(cat "$state" 2>/dev/null || true)" ]]; then
     git --git-dir="$mirror" fetch --quiet origin "+refs/heads/main:refs/heads/main"
     if candidate="$(published_revision "$sha")"; then
-      # Recover after a Mac restart or a stopped build VM; concurrent starts are harmless.
       if ! podman info >/dev/null 2>&1; then
         podman machine start >/dev/null 2>&1 || true
       fi

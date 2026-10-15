@@ -1,7 +1,5 @@
 import XCTest
 
-// The browser suite cannot detect skipped or unreachable native Form rows.
-// Existing remote tests stop at Playback; this owns the remaining Settings path.
 final class RemoteSettingsNavigationTests: RemoteTestCase {
     @MainActor func testNestedSettingsReturnToTheirOriginatingRows() {
         continueAfterFailure = false

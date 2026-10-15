@@ -16,5 +16,4 @@ const (
 
 var routePatterns = []string{serviceProviderPattern, resourceTypesPattern, resourceTypePattern, schemasPattern, schemaPattern, usersPattern, createUserPattern, userPattern, replaceUserPattern, patchUserPattern, deleteUserPattern}
 
-// Patterns returns every route pattern installed by Register.
 func Patterns() []string { return append([]string(nil), routePatterns...) }

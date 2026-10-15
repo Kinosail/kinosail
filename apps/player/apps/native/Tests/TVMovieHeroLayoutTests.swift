@@ -3,8 +3,6 @@ import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
-// An isolated painted-layout check catches inset/cropped artwork and clipped
-// large content. Remote E2E tests still own real focus and navigation proof.
 struct TVMovieHeroLayoutTests {
     private let red = Color(.sRGB, red: 1, green: 0, blue: 0, opacity: 1)
     private let white = Color(.sRGB, red: 1, green: 1, blue: 1, opacity: 1)
@@ -18,7 +16,6 @@ struct TVMovieHeroLayoutTests {
         renderer.scale = 1
         let image = try #require(renderer.cgImage)
         #expect(image.width == 1920)
-        // Both edges are backdrop; white stands in for the inset content.
         #expect(try pixel(image, x: 2, y: 500) == [255, 0, 0])
         #expect(try pixel(image, x: 1917, y: 500) == [255, 0, 0])
         #expect(try pixel(image, x: 103, y: 500) == [255, 0, 0])

@@ -18,8 +18,6 @@ class SecurityContracts(unittest.TestCase):
         self.assertIn("  swift-analysis:\n    if: github.event_name == 'schedule'", workflow)
         self.assertIn("    runs-on: xcode-27", workflow)
         self.assertIn("DEVELOPER_DIR=/Applications/Xcode_27.1.app/Contents/Developer", workflow)
-        # Hosted images rename prerelease bundles; the versioned alias survives.
-        # App journeys cannot detect a skipped compiler caused by workflow setup.
         app = (ROOT / ".github/workflows/app.yml").read_text()
         toolchains = [line.split("DEVELOPER_DIR:", 1)[1].strip()
                       for line in app.splitlines() if "DEVELOPER_DIR:" in line]

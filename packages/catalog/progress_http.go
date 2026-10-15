@@ -13,7 +13,6 @@ type progressItemIndex interface {
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 
-// ProgressHTTPHandlers applies shared progress validation at each app's HTTP boundary.
 type ProgressHTTPHandlers struct {
 	Store    *RequestProgressStore
 	Index    progressItemIndex
@@ -23,12 +22,10 @@ type ProgressHTTPHandlers struct {
 	Status   func(error) int
 }
 
-// NewProgressHTTPHandlers binds application adapters to the shared progress boundary.
 func NewProgressHTTPHandlers(store *RequestProgressStore, index progressItemIndex, timeline func(string) (playback.Timeline, error), writeError func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request), status func(error) int) ProgressHTTPHandlers {
 	return ProgressHTTPHandlers{Store: store, Index: index, Timeline: timeline, Error: writeError, NotFound: notFound, Status: status}
 }
 
-// Save validates and stores a playback position.
 func (handlers ProgressHTTPHandlers) Save() http.HandlerFunc { //nolint:cyclop // One boundary validates the complete progress form before its single state change.
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
@@ -64,7 +61,6 @@ func (handlers ProgressHTTPHandlers) Save() http.HandlerFunc { //nolint:cyclop /
 	}
 }
 
-// SaveWatched validates and stores the watched state submitted by the web UI.
 func (handlers ProgressHTTPHandlers) SaveWatched() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
@@ -82,7 +78,6 @@ func (handlers ProgressHTTPHandlers) SaveWatched() http.HandlerFunc {
 	}
 }
 
-// Dismiss removes visible progress from continue watching.
 func (handlers ProgressHTTPHandlers) Dismiss() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))

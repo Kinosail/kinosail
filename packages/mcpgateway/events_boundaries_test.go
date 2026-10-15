@@ -90,8 +90,6 @@ func TestEventsRetrySameBodyThenSuspendUntilRefresh(t *testing.T) { //nolint:cyc
 			t.Fatal("retry did not arrive")
 		}
 	}
-	// Wait until the last failure has reached the worker, then prove another
-	// application update cannot restart retries without an explicit refresh.
 	deadline := time.Now().Add(time.Second)
 	for time.Now().Before(deadline) {
 		fixture.gateway.eventMu.Lock()

@@ -70,7 +70,6 @@ final class AppSession {
             guard let saved = try await keychain.restore() else { return }
             let candidate = try ServerClient(server: saved.server, token: saved.token, viewer: saved.viewer)
             guard generation == attempt else { await candidate.close(); return }
-            // Show saved browsing content before revalidating Server permissions.
             client = candidate
             restoredClient = candidate.identity
             viewer = saved.viewer
@@ -80,7 +79,6 @@ final class AppSession {
             guard generation == attempt, client?.identity == candidate.identity else { await candidate.close(); return }
             restoring = false
             #if os(iOS)
-            // Restore local media before waiting for a possibly unreachable Server.
             await downloads.restore(viewer: saved.viewer, server: saved.server, client: candidate)
             guard client?.identity == candidate.identity else { await candidate.close(); return }
             #endif
@@ -175,7 +173,6 @@ final class AppSession {
                         #endif
                         if let previous { await previous.close() }
                     } catch {
-                        // This token was issued by the abandoned attempt; never leave it active.
                         try? await authenticated.signOut()
                         await authenticated.close()
                         throw error

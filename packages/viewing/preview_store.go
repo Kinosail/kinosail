@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Acquire reserves one bounded preview worker after expired entries are removed.
 func (store PreviewStore) Acquire(ctx context.Context, now time.Time) (func(), error) {
 	store.Mutex.Lock()
 	store.ExpireLocked(now)
@@ -31,7 +30,6 @@ func (store PreviewStore) Acquire(ctx context.Context, now time.Time) (func(), e
 	}
 }
 
-// Add stores one preview and schedules its expiry.
 func (store PreviewStore) Add(preview Preview, now time.Time) error {
 	store.Mutex.Lock()
 	defer store.Mutex.Unlock()
@@ -44,7 +42,6 @@ func (store PreviewStore) Add(preview Preview, now time.Time) error {
 	return nil
 }
 
-// Get returns a current preview after removing expired entries.
 func (store PreviewStore) Get(id string, now time.Time) (Preview, bool) {
 	store.Mutex.Lock()
 	defer store.Mutex.Unlock()
@@ -53,14 +50,12 @@ func (store PreviewStore) Get(id string, now time.Time) (Preview, bool) {
 	return preview, found
 }
 
-// Delete removes a preview and stops its timer.
 func (store PreviewStore) Delete(id string) {
 	store.Mutex.Lock()
 	store.DeleteLocked(id)
 	store.Mutex.Unlock()
 }
 
-// ExpireID removes the same expired generation of a preview.
 func (store PreviewStore) ExpireID(id string, expires, now time.Time) {
 	store.Mutex.Lock()
 	if preview, found := (*store.Values)[id]; found && preview.ExpiresAt.Equal(expires) && !preview.ExpiresAt.After(now) {
@@ -69,7 +64,6 @@ func (store PreviewStore) ExpireID(id string, expires, now time.Time) {
 	store.Mutex.Unlock()
 }
 
-// ExpireLocked removes all previews due at now. The caller must hold Mutex.
 func (store PreviewStore) ExpireLocked(now time.Time) {
 	for id, preview := range *store.Values {
 		if !preview.ExpiresAt.After(now) {
@@ -78,7 +72,6 @@ func (store PreviewStore) ExpireLocked(now time.Time) {
 	}
 }
 
-// DeleteLocked removes a preview while the caller holds Mutex.
 func (store PreviewStore) DeleteLocked(id string) {
 	if preview, found := (*store.Values)[id]; found && preview.Timer != nil {
 		preview.Timer.Stop()
@@ -86,7 +79,6 @@ func (store PreviewStore) DeleteLocked(id string) {
 	delete(*store.Values, id)
 }
 
-// Prepare runs one bounded source fetch, Library snapshot, plan, and expiry registration.
 func Prepare(ctx context.Context, store PreviewStore, fetch func(context.Context) ([]Activity, error), snapshot func() ([]library.Item, error), build func([]Activity, []library.Item) Preview) (Preview, error) {
 	release, err := store.Acquire(ctx, time.Now())
 	if err != nil {
@@ -108,7 +100,6 @@ func Prepare(ctx context.Context, store PreviewStore, fetch func(context.Context
 	return preview, nil
 }
 
-// ApplyPreview reads, commits, summarizes, and consumes one preview on success.
 func ApplyPreview(store PreviewStore, id string, commit func(Preview) (int, int, int, error)) (Summary, error) {
 	preview, found := store.Get(id, time.Now())
 	if !found {

@@ -5,9 +5,6 @@ import Synchronization
 import Testing
 @testable import KinosailPlayer
 
-// Test-first isolation gap: deterministic sub-frame pending restoration through
-// visible retained AVKit cannot be injected into a real profile's journal.
-// This uses fictional loopback HLS and production NativePlayerView/coordinator.
 @Suite(.serialized) struct PlaybackEndpointJourneys {}
 
 extension PlaybackEndpointJourneys {
@@ -80,8 +77,6 @@ extension PlaybackEndpointJourneys {
                          "Prerequisite: prior native view must finish exit before retained replay")
             if !visible { window.rootViewController = UIHostingController(rootView: Color.black.ignoresSafeArea()) }
 
-            // Warm playback caches preparation for thirty seconds. A fresh fictional
-            // client makes the cold/prepared distinction real without private access.
             let endpointFixture = try await PlaybackStartupFixture()
             endpointFixture.denied = false
             endpointFixture.hlsResources = fixture.hlsResources

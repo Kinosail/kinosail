@@ -6,15 +6,11 @@ import (
 	"testing"
 )
 
-// Packet clocks cannot detect padded silence or a payload moved to an incorrect
-// time. This public-media check uses nonperiodic chirps around both real joins.
 func transcodeRefillContent(t *testing.T, original, mixed []byte, sequence, fragment []refillAudioPacket) {
 	t.Helper()
 	last := fragment[len(fragment)-1]
 	joins := []int64{*fragment[0].PTS, *last.PTS + *last.Duration}
 	for index, tick := range joins {
-		// Stereo s16le has four bytes per sample clock tick. Include 100 ms
-		// on each side of the join, including the retained adjacent fragment.
 		center, radius := int(tick-*sequence[0].PTS)*4, 4800*4
 		start, end := center-radius, center+radius
 		if start < 0 || end+3072*4 > len(original) || end > len(mixed) {

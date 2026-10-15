@@ -1,4 +1,3 @@
-// Package serverdiscovery advertises Player endpoints on the local network.
 package serverdiscovery
 
 import (
@@ -22,7 +21,6 @@ type (
 	registerFunc  func(string, string, string, int, []string, []net.Interface) (advertisement, error)
 )
 
-// Start publishes only the server name and connection endpoint, until cancellation.
 func Start(ctx context.Context, name, origin string) error {
 	return start(ctx, name, origin, func(name, service, domain string, port int, txt []string, interfaces []net.Interface) (advertisement, error) {
 		return zeroconf.Register(name, service, domain, port, txt, interfaces)
@@ -67,7 +65,6 @@ func record(name, origin string) (int, []string, error) {
 		return 0, nil, invalid
 	}
 	txt := []string{"version=1", "scheme=" + parsed.Scheme}
-	// Loopback addresses refer to the client itself: resolve the Bonjour host instead.
 	if advertised, err := advertisedOrigin(parsed.Scheme, host, origin, ip); err != nil {
 		return 0, nil, invalid
 	} else if advertised != "" {
@@ -76,8 +73,6 @@ func record(name, origin string) (int, []string, error) {
 	return port, txt, nil
 }
 
-// LoopbackAlias returns only the hostname advertised by zeroconf for a loopback origin.
-// It lets the HTTP adapter accept this one local name without weakening its host allowlist.
 func LoopbackAlias(origin string) string {
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -91,7 +86,6 @@ func loopbackAlias(origin, hostname string) string {
 	if err != nil || len(txt) != 2 {
 		return ""
 	}
-	// Register appends its local domain to the operating-system hostname.
 	hostname = strings.TrimSuffix(hostname, ".") + ".local"
 	if !validHostname(hostname) {
 		return ""

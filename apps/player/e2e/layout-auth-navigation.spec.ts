@@ -88,8 +88,6 @@ await import(${JSON.stringify(root + "scripts/testing/layout-stability-local.mjs
   });
 }
 
-// Populated layout runs cannot force a commit between a visibility read and its use.
-// Preserve that hosted WebKit interleaving and rejected-login isolation explicitly.
 for (const accepted of [true, false]) {
   test(`layout CLI submits credentials once with ${accepted ? "late redirect" : "rejected factor"}`, {tag: "@smoke"}, async ({browserName}, info) => {
     let posts = 0, libraryRequests = 0;
@@ -109,7 +107,6 @@ for (const accepted of [true, false]) {
         response.end('<!doctype html><form method="post" action="/login"><label>Name<input name="name"></label><label>Password<input name="password" type="password"></label><label>6-digit code<input name="code"></label><button>Sign in</button></form>');
       } else if (path === "/api/v1/library") {
         libraryRequests++;
-        // Stop after proving authentication; this peer is not a populated library.
         response.writeHead(503); response.end("Controlled library boundary");
       } else {
         response.writeHead(200, {"Content-Type": "text/html"}); response.end("<!doctype html><p>Signed in</p>");

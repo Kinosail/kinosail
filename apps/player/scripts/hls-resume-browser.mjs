@@ -35,16 +35,12 @@ try {
         window.qaResumeFirstPlaying = event.target.currentTime;
     }, true));
     if (directSwitch && !native) await page.addInitScript(() => {
-      // Mac browsers can use native HLS before lazily loading Hls.js. Exercise
-      // the same MSE fallback that browsers without native HLS actually use.
       const canPlayType = HTMLMediaElement.prototype.canPlayType;
       HTMLMediaElement.prototype.canPlayType = function(type) {
         return type === 'application/vnd.apple.mpegurl' ? '' : canPlayType.call(this, type);
       };
     });
     if (native) await page.addInitScript(() => {
-      // Exercise the real native decoder with the unsupported-MSE policy.
-      // This is a capability simulation, not physical Safari acceptance.
       for (const name of ['MediaSource', 'ManagedMediaSource', 'WebKitMediaSource'])
         Object.defineProperty(window, name, {configurable: true, value: undefined});
     });
@@ -91,8 +87,6 @@ try {
       })());
     });
     if (variant === 'reference') {
-      // Only the reference document is synthetic. All original media and the
-      // compatible watch page use the same authenticated real Server.
       await page.route(`${origin}/__qa_reference`, route => route.fulfill({contentType: 'text/html',
         body: `<video muted playsinline src="${reference.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></video>`}));
       await page.goto(`${origin}/__qa_reference`);
@@ -149,10 +143,6 @@ try {
         const points = resume >= 60 ? [resume + .05, resume + .55, resume + 1.55, resume + 2.55, resume + 3.55, resume + 4.55, duration - .05]
           : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, duration > 40 ? duration - .05 : Math.min(31.55, duration - .05)];
         for (const point of points) {
-          // A seeked event can precede compositor presentation in WebKit.
-          // Wait for the requested timestamp, never for an expected pixel hash.
-          // Native HLS needs playback to deliver a timestamped frame callback.
-          // Pause on the matching clock, independently of the expected pixels.
           const presented = new Promise((resolve, reject) => {
             let callback;
             const timer = setTimeout(() => {
@@ -184,8 +174,6 @@ try {
           samples.push({point, currentTime: video.currentTime, duration: video.duration, ...frame, digest});
         }
         video.muted = true;
-        // Seeking to the final decoded frame can already set ended, in which
-        // case play() correctly restarts at zero. Exercise actual tail playback.
         await wait('seeked', () => video.currentTime = Math.max(0, video.duration - .5));
         eofStart = {currentTime: video.currentTime, ended: video.ended};
         if (video.ended) throw new Error('eof_start_ended');

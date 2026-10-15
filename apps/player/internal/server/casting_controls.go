@@ -24,7 +24,6 @@ func (service *castService) endHTTP(writer http.ResponseWriter, request *http.Re
 		apiError(writer, casting.ErrInvalid, http.StatusBadRequest)
 		return
 	}
-	// Revocation must remain possible even when the receiver is offline.
 	service.remove(session.ID, session.profileID)
 	writer.WriteHeader(http.StatusNoContent)
 }

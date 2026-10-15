@@ -135,7 +135,6 @@ for (const target of [45, 5]) test(`advancing playback clears seeking at ${targe
     await page.screenshot({ path: testInfo.outputPath(`${viewport.width}-pending-seek.png`) });
   }
 
-  // A position update during the seek or while paused is not resumed playback.
   await video.evaluate((element) => { element.currentTime += 0.1; element.dispatchEvent(new Event("timeupdate")); });
   await expect(status).toBeVisible();
   await page.evaluate(() => (window as Window & { setPaused: (value: boolean) => void }).setPaused(true));

@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
-// InvalidDurableShapesFailClosed checks every malformed persisted document at startup.
 func (fixture LibraryAPIFixture) InvalidDurableShapesFailClosed(t *testing.T) {
 	t.Helper()
 	for _, name := range []string{"settings.json", "metadata.json", "progress.json", "lists.json", "playlists.json", "playlist_order.json", "smart_playlists.json", "audit_key.json", "audit.jsonl"} {
@@ -29,7 +28,6 @@ func (fixture LibraryAPIFixture) InvalidDurableShapesFailClosed(t *testing.T) {
 	}
 }
 
-// InvalidDownloadStateFailsClosed preserves the download path-traversal startup rejection.
 func InvalidDownloadStateFailsClosed(t *testing.T, newHandler func(data, cache string) http.Handler) {
 	t.Helper()
 	cache := t.TempDir()
@@ -47,7 +45,6 @@ func InvalidDownloadStateFailsClosed(t *testing.T, newHandler func(data, cache s
 	}
 }
 
-// IndividualStateFileFailures checks each API mutation against a blocked durable store.
 func (fixture LibraryAPIFixture) IndividualStateFileFailures(t *testing.T, firstItemID func(*testing.T, http.Handler, string) string) {
 	t.Helper()
 	tests := []struct {

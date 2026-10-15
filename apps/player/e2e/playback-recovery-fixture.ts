@@ -3,8 +3,6 @@ import { expect, type Page, type TestInfo } from "@playwright/test";
 export async function injectUnknownFailure(page: Page, info: TestInfo, label: string) {
 	const video = page.locator("video");
 	const ready = await video.evaluate(async (element: HTMLVideoElement) => {
-		// A pending saved-position seek can emit canplay after a synthetic error.
-		// Finish real startup first so it cannot clear the injected recovery state.
 		element.muted = true;
 		await element.play();
 		element.pause();

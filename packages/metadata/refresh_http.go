@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// RefreshHandler binds Player's metadata refresh flow to the app's localized errors.
 func RefreshHandler(index BulkIndex, fetch func(context.Context, library.Item) error, fail BulkFailure, notFound http.HandlerFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if !httpguard.EmptyMutationRequest(writer, request) {

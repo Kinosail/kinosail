@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Completion is bounded to the demonstrated short source-origin AAC journey.
 func remainingColdAACEligible(facts MediaFacts, recipe hlsRecipe, name, method string, duration float64) bool {
 	return remainingColdAACRoute(name, method, duration) && facts.Duration == duration &&
 		remainingOriginSource(facts, 0) && remainingPlainAudio(recipe) && remainingColdAACRecipe(recipe)
@@ -25,7 +24,6 @@ func remainingColdAACRecipe(recipe hlsRecipe) bool {
 	return recipe.offset == 0 && recipe.outputTime == 0 && (recipe.maxBitrate == 0 || recipe.maxBitrate >= 192000)
 }
 
-// The caller holds manager.mu; no wait, probe, or filesystem operation occurs here.
 func remainingColdAACInitial(job *hlsJob, policy string) (bool, error) {
 	if job == nil || job.preparation != nil || job.startNumber != 0 {
 		return false, nil
@@ -96,7 +94,6 @@ func (manager *hlsManager) remainingColdAACProjector(ctx context.Context, item l
 			remainingColdAACRejected(ctx, recipe, item, err)
 			return nil
 		}
-		// Use the retained rooted read, not the unchecked pathname bytes.
 		return completeHLSVOD(current.manifest, duration)
 	}
 }

@@ -2,8 +2,6 @@ import {expect, test} from "@playwright/test";
 import {openAudio, queueItem, startQueue} from "./player-audio-queue-fixture";
 import {playerSource} from "./static-sources";
 
-// These held responses exercise closed-page and ownership races that the real
-// Server cannot produce deterministically. They are isolated browser controls.
 for (const boundary of ["pagehide", "cast", "room"]) {
   test(`late queue item authorization cannot cross ${boundary}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
     await openAudio(page, "");
@@ -18,7 +16,6 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await expect.poll(() => !!lookup).toBe(true);
     await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
     if (boundary === "pagehide") await page.evaluate(() => {
-      // Avoid a real page-exit checkpoint here; this case isolates the late read.
       document.querySelector("audio")!.dataset.offline = "true";
       dispatchEvent(new PageTransitionEvent("pagehide"));
     });
@@ -29,8 +26,6 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     if (boundary === "pagehide") await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
     await lookup!.fulfill({json: {item: queueItem("next"), profileId: "qa-viewer"}});
     if (boundary !== "pagehide") await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "ownership");
-    // Busy clears only when the held queue operation completes, so the old
-    // identity assertions cannot pass before its response is consumed.
     await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
     await expect(page.locator("[data-audio-next]")).toBeDisabled();
     await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
@@ -98,8 +93,6 @@ for (const saved of [true, false]) test(`ended offline queue requires its own wa
       return request(...args);
     };
   }, saved);
-  // The journal resolves synchronously. Complete its microtask continuation
-  // before checking that failed acknowledgement did not begin authorization.
   await page.evaluate(async () => {
     document.querySelector("audio")!.dispatchEvent(new Event("ended"));
     await new Promise<void>(resolve => setTimeout(resolve, 0));

@@ -1,5 +1,3 @@
-// Package mp4fixture builds sample-description fixtures, not playable media.
-// It is used by mocked FFmpeg tests; real media checks must run an encoder.
 package mp4fixture
 
 import (

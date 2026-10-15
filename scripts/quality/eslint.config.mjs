@@ -1,7 +1,6 @@
 import importPlugin from 'eslint-plugin-import';
 import globals from 'globals';
 
-// Retain the web rules formerly inherited through the retired Expo package.
 export default [
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.errors,
@@ -11,7 +10,6 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        // Supplied by the embedded HLS library and the on-demand Cast sender.
         Hls: 'readonly',
         cast: 'readonly',
         chrome: 'readonly',

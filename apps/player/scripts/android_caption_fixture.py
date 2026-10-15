@@ -42,8 +42,6 @@ def target(method, raw):
     if len({key for key, _ in query}) != len(query) or any(key not in allowed or len(value) > 512 for key, value in query):
         raise ValueError()
     destination = path + ("?" + urlencode(query) if query else "")
-    # Validate the complete wire target after encoding. Paths cannot contain
-    # traversal or percent escapes; escaped data stays inside the query.
     if not re.fullmatch(r"/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_~.%+=&-]+)?", destination):
         raise ValueError()
     return destination
@@ -193,7 +191,6 @@ def fixture(root, run, receipt):
                 action()
             except Exception as error:
                 receipt["fixtureCleanupFailures"].append({"operation": name, "failureClass": type(error).__name__})
-        # shutdown blocks if serve_forever never started; all owners are independent.
         if thread is not None and thread.is_alive():
             clean("bridge_shutdown", bridge.shutdown)
         if bridge is not None:

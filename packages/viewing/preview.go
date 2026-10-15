@@ -10,7 +10,6 @@ import (
 
 const maximumPreviewRows = 500
 
-// PreviewInput contains normalized source activity and read-only destination state.
 type PreviewInput struct {
 	Overwrite     bool
 	Activities    []Activity
@@ -19,7 +18,6 @@ type PreviewInput struct {
 	ListAdditions func(string, bool, map[string]int) int
 }
 
-// BuildPreview classifies every source activity before any destination write.
 func BuildPreview(input PreviewInput) Plan {
 	preview := Plan{}
 	preview.Summary.SourceItems = len(input.Activities)
@@ -111,7 +109,6 @@ func appendPreviewItem(preview *Plan, item Item) {
 	preview.Truncated = true
 }
 
-// NewPreview builds one expiring credential-safe preview snapshot.
 func NewPreview(id string, expires time.Time, input Input, profileID, profileName string, activities []Activity, items []library.Item, progress func(string) catalog.PlaybackState, listAdditions func(string, bool, map[string]int) int) Preview {
 	plan := BuildPreview(PreviewInput{Overwrite: input.Overwrite, Activities: activities, Items: items, Progress: progress, ListAdditions: listAdditions})
 	return Preview{ID: id, Source: input.Source, ProfileID: profileID, ProfileName: profileName, ExpiresAt: expires, Summary: plan.Summary, Items: plan.Items, Truncated: plan.Truncated, Input: input, Activities: activities, Changes: plan.Changes, ListChanges: plan.ListChanges}

@@ -8,7 +8,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-// ProfileFlowConfig connects Player-style account behavior to the shared protocol engine.
 type ProfileFlowConfig[T any] struct {
 	RecentlyAuthenticated func(*http.Request, time.Duration) bool
 	Engine                *Engine
@@ -28,14 +27,12 @@ type ProfileFlowConfig[T any] struct {
 	WriteError            func(http.ResponseWriter, error, int)
 }
 
-// ProfileFlow owns Player-style registration and login orchestration.
 type ProfileFlow[T any] struct {
 	config             ProfileFlowConfig[T]
 	finishRegistration func(webauthn.User, string, *http.Request) (*webauthn.Credential, error)
 	finishLogin        func(*http.Request, webauthn.DiscoverableUserHandler) (webauthn.User, *webauthn.Credential, error)
 }
 
-// NewProfileFlow validates and creates one Player-style passkey flow.
 func NewProfileFlow[T any](config ProfileFlowConfig[T]) (*ProfileFlow[T], error) {
 	if !validProfileFlow(config) {
 		return nil, ErrInvalidConfig
@@ -55,7 +52,6 @@ func validProfileFlowEffects[T any](config ProfileFlowConfig[T]) bool {
 	return config.RecentlyAuthenticated != nil && config.AddCredential != nil && config.MarkStrong != nil && config.UpdateCredential != nil && config.SignIn != nil && config.AfterLogin != nil && config.OnboardingNext != nil && config.WriteError != nil
 }
 
-// BeginRegistration starts one authenticated registration ceremony.
 func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, request *http.Request) {
 	if flow == nil || !flow.requireOrigin(writer, request, "/account") || !flow.requireEnrollmentAuthentication(writer, request) {
 		return
@@ -71,7 +67,6 @@ func (flow *ProfileFlow[T]) BeginRegistration(writer http.ResponseWriter, reques
 	WriteJSON(writer, creation)
 }
 
-// FinishRegistration verifies and commits one credential.
 func (flow *ProfileFlow[T]) FinishRegistration(writer http.ResponseWriter, request *http.Request) {
 	if !flow.requireEnrollmentAuthentication(writer, request) {
 		return
@@ -94,7 +89,6 @@ func (flow *ProfileFlow[T]) FinishRegistration(writer http.ResponseWriter, reque
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-// BeginLogin starts one discoverable login ceremony.
 func (flow *ProfileFlow[T]) BeginLogin(writer http.ResponseWriter, request *http.Request) {
 	if flow == nil || !flow.requireOrigin(writer, request, "/login") {
 		return
@@ -108,7 +102,6 @@ func (flow *ProfileFlow[T]) BeginLogin(writer http.ResponseWriter, request *http
 	WriteJSON(writer, assertion)
 }
 
-// FinishLogin verifies and commits one discoverable login.
 func (flow *ProfileFlow[T]) FinishLogin(writer http.ResponseWriter, request *http.Request) {
 	user, credential, err := flow.finishLogin(request, flow.config.Discover)
 	if errors.Is(err, ErrCeremonyExpired) {

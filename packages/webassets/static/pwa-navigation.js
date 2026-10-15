@@ -13,7 +13,6 @@ const sameDocumentTarget = (link) => {
   const current = new URL(location.href);
   return target.origin === current.origin && target.pathname === current.pathname && target.search === current.search;
 };
-// Let target handlers cancel in-page actions before acquiring the navigation lock.
 document.addEventListener("click", (event) => {
   const action = event.target.closest?.(navigationActionSelector);
   if (!action || event.defaultPrevented) return;

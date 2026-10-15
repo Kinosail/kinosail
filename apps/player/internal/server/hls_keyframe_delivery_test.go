@@ -124,7 +124,6 @@ func assertIndependentHLSFragment(t *testing.T, ctx context.Context, fragment []
 		t.Errorf("%s first video packet is not a keyframe: %q (%v)", segment, first, err)
 		return
 	}
-	// A partial segment's inferred frame rate must not round distinct timestamps together.
 	decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-err_detect", "explode", "-i", path, "-map", "0:v:0", "-enc_time_base", "1:1000000", "-fps_mode", "passthrough", "-f", "rawvideo", "-") //nolint:gosec // Generated fixture paths and discovered local tools.
 	var errors bytes.Buffer
 	decode.Stdout, decode.Stderr = io.Discard, &errors

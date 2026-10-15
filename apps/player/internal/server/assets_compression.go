@@ -13,8 +13,6 @@ var encodingQuality = regexp.MustCompile(`^(0(\.[0-9]{0,3})?|1(\.0{0,3})?)$`)
 
 var contentCoding = regexp.MustCompile("^[!#$%&'*+.^_`|~0-9a-z-]+$")
 
-// Compress only embedded public text, once when its handler is constructed.
-// Personalized HTML, API responses and media never enter this path.
 func compressedAsset(content []byte, contentType string) http.HandlerFunc {
 	compressed := gzipAsset(content, contentType)
 	return func(writer http.ResponseWriter, request *http.Request) {

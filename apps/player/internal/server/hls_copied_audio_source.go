@@ -12,8 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/mediaprobe"
 )
 
-// The complete decoded source must have one sample clock before a seek may
-// reconstruct that clock. A gap, format change or incomplete scan opts out.
 type copiedHLSSourceAudio struct {
 	Rate    int64
 	Quantum int64
@@ -78,8 +76,6 @@ func (manager *hlsManager) indexCopiedHLSAudio(ctx context.Context, item library
 		slog.DebugContext(ctx, "HLS audio source clock", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "outcome", "certified", "frames", scan.frames)
 		return nil
 	}
-	// Preserve the previous path for delayed, discontinuous or unsupported
-	// sources. Never apply a guessed clock or conceal the verification gap.
 	slog.WarnContext(ctx, "HLS audio source clock", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "outcome", "legacy-seek", "failure_class", "source-clock-not-certified")
 	return nil
 }
@@ -102,7 +98,6 @@ func (scan *copiedHLSAudioScan) header(line string) error {
 	scan.clock = &copiedHLSSourceAudio{Rate: rate}
 	scan.denominator = base
 	if base%rate != 0 {
-		// Coarser clocks cannot identify a unique AC3 block after seeking.
 		if base < 1000 || fields["codec_name"] != "ac3" || !copiedHLSAC3Rate(rate) {
 			scan.clock, scan.rejected = nil, true
 			return nil
@@ -123,8 +118,6 @@ func copiedHLSAudioSourceHeader(fields map[string]string) (int64, int64, bool) {
 }
 
 func (scan *copiedHLSAudioScan) frame(line string) error {
-	// An unsupported clock is a normal opt-out. Drain within the optional
-	// proof budget so shared process checks still require genuine clean EOF.
 	if scan.rejected {
 		return nil
 	}
@@ -150,9 +143,6 @@ func (scan *copiedHLSAudioScan) framePTS(pts int64) bool {
 	if scan.clock.Quantum == 0 {
 		return pts == (ticks+rate/2)/rate
 	}
-	// A remux can round before shifting the first timestamp to zero. Keep
-	// one quantizer phase for the ENTIRE source, never a per-frame allowance.
-	// Subtract the bounded whole part before multiplying untrusted PTS.
 	whole, remainder := ticks/rate, ticks%rate
 	if pts < whole || pts > whole+1 {
 		return false
@@ -177,7 +167,6 @@ func (scan *copiedHLSAudioScan) frameShape(fields map[string]string, samples int
 	if shape != scan.format || scan.clock.Quantum != 0 && samples > scan.clock.Quantum {
 		return false
 	}
-	// Only the initial priming and the final partial frame may be short.
 	return scan.clock.Quantum == 0 || scan.frames <= 1 || scan.previous == scan.clock.Quantum
 }
 
@@ -200,8 +189,6 @@ func copiedHLSSourceAudioArguments(arguments []string, timeline *copiedHLSTimeli
 	if timeline == nil || timeline.AudioSource == nil || mode != "audio-transcode" {
 		return arguments
 	}
-	// Keep a finite interleave window. Low-rate AAC can queue more than ten
-	// seconds before producing packets; forced flushes misassign HLS audio.
 	arguments = append(arguments, "-max_interleave_delta", "30000000")
 	source := timeline.AudioSource
 	if source.Quantum == 0 {
@@ -212,8 +199,6 @@ func copiedHLSSourceAudioArguments(arguments []string, timeline *copiedHLSTimeli
 	target := copiedHLSAudioSeekSamples(micros, source.Rate)
 	integer := func(value int64) string { return strconv.FormatInt(value, 10) }
 	rate, quantum, priming := integer(source.Rate), integer(source.Quantum), integer(source.Priming)
-	// Reconstruct BEFORE trimming. Adjusting encoded PTS cannot repair samples
-	// already discarded by accurate seek against a coarse source clock.
 	phase := "if(eq(N\\,0)\\,NB_SAMPLES-" + integer(source.Quantum-source.Priming) + "\\," + priming + ")"
 	filter := "asettb=1/" + rate + ",asetpts=round(((PTS*TB+" + seek + ")*" + rate + "+" + phase + ")/" + quantum + ")*" + quantum + "-" + phase + "-" + integer(target) + ",atrim=start_pts=0,asetpts=PTS-STARTPTS"
 	return append(arguments, "-af", filter)

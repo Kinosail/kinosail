@@ -183,7 +183,6 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 		await expect(levels.locator('[aria-current="page"]')).toHaveText("Basic");
 		await expect(page.locator("#playback")).toBeVisible();
 		await nav.getByRole("link", { name: "General", exact: true }).click();
-		// The populated fixture intentionally manages Server name through Docker.
 		const serverName = page.getByRole("textbox", { name: "Server name", exact: true });
 		await expect(serverName).toBeDisabled();
 		await expect(page.locator("#general .managed-setting")).toContainText("KINOSAIL_SERVER_NAME");

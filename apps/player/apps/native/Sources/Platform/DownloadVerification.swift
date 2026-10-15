@@ -4,8 +4,6 @@ import Darwin
 import Foundation
 import Synchronization
 
-/// A cached verification is usable only while the app-owned file is unchanged.
-/// Nanosecond ctime catches same-size rewrites even when mtime is restored.
 struct DownloadFileStamp: Equatable, Sendable {
     let device: Int32
     let inode: UInt64

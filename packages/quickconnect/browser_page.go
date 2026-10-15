@@ -1,12 +1,10 @@
 package quickconnect
 
-// BrowserPage supplies app branding and existing federated sign-in choices.
 type BrowserPage struct {
 	Product, Next string
 	OIDC, SAML    bool
 }
 
-// BrowserHTML keeps public sign-in separate from local password and account management.
 const BrowserHTML = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sign in away from home · {{.Product}}</title><link rel="icon" href="/static/icon.svg"><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1">

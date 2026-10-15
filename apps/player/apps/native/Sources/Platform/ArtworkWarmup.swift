@@ -1,6 +1,5 @@
 import Foundation
 
-/// A bounded queue keeps look-ahead work behind visible artwork and out of catalog requests.
 actor ArtworkWarmup {
     private struct Request {
         let path: String
@@ -14,7 +13,6 @@ actor ArtworkWarmup {
     func prefetch(paths: [String], client: ServerClient, dimension: Int, loader: ArtworkLoader) throws {
         try Task.checkCancellation()
         guard paths.count <= 24, [400, 500, 800, 1600].contains(dimension) else { throw ClientError.invalidResponse }
-        // Validate the entire batch before admitting any background work.
         let urls = try paths.map { path in
             guard !path.isEmpty, path.utf8.count <= 16_384,
                   path.rangeOfCharacter(from: .controlCharacters) == nil else { throw ClientError.invalidResponse }

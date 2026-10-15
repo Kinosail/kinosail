@@ -16,8 +16,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// Operation records an actual encoder/format check on one device. DecodeH264
-// certifies only the tested 8-bit H.264 input, never all codecs on that backend.
 type Operation struct {
 	ToneMapSoftwareFrames bool `json:"toneMapSoftwareFrames,omitempty"`
 	identity              string
@@ -65,8 +63,6 @@ func (backend Backend) operation(codec, hdr string) (Operation, bool) {
 	return Operation{}, false
 }
 
-// RecordFailure temporarily removes a failed device/codec from selection. The
-// snapshot remains immutable; current sessions can safely retain its evidence.
 func (capabilities Capabilities) RecordFailure(options transcodepolicy.Settings) {
 	if capabilities.verification == nil {
 		return
@@ -77,8 +73,6 @@ func (capabilities Capabilities) RecordFailure(options transcodepolicy.Settings)
 	state.mu.Unlock()
 }
 
-// RecordDecodeFailure retains verified encoding while disabling the failed
-// hardware input path. An encode-only retry can still quarantine the operation.
 func (capabilities Capabilities) RecordDecodeFailure(options transcodepolicy.Settings) {
 	if capabilities.verification == nil {
 		return
@@ -94,7 +88,6 @@ func (capabilities Capabilities) RecordDecodeFailure(options transcodepolicy.Set
 	}
 }
 
-// RecordCheck makes a successful explicit smoke check available to selection.
 func (capabilities Capabilities) RecordCheck(options transcodepolicy.Settings, result transcodepolicy.CheckResult) {
 	if capabilities.verification == nil {
 		return
@@ -137,8 +130,6 @@ func verify(ctx context.Context, options ProbeOptions, capabilities Capabilities
 		eligible[backend.ID] = backend.Usable
 		backend.verification, backend.Usable = state, false
 	}
-	// Establish the baseline on every candidate before spending the bounded
-	// startup budget on more expensive codecs or optional decoding stages.
 	state.verifyBaselines(ctx, options, capabilities.Backends, devices, eligible, check)
 	for index := range capabilities.Backends {
 		backend := &capabilities.Backends[index]
@@ -217,8 +208,6 @@ func backendDevices(backend Backend, devices []string) []string {
 	return result
 }
 
-// Evidence is process-local and expires when the executable, device node or
-// available kernel-driver identity changes. A restart always re-probes it.
 func operationIdentity(ffmpeg, device string) string {
 	if path, err := exec.LookPath(ffmpeg); err == nil {
 		ffmpeg = path
@@ -267,8 +256,6 @@ func (state *verification) verifyBaselines(ctx context.Context, options ProbeOpt
 			state.verifyCodec(ctx, options, backend, codec, devices, check)
 		}
 		if codec == "h264" {
-			// Optional software codecs must not consume the startup budget
-			// before the preferred hardware H.264 frame path is checked.
 			for index := range backends {
 				backend := &backends[index]
 				state.verifyBaselineDecode(ctx, options, backend, codec, check)

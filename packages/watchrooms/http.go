@@ -15,14 +15,12 @@ import (
 
 const roomEventsRoute = "GET /api/v1/watch-rooms/{id}/events"
 
-// HTTPIndex supplies Player's library queries to room delivery.
 type HTTPIndex interface {
 	Find(string) (library.Item, bool)
 	Safe(string) bool
 	Snapshot() ([]library.Item, error)
 }
 
-// HTTPConfig supplies app-specific access and localized response adapters.
 type HTTPConfig struct {
 	Rooms       *Rooms
 	Index       HTTPIndex
@@ -33,12 +31,10 @@ type HTTPConfig struct {
 	NotFound    func(http.ResponseWriter, *http.Request)
 }
 
-// HTTP owns Player's Watch Together routes and WebSocket lifecycle.
 type HTTP struct {
 	config HTTPConfig
 }
 
-// NewHTTP validates and returns one Watch Together HTTP module.
 func NewHTTP(config HTTPConfig) (*HTTP, error) {
 	if config.Rooms == nil || config.Index == nil || config.ViewerID == nil || config.CanView == nil || config.Reauthorize == nil || config.Failure == nil || config.NotFound == nil {
 		return nil, errors.New("watch room HTTP configuration is invalid")
@@ -46,7 +42,6 @@ func NewHTTP(config HTTPConfig) (*HTTP, error) {
 	return &HTTP{config: config}, nil
 }
 
-// MustNewHTTP returns one module from compile-time app dependencies.
 func MustNewHTTP(config HTTPConfig) *HTTP {
 	handler, err := NewHTTP(config)
 	if err != nil {
@@ -55,7 +50,6 @@ func MustNewHTTP(config HTTPConfig) *HTTP {
 	return handler
 }
 
-// Register installs Player's Watch Together routes.
 func (handler *HTTP) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /watch-together", handler.create)
 	mux.HandleFunc("GET /room/{id}", handler.redirect)
@@ -63,7 +57,6 @@ func (handler *HTTP) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /watch-together/{id}", handler.connect)
 }
 
-// Player returns one visible room projection for Player's web view.
 func (handler *HTTP) Player(request *http.Request, item library.Item) (string, bool, []library.Item) {
 	id := request.URL.Query().Get("room")
 	event, found := handler.config.Rooms.Snapshot(id, handler.config.ViewerID(request))

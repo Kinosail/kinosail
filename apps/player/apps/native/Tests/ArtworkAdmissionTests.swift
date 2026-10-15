@@ -105,7 +105,6 @@ struct ArtworkAdmissionTests {
         let again = try await loader.image(path: "/art/admission0", client: fixture.client)
         #expect(again === visible)
         #expect(fixture.requests.filter { $0.url?.path == "/art/admission0" }.count == 1)
-        // A background hit becomes foreground-owned when it is displayed.
         let promoted = try await loader.image(path: "/art/admission5", client: fixture.client)
         for index in 1..<5 {
             _ = try await loader.image(path: "/art/admission\(index)", client: fixture.client, background: true)

@@ -1,22 +1,5 @@
 @echo off
 setlocal
-rem Impeccable launcher (Windows). Runs bin\windows-<arch>\impeccable.exe next
-rem to this file, else a cached or freshly downloaded engine binary.
-rem
-rem Structure notes (this file is exercised by dry parsing and string-level
-rem tests, not yet on a real Windows machine):
-rem - No multi-line parenthesized blocks: cmd expands %var% at block parse
-rem   time, which made the old download path read back empty %url%/%cached%.
-rem   Linear goto flow keeps every expansion on its own line, and avoids
-rem   delayed expansion eating ! characters in user arguments.
-rem - The unversioned user binary and the PATH candidate are validated with
-rem   the engine-probe handshake (see :probe) so the retired 3.x npm CLI,
-rem   whose bin is also named impeccable, is never exec'd. IMPECCABLE_BIN,
-rem   the sibling binary, and the version-pinned cache stay trusted.
-rem - Downloads are verified against the .sha256 sidecar via certutil and
-rem   fail closed: a missing sidecar or hash tool refuses the download. On
-rem   ARM64 the arm64 asset is tried first and the x64 asset is the
-rem   fallback (Windows on ARM runs x64 binaries).
 if not defined IMPECCABLE_SKILL_DIR set "IMPECCABLE_SKILL_DIR=%~dp0.."
 if not defined IMPECCABLE_SELF set "IMPECCABLE_SELF=%~f0"
 set "arch=x64"
@@ -62,9 +45,6 @@ impeccable %*
 exit /b
 
 :download
-rem Last resort: fetch this version's binary from the release channel into
-rem the version-pinned user cache, verify it, then run it. Never inside
-rem another launcher's probe: fail fast and quiet instead.
 if defined IMPECCABLE_LAUNCHER_PROBE exit /b 127
 if not defined version goto fail
 where curl.exe >nul 2>nul
@@ -74,10 +54,6 @@ if exist "%IMPECCABLE_HOME%\bin\%version%\" goto cache_ready
 mkdir "%IMPECCABLE_HOME%\bin\%version%" >nul 2>nul
 if errorlevel 1 goto cache_directory_failed
 :cache_ready
-rem Check the staging file too: an existing directory may be read-only.
-rem Redirection failures do not reliably update ERRORLEVEL in cmd.exe;
-rem branch on the command's failure directly. Never treat a directory as a
-rem staging file (later del cleanup would prompt to delete its contents).
 if exist "%cached%.part\" goto cache_write_failed
 (type nul >"%cached%.part") 2>nul || goto cache_write_failed
 set "asset=impeccable-windows-%arch%.exe"
@@ -93,10 +69,6 @@ if errorlevel 1 goto download_failed
 :verify
 call :check_download
 if errorlevel 1 exit /b 127
-rem Mirrors the sh launcher and fails closed: a freshly downloaded binary
-rem runs only after verifying against its .sha256 sidecar. A sidecar that
-rem cannot be fetched, or an empty certutil result, refuses the download
-rem instead of running an unverified binary.
 curl.exe -fsSL -o "%cached%.sha256" "%url%.sha256" >nul 2>nul
 if errorlevel 1 goto verify_refuse
 set "expected="
@@ -105,8 +77,6 @@ for /f "tokens=1" %%h in ("%expected%") do set "expected=%%h"
 call :check_download
 if errorlevel 1 exit /b 127
 set "actual="
-rem Reuse the sidecar staging file after reading expected. Check certutil's
-rem status before parsing: its error text on stdout is not a digest.
 certutil -hashfile "%cached%.part" SHA256 >"%cached%.sha256" 2>nul
 if errorlevel 1 goto verify_refuse
 call :check_download
@@ -169,9 +139,6 @@ exit /b 127
 exit /b
 
 :probe
-rem Sets probe_ok=1 when %1 answers the engine handshake: prints
-rem "impeccable-engine <version>" and exits 0. The 3.x npm CLI answers any
-rem unknown verb with "Unknown command", exit 1, so it never passes.
 set "probe_ok="
 set "probe_tmp=%TEMP%\impeccable-probe-%RANDOM%%RANDOM%.txt"
 set "IMPECCABLE_LAUNCHER_PROBE=1"

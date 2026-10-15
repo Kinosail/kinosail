@@ -8,8 +8,6 @@ struct PlaybackPreparation: Sendable {
     let preferences: PlaybackPreferences
 }
 
-/// The producer owns its result; cancelling a screen only removes that waiter.
-/// Foreground playback can adopt the same request when title details disappear.
 @MainActor
 final class PlaybackPreparationRequest {
     let itemID: String

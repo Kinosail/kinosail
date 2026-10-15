@@ -67,7 +67,6 @@ internal fun PdfReaderScreen(item: CatalogItem, viewer: Viewer, close: () -> Uni
                             if (finalDocument.pageCount == 1) 0.0 else finalPage.toDouble() / (finalDocument.pageCount - 1))
                     }
                 } catch (_: Exception) {
-                    // The visible reader already reports save failures; closing must still release the file.
                 } finally {
                     finalDocument?.close()
                 }

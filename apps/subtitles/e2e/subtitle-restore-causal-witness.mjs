@@ -1,4 +1,3 @@
-// This function is serialized into the owned page. It has no imported closure.
 export function installFetchWitness(configuration) {
   if (!configuration || Object.keys(configuration).sort().join(',') !== 'item,origin' ||
     typeof configuration.origin !== 'string' || !/^https:\/\/127\.0\.0\.1:\d{1,5}$/.test(configuration.origin) ||
@@ -11,7 +10,7 @@ export function installFetchWitness(configuration) {
   const onHide = () => { hidden = true; for (const row of Object.values(records)) if (row.outcome === 'pending') row.pagehide = true; };
   globalThis.addEventListener('pagehide', onHide);
   const wrapper = function (...args) {
-    const promise = native.apply(this, args); // Preserve the exact native promise and caller arguments.
+    const promise = native.apply(this, args);
     try {
       const [input, options] = args;
       let key;
@@ -34,7 +33,6 @@ export function installFetchWitness(configuration) {
               response.url === configuration.origin + '/api/v1/subtitle-library/' + configuration.item + '/restore';
             row.signalAborted = !!options.signal?.aborted; row.pagehide = hidden; } catch { valid = false; }
         };
-        // Observe fulfillment/rejection only. Never read/replace a Response or body.
         void promise.then(response => record('fulfilled', response), () => record('rejected'));
       }
     } catch { valid = false; }

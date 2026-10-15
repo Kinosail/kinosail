@@ -30,8 +30,6 @@ def parse_frames(data):
 
 
 def frame_facts(rows):
-    # Without an independently verified edit/preroll mapping, no negative frame
-    # can be silently removed. Such a case remains explicitly unqualified.
     presented = rows
     hashes = '\n'.join(value for _, value in presented).encode()
     negatives = sum(point < 0 for point, _ in rows)
@@ -63,7 +61,7 @@ def decode_frames(path, offset=None):
         command += ['-copyts']
     command += ['-i', str(path)]
     if offset is not None and offset:
-        command += ['-ss', str(offset)]  # Output-side reference seek, never input seek.
+        command += ['-ss', str(offset)]
     command += ['-an', '-frames:v', '4097', '-fps_mode', 'passthrough',
                 '-enc_time_base', '1:1000000', '-f', 'framemd5', 'pipe:1']
     result = subprocess.run(command, capture_output=True, timeout=60)

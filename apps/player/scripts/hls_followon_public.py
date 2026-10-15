@@ -72,7 +72,7 @@ def prepare_once(api, prepare, hls, log_path, server, source, case):
         for line in private.splitlines():
             check(len(line) <= 16 * 1024, 'private_log_line_bound')
             if not line.startswith('{') or not line.endswith('}'):
-                continue  # An in-flight final line may not have finished writing yet.
+                continue
             entry = json.loads(line)
             if (entry.get('msg') == 'HLS startup preparation' and entry.get('request_id') == request_id
                     and entry.get('state') in ['ready', 'unavailable', 'cancelled', 'bounded', 'adopted']):
@@ -132,7 +132,7 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
             case['publicFragments'].append(packets)
             failure.append('fragment_missing_audio' if count == 0 else 'fragment_audio_bound')
             previous_video_end = packets['lastVideoEnd']
-            continue  # Preserve the failed assertion and fetch later advertised media.
+            continue
         packets.update(segment=filename, advertisedSeconds=advertised)
         packets['videoDecodeOrderValid'] = video_decode_order(path)
         case['publicFragments'].append(packets)
@@ -157,12 +157,12 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
     case['timestampedFrameEvidence'] = [{'pts': point, 'md5': digest} for point, digest in raw]
     if not case['presentationQualified']:
         failure.append('unqualified_preroll_mapping')
-        return  # Keep raw facts; an ambiguous window is not a product-failure certificate.
+        return
     check(reference['presentedFrames'] == case['referenceClock']['expectedFrames'],
           'independent_reference_frame_count')
     for packets in case['publicFragments']:
         if 'failedAssertion' in packets:
-            continue  # Already failed strictly; timing cannot qualify an empty/bounded audio stream.
+            continue
         if packets['firstVideoTime'] < 0 or packets['firstAudioTime'] < 0:
             failure.append('unqualified_packet_presentation')
             continue
@@ -176,8 +176,6 @@ def measure(api, hls, directory, source, metadata, offset, prepared_init, case):
     if actual['identity'] != reference['identity']:
         failure.append('presented_source_frames')
         if offset:
-            # Diagnose the failed window independently; never trim delivered frames
-            # or use a hash match to change the requested presentation boundary.
             prior = max(k for k in metadata['keyframesSeconds']
                         if k <= metadata['sourceTimeOriginSeconds'] + offset)
             earlier, _ = decode_frames(source, prior - metadata['sourceTimeOriginSeconds'])

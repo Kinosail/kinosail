@@ -55,8 +55,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Opt-in real Server journey. The runner copies a private, synthetic session seed
-// into the isolated app. Playback uses the actual decoder and Server responses.
 @RunWith(AndroidJUnit4::class)
 @androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
 class LivePlaybackOverlayTest {
@@ -66,7 +64,6 @@ class LivePlaybackOverlayTest {
         awaitLightFrame()
         val prefix = json.optString("capture", "phone")
         verifyLabels(capture("$prefix-loaded"), title)
-        // Real View/decoder timers are outside Compose's test clock.
         Thread.sleep(5_000)
         compose.onRoot().performTouchInput { click(center) }
         waitForText("Speed 1×")
@@ -102,11 +99,9 @@ class LivePlaybackOverlayTest {
         verifyLabels(capture("$prefix-recovered"), title)
     }
 
-    // Browser evidence cannot prove the native caption compositor respects Android system bars.
-    // Use real decoded static media and on/off compositor frames, without private player internals.
     @Test fun captionsStayAboveTheSystemNavigationArea() = journey("captions") { json, _ ->
         awaitLightFrame()
-        Thread.sleep(2_000) // The generated cue starts at one second.
+        Thread.sleep(2_000)
         val prefix = json.optString("capture", "phone")
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val observations = JSONArray()
@@ -160,7 +155,6 @@ class LivePlaybackOverlayTest {
                 false
             } else false
             if (!received) main.removeCallbacks(collect)
-            // A late callback owns only its detached result, never the emitted receipt.
             if (observations.length() < 4) observations.put(if (received) result.get() else unavailable())
         }
         recordPlayback("initial-playing")
@@ -184,7 +178,6 @@ class LivePlaybackOverlayTest {
                     pause != null -> pause.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
                     visibleAction(nodes, "Play") != null -> true
                     else -> {
-                        // Controls can auto-hide after discovery. Reopen only their public hidden-state action.
                         visibleAction(nodes, "Show player controls")?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
                         false
                     }
@@ -199,7 +192,7 @@ class LivePlaybackOverlayTest {
             val target = if (enabled) "Captions on" else "Captions off"
             if (captionsLabel() != target) compose.onNodeWithText(captionsLabel()).performClick()
             waitForText(target)
-            Thread.sleep(500) // Wait for the native decoder's next cue delivery.
+            Thread.sleep(500)
         }
         fun difference(a: Int, b: Int) = maxOf(kotlin.math.abs(Color.red(a) - Color.red(b)),
             kotlin.math.abs(Color.green(a) - Color.green(b)), kotlin.math.abs(Color.blue(a) - Color.blue(b)))
@@ -212,19 +205,15 @@ class LivePlaybackOverlayTest {
             return false
         }
         fun captureCaptionFrame(name: String, reference: Bitmap? = null): Bitmap {
-            // The native controller is painted above the captions. Dismiss it through the
-            // video surface below its centered Play button so it cannot hide an overlap.
             val controls = completeSnapshot()
             assertNull("Playback must remain paused", visibleAction(controls, "Pause"))
             if (visibleAction(controls, "Play") != null) compose.onRoot().performTouchInput {
                 click(androidx.compose.ui.geometry.Offset(center.x, height * 0.65f))
             }
             compose.waitUntil(10_000) { controllerHidden() }
-            Thread.sleep(300) // Retain a frame after the controller's hide transition.
+            Thread.sleep(300)
             assertTrue("A complete accessibility tree must confirm the controller is hidden", controllerHidden())
             if (reference != null) {
-                // Track selection can finish before Media3 paints its cue. Observe actual
-                // pixels with a bound, then retain the original visibility/overlap oracle.
                 val deadline = android.os.SystemClock.elapsedRealtime() + 10_000
                 while (true) {
                     val current = screenPixels()
@@ -305,8 +294,6 @@ class LivePlaybackOverlayTest {
             val evidenceFile = File(instrumentation.targetContext.filesDir, "video-overlay/$prefix-caption-safe-area.json")
             evidenceFile.writeText(evidence.toString(2))
             if (captionPixels <= 100 && !forceCaptionsOff) {
-                // Diagnose delayed cue delivery without changing the retained failed pair.
-                // This extra frame cannot make the original visibility assertion pass.
                 runCatching {
                     val deadline = android.os.SystemClock.elapsedRealtime() + 15_000
                     fun awaitDiagnostic(condition: () -> Boolean) {
@@ -349,8 +336,6 @@ class LivePlaybackOverlayTest {
         }
     }
 
-    // The normal toggle journey parses before the final cue. Resume after it to prove
-    // lazy first selection still allows seeking backward into the retained caption.
     @Test fun captionsReturnWhenSeekingBackFromAfterTheirFinalCue() =
         journey("caption-seek", "pending", startAt = 115.0, pauseOnStart = true) { json, _ ->
             val subtitleLoaded = java.util.concurrent.atomic.AtomicBoolean(false)
@@ -369,13 +354,9 @@ class LivePlaybackOverlayTest {
                 ) { firstFrameRendered.set(true) }
             }
             withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).addAnalyticsListener(listener) }
-            // The bridge held both video and captions, so the listener cannot miss
-            // the first sidecar completion. No production injection hook is needed.
             try {
                 setMedia(json, "ready")
                 compose.waitUntil(10_000) { subtitleLoaded.get() }
-                // Paused native controls dim the white frame. Observe actual decoder
-                // presentation instead of applying the playing-frame color threshold.
                 compose.waitUntil(30_000) { firstFrameRendered.get() }
             } finally {
                 withPlayer { (this as androidx.media3.exoplayer.ExoPlayer).removeAnalyticsListener(listener) }
@@ -523,8 +504,6 @@ class LivePlaybackOverlayTest {
                     compose.waitUntil(30_000) {
                         if (compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isNotEmpty()) true
                         else {
-                            // Playback can auto-hide its controls before test discovery.
-                            // Reopen only the explicitly hidden player's public action.
                             accessibilitySnapshot()?.let { visibleAction(it, "Show player controls") }
                                 ?.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK)
                             false
@@ -535,7 +514,6 @@ class LivePlaybackOverlayTest {
                     compose.onNodeWithText("Done").assertIsEnabled().performClick()
                     waitForText("Back")
                 } catch (error: Throwable) {
-                    // Keep the visible isolated fixture before ActivityScenario closes it.
                     runCatching {
                         capture(json.optString("capture", "phone") + "-" + evidenceName + "-" + stage + "-failure").recycle()
                     }
@@ -570,7 +548,6 @@ class LivePlaybackOverlayTest {
         }
     }
 
-    // Use the same physical compositor capture path as adb in every configuration.
     private fun screenPixels(): Bitmap {
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
         return ParcelFileDescriptor.AutoCloseInputStream(automation.executeShellCommand("screencap -p")).use {

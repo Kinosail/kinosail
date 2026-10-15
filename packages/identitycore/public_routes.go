@@ -1,9 +1,5 @@
 package identitycore
 
-// PublicBootstrapRouteAllowed is the closed internet allowlist for routes that
-// bypass normal Viewer authorization. Media handlers still validate capabilities;
-// sign-in handlers still enforce remote Viewer eligibility and strong sign-in.
-// Local integration routes must never become public merely by being registered.
 func PublicBootstrapRouteAllowed(pattern string) bool {
 	switch pattern {
 	case "GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel":

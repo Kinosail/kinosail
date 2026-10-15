@@ -254,7 +254,6 @@ func apiReaderProgress(index *libraryIndex, progress *progressStore) http.Handle
 	}
 }
 
-// Omission means the start of the chapter; an explicit value must be numeric.
 func parseReaderOffset(raw json.RawMessage) (*float64, error) {
 	if len(raw) == 0 {
 		return nil, nil
@@ -266,7 +265,6 @@ func parseReaderOffset(raw json.RawMessage) (*float64, error) {
 	return value, nil
 }
 
-// Older native builds reject unknown response fields, so offsets are opt-in.
 func readerOffsetRequested(request *http.Request) (bool, error) {
 	if len(request.URL.RawQuery) > 2048 {
 		return false, errors.New("invalid reader query")

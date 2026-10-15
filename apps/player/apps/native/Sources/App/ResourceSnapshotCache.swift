@@ -1,7 +1,5 @@
 import Foundation
 
-/// Decoded, session-only screen values. The protected catalog cache remains the
-/// source for launches and background refreshes.
 @MainActor
 final class ResourceSnapshotCache {
     private struct Key: Hashable {

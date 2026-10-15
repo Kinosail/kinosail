@@ -3,7 +3,6 @@ import {writeFile} from "node:fs/promises";
 import {execFileSync} from "node:child_process";
 import {login} from "./test-instance-helpers";
 
-// Authentication bodies and cookie values must stay out of traces/screenshots.
 test.use({serviceWorkers:"block", trace:"off", screenshot:"off", video:"off"});
 test("closing a signed-in tab resumes its saved login URL @smoke", async ({page, context}, info) => {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the isolated populated Server");
@@ -15,7 +14,6 @@ test("closing a signed-in tab resumes its saved login URL @smoke", async ({page,
   const reopened = await context.newPage();
   let begins = 0;
   reopened.on("request", request => { if (new URL(request.url()).pathname === "/api/v1/passkeys/login/begin") begins++; });
-  // The saved session redirects during document loading; verify its destination.
   await reopened.goto(`${origin}/login?next=%2Faccount`, {waitUntil:"commit"});
   await expect(reopened).toHaveURL(origin+"/account");
   await expect(reopened.getByRole("heading", {name:"Ways to sign in", exact:true})).toBeVisible();

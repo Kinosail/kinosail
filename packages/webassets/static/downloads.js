@@ -202,7 +202,6 @@ async function removeOfflineJobSafely(id, explicit = false, afterRemove) {
     return await withOfflineJobLock(id, async () => {
       const current = await getExistingOfflineJob(id);
       const transferID = offlineTransferIDOf(current);
-      // A removal from an old playback source must never delete its replacement.
       if (current && (sourceTransferID !== undefined ? transferID !== sourceTransferID :
         Number.isFinite(current.transferStartedAt) ? current.transferStartedAt > request.requestedAt : transferID !== offlineTransferIDOf(observed))) return false;
       await removeOfflineJob(id);

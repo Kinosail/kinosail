@@ -12,10 +12,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/playerweb"
 )
 
-// WebPlaybackFixture retains real app settings across repeated playback applications.
 type WebPlaybackFixture func([]string, bool) func(*http.Request, playback.MediaFacts, *playerweb.PlayerData)
 
-// WebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits checks the real web playback operation.
 func (fixture WebPlaybackFixture) WebPlaybackOffersButDoesNotAutoSkipUnreviewedCredits(t *testing.T) {
 	t.Helper()
 	apply := fixture([]string{"credits"}, true)
@@ -28,7 +26,6 @@ func (fixture WebPlaybackFixture) WebPlaybackOffersButDoesNotAutoSkipUnreviewedC
 	}
 }
 
-// WebPlaybackStartsAfterATrustedOpeningWithoutTranscoding checks the real web playback operation.
 func (fixture WebPlaybackFixture) WebPlaybackStartsAfterATrustedOpeningWithoutTranscoding(t *testing.T) {
 	t.Helper()
 	apply := fixture([]string{"intro"}, false)
@@ -47,7 +44,6 @@ func (fixture WebPlaybackFixture) WebPlaybackStartsAfterATrustedOpeningWithoutTr
 	}
 }
 
-// AutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline checks the real web playback operation.
 func (fixture WebPlaybackFixture) AutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline(t *testing.T) {
 	t.Helper()
 	apply := fixture([]string{"intro", "credits"}, true)

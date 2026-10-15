@@ -8,10 +8,8 @@ import (
 	"time"
 )
 
-// ErrInvalidProgressState reports invalid progress before persistence.
 var ErrInvalidProgressState = errors.New("progress state is invalid")
 
-// PlaybackState is the durable per-Viewer state of one Library item.
 type PlaybackState struct {
 	Seconds      float64   `json:"seconds,omitempty"`
 	ReaderOffset float64   `json:"readerOffset,omitempty"`
@@ -23,10 +21,8 @@ type PlaybackState struct {
 	Revision     uint64    `json:"revision,omitempty"`
 }
 
-// ProgressChange derives a new playback state from the current state.
 type ProgressChange func(PlaybackState) (PlaybackState, bool, error)
 
-// ProgressStorage connects the shared transaction to an app-owned state map.
 type ProgressStorage struct {
 	Mutex, PersistMutex *sync.Mutex
 	Values              *map[string]PlaybackState
@@ -35,7 +31,6 @@ type ProgressStorage struct {
 	PersistEntry        func(string, PlaybackState) error
 }
 
-// Update commits one validated state change without exposing partial memory state.
 func (storage ProgressStorage) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
 	storage.PersistMutex.Lock()
 	defer storage.PersistMutex.Unlock()
@@ -80,7 +75,6 @@ func progressChange(values map[string]PlaybackState, key string, change Progress
 	return previous, current, true, nil
 }
 
-// ValidateStoredProgress rejects unbounded or malformed durable state.
 func ValidateStoredProgress(values map[string]PlaybackState) error {
 	if len(values) > 1_000_000 {
 		return errors.New("too many persisted progress records")
@@ -93,12 +87,10 @@ func ValidateStoredProgress(values map[string]PlaybackState) error {
 	return nil
 }
 
-// ValidProgressKey reports whether a durable progress key is bounded.
 func ValidProgressKey(key string) bool {
 	return key != "" && len(key) <= 256
 }
 
-// ValidPlaybackState reports whether every bounded playback value is safe to persist.
 func ValidPlaybackState(state PlaybackState) bool {
 	return progressRange(state.Seconds, 1e9) &&
 		progressRange(state.ReaderOffset, 1) && (state.ReaderPage > 0 || state.ReaderOffset == 0) &&

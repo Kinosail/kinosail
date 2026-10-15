@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// Existing structured operational completion is the barrier: cancelling before
-// certification finished could hide a late encode after malformed probe output.
 type copiedLogBuffer struct {
 	sync.Mutex
 	bytes.Buffer

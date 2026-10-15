@@ -10,8 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalogapi"
 )
 
-// Index construction is outside the timed request; each request starts without a
-// reusable order. Include a sparse view to detect sorting unrelated content.
 func BenchmarkNativeCatalogColdBrowse(b *testing.B) {
 	for _, view := range []string{"all", "movies", "books"} {
 		b.Run(view, func(b *testing.B) {

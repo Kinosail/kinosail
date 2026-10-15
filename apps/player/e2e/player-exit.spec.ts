@@ -26,7 +26,6 @@ for (const viewport of [{width: 390, height: 844}, {width: 844, height: 390}, {w
     await expect(exit).toBeVisible();
     await expect(exit).toHaveAccessibleName("Exit theater");
     const box = await exit.boundingBox();
-    // Firefox can report 44px as 43.999999px.
     expect(box!.width + .001).toBeGreaterThanOrEqual(44);
     expect(box!.height + .001).toBeGreaterThanOrEqual(44);
     expect(await exit.evaluate(button => {

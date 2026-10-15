@@ -3,8 +3,6 @@ import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
-// Before gesture edits: headless native journeys cannot inject actual SwiftUI
-// drags. This isolated check protects accidental close and control-region conflicts.
 @MainActor struct PlaybackDismissalTests {
     @Test func shortHorizontalUpwardAndControlRegionDragsCannotDismiss() {
         let dismissal = PlaybackDismissal()
@@ -22,7 +20,6 @@ import Testing
         }
         #expect(closes == 0)
         #expect(!dismissal.closing)
-        // Cancellation does not call onEnded and therefore never calls close.
         #expect(!dismissal.closing)
     }
 

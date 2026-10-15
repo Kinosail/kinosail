@@ -10,7 +10,6 @@ import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 import java.util.UUID
 
-/** One chapter owns its request and byte budget. WebView never owns credentials or network access. */
 internal class EpubResources(private val itemId: String, private val saved: SavedSession,
     private val viewer: Viewer, private val fontSize: Int, private val light: Boolean) {
     private var requests = 0

@@ -1,5 +1,3 @@
-// Package transcodehardware owns Player's FFmpeg hardware discovery and
-// per-device codec selection policy for Kinosail media applications.
 package transcodehardware
 
 import (
@@ -15,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// ProbeOptions supplies installation-specific hardware probe inputs.
 type ProbeOptions struct {
 	Application string
 	FFmpeg      string
@@ -25,7 +22,6 @@ type ProbeOptions struct {
 	GOARCH      string
 }
 
-// Probe discovers FFmpeg encoders and accessible hardware devices.
 func Probe(ctx context.Context, options ProbeOptions) Capabilities {
 	return verify(ctx, options, probe(ctx, options, canOpenHardwareDevice, linuxHardwarePlatform), transcodepolicy.Check)
 }

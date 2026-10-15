@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// AssertOwnerCanCreateViewerProfileWithoutGrantingAdministration preserves the original real-handler authentication regression.
 func AssertOwnerCanCreateViewerProfileWithoutGrantingAdministration(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
@@ -37,7 +36,6 @@ func AssertOwnerCanCreateViewerProfileWithoutGrantingAdministration(t *testing.T
 	}
 }
 
-// AssertOwnerCanRemoveViewerAndRevokeSessions preserves the original real-handler authentication regression.
 func AssertOwnerCanRemoveViewerAndRevokeSessions(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
@@ -64,7 +62,6 @@ func AssertOwnerCanRemoveViewerAndRevokeSessions(t *testing.T, fixture LibraryAP
 	}
 }
 
-// AssertOwnerCanResetViewerPassword preserves the original real-handler authentication regression.
 func AssertOwnerCanResetViewerPassword(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 
@@ -91,7 +88,6 @@ func AssertOwnerCanResetViewerPassword(t *testing.T, fixture LibraryAPIFixture) 
 	}
 }
 
-// AssertOwnerControlsViewerDownloads preserves the original real-handler authentication regression.
 func AssertOwnerControlsViewerDownloads(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 

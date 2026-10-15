@@ -11,14 +11,12 @@ import (
 	sharedbackup "github.com/MikeO7/kinosail/packages/backup"
 )
 
-// SQLiteDatabase is the durable document boundary exercised by an app backup adapter.
 type SQLiteDatabase interface {
 	SaveJSON(string, any) error
 	LoadJSON(string, any) (bool, error)
 	Close() error
 }
 
-// SQLiteBackupFixture binds one app's database and archive service.
 type SQLiteBackupFixture[Database SQLiteDatabase] struct {
 	Filename string
 	Open     func(string, bool) (Database, error)
@@ -26,7 +24,6 @@ type SQLiteBackupFixture[Database SQLiteDatabase] struct {
 	Restore  func(io.Reader, string) error
 }
 
-// SQLiteBackupContract verifies logical database export and safe replacement behavior.
 func SQLiteBackupContract[Database SQLiteDatabase](t *testing.T, fixture SQLiteBackupFixture[Database]) {
 	t.Helper()
 	t.Run("SQLite state round trips through logical backup", fixture.sqliteRoundTrip)
@@ -146,7 +143,6 @@ func (fixture SQLiteBackupFixture[Database]) rejectNonRegularRestoreTarget(t *te
 	}
 }
 
-// BackupAdapterContract verifies encrypted adapters and the version-bound command.
 func BackupAdapterContract(t *testing.T, writeEncrypted func(io.Writer, string, string) error, verify func(io.Reader, string) error, command sharedbackup.Command) {
 	t.Helper()
 	directory := t.TempDir()

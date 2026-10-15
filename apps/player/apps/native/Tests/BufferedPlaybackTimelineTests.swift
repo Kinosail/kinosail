@@ -3,8 +3,6 @@ import Testing
 import AVFoundation
 @testable import KinosailPlayer
 
-// Failure cases: unknown duration, nonfinite/reversed/outside ranges, too many
-// ranges, and omitted source sections must never paint fabricated buffer data.
 struct BufferedPlaybackTimelineTests {
     @Test func loadedRangesPreserveGapsAndClipAtMediaBounds() throws {
         let timeline = try MediaTimeline(sourceDuration: 100, duration: 100)
@@ -29,7 +27,6 @@ struct BufferedPlaybackTimelineTests {
 }
 
 @MainActor struct BufferedPlaybackStateTests {
-    // Missing, pending, and stopped playback must clear a previous item's buffer.
     @Test func missingAndPendingMediaClearStaleRangesWithoutSeeking() throws {
         let engine = PlaybackEngine()
         engine.bufferedRanges = [0..<60]
@@ -54,8 +51,6 @@ import SwiftUI
 
 @Suite(.serialized) @MainActor
 struct BufferedPlaybackSliderTests {
-    // Native playback journeys do not assert UIKit target/action ordering. These
-    // checks protect seek commits if actor isolation introduces deferred callbacks.
     @Test func nontrackingValueChangeFinishesEditingSynchronouslyAfterUpdatingTheBinding() async throws {
         var position = 20.0
         var events: [String] = []

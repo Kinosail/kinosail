@@ -1,7 +1,5 @@
-// Package playback defines Player's media-delivery policy for Kinosail apps.
 package playback
 
-// MediaFacts is the normalized source description consumed by playback adapters.
 type MediaFacts struct {
 	Kind         string          `json:"kind"`
 	FileVersion  string          `json:"fileVersion"`
@@ -87,7 +85,6 @@ type PlaybackPlan struct {
 	MarkerMode            string            `json:"markerMode,omitempty"`
 	Timeline              Timeline          `json:"timeline,omitempty"`
 
-	// Audio conversion is required while the original video otherwise meets the client's limits.
 	AudioCompatibilityRequired bool `json:"audioCompatibilityRequired,omitempty"`
 }
 
@@ -110,7 +107,6 @@ type Timeline struct {
 	Omitted        []Range `json:"omitted"`
 }
 
-// SourceTime maps a presentation position to the source timeline.
 func (timeline Timeline) SourceTime(presentation float64) float64 {
 	presentation = max(0, min(presentation, timeline.Duration))
 	removed := 0.0
@@ -123,7 +119,6 @@ func (timeline Timeline) SourceTime(presentation float64) float64 {
 	return min(timeline.SourceDuration, presentation+removed)
 }
 
-// PresentationTime maps a source position to the presented timeline.
 func (timeline Timeline) PresentationTime(source float64) float64 {
 	source = max(0, min(source, timeline.SourceDuration))
 	removed := 0.0

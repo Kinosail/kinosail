@@ -1,8 +1,6 @@
 import XCTest
 
 extension RemoteArtworkStateTests {
-    // Real focused controls own their visual treatment; geometry is compared
-    // while the measured controls are unfocused. Widths follow their labels.
     @MainActor
     func testDetailActionsShareCapsuleGeometryAndPreserveNavigation() async throws {
         try requireCase("appearance")
@@ -25,8 +23,6 @@ extension RemoteArtworkStateTests {
         waitForFocus(bookmarks, in: app)
         record("detail-actions-bookmarks-focused", app)
 
-        // These three are all unfocused, so native focus scaling does not
-        // change the bounds used to check the shared height and leading edge.
         XCTAssertFalse(resume.hasFocus)
         XCTAssertFalse(myList.hasFocus)
         XCTAssertFalse(remove.hasFocus)

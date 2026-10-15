@@ -244,7 +244,6 @@ func TestDeviceKindsRejectLookalikes(t *testing.T) {
 
 func fakeFFmpeg(t *testing.T, capabilities string) string {
 	t.Helper()
-	// Write before t.Parallel: forked probes can briefly inherit writable descriptors.
 	path := filepath.Join(t.TempDir(), "ffmpeg")
 	script := "#!/bin/sh\nprintf '%s\\n' '" + capabilities + "'\nprintf 'stderr-capability\\n' >&2\n"
 	if err := os.WriteFile(path, []byte(script), 0o700); err != nil { //nolint:gosec // Test fixture must be executable.

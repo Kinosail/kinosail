@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// PrimaryPagesExposeTheInstallExperience preserves the shared app asset contract.
 func (fixture AssetsFixture) PrimaryPagesExposeTheInstallExperience(t *testing.T) {
 	t.Helper()
 	t.Parallel()

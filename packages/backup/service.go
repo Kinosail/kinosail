@@ -15,20 +15,17 @@ var (
 	versionPattern    = regexp.MustCompile(`^(dev|[A-Za-z0-9][A-Za-z0-9._+-]{0,127})$`)
 )
 
-// Database provides a consistent logical snapshot of Kinosail state.
 type Database interface {
 	Export() (map[string][]byte, error)
 	Close() error
 }
 
-// Config supplies the app-owned SQLite adapter and settings validation rule.
 type Config struct {
 	DatabaseFilename string
 	OpenDatabase     func(string) (Database, error)
 	ValidateSettings func([]byte) error
 }
 
-// Service archives and restores one Kinosail app's installation state.
 type Service struct {
 	databaseFilename string
 	openDatabase     func(string) (Database, error)
@@ -37,7 +34,6 @@ type Service struct {
 	restore          restoreOperations
 }
 
-// New validates app-specific dependencies without touching installation state.
 func New(config Config) (*Service, error) {
 	if config.DatabaseFilename == "" || config.DatabaseFilename == "." || config.DatabaseFilename == ".." || filepath.Base(config.DatabaseFilename) != config.DatabaseFilename || config.OpenDatabase == nil || config.ValidateSettings == nil {
 		return nil, errors.New("invalid backup configuration")
@@ -45,7 +41,6 @@ func New(config Config) (*Service, error) {
 	return &Service{databaseFilename: config.DatabaseFilename, openDatabase: config.OpenDatabase, validateSettings: config.ValidateSettings, random: rand.Reader, restore: defaultRestoreOperations()}, nil
 }
 
-// MustNew constructs a service from compile-time app dependencies.
 func MustNew(config Config) *Service {
 	service, err := New(config)
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// SecurityClassificationAndMediaLimits verifies secret, bitrate, search, and path policy helpers.
 func SecurityClassificationAndMediaLimits(t *testing.T, collectionMatches func(string, []library.Item, string) bool, within func(string, string) bool) { //nolint:cyclop // One shared contract checks the related boundary helpers.
 	t.Parallel()
 	for key, want := range map[string]bool{"database.password": true, "apiSecret": true, "refreshToken": true, "tls.key": true, "monkey": false, "hostname": false} {

@@ -10,20 +10,17 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// PlaybackMedia contains normalized facts needed by Player's Jellyfin planner.
 type PlaybackMedia struct {
 	Facts   playback.MediaFacts
 	Markers []markers.Marker
 }
 
-// MediaSourcePolicy preserves one app's Jellyfin delivery contract.
 type MediaSourcePolicy struct {
 	IncludeToken             bool
 	QueryOnDirectPath        bool
 	TranscodingProtocolField string
 }
 
-// PlaybackHTTP contains true app adapters for Player's playback flow.
 type PlaybackHTTP struct {
 	VisibleItem         func(*http.Request, string) (library.Item, bool)
 	VisibleLibrary      func(*http.Request) ([]library.Item, error)
@@ -39,13 +36,11 @@ type PlaybackHTTP struct {
 	Resolved            func(context.Context, library.Item)
 }
 
-// Register installs all stable Jellyfin playback routes.
 func (module PlaybackHTTP) Register(mux *http.ServeMux, handlers playback.JellyfinPlaybackHandlers) error {
 	handlers.PlaybackInfo, handlers.Image = module.PlaybackInfo, module.Image
 	return playback.RegisterJellyfinPlayback(mux, handlers)
 }
 
-// PlaybackInfo validates, plans, stores, and projects one playback request.
 func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Ordered validation maps each Jellyfin protocol failure to its wire response.
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {
@@ -98,7 +93,6 @@ func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *htt
 	JSON(writer, map[string]any{"MediaSources": []any{source}, "PlaySessionId": playID})
 }
 
-// MediaSource projects one validated Player or Subtitles source.
 func MediaSource(item library.Item, facts playback.MediaFacts, plan playback.PlaybackPlan, policy MediaSourcePolicy, playID, token string) (map[string]any, error) {
 	if !validRequiredValue(playID, 256) || !validOptionalValue(token, 256) {
 		return nil, errors.New("jellyfin media source identity is invalid")
@@ -109,7 +103,6 @@ func MediaSource(item library.Item, facts playback.MediaFacts, plan playback.Pla
 	})
 }
 
-// Image finds and serves artwork through Player's public-image policy.
 func (module PlaybackHTTP) Image(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {
@@ -127,7 +120,6 @@ func (module PlaybackHTTP) Image(writer http.ResponseWriter, request *http.Reque
 	http.ServeFile(writer, request, item.Artwork)
 }
 
-// ArtworkItem selects item, series, or season artwork from visible content.
 func (module PlaybackHTTP) ArtworkItem(request *http.Request, id string) (library.Item, bool) {
 	if item, found := module.VisibleItem(request, RawID(id)); found {
 		return item, true

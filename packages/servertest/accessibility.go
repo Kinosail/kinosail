@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// AgentConnectionsExposeAccessibleConsentAndSettingsLandmarks verifies agent setup guidance.
 func AgentConnectionsExposeAccessibleConsentAndSettingsLandmarks(t *testing.T, handler http.Handler, origin string) {
 	t.Helper()
 	response := httptest.NewRecorder()
@@ -19,7 +18,6 @@ func AgentConnectionsExposeAccessibleConsentAndSettingsLandmarks(t *testing.T, h
 	}
 }
 
-// AccountJourneysExposeMainLandmarks verifies the unauthenticated account pages.
 func AccountJourneysExposeMainLandmarks(t *testing.T, handler http.Handler) {
 	t.Helper()
 	for _, path := range []string{"/setup", "/login", "/quick-connect"} {

@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// VersionedAPIMissingResources verifies missing-resource failures across public capabilities.
 func (fixture LibraryAPIFixture) VersionedAPIMissingResources(t *testing.T) {
 	handler, token := fixture.Server(t)
 	for _, call := range []struct{ method, path string }{

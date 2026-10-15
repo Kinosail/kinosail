@@ -7,8 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// MigrateBrowserCookie preserves a validated legacy session at the app's cookie name.
-// It does not renew authentication, change server state, or delete a sibling's cookie.
 func (sessions *RequestSessions) MigrateBrowserCookie(writer http.ResponseWriter, request *http.Request) {
 	if writer == nil || sessions == nil || !sessions.valid() {
 		return

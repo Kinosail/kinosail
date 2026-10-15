@@ -31,8 +31,6 @@ for (const scenario of scenarios) test(`download navigation preserves original $
     }
     if (calls === 1) {
       if (scenario === "wrong-worker" || scenario === "wrong-scope") {
-        // Finish the app's own worker registration before replacing it. An
-        // activated controller alone does not settle the offline bootstrap.
         expect(await page.evaluate(async () => {
           const api = (window as Window & {KinosailOfflineMedia: {source: (id: string) => Promise<string>}}).KinosailOfflineMedia;
           return api.source("bbbbbbbbbbbbbbbb");
@@ -102,7 +100,6 @@ for (const scenario of scenarios) test(`download navigation preserves original $
     expect(result.ok).toBe(eligible);
     const replacement = browser.browserType().name() === "firefox" && ["ready", "repeated-timeout", "replacement-http-error", "replacement-redirect"].includes(scenario);
     expect(calls).toBe(replacement ? 2 : 1);
-    // A redirect followed inside the native worker exposes its final URL to Firefox.
     expect(documents).toBe(eligible ? 3 : replacement && scenario !== "replacement-redirect" ? 2 : 1);
     const stats = await peer.stats();
     expect(stats.ranges).toEqual(scenario === "unexpected-transfer" || scenario === "late-transfer" && browser.browserType().name() === "firefox" ? [0] : []);

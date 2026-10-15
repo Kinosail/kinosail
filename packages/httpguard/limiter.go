@@ -14,13 +14,11 @@ type window struct {
 	reset time.Time
 }
 
-// Limiter bounds one-minute request counters and tracked client state.
 type Limiter struct {
 	mu      sync.Mutex
 	windows map[string]window
 }
 
-// Allow records a request and reports whether it is inside the supplied limit.
 func (limiter *Limiter) Allow(key string, maximum int) bool {
 	now := time.Now()
 	limiter.mu.Lock()
@@ -47,21 +45,18 @@ func (limiter *Limiter) Allow(key string, maximum int) bool {
 	return current.count <= maximum
 }
 
-// Reset removes the request counter for one normalized key.
 func (limiter *Limiter) Reset(key string) {
 	limiter.mu.Lock()
 	delete(limiter.windows, key)
 	limiter.mu.Unlock()
 }
 
-// TrackedClients reports the number of active client counters.
 func (limiter *Limiter) TrackedClients() int {
 	limiter.mu.Lock()
 	defer limiter.mu.Unlock()
 	return len(limiter.windows)
 }
 
-// RemoteHost removes a valid port from a remote network address.
 func RemoteHost(remote string) string {
 	host, _, err := net.SplitHostPort(remote)
 	if err != nil {

@@ -1,4 +1,3 @@
-/* Personal mobile destinations; More always preserves access to the full library. */
 const mobileTabCatalog = [
   ["all", "Home"], ["shows", "TV Shows"], ["movies", "Movies"], ["search", "Search"], ["list", "My List"],
   ["music", "Music"], ["audiobooks", "Audiobooks"], ["books", "Books"], ["photos", "Photos"],
@@ -148,8 +147,6 @@ function initializeMobileTabs(nav) {
   });
   document.addEventListener("htmx:after:swap", renderNavigation);
 }
-// Theme runs while HTML parses. Wait only for the complete navigation subtree,
-// so saved/default tab labels and wrapping are present at the first paint.
 (() => {
   let initialized = false;
   const initialize = () => {

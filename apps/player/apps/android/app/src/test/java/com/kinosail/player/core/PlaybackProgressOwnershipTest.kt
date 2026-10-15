@@ -17,11 +17,6 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
 
-/**
- * Public playback/journal callers and a gated HTTP server reproduce late progress replies.
- * Existing browser and native journeys do not hold an Android progress reply across stop/restart.
- * Cover late conflict, late failure, and same-title restart; keep active conflict and failure feedback.
- */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -58,8 +53,6 @@ class PlaybackProgressOwnershipTest {
 
     @Test fun stoppingWithAQueuedProgressReplyCannotRestoreConflict() = journey(409) { model, _, journal, reply, resolution ->
         reply.release.countDown()
-        // This I/O job only creates a child when dispatching its UI commit to Main.
-        // Leave Main paused until that child exists, then stop before it can run.
         awaitWithoutMain { journal.pending().singleOrNull()?.conflict == changedAgain && resolution.children.any() }
         model.stop()
         assertProgressStaysClear(model, resolution)
@@ -134,7 +127,6 @@ class PlaybackProgressOwnershipTest {
     }
 
     private fun assertProgressStaysClear(model: PlaybackModel, resolution: Job) {
-        // Wait for the public lifecycle job, so cleanup cannot cancel a harmful reply after the assertion.
         await {
             assertFalse("A previous playback session must not restore a conflict", model.progressConflict)
             assertNull("A previous playback session must not restore a notice", model.progressNotice)

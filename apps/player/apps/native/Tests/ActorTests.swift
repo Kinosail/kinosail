@@ -187,7 +187,6 @@ struct ActorTests {
         let saved = try await reopened.actor(name: "Amy Adams", policy: .cached)
         #expect(saved.movies.first?.title == "Arrival")
         #expect(fixture.requests.count == 1)
-        // The fixture returns Amy Adams for another actor: reject the mismatch before caching.
         await #expect(throws: ClientError.self) { try await reopened.actor(name: "Someone else") }
         await #expect(throws: CatalogCacheMiss.self) { try await reopened.actor(name: "Someone else", policy: .cached) }
         #expect(fixture.requests.count == 2)

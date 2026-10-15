@@ -1,7 +1,6 @@
 import Foundation
 import Network
 
-/// State is confined to the gateway's serial queue, including Network callbacks.
 final class MediaConnection: MediaTransferConsumer, @unchecked Sendable {
     private let connection: NWConnection
     private let queue: DispatchQueue

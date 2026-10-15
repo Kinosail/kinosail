@@ -12,13 +12,11 @@ import (
 )
 
 const (
-	// Version is the Player-authoritative Jellyfin compatibility version.
 	Version             = "12.0.0"
 	maxCredentialsBytes = 1 << 20
 )
 
 var (
-	// Password-login errors map app-owned identity outcomes to the Jellyfin contract.
 	ErrPublicPasswordLogin = errors.New("public password login is disabled; use Quick Connect") //nolint:staticcheck // Product term starts with a capital.
 	ErrInvalidCredentials  = errors.New("invalid credentials")
 	ErrCredentialRateLimit = errors.New("too many login attempts")
@@ -34,30 +32,24 @@ var jellyfinPrefixes = []string{
 	"/Branding/", "/MediaSegments/", "/Playback/",
 }
 
-// Credentials is the bounded Jellyfin password-login document.
 type Credentials struct{ Username, Pw, Password string }
 
-// User contains app-owned profile facts used by Jellyfin projections.
 type User struct {
 	ID, Name, ServerID, ServerName                  string
 	HasPassword, Owner, Disabled, Downloads, Remote bool
 }
 
-// Authentication is one completed app-owned Jellyfin login.
 type Authentication struct {
 	Token string
 	User  User
 }
 
-// CoreHandlers contains app-owned adapters for the stable Jellyfin entry routes.
 type CoreHandlers struct {
 	SystemInfo, Views, BitrateTest, Authenticate, User, Users, CreateAuthKey, AuthKeys, Logout http.HandlerFunc
 }
 
-// QuickConnectHandlers contains app-owned operations for the stable Jellyfin Quick Connect routes.
 type QuickConnectHandlers struct{ Start, Status, Approve, Authenticate http.HandlerFunc }
 
-// Path reports whether a request path belongs to the Jellyfin compatibility API.
 func Path(path string) bool {
 	for _, prefix := range jellyfinPrefixes {
 		if strings.HasPrefix(path, prefix) {
@@ -67,7 +59,6 @@ func Path(path string) bool {
 	return false
 }
 
-// RegisterCore registers the stable Jellyfin entry route contract.
 func RegisterCore(mux *http.ServeMux, handlers CoreHandlers) {
 	mux.HandleFunc("GET /System/Info/Public", handlers.SystemInfo)
 	mux.HandleFunc("GET /system/info/public", handlers.SystemInfo)
@@ -87,7 +78,6 @@ func RegisterCore(mux *http.ServeMux, handlers CoreHandlers) {
 	mux.HandleFunc("POST /Sessions/Logout", handlers.Logout)
 }
 
-// RegisterQuickConnect registers the stable Jellyfin Quick Connect route contract.
 func RegisterQuickConnect(mux *http.ServeMux, handlers QuickConnectHandlers) {
 	mux.HandleFunc("GET /QuickConnect/Enabled", Value(true))
 	mux.HandleFunc("GET /QuickConnect/Initiate", handlers.Start)
@@ -97,7 +87,6 @@ func RegisterQuickConnect(mux *http.ServeMux, handlers QuickConnectHandlers) {
 	mux.HandleFunc("POST /Users/AuthenticateWithQuickConnect", handlers.Authenticate)
 }
 
-// SystemInfo projects the stable Jellyfin server identity.
 func SystemInfo(id, name, address string, configured bool) map[string]any {
 	return map[string]any{
 		"Id": id, "ServerName": name, "Version": Version, "ProductName": "Jellyfin Server", "OperatingSystem": "Linux",
@@ -105,7 +94,6 @@ func SystemInfo(id, name, address string, configured bool) map[string]any {
 	}
 }
 
-// UserDTO projects app-owned profile facts to the Jellyfin user contract.
 func UserDTO(user User) map[string]any {
 	return map[string]any{
 		"Id": user.ID, "Name": user.Name, "ServerId": user.ServerID, "ServerName": user.ServerName, "HasPassword": user.HasPassword,
@@ -114,16 +102,13 @@ func UserDTO(user User) map[string]any {
 	}
 }
 
-// AuthenticationResult projects one completed Jellyfin login.
 func AuthenticationResult(authentication Authentication) map[string]any {
 	user := authentication.User
 	return map[string]any{"AccessToken": authentication.Token, "ServerId": user.ServerID, "User": UserDTO(user), "SessionInfo": map[string]any{"UserId": user.ID, "UserName": user.Name}}
 }
 
-// JSON writes one uncached Jellyfin JSON response.
 func JSON(writer http.ResponseWriter, value any) { JSONStatus(writer, value, http.StatusOK) }
 
-// JSONStatus writes one uncached Jellyfin JSON response with an explicit status.
 func JSONStatus(writer http.ResponseWriter, value any, status int) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Cache-Control", "no-store")
@@ -131,15 +116,12 @@ func JSONStatus(writer http.ResponseWriter, value any, status int) {
 	_ = json.NewEncoder(writer).Encode(value)
 }
 
-// Value returns a handler for one fixed Jellyfin JSON value.
 func Value(value any) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) { JSON(writer, value) }
 }
 
-// Empty writes one successful response without a body.
 func Empty(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusNoContent) }
 
-// PasswordAuthentication validates and translates one app-owned password login.
 func PasswordAuthentication(public func(*http.Request) bool, login func(*http.Request, Credentials) (Authentication, error)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if public(request) {
@@ -187,7 +169,6 @@ func passwordError(writer http.ResponseWriter, err error) {
 	http.Error(writer, err.Error(), status)
 }
 
-// QuickConnectRequest extracts the required bounded Jellyfin device identity.
 func QuickConnectRequest(request *http.Request, remote bool) (quickconnect.Request, bool) {
 	device, deviceValid := strictMediaBrowserValue(request, "Device")
 	deviceID, deviceIDValid := strictMediaBrowserValue(request, "DeviceId")
@@ -201,7 +182,6 @@ func QuickConnectRequest(request *http.Request, remote bool) (quickconnect.Reque
 	return identity, deviceValid && deviceIDValid && clientValid && versionValid && device != "" && deviceID != "" && client != "" && version != ""
 }
 
-// QuickConnectDTO projects shared authorization state to the Jellyfin contract.
 func QuickConnectDTO(secret string, pending quickconnect.Connection) map[string]any {
 	return map[string]any{
 		"Authenticated": pending.Approved, "Secret": secret, "Code": pending.Code, "DateAdded": pending.Created,
@@ -209,7 +189,6 @@ func QuickConnectDTO(secret string, pending quickconnect.Connection) map[string]
 	}
 }
 
-// StartQuickConnect validates identity, applies the protocol rate limit, and creates one request.
 func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connections *quickconnect.Broker, starts *httpguard.Limiter, remote bool) {
 	identity, valid := QuickConnectRequest(request, remote)
 	if !valid {
@@ -233,7 +212,6 @@ func StartQuickConnect(writer http.ResponseWriter, request *http.Request, connec
 	JSON(writer, QuickConnectDTO(secret, pending))
 }
 
-// QuickConnectStatus applies the protocol poll limit and writes current request state.
 func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, connections *quickconnect.Broker, polls *httpguard.Limiter) {
 	if !polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		writer.Header().Set("Retry-After", "60")
@@ -253,7 +231,6 @@ func QuickConnectStatus(writer http.ResponseWriter, request *http.Request, conne
 	JSON(writer, QuickConnectDTO(secret, pending))
 }
 
-// AuthenticateQuickConnect validates one secret and delegates app-owned session creation.
 func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request, polls *httpguard.Limiter, authenticate func(string) (Authentication, error)) {
 	if !polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		writer.Header().Set("Retry-After", "60")
@@ -277,7 +254,6 @@ func AuthenticateQuickConnect(writer http.ResponseWriter, request *http.Request,
 	JSON(writer, AuthenticationResult(authentication))
 }
 
-// WriteQuickConnectApproval maps app-owned approval outcomes to Jellyfin responses.
 func WriteQuickConnectApproval(writer http.ResponseWriter, request *http.Request, err error) {
 	switch {
 	case err == nil:

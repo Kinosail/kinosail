@@ -2,8 +2,6 @@ import {expect, test} from "@playwright/test";
 import {createHash} from "node:crypto";
 import {playerSource} from "./static-sources";
 
-// Isolated ordering fault: a real Server cannot deterministically hold the
-// browser's play promise across a new-source pause. No production CSP is changed.
 test.use({baseURL: "https://queue-progress.test"});
 
 test("new track pause is dispatched after watched continuation release", {tag: "@smoke"}, async ({page}, testInfo) => {
@@ -43,8 +41,6 @@ test("new track pause is dispatched after watched continuation release", {tag: "
     await expect(audio).toHaveAttribute("data-progress", "/progress/next");
     await expect.poll(() => audio.evaluate((media: HTMLAudioElement) => new URL(media.src).pathname)).toBe("/media/next");
     await page.waitForFunction("typeof window.releaseQueuePlayback === 'function'");
-    // A new source inherits no activity from the completed track, even with a
-    // positive stale decoder sample while its first Play promise is pending.
     await audio.dispatchEvent("pause");
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     expect(writes).toEqual([{path:"/progress/first",seconds:"0",watched:"true"}]);
@@ -58,9 +54,6 @@ test("new track pause is dispatched after watched continuation release", {tag: "
   }
 });
 
-// Supersession failure: pagehide must dispatch the latest position immediately,
-// but a retired sender must not repeat it when a held play promise later settles.
-// The closing response is held to preserve the real HTTP ordering boundary.
 test("pagehide dispatches latest position once while retired watched continuation settles", {tag: "@smoke"}, async ({page}, testInfo) => {
   const writes: Array<{path: string; seconds: string | null; watched: string | null; revision: string | null}> = [];
   let releaseClosing!: () => void;
@@ -103,8 +96,6 @@ test("pagehide dispatches latest position once while retired watched continuatio
     await audio.dispatchEvent("ended");
     await expect(audio).toHaveAttribute("data-progress", "/progress/next");
     await page.waitForFunction("typeof window.releaseQueuePlayback === 'function'");
-    // Capture only the retired promise for deterministic continuation settlement;
-    // correctness below is the observable request list and policy failure state.
     await page.evaluate("void (window.retiredProgressSender = progressFlight)");
     await audio.evaluate((media: HTMLAudioElement) => {media.currentTime = 3; media.dispatchEvent(new Event("seeking")); media.dispatchEvent(new Event("seeked")); media.dispatchEvent(new Event("pause"));});
     await audio.evaluate((media: HTMLAudioElement) => media.currentTime = 4);

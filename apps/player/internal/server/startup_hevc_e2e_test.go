@@ -21,8 +21,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// Real codecs and network delivery protect the short copied-video tail. The
-// synthetic preparation encoder cannot prove that the final frames decode.
 func TestShortHEVCStartupPreparationPreservesEveryDecodedVideoFrame(t *testing.T) {
 	ffmpeg, ffprobe := hevcTools(t)
 	ctx, cancel := context.WithTimeout(t.Context(), 75*time.Second)

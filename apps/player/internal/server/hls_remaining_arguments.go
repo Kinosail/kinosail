@@ -10,8 +10,6 @@ type remainingAudioOrigin struct {
 	drop   string
 }
 
-// A short origin replay retains the AAC encoder history of the existing prefix.
-// Keep the replay bounded to the qualified sample grid and plain FLAC mapping.
 func remainingAudioOriginRefill(facts MediaFacts, source, window hlsRecipe, start float64, number int, rate string) *remainingAudioOrigin {
 	if !remainingOriginSource(facts, start) || rate != "192000" || !(start > 0) || number <= 0 ||
 		!remainingOriginRecipes(source, window, start) {
@@ -51,8 +49,6 @@ func remainingOriginRecipes(source, window hlsRecipe, start float64) bool {
 }
 
 func remainingOriginTarget(start float64, number int, duration float64) (float64, bool) {
-	// EXTINF is rounded to six decimals. Admit only its accumulated rounding
-	// around the existing three-decimal FFmpeg target, never another codec cut.
 	target, err := strconv.ParseFloat(ffmpegSeconds(start), 64)
 	return target, err == nil && target > 0 && target <= 8 && duration > target && target == float64(number)*2 &&
 		math.Abs(start-target) <= float64(number)*0.0000005+1e-12

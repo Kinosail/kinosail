@@ -1,4 +1,3 @@
-// Fetch captions outside the media loader: a pending default track blocks Safari playback.
 const subtitleElements = [...player.querySelectorAll("track[data-subtitle-source]")];
 const subtitleStatus = document.querySelector("[data-subtitle-status]");
 const subtitleRetry = document.querySelector("[data-subtitle-retry]");

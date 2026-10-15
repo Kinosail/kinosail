@@ -11,12 +11,10 @@ import (
 	"testing"
 )
 
-// SubtitlePreferenceFixture binds a real application to its media tool paths.
 type SubtitlePreferenceFixture struct {
 	NewHandler func(media, data, ffprobe, ffmpeg string) http.Handler
 }
 
-// AlwaysOnSubtitlesRemainDirect verifies subtitle extraction without video transcoding.
 func (fixture SubtitlePreferenceFixture) AlwaysOnSubtitlesRemainDirect(t *testing.T) { //nolint:cyclop // One lifecycle proves setting, direct media, and subtitle extraction.
 	t.Parallel()
 	media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()

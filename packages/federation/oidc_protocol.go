@@ -35,12 +35,10 @@ func validateOIDCProvider(provider oidcProviderMetadata) error {
 	return nil
 }
 
-// TrustedURL accepts HTTPS endpoints and explicit loopback HTTP endpoints.
 func TrustedURL(endpoint *url.URL) bool {
 	return endpoint != nil && endpoint.Host != "" && endpoint.User == nil && endpoint.RawQuery == "" && endpoint.Fragment == "" && (endpoint.Scheme == "https" || endpoint.Scheme == "http" && (endpoint.Hostname() == "127.0.0.1" || endpoint.Hostname() == "localhost"))
 }
 
-// ValidSubject reports whether a provider identity is safe to store and compare.
 func ValidSubject(subject string) bool {
 	if subject == "" || len(subject) > 255 || !utf8.ValidString(subject) {
 		return false

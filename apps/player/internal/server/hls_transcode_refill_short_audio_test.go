@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-// Replay the original warm-up budget defect through the real encoder. A zero
-// encoder exit must not authorize publication of an incomplete AAC packet grid.
 func transcodeRefillRejectShortAudio(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment, source, adapter string, beforeOwned int, logs *copiedLogBuffer) int {
 	t.Helper()
 	original := transcodeRefillRead(t, adapter)

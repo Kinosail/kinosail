@@ -66,7 +66,6 @@ test("Safari startup waits after preparation restores a position following block
   await video.dispatchEvent("progress");
   await expect(video).toHaveJSProperty("currentTime", 20);
   await expect(page.locator("[data-player-status]")).toBeVisible();
-  // WebKit can deliver the preparation's queued playing event after pause and seek.
   await video.dispatchEvent("playing");
   await expect(video).toHaveJSProperty("paused", true);
   await expect(page.locator("[data-player-status]")).toBeVisible();
@@ -191,7 +190,6 @@ for (const pauseDelivery of ["immediate", "queued pause"]) test(`Safari startup 
   await expect(video).toHaveJSProperty("paused", false);
   await expect(video).toHaveJSProperty("muted", false);
   await expect(status).toBeHidden();
-  // A stale preparation promise must not pause the user's playback.
   await page.evaluate(() => (window as Window & {finishPlay: () => void}).finishPlay());
   await expect(video).toHaveJSProperty("paused", false);
   await page.evaluate(() => (window as Window & {advanceMediaTime: (value: number) => void}).advanceMediaTime(25));

@@ -134,7 +134,7 @@ def settle_owned(pid):
         except ProcessLookupError:
             return True
         except PermissionError:
-            pass  # Darwin can retain an exiting group with no signalable members.
+            pass
         deadline = time.monotonic() + 2
         while time.monotonic() < deadline:
             try:
@@ -142,7 +142,7 @@ def settle_owned(pid):
             except ProcessLookupError:
                 return True
             except PermissionError:
-                pass  # Permission denial is not proof of absence; keep the bound.
+                pass
             time.sleep(0.025)
     return False
 

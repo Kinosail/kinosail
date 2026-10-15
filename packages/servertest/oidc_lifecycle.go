@@ -11,7 +11,6 @@ import (
 
 func assertUnlinkedOIDCIdentity(t *testing.T, handler http.Handler, nonce *string) {
 	t.Helper()
-	// A valid provider identity is rejected until a local Viewer explicitly links it.
 	start := httptest.NewRecorder()
 	handler.ServeHTTP(start, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/session/oidc", nil))
 	location := MustOIDCAuthorization(t, start)
@@ -33,7 +32,6 @@ func assertUnlinkedOIDCIdentity(t *testing.T, handler http.Handler, nonce *strin
 
 func assertOIDCProfileLink(t *testing.T, fixture OIDCFixture, handler http.Handler, dataDir, issuer string, nonce *string, owner *http.Cookie) []byte {
 	t.Helper()
-	// The already-authenticated Viewer initiates linking; no profile is provisioned.
 	link := httptest.NewRecorder()
 	linkRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/me/oidc/link", nil)
 	linkRequest.AddCookie(owner)
@@ -57,7 +55,6 @@ func assertOIDCProfileLink(t *testing.T, fixture OIDCFixture, handler http.Handl
 
 func assertLinkedOIDCSessions(t *testing.T, fixture OIDCFixture, handler http.Handler, nonce *string, profiles []byte, secret string, owner *http.Cookie) {
 	t.Helper()
-	// The linked identity can now create a session for that exact local Profile.
 	start := httptest.NewRecorder()
 	handler.ServeHTTP(start, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/session/oidc", nil))
 	location := MustOIDCAuthorization(t, start)

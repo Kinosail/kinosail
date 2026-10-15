@@ -1,4 +1,3 @@
-// Queue metadata stays page-owned. Fresh canonical item reads authorize each move.
 let audioQueue = [], queueItems = [], queueCursor = 0, queueFlight, queuedAudio, queueReadRequestID = "", queuePageClosed = false, queueLoadingIntent;
 const queueControls = document.querySelector("[data-audio-queue-controls]");
 const queueStatus = document.querySelector("[data-audio-queue-status]");
@@ -63,8 +62,6 @@ player.addEventListener("kinosail:seek-intent", () => {
   if (!queueSourceChanging || !queueOwned() || !player.isConnected) return;
   const intent = {item: progressItem(), source: player.src};
   queueLoadingIntent = intent;
-  // The normal setter emits intent before assigning its target. Read it after
-  // that synchronous setter, before any real media event can resume progress.
   queueMicrotask(() => {
     if (queueLoadingIntent !== intent || !queueOwned() || !player.isConnected || !queueSourceChanging ||
         intent.item !== progressItem() || intent.source !== player.src) return;
@@ -76,7 +73,7 @@ const queuePositionText = () => `${queueStatus?.dataset.trackLabel || "Track"} $
 const queueHandlers = () => {
   for (const [action, handler] of [["previoustrack", queueCursor > 0 && queueOwned() ? () => moveAudioQueue(-1) : null],
     ["nexttrack", audioQueue.length && queueOwned() ? () => moveAudioQueue(1) : null]]) {
-    try { navigator.mediaSession?.setActionHandler(action, handler); } catch (_) { /* Page controls remain usable. */ }
+    try { navigator.mediaSession?.setActionHandler(action, handler); } catch (_) {   }
   }
 };
 const refreshQueueControls = () => {
@@ -118,8 +115,6 @@ const scopeCurrentTrackActions = item => {
   if (actions) actions.hidden = false;
 };
 const commitAudioQueueItem = (item, cursor) => {
-  // Dispatch old buffered events before the endpoint changes. No asynchronous
-  // work separates the validated source, all identities, and displayed metadata.
   flushPlaybackTrace(); queueSourceChanging = true; queueProgressReady = false; progressPlayedItem = undefined; queueLoadingIntent = undefined;
   window.KinosailOfflineMedia?.unbindProgress(player); delete player.dataset.offline;
   Object.assign(player.dataset, {progress: `/progress/${item.id}`, title: item.title, artist: item.artist, album: item.album,
@@ -157,7 +152,6 @@ const moveAudioQueue = (delta, saveCurrent = true) => {
       if (!queueCurrent(context)) throw queueError("ownership");
       if (body.profileId !== context.profile || body.item?.id !== target.id) throw queueError("invalid");
       const item = queueItem(body.item);
-      // Rejected authorization never writes the current track's progress.
       if (saveCurrent && queueProgressReady && !(await save(player.ended))?.ok) throw queueError("progress");
       if (!queueCurrent(context)) throw queueError("ownership");
       commitAudioQueueItem(item, cursor);

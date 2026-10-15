@@ -20,7 +20,7 @@ const mediaState = (video: Locator) => video.evaluate((media: HTMLVideoElement) 
 });
 const sourceDigest = (source: string, baseURL = "https://private-fixture.invalid") => {
   const original = new URL(source, baseURL);
-  original.hash = ""; // Resume position belongs to the existing source-change controller.
+  original.hash = "";
   return createHash("sha256").update(original.href).digest("hex");
 };
 
@@ -81,7 +81,6 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
     expect(receipt.states.pending.status.busy).toBe("true");
     expect(receipt.states.pending.ready).toBe(0);
     await page.screenshot({path: info.outputPath(`direct-${viewport.width}-pending.png`)});
-    // Removing this route while its callback is suspended makes Playwright handle it twice.
     mediaMode = "pass"; release();
     await expect.poll(() => video.evaluate((media: HTMLVideoElement) => media.readyState)).toBeGreaterThanOrEqual(3);
     await expect(page.locator("[data-player-status]")).toBeHidden();
@@ -140,8 +139,6 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
     throw error;
   } finally {
     mediaMode = "pass"; releasePending?.();
-    // These fresh journey pages own only this route. Drain callbacks before removal,
-    // retaining any route failures rather than suppressing them at teardown.
     try {if (ownedRouteInstalled) await page.unrouteAll({behavior: "wait"});}
     catch (error) {
       receipt.result = "failed";
@@ -151,7 +148,7 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
     try {
       receipt.states.final = await mediaState(video);
       await page.screenshot({path: info.outputPath(`direct-${viewport.width}-final.png`)});
-    } catch { /* The page may have failed before a video was rendered. */ }
+    } catch {   }
     const artifact = info.outputPath(`direct-${viewport.width}-retry-receipt.json`);
     await writeFile(artifact, JSON.stringify(receipt, null, 2));
     await info.attach(`direct-${viewport.width}-retry-receipt`, {path: artifact, contentType: "application/json"});
@@ -159,7 +156,6 @@ export async function verifyDirectRetry(page: Page, info: TestInfo, browserName:
   }
 }
 
-// Reuse the current Viewer state after setup; this creates no profile.
 export async function verifyAuthenticatedDirectRetryWidths(authenticatedPage: Page, info: TestInfo) {
   const browser = authenticatedPage.context().browser();
   if (!browser) throw new Error("direct retry needs the existing test browser");

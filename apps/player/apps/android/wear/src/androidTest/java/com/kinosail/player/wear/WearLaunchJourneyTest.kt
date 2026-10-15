@@ -28,13 +28,11 @@ import org.junit.runner.RunWith
 class WearLaunchJourneyTest {
     @get:Rule val compose = createEmptyComposeRule()
 
-    // Rendered WatchApp fixtures miss the real Activity entrypoint, lifecycle, and platform Data Layer.
     @Test fun unpairedWatchLaunchesAndSurvivesRecreation() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val context = instrumentation.targetContext
         assertTrue("Wear launch requires a watch", context.packageManager.hasSystemFeature(PackageManager.FEATURE_WATCH))
         assertTrue("Hosted watch profile must be round", context.resources.configuration.isScreenRound)
-        // Connect the observer before launching the Activity.
         val automation = checkNotNull(instrumentation.uiAutomation) { "UI automation must connect before launch" }
         fun foregroundIsApp(): Boolean {
             automation.clearCache()
@@ -76,7 +74,6 @@ class WearLaunchJourneyTest {
                 phase = "accessibility-setup"
                 compose.enableAccessibilityChecks()
                 fun verifyAndCapture() {
-                    // Compose visibility alone can pass behind a system welcome screen.
                     phase = "foreground"
                     compose.waitUntil(10_000) { foregroundIsApp() }
                     phase = "content"
@@ -86,7 +83,6 @@ class WearLaunchJourneyTest {
                     compose.onNodeWithText("Connect phone").assertIsDisplayed()
                         .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
                     compose.onNodeWithText("Pair Android phone.").assertIsDisplayed()
-                    // Rectangular Compose visibility can miss clipping by the round display.
                     val viewport = compose.onRoot().fetchSemanticsNode().boundsInRoot
                     val brand = compose.onNodeWithText("KINOSAIL").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
                     val radius = minOf(viewport.width, viewport.height) / 2

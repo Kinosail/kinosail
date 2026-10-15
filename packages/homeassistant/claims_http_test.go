@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// These registered public-route tests control time/profile boundaries that the
-// populated browser cannot force. They are isolated protocol proof, not app E2E.
 func claimedHTTPTest(t *testing.T) (*testState, *Integration[testProfile], func(string, string, string, ...string) *httptest.ResponseRecorder) {
 	t.Helper()
 	state, integration, _ := registeredHTTPTest(t)

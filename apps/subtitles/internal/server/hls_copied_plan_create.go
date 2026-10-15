@@ -69,8 +69,6 @@ func (manager *hlsManager) selectCopiedHLSPlan(ctx context.Context, item library
 }
 
 func copiedHLSIndexEligible(recipe hlsRecipe, probe probeResult) bool {
-	// MOV uses PTS seeking in both the source scan and the copying encoder.
-	// Other demuxers can retain different keys for the same requested offset.
 	return len(recipe.omitted) == 0 && probe.Video.Codec == "h264" &&
 		(recipe.offset == 0 || recipe.mode == "remux" && (probe.Container == "mov" || probe.Container == "mp4"))
 }
@@ -127,8 +125,6 @@ func (plan *copiedHLSPlan) segmentMode(mode string) string {
 	return mode
 }
 
-// A short copied suffix can retain earlier packets than its requested offset.
-// Publish its actual completed map instead of extrapolating a shorter timeline.
 func completedCopiedHLSWindow(recipe hlsRecipe, duration float64) bool {
 	remaining := playback.HLSPlaybackDuration(sharedHLSRecipe(recipe), duration)
 	return copiedHLSMode(recipe) && recipe.offset > 0 && remaining > 0 && remaining <= 30

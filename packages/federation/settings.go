@@ -32,7 +32,6 @@ var (
 	samlSettingKeys  = []string{SAMLMetadataURLKey, SAMLMetadataXMLKey, SAMLIdentityKey}
 )
 
-// Settings owns atomic persistence mechanics for coupled OIDC and SAML configuration.
 type Settings struct {
 	dataDir        string
 	lock           sync.Locker
@@ -42,12 +41,10 @@ type Settings struct {
 	persist        func(string, map[string]string, map[string]string, bool, bool) error
 }
 
-// NewSettings adapts one app's configuration storage to shared federation mutations.
 func NewSettings(dataDir string, lock sync.Locker, validateValue func(string, string) error, read func(string) (map[string]string, map[string]string, error), validateStored func(map[string]string, map[string]string) error, persist func(string, map[string]string, map[string]string, bool, bool) error) Settings {
 	return Settings{dataDir: dataDir, lock: lock, validateValue: validateValue, read: read, validateStored: validateStored, persist: persist}
 }
 
-// SetOIDC changes the complete OpenID Connect client as one validated operation.
 func (settings Settings) SetOIDC(config OIDCConfig) error {
 	if config.IdentityClaim == "" {
 		config.IdentityClaim = "sub"
@@ -66,7 +63,6 @@ func (settings Settings) SetOIDC(config OIDCConfig) error {
 	})
 }
 
-// DeleteOIDC removes the complete OpenID Connect client as one operation.
 func (settings Settings) DeleteOIDC() error {
 	return settings.change(true, "", func(regular, secrets map[string]string) error {
 		for _, key := range oidcSettingKeys {
@@ -77,7 +73,6 @@ func (settings Settings) DeleteOIDC() error {
 	})
 }
 
-// SetSAML changes the provider metadata source as one validated operation.
 func (settings Settings) SetSAML(config SAMLConfig) error {
 	if config.IdentityAttribute == "" {
 		config.IdentityAttribute = "NameID"
@@ -104,7 +99,6 @@ func (settings Settings) SetSAML(config SAMLConfig) error {
 	})
 }
 
-// DeleteSAML removes the provider metadata source as one operation.
 func (settings Settings) DeleteSAML() error {
 	return settings.change(false, "save SAML configuration", func(regular, _ map[string]string) error {
 		for _, key := range samlSettingKeys {
@@ -134,7 +128,6 @@ func (settings Settings) change(writeSecrets bool, persistContext string, update
 	return err
 }
 
-// IsOIDCKey reports whether one storage key is part of the coupled OIDC client.
 func IsOIDCKey(key string) bool {
 	for _, candidate := range oidcSettingKeys {
 		if candidate == key {
@@ -144,7 +137,6 @@ func IsOIDCKey(key string) bool {
 	return false
 }
 
-// IsSAMLKey reports whether one storage key is part of the coupled SAML provider.
 func IsSAMLKey(key string) bool {
 	for _, candidate := range samlSettingKeys {
 		if candidate == key {
@@ -154,7 +146,6 @@ func IsSAMLKey(key string) bool {
 	return false
 }
 
-// ValidateOIDC enforces all-or-none coupled OIDC configuration.
 func ValidateOIDC(value func(string) string) error {
 	configured := false
 	for _, key := range oidcRequiredKeys {
@@ -171,7 +162,6 @@ func ValidateOIDC(value func(string) string) error {
 	return nil
 }
 
-// ValidateSAML enforces one metadata source at most.
 func ValidateSAML(value func(string) string) error {
 	metadataURL, metadataXML := value(SAMLMetadataURLKey), value(SAMLMetadataXMLKey)
 	if metadataURL != "" && metadataXML != "" {
@@ -180,7 +170,6 @@ func ValidateSAML(value func(string) string) error {
 	return nil
 }
 
-// ValidIdentityURL accepts HTTPS and explicit loopback HTTP without credentials, query, or fragment.
 func ValidIdentityURL(raw string) bool {
 	if !boundedURLText(raw) {
 		return false
@@ -189,7 +178,6 @@ func ValidIdentityURL(raw string) bool {
 	return err == nil && TrustedURL(endpoint)
 }
 
-// BoundedIdentityText rejects oversized, malformed, and control-containing identity configuration.
 func BoundedIdentityText(raw string, maximum int) bool {
 	if len(raw) > maximum || !utf8.ValidString(raw) {
 		return false
@@ -202,7 +190,6 @@ func BoundedIdentityText(raw string, maximum int) bool {
 	return true
 }
 
-// ValidIdentityField validates an OIDC claim or SAML attribute name.
 func ValidIdentityField(raw string) bool {
 	if raw == "" || len(raw) > 256 || strings.TrimSpace(raw) != raw || !utf8.ValidString(raw) {
 		return false
@@ -215,7 +202,6 @@ func ValidIdentityField(raw string) bool {
 	return true
 }
 
-// ValidSAMLMetadata verifies metadata structure, a trusted supported endpoint, and a parseable certificate.
 func ValidSAMLMetadata(raw string) bool { //nolint:cyclop // Metadata structure, endpoint, and certificate validation stay together.
 	if raw == "" {
 		return true

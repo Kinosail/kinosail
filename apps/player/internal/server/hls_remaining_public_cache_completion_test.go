@@ -26,7 +26,6 @@ func remainingPublicObservePublication(t *testing.T) *remainingPublicPublication
 	previous := slog.Default()
 	previousOutput, previousFlags := log.Writer(), log.Flags()
 	publication := &remainingPublicPublication{}
-	// A standalone sink avoids reinstalling slog's default log bridge recursively.
 	slog.SetDefault(slog.New(remainingPublicCompletionHandler{Handler: slog.DiscardHandler, publication: publication}))
 	t.Cleanup(func() {
 		slog.SetDefault(previous)
@@ -72,7 +71,6 @@ func (publication *remainingPublicPublication) hasCompleted(expected int) bool {
 	return publication.completed == expected
 }
 
-// Each fixture response is bounded before buffering any incoming write.
 type remainingPublicResponse struct {
 	header http.Header
 	code   int

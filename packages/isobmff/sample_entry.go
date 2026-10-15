@@ -55,7 +55,6 @@ func (track *Track) configuration(format, kind string, payload []byte) error {
 	return nil
 }
 
-// readBitDepth follows codecConfiguration validation. Dolby Vision may ignore hvcC, so that box retains its length guard.
 func (track *Track) readBitDepth(kind string, payload []byte) {
 	switch kind {
 	case "avcC":

@@ -1,4 +1,3 @@
-/* Sailcraft honors use artwork for expression and shared roles for controls. */
 :root{--supporter-gold:#d6b96d;--supporter-ivory:#fff4bd;--supporter-live:#c8f169}
 .supporter-page{background:var(--bg)}
 .supporter-page #main.supporter-shell{display:grid;gap:40px;width:min(100% - 48px,1120px);max-width:1120px;margin:auto;padding:24px 0 64px;border:0;border-radius:0;background:none;box-shadow:none;backdrop-filter:none}

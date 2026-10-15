@@ -43,7 +43,6 @@ type eventDeliveryState struct {
 	generation uint64
 }
 
-// ObserveEvents connects the application's live updates to its MCP subscriptions.
 func (adapter *Gateway) ObserveEvents(ctx context.Context, hub *liveevents.Hub) {
 	if adapter == nil || adapter.connections == nil || ctx == nil || hub == nil {
 		return
@@ -51,7 +50,6 @@ func (adapter *Gateway) ObserveEvents(ctx context.Context, hub *liveevents.Hub) 
 	hub.SetObserver(func(profile, name, resource string) { adapter.PublishEvent(ctx, profile, name, resource) })
 }
 
-// PublishEvent queues a minimal notice within its optional Viewer Profile scope.
 func (adapter *Gateway) PublishEvent(ctx context.Context, profile, name, resource string) { //nolint:cyclop,gocognit // Profile filtering and bounded queue admission stay in one publication boundary.
 	if adapter == nil || adapter.connections == nil || ctx == nil || !eventResource(name, resource) || resource == "" {
 		return

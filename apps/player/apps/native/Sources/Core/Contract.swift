@@ -28,8 +28,6 @@ enum ClientError: LocalizedError, Equatable {
     }
 }
 
-// Decode remote JSON into Sendable values before it crosses actor boundaries.
-// Every consumed field is subsequently checked by its domain initializer.
 enum JSONValue: Codable, Sendable, Equatable {
     case object([String: JSONValue]), array([JSONValue]), string(String), number(Double), bool(Bool), null
 

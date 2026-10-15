@@ -161,8 +161,6 @@ if (controls && player.tagName === "VIDEO") {
         return;
       }
       try {
-        // Before metadata, play without playsinline lets iPhone open Apple when ready.
-        // Never retry fullscreen from a readiness callback without a fresh gesture.
         if (!player.webkitDisplayingFullscreen && player.readyState >= HTMLMediaElement.HAVE_METADATA) player.webkitEnterFullscreen();
         requestPlay("apple-play").catch(() => { restoreAppleLauncher(); reportControlFailure("Playback could not start. Try Play again."); });
       } catch (error) { restoreAppleLauncher(); reportFullscreenFailure(error); }

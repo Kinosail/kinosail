@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// The hosted control fails before decode and depends on mux/cleanup timing.
-// This captured prefix deterministically protects the readiness decision that
-// ends speculative ownership before a genuine final manifest is published.
 func TestRemainingInitialAACPrefixCannotCertifyCompletion(t *testing.T) {
 	_, ready := startupWindowSegments([]byte(remainingInitialAACPrefix), 10)
 	if ready {
@@ -75,8 +72,6 @@ segment-00003.m4s
 segment-00004.m4s
 `
 
-// The public origin journey reproduces mux timing but cannot deterministically
-// exercise sub-microsecond playlist rounding, absent assets, or malformed cuts.
 func TestRemainingRoundedAACWindowUsesAvailableAssets(t *testing.T) {
 	prefix := strings.Split(remainingInitialAACPrefix, "#EXTINF:2.005333,\nsegment-00004.m4s")[0]
 	cases := []struct {

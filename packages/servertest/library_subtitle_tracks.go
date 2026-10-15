@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// ViewerCanChooseMultipleSubtitleTracks verifies the shared external-subtitle contract.
 func (fixture LibraryAPIFixture) ViewerCanChooseMultipleSubtitleTracks(t *testing.T) {
 	mediaDir := t.TempDir()
 	for name, content := range map[string]string{

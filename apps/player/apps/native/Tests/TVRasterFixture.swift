@@ -2,8 +2,6 @@
 import SwiftUI
 import UIKit
 
-// Give focus-dependent raster fixtures a scene lifecycle. Keep their windows
-// non-key so focus decoration cannot change comparisons.
 @MainActor
 func tvRasterFixture<Content: View>(_ content: Content, width: CGFloat) async throws -> (image: CGImage, pixels: Data) {
     guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { throw TVRasterFailure.scene }
@@ -20,7 +18,6 @@ func tvRasterFixture<Content: View>(_ content: Content, width: CGFloat) async th
         window.rootViewController = nil
         if let previousKey, !previousKey.isKeyWindow { previousKey.makeKey() }
     }
-    // Fit each view independently: a shared height could hide reserved rows.
     let fitted = controller.sizeThatFits(in: CGSize(width: width, height: 4096))
     guard fitted.width.isFinite, fitted.height.isFinite,
           (1...4096).contains(fitted.width), (1...4096).contains(fitted.height) else { throw TVRasterFailure.size }

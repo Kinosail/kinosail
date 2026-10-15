@@ -3,8 +3,6 @@ import AxeBuilder from "@axe-core/playwright";
 import {login} from "./test-instance-helpers";
 
 export function registerAudioProgressTests(albumTracks: (page: Page) => Promise<{id: string}[]>) {
-// Isolated 503 injection in an actual Go-rendered page. Initial and Retry 204
-// acknowledgements remain real Server requests; canonical queue cases are unrouted.
 test("mobile R03 progress notice stays hidden after real acknowledgement and reopens only on failure", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
   await login(page);
   const [first] = await albumTracks(page);
@@ -35,7 +33,6 @@ test("mobile R03 progress notice stays hidden after real acknowledgement and reo
   const failureRoute = `**/progress/${first.id}`;
   await page.route(failureRoute, route => route.fulfill({status: 503, headers: {"X-Request-ID": "qa-mobile-progress-failure"}}));
   await media.evaluate((audio: HTMLAudioElement) => {audio.currentTime = 2;});
-  // Request playback before requiring future data from the paused decoder.
   await media.evaluate((audio: HTMLAudioElement) => audio.play());
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => !audio.seeking && audio.readyState >= 3)).toBe(true);
   await expect.poll(() => media.evaluate((audio: HTMLAudioElement) => audio.currentTime)).toBeGreaterThan(2.1);

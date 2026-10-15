@@ -1,7 +1,6 @@
 import AVKit
 import Observation
 
-/// Retains the video surface and its system Picture in Picture session across navigation.
 @MainActor @Observable
 final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     private(set) var pictureInPicture = false
@@ -47,7 +46,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
             Task { @MainActor in self?.readyForDisplay = self?.controller.isReadyForDisplay ?? false }
         }
         controller.loadViewIfNeeded()
-        // Keep AVKit's transport controls stable while the remote is scrubbing.
         controller.transportBarCustomMenuItems = [
             UIAction(title: "Seek with preview", image: UIImage(systemName: "film")) { [weak self] _ in self?.showSeekPreview?() },
             UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { [weak self] _ in self?.showOptions?() },
@@ -120,7 +118,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
 
     func requestClose() {
         guard closing == nil, close != nil else { return }
-        // Finish AVKit's remote event before removing its responder hierarchy.
         closing = Task { @MainActor [weak self] in
             guard !Task.isCancelled else { return }
             let close = self?.close

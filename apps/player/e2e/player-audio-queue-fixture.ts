@@ -1,8 +1,6 @@
 import {expect, type Page} from "@playwright/test";
 import {playerSource} from "./static-sources";
 
-// Isolated fault injection: a populated Server cannot naturally return a forged
-// cross-profile queue projection or deterministically delay a source-load pause.
 export const queueItem = (id: string) => ({id, kind: "audio", title: id === "track" ? "First track" : "Next track",
   artist: id === "track" ? "First artist" : "Next artist", album: "Fictional album", track: id === "track" ? 1 : 2,
   stream: `/media/${id}`, artwork: `/art/${id}`, progress: {seconds: 0, watched: false}});
@@ -49,6 +47,5 @@ export async function openAudio(page: Page, policy: string, homeAssistant = fals
 export async function startQueue(page: Page) {
   await page.addScriptTag({content: playerSource});
   await expect(page.getByRole("button", {name: "Next track", exact: true})).toBeEnabled();
-  // Explicit user seek intent; loading metadata alone must never claim playback.
   await page.locator("audio").dispatchEvent("kinosail:seek-intent");
 }

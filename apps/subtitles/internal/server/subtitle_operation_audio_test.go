@@ -13,9 +13,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-// The executable supplies fictional silence at the process boundary; it is
-// not an encoder or an internal audio-manager replacement. Native playback
-// and actual lost-write response evidence remain separate journeys.
 func TestSubtitleActionLegacyAudioPublicControl(t *testing.T) {
 	handler, base, target, calls, _ := subtitleOperationAudioFixture(t, false)
 	response := requestJSON(t, handler, http.MethodPost, base+"/audio", `{"language":"en"}`)

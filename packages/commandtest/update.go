@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-// UpdateContract runs the same release-command scenarios against each application.
 type UpdateContract struct {
 	Run                        updatecontrol.Command
 	Open                       func(string) (updatecontrol.CommandDatabase, error)

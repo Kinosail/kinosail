@@ -7,8 +7,6 @@ import WebKit
 extension NativePreferencesUXTests {
     func readerEvidence(_ data: Data, folder: URL, name: String) throws {
         try data.write(to: folder.appendingPathComponent(name))
-        // Hosted CI retains xcresult, while simulator temporary files are discarded.
-        // These bytes contain only the isolated reader fixture and measured geometry.
         Attachment.record(data, named: name)
     }
 
@@ -19,8 +17,6 @@ extension NativePreferencesUXTests {
                 readerDescendants(window).compactMap { $0 as? WKWebView }.contains { $0.url != nil && !$0.isLoading }
             }
         } catch {
-            // Capture before the owner's defer hides the window. Avoid WebKit's
-            // asynchronous snapshot API while diagnosing stalled navigation.
             let views = readerDescendants(window)
             let web = views.compactMap { $0 as? WKWebView }
             let now = ProcessInfo.processInfo.systemUptime
@@ -40,8 +36,6 @@ extension NativePreferencesUXTests {
                 window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
             }
             if let data = image.pngData() { try? readerEvidence(data, folder: folder, name: "loaded-webview-timeout.png") }
-            // Keep the original failure. Observe this navigation after the deadline
-            // to distinguish delayed process startup from an app load that stays stuck.
             let observationStart = ProcessInfo.processInfo.systemUptime
             var transitions: [[String: Any]] = []
             var previousReads = fixture.state.withLock { $0.readerAssetReads }

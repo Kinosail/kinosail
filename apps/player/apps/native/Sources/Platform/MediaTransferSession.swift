@@ -6,9 +6,6 @@ protocol MediaTransferConsumer: AnyObject {
   func complete(_ error: Error?)
 }
 
-// One ephemeral connection pool per authorized original-file gateway. Seeking
-// reuses TLS/HTTP connections, but never another viewer's credentials or bytes.
-// All mutable state and delegate callbacks use the gateway's serial queue.
 final class MediaTransferSession: NSObject, URLSessionDataDelegate, @unchecked Sendable {
   private let queue: DispatchQueue
   private var consumers: [Int: MediaTransferConsumer] = [:]
@@ -30,7 +27,6 @@ final class MediaTransferSession: NSObject, URLSessionDataDelegate, @unchecked S
     delegates.underlyingQueue = queue
     session = URLSession(configuration: configuration, delegate: self, delegateQueue: delegates)
   }
-  // Called on the gateway's serial queue, after method/path/range validation.
   func dataTask(with request: URLRequest, consumer: MediaTransferConsumer) -> URLSessionDataTask? {
     guard !closed, consumers.count < 4 else { return nil }
     let task = session.dataTask(with: request)

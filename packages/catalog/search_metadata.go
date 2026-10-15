@@ -12,7 +12,6 @@ import (
 
 const metadataSearchScratchSize = 512
 
-// Normalize fields into local storage; field separators are normalization boundaries.
 func matchesMetadata(item library.Item, query string) bool {
 	fields := []string{item.Title, item.Show, item.Year, item.Plot, item.Genres, item.Director, item.Studio, item.Artist, item.Album}
 	size := metadataSearchSize(fields, item.Cast, item.ShowCast)
@@ -56,7 +55,6 @@ func metadataSearchSize(fields []string, cast, showCast []library.Person) int {
 	return size
 }
 
-// Lowercase ASCII letters, digits, and spaces survive field normalization unchanged.
 func matchesLiteralPrefix(fields []string, query string) bool {
 	for position := 0; position < len(query); position++ {
 		if searchASCIIByte(query[position]) != query[position] {
@@ -80,11 +78,10 @@ func appendSearchField(text []byte, value string) []byte {
 
 func appendUnicodeSearchField(text []byte, value string) []byte {
 	value = norm.NFKD.String(strings.ToLower(value))
-	space := true // Every field starts at the preceding field's separator.
+	space := true
 	for _, character := range value {
 		switch {
 		case character >= 0 && character <= 127:
-			// Lowercasing precedes NFKD; preserve any capitals produced by decomposition.
 			if searchASCIIByte(byte(character)) == ' ' {
 				character = ' '
 			}

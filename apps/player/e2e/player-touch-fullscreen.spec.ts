@@ -5,8 +5,6 @@ import {installPlayerExperienceFixture} from "./player-experience-fixture";
 test.describe("touch fullscreen @smoke", () => {
 test.use({hasTouch: true, ignoreHTTPSErrors: false});
 installPlayerExperienceFixture(false, false, "iPhone", async (page, title) => {
-  // Firefox touch emulation does not populate maxTouchPoints. Supply the
-  // declared hardware capability before the Player selects its control policy.
   await page.evaluate(({limited, touch}) => {
     Object.defineProperty(navigator, "maxTouchPoints", {configurable: true, value: touch ? 1 : 0});
     if (limited) Object.defineProperty(document.querySelector("video"), "webkitEnterFullscreen", {configurable: true, value: () => {}});

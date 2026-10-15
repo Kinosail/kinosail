@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// ViewerCanSeeTMDBMovieMetadataAndArtwork checks metadata through the real app server.
 func (fixture MetadataFixture) ViewerCanSeeTMDBMovieMetadataAndArtwork(t *testing.T) {
 	t.Helper()
 	t.Parallel()

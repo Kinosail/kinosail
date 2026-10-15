@@ -8,14 +8,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// ReadinessCheck reports one enforced public-access invariant.
 type ReadinessCheck struct {
 	ID      string `json:"id"`
 	Ready   bool   `json:"ready"`
 	Message string `json:"message"`
 }
 
-// Readiness reports whether every public-access invariant is satisfied.
 type Readiness struct {
 	Ready        bool             `json:"ready"`
 	Checks       []ReadinessCheck `json:"checks"`
@@ -25,7 +23,6 @@ type Readiness struct {
 	Stopped      bool             `json:"stopped"`
 }
 
-// SecurePublicReadiness evaluates Player's public-access readiness policy.
 func SecurePublicReadiness(status Status, profiles []identitycore.Profile, profileErr error, now time.Time) Readiness {
 	certificateExpires, certificateErr := time.Parse(time.RFC3339, status.CertificateExpires)
 	remoteSignIn := false
@@ -65,7 +62,6 @@ const readinessViewSource = `<!doctype html><html lang="en"><head><meta charset=
 <section class="wide" aria-labelledby="help-heading"><h2 id="help-heading">If it does not connect</h2><details><summary>The connection times out</summary><p>Check the selected Server device, TCP 443 in both port fields, and the Server firewall. Confirm DuckDNS points to your current public IP address. If port 443 is already used, resolve the conflict before opening anything else.</p><p>If you have a router behind an internet-provider router, both need the rule: forward TCP 443 on the outer router to the inner router's WAN address, then on the inner router to the Server. Ask your provider for help if you are unsure.</p><p>Ask your internet provider: “Do I have a public IPv4 address, and can I receive incoming TCP 443 connections?” A private WAN address or 100.64.0.0–100.127.255.255 can mean double NAT or carrier-grade NAT (CGNAT). Port forwarding alone cannot fix CGNAT; ask for a public address or use an owner-controlled VPN that supports your network.</p></details><details><summary>A certificate warning appears</summary><p>Stop. Check that you used your exact DuckDNS HTTPS address and that TCP 443 reaches the Server's public HTTPS port. Wait for certificate issuance and check the error in Settings. Never bypass a warning at the public address.</p></details><details><summary>The page opens, but sign-in fails</summary><p>Use a remote-enabled Viewer, not an Owner. Password-only public sign-in is disabled. In a browser, choose Get a sign-in code. You can also use Quick Connect in the Kinosail app or a compatible Jellyfin app. Approve the code from a local Viewer session secured with an authenticator or passkey. Enable Jellyfin apps in Settings if you use one. Approvals and adding passkeys stay local; do not try to enroll a new passkey on the public listener.</p></details></section>
 <section class="wide" aria-labelledby="stop-heading"><h2 id="stop-heading">Turn it off whenever you need</h2><p>At home, open <a href="/settings#access">Settings → Watch away from home</a> and choose Disable public access now. This stops public viewing, revokes public sessions, and keeps public access off after restart. Remove the Kinosail port-forwarding rule in your router too when you no longer need it. Local access stays available.</p></section></main></body></html>`
 
-// ReadinessViewSource derives a branded view from Player's canonical markup.
 func ReadinessViewSource(product, assetVersion string) string {
 	if !safeReadinessToken(product, 32, false) || !safeReadinessToken(assetVersion, 8, true) {
 		panic("invalid remote readiness view configuration")
@@ -96,7 +92,6 @@ type readinessView interface {
 	Execute(http.ResponseWriter, *http.Request, any) error
 }
 
-// NewReadinessHandler serves the shared readiness model through an app-local view.
 func NewReadinessHandler(internet *Manager, profiles func() ([]identitycore.Profile, error), view readinessView, renderError func(http.ResponseWriter, *http.Request, string, int)) http.HandlerFunc {
 	if profiles == nil || view == nil || renderError == nil {
 		panic("invalid remote readiness dependencies")

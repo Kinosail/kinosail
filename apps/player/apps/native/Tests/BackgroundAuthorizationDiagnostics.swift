@@ -5,7 +5,6 @@ import Foundation
 extension BackgroundAuthorizationProbe {
     func recordReauthorizationDelivery(access: DownloadAuthorization, key: String, filePath: String,
                                       revision: UUID, began: ContinuousClock.Instant, initialCount: Int) async {
-        // The caller has frozen its failed assertion. Late delivery cannot make it pass.
         let originalFinished = ContinuousClock.now
         let deadline = originalFinished.advanced(by: .seconds(10))
         var interrupted = false
@@ -13,7 +12,6 @@ extension BackgroundAuthorizationProbe {
             do { try await Task.sleep(for: .milliseconds(5)) }
             catch { interrupted = true; break }
         }
-        // Admissions may repeat and include earlier manifest/file requests.
         let delivery = FixtureURLProtocol.entries.withLock { $0[fixture.host] }
         let laterFiles = (delivery?.requests ?? []).filter { $0.url?.path == filePath }
         let milliseconds: (ContinuousClock.Instant) -> Double = { instant in
@@ -32,7 +30,6 @@ extension BackgroundAuthorizationProbe {
             "jobStatus": state?.status ?? "unavailable",
             "admissionElapsedMs": Array((delivery?.requestAdmissions ?? []).suffix(16)).map(milliseconds),
             "arrivalElapsedMs": Array((delivery?.requestArrivals ?? []).suffix(16)).map(milliseconds)]
-        // No credentials, hostnames, request bodies, or raw errors leave this fixture.
         if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]),
            let text = String(data: data, encoding: .utf8) { print("BACKGROUND_REAUTH_TIMING \(text)") }
     }

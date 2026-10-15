@@ -9,13 +9,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-// Snapshot exposes the resolved values needed by trusted HTTPS policy.
 type Snapshot interface {
 	String(string) string
 	Bool(string) bool
 }
 
-// ValidateTrustedHTTPS validates trusted HTTPS against the other network settings.
 func ValidateTrustedHTTPS(configured Snapshot) error { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for one cross-field validator.
 	trusted, err := trustedhttps.Parse(configured.String("tls.duckdns"))
 	if err != nil || trusted == (trustedhttps.Config{}) {
@@ -40,7 +38,6 @@ func ValidateTrustedHTTPS(configured Snapshot) error { //nolint:cyclop // The sc
 	return nil
 }
 
-// TrustedOrigin returns the canonical browser and passkey origin.
 func TrustedOrigin(raw, listen string) (string, error) {
 	config, err := trustedhttps.Parse(raw)
 	if err != nil || config == (trustedhttps.Config{}) {

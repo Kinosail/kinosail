@@ -182,7 +182,7 @@ func TestSubtitleLibraryRejectsMalformedFiltersBeforeAnyWork(t *testing.T) {
 	}
 	for _, query := range invalid {
 		t.Run(query[:min(len(query), 40)], func(t *testing.T) {
-			manager := &subtitleManager{} // Validation must precede all settings, index, provider, and file access.
+			manager := &subtitleManager{}
 			for _, handler := range []http.HandlerFunc{manager.dashboard, manager.statusAPI} {
 				request := ownerRequest("/")
 				request.URL.RawQuery = query

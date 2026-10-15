@@ -36,8 +36,6 @@ type transcodeFragmentInterval struct {
 	info       os.FileInfo
 }
 
-// Open only the current immutable fragment. Retain neither a whole movie nor a
-// descriptor per fragment while feeding one joined demux pass.
 type transcodeFragmentReader struct {
 	ctx       context.Context
 	root      *os.Root
@@ -184,8 +182,6 @@ func (projection *transcodeClockProjection) audioDuration(stream, duration int64
 	if duration == 1024 {
 		return true
 	}
-	// The muxer can trim the final AAC packet. Only the actual final fragment
-	// can contain it, and no later audio packet may follow in the joined demux.
 	projection.shortAudio = true
 	return projection.terminal && owner == len(projection.intervals)-1
 }

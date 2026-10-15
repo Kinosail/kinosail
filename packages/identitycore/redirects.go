@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// StepUpLoginPath returns the safe owner destination for a step-up request.
 func StepUpLoginPath(request *http.Request) string {
 	next := "/"
 	if request != nil && request.URL != nil {
@@ -26,7 +25,6 @@ func StepUpLoginPath(request *http.Request) string {
 	return "/login?stepup=1&next=" + url.QueryEscape(next)
 }
 
-// SafeLoginReturn accepts only bounded same-origin relative destinations.
 func SafeLoginReturn(raw string) string {
 	if raw == "" || len(raw) > 2048 || strings.HasPrefix(raw, "//") {
 		return "/"
@@ -39,7 +37,6 @@ func SafeLoginReturn(raw string) string {
 	return target.RequestURI()
 }
 
-// PasskeyOfferPath returns the account path that offers a passkey for next.
 func PasskeyOfferPath(next string) string {
 	return "/account?passkey=offer&next=" + url.QueryEscape(next)
 }

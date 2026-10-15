@@ -4,8 +4,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Isolation gap: production profiles cannot be reseeded or have real media
-// responses held to deterministically exercise interrupted native loading.
 extension PlaybackProgressSafetyJourneys {
     @Test func pendingInitialSeekCannotPublishUncommittedProgress() async throws {
         try await withSources(count: 1) { engine, sources in
@@ -36,8 +34,6 @@ extension PlaybackProgressSafetyJourneys {
             engine.pause(); try await drain(engine.writing, client: source.fixture.client)
             let committed = engine.seconds
             try #require(committed > 6 && committed < 9)
-            // The production retry entry owns replacement. Stop its independent
-            // polling task to make one recovery request the sole stimulus.
             let monitor = engine.monitoring; monitor?.cancel(); await monitor?.value
             let details = try #require(engine.source)
             let attempt = engine.generation
@@ -120,10 +116,6 @@ extension PlaybackProgressSafetyJourneys {
         }
     }
 
-    // Distinct gap: replacing the stream for the same title retains generation.
-    // A retired load must not clear pending state, seek the new player, or resume
-    // it after the user's pause. Hold real media after player creation; this
-    // does not claim to hold the operating system's audio activation call.
     @Test func supersededSameTitleLoadPreservesLatestSeekAndPause() async throws {
         try await withSources(count: 1) { engine, sources in
             let source = sources[0]
@@ -150,8 +142,6 @@ extension PlaybackProgressSafetyJourneys {
                   ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(10)) }
             let newPlayer = try #require(engine.player)
             try #require(newPlayer !== oldPlayer && source.fixture.heldMediaCount > heldBefore)
-            // Observe this item's decoder before releasing preparation. The
-            // retained late-attachment trial advanced without yielding a frame.
             let newItem = try #require(newPlayer.currentItem)
             let output = AVPlayerItemVideoOutput(pixelBufferAttributes: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
             newItem.add(output)
@@ -175,8 +165,6 @@ extension PlaybackProgressSafetyJourneys {
         }
     }
 
-    // The retained late-output control fails without a retired installation.
-    // Match early observation while preserving the seek and frame requirements.
     @Test func healthyPendingSeekToNineSupportsEarlyFrameObservation() async throws {
         try await withSources(count: 1) { engine, sources in
             let source = sources[0]
@@ -220,8 +208,6 @@ extension PlaybackProgressSafetyJourneys {
         sources.forEach { $0.jobs.forEach { $0.task?.cancel() } }
         let monitor = engine.monitoring, transport = engine.transport
         engine.stop()
-        // Close fictional origins before joining cancellation paths; a held
-        // response must not keep a failed test's writer or startup alive.
         for source in sources {
             source.fixture.releaseMedia()
             await source.fixture.client.close(purgeCache: true)

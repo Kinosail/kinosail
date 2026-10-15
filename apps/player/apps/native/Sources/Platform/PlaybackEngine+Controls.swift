@@ -36,8 +36,6 @@ extension PlaybackEngine {
         guard self.player === player else { throw CancellationError() }
         if !success {
             if let error = player.currentItem?.error { throw error }
-            // Retry the changed explicit target if a user superseded this seek.
-            // Other interruptions must not silently replace saved progress.
             if recoveringNetwork || loading, let requested = recoveryPosition ?? nativeRecoveryPosition,
                abs(requested - seconds) >= 0.01 {
                 return
@@ -278,8 +276,6 @@ extension PlaybackEngine {
 
     func saveProgress(watched: Bool) {
         guard let writer else { return }
-        // Loading and queued seeks can change the displayed position before
-        // AVPlayer accepts it. Keep the last position confirmed by playback.
         guard let position = committedPosition else {
             progressLog.debug("operation=progress-save outcome=uncommitted-position session=\(self.generation.uuidString, privacy: .public)")
             return

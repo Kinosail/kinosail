@@ -2,8 +2,6 @@ package transcodepolicy
 
 import "strings"
 
-// ToneMapMethods lists device frame paths to verify, in preference order.
-// A compiled filter is not evidence that the device can execute it.
 func ToneMapMethods(backend, device string) []string {
 	switch backend {
 	case "cuda":
@@ -37,9 +35,6 @@ func validToneMapMethod(options Settings) bool {
 	return false
 }
 
-// hardwareToneMapFrames keeps HDR conversion on the GPU. Returning SDR frames
-// to the existing software seam preserves rotation, subtitle burn-in and skip
-// filters without treating an encode smoke check as HDR decode evidence.
 func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 	if !options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg" {
 		return nil, ""
@@ -51,7 +46,6 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 		return input, filter + "," + scaler + "=w=" + width + ":h=-2:format=nv12,setsar=1"
 	}
 	filter += ",hwdownload,format=nv12"
-	// Strip HDR side data after conversion; output pixels and tags are SDR.
 	filter += "," + strings.Join(removeHDRMetadata(), ",")
 	software := options
 	software.ToneMap = false
@@ -60,8 +54,6 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 		filters[len(filters)-1] = "format=nv12"
 	}
 	filter += "," + strings.Join(filters, ",")
-	// Derived OpenCL processing returns to the selected VA-API device;
-	// QSV encoding derives its upload device from that same DRM node.
 	switch options.Accelerator {
 	case "qsv", "vaapi":
 		if options.HardwareToneMap == "opencl" || options.HardwareToneMap == "vulkan" || options.HardwareToneMap == "d3d11" {
@@ -82,7 +74,6 @@ func removeHDRMetadata() []string {
 	return filters
 }
 
-// ToneMapSoftwareFrames identifies paths that need SDR frames on the CPU.
 func ToneMapSoftwareFrames(options Settings) bool {
 	return options.SoftwareFilters || options.Deinterlace || options.HardwareToneMap == "opencl" || options.HardwareToneMap == "vulkan" || options.HardwareToneMap == "d3d11" || options.Accelerator != "cuda" && options.Accelerator != "qsv" && options.Accelerator != "vaapi"
 }

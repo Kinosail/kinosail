@@ -11,11 +11,8 @@ import (
 
 const maximumH264Keys = 4096
 
-// H264Key identifies a certified IDR packet on the source rational clock.
 type H264Key struct{ PTS, DTS int64 }
 
-// H264Scan bounds source-only indexing. The caller owns source validation,
-// workload admission, and the deadline shared by all three joined probes.
 type H264Scan struct {
 	Path                        string
 	From, Duration, MaximumSpan float64
@@ -24,8 +21,6 @@ type H264Scan struct {
 	Logger                      *slog.Logger
 }
 
-// H264Index contains immutable source cuts. It does not certify generated media,
-// cache identity, audio continuity, or permission to publish a playlist.
 type H264Index struct{ timeline h264Timeline }
 
 func (index H264Index) TimeBase() (int64, int64) {
@@ -35,8 +30,6 @@ func (index H264Index) TimeBase() (int64, int64) {
 func (index H264Index) Keys() []H264Key { return append([]H264Key(nil), index.timeline.Keys...) }
 func (index H264Index) End() float64    { return index.timeline.End }
 
-// H264Index returns cuts only after packets, IDRs, and codec configuration have
-// each reached successful EOF. Unsupported or incomplete proof returns no index.
 func (probe *Probe) H264Index(ctx context.Context, ffmpeg string, options H264Scan) (H264Index, error) {
 	if ctx.Err() != nil {
 		return H264Index{}, ctx.Err()

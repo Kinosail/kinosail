@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// DownloadFixture connects download contracts to each app's real account and media fixtures.
 type DownloadFixture struct {
 	NewHandler          func(media, data, cache string) http.Handler
 	NewTranscodeHandler func(media, data, cache, ffmpeg string) http.Handler
@@ -23,7 +22,6 @@ type DownloadFixture struct {
 	CookieRequest       func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 }
 
-// DownloadsBoundaryContract runs each download scenario against the real app.
 func DownloadsBoundaryContract(t *testing.T, fixture DownloadFixture) {
 	t.Helper()
 	for _, test := range []struct {
@@ -38,7 +36,6 @@ func DownloadsBoundaryContract(t *testing.T, fixture DownloadFixture) {
 	}
 }
 
-// OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt runs the shared download regression contract.
 func OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt(t *testing.T, fixture DownloadFixture) {
 	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("original-media"), 0o600); err != nil {
@@ -73,7 +70,6 @@ func OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt(t *testing.T, fixture D
 	}
 }
 
-// OfflineDownloadValidationIsPublicThroughAPIAndWeb runs the shared download regression contract.
 func OfflineDownloadValidationIsPublicThroughAPIAndWeb(t *testing.T, fixture DownloadFixture) {
 	handler, token := fixture.APIServer(t)
 	itemID := fixture.FirstItemID(t, handler, token)
@@ -88,7 +84,6 @@ func OfflineDownloadValidationIsPublicThroughAPIAndWeb(t *testing.T, fixture Dow
 	}
 }
 
-// OfflineDownloadRejectsTrailingJSONBeforeCreatingAJob runs the shared download regression contract.
 func OfflineDownloadRejectsTrailingJSONBeforeCreatingAJob(t *testing.T, fixture DownloadFixture) {
 	handler, token := fixture.APIServer(t)
 	itemID := fixture.FirstItemID(t, handler, token)

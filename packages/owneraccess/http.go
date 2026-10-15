@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// HTTP keeps browser and API mutations on the same validated management operations.
 type HTTP struct {
 	Manager *Manager
 	OwnerID func(*http.Request) string
@@ -26,7 +25,6 @@ func (h HTTP) Status(w http.ResponseWriter, r *http.Request) {
 	h.JSON(w, h.Manager.Status(), http.StatusOK)
 }
 
-// Change accepts a fixed operation chosen by the route, never by request data.
 func (h HTTP) Change(operation string, api bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -54,7 +52,6 @@ func (h HTTP) Change(operation string, api bool) http.HandlerFunc {
 				return
 			}
 		}
-		// Management runs under the manager lifecycle, beyond this HTTP request.
 		profile, err := h.apply(operation, value, func() string { return h.OwnerID(r) }) //nolint:contextcheck
 		if err != nil {
 			h.Error(w, r, err.Error(), http.StatusBadRequest)

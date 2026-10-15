@@ -66,7 +66,7 @@ type scimUserPayload struct {
 	Emails       []scimEmail       `json:"emails"`
 	Roles        []json.RawMessage `json:"roles"`
 	Password     string            `json:"password"`
-	Meta         json.RawMessage   `json:"meta"` // The RFC-defined read-only metadata is accepted and ignored.
+	Meta         json.RawMessage   `json:"meta"`
 	Enterprise   json.RawMessage   `json:"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"`
 	Title        string            `json:"title"`
 	UserType     string            `json:"userType"`

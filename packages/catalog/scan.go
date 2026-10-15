@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// SafePath reports whether a resolved path stays inside one configured root.
 func SafePath(path string, allowed []string) bool {
 	resolved, err := filepath.EvalSymlinks(path)
 	if err != nil {
@@ -27,12 +26,10 @@ func SafePath(path string, allowed []string) bool {
 	return false
 }
 
-// ScanRoot is one Library scan path and its stable namespace.
 type ScanRoot struct {
 	Path, Namespace string
 }
 
-// ScanRoots maps app-owned root records into the canonical scan contract.
 func ScanRoots[T any](values []T, fields func(T) (string, string)) []ScanRoot {
 	roots := make([]ScanRoot, len(values))
 	for position, value := range values {
@@ -41,7 +38,6 @@ func ScanRoots[T any](values []T, fields func(T) (string, string)) []ScanRoot {
 	return roots
 }
 
-// IndexStorage connects shared refresh rules to an app-owned watcher index.
 type IndexStorage struct {
 	Mutex     *sync.RWMutex
 	Items     *[]library.Item
@@ -54,7 +50,6 @@ type IndexStorage struct {
 	published func()
 }
 
-// RefreshWork serializes a bounded background-work lease around one index refresh.
 func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Context) (func(), error), refresh func(context.Context) error) error {
 	mutex.Lock()
 	defer mutex.Unlock()
@@ -66,7 +61,6 @@ func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Co
 	return refresh(ctx)
 }
 
-// RefreshIndex snapshots app-owned roots and publishes their scan under one work lease.
 func RefreshIndex[T any](ctx context.Context, refreshMutex *sync.Mutex, rootMutex *sync.RWMutex, roots *[]T, acquire func(context.Context) (func(), error), storage IndexStorage, fields func(T) (string, string)) error {
 	return RefreshWork(ctx, refreshMutex, acquire, func(ctx context.Context) error {
 		rootMutex.RLock()
@@ -76,7 +70,6 @@ func RefreshIndex[T any](ctx context.Context, refreshMutex *sync.Mutex, rootMute
 	})
 }
 
-// WaitRefresh waits for cancellation, rescheduling, or the next refresh interval.
 func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan struct{}, request func()) bool {
 	if interval <= 0 {
 		select {
@@ -99,7 +92,6 @@ func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan 
 	}
 }
 
-// Scan reads all roots and applies one complete decoration pipeline.
 func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) { //nolint:cyclop,gocognit // Bounded dispatch and ordered publication share one cancellation boundary.
 	items := make([]library.Item, 0)
 	if len(roots) == 0 {
@@ -150,7 +142,6 @@ dispatch:
 	return items, nil
 }
 
-// ItemsByID indexes the first occurrence of each stable Library ID.
 func ItemsByID(items []library.Item) map[string]int {
 	byID := make(map[string]int, len(items))
 	for position, item := range items {
@@ -161,7 +152,6 @@ func ItemsByID(items []library.Item) map[string]int {
 	return byID
 }
 
-// Refresh scans and atomically publishes one complete decorated index.
 func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error {
 	storage.Mutex.RLock()
 	decorate := *storage.Decorator
@@ -185,7 +175,6 @@ func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error
 	return err
 }
 
-// SetDecorator replaces the index projection and rebuilds its ID lookup.
 func (storage IndexStorage) SetDecorator(decorate func([]library.Item) []library.Item) {
 	storage.Mutex.Lock()
 	*storage.Decorator = decorate
@@ -197,7 +186,6 @@ func (storage IndexStorage) SetDecorator(decorate func([]library.Item) []library
 	storage.Mutex.Unlock()
 }
 
-// AddAnalyzer registers an analyzer and sends it a detached current snapshot.
 func (storage IndexStorage) AddAnalyzer(analyze func([]library.Item)) {
 	storage.Mutex.Lock()
 	*storage.Analyzers = append(*storage.Analyzers, analyze)
@@ -206,7 +194,6 @@ func (storage IndexStorage) AddAnalyzer(analyze func([]library.Item)) {
 	analyze(items)
 }
 
-// Status returns the current item count, scan time, and scan error.
 func (storage IndexStorage) Status() (int, time.Time, error) {
 	storage.Mutex.RLock()
 	defer storage.Mutex.RUnlock()

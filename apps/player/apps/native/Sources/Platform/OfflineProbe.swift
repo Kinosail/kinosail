@@ -4,11 +4,7 @@ import Foundation
 import OSLog
 import Synchronization
 
-/// Decodes one local sample through the same AVFoundation stack as the player.
-/// Unsupported originals remain unavailable offline with a compatible-format remedy.
 enum OfflineProbe {
-    /// Private storage names have no media extension. Identify bounded file bytes
-    /// for both verification and playback; never let a saved playlist open URLs.
     static func asset(_ url: URL) throws -> AVURLAsset {
         guard url.isFileURL, url.resolvingSymlinksInPath().standardizedFileURL == url.standardizedFileURL else { throw ClientError.invalidResponse }
         let file = try FileHandle(forReadingFrom: url)

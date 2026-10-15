@@ -7,14 +7,12 @@ import (
 	"testing"
 )
 
-// AssetsFixture binds asset contracts to real app construction and authenticated web calls.
 type AssetsFixture struct {
 	NewHandler func(string, string, bool) http.Handler
 	SignIn     func(*testing.T, http.Handler, string, string) *http.Cookie
 	WebCall    func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 }
 
-// HomeHasSelfHostedFrontendAssets preserves the shared app asset contract.
 func (fixture AssetsFixture) HomeHasSelfHostedFrontendAssets(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -30,7 +28,6 @@ func (fixture AssetsFixture) HomeHasSelfHostedFrontendAssets(t *testing.T) {
 	}
 }
 
-// LibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow preserves the shared app asset contract.
 func (fixture AssetsFixture) LibraryNavigationKeepsEveryDestinationInMainWithCompactOverflow(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -57,7 +54,6 @@ func (fixture AssetsFixture) LibraryNavigationKeepsEveryDestinationInMainWithCom
 	}
 }
 
-// LibraryExposesDiscoverableCommandsAndInputParity preserves the shared app asset contract.
 func (fixture AssetsFixture) LibraryExposesDiscoverableCommandsAndInputParity(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -88,7 +84,6 @@ func (fixture AssetsFixture) LibraryExposesDiscoverableCommandsAndInputParity(t 
 	}
 }
 
-// DesktopRailSeparatesUtilitiesFromAccount preserves the shared app asset contract.
 func (fixture AssetsFixture) DesktopRailSeparatesUtilitiesFromAccount(t *testing.T) {
 	t.Helper()
 	t.Parallel()

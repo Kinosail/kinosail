@@ -29,8 +29,6 @@ def reject_audio_metadata(api, base, root, rendition, server, source, log_path):
             damaged[section][field] = value
             raw = json.dumps(damaged, separators=(',', ':')).encode()
             binding = copy.deepcopy(certificate)
-            # Rebind the hash to exercise semantic validation independently of
-            # an ordinary checksum mismatch. These are owned fixture files.
             binding['timeline'] = list(hashlib.sha256(raw).digest())
             timeline_path.write_bytes(raw)
             certificate_path.write_text(json.dumps(binding))

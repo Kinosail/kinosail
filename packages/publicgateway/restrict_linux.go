@@ -10,10 +10,6 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// The listener is opened before this filter. All threads may subsequently open
-// only Unix sockets. Blocking io_uring and cross-process FD/memory access closes
-// alternative paths around socket filtering. The container supplies filesystem,
-// PID, privilege and resource isolation; this filter alone is not a sandbox.
 func restrictNetwork() error {
 	arch := uint32(unix.AUDIT_ARCH_X86_64)
 	if runtime.GOARCH == "arm64" {
@@ -44,7 +40,6 @@ func networkFilter(arch uint32) []unix.SockFilter {
 	deny := unix.SockFilter{Code: unix.BPF_RET | unix.BPF_K, K: unix.SECCOMP_RET_ERRNO | uint32(unix.EPERM)}
 	allow := unix.SockFilter{Code: unix.BPF_RET | unix.BPF_K, K: unix.SECCOMP_RET_ALLOW}
 	filter := []unix.SockFilter{load(4), equal(arch, 1, 0), {Code: unix.BPF_RET | unix.BPF_K, K: unix.SECCOMP_RET_KILL_PROCESS}, load(0)}
-	// Reject the x32 syscall ABI even though it reports AUDIT_ARCH_X86_64.
 	filter = append(filter, unix.SockFilter{Code: unix.BPF_JMP | unix.BPF_JGE | unix.BPF_K, K: 0x40000000, Jt: 0, Jf: 1}, deny)
 	for _, call := range []uint32{unix.SYS_IO_URING_SETUP, unix.SYS_IO_URING_ENTER, unix.SYS_IO_URING_REGISTER, unix.SYS_PTRACE, unix.SYS_PROCESS_VM_READV, unix.SYS_PROCESS_VM_WRITEV, unix.SYS_PIDFD_GETFD, unix.SYS_BPF} {
 		filter = append(filter, equal(call, 0, 1), deny)

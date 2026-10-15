@@ -20,7 +20,6 @@ const (
 	mcpRefreshHistoryLimit = 1024
 )
 
-// Connections owns built-in OAuth clients, grants, and one-use credentials.
 type Connections struct {
 	mu         sync.Mutex
 	issuer     string
@@ -99,7 +98,6 @@ type mcpConnectionView struct {
 	Scopes      []string `json:"scopes"`
 }
 
-// ConnectionView is one safe, revocable grant projection.
 type ConnectionView = mcpConnectionView
 
 type mcpClientMetadataDocument struct {
@@ -107,7 +105,6 @@ type mcpClientMetadataDocument struct {
 	oauthex.ClientRegistrationMetadata
 }
 
-// ConnectionConfig contains the adapters required by built-in OAuth.
 type ConnectionConfig struct {
 	Issuer, Resource string
 	Principals       PrincipalRepository
@@ -117,7 +114,6 @@ type ConnectionConfig struct {
 	SessionKey       func(string) string
 }
 
-// NewConnections loads built-in OAuth state without creating authority on failure.
 func NewConnections(config ConnectionConfig) *Connections { //nolint:contextcheck // Startup state loading is installation-owned.
 	issuer := strings.TrimSuffix(strings.TrimSpace(config.Issuer), "/")
 	if issuer == "" {
@@ -165,14 +161,12 @@ func (connections *Connections) loadState() {
 	}
 }
 
-// Configure selects an external OAuth provider when configured.
 func (connections *Connections) Configure(config OAuthConfig) {
 	if config.Configured() {
 		connections.external, connections.issuer, connections.resource = true, config.AuthorizationServer, config.ResourceURL
 	}
 }
 
-// RegisterOAuth installs the built-in authorization server routes.
 func (connections *Connections) RegisterOAuth(mux *http.ServeMux) {
 	mux.HandleFunc("GET /.well-known/oauth-authorization-server", connections.metadata)
 	mux.HandleFunc("POST /oauth/register", connections.registerClient)
@@ -202,11 +196,8 @@ func validMCPIssuer(raw string) bool {
 	return err == nil && trustedURL(parsed) && (parsed.Path == "" || parsed.Path == "/")
 }
 
-// Issuer returns the active authorization server.
 func (connections *Connections) Issuer() string { return connections.issuer }
 
-// Resource returns the protected resource address.
 func (connections *Connections) Resource() string { return connections.resource }
 
-// External reports whether an external OAuth provider is active.
 func (connections *Connections) External() bool { return connections.external }

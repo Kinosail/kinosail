@@ -74,8 +74,6 @@ export async function verifyTitleJumpScroll(page: Page, info: TestInfo) {
     await expect(page.getByRole("heading", { name: "Arrival", exact: true })).toHaveCount(0);
     await expect(page.locator("#library a.card").first()).toBeFocused();
     if (viewport.rapid) {
-      // Keep the original interaction pace. Sampling or screenshots here can
-      // let an in-flight swap settle before the viewer clears the same letter.
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
     } else {
       const selected = await record(page, info, `${prefix}-selected`);

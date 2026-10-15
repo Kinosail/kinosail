@@ -14,8 +14,6 @@ for (const preference of ["default", "off"] as const) {
         await page.locator("track").evaluate((track: HTMLTrackElement) => { track.track.mode = "disabled"; });
         await page.locator("[data-subtitles]").selectOption("off");
       }
-      // WebKit's initial media selection can disable an external default track.
-      // Exercise that native transition without feeding captions to the decoder.
       await page.locator("video").evaluate((video: HTMLVideoElement) => {
         video.textTracks[0].mode = "disabled";
         video.dispatchEvent(new Event("loadedmetadata"));
@@ -37,7 +35,6 @@ test("later metadata preserves a native Off caption choice @smoke", async ({page
     await expect.poll(async () => (await peer.stats()).calls).toBe(1);
     await page.locator("video").evaluate((video: HTMLVideoElement) => {
       video.dispatchEvent(new Event("loadedmetadata"));
-      // Native media controls change TextTrack mode without the app selector.
       video.textTracks[0].mode = "disabled";
       video.dispatchEvent(new Event("loadedmetadata"));
     });
@@ -79,7 +76,6 @@ test("persisted caption restore keeps Off without starting another request", asy
     await openCaptionPlayer(page, peer.origin);
     await expect(page.locator("[data-subtitle-status]")).toHaveText("Loading subtitles…");
     await expect.poll(async () => (await peer.stats()).calls).toBe(1);
-    // Isolated shell has no settings adapter; operate the native track preference.
     await page.locator("track").evaluate((track: HTMLTrackElement) => { track.track.mode = "disabled"; });
     await page.locator("[data-subtitles]").selectOption("off");
     await expect(page.locator("[data-subtitle-status]")).toBeHidden();

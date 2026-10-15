@@ -9,8 +9,6 @@ const channel=process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.plat
 const browser=await (engine==='webkit'?webkit.launch():chromium.launch({channel}));
 const cases=[];
 let context;
-// Generated FFmpeg inputs cannot represent malformed initialization boxes.
-// This isolated network fault checks terminal rejection in the production UI.
 let passed=true, stage='setup';
 try {
  for(const viewport of [{width:390,height:844},{width:1440,height:900},{width:1920,height:1080}]) {

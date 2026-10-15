@@ -18,7 +18,6 @@ var (
 	imdbName    = regexp.MustCompile(`(?i)\{imdb\s+(tt[0-9]{7,9})\}`)
 )
 
-// Item is playable Library Content discovered on a Kinosail Server.
 type Item struct {
 	ID              string
 	Library         string
@@ -70,14 +69,12 @@ type Item struct {
 	ProviderIDs     map[string]string
 }
 
-// Person is a credited member of an item's cast.
 type Person struct {
 	Name  string
 	Role  string
 	Image string
 }
 
-// Show groups discovered episodes for browsing.
 type Show struct {
 	ID, Title, Year, Plot, Genres, Studio string
 	Artwork, Backdrop, Logo               string
@@ -87,13 +84,11 @@ type Show struct {
 	Episodes                              []Item
 }
 
-// Season groups discovered episodes and their season-specific artwork.
 type Season struct {
 	Number  int
 	Artwork string
 }
 
-// Album groups locally described music tracks.
 type Album struct {
 	ID        string
 	Title     string

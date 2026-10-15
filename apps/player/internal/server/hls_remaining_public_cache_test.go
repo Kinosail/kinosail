@@ -16,9 +16,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Real public HTTP complements the isolated stale-asset and replacement races.
-// Only disposable generated media/cache metadata are changed. Native devices
-// and worker/process observations remain separate hosted origin-proof evidence.
 func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:funlen,gocognit,cyclop // One bounded public cache lifecycle retains its before/after evidence.
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {

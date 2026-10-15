@@ -33,7 +33,6 @@ type ChapterProvider struct {
 	calls   map[string]*chapterLookupCall
 }
 
-// Chapter describes one bounded media timeline section.
 type Chapter struct {
 	Index int     `json:"index"`
 	Start float64 `json:"start"`
@@ -41,7 +40,6 @@ type Chapter struct {
 	Title string  `json:"title"`
 }
 
-// Timestamp formats the chapter start for the player view.
 func (value Chapter) Timestamp() string {
 	seconds := int(value.Start)
 	if seconds >= 3600 {

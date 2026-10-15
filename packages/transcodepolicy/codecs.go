@@ -1,10 +1,7 @@
-// Package transcodepolicy defines Player's supported streaming codecs and
-// FFmpeg argument policy for all Kinosail media applications.
 package transcodepolicy
 
 import "strings"
 
-// Codec describes one Player-supported video codec.
 type Codec struct {
 	ID        string
 	Name      string
@@ -22,7 +19,6 @@ var codecs = []Codec{
 	{ID: "av2", Name: "AV2"},
 }
 
-// Codecs returns an isolated copy of Player's codec catalog.
 func Codecs() []Codec {
 	result := make([]Codec, len(codecs))
 	for index, codec := range codecs {
@@ -31,7 +27,6 @@ func Codecs() []Codec {
 	return result
 }
 
-// NormalizeCodec resolves automatic selection to Player's compatibility codec.
 func NormalizeCodec(codec string) string {
 	if codec == "" || codec == "auto" {
 		return "h264"
@@ -39,7 +34,6 @@ func NormalizeCodec(codec string) string {
 	return codec
 }
 
-// ValidCodec reports whether a setting names a supported Player codec.
 func ValidCodec(codec string) bool {
 	if codec == "" || codec == "auto" {
 		return true
@@ -48,7 +42,6 @@ func ValidCodec(codec string) bool {
 	return definition.ID == codec && definition.Supported
 }
 
-// Definition returns the named codec or Player's H.264 fallback.
 func Definition(codec string) Codec {
 	for _, definition := range codecs {
 		if definition.ID == codec {
@@ -58,7 +51,6 @@ func Definition(codec string) Codec {
 	return cloneCodec(codecs[0])
 }
 
-// DefaultEncoder returns Player's preferred encoder for a backend and codec.
 func DefaultEncoder(accelerator, codec string) string {
 	definition := Definition(NormalizeCodec(codec))
 	if accelerator == "" || accelerator == "auto" || accelerator == "none" {
@@ -70,7 +62,6 @@ func DefaultEncoder(accelerator, codec string) string {
 	return definition.Hardware[accelerator]
 }
 
-// FirstEncoder selects the first exact encoder token present in FFmpeg output.
 func FirstEncoder(available string, encoders []string) string {
 	for _, encoder := range encoders {
 		if HasCapability(available, encoder) {
@@ -80,7 +71,6 @@ func FirstEncoder(available string, encoders []string) string {
 	return ""
 }
 
-// EncoderCodecIDs returns codec IDs in Player preference order.
 func EncoderCodecIDs(encoders map[string]string) []string {
 	ids := make([]string, 0, len(encoders))
 	for _, definition := range codecs {
@@ -91,7 +81,6 @@ func EncoderCodecIDs(encoders map[string]string) []string {
 	return ids
 }
 
-// HasCapability matches one complete FFmpeg capability token.
 func HasCapability(output, capability string) bool {
 	for _, field := range strings.Fields(output) {
 		if field == capability {

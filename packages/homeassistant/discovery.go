@@ -69,7 +69,6 @@ func (integration *Integration[P]) stopDiscoveryLocked() {
 	}
 }
 
-// Validate the complete DNS-SD record before opening multicast sockets.
 func validateAdvertisement(name string, port int, text []string) error {
 	if !validDiscoveryText(name, 63) || strings.TrimSpace(name) != name || port < 1 || port > 65535 || len(text) < 1 || len(text) > 5 {
 		return errors.New("invalid discovery advertisement")

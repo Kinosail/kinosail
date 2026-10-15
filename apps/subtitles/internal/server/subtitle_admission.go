@@ -9,8 +9,6 @@ import (
 
 var errSubtitleBusy = errors.New("another subtitle operation is running; review its outcome before starting another")
 
-// Legacy work remains concurrent. Receipt work is exclusive with every legacy
-// writer and audio consumer, including work waiting for the audio seam.
 type subtitleAdmission struct {
 	mu        sync.Mutex
 	legacy    int

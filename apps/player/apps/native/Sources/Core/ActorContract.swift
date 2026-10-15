@@ -66,7 +66,6 @@ struct ActorDetail: Sendable {
                 guard try credit.text("url", required: true) == route + id else { throw ClientError.invalidResponse }
                 let artwork = try credit.text("artwork")
                 if !artwork.isEmpty { _ = try server.mediaURL(artwork) }
-                // A show credit joins roles across episodes; the bounded response is its size ceiling.
                 return try Credit(id: id, title: credit.text("title", max: 512, required: true),
                                   year: credit.text("year", max: 16), role: credit.text("role", max: 2 * 1024 * 1024), artwork: artwork)
             })

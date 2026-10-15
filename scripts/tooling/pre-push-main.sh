@@ -3,7 +3,6 @@ set -euo pipefail
 
 repo="$(git rev-parse --show-toplevel)"
 common="$(git rev-parse --path-format=absolute --git-common-dir)"
-# Nested Git fixtures must discover their own repositories, not inherit this hook's context.
 while IFS= read -r git_context; do
   unset "$git_context"
 done < <(git rev-parse --local-env-vars)

@@ -1,5 +1,3 @@
-// Package owneraccess provides a private, device-bound management tunnel.
-// Its userspace network has no route to the host, the LAN, or other peers.
 package owneraccess
 
 import (
@@ -77,7 +75,6 @@ type Manager struct {
 	endpointError bool
 }
 
-// Open reads private state. It neither enables access nor opens a network port.
 func Open(config Config) (*Manager, error) {
 	if !filepath.IsAbs(config.Directory) || filepath.Clean(config.Directory) != config.Directory || config.Profile == nil || config.Certificate == nil {
 		return nil, errors.New("private management configuration is invalid")
@@ -108,7 +105,6 @@ func Open(config Config) (*Manager, error) {
 	return m, nil
 }
 
-// Attach supplies the existing authenticated application, then resumes explicitly enabled access.
 func (m *Manager) Attach(ctx context.Context, handler http.Handler) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -126,7 +122,6 @@ func (m *Manager) Attach(ctx context.Context, handler http.Handler) {
 	go m.retryStartup(ctx)
 }
 
-// Enable requires a configured HTTPS identity and an explicit, bounded public endpoint.
 func (m *Manager) Enable(endpoint string) error {
 	if !validEndpoint(endpoint) || !validOrigin(m.config.Origin) {
 		return errors.New("set up trusted HTTPS and enter a hostname with a UDP port between 1024 and 65535")
@@ -166,7 +161,6 @@ func (m *Manager) Enable(endpoint string) error {
 	return nil
 }
 
-// Disable closes active tunnels before durably clearing every pairing and the Server key.
 func (m *Manager) Disable() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -185,7 +179,6 @@ func (m *Manager) Disable() error {
 	return nil
 }
 
-// Pair binds one device to the signed-in Owner. Keys leave the Server only in this response.
 func (m *Manager) Pair(label, profileID string) (string, error) {
 	label = strings.TrimSpace(label)
 	if !validLabel(label) || !validID(profileID) {
@@ -208,7 +201,6 @@ func (m *Manager) Pair(label, profileID string) (string, error) {
 	if _, err = io.ReadFull(rand.Reader, psk); err != nil {
 		return "", errors.New("could not create device identity")
 	}
-	// Addresses are never reused during this runtime: an old TCP connection cannot become a new device.
 	address := m.runtime.nextAddress()
 	if address == "" {
 		return "", errors.New("restart private management before pairing more devices")
@@ -242,7 +234,6 @@ func (m *Manager) Revoke(key string) error {
 		}
 		next := m.state
 		next.Devices = append(append([]Device(nil), next.Devices[:i]...), next.Devices[i+1:]...)
-		// Stop accepting the peer even if durable storage fails.
 		if m.runtime != nil {
 			m.runtime.remove(peer)
 		}

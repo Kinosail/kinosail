@@ -38,7 +38,7 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	for index, quality := range qualities {
 		layoutNumber := startNumber
 		if refill != nil {
-			layoutNumber = 0 // The exclusive stage contains media and init together.
+			layoutNumber = 0
 		}
 		directory, playlistDirectory, err := preparePresentationDirectories(root, quality.Label, layoutNumber)
 		if err != nil {
@@ -67,7 +67,6 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 			arguments = append(arguments, "-c:a", "aac", "-ac", "2", "-b:a", strconv.FormatInt(audioBitrate/1000, 10)+"k")
 		}
 		arguments = append(arguments, "-flags", "+cgop", "-force_key_frames", "expr:gte(t,n_forced*2)")
-		// Automatic shifting depends on the start time; every rendition must keep the same refill clock.
 		arguments = append(arguments, "-avoid_negative_ts", "disabled")
 		if startNumber > 0 {
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))

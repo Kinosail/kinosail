@@ -55,7 +55,6 @@ struct AppShell: View {
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(session.restoring):\(scenePhase)") {
                 if scenePhase != .active { await session.artwork.stopPrefetch(); return }
                 guard scenePhase == .active, !session.restoring, let client = session.client else { return }
-                // Visible requests take priority over background catalog warmup.
                 do { try await Task.sleep(for: .milliseconds(100)) }
                 catch { return }
                 #if os(tvOS)

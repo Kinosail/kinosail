@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// Transcoding adapts Player settings to the download manager's software retry contract.
 func Transcoding(current func() transcodepolicy.Settings, softwareEncoder func(string) string) func(bool) transcodepolicy.Settings {
 	return func(software bool) transcodepolicy.Settings {
 		settings := current()

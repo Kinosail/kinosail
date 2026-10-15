@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Decorate adds trusted embedded audio tags to library items.
 func (probe *Probe) Decorate(ctx context.Context, items []library.Item, enrichment Enrichment) []library.Item {
 	jobs := make(chan int)
 	var wait sync.WaitGroup

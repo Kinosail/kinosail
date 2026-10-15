@@ -7,10 +7,8 @@ import (
 
 const commandUsage = "usage: kinosail backup [verify] | kinosail restore"
 
-// Command runs Player's recovery command contract.
 type Command func([]string, io.Reader, io.Writer, string, string) (bool, error)
 
-// BindCommand binds recovery command orchestration to one app backup service.
 func BindCommand(service *Service, version func() string) Command {
 	if service == nil || version == nil {
 		return func([]string, io.Reader, io.Writer, string, string) (bool, error) {

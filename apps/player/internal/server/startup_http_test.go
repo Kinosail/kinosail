@@ -20,7 +20,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-// Registered HTTP routes own admission and delivery; the encoder is synthetic.
 func TestPlaybackPreparationRejectsInvalidSourcesWithoutConsumingAdmission(t *testing.T) {
 	h, ids, starts := preparationFixture(t, 4, true)
 	page := apiCall(t, h, "", http.MethodGet, "/watch/"+ids[0], nil)
@@ -44,7 +43,6 @@ func TestPlaybackPreparationRejectsInvalidSourcesWithoutConsumingAdmission(t *te
 	assertAPIBody(t, preparationRaw(t, h, http.MethodPost, base+"?unknown=1", body), http.StatusBadRequest)
 	assertAPIBody(t, preparationRaw(t, h, http.MethodPost, "/api/v1/items/missing/playback-prepare", preparationJSON("/media/missing")), http.StatusNotFound)
 	assertPreparationNoEncoder(t, starts)
-	// Rejection must leave all public admission slots available.
 	for _, id := range ids[:3] {
 		assertPreparationState(t, prepareSource(t, h, id, "/media/"+id), http.StatusAccepted, "queued")
 	}
@@ -124,7 +122,6 @@ func preparationFixture(t *testing.T, count int, caching bool) (http.Handler, []
 
 	probe, encoder, starts := filepath.Join(tools, "ffprobe"), filepath.Join(tools, "ffmpeg"), filepath.Join(tools, "starts")
 	servertest.WriteExecutable(t, probe, "#!/bin/sh\nprintf '%s' '{\"streams\":[{\"index\":0,\"codec_type\":\"video\",\"codec_name\":\"h264\",\"width\":640,\"height\":360},{\"index\":1,\"codec_type\":\"audio\",\"codec_name\":\"aac\"}],\"format\":{\"format_name\":\"mp4\",\"duration\":\"8\"}}'\n")
-	// Observe HLS encoding, not unrelated scheduled marker analysis.
 	hlsStart := "for output; do case \"$output\" in */index.m3u8) printf 'started\\n' >> '" + starts + "'; break;; esac; done\n"
 	servertest.WriteExecutable(t, encoder, "#!/bin/sh\n"+hlsStart+servertest.PlayableHLS())
 	h := server.New(server.Config{Lifecycle: t.Context(), MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, FFprobe: probe, FFmpeg: encoder})
@@ -143,9 +140,6 @@ func preparationFixture(t *testing.T, count int, caching bool) (http.Handler, []
 	return h, ids, starts
 }
 
-// Managed background subtitle preparation probes every fixture source. Settle
-// those facts via public planning before admission tests or TempDir cleanup;
-// cancellation alone does not join a cache publication already in flight.
 func settlePreparationFacts(t *testing.T, handler http.Handler, ids []string, cache string) {
 	t.Helper()
 	for _, id := range ids {
@@ -168,7 +162,7 @@ func preparationFactsPublished(cache string, count int) error {
 	}
 	for _, entry := range entries {
 		if !entry.Type().IsRegular() || !strings.HasSuffix(entry.Name(), ".json") {
-			return os.ErrNotExist // An atomic publication may still own a temporary file.
+			return os.ErrNotExist
 		}
 	}
 	return nil

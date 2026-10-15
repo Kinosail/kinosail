@@ -8,8 +8,6 @@ const CASES = [
   { id: "r06-restore-inspect-body-phone", title: "R06 Restore held inspection body releases phone editor", mode: "inspect-body", width: 390, height: 844 },
 ] as const;
 
-// Discovery is unconditional; root selects one exact pair. Soft expectations
-// preserve navigation/settlement evidence after an intended deadline failure.
 for (const entry of CASES) {
   test(entry.title, async ({ page }, testInfo) => {
     const result = await runRestoreCase(page, entry);

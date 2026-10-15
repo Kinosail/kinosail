@@ -16,9 +16,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// A clip longer than the startup burst must remain deliverable at the fastest
-// supported speed. Sequential requests prevent a distant seek from hiding a
-// slow producer behind another startup burst.
 func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
@@ -54,7 +51,6 @@ func TestRealHLSGenerationKeepsAheadOfSupportedPlaybackSpeeds(t *testing.T) {
 			if info.CompatiblePlan.Mode != sample.mode {
 				t.Fatalf("fixture plan = %+v; want %s", info.CompatiblePlan, sample.mode)
 			}
-			// Consume a long, complete window before the final muxer tail.
 			duration := 60.0
 			if sample.skip {
 				duration -= 10

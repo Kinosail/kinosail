@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-/** A real HTTP stand-in, with only Android's JVM-unavailable key lookup substituted. */
 internal class AndroidRecoveryFixture(private val application: Application) : AutoCloseable {
     val viewer = Viewer("Recovery fixture", "recovery-server", "recovery-viewer", "Viewer")
     val catalogOffsets = CopyOnWriteArrayList<Int>()

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Gives tvOS forms and lists a stable visual anchor without changing the iOS layout.
 struct TVOSConfigurationLayout<Content: View>: View {
     let title: String
     let symbol: String

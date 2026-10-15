@@ -77,7 +77,6 @@ func (service *castService) planCast(facts MediaFacts, viewer viewerProfile, kin
 	policy := viewerPlaybackPolicy(viewer)
 	intent := playbackModeIntent(service.settings)
 	policy.AllowTranscode = policy.AllowTranscode && !intent.ForceDirect && kind == "video"
-	// Use the original timeline on receivers; automatic skip remains a sender feature.
 	plan := playback.Decide(facts, capabilities, policy, intent, playback.DecisionPolicy{PreferCompatibleAudio: true})
 	if !plan.Allowed {
 		return PlaybackPlan{}, errors.New("This title is not compatible with the receiver and this profile's playback permissions") //nolint:staticcheck // This complete sentence is displayed directly in the device picker.
@@ -119,7 +118,7 @@ func (service *castService) rememberCast(session castSession) error {
 	for index := range stored.Tracks {
 		stored.Tracks[index].URL = ""
 	}
-	stored.URL = "" // Never retain the receiver bearer capability in the session registry.
+	stored.URL = ""
 	if session.Protocol == "dlna" {
 		for _, existing := range service.sessions {
 			if existing.DeviceID == session.DeviceID {

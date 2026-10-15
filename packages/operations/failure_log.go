@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// FailureEvent is a bounded, private-safe projection of one failed HTTP request.
 type FailureEvent struct {
 	Time       string `json:"time"`
 	Level      string `json:"level"`
@@ -17,13 +16,11 @@ type FailureEvent struct {
 	DurationMS int64  `json:"durationMs"`
 }
 
-// FailureLog keeps recent request failures in memory for Owner diagnostics.
 type FailureLog struct {
 	mu     sync.Mutex
 	events []FailureEvent
 }
 
-// Record accepts only safe, bounded fields; raw paths and error text are never retained.
 func (log *FailureLog) Record(requestID, method, path string, status int, duration time.Duration) { //nolint:cyclop // The checks bound each field before it enters Owner diagnostics.
 	if log == nil || status < 400 || status > 599 {
 		return
@@ -81,7 +78,6 @@ func hexByte(value byte) bool {
 	return value >= '0' && value <= '9' || value >= 'a' && value <= 'f' || value >= 'A' && value <= 'F'
 }
 
-// Recent returns a copy in newest-first order.
 func (log *FailureLog) Recent() []FailureEvent {
 	if log == nil {
 		return nil

@@ -2,7 +2,6 @@ package identitycore
 
 import "path/filepath"
 
-// ProfileState is the canonical loaded profile document set.
 type ProfileState struct {
 	ProfileFile, SessionFile, APIFile string
 	Profiles                          []Profile
@@ -11,7 +10,6 @@ type ProfileState struct {
 	Err                               error
 }
 
-// LoadProfileState loads Player's related profile documents in dependency order.
 func LoadProfileState(
 	dataDir string,
 	loadProfiles func(string, any) (bool, error),

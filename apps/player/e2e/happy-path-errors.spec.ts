@@ -87,7 +87,7 @@ for (const scenario of ["cancelled", "denied", "redirected", "different-item", "
         }
         started = true;
         if (scenario === "denied") {response.writeHead(403); response.end("Denied");}
-        return; // Hold a real XHR until the native form navigation cancels it.
+        return;
       }
       if (request.method === "POST" && path === `/watched/${nextItem}`) {
         submitted = true;
@@ -137,8 +137,6 @@ for (const scenario of ["cancelled", "denied", "redirected", "different-item", "
       if (scenario === "failed-navigation") expect(observed[0].navigations).toHaveLength(0);
       else expect(observed[0].navigations).toMatchObject([{status: 200, redirectStatus: 303, method: "GET", redirectMethod: "POST", newDocument: true}]);
       if (scenario === "redirected") expect([...observed[0].failures, ...observed[0].pendingRequests].some(failure => failure.redirected)).toBe(true);
-      // A deliberately thrown error is not the engine's native HLS XHR exception.
-      // Even an actual cancellation and successful navigation must not excuse it.
       if (["denied", "failed-navigation"].includes(scenario)) await expect.poll(() => monitor.errors().length).toBeGreaterThan(0);
       else await expect.poll(() => monitor.errors().length).toBe(scenario === "duplicate-error" ? 2 : 1);
       expect(monitor.cancellations()).toHaveLength(0);

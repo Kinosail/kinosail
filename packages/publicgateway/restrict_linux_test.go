@@ -41,7 +41,6 @@ func TestGatewayNetworkRestrictionAcrossAllThreads(t *testing.T) {
 	if err = restrictNetwork(); err != nil {
 		t.Fatal(err)
 	}
-	// Already opened public listeners must still accept and serve after filtering.
 	accepted, err := listener.Accept()
 	if err != nil {
 		t.Fatal(err)

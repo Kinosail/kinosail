@@ -7,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// CollectionNames returns built-in and custom collection names for visible items.
 func (storage ListStorage) CollectionNames(items []library.Item) []string {
 	values := make([]string, 0)
 	for _, item := range items {
@@ -18,7 +17,6 @@ func (storage ListStorage) CollectionNames(items []library.Item) []string {
 	return storage.collectionNamesWith(values)
 }
 
-// collectionNamesWith merges built-in names with stored collection visibility.
 func (storage ListStorage) collectionNamesWith(values []string) []string {
 	unique := make(map[string]bool)
 	for key := range *storage.Playlists {
@@ -39,7 +37,6 @@ func (storage ListStorage) collectionNamesWith(values []string) []string {
 	return names
 }
 
-// Collection selects built-in and explicitly included members, honoring exclusions.
 func (storage ListStorage) Collection(name string, items []library.Item) []library.Item {
 	selected, result := (*storage.Playlists)["collection:"+name], make([]library.Item, 0)
 	for _, item := range items {

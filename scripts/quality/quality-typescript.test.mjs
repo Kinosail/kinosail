@@ -6,8 +6,6 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-// These CLI controls cover the compiler dependency used by the weekly policies.
-// Browser journeys do not execute the static type or Halstead policy scripts.
 const quality = dirname(fileURLToPath(import.meta.url));
 
 function check(t, script, file, source) {

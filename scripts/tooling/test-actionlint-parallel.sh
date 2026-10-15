@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# The hosted graph exercises execution; this catches a linter upgrade that
-# rejects native parallel steps or stops validating their children and waits.
 set -euo pipefail
 fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT
@@ -22,9 +20,6 @@ jobs:
 YAML
 actionlint - < "$fixture/valid.yml"
 
-# The errors must come from child validation, not rejection of parallel itself.
-# Use an unknown step key to test parsing inside a group without depending on
-# optional shellcheck or repository secrets.
 sed '/          - run:/a\
             unknown-step-key: true
 ' "$fixture/valid.yml" > "$fixture/invalid.yml"

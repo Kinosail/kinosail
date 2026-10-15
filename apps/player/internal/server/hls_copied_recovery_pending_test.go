@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// Public E2E cannot schedule corruption between pending copy and atomic Link.
 func TestCopiedRecoveryPendingMutationCannotPublish(t *testing.T) { //nolint:cyclop,gocognit // Serial integration assertions and injected filesystem failure cases.
 	for _, action := range []string{"contents", "replacement", "identical-replacement", "cancel"} {
 		t.Run(action, func(t *testing.T) {

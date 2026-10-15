@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
-// ProgressStorage connects viewing-import reconciliation to an app-owned state map.
 type ProgressStorage struct {
 	Mutex, PersistMutex *sync.Mutex
 	Values              *map[string]catalog.PlaybackState
@@ -21,12 +20,10 @@ type ProgressStorage struct {
 	Owner               bool
 }
 
-// NewProgressStorage adapts the shared progress transaction to viewing-import reconciliation.
 func NewProgressStorage(storage catalog.ProgressStorage, database *documentdb.Store) ProgressStorage {
 	return ProgressStorage{Mutex: storage.Mutex, PersistMutex: storage.PersistMutex, Values: storage.Values, File: storage.File, Persist: storage.Persist, Database: database}
 }
 
-// Import atomically persists and publishes a batch of optimistic viewing changes.
 func (storage ProgressStorage) Import(changes []ProgressChange, now time.Time) (int, int, error) {
 	storage.PersistMutex.Lock()
 	defer storage.PersistMutex.Unlock()
@@ -42,7 +39,6 @@ func (storage ProgressStorage) Import(changes []ProgressChange, now time.Time) (
 	return applied, conflicts, nil
 }
 
-// MergeProgress applies optimistic viewing changes to a detached state map.
 func MergeProgress(values map[string]catalog.PlaybackState, profileID string, owner bool, changes []ProgressChange, now time.Time) (map[string]catalog.PlaybackState, int, int) {
 	result, applied, conflicts := maps.Clone(values), 0, 0
 	for _, change := range changes {
@@ -65,7 +61,6 @@ func MergeProgress(values map[string]catalog.PlaybackState, profileID string, ow
 	return result, applied, conflicts
 }
 
-// MergeLists adds favorites and ordered playlist entries to detached maps.
 func MergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) { //nolint:cyclop,gocognit // Favorite and ordered playlist merges form one optimistic transaction.
 	type positionedItem struct {
 		id       string

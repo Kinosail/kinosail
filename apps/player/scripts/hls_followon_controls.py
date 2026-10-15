@@ -22,9 +22,9 @@ def controls(root, run, binary, receipt, include_hevc=True, include_audio=True):
                                    ('hevc-adopted-preparation', '.mkv', 'ac3')]:
         hevc = name.startswith('hevc-')
         if hevc and not include_hevc:
-            continue  # Full manual proof retains strict HEVC counter/control cases.
+            continue
         if not hevc and not include_audio:
-            continue  # The separate HEVC gate leaves audio6 in its existing gate.
+            continue
         case = {'name': name, 'result': 'failed', 'failures': [],
                 'boundary': 'Public complete output for matched zero-offset synthetic media; general HEVC seeks not certified'}
         receipt['cases'].append(case)

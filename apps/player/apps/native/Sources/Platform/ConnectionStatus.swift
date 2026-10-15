@@ -2,7 +2,6 @@ import Foundation
 import Network
 import Observation
 
-/// Network availability is a hint; only an actual Server response proves reachability.
 @MainActor @Observable
 final class ConnectionStatus {
     private(set) var networkAvailable: Bool?
@@ -53,7 +52,6 @@ final class ConnectionStatus {
         let attempt = UUID()
         checkID = attempt
         defer { if checkID == attempt { checking = false } }
-        // Never use a cache hit as evidence of a restored connection.
         _ = try? await client.viewer()
     }
 

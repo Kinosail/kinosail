@@ -218,7 +218,6 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
 fi
 mkfifo "$mcp_dir/input"
 exec 9<>"$mcp_dir/input"
-# One exec starts all relays concurrently; retain stderr for startup failures.
 # shellcheck disable=SC2016 # Expansion belongs to the container shell.
 "$engine" exec --interactive "$container" sh -c 'exec 3<&0; for index in $(seq 1 12); do kinosail mcp-stdio <&3 & done; wait' <"$mcp_dir/input" >/dev/null 2>"$mcp_dir/relay.log" &
 mcp_jobs+=("$!")

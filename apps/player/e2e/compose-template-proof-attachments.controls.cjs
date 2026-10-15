@@ -1,6 +1,4 @@
 "use strict";
-// Source-only controls until the bounded hosted Node 26 phase.
-// Native Node type stripping loads the actual helper; no transformed VM copy.
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const { ownedOutputRoot, privateContextPath, privateContextValid } =
@@ -89,5 +87,4 @@ test("metadata recognition performs no attachment content acquisition", () => {
   const record = attachment();
   Object.defineProperty(record, "body", { get() { throw new Error("fictional-acquisition"); } });
   assert.throws(() => privateContextValid(record, context()), /fictional-acquisition/);
-  // The reporter catches acquisition failures as attachment_invalid, never known errors.
 });

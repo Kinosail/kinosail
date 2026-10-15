@@ -4,14 +4,9 @@ import SwiftUI
 import Testing
 @testable import KinosailPlayer
 
-// Test-first gap: real journals and native EOF/actor ordering cannot be seeded
-// safely. MP4/HLS decode uses real AVFoundation; explicit EOF posts below are
-// isolated notification ownership tests, not natural EOF or Nox proof.
 extension PlaybackEndpointJourneys {
     @Suite
     @MainActor struct PlaybackCompletionSafetyJourneys {
-        // The populated Nox journal is intentionally not seeded or read. This
-        // fixture covers the public replay decision with real native decoding.
         @Test(arguments: ["device-watched", "server-endpoint", "server-resumed", "device-resumed"])
         func reopeningCompletedTitleUsesNewestPlaybackIntent(origin: String) async throws {
             let fixture = try await mp4Fixture()
@@ -132,7 +127,7 @@ extension PlaybackEndpointJourneys {
             try await decodedProgress(first)
             let oldItem = try #require(first.currentItem)
             NotificationCenter.default.post(name: .AVPlayerItemDidPlayToEndTime, object: oldItem)
-            coordinator.stop() // Invalidate queued actor work before yielding.
+            coordinator.stop()
             let secondStore = try await pendingStore(fixture, seconds: 3)
             try await joinedStartup(coordinator, item: item, fixture: fixture, store: secondStore)
             let second = try #require(coordinator.player)

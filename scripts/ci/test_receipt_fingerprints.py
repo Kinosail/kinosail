@@ -68,7 +68,6 @@ class RealReceiptScanner(unittest.TestCase):
         self.repo = Path(self.temp.name)
         self.env = {**os.environ, "GIT_CONFIG_NOSYSTEM": "1",
                     "GIT_CONFIG_GLOBAL": os.devnull}
-        # An inherited diagnostic GIT_DIR must never redirect the disposable Git.
         for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY",
                     "GIT_ALTERNATE_OBJECT_DIRECTORIES"):
             self.env.pop(key, None)
@@ -106,7 +105,6 @@ class RealReceiptScanner(unittest.TestCase):
                                 cwd=self.repo, env=self.env, timeout=30,
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.assertIn(result.returncode, (0, 1))
-        # Never emit scanner match/secret/author fields, even on assertion failure.
         projected = [{key: row[key] for key in ("Commit", "File", "RuleID", "StartLine")}
                      for row in json.loads(report.read_text())]
         report.unlink()
@@ -119,7 +117,6 @@ class RealReceiptScanner(unittest.TestCase):
     def test_exact_digest_exception_keeps_new_credential_at_same_path_detectable(self):
         (self.repo / ".gitleaksignore").write_text(self.fingerprint(self.original) + "\n")
         self.assertEqual(self.scan(), (0, []))
-        # This is a deliberately synthetic scanner payload; no service accepts it.
         self.write({"checksums": {"config/audit_key.json": "synthetic"},
                     "api_key": hashlib.sha256(b"synthetic credential control").hexdigest()})
         head = self.commit("Add synthetic credential near-miss control")

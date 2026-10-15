@@ -10,7 +10,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-// PasskeyCloneWarningCreatesSecuritySignal verifies clone warnings remain advisory and auditable.
 func PasskeyCloneWarningCreatesSecuritySignal(t *testing.T, risk func(*http.Request, identitycore.Profile, *webauthn.Credential), query func(string, int) []auditjournal.Event) {
 	t.Parallel()
 	profile := identitycore.Profile{ID: "viewer", Name: "Viewer"}

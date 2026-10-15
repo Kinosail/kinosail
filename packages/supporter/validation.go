@@ -24,13 +24,10 @@ var (
 	tiers               = []string{"friend", "crew", "navigator", "patron", "steward", "lighthouse", "commodore", "admiral", "northstar", "legacy"}
 )
 
-// ValidKey reports whether a normalized activation key follows Player's bounded alphabet.
 func ValidKey(value string) bool { return keyPattern.MatchString(value) }
 
-// Tiers returns an isolated copy of Player's ordered supporter levels.
 func Tiers() []string { return slices.Clone(tiers) }
 
-// ValidEndpoint applies Player's remote endpoint policy.
 func ValidEndpoint(value string, allowLoopbackHTTP bool) bool { //nolint:cyclop // Endpoint trust rules are clearer as one predicate.
 	parsed, err := url.Parse(value)
 	if err != nil || parsed.Host == "" || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" {
@@ -43,7 +40,6 @@ func ValidEndpoint(value string, allowLoopbackHTTP bool) bool { //nolint:cyclop 
 	return allowLoopbackHTTP && parsed.Scheme == "http" && (parsed.Hostname() == "localhost" || ip != nil && ip.IsLoopback())
 }
 
-// ValidRecognitionName checks an optional signed public name.
 func ValidRecognitionName(value string, requireValue bool) bool {
 	if value == "" {
 		return !requireValue
@@ -59,10 +55,8 @@ func ValidRecognitionName(value string, requireValue bool) bool {
 	return true
 }
 
-// Rank maps Player's canonical tier names to levels.
 func Rank(tier string) int { return slices.Index(tiers, tier) + 1 }
 
-// Name returns Player's canonical display name for a tier.
 func Name(tier string) string {
 	if tier == "" || tier == "free" {
 		return "Free"

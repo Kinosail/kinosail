@@ -44,8 +44,6 @@ def capture_audio(root, run, api, item, label, point, span, source_pcm, app='pla
     samples = floats((run / (label + '.f32')).read_bytes())
     check(facts['passed'] and facts['capture']['sampleRate'] == 48000, 'capture_sample_rate')
     check(len(samples) > (span - .6) * 48000, 'capture_incomplete')
-    # Establish one alignment before the splice. Never realign individual
-    # windows: that would hide a phase or playback-clock discontinuity.
     anchor, size = 4800, 512
     expected = round(point * 48000) + anchor
     lags = range(-2048, 2049)
@@ -59,8 +57,6 @@ def capture_audio(root, run, api, item, label, point, span, source_pcm, app='pla
     blocks = facts['capture']['blocks']
     gaps = [b['frame'] - a['frame'] - a['length'] for a, b in zip(blocks, blocks[1:])]
     minimum = min(row['correlation'] for row in rows)
-    # Nonperiodic, band-limited noise controls exceed .97 with ordinary lossy
-    # encoding. The broken splice falls below .71; .90 retains a wide margin.
     verdict = abs(lag) <= 48 and minimum >= .90 and not any(gaps)
     comparison = {'label': label, 'command': command, 'point': point, 'span': span,
                   'lagSamples': lag, 'minimumCorrelation': minimum, 'rows': rows,
@@ -99,9 +95,6 @@ def packet_grid(rendition):
                      'phase': start % 1024, 'gapSamples': gap, 'videoStartDTS': video_start, 'passed': valid})
         previous = end
     for row, following in zip(rows, rows[1:]):
-        # HLS must place audio up to the next video's decode boundary in
-        # this fragment. Complete concatenated audio can hide late packets
-        # assigned to a later fragment until a real client seeks.
         boundary_gap = row['end'] - following['videoStartDTS'] * row['sampleRate']
         row['videoBoundaryGapSamples'] = boundary_gap
         row['passed'] = row['passed'] and -1 <= boundary_gap <= 1025

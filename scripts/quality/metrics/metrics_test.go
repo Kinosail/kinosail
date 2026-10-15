@@ -40,7 +40,6 @@ func TestHalsteadCountsTypedOperandsAndNestedFunctions(t *testing.T) {
 	if len(got.Functions) != 3 {
 		t.Fatalf("reports: %+v", got)
 	}
-	// func,+,return; func:add,var:a,var:b,type:int; seven operand occurrences.
 	if got.Functions[0].Metrics.Difficulty != 2.625 {
 		t.Fatalf("add: %+v", got.Functions[0])
 	}

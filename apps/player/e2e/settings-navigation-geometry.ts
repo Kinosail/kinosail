@@ -23,7 +23,6 @@ async function recordNavigation(page: Page, info: TestInfo, noticeExpected: bool
   await info.attach(`${name}.json`, { body: JSON.stringify({
     revision: process.env.KINOSAIL_TEST_REVISION, browser: info.project.name, noticeExpected, phase, ...geometry,
   }), contentType: "application/json" });
-  // Playwright screenshots also await font readiness, which a held script can delay.
   if (!pending) await page.screenshot({ path: info.outputPath(`${name}.png`) });
   expect(geometry.nav, `${name}: category menu exists`).not.toBeNull();
   expect(geometry.levels, `${name}: level controls exist`).not.toBeNull();
@@ -51,7 +50,6 @@ export async function verifySettingsNavigation(page: Page, info: TestInfo, notic
     await expect(page.locator("[data-settings-ready]")).toHaveCount(1);
     await recordNavigation(page, info, noticeExpected, "loaded");
   }
-  // A controlled fresh context prevents the service worker from bypassing asset routing.
   const context = await page.context().browser()!.newContext({
     baseURL: new URL(page.url()).origin, storageState: await page.context().storageState(),
     serviceWorkers: "block", ignoreHTTPSErrors: false, viewport: { width: 1440, height: 900 },
@@ -76,7 +74,6 @@ export async function verifySettingsNavigation(page: Page, info: TestInfo, notic
 }
 
 async function verifyDeferredNavigation(page: Page, info: TestInfo, noticeExpected: boolean) {
-  // Keep the actual server document and stylesheet when its deferred bundle is pending or fails.
   const bundle = "**/static/main.kinosail.bundle.js*";
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });

@@ -1,4 +1,3 @@
-// Package trustedhttps provides optional public trust for a LAN-only Kinosail address.
 package trustedhttps
 
 import (
@@ -16,7 +15,6 @@ const (
 	duckDNSSuffix   = ".duckdns.org"
 )
 
-// Config stores one complete trusted HTTPS setup as an atomic secret document.
 type Config struct {
 	Provider string `json:"provider,omitempty"`
 	Domain   string `json:"domain"`
@@ -25,7 +23,6 @@ type Config struct {
 	Terms    bool   `json:"termsAccepted"`
 }
 
-// NewProviderConfig normalizes owner input and validates the complete trust boundary.
 func NewProviderConfig(provider, hostname, token, address string, terms bool) (Config, error) {
 	provider = strings.ToLower(strings.TrimSpace(provider))
 	if provider == "" {
@@ -39,7 +36,6 @@ func NewProviderConfig(provider, hostname, token, address string, terms bool) (C
 	return config, config.Validate()
 }
 
-// Parse strictly decodes one bounded stored configuration document.
 func Parse(raw string) (Config, error) { //nolint:cyclop,gocognit,funlen // Strict decoding and canonical validation share one persisted-input boundary.
 	if raw == "" {
 		return Config{}, nil
@@ -95,7 +91,6 @@ func Parse(raw string) (Config, error) { //nolint:cyclop,gocognit,funlen // Stri
 	return config, nil
 }
 
-// Encode validates and returns the canonical secret document.
 func (config Config) Encode() (string, error) {
 	if config != (Config{}) && config.Provider == "" {
 		config.Provider = ProviderDuckDNS
@@ -107,7 +102,6 @@ func (config Config) Encode() (string, error) {
 	return string(encoded), err
 }
 
-// ProviderName returns the configured provider. Legacy documents use DuckDNS.
 func (config Config) ProviderName() string {
 	if config == (Config{}) {
 		return ""
@@ -118,7 +112,6 @@ func (config Config) ProviderName() string {
 	return config.Provider
 }
 
-// Validate rejects ambiguous names, unsafe credentials, and routable targets.
 func (config Config) Validate() error {
 	if config == (Config{}) {
 		return nil
@@ -176,7 +169,6 @@ func validateToken(provider, token string) error {
 	return nil
 }
 
-// Hostname is the public name covered by the trusted certificate.
 func (config Config) Hostname() string {
 	if config.Domain == "" {
 		return ""

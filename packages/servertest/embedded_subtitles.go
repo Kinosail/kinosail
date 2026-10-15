@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// EmbeddedSubtitleFixture retains each app's real media and authentication adapters.
 type EmbeddedSubtitleFixture struct {
 	New             func(*testing.T, AutomaticSkipConfig) http.Handler
 	WebCaptionLabel string
@@ -21,7 +20,6 @@ type EmbeddedSubtitleFixture struct {
 	Decode          func(*testing.T, *httptest.ResponseRecorder, any)
 }
 
-// TextCaptionsAcrossAdapters proves semantic captions and real extraction on every adapter.
 func (fixture EmbeddedSubtitleFixture) TextCaptionsAcrossAdapters(t *testing.T) {
 	t.Helper()
 	t.Parallel()

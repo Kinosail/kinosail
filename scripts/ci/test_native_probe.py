@@ -40,8 +40,6 @@ class NativeProbeContractTests(unittest.TestCase):
         self.assertIn("steps.probe.outcome == 'success'", source)
 
     def test_reader_probe_checks_all_parameter_repetitions_from_xcresult(self):
-        # Native E2E cannot prove that missing, duplicate, skipped, or failed
-        # results are rejected by its own receipt verifier.
         from unittest.mock import patch
         source = (WORKFLOWS / 'app.yml').read_text()
         step = source.split('      - name: Execute one iOS probe suite\n', 1)[1].split('      - name:', 1)[0]

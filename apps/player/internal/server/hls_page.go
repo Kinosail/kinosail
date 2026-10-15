@@ -15,7 +15,6 @@ func hlsPageOwner(ctx context.Context) string {
 	return viewer.ID + ":" + session
 }
 
-// The HLS mutex protects attachments; a new job is still private to its creator.
 func retainHLSPage(job *hlsJob, ctx context.Context) {
 	if !startupActualPlayback(ctx) {
 		return
@@ -25,10 +24,10 @@ func retainHLSPage(job *hlsJob, ctx context.Context) {
 	}
 	owner := hlsPageOwner(ctx)
 	if retained, exists := job.pages[owner]; exists && !retained {
-		return // A late segment request cannot reopen a departed page.
+		return
 	}
 	if len(job.pages) >= 64 && !job.pages[owner] {
-		owner = "" // Preserve untracked consumers until the existing idle timeout.
+		owner = ""
 	}
 	job.pages[owner] = true
 }

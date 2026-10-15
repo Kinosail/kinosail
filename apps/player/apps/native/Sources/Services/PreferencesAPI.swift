@@ -17,7 +17,6 @@ extension ServerClient {
     }
 
     func playbackPreparationPreferences(itemID: String) async throws -> ItemPlaybackPreferences {
-        // A previous playback's checkpoint may invalidate browse caches during startup.
         let path = "/api/v1/items/\(try Input.id(itemID))/playback-preferences"
         do { return try ItemPlaybackPreferences(await request(path).body) }
         catch {

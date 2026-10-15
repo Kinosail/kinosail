@@ -4,10 +4,6 @@ import Synchronization
 import Testing
 @testable import KinosailPlayer
 
-// Isolated HTTP adapter journey. Server departure E2E covers admission and
-// shared viewers; it cannot detect a native gateway omitting the wire contract.
-// Failures: absent/mismatched identity, replacement ending the new stream,
-// duplicate departure, invalid input closing live playback, or blocked cleanup.
 @Suite(.serialized)
 struct MediaDepartureJourneys {
     @Test func failedDepartureDoesNotPreventAnotherStreamOpening() async throws {

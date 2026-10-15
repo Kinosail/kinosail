@@ -1,8 +1,6 @@
 import {expect, test} from "@playwright/test";
 import {installWatchedPlayingBarrier} from "./watched-playing-barrier";
 
-// Isolated gap: populated playback cannot deterministically prove registration
-// identity, removal and once semantics for the fixture's delayed notifications.
 test("watched barrier preserves library callbacks and owned listener identity", {tag: "@smoke"}, async ({page}, info) => {
   await page.addInitScript(installWatchedPlayingBarrier);
   await page.route("**/watched-barrier-proof", route => route.fulfill({contentType: "text/html", body: `

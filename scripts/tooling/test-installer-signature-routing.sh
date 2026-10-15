@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Sourced by both installer tests after verifying their version-tag signer.
 # shellcheck disable=SC2154 # fixture is initialized by each caller.
 
 KINOSAIL_INSTALL_TEST_LEGACY_SIGNATURE=1 PATH="$fixture/bin:$PATH" "$fixture/app/scripts/install.sh" "$fixture/media" 9080 >/dev/null

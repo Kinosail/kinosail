@@ -16,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/** Keeps movie-position anchors current while an opted-in graph is recording. */
 class HeartTrackingService : Service() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var polling: Job? = null

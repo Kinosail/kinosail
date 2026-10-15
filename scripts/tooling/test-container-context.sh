@@ -35,7 +35,6 @@ done
 printf 'FROM scratch\nCOPY . /\n' >"$fixture/Containerfile"
 
 for ignore in .dockerignore .containerignore; do
-  # Exercise each repository policy with the selected engine's native matcher.
   cp "$repo/$ignore" "$fixture/.dockerignore"
   cp "$repo/$ignore" "$fixture/.containerignore"
   "$engine" build --quiet --tag "$image" "$fixture" >/dev/null

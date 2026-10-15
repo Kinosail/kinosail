@@ -11,16 +11,12 @@ import (
 
 const defaultBackdropURL = "https://image.tmdb.org/t/p/original"
 
-// Full decoding needs substantially more memory than the compressed response.
-// Serialize only the new canonical-backdrop validation, after bounding pixels.
 var backdropDecodeSlot = make(chan struct{}, 1)
 
-// BackdropValidationError exposes a bounded failure class without remote bytes.
 type BackdropValidationError struct{ class string }
 
 func (*BackdropValidationError) Error() string { return "metadata backdrop is invalid" }
 
-// FailureClass describes the locally observed validation stage.
 func (failure *BackdropValidationError) FailureClass() string {
 	switch failure.class {
 	case "jpeg-header", "dimensions", "jpeg-decode":
@@ -30,8 +26,6 @@ func (failure *BackdropValidationError) FailureClass() string {
 	}
 }
 
-// DownloadProviderBackdrop upgrades only the canonical default TMDB source.
-// Posters and custom image bases retain their existing download behavior.
 func DownloadProviderBackdrop(ctx context.Context, client *http.Client, baseURL, path, target string) error {
 	if baseURL != defaultImageURL {
 		return DownloadProviderImage(ctx, client, baseURL, path, target)
@@ -39,8 +33,6 @@ func DownloadProviderBackdrop(ctx context.Context, client *http.Client, baseURL,
 	return downloadProviderImage(ctx, client, defaultBackdropURL, path, target, validateBackdropJPEG)
 }
 
-// RetainProviderBackdrop keeps a usable prior derivative after a failed
-// canonical upgrade. It never extends cache lifetime or changes custom bases.
 func RetainProviderBackdrop(ctx context.Context, baseURL, cache, target string) bool {
 	if ctx.Err() != nil || baseURL != defaultImageURL || CurrentArtwork(cache, target) == "" {
 		return false

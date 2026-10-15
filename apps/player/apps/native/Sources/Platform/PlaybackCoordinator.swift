@@ -185,7 +185,6 @@ final class PlaybackEngine {
             writer = try ProgressWriter(itemID: item.id, expected: item.progress, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }
             try check(attempt, installation: installation)
-            // A completed device entry represents replay, not an endpoint seek.
             let start = pending.map { $0.progress.watched ? 0 : $0.progress.seconds } ?? details.start
             if pending?.progress.watched == true {
                 playbackStartLog.info("operation=playback-start outcome=replay-completed-progress session=\(attempt.uuidString, privacy: .public)")

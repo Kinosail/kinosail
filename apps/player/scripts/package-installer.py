@@ -55,7 +55,6 @@ def main():
         source = ROOT / name
         if not source.is_file() or source.is_symlink():
             parser.error(f"missing or non-regular installer input: {name}")
-    # Assemble completely before creating the destination.
     with tempfile.TemporaryDirectory(prefix=".player-installer-", dir=destination.parent) as temporary:
         archive = Path(temporary) / "kinosail-player-install.tar.gz"
         with tarfile.open(archive, "w:gz") as bundle:

@@ -1,4 +1,3 @@
-// Package mediashares owns Player's expiring private-media capability contract.
 package mediashares
 
 import (
@@ -15,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Share is one persisted media grant.
 type Share struct {
 	ID                 string   `json:"id"`
 	ItemIDs            []string `json:"itemIds"`
@@ -25,20 +23,17 @@ type Share struct {
 	RightsAcknowledged bool     `json:"rightsAcknowledged"`
 }
 
-// Session is one claimed device capability.
 type Session struct {
 	ShareID   string `json:"shareId"`
 	ExpiresAt int64  `json:"expiresAt"`
 	Device    string `json:"device"`
 }
 
-// State is the validated persisted grant document.
 type State struct {
 	Shares   map[string]Share   `json:"shares"`
 	Sessions map[string]Session `json:"sessions"`
 }
 
-// Dependencies adapt application persistence and the current library index.
 type Dependencies struct {
 	Load     func(string, any) (bool, error)
 	Persist  func(string, any) error
@@ -48,7 +43,6 @@ type Dependencies struct {
 	Random   io.Reader
 }
 
-// Store owns media share grants, claims, stream limits, and persistence.
 type Store struct {
 	mu       sync.Mutex
 	file     string
@@ -62,10 +56,8 @@ type Store struct {
 	err      error
 }
 
-// ErrDeviceLimit indicates that every permitted device has claimed the grant.
 var ErrDeviceLimit = errors.New("media share device limit reached")
 
-// View is the safe owner/API projection of a grant.
 type View struct {
 	ID         string   `json:"id"`
 	ItemIDs    []string `json:"itemIds"`
@@ -73,7 +65,6 @@ type View struct {
 	MaxDevices int      `json:"maxDevices"`
 }
 
-// New restores the media-share state and fails closed on invalid dependencies or state.
 func New(dataDir string, dependencies Dependencies) *Store {
 	dependencies, dependencyErr := normalizedDependencies(dependencies)
 	store := &Store{file: filepath.Join(dataDir, "media_shares.json"), persist: dependencies.Persist, find: dependencies.Find, snapshot: dependencies.Snapshot, active: make(map[string]int), now: dependencies.Now, random: dependencies.Random, err: dependencyErr}
@@ -113,7 +104,6 @@ func (store *Store) restore(dataDir string, load func(string, any) (bool, error)
 	}
 }
 
-// Create validates and persists one expiring grant.
 func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices int, rightsAcknowledged bool) (View, string, error) { //nolint:cyclop // Every grant policy check must pass before persistence.
 	if store.err != nil {
 		return View{}, "", store.err
@@ -154,7 +144,6 @@ func (store *Store) Create(itemIDs []string, lifetime time.Duration, maxDevices 
 	return View{ID: share.ID, ItemIDs: append([]string(nil), share.ItemIDs...), ExpiresAt: share.ExpiresAt, MaxDevices: share.MaxDevices}, claim, nil
 }
 
-// Claim exchanges a one-time grant secret for a bounded device session.
 func (store *Store) Claim(token, device string) (string, time.Time, error) { //nolint:cyclop // Token, expiry, device capacity, and atomic persistence form one claim decision.
 	if !validClaimInput(token, device) {
 		return "", time.Time{}, errors.New("media share claim is invalid")
@@ -201,7 +190,6 @@ func (store *Store) Claim(token, device string) (string, time.Time, error) { //n
 	return sessionToken, expires, nil
 }
 
-// Revoke removes a grant and all of its sessions.
 func (store *Store) Revoke(id string) error {
 	if !validCapabilityID(id) {
 		return errors.New("media share was not found")
@@ -240,7 +228,6 @@ func validCapabilityID(value string) bool {
 	return len(value) >= 32 && len(value) <= 256
 }
 
-// List returns unexpired grants in expiry order.
 func (store *Store) List() ([]View, error) {
 	store.mu.Lock()
 	defer store.mu.Unlock()

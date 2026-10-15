@@ -31,7 +31,6 @@ ITEMS = []
 for n in range(160):
     title = TITLES[n] if n < len(TITLES) else f'Journey {n:03d}'
     ITEMS.append(dict(id=f'movie-{n:03d}',kind='video',title=title,year='2026',rating='PG',genres=['Adventure','Drama','Nature','Mystery'][n%4],plot='A quiet journey through unfamiliar landscapes. An ordinary evening turns into an extraordinary adventure.',artwork=f'/art/movie-{n:03d}',backdrop=f'/backdrop/movie-{n:03d}',stream=f'/media/movie-{n:03d}',container='mp4',progress={**PROGRESS,'seconds':3 if n<6 else 0,'session':'qa' if n<6 else '', 'revision':1 if n<6 else 0}))
-# Opt in only for artwork scrolling QA; other fixture consumers retain their data.
 if os.environ.get('KINOSAIL_TV_ARTWORK_CAST_FIXTURE') == '1':
     next(item for item in ITEMS if item['id'] == 'movie-004')['cast'] = [
         dict(name=f'Artwork QA Actor {n:02d}', role=f'Fixture role {n:02d}', image=f'/art/artwork-cast-{n:02d}')
@@ -173,7 +172,6 @@ class Handler(BaseHTTPRequestHandler):
                 if not isinstance(value['session'],str) or len(value['session'].encode())>128: raise ValueError()
             if not isinstance(body['playbackToken'],str) or len(body['playbackToken'].encode())>8192: raise ValueError()
         except (ValueError,KeyError,TypeError,RecursionError): return self.send(400,{'error':'invalid fixture progress'})
-        # Navigation-only acknowledgement. No progress is persisted or replayed.
         return self.send(200,body['progress'])
 print('TV polish fixture on 127.0.0.1:38359',flush=True)
 ThreadingHTTPServer(('127.0.0.1',38359),Handler).serve_forever()

@@ -47,7 +47,6 @@ export async function login(page: import("@playwright/test").Page) {
   if (await notNow.isVisible()) {
     const href = await notNow.getAttribute("href");
     expect(href).toBeTruthy();
-    // The click waits for navigation commitment, not the destination's load.
     await Promise.all([page.waitForURL(new URL(href!, page.url()).href, {waitUntil: "load"}), notNow.click()]);
   }
 }

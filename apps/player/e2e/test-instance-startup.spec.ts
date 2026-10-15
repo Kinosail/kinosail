@@ -24,7 +24,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.getByRole('link', {name: 'Continue to household setup'}).click();
   await page.getByRole('link', {name: 'Continue to optional viewing history'}).click();
   await page.getByRole('link', {name: 'Finish and open Library'}).click();
-  // Retain the old immutable URL in this browser's cache across the upgrade.
   await page.route('**/static/theme.js?v=electric-2', route => route.fulfill({contentType: 'text/javascript', headers: {'Cache-Control': 'public, max-age=31536000, immutable'}, body: 'window.legacyStartupTheme = true;'}));
   await page.addScriptTag({url: '/static/theme.js?v=electric-2'});
   await page.goto('/');
@@ -126,7 +125,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.unroute('**/playback-prepare');
   await writeFile(info.outputPath('startup-measurements.json'), JSON.stringify(receipts, null, 2));
   if (process.env.KINOSAIL_STARTUP_BASELINE === '1') return;
-  // Failure before code: this authenticated route is absent on the baseline.
   const warmSource = source(await plan('Warm'), 12.3);
   const triggered = page.waitForRequest(request => request.method() === 'POST' && request.url().endsWith(`/items/${id('Warm')}/playback-prepare`));
   await page.locator(`a[href="/watch/${id('Warm')}"]`).first().dispatchEvent('focusin');
@@ -182,7 +180,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await expect.poll(async () => {
     try { return Object.keys(await initHashes('Adopt')).length; } catch { return 0; }
   }, {timeout: 20_000, intervals: [50]}).toBeGreaterThan(0);
-  // A real native HLS master request adopts the running preparation atomically.
   expect((await page.request.get(adopt)).ok()).toBe(true);
   const adoptedInit = await initHashes('Adopt');
   const adopted = await moving('Adopt');
@@ -195,7 +192,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   await page.route('**/playback-prepare', route => route.abort());
   await leavePlayback('Adopt', () => page.goto('/?q=Compete', {waitUntil: 'domcontentloaded', timeout: 20_000}));
   await page.waitForLoadState('networkidle');
-  // Keep admission closed without new media GETs clearing the queue under test.
   const queueTrace = (sequence: number, event: string, paused: boolean) => page.request.post(`/api/v1/items/${id('Compete')}/playback-events`, {headers, data: {session: 'startup-queue-bound', sequence, event, paused}});
   expect((await queueTrace(1, 'play-request', false)).status()).toBe(204);
   const competePlan = await plan('Compete');
@@ -207,9 +203,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect((await queueTrace(2, 'pause', true)).status()).toBe(204);
   await page.goto('/?q=Invalidation');
   await page.route('**/playback-prepare', route => route.abort());
-  // This case owns bounded conversion invalidation. A host that can copy HEVC
-  // otherwise needs all 64 seconds before readiness, beyond the work budget.
-  // Whole copied-HEVC completion/cancellation has its own public follow-on suite.
   const staleSource = source(await plan('Invalidation', '?videoCodecs=h264'));
   expect((await prepare('Invalidation', staleSource)).status()).toBe(202);
   await expect.poll(async () => (await prepare('Invalidation', staleSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
@@ -220,7 +213,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(await (await prepare('Invalidation', staleSource)).json()).toMatchObject({state: 'queued'});
   await expect.poll(async () => (await prepare('Invalidation', staleSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readFile(join(staleDirectory, 'index.m3u8'), 'utf8')).not.toBe(beforeVersion);
-  // Force the full video conversion path with bounded software encoders.
   const settings = {quality: 'speed', codec: 'auto', accelerator: 'none', toneMap: true};
   expect((await page.request.put('/api/v1/settings/transcoder', {headers, data: settings})).ok()).toBe(true);
   const transcode = await (await page.request.get(`/api/v1/items/${id('Invalidation')}/playback?videoCodecs=h264`)).json();
@@ -256,7 +248,6 @@ test('bounded startup preparation preserves the exact stream and playback priori
   expect(await (await prepare('Invalidation', burnSource)).json()).toMatchObject({state: 'queued'});
   await expect.poll(async () => (await prepare('Invalidation', burnSource)).json(), {timeout: 30_000}).toMatchObject({state: 'ready'});
   expect(await readBurnVersion()).not.toBe(settingsVersion);
-  // Decode across the prepared eight seconds using the original init and lazy segments.
   const continuationInit = await initHashes('Invalidation', transcodeToken);
   const master = await page.request.get(burnSource);
   expect(master.ok()).toBe(true);

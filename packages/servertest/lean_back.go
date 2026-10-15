@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// LeanBackPlaybackDefaults verifies defaults, localized fields, overrides, and persistence.
 func (fixture LibraryAPIFixture) LeanBackPlaybackDefaults(t *testing.T) { //nolint:cyclop // One lifecycle proves defaults, overrides, and restart persistence.
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()

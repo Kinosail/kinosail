@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// LoginRouteProfile retains the original session and enrollment rules for the route fixture.
 func LoginRouteProfile(t *testing.T, handler http.Handler, name, password string) string {
 	t.Helper()
 	input := map[string]string{
@@ -30,7 +29,6 @@ func LoginRouteProfile(t *testing.T, handler http.Handler, name, password string
 	return token
 }
 
-// CompleteRouteViewerEnrollment confirms the real Viewer factor and retains its test secret.
 func CompleteRouteViewerEnrollment(t *testing.T, handler http.Handler, token string) {
 	t.Helper()
 	setup := RouteJSON(t, handler, token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{})
@@ -49,7 +47,6 @@ func CompleteRouteViewerEnrollment(t *testing.T, handler http.Handler, token str
 	}
 }
 
-// ResponseJSONToken retains strict token decoding and original failure diagnostics.
 func ResponseJSONToken(t *testing.T, response *httptest.ResponseRecorder) string {
 	t.Helper()
 	var result struct {

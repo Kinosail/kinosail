@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/quickconnect"
 )
 
-// QuickConnectApproval owns Player's Viewer and recent-auth checks.
 func QuickConnectApproval[Profile any](
 	public func(*http.Request) bool,
 	current func(*http.Request) Profile,
@@ -38,7 +37,6 @@ func QuickConnectApproval[Profile any](
 	}
 }
 
-// QuickConnectAuthentication owns one-use consumption and response projection.
 func QuickConnectAuthentication[Profile any](
 	polls *httpguard.Limiter,
 	consume func(string) (string, Profile, error),
@@ -57,7 +55,6 @@ func QuickConnectAuthentication[Profile any](
 	}
 }
 
-// StrictQuery accepts at most one bounded case-insensitive query value.
 func StrictQuery(values url.Values, name string, maximum int) (string, bool) {
 	candidates := foldedValues(values, name)
 	if len(candidates) > 1 {

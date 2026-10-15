@@ -191,7 +191,6 @@ struct LibraryScreen: View {
             if let clientID = session.client?.identity,
                session.resourceSnapshots.isFresh(for: snapshotKey, clientID: clientID,
                                                  as: LibrarySnapshot.self, refreshID: session.contentRevision.uuidString) { return }
-            // Preserve an expanded or letter-jump result when returning to it.
             if loadedKey == requestKey, loadedRevision == session.contentRevision, let page, page.offset > 0 { return }
             do { if !query.isEmpty { try await Task.sleep(for: .milliseconds(250)) } }
             catch { return }
@@ -249,7 +248,6 @@ struct LibraryScreen: View {
         let revision = session.contentRevision
         if reset {
             generation = UUID()
-            // Keep the focused A–Z rail mounted while its new page loads.
             if loadedKey != key {
                 if let saved = savedSnapshot {
                     items = saved.items; page = saved.page; loadedKey = key; loadedRevision = saved.revision

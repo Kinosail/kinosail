@@ -4,11 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFile, writeFile} from 'node:fs/promises';
 import {configureTestInstance, login} from './test-instance-helpers';
 
-// Gap: positive paused restore was reset by Mark watched before decoded Play.
-// This real-process case keeps the positive state through the first Play.
 configureTestInstance();
-// Match the live MobileSafari initial-Watch policy while decoding on macOS
-// WebKit. The public autoplay preference controls the next episode only.
 test.use({...devices['iPhone 13']});
 test('positive Matroska reentry decodes the saved scene through native HLS', async ({page}, info) => {
   test.skip(process.env.KINOSAIL_POSITIVE_REENTRY_E2E !== '1', 'Owned synthetic loopback runner only');
@@ -103,8 +99,6 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
   expect(assetSHA256).toBe(new URL(assetURL!, base).searchParams.get('v'));
   await record({phase: 'referenced-served-asset-identity', assetSHA256,
     limit: 'Fresh public asset fetch verifies the referenced version; it does not inspect executed resource bytes.'});
-  // Observe existing public telemetry without changing requests or retaining
-  // raw bodies, URLs, sessions, headers, or arbitrary diagnostic details.
   const launchTelemetry: object[] = [];
   page.on('request', request => {
     try {
@@ -122,9 +116,8 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
         readyState: bounded(value.readyState, 4), errorCode: bounded(value.errorCode, 4),
         paused: typeof value.paused === 'boolean' ? value.paused : null,
         method: ['direct', 'native-hls', 'transcode', 'remux'].includes(value.method) ? value.method : 'unreported'});
-    } catch { /* Optional fixed projection; never retain the rejected body. */ }
+    } catch {   }
   });
-  // Read real presented frames. No setter replaces currentTime, play, or metadata.
   await page.evaluate(() => {
     const video = document.querySelector('video')!;
     video.muted = true;
@@ -162,8 +155,6 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     await writeFile(info.outputPath('first-decoded-frame.png'), Buffer.from(frames[0].png.split(',')[1], 'base64'));
     await record({phase: 'first-real-frames', elapsedObservationMS: Date.now() - playPosted,
       frames: frames.map(({png: _png, ...value}) => value), ...await snapshot()});
-    // Require real clock movement so an unchanged seed6 cannot masquerade as
-    // a checkpoint written by this Play. This reads the native getter only.
     await expect.poll(async () => (await snapshot()).rawTime).toBeGreaterThan(frames[1].rawTime + 0.5);
     await page.evaluate(() => document.querySelector('video')!.pause());
     const terminal = await snapshot();
@@ -180,8 +171,6 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     expect(accepted.seconds).toBeLessThan(8);
     expect(before.offsetSeconds).toBe(6);
     expect(frames[1].mediaTime).toBeGreaterThan(frames[0].mediaTime);
-    // Original source is blue before4s and yellow after4s. A projected clock
-    // cannot turn an actual opening blue frame into a resumed yellow frame.
     expect(frames[0].rgb[0]).toBeGreaterThan(150);
     expect(frames[0].rgb[1]).toBeGreaterThan(150);
     expect(frames[0].rgb[2]).toBeLessThan(80);
@@ -199,7 +188,6 @@ test('positive Matroska reentry decodes the saved scene through native HLS', asy
     }) : null;
     await record({phase: 'final-observation', pageIsWatch, ...(pageIsWatch ? await snapshot() : {}), nativeState, launchTelemetry, public: await publicPosition()});
     } catch {
-      // Optional diagnostics must preserve the original playback failure.
       await record({phase: 'final-diagnostics-unavailable'}).catch(() => {});
     }
   }

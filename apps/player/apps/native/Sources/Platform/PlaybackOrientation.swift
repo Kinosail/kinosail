@@ -3,7 +3,6 @@ import Observation
 import OSLog
 import UIKit
 
-/// Explicit video rotation belongs to its window scene, without changing the system lock.
 @MainActor @Observable
 final class PlaybackOrientation {
     private(set) var requesting = false
@@ -47,7 +46,6 @@ final class PlaybackOrientation {
             fail(id, operation: operation, code: nil, onFailure: onFailure)
             return
         }
-        // UIKit compares the app and visible controller's supported orientations.
         var controller = window.rootViewController
         while let current = controller {
             current.setNeedsUpdateOfSupportedInterfaceOrientations()

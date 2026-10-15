@@ -4,8 +4,6 @@ import Synchronization
 import Testing
 @testable import KinosailPlayer
 
-// Failure paths were enumerated before implementation. These loopback journeys
-// retain deterministic cancellation ordering unavailable through a UI tap.
 @Suite(.serialized) @MainActor
 struct PlaybackStartupJourneys {
     private func wait(_ condition: () -> Bool) async throws {

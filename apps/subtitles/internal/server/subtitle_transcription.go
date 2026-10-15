@@ -27,7 +27,6 @@ func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media stri
 	if err = command.Run(); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
-	// DTW provides estimated token timing, not independent forced alignment.
 	command = exec.CommandContext(ctx, whisper, "--model", model, "--language", language, "--file", wav, "--output-json-full", "--output-file", output, "--dtw", architecture, "--max-len", "42", "--split-on-word", "--threads", "4", "--no-prints")
 	if err = command.Run(); err != nil {
 		return cleanedSubtitle{}, nil, err
@@ -143,8 +142,6 @@ func (token subtitleTranscriptToken) timing(offsets subtitleTranscriptTimes, dur
 	if token.Offsets != nil && token.Offsets.From >= 0 && token.Offsets.To >= token.Offsets.From && float64(token.Offsets.To)/1000 <= duration+2 {
 		start, end = float64(token.Offsets.From)/1000, float64(token.Offsets.To)/1000
 	}
-	// The CLI's DTW timestamp uses 10 ms ticks. Preserve it as a word/token
-	// inspection anchor; it does not change the segment's validated bounds.
 	if token.DTW >= 0 && token.DTW/100 >= start && token.DTW/100 <= end {
 		start = token.DTW / 100
 	}

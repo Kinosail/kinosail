@@ -2,8 +2,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// These isolated checks cover disk migration, decoded memory and cancellation
-// boundaries that a populated remote-focus journey cannot reliably measure.
 struct ArtworkBackdropMigrationTests {
     @Test(arguments: [0, 429, 503])
     func migrationFailureUsesFreshLegacyBytesWithoutSuppressingRetry(_ status: Int) async throws {
@@ -22,8 +20,6 @@ struct ArtworkBackdropMigrationTests {
         #expect(afterFailure > 1)
         if let store = try await fixture.client.cacheStore() { await store.flushWrites() }
 
-        // The failed transition must not put legacy bytes into the new disk
-        // namespace, nor retain them as fresh high-resolution memory pixels.
         try installArtworkImage(fixture, path: "/backdrop/movie", width: 3840, height: 2160)
         let upgraded = try await loader.image(path: "/backdrop/movie", client: fixture.client, dimension: 4096)
         #expect(upgraded.width == 3840 && upgraded.height == 2160)
@@ -68,7 +64,6 @@ struct ArtworkBackdropMigrationTests {
         pending.cancel()
         for _ in 0..<200 where !ControlledArtworkProtocol.active(fixture.host).isEmpty { try await Task.sleep(for: .milliseconds(5)) }
         let cancelledTransport = ControlledArtworkProtocol.active(fixture.host).isEmpty
-        // Always release a broken cancellation path before awaiting its result.
         for response in ControlledArtworkProtocol.active(fixture.host) { response.finish() }
         #expect(cancelledTransport)
         await #expect(throws: CancellationError.self) { try await pending.value }

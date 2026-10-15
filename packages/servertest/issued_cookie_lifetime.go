@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// AssertIssuedCookieLifetime binds real-clock cookie issuance to persisted expiry.
 func AssertIssuedCookieLifetime(t *testing.T, cookie *http.Cookie, lifetime time.Duration, started, finished time.Time, persisted []byte) {
 	t.Helper()
 	assertIssuedCookieSecurity(t, cookie)

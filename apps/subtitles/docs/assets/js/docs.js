@@ -21,7 +21,7 @@
   mobile.addEventListener('change', closeMenu);
   theme?.addEventListener('click', () => {
     root.dataset.theme = currentTheme() === 'dark' ? 'light' : 'dark';
-    try { localStorage.setItem('kinosail-docs-theme', root.dataset.theme); } catch { /* Storage is optional. */ }
+    try { localStorage.setItem('kinosail-docs-theme', root.dataset.theme); } catch {   }
     labelTheme();
   });
   labelTheme();

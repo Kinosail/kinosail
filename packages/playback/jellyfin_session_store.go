@@ -8,7 +8,6 @@ import (
 
 const maximumJellyfinSessions = 1024
 
-// Serialize the bounded count and insert across the app-owned session maps.
 var jellyfinSessionWrites sync.Mutex
 
 func StoreJellyfinPlaySession(store *sync.Map, now time.Time, newID func() (string, error), session JellyfinSession) (string, error) { //nolint:cyclop // Validation, pruning, and insertion form one bounded operation.
@@ -41,7 +40,6 @@ func StoreJellyfinPlaySession(store *sync.Map, now time.Time, newID func() (stri
 	return id, nil
 }
 
-// LoadJellyfinPlaySession removes expired entries before exposing them to delivery.
 func LoadJellyfinPlaySession(store *sync.Map, id string, now time.Time) (any, bool) {
 	value, found := store.Load(id)
 	session, valid := value.(JellyfinSession)

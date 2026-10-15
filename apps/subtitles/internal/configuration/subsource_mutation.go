@@ -2,7 +2,6 @@ package configuration
 
 import "fmt"
 
-// SetSubSource saves the API key and personal-use acceptance as one operation.
 func SetSubSource(dataDir, apiKey string) error {
 	keySpec, _ := find(subSourceAPIKey)
 	if err := validate(keySpec, apiKey); err != nil || apiKey == "" {
@@ -21,7 +20,6 @@ func SetSubSource(dataDir, apiKey string) error {
 	return persistStoredConfiguration(dataDir, regular, secrets, true, true)
 }
 
-// DeleteSubSource removes the API key and personal-use acceptance together.
 func DeleteSubSource(dataDir string) error {
 	configurationMutationMu.Lock()
 	defer configurationMutationMu.Unlock()

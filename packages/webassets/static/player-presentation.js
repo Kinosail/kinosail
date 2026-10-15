@@ -8,7 +8,6 @@ const setTheater = (enabled) => {
       inert: [],
       attributes: ["role", "aria-modal", "tabindex"].map((name) => [name, stage.getAttribute(name)]),
     };
-    // Isolate only siblings of the stage and its ancestors; preserve existing inert state.
     for (let branch = stage; branch && branch !== document.body; branch = branch.parentElement) {
       for (const sibling of branch.parentElement.children) {
         if (sibling !== branch && !sibling.matches("script,style,dialog") && !sibling.inert) {
@@ -141,7 +140,6 @@ if (theaterButton && !appleNativePlayback) {
     const end = event.changedTouches[0];
     if (!start || !end || event.touches.length || Math.hypot(end.clientX - start.x, end.clientY - start.y) > 12 ||
         mediaStage.matches(".is-busy,.has-settings") || player.error) return;
-    // Suppress Safari's compatibility click before changing the touch targets.
     event.preventDefault();
     if (start.hidden) revealTheater();
     else hideTheater();
@@ -197,7 +195,6 @@ const updateMediaMetadata = () => {
       artwork: player.dataset.artwork ? [{src: player.dataset.artwork}] : [],
     }) : null;
   } catch (_) {
-    // Prefer no system title to retaining a previous track after an API failure.
     try { navigator.mediaSession.metadata = null; } catch (_) {}
   }
 };

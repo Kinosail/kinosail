@@ -1,4 +1,3 @@
-// Package jellyfincompat implements shared Jellyfin identity compatibility.
 package jellyfincompat
 
 import (
@@ -15,10 +14,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// NewID returns one random Jellyfin-compatible identifier.
 func NewID() (string, error) { return IDFrom(rand.Reader) }
 
-// IDFrom returns one Jellyfin-compatible identifier from exactly 128 random bits.
 func IDFrom(reader io.Reader) (string, error) {
 	data := make([]byte, 16)
 	if _, err := io.ReadFull(reader, data); err != nil {
@@ -27,7 +24,6 @@ func IDFrom(reader io.Reader) (string, error) {
 	return hex.EncodeToString(data), nil
 }
 
-// ValidID reports whether a persisted Jellyfin server identifier is safe.
 func ValidID(id string) bool {
 	if len(id) == 0 || len(id) > 128 {
 		return false
@@ -44,7 +40,6 @@ func validIDCharacter(character rune) bool {
 	return character == '-' || character >= '0' && character <= '9' || character >= 'A' && character <= 'Z' || character >= 'a' && character <= 'z'
 }
 
-// EnsureID validates an existing identifier or generates one when absent.
 func EnsureID(current string, generate func() (string, error)) (string, bool, error) {
 	if current != "" {
 		if !ValidID(current) {
@@ -56,7 +51,6 @@ func EnsureID(current string, generate func() (string, error)) (string, bool, er
 	return id, err == nil, err
 }
 
-// LibraryRoutes lists the read routes granted by the Jellyfin library scope.
 func LibraryRoutes() []string {
 	return []string{
 		"GET /System/Info", "GET /Library/MediaFolders", "GET /Users", "GET /Users/Me", "GET /Users/{id}",
@@ -66,7 +60,6 @@ func LibraryRoutes() []string {
 	}
 }
 
-// App accepts the supported Seerr application names from one query value.
 func App(values url.Values) (string, bool) {
 	candidates := foldedValues(values, "App")
 	if len(candidates) != 1 {
@@ -84,7 +77,6 @@ func App(values url.Values) (string, bool) {
 	}
 }
 
-// ProviderIDs converts known local provider names to Jellyfin names.
 func ProviderIDs(ids map[string]string) map[string]string {
 	result := make(map[string]string)
 	for provider, id := range ids {
@@ -98,7 +90,6 @@ func ProviderIDs(ids map[string]string) map[string]string {
 	return result
 }
 
-// ShowProviderIDs returns the first episode-level show identity.
 func ShowProviderIDs(episodes []library.Item) map[string]string {
 	for _, episode := range episodes {
 		if len(episode.ShowProviderIDs) > 0 {
@@ -108,7 +99,6 @@ func ShowProviderIDs(episodes []library.Item) map[string]string {
 	return map[string]string{}
 }
 
-// ItemIDs validates and normalizes one bounded ids query.
 func ItemIDs(values url.Values, normalize func(string) string) (map[string]bool, error) {
 	candidates := foldedValues(values, "ids")
 	if len(candidates) == 0 {
@@ -149,15 +139,12 @@ type grant struct {
 	Expires                    time.Time
 }
 
-// Grants stores short-lived Seerr key handoffs.
 type Grants struct{ values sync.Map }
 
-// Store records one short-lived handoff.
 func (grants *Grants) Store(profile, app, secret, id string, expires time.Time) {
 	grants.values.Store(profile+"\x00"+app, grant{ID: id, ProfileID: profile, App: app, Secret: secret, Expires: expires})
 }
 
-// Items returns active handoffs for one profile and removes invalid state.
 func (grants *Grants) Items(profile string, now time.Time) []map[string]any {
 	items := make([]map[string]any, 0)
 	grants.values.Range(func(key, value any) bool {

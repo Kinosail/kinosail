@@ -74,7 +74,6 @@ func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string
 	return generateFrame(ctx, cache, ffmpeg, source, target, second, 320)
 }
 
-// GenerateEpisodeStill caches one larger frame for an episode card.
 func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
 	return generateFrame(ctx, cache, ffmpeg, source, target, second, 960)
 }

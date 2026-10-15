@@ -28,7 +28,6 @@ type HLSHandlerDependencies struct {
 	InvalidSeek func(http.ResponseWriter, *http.Request)
 }
 
-// ServeHLS validates and authorizes an HLS route before invoking app-owned work.
 func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HLSHandlerDependencies) { //nolint:cyclop // Route validation and delegation form one side-effect boundary.
 	if request == nil || dependencies.Lookup == nil || dependencies.Allowed == nil || dependencies.Legacy == nil || dependencies.Duration == nil || dependencies.Serve == nil || dependencies.NotFound == nil || dependencies.Forbidden == nil || dependencies.InvalidSeek == nil {
 		http.Error(writer, "compatible playback is unavailable", http.StatusInternalServerError)
@@ -55,7 +54,6 @@ func ServeHLS(writer http.ResponseWriter, request *http.Request, dependencies HL
 	dependencies.Serve(writer, request, item, recipe, selection.File)
 }
 
-// ParseHLSRequest validates the complete route input before a caller starts work.
 func ParseHLSRequest(name, track string, policy HLSRecipePolicy) (HLSRequest, error) {
 	recipe, file, planned := PlannedHLSFile(name, policy)
 	if len(name) >= 2 && name[:2] == "p/" && !planned {
@@ -79,7 +77,6 @@ type HLSCodecInput struct {
 	Policy                                    HLSRecipePolicy
 }
 
-// HLSCodecArguments applies Player's mode-specific stream mapping and codecs.
 func HLSCodecArguments(input HLSCodecInput) ([]string, error) {
 	if input.AudioRate == "" || input.CopyInput != "0" && input.CopyInput != "1" {
 		return nil, errors.New("HLS codec input is invalid")
@@ -125,7 +122,6 @@ func transcodeCodecArguments(input HLSCodecInput, arguments []string) ([]string,
 	return append(arguments, "-force_key_frames", "expr:gte(t,n_forced*4)"), nil
 }
 
-// StoreJellyfinPlaySession prunes expired entries and atomically publishes one session.
 type JellyfinSession interface {
 	JellyfinItemID() string
 	JellyfinProfile() (string, uint64)

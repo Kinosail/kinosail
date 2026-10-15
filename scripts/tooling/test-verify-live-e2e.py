@@ -73,7 +73,6 @@ class LiveBrowserVerificationTests(unittest.TestCase):
             third = verify()
             self.assertEqual(third.returncode, 0, third.stderr)
             self.assertIn('PASS e2e-changed', third.stdout)
-            # Same-size content and the original mtime must invalidate collection.
             previous = spec.stat()
             spec.write_text('// revised browser journey!\n')
             os.utime(spec, ns=(previous.st_atime_ns, previous.st_mtime_ns))

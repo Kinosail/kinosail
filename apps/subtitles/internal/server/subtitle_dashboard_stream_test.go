@@ -25,7 +25,7 @@ func TestSubtitleDashboardFlushesNavigationBeforeReadingLibrary(t *testing.T) {
 		t.Run(view, func(t *testing.T) {
 			manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
 			index := manager.index
-			manager.index = nil // Any projection before Flush would panic.
+			manager.index = nil
 			response := httptest.NewRecorder()
 			writer := &subtitleShellWriter{ResponseRecorder: response, onFlush: func() {
 				body := response.Body.String()

@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// AssertLocalizationDoesNotTranslateLibraryContent preserves localized chrome without changing media content.
 func AssertLocalizationDoesNotTranslateLibraryContent(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 	media := t.TempDir()
@@ -24,7 +23,6 @@ func AssertLocalizationDoesNotTranslateLibraryContent(t *testing.T, fixture Libr
 	}
 }
 
-// AssertLocalizedPlayerUsesCatalogedPlaybackMode preserves localized chrome without changing media content.
 func AssertLocalizedPlayerUsesCatalogedPlaybackMode(t *testing.T, fixture LibraryAPIFixture) {
 	t.Parallel()
 	media := t.TempDir()

@@ -18,9 +18,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-// The hosted origin proof uses fresh corrected caches. It cannot exercise old
-// cached assets reaching HTTP delivery without consulting encoder arguments.
-// These isolated HTTP-boundary cases protect that concrete admission gap.
 func TestRemainingOldAACAssetsCannotBypassPolicy(t *testing.T) {
 	for _, version := range []string{"15", "18"} {
 		for _, asset := range []string{"audio/init.mp4", "audio/segment-00000.m4s"} {
@@ -39,9 +36,6 @@ func TestRemainingAACCorrectionHasCacheIdentity(t *testing.T) {
 	}
 }
 
-// Mocked asset delivery is an admission control, not native AAC media proof.
-// The terminal ordinal is copied from the qualified real-media timeline;
-// hosted decode and resource measurements still qualify production delivery.
 func TestRemainingCurrentAACAssetsRemainReadable(t *testing.T) {
 	for _, asset := range []string{"audio/init.mp4", "audio/segment-00000.m4s", "audio/segment-00005.m4s"} {
 		t.Run(asset, func(t *testing.T) {
@@ -52,8 +46,6 @@ func TestRemainingCurrentAACAssetsRemainReadable(t *testing.T) {
 
 func remainingAACCacheInitialization(t *testing.T) []byte {
 	t.Helper()
-	// Retain only the AAC sample-description track from the shared mock fixture.
-	// Parse proves structural admission; this data does not claim native playback.
 	combined := mp4fixture.Initialization(640, 360, "h264", "aac", "")
 	videoSize := int(binary.BigEndian.Uint32(combined[8:12]))
 	initialization := mp4fixture.Box("moov", combined[8+videoSize:])

@@ -92,7 +92,6 @@ def main():
     except (OSError, json.JSONDecodeError):
         result = {'revision': revision, 'result': 'failed', 'reason': 'private_evidence_unavailable'}
     except ValueError as failure:
-        # Every ValueError above is a fixed local code, never remote input.
         result = {'revision': revision, 'result': 'failed', 'reason': str(failure)}
     artifact = run / 'hls-phases.json'
     artifact.write_text(json.dumps(result, indent=2) + '\n')

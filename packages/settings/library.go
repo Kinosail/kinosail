@@ -13,27 +13,21 @@ const maximumLibraryPath = 4096
 
 var errUnchangedLibraryFolders = errors.New("library folders are unchanged")
 
-// LibraryFolderState adapts app-owned settings persistence to folder operations.
-// Read returns a detached snapshot. Update validates, saves, and commits under one exclusive lock.
-// Update must leave active state unchanged when validation or persistence fails.
 type LibraryFolderState interface {
 	Editable() error
 	Read() []string
 	Update(func([]string) ([]string, error)) error
 }
 
-// LibraryFolders owns canonical validation and configured-folder changes.
 type LibraryFolders struct {
 	mediaRoot string
 	state     LibraryFolderState
 }
 
-// NewLibraryFolders binds canonical folder rules to app-owned settings state.
 func NewLibraryFolders(mediaRoot string, state LibraryFolderState) LibraryFolders {
 	return LibraryFolders{mediaRoot, state}
 }
 
-// Roots resolves valid configured folders for one Library scan.
 func (folders LibraryFolders) Roots() []catalog.ScanRoot {
 	if folders.mediaRoot == "" {
 		return nil
@@ -48,7 +42,6 @@ func (folders LibraryFolders) Roots() []catalog.ScanRoot {
 	return roots
 }
 
-// Add validates and persists one folder inside the media mount.
 func (folders LibraryFolders) Add(path string) error {
 	if err := folders.state.Editable(); err != nil {
 		return err
@@ -77,7 +70,6 @@ func (folders LibraryFolders) Add(path string) error {
 	return err
 }
 
-// Remove validates and persists removal of one configured folder.
 func (folders LibraryFolders) Remove(path string) error {
 	if err := folders.state.Editable(); err != nil {
 		return err

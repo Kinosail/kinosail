@@ -24,8 +24,6 @@ for (const destination of ['Library', 'Back to Movies', 'Mark watched']) {
       await click.click({noWaitAfter: true});
       await expect.poll(() => peer.snapshot().departing).toBe(true);
       peer.releaseRetry();
-      // The real library retries a 503 after its own one-second delay. Destination
-      // headers remain held so pagehide cannot hide a pre-commit lifecycle leak.
       await page.waitForTimeout(1500);
       const pending = peer.snapshot();
       peer.releaseDestination();
@@ -75,7 +73,6 @@ for (const destination of ['ordinary query', 'fragment', 'other origin']) test(`
       else anchor.hostname = 'localhost';
     }, destination);
     await link.click({noWaitAfter: true});
-    // Held checkpoints cannot permit departure if this link is wrongly classified as Back.
     await expect.poll(() => peer.snapshot().departing).toBe(true);
     await info.attach('excluded-browse-checkpoint', {body: JSON.stringify({destination, facts: peer.facts,
       snapshot: peer.snapshot(), boundary: 'real HLS and HTTP; no Go storage'}), contentType: 'application/json'});
@@ -111,8 +108,6 @@ test('cancelled watched submission retains the real HLS owner', {tag: '@smoke'},
   try {
     await movingVideo(page, peer);
     await page.evaluate(() => {
-      // This is a later listener, after shipped listeners, so cancellation must
-      // be checked after the complete submit dispatch, including its replay.
       document.addEventListener('submit', event => event.preventDefault());
     });
     await page.getByRole('button', {name: 'Mark watched', exact: true}).click();
@@ -141,8 +136,6 @@ test('declared PiP ownership retains HLS through an accepted departure', {tag: '
     }));
     await page.getByRole('link', {name: 'Library', exact: true}).click({noWaitAfter: true});
     await expect.poll(() => peer.snapshot().departing).toBe(true);
-    // A real 204 completes the accepted request without replacing the document.
-    // It exposes pipeline ownership without claiming a physical PiP API session.
     peer.discardDestination();
     const before = peer.snapshot().requests.filter(row => row.kind.endsWith('.ts')).length;
     peer.releaseRetry();

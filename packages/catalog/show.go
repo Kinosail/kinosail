@@ -2,7 +2,6 @@ package catalog
 
 import "github.com/MikeO7/kinosail/packages/library"
 
-// PlayAction describes the canonical next Show episode action.
 type PlayAction struct {
 	ID     string `json:"id"`
 	Title  string `json:"title"`
@@ -10,7 +9,6 @@ type PlayAction struct {
 	Stream string `json:"stream"`
 }
 
-// ShowPlay selects the first unwatched episode or starts the Show again.
 func ShowPlay(show library.Show, progress func(string) PlaybackState) *PlayAction {
 	for _, episode := range show.Episodes {
 		state := progress(episode.ID)

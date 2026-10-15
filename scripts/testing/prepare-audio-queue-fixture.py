@@ -22,7 +22,6 @@ def cover(path, color):
 
 
 def prepare(directory):
-    # Refuse an existing directory or symlink; never replace media or proof files.
     directory.mkdir()
     tracks = [('01 Lantern', 'Lantern Start', 'Aster Vale', 440, (10, 50, 90)),
               ('02 Copper', 'Copper &lt;Moon&gt; &amp; Harbor', 'Mira Tide', 660, (20, 80, 40))]

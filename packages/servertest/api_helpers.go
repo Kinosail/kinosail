@@ -13,14 +13,12 @@ import (
 	"time"
 )
 
-// APITestCall describes one authenticated API request and its expected status.
 type APITestCall struct {
 	Method, Path string
 	Body         any
 	Status       int
 }
 
-// AssertAPICalls checks each request's expected status against the real handler.
 func AssertAPICalls(t *testing.T, handler http.Handler, token string, calls []APITestCall) {
 	t.Helper()
 	for _, call := range calls {
@@ -31,7 +29,6 @@ func AssertAPICalls(t *testing.T, handler http.Handler, token string, calls []AP
 	}
 }
 
-// AssertAPIBody checks the response status and required body fragments.
 func AssertAPIBody(t *testing.T, response *httptest.ResponseRecorder, status int, values ...string) {
 	t.Helper()
 	if response.Code != status {
@@ -44,13 +41,11 @@ func AssertAPIBody(t *testing.T, response *httptest.ResponseRecorder, status int
 	}
 }
 
-// APIFixture binds the real app constructor and its factor generator.
 type APIFixture struct {
 	NewHandler func(string, string) http.Handler
 	TOTP       func(*testing.T, string, time.Time) string
 }
 
-// Server provides a populated real app with an authenticated Owner.
 func (fixture APIFixture) Server(t *testing.T) (http.Handler, string) {
 	t.Helper()
 	media, data := t.TempDir(), t.TempDir()
@@ -92,7 +87,6 @@ func (fixture APIFixture) Server(t *testing.T) (http.Handler, string) {
 	return handler, session.Token
 }
 
-// WebFormCall submits an authenticated URL-encoded form to the real handler.
 func WebFormCall(t *testing.T, handler http.Handler, token, path string, form url.Values) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(form.Encode()))
@@ -103,7 +97,6 @@ func WebFormCall(t *testing.T, handler http.Handler, token, path string, form ur
 	return response
 }
 
-// MustJSON decodes a response, retaining its status and body in failure reports.
 func MustJSON(t *testing.T, response *httptest.ResponseRecorder, target any) {
 	t.Helper()
 	if err := json.Unmarshal(response.Body.Bytes(), target); err != nil {

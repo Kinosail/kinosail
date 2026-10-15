@@ -6,8 +6,6 @@ import (
 	"reflect"
 )
 
-// These names preserve the established Go AST counting convention. Assignment
-// multiplicity affects total operators, but difficulty uses distinct operators.
 var nodeOperators = map[reflect.Type]string{
 	reflect.TypeOf((*ast.ReturnStmt)(nil)): "return", reflect.TypeOf((*ast.IfStmt)(nil)): "if",
 	reflect.TypeOf((*ast.ForStmt)(nil)): "for", reflect.TypeOf((*ast.SwitchStmt)(nil)): "switch",

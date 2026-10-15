@@ -24,8 +24,6 @@ type Review = {id: string; title: string; language: string; fingerprint: string;
 const source = ["subtitle-source-cues.js", "subtitle-save-operation.js", "subtitle-inspector.js"].map(name => readFileSync(new URL(`../internal/server/static/${name}`, import.meta.url), "utf8")).join("\n");
 export const flush = () => new Promise<void>(resolve => setImmediate(resolve));
 
-// Execute the complete shipped script with controlled requests and lifecycle.
-// This proves JS ordering, not layout, keyboard access, or browser rendering.
 export function inspectorFixture(withObservers = false) {
   const observers: IntersectionObserver[] = [];
   class IntersectionObserver {

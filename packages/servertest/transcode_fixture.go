@@ -44,8 +44,6 @@ done
 `
 }
 
-// HardwareSmokeHLS supplies format-correct synthetic sample descriptions for
-// mocked operation checks. It does not certify a real encoder or decoder.
 func HardwareSmokeHLS() string {
 	var result strings.Builder
 	result.WriteString("case \"$*\" in *kinosail-transcoder-check-*)\ncase \"$*\" in\n")

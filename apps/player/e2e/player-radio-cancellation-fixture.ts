@@ -2,9 +2,6 @@ import {expect, type Page} from '@playwright/test';
 import {createHash} from 'node:crypto';
 import {playerSource} from './static-sources';
 
-// Decoder isolation reaches the public playback-radio replacement while an
-// automatic seek is unfinished. Real decoder/native-pointer ownership is
-// independently verified; this fixture keeps source choice deterministic.
 export const radioSourceHash = createHash('sha256').update(playerSource).digest('hex');
 export type RadioWindow = Window & {radioDecoder: {
   metadata(raw: number, duration: number): void;
@@ -32,7 +29,6 @@ function decoderFixture() {
     userAgent: {configurable: true, value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'},
     vendor: {configurable: true, value: 'Apple Computer, Inc.'},
   });
-  // The production wrapper must capture these prototype clocks itself.
   Object.defineProperties(HTMLMediaElement.prototype, {
     currentTime: {configurable: true, get: () => state.raw, set: (value: number) => {
       state.raw = value; state.seeking = true; state.setters++;

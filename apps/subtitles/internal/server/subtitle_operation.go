@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// SubtitleOperationTime supplies external time only to prepared receipts.
-// Production defaults retain real time and lifecycle-derived deadlines.
 type SubtitleOperationTime struct {
 	Now         func() time.Time
 	WithTimeout func(context.Context, time.Duration) (context.Context, context.CancelFunc)

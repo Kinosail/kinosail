@@ -9,9 +9,6 @@ import (
 	"testing"
 )
 
-// Native immutable-media proofs do not schedule pathname replacement between
-// validation and delivery. The Header hook deterministically schedules that
-// HTTP-boundary race using mocked fragment bytes, without a live encoder.
 func TestRemainingCachedDeliveryRetainsValidatedFragment(t *testing.T) {
 	for _, substitution := range []string{"replacement", "symlink"} {
 		for _, ranged := range []bool{false, true} {

@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// WebFailuresUseTheSelectedLanguage preserves the original localized error responses.
 func (fixture LocaleWebFixture) WebFailuresUseTheSelectedLanguage(t *testing.T, signIn func(*testing.T, http.Handler, string, string) *http.Cookie, web AuthCookieRequest) {
 	t.Parallel()
 	handler := fixture.NewHandler(t, true)

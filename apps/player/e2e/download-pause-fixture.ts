@@ -66,7 +66,6 @@ export async function downloadPeer(forceIsolated = false, documentResponse?: () 
     if (path === "/service-worker.js") { response.setHeader("Content-Type", "text/javascript"); response.end(serviceWorkerSource); return; }
     if (path === "/static/downloads.js") { response.setHeader("Content-Type", "text/javascript"); response.end(downloadsSource); return; }
     if (path === "/static/app.css") { response.setHeader("Content-Type", "text/css"); response.end(stylesheet); return; }
-    // Ancillary shell cache assets have correct types, but are fixture placeholders.
     if (path.startsWith("/static/")) {
       response.setHeader("Content-Type", path.endsWith(".js") ? "text/javascript" : path.endsWith(".woff2") ? "font/woff2" : path.endsWith(".svg") ? "image/svg+xml" : path.endsWith(".jpg") ? "image/jpeg" : "image/png");
       response.end(); return;

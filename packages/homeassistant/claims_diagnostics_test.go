@@ -24,8 +24,6 @@ func requireClaimDiagnosticFields(t *testing.T, output *bytes.Buffer, required m
 	return entry
 }
 
-// Isolated log capture protects secret exclusion and rejection correlation that
-// browser evidence cannot inspect. State/command effects use registered routes.
 func TestRegisteredClaimDiagnosticsAreBoundedAndNeverContainOwnership(t *testing.T) {
 	var output bytes.Buffer
 	previous := slog.Default()

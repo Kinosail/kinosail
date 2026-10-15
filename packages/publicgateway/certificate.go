@@ -22,8 +22,6 @@ type certificateRequest struct {
 	ECDSA bool   `json:"ecdsa"`
 }
 
-// CertificateHandler exposes only the public TLS identity over a separate private
-// socket. It never exports ACME account keys, DNS credentials, or application state.
 func CertificateHandler(hostname string, get func(*tls.ClientHelloInfo) (*tls.Certificate, error)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")

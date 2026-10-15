@@ -20,8 +20,6 @@ type inspectorInitialView struct {
 	Count   int
 }
 
-// Render the review already read for this request, using the interactive view's
-// first page and normal escaping. Deferred refreshes retain the same geometry.
 func initialInspector(review subtitleReview) inspectorInitialView {
 	view := inspectorInitialView{}
 	document := review.Proposed

@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 )
 
-// A mapper must change decoded luminance, not merely stamp SDR metadata onto
-// HDR pixels. This is a no-op guard, not a perceptual color-quality metric.
 func checkToneMapPixels(ctx context.Context, ffmpeg, directory, source, output string, run func(context.Context, string, ...string) error) bool {
 	var samples [][]byte
 	for index, path := range []string{source, output} {

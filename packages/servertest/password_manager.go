@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// PasswordFormsExposeStablePasswordManagerSemantics runs the corresponding app regression contract.
 func PasswordFormsExposeStablePasswordManagerSemantics(t *testing.T, setupHTML, profileLoginHTML, settingsHTML string, ignoreNonPasswordSecretAutofill func(string) string) {
 	t.Parallel()
 	tests := []struct {
@@ -40,7 +39,6 @@ func PasswordFormsExposeStablePasswordManagerSemantics(t *testing.T, setupHTML, 
 	}
 }
 
-// AuthenticationCodeFieldsUseLocalizedNumericSemantics runs the corresponding app regression contract.
 func AuthenticationCodeFieldsUseLocalizedNumericSemantics(t *testing.T, mfaSetupHTML, profileLoginHTML, accountHTML string) {
 	t.Parallel()
 	if !strings.Contains(mfaSetupHTML, `{{t "Authentication code"}}`) {
@@ -84,7 +82,6 @@ func assertRecoveryCodeField(t *testing.T, page string) {
 	}
 }
 
-// NonPasswordSecretsOptOutOfPasswordManagers runs the corresponding app regression contract.
 func NonPasswordSecretsOptOutOfPasswordManagers(t *testing.T, configurationHTML, settingsHTML, onboardingConnectionHTML, viewingImportOnboardingHTML string, ignoreNonPasswordSecretAutofill func(string) string) {
 	t.Parallel()
 	const ignored = `autocomplete="off" data-1p-ignore data-bwignore data-lpignore="true" data-form-type="other" spellcheck="false"`
@@ -106,7 +103,6 @@ func NonPasswordSecretsOptOutOfPasswordManagers(t *testing.T, configurationHTML,
 	}
 }
 
-// PasskeyLoginSupportsPasswordManagerAutofill runs the corresponding app regression contract.
 func PasskeyLoginSupportsPasswordManagerAutofill(t *testing.T, passkeysJS []byte) {
 	t.Parallel()
 	script := string(passkeysJS)
@@ -123,7 +119,6 @@ func PasskeyLoginSupportsPasswordManagerAutofill(t *testing.T, passkeysJS []byte
 	}
 }
 
-// CopyControlsReportClipboardFallback runs the corresponding app regression contract.
 func CopyControlsReportClipboardFallback(t *testing.T, themeJS []byte) {
 	t.Parallel()
 	script := string(themeJS)
@@ -134,7 +129,6 @@ func CopyControlsReportClipboardFallback(t *testing.T, themeJS []byte) {
 	}
 }
 
-// DisclosureLinksOpenAndFocusTheirTarget runs the corresponding app regression contract.
 func DisclosureLinksOpenAndFocusTheirTarget(t *testing.T, themeJS []byte) {
 	t.Parallel()
 	script := string(themeJS)

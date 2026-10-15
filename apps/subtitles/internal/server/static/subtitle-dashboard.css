@@ -1,4 +1,3 @@
-/* Subtitles uses Player's role tokens; this workspace keeps file decisions quiet. */
 .subtitle-app .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .subtitle-app .subtitle-topbar{display:block;padding-bottom:1rem}
 .subtitle-app .subtitle-topbar h1{margin:0;font-size:clamp(1.65rem,2.5vw,2.15rem);line-height:1.15;letter-spacing:-.04em}

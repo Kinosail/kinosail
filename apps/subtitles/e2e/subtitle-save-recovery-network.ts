@@ -1,7 +1,6 @@
 import type { Page, Request, Response } from "@playwright/test";
 import type { SafeCase } from "./subtitle-save-recovery-helpers";
 
-// Install before the real click. Only the exact item's actual POST is bound.
 export function observeSave(page: Page, origin: string, item: string, result: SafeCase) {
   let request: Request | null = null, response: Response | null = null;
   let settle: (value: "finished" | "request-failed") => void = () => {};

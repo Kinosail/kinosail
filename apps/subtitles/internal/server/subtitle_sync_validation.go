@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-// Fit continuous drift from separated regional offsets rather than quantizing
-// every recording to one of the common broadcast frame-rate conversions.
 func continuousSubtitleAlignment(global subtitleAlignment, anchors []subtitleAlignmentAnchor) (subtitleAlignment, bool) {
 	if len(anchors) < 3 {
 		return global, false
@@ -39,8 +37,6 @@ func subtitleAbruptTimingChange(anchors []subtitleAlignmentAnchor) bool {
 	return false
 }
 
-// These windows do not fit the regional correction. Reject corrections that
-// leave a measurable timing error there, including likely alternate cuts.
 func validateSubtitleRegions(audio []float64, cues []subtitleCue) bool {
 	if len(cues) == 0 {
 		return false

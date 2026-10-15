@@ -49,8 +49,6 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		return err
 	}
 	if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
-		// Keep priming and reordered frames on the source clock. SIDX timing
-		// rewrites the first packet after a fixed-time cut through a GOP.
 		arguments = append(arguments, "-avoid_negative_ts", "disabled", "-hls_segment_options", "movflags=+skip_sidx")
 	}
 	arguments = append(arguments, hlsSegmentArguments(plan.segmentMode(recipe.mode), directory, playlist)...)

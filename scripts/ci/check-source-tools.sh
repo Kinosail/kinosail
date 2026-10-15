@@ -9,10 +9,6 @@ repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 tools="$(mktemp -d)"
 trap 'rm -rf "$tools"' EXIT
 
-# Hashes recorded from the selected upstream release assets. Verify the complete
-# archives before extracting the two known executable paths; never use latest.
-# This maintained actionlint fork validates native parallel steps, which the
-# rhysd/actionlint releases do not support (upstream issues #693 and #694).
 curl --proto '=https' --tlsv1.2 --fail --location --max-time 120 --max-filesize 16777216 \
   --output "$tools/shellcheck.tar.gz" \
   https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.gz

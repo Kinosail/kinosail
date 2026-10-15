@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-// AssertExternalOIDCBoundaries checks unsafe origins and fail-closed protocol transitions.
 func AssertExternalOIDCBoundaries(t *testing.T, fixture OIDCFixture) {
 	assertExternalOIDCOrigins(t, fixture)
 	assertExternalOIDCTransitions(t, fixture)
@@ -82,7 +81,6 @@ func assertExternalOIDCTransitions(t *testing.T, fixture OIDCFixture) {
 	}
 }
 
-// ExternalBoundaryItemID retrieves an item from the real rendered library.
 func ExternalBoundaryItemID(t *testing.T, handler http.Handler) string {
 	t.Helper()
 	response := httptest.NewRecorder()

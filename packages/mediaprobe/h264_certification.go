@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-// A key flag alone may be a recovery point. Filtered IDR packets must match the
-// complete demux key map in order; uncertain boundaries cannot be prepared.
 func certifyH264(ctx context.Context, logger *slog.Logger, ffmpeg, path string, timeline *h264Timeline) error {
 	proof := copiedHLSIDRProof{timeline: timeline}
 	arguments := copiedHLSCertificationArguments(path, timeline, "filter_units=pass_types=5")

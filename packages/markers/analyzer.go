@@ -57,20 +57,17 @@ type markerCandidate struct {
 	ranges []timeRange
 }
 
-// Config contains the local resources used by marker analysis.
 type Config struct {
 	DataDir, CacheDir, FFmpeg, Fingerprint string
 	Database                               *documentdb.Store
 	Acquire                                func(context.Context) (func(), error)
 }
 
-// Media contains the probe facts required by marker analysis.
 type Media struct {
 	Duration float64
 	Markers  []Marker
 }
 
-// NewAnalyzer returns a bounded playback marker analyzer.
 func NewAnalyzer(config Config) *Analyzer {
 	cache := ""
 	if config.CacheDir != "" {
@@ -96,7 +93,6 @@ func NewAnalyzer(config Config) *Analyzer {
 	return analyzer
 }
 
-// Schedule connects the analyzer to one library and probe adapter.
 func (analyzer *Analyzer) Schedule(ctx context.Context, observe func(func([]library.Item)), probe func(context.Context, library.Item) Media) {
 	if ctx == nil || observe == nil || probe == nil {
 		return
@@ -106,14 +102,12 @@ func (analyzer *Analyzer) Schedule(ctx context.Context, observe func(func([]libr
 	go analyzer.work(ctx)
 }
 
-// SetProbe supplies the media facts used by direct and scheduled analysis.
 func (analyzer *Analyzer) SetProbe(probe func(context.Context, library.Item) Media) {
 	analyzer.mu.Lock()
 	analyzer.probe = probe
 	analyzer.mu.Unlock()
 }
 
-// SetWait supplies an optional idle gate for background analysis.
 func (analyzer *Analyzer) SetWait(wait func(context.Context) error) {
 	analyzer.mu.Lock()
 	analyzer.wait = wait

@@ -25,7 +25,6 @@ struct APIResponse: Sendable {
     let body: JSONValue
 }
 
-/// The single owner of authenticated Server HTTP access.
 actor ServerClient {
     let identity = UUID()
     let server: ServerAddress
@@ -94,7 +93,6 @@ actor ServerClient {
         let url: URL
         let collectionPrefix = "/api/v1/collections/"
         if method == .get, path.hasPrefix(collectionPrefix) {
-            // Metadata collection names can contain slashes. Keep them in one canonical URL segment.
             guard let name = String(path.dropFirst(collectionPrefix.count)).removingPercentEncoding,
                   path == collectionPrefix + Input.segment(try Input.collection(name)),
                   let collectionURL = URL(string: path, relativeTo: server.url)?.absoluteURL else { throw ClientError.invalidResponse }
@@ -151,8 +149,6 @@ actor ServerClient {
         catch let error as ClientError {
             if case .http(let status) = error {
                 recordConnection(status >= 500 ? .unreachable : .reachable, sequence: sequence)
-                // Playback event delivery is best effort; the Server's idle
-                // cleanup still releases a stream when departure is unavailable.
                 if status >= 500, operation != "items-playback-events" {
                     networkLog.error("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")
                 } else {
@@ -223,7 +219,6 @@ actor ServerClient {
     deinit { session.invalidateAndCancel() }
 }
 
-/// Stateless delegate: redirects cannot carry authenticated requests elsewhere.
 final class HTTPPolicy: NSObject, URLSessionTaskDelegate, Sendable {
     func urlSession(_ session: URLSession, task: URLSessionTask,
                     willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,

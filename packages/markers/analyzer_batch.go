@@ -53,7 +53,6 @@ dispatch:
 	return nil
 }
 
-// Publish each season or movie library atomically; unrelated groups can still finish.
 func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error { //nolint:cyclop // Group staging, Owner edits, and atomic persistence form one publication boundary.
 	analyzer.mu.RLock()
 	before := maps.Clone(analyzer.records)
@@ -83,7 +82,7 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 		}
 		current := next[item.ID]
 		if current.Revision != "" && current.Revision != before[item.ID].Revision && current.Revision != mediaRevision(item) {
-			continue // A newer media revision received an Owner edit during analysis.
+			continue
 		}
 		next[item.ID] = analyzedRecord(item, current, staged.records[item.ID].Markers)
 	}
@@ -96,7 +95,6 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 	return nil
 }
 
-// Owner corrections made during extraction take precedence over generated results.
 func analyzedRecord(item library.Item, current Record, detected []Marker) Record {
 	record := Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Suppressed: current.suppressed(item)}
 	if current.Revision == record.Revision {

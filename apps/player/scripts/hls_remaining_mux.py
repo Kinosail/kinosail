@@ -74,8 +74,6 @@ def counterfactuals(run, source, metadata, directory, result):
     directory.mkdir()
     result.update(boundary='Isolated installed-codec mux diagnosis; no Server, renderer or native acceptance.',
         source=before, sourceMetadata=stream_metadata(source), sourceFrames=full)
-    # AVFormat output options must follow the input; earlier placement only
-    # supplies an input-format option and cannot qualify an HLS mux policy.
     disabled = {'output': ['-avoid_negative_ts', 'disabled']}
     candidates = [
         ('legacy', {}, 12.5, None),

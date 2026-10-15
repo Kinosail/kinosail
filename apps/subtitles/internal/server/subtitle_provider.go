@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// SubtitleConfig configures subtitle adapters without persisting credentials.
 type SubtitleConfig struct {
 	URL, APIKey   string
 	OpenSubtitles OpenSubtitlesConfig
@@ -245,7 +244,6 @@ func (provider *subtitleProvider) subtitleCandidates(ctx context.Context, item l
 		workers.Go(func() { results[index] = search(searchContext, item, language) })
 	}
 	workers.Wait()
-	// Preserve provider order for deterministic ranking of equal candidates.
 	for _, search := range results {
 		candidates = append(candidates, search.Candidates...)
 		if search.Configured {

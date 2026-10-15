@@ -6,13 +6,10 @@ import (
 )
 
 var (
-	// ErrInvalidKey identifies a malformed activation key before provider work.
-	ErrInvalidKey = errors.New("invalid supporter key")
-	// ErrInvalidRecognitionName identifies a malformed optional public name.
+	ErrInvalidKey             = errors.New("invalid supporter key")
 	ErrInvalidRecognitionName = errors.New("invalid supporter recognition name")
 )
 
-// NewActivationInput normalizes Player's form values into the shared operation input.
 func NewActivationInput(key, recognitionName string) (ActivationInput, error) {
 	key = strings.TrimSpace(key)
 	if !ValidKey(key) {
@@ -29,7 +26,6 @@ func NewActivationInput(key, recognitionName string) (ActivationInput, error) {
 	return input, nil
 }
 
-// ParseActivationJSON decodes the strict shared JSON input after an adapter bounds its size.
 func ParseActivationJSON(data []byte) (ActivationInput, error) {
 	object, err := jsonObject(data)
 	if err != nil || !exactFields(object, []string{"key"}, []string{"recognitionName"}) {

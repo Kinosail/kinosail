@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// CollectionSummary is the canonical collection card and API projection.
 type CollectionSummary struct {
 	Name       string         `json:"name"`
 	Source     string         `json:"source"`
@@ -18,10 +17,8 @@ type CollectionSummary struct {
 	Preview    []library.Item `json:"-"`
 }
 
-// Path keeps imported metadata names within a single route segment.
 func (summary CollectionSummary) Path() string { return "/collection/" + url.PathEscape(summary.Name) }
 
-// CollectionSummaries projects visible collections and their first four members.
 func (storage ListStorage) CollectionSummaries(items []library.Item, query string) []CollectionSummary {
 	summaries := make([]CollectionSummary, 0)
 	defaults := make(map[string]bool)
@@ -46,7 +43,6 @@ func (storage ListStorage) CollectionSummaries(items []library.Item, query strin
 	return summaries
 }
 
-// CollectionMatches searches a collection name and its visible member metadata.
 func CollectionMatches(name string, items []library.Item, query string) bool {
 	if query == "" || strings.Contains(strings.ToLower(name), strings.ToLower(query)) {
 		return true
@@ -59,7 +55,6 @@ func CollectionMatches(name string, items []library.Item, query string) bool {
 	return false
 }
 
-// CountLabel returns Player's singular or plural item count.
 func CountLabel(count int) string {
 	if count == 1 {
 		return "1 item"

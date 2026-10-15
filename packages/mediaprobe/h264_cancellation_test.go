@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// A populated journey cannot deterministically cancel between all three scans.
-// Each phase must preserve cancellation so optional callers cannot start fallback.
 func TestH264CancellationSurvivesEveryPhase(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()

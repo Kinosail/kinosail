@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// AssertOwnerCanRequireMFAForEveryProfile preserves the original MFA enrollment and policy assertions.
 func AssertOwnerCanRequireMFAForEveryProfile(t *testing.T, fixture MFAPolicyFixture) {
 	data := t.TempDir()
 	handler := fixture.Library.NewHandler("", data, true)
@@ -56,7 +55,6 @@ func AssertOwnerCanRequireMFAForEveryProfile(t *testing.T, fixture MFAPolicyFixt
 	}
 }
 
-// AssertOwnerCanRequireMFAThroughWeb preserves the original MFA enrollment and policy assertions.
 func AssertOwnerCanRequireMFAThroughWeb(t *testing.T, fixture MFAPolicyFixture) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	setup := APICall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Owner", "password": "owner-password", "totp": true})

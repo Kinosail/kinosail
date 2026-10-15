@@ -23,7 +23,6 @@ import (
 	"golang.zx2c4.com/wireguard/tun/netstack"
 )
 
-// ProfileID is populated only by the private userspace listener, never by an HTTP header.
 func ProfileID(r *http.Request) string {
 	return identitycore.ManagementProfileID(r)
 }
@@ -139,7 +138,6 @@ func (m *Manager) guard(next http.Handler) http.Handler {
 			http.Error(w, "private management device is not authorized", http.StatusForbidden)
 			return
 		}
-		// A peer proves a device, not an Owner login. The application must still authenticate it.
 		r.Header.Del("X-Kinosail-Proxy-Token")
 		r.Header.Del("X-Kinosail-Remote")
 		next.ServeHTTP(w, identitycore.WithManagementDevice(r, peer.ProfileID, peer.PublicKey))

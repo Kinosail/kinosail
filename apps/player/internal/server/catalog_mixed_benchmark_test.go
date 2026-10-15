@@ -12,7 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// No all-title request precedes the native entry routes in this workload.
 func BenchmarkNativeMixedCatalog(b *testing.B) { //nolint:gocognit,cyclop // Keep route, profile seed, cardinality, and cold/warm controls in one fixture.
 	for _, count := range []int{10_000, 100_000} {
 		for _, owner := range []bool{true, false} {

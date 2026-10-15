@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-// Race-instrumented template initialization competes with package tests on hosted runners.
 const testServerStartTimeout = 90 * time.Second
 
 func TestCommandLineServesCompatibleHTTPSByDefault(t *testing.T) { //nolint:cyclop,funlen,gocognit // One process-level scenario verifies the complete externally visible TLS policy.
@@ -143,7 +142,6 @@ func unusedAddress(t *testing.T) string {
 func startTestServer(t *testing.T, environment []string) *exec.Cmd {
 	t.Helper()
 	command := exec.CommandContext(t.Context(), os.Args[0], "-test.run=TestCommandLineHelperProcess", "--") //nolint:gosec // The executable is the current Go test binary.
-	// TLS readiness must not depend on the runner's GPU or encoder inventory.
 	ffmpeg := filepath.Join(t.TempDir(), "ffmpeg")
 	if err := os.WriteFile(ffmpeg, []byte("#!/bin/sh\nexit 0\n"), 0o600); err != nil {
 		t.Fatal(err)

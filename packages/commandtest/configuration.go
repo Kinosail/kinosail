@@ -9,12 +9,10 @@ import (
 	"testing"
 )
 
-// ConfigurationSnapshot exposes the values needed by the shared CLI contract.
 type ConfigurationSnapshot interface {
 	String(string) string
 }
 
-// ConfigurationCommandSources verifies config validation and source summaries.
 func ConfigurationCommandSources[Snapshot any](t *testing.T, set func(string, string, string) error, load func(string, string, func(string) (string, bool)) (Snapshot, error), command func([]string, io.Writer, func(string) (Snapshot, error)) (bool, error)) { //nolint:cyclop // This shared contract keeps every CLI validation boundary in one scenario.
 	t.Parallel()
 	directory := t.TempDir()
@@ -55,7 +53,6 @@ func LoadSnapshot[Snapshot any](t *testing.T, load func(string, string, func(str
 	return configured
 }
 
-// ConfigurationEdges verifies defaults, explicit origins, and public HTTPS configuration.
 func ConfigurationEdges[Snapshot ConfigurationSnapshot](t *testing.T, load func(string, string, func(string) (string, bool)) (Snapshot, error), authURL func(Snapshot) string, port string) {
 	var zero Snapshot
 	if got := authURL(zero); got != "http://localhost:"+port {

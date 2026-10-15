@@ -17,7 +17,6 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-// Profile is Player's canonical persisted Viewer identity and access policy.
 type Profile struct {
 	ID             string                    `json:"id"`
 	Name           string                    `json:"name"`
@@ -53,14 +52,12 @@ type Profile struct {
 	Revision       uint64                    `json:"revision,omitempty"`
 }
 
-// ProfilePolicy is the shared Viewer access policy accepted by Player.
 type ProfilePolicy struct {
 	Downloads, Transcode, Remote   bool
 	Rating, AccessStart, AccessEnd string
 	Libraries                      []string
 }
 
-// NewProfile hashes a credential and returns a new Player profile.
 func NewProfile(name, password string, owner bool) (Profile, error) {
 	name = strings.TrimSpace(name)
 	if name == "" || len(name) > 64 || credentials.Validate(password) != nil {
@@ -77,7 +74,6 @@ func newProfile(name, password string, owner bool, hash func(string) (string, er
 	return Profile{ID: newID(), Name: name, Credential: credential, Owner: owner, Revision: 1}, nil
 }
 
-// CloneProfiles returns a deep copy of mutable profile state.
 func CloneProfiles(profiles []Profile) []Profile {
 	clone := append([]Profile(nil), profiles...)
 	for index := range clone {
@@ -94,7 +90,6 @@ func CloneProfiles(profiles []Profile) []Profile {
 	return clone
 }
 
-// FindProfile returns a detached profile by identifier.
 func FindProfile(profiles []Profile, id string) (Profile, bool) {
 	for _, profile := range profiles {
 		if profile.ID == id {
@@ -104,7 +99,6 @@ func FindProfile(profiles []Profile, id string) (Profile, bool) {
 	return Profile{}, false
 }
 
-// FederatedProfile projects persisted profile fields into the federation model.
 func FederatedProfile(profile Profile) federation.Profile {
 	return federation.Profile{
 		ID: profile.ID, SCIMExternalID: profile.SCIMExternalID,
@@ -114,7 +108,6 @@ func FederatedProfile(profile Profile) federation.Profile {
 	}
 }
 
-// ApplyFederatedIdentity updates one protocol-specific identity slot.
 func ApplyFederatedIdentity(profile *Profile, protocol federation.Protocol, identity federation.Identity) {
 	if protocol == federation.SAMLProtocol {
 		profile.SAMLIssuer, profile.SAMLSubject = identity.Issuer, identity.Subject
@@ -123,20 +116,16 @@ func ApplyFederatedIdentity(profile *Profile, protocol federation.Protocol, iden
 	}
 }
 
-// Secured reports whether the profile has a second authentication factor.
 func (profile Profile) Secured() bool { return Secured(profile.TOTPSecret, len(profile.Passkeys)) }
 
-// Permits applies an API-key scope to an already authorized capability.
 func (profile Profile) Permits(scope string, allowed bool) bool {
 	return allowed && (!profile.APIKey || slices.Contains(profile.Scopes, scope))
 }
 
-// AllowsAPI applies the canonical scoped API policy to one route.
 func (profile Profile) AllowsAPI(pattern string, routes APIRoutes) bool {
 	return AllowsAPI(profile.Scopes, pattern, routes)
 }
 
-// Allowed applies the profile's remote and viewing schedule policy.
 func (profile Profile) Allowed(public bool, now time.Time) bool {
 	if profile.Owner {
 		return true
@@ -156,7 +145,6 @@ func (profile Profile) Allowed(public bool, now time.Time) bool {
 	return minute >= first || minute < last
 }
 
-// ProfilePolicyFromRequest parses one Viewer policy form.
 func ProfilePolicyFromRequest(request *http.Request) ProfilePolicy {
 	return ProfilePolicy{
 		Downloads:   request.FormValue("downloads") == "true",
@@ -169,7 +157,6 @@ func ProfilePolicyFromRequest(request *http.Request) ProfilePolicy {
 	}
 }
 
-// Valid rejects incomplete or malformed viewing schedules.
 func (policy ProfilePolicy) Valid() error {
 	if (policy.AccessStart == "") != (policy.AccessEnd == "") {
 		return errors.New("both viewing schedule times are required")
@@ -184,7 +171,6 @@ func (policy ProfilePolicy) Valid() error {
 	return nil
 }
 
-// ApplyProfilePolicy replaces mutable access fields with a detached policy.
 func ApplyProfilePolicy(profile *Profile, policy ProfilePolicy) {
 	profile.Downloads, profile.Transcode, profile.Remote = policy.Downloads, policy.Transcode, policy.Remote
 	profile.Rating, profile.Libraries = normalizeRating(policy.Rating), slices.Clone(policy.Libraries)
@@ -213,20 +199,16 @@ func splitLibraries(value string) []string {
 	return libraries
 }
 
-// ProfileBatchStore commits related profile documents atomically.
 type ProfileBatchStore interface {
 	SaveJSONBatch(map[string]any) error
 }
 
-// ProfilePersistence binds profile state to app-owned persistence.
 type ProfilePersistence struct {
 	Database                          ProfileBatchStore
 	Persist                           func(string, any) error
 	ProfileFile, SessionFile, APIFile string
 }
 
-// NewProfilePersistence preserves an optional concrete database pointer without
-// turning a typed nil into an enabled interface.
 func NewProfilePersistence(database ProfileBatchStore, databaseEnabled bool, persist func(string, any) error, profileFile, sessionFile, apiFile string) ProfilePersistence {
 	persistence := ProfilePersistence{Persist: persist, ProfileFile: profileFile, SessionFile: sessionFile, APIFile: apiFile}
 	if databaseEnabled {
@@ -235,7 +217,6 @@ func NewProfilePersistence(database ProfileBatchStore, databaseEnabled bool, per
 	return persistence
 }
 
-// Save writes one profile snapshot.
 func (persistence ProfilePersistence) Save(profiles []Profile) error {
 	if persistence.ProfileFile == "" || persistence.Persist == nil {
 		return errors.New("profile storage is not configured")
@@ -243,7 +224,6 @@ func (persistence ProfilePersistence) Save(profiles []Profile) error {
 	return persistence.Persist(persistence.ProfileFile, profiles)
 }
 
-// SaveRelated commits profiles, sessions, and API keys in their canonical order.
 func (persistence ProfilePersistence) SaveRelated(profiles []Profile, sessions map[string]Session, keys map[string]APIKey) error {
 	if persistence.Database != nil {
 		return persistence.Database.SaveJSONBatch(map[string]any{"profiles.json": profiles, "sessions.json": sessions, "api_keys.json": keys})

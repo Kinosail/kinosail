@@ -28,7 +28,6 @@ func TestSubtitlePreparationSelectsPreferredTextAndReusesCache(t *testing.T) {
 func TestSubtitlePreparationRejectsInvalidLanguageBeforeWork(t *testing.T) {
 	t.Parallel()
 	for _, language := range []string{"", "not-a-language", "en_US", strings.Repeat("x", 1024)} {
-		// A nil probe proves invalid preferences cannot reach probing or extraction.
 		if err := (*mediaProbe)(nil).preparePreferredSubtitle(context.Background(), library.Item{Kind: "video"}, language); err == nil {
 			t.Fatalf("accepted language %q", language)
 		}

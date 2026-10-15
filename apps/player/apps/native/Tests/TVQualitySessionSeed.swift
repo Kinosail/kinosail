@@ -3,8 +3,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Opt-in setup for the disposable loopback navigation fixture. This file is
-// test-only and must never pair a production profile or run on another device.
 @Suite(.enabled(if: ProcessInfo.processInfo.environment["KINOSAIL_TV_QUALITY_SEED"] == "1"))
 @MainActor struct TVQualitySessionSeed {
     @Test func seedDisposableSimulatorSession() async throws {

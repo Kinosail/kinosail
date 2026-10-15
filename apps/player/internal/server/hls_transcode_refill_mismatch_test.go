@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-// A rehashed, structurally valid proof is not authority to publish media whose
-// measured clocks disagree. Exercise the real encoder and HTTP rejection path.
 func transcodeRefillRejectClockMismatch(t *testing.T, ctx context.Context, root, prefix, owned, variant, fragment, source string, beforeOwned int, logs *copiedLogBuffer) int {
 	t.Helper()
 	proofPath, masterPath := filepath.Join(root, ".transcode-clock"), filepath.Join(root, "index.m3u8")

@@ -5,7 +5,6 @@ import (
 	"strings"
 )
 
-// Denial identifies one shared Viewer access rejection.
 type Denial uint8
 
 const (
@@ -21,14 +20,12 @@ const (
 	OwnerStepUpRequired
 )
 
-// AccessInput contains evaluated app state for one Viewer request.
 type AccessInput struct {
 	Public, Owner, APIKey, RecentlyAuthenticated, PublicSession bool
 	RemoteRouteAllowed, ScheduleAllowed, APIKeyAllowed          bool
 	LocalOwner, MFARequired, Secured, EnrollmentRoute           bool
 }
 
-// EvaluateAccess applies Player's generic Viewer access policy in order.
 func EvaluateAccess(input AccessInput) Denial { //nolint:cyclop,gocognit // The ordered policy stays explicit for security review.
 	if input.Public {
 		if input.Owner {
@@ -73,7 +70,6 @@ func EvaluateAccess(input AccessInput) Denial { //nolint:cyclop,gocognit // The 
 	return Allowed
 }
 
-// EvaluateOwner applies Player's Owner and recent-authentication policy.
 func EvaluateOwner(owner, localOwner, managed, safeMethod, recentlyAuthenticated bool) Denial {
 	if !owner {
 		return OwnerRequired
@@ -84,7 +80,6 @@ func EvaluateOwner(owner, localOwner, managed, safeMethod, recentlyAuthenticated
 	return Allowed
 }
 
-// Reason returns the stable audit reason for a denial.
 func (denial Denial) Reason() string {
 	switch denial {
 	case OwnerRemoteDenied:
@@ -107,7 +102,6 @@ func (denial Denial) Reason() string {
 	return "Owner access required"
 }
 
-// Message returns the stable user message for a denial.
 func (denial Denial) Message() string {
 	switch denial {
 	case OwnerRemoteDenied:
@@ -128,7 +122,6 @@ func (denial Denial) Message() string {
 	return "Owner access required"
 }
 
-// Status returns the HTTP status for a denial.
 func (denial Denial) Status() int {
 	if denial == OwnerStepUpRequired || denial == OwnerRemoteDenied || denial == StrongAuthenticationRequired || denial == PublicSessionRequired || denial == ViewerScheduleDenied || denial == APIKeyScopeDenied || denial == MFAEnrollmentRequired || denial == OwnerRequired {
 		return http.StatusForbidden
@@ -136,10 +129,8 @@ func (denial Denial) Status() int {
 	return http.StatusNotFound
 }
 
-// Secured reports whether a profile has an enrolled second factor.
 func Secured(secret string, passkeyCount int) bool { return secret != "" || passkeyCount > 0 }
 
-// MFAEnrollmentRoute reports whether a route can complete mandatory enrollment.
 func MFAEnrollmentRoute(pattern string) bool {
 	switch pattern {
 	case "GET /account", "POST /account/mfa/setup", "POST /account/mfa/enable", "POST /auth/passkeys/register/begin", "POST /auth/passkeys/register/finish", "POST /logout", "DELETE /api/v1/session", "GET /api/v1/me", "POST /api/v1/me/mfa/setup", "PUT /api/v1/me/mfa", "POST /api/v1/passkeys/register/begin", "POST /api/v1/passkeys/register/finish":
@@ -149,12 +140,10 @@ func MFAEnrollmentRoute(pattern string) bool {
 	}
 }
 
-// APIRoutes maps app-specific routes to shared scope policy.
 type APIRoutes struct {
 	SessionOnly, JellyfinLibrary, Library, Write, Stream, Download map[string]bool
 }
 
-// AllowsAPI applies Player's closed API-key scope policy.
 func AllowsAPI(scopes []string, pattern string, routes APIRoutes) bool {
 	if hasScope(scopes, "home-assistant") {
 		return strings.Contains(pattern, " /api/v1/home-assistant/")
@@ -172,7 +161,6 @@ func AllowsAPI(scopes []string, pattern string, routes APIRoutes) bool {
 	return scope != "" && hasScope(scopes, scope)
 }
 
-// RouteSet creates an immutable-by-convention route lookup.
 func RouteSet(patterns ...string) map[string]bool {
 	result := make(map[string]bool, len(patterns))
 	for _, pattern := range patterns {

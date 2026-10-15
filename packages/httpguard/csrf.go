@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-// CSRFForRequest derives a token only when the request has a session cookie.
 func CSRFForRequest(request *http.Request) string {
 	if request == nil {
 		return ""
@@ -18,13 +17,11 @@ func CSRFForRequest(request *http.Request) string {
 	return ""
 }
 
-// CSRFToken returns Player's domain-separated, HTML-safe session token.
 func CSRFToken(session string) string {
 	digest := sha256.Sum256([]byte("kinosail-csrf\x00" + session))
 	return base64.RawURLEncoding.EncodeToString(digest[:])
 }
 
-// ValidCSRF validates one header or form token and consumes form token fields.
 func ValidCSRF(request *http.Request) bool {
 	expected := CSRFForRequest(request)
 	if expected == "" {

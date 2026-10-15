@@ -6,8 +6,6 @@ import (
 	"log/slog"
 )
 
-// Only fixed internal operation names cross the diagnostic boundary. Probe
-// errors can retain sensitive paths, so the underlying error is never logged.
 type transcodeClockStageError struct {
 	operation  string
 	cause      error

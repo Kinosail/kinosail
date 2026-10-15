@@ -7,8 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
-// Certificate returns only an already issued public identity. Private management
-// must not trigger an ACME challenge or require the public listener to stay enabled.
 func (manager *Manager) Certificate(name string) *tls.Certificate {
 	if manager == nil || !manager.config.PublicHTTPS || name != manager.hostname {
 		return nil

@@ -17,7 +17,6 @@ func TestFingerprintCacheAndToolFailuresAreDeterministic(t *testing.T) { //nolin
 	if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	// Never write executables while parallel tests can fork with their open FDs.
 	tool := filepath.Join("testdata", "fingerprint-tool.sh")
 	item := library.Item{ID: "item", Path: media}
 	analyzer := &Analyzer{cache: filepath.Join(directory, "cache"), tool: tool}

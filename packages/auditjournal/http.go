@@ -59,7 +59,6 @@ func (writer *ResponseWriter) Write(data []byte) (int, error) {
 	return written, err
 }
 
-// ReadFrom preserves the underlying writer's file transfer fast path.
 func (writer *ResponseWriter) ReadFrom(source io.Reader) (int64, error) {
 	if writer.Status == 0 {
 		writer.WriteHeader(http.StatusOK)

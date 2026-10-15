@@ -167,8 +167,6 @@ func transcodeRefillLegacyCache(t *testing.T, ctx context.Context, ffmpeg, ffpro
 
 func transcodeRefillSetLegacyBindings(t *testing.T, root string) {
 	t.Helper()
-	// Simulate a completed pre-policy cache entirely inside the disposable root.
-	// Every public identity must agree on the old policy before the HTTP reopen.
 	for _, name := range []string{"index.m3u8", ".source", ".seekable"} {
 		path := filepath.Join(root, name)
 		data := transcodeRefillRead(t, path)
@@ -186,8 +184,6 @@ func transcodeRefillCurrentBindings(t *testing.T, root string) {
 	t.Helper()
 	for _, name := range []string{".source", ".seekable"} {
 		data, err := os.ReadFile(filepath.Join(root, name))
-		// A complete rebuild may remove the seek-only marker. If retained, it
-		// must identify the new policy rather than certify the legacy cache.
 		if name == ".seekable" && os.IsNotExist(err) {
 			continue
 		}
@@ -197,8 +193,6 @@ func transcodeRefillCurrentBindings(t *testing.T, root string) {
 	}
 }
 
-// This fixed FFV1 fixture has seekable keys throughout. Every source input must
-// request the nearby window; an output trim after origin replay is insufficient.
 func transcodeRefillBoundedInputs(t *testing.T, directory string, target int) {
 	t.Helper()
 	selected := 0
@@ -231,8 +225,6 @@ func transcodeRefillDuration(t *testing.T, record map[string][]string, target in
 	}
 	duration, durationErr := strconv.ParseFloat(record["-t"][0], 64)
 	audio, audioErr := strconv.ParseFloat(record["input-seek"][1], 64)
-	// The fixture's requested fragment lasts two seconds. Discarded audio
-	// warm-up must fit as well; an output budget cannot end inside that fragment.
 	if durationErr != nil || audioErr != nil || !(duration > 0 && duration <= 12 && duration >= float64(target*2)-audio+2) {
 		t.Fatal("late refill duration truncates the requested audio or exceeds its bound")
 	}

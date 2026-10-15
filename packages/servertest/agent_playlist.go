@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// AgentCanCreateOrderedPlaylist verifies ordering and rejection without side effects.
 func (fixture LibraryAPIFixture) AgentCanCreateOrderedPlaylist(t *testing.T) {
 	t.Parallel()
 	handler, token := fixture.Server(t)

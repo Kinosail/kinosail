@@ -25,8 +25,6 @@ private struct TVMovieHeroAnchorKey: PreferenceKey {
     }
 }
 
-// Resolve the content's bounds at the viewport, outside the ScrollView clip.
-// Only this decorative plane expands into the inherited TV safe area.
 private struct TVMovieHeroBackdrop: View {
     let anchor: TVMovieHeroAnchor?
     @Environment(\.colorScheme) private var colorScheme
@@ -80,15 +78,12 @@ private struct TVMovieHeroBackdrop: View {
 
 extension View {
     func tvMovieHeroArtwork(_ path: String? = nil) -> some View {
-        // Capture before negative padding changes the hero's reported bounds.
         anchorPreference(key: TVMovieHeroAnchorKey.self, value: .bounds) {
             TVMovieHeroAnchor(bounds: $0, path: path)
         }
     }
 
     func tvMovieHeroViewport() -> some View {
-        // Clip scrolling foreground before adding the decorative plane, whose
-        // safe-area expansion must not let text or controls bleed with it.
         clipped()
             .backgroundPreferenceValue(TVMovieHeroAnchorKey.self) { anchor in
                 TVMovieHeroBackdrop(anchor: anchor)
@@ -96,8 +91,6 @@ extension View {
     }
 
     func tvMovieHeroBleed() -> some View {
-        // Expand only the decorative hero; the surrounding shelves keep the
-        // screen inset. The shared layout retains the previous 104pt text inset.
         padding(.horizontal, -KinoTheme.contentPadding)
             .padding(.top, -KinoTheme.contentPadding)
     }

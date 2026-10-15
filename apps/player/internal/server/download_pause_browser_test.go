@@ -19,8 +19,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// Opt-in: public original-quality preparation and Go-rendered Downloads use real
-// native-size blocks. A disposable outer peer controls partial media and page responses.
 func TestDownloadPauseBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_DOWNLOAD_PAUSE_BROWSER") != "1" {
 		t.Skip("KINOSAIL_DOWNLOAD_PAUSE_BROWSER is not set")
@@ -193,7 +191,6 @@ func (peer *downloadPausePeer) serveRefreshControl(writer http.ResponseWriter, r
 }
 
 func (peer *downloadPausePeer) serveHeldRange(writer http.ResponseWriter, request *http.Request, generation int) {
-	// Obtain headers and bytes from the real Go range handler, then hold its body.
 	response := httptest.NewRecorder()
 	peer.handler.ServeHTTP(response, request)
 	for name, values := range response.Header() {

@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// HLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput verifies the bounded diagnostic contract.
 func HLSDiagnosticPreservesCauseAndKeepsOnlyRecentOutput(t *testing.T, cause, failure error, output interface {
 	Write([]byte) (int, error)
 	Bytes() []byte

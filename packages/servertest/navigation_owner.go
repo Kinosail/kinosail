@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// AssertOwnerCanReachNavigationEditorFromMainBar retains the original navigation regression.
 func AssertOwnerCanReachNavigationEditorFromMainBar(t *testing.T, fixture NavigationFixture) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	owner := fixture.Library.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
@@ -31,7 +30,6 @@ func AssertOwnerCanReachNavigationEditorFromMainBar(t *testing.T, fixture Naviga
 	}
 }
 
-// AssertMobileMoreMenuPlacesLibraryAfterSecondaryActions retains the original navigation regression.
 func AssertMobileMoreMenuPlacesLibraryAfterSecondaryActions(t *testing.T, fixture NavigationFixture) {
 	handler, token := fixture.Library.Server(t)
 	markup := MainNavigationMarkup(APICall(t, handler, token, http.MethodGet, "/", nil).Body.String())

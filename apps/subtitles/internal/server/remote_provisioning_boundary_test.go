@@ -54,7 +54,6 @@ func assertRemoteProvisioningDenied(t *testing.T, handler http.Handler, method, 
 	if token != "" {
 		request.Header.Set("Authorization", "Bearer "+token)
 	}
-	// Neither forwarding headers nor a claimed loopback source can turn public ingress local.
 	request.Header.Set("X-Forwarded-For", "127.0.0.1")
 	request.Header.Set("X-Kinosail-Remote", "false")
 	response := httptest.NewRecorder()

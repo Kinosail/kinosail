@@ -181,7 +181,6 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 			return job, nil
 		}
 		if job != nil && ctx.Value(startupEncodingKey{}) != nil {
-			// Preparation cannot replace a foreground seek or any shared encoder.
 			manager.mu.Unlock()
 			return nil, nil
 		}
@@ -193,8 +192,6 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 			}
 			continue
 		}
-		// The preceding owner may have committed certification while this request
-		// joined it. Resolve the strategy only after that owner has settled.
 		var recovery *transcodeHLSRecovery
 		if recipe.mode == "transcode" {
 			recovery, err = manager.readTranscodeHLSRecovery(ctx, directory, options.Cache, filepath.Base(filepath.Dir(path)), segment)

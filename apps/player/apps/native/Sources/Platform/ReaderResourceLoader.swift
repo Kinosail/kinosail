@@ -31,8 +31,6 @@ actor ReaderResourceLoader {
             }
             return (data, mime)
         } catch {
-            // Failed transfers consume their reservation too, bounding repeated
-            // broken subresource requests without guessing partial byte counts.
             if !received { reservedBytes -= maximum; usedBytes += maximum }
             throw error
         }

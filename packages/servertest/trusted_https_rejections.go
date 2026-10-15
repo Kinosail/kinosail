@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// AssertTrustedHTTPSRejectsInvalidInputWithoutSideEffects preserves rejection and secret-file side-effect checks.
 func AssertTrustedHTTPSRejectsInvalidInputWithoutSideEffects(t *testing.T, fixture TrustedHTTPSFixture) {
 	t.Parallel()
 	directory := t.TempDir()
@@ -41,7 +40,6 @@ func AssertTrustedHTTPSRejectsInvalidInputWithoutSideEffects(t *testing.T, fixtu
 	}
 }
 
-// AssertTrustedHTTPSStorageFailureIsGeneric preserves the real storage failure and redaction checks.
 func AssertTrustedHTTPSStorageFailureIsGeneric(t *testing.T, fixture TrustedHTTPSFixture) {
 	t.Parallel()
 	directory := t.TempDir()

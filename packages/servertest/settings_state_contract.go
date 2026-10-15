@@ -9,21 +9,17 @@ import (
 	"github.com/MikeO7/kinosail/packages/supporter"
 )
 
-// SettingsStateReferences points to actual field slots, never cloned storage.
 type SettingsStateReferences struct {
 	Libraries, AutoSkip, Navigation *[]string
 	Supporter                       **supporter.State
 }
 
-// SettingsReferences assembles a view of real field slots without copying their values.
 func SettingsReferences(libraries, autoSkip, navigation *[]string, state **supporter.State) SettingsStateReferences {
 	return SettingsStateReferences{Libraries: libraries, AutoSkip: autoSkip, Navigation: navigation, Supporter: state}
 }
 
-// SettingsEnabler is the real integration mutation exercised by the contract.
 type SettingsEnabler interface{ SetEnabled(bool) error }
 
-// SettingsStateFixture retains actual settings references and app operations.
 type SettingsStateFixture struct {
 	current        SettingsStateReferences
 	snapshot       func() SettingsStateReferences
@@ -35,7 +31,6 @@ type SettingsStateFixture struct {
 	enabled        func() bool
 }
 
-// NewSettingsStateFixture binds a real private store without replacing or cloning it.
 func NewSettingsStateFixture[S any](current *S, snapshot func() S, references func(*S) SettingsStateReferences, file *string, active *bool, persist *func(string, any) error, newIntegration func(io.Reader) (SettingsEnabler, error), enabled func() bool) SettingsStateFixture {
 	return SettingsStateFixture{
 		current: references(current), snapshot: func() SettingsStateReferences { value := snapshot(); return references(&value) }, detail: func() any { return *current },
@@ -43,7 +38,6 @@ func NewSettingsStateFixture[S any](current *S, snapshot func() S, references fu
 	}
 }
 
-// SettingsStateContracts runs both original contracts against independently constructed stores.
 func SettingsStateContracts(t *testing.T, newFixture func() SettingsStateFixture) {
 	t.Helper()
 	t.Run("TestSettingsSnapshotDoesNotAliasStoredState", func(t *testing.T) { assertSettingsSnapshotIsolation(t, newFixture()) })

@@ -1,4 +1,3 @@
-// Command hls-readiness projects the exact shared readiness gates for synthetic E2E media.
 package main
 
 import (

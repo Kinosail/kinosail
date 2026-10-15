@@ -5,10 +5,8 @@ import (
 	"time"
 )
 
-// WritePublicError writes one app-specific public error response.
 type WritePublicError func(http.ResponseWriter, *http.Request, string, int)
 
-// GuardPublicRequests quarantines repeated scanner and credential abuse.
 func GuardPublicRequests(next http.Handler, public func(*http.Request) bool, writeError WritePublicError, writeNotFound func(http.ResponseWriter, *http.Request), audit func(*http.Request, string, bool)) http.Handler {
 	tripwire := &PublicTripwire{}
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -41,7 +39,6 @@ func GuardPublicRequests(next http.Handler, public func(*http.Request) bool, wri
 	})
 }
 
-// LimitPublicRequests rejects unsafe bodies, ranges, and excess concurrency.
 func LimitPublicRequests(next http.Handler, public func(*http.Request) bool, writeError WritePublicError) http.Handler {
 	capacity := NewPublicCapacity()
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

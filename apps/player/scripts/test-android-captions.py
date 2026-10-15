@@ -63,7 +63,6 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["displayDensities"] = {kind.decode().lower(): int(value) for kind,value in
             re.findall(rb"(Physical|Override) density: (\d+)", adb("shell", "wm", "density"))}
         case["stage"] = "seed"
-        # The original tablet overlap used portrait video on a landscape display.
         case["videoOrientation"] = "landscape" if landscape and not tablet else "portrait"
         case["fixtureTitle"] = "Native " + case["videoOrientation"] + " contrast 01a0f2ab"
         case["fixtureSHA256"] = {suffix: sha(ROOT / "engineering/qa/2026-09-30-android-playback-overlay/fixtures" /
@@ -92,7 +91,6 @@ def capture_case(run, safe, token, label, landscape, tablet, negative=False):
         case["logTruncated"] = len(log) > 4 << 20
         log = log[:4 << 20]
         (run / (label + ".instrumentation.private.log")).write_bytes(log)
-        # am instrument may return zero even when JUnit failed or skipped.
         case["selectedExpectedTests"] = set(re.findall(rb"(?m)^INSTRUMENTATION_STATUS: numtests=(\d+)\r?$", log)) == {str(case["expectedTests"]).encode()}
         case["junitPassed"] = ("OK (" + str(case["expectedTests"]) + (" test)" if negative else " tests)")).encode() in log and b"FAILURES!!!" not in log
         case["ignored"] = b"INSTRUMENTATION_STATUS_CODE: -3" in log or b"INSTRUMENTATION_STATUS_CODE: -4" in log
@@ -201,7 +199,6 @@ try:
         ROOT / "apps/player/apps/android/app/src/main/java/com/kinosail/player/core/PlaybackScreen.kt")}
     receipt["bridgeBoundary"] = {}
     verify_bridge(receipt["bridgeBoundary"])
-    # All application work runs on the hosted runner, never on the shared Mac.
     command(["go", "-C", "apps/player", "build", "-trimpath", "-o", str(run / "player"), "./cmd/kinosail"], timeout=180)
     receipt["serverBinarySHA256"] = sha(run / "player")
     receipt["codecVersions"] = {name: command([name, "-version"]).decode().splitlines()[0] for name in ("ffmpeg", "ffprobe")}
@@ -217,7 +214,6 @@ try:
     command([str(manager), "create", "avd", "-n", "kinosail-caption", "-k", IMAGE], input=b"no\n", env=env)
     configuration = avd / "kinosail-caption.avd/config.ini"
     settings = dict(line.split("=", 1) for line in configuration.read_text().splitlines() if "=" in line)
-    # Set the hardware display before boot. wm overrides alone did not produce the requested captures.
     settings.update({"hw.lcd.width": "1600", "hw.lcd.height": "2560", "hw.lcd.density": "320"})
     configuration.write_text("".join(key + "=" + value + "\n" for key,value in sorted(settings.items())))
     receipt["hardwareDisplay"] = {"width": 1600, "height": 2560, "density": 320, "configurationSHA256": sha(configuration)}

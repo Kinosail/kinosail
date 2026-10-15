@@ -37,12 +37,9 @@ if (selected("htmx")) test("HTMX title-letter Back fetches current browse data a
   await assetReceipt(page, info);
   await loadAll(page, expected);
   const href = (await page.locator("#library a.card").filter({ hasText: "Return Movie 25" }).getAttribute("href"))!;
-  // The actual departing action is the title-letter link, so focus expectation
-  // for this history-only control belongs to that link, not a playback card.
   const letter = page.locator('[data-title-jump-index] [data-title-letter="A"]');
   await letter.scrollIntoViewIfNeeded();
   await letter.focus();
-  // A zero-position return cannot detect an unintended reset to the page top.
   await page.evaluate(() => scrollTo({ top: 120, behavior: "instant" }));
   await settle(page, href);
   const before = await record(page, info, "before", href);
@@ -52,7 +49,6 @@ if (selected("htmx")) test("HTMX title-letter Back fetches current browse data a
   await expect(page.locator("#library .card h2")).toHaveText(["Anchor Movie"]);
   const atLetter = await record(page, info, "letter", href);
   try {
-    // A real same-document history traversal triggers HTMX's normal fetch.
     await page.evaluate(() => history.back());
     await expect.poll(async () => (await snapshot(page, href)).document.histories, { timeout: 4000, message: "HTMX prerequisite: actual history restore event" }).toBeGreaterThan(atLetter.state.document.histories);
     await expect.poll(async () => {

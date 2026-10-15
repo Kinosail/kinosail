@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// ViewerCanChooseDarkLightOrSystemTheme preserves the shared app asset contract.
 func (fixture AssetsFixture) ViewerCanChooseDarkLightOrSystemTheme(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -38,7 +37,6 @@ func (fixture AssetsFixture) ViewerCanChooseDarkLightOrSystemTheme(t *testing.T)
 	}
 }
 
-// SettingsAndSharedPageFamiliesUseSignalLayout preserves the shared app asset contract.
 func (fixture AssetsFixture) SettingsAndSharedPageFamiliesUseSignalLayout(t *testing.T) {
 	t.Helper()
 	t.Parallel()

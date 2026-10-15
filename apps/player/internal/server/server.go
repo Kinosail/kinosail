@@ -67,7 +67,6 @@ func homeTemplateSource() string {
 
 var homeView = newLocalizedTemplate("home", homeWithPlaylistImport)
 
-// Config describes the installation-owned paths used by the HTTP interface.
 type Config struct {
 	Lifecycle           context.Context
 	MediaDir            string
@@ -110,7 +109,6 @@ type Config struct {
 	Supporter           SupporterConfig
 }
 
-// New returns Kinosail's HTTP interface.
 func New(config Config) http.Handler {
 	return newApplication(config)
 }
@@ -171,7 +169,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
-		// Keep LAN administration local. Passkey ceremonies still require their exact origin.
 		auth.passkeys.redirectPages = false
 	}
 	if !auth.audit.Healthy() {
@@ -254,7 +251,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	metadata.register(mux, auth, index)
 	registerCollections(mux, index, lists, auth)
 	if managedLifecycle {
-		// TMDB may be configured after startup, so keep the refresh worker available.
 		settings.metadataChanged = sharedmetadata.Schedule(config.Lifecycle, true, index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
 	registerAPI(mux, apiServices{index, progress, lists, auth, settings, hls, probe, metadata, rooms, backups, downloads, maintenance, viewingImports, agentConnections, config.InternetAccess, config.TrustedHTTPS, shares, quickConnect, supporter, updates, homeAssistant, newRemotePlayers(), config.AuthURL, events, experience})

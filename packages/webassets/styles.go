@@ -1,4 +1,3 @@
-// Package webassets owns browser assets shared by Kinosail applications.
 package webassets
 
 import (
@@ -25,7 +24,6 @@ var (
 	//go:embed static/subtitles-app.css.patch
 	subtitlesCSSPatch []byte
 
-	// SubtitlesCSS derives the Subtitles stylesheet from Player's stylesheet.
 	SubtitlesCSS = append(mustApplyStylePatch(playerCoreCSS, subtitlesCSSPatch), restartNoticeCSS...)
 )
 

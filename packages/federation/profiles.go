@@ -2,7 +2,6 @@ package federation
 
 import "errors"
 
-// Protocol selects one federated identity slot and its product-facing errors.
 type Protocol string
 
 const (
@@ -10,7 +9,6 @@ const (
 	SAMLProtocol Protocol = "SAML"
 )
 
-// Profile describes the federation and provisioning fields shared by every app profile.
 type Profile struct {
 	ID, SCIMExternalID    string
 	OIDC, SAML            Identity
@@ -18,19 +16,16 @@ type Profile struct {
 	Disabled, SCIMDeleted bool
 }
 
-// Profiles owns atomic federation lookup, linking, provisioning, and persistence policy.
 type Profiles[T any] struct {
-	Lock, Unlock func()
-	Clone        func() []T
-	Persist      func([]T) error
-	Commit       func([]T)
-	Inspect      func(T) Profile
-	Apply        func(*T, Protocol, Identity)
-	// SessionActive is called while the profile lock is held.
+	Lock, Unlock  func()
+	Clone         func() []T
+	Persist       func([]T) error
+	Commit        func([]T)
+	Inspect       func(T) Profile
+	Apply         func(*T, Protocol, Identity)
 	SessionActive func(string, string) bool
 }
 
-// Find returns the enabled profile linked to one verified identity.
 func (profiles Profiles[T]) Find(protocol Protocol, identity Identity) (T, bool) {
 	var zero T
 	if validateIdentity(protocol, identity) != nil {
@@ -47,7 +42,6 @@ func (profiles Profiles[T]) Find(protocol Protocol, identity Identity) (T, bool)
 	return zero, false
 }
 
-// FindByID returns one profile without changing its state.
 func (profiles Profiles[T]) FindByID(id string) (T, bool) {
 	profiles.Lock()
 	defer profiles.Unlock()
@@ -60,7 +54,6 @@ func (profiles Profiles[T]) FindByID(id string) (T, bool) {
 	return zero, false
 }
 
-// AutoLinkSCIM links one uniquely matching active SCIM profile and persists it atomically.
 func (profiles Profiles[T]) AutoLinkSCIM(protocol Protocol, identity Identity) (T, bool, error) {
 	var zero T
 	if identity == (Identity{}) {
@@ -99,12 +92,10 @@ func uniqueSCIMMatch[T any](profiles []T, subject string, inspect func(T) Profil
 	return match, true
 }
 
-// Link validates ownership and uniqueness before it persists one identity atomically.
 func (profiles Profiles[T]) Link(protocol Protocol, id string, identity Identity) error {
 	return profiles.link(protocol, id, identity, "", false)
 }
 
-// LinkForSession rechecks the initiating session atomically with the profile write.
 func (profiles Profiles[T]) LinkForSession(protocol Protocol, id string, identity Identity, session string) error {
 	return profiles.link(protocol, id, identity, session, true)
 }
@@ -142,7 +133,6 @@ func (profiles Profiles[T]) link(protocol Protocol, id string, identity Identity
 	return profiles.persist(values)
 }
 
-// Unlink clears one identity and persists the change atomically.
 func (profiles Profiles[T]) Unlink(protocol Protocol, id string) error {
 	if err := validateProtocol(protocol); err != nil {
 		return err

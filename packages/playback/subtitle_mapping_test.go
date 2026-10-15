@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-// WebVTT allows space/tab timing separators and CR, LF, or CRLF line endings:
-// https://www.w3.org/TR/webvtt1/#webvtt-cue-timings
 func TestServeSubtitleMapsTimingWithoutChangingTextOrSettings(t *testing.T) {
 	for _, format := range []string{"vtt", "srt", "legacy-vtt"} {
 		for eolIndex, eol := range []string{"\n", "\r\n", "\r"} {

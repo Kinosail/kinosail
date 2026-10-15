@@ -32,7 +32,6 @@ func ResumeAt(seconds float64) string {
 	return fmt.Sprintf("Resume at %dh %dm", minutes/60, minutes%60)
 }
 
-// ViewerProgress retains the legacy Owner fallback for imported progress.
 func ViewerProgress(values map[string]PlaybackState, profile string, owner bool, id string) PlaybackState {
 	value, found := values[profile+":"+id]
 	if !found && owner {
@@ -52,7 +51,6 @@ func ActiveProgress(values map[string]PlaybackState, profile string, owner bool,
 	return active
 }
 
-// ProgressHistory sorts the caller-owned slice by most recent activity.
 func ProgressHistory(values map[string]PlaybackState, profile string, owner bool, items []library.Item) []library.Item {
 	state := func(item library.Item) PlaybackState { return ViewerProgress(values, profile, owner, item.ID) }
 	sort.SliceStable(items, func(left, right int) bool { return state(items[left]).Updated.After(state(items[right]).Updated) })

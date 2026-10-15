@@ -13,12 +13,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// RequestBodyMaximum bounds every Quick Connect request body.
 const RequestBodyMaximum = 4 << 10
 
 var errHTTPRequest = errors.New("Quick Connect request is invalid") //nolint:staticcheck // Product term starts with a capital.
 
-// Start creates one strictly parsed pending authorization request.
 func (application *Application) Start(writer http.ResponseWriter, request *http.Request) {
 	if !application.limiters.Requests.Allow(httpguard.RemoteHost(request.RemoteAddr), 60) {
 		tooMany(writer, "too many Quick Connect requests")
@@ -47,7 +45,6 @@ func (application *Application) Start(writer http.ResponseWriter, request *http.
 	apihttp.WriteJSON(writer, map[string]string{"code": pending.Code, "secret": secret}, http.StatusCreated)
 }
 
-// Poll returns pending state or consumes one approved request.
 func (application *Application) Poll(writer http.ResponseWriter, request *http.Request) {
 	if !application.limiters.Polls.Allow(httpguard.RemoteHost(request.RemoteAddr), 120) {
 		tooMany(writer, "too many Quick Connect polls")
@@ -73,7 +70,6 @@ func (application *Application) Poll(writer http.ResponseWriter, request *http.R
 	apihttp.WriteJSON(writer, map[string]any{"token": token, "expiresIn": expires}, http.StatusCreated)
 }
 
-// Page renders the product Quick Connect page.
 func (application *Application) Page(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.Header().Set("Referrer-Policy", "no-referrer")
@@ -95,7 +91,6 @@ func (application *Application) Page(writer http.ResponseWriter, request *http.R
 	_ = application.adapter.Render(writer, request, page)
 }
 
-// ApprovePage validates and applies one browser approval.
 func (application *Application) ApprovePage(writer http.ResponseWriter, request *http.Request) {
 	if identitycore.RemoteRequest(request) {
 		application.adapter.Error(writer, request, "not found", http.StatusNotFound)
@@ -118,7 +113,6 @@ func (application *Application) ApprovePage(writer http.ResponseWriter, request 
 	http.Redirect(writer, request, "/", http.StatusSeeOther)
 }
 
-// ApproveAPI validates and applies one versioned API approval.
 func (application *Application) ApproveAPI(writer http.ResponseWriter, request *http.Request) {
 	if identitycore.RemoteRequest(request) {
 		apihttp.NotFound(writer)

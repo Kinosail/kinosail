@@ -17,8 +17,6 @@ export function registerSubtitleDefaultTests() {
             const button = record.target;
             if (record.oldValue === null || !(button instanceof HTMLButtonElement) || button.disabled ||
                 !button.matches('#subtitle-edit-form button[type="submit"]')) continue;
-            // Hold real CSS transitions at an early mixed-color frame, when the
-            // newly enabled label must already be readable. No styles are replaced.
             getComputedStyle(button).backgroundColor;
             const colors: string[] = [];
             for (const animation of button.getAnimations()) {
@@ -42,7 +40,6 @@ export function registerSubtitleDefaultTests() {
       const original = await readFile(containerMedia ? path : join(media, "Example Movie.vtt"));
       if (!containerMedia) await writeFile(path, original);
       try {
-        // Host writes can reach a container mount after the local write completes.
         await expect.poll(async () => (await page.request.get(`${base}/inspect?language=en`)).status(),
           { message: "Wait for the written subtitle to be readable by the Server" }).toBe(200);
         const capture = async (state: string) => {
@@ -73,8 +70,6 @@ export function registerSubtitleDefaultTests() {
         await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
         await capture("pending");
         release();
-        // The server-rendered status already says loaded during the refresh.
-        // Wait for the real request to release its controls before capturing it.
         await expect(page.locator("#inspector-status")).not.toHaveAttribute("aria-busy", "true");
         await expect(page.getByRole("button", { name: "Preview changes" })).toBeEnabled();
         await expect(page.locator("#inspector-status")).toContainText("Current subtitle loaded");

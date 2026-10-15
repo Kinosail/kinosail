@@ -193,7 +193,7 @@ func remainingAACExistingAsset(root *os.Root, name string) error {
 		return errCopiedHLSIndex
 	}
 	if _, err := root.Lstat(name); errors.Is(err, os.ErrNotExist) {
-		return nil // Projected future fragments continue through ordinary refill.
+		return nil
 	}
 	file, info, err := copiedHLSOpenFile(root, name, 64<<20)
 	if err != nil {

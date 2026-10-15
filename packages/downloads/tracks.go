@@ -15,7 +15,6 @@ type TrackSelection struct {
 	Subtitles []int `json:"subtitles"`
 }
 
-// A nil selection means every track. Explicit empty arrays mean none.
 func validateSelection(selection *TrackSelection) bool {
 	if selection == nil {
 		return true
@@ -88,8 +87,6 @@ func trackLabel(kind string, index int, language, role string) string {
 	return label
 }
 
-// Resolve all indices and sidecar paths against scanned facts before execution.
-// Matroska preserves bitmap subtitles and styled text without silent loss.
 func resolveTracks(facts playback.MediaFacts, item library.Item, selection *TrackSelection) ([]string, []string, bool, error) {
 	if !validTrackRequest(facts, item, selection) {
 		return nil, nil, false, errors.New("download tracks are invalid")

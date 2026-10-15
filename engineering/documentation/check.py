@@ -82,7 +82,6 @@ def check(root, base):
             if not document.is_file():
                 errors.append(f'{relative}: search page missing')
                 continue
-            # The canonical origin is supplied by the build, including preview builds.
             source = document.read_text()
             public_urls.add(public_origin + entry['url'])
             errors.extend(f'{relative}: {error}' for error in validate(source, public_origin + entry['url']))

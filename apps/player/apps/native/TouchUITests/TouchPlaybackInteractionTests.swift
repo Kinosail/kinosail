@@ -1,7 +1,6 @@
 import AVKit
 import XCTest
 
-// Run against the disposable loopback fixture in scripts/ios-playback-fixture.py.
 final class TouchPlaybackInteractionTests: XCTestCase {
     @MainActor func testOpeningVideoHasNoPlayAndKeepsCloseAfterBackgroundTap() async throws {
         let app = try await openVideo(mode: "pending")
@@ -15,7 +14,6 @@ final class TouchPlaybackInteractionTests: XCTestCase {
 
     @MainActor func testWaitingForFirstFrameHasNoPlayOrPause() async throws {
         let app = try await openVideo(mode: "preparing")
-        // Metadata is available, but the fixture withholds all video bytes.
         XCTAssertTrue(app.staticTexts["−1:00"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertFalse(app.buttons["Play"].exists, app.debugDescription)
         XCTAssertFalse(app.buttons["Pause"].exists, app.debugDescription)
@@ -78,7 +76,6 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(pause.isEnabled)
         XCTAssertFalse(app.staticTexts["Opening video…"].exists)
         record("loaded video", app)
-        // Controls naturally hide while screenshots or user actions take time.
         try await Task.sleep(for: .seconds(5))
         background(app, x: 0.75, y: 0.3).tap()
         XCTAssertTrue(pause.waitForExistence(timeout: 5))
@@ -112,7 +109,6 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(back.waitForExistence(timeout: 5), app.debugDescription)
         back.tap()
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10), app.debugDescription)
-        // Reopening the same title must retain the floating playback session.
         app.buttons["Play"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Return to video"].waitForExistence(timeout: 10), app.debugDescription)
         app.buttons["Return to video"].tap()
@@ -143,7 +139,6 @@ final class TouchPlaybackInteractionTests: XCTestCase {
     }
 
     @MainActor private func background(_ app: XCUIApplication, x: CGFloat, y: CGFloat) -> XCUICoordinate {
-        // iPad can expose a zero-size window before its full-screen content.
         app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: y))
     }
 

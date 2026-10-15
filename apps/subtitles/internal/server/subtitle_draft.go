@@ -19,8 +19,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Drafts are intentionally separate from maintenance: OCR and recognition can
-// invent or miss dialogue. Only a reviewed, fingerprint-checked edit installs one.
 type subtitleDraft struct {
 	ID       string                  `json:"id"`
 	Item     string                  `json:"item"`

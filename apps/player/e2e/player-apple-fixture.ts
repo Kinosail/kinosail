@@ -1,6 +1,5 @@
 import type {Page} from "@playwright/test";
 
-// Only the isolated policy tests use this simulation; media is simulated separately.
 export async function installAppleFullscreenApi(page: Page, device: "iPhone" | "iPad" = "iPhone") {
   await page.evaluate(device => {
     Object.defineProperty(navigator, "userAgent", {configurable: true, value: `Mozilla/5.0 (${device}; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148`});

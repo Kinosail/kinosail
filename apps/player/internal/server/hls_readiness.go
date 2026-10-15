@@ -32,8 +32,6 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	}
 	if masterFresh(playlist, item.Path, options.Cache) {
 		if pending, err := manager.copiedHLSClockPending(ctx, filepath.Dir(playlist), options.Cache); err == nil && pending {
-			// A finished encoder no longer owns a job. Join clock certification
-			// before cache admission can replace its otherwise valid output.
 			if err := manager.ensureCopiedHLSClock(ctx, item, recipe, filepath.Dir(playlist), options.Cache); err != nil {
 				return err
 			}
@@ -69,8 +67,6 @@ func (manager *hlsManager) waitHLSReadiness(ctx context.Context, item library.It
 			if !ready() {
 				return errHLSIdentityChanged
 			}
-			// Completion can beat the readiness ticker. Keep this output and
-			// bind its clock after the loop instead of restarting it.
 		case <-ticker.C:
 		}
 	}

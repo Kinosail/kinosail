@@ -5,18 +5,15 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Destination is one nonempty home Library category.
 type Destination struct {
 	Name, Description, Href, Icon, CountLabel string
 }
 
-// DestinationGroup is one related set of Library categories.
 type DestinationGroup struct {
 	Name         string
 	Destinations []Destination
 }
 
-// Destinations projects Player-canonical home links and wording.
 func Destinations(items []library.Item, listCount, collectionCount, playlistCount int) []DestinationGroup {
 	movies, shows := library.Organize(items)
 	groups := []DestinationGroup{
@@ -44,7 +41,6 @@ func nonemptyDestinations(destinations []Destination) []Destination {
 	return visible
 }
 
-// CountLabel returns the Player-canonical singular or plural item count.
 func CountLabel(count int) string {
 	return catalog.CountLabel(count)
 }

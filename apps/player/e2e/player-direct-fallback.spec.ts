@@ -241,8 +241,6 @@ for (const compatibleMode of ["remux", "audio-transcode"]) {
       negotiations++;
       return route.abort();
     });
-    // Audio incompatibility is selected before direct startup; keep this case on the
-    // original source until the explicit Compatibility action below.
     await startDirectPlayer(page, { compatibleMode: compatibleMode === "audio-transcode" ? "remux" : compatibleMode });
     await page.evaluate((mode) => {
       document.querySelector("video")!.dataset.playbackApi = "/api/v1/items/movie/playback";

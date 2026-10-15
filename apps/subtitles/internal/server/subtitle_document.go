@@ -15,7 +15,6 @@ func subtitleDocument(cues []subtitleCue, duplicates int) (cleanedSubtitle, erro
 	var output strings.Builder
 	maximumCPS := 0.0
 	for index, cue := range cues {
-		// SRT uses whole milliseconds; reject cues that would serialize empty.
 		if cue.Start < 0 || cue.End/time.Millisecond <= cue.Start/time.Millisecond || cue.End > 36*time.Hour {
 			return cleanedSubtitle{}, errors.New("aligned subtitle timing is invalid")
 		}

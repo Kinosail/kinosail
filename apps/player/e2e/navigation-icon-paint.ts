@@ -1,7 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
 
-// An accessible name and a CSS mask can both exist while the icon paints nothing.
-// Compare the real viewport with a negative control that hides only those glyphs.
 export async function expectNavigationIconPaint(page: Page, info: TestInfo, name: string) {
 	const selector = ".header-compact-menu > summary, .mobile-navigation > a:visible, .mobile-navigation .nav-more > summary";
 	const controls = page.locator(selector);
@@ -15,8 +13,6 @@ export async function expectNavigationIconPaint(page: Page, info: TestInfo, name
 		return { name: element.textContent!.trim(), x: box.x, y: box.y, width: box.width, height: box.height };
 	}));
 	const hiddenStyle = ".header-compact-menu > summary::before, .mobile-navigation > a::before, .mobile-navigation .nav-more > summary::before { visibility: hidden !important; }";
-	// Inline screenshot styles are rejected by the real Server's CSP. Use CSSOM
-	// for this temporary negative control, and verify it actually hides each glyph.
 	const sheet = await page.evaluateHandle(rule => {
 		const sheet = new CSSStyleSheet();
 		sheet.replaceSync(rule);

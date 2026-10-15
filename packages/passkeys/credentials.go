@@ -30,7 +30,6 @@ var (
 	ErrLastFactor        = errors.New("owner must retain a passkey or authenticator")
 )
 
-// User carries an application identity through a WebAuthn ceremony.
 type User[T any] struct {
 	Value       T
 	ID          string
@@ -43,12 +42,10 @@ func (user User[T]) WebAuthnName() string                       { return user.Na
 func (user User[T]) WebAuthnDisplayName() string                { return user.Name }
 func (user User[T]) WebAuthnCredentials() []webauthn.Credential { return user.Credentials }
 
-// NewUser returns a WebAuthn user with isolated credential storage.
 func NewUser[T any](value T, id, name string, credentials []webauthn.Credential) User[T] {
 	return User[T]{Value: value, ID: id, Name: name, Credentials: CloneAll(credentials)}
 }
 
-// ValidateCredential rejects credentials that cannot be stored safely.
 func ValidateCredential(credential *webauthn.Credential) error {
 	if !validCredentialShape(credential) {
 		return ErrInvalidCredential
@@ -72,7 +69,6 @@ func validAttestation(attestation webauthn.CredentialAttestation) bool {
 	return len(attestation.ClientDataJSON) <= maxAttestation && len(attestation.ClientDataHash) <= 64 && len(attestation.AuthenticatorData) <= maxAttestation && len(attestation.Object) <= maxAttestation
 }
 
-// ValidateCredentials rejects invalid, duplicate, or excessive stored credentials.
 func ValidateCredentials(credentials []webauthn.Credential) error {
 	if len(credentials) > MaxCredentials {
 		return ErrLimit
@@ -91,7 +87,6 @@ func ValidateCredentials(credentials []webauthn.Credential) error {
 	return nil
 }
 
-// ValidateLookup bounds a discoverable credential lookup before storage access.
 func ValidateLookup(rawID, userHandle []byte) error {
 	if len(rawID) == 0 || len(rawID) > maxCredentialID || len(userHandle) == 0 || len(userHandle) > maxUserHandle {
 		return ErrInvalidCredential
@@ -99,7 +94,6 @@ func ValidateLookup(rawID, userHandle []byte) error {
 	return nil
 }
 
-// Index finds a credential by its raw identifier.
 func Index(credentials []webauthn.Credential, rawID []byte) int {
 	for index := range credentials {
 		if bytes.Equal(credentials[index].ID, rawID) {
@@ -109,7 +103,6 @@ func Index(credentials []webauthn.Credential, rawID []byte) int {
 	return -1
 }
 
-// Clone returns a credential without shared byte slices.
 func Clone(credential webauthn.Credential) webauthn.Credential {
 	credential.ID, credential.PublicKey = slices.Clone(credential.ID), slices.Clone(credential.PublicKey)
 	credential.Transport, credential.Authenticator.AAGUID = slices.Clone(credential.Transport), slices.Clone(credential.Authenticator.AAGUID)
@@ -118,7 +111,6 @@ func Clone(credential webauthn.Credential) webauthn.Credential {
 	return credential
 }
 
-// CloneAll returns credentials without shared byte slices.
 func CloneAll(credentials []webauthn.Credential) []webauthn.Credential {
 	cloned := make([]webauthn.Credential, len(credentials))
 	for index := range credentials {
@@ -127,13 +119,11 @@ func CloneAll(credentials []webauthn.Credential) []webauthn.Credential {
 	return cloned
 }
 
-// ID returns the redacted storage identifier for a credential.
 func ID(raw []byte) string {
 	sum := sha256.Sum256(raw)
 	return hex.EncodeToString(sum[:])
 }
 
-// ValidateID accepts only a lowercase SHA-256 identifier.
 func ValidateID(id string) error {
 	if len(id) != sha256.Size*2 {
 		return ErrInvalidID
@@ -146,13 +136,11 @@ func ValidateID(id string) error {
 	return nil
 }
 
-// Usage records safe passkey activity metadata.
 type Usage struct {
 	LastUsed int64 `json:"lastUsed,omitempty"`
 	Tracked  bool  `json:"tracked,omitempty"`
 }
 
-// Summary is the redacted passkey inventory shape.
 type Summary struct {
 	ID             string `json:"id"`
 	Display        string `json:"display"`
@@ -166,7 +154,6 @@ type Summary struct {
 	CloneWarning   bool   `json:"cloneWarning"`
 }
 
-// Inventory returns redacted passkey data for account views.
 func Inventory(credentials []webauthn.Credential, usage map[string]Usage) []Summary {
 	result := make([]Summary, 0, len(credentials))
 	mostRecent := int64(0)
@@ -188,7 +175,6 @@ func Inventory(credentials []webauthn.Credential, usage map[string]Usage) []Summ
 	return result
 }
 
-// Update replaces one verified credential and records its use.
 func Update(credentials []webauthn.Credential, usage map[string]Usage, credential *webauthn.Credential, now time.Time) bool {
 	if usage == nil || ValidateCredential(credential) != nil {
 		return false

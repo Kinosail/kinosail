@@ -4,7 +4,6 @@ import XCTest
 
 @MainActor
 final class MediaCardRatingTests: XCTestCase {
-    // E2E does not exercise this raster helper. It must not omit text and compare backgrounds alone.
     func testCardCaptureIncludesVisibleRatingText() async throws {
         let session = AppSession()
         let rated = try item(kind: "video", rating: "PG-13")
@@ -29,7 +28,6 @@ final class MediaCardRatingTests: XCTestCase {
         }
     }
 
-    // Failures: ratings remain visible, reserve a metadata row, or disappear from selected-video metadata.
     func testVideoCardsRenderIdenticallyWithAndWithoutRatings() async throws {
         let session = AppSession()
         for kind in ["video", "show"] {
@@ -78,8 +76,6 @@ final class MediaCardRatingTests: XCTestCase {
         }
     }
 
-    // Failures: blank capture, cropped content, or attachments from a different raster.
-    // Draw directly into the same bitmap used for assertions and image evidence.
     private func capture<Content: View>(_ content: Content, width: CGFloat) async throws -> (image: CGImage, pixels: Data) {
 #if os(tvOS)
         return try await tvRasterFixture(content, width: width)

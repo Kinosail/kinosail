@@ -20,7 +20,6 @@ test("Owner actions remain reachable on desktop and phone", async ({ page }, tes
     await expect(panel.getByRole("link", { name: "Quick Connect", exact: true })).toBeVisible();
     await expect(panel.getByRole("button", { name: "Sign out", exact: true })).toBeVisible();
     for (const control of await panel.locator("a:visible,button:visible").all()) {
-      // Firefox reports a settled 44px target as 43.99998474121094px.
       await expect.poll(async () => Math.round(((await control.boundingBox())?.height ?? 0) * 1000) / 1000,
         { message: await control.innerText() }).toBeGreaterThanOrEqual(44);
     }
@@ -151,7 +150,6 @@ test("Viewer navigation exposes connection and account actions without Owner too
   } finally {
     await viewer.context().close();
     if (required) await setMFA(required);
-    // Requiring MFA revokes sessions that were created while it was optional.
     await login(page);
     await removeViewer(page, id);
   }

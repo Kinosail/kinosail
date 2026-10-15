@@ -14,7 +14,6 @@ import (
 
 var tvRegionSuffix = regexp.MustCompile(`(?i)\s+\([a-z]{2,3}\)$`)
 
-// ResolveTMDBRecord applies Player's movie and series record-building policy.
 func ResolveTMDBRecord(ctx context.Context, item library.Item, baseURL string, fetch func(context.Context, string, any) error, collection func(context.Context, int) string, details func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) {
 	if ctx == nil || fetch == nil || collection == nil || details == nil || artwork == nil {
 		return Result{}, errors.New("metadata identity is invalid")
@@ -120,7 +119,6 @@ func addTMDBBackdrop(result *Result, source, id string, show bool, artwork func(
 	return nil
 }
 
-// FindTMDBCandidate applies Player's ID-first and conservative title matching policy.
 func FindTMDBCandidate(ctx context.Context, baseURL, kind string, identity library.Item, providerIDs map[string]string, fetch func(context.Context, string, any) error) (TMDBCandidate, error) {
 	query, searchYear, err := validTMDBIdentity(ctx, baseURL, kind, identity, fetch)
 	if err != nil {

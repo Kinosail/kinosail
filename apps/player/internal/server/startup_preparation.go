@@ -17,12 +17,11 @@ const startupQueueLimit = 3
 
 type startupEncodingKey struct{}
 
-// Shared ownership exists before an encoder so playback can adopt cache refills.
 type startupEncoding struct {
 	adopted       atomic.Bool
 	timeline      *copiedHLSTimeline
-	completeVideo bool // Set before the encoder is created.
-	stopping      bool // Serialized with adoption under hls.mu.
+	completeVideo bool
+	stopping      bool
 }
 
 type startupRequest struct {
@@ -58,7 +57,7 @@ type startupPreparation struct {
 
 func newStartupPreparation(hls *hlsManager, auth *authentication, limit int64) *startupPreparation {
 	if limit <= 0 {
-		limit = 10_737_418_240 // Same default as the existing cache maintenance policy.
+		limit = 10_737_418_240
 	}
 	return &startupPreparation{hls: hls, auth: auth, limit: limit, active: make(map[string]startupSession)}
 }
@@ -153,11 +152,7 @@ func (startup *startupPreparation) next(parent context.Context) {
 	startup.startRequest(value.request, value)
 }
 
-// startRequest releases the queue lock after attaching cancellation/ownership.
-// The explicit request parameter retains this queued viewer's trusted scope.
 func (startup *startupPreparation) startRequest(request *http.Request, value startupRequest) {
-	// Retain trusted cookie/application/connection scope while dropping only the
-	// ended HTTP request's cancellation. Server shutdown still stops preparation.
 	ctx, cancel := context.WithTimeout(context.WithoutCancel(request.Context()), 12*time.Second)
 	stop := context.AfterFunc(startup.hls.ctx, cancel) //nolint:contextcheck // Server shutdown also cancels work; authorization values come from this queued request.
 	startup.current, startup.cancel = &value, cancel

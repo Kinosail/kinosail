@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-// Real-media E2E cannot reliably cause OS observation or termination failures.
-// This retained certificate seam verifies that optional probing cannot hide them.
 func TestCopiedHLSLinesCompletionCertificate(t *testing.T) {
 	failure := errors.New("incomplete probe")
 	cases := []struct {

@@ -1,4 +1,3 @@
-// Package metadata owns Kinosail media metadata providers and validated records.
 package metadata
 
 import (
@@ -15,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Record contains persisted metadata for one library item.
 type Record struct {
 	Title, Year, Plot, Rating, Tagline, Genres, Artwork, Backdrop, Collection string
 	ShowTitle, ShowYear, ShowPlot, ShowArtwork, ShowBackdrop                  string
@@ -25,7 +23,6 @@ type Record struct {
 	ShowProviderIDs                                                           map[string]string `json:"showProviderIds,omitempty"`
 }
 
-// Image describes one provider asset that must be cached with a resolved record.
 type Image struct {
 	Source, Target string
 	Show           bool
@@ -33,13 +30,11 @@ type Image struct {
 	Backdrop       bool
 }
 
-// Result contains one resolved provider record and its pending provider assets.
 type Result struct {
 	Record Record
 	Images []Image
 }
 
-// Year returns a four-digit year from a validated provider date.
 func Year(date string) string {
 	if len(date) < 4 {
 		return ""
@@ -47,10 +42,8 @@ func Year(date string) string {
 	return date[:4]
 }
 
-// Valid reports whether a record is complete and within persisted bounds.
 func Valid(record Record) bool { return record.Title != "" && Bounded(record) }
 
-// Bounded reports whether every persisted field is safe to store.
 func Bounded(record Record) bool {
 	fields := []struct {
 		value     string
@@ -86,7 +79,6 @@ func hasInvalidRecordText(value string, multiline bool) bool {
 	}) >= 0
 }
 
-// ApplyMissing fills only empty scanned library fields from a stored record.
 func ApplyMissing(item *library.Item, record Record) {
 	applyRecordCast(item, record)
 	fillString(&item.Year, record.Year)
@@ -103,7 +95,6 @@ func ApplyMissing(item *library.Item, record Record) {
 	}
 }
 
-// Apply overlays every populated owner-controlled field onto one item.
 func Apply(item *library.Item, record Record) {
 	applyRecordCast(item, record)
 	setString(&item.Title, record.Title)
@@ -140,7 +131,6 @@ func setString(target *string, value string) {
 	}
 }
 
-// ApplyRecords overlays one cloned record set and resolves cached artwork paths.
 func ApplyRecords(items []library.Item, records map[string]Record, currentArtwork func(string) string) []library.Item {
 	for position := range items {
 		record, found := records[items[position].ID]
@@ -166,7 +156,6 @@ func ApplyRecords(items []library.Item, records map[string]Record, currentArtwor
 	return items
 }
 
-// RegularFile reports whether a metadata sidecar or cached asset is a regular file.
 func RegularFile(path string) bool {
 	info, err := os.Lstat(path) //nolint:gosec // Callers derive the path from configured metadata storage or scanned Library Content.
 	return err == nil && info.Mode().IsRegular()
@@ -186,7 +175,6 @@ func validProviderIDs(values map[string]string) bool {
 	return true
 }
 
-// ValidateRecords validates one complete persisted metadata state before use.
 func ValidateRecords(records map[string]Record) error {
 	if len(records) > 100000 {
 		return errors.New("too many persisted metadata records")
@@ -203,7 +191,6 @@ func validMetadataID(value string) bool {
 	return value != "" && len(value) <= 128 && !strings.ContainsAny(value, `/\`) && strings.IndexFunc(value, unicode.IsControl) < 0
 }
 
-// ResolveTMDBEpisode applies the shared episode response and artwork contract.
 func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enrich func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) { //nolint:cyclop // One fail-closed guard keeps all cross-field episode invariants ahead of the provider call.
 	id, err := strconv.Atoi(show.ShowProviderIDs["tmdb"])
 	if ctx == nil || enrich == nil || artwork == nil || err != nil || id <= 0 || !validMetadataID(item.ID) || item.Season < 0 || item.Season > 100000 || item.Episode < 0 || item.Episode > 100000 || show.ShowTitle == "" || !Bounded(show) {
@@ -226,7 +213,6 @@ func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enr
 	return result, nil
 }
 
-// TVDBProviderID copies a bounded TVDB identity from one library item.
 func TVDBProviderID(item library.Item) map[string]string {
 	if value := strings.TrimSpace(item.ProviderIDs["tvdb"]); value != "" {
 		return map[string]string{"tvdb": value}
@@ -234,7 +220,6 @@ func TVDBProviderID(item library.Item) map[string]string {
 	return nil
 }
 
-// Clone returns a record with independent provider identity maps.
 func Clone(record Record) Record {
 	record.Cast = append([]library.Person(nil), record.Cast...)
 	record.ShowCast = append([]library.Person(nil), record.ShowCast...)
@@ -243,7 +228,6 @@ func Clone(record Record) Record {
 	return record
 }
 
-// MergeRecords clones current records and applies cloned updates.
 func MergeRecords(current, updates map[string]Record) map[string]Record {
 	records := make(map[string]Record, len(current)+len(updates))
 	for key, value := range current {
@@ -255,7 +239,6 @@ func MergeRecords(current, updates map[string]Record) map[string]Record {
 	return records
 }
 
-// RecordFromForm parses the bounded owner-editable metadata fields.
 func RecordFromForm(form url.Values, record Record) (Record, bool) {
 	fields := []struct {
 		name   string

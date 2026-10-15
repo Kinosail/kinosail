@@ -8,9 +8,6 @@ const CASES = [
   { id: "save-body-desktop", title: "R06 Save body held after completed write - desktop", mode: "body", width: 1440 },
 ] as const;
 
-// Collection is unconditional. Root selects one exact two-case suite with --grep.
-// Failures never skip the later navigation exercise: the helper records fixed
-// observations, releases the old response in the same document, then navigates.
 for (const entry of CASES) {
   test(entry.title, async ({ page }, testInfo) => {
     const result = await runSaveCase(page, testInfo, entry);

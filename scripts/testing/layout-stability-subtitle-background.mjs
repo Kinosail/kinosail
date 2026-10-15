@@ -1,8 +1,6 @@
 import {link, unlink} from "node:fs/promises";
 import {join, resolve} from "node:path";
 
-// Real fixture file discovery and the normal summary poll; no fake clock or API
-// response. The current page must retain its snapshot until the user refreshes.
 export async function measureSubtitleBackground(browser, options, results, probe) {
   const root = resolve(process.env.KINOSAIL_LAYOUT_MEDIA_ROOT || "");
   if (!root.includes("/.verification/layout/") || !root.endsWith("/media")) throw new Error("Owned synthetic media root required");

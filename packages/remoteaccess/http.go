@@ -5,10 +5,8 @@ import (
 	"net/http"
 )
 
-// WriteError preserves one application's localized web error response.
 type WriteError func(http.ResponseWriter, *http.Request, string, int)
 
-// KillHTTP disables public access and revokes application authorization.
 func KillHTTP(manager *Manager, revoke func() error, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if status, err := killResult(manager, revoke); err != nil {
@@ -19,7 +17,6 @@ func KillHTTP(manager *Manager, revoke func() error, writeError WriteError) http
 	}
 }
 
-// ResetKillHTTP resumes public access in the running Server.
 func ResetKillHTTP(manager *Manager, writeError WriteError) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := resetResult(manager); err != nil {
@@ -30,7 +27,6 @@ func ResetKillHTTP(manager *Manager, writeError WriteError) http.HandlerFunc {
 	}
 }
 
-// StatusAPI reports public HTTPS readiness.
 func StatusAPI[R any](internet *Manager, readiness func(Status) R, write func(http.ResponseWriter, any, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		internetStatus := Status{State: "disabled", Mode: "off"}
@@ -41,7 +37,6 @@ func StatusAPI[R any](internet *Manager, readiness func(Status) R, write func(ht
 	}
 }
 
-// KillAPI disables public access and revokes authorization for versioned clients.
 func KillAPI(manager *Manager, revoke func() error, contract func(string) error, writeError func(http.ResponseWriter, error, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		if status, err := killResult(manager, revoke); err != nil {
@@ -55,7 +50,6 @@ func KillAPI(manager *Manager, revoke func() error, contract func(string) error,
 	}
 }
 
-// ResetKillAPI resumes public access in the running Server for versioned clients.
 func ResetKillAPI(manager *Manager, contract func(string) error, writeError func(http.ResponseWriter, error, int)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, _ *http.Request) {
 		if err := resetResult(manager); err != nil {
@@ -66,7 +60,6 @@ func ResetKillAPI(manager *Manager, contract func(string) error, writeError func
 	}
 }
 
-// RevokeAuthorization clears every public authorization surface and joins durable errors.
 func RevokeAuthorization(revokePasskeys, revokeQuick func(), revokeProfiles func() error, revokeShares func() error) error {
 	revokePasskeys()
 	revokeQuick()

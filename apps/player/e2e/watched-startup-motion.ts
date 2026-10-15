@@ -23,9 +23,6 @@ export function observeHeldWatchedMotion({watched, cancelledAgain, guardMutation
         document.addEventListener("submit", event => event.preventDefault(), {capture: true, once: true});
         if (form.dispatchEvent(new SubmitEvent("submit", {bubbles: true, cancelable: true, submitter: form.querySelector("button")}))) throw new Error("Second submission was not cancelled");
       }
-      // Native navigation can pause WebKit media before the response arrives.
-      // Establish fresh decoded motion inside the held request before releasing
-      // the page's queued real notifications and requesting the late native pause.
       const finite = (value: number) => Number.isFinite(value) ? value : null;
       const state = (): MotionState | null => { try {
         const bounds = video.getBoundingClientRect(), ranges = video.buffered;
@@ -47,8 +44,6 @@ export function observeHeldWatchedMotion({watched, cancelledAgain, guardMutation
       };
       const start = sample();
       const tracker = (window as DisplayedMotionHost).createDisplayedMotionTracker!(start);
-      // Held WebKit navigation can advance playback without delivering rVFC.
-      // Keep callback evidence diagnostic; require fresh non-dropped frames and time.
       const rawFrameTimes: (number | null)[] = [];
       let callbacksSeen = 0;
       let frame = video.requestVideoFrameCallback(function presented(_now, metadata) {
@@ -85,7 +80,6 @@ export function observeHeldWatchedMotion({watched, cancelledAgain, guardMutation
         before: {...before, callbacksReleased}, seconds: video.currentTime, frames: video.getVideoPlaybackQuality().totalVideoFrames}, location.origin);
       if (watched) {video.addEventListener("pause", report, {once: true}); return video.pause();}
       video.addEventListener("ended", report, {once: true});
-      // Decode the admitted buffered ending; departure intentionally stopped loading.
       void video.play().catch(() => {});
     });
 }

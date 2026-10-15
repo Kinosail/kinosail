@@ -80,8 +80,6 @@ def long_window(api, path, run, source, physical, receipt):
             output.write(data)
     reference = decoded_frames(source, run, 'long-source')
     compatible = decoded_frames(joined, run, 'long-compatible')
-    # The fixture independently fixes its retained key on the source frame clock.
-    # Compare every decoded frame to reject a full-source or other-window response.
     expected_start = receipt['longExpectedFirstFrame']
     evidence['reference'] = frame_receipt(reference)
     evidence['compatible'] = frame_receipt(compatible)
@@ -120,7 +118,6 @@ def lifecycle_outcomes(run, complete=False):
         data = source.read((4 << 20) + 1)
     check(len(data) <= 4 << 20, 'long_window_log_bound')
     raw = data.decode()
-    # Poll only complete JSON lines while the Server still owns this log.
     lines = raw.splitlines() if complete else [line for line in raw.splitlines(keepends=True) if line.endswith('\n')]
     events = [json.loads(line) for line in lines if line.startswith('{')]
     outcomes = [event for event in events if event.get('msg') in ('HLS transcode completed', 'HLS transcode failed')]
@@ -135,8 +132,6 @@ def lifecycle_counts(outcomes):
 
 
 def long_window_complete_before_restart(run, receipt):
-    # The wrapper writes .joined before it exits. That does not prove the Server
-    # has reaped the wrapper and finished publication; do not kill that owner yet.
     deadline = time.monotonic() + 10
     while time.monotonic() < deadline:
         _, outcomes = lifecycle_outcomes(run)

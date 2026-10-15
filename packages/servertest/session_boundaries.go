@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// PublicOutboundResolutionRejectsMixedAndEmptyAnswers verifies fail-closed DNS resolution.
 func PublicOutboundResolutionRejectsMixedAndEmptyAnswers(t *testing.T, allowed func(net.IP) bool) {
 	t.Parallel()
 	for name, addresses := range map[string][]net.IP{
@@ -28,7 +27,6 @@ func PublicOutboundResolutionRejectsMixedAndEmptyAnswers(t *testing.T, allowed f
 	}
 }
 
-// SessionTimeoutValidationHasNoSideEffects verifies all invalid boundary combinations.
 func SessionTimeoutValidationHasNoSideEffects(t *testing.T, read func() (time.Duration, time.Duration), set func(float64, float64) error) {
 	beforeInactive, beforeAbsolute := read()
 	for _, values := range [][2]float64{{0, 4}, {.24, 4}, {1, 3}, {8761, 8761}, {24, 8761}, {48, 24}} {

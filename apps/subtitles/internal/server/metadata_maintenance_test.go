@@ -43,7 +43,7 @@ func TestConfiguredProviderAutomaticallyEnrichesMediaAddedLater(t *testing.T) {
 	t.Cleanup(provider.Close)
 	mediaDir := t.TempDir()
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, DataDir: t.TempDir(), CacheDir: t.TempDir(), Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
-	time.Sleep(350 * time.Millisecond) // Let initial enrichment finish before adding the new item.
+	time.Sleep(350 * time.Millisecond)
 	if err := os.WriteFile(filepath.Join(mediaDir, "Dune.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

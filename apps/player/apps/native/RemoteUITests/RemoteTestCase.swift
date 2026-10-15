@@ -5,8 +5,6 @@ class RemoteTestCase: XCTestCase {
     func focusedLabels(_ app: XCUIApplication) -> [String] {
         app.descendants(matching: .any).matching(NSPredicate(format: "hasFocus == true"))
             .allElementsBoundByIndex.flatMap { element in
-                // Native Menu focus belongs to a container whose visible
-                // title is exposed through its static-text children.
                 element.label.isEmpty ? element.staticTexts.allElementsBoundByIndex.map(\.label)
                                       : [element.label]
             }

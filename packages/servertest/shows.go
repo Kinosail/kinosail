@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// ViewerCanBrowseAShowsEpisodes verifies browsing and watched-state projection.
 func ViewerCanBrowseAShowsEpisodes(t *testing.T, newHandler func(*testing.T, string) http.Handler, expected ...string) {
 	t.Helper()
 	mediaDir := t.TempDir()

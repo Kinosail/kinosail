@@ -10,13 +10,11 @@ import (
 
 const recentItemLimit = 12
 
-// MovieGenre is one populated movie shelf on Home.
 type MovieGenre struct {
 	Name  string
 	Items []ShelfItem
 }
 
-// HomeShelf is one vertically stacked media group on the Player home page.
 type HomeShelf struct {
 	Key    string
 	Title  string
@@ -24,7 +22,6 @@ type HomeShelf struct {
 	Genres []MovieGenre
 }
 
-// HomeShelves follows the native watch-home order while retaining non-video media.
 func HomeShelves(items, unwatched []library.Item, artwork, showTitles map[string]string, genres []MovieGenre) []HomeShelf {
 	shelves := []HomeShelf{
 		{Key: "recent-movies", Title: "Recently added movies", Items: recentFor(items, artwork, showTitles, "movie")},
@@ -75,7 +72,6 @@ func homeKind(item library.Item, kind string) bool {
 	}
 }
 
-// MovieGenres shows the most populated genres from the visible movie catalog.
 func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
 	grouped := make(map[string][]library.Item)
 	for _, item := range items {
@@ -109,7 +105,6 @@ func MovieGenres(items []library.Item, artwork map[string]string) []MovieGenre {
 	return genres[:min(len(genres), 4)]
 }
 
-// ShelfItem is one recent-media card on the Player home page.
 type ShelfItem struct {
 	Href            string
 	PlayHref        string
@@ -123,7 +118,6 @@ type ShelfItem struct {
 	Priority        bool
 }
 
-// RecentlyAdded projects the newest canonical home shelf.
 func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
 	recent := make([]*library.Item, len(items))
 	for position := range items {
@@ -137,7 +131,6 @@ func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) 
 	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
 }
 
-// RecentlyPlayed projects the Player-canonical playback-history shelf.
 func RecentlyPlayed(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
 	return episodeShelf(items, artwork, showTitles, "play", "recently played episodes stacked")
 }

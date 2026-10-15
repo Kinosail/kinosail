@@ -69,8 +69,6 @@ func (manager *hlsManager) prepareRecipeSegmentFile(ctx context.Context, item li
 	return job, err
 }
 
-// Only a missing file after successful producer completion permits readmission.
-// Background preparation keeps using nonblocking prepareSegment directly.
 func waitForHLSJobFile(ctx context.Context, path string, job *hlsJob) (bool, error) {
 	var failure error
 	if job == nil {

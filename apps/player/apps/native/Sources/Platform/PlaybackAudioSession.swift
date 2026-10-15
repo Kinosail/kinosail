@@ -2,15 +2,11 @@ import AVFoundation
 import Foundation
 import OSLog
 
-// The session is process-wide. Keep category and activation together, including
-// on OS 26 where the asynchronous activation API is unavailable.
 enum PlaybackAudioSession {
     private static let queue = DispatchQueue(label: "com.kinosail.player.audio-session")
     private static let log = Logger(subsystem: "com.kinosail.player", category: "audio-session")
 
     @MainActor static func activate(audio: Bool, session: UUID) async throws {
-        // Submit before suspension so concurrent MainActor callers keep their
-        // order. Join an in-flight system call even when its caller is cancelled.
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             queue.async {
                 let mode = audio ? "audio" : "video"

@@ -21,8 +21,7 @@ const (
 	maxSCIMPageSize     = 200
 	maxSCIMPatchActions = 32
 	maxSCIMQueryLength  = 4096
-	// MaxBodySize is the maximum accepted identity protocol document size.
-	MaxBodySize = maxSCIMBody
+	MaxBodySize         = maxSCIMBody
 )
 
 type scimAPI struct {
@@ -30,7 +29,6 @@ type scimAPI struct {
 	repository Repository
 }
 
-// Register installs the complete SCIM 2.0 HTTP interface on mux.
 func Register(mux *http.ServeMux, config Config, repository Repository) {
 	api := &scimAPI{config: config, repository: repository}
 	api.register(mux)

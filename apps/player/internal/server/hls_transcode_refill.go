@@ -71,8 +71,6 @@ func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualiti
 	clock := recovery.clock.Renditions[recovery.rendition]
 	rate := recovery.clock.Source.Rate
 	warm := transcodeWarmSample(target, rate, clock.Cuts[0].AudioPTS)
-	// FFmpeg's output duration includes audio later discarded by the bitstream
-	// filter. Budget from the trimmed warm-up origin, not the video seek origin.
 	duration := end - float64(warm)/float64(rate)
 	if duration <= 0 || duration > 12 {
 		return nil, errTranscodeHLSClock
@@ -83,7 +81,7 @@ func newTranscodeHLSOutput(cache string, recovery *transcodeHLSRecovery, qualiti
 	}
 	stage, err := os.OpenRoot(directory)
 	if err != nil {
-		_ = os.Remove(directory) // Exclusive empty task-owned stage.
+		_ = os.Remove(directory)
 		return nil, errTranscodeHLSClock
 	}
 	return &transcodeHLSOutput{recovery: recovery, directory: directory, stage: stage, warm: warm, target: target, duration: duration, qualities: qualities}, nil

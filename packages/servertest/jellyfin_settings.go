@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// JellyfinSettingsFixture binds compatibility contracts to real app configuration and HTTP helpers.
 type JellyfinSettingsFixture struct {
 	Port                string
 	OnboardingFragments []string
@@ -21,7 +20,6 @@ type JellyfinSettingsFixture struct {
 	WebFormCall         func(*testing.T, http.Handler, string, string, url.Values) *httptest.ResponseRecorder
 }
 
-// JellyfinCompatibilityAPIIsOffByDefaultAndCanBeEnabled runs the shared Jellyfin settings regression contract.
 func JellyfinCompatibilityAPIIsOffByDefaultAndCanBeEnabled(t *testing.T, fixture JellyfinSettingsFixture) {
 	t.Parallel()
 
@@ -47,7 +45,6 @@ func JellyfinCompatibilityAPIIsOffByDefaultAndCanBeEnabled(t *testing.T, fixture
 	}
 }
 
-// JellyfinCompatibilityWebSettingPersists runs the shared Jellyfin settings regression contract.
 func JellyfinCompatibilityWebSettingPersists(t *testing.T, fixture JellyfinSettingsFixture) {
 	t.Parallel()
 
@@ -83,7 +80,6 @@ func JellyfinCompatibilityWebSettingPersists(t *testing.T, fixture JellyfinSetti
 	}
 }
 
-// JellyfinOnboardingRequiresDuckDNSBeforeEnable runs the shared Jellyfin settings regression contract.
 func JellyfinOnboardingRequiresDuckDNSBeforeEnable(t *testing.T, fixture JellyfinSettingsFixture) {
 	t.Parallel()
 
@@ -117,7 +113,6 @@ func JellyfinOnboardingRequiresDuckDNSBeforeEnable(t *testing.T, fixture Jellyfi
 	}
 }
 
-// JellyfinWebSettingRejectsAmbiguousInputWithoutSideEffects runs the shared Jellyfin settings regression contract.
 func JellyfinWebSettingRejectsAmbiguousInputWithoutSideEffects(t *testing.T, fixture JellyfinSettingsFixture) {
 	t.Parallel()
 

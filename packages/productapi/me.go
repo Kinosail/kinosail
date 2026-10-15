@@ -1,4 +1,3 @@
-// Package productapi owns Player's shared product API projections and metadata mutations.
 package productapi
 
 import (
@@ -8,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// MeState contains app-owned values projected by the shared current-viewer endpoint.
 type MeState struct {
 	Server, ServerID, Language, LanguagePreference string
 	Viewer                                         identitycore.Profile
@@ -39,7 +37,6 @@ type meResponse struct {
 	Languages          any            `json:"languages"`
 }
 
-// Me serves Player's canonical current-viewer projection.
 func Me(state func(*http.Request) MeState) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		input := state(request)

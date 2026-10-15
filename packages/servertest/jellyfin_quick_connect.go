@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// JellyfinQuickConnectFixture binds the shared exchange scenarios to each real app.
 type JellyfinQuickConnectFixture struct {
 	NewHandler    func(*testing.T, time.Duration) http.Handler
 	Remote        func(http.Handler) http.Handler
@@ -20,7 +19,6 @@ type JellyfinQuickConnectFixture struct {
 	ConfirmFactor func(*testing.T, http.Handler, *http.Cookie, *httptest.ResponseRecorder)
 }
 
-// AssertJellyfinQuickConnect runs all five original real-handler regression scenarios.
 func AssertJellyfinQuickConnect(t *testing.T, fixture JellyfinQuickConnectFixture) {
 	t.Run("JellyfinAndroidTVQuickConnectUsesLocalViewerSession", func(t *testing.T) { assertJellyfinAndroidTVQuickConnectUsesLocalViewerSession(t, fixture) })
 	t.Run("JellyfinQuickConnectRequiresDeviceIdentity", func(t *testing.T) { assertJellyfinQuickConnectRequiresDeviceIdentity(t, fixture) })

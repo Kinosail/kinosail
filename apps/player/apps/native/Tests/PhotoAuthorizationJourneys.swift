@@ -4,8 +4,6 @@ import Testing
 import UIKit
 @testable import KinosailPlayer
 
-/// Protects the native rendering gap in populated browser E2E coverage. The
-/// production photo view and HTTP transport run against a loopback stand-in.
 @Suite(.serialized) @MainActor
 struct PhotoAuthorizationJourneys {
     @Test(arguments: [401, 403, 404])
@@ -60,16 +58,11 @@ struct PhotoAuthorizationJourneys {
             try snapshot(window, name: "photo-\(status)-saved")
             fixture.respondPhoto(status: status)
             if status == 503 {
-                // Safe GET retries have two more requests. Release each through
-                // the same HTTP boundary before assessing the settled view.
                 for count in 3...4 {
                     try await until { fixture.photoReads == count }
                     fixture.respondPhoto(status: status)
                 }
             }
-            // Synchronization only: assertions remain on rendered content. The
-            // transport producer must finish before a retained image can count
-            // as successful offline recovery.
             let deadline = Date().addingTimeInterval(5)
             while !(await client.catalogRequests.isEmpty), Date() < deadline { try await Task.sleep(for: .milliseconds(20)) }
             let requestFinished = await client.catalogRequests.isEmpty

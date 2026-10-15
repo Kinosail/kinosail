@@ -144,7 +144,6 @@ func newMediaExperienceStore(dataDir string, db *database.Store) *mediaExperienc
 	return store
 }
 
-// The caller holds mu; publish only after the durable write succeeds.
 func (store *mediaExperienceStore) change(change func(*mediaExperienceState) error) error {
 	if store.err != nil {
 		return store.err

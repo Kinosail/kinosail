@@ -1,8 +1,6 @@
 import UIKit
 import XCTest
 
-// Opt-in disposable-fixture journeys. Each selected case needs a fresh unique
-// session seed. Prepared source is not runtime or visual acceptance evidence.
 final class RemoteArtworkStateTests: RemoteTestCase {
     private var fixtureEnabled = false
 
@@ -177,8 +175,6 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         verifyPrimaryVisible(app)
     }
 
-    // The placeholder intentionally hides its decorative children from accessibility.
-    // Inspect actual pixels at the shared text inset, without a production test hook.
     private func firstPlaceholderY(_ image: UIImage, viewport: CGRect) throws -> CGFloat {
         let cg = try XCTUnwrap(image.cgImage)
         let scale = CGFloat(cg.width) / viewport.width

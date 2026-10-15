@@ -8,13 +8,11 @@ import (
 	"path/filepath"
 )
 
-// ConnectionOwner is one safe Owner choice for a host MCP connection.
 type ConnectionOwner struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// ConnectionProjection is the complete application-facing connection state.
 type ConnectionProjection struct {
 	Mode, Issuer, Resource, StdioCommand, StdioSSHCommand string
 	HTTPCommands                                          []string
@@ -23,7 +21,6 @@ type ConnectionProjection struct {
 	CertificateAvailable                                  bool
 }
 
-// ApplicationProjection returns Player's canonical agent connection instructions.
 func (connections *Connections) ApplicationProjection(state ProfileState, dataDir string) ConnectionProjection {
 	mode := "built-in"
 	if connections.External() {
@@ -38,7 +35,6 @@ func (connections *Connections) ApplicationProjection(state ProfileState, dataDi
 	}
 }
 
-// APIDocument returns the stable JSON shape served by application adapters.
 func (projection ConnectionProjection) APIDocument() map[string]any {
 	return map[string]any{
 		"mode": projection.Mode, "issuer": projection.Issuer, "resource": projection.Resource, "recommended": "stdio",
@@ -63,7 +59,6 @@ func connectionOwners(state ProfileState) []ConnectionOwner {
 	return owners
 }
 
-// LocalCACertificate returns only the validated public local CA certificate.
 func LocalCACertificate(dataDir string) []byte {
 	contents, err := os.ReadFile(filepath.Join(dataDir, "tls-ca.pem")) //nolint:gosec // Fixed installation-owned filename.
 	if err != nil || len(contents) > 64<<10 {

@@ -6,10 +6,6 @@ import Vision
 import WebKit
 @testable import KinosailPlayer
 
-// The existing PDF spinner test and loaded-only gallery cannot compare native
-// pending pixels with WKWebView layout. This isolated native UI journey uses
-// held loopback metadata and production screens, without a production seam.
-// Keep it in the serialized preferences owner because both use SessionKeychain.
 extension NativePreferencesUXTests {
     @Test(arguments: [("en", "appearance", "chapter2of3", "page2of3", "document"),
                       ("es", "apariencia", "capitulo2de3", "pagina2de3", "documento"),
@@ -34,8 +30,6 @@ extension NativePreferencesUXTests {
             let window = UIWindow(windowScene: scene)
             defer { window.isHidden = true; previousWindow?.makeKey() }
             window.overrideUserInterfaceStyle = .dark
-            // This explicit harness control proves the selected catalog is active.
-            // It is outside the real reader and is not part of the product UI.
             window.rootViewController = UIHostingController(rootView: VStack(spacing: 0) {
                 NavigationStack { ReaderScreen(itemID: "book") }
                 Text("Appearance").padding(8)
@@ -51,8 +45,6 @@ extension NativePreferencesUXTests {
                 readerDescendants(window).contains { $0 is ProtectedReaderView }
             }
             window.layoutIfNeeded()
-            // The native footer is available before document decoding completes.
-            // Capture its pixels without coupling localization to WebKit readiness.
             let footer = UIGraphicsImageRenderer(size: CGSize(width: window.bounds.width, height: 180)).image { context in
                 context.cgContext.translateBy(x: 0, y: 180 - window.bounds.height)
                 window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
@@ -181,7 +173,6 @@ extension NativePreferencesUXTests {
                     "heldPreferenceCount": fixture.heldPreferenceCount, "preferenceReads": fixture.preferenceReads]
                 if let data = try? JSONSerialization.data(withJSONObject: diagnostic, options: [.sortedKeys]) {
                     try? readerEvidence(data, folder: evidenceFolder, name: "failed-operation.json")
-                    // Retain only fixed stage names and fixture counts in hosted logs.
                     print("NATIVE_READER_FAILURE " + String(decoding: data, as: UTF8.self))
                 }
             }
@@ -243,8 +234,6 @@ extension NativePreferencesUXTests {
                     width: CGFloat(last - first + 1) / scale, height: 1 / scale)
                 current = current.map { $0.union(row) } ?? row
             } else if let group = current {
-                // This fixture uses at most 32px body text. Exclude native navigation
-                // and footer surfaces when locating its paragraph placeholders.
                 if (8...40).contains(group.height) { groups.append(group) }
                 current = nil
             }

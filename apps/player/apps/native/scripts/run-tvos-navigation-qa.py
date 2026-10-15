@@ -136,7 +136,6 @@ with (output / 'fixture.log').open('w') as log:
                           'failed': 'testFailedHomeBackAndRetryRemainUsable',
                           'pending': 'testPendingHomeKeepsNavigationReachableAndRemovesSkeleton'}[args.mode]
                 selection = ['-only-testing:Kinosail-tvOSRemoteUITests/RemoteHomeStateTests/' + method]
-            # The 4K run's 100-return case takes about twelve minutes on its own.
             code = run('remote', 'Kinosail-tvOS-Remote', selection, 2400 if args.mode == 'loaded' else 300)
     finally:
         try:

@@ -5,12 +5,10 @@ import (
 	"testing"
 )
 
-// SupportedLocale is one advertised locale and its text direction.
 type SupportedLocale struct{ Tag, Direction string }
 
 var localePlaceholder = regexp.MustCompile(`{{[^{}]+}}|\{[A-Za-z][A-Za-z0-9_]*}`)
 
-// LocaleCatalogsAreComplete verifies catalog cardinality and placeholder preservation.
 func LocaleCatalogsAreComplete(t *testing.T, locales []SupportedLocale, read func(*testing.T, string) map[string]string) {
 	t.Helper()
 	english := read(t, "en")

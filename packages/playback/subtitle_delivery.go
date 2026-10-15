@@ -26,7 +26,6 @@ type LibrarySubtitleDependencies struct {
 	Delivery SubtitleDeliveryDependencies
 }
 
-// SubtitlePath selects one validated sidecar track.
 func SubtitlePath(paths []string, value string) (string, bool) {
 	if value == "" {
 		value = "0"
@@ -38,7 +37,6 @@ func SubtitlePath(paths []string, value string) (string, bool) {
 	return paths[track], true
 }
 
-// ServeSubtitle delivers one safe app-selected sidecar as WebVTT.
 func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path string, timelines []Timeline, dependencies SubtitleDeliveryDependencies) { //nolint:cyclop // Validation, direct delivery, and conversion form one response boundary.
 	if request == nil || dependencies.ParseTimeline == nil || dependencies.NotFound == nil || dependencies.Error == nil {
 		http.Error(writer, "subtitle delivery is unavailable", http.StatusInternalServerError)
@@ -81,7 +79,6 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 	_, _ = writer.Write(data)
 }
 
-// LibrarySubtitleHandler selects one safe track before starting delivery.
 func LibrarySubtitleHandler(dependencies LibrarySubtitleDependencies) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request == nil || dependencies.Lookup == nil || dependencies.Safe == nil || dependencies.Delivery.NotFound == nil {

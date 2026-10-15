@@ -4,8 +4,6 @@ import Testing
 import UIKit
 @testable import KinosailPlayer
 
-// Failure cases: a second sail in the brand column breaks the page canvas;
-// an opaque fill hides the shared sail; light appearance must omit decoration.
 @MainActor struct TVOSBackgroundTests {
     @Test(arguments: [ColorScheme.dark, .light])
     func configurationUsesOneSharedCanvas(_ appearance: ColorScheme) throws {

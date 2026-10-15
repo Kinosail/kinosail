@@ -12,8 +12,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// The browser owns tab context. A Referer must not alter the Go fallback or
-// canonical public watch URL; the rendered labels and marker enable that UI.
 func TestPlayerBrowseReturnKeepsCanonicalWatchAndSafeFallback(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()

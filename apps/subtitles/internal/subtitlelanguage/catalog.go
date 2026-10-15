@@ -1,4 +1,3 @@
-// Package subtitlelanguage owns canonical subtitle language identities and provider codes.
 package subtitlelanguage
 
 import (
@@ -10,7 +9,6 @@ import (
 	"golang.org/x/text/language/display"
 )
 
-// Provider identifies one subtitle search adapter.
 type Provider string
 
 const (
@@ -19,7 +17,6 @@ const (
 	SubSource     Provider = "subsource"
 )
 
-// Choice is one selectable canonical language.
 type Choice struct {
 	Tag       string            `json:"tag"`
 	Name      string            `json:"name"`
@@ -40,7 +37,6 @@ var (
 
 var selectableAliases = map[string]string{"eng": "en", "spa": "es", "zh-cn": "zh-Hans", "zh-tw": "zh-Hant"}
 
-// openSubtitlesCodes is a reviewed static snapshot of official /infos/languages codes.
 var openSubtitlesCodes = map[string]string{
 	"ab": "ab", "af": "af", "sq": "sq", "am": "am", "ar": "ar", "an": "an", "hy": "hy", "as": "as", "az": "az-az", "eu": "eu", "be": "be", "bn": "bn", "bs": "bs", "br": "br", "bg": "bg", "my": "my", "ca": "ca", "hr": "hr", "cs": "cs", "da": "da", "nl": "nl", "en": "en", "eo": "eo", "et": "et", "fi": "fi", "fr": "fr", "gd": "gd", "gl": "gl", "ka": "ka", "de": "de", "el": "el", "he": "he", "hi": "hi", "hu": "hu", "is": "is", "ig": "ig", "id": "id", "ia": "ia", "ga": "ga", "it": "it", "ja": "ja", "kn": "kn", "kk": "kk", "km": "km", "ko": "ko", "ku": "ku", "lv": "lv", "lt": "lt", "lb": "lb", "mk": "mk", "ms": "ms", "ml": "ml", "mr": "mr", "mn": "mn", "nv": "nv", "ne": "ne", "se": "se", "no": "no", "oc": "oc", "or": "or", "fa": "fa", "pl": "pl", "ps": "ps", "ro": "ro", "ru": "ru", "sr": "sr", "sd": "sd", "si": "si", "sk": "sk", "sl": "sl", "so": "so", "es": "es", "sw": "sw", "sv": "sv", "tl": "tl", "ta": "ta", "tt": "tt", "te": "te", "th": "th", "tr": "tr", "tk": "tk", "uk": "uk", "ur": "ur", "uz": "uz", "vi": "vi", "cy": "cy",
 	"es-ES": "sp", "es-419": "ea", "pt": "pt-pt", "pt-PT": "pt-pt", "pt-BR": "pt-br", "zh": "zh-cn", "zh-Hans": "zh-cn", "zh-Hant": "zh-tw", "yue": "zh-ca",
@@ -104,7 +100,6 @@ func providerCodeMap(codes []string) map[string]string {
 	return result
 }
 
-// Catalog returns a common-first copy of every supported language identity.
 func Catalog() []Choice {
 	once.Do(initCatalog)
 	result := make([]Choice, len(choices))
@@ -115,7 +110,6 @@ func Catalog() []Choice {
 	return result
 }
 
-// NormalizeTag returns a canonical selectable tag from case-insensitive BCP 47 input.
 func NormalizeTag(value string) (string, bool) {
 	if value != strings.TrimSpace(value) || !validTagSyntax(value) {
 		return "", false
@@ -132,7 +126,6 @@ func NormalizeTag(value string) (string, bool) {
 	return "", false
 }
 
-// NormalizeLocal accepts selectable identities and registered local BCP 47 variants.
 func NormalizeLocal(value string) (string, bool) {
 	if canonical, ok := NormalizeTag(value); ok {
 		return canonical, true
@@ -153,7 +146,6 @@ func NormalizeLocal(value string) (string, bool) {
 	return canonical, true
 }
 
-// NormalizeProvider translates only the codes documented by one provider adapter.
 func NormalizeProvider(value string, provider Provider) (string, bool) {
 	if value != strings.TrimSpace(value) || value == "" || len(value) > 64 {
 		return "", false
@@ -196,7 +188,6 @@ func validTagSyntax(value string) bool { //nolint:cyclop,gocognit // Tag syntax 
 	return true
 }
 
-// Code returns the exact provider code for a canonical tag.
 func Code(tag string, provider Provider) (string, bool) {
 	switch provider {
 	case SubDL:

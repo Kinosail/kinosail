@@ -16,7 +16,6 @@ import (
 	"time"
 )
 
-// HardwareTranscodeConfig carries the app-specific server setup for hardware contracts.
 type HardwareTranscodeConfig[S any] struct {
 	Lifecycle                                                              context.Context
 	MediaDir, DataDir, CacheDir, FFprobe, FFmpeg, HardwareOS, HardwareArch string
@@ -25,7 +24,6 @@ type HardwareTranscodeConfig[S any] struct {
 	HardwareDevices                                                        []string
 }
 
-// HardwareTranscodeFixture verifies selection, rejection, migration, and process cleanup.
 type HardwareTranscodeFixture[S any] struct {
 	New         func(HardwareTranscodeConfig[S]) http.Handler
 	Load        func(string, string, func(string) (string, bool)) (S, error)
@@ -202,8 +200,6 @@ func (fixture HardwareTranscodeFixture[S]) Run(t *testing.T) {
 	t.Run("UnsupportedManagedHardwareFailsClosed", fixture.UnsupportedManagedHardwareFailsClosed)
 }
 
-// HardwareTranscodeServer maps the fixture's explicit fields to either app Config.
-// Missing or incompatible fields fail immediately instead of silently omitting setup.
 func HardwareTranscodeServer[C, S any](newHandler func(C) http.Handler) func(HardwareTranscodeConfig[S]) http.Handler {
 	return ServerConfigAdapter[C, HardwareTranscodeConfig[S]](newHandler)
 }

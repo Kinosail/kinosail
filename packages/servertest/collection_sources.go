@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// AssertCollectionSources checks custom and default collection projection parity.
 func AssertCollectionSources(t *testing.T, summaries []catalog.CollectionSummary) {
 	t.Helper()
 	sources, counts := map[string]string{}, map[string]int{}
@@ -37,7 +36,6 @@ func assertCollectionSourceJSON(t *testing.T, summaries []catalog.CollectionSumm
 	}
 }
 
-// CollectionSources exercises the app collection adapter and its shared projection.
 func CollectionSources(t *testing.T, create func(context.Context, string) error, set func(context.Context, string, library.Item, bool) error, summaries func([]library.Item, string) []catalog.CollectionSummary) {
 	t.Helper()
 	items := []library.Item{

@@ -114,7 +114,6 @@ def format_owned(tool, source):
 
 
 def main():
-    # Source-format has no application, browser, compiler, dependency or network operation.
     if (sys.argv[1:] or os.environ.get("CAMPAIGN_R06_SUITE") != "source-format" or
             os.environ.get("GITHUB_ACTIONS") != "true" or os.environ.get("RUNNER_OS") != "Linux"):
         return 2

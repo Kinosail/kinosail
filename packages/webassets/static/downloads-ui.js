@@ -135,9 +135,7 @@ const refreshDownloads = async () => {
       for (const oldJob of current.querySelectorAll('[data-download-job]')) {
         const nextJob = [...replacement.querySelectorAll('[data-download-job]')].find((job) => job.dataset.downloadJob === oldJob.dataset.downloadJob);
         if (!nextJob) continue;
-        // The Server cannot render device storage. Keep Play visible before focus restoration.
         if (oldJob.querySelector('[data-download-play]:not([hidden])')) nextJob.querySelector('[data-download-play]')?.removeAttribute('hidden');
-        // Preserve Pause and its owner through Server refreshes.
         if (offlineTransfers.has(oldJob.dataset.downloadJob) || oldJob.querySelector('[data-download-device]:disabled,form[data-removing="true"]')) nextJob.replaceWith(oldJob);
         else if (oldJob.querySelector('details[open]')) nextJob.querySelector('details')?.setAttribute('open', '');
       }

@@ -13,7 +13,6 @@ import (
 
 const maximumHLSPlaylistBytes = 1 << 20
 
-// HLSBandwidthPolicyMarker identifies masters with conservative startup demand.
 const HLSBandwidthPolicyMarker = "#KINOSAIL-BANDWIDTH:2"
 
 func VariantsReady(source, directory string, qualities []PlaybackQuality) bool {
@@ -98,8 +97,6 @@ func VariantBandwidth(directory string, fallback int64) (int64, int64) {
 	if duration == 0 {
 		return fallback, fallback * 11 / 10
 	}
-	// An unfinished black intro cannot predict the bitrate of later scenes.
-	// Keep the planned demand until every segment has been produced.
 	if !PlaylistHas(manifest, "#EXT-X-ENDLIST") {
 		return max(fallback, int64(total/duration)), max(fallback*11/10, int64(peak))
 	}

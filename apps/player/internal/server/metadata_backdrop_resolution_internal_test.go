@@ -18,9 +18,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-// This isolated check covers canonical-provider variant selection. The public
-// refresh journey uses a custom loopback provider and cannot reach this branch
-// without a real provider account or changing the production network policy.
 func TestMetadataBackdropsUseOriginalVariantWithoutChangingPostersOrCustomBases(t *testing.T) {
 	t.Parallel()
 	poster := backdropResolutionJPEG(t, 780, 1170)
@@ -63,9 +60,6 @@ func TestMetadataBackdropsUseOriginalVariantWithoutChangingPostersOrCustomBases(
 	}
 }
 
-// A successful image MIME response must not replace valid derived artwork with
-// bytes that a native client cannot decode. This protects the new canonical
-// high-resolution download branch without changing poster/custom-base policy.
 func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T) {
 	t.Parallel()
 	prior := backdropResolutionJPEG(t, 780, 439)
@@ -82,9 +76,8 @@ func TestCanonicalBackdropInvalidImagePreservesExistingDerivedBytes(t *testing.T
 	if frame < 0 || frame+9 > len(oversizedDimensions) {
 		t.Fatal("JPEG fixture has no baseline frame header")
 	}
-	// A tiny body with a large advertised image must be bounded before decode.
-	oversizedDimensions[frame+5], oversizedDimensions[frame+6] = 0x0f, 0xa0 // 4000
-	oversizedDimensions[frame+7], oversizedDimensions[frame+8] = 0x17, 0x70 // 6000
+	oversizedDimensions[frame+5], oversizedDimensions[frame+6] = 0x0f, 0xa0
+	oversizedDimensions[frame+7], oversizedDimensions[frame+8] = 0x17, 0x70
 	for _, test := range []struct {
 		name string
 		data []byte

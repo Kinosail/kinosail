@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// EnrollTestAPIFactor retains the app helper enrollment and confirmation assertions.
 func EnrollTestAPIFactor(t *testing.T, handler http.Handler, token string) {
 	t.Helper()
 	setup := APICall(t, handler, token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{})

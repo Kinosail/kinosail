@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// OnboardingFixture binds real application handlers and keeps app-specific setup copy explicit.
 type OnboardingFixture struct {
 	Library                 LibraryAPIFixture
 	Web                     AuthCookieRequest
@@ -18,7 +17,6 @@ type OnboardingFixture struct {
 	Introduction, PlanLabel string
 }
 
-// OwnerSetupContinuesToConnectionOnboarding preserves the original real-handler onboarding continuation scenario.
 func (fixture OnboardingFixture) OwnerSetupContinuesToConnectionOnboarding(t *testing.T) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	setupPage := APICall(t, handler, "", http.MethodGet, "/setup", nil)
@@ -48,7 +46,6 @@ func (fixture OnboardingFixture) OwnerSetupContinuesToConnectionOnboarding(t *te
 	AssertAPIBody(t, passkeys, http.StatusOK, `location.replace("/onboarding/connection")`)
 }
 
-// OwnerAuthenticatorChoiceRetainsConnectionOnboarding preserves the original real-handler onboarding continuation scenario.
 func (fixture OnboardingFixture) OwnerAuthenticatorChoiceRetainsConnectionOnboarding(t *testing.T) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), true)
 	setup := fixture.Library.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")

@@ -19,20 +19,17 @@ import (
 
 const maximumItemID = 128
 
-// MetadataIndex is the app-owned Library port used by metadata mutations.
 type MetadataIndex interface {
 	Find(string) (library.Item, bool)
 	Refresh(context.Context) error
 }
 
-// MetadataStore is the app-owned persistence and provider port used by metadata mutations.
 type MetadataStore interface {
 	Record(string) metadata.Record
 	Save(string, metadata.Record) error
 	Fetch(context.Context, library.Item) error
 }
 
-// MetadataPatch contains the canonical owner-editable bulk fields.
 type MetadataPatch struct {
 	Title   *string `json:"title"`
 	Year    *string `json:"year"`
@@ -42,22 +39,18 @@ type MetadataPatch struct {
 	Genres  *string `json:"genres"`
 }
 
-// BulkMetadataStore applies one validated bulk edit transaction.
 type BulkMetadataStore interface {
 	ApplyMetadata(context.Context, []string, MetadataPatch) (int, error)
 }
 
-// BulkMetadataFunc adapts app persistence without moving HTTP behavior back into the app.
 type BulkMetadataFunc func(context.Context, []string, MetadataPatch) (int, error)
 
-// ApplyMetadata implements BulkMetadataStore.
 func (apply BulkMetadataFunc) ApplyMetadata(ctx context.Context, ids []string, patch MetadataPatch) (int, error) {
 	return apply(ctx, ids, patch)
 }
 
 type metadataInput struct{ Title, Year, Plot, Rating, Tagline, Genres string }
 
-// EditMetadata validates and applies one owner-authored metadata record.
 func EditMetadata(index MetadataIndex, store MetadataStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id := request.PathValue("id")
@@ -97,7 +90,6 @@ func EditMetadata(index MetadataIndex, store MetadataStore) http.HandlerFunc {
 	}
 }
 
-// BulkEditMetadata validates and applies one bulk owner metadata transaction.
 func BulkEditMetadata(store BulkMetadataStore, invalid ...error) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.RawQuery != "" || !jsonRequest(request) {
@@ -127,7 +119,6 @@ func BulkEditMetadata(store BulkMetadataStore, invalid ...error) http.HandlerFun
 	}
 }
 
-// RefreshMetadata validates and refreshes one video metadata record.
 func RefreshMetadata(index MetadataIndex, store MetadataStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id := request.PathValue("id")
@@ -167,7 +158,7 @@ func decodeObjectRequest(writer http.ResponseWriter, request *http.Request, targ
 	if err := decodeUniqueObjectFields(decoder); err != nil {
 		return err
 	}
-	_, _ = decoder.Token() // More returning false at object scope guarantees the closing delimiter.
+	_, _ = decoder.Token()
 	if err = decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
 		return errors.New("request must contain one JSON object")
 	}

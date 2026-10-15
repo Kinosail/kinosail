@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-// RegisteredRouteInventory discovers the exact original app and shared route inventory.
 func RegisteredRouteInventory(t *testing.T) []string {
 	t.Helper()
 	routes, err := routeinventory.Discover(".", "../../../../packages", scim.Patterns(), mcpgateway.Patterns())
@@ -19,7 +18,6 @@ func RegisteredRouteInventory(t *testing.T) []string {
 	return routes
 }
 
-// ConcreteRoutePath fills the original route placeholders for authorization checks.
 func ConcreteRoutePath(pattern string) string {
 	if pattern == "/{$}" {
 		return "/"
@@ -32,7 +30,6 @@ func ConcreteRoutePath(pattern string) string {
 	).Replace(pattern)
 }
 
-// ExpectedRouteAPIKeyScopes classifies only the supplied app policy maps.
 func ExpectedRouteAPIKeyScopes(pattern string, sessionOnly map[string]bool, scopes map[string]map[string]bool) map[string]bool {
 	if sessionOnly[pattern] {
 		return nil

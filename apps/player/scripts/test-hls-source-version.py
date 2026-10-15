@@ -120,7 +120,6 @@ def journey(name, source_time):
         return data
 
     def identity(data):
-        # Completion may update measured bandwidth while the same stream stays valid.
         return tuple(re.sub(r'(?:AVERAGE-)?BANDWIDTH=[0-9]+,?', '', line)
                      for line in data.decode().splitlines()
                      if line.startswith(('#KINOSAIL-TRANSCODER:', '#EXT-X-STREAM-INF:'))
@@ -195,14 +194,12 @@ def journey(name, source_time):
             case['decodedFramesAcrossWarmWindow'] = max(frames)
             case['originalInitSHA256'] = hashlib.sha256(fragments[0]).hexdigest()
             unchanged_source('playback_through_warm_window', initial_source)
-            # Move source mtime backwards: a timestamp-only cache check would accept old output.
             os.utime(source, (315532800, 315532800))
             backwards_source = source_state(source)
             first_changed = master()
             check(identity(first_changed) != original, 'backwards_mtime_stale_reuse')
             case['backwardsMtimeInvalidated'] = True
             unchanged_source('backwards_mtime_invalidation', backwards_source)
-            # Change bytes while retaining exactly that mtime, then join one rebuild twice.
             with source.open('ab') as output:
                 output.write(b'\0')
             os.utime(source, (315532800, 315532800))
@@ -212,7 +209,6 @@ def journey(name, source_time):
             check(identity(rebuilt[0]) == identity(rebuilt[1]) and identity(rebuilt[0]) != identity(first_changed), 'size_change_concurrent_rebuild')
             case['changedSizeInvalidatedAndConcurrentMastersMatch'] = True
             unchanged_source('size_invalidation_and_concurrent_rebuild', changed_size_source)
-            # A stale validated-policy marker must never be returned as the current master.
             current = root / 'index.m3u8'
             previous = current.read_bytes()
             lines = previous.splitlines(keepends=True)
@@ -223,7 +219,6 @@ def journey(name, source_time):
             case['sourceReadOnlyAcrossApplicationRequests'] = True
             case['result'] = 'passed'
         except Exception as error:
-            # Safe categories only; HTTP bodies, tokens, private targets and encoder stderr stay private.
             case['failureClass'] = str(error) if isinstance(error, RuntimeError) else type(error).__name__
         finally:
             server.terminate()

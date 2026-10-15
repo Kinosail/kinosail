@@ -17,7 +17,6 @@ def signal_owned(pid, signum):
 
 
 def settle_owned(pid):
-    # The leader has already been reaped. Prove the whole owned group absent.
     for signum in (signal.SIGTERM, signal.SIGKILL):
         state, error = signal_owned(pid, 0)
         if state != "present":
@@ -35,7 +34,6 @@ def settle_owned(pid):
 
 
 def stop_owned(process, receipt):
-    # The leader may have exited while a descendant still holds stdout.
     _state, error = signal_owned(process.pid, signal.SIGKILL)
     if error:
         receipt["processStopFailureClass"] = error
@@ -102,7 +100,6 @@ def execute(command, bound, projection, receipt, cwd=APP):
                         break
             if len(pending) > 65536:
                 reason["stop"] = "output-bound"
-        # EOF is not proof of process exit. Preserve its natural result first.
         while eof and not reason["stop"]:
             remaining = deadline - time.monotonic()
             if remaining <= 0:

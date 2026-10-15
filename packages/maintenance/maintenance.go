@@ -1,4 +1,3 @@
-// Package maintenance coordinates Player background upkeep around interactive media work.
 package maintenance
 
 import (
@@ -20,7 +19,6 @@ const (
 	pollInterval      = time.Duration(250_000_000)
 )
 
-// Dependencies adapt app-owned cache, metadata, backup, and analysis services.
 type Dependencies struct {
 	PruneCache         func(int64) (int64, error)
 	PruneMetadata      func() error
@@ -30,7 +28,6 @@ type Dependencies struct {
 	AnalysisStatus     func() string
 }
 
-// Manager owns automatic maintenance scheduling and interactive-work protection.
 type Manager struct {
 	dependencies Dependencies
 	interval     time.Duration
@@ -40,7 +37,6 @@ type Manager struct {
 	quietUntil   atomic.Int64
 }
 
-// New constructs a maintenance manager and starts its schedule when ctx is not nil.
 func New(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies) *Manager {
 	if interval <= 0 {
 		interval = 15 * time.Minute
@@ -55,7 +51,6 @@ func New(ctx context.Context, interval time.Duration, limit int64, dependencies 
 	return manager
 }
 
-// NewBound constructs a manager and connects its idle wait hook to app-owned work.
 func NewBound(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies, setWait func(func(context.Context) error)) *Manager {
 	manager := New(ctx, interval, limit, dependencies)
 	if setWait != nil {
@@ -64,7 +59,6 @@ func NewBound(ctx context.Context, interval time.Duration, limit int64, dependen
 	return manager
 }
 
-// NewApplication binds the shared subsystem types used by the Player applications.
 func NewApplication(ctx context.Context, interval time.Duration, limit int64, cache playback.HLSCacheControl, backups *sharedbackup.Manager, pruneMetadata func() error, metadataConfigured func() bool, analysis *markers.Analyzer) *Manager {
 	return NewBound(ctx, interval, limit, Dependencies{
 		PruneCache: cache.Prune, PruneMetadata: pruneMetadata, CacheStats: cache.Stats,
@@ -96,7 +90,6 @@ func initialDelay(interval time.Duration) time.Duration {
 	return min(interval, pollInterval)
 }
 
-// Run performs one upkeep pass unless interactive media work is active.
 func (manager *Manager) Run() error {
 	if manager.Busy() {
 		return nil
@@ -112,12 +105,10 @@ func (manager *Manager) Run() error {
 	return err
 }
 
-// Busy reports whether maintenance must defer to recent interactive media work.
 func (manager *Manager) Busy() bool {
 	return manager.foreground.Load() != 0 || manager.now().UnixNano() < manager.quietUntil.Load()
 }
 
-// Track protects active GET media work and adds a short post-request quiet period.
 func (manager *Manager) Track(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.Method != http.MethodGet || !mediaWorkPath(request.URL.Path) {
@@ -140,7 +131,6 @@ func mediaWorkPath(path string) bool { //nolint:cyclop // Cache namespaces are e
 		strings.HasPrefix(path, "/Items/") && (strings.HasSuffix(path, "/Download") || strings.HasSuffix(path, "/File"))
 }
 
-// WaitIdle waits until the interactive-work guard becomes idle or the context ends.
 func (manager *Manager) WaitIdle(ctx context.Context) error {
 	for manager.Busy() {
 		timer := time.NewTimer(pollInterval)

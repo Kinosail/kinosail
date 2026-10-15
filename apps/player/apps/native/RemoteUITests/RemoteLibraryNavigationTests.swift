@@ -1,8 +1,6 @@
 import UIKit
 import XCTest
 
-// Covers real tvOS grid and index focus. Browser and paging unit tests cannot
-// detect spatial traps between the right grid edge, sorting, and letter index.
 final class RemoteLibraryNavigationTests: RemoteTestCase {
     @MainActor func testGridColumnsAndTopRowReachSortWithOneUp() {
         continueAfterFailure = false
@@ -92,8 +90,6 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
         XCTAssertTrue(app.buttons[label].hasFocus, "Back should keep the letter jump and originating title")
     }
 
-    // The native plain button can report focus while rendering its letter in
-    // white on a white focus fill. Inspect the central glyph, away from edges.
     @MainActor private func assertReadableLetter(_ letter: XCUIElement, _ app: XCUIApplication) {
         let readable = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             guard let screenshot = app.screenshot().image.cgImage else { return false }

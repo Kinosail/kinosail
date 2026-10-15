@@ -177,7 +177,6 @@ func piecewiseSubtitleRegion(audio []float64, cues []subtitleCue, global subtitl
 		return subtitleAlignmentAnchor{}, 0, false
 	}
 	activity := subtitleActivity(regional, global.Scale, frame, len(audio))
-	// Compare only this region: dialogue elsewhere is not negative evidence.
 	first := max(0, int(time.Duration(float64(start)*global.Scale)/frame)-radius-subtitleAbsInt(center))
 	last := min(len(audio), int(time.Duration(float64(end)*global.Scale)/frame)+radius+subtitleAbsInt(center))
 	if last <= first {

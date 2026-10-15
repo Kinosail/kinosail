@@ -1,5 +1,3 @@
-// One worker owns the file handle for a transfer. Flush each verified block
-// before its IndexedDB metadata can make it visible to offline playback.
 function offlineStorageWorkerScope() {
   let handle, size;
   const operations = new Set(["read", "write", "truncate", "close"]);
@@ -57,7 +55,6 @@ async function openOfflineWriter(jobID, size) {
     const id = nextID++;
     const timer = setTimeout(() => stop(new Error("Offline storage stopped responding")), 30000);
     pending.set(id, {resolve, reject, timer});
-    // Clone writes: the incremental digest worker subsequently takes ownership.
     worker.postMessage({id, type, value});
   });
   try {

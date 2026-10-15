@@ -17,7 +17,6 @@ var (
 	contentRangePattern      = regexp.MustCompile(`^bytes (?:(\d+)-(\d+)|\*)/(\d+)$`)
 )
 
-// SafeCompatibilityPath normalizes an otherwise-unmatched compatibility route for logs.
 func SafeCompatibilityPath(request *http.Request, pattern string) string {
 	if pattern != "" || len(request.URL.Path) > 512 || MediaBrowserValue(request, "Client") == "" {
 		return ""
@@ -34,7 +33,6 @@ func SafeCompatibilityPath(request *http.Request, pattern string) string {
 	return "/" + strings.Join(segments, "/")
 }
 
-// ValidContentRange accepts one internally consistent bounded response range.
 func ValidContentRange(value string) bool {
 	match := contentRangePattern.FindStringSubmatch(value)
 	if len(value) > 128 || match == nil {

@@ -1,6 +1,5 @@
 import {expect, test} from '@playwright/test';
 import {playerSource} from './static-sources';
-// Controlled decoder clocks supplement the real-process public saved-state journey.
 for (const clock of [0, 0.5]) test(`unplayed settled native HLS clock ${clock} only saves an explicit zero chapter seek`, async ({page}) => {
   const writes: URLSearchParams[] = [];
   await page.route('**/progress/movie', route => { writes.push(new URLSearchParams(route.request().postData() || '')); return route.fulfill({status:204}); });

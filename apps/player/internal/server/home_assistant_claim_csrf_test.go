@@ -78,8 +78,6 @@ func (client *claimCSRFClient) rejectMutation(t *testing.T, claim, before string
 	}
 }
 
-// The actual application handler, authenticated cookie and CSRF middleware are
-// exercised here. No device or household integration is created or controlled.
 func TestHomeAssistantClaimReleaseAndStatePreserveBrowserCSRF(t *testing.T) {
 	client := newClaimCSRFClient(t)
 	const claimsPath = "/api/v1/home-assistant/players/claims"

@@ -62,7 +62,6 @@ export async function verifyTitleRail(page: Page, info: TestInfo) {
     try {
       await page.goto("/?view=movies", { waitUntil: "commit" });
       await expect.poll(() => entered, { message: "actual navigation bundle is held" }).toBe(true);
-      // The tall-phone rail is server-rendered and visible before its handlers load.
       await expect(page.locator("[data-title-jump-index]")).toBeVisible();
       await recordTitleRail(page, info, `rail-${width}-pending`, true);
     } catch (error) {
@@ -71,8 +70,6 @@ export async function verifyTitleRail(page: Page, info: TestInfo) {
     } finally {
       release();
       let joinFailed = false, removalFailed = false, evidenceFailed = false;
-      // Removing an active handler can continue its route before our handler does.
-      // Release and join first, then remove the no-longer-active handler.
       try { await expect.poll(() => !entered || settled, { message: "held bundle handler settled" }).toBe(true); }
       catch { joinFailed = true; }
       try { await page.unroute(bundle); }
@@ -92,7 +89,6 @@ export async function verifyTitleRail(page: Page, info: TestInfo) {
     await page.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" }));
     await recordTitleRail(page, info, `rail-${width}-scrolled`);
   }
-  // Resize the same document through compact, desktop, TV and tall-phone modes.
   for (const viewport of [{ width: 390, height: 650 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);
     await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
@@ -100,7 +96,6 @@ export async function verifyTitleRail(page: Page, info: TestInfo) {
     await expect(page.locator("[data-title-jump-index]")).toBeVisible({ visible: !compact });
     await recordTitleRail(page, info, `rail-resized-${viewport.width}x${viewport.height}`);
   }
-  // Abort one actual title request; retain the loaded catalog and release busy state.
   const failedLetter = (url: URL) => url.pathname === "/" && url.searchParams.get("letter") === "B";
   await page.route(failedLetter, route => route.abort("failed"));
   try {

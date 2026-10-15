@@ -2,7 +2,6 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import {establishPlayedThenPaused, progressFixtureHTML} from './player-progress-fixture';
 
-// Isolated HTTP failure/ordering coverage; see engineering/qa/2026-10-04-r03-progress.
 const source = (await Promise.all(["player-progress.js", "player-audio-queue.js", "player-progress-navigation.js"].map(path =>
   readFile(new URL(`../../../packages/webassets/static/${path}`, import.meta.url), "utf8")))).join("");
 const fixtureOrigin = "https://progress.kinosail.test";
@@ -45,7 +44,6 @@ test.beforeEach(async ({ page }, testInfo) => {
     Object.assign(window, {setEnded: value => ended = value, setPaused: value => paused = value, prepare: value => playbackPreparation = value});
     addEventListener('pagehide', () => player.dispatchEvent(new Event('kinosail:page-exit')));
   ` + source });
-  // This ordering fixture starts after playback has reached its paused position.
   await establishPlayedThenPaused(page);
 });
 
@@ -218,7 +216,6 @@ test("watched failure on the last title survives later pause and hiding events",
   await page.locator("video").dispatchEvent("ended");
   await expect(page.locator("[data-progress-status]")).toHaveText("Watched status is not saved. Retry while this page is open.");
   await expect(page.locator("[data-progress-continue]")).toBeHidden();
-  // A later seek can clear ended; the pending watched revision must still win.
   await page.evaluate(() => (window as Window & {setEnded(value: boolean): void}).setEnded(false));
   await pauseAt(page, 100);
   await page.evaluate(() => dispatchEvent(new Event("pagehide")));

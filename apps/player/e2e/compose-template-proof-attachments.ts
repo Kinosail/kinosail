@@ -22,14 +22,10 @@ export function ownedOutputRoot(configured: string | undefined, requested: strin
   if (!canonicalAbsolute(destination) || basename(destination) !== "q47-proof.json" ||
     !canonicalAbsolute(requested) || configured !== requested ||
     requested !== join(dirname(destination), "browser-private")) return null;
-  // destination already passed the reporter's realpath and private-parent mode checks.
   return requested;
 }
 export function privateContextPath(root: string | null, title: string): string | null {
   if (!canonicalAbsolute(root) || !titles.includes(title)) return null;
-  // Pinned v1.63.0 TestInfoImpl.outputDir; these ten tests are top-level, retry/repeat zero.
-  // https://github.com/microsoft/playwright/blob/v1.63.0/packages/playwright/src/worker/testInfo.ts#L185-L196
-  // https://github.com/microsoft/playwright/blob/v1.63.0/packages/utils/fileUtils.ts#L79-L93
   const sanitized = title.replace(/[\x00-\x2c\x2e-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g, "-");
   const full = "compose-template-recovery.journey.ts-" + sanitized;
   const middle = "-" + createHash("sha1").update(full).digest("hex").slice(0, 5) + "-";
@@ -44,6 +40,5 @@ export function privateContextValid(attachment: TestResult["attachments"][number
   const keys = Object.keys(attachment);
   if (keys.length > 4 || keys.some(key => !["name", "contentType", "path", "body"].includes(key))) return false;
   const expected = privateContextPath(context.outputRoot, context.title);
-  // Metadata recognition only: never stat/open/read or export the ancillary file or its path.
   return expected !== null && attachment.path === expected;
 }

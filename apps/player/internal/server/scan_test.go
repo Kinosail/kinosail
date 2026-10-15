@@ -36,7 +36,7 @@ func TestLibraryAutomaticallyDetectsNewNestedMediaForWebAndAPI(t *testing.T) {
 
 	mediaDir := t.TempDir()
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, ScanInterval: time.Hour})
-	time.Sleep(100 * time.Millisecond) // Let real-time monitoring finish its startup reconciliation.
+	time.Sleep(100 * time.Millisecond)
 	season := filepath.Join(mediaDir, "Severance", "Season 01")
 	if err := os.MkdirAll(season, 0o700); err != nil {
 		t.Fatal(err)
@@ -64,7 +64,7 @@ func TestLibraryMonitoringWorksWithoutScheduledScans(t *testing.T) {
 
 	mediaDir := t.TempDir()
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir})
-	time.Sleep(100 * time.Millisecond) // Let real-time monitoring register the root.
+	time.Sleep(100 * time.Millisecond)
 	if err := os.WriteFile(filepath.Join(mediaDir, "Dune.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +77,7 @@ func TestLibraryWaitsForCopyToSettle(t *testing.T) {
 
 	mediaDir := t.TempDir()
 	handler := server.New(server.Config{Lifecycle: t.Context(), MediaDir: mediaDir, ScanInterval: time.Hour})
-	time.Sleep(100 * time.Millisecond) // Let real-time monitoring register the root.
+	time.Sleep(100 * time.Millisecond)
 	file, err := os.Create(filepath.Join(mediaDir, "Arrival.mp4"))
 	if err != nil {
 		t.Fatal(err)

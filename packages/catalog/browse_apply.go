@@ -8,7 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Apply selects, orders, groups, and pages Viewer-visible candidates.
 func (browse Browse) Apply(ctx context.Context, candidates []Candidate) (Result, error) {
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
@@ -16,7 +15,6 @@ func (browse Browse) Apply(ctx context.Context, candidates []Candidate) (Result,
 	return browse.apply(ctx, append([]Candidate(nil), candidates...))
 }
 
-// apply owns its candidate storage and can compact it after releasing profile locks.
 func (browse Browse) apply(ctx context.Context, candidates []Candidate) (Result, error) {
 	selected, err := browseCandidates(ctx, candidates, browse.view, browse.query)
 	if err != nil {
@@ -148,7 +146,6 @@ func itemCandidates(ctx context.Context, items []*library.Item, visible func(lib
 	return candidates, ctx.Err()
 }
 
-// ApplyAccess reads one consistent app-owned Viewer state snapshot.
 func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, access BrowseAccess) (Result, error) {
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
@@ -180,7 +177,6 @@ func (browse Browse) ApplyAccess(ctx context.Context, items []*library.Item, acc
 	return browse.applyItems(ctx, references)
 }
 
-// accessItems owns selected references and reads only state used by the view.
 func (browse Browse) accessItems(ctx context.Context, items []*library.Item, access BrowseAccess) ([]*library.Item, error) {
 	selected := make([]*library.Item, 0, len(items))
 	for position, item := range items {
@@ -206,7 +202,6 @@ func (browse Browse) accessItems(ctx context.Context, items []*library.Item, acc
 	return selected, ctx.Err()
 }
 
-// searchReferences compacts owned storage after releasing profile locks.
 func searchReferences(ctx context.Context, items []*library.Item, query string) ([]*library.Item, error) {
 	if query == "" {
 		return items, ctx.Err()

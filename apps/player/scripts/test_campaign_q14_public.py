@@ -188,8 +188,6 @@ class CompileTests(unittest.TestCase):
 
 
 class SourceTests(unittest.TestCase):
-    # The public journey cannot detect a omitted provenance input. These controls
-    # cover the new loader/catalog inclusion gap independently of browser results.
     def fixture(self, root):
         qa = root / 'engineering/qa/2026-10-04-q14-browse-return'
         qa.mkdir(parents=True)

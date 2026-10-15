@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-// WatchProgressHandler reads the visible item's original runtime and the current
-// viewer's saved position. It does not prepare or start a playback session.
 func WatchProgressHandler(lookup func(*http.Request, string) (float64, float64, bool)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request == nil || lookup == nil {

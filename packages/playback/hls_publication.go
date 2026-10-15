@@ -13,7 +13,6 @@ func PublishVariants(ctx context.Context, source, directory, transcoder string, 
 	return PublishVariantsObserved(ctx, source, directory, transcoder, qualities, results, expected, independent, write, nil)
 }
 
-// PublishVariantsObserved reports the first successful validated master publication.
 func PublishVariantsObserved(ctx context.Context, source, directory, transcoder string, qualities []PlaybackQuality, results <-chan error, expected int, independent bool, write AtomicWriter, ready func()) error { //nolint:cyclop,gocognit // Readiness and worker completion are one bounded coordination loop.
 	if expected <= 0 || expected > 64 || write == nil {
 		return errors.New("HLS publication configuration is invalid")

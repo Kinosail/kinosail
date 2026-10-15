@@ -1,5 +1,3 @@
-// hls.js 1.7.3 normalizes fMP4 timestamps without applying MP4 edit lists.
-// Reconcile metadata before tracking, and normalize leading empty edits for MSE.
 const copiedHLSClock = (Hls, offset) => {
   const limit = 31622400;
   const invalid = () => { throw new Error("Copied media timing is unsupported"); };
@@ -85,7 +83,7 @@ const copiedHLSClock = (Hls, offset) => {
         normalized.copyWithin(first + 8, first + 8 + width, first + 8 + 2 * width);
         target.setUint32(first - 8, 16 + width); target.setUint32(first + 4, 1);
         target.setUint32(first + 8 + width, width);
-        normalized.set([102, 114, 101, 101], first + 12 + width); // Keep parent sizes with a free box.
+        normalized.set([102, 114, 101, 101], first + 12 + width);
       }
     }
     return {tracks, normalized};
@@ -161,7 +159,7 @@ const copiedHLSClock = (Hls, offset) => {
           for (const kind of ["video", "audio"]) if (remux[kind]) {
             const track = {...remux[kind]};
             if ([...nextEdits.values()].some(track => track.lead)) {
-              if (track.data2 !== undefined) invalid(); // Pinned passthrough mode emits one complete fMP4 buffer.
+              if (track.data2 !== undefined) invalid();
               track.data1 = normalizeMedia(track.data1, nextEdits);
             }
             for (const key of ["startPTS", "endPTS", "startDTS", "endDTS"]) track[key] = shift(track[key], delta);

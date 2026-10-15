@@ -15,7 +15,6 @@ import (
 	"time"
 )
 
-// Only disposable fictional media is scanned. These bytes are not decode proof.
 type q12PaginationFixture struct {
 	web                  *httptest.Server
 	client               *http.Client

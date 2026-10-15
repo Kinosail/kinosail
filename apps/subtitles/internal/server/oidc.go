@@ -6,7 +6,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/federation"
 )
 
-// OIDCConfig configures optional OpenID Connect authorization-code login.
 type (
 	OIDCConfig   = federation.OIDCConfig
 	oidcIdentity = federation.Identity

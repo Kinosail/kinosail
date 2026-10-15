@@ -94,7 +94,6 @@ func (service *castService) startHTTP(writer http.ResponseWriter, request *http.
 	writeJSON(writer, session, http.StatusCreated)
 }
 
-// start is the shared boundary: authorization and complete input validation precede a grant or device command.
 func (service *castService) start(request *http.Request, itemID string, input casting.Start) (castSession, error) {
 	if invalidCastRequest(request, itemID, input) {
 		return castSession{}, casting.ErrInvalid

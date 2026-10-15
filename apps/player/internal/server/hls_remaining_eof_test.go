@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// These isolated controls cover source/route, cancellation and replacement paths
-// absent from the public ten-second fixture; fake assets do not prove AAC content.
 func TestRemainingColdAACEligibilityCannotBroadenCompletionWait(t *testing.T) {
 	facts := MediaFacts{
 		Kind: "audio", Container: "flac", Duration: 10,

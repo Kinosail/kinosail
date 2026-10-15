@@ -10,8 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Every new marker/asset operation is rooted at the configured cache directory.
-// Recipe and manifest allowlists remain required; Root also prevents symlink escape.
 func (manager *hlsManager) startupMarker(key string, prepared bool) {
 	root, err := os.OpenRoot(manager.cache)
 	if err != nil {

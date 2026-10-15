@@ -1,4 +1,3 @@
-// Package workload limits expensive work while reserving capacity for playback.
 package workload
 
 import (
@@ -9,17 +8,13 @@ import (
 	"sync/atomic"
 )
 
-// Class identifies interactive and background work.
 type Class uint8
 
 const (
-	// Playback is latency-sensitive work.
 	Playback Class = iota
-	// Background is deferrable work.
 	Background
 )
 
-// Governor bounds expensive work across one application process.
 type Governor struct {
 	background                         chan struct{}
 	mu                                 sync.Mutex
@@ -30,29 +25,23 @@ type Governor struct {
 	waitingPlayback, waitingBackground atomic.Int64
 }
 
-// Metrics reports current capacity and use.
 type Metrics struct {
 	Capacity, BackgroundCapacity       int
 	ActivePlayback, ActiveBackground   int64
 	WaitingPlayback, WaitingBackground int64
 }
 
-// New returns a governor with reserved playback capacity.
 func New(capacity int) *Governor {
 	capacity = max(1, capacity)
 	return &Governor{capacity: capacity, changed: make(chan struct{}), devices: make(map[string]bool), background: make(chan struct{}, max(1, capacity-2))}
 }
 
-// HeavyCapacity returns the default process-wide capacity for expensive work.
 func HeavyCapacity() int { return min(3, max(1, runtime.GOMAXPROCS(0)-1)) }
 
-// Acquire waits for capacity and returns an idempotent release function.
 func (governor *Governor) Acquire(ctx context.Context, class Class) (func(), error) {
 	return governor.AcquireEncoding(ctx, class, 1, "")
 }
 
-// AcquireEncoding reserves all rendition encoders atomically and serializes a
-// hardware device until measured capacity supports more sessions.
 func (governor *Governor) AcquireEncoding(ctx context.Context, class Class, cost int, device string) (func(), error) {
 	if !validEncodingReservation(class, cost, device) {
 		return nil, errors.New("invalid encoding reservation")
@@ -96,7 +85,6 @@ func (governor *Governor) AcquireEncoding(ctx context.Context, class Class, cost
 	}, nil
 }
 
-// Metrics returns one consistent snapshot of governor counters.
 func (governor *Governor) Metrics() Metrics {
 	return Metrics{governor.capacity, cap(governor.background), governor.activePlayback.Load(), governor.activeBackground.Load(), governor.waitingPlayback.Load(), governor.waitingBackground.Load()}
 }

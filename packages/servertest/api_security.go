@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// APISecurityContract verifies the versioned API's positive path and fail-closed boundary.
 func APISecurityContract(t *testing.T, server func(*testing.T) (http.Handler, string)) {
 	t.Helper()
 	handler, token := server(t)

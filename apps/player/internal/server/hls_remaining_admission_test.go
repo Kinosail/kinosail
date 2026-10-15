@@ -11,9 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Corrected-media cold reopens do not test malformed or substituted cache
-// metadata. These isolated requests protect the new cached-asset boundary;
-// native AAC content and lifecycle remain hosted public-media admissions.
 func TestRemainingCurrentAACInvalidCacheCannotDeliverAssets(t *testing.T) {
 	for _, invalid := range []string{"malformed-init", "missing-source", "changed-source", "changed-master", "symlink-init", "symlink-fragment"} {
 		for _, asset := range []string{"audio/init.mp4", "audio/segment-00000.m4s"} {

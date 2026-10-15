@@ -68,7 +68,6 @@ func sortTitles(ctx context.Context, items []*library.Item, titles *collate.Coll
 				return err
 			}
 		}
-		// Reuse collation scratch space; keep independent keys in compact storage.
 		buffer.Reset()
 		start := len(keys)
 		keys = append(keys, titles.KeyFromString(&buffer, sortKey(*item))...)
@@ -105,7 +104,6 @@ func singleValue(values url.Values, name string, maximum int) (string, error) {
 	return selected[0], nil
 }
 
-// SingleValue reads one bounded UTF-8 query value.
 func SingleValue(values url.Values, name string, maximum int) (string, error) {
 	return singleValue(values, name, maximum)
 }

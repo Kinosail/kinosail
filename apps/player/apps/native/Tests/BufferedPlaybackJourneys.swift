@@ -5,8 +5,6 @@ import Testing
 import UIKit
 @testable import KinosailPlayer
 
-// Real decoded media crosses the loopback Server, authenticated transport,
-// AVPlayer, observable playback state, and the app's actual playback screen.
 @Suite(.serialized, .enabled(if: FileManager.default.fileExists(atPath: "/tmp/kinosail-player-buffer-bar.mp4")))
 @MainActor struct BufferedPlaybackJourneys {
     @Test func decodedMediaBuffersReachThePlaybackScreenAndClearOnStop() async throws {
@@ -58,8 +56,6 @@ import UIKit
         #else
         try await render(AudioPlayerScreen(itemID: "music").environment(session), name: "loaded-audio", widths: [1920])
         try await render(TVSeekPreviewScreen().environment(session), name: "loaded-seek", widths: [1920])
-        // The same decoded fixture contains video, so retain its paused player
-        // while presenting AVKit's system controls.
         let player = try #require(session.player.player)
         let tracks = try await #require(player.currentItem).asset.loadTracks(withMediaType: .video)
         #expect(!tracks.isEmpty)

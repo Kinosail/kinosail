@@ -12,7 +12,6 @@ import (
 	"testing"
 )
 
-// ServeTVMazeIdentityFixture provides one bounded trusted-origin metadata fixture.
 func ServeTVMazeIdentityFixture(writer http.ResponseWriter, request *http.Request) {
 	if request.Header.Get("User-Agent") == "" {
 		http.Error(writer, "missing user agent", http.StatusBadRequest)

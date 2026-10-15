@@ -18,7 +18,6 @@ async function hitTarget(target: Locator, name: string, info: TestInfo) {
 async function centerAndFocus(target: Locator) {
   await target.evaluate((element) => element.scrollIntoView({block: "center"}));
   await target.focus();
-  // The shipped html uses smooth scrolling; inspect the settled public geometry.
   let previous = "", stable = 0;
   await expect.poll(async () => {
     const position = await target.evaluate((element) => {
@@ -39,7 +38,6 @@ test("actual Go phone: fictional download controls and ready Play link remain re
   let refreshHeld = false;
   const releaseRefresh = async () => {
     if (!refreshHeld) return;
-    // Cleanup must still reach the peer after Playwright cancels its context.
     expect((await fetch(`${peer.origin}/__download-pause?refresh=release`, {method: "POST", signal: AbortSignal.timeout(2_000)})).ok).toBe(true);
     refreshHeld = false;
   };
@@ -70,13 +68,8 @@ test("actual Go phone: fictional download controls and ready Play link remain re
     await expect(page).toHaveURL(`${peer.origin}/offline?job=${served.jobID}`);
     await expect(page.locator("[data-offline-library] h2")).toHaveText("Fictional Range Fixture");
     await info.attach("phone-play-pointer-navigation", {body: JSON.stringify({pathname: new URL(page.url()).pathname, selectedJob: new URL(page.url()).searchParams.get("job"), decodingClaim: false}), contentType: "application/json"});
-    // Hold a real live refresh at the disposable peer until Play has focus.
-    // Native service workers can bypass Playwright's page-level routing.
-    // The Server cannot know device storage and returns this link hidden.
     expect((await page.request.post(`${peer.origin}/__download-pause?refresh=hold`)).ok()).toBe(true);
     refreshHeld = true;
-    // Mark only the document request; service-worker fetches can change its destination header.
-    // The live refresh still fetches the canonical URL and real Server markup.
     const reloaded = await page.goto(`${peer.origin}/offline-downloads?refreshDocument=1`, {waitUntil: "domcontentloaded"});
     expect(reloaded?.status()).toBe(200);
     const again = page.locator("[data-download-play]");

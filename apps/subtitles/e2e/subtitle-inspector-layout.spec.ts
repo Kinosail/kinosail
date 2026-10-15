@@ -70,7 +70,6 @@ for (const theme of ["dark", "light"]) for (const viewport of viewports) {
       await expect(status).toHaveText(nextState === "empty" ? "Choose a subtitle file to begin." : "Subtitle details are unavailable. Reload and try again.");
       await expect(status).not.toHaveAttribute("aria-busy", "true");
       await expect(page.getByRole("button", { name: "Save reviewed subtitle" })).toBeDisabled();
-      // A failed refresh keeps the known server-rendered review; an empty result replaces it.
       await expect(page.locator(".subtitle-cue-row")).toHaveCount(nextState === "failed" ? 2 : 0);
       await expect(page.locator(".subtitle-topbar h1")).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);

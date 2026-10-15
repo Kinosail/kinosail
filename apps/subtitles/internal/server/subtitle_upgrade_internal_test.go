@@ -254,7 +254,6 @@ func TestSubtitleProviderOnlyReplacesUnknownSidecarWithExactHashMatch(t *testing
 	}
 	config := SubtitleConfig{OpenSubtitles: OpenSubtitlesConfig{URL: remote.URL, APIKey: "key", Username: "user", Password: "password"}}
 	provider := newSubtitleProvider(config, t.TempDir(), t.TempDir(), sidecarTestIndex(item), nil, "")
-	// An externally changed file must not inherit an old managed file's score.
 	stale := subtitleRecord{Fingerprint: subtitleFingerprint([]byte("different file")), Source: "subdl", Score: 70, Managed: true}
 	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), stale); err != nil {
 		t.Fatal(err)

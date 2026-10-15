@@ -1,6 +1,5 @@
 import {expect, type Page, type Response} from '@playwright/test';
 
-// Observe native trace delivery; never inject or replay admission state.
 export function observeStartupPlaybackExits(page: Page, id: (name: string) => string, record: (value: object) => Promise<void>) {
   const establishedSessions = new Set<string>();
   const sequences = new Map<string, number>();

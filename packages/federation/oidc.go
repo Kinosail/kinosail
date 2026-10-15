@@ -1,4 +1,3 @@
-// Package federation owns the shared OpenID Connect and SAML protocol flows.
 package federation
 
 import (
@@ -16,9 +15,8 @@ import (
 )
 
 const (
-	maxPendingStates = 256
-	transactionTTL   = 10 * time.Minute
-	// OIDCStateCookieName is the authorization state cookie shared by all app adapters.
+	maxPendingStates    = 256
+	transactionTTL      = 10 * time.Minute
 	OIDCStateCookieName = "kinosail_oidc_state"
 )
 
@@ -33,10 +31,8 @@ var (
 	ErrTokenInvalid        = errors.New("federation token is invalid")
 )
 
-// Identity is a verified provider identity.
 type Identity struct{ Issuer, Subject string }
 
-// OIDCConfig configures an OpenID Connect authorization-code flow.
 type OIDCConfig struct{ Issuer, ClientID, ClientSecret, RedirectURL, IdentityClaim string }
 
 type oidcTransaction struct {
@@ -49,7 +45,6 @@ type mfaChallenge struct {
 	expires   time.Time
 }
 
-// OIDC owns provider discovery, authorization state, token exchange, and identity validation.
 type OIDC struct {
 	config     OIDCConfig
 	mu         sync.Mutex
@@ -59,7 +54,6 @@ type OIDC struct {
 	mfa        map[string]mfaChallenge
 }
 
-// OIDCCallback is the verified result of one authorization response.
 type OIDCCallback struct {
 	Identity    Identity
 	ProfileID   string
@@ -67,7 +61,6 @@ type OIDCCallback struct {
 	ClearCookie bool
 }
 
-// NewOIDC creates an isolated OpenID Connect flow.
 func NewOIDC(config OIDCConfig) *OIDC {
 	if config.IdentityClaim == "" {
 		config.IdentityClaim = "sub"
@@ -75,7 +68,6 @@ func NewOIDC(config OIDCConfig) *OIDC {
 	return &OIDC{config: config, pending: make(map[string]oidcTransaction), mfa: make(map[string]mfaChallenge)}
 }
 
-// Configured reports whether all required values are bounded and trusted.
 func (flow *OIDC) Configured() bool {
 	if flow == nil || !validOIDCClient(flow.config) {
 		return false
@@ -89,7 +81,6 @@ func validOIDCClient(config OIDCConfig) bool {
 	return boundedURLText(config.Issuer) && boundedURLText(config.RedirectURL) && config.ClientID != "" && BoundedIdentityText(config.ClientID, 512) && config.ClientSecret != "" && BoundedIdentityText(config.ClientSecret, 4096) && ValidIdentityField(config.IdentityClaim)
 }
 
-// Begin creates one bounded authorization transaction and returns its redirect URL and cookie state.
 func (flow *OIDC) Begin(ctx context.Context, profileID, linkSession string) (string, string, error) {
 	provider, err := flow.getProvider(ctx)
 	if err != nil {
@@ -110,7 +101,6 @@ func (flow *OIDC) Begin(ctx context.Context, profileID, linkSession string) (str
 	return location, state, nil
 }
 
-// Complete validates one callback before it consumes state or contacts the token endpoint.
 func (flow *OIDC) Complete(ctx context.Context, rawQuery, cookieState string, cookiePresent bool) (OIDCCallback, error) {
 	code, responseIssuer, providerError, valid := parseOIDCCallbackQuery(rawQuery)
 	if !valid || responseIssuer != "" && responseIssuer != flow.config.Issuer {
@@ -141,7 +131,6 @@ func (flow *OIDC) Complete(ctx context.Context, rawQuery, cookieState string, co
 	return result, nil
 }
 
-// BeginMFA creates one bounded challenge for a verified federated profile.
 func (flow *OIDC) BeginMFA(profileID string) (string, error) {
 	challenge, now := rand.Text(), time.Now()
 	flow.mu.Lock()
@@ -154,7 +143,6 @@ func (flow *OIDC) BeginMFA(profileID string) (string, error) {
 	return challenge, nil
 }
 
-// MFAProfile returns the profile for one active challenge without consuming it.
 func (flow *OIDC) MFAProfile(challenge string) (string, bool) {
 	flow.mu.Lock()
 	defer flow.mu.Unlock()
@@ -162,7 +150,6 @@ func (flow *OIDC) MFAProfile(challenge string) (string, bool) {
 	return entry.profileID, found && time.Now().Before(entry.expires)
 }
 
-// ConsumeMFA removes one active challenge after successful local verification.
 func (flow *OIDC) ConsumeMFA(challenge string) (string, bool) {
 	flow.mu.Lock()
 	defer flow.mu.Unlock()
@@ -174,7 +161,6 @@ func (flow *OIDC) ConsumeMFA(challenge string) (string, bool) {
 	return entry.profileID, found && time.Now().Before(entry.expires)
 }
 
-// StateCookie returns the short-lived, HTTP-only authorization state cookie.
 func StateCookie(state string, secure bool) *http.Cookie {
 	maxAge := 600
 	if state == "" {

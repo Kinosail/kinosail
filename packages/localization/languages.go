@@ -7,7 +7,6 @@ import (
 	"golang.org/x/text/language/display"
 )
 
-// Language describes one locale that a Kinosail product can expose.
 type Language struct {
 	Tag, Name, Direction string
 }
@@ -29,7 +28,6 @@ var translatedLanguageTags = map[string]struct{}{
 	"en": {}, "es": {}, "de": {}, "fr": {}, "pt-BR": {}, "zh-Hans": {}, "it": {}, "nl": {}, "pl": {}, "ru": {}, "ja": {}, "ko": {}, "ar": {}, "tr": {}, "uk": {}, "pt-PT": {}, "zh-Hant": {}, "sv": {},
 }
 
-// SupportedLanguages returns the Player locale catalog in display order.
 func SupportedLanguages() []Language {
 	result := make([]Language, 0, len(supportedLanguageTags))
 	seen := make(map[string]struct{}, len(supportedLanguageTags))
@@ -56,7 +54,6 @@ func SupportedLanguages() []Language {
 	return result
 }
 
-// ExactSupportedLanguage returns the canonical spelling of an exact supported tag.
 func ExactSupportedLanguage(languages []Language, value string) (string, bool) {
 	parsed, err := language.Parse(value)
 	if err != nil {
@@ -71,7 +68,6 @@ func ExactSupportedLanguage(languages []Language, value string) (string, bool) {
 	return "", false
 }
 
-// IsTranslated reports whether Kinosail maintains a translated catalog for the tag.
 func IsTranslated(tag string) bool {
 	_, ok := translatedLanguageTags[tag]
 	return ok

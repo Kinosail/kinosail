@@ -13,8 +13,6 @@ func frameArguments(options Settings, width string) ([]string, string) {
 	}
 	filters := softwareFrameFilters(options, width)
 	input := []string{}
-	// VA-API and QSV encoders consume hardware frames. Upload only after all
-	// software operations, including subtitle rendering, have finished.
 	switch options.Accelerator {
 	case "vaapi":
 		input = []string{"-init_hw_device", "vaapi=kino:" + renderDevice(options.Device), "-filter_hw_device", "kino"}
@@ -56,7 +54,6 @@ func qsvDevice(device string) []string {
 	return []string{"-init_hw_device", "qsv=kino", "-filter_hw_device", "kino"}
 }
 
-// PixelFormat is the software representation of the negotiated output color.
 func PixelFormat(options Settings) string {
 	if options.OutputHDR == "hdr10" || options.OutputHDR == "hlg" {
 		return "yuv420p10le"
@@ -71,7 +68,6 @@ func surfaceFormat(options Settings) string {
 	return "nv12"
 }
 
-// ColorArguments keeps encoded pixels and their color declarations consistent.
 func ColorArguments(options Settings) []string {
 	if options.ToneMap {
 		return []string{"-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv"}

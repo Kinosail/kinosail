@@ -34,30 +34,24 @@ func New(executable string) *Probe {
 	return &Probe{executable: executable, cache: make(map[string]Result), versions: make(map[string]string), calls: make(map[string]*probeCall)}
 }
 
-// ConfigureCache sets the installation-owned probe cache directory.
 func (probe *Probe) ConfigureCache(directory string) {
 	probe.mu.Lock()
 	probe.cacheDir = directory
 	probe.mu.Unlock()
 }
 
-// Inspect returns normalized media facts and applies app-owned enrichment.
 func (probe *Probe) Inspect(ctx context.Context, item library.Item, enrichment Enrichment) Result {
 	return probe.inspect(ctx, item, &enrichment)
 }
 
-// Facts returns cached media facts without chapter lookups or playback keyframe analysis.
 func (probe *Probe) Facts(ctx context.Context, item library.Item) Result {
 	return probe.inspect(ctx, item, nil)
 }
 
-// CachedFacts reads current media facts without starting or waiting for a probe.
 func (probe *Probe) CachedFacts(item library.Item) (Result, bool) {
 	return probe.cachedFacts(item, playback.SourceVersion(item.Path))
 }
 
-// MemoryScanFacts returns only facts already loaded by the background worker.
-// It never reads either the media volume or the persistent probe cache.
 func (probe *Probe) MemoryScanFacts(item library.Item) (Result, bool) {
 	if item.Size < 0 || item.Added.IsZero() {
 		return Result{}, false
@@ -70,8 +64,6 @@ func (probe *Probe) MemoryScanFacts(item library.Item) (Result, bool) {
 	return result, found && (cachedVersion == "" || cachedVersion == version)
 }
 
-// CachedScanFacts reads facts for the last library scan without touching media
-// storage. Playback and mutations must use Facts to validate the live source.
 func (probe *Probe) CachedScanFacts(item library.Item) (Result, bool) {
 	if item.Size < 0 || item.Added.IsZero() {
 		return Result{}, false
@@ -108,7 +100,6 @@ func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *
 	}
 	key := item.ID + "\x00" + version
 	probe.mu.Lock()
-	// A previous call can finish between the cache lookup and this lock.
 	if cached, ok := probe.cache[item.ID]; ok && (probe.versions[item.ID] == "" || probe.versions[item.ID] == version) {
 		probe.mu.Unlock()
 		return complete(cached)
@@ -143,7 +134,6 @@ func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *
 	return complete(result)
 }
 
-// Duration returns a source duration without app-owned enrichment.
 func (probe *Probe) Duration(ctx context.Context, item library.Item) float64 {
 	return probe.Facts(ctx, item).Duration
 }
@@ -173,7 +163,6 @@ func (probe *Probe) load(item library.Item, version string) (Result, bool) {
 	if decoder.Decode(&entry) != nil || decoder.Decode(&struct{}{}) != io.EOF || !validProbeCache(entry, version) {
 		return Result{}, false
 	}
-	// Chapter classifications can become more conservative without decoding again.
 	entry.Result.Markers = markerlogic.DetectPlaybackMarkers(entry.Result.Chapters)
 	return entry.Result, true
 }

@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// AssertViewerApprovesOneTimeQuickConnectSession runs the original Quick Connect regression against an app.
 func AssertViewerApprovesOneTimeQuickConnectSession(t *testing.T, fixture QuickConnectFixture, checkDigits bool) {
 	t.Parallel()
 	dataDir := t.TempDir()
@@ -42,7 +41,6 @@ func AssertViewerApprovesOneTimeQuickConnectSession(t *testing.T, fixture QuickC
 	}
 }
 
-// AssertApprovedQuickConnectCannotBeReassignedToAnotherViewer runs the original Quick Connect regression against an app.
 func AssertApprovedQuickConnectCannotBeReassignedToAnotherViewer(t *testing.T, fixture QuickConnectFixture) {
 	t.Parallel()
 	handler := fixture.New(t.TempDir(), time.Minute)
@@ -65,7 +63,6 @@ func AssertApprovedQuickConnectCannotBeReassignedToAnotherViewer(t *testing.T, f
 	}
 }
 
-// AssertQuickConnectCodeExpires runs the original Quick Connect regression against an app.
 func AssertQuickConnectCodeExpires(t *testing.T, fixture QuickConnectFixture) {
 	t.Parallel()
 	handler := fixture.New(t.TempDir(), 10*time.Millisecond)
@@ -78,7 +75,6 @@ func AssertQuickConnectCodeExpires(t *testing.T, fixture QuickConnectFixture) {
 	}
 }
 
-// AssertQuickConnectCreationIsRateLimited runs the original Quick Connect regression against an app.
 func AssertQuickConnectCreationIsRateLimited(t *testing.T, fixture QuickConnectFixture) {
 	t.Parallel()
 	handler := fixture.New(t.TempDir(), 0)
@@ -95,7 +91,6 @@ func AssertQuickConnectCreationIsRateLimited(t *testing.T, fixture QuickConnectF
 	}
 }
 
-// AssertQuickConnectRejectsInvalidDeviceBeforeCreatingRequest runs the original Quick Connect regression against an app.
 func AssertQuickConnectRejectsInvalidDeviceBeforeCreatingRequest(t *testing.T, fixture QuickConnectFixture) {
 	t.Parallel()
 	handler := fixture.New(t.TempDir(), 0)

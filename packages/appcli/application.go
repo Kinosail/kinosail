@@ -14,16 +14,13 @@ import (
 
 var liveLogLevel slog.LevelVar
 
-// ConfigureLogging installs a logger whose level can change without a restart.
 func ConfigureLogging(value string) {
 	UpdateLoggingLevel(value)
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: &liveLogLevel})))
 }
 
-// UpdateLoggingLevel applies a validated configuration value to the active logger.
 func UpdateLoggingLevel(value string) { liveLogLevel.Set(LogLevel(value)) }
 
-// Application adapts one Player-derived process to the shared command lifecycle.
 type Application[Configuration Settings] struct {
 	Configuration func([]string, io.Writer) (bool, error)
 	Load          func() (Configuration, error)
@@ -33,9 +30,7 @@ type Application[Configuration Settings] struct {
 	Run           func(Configuration) int
 }
 
-// Execute runs Player's command and server-mode dispatch without terminating the process.
 func Execute[Configuration Settings](args []string, input io.Reader, output io.Writer, getenv func(string) string, signals []os.Signal, application Application[Configuration]) int { //nolint:cyclop // Keep command precedence explicit; the repository complexity gate still applies.
-	// Dispatch before loading application settings or opening private state.
 	if len(args) > 0 && args[0] == "public-gateway" {
 		return executePublicGateway(args, getenv, signals)
 	}
@@ -82,7 +77,6 @@ func commandResult(message string, err error) int {
 	return 1
 }
 
-// SecureProxyConfiguration validates the proxy capability at the process boundary.
 func SecureProxyConfiguration(token, remote string) bool {
 	return remote == "" && token == "" || len(token) >= 32
 }

@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// LibraryAPIFixture binds real application construction and authentication.
 type LibraryAPIFixture struct {
 	NewHandler      func(media, data string, requireAuth bool) http.Handler
 	SubtitleLabels  [2]string

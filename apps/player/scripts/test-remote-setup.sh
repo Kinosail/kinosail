@@ -56,7 +56,6 @@ grep -Fqx 'KINOSAIL_REMOTE_LISTEN=:8443' "$valid/.env"
 [[ -n "$(find "$valid/secrets/duckdns_token" -perm 600 -print)" ]]
 grep -Fq 'podman compose --file compose.release.yaml --file compose.config.yaml --file compose.remote-https.yaml up --detach --force-recreate' "$fixture/commands.log"
 grep -Fq 'podman compose --file compose.release.yaml --file compose.config.yaml --file compose.remote-https.yaml exec -T kinosail kinosail healthcheck' "$fixture/commands.log"
-# Re-running setup must preserve the original LAN address.
 printf '\n\n\ny\ny\n' | PATH="$fixture/bin:$PATH" "$valid/scripts/setup-remote-access.sh" >/dev/null
 grep -Fqx 'KINOSAIL_LOCAL_AUTH_URL=https://192.168.1.20:38127' "$valid/.env"
 PATH="$fixture/bin:$PATH" "$valid/scripts/disable-remote-access.sh" >/dev/null
@@ -72,14 +71,12 @@ printf '\n\nsource-media\n%s\ny\n' "$token" | PATH="$fixture/bin:$PATH" "$source
 grep -Fq 'podman compose --file compose.yaml --file compose.remote-https.yaml up --detach --force-recreate' "$fixture/commands.log"
 grep -Fq 'podman compose --file compose.yaml --file compose.remote-https.yaml build kinosail' "$fixture/commands.log"
 grep -Fq 'up --detach --force-recreate --remove-orphans' "$fixture/commands.log"
-# Gateway must use the same freshly built source image, including on a clean setup.
 grep -Fqx 'KINOSAIL_IMAGE=localhost/kinosail:dev' "$source_case/.env"
 grep -Fqx 'KINOSAIL_LOCAL_AUTH_URL=' "$source_case/.env"
 PATH="$fixture/bin:$PATH" "$source_case/scripts/disable-remote-access.sh" >/dev/null
 grep -Fqx 'KINOSAIL_AUTH_URL=' "$source_case/.env"
 grep -Fq 'podman compose --file compose.yaml up --detach --force-recreate --remove-orphans' "$fixture/commands.log"
 
-# If recreation fails, the stop command must already have closed the old listener.
 : >"$fixture/commands.log"
 if KINOSAIL_REMOTE_TEST_FAIL_UP=yes PATH="$fixture/bin:$PATH" "$valid/scripts/disable-remote-access.sh" >"$fixture/failed-stop.out" 2>&1; then
   echo "failed recreation must not report success" >&2; exit 1

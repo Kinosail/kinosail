@@ -32,7 +32,6 @@ type TraceEvent struct {
 
 var playbackTraceEvents = stringSet("session-start", "capability", "capability-direct", "first-frame", "first-moving-frame", "frame-after-seek", "loadstart", "loadedmetadata", "canplay", "play-request", "play-rejected", "play", "playing", "waiting", "stalled", "seeking", "seeked", "pause", "ended", "error", "progress", "source-direct", "source-compatible", "fallback-offered", "fallback-selected", "hls-manifest", "hls-level", "hls-error", "policy-change", "heartbeat", "visibility-hidden", "visibility-visible", "session-end")
 
-// ReadTrace decodes one strict, bounded trace without causing application side effects.
 func ReadTrace(writer http.ResponseWriter, request *http.Request, validSession func(string) bool) (TraceEvent, error) {
 	if writer == nil || request == nil || request.Body == nil || validSession == nil {
 		return TraceEvent{}, errors.New("invalid playback trace")

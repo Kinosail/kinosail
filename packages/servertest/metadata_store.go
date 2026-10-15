@@ -2,7 +2,6 @@ package servertest
 
 import "testing"
 
-// MetadataStoreDetachesMutableRecords verifies copies at both storage boundaries.
 func MetadataStoreDetachesMutableRecords(t *testing.T, set func(map[string]string, map[string]string) error, project func() map[string]string) {
 	t.Helper()
 	providerIDs := map[string]string{"tmdb": "329865"}

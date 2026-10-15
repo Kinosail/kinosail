@@ -97,8 +97,6 @@ func validSubtitleOperationEnvelope(envelope subtitleOperationEnvelope) bool {
 func (operations *subtitleOperations) restore(envelope subtitleOperationEnvelope) {
 	now := operations.clock.Now().Unix()
 	for _, record := range envelope.Receipts {
-		// A failed durable activation must never resurrect preparation. An
-		// interrupted running record is retained as unknown, never resumed.
 		if record.State == "prepared" || record.State != "running" && record.Expires <= now {
 			continue
 		}

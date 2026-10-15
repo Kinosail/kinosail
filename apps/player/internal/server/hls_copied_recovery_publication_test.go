@@ -14,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-// These real filesystem/process races cannot be scheduled through public E2E.
 func copiedRecoveryRefill(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string) {
 	t.Helper()
 	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)

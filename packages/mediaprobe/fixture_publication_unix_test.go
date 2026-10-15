@@ -12,17 +12,11 @@ import (
 	"time"
 )
 
-// A concurrent fork can inherit a writable descriptor before close-on-exec.
-// Keep it out of fixture publication, then release before command execution.
-// https://github.com/golang/go/issues/62221
 func lockProbeFixturePublication() func() {
 	syscall.ForkLock.RLock()
 	return syscall.ForkLock.RUnlock
 }
 
-// Populated media E2E uses installed executables and cannot expose the test
-// fixture write/exec boundary. Preserve strict command bytes under concurrent
-// publication; a newly written command must execute once without retries.
 func TestProbeFixturesExecuteDuringParallelPublication(t *testing.T) {
 	t.Parallel()
 	for worker := range 8 {

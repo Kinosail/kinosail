@@ -15,7 +15,6 @@ import (
 	"time"
 )
 
-// Get returns one job only when the profile owns it.
 func (manager *Manager) Get(profileID, id string) (Job, bool) {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
@@ -29,7 +28,6 @@ func (manager *Manager) Get(profileID, id string) (Job, bool) {
 	return job, found && job.Profile == profileID
 }
 
-// List returns newest-first jobs owned by one profile.
 func (manager *Manager) List(profileID string) []Job {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
@@ -43,7 +41,6 @@ func (manager *Manager) List(profileID string) []Job {
 	return jobs
 }
 
-// Remove stages media and state deletion before it changes memory.
 func (manager *Manager) Remove(profileID, id string) error {
 	return manager.remove(profileID, id, deliveryFiles{remove: os.Remove, rename: os.Rename})
 }
@@ -87,7 +84,6 @@ func (manager *Manager) remove(profileID, id string, files deliveryFiles) error 
 	manager.manifestMu.Unlock()
 	delete(manager.restoring, id)
 	delete(manager.jobs, id)
-	// Remove the old sidecar before another attempt can reuse this identity.
 	_ = os.Remove(job.File + ".manifest")
 	manager.mu.Unlock()
 	_ = os.Remove(mediaTrash)
@@ -110,7 +106,6 @@ func stageRemoval(path string, files deliveryFiles) (string, bool, error) {
 	return trash, true, nil
 }
 
-// Wait waits until a profile-owned job finishes or its context stops.
 func (manager *Manager) Wait(ctx context.Context, profileID, id string) (Job, error) {
 	ticker := time.NewTicker(20 * time.Millisecond)
 	defer ticker.Stop()
@@ -133,7 +128,6 @@ func (manager *Manager) Wait(ctx context.Context, profileID, id string) (Job, er
 	}
 }
 
-// Serve writes one validated job with immutable integrity headers.
 func Serve(writer http.ResponseWriter, request *http.Request, job Job) error {
 	return serve(writer, request, job, deliveryFiles{open: os.Open})
 }
@@ -167,8 +161,6 @@ func serve(writer http.ResponseWriter, request *http.Request, job Job, files del
 	return nil
 }
 
-// ServeContent decides whether conditional requests actually deliver a range.
-// A sealed block digest is only valid for that partial response.
 type rangeDigestWriter struct{ http.ResponseWriter }
 
 func (writer rangeDigestWriter) WriteHeader(status int) {
@@ -207,17 +199,14 @@ func explicitRange(value string, size int64) (int64, int64, bool) {
 	return start, end - start + 1, true
 }
 
-// Configured reports whether the manager has a persistent cache root.
 func (manager *Manager) Configured() bool { return manager.root != "" }
 
-// Err returns a startup state error.
 func (manager *Manager) Err() error {
 	manager.mu.RLock()
 	defer manager.mu.RUnlock()
 	return manager.err
 }
 
-// SetPublisher replaces the event callback.
 func (manager *Manager) SetPublisher(publish func(Job)) {
 	manager.mu.Lock()
 	manager.publish = publish
@@ -234,8 +223,6 @@ func (manager *Manager) emit(job Job) {
 }
 
 func setRangeDigest(headers http.Header, requested string, size int64, job Job) {
-	// Integrity belongs to the sealed manifest. Hashing arbitrary ranges here
-	// rereads gigabytes before the first response byte and also delays HEAD.
 	if start, length, ranged := explicitRange(requested, size); ranged && start%ChunkSize == 0 && length == min(ChunkSize, size-start) {
 		if manifest, err := readManifest(job); err == nil && start/ChunkSize < int64(len(manifest.Chunks)) {
 			digest, _ := hex.DecodeString(manifest.Chunks[start/ChunkSize])

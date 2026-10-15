@@ -40,7 +40,6 @@ def affected(paths):
             continue
         if path.startswith("packages/webassets/static/fonts/"):
             selected["docs"] = True
-        # Only prose is exempt. Embedded assets and unfamiliar build inputs run CI.
         if (path in ("README.md", "AGENTS.md")
                 or (path.endswith(".md") and path.startswith(("engineering/", "docs/")))
                 or (len(parts) == 3 and parts[0] == "apps" and parts[-1] in ("README.md", "AGENTS.md", "DESIGN.md", "CONTEXT.md"))
@@ -58,7 +57,7 @@ def affected(paths):
         if path.startswith("apps/") and len(parts) > 2 and parts[1] in APPS:
             app = parts[1]
             if parts[-1] == "go.mod":
-                return dict.fromkeys(FLAGS, True)  # Workspace MVS affects every module.
+                return dict.fromkeys(FLAGS, True)
             selected[app] = selected["go"] = True
             relative = "/".join(parts[2:])
             if relative.endswith(".go") or relative == "go.sum":

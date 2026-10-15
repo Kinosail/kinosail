@@ -25,7 +25,6 @@ type LibraryDownloadDependencies struct {
 	Error    func(http.ResponseWriter, *http.Request, string, int)
 }
 
-// LibraryFileHandler serves one safe file selected from a visible Library item.
 func LibraryFileHandler(dependencies LibraryFileDependencies) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request == nil || !validLibraryFileDependencies(dependencies) {
@@ -56,7 +55,6 @@ func validLibraryFileDependencies(dependencies LibraryFileDependencies) bool {
 	return dependencies.Lookup != nil && dependencies.Select != nil && dependencies.Safe != nil && dependencies.NotFound != nil && len(dependencies.ContentType) <= 256 && !strings.ContainsAny(dependencies.ContentType, "\r\n")
 }
 
-// LibraryPersonHandler serves one indexed cast image from a visible item.
 func LibraryPersonHandler(lookup func(*http.Request, string) (library.Item, bool)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request == nil || lookup == nil {
@@ -81,7 +79,6 @@ func LibraryPersonHandler(lookup func(*http.Request, string) (library.Item, bool
 	}
 }
 
-// LibraryDownloadHandler authorizes one visible item before serving it as an attachment.
 func LibraryDownloadHandler(dependencies LibraryDownloadDependencies) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request == nil || dependencies.Allowed == nil || dependencies.Lookup == nil || dependencies.NotFound == nil || dependencies.Error == nil {

@@ -50,10 +50,8 @@ test("selecting a movie starts moving playback promptly", async ({ page }, testI
 
 for (const source of ["direct", "compatible", "automatic"]) for (const savedPosition of [0, 1]) test(`blocked autoplay leaves one Play control that starts ${source} video from ${savedPosition ? "saved progress" : "the beginning"}`, { tag: ["compatible", "automatic"].includes(source) && savedPosition ? ["@smoke"] : [] }, async ({ page, browserName }, testInfo) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	// Exercise WebKit's native HLS adapter, as mobile Safari does for automatic compatibility.
 	if (browserName === "webkit") await page.route("**/static/hls.min.js*", (route) => route.fulfill({ contentType: "application/javascript", body: "" }));
 	await page.addInitScript(() => {
-		// Keep this browser's real capabilities. Apple launcher journeys cover Safari.
 		const nativePlay = HTMLMediaElement.prototype.play;
 		let blocked = true;
 		const observer = new MutationObserver(() => {
@@ -94,10 +92,7 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 	await page.waitForTimeout(2_000);
 	await expect(page.locator("[data-player-status]")).toBeVisible();
 	await expect(page.locator(".player-center-control[data-player-toggle]")).toBeHidden();
-	// WebKit waits for document.fonts.ready, which needs the held media load to finish.
 	if (browserName !== "webkit") await page.screenshot({ path: testInfo.outputPath("390-media-pending.png"), fullPage: true });
-	// Deliver a reachable original that the real decoder rejects; compatibility media
-	// still comes from the real server and FFmpeg, with the full preparation UI.
 	if (source === "automatic") await page.locator("video").evaluate((video) => { video.dataset.compatibilityMode = "transcode"; });
 	releaseMedia();
 	await expect(page.locator("[data-player-status]")).toBeHidden();
@@ -114,8 +109,6 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 		}
 		return { readyState: video.readyState, ahead, gap, remaining: video.duration - video.currentTime, position: video.currentTime };
 	});
-	// Paused WebKit can settle at HAVE_CURRENT_DATA after a buffered seek.
-	// Prove the required tap advances from the resume position below.
 	expect(readiness.readyState).toBeGreaterThanOrEqual(browserName === "webkit" ? 2 : 3);
 	expect(readiness.gap).toBeLessThanOrEqual(0.05);
 	expect(readiness.ahead).toBeGreaterThanOrEqual(Math.min(2, readiness.remaining));
@@ -137,8 +130,6 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 	await expect(page.locator("[data-player-status]")).toBeHidden();
 	await expect(page.locator("video")).toHaveJSProperty("muted", false);
 	if (source === "compatible" && savedPosition && browserName === "webkit") {
-		// Safari preparation also restores the start of the loaded native HLS window.
-		// Use real media seeking and decoding so a frozen application timeline is observable.
 		const originalSource = await page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc);
 		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = Number(video.dataset.start) + 0.5; });
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.seeking)).toBe(false);
@@ -147,8 +138,6 @@ for (const source of ["direct", "compatible", "automatic"]) for (const savedPosi
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime), { timeout: 5_000 }).toBeGreaterThan(savedPosition + 0.5);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
 		await page.screenshot({ path: testInfo.outputPath("390-resumed-after-seek.png"), fullPage: true });
-		// A paused seek outside this offset window loads another native stream.
-		// Its first playable sample can be later than the requested timestamp.
 		await page.locator("video").evaluate((video: HTMLVideoElement) => { video.pause(); video.currentTime = 0.3; });
 		await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentSrc)).not.toBe(originalSource);
 		await expect(page.locator("[data-player-status]")).toBeHidden();
@@ -200,7 +189,6 @@ test("selecting compatibility playback starts without a second play click", asyn
 	await page.getByText("Playback & downloads", { exact: true }).click();
 	await page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }).click();
 	const video = page.locator("video");
-	// Restored progress can be positive before the decoder starts playing.
 	await expect.poll(() => page.evaluate(() => (window as Window & { mediaEvents: Array<{ name: string }> }).mediaEvents.some(({ name }) => name === "playing")), { timeout: 20_000 }).toBe(true);
 	await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.currentTime), { timeout: 20_000 }).toBeGreaterThan(0.25);
 	const state = await video.evaluate((element: HTMLVideoElement) => ({ paused: element.paused, seconds: element.currentTime }));

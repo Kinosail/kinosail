@@ -1,4 +1,3 @@
-// Preparation and playback must select the same decoder and rendition.
 window.kinosailPlaybackCapabilities = (() => {
   const codecs = [
     ["av1", 'video/mp4; codecs="av01.0.08M.08"'],
@@ -6,8 +5,6 @@ window.kinosailPlaybackCapabilities = (() => {
     ["vp9", 'video/mp4; codecs="vp09.00.10.08"'],
     ["h264", 'video/mp4; codecs="avc1.64002a"'],
   ];
-  // Safari keeps its native HLS path. Chromium's HLS canPlayType result alone
-  // does not establish the compatible-stream decoder used by this player.
   const needsAdapter = element => !navigator.vendor.includes("Apple") && typeof MediaSource !== "undefined" || !element.canPlayType("application/vnd.apple.mpegurl");
   const positive = (value, fallback) => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
   const video = (facts, contentType, compatible = false) => {

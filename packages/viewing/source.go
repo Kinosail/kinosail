@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-// Fetch reads and validates one bounded viewing snapshot from Plex or Jellyfin.
 func Fetch(ctx context.Context, client *http.Client, input Input, lists bool) ([]Activity, error) {
 	if input.Source == "plex" {
 		return fetchPlexViewingActivity(ctx, client, input, lists)

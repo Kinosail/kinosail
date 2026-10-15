@@ -39,8 +39,6 @@
       let final = store.media(job), partial = store.staging(job)
       guard final.resolvingSymlinksInPath().standardizedFileURL == final.standardizedFileURL,
             partial.resolvingSymlinksInPath().standardizedFileURL == partial.standardizedFileURL else { throw failure() }
-      // Missing/truncated payloads must clear their missing bits before scheduling.
-      // Intact blocks still receive a full hash pass before publication.
       let readable = FileManager.default.fileExists(atPath: partial.path) ? partial : final
       let size = (try? readable.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
       for index in job.verified.indices where Int64(index) * manifest.chunkSize + manifest.length(index) > size { job.verified[index] = false }
@@ -128,7 +126,6 @@
         }
       }
       pumpPlans()
-      // Fill the second slot for a single large item, without unbounded tasks.
       if occupiedSlots == 1, planTasks.isEmpty, let active = tasks.values.first(where: { $0.task.state != .suspended }) {
         if let job = jobs[active.id], ["queued", "waiting", "downloading"].contains(job.status), job.verified.indices.contains(where: { !job.verified[$0] && ($0 < active.first || $0 >= active.first + active.count) }) {
           pump()

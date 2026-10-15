@@ -151,7 +151,6 @@ class RestoreProcessControls(unittest.TestCase):
 
     def test_completed_natural_stream_and_tail_are_projected_once(self):
         lines=[]
-        # Capture must consume the last non-newline tail at natural EOF.
         projector=SimpleNamespace(consume=lines.append)
         original=process.execute
         def invoke(command,active,total,projection,receipt,cwd):

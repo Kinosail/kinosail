@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// ErrPersistence reports a failed durable marker change without exposing storage details.
 var ErrPersistence = errors.New("playback segment results could not be saved")
 
 func (analyzer *Analyzer) storeLocked(item library.Item, markers []Marker, suppressed []string, version int) error {
@@ -113,7 +112,6 @@ func (analyzer *Analyzer) SetManual(item library.Item, markerType string, start,
 	return analyzer.storeLocked(item, markers, suppressed, record.analysisVersion(item))
 }
 
-// Suppress removes one marker type and prevents automatic replacement for this revision.
 func (analyzer *Analyzer) Suppress(item library.Item, markerType string) error {
 	normalized, err := NormalizeAutoSkip([]string{markerType})
 	if err != nil || len(normalized) != 1 {

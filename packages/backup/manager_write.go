@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// Write waits for background capacity and writes one backup.
 func (manager *Manager) Write(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
@@ -29,7 +28,6 @@ func (manager *Manager) reserve(ctx context.Context) (func(), error) {
 	return manager.acquire(ctx)
 }
 
-// WriteNow creates, verifies, and retains one encrypted backup immediately.
 func (manager *Manager) WriteNow() error {
 	return manager.write(context.Background())
 }

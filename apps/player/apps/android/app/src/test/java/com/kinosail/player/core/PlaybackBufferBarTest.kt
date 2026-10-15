@@ -19,8 +19,6 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
-// Failure cases: the app theme must not hide the stock buffered portion;
-// clearing the buffer must remove its highlight without moving playback.
 @UnstableApi
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35])

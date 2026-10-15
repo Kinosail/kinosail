@@ -10,16 +10,13 @@ import (
 	"testing"
 )
 
-// MetadataConfig contains only app constructor inputs exercised by the metadata contracts.
 type MetadataConfig struct{ MediaDir, CacheDir, TMDBToken, TMDBURL, TMDBImageURL string }
 
-// MetadataFixture binds shared metadata scenarios to real app configuration and provider fixtures.
 type MetadataFixture struct {
 	New     func(MetadataConfig) http.Handler
 	IDFirst func(string, string, bool, *int, *int) http.HandlerFunc
 }
 
-// ViewerCanSeeLocalNfoMetadata checks metadata through the real app server.
 func (fixture MetadataFixture) ViewerCanSeeLocalNfoMetadata(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -49,7 +46,6 @@ func (fixture MetadataFixture) ViewerCanSeeLocalNfoMetadata(t *testing.T) {
 	}
 }
 
-// ViewerCanBrowseAndSearchRichLocalMetadata checks metadata through the real app server.
 func (fixture MetadataFixture) ViewerCanBrowseAndSearchRichLocalMetadata(t *testing.T) {
 	t.Helper()
 	t.Parallel()

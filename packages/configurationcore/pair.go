@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 )
 
-// Pair durably persists public and secret configuration files.
 type Pair struct {
 	RegularFile  string
 	SecretsFile  string
@@ -33,7 +32,6 @@ type pairDependencies struct {
 	removeTransaction func(string) error
 }
 
-// Persist replaces either or both maps and uses a recovery journal for paired writes.
 func (pair Pair) Persist(dataDir string, regular, secrets map[string]string, writeRegular, writeSecrets bool) error {
 	if !writeRegular && !writeSecrets {
 		return nil

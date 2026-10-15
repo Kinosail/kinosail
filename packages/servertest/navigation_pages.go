@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// AssertEveryMainNavigationDestinationRetainsTheMainBar retains the original navigation regression.
 func AssertEveryMainNavigationDestinationRetainsTheMainBar(t *testing.T, fixture NavigationFixture) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), false)
 	for _, path := range []string{"/?view=all", "/?view=list", "/?view=movies", "/?view=shows", "/?view=music", "/?view=audiobooks", "/?view=books", "/?view=photos", "/?view=collections", "/?view=playlists", "/?view=unwatched", "/?view=history"} {
@@ -17,7 +16,6 @@ func AssertEveryMainNavigationDestinationRetainsTheMainBar(t *testing.T, fixture
 	}
 }
 
-// AssertSignedInApplicationPagesRetainTheMainBar retains the original navigation regression.
 func AssertSignedInApplicationPagesRetainTheMainBar(t *testing.T, fixture NavigationFixture) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), false)
 	for _, path := range []string{"/account", "/metadata/bulk", "/offline-downloads", "/quick-connect", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/media-shares", "/settings/remote-readiness", "/settings/system", "/supporter"} {

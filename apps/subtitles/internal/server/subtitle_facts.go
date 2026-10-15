@@ -13,8 +13,6 @@ type subtitleFactVersion struct {
 	modified time.Time
 }
 
-// Track checks follow scans in one background worker. Browsing never starts or
-// waits for FFprobe, including when the persistent cache is cold or stale.
 func (manager *subtitleManager) scheduleFacts(ctx context.Context) {
 	trigger := make(chan struct{}, 1)
 	go func() {

@@ -14,8 +14,6 @@ export function installWatchedPlayingBarrier() {
     if (existing) return add.call(this, type, existing, options);
     const script = document.currentScript as HTMLScriptElement | null;
     const source = script?.src ? new URL(script.src) : undefined;
-    // Delay only the page-owned callbacks installed by its application script.
-    // HLS controller events and later registrations retain native dispatch.
     if (!(this instanceof HTMLVideoElement) || type !== "playing" || !listener ||
         source?.origin !== location.origin || source.pathname !== "/static/player.js") return add.call(this, type, listener, options);
     let targetListeners = listeners.get(this);

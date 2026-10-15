@@ -1,6 +1,5 @@
 package mcpgateway
 
-// Patterns returns every HTTP route owned by the shared MCP gateway.
 func Patterns() []string {
 	return []string{
 		"GET /.well-known/oauth-protected-resource/mcp",

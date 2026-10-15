@@ -15,8 +15,6 @@ actor ProgressWriter {
         progress.session = UUID().uuidString
     }
 
-    /// Records locally before attempting HTTP. A failed connection cannot lose
-    /// the update; the caller can distinguish pending sync from a storage failure.
     func update(seconds: Double, watched: Bool) async throws -> Bool {
         try Input.position(seconds)
         progress.revision += 1

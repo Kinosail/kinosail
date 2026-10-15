@@ -19,7 +19,6 @@ func TestTrustedHTTPSFormRejectsAmbiguousRequestsBeforeSave(t *testing.T) {
 			request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, input.target, strings.NewReader(input.body))
 			request.Header.Set("Content-Type", input.contentType)
 			response := httptest.NewRecorder()
-			// A nil store proves rejection occurs before the settings operation.
 			saveTrustedHTTPS(nil, "/settings")(response, request)
 			if response.Code != http.StatusBadRequest || strings.Contains(response.Body.String(), "private") {
 				t.Fatalf("response = %d %q", response.Code, response.Body.String())

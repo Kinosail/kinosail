@@ -21,8 +21,6 @@ class WorkflowSecurityTests(unittest.TestCase):
             self.assertNotIn('continue-on-error', step)
 
     def test_wear_requires_both_independent_hardware_profiles(self):
-        # One passing emulator cannot cover the other physical size. The old
-        # in-place wm override did not establish correct round-screen geometry.
         source = (WORKFLOWS / 'app.yml').read_text().split('  wear:\n', 1)[1].split('\n  system:', 1)[0]
         self.assertIn('fail-fast: false', source)
         self.assertIn('profile: [small-round, large-round]', source)
@@ -44,7 +42,6 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_layout_recovery_retains_original_precredential_evidence(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
-        # Browser execution cannot prove that an omitted spec or path filter runs.
         triggers = source.split('  workflow_dispatch:', 1)[0]
         for path in ('apps/player/e2e/login-readiness.spec.ts', 'apps/player/e2e/layout-audit-helpers.ts'):
             self.assertIn(f'      - "{path}"\n', triggers)
@@ -59,7 +56,6 @@ class WorkflowSecurityTests(unittest.TestCase):
         self.assertNotIn('.verification/layout/**', artifact)
 
     def test_backup_runs_first_without_leaking_its_flag_or_hiding_later_runs(self):
-        # Runtime tests cannot observe skipped CI commands or a flag leaked to another invocation.
         root = ROOT
         source = (root / '.github/workflows/app.yml').read_text()
         step = source.split('      - name: Execute iOS and tvOS native contracts\n', 1)[1].split('      - name:', 1)[0]
@@ -97,8 +93,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertIn("KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}", source)
         step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
         self.assertIn('if: fromJSON(inputs.plan).deep', step)
-        # Noble FFmpeg 6.1 rejects the real copied-HLS offset/resume fixtures.
-        # Use the supported container's codec generation with verified host bytes.
         version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)',
                             (ROOT / 'apps/player/Containerfile').read_text()).group(1)
         self.assertIn(f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb', step)
@@ -108,8 +102,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertLess(source.index('Install deep media fixture codecs'), source.index('scripts/ci/test-go.sh'))
 
     def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
-        # Compilation cannot catch failing Swift Testing contracts or an omitted
-        # platform. The manual and weekly lane must execute both existing schemes.
         source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
         self.assertIn('if: fromJSON(inputs.plan).deep', source)
         self.assertIn('for contract in iOS-backup iOS tvOS', source)
@@ -132,8 +124,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertIn('${{ runner.temp }}/native-media.json', source)
 
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
-        # Trivy creates/removes files in the checkout. Overlap changes Git
-        # status during the E2E receipt and invalidates exact revision proof.
         source = (WORKFLOWS / 'app.yml').read_text().split('  system:\n', 1)[1].split('  browser:\n', 1)[0]
         scan = re.search(r'^      - uses: aquasecurity/trivy-action@[a-f0-9]{40}', source, re.M)
         evidence = re.search(r'^      - name: Test production paths\n', source, re.M)
@@ -143,8 +133,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertNotIn('background:', source)
 
     def test_parallel_image_checks_finish_before_digest_export(self):
-        # Browser E2E cannot prove that image publication still waits for both
-        # runtime verification and the vulnerability scan before export.
         for workflow, test_name, export_name in (
                 ('publish.yml', 'Test the production image by digest', 'Export tested and scanned digest'),
                 ('release.yml', 'Test production image by digest', 'Export verified digest')):
@@ -167,8 +155,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 self.assertNotIn('digests/', checks)
 
     def test_player_browser_engines_receive_verified_fixture_codecs(self):
-        # Actual HLS navigation fixtures spawn FFmpeg in every selected engine.
-        # Container codecs cannot satisfy a host fixture's executable dependency.
         app = (WORKFLOWS / 'app.yml').read_text()
         step = app.split('      - name: Install startup fixture codecs\n', 1)[1].split('      - name:', 1)[0]
         self.assertIn("if: inputs.app == 'player' || matrix.engine == 'chromium'\n", step)
@@ -176,7 +162,6 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
 
     def test_subtitles_full_browser_selection_covers_progress_restoration(self):
-        # Explicit fixture selection otherwise leaves the new regression local-only.
         script = (ROOT / 'apps/subtitles/scripts/test-container.sh').read_text()
         selection = re.search(r'^  browser_args=\(([^)]+)\)', script, re.M)
         self.assertIsNotNone(selection)

@@ -120,7 +120,6 @@ func typedPackage(path string) (*token.FileSet, []*ast.File, *types.Info, error)
 	}
 	patterns := []string{"."}
 	if !hasModule(filepath.Dir(path)) {
-		// Standalone repository commands use the workspace, like `go run FILE`.
 		patterns = []string{path}
 	}
 	packages, err := listPackages(filepath.Dir(path), patterns, true)

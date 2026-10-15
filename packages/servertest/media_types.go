@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// ViewerCanBrowseAndOpenMusicAndPhotos verifies distinct browsing and playback surfaces.
 func (fixture LibraryAPIFixture) ViewerCanBrowseAndOpenMusicAndPhotos(t *testing.T) {
 	t.Parallel()
 	mediaDir := t.TempDir()
@@ -48,7 +47,6 @@ func (fixture LibraryAPIFixture) ViewerCanBrowseAndOpenMusicAndPhotos(t *testing
 	MustContainAll(t, players.String(), "<audio", `/static/player.js`, `class="viewer"`, `class="player-page"`, "Mezzanine")
 }
 
-// MustContainAll asserts that value includes every expected fragment.
 func MustContainAll(t *testing.T, value string, expected ...string) {
 	t.Helper()
 	for _, text := range expected {

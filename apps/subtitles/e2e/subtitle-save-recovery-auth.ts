@@ -22,7 +22,6 @@ export async function owner(page: Page, origin: string) {
   if (response.status() !== 200 || Buffer.byteLength(html, "utf8") > 65536 || !secret || !cookies.some(cookie =>
     cookie.name === "__Host-kinosail_subtitles_session" && cookie.secure && cookie.httpOnly &&
     cookie.sameSite === "Strict" && cookie.path === "/")) throw new Error("fixed-auth-boundary");
-  // Setup sets the response cookie; read CSRF from an authenticated public page.
   const enrollment = await page.request.get(origin + "/account", { maxRedirects: 0, timeout: 15000 });
   const enrollmentHTML = await enrollment.text();
   const enrollmentTokens = [...enrollmentHTML.matchAll(/name="kinosail-csrf" content="([A-Za-z0-9_-]{43})"/g)];

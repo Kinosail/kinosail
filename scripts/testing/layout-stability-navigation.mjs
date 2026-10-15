@@ -1,4 +1,3 @@
-// Measure rendered text in the real Player page without changing its layout.
 export function personalNavigationSnapshot() {
   const nav = document.querySelector("[data-mobile-tabs]");
   if (!nav) return {present: false, entries: []};
@@ -232,8 +231,6 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
   }
 }
 
-// The populated regression owns rapid toggling; this checks the other engines
-// with native motion enabled instead of the layout suite's reduced-motion mode.
 export async function measureTitleFilterFlow(browser, options, results, probe) {
   for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 650},
     {width: 390, height: 844}, {width: 1920, height: 1080}]) {

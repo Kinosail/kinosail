@@ -25,7 +25,6 @@ func (output *copiedHLSBuildDiagnostic) Write(data []byte) (int, error) {
 	return len(data), nil
 }
 
-// Build the isolated real probe before starting the unchanged operation budget.
 func copiedHLSProbeExecutable(t *testing.T) string {
 	t.Helper()
 	source := copiedHLSProbeFileHash(t, "testdata/copied-probe-fixture/main.go", 128<<10)
@@ -41,7 +40,7 @@ func copiedHLSProbeExecutable(t *testing.T) string {
 	defer cancel()
 	var diagnostic copiedHLSBuildDiagnostic
 	command := exec.CommandContext(ctx, "go", "build", "-trimpath", "-o", executable, "./testdata/copied-probe-fixture")
-	command.WaitDelay = time.Second // Setup drain bound; never a settlement oracle.
+	command.WaitDelay = time.Second
 	command.Stdout, command.Stderr = &diagnostic, &diagnostic
 	if command.Run() != nil {
 		classes := []string{}

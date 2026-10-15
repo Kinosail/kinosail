@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// PlaylistPage is the app-neutral view model for a manual or smart playlist.
 type PlaylistPage struct {
 	Name, Query, Mode, Rule string
 	Items                   []PlaylistItem
@@ -22,13 +21,11 @@ type PlaylistPage struct {
 	Smart                   bool
 }
 
-// PlaylistItem contains the navigation state for one visible playlist item.
 type PlaylistItem struct {
 	library.Item
 	CanEarlier, CanLater bool
 }
 
-// PlaylistHandlersConfig binds shared playlist behavior to app-owned state and views.
 type PlaylistHandlersConfig struct {
 	VisibleLibrary func(*http.Request) ([]library.Item, error)
 	PlaylistNames  func(*http.Request) []string
@@ -43,10 +40,8 @@ type PlaylistHandlersConfig struct {
 	NotFound       func(http.ResponseWriter, *http.Request)
 }
 
-// PlaylistHandlers owns the shared web behavior for playlist browsing and mutations.
 type PlaylistHandlers struct{ config PlaylistHandlersConfig }
 
-// NewPlaylistHandlers creates one playlist HTTP adapter around app-owned seams.
 func NewPlaylistHandlers(config PlaylistHandlersConfig) PlaylistHandlers {
 	if !validPlaylistHandlersConfig(config) {
 		panic("invalid playlist HTTP dependencies")
@@ -54,7 +49,6 @@ func NewPlaylistHandlers(config PlaylistHandlersConfig) PlaylistHandlers {
 	return PlaylistHandlers{config: config}
 }
 
-// Browse renders one visible playlist and its bounded add-item candidates.
 func (handlers PlaylistHandlers) Browse(writer http.ResponseWriter, request *http.Request) {
 	query, err := ParseCurationQuery(request.URL.Query())
 	if err != nil {
@@ -89,7 +83,6 @@ func (handlers PlaylistHandlers) Browse(writer http.ResponseWriter, request *htt
 	}
 }
 
-// Order changes one playlist item's position after validating the complete form.
 func (handlers PlaylistHandlers) Order(writer http.ResponseWriter, request *http.Request) {
 	if err := request.ParseForm(); err != nil || len(request.PostForm) != 2 || len(request.PostForm["id"]) != 1 || len(request.PostForm["direction"]) != 1 {
 		handlers.config.Failure(writer, request, "invalid playlist order", http.StatusBadRequest)
@@ -123,7 +116,6 @@ func (handlers PlaylistHandlers) Order(writer http.ResponseWriter, request *http
 	http.Redirect(writer, request, "/playlist/"+url.PathEscape(name), http.StatusSeeOther)
 }
 
-// ManageItem changes one playlist membership after validating the complete form.
 func (handlers PlaylistHandlers) ManageItem(writer http.ResponseWriter, request *http.Request) {
 	if len(request.URL.Query()) != 0 {
 		handlers.config.Failure(writer, request, "invalid playlist state", http.StatusBadRequest)
@@ -158,7 +150,6 @@ func (handlers PlaylistHandlers) ManageItem(writer http.ResponseWriter, request 
 	http.Redirect(writer, request, target, http.StatusSeeOther)
 }
 
-// ParseCurationQuery accepts only the shared Collection and playlist browse query.
 func ParseCurationQuery(values url.Values) (string, error) {
 	for key := range values {
 		if key != "q" && key != "lang" {
@@ -168,7 +159,6 @@ func ParseCurationQuery(values url.Values) (string, error) {
 	return SingleValue(values, "q", 200)
 }
 
-// CurationCandidates returns bounded visible items not already in a curation.
 func CurationCandidates(items, members []library.Item, query string) []library.Item {
 	if query == "" {
 		return nil

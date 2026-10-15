@@ -9,6 +9,5 @@ import (
 )
 
 func startCopiedHLSProbe(context.Context, *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
-	// No unowned subprocess fallback on an unsupported platform.
 	return nil, nil, errCopiedHLSIndex
 }

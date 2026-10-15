@@ -11,20 +11,17 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// DeliveryViewer contains the profile facts used by Jellyfin delivery.
 type DeliveryViewer struct {
 	ID                  string
 	Revision            uint64
 	Owner, CanTranscode bool
 }
 
-// DeliverySession exposes one app play session to the shared delivery policy.
 type DeliverySession interface {
 	playback.JellyfinSession
 	JellyfinPlan() playback.PlaybackPlan
 }
 
-// DeliveryPolicy preserves true Player and Subtitles delivery differences.
 type DeliveryPolicy struct {
 	HLS                            playback.HLSRecipePolicy
 	NestedStream, SourceHLS        bool
@@ -33,7 +30,6 @@ type DeliveryPolicy struct {
 	EmbeddedFailureStatus          int
 }
 
-// PlaybackRejection records the complete public play-session decision.
 type PlaybackRejection struct {
 	ItemID                                               string
 	ItemFound, SessionFound, SessionValid, ProfileActive bool
@@ -47,7 +43,6 @@ func (value PlaybackRejection) allowed() bool {
 		value.ViewerAllowed && value.ItemVisible
 }
 
-// DeliveryHTTP contains true app adapters for media I/O and profile policy.
 type DeliveryHTTP struct {
 	Playback            PlaybackHTTP
 	Policy              DeliveryPolicy
@@ -73,7 +68,6 @@ type DeliveryHTTP struct {
 	SubtitleUnavailable func(context.Context, library.Item, int, error)
 }
 
-// Stream selects explicit HLS, download, planned HLS, automatic skip, or direct delivery.
 func (module DeliveryHTTP) Stream(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // The order is the Player delivery contract.
 	stream := strings.ToLower(request.PathValue("stream"))
 	if !validOptionalValue(stream, 2048) {
@@ -209,7 +203,6 @@ func (module DeliveryHTTP) hlsRecipe(request *http.Request, recipe playback.HLSR
 	return HLSRecipe(request, recipe, module.Policy.SingleQuality, module.Public)
 }
 
-// HLSRecipe applies Player's local single-quality rule.
 func HLSRecipe(request *http.Request, recipe playback.HLSRecipe, singleQuality bool, public func(*http.Request) bool) playback.HLSRecipe {
 	if singleQuality {
 		recipe.SingleQuality = recipe.Mode == "transcode" && !public(request)
@@ -217,7 +210,6 @@ func HLSRecipe(request *http.Request, recipe playback.HLSRecipe, singleQuality b
 	return recipe
 }
 
-// SourceHLSFile recognizes Player's official-client source-prefixed HLS paths.
 func SourceHLSFile(path string) (string, bool) {
 	parts := strings.Split(strings.ToLower(path), "/")
 	if len(parts) < 2 {

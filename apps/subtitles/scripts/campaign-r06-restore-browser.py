@@ -23,7 +23,6 @@ MODULES = {
 
 
 def load_modules():
-    # Verify exact reviewed helper bytes before executing any helper definitions.
     bodies = {}
     for name, expected in MODULES.items():
         path = ROOT / "apps/subtitles/scripts" / (name + ".py")
@@ -167,7 +166,6 @@ def main():
         for name, value in previous.items():
             if value is None: os.environ.pop(name, None)
             else: os.environ[name] = value
-        # Every selected closure is independently checked, including when another check fails.
         try:
             final = s.identity()
             after = s.tracked_sources(deadline=time.monotonic() + 45)

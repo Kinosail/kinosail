@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// PlaybackAPIRejectsInvalidCodecEvidenceBeforeProbingMedia checks rejected input causes no media probe.
 func (fixture PlaybackAPIFixture) PlaybackAPIRejectsInvalidCodecEvidenceBeforeProbingMedia(t *testing.T) {
 	t.Helper()
 	t.Parallel()

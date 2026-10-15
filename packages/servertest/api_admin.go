@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// AssertOperationalMetrics verifies the complete operational metric surface.
 func AssertOperationalMetrics(t *testing.T, metrics *httptest.ResponseRecorder) {
 	t.Helper()
 	if metrics.Code != http.StatusOK || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_health")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_workload_capacity")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_workload_waiting{class=\"playback\"}")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_notification_dropped_total")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_viewing_sync_deferred_total")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_live_event_subscribers")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_watch_room_reconnects_total")) || !bytes.Contains(metrics.Body.Bytes(), []byte("kinosail_watch_room_drift_seconds")) {
@@ -15,7 +14,6 @@ func AssertOperationalMetrics(t *testing.T, metrics *httptest.ResponseRecorder) 
 	}
 }
 
-// OnboardingSettingsRequireExplicitBoolean verifies strict decoding and no side effects.
 func (fixture LibraryAPIFixture) OnboardingSettingsRequireExplicitBoolean(t *testing.T) {
 	handler, token := fixture.Server(t)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"onboardingPending":true`)

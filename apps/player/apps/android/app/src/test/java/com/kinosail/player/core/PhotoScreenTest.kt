@@ -227,8 +227,6 @@ class PhotoScreenTest {
         return pixels
     }
 
-    // Supply only the platform key lookup missing on the JVM. SessionStore still encrypts,
-    // saves and reloads the public session; CatalogModel and ArtworkClient use real HTTP.
     class FixtureKeyStore : KeyStoreSpi() {
         override fun engineGetKey(alias: String?, password: CharArray?): Key = key
         override fun engineLoad(stream: InputStream?, password: CharArray?) {}

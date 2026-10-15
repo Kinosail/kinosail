@@ -6,8 +6,6 @@ import (
 	"strconv"
 )
 
-// LocalAliases accepts the exact local addresses resolved by Android NSD when
-// a loopback-configured server has no externally configured connection URL.
 func LocalAliases(origin string) []string {
 	alias := LoopbackAlias(origin)
 	if alias == "" {

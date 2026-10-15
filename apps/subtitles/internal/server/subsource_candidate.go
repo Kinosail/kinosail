@@ -213,7 +213,6 @@ func validSubSourceSubtitleRating(subtitle subSourceSubtitle) bool {
 	return subtitle.Rating.Good >= 0 && subtitle.Rating.Bad >= 0 && subtitle.Rating.Total >= subtitle.Rating.Good+subtitle.Rating.Bad
 }
 
-// Capture malformed suffixes and episode continuations instead of accepting their numeric prefix.
 var subSourceEpisodePattern = regexp.MustCompile(`[sS]([0-9]+)[eE]([0-9]+)` +
 	`([\p{L}\p{N}\p{M}]*(?:[^\p{L}\p{N}\p{M}]+[eE][0-9]+|\s*[-+]\s*[0-9]+(?:$|[^\p{L}\p{N}\p{M}]))?)`)
 

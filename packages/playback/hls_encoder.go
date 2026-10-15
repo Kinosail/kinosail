@@ -21,8 +21,6 @@ const hlsSourcePolicyLimit = 16 * 1024
 
 var ErrHLSSourceChanged = errors.New("HLS source snapshot changed")
 
-// BindHLSEncoder keeps seek segments on the encoder that produced the existing
-// initialization data, while cache readers use the unchanged playback policy.
 func BindHLSEncoder(directory string, options transcodepolicy.Settings, resume bool) error {
 	identity := struct {
 		Accelerator, Encoder, Device, Codec, HDR string
@@ -43,8 +41,6 @@ func BindHLSEncoder(directory string, options transcodepolicy.Settings, resume b
 	return privatefile.WriteCache(path, data)
 }
 
-// BindHLSSource records the immutable source and complete policy before encoding.
-// A retained presentation is never rebound to a different source or policy.
 func BindHLSSource(directory, source, policy string) error {
 	if err := ValidateHLSSource(source, policy); err != nil {
 		return err
@@ -73,7 +69,6 @@ func BindHLSSource(directory, source, policy string) error {
 	return nil
 }
 
-// Only an empty root or a previously validated legacy master can be bound.
 func hlsSourceBindable(root *os.Root, directory, source, policy string) bool {
 	entries, err := fs.ReadDir(root.FS(), ".")
 	return err == nil && (len(entries) == 0 || MasterFresh(filepath.Join(directory, "index.m3u8"), source, policy))
@@ -179,7 +174,6 @@ func validHLSSourceFile(info os.FileInfo) bool {
 }
 
 func writeHLSSource(root *os.Root, data []byte) error {
-	// Exclusive creation and root-relative rename keep every write inside the cache.
 	file, err := root.OpenFile(".source.pending", os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
 	if err != nil {
 		return err
@@ -198,7 +192,6 @@ func writeHLSSource(root *os.Root, data []byte) error {
 	return root.Rename(".source.pending", ".source")
 }
 
-// ValidateHLSSource distinguishes a changed snapshot from invalid or missing input.
 func ValidateHLSSource(source, policy string) error {
 	expected, valid := hlsPolicySourceVersion(policy)
 	if !valid {
@@ -214,8 +207,6 @@ func ValidateHLSSource(source, policy string) error {
 	return nil
 }
 
-// StartHLSWorker keeps cancellation and worker completion under one owner.
-// Callers defer the returned stop function before publishing or returning output.
 func StartHLSWorker(parent context.Context, encode func(context.Context) error) (<-chan error, func()) {
 	ctx, cancel := context.WithCancel(parent)
 	results := make(chan error, 1)

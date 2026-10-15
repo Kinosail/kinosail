@@ -1,8 +1,6 @@
 import {expect, test} from "@playwright/test";
 import {installDisplayedMotionTracker, type DisplayedMotionHost, type FrameSample} from "./watched-motion-counter";
 
-// Isolated gap: real playback cannot deterministically produce dropped-only,
-// stale, or reset counter sequences. These controls protect admission arithmetic.
 const sample = (seconds: number, total: number, dropped = 0): FrameSample => ({seconds, total, dropped});
 const controls = [
   {name: "dropped-only increments", samples: [sample(1.1, 11, 1), sample(1.2, 12, 2), sample(1.3, 13, 3)], admitted: false},

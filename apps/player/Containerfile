@@ -28,6 +28,7 @@ RUN apt-get update \
     && echo "$checksum  /tmp/jellyfin-ffmpeg.deb" | sha256sum -c - \
     && apt-get install -y --no-install-recommends /tmp/jellyfin-ffmpeg.deb \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' librsvg2-2)" ge '2.60.0+dfsg-1+deb13u1' \
+    && if curl_version="$(dpkg-query -W -f='${Version}' libcurl4t64 2>/dev/null)"; then dpkg --compare-versions "$curl_version" ge '8.14.1-2+deb13u7'; fi \
     && apt-get purge -y --auto-remove wget \
     && ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/local/bin/ffmpeg \
     && ln -s /usr/lib/jellyfin-ffmpeg/ffprobe /usr/local/bin/ffprobe \

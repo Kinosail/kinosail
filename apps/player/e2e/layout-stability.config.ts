@@ -1,6 +1,5 @@
 import {defineConfig, devices} from "@playwright/test";
 
-// Geometry fixtures use loopback HTTP. No insecure TLS options.
 export default defineConfig({
   testDir: ".", workers: 1, timeout: 30000,
   use: {baseURL: "http://localhost:31808", ignoreHTTPSErrors: false, trace: "retain-on-failure"},

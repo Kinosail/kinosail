@@ -48,7 +48,6 @@ func TestOfflineSyncProfileHeaderRejectsBeforeReadingOrWritingMedia(t *testing.T
 		request = request.WithContext(context.WithValue(request.Context(), viewerContextKey{}, viewerProfile{ID: "viewer-a"}))
 		request.Header["X-Kinosail-Viewer-Profile"] = values
 		response := httptest.NewRecorder()
-		// Nil dependencies prove rejected identity cannot reach catalog reads or writes.
 		syncMediaProgress(nil, nil)(response, request)
 		if response.Code != http.StatusForbidden {
 			t.Fatalf("header %q returned %d", values, response.Code)

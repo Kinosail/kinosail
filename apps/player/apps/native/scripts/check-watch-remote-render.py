@@ -55,7 +55,6 @@ def main():
     if isinstance(recognized, dict):
         recognized = [line["text"] for line in recognized["lines"]]
     text = " ".join(" ".join(recognized).split())
-    # Vision misreads this fixed product token on the small Watch; captured pixels confirm it.
     text = text.replace("IPhone", "iPhone").replace("¡Phone", "iPhone")
     checks = {"hasVisibleContent": bool(text), "hasAppHeading": "Kinosail" in text or "This iPhone" in text}
     if args.state == "connecting":

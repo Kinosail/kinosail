@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-// MaximumSyncStateSize bounds the complete durable sync document.
 const MaximumSyncStateSize = 1 << 24
 
 const (
@@ -23,7 +22,6 @@ const (
 	maximumSyncSeconds   = 31_622_400
 )
 
-// LoadSyncs strictly restores a complete sync document before returning any state.
 func LoadSyncs(file string, normalize func(Input) (Input, error)) (map[string]Sync, error) { //nolint:cyclop // Restore validates every persisted invariant before accepting any state.
 	reader, err := os.Open(file) //nolint:gosec // The app owns the configured durable-state path.
 	if err != nil {
@@ -79,7 +77,6 @@ func validObservation(key string, observation Observation) bool {
 	return withinMaximum(len(observation.TargetID), 512) && withinMaximum(len(observation.Signature), 2048)
 }
 
-// ValidPending reports whether a durable recovery batch satisfies every bound.
 func ValidPending(pending *SyncPending) bool { //nolint:cyclop,gocognit // Persisted recovery state is a trust boundary.
 	if pending == nil {
 		return true
@@ -129,7 +126,6 @@ func validPendingLists(changes []ListChange) bool {
 	return true
 }
 
-// ValidSummary reports whether all persisted counters are finite bounded counts.
 func ValidSummary(summary Summary) bool {
 	values := []int{summary.SourceItems, summary.Activity, summary.Matched, summary.Importable, summary.Unchanged, summary.Ambiguous, summary.Unmatched, summary.Conflicts, summary.Favorites, summary.PlaylistItems, summary.Applied, summary.ListsApplied}
 	for _, value := range values {
@@ -140,12 +136,10 @@ func ValidSummary(summary Summary) bool {
 	return true
 }
 
-// ValidSyncInterval reports whether a recurring import interval is supported.
 func ValidSyncInterval(interval string) bool {
 	return interval == "15m" || interval == "1h" || interval == "6h" || interval == "24h"
 }
 
-// CloneSyncs returns a deep copy of recurring import state.
 func CloneSyncs(source map[string]Sync) map[string]Sync {
 	result := make(map[string]Sync, len(source))
 	for id, sync := range source {
@@ -164,12 +158,10 @@ func CloneSyncs(source map[string]Sync) map[string]Sync {
 	return result
 }
 
-// CloneObservations returns a detached source-observation map.
 func CloneObservations(source map[string]Observation) map[string]Observation {
 	return maps.Clone(source)
 }
 
-// SafeError flattens and bounds an error before durable or visible storage.
 func SafeError(err error) string {
 	if err == nil {
 		return ""

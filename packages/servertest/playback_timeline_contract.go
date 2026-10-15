@@ -8,10 +8,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// AutomaticSkipPlanner binds a real app's automatic-skip policy wrapper.
 type AutomaticSkipPlanner func(playback.MediaFacts, playback.ClientCapabilities, playback.ViewerPolicy, playback.NetworkIntent, []mediaprobe.Marker, []string) playback.PlaybackPlan
 
-// AssertAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart checks the real app's automatic-skip boundary.
 func AssertAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart(t *testing.T, start func(float64, float64, []mediaprobe.Marker, []string) float64) {
 	t.Helper()
 	trusted := mediaprobe.Marker{Type: "intro", Start: 0, End: 20, Source: "fingerprint"}
@@ -43,7 +41,6 @@ func AssertAutomaticStartOffsetOnlyUsesATrustedIntroAtTheSourceStart(t *testing.
 	}
 }
 
-// AssertAutomaticSkipFallbackPreservesNoTranscodePolicy checks the real app's automatic-skip boundary.
 func AssertAutomaticSkipFallbackPreservesNoTranscodePolicy(t *testing.T, decide AutomaticSkipPlanner) {
 	t.Helper()
 	facts := playback.MediaFacts{Kind: "video", Container: "mp4", Duration: 60, Video: playback.VideoFacts{Codec: "h264"}, Audio: []playback.AudioFacts{{Codec: "aac"}}}
@@ -54,7 +51,6 @@ func AssertAutomaticSkipFallbackPreservesNoTranscodePolicy(t *testing.T, decide 
 	}
 }
 
-// AssertAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries checks the real app's automatic-skip boundary.
 func AssertAutomaticSkipCopiesVideoOnlyAtRandomAccessBoundaries(t *testing.T, plan AutomaticSkipPlanner) {
 	t.Helper()
 	facts := playback.MediaFacts{Kind: "video", Container: "mp4", Duration: 60, Video: playback.VideoFacts{Codec: "h264", FrameRate: 24}, Audio: []playback.AudioFacts{{Codec: "aac"}}, RandomAccess: []float64{0, 10, 20, 60}}

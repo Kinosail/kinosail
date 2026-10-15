@@ -225,8 +225,6 @@ func (manager *Manager) save(job Job) error {
 	return manager.persist(filepath.Join(manager.root, job.ID+".json"), job)
 }
 
-// Restore metadata first. One worker verifies payloads, preferring requested titles
-// between files. Removed jobs cancel their current read before another block.
 func (manager *Manager) verifyRestored() {
 	for manager.ctx.Err() == nil {
 		var id string

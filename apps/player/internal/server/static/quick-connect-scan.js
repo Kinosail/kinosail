@@ -1,4 +1,3 @@
-// Camera frames stay in this browser; only a validated code reaches confirmation.
 (() => {
   const start = document.querySelector('[data-qr-start]');
   if (!start) return;
@@ -32,7 +31,6 @@
   function readCode(raw) {
     if (typeof raw !== 'string' || raw.length > 2048) return null;
     if (/^[0-9]{6}$/.test(raw)) return raw;
-    // Accept only the exact same-server links emitted by Player clients.
     if (!/^https?:\/\//.test(raw) || /[\s\\]/.test(raw)) return null;
     try {
       const url = new URL(raw);

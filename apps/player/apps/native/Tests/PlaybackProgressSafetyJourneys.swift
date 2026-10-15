@@ -4,9 +4,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Real AVFoundation and loopback HTTP isolate failed-load cleanup. Populated
-// server journeys cannot safely seed progress or hold native loading barriers.
-// A failed first load must preserve prior progress; healthy saves still advance.
 @Suite(.serialized) @MainActor
 struct PlaybackProgressSafetyJourneys {
     @Test(arguments: ["invalid-media", "media-denied", "healthy-control"])
@@ -54,8 +51,6 @@ struct PlaybackProgressSafetyJourneys {
             case .failure(let error): failure = error
             }
             let transportFailure = await engine.transport.failure()
-            // Emit safe failure evidence before any prerequisite can reject the run.
-            // Mapped start is a computed plan observation, not an observed seek operand.
             let observed = PlaybackProgressStartupObservation(
                 mode: mode, engineSession: engine.generation.uuidString,
                 sourceStart: engine.source?.start,
@@ -89,9 +84,9 @@ struct PlaybackProgressSafetyJourneys {
             let receiptsBeforeStop = fixture.progressReceipts.count
             let monitor = engine.monitoring
             let retiredTransport = engine.transport
-            engine.stop() // Same engine boundary used by PlaybackScreen.onDisappear.
+            engine.stop()
             await monitor?.value
-            await retiredTransport.close() // Idempotent barrier at the actor; gateway work remains externally bounded.
+            await retiredTransport.close()
             try await drain(engine.writing, client: fixture.client)
             let pending = try await store.pending().filter { $0.itemID == item.id }
             let writes = Array(fixture.progressReceipts.dropFirst(seededReceipts))
@@ -125,7 +120,6 @@ struct PlaybackProgressSafetyJourneys {
             await monitor?.value
             await retiredTransport.close()
             await fixture.client.close(purgeCache: true)
-            // Join the only remaining save after closing this fictional client.
             await engine.writing?.value
             throw error
         }

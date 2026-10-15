@@ -68,13 +68,10 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     let download: String
     let size: Int64
     var progress: WatchProgress
-    // Optional for previously saved download metadata that predates cast support.
     let cast: [CastMember]?
 
     init(_ raw: JSONValue, server: ServerAddress) throws {
         var value = try raw.object(allowing: ["id", "kind", "title", "sortTitle", "year", "plot", "rating", "tagline", "genres", "director", "studio", "artist", "album", "track", "show", "showId", "size", "season", "episode", "stream", "download", "subtitles", "added", "cast", "artwork", "backdrop", "container", "progress"])
-        // Some imported synopses contain zero-width word separators. Bound before normalizing;
-        // other controls and every identifier/URL retain strict validation.
         if case .string(let plot)? = value["plot"], plot.utf8.count <= 10_000 {
             value["plot"] = .string(plot.replacingOccurrences(of: "\u{200B}", with: ""))
         }

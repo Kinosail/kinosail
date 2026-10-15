@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// HealthcheckConfiguredAuthHost verifies the CLI uses the configured HTTPS host.
 func HealthcheckConfiguredAuthHost(t *testing.T, unusedAddress func(*testing.T) string, start func(*testing.T, []string) *exec.Cmd, stop func(*exec.Cmd), assert func(*testing.T, []string), timeout time.Duration) {
 	address, dataDir := unusedAddress(t), t.TempDir()
 	_, port, err := net.SplitHostPort(address)

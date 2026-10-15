@@ -10,7 +10,6 @@ import (
 	"testing"
 )
 
-// ViewerCanBrowseAlbumTracksInOrder verifies metadata track ordering in the album view.
 func (fixture LibraryAPIFixture) ViewerCanBrowseAlbumTracksInOrder(t *testing.T) {
 	mediaDir := t.TempDir()
 	for name, content := range map[string]string{

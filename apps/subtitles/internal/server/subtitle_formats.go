@@ -193,7 +193,6 @@ func assDialogue(value string, format []string) (subtitleCue, error) {
 				return subtitleCue{}, err
 			}
 		case "text":
-			// Vector drawing events cannot be represented as dialogue.
 			if subtitleDrawing.MatchString(fields[i]) {
 				return subtitleCue{}, errors.New("subtitle drawings require the original ASS file")
 			}

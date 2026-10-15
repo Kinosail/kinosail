@@ -5,7 +5,6 @@ import (
 	"unicode"
 )
 
-// Identity contains the app adapters for Player's Jellyfin identity flow.
 type Identity[Profile any] struct {
 	ServerID       string
 	ServerName     func() string
@@ -25,7 +24,6 @@ type Identity[Profile any] struct {
 	SignOut        func(*http.Request) error
 }
 
-// SystemInfo writes Player's Jellyfin server identity.
 func (identity Identity[Profile]) SystemInfo(writer http.ResponseWriter, request *http.Request) {
 	scheme := "http"
 	if identity.Secure(request) {
@@ -34,7 +32,6 @@ func (identity Identity[Profile]) SystemInfo(writer http.ResponseWriter, request
 	JSON(writer, SystemInfo(identity.ServerID, identity.ServerName(), scheme+"://"+request.Host, identity.Configured()))
 }
 
-// PasswordLogin runs Player's ordered compatibility-login policy.
 func (identity Identity[Profile]) PasswordLogin(request *http.Request, credentials Credentials) (Authentication, error) {
 	if !identity.AllowLogin(request.RemoteAddr, credentials.Username) {
 		return Authentication{}, ErrCredentialRateLimit
@@ -56,7 +53,6 @@ func (identity Identity[Profile]) PasswordLogin(request *http.Request, credentia
 	return Authentication{Token: token, User: identity.Project(profile)}, nil
 }
 
-// User writes the current profile or rejects a mismatched path identifier.
 func (identity Identity[Profile]) User(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	if !validOptionalValue(id, 256) {
@@ -71,7 +67,6 @@ func (identity Identity[Profile]) User(writer http.ResponseWriter, request *http
 	JSON(writer, UserDTO(identity.Project(profile)))
 }
 
-// Logout revokes the current session before it reports success.
 func (identity Identity[Profile]) Logout(writer http.ResponseWriter, request *http.Request) {
 	if err := identity.SignOut(request); err != nil {
 		http.Error(writer, "could not end session", http.StatusInternalServerError)

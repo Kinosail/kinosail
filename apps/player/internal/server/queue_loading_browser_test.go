@@ -14,8 +14,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-// Native WebKit media bypasses Playwright routing. Hold real HTTP bytes outside
-// the real Server instead; media events, commands and persistence remain native.
 func TestQueueLoadingBrowserJourney(t *testing.T) {
 	if os.Getenv("KINOSAIL_QUEUE_LOADING_BROWSER") != "1" {
 		t.Skip("KINOSAIL_QUEUE_LOADING_BROWSER is not set")
@@ -129,7 +127,6 @@ func (peer *queueLoadingPeer) control(writer http.ResponseWriter, request *http.
 	writer.WriteHeader(peer.change(request.Method, path))
 }
 
-// change runs with the control request's mutex held.
 func (peer *queueLoadingPeer) change(method, path string) int {
 	switch {
 	case method == http.MethodPut && path != "" && peer.gate == nil:

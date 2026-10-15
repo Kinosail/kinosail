@@ -6,14 +6,12 @@ import (
 	"time"
 )
 
-// HTTPServerLimits records the application-specific transport settings.
 type HTTPServerLimits struct {
 	Address           string
 	Read, Write, Idle time.Duration
 	HeaderBytes       int
 }
 
-// HTTPServerPolicy checks construction, common policy, and application limits.
 func HTTPServerPolicy(t *testing.T, build func(string, http.Handler) *http.Server, limits HTTPServerLimits) {
 	t.Helper()
 	called := false

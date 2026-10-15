@@ -124,7 +124,6 @@ class ArchitectureAdmissionTests(unittest.TestCase):
 
     def test_timeout_settles_descendants_after_leader_exit(self):
         helper = self.helper(); process = Mock(pid=456, returncode=0)
-        # The leader exits after TERM; a survivor still owns the group.
         with patch.object(helper.os, 'killpg', side_effect=[None, None, None, ProcessLookupError()]) as signals:
             helper.settle_owned_group(process, True)
         self.assertEqual([call.args[1] for call in signals.call_args_list],

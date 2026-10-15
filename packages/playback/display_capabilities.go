@@ -8,9 +8,6 @@ import (
 	"strings"
 )
 
-// RequestedDisplayCapabilities is shared semantic validation for optional
-// display/decoded-audio hints. Absence preserves the existing client baseline.
-// These hints never grant playback or conversion permission.
 func RequestedDisplayCapabilities(request *http.Request) ([]string, int, error) {
 	invalid := errors.New("playback display capabilities are invalid")
 	if request == nil || request.URL == nil || len(request.URL.RawQuery) > 4096 {

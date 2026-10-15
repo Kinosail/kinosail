@@ -17,7 +17,6 @@ type copiedHLSUnixProbe struct {
 	exit    *copiedHLSExitObservation
 }
 
-// Keep the group leader unreaped until all group mutations and scanning finish.
 func startCopiedHLSProbe(ctx context.Context, command *exec.Cmd) (copiedHLSProbe, io.ReadCloser, error) {
 	if ctx.Err() != nil {
 		return nil, nil, ctx.Err()

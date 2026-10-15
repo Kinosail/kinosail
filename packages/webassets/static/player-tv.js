@@ -148,7 +148,7 @@
   button('[data-tv-stop]').addEventListener('click', () => run(async () => {
     if (!session) return;
     closing = true; clearTimeout(timer);
-    try { await controller.command({ action: 'stop' }); } catch { /* Revocation remains available when the TV is offline. */ }
+    try { await controller.command({ action: 'stop' }); } catch {   }
     try { await revoke(session.id); }
     catch (error) { closing = false; void poll(); throw error; }
     session = undefined; controller = undefined; closing = false;

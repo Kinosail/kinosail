@@ -8,7 +8,6 @@ import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Home requests 36 category rows and 200 history rows; the small parity fixture misses these limits. */
 class CatalogPageLimitTest {
     private val server = ServerAddress("https://example.com")
 

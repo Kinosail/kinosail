@@ -5,15 +5,12 @@ import (
 	"time"
 )
 
-// WriteJSON writes one Jellyfin-compatible response.
 type WriteJSON func(http.ResponseWriter, any)
 
-// ItemHandlers contains app-owned Jellyfin item HTTP adapters.
 type ItemHandlers struct {
 	Views, Items, Latest, Persons, Item, Seasons, Episodes, NextUp, Resume http.HandlerFunc
 }
 
-// RegisterItems registers the shared Jellyfin item route contract.
 func RegisterItems(mux *http.ServeMux, handlers ItemHandlers) {
 	mux.HandleFunc("GET /UserViews", handlers.Views)
 	mux.HandleFunc("GET /Users/{user}/Views", handlers.Views)
@@ -30,7 +27,6 @@ func RegisterItems(mux *http.ServeMux, handlers ItemHandlers) {
 	mux.HandleFunc("GET /UserItems/Resume", handlers.Resume)
 }
 
-// Users writes visible profile data through the app-owned projection.
 func Users[T any](writer http.ResponseWriter, profiles []T, visible func(T) (map[string]any, bool), write WriteJSON) {
 	users := make([]map[string]any, 0, len(profiles))
 	for _, profile := range profiles {
@@ -41,7 +37,6 @@ func Users[T any](writer http.ResponseWriter, profiles []T, visible func(T) (map
 	write(writer, users)
 }
 
-// CreateAuthKey validates one app and records its short-lived key handoff.
 func CreateAuthKey(writer http.ResponseWriter, request *http.Request, profile string, create func(string) (string, error), keyID func(string) string, grants *Grants, now func() time.Time) {
 	app, ok := App(request.URL.Query())
 	if !ok {
@@ -57,7 +52,6 @@ func CreateAuthKey(writer http.ResponseWriter, request *http.Request, profile st
 	writer.WriteHeader(http.StatusNoContent)
 }
 
-// AuthKeys writes active key handoffs for one profile.
 func AuthKeys(writer http.ResponseWriter, profile string, grants *Grants, now time.Time, write WriteJSON) {
 	items := grants.Items(profile, now)
 	write(writer, map[string]any{"Items": items, "TotalRecordCount": len(items)})

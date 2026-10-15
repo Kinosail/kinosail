@@ -1,6 +1,4 @@
-# Native parallel steps and queue:max are validated by the pinned actionlint fork.
 paths:
-  # GitHub's Xcode 27 public-preview runner predates actionlint's label list.
   .github/workflows/{app,ci}.yml:
     ignore:
       - '^label "xcode-27" is unknown\.'

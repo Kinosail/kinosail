@@ -49,7 +49,6 @@ for (const [name, path, role] of [
 
 test("fragment navigation does not lock subsequent menu links", async ({ page }) => {
 	await loadMenu(page);
-	// Remove the Search handler to exercise ordinary same-document fragment navigation.
 	await page.locator('a[href="#library-search"]').evaluate(link => link.replaceWith(link.cloneNode(true)));
 	await page.getByRole("link", { name: "Search", exact: true }).tap();
 	await expect(page).toHaveURL(`${origin}/?view=movies#library-search`);
@@ -73,7 +72,6 @@ test("duplicate navigation is blocked until the next pageshow", async ({ page })
 	await loadMenu(page);
 	const allowed = await page.evaluate(() => {
 		const link = document.querySelector<HTMLAnchorElement>('a[href="/settings"]')!;
-		// Observe the guard after it bubbles through document, without leaving the fixture.
 		const result: boolean[] = [];
 		window.addEventListener("click", event => {
 			result.push(!event.defaultPrevented);
@@ -84,6 +82,5 @@ test("duplicate navigation is blocked until the next pageshow", async ({ page })
 		link.click();
 		return result;
 	});
-	// The rejected second click stops propagation before the window observer.
 	expect(allowed).toEqual([true, true]);
 });

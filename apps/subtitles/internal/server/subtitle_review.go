@@ -207,7 +207,6 @@ func (manager *subtitleManager) exportSubtitle(request *http.Request, id, langua
 		}
 		return data, "application/octet-stream", http.StatusOK, nil
 	}
-	// Exporting the same format keeps its positions and styling intact.
 	if format == "vtt" && strings.HasPrefix(strings.TrimSpace(string(data)), "WEBVTT") {
 		return data, "text/vtt; charset=utf-8", http.StatusOK, nil
 	}

@@ -71,7 +71,6 @@ func TestSubSourceAcquisitionRecoversFromInvalidCandidate(t *testing.T) { //noli
 							if test.name == "ambiguous exact members" {
 								files = 2
 							}
-							// A one-byte body overflow must reach the HTTP reader, not fail search metadata validation.
 							if test.name == "body above four MiB" {
 								size = 4 << 20
 							}
@@ -94,12 +93,10 @@ func TestSubSourceAcquisitionRecoversFromInvalidCandidate(t *testing.T) { //noli
 					case "service unavailable":
 						writer.WriteHeader(http.StatusServiceUnavailable)
 					case "short HTTP transfer":
-						// The ZIP bytes are complete; only the HTTP body is incomplete.
 						writer.Header().Set("Content-Length", strconv.Itoa(len(good)+17))
 						writer.Header().Set("Connection", "close")
 						_, _ = writer.Write(good)
 					default:
-						// The truncated-ZIP case still delivers its entire declared HTTP body.
 						writer.Header().Set("Content-Type", "application/zip")
 						writer.Header().Set("Content-Length", strconv.Itoa(len(bad)))
 						_, _ = writer.Write(bad)

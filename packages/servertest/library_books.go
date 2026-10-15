@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/archivetest"
 )
 
-// ViewerCanBrowseAndDownloadEbooks preserves the Player book-reader regression contract.
 func (fixture LibraryAPIFixture) ViewerCanBrowseAndDownloadEbooks(t *testing.T) {
 	mediaDir := t.TempDir()
 	for name, content := range map[string]string{"Dune.epub": "epub", "Manual.pdf": "%PDF"} {
@@ -42,7 +41,6 @@ func (fixture LibraryAPIFixture) ViewerCanBrowseAndDownloadEbooks(t *testing.T) 
 	}
 }
 
-// ReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb preserves the Player book-reader regression contract.
 func (fixture LibraryAPIFixture) ReaderServesPDFEPUBAndComicPagesThroughAPIAndWeb(t *testing.T) {
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Manual.pdf"), []byte("%PDF-1.4"), 0o600); err != nil {
@@ -65,7 +63,6 @@ func (fixture LibraryAPIFixture) ReaderServesPDFEPUBAndComicPagesThroughAPIAndWe
 	}
 }
 
-// ReaderServesMainstreamComicArchivesThroughAPIAndWeb preserves the Player book-reader regression contract.
 func (fixture LibraryAPIFixture) ReaderServesMainstreamComicArchivesThroughAPIAndWeb(t *testing.T, itemsByTitle func(*testing.T, http.Handler) map[string]string) {
 	if _, err := exec.LookPath("bsdtar"); err != nil {
 		t.Fatalf("bsdtar runtime is required for CB7 and CBT reader coverage: %v", err)

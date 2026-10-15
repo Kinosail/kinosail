@@ -11,7 +11,6 @@ import (
 	"testing"
 )
 
-// SessionlessHLSPlaylist exercises the actual app playlist-serving operation.
 func SessionlessHLSPlaylist(t *testing.T, cadence float64, serve func(http.ResponseWriter, *http.Request, string, int, float64) bool) {
 	t.Helper()
 	event := fmt.Sprintf("#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXTINF:%.6f,\nsegment-00000.m4s\n", cadence)

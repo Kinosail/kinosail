@@ -10,8 +10,6 @@ for (const scriptState of ["delayed", "missing"]) {
   test(`login waits for initialized password controls when its script is ${scriptState}`, {tag: ["@smoke", "@routed-fault"]}, async ({browser}, info) => {
     let release!: () => void, requested = false, posts = 0;
     const barrier = new Promise<void>(resolve => release = resolve);
-    // Serve the complete redirect chain: intercepted redirects can reach the
-    // unrelated configured Server before Playwright routes the next document.
     const server = createServer(async (request, response) => {
       const url = new URL(request.url!, "http://fixture");
       if (url.pathname === "/theme-readiness.js") {
@@ -32,7 +30,6 @@ for (const scriptState of ["delayed", "missing"]) {
     let attempt: Promise<{ok: boolean; error: string}> | undefined;
     try {
       page = await browser.newPage({baseURL: origin, serviceWorkers: "block"});
-      // Observe missing-script failures immediately, before checking controls.
       attempt = login(page).then(() => ({ok: true, error: ""}), error => ({ok: false, error: String(error)}));
       await expect.poll(() => requested).toBe(true);
       if (scriptState === "delayed") {
@@ -66,9 +63,6 @@ for (const scriptState of ["delayed", "missing"]) {
   });
 }
 
-// Isolation gap: a populated Server cannot hold one Home resource after the
-// optional passkey offer. The helper must finish that destination before the
-// next journey navigates; a permanently pending load must stop that journey.
 for (const helper of [{name: "populated", run: login}, {name: "layout", run: layoutLogin}]) for (const homeState of ["delayed", "blocked"] as const) {
   test(`${helper.name === "layout" ? "layout " : ""}login finishes the Not now destination before Library when Home is ${homeState}`, {tag: "@smoke"}, async ({browser}, info) => {
     let release!: () => void, homeRequested = false, posts = 0, homeGets = 0, libraryGets = 0;

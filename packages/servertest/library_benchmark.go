@@ -8,13 +8,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// LibraryBenchmark binds the shared index and search implementations.
 type LibraryBenchmark struct {
 	Index  func([]library.Item) func(string) (library.Item, bool)
 	Search func([]library.Item, string) []library.Item
 }
 
-// FindDoesNotCopy verifies the allocation-free index lookup contract.
 func (fixture LibraryBenchmark) FindDoesNotCopy(t *testing.T) {
 	find := fixture.index(10_000)
 	if allocations := testing.AllocsPerRun(100, func() {
@@ -26,7 +24,6 @@ func (fixture LibraryBenchmark) FindDoesNotCopy(t *testing.T) {
 	}
 }
 
-// BenchmarkFind measures index lookup without copying the library.
 func (fixture LibraryBenchmark) BenchmarkFind(b *testing.B) {
 	find := fixture.index(10_000)
 	b.ReportAllocs()
@@ -37,7 +34,6 @@ func (fixture LibraryBenchmark) BenchmarkFind(b *testing.B) {
 	}
 }
 
-// BenchmarkSearch10K measures a selective search across a large library.
 func (fixture LibraryBenchmark) BenchmarkSearch10K(b *testing.B) {
 	items := make([]library.Item, 10_000)
 	for position := range items {

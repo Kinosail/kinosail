@@ -16,7 +16,6 @@ actor CatalogRequest {
         Task { await self.finish(await task.result) }
     }
 
-    // The producer keeps ownership of persistence when a consumer leaves.
     func value() async throws -> any Sendable {
         let consumer = UUID()
         let value = try await withTaskCancellationHandler {
@@ -53,8 +52,6 @@ actor CatalogRequest {
 }
 
 extension ServerClient {
-    /// Domain validation runs on both remote and persisted data. This seam is
-    /// limited to browsing metadata and preferences, never stream URLs or authentication.
     func catalog<Value: Sendable>(_ path: String, policy: CatalogPolicy,
                                  decode: @escaping (JSONValue) throws -> Value) async throws -> Value {
         try Task.checkCancellation()
@@ -91,8 +88,6 @@ extension ServerClient {
         else {
             guard catalogRequests.count < 32 else { throw ClientError.unavailable }
             let id = UUID()
-            // The producer owns persistence. Leaving a screen must not throw away
-            // a successful fetch shared with another screen or a future visit.
             request = CatalogRequest(id: id, operation: diagnosticOperation(path), task: Task {
                 defer { if catalogRequests[path]?.id == id { catalogRequests[path] = nil } }
                 do {

@@ -24,8 +24,6 @@ type copiedHLSProbeOutput struct {
 	bytes.Buffer
 }
 
-// A complete, checked file is linked without replacing another producer's
-// destination. Root handles retain the original generation throughout copying.
 func (output *copiedHLSVariantOutput) publishFirst(current func() bool) error {
 	file, _, err := copiedHLSOpenFile(output.stage, "segment-00000.m4s", 64<<20)
 	if err != nil {
@@ -71,8 +69,6 @@ func copyCopiedHLSPending(ctx context.Context, source, pending *os.File) error {
 }
 
 func (output *copiedHLSVariantOutput) finishPublishedFirst(linkErr error, current func() bool, owned os.FileInfo) error {
-	// A race winner is accepted only when independently certified; never remove
-	// or replace that path on any subsequent failure.
 	valid := current()
 	hash, err := copiedHLSAssetHash(output.ctx, output.media, "segment-00000.m4s", 64<<20)
 	if !valid || err != nil || hash != output.certificate.First {
@@ -100,7 +96,7 @@ func copiedHLSRemoveStageRoot(root *os.Root, directory string) {
 	held, heldErr := root.Stat(".")
 	canonical, err := parent.Lstat(name)
 	if heldErr == nil && err == nil && canonical.IsDir() && os.SameFile(held, canonical) {
-		_ = parent.Remove(name) // Empty exclusive operation stage after worker/monitor join.
+		_ = parent.Remove(name)
 	}
 }
 
@@ -114,7 +110,7 @@ func copiedHLSSettleStage(root *os.Root, directory string) {
 	for removed := 0; removed < 4096 && time.Now().Before(deadline); {
 		entries, err := file.ReadDir(32)
 		for _, entry := range entries {
-			_ = root.Remove(entry.Name()) // Files only; never traverse unexpected directories.
+			_ = root.Remove(entry.Name())
 		}
 		removed += len(entries)
 		if err != nil || len(entries) == 0 {
@@ -289,7 +285,7 @@ func (manager *hlsManager) copiedHLSClockPending(ctx context.Context, directory,
 		if manager.copiedHLSTimelinePresent(directory) {
 			return false, errCopiedHLSIndex
 		}
-		return false, nil // Ordinary cold streams have no indexed strategy.
+		return false, nil
 	}
 	return timeline.Clock == nil, nil
 }

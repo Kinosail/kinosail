@@ -88,7 +88,7 @@ func (output *copiedHLSVariantOutput) selectStage(manager *hlsManager, name, pol
 		return errCopiedHLSIndex
 	}
 	if _, err := output.media.Lstat("segment-00000.m4s"); !os.IsNotExist(err) {
-		return errCopiedHLSIndex // A committed zero must never enter the legacy writer.
+		return errCopiedHLSIndex
 	}
 	if err := output.snapshot(name); err != nil {
 		return err
@@ -139,8 +139,6 @@ func (output *copiedHLSVariantOutput) arguments() []string {
 	if output.stage == nil {
 		return nil
 	}
-	// The next source key closes zero. Keep a second GOP for interleaver/audio
-	// lookahead; a single key instead runs through its certified genuine EOF.
 	duration := output.timeline.segmentEnd(min(1, len(output.timeline.Keys)-1)) - output.timeline.point(0) + *output.timeline.Clock
 	return []string{"-t", copiedHLSTime(duration)}
 }
@@ -170,7 +168,7 @@ func (output *copiedHLSVariantOutput) run(command *exec.Cmd, private ...string) 
 	}()
 	err := runHLSCommand(output.ctx, command, append(private, output.directory)...)
 	close(stop)
-	<-joined // The command and monitor settle before any publication or cleanup.
+	<-joined
 	if err != nil || output.ctx.Err() != nil || !output.boundedStage() {
 		return errCopiedHLSIndex
 	}

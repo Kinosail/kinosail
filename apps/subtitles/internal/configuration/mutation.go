@@ -56,12 +56,10 @@ func configurationMutation() configurationcore.Mutation {
 func Set(dataDir, key, raw string) error { return configurationMutation().Set(dataDir, key, raw) }
 func Delete(dataDir, key string) error   { return configurationMutation().Delete(dataDir, key) }
 
-// SetSCIM changes the token and its expiry as one validated configuration operation.
 func SetSCIM(dataDir, token, expiresAt string) error {
 	return configurationMutation().SetSCIM(dataDir, token, expiresAt)
 }
 
-// DeleteSCIM removes the token and expiry as one validated configuration operation.
 func DeleteSCIM(dataDir string) error { return configurationMutation().DeleteSCIM(dataDir) }
 
 func persistStoredConfiguration(dataDir string, regular, secrets map[string]string, writeRegular, writeSecrets bool) error {

@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// PlaySession returns one request-bound session after Player's authorization checks.
 func (module DeliveryHTTP) PlaySession(request *http.Request, itemID string) (DeliverySession, bool) {
 	id, valid := StrictQuery(request.URL.Query(), "playSessionId", 256)
 	if !validRequiredValue(id, 256) || !valid {
@@ -26,7 +25,6 @@ func (module DeliveryHTTP) PlaySession(request *http.Request, itemID string) (De
 	return session, allowed
 }
 
-// PlaybackContext resolves authenticated content or validates a public play session.
 func (module DeliveryHTTP) PlaybackContext(request *http.Request) (library.Item, DeliveryViewer, bool) { //nolint:cyclop // Each authorization fact remains explicit.
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {
@@ -72,7 +70,6 @@ func (module DeliveryHTTP) PlaybackContext(request *http.Request) (library.Item,
 	return item, viewer, true
 }
 
-// Subtitle selects embedded or sidecar delivery and applies the play-session timeline.
 func (module DeliveryHTTP) Subtitle(writer http.ResponseWriter, request *http.Request) {
 	index, err := strconv.Atoi(request.PathValue("index"))
 	if err != nil || index < 0 || index > 1024 {
@@ -131,7 +128,6 @@ func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, req
 	return false
 }
 
-// PlaybackItem returns only the item portion of one authorized context.
 func (module DeliveryHTTP) PlaybackItem(request *http.Request) (library.Item, bool) {
 	item, _, found := module.PlaybackContext(request)
 	return item, found

@@ -37,7 +37,6 @@ func TestManagementPageIsPrivateAndDefaultsOff(t *testing.T) {
 
 func TestManagementSessionReplayCannotTouchAppSessionState(t *testing.T) {
 	store := newProfileStore(t.TempDir())
-	// Resolve through the real app token boundary; it must reject before LastSeen or persistence.
 	key := base64.StdEncoding.EncodeToString([]byte(strings.Repeat("k", 32)))
 	store.sessions[sessionKey("management-token")] = viewerSession{ProfileID: "owner", ManagementDevice: key, Browser: true, LastSeen: 1, ExpiresAt: 9999999999}
 	before, err := json.Marshal(store.sessions)

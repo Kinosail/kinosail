@@ -18,13 +18,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// ErrorFunc writes one app-localized error.
 type ErrorFunc func(http.ResponseWriter, *http.Request, string, int)
 
-// Approval contains the app-branded approval view state.
 type Approval struct{ ProfileName, RequestID, Destination string }
 
-// Register installs the complete Home Assistant route set.
 func (integration *Integration[P]) Register(mux *http.ServeMux, owner func(http.Handler) http.Handler, approval func(http.ResponseWriter, *http.Request, Approval) error) {
 	mux.Handle("GET /api/v1/home-assistant", integration.available(http.HandlerFunc(integration.probeHTTP)))
 	mux.Handle("POST /api/v1/home-assistant/token", integration.available(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) { integration.tokenHTTP(writer, request) })))
@@ -46,7 +43,6 @@ func (integration *Integration[P]) Register(mux *http.ServeMux, owner func(http.
 	mux.Handle("GET /home-assistant/media/{id}", integration.available(http.HandlerFunc(integration.mediaHTTP)))
 }
 
-// Gate hides all Home Assistant routes while the feature is disabled.
 func Gate(enabled func() bool, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if (strings.HasPrefix(request.URL.Path, "/api/v1/home-assistant") || strings.HasPrefix(request.URL.Path, "/home-assistant/")) && !enabled() {
@@ -61,7 +57,6 @@ func Gate(enabled func() bool, next http.Handler) http.Handler {
 	})
 }
 
-// SettingHandler changes the feature through the versioned HTTP API.
 func (integration *Integration[P]) SettingHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var input struct {
@@ -82,7 +77,6 @@ func (integration *Integration[P]) SettingHandler() http.HandlerFunc {
 	}
 }
 
-// SaveSetting changes the feature through one strict web form.
 func (integration *Integration[P]) SaveSetting(destination string, writeError ErrorFunc) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if err := httpguard.DecodeForm(writer, request, 1024, "enabled"); err != nil {
@@ -102,7 +96,6 @@ func (integration *Integration[P]) SaveSetting(destination string, writeError Er
 	}
 }
 
-// PairingHandler renders one app-branded manual pairing page.
 func (integration *Integration[P]) PairingHandler(render func(http.ResponseWriter, *http.Request, string) error, writeError ErrorFunc, notFound func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if !integration.Enabled() {

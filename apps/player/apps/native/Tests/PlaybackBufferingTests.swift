@@ -3,9 +3,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Failure cases: resume must not claim playback before media is available;
-// changing speed must reach a waiting player, preserve a pause, and reject
-// invalid rates before changing either player or persisted device choices.
 @MainActor struct PlaybackBufferingTests {
     @Test func resumeKeepsPendingMediaInBufferingState() throws {
         let engine = try pendingEngine()

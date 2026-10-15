@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// JellyfinOwnerSessions binds media-only Owner contracts to real app HTTP handlers.
 type JellyfinOwnerSessions struct {
 	NewHandler func(*testing.T, string, string) http.Handler
 	Set        func(string, string, string) error
@@ -32,7 +31,6 @@ type jellyfinOwnerSession struct {
 	} `json:"User"`
 }
 
-// JellyfinQuickConnectProjectsOwnerAsMediaViewer checks the approved media-only session.
 func (fixture JellyfinOwnerSessions) JellyfinQuickConnectProjectsOwnerAsMediaViewer(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -55,7 +53,6 @@ func (fixture JellyfinOwnerSessions) JellyfinQuickConnectProjectsOwnerAsMediaVie
 	fixture.assertRestrictedOwnerRoutes(t, handler, session.Token, "restricted Owner Quick Connect")
 }
 
-// JellyfinPasswordSessionProjectsOwnerAsMediaViewer checks playback and persisted restrictions.
 func (fixture JellyfinOwnerSessions) JellyfinPasswordSessionProjectsOwnerAsMediaViewer(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -118,7 +115,6 @@ func (fixture JellyfinOwnerSessions) assertRestrictedOwnerRoutes(t *testing.T, h
 	}
 }
 
-// JellyfinCompatibilitySessionAppearsInActivityWithoutCredentials checks safe audit attribution.
 func (fixture JellyfinOwnerSessions) JellyfinCompatibilitySessionAppearsInActivityWithoutCredentials(t *testing.T) {
 	t.Helper()
 	t.Parallel()

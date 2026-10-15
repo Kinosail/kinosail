@@ -4,8 +4,6 @@ import UIKit
 import WebKit
 @testable import KinosailPlayer
 
-// A pending reader and another native consumer share the real preference request.
-// Browser E2E cannot host this native shared-client cancellation boundary.
 extension NativePreferencesUXTests {
     @Test func readerPreferenceSaveDoesNotAbandonOpeningChapter() async throws {
         let fixture = try await PreferencesLoopbackFixture()

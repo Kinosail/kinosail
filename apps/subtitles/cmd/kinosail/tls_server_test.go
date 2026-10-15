@@ -163,9 +163,6 @@ func startTestServer(t *testing.T, environment []string) *exec.Cmd {
 	return command
 }
 
-// A failed health request can come from application rejection, a child startup
-// failure, or another listener using the released port. Keep those classes
-// observable without publishing raw process logs, addresses, or response bodies.
 func logTestServerFailure(t *testing.T, command *exec.Cmd, output *os.File) {
 	t.Helper()
 	if _, err := output.Seek(0, io.SeekStart); err != nil {

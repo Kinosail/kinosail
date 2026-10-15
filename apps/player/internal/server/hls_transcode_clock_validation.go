@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// Apply the same bounds to generated and persisted proofs before any arithmetic
-// or side effect. These limits also bound all cross-timebase integer products.
 func validTranscodeHLSClock(clock *transcodeHLSClock) bool {
 	source := clock.Source
 	if !validTranscodeClockEnvelope(clock) {
@@ -93,7 +91,7 @@ func validTranscodeFragment(cut transcodeFragmentClock, number int, base int64, 
 		return false
 	}
 	if number == 0 && cut.VideoPTS != 0 || cut.VideoPTS*source.Rate%base != 0 || cut.VideoPTS*1000%base != 0 {
-		return false // This encoder path requires exact audio samples and millisecond video seeks.
+		return false
 	}
 	for stream := range 2 {
 		if cut.Packets[stream] <= 0 || cut.Packets[stream] > 16384 || cut.Clocks[stream] == ([32]byte{}) {

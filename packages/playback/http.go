@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// RequestedVideoCodecs parses the bounded browser capability query.
 func RequestedVideoCodecs(request *http.Request) ([]string, error) {
 	return requestedCodecs(request, "video", []string{"h264", "hevc", "av1", "vp9"})
 }

@@ -1,8 +1,6 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 import { assetReceipt, observe, origin, record, settle, snapshot, type Snapshot } from "./browse-return-helpers";
 
-// Source-prepared supplemental coverage: the original nine-case selector does
-// not register this file. Root must explicitly admit it with the real Go fixture.
 test.skip(!origin, "requires disposable Go Server browse-return fixture");
 test.use({ serviceWorkers: "block", video: "off", launchOptions: { args: ["--disable-back-forward-cache"] } });
 test.setTimeout(25_000);
@@ -23,9 +21,6 @@ async function selectResume(page: Page, info: TestInfo) {
   expect(data).toMatchObject({ total: 1, items: [{ title: "Return Movie 25" }] });
   const id = data.items[0].id;
   expect(id, "Home prerequisite: canonical fictional identity").toMatch(/^[a-f0-9]{16}$/);
-  // Only the authorized disposable Server receives this progress write. No
-  // Remove action or production account/media is involved, and playback decode
-  // is outside this focus/scroll contract.
   const progress = await page.request.post(`${origin}/progress/${id}`, { form: { seconds: "3" } });
   expect(progress.status(), "Home prerequisite: public Continue watching seed").toBe(204);
   await home(page, info);

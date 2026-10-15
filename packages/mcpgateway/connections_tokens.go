@@ -152,7 +152,6 @@ func writeMCPToken(writer http.ResponseWriter, access, refresh string, scopes []
 	writeJSON(writer, map[string]any{"access_token": access, "token_type": "Bearer", "expires_in": expiresIn, "refresh_token": refresh, "scope": strings.Join(scopes, " ")}, http.StatusOK)
 }
 
-// VerifyToken validates one built-in access token and records its last use.
 func (connections *Connections) VerifyToken(_ context.Context, token string, request *http.Request) (*mcpauth.TokenInfo, error) {
 	hash, now := secretHash(token), connections.now()
 	connections.mu.Lock()

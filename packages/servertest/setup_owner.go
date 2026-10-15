@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// SetupOwnerCookie creates the shared local Owner fixture and returns its secure session.
 func SetupOwnerCookie(t *testing.T, handler http.Handler) *http.Cookie {
 	t.Helper()
 	response := httptest.NewRecorder()
@@ -24,7 +23,6 @@ func SetupOwnerCookie(t *testing.T, handler http.Handler) *http.Cookie {
 	return nil
 }
 
-// IsBrowserSessionCookie recognizes each app's session response and legacy fixtures.
 func IsBrowserSessionCookie(cookie *http.Cookie) bool {
 	if cookie == nil {
 		return false

@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-// AssertDLNALabelExplainsUnconfiguredAndConfiguredStates preserves the Player regression against the supplied app bindings.
 func AssertDLNALabelExplainsUnconfiguredAndConfiguredStates(t *testing.T, label func() string, configure func(string, string)) {
 	if got := label(); got != "Set KINOSAIL_DLNA_URL to enable" {
 		t.Fatalf("unconfigured DLNA label = %q", got)
@@ -19,14 +18,12 @@ func AssertDLNALabelExplainsUnconfiguredAndConfiguredStates(t *testing.T, label 
 	}
 }
 
-// AssertHardwareSupportAcceptsAutomaticAndKnownBackends preserves the Player regression against the supplied app bindings.
 func AssertHardwareSupportAcceptsAutomaticAndKnownBackends(t *testing.T, supports func(string) bool) {
 	if !supports("auto") || !supports("vaapi") || supports("nvenc") {
 		t.Fatal("hardware support classification is incorrect")
 	}
 }
 
-// AssertPlayerFormattingUsesStableHumanReadableBoundaries preserves the Player regression against the supplied app bindings.
 func AssertPlayerFormattingUsesStableHumanReadableBoundaries(t *testing.T, byteSize func(int64) string, oneOf func(string, ...string) bool) {
 	AssertByteSizeBoundaries(t, byteSize)
 	if !oneOf("hevc", "h264", "hevc") || oneOf("vp9", "h264", "hevc") {
@@ -34,7 +31,6 @@ func AssertPlayerFormattingUsesStableHumanReadableBoundaries(t *testing.T, byteS
 	}
 }
 
-// AssertByteSizeBoundaries checks formatting in apps that no longer own allowlist helpers.
 func AssertByteSizeBoundaries(t *testing.T, byteSize func(int64) string) {
 	for size, want := range map[int64]string{0: "0 B", 1024: "1.0 KB", 1024 * 1024: "1.0 MB", 1024 * 1024 * 1024: "1.0 GB"} {
 		if got := byteSize(size); got != want {

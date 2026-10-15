@@ -12,14 +12,11 @@ import (
 const maxBulkItems = 100
 
 var (
-	// ErrBulkSelection reports an invalid bulk metadata item selection.
 	ErrBulkSelection = errors.New("metadata selection is invalid")
-	// ErrBulkFields reports an invalid bulk metadata patch.
-	ErrBulkFields = errors.New("metadata fields are invalid")
-	errBulkSave   = errors.New("metadata could not be saved")
+	ErrBulkFields    = errors.New("metadata fields are invalid")
+	errBulkSave      = errors.New("metadata could not be saved")
 )
 
-// BulkPatch contains the owner-controlled fields that a bulk edit can replace.
 type BulkPatch struct {
 	Title   *string `json:"title"`
 	Year    *string `json:"year"`
@@ -29,14 +26,12 @@ type BulkPatch struct {
 	Genres  *string `json:"genres"`
 }
 
-// BulkIndex supplies the library operations required by a bulk metadata edit.
 type BulkIndex interface {
 	Find(string) (library.Item, bool)
 	Refresh(context.Context) error
 	Snapshot() ([]library.Item, error)
 }
 
-// BulkEditor owns Player's canonical bulk metadata operation.
 type BulkEditor struct {
 	index    BulkIndex
 	recordMu sync.Locker
@@ -47,17 +42,14 @@ type BulkEditor struct {
 	fail     BulkFailure
 }
 
-// NewBulkEditor connects storage and rendering adapters to Player's canonical operation.
 func NewBulkEditor(index BulkIndex, recordMu sync.Locker, records *map[string]Record, save func(map[string]Record) error, render BulkRender, fail BulkFailure) *BulkEditor {
 	return NewBulkEditorFor(index, recordMu, records, save, PlayerBulkPage(), render, fail)
 }
 
-// NewBulkEditorFor connects a derivative product profile to Player's canonical operation.
 func NewBulkEditorFor(index BulkIndex, recordMu sync.Locker, records *map[string]Record, save func(map[string]Record) error, page BulkPage, render BulkRender, fail BulkFailure) *BulkEditor {
 	return &BulkEditor{index: index, recordMu: recordMu, records: records, save: save, page: page, render: render, fail: fail}
 }
 
-// Apply validates and persists one owner-authenticated bulk metadata edit.
 func (editor *BulkEditor) Apply(ctx context.Context, ids []string, patch BulkPatch) (map[string]Record, error) {
 	ids, err := normalizeBulkSelection(append([]string(nil), ids...))
 	if err != nil {

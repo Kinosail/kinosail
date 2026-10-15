@@ -1,5 +1,3 @@
-// Package publicgateway is the restricted public HTTPS process. It has no
-// application configuration, Owner identity, media mount, or IP dial capability.
 package publicgateway
 
 import (
@@ -27,8 +25,6 @@ const (
 	ClientAddressHeader = "X-Kinosail-Public-Client"
 )
 
-// Run opens exactly one public listener before installing a process-wide network
-// filter. Failure to install the filter closes the listener without serving.
 func Run(ctx context.Context, hostname string) error {
 	if !validHostname(hostname) {
 		return errors.New("public gateway hostname is invalid")
@@ -65,8 +61,6 @@ func unixTransport(path string) *http.Transport {
 	}
 }
 
-// Handler forwards requests only to the public application socket. Caller-supplied
-// proxy metadata cannot select another target or turn a public request into management.
 func Handler(hostname, path string) http.Handler {
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(p *httputil.ProxyRequest) {
@@ -146,8 +140,6 @@ func (l *connectionLimits) track(c net.Conn, state http.ConnState) {
 	}
 }
 
-// TLSMetadata is used only on the private socket receiving HTTPS from this process.
-// It does not imply identity or Owner permissions.
 func TLSMetadata(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		values := r.Header.Values(ClientAddressHeader)

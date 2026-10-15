@@ -8,8 +8,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-// Cancel removes only the request whose device-held polling secret matches.
-// Missing or already consumed requests are harmless, so cancellation is idempotent.
 func (broker *Broker) Cancel(secret string) error {
 	if secret == "" || strings.TrimSpace(secret) != secret || !validField(secret, 128) {
 		return ErrInvalidRequest
@@ -23,7 +21,6 @@ func (broker *Broker) Cancel(secret string) error {
 	return nil
 }
 
-// CancelAPI lets a requesting device withdraw its own pending authorization.
 func (application *Application) CancelAPI(writer http.ResponseWriter, request *http.Request) {
 	if !application.limiters.Requests.Allow("cancel:"+httpguard.RemoteHost(request.RemoteAddr), 60) {
 		tooMany(writer, "too many Quick Connect requests")

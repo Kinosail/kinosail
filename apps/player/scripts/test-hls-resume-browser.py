@@ -136,7 +136,7 @@ try:
         shift = ['ffmpeg', '-nostdin', '-v', 'error', '-i', str(source), '-itsoffset', '0.130',
                  '-i', str(source), '-map', '1:v:0', '-map', '0:a:0', '-c', 'copy', str(shifted)]
         subprocess.run(shift, check=True, capture_output=True, timeout=60)
-        source.unlink()  # Only this run's generated input before Server startup.
+        source.unlink()
         source = shifted
         metadata.update(shiftCommand=shift, sha256=sha(source), keyframesSeconds=source_keys,
                         durationSeconds=duration + .13, videoDurationSeconds=duration + .13)
@@ -164,7 +164,6 @@ try:
         server = subprocess.Popen([str(run / 'player')], cwd=ROOT, env=env, stdout=log, stderr=log)
         try:
             api, boot = PublicServer(origin), time.monotonic()
-            # Startup on a busy development Mac is distinct from media readiness.
             while time.monotonic() - boot < 120:
                 if server.poll() is not None:
                     raise RuntimeError('fixture_process_exited')
@@ -206,7 +205,6 @@ try:
                     while encoder_count(server, source) and time.monotonic() < limit:
                         time.sleep(.05)
                     check(encoder_count(server, source) == 0, 'tail_recovery_worker_not_joined')
-                    # Derive the last fragment from the independent fixture key schedule.
                     target = 0 if args.first_recovery else fragment_count - 1
                     fragment = rendition / f'segment-{target:05d}.m4s'
                     case['evictedFragment'] = fragment.name
@@ -217,7 +215,7 @@ try:
                     stable_paths.append(rendition / 'index.m3u8')
                     previous_metadata = [sha(path) for path in stable_paths]
                     case['audioBeforeEviction'] = audio_boundaries(rendition)
-                    fragment.unlink()  # Only this run's disposable cache.
+                    fragment.unlink()
                     case['fragmentMissingBeforePlayback'] = not fragment.exists()
                     if args.tail_recovery:
                         case['tailPresentBeforeEviction'] = case['fragmentPresentBeforeEviction']

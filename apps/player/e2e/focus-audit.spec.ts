@@ -22,17 +22,14 @@ for (const width of [390, 1440]) {
 			const media = page.locator("video,audio");
 			if (/^\/(watch|album)\//.test(route) && await media.count()) {
 				await expect.poll(() => media.first().evaluate((element: HTMLMediaElement) => element.readyState)).toBeGreaterThanOrEqual(2);
-				// The short fixture episodes advance automatically; audit one stable document.
 				await media.evaluateAll(elements => elements.forEach((element: HTMLMediaElement) => element.pause()));
 			}
-			// Discover detail and settings pages from production links, excluding exports and mutation endpoints.
 			const discovered = await page.locator("main a[href]:not([download])").evaluateAll(links => links.map(link => link.getAttribute("href")!).filter(href => /^\/(show|album|book|item|collection|watch|photo|playlist)\/[^/?.#]+$/.test(href) || /^\/settings(?:\/[^/.?#]+)?$/.test(href) && !["/settings/metrics", "/settings/backup"].includes(href)));
 			for (const href of discovered) routes.add(href);
 			const controls = page.locator('a[href]:visible,button:visible:not(:disabled),input:visible:not(:disabled):not([type=hidden]),select:visible:not(:disabled),textarea:visible:not(:disabled),summary:visible,[tabindex="0"]:visible');
 			let checked = 0;
 			for (const control of await controls.all()) {
 				if (!(await control.isEnabled())) continue;
-                // Closed native details may retain descendant boxes in WebKit.
                 if (!await control.evaluate(element => {
                   for (let parent = element.parentElement; parent; parent = parent.parentElement) {
                     if (parent instanceof HTMLDetailsElement && !parent.open && !parent.querySelector(":scope > summary")?.contains(element)) return false;

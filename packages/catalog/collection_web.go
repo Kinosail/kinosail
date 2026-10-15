@@ -12,7 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// CollectionWebPage is the app-neutral view model for one Collection page.
 type CollectionWebPage struct {
 	Name, Query       string
 	Items, Candidates []library.Item
@@ -20,7 +19,6 @@ type CollectionWebPage struct {
 	Owner             bool
 }
 
-// CollectionWebHandlersConfig binds Collection behavior to app-owned state and views.
 type CollectionWebHandlersConfig struct {
 	VisibleLibrary  func(*http.Request) ([]library.Item, error)
 	Snapshot        func(*http.Request) ([]library.Item, error)
@@ -36,7 +34,6 @@ type CollectionWebHandlersConfig struct {
 	NotFound        func(http.ResponseWriter, *http.Request)
 }
 
-// CollectionWebStore exposes shared Collection state operations to the web adapter.
 type CollectionWebStore interface {
 	CollectionNames([]library.Item) []string
 	Collection(string, []library.Item) []library.Item
@@ -45,14 +42,12 @@ type CollectionWebStore interface {
 	DeleteCollection(context.Context, string, []library.Item) error
 }
 
-// CollectionWebIndex supplies the request-aware visibility and complete snapshot seams.
 type CollectionWebIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
 	VisibleItem(*http.Request, string) (library.Item, bool)
 	Snapshot() ([]library.Item, error)
 }
 
-// CollectionWebApp supplies the presentation and localized response seams.
 type CollectionWebApp struct {
 	Index    CollectionWebIndex
 	Owner    func(*http.Request) bool
@@ -61,10 +56,8 @@ type CollectionWebApp struct {
 	NotFound func(http.ResponseWriter, *http.Request)
 }
 
-// CollectionWebHandlers owns shared Collection web behavior and validation.
 type CollectionWebHandlers struct{ config CollectionWebHandlersConfig }
 
-// NewCollectionWebHandlers creates one Collection HTTP adapter around app-owned seams.
 func NewCollectionWebHandlers(config CollectionWebHandlersConfig) CollectionWebHandlers {
 	if !validCollectionWebHandlersConfig(config) {
 		panic("invalid Collection HTTP dependencies")
@@ -72,7 +65,6 @@ func NewCollectionWebHandlers(config CollectionWebHandlersConfig) CollectionWebH
 	return CollectionWebHandlers{config: config}
 }
 
-// NewCollectionWebHandlersForStore binds common Collection state methods once.
 func NewCollectionWebHandlersForStore(store CollectionWebStore, app CollectionWebApp) CollectionWebHandlers {
 	return NewCollectionWebHandlers(CollectionWebHandlersConfig{
 		VisibleLibrary: func(request *http.Request) ([]library.Item, error) {
@@ -94,7 +86,6 @@ func NewCollectionWebHandlersForStore(store CollectionWebStore, app CollectionWe
 	})
 }
 
-// ManageItem changes one Collection membership after validating the complete form.
 func (handlers CollectionWebHandlers) ManageItem(writer http.ResponseWriter, request *http.Request) {
 	if len(request.URL.Query()) != 0 {
 		handlers.config.Failure(writer, request, "invalid Collection state", http.StatusBadRequest)
@@ -129,7 +120,6 @@ func (handlers CollectionWebHandlers) ManageItem(writer http.ResponseWriter, req
 	http.Redirect(writer, request, target, http.StatusSeeOther)
 }
 
-// Create adds one Collection after applying the shared name boundary.
 func (handlers CollectionWebHandlers) Create(writer http.ResponseWriter, request *http.Request) {
 	name := strings.TrimSpace(request.FormValue("name"))
 	if !ValidListName(name) {
@@ -143,7 +133,6 @@ func (handlers CollectionWebHandlers) Create(writer http.ResponseWriter, request
 	http.Redirect(writer, request, "/collection/"+url.PathEscape(name), http.StatusSeeOther)
 }
 
-// Save changes one Collection membership from a detail-page form.
 func (handlers CollectionWebHandlers) Save(writer http.ResponseWriter, request *http.Request) {
 	name, id := request.PathValue("name"), request.PathValue("id")
 	if !ValidListName(name) || !ValidCurationItemID(id) {
@@ -172,7 +161,6 @@ func (handlers CollectionWebHandlers) Save(writer http.ResponseWriter, request *
 	http.Redirect(writer, request, target+item.ID, http.StatusSeeOther)
 }
 
-// Delete removes one Collection after resolving the current Library snapshot.
 func (handlers CollectionWebHandlers) Delete(writer http.ResponseWriter, request *http.Request) {
 	name := request.PathValue("name")
 	if !ValidListName(name) {
@@ -187,7 +175,6 @@ func (handlers CollectionWebHandlers) Delete(writer http.ResponseWriter, request
 	http.Redirect(writer, request, "/", http.StatusSeeOther)
 }
 
-// Browse renders one visible Collection and bounded add-item candidates.
 func (handlers CollectionWebHandlers) Browse(writer http.ResponseWriter, request *http.Request) {
 	query, err := ParseCurationQuery(request.URL.Query())
 	if err != nil {

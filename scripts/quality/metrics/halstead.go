@@ -39,8 +39,6 @@ func measureFunctions(set *token.FileSet, file *ast.File, info *types.Info) metr
 		value.Start.Line = set.Position(node.Pos()).Line
 		value.Metrics.Difficulty = halsteadDifficulty(node, info)
 		report.Functions = append(report.Functions, value)
-		// Existing gate counts a closure within its parent and separately, but does
-		// not emit extra reports for closures nested inside that closure.
 		return !literal
 	})
 	return report

@@ -9,7 +9,7 @@ import wave
 
 
 def prepare(directory):
-    directory.mkdir()  # Refuse existing media, symlinks and prior evidence.
+    directory.mkdir()
     for number, title in enumerate(('Queue Intent Alpha', 'Queue Intent Beta'), 1):
         stem = f'{number:02d} {title}'
         with wave.open(str(directory / (stem + '.wav')), 'wb') as audio:

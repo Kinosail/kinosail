@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// These isolated controls cover source/route, cancellation and replacement paths
-// absent from the public ten-second fixture; fake assets do not prove AAC content.
 func TestRemainingColdAACCompletionRejectsGenerationChangedBeforeJoin(t *testing.T) {
 	for _, changed := range []string{"root", "rendition"} {
 		t.Run(changed, func(t *testing.T) {

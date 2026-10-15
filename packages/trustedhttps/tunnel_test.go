@@ -13,7 +13,6 @@ func TestTunnelCertificateRenewsWithoutPublishingPrivateAddress(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// This provider fails any address update; certificate-only maintenance must not call it.
 	manager.provider = failingDNSProvider{}
 	obtained := 0
 	manager.obtain = func(context.Context, Config, string, *http.Client, string, dnsProvider) ([]byte, error) {

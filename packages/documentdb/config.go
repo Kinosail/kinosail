@@ -15,10 +15,8 @@ var playerDocuments = []string{
 	"sessions.json", "settings.json", "smart_playlists.json", "updates.json",
 }
 
-// Validator applies app-specific semantic rules after common JSON validation.
 type Validator func(name string, data []byte) error
 
-// Config defines the app-owned document vocabulary and migration policy.
 type Config struct {
 	Documents               []string
 	RetiredDocuments        []string
@@ -26,10 +24,8 @@ type Config struct {
 	ValidateBeforeMigration bool
 }
 
-// PlayerDocuments returns the canonical Player state vocabulary.
 func PlayerDocuments() []string { return slices.Clone(playerDocuments) }
 
-// PlayerConfig returns the canonical Player document-store policy.
 func PlayerConfig() Config {
 	return Config{Documents: PlayerDocuments(), RetiredDocuments: []string{"live-tv.json"}}
 }

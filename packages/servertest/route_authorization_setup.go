@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// SetupRouteAuthorization preserves Owner enrollment and enabled Jellyfin routes.
 func SetupRouteAuthorization(t *testing.T, handler http.Handler, responseToken func(*testing.T, *httptest.ResponseRecorder) string) (string, string) {
 	t.Helper()
 	response := RouteJSON(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{

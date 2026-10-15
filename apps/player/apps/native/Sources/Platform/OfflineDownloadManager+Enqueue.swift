@@ -36,7 +36,6 @@ extension OfflineDownloadManager {
         guard catalog.records.count < 50 else { throw ClientError.invalidInput("Remove a download before adding another.") }
         let expected = try OfflineRecord(item: item, jobID: String(repeating: "0", count: 16), quality: quality, tracks: tracks)
         guard !catalog.records.contains(where: { $0.key == expected.key }) else { throw ClientError.invalidInput("This download is already on the device. Open Downloads to resume or remove it.") }
-        // Persistable metadata and settings are validated before Server preparation.
         let subtitlePolicy = item.kind == .video ? try await client.playbackSubtitlePolicy(itemID: item.id) : nil
         try check(attempt)
         let prepared = try await client.prepareDownload(itemID: item.id, quality: quality, tracks: tracks)

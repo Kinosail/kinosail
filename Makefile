@@ -1,6 +1,6 @@
 APPS := player subtitles
 
-.PHONY: hooks check verify-changed max-loc quality quality-static container-test test-instance-check packages-check tooling-check cli-startup-test worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish nox-live nox-live-install nox-live-stop
+.PHONY: hooks check verify-changed max-loc comments-check quality quality-static container-test test-instance-check packages-check tooling-check cli-startup-test worktree-lease worktree-heartbeat worktree-audit worktree-cleanup agent-finish nox-live nox-live-install nox-live-stop
 
 hooks:
 	@hooks="$$(git rev-parse --git-common-dir)/hooks"; \
@@ -70,6 +70,9 @@ verify-changed: tooling-check packages-check
 max-loc:
 	@./scripts/quality/check-loc.sh
 
+comments-check:
+	@bash scripts/tooling/check-code-comments.sh
+
 quality-static:
 	@./scripts/quality/check-static.sh
 
@@ -107,5 +110,4 @@ nox-live-install:
 nox-live-stop:
 	@python3 scripts/tooling/install-nox-local.py --stop
 
-# The file cap is enabled; preserve the pause for all other gates.
 packages-check tooling-check check verify-changed quality-static quality container-test test-instance-check: SHELL := $(abspath scripts/tooling/gate-shell.sh)

@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-// Check verifies the provider token by updating the configured DNS address.
 func Check(ctx context.Context, config Config, dependencies ...Dependencies) error {
 	if len(dependencies) > 1 {
 		return errors.New("trusted HTTPS check accepts at most one dependency set")

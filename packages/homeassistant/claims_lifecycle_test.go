@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-// Registered routes control the disable interleaving and lease clock that a
-// populated browser cannot force. These are isolated protocol regressions.
 func TestRegisteredClaimCannotMintAfterAdmittedRequestIsDisabled(t *testing.T) {
 	_, integration, call := claimedHTTPTest(t)
 	profile := integration.config.CurrentProfile
@@ -31,7 +29,6 @@ func TestRegisteredClaimCannotMintAfterAdmittedRequestIsDisabled(t *testing.T) {
 	if got := call(http.MethodGet, "/api/v1/home-assistant/players", ""); got.Code != http.StatusOK || !strings.Contains(got.Body.String(), `"players":[]`) {
 		t.Fatal("disabled request left a published target")
 	}
-	// A surviving hidden reservation would make this return409 after re-enable.
 	readClaimReply(t, call(http.MethodPost, "/api/v1/home-assistant/players/claims", `{"id":"disable-boundary"}`))
 }
 

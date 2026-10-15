@@ -7,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-// Selection contains one persisted transcoder policy choice.
 type Selection struct {
 	Transcoder  string `json:"transcoder,omitempty"`
 	Codec       string `json:"codec,omitempty"`
@@ -15,10 +14,8 @@ type Selection struct {
 	ToneMap     bool   `json:"toneMap,omitempty"`
 }
 
-// SelectionSources identifies choices controlled by explicit configuration.
 type SelectionSources struct{ Accelerator, Codec bool }
 
-// NormalizeAccelerator applies Player's automatic hardware default.
 func NormalizeAccelerator(accelerator string) string {
 	if accelerator == "" {
 		return "auto"
@@ -26,7 +23,6 @@ func NormalizeAccelerator(accelerator string) string {
 	return accelerator
 }
 
-// NormalizeCodec applies Player's automatic codec default.
 func NormalizeCodec(codec string) string {
 	if codec == "" {
 		return "auto"
@@ -34,7 +30,6 @@ func NormalizeCodec(codec string) string {
 	return codec
 }
 
-// ValidAccelerator reports whether Player accepts one hardware setting.
 func ValidAccelerator(accelerator string) bool {
 	switch accelerator {
 	case "", "none", "auto", "vaapi", "qsv", "cuda", "videotoolbox", "rkmpp", "v4l2m2m", "amf", "mf":
@@ -44,7 +39,6 @@ func ValidAccelerator(accelerator string) bool {
 	}
 }
 
-// ValidateSelection validates and normalizes one untrusted settings request.
 func (capabilities Capabilities) ValidateSelection(selection Selection) (Selection, error) {
 	if selection.Transcoder != "automatic" && selection.Transcoder != "speed" && selection.Transcoder != "quality" {
 		return Selection{}, errors.New("transcoder quality is invalid")
@@ -65,7 +59,6 @@ func (capabilities Capabilities) ValidateSelection(selection Selection) (Selecti
 	return selection, nil
 }
 
-// ReconcileSelection repairs unavailable defaults but rejects explicit configuration.
 func (capabilities Capabilities) ReconcileSelection(selection Selection, sources SelectionSources) (Selection, bool, error) {
 	accelerator, codec := NormalizeAccelerator(selection.Accelerator), NormalizeCodec(selection.Codec)
 	acceleratorSupported, codecSupported := capabilities.Supports(accelerator), capabilities.SupportsCodec(codec)
@@ -87,7 +80,6 @@ func (capabilities Capabilities) ReconcileSelection(selection Selection, sources
 	return selection, true, nil
 }
 
-// Settings resolves one selection to the effective encoder policy.
 func (capabilities Capabilities) Settings(selection Selection, requestedCodec string) (transcodepolicy.Settings, error) {
 	codec := requestedCodec
 	if codec == "" {
@@ -105,8 +97,6 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	if name == "" {
 		name = "automatic"
 	}
-	// Cached output follows the requested policy even if recovery changes the
-	// device. HLS separately binds seek work to the encoder that made its init.
 	settings := transcodepolicy.Settings{
 		Name: name, Preset: "veryfast", CRF: "22", Codec: codec, Accelerator: accelerator, Encoder: encoder,
 		Cache: name + ":" + codec + ":" + NormalizeAccelerator(selection.Accelerator) + ":policy=3", ToneMap: selection.ToneMap,
@@ -127,8 +117,6 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	return settings, nil
 }
 
-// ColorSettings selects independently verified HDR processing. Tone mapping
-// falls back to software; unverified HDR output fails without changing colors.
 func (capabilities Capabilities) ColorSettings(options transcodepolicy.Settings) (transcodepolicy.Settings, error) {
 	if options.OutputHDR == "" {
 		return capabilities.toneMapSettings(options), nil

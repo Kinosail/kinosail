@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// The HTTP issuance seam uses a clock that crosses a second while persistence completes.
 func TestCookieIssuancePreservesPersistedExpiryAcrossSecondBoundary(t *testing.T) {
 	t.Parallel()
 	for _, kind := range []string{"local", "public", "public-grant"} {

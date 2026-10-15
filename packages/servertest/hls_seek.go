@@ -74,7 +74,6 @@ func SnapshotHLSCache(t *testing.T, root string) map[string]string {
 			return err
 		}
 		if entry.IsDir() {
-			// Probe metadata is independent of HLS output and may be cached during validation.
 			if path == filepath.Join(root, "probes") {
 				return filepath.SkipDir
 			}

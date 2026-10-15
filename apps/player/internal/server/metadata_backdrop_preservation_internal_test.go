@@ -16,9 +16,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/operations"
 )
 
-// The public refresh journey uses a loopback image base, which must keep its
-// existing behavior. This canonical-transport integration covers partial bulk
-// persistence, including shared show propagation, without provider credentials.
 func TestCanonicalBackdropBulkFailureKeepsCommittedMovieAndShowReferences(t *testing.T) {
 	for _, test := range []struct {
 		name         string

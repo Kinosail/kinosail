@@ -1,8 +1,6 @@
 import UIKit
 import XCTest
 
-// Real tvOS loading and retry focus cannot be established by player unit tests.
-// Each journey requires its own fresh loopback identity to avoid cached playback.
 final class RemoteAudioStateTests: RemoteTestCase {
     private var fixtureEnabled = false
     override func setUpWithError() throws {
@@ -85,8 +83,6 @@ final class RemoteAudioStateTests: RemoteTestCase {
         return app
     }
 
-    // Decorative skeletons are intentionally absent from the accessibility tree.
-    // Measure the tall center circle in rendered pixels, not a production test hook.
     private func pendingTransportCenter(_ image: UIImage, x: CGFloat, viewport: CGRect) throws -> CGFloat {
         let cg = try XCTUnwrap(image.cgImage)
         let scale = CGFloat(cg.width) / viewport.width

@@ -74,8 +74,6 @@ if (settingsNav && settingsFlow) {
       if (link.dataset.settingsGroup === group) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }
-    // The initial CSS projection already shows the native fragment's category.
-    // Switch to interactive visibility only after the same projection is applied.
     if (organized) settingsFlow.closest(".settings-shell").setAttribute("data-settings-ready", "");
   };
   const searchSettings = () => {
@@ -122,7 +120,6 @@ if (settingsNav && settingsFlow) {
     if (!section || form.method.toLowerCase() !== "post") return;
     const action = new URL(form.action, location.href);
     if (action.origin !== location.origin || !action.pathname.startsWith("/settings/") || action.hash) return;
-    // Redirects back to Settings inherit this bookmark; the HTTP operation is unchanged.
     action.hash = section.id;
     form.action = action.href;
   });

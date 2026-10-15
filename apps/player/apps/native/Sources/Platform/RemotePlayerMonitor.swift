@@ -19,7 +19,7 @@ final class RemotePlayerMonitor {
                         try await apply(command, to: session.player)
                     }
                 } catch is CancellationError { return }
-                catch { /* Reachability is reflected by the Server's 30-second player expiry. */ }
+                catch {   }
             }
             do { try await Task.sleep(for: .seconds(3)) } catch { return }
         }

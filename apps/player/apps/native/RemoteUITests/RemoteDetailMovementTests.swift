@@ -59,7 +59,6 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Forward 30 seconds"].hasFocus)
         remote.press(.up)
         record("audio Up to Playback options", app)
-        // tvOS 27 exposes the ellipsis toolbar item as its native "More" control.
         let options = app.buttons.matching(NSPredicate(format: "label == 'Playback options' OR label == 'More'")).firstMatch
         XCTAssertTrue(options.hasFocus)
         remote.press(.select)
@@ -106,8 +105,6 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         record("back to Music tile", app)
     }
 
-    // Native expanded menus do not expose their focused child through hasFocus.
-    // Select each visible choice with arrows and verify the resulting public state.
     @MainActor private func verifyAudioMenus(_ app: XCUIApplication, _ remote: XCUIRemote) {
         remote.press(.down)
         XCTAssertTrue(app.buttons["Shuffle off"].hasFocus)

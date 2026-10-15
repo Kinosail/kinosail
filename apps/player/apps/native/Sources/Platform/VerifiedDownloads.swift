@@ -3,7 +3,6 @@
   import Foundation
   import UIKit
 
-  /// Public download operations hide queue-confined transfer state.
   final class VerifiedDownloads: Sendable {
     static let shared = VerifiedDownloads()
     static let identifier = VerifiedDownloadEngine.identifier
@@ -38,11 +37,7 @@
     }
   }
 
-  /// OS-owned extent transfers; verified blocks live in an app-owned staging file.
-  /// The serial utility queue owns journals; a separate bounded worker hashes payloads.
-  /// Public async adapters cross that queue; delegate callbacks run on it.
   final class VerifiedDownloadEngine: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
-    // State below is confined to queue, including the implementation extensions.
     static let identifier = "com.kinosail.player.offline.swift.v1"
     let queue = DispatchQueue(label: "com.kinosail.player.offline", qos: .utility)
     var jobs: [String: VerifiedDownload] = [:]

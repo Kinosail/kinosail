@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-// Reconstruct the historical uncorrected8-second AAC refill on disposable media.
-// This changes generated cached fragments, never source media or stored receipts.
 func remainingPublicLegacyRefill(t *testing.T, ctx context.Context, ffmpeg, source string) string {
 	t.Helper()
 	directory := t.TempDir()

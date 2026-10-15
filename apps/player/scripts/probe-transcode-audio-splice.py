@@ -70,7 +70,6 @@ class Trial:
         samples = array.array("h")
         for number in range(rate * 18):
             time = number / rate
-            # Two chirps and a varying envelope make a time shift observable.
             signal = (0.22 + 0.04 * math.sin(0.73 * time)) * math.sin(2 * math.pi * (173 * time + 37 * time * time))
             signal += 0.10 * math.sin(2 * math.pi * (613 * time + 11 * time * time))
             samples.append(round(signal * 32767))

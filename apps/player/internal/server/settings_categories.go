@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// Categories describe presentation only; forms, authorization, and saved values stay unchanged.
 var settingsCategories = []struct {
 	id, label, level, anchor string
 	headings                 []string
@@ -47,7 +46,6 @@ func categorizeSettingsPage(page string) string {
 		}
 		return `<section` + attributes + `><h2>` + parts[2] + `</h2>`
 	})
-	// Keep setup available in Overview without placing it above the navigation.
 	if start := strings.Index(page, `<section class="wide onboarding-settings"`); start >= 0 {
 		if end := strings.Index(page[start:], `</section>`); end >= 0 {
 			end += start + len(`</section>`)
@@ -92,7 +90,6 @@ func settingsCategoryFor(heading string) string {
 	return "system"
 }
 
-// Stable bookmarks take precedence over presentation copy.
 var settingsSectionCategories = map[string]string{
 	"general": "general", "updates": "general", "onboarding": "general",
 	"playback": "playback", "appearance": "appearance", "navigation": "appearance",

@@ -62,7 +62,6 @@ func (service *castService) mediaHTTP(writer http.ResponseWriter, request *http.
 	serveFile(service.index, playback.MediaPath, session.ContentType)(writer, authorized)
 }
 
-// The track number was validated against this session before response headers.
 func (service *castService) serveCastSubtitle(writer http.ResponseWriter, request *http.Request, session castSession) {
 	track, _ := strconv.Atoi(request.PathValue("track"))
 	parts := strings.Split(session.Tracks[track-1].source, "/")

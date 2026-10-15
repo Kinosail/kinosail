@@ -7,8 +7,6 @@ import { expect, test } from "@playwright/test";
 const fixtureDir = process.env.KINOSAIL_UI_FIXTURE_DIR;
 const revision = process.env.KINOSAIL_TEST_REVISION ?? execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 test.skip(!fixtureDir, "requires TestWriteUIStateFixturesSubtitlePairingPreservesDialogueCorrespondenceThroughCleanup artifacts");
-// Cue comparisons exercise native input behavior after seeking focuses the video.
-// Keep the following checkbox click independent of that focus scroll animation.
 test.use({reducedMotion: "reduce"});
 
 for (const width of [390, 1440]) {
@@ -31,7 +29,6 @@ for (const width of [390, 1440]) {
       expect(route.request().method(), "preview must not save or restore a sidecar").toBe("GET");
       if (path.startsWith("/media/")) return route.abort();
       if (path === "/static/theme.js") {
-        // Saved baseline assets predate this shell dependency capture; preserve their empty-script boundary.
         const body = await readFile(`${fixtureDir}/theme.js`).catch(error => { if (error.code === "ENOENT") return ""; throw error; });
         return route.fulfill({ contentType: "text/javascript", body });
       }

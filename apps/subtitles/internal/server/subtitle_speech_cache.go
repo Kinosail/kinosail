@@ -48,8 +48,6 @@ func (synchronizer *subtitleSynchronizer) audioReference(ctx context.Context, it
 	if err != nil {
 		return subtitleAudioReference{}, err
 	}
-	// Two full-length references bound memory and are shared by search, preview,
-	// and retries. File changes invalidate the key automatically.
 	synchronizer.cache = append([]subtitleSpeechCacheEntry{{key, reference}}, synchronizer.cache...)
 	if len(synchronizer.cache) > 2 {
 		synchronizer.cache = synchronizer.cache[:2]

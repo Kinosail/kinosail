@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// Access supplies application authorization and visible Library items.
 type Access interface {
 	Profile(*http.Request) (string, bool)
 	Item(*http.Request, string) (string, library.Item, bool)
@@ -21,7 +20,6 @@ type api struct {
 	access  Access
 }
 
-// RegisterAPI registers Player's versioned offline-download contract.
 func RegisterAPI(mux *http.ServeMux, manager *Manager, access Access) {
 	handler := api{manager, access}
 	mux.HandleFunc("POST /api/v1/items/{id}/downloads", handler.start)

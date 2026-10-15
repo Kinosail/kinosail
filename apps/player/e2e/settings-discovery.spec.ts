@@ -25,7 +25,6 @@ test("settings search crosses levels and preserves unsaved preferences", { tag: 
  await page.getByRole("navigation", { name: "Settings level" }).getByRole("link", { name: "Basic", exact: true }).click();
  await page.locator('[data-settings-nav] a[href="#general"]').click();
  await expect(page.getByRole("textbox", { name: "Server name", exact: true })).toHaveValue("Unsaved name");
- // Save the original value so the shared test instance is left unchanged.
  await page.getByRole("textbox", { name: "Server name", exact: true }).fill(originalName);
  await page.getByRole("button", { name: "Save Server name", exact: true }).click();
  await expect(page).toHaveURL(/\/settings#general$/);

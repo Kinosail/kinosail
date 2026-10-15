@@ -1,6 +1,4 @@
 
-// Project capability-dependent Apple controls while the HTML is being parsed,
-// before the deferred player bundle. Keep one toolbar and one settings panel.
 if (location.pathname.startsWith("/watch/")) {
   const appleTouch = /iPhone|iPad|iPod/.test(navigator.userAgent) || navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
   if (appleTouch && typeof document.createElement("video").webkitEnterFullscreen === "function") {
@@ -19,7 +17,6 @@ if (location.pathname.startsWith("/watch/")) {
       }
       const toolbar = stage.querySelector(".player-stage-toolbar");
       const settings = stage.querySelector(".player-settings");
-      // The buffer follows the complete settings subtree in both app templates.
       if (!toolbar || !settings || !stage.querySelector("[data-player-status]")) return;
       const button = stage.querySelector("[data-player-settings]");
       if (button && !toolbar.contains(button)) toolbar.append(button);

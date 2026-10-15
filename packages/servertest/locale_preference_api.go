@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// LanguagePreferenceIsAvailableThroughAPI preserves the original locale preference regression.
 func (fixture LocaleWebFixture) LanguagePreferenceIsAvailableThroughAPI(t *testing.T) {
 	t.Parallel()
 	handler, token := fixture.Server(t)
@@ -27,7 +26,6 @@ func (fixture LocaleWebFixture) LanguagePreferenceIsAvailableThroughAPI(t *testi
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodPut, "/api/v1/me/language", map[string]any{"language": "xx"}), http.StatusBadRequest, `"error"`)
 }
 
-// BrowserLanguageIsMatchedAndCanReturnToAutomatic preserves the original locale preference regression.
 func (fixture LocaleWebFixture) BrowserLanguageIsMatchedAndCanReturnToAutomatic(t *testing.T) {
 	t.Parallel()
 	handler, token := fixture.Server(t)

@@ -22,7 +22,6 @@ const (
 	mcpStdioConnectionLimit = 32
 )
 
-// ServeStdio bridges stdin and stdout to the running Kinosail Server.
 func ServeStdio(ctx context.Context, dataDir, profileID string, input io.Reader, output io.Writer) error { //nolint:cyclop // Validation, handshake, cancellation, and bidirectional bridging form one transport lifecycle.
 	if ctx == nil || input == nil || output == nil {
 		return errors.New("MCP STDIO requires a context, input, and output")
@@ -51,7 +50,6 @@ func ServeStdio(ctx context.Context, dataDir, profileID string, input io.Reader,
 	}
 }
 
-// OpenStdioRelay returns an authorized Server socket for a lightweight relay.
 func OpenStdioRelay(ctx context.Context, dataDir, profileID string) (*os.File, error) {
 	connection, _, err := openMCPStdio(ctx, dataDir, profileID)
 	if err != nil {
@@ -113,7 +111,6 @@ func initializeMCPStdio(connection net.Conn, profileID string) (*bufio.Reader, e
 	return reader, nil
 }
 
-// StartStdioHost starts the private local MCP socket.
 func StartStdioHost(ctx context.Context, dataDir string, adapter *Gateway, principals PrincipalRepository) error { //nolint:cyclop,gocognit // Safe stale-socket recovery and listener ownership form one startup decision.
 	path, err := StdioSocketPath(dataDir)
 	if err != nil || adapter == nil || principals == nil {
@@ -258,7 +255,6 @@ func validMCPStdioSelector(profileID string) error {
 	return nil
 }
 
-// StdioSocketPath returns the private socket path for one data directory.
 func StdioSocketPath(dataDir string) (string, error) {
 	if dataDir == "" {
 		return "", errors.New("MCP STDIO requires the Server data directory")

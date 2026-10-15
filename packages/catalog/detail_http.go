@@ -17,20 +17,16 @@ const (
 	playerBookHTML       = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>{{.Title}} · Kinosail Player</title><script src="/static/theme.js?v=cinema-1"></script><link rel="stylesheet" href="/static/app.css?v=cinema-1"></head><body class="detail-page"><main class="detail-shell"><a class="back" href="/?view=books">{{icon "back"}} Books</a><section class="media-hero">{{if .Artwork}}<img class="hero-poster" src="/art/{{.ID}}" alt="" loading="eager">{{else}}<div class="hero-poster art">{{icon "book"}}</div>{{end}}<div><span class="eyebrow">Book</span><h1>{{.Title}}</h1><p class="meta-line">{{.Container}}{{if .Year}} · {{.Year}}{{end}}</p>{{if .Plot}}<p>{{.Plot}}</p>{{end}}<div class="hero-actions"><a class="button" href="/read/{{.ID}}">Read now</a>{{if .CanDownload}}<a class="mode" href="/download/{{.ID}}">Download {{.Container}}</a>{{end}}<form action="/list/{{.ID}}" method="post"><button class="quiet" name="listed" value="{{if .Listed}}false{{else}}true{{end}}">{{if .Listed}}Remove from{{else}}Add to{{end}} My List</button></form></div></div></section>{{if or .Playlists .Collections}}<details class="curation-menu"><summary>Add to playlist or Collection</summary><div class="curation-options">{{if .Playlists}}<section><h2>Playlists</h2>{{range .Playlists}}<form action="/playlist/{{.Name}}/{{$.ID}}" method="post"><button name="included" value="{{if .Included}}false{{else}}true{{end}}" aria-label="{{if .Included}}Remove from{{else}}Add to{{end}} playlist · {{.Name}}"><span>{{.Name}}</span><small>{{if .Included}}Added{{else}}Add{{end}}</small></button></form>{{end}}</section>{{end}}{{if and .Owner .Collections}}<section><h2>Collections</h2>{{range .Collections}}<form action="/collection/{{.Name}}/{{$.ID}}" method="post"><button name="included" value="{{if .Included}}false{{else}}true{{end}}" aria-label="{{if .Included}}Remove from{{else}}Add to{{end}} Collection · {{.Name}}"><span>{{.Name}}</span><small>{{if .Included}}Added{{else}}Add{{end}}</small></button></form>{{end}}</section>{{end}}</div></details>{{end}}</main></body></html>`
 )
 
-// ErrInvalidDetailPresentation reports unsafe or incomplete product branding.
 var ErrInvalidDetailPresentation = errors.New("invalid detail presentation")
 
-// DetailPresentation declares the product-specific values used by shared media details.
 type DetailPresentation struct {
 	Product, ThemeVersion, StyleVersion string
 }
 
-// DetailSources contains Player-canonical album and book template sources.
 type DetailSources struct {
 	Album, Book string
 }
 
-// NewDetailSources applies validated product branding to Player's canonical markup.
 func NewDetailSources(presentation DetailPresentation) (DetailSources, error) {
 	if !validDetailPresentation(presentation) {
 		return DetailSources{}, ErrInvalidDetailPresentation
@@ -43,7 +39,6 @@ func NewDetailSources(presentation DetailPresentation) (DetailSources, error) {
 	return DetailSources{replacer.Replace(playerAlbumHTML), replacer.Replace(playerBookHTML)}, nil
 }
 
-// MustDetailSources returns validated detail sources or panics for invalid static configuration.
 func MustDetailSources(presentation DetailPresentation) DetailSources {
 	sources, err := NewDetailSources(presentation)
 	if err != nil {
@@ -76,18 +71,15 @@ func validAssetVersion(version string) bool {
 	return true
 }
 
-// DetailView renders one localized detail page.
 type DetailView interface {
 	Execute(http.ResponseWriter, *http.Request, any) error
 }
 
-// DetailIndex supplies Viewer-filtered Library state.
 type DetailIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 
-// DetailLists supplies the app-owned curation state used by book pages.
 type DetailLists interface {
 	EditablePlaylistNames(*http.Request) []string
 	Playlist(*http.Request, string, []library.Item) []library.Item
@@ -96,12 +88,10 @@ type DetailLists interface {
 	Has(*http.Request, string) bool
 }
 
-// DetailViewer is the access policy used by a book page.
 type DetailViewer struct {
 	Owner, Downloads bool
 }
 
-// DetailHTTP owns Player-canonical album and book projection and response behavior.
 type DetailHTTP struct {
 	album, book DetailView
 	viewer      func(*http.Request) DetailViewer
@@ -109,12 +99,10 @@ type DetailHTTP struct {
 	notFound    func(http.ResponseWriter, *http.Request)
 }
 
-// NewDetailHTTP binds app localization and state adapters to shared detail handlers.
 func NewDetailHTTP(album, book DetailView, viewer func(*http.Request) DetailViewer, failure func(http.ResponseWriter, *http.Request, string, int), notFound func(http.ResponseWriter, *http.Request)) DetailHTTP {
 	return DetailHTTP{album: album, book: book, viewer: viewer, failure: failure, notFound: notFound}
 }
 
-// Album returns the shared Player album handler.
 func (details DetailHTTP) Album(index DetailIndex) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id := request.PathValue("id")
@@ -137,7 +125,6 @@ func (details DetailHTTP) Album(index DetailIndex) http.HandlerFunc {
 	}
 }
 
-// Book returns the shared Player book handler.
 func (details DetailHTTP) Book(index DetailIndex, lists DetailLists) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id := request.PathValue("id")
@@ -168,19 +155,16 @@ func (details DetailHTTP) Book(index DetailIndex, lists DetailLists) http.Handle
 	}
 }
 
-// AlbumPage is the canonical album template projection.
 type AlbumPage struct {
 	library.Album
 	First *library.Item
 }
 
-// DetailOption is one book curation choice.
 type DetailOption struct {
 	Name     string
 	Included bool
 }
 
-// BookPage is the canonical book template projection.
 type BookPage struct {
 	ID, Title, Plot, Container, Year string
 	Artwork, CanDownload, Owner      bool

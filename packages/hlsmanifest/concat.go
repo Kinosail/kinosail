@@ -1,4 +1,3 @@
-// Package hlsmanifest writes safe HTTP Live Streaming input manifests.
 package hlsmanifest
 
 import (
@@ -11,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// WriteSkipConcat writes an FFmpeg concat manifest without the omitted ranges.
 func WriteSkipConcat(directory, source string, duration float64, omitted []playback.Range) (string, error) {
 	if strings.ContainsAny(source, "\r\n") {
 		return "", errors.New("library content path cannot be safely remuxed")

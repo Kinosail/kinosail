@@ -23,7 +23,6 @@ internal fun EpubDocument(book: EpubBook, saved: SavedSession, viewer: Viewer, p
         with(chapterView) {
             contentDescription = "Book chapter"
             setBackgroundColor(if (light) Color.rgb(244, 248, 239) else Color.rgb(11, 13, 11))
-            // Reader CSS already includes the user's system font scale.
             settings.textZoom = 100
             settings.javaScriptEnabled = false
             settings.domStorageEnabled = false

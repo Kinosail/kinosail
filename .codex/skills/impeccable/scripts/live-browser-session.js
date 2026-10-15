@@ -1,10 +1,3 @@
-/**
- * Browser-side durable session helpers for Impeccable live mode.
- *
- * Kept separate from live-browser.js so recovery state can be tested without
- * booting the full overlay UI. Served before live-browser.js and attached to
- * window.__IMPECCABLE_LIVE_SESSION__.
- */
 (function (root) {
   'use strict';
 
@@ -23,11 +16,11 @@
     }
 
     function safeWrite(key, value) {
-      try { store.setItem(key, value); } catch { /* quota exceeded or private mode */ }
+      try { store.setItem(key, value); } catch {   }
     }
 
     function safeRemove(key) {
-      try { store.removeItem(key); } catch { /* unavailable storage */ }
+      try { store.removeItem(key); } catch {   }
     }
 
     function loadSession() {
@@ -80,7 +73,7 @@
           return parsed.filter(id => typeof id === 'string' && id);
         }
         if (typeof parsed === 'string' && parsed) return [parsed];
-      } catch { /* legacy values were stored as a plain session id */ }
+      } catch {   }
       return [raw];
     }
 

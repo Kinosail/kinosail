@@ -5,8 +5,6 @@ import Testing
 import UIKit
 @testable import KinosailPlayer
 
-/// Fictional loopback data. Responses are held until the native view has shown
-/// its saved content, so authorization assertions do not depend on timing.
 final class LibraryRecoveryFixture: @unchecked Sendable {
     struct State {
         var photoReads = 0

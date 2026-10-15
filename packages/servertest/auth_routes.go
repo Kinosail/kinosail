@@ -12,7 +12,6 @@ import (
 	"testing"
 )
 
-// AuthRoutes binds common route security checks to each app's reviewed inventory and real server.
 type AuthRoutes struct {
 	Inventory           func(*testing.T) []string
 	New                 func(*testing.T) (http.Handler, string)
@@ -176,7 +175,6 @@ func (contract AuthRoutes) assertKeyScope(t *testing.T, pattern, scope string, a
 	}
 }
 
-// ReviewedAnonymousAccess verifies the exact inventory before exercising every route.
 func (contract AuthRoutes) ReviewedAnonymousAccess(t *testing.T, expectedCount int, expectedDigest string, newAnonymous func(*testing.T, string) http.Handler) {
 	routes := contract.Inventory(t)
 	if len(routes) != expectedCount {

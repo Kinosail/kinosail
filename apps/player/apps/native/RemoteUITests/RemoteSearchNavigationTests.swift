@@ -1,7 +1,5 @@
 import XCTest
 
-// Search uses the system keyboard above app-owned filters and results. The
-// browser suite cannot detect directional gaps at that native boundary.
 final class RemoteSearchNavigationTests: RemoteTestCase {
     @MainActor func testKeyboardResultsAndEmptyResultsKeepTheirReturnPaths() {
         continueAfterFailure = false

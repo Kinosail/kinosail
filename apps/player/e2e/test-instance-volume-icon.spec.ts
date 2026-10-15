@@ -84,7 +84,6 @@ test("volume icon renders balanced sound waves and keeps accessible mute control
         return { ink, asymmetry: difference / ink };
       });
       expect(pixels.ink).toBeGreaterThan(100_000);
-      // Both speaker and sound waves mirror across the icon's horizontal center.
       expect(pixels.asymmetry).toBeLessThan(0.03);
       expect((await new AxeBuilder({ page }).include(".player-control-row").analyze()).violations).toEqual([]);
       await mute.focus();

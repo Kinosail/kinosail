@@ -35,7 +35,6 @@ mv "$temporary" .env
 project=("${compose[@]}" --file "$compose_file")
 [[ ! -f kinosail.yaml ]] || project+=(--file compose.config.yaml)
 echo "Stopping remote access. Remove the Kinosail port-forwarding rule from your router too."
-# Stop first so a failed recreation cannot leave the previous public listener running.
 "${project[@]}" stop --timeout 0 kinosail
 if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet wg-quick@kinosail 2>/dev/null; then
 	  sudo systemctl stop wg-quick@kinosail

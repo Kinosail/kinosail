@@ -2,7 +2,6 @@ package configurationcore
 
 import "os"
 
-// StagedFile is the durability surface required by a configuration transaction.
 type StagedFile interface {
 	Name() string
 	Chmod(os.FileMode) error
@@ -11,7 +10,6 @@ type StagedFile interface {
 	Close() error
 }
 
-// WriteStagedFile durably writes and closes one configuration transaction file.
 func WriteStagedFile(file StagedFile, data []byte, mode os.FileMode) error {
 	if err := file.Chmod(mode); err != nil {
 		_ = file.Close()

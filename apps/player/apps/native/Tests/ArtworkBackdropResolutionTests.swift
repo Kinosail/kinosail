@@ -2,8 +2,6 @@ import Foundation
 import Testing
 @testable import KinosailPlayer
 
-// Isolated pixel/cache checks protect against a false sharpness claim that a
-// remote-focus screenshot cannot measure. They are not populated-server proof.
 struct ArtworkBackdropResolutionTests {
     @Test func preserves4KBackdropPixelsIndependentlyOfThumbnailDecode() async throws {
         let fixture = try HTTPFixture(body: "{}")
@@ -34,8 +32,6 @@ struct ArtworkBackdropResolutionTests {
         #expect(legacy.width == 780)
         if let store = try await fixture.client.cacheStore() { await store.flushWrites() }
 
-        // The Server has upgraded this derivative; the legacy encoded download
-        // is deliberately still fresh. No global cache clear precedes the hero.
         try installArtworkImage(fixture, path: "/backdrop/movie", width: 3840, height: 2160)
         let loader = ArtworkLoader()
         let hero = try await loader.image(path: "/backdrop/movie", client: fixture.client, dimension: 4096)

@@ -42,8 +42,6 @@ func (operations *subtitleOperations) activate(request *http.Request, activation
 }
 
 func (operations *subtitleOperations) launch(request *http.Request, record subtitleOperationRecord, limit time.Duration, work http.HandlerFunc) {
-	// Browser cancellation does not undo an activation. The job keeps request
-	// identity, follows Server shutdown, and has the reviewed outer deadline.
 	ctx, cancel := operations.operationContext(request.Context(), limit)
 	maps.Copy(operations.active, map[string]context.Context{record.ID: ctx})
 	jobRequest := request.Clone(ctx)

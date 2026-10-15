@@ -34,11 +34,7 @@ import Testing
         #expect((image?.size.height ?? 0) >= 650)
     }
 
-    // Remote E2E owns lifecycle/focus and actual screen proof. Its loading
-    // placeholders are AX-hidden, so this painted check protects card pitch.
     @Test @MainActor func pendingCastCardsMatchPopulatedShelfPitch() async throws {
-        // ImageRenderer omits the UIKit-backed ScrollView. Host the real view
-        // before sampling it; the current pending shelf contains six cards.
         let scene = try #require(UIApplication.shared.connectedScenes.first as? UIWindowScene)
         let window = UIWindow(windowScene: scene)
         let controller = UIHostingController(rootView: DetailLoadingState()
@@ -68,7 +64,6 @@ import Testing
     }
 
     private func pendingCardSpans(_ image: CGImage) throws -> [(start: Int, width: Int)] {
-        // Inside the cards, below their rounded corners. The gaps stay clear.
         let row = try #require(image.cropping(to: CGRect(x: 0, y: CGFloat(image.height - 100),
             width: CGFloat(image.width), height: 1)))
         let context = try #require(CGContext(data: nil, width: image.width, height: 1,

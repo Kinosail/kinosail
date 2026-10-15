@@ -96,7 +96,6 @@ LABEL org.opencontainers.image.revision={GOOD}
 HEALTHCHECK --interval=1s --timeout=30s --start-period=10s --retries=2 CMD kinosail healthcheck
 DOCKERFILE
 """
-    # Refuse to claim a preexisting fixture. Cleanup only resources created by this run.
     remote(f"set -e; if test -e {SANDBOX} || docker inspect {SERVICE} >/dev/null 2>&1 || "
            f"docker image inspect {REPO}:nox-dev >/dev/null 2>&1; then exit 2; fi; mkdir -m 700 {SANDBOX}")
     try:

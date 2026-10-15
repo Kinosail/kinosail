@@ -1,7 +1,6 @@
 let progressRevision = 0, progressPlayedItem, watchedSubmission;
 let watchedDeparture = false, watchedReplay = false;
 let queueSourceChanging = false, queueProgressReady = true;
-// One page-owned pending position; never replay a closed page's session over newer state.
 let pendingProgress, progressFlight, progressFailure = "", progressContinuation, progressNavigation;
 const progressNotice = document.querySelector("[data-progress-notice]");
 const progressStatus = document.querySelector("[data-progress-status]");
@@ -37,7 +36,6 @@ const showProgressFailure = () => {
 };
 const sendProgress = (closing = false) => {
   if (progressFlight && !closing) return progressFlight;
-  // Unload cannot wait for an older response to dispatch the latest keepalive.
   let flight;
   flight = (async () => {
     let response;

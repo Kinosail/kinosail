@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-// TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile verifies conversion, integrity, range resume, UI state, and restart persistence.
 func (fixture DownloadFixture) TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile(t *testing.T) { //nolint:cyclop,funlen // One end-to-end lifecycle proves the complete offline contract.
 	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("source"), 0o600); err != nil {
@@ -75,13 +74,17 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	}
 	handler = fixture.NewTranscodeHandler(media, data, cache, ffmpeg)
 	restored := fixture.APICall(t, handler, token, http.MethodGet, "/api/v1/downloads/"+job.ID, nil)
+	for deadline := time.Now().Add(3 * time.Second); strings.Contains(restored.Body.String(), `"state":"preparing"`) && time.Now().Before(deadline); {
+		AssertAPIBody(t, restored, http.StatusOK, `"readyOffline":false`)
+		time.Sleep(10 * time.Millisecond)
+		restored = fixture.APICall(t, handler, token, http.MethodGet, "/api/v1/downloads/"+job.ID, nil)
+	}
 	var decoded map[string]any
 	if json.Unmarshal(restored.Body.Bytes(), &decoded) != nil || decoded["state"] != "ready" {
 		t.Fatalf("restored job = %d %q", restored.Code, restored.Body.String())
 	}
 }
 
-// RestartDoesNotTrustMissingOrChangedReadyDownload verifies persisted integrity before serving bytes.
 func (fixture DownloadFixture) RestartDoesNotTrustMissingOrChangedReadyDownload(t *testing.T) {
 	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("original-media"), 0o600); err != nil {

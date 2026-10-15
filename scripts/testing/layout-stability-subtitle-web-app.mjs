@@ -1,4 +1,3 @@
-// Actual production dashboard and public manifest; no synthetic document or responses.
 import {createHash} from "node:crypto";
 export async function measureSubtitleWebAppMetadata(browser, options, inspectorPath, results, probe) {
   const context = await browser.newContext({...options, viewport: {width: 390, height: 844}, ignoreHTTPSErrors: false});
@@ -46,7 +45,7 @@ export async function measureSubtitleWebAppMetadata(browser, options, inspectorP
             decoded = JSON.parse(processed.data || "null");
             const url = new URL(processed.url);
             locationValid = url.origin === new URL(options.baseURL).origin && url.pathname === "/manifest.webmanifest";
-          } catch { /* A missing or invalid manifest is retained as a failing result. */ }
+          } catch {   }
           processedManifest = {locationValid, identityValid: matches(decoded), errors: processed.errors.length};
         } finally { await cdp.detach(); }
       }

@@ -41,7 +41,6 @@ async function syncOfflineDownloadButton(button, detail) {
     const locks = await navigator.locks.query();
     if (!current()) return;
     if (!locks.held.some((lock) => lock.name === offlineJobLockName(jobID))) { resume(); return; }
-    // A pause notification can precede the browser's exclusive-lock release.
     await navigator.locks.request(offlineJobLockName(jobID), {
       mode: "shared", signal,
     }, resume);
@@ -83,7 +82,6 @@ async function downloadOfflineJob(button) {
   } catch (error) {
     const interrupted = owner.paused ? offlineUserPaused() : offlineMessage("offlinePaused", "Download interrupted. Resume to continue where it stopped.");
     const detail = {state: "needs_attention", error: owner.controller.signal.aborted ? interrupted : error instanceof Error ? error.message : offlineMessage("offlineVerificationError", "The download could not be verified")};
-    // A tab waiting for another owner may pause only its own pending admission.
     if (owner.admitted) notifyOffline(jobID, detail);
     else showOfflineStatus(jobID, detail);
   } finally {

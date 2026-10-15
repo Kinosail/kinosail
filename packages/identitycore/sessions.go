@@ -126,12 +126,10 @@ func (sessions *Sessions) Create(profileID, name string, browser, strong bool, c
 	return sessions.create(profileID, name, browser, strong, channel, nil, "")
 }
 
-// CreatePublicGrant checks approval's Profile revision under the same lock as issuance.
 func (sessions *Sessions) CreatePublicGrant(profileID, name string, browser bool, revision uint64) (string, error) {
 	return sessions.create(profileID, name, browser, true, "public", &revision, "")
 }
 
-// CreateLocalGrant preserves approval's revision and session authority during issuance.
 func (sessions *Sessions) CreateLocalGrant(profileID, name string, revision uint64, compatibility bool) (string, error) {
 	channel := ""
 	if compatibility {

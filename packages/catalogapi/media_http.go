@@ -9,13 +9,11 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-// MediaIndex exposes Viewer-filtered Library reads.
 type MediaIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 
-// MediaProgress owns per-Viewer progress and public item projection.
 type MediaProgress interface {
 	ClientItems(*http.Request, []library.Item) any
 	ClientItem(*http.Request, library.Item) any
@@ -25,7 +23,6 @@ type MediaProgress interface {
 	SetRevision(*http.Request, string, float64, *bool, string, uint64) (bool, error)
 }
 
-// MediaLists owns per-Viewer lists, playlists, and Collections.
 type MediaLists interface {
 	catalog.CollectionStore
 	Create(context.Context, string, string, ...string) error
@@ -41,7 +38,6 @@ type MediaLists interface {
 	SetPlaylist(context.Context, string, string, string, bool) error
 }
 
-// MediaHandlers owns the Player-canonical catalog HTTP interface.
 type MediaHandlers struct {
 	Index       MediaIndex
 	Progress    MediaProgress
@@ -51,12 +47,10 @@ type MediaHandlers struct {
 	StoreStatus func(error) int
 }
 
-// NewMediaHandlers binds the canonical catalog API to app-owned state and authorization.
 func NewMediaHandlers(index MediaIndex, progress MediaProgress, lists MediaLists, viewer func(*http.Request) string, timeline func(string) (playback.Timeline, error), storeStatus func(error) int) MediaHandlers {
 	return MediaHandlers{Index: index, Progress: progress, Lists: lists, Viewer: viewer, Timeline: timeline, StoreStatus: storeStatus}
 }
 
-// MediaExtras keeps app-only handlers and owner authorization at the adapter.
 type MediaExtras struct {
 	PlaybackEvents http.HandlerFunc
 	Reader         http.HandlerFunc
@@ -64,7 +58,6 @@ type MediaExtras struct {
 	Owner          func(http.Handler) http.Handler
 }
 
-// Register installs the shared catalog routes and app-only route adapters.
 func (handlers MediaHandlers) Register(mux *http.ServeMux, extras MediaExtras) {
 	mux.HandleFunc("GET /api/v1/items/{id}", handlers.item)
 	mux.HandleFunc("PUT /api/v1/items/{id}/progress", handlers.progress)

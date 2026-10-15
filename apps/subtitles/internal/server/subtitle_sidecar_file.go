@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// subtitleSidecar retains the authorized parent throughout acquisition and rollback.
 type subtitleSidecar struct {
 	root *os.Root
 	name string

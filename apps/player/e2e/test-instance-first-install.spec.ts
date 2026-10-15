@@ -3,7 +3,6 @@ import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 import { totp } from "./happy-path-helpers";
 
-// Each browser needs a new isolated Server with no Owner account.
 test.describe.configure({ retries: 0 });
 test("fresh install protects the Owner and reaches playback and a new sign-in", async ({ page, browserName }, info) => {
   test.skip(process.env.KINOSAIL_FRESH_INSTALL !== "1", "requires a dedicated empty Server");

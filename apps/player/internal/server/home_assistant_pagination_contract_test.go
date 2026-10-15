@@ -79,7 +79,6 @@ func TestHomeAssistantPublicLibraryPaginationAndQuery(t *testing.T) {
 			t.Fatal("Q12 empty final extent is not truthful")
 		}
 	}
-	// Safe counts only. This does not describe adapter or HA frontend acceptance.
 	t.Log("Q12 public control: Owner/scoped grant totals208/query201; pages200+8/200+1; empty0")
 }
 

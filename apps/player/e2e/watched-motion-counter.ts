@@ -4,7 +4,6 @@ export type DisplayedMotionHost = {createDisplayedMotionTracker?: (start: FrameS
   receipt: DisplayedMotionReceipt; observe(sample: FrameSample): void;
 }};
 
-// Self-contained for addInitScript; isolated controls install this same function.
 export function installDisplayedMotionTracker(target: DisplayedMotionHost = window as DisplayedMotionHost) {
   target.createDisplayedMotionTracker = start => {
     const valid = (sample: FrameSample) => Number.isFinite(sample.seconds) && sample.seconds >= 0 &&

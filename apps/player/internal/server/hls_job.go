@@ -41,7 +41,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			if err := waitForReplacedHLSJob(ctx, job); err != nil {
 				return nil, err
 			}
-			// Cancellation can publish a reusable cache before the producer joins.
 			return nil, errHLSIdentityChanged
 		}
 		if job != nil && job.cachePolicy != options.Cache {
@@ -56,8 +55,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 			directory := filepath.Join(manager.cache, key)
 			if cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) || seekCacheFresh(directory, item.Path, options.Cache) {
 				if _, err := manager.readCopiedHLSTimelineContext(ctx, directory, options.Cache); err == nil {
-					// Publication or clock binding may have finished after admission
-					// inspected this cache. Never delete that valid new generation.
 					manager.mu.Unlock()
 					return nil, errHLSIdentityChanged
 				}
@@ -85,7 +82,6 @@ func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, 
 	}
 }
 
-// Called under manager.mu so one replacement produces one diagnostic.
 func replaceHLSIdentity(ctx context.Context, job *hlsJob, recipe hlsRecipe) {
 	if job.replacing {
 		return
@@ -150,7 +146,6 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 	return options, nil
 }
 
-// Recheck the complete settings, subtitle, and source snapshot under manager.mu.
 func (manager *hlsManager) validateHLSPolicy(ctx context.Context, item library.Item, recipe hlsRecipe, expected string) error {
 	if err := ctx.Err(); err != nil {
 		return err

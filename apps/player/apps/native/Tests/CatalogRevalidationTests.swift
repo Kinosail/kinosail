@@ -14,7 +14,6 @@ struct CatalogRevalidationTests {
         let refresh = Task { try await fixture.client.home(policy: .reload) }
         try await fixture.waitForRequests(2)
         fixture.respond(view: "history", version: 2)
-        // Wait for the changed first page to persist while recent is still in flight.
         for _ in 0..<200 {
             let page = try await fixture.client.library(view: .history, limit: 24, policy: .cached)
             if page.items.first?.title == "Movie 2" { break }

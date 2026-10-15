@@ -11,24 +11,20 @@ import (
 )
 
 const (
-	// OIDCConfigurationKey identifies the complete OpenID Connect settings group.
 	OIDCConfigurationKey = "integrations.oidc"
 	OIDCIssuerKey        = federation.OIDCIssuerKey
 	OIDCClientIDKey      = federation.OIDCClientIDKey
 	OIDCSecretKey        = federation.OIDCSecretKey
 	OIDCRedirectKey      = federation.OIDCRedirectKey
 	OIDCIdentityKey      = federation.OIDCIdentityKey
-	// SAMLConfigurationKey identifies the complete SAML settings group.
 	SAMLConfigurationKey = "integrations.saml"
 	SAMLMetadataURLKey   = federation.SAMLMetadataURLKey
 	SAMLMetadataXMLKey   = federation.SAMLMetadataXMLKey
 	SAMLIdentityKey      = federation.SAMLIdentityKey
 )
 
-// OIDCConfig is the shared federation configuration value.
 type OIDCConfig = federation.OIDCConfig
 
-// SAMLConfig is the shared federation configuration value.
 type SAMLConfig = federation.SAMLConfig
 
 var (
@@ -36,25 +32,20 @@ var (
 	samlSettingKeys = []string{SAMLMetadataURLKey, SAMLMetadataXMLKey, SAMLIdentityKey}
 )
 
-// OIDCConfigurationKeys returns each setting managed as one OpenID Connect configuration.
 func OIDCConfigurationKeys() []string { return append([]string(nil), oidcSettingKeys...) }
 
-// SAMLConfigurationKeys returns each setting managed as one SAML configuration.
 func SAMLConfigurationKeys() []string { return append([]string(nil), samlSettingKeys...) }
 
-// SAMLConfigured reports whether either supported metadata source is present.
 func SAMLConfigured(value func(string) string) bool {
 	return value(SAMLMetadataURLKey) != "" || value(SAMLMetadataXMLKey) != ""
 }
 
-// OIDCConfigurationView contains the shared OpenID Connect setup presentation state.
 type OIDCConfigurationView[C any] struct {
 	Issuer, ClientID, RedirectURL, IdentityClaim string
 	Configured, SecretConfigured                 bool
 	Control                                      C
 }
 
-// NewOIDCConfigurationView derives the complete OpenID Connect setup state.
 func NewOIDCConfigurationView[C any](value func(string) (string, bool), control C) OIDCConfigurationView[C] {
 	issuer, configured := value(OIDCIssuerKey)
 	_, secretConfigured := value(OIDCSecretKey)
@@ -64,7 +55,6 @@ func NewOIDCConfigurationView[C any](value func(string) (string, bool), control 
 	return OIDCConfigurationView[C]{issuer, clientID, redirectURL, identityClaim, configured, secretConfigured, control}
 }
 
-// OIDCConfigurationStore adapts app storage to one atomic OpenID Connect settings operation.
 type OIDCConfigurationStore[S ~string] struct {
 	File    string
 	Lock    sync.Locker
@@ -76,12 +66,10 @@ type OIDCConfigurationStore[S ~string] struct {
 	Update  func(string, string, bool)
 }
 
-// NewOIDCConfigurationStore adapts one app's settings storage callbacks.
 func NewOIDCConfigurationStore[S ~string](file string, lock sync.Locker, current func(string) string, managed func(string) bool, source func(string) S, set func(string, string, string, string, string, string) error, deleteConfiguration func(string) error, update func(string, string, bool)) OIDCConfigurationStore[S] {
 	return OIDCConfigurationStore[S]{File: file, Lock: lock, Current: current, Managed: managed, Source: source, Set: set, Delete: deleteConfiguration, Update: update}
 }
 
-// Change validates ownership before it persists and projects one OpenID Connect settings change.
 func (store OIDCConfigurationStore[S]) Change(config OIDCConfig, reset bool) error {
 	store.Lock.Lock()
 	defer store.Lock.Unlock()
@@ -116,7 +104,6 @@ func (store OIDCConfigurationStore[S]) Change(config OIDCConfig, reset bool) err
 	return nil
 }
 
-// ParseOIDCConfigurationForm decodes one bounded, unambiguous OpenID Connect settings form.
 func ParseOIDCConfigurationForm(writer http.ResponseWriter, request *http.Request) (OIDCConfig, error) {
 	keys := []string{"key", "issuer", "clientId", "clientSecret", "redirectUrl", "identityClaim"}
 	if err := httpguard.DecodeForm(writer, request, 16<<10, keys...); err != nil || request.PostForm.Get("key") != OIDCConfigurationKey {
@@ -141,7 +128,6 @@ func oidcFormField(request *http.Request, key string, maximum int, required bool
 	return values[0], true
 }
 
-// SaveOIDCConfiguration handles one shared form and delegates its durable change.
 func SaveOIDCConfiguration(writer http.ResponseWriter, request *http.Request, change func(string, string, string, string, string, bool) error, writeError func(http.ResponseWriter, *http.Request, string, int)) {
 	config, err := ParseOIDCConfigurationForm(writer, request)
 	if err != nil {
@@ -155,14 +141,12 @@ func SaveOIDCConfiguration(writer http.ResponseWriter, request *http.Request, ch
 	http.Redirect(writer, request, "/settings/configuration#integrations.oidc", http.StatusSeeOther)
 }
 
-// SAMLConfigurationView contains the shared SAML setup presentation state.
 type SAMLConfigurationView[C any] struct {
 	ProviderMetadataURL, ProviderMetadataXML, SPMetadataURL, ACSURL, IdentityAttribute string
 	Configured                                                                         bool
 	Control                                                                            C
 }
 
-// NewSAMLConfigurationView derives the complete SAML setup state.
 func NewSAMLConfigurationView[C any](value func(string) (string, bool), origin string, control C) SAMLConfigurationView[C] {
 	metadataURL, urlConfigured := value(SAMLMetadataURLKey)
 	metadataXML, xmlConfigured := value(SAMLMetadataXMLKey)
@@ -170,7 +154,6 @@ func NewSAMLConfigurationView[C any](value func(string) (string, bool), origin s
 	return SAMLConfigurationView[C]{metadataURL, metadataXML, origin + "/login/saml/metadata", origin + "/login/saml/acs", identityAttribute, urlConfigured || xmlConfigured, control}
 }
 
-// SAMLConfigurationStore adapts app storage to one atomic SAML settings operation.
 type SAMLConfigurationStore[S ~string] struct {
 	File    string
 	Lock    sync.Locker
@@ -181,7 +164,6 @@ type SAMLConfigurationStore[S ~string] struct {
 	Update  func(string, string, bool)
 }
 
-// Change validates ownership before it persists and projects one SAML change.
 func (store SAMLConfigurationStore[S]) Change(config federation.SAMLConfig, reset bool) error {
 	store.Lock.Lock()
 	defer store.Lock.Unlock()
@@ -212,7 +194,6 @@ func (store SAMLConfigurationStore[S]) Change(config federation.SAMLConfig, rese
 	return nil
 }
 
-// ParseSAMLConfigurationForm decodes one bounded, unambiguous SAML settings form.
 func ParseSAMLConfigurationForm(writer http.ResponseWriter, request *http.Request) (federation.SAMLConfig, error) {
 	keys := []string{"key", "metadataUrl", "metadataXml", "identityAttribute"}
 	if err := httpguard.DecodeForm(writer, request, 1<<20, keys...); err != nil || request.PostForm.Get("key") != SAMLConfigurationKey {
@@ -235,7 +216,6 @@ func boundedFormField(request *http.Request, key string, maximum int, required b
 	return values[0], true
 }
 
-// SaveSAMLConfiguration handles one shared form and delegates its durable change.
 func SaveSAMLConfiguration(writer http.ResponseWriter, request *http.Request, change func(string, string, string, bool) error, writeError func(http.ResponseWriter, *http.Request, string, int)) {
 	config, err := ParseSAMLConfigurationForm(writer, request)
 	if err != nil {

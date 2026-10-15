@@ -12,10 +12,6 @@ import (
 	"time"
 )
 
-// The real-codec public proof exposed a missing fragment at startup cancellation.
-// Isolate the otherwise unschedulable join boundary: canceled workers must not be
-// adopted, replacement must wait for join, rejected requests must have no effects,
-// and a live producer must remain adoptable without replacing retained output.
 func TestCopiedStartupCanceledProducerJoinsBeforeHTTPRefill(t *testing.T) {
 	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)
 	check := copiedStartupRetained(t, directory, item.Path)
@@ -160,7 +156,6 @@ func TestCopiedStartupLiveProducerRemainsAdoptable(t *testing.T) {
 	}
 }
 
-// Unlike real-codec E2E, this controls the source-change boundary after adoption.
 func copiedStartupLiveHTTP(t *testing.T, outcome string) {
 	t.Helper()
 	manager, item, recipe, directory, initialization := copiedRecoveryEnclosingFixture(t)

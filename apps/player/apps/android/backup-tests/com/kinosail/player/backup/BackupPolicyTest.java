@@ -36,7 +36,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.util.ReflectionHelpers;
 import org.xmlpull.v1.XmlPullParser;
 
-/** Framework selection regression; no OEM transport or device-transfer claim. */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 35, shadows = BackupPolicyTest.TarRecorder.class)
 public class BackupPolicyTest {
@@ -72,8 +71,6 @@ public class BackupPolicyTest {
         schemeCache.clear();
         TarRecorder.paths.clear();
         try {
-            // Robolectric's legacy PackageParser omits dataExtractionRules. Bind the
-            // compiled manifest's actual reference, without replacing backup parsing.
             ReflectionHelpers.setField(info, "dataExtractionRulesRes", noRules ? 0 : rules);
             if (noRules) {
                 ReflectionHelpers.setField(info, "fullBackupContent", 0);

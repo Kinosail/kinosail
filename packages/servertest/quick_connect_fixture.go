@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-// QuickConnectFixture uses the real app constructor and established request helpers.
 type QuickConnectFixture struct {
 	New       func(string, time.Duration) http.Handler
 	SignIn    func(*testing.T, http.Handler, string, string) *http.Cookie
@@ -19,10 +18,8 @@ type QuickConnectFixture struct {
 	API       func(*testing.T, http.Handler, string, string, string, any) *httptest.ResponseRecorder
 }
 
-// QuickConnectResponse is the app's code, polling secret and approved token response.
 type QuickConnectResponse struct{ Code, Secret, Token string }
 
-// QuickConnect decodes the original form request response.
 func QuickConnect(t *testing.T, handler http.Handler, path, body string) QuickConnectResponse {
 	t.Helper()
 	response := QuickConnectRecorder(t, handler, path, body)
@@ -33,7 +30,6 @@ func QuickConnect(t *testing.T, handler http.Handler, path, body string) QuickCo
 	return value
 }
 
-// QuickConnectRecorder sends the original form request.
 func QuickConnectRecorder(t *testing.T, handler http.Handler, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader(body))

@@ -17,12 +17,10 @@ var secureTLS12CipherSuites = []uint16{
 	tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
 }
 
-// CertificateProvider selects an optional trusted certificate by server name.
 type CertificateProvider interface {
 	Certificate(string) *tls.Certificate
 }
 
-// TLSConfig contains the validated app settings required to serve HTTPS.
 type TLSConfig struct {
 	Enabled      bool
 	DataDir      string
@@ -30,7 +28,6 @@ type TLSConfig struct {
 	Certificates CertificateProvider
 }
 
-// NewServer returns an HTTP server with Kinosail's shared transport limits.
 func NewServer(address string, handler http.Handler) *http.Server {
 	return &http.Server{
 		Addr:                address,
@@ -56,7 +53,6 @@ func NewServer(address string, handler http.Handler) *http.Server {
 	}
 }
 
-// Serve starts the server with plain HTTP or the configured certificate policy.
 func Serve(server *http.Server, config TLSConfig) error {
 	return serve(server, config, func() error { return server.ListenAndServe() }, func() error { return server.ListenAndServeTLS("", "") })
 }
@@ -71,7 +67,6 @@ func serve(server *http.Server, config TLSConfig, plain, secure func() error) er
 	return secure()
 }
 
-// ConfigureCertificates loads the local identity and installs trusted SNI selection.
 func ConfigureCertificates(server *http.Server, config TLSConfig) error {
 	certificate, err := LoadOrCreate(config.DataDir, config.Hosts...)
 	if err != nil {
@@ -92,7 +87,6 @@ func ConfigureCertificates(server *http.Server, config TLSConfig) error {
 	return nil
 }
 
-// CheckHealth verifies the loopback health endpoint over the configured protocol.
 func CheckHealth(listen string, tlsEnabled bool, authURL string) error {
 	_, port, err := net.SplitHostPort(listen)
 	if err != nil {

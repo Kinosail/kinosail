@@ -91,7 +91,6 @@ class RequiredTests(unittest.TestCase):
             verify("app", needs, raw, "player")
 
     def test_deep_android_requires_wear_runtime(self):
-        # A successful Android build must not hide a missing selected Wear execution.
         plan = dict.fromkeys((*FLAGS, "deep"), False)
         plan["android"] = plan["deep"] = True
         raw = json.dumps(plan)

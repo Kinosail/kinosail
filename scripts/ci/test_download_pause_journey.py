@@ -56,8 +56,6 @@ class DownloadPauseJourneyTest(unittest.TestCase):
         self.assertIn('run_local_player_journeys "$project"', source)
         self.assertIn('run_subtitle_recovery_journey "$project"', source)
         self.assertIn('run_populated_player_journeys "$project"', source)
-        # This clean Q09 branch starts at main; R08's unmerged fixture remains
-        # protected by its separate original branch/controls, not this feature.
         helper = HELPER.read_text()
         for title in ('settings search crosses levels and preserves unsaved preferences',
                       'Owner settings search finds a setting across task families',

@@ -17,7 +17,6 @@ const (
 	updateCheckJitter   = 6 * time.Hour
 )
 
-// Status is the application-facing state of the update checker.
 type Status struct {
 	Automatic      bool   `json:"automatic"`
 	State          string `json:"state"`
@@ -28,20 +27,16 @@ type Status struct {
 	Manager        View   `json:"manager"`
 }
 
-// ReleaseSource returns the newest public release and its cache validator.
 type ReleaseSource interface {
 	Latest(context.Context, string) (version, etag string, unchanged bool, err error)
 }
 
-// ReleaseSourceFunc adapts a function to ReleaseSource.
 type ReleaseSourceFunc func(context.Context, string) (string, string, bool, error)
 
-// Latest calls the adapted release source.
 func (function ReleaseSourceFunc) Latest(ctx context.Context, etag string) (string, string, bool, error) {
 	return function(ctx, etag)
 }
 
-// CheckerConfig supplies app adapters to the shared checker.
 type CheckerConfig struct {
 	Manager        *Store
 	Source         ReleaseSource
@@ -50,7 +45,6 @@ type CheckerConfig struct {
 	SaveAutomatic  func(bool) error
 }
 
-// Checker checks releases, requests approved installs, and schedules checks.
 type Checker struct {
 	mu            sync.RWMutex
 	checkMu       sync.Mutex
@@ -67,7 +61,6 @@ type Checker struct {
 	delay         func(io.Reader) time.Duration
 }
 
-// NewChecker validates its adapters before creating a checker.
 func NewChecker(config CheckerConfig) (*Checker, error) {
 	if config.Source == nil || config.Automatic == nil || config.SaveAutomatic == nil || config.CurrentVersion == "" || len(config.CurrentVersion) > 64 || strings.HasPrefix(config.CurrentVersion, "sha-") && !commitVersion(config.CurrentVersion) || strings.ContainsAny(config.CurrentVersion, "\r\n") {
 		return nil, errors.New("invalid update checker configuration")
@@ -80,7 +73,6 @@ func NewChecker(config CheckerConfig) (*Checker, error) {
 	}, nil
 }
 
-// View returns a snapshot with current preference and update-manager state.
 func (checker *Checker) View() Status {
 	checker.mu.RLock()
 	status := checker.status
@@ -96,10 +88,8 @@ func (checker *Checker) View() Status {
 	return status
 }
 
-// Available reports whether a newer release is ready for approval.
 func (checker *Checker) Available() bool { return checker.View().State == "available" }
 
-// SetAutomatic persists the preference and triggers a prompt check when enabled.
 func (checker *Checker) SetAutomatic(enabled bool) error {
 	if err := checker.saveAutomatic(enabled); err != nil {
 		return err
@@ -113,7 +103,6 @@ func (checker *Checker) SetAutomatic(enabled bool) error {
 	return nil
 }
 
-// Check refreshes the public release state.
 func (checker *Checker) Check(ctx context.Context) Status {
 	if commitVersion(checker.current) {
 		return checker.View()
@@ -153,13 +142,11 @@ func (checker *Checker) Check(ctx context.Context) Status {
 	return checker.View()
 }
 
-// CheckAndRequest refreshes releases and requests the available version.
 func (checker *Checker) CheckAndRequest(ctx context.Context) (Status, error) {
 	checker.Check(ctx)
 	return checker.RequestAvailable()
 }
 
-// RequestAvailable requests the last checked available release.
 func (checker *Checker) RequestAvailable() (Status, error) {
 	status := checker.View()
 	if status.State != "available" || checker.manager == nil {
@@ -169,7 +156,6 @@ func (checker *Checker) RequestAvailable() (Status, error) {
 	return checker.View(), err
 }
 
-// Schedule checks immediately when enabled and then at a randomized daily interval.
 func (checker *Checker) Schedule(ctx context.Context) {
 	go func() {
 		for {
@@ -234,7 +220,6 @@ func releaseVersion(value string) ([3]uint64, bool) {
 	return result, true
 }
 
-// Commit images are updated by the container deployment, never by tag releases.
 func commitVersion(value string) bool {
 	return len(value) == 44 && strings.HasPrefix(value, "sha-") && strings.Trim(value[4:], "0123456789abcdef") == ""
 }

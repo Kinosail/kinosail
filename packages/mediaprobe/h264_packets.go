@@ -30,7 +30,6 @@ func (timeline *h264Timeline) packet(line string, end *int64) error {
 	return nil
 }
 
-// CompactFields splits bounded ffprobe compact output without interpreting values.
 func CompactFields(line string) map[string]string {
 	fields := make(map[string]string)
 	for _, field := range strings.Split(line, "|") {

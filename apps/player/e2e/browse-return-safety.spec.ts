@@ -2,8 +2,6 @@ import type {JSONObject} from "../../../scripts/testing/json-value";
 import { expect, test } from "@playwright/test";
 import { observe, origin, selectMovie } from "./browse-return-helpers";
 
-// Additional real-Server controls. The original nine-case hosted selector is
-// unchanged; root must explicitly admit this spec in a later fixture run.
 test.skip(!origin, "requires disposable Go Server browse-return fixture");
 test.use({ serviceWorkers: "block", video: "off" });
 test.setTimeout(25_000);

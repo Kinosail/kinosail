@@ -9,7 +9,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-// PreviewAPI exposes a read-only approval preview to signed-in clients.
 func (application *Application) PreviewAPI(writer http.ResponseWriter, request *http.Request) {
 	if !application.allowApprovalRead(writer, request) {
 		return
@@ -22,7 +21,6 @@ func (application *Application) PreviewAPI(writer http.ResponseWriter, request *
 	apihttp.WriteJSON(writer, pending, http.StatusOK)
 }
 
-// PendingTVsAPI exposes only bounded pending TV previews, never polling secrets.
 func (application *Application) PendingTVsAPI(writer http.ResponseWriter, request *http.Request) {
 	if !application.allowApprovalRead(writer, request) {
 		return
@@ -57,7 +55,6 @@ func (application *Application) allowApprovalRead(writer http.ResponseWriter, re
 	return true
 }
 
-// ReadLinkCode strictly parses a six-digit code from a scanned approval link.
 func ReadLinkCode(request *http.Request) (string, bool) {
 	if len(request.URL.RawQuery) > 64 || request.ContentLength != 0 || len(request.TransferEncoding) != 0 {
 		return "", false

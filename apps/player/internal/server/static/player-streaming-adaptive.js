@@ -86,8 +86,6 @@ const nativeStreamAt = async (position, generation) => {
 const useAdaptive = (preference = "auto", resume = false, target = resume ? pendingResume?.seconds ?? player.currentTime : Number(player.dataset.start) || 0) => {
   cancelNetworkRecovery();
   adaptiveOriginController?.abort();
-  // A direct source may publish metadata while the adapter is loading. Retain
-  // the intended position/play state for the compatible source's metadata too.
   resumeAfterSourceChange(!resume && networkWantsPlay, true, target);
   delete player.dataset.offline;
   hls?.destroy();
@@ -101,8 +99,6 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
   adaptiveOffset = selected.offset;
   playbackTimelineSeek = undefined;
   let certifiedOffset;
-  // The pinned adapter otherwise anchors muxed streams to earlier AAC priming.
-  // Preserve its append queue and all media bytes, using the certified video clock.
   const bufferController = class extends Hls.DefaultConfig.bufferController {
     onBufferAppending(event, data) {
       if (certifiedOffset !== undefined && data.offset !== undefined && ["video", "audiovideo"].includes(data.type))
@@ -194,7 +190,6 @@ const startAdaptive = async (resume = false) => {
   let explicitSeek = false, pendingAtExplicitSeek;
   const retainInitialSeek = () => {
     const pending = pendingResume;
-    // User seek intent is emitted before its setter; read the new clock after it.
     queueMicrotask(() => {
       if (generation !== adaptiveGeneration) return;
       initialTarget = player.currentTime;
@@ -214,7 +209,6 @@ const startAdaptive = async (resume = false) => {
     streamNegotiated = true;
     negotiation = negotiateStream(generation);
   }
-  // Load the decoder adapter alongside negotiation, only after compatible playback was selected.
   const needsHls = typeof Hls === "undefined" && window.kinosailPlaybackCapabilities.needsAdapter(player);
   const adapter = needsHls ? loadHls() : Promise.resolve(true);
   try {
@@ -238,7 +232,6 @@ const startAdaptive = async (resume = false) => {
         adaptiveActive = true;
         adaptiveSeekSwitch = resume;
         playbackTimelineOffset = selected.offset;
-        // Keep old decoder events from reporting its clock plus the new offset.
         playbackTimelineSeek = selected.offset || position === 0 ? position : undefined;
         playbackTraceMethod = "native-hls";
         playbackTrace("source-compatible", "native-hls");
@@ -249,13 +242,8 @@ const startAdaptive = async (resume = false) => {
           if (resume && pendingResume?.seconds === position && Number.isFinite(current))
             pendingResume.seconds = Math.max(position, current);
         }, {once: true});
-        // Expose the new decoder's clock before the resume listener compares it
-        // with the requested position. The temporary latch is not a real seek.
         resumeAfterSourceChange(!resume && networkWantsPlay, true, position);
-        // This adapter owns saved and explicit targets once the origin is known.
         player.removeEventListener("loadedmetadata", resumeFromSavedProgress);
-        // A pre-metadata seek belongs to the source clock, not this new window.
-        // Clear its decoder default; the retained target is restored above.
         if (player.readyState === HTMLMediaElement.HAVE_NOTHING) mediaTime.set.call(player, 0);
         player.src = selected.source;
         player.load();

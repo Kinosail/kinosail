@@ -7,7 +7,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-// MediaPresentation selects visible artwork and Show titles for home shelves.
 func MediaPresentation(items []library.Item, hasArtwork func(library.Item) bool) (map[string]string, map[string]string) {
 	artwork, titles := make(map[string]string), make(map[string]string)
 	for _, item := range items {
@@ -27,7 +26,6 @@ func MediaPresentation(items []library.Item, hasArtwork func(library.Item) bool)
 	return artwork, titles
 }
 
-// ClearSearchURL removes search-only query state from a Library URL.
 func ClearSearchURL(request *http.Request) string {
 	query := request.URL.Query()
 	query.Del("q")
@@ -39,7 +37,6 @@ func ClearSearchURL(request *http.Request) string {
 	return "/?" + query.Encode()
 }
 
-// FragmentRequest validates the bounded Library fragment header.
 func FragmentRequest(request *http.Request) (bool, error) {
 	values := request.Header.Values(InfiniteLibraryHeader)
 	if len(values) > 1 || len(values) == 1 && values[0] != "1" {
@@ -48,7 +45,6 @@ func FragmentRequest(request *http.Request) (bool, error) {
 	return len(values) == 1, nil
 }
 
-// Media returns items with one exact canonical kind.
 func Media(items []library.Item, kind string) []library.Item {
 	return catalog.Media(items, kind)
 }

@@ -1,4 +1,3 @@
-// Package identitycore owns shared account security rules for Kinosail apps.
 package identitycore
 
 import (
@@ -30,14 +29,12 @@ var (
 	ErrInvalidEnrollment = errors.New("authentication code is invalid or enrollment expired")
 )
 
-// Enrollment contains one time-based one-time password enrollment.
 type Enrollment struct {
 	Secret, URI   string
 	RecoveryCodes []string
 	Expires       time.Time
 }
 
-// MFA owns bounded in-flight multi-factor authentication enrollments.
 type MFA struct {
 	mu      sync.Mutex
 	pending map[string]Enrollment
@@ -45,12 +42,10 @@ type MFA struct {
 	random  io.Reader
 }
 
-// NewMFA creates a multi-factor authentication engine.
 func NewMFA() *MFA {
 	return &MFA{pending: make(map[string]Enrollment), now: time.Now, random: rand.Reader}
 }
 
-// Setup creates and stores one enrollment after identity validation.
 func (mfa *MFA) Setup(identity, name string) (Enrollment, error) {
 	if !validIdentity(identity, name) || mfa == nil || mfa.now == nil || mfa.random == nil {
 		return Enrollment{}, ErrInvalidInput
@@ -77,7 +72,6 @@ func (mfa *MFA) Setup(identity, name string) (Enrollment, error) {
 	return cloneEnrollment(enrollment), nil
 }
 
-// Confirm verifies and consumes one enrollment.
 func (mfa *MFA) Confirm(identity, code string) (Enrollment, error) {
 	if mfa == nil || mfa.now == nil || identity == "" || len(identity) > maxIdentityLength || len(code) > 32 {
 		return Enrollment{}, ErrInvalidEnrollment
@@ -93,7 +87,6 @@ func (mfa *MFA) Confirm(identity, code string) (Enrollment, error) {
 	return cloneEnrollment(enrollment), nil
 }
 
-// Discard removes one pending enrollment.
 func (mfa *MFA) Discard(identity string) {
 	if mfa == nil || identity == "" || len(identity) > maxIdentityLength {
 		return
@@ -103,7 +96,6 @@ func (mfa *MFA) Discard(identity string) {
 	mfa.mu.Unlock()
 }
 
-// PendingCount reports the number of in-flight enrollments.
 func (mfa *MFA) PendingCount() int {
 	if mfa == nil {
 		return 0
@@ -113,7 +105,6 @@ func (mfa *MFA) PendingCount() int {
 	return len(mfa.pending)
 }
 
-// ValidTOTP verifies one RFC 6238 code with one adjacent time step.
 func ValidTOTP(secret, code string, now time.Time) bool {
 	code = strings.TrimSpace(code)
 	if len(secret) == 0 {
@@ -142,7 +133,6 @@ func ValidTOTP(secret, code string, now time.Time) bool {
 	return hmac.Equal([]byte(totp(key, counter+1)), []byte(code))
 }
 
-// NormalizeRecovery canonicalizes one bounded recovery code.
 func NormalizeRecovery(code string) string {
 	if len(code) > 128 {
 		return ""

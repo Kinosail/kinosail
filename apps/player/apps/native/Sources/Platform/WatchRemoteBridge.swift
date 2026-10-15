@@ -3,7 +3,6 @@ import Foundation
 import WatchConnectivity
 
 private struct WatchReplyHandler: @unchecked Sendable {
-    // Watch Connectivity permits its reply handler to run on any queue. This value is called once.
     let send: (Data) -> Void
 }
 

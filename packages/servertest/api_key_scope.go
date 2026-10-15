@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// AssertLibraryKeyContract verifies that a browse-only key cannot disclose playback internals.
 func AssertLibraryKeyContract(t *testing.T, handler http.Handler, library *httptest.ResponseRecorder, secret string) string {
 	t.Helper()
 	if library.Code != http.StatusOK || strings.Contains(library.Body.String(), `"download"`) || strings.Contains(library.Body.String(), `"stream"`) {
@@ -25,7 +24,6 @@ func AssertLibraryKeyContract(t *testing.T, handler http.Handler, library *httpt
 	return id
 }
 
-// AssertLibraryKeyCannotMutate verifies that browse scope cannot change library state.
 func AssertLibraryKeyCannotMutate(t *testing.T, handler http.Handler, id, secret string) {
 	t.Helper()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPut, "/api/v1/items/"+id+"/list", strings.NewReader(`{"listed":true}`))
@@ -38,7 +36,6 @@ func AssertLibraryKeyCannotMutate(t *testing.T, handler http.Handler, id, secret
 	}
 }
 
-// RemovingProfileRevokesItsAPIKeys verifies that credentials cannot outlive their profile.
 func (fixture LibraryAPIFixture) RemovingProfileRevokesItsAPIKeys(t *testing.T) {
 	dataDir := t.TempDir()
 	handler := fixture.NewHandler("", dataDir, true)

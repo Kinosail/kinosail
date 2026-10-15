@@ -13,7 +13,6 @@ type jellyfinBitrateFixture struct {
 	Call   func(*testing.T, http.Handler, string, string, string, string) *httptest.ResponseRecorder
 }
 
-// JellyfinBitrate checks authenticated transfer sizes and bounded invalid-input responses.
 func JellyfinBitrate(t *testing.T,
 	newHandler func(*testing.T) (http.Handler, string),
 	enable func(*testing.T, http.Handler, string),

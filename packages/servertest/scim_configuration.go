@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// SCIMConfiguration binds configuration persistence and real authenticated app handlers.
 type SCIMConfiguration[S interface{ String(string) string }] struct {
 	AuthURL, Token string
 	Load           func(string, string, func(string) (string, bool)) (S, error)
@@ -20,7 +19,6 @@ type SCIMConfiguration[S interface{ String(string) string }] struct {
 	WebCall        func(*testing.T, http.Handler, string, string, string, *http.Cookie) *httptest.ResponseRecorder
 }
 
-// OwnerCanConfigureSCIMPairThroughAPIAndWeb checks paired API and web persistence.
 func (fixture SCIMConfiguration[S]) OwnerCanConfigureSCIMPairThroughAPIAndWeb(t *testing.T) {
 	t.Helper()
 	t.Parallel()
@@ -65,7 +63,6 @@ func (fixture SCIMConfiguration[S]) assertInvalidSCIMConfiguration(t *testing.T,
 	}
 }
 
-// ExpiredSCIMConfigurationKeepsOwnerRecoveryAvailable checks expired-token isolation.
 func (fixture SCIMConfiguration[S]) ExpiredSCIMConfigurationKeepsOwnerRecoveryAvailable(t *testing.T) {
 	t.Helper()
 	t.Parallel()

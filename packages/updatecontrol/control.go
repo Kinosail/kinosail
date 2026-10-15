@@ -1,4 +1,3 @@
-// Package updatecontrol owns the platform-neutral update contract.
 package updatecontrol
 
 import (

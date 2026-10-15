@@ -28,7 +28,6 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 		data.ProviderReady = data.ProviderReady || manager.provider.supports(language)
 		data.ProviderAvailable = data.ProviderAvailable || subtitleProviderAvailable(language)
 	}
-	// Browsing a library never performs readiness write probes on its media roots.
 	if options.View == "summary" {
 		data.PageSize = 6
 		data.Readiness, data.Providers = manager.readiness(), manager.provider.healthViews()
@@ -61,7 +60,6 @@ func (manager *subtitleManager) projection(request *http.Request, options subtit
 	data.Page = min(data.Page, data.Pages)
 	start := (data.Page - 1) * data.PageSize
 	end := min(start+data.PageSize, data.Matched)
-	// Only visible rows get history, sidecar actions, and recovery-file checks.
 	for _, candidate := range candidates[start:end] {
 		row := candidate.row
 		manager.decorateSubtitleDashboardItem(&row, candidate.source, languages)

@@ -1,4 +1,3 @@
-// Package auditjournal owns Kinosail's durable HMAC-chained activity journal.
 package auditjournal
 
 import (
@@ -14,13 +13,12 @@ import (
 )
 
 const (
-	defaultAuditRetention    time.Duration = 31_536_000_000_000_000 // 365 days.
-	defaultPlaybackRetention time.Duration = 7_776_000_000_000_000  // 90 days.
+	defaultAuditRetention    time.Duration = 31_536_000_000_000_000
+	defaultPlaybackRetention time.Duration = 7_776_000_000_000_000
 	maxActivityEvents                      = 25_000
 	auditNotificationQueue                 = 128
 )
 
-// Event is one durable activity record.
 type Event struct {
 	ID        string            `json:"id"`
 	Time      string            `json:"time"`
@@ -38,7 +36,6 @@ type Event struct {
 	Integrity string            `json:"integrity,omitempty"`
 }
 
-// Config supplies journal storage, retention, and notification policy.
 type Config struct {
 	DataDir           string
 	AuditRetention    time.Duration
@@ -46,7 +43,6 @@ type Config struct {
 	Notify            func(Event)
 }
 
-// Status is a safe journal health and queue snapshot.
 type Status struct {
 	Healthy            bool
 	WriteFailures      uint64
@@ -55,7 +51,6 @@ type Status struct {
 	LastError          string
 }
 
-// Journal stores and queries one installation's activity history.
 type Journal struct {
 	mu                sync.Mutex
 	file              string
@@ -71,7 +66,6 @@ type Journal struct {
 	writable          bool
 }
 
-// New validates and loads a journal. Load failures remain visible through Status.
 func New(ctx context.Context, config Config) *Journal {
 	journal := &Journal{
 		notify:            config.Notify,
@@ -98,7 +92,6 @@ func New(ctx context.Context, config Config) *Journal {
 	return journal
 }
 
-// Record validates and durably appends one event.
 func (journal *Journal) Record(event Event) {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
@@ -132,7 +125,6 @@ func (journal *Journal) Record(event Event) {
 	}
 }
 
-// Query returns newest events first and clamps the result to 1 through 1000 items.
 func (journal *Journal) Query(category string, limit int) []Event {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
@@ -150,7 +142,6 @@ func (journal *Journal) Query(category string, limit int) []Event {
 	return result
 }
 
-// RecentLogs returns the newest 25 events that are not playback events.
 func (journal *Journal) RecentLogs() []Event {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
@@ -163,7 +154,6 @@ func (journal *Journal) RecentLogs() []Event {
 	return result
 }
 
-// TripwireWarning returns the newest public scanner warning.
 func (journal *Journal) TripwireWarning() string {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
@@ -178,7 +168,6 @@ func (journal *Journal) TripwireWarning() string {
 	return ""
 }
 
-// WriteJSONL writes all events in chronological order.
 func (journal *Journal) WriteJSONL(writer io.Writer) error {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
@@ -191,7 +180,6 @@ func (journal *Journal) WriteJSONL(writer io.Writer) error {
 	return nil
 }
 
-// Status returns current persistence and notification health.
 func (journal *Journal) Status() Status {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()

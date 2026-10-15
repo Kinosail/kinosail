@@ -1,7 +1,5 @@
 import type {Page, Response, TestInfo} from "@playwright/test";
 
-// This recovery is confined to the disposable pagination fixture. Preserve the
-// first real catalog before releasing Firefox's stranded navigation with one GET.
 export async function gotoPaginationCatalog(page: Page, url: string, info: TestInfo) {
   const previousDocument = await page.evaluate(() => performance.timeOrigin);
   const started = Date.now();

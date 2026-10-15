@@ -16,8 +16,6 @@ SPEC.loader.exec_module(MODULE)
 
 class WearHomeReadinessTests(unittest.TestCase):
     def test_home_readiness_requires_one_current_follow_on_in_home_package(self):
-        # Historical events and per-display records cannot establish the global
-        # current Activity. Malformed snapshots cannot be injected in native E2E.
         home = b"Activity: private.home/.Entry\n"
         entry = b"  ResumedActivity: ActivityRecord{abc123 u0 private.home/.Entry t12}\n"
         ready = b"  ResumedActivity: ActivityRecord{abc123 u0 private.home/.FollowOn t12}\n"

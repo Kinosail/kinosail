@@ -12,7 +12,6 @@ import (
 	"testing"
 )
 
-// PlaybackTraceRejectsInvalidInputWithoutLogging verifies validation precedes telemetry side effects.
 func (fixture LibraryAPIFixture) PlaybackTraceRejectsInvalidInputWithoutLogging(t *testing.T) {
 	media := t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {

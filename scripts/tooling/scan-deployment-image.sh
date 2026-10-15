@@ -16,7 +16,6 @@ for scanner in trivy syft; do
 done
 mkdir -p "$evidence"
 shasum -a 256 "$archive" >"$evidence/archive.sha256"
-# Keep the complete findings separately from the existing release policy gate.
 syft scan "docker-archive:$archive" -o "cyclonedx-json=$evidence/sbom.json"
 trivy image --input "$archive" --scanners vuln --format json --output "$evidence/vulnerabilities.json"
 trivy image --input "$archive" --scanners vuln --skip-db-update \

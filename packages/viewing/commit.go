@@ -10,7 +10,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-// CommitStore adapts app-private progress and list state to one atomic import.
 type CommitStore struct {
 	Progress  ProgressStorage
 	Lists     catalog.ListStorage
@@ -23,7 +22,6 @@ type viewingWrite struct {
 	persist  func(string, any) error
 }
 
-// Commit validates optimistic changes and publishes every category together.
 func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChange, listChanges []ListChange) (int, int, int, error) { //nolint:cyclop,funlen,gocognit // One lock and rollback seam prevents partial category commits.
 	store.Progress.PersistMutex.Lock()
 	defer store.Progress.PersistMutex.Unlock()

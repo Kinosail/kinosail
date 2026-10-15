@@ -13,9 +13,8 @@ import (
 	"time"
 )
 
-const certificateName = "tls-duckdns.pem" // Keep the legacy file name so existing certificates migrate without owner action.
+const certificateName = "tls-duckdns.pem"
 
-// Status is safe to show to an Owner and never contains a provider token.
 type Status struct {
 	State              string `json:"state"`
 	Provider           string `json:"provider,omitempty"`
@@ -25,7 +24,6 @@ type Status struct {
 	Error              string `json:"error,omitempty"`
 }
 
-// Dependencies are internal seams for DNS and ACME adapters.
 type Dependencies struct {
 	Client       *http.Client
 	UpdateURL    string
@@ -36,7 +34,6 @@ type Dependencies struct {
 	DirectoryURL string
 }
 
-// Manager owns the cached certificate and its renewal lifecycle.
 type Manager struct {
 	certificateOnly bool
 	config          Config
@@ -53,7 +50,6 @@ type Manager struct {
 	leaf            *x509.Certificate
 }
 
-// New validates configuration before reading files or creating network clients.
 func New(config Config, dataDir string, dependencies ...Dependencies) (*Manager, error) { //nolint:cyclop // Dependency defaults and cached-certificate validation form one constructor boundary.
 	if len(dependencies) > 1 {
 		return nil, errors.New("trusted HTTPS accepts at most one dependency set")
@@ -97,7 +93,6 @@ func New(config Config, dataDir string, dependencies ...Dependencies) (*Manager,
 	return manager, nil
 }
 
-// Run keeps DNS current and renews the certificate without blocking local startup.
 func (manager *Manager) Run(ctx context.Context) {
 	if manager == nil || manager.config == (Config{}) {
 		return
@@ -114,7 +109,6 @@ func (manager *Manager) Run(ctx context.Context) {
 	}
 }
 
-// Certificate returns the public certificate only for its exact trusted name.
 func (manager *Manager) Certificate(serverName string) *tls.Certificate {
 	if manager == nil || !strings.EqualFold(strings.TrimSuffix(serverName, "."), manager.config.Hostname()) {
 		return nil
@@ -124,7 +118,6 @@ func (manager *Manager) Certificate(serverName string) *tls.Certificate {
 	return manager.cert
 }
 
-// Status returns a credential-free snapshot.
 func (manager *Manager) Status() Status {
 	if manager == nil {
 		return Status{State: "disabled"}

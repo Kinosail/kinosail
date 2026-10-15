@@ -14,7 +14,6 @@ struct HomeScreen: View {
     private var homeMode: PlayerMode { mode ?? .watch }
     var body: some View {
         ScrollView {
-            // Refresh belongs to a vertical scroll container, not the nested media shelf.
             ResourceView(identity: "\(session.profileKey ?? ""):\(homeMode.rawValue)", refreshID: session.contentRevision.uuidString,
                          loadingLayout: tvHomeLoadingLayout, allowsPullToRefresh: false, load: { policy in
                 guard let client = session.client else { throw ClientError.http(401) }

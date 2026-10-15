@@ -43,7 +43,6 @@ func TestPublicHTTPSKeepsLANBrowserRecoveryLocal(t *testing.T) {
 			t.Fatalf("public setup = %d", remote.Code)
 		}
 	}
-	// Disabling page redirects does not relax WebAuthn's exact-origin check.
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "https://media.home:38127/api/v1/passkeys/login/begin", strings.NewReader("{}"))
 	request.Header.Set("Origin", "https://media.home:38127")
 	request.Header.Set("Content-Type", "application/json")

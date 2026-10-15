@@ -73,7 +73,7 @@ final class OfflineDownloadManager {
             try await storage.save(next)
             try check(attempt)
             catalog = next
-        } catch { /* Keep the last validated policy when the Server is unavailable. */ }
+        } catch {   }
     }
 
     func performEnqueue(_ action: () async throws -> Void) async rethrows {
@@ -239,7 +239,6 @@ final class OfflineDownloadManager {
             }
             try check(attempt)
             if preferences.removeWatched {
-                // Never delete the last playable episode while its replacement is still transferring.
                 guard replacements.allSatisfy({ id in downloads.contains(where: { $0.item.id == id && $0.state == .ready }) }) else {
                     smartRetry = Date().addingTimeInterval(60); return
                 }

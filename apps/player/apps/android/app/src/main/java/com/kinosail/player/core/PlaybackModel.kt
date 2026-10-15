@@ -557,7 +557,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 val command = withContext(Dispatchers.IO) { api.update(state, saved.token, viewer.id) }
                 if (attempt == generation && command != null) applyRemote(command)
             } catch (error: CancellationException) { throw error }
-            catch (_: Exception) { /* The TV remains playable when remote discovery is unavailable. */ }
+            catch (_: Exception) {   }
             delay(5_000)
         }
     }

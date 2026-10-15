@@ -1,6 +1,5 @@
 package transcodepolicy
 
-// Capability describes the current support state for one Player codec.
 type Capability struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
@@ -12,13 +11,11 @@ type Capability struct {
 	Action    string `json:"action,omitempty"`
 }
 
-// Backend supplies the detection facts needed by Player's codec policy.
 type Backend struct {
 	Encoders map[string]string
 	Usable   bool
 }
 
-// Capabilities applies Player's codec readiness policy to detected backends.
 func Capabilities(backends []Backend) []Capability { //nolint:cyclop // One explicit mapping keeps every codec state consistent.
 	result := make([]Capability, 0, len(codecs))
 	for _, definition := range codecs {

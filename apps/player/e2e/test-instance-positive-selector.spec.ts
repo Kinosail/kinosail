@@ -4,9 +4,6 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {configureTestInstance, login} from './test-instance-helpers';
 import {selectorAdmissionFacts, selectorNegotiationMatch} from './positive-selector-admission';
 
-// Gap: native fullscreen admission can fail before the selected stream moves.
-// Observe the untouched phone selector, then separately decode its exact URL
-// in an ordinary inline rendered fixture. This is not native launch acceptance.
 configureTestInstance();
 test.use({...devices['iPhone 13']});
 for (const explicitZero of [false, true]) {
@@ -46,7 +43,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
       const projection = hlsProjection(request.url());
       if (projection && sourceRequests.length < 64 && ['GET', 'HEAD'].includes(request.method()))
         sourceRequests.push({utc: new Date().toISOString(), phase, operation: 'request', method: request.method(), ...projection});
-    } catch { /* Fixed optional projection; no raw requests retained. */ }
+    } catch {   }
   });
   await page.addInitScript(() => {
     localStorage.setItem('kinosail.playback-policy-v2', 'direct-first');
@@ -91,7 +88,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
         route: endpoint.pathname === progressEndpoint ? 'page-progress' : 'api-progress',
         seconds: bounded(typeof value.seconds === 'number' ? String(value.seconds) : value.seconds, 31622400),
         revision: bounded(typeof value.revision === 'number' ? String(value.revision) : value.revision, 1000000)});
-    } catch { /* Only known numeric fields; never retain body/session. */ }
+    } catch {   }
   });
   const publicPosition = async () => {
     const response = await page.request.get(path + '/watch-progress');
@@ -124,7 +121,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
             matchesReferencedVersion: sha256 === endpoint.searchParams.get('v'),
             resourceType: response.request().resourceType() === 'script' ? 'script' : 'other'});
         }
-      } catch { /* Response projections must not change selector behavior. */ }
+      } catch {   }
     })();
     if (pendingResponses.length < 128) pendingResponses.push(operation);
   });
@@ -211,7 +208,7 @@ test(`positive saved selector ${explicitZero ? 'explicit zero during actual nego
     try {
       const endpoint = new URL(request.url());
       if (endpoint.origin === base.origin && [path + '/progress', progressEndpoint].includes(endpoint.pathname) && !['GET', 'HEAD'].includes(request.method())) controlWrites++;
-    } catch { /* Counter only; no body or URL retained. */ }
+    } catch {   }
   });
   let controlFailed = false;
   let inline: Awaited<ReturnType<typeof control.newPage>> | undefined;

@@ -1,4 +1,3 @@
-/* Kinosail Electric: shared semantic roles, typography, controls and states. */
 @font-face{font-family:Manrope;src:url('/static/manrope.woff2?v=1') format('woff2');font-style:normal;font-weight:200 800;font-display:optional}
 :root{
   color-scheme:dark;
@@ -96,7 +95,6 @@ body .media-hero.has-media-backdrop .quiet{color:var(--text)}
 .watch-progress progress::-webkit-progress-bar{background:var(--line)}
 .watch-progress progress::-webkit-progress-value{background:var(--signal)}
 .watch-progress progress::-moz-progress-bar{background:var(--signal)}
-/* Setup remains a focused sequence; native form behavior stays intact. */
 body.auth main.wizard-shell,body .setup-shell{display:grid;grid-template-columns:16rem minmax(0,36rem);justify-content:center;align-items:start;gap:5rem;width:min(100% - 3rem,64rem);min-height:0;margin:5rem auto;padding:0}
 body :is(.wizard-rail,.setup-rail){padding:0;min-height:0}
 body :is(.wizard-brand,.setup-brand){margin-bottom:3rem}
@@ -145,7 +143,6 @@ body :is(.subtitle-inline-count,.subtitle-page-position,.health-line){font-varia
   .watch-progress progress{border:1px solid CanvasText}
 }
 
-/* Keep watch-page controls readable over bright title artwork during scroll. */
 body.player-page.has-media-backdrop::before{
   background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 88%,transparent),color-mix(in srgb,var(--bg) 94%,transparent) 48rem,var(--bg));
 }
@@ -153,7 +150,6 @@ body.player-page.has-media-backdrop::before{
   background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 96%,transparent),var(--bg) 48rem);
 }
 
-/* Electric action hierarchy: capsules act; quiet controls recede. */
 body :is(button[type=submit]:not(.quiet),.button:not(.quiet),.primary-button){border-radius:999px}
 body :is(.button.quiet,.quiet-button){border-radius:12px}
 body .app-header nav a.active::after{background:var(--signal)}
@@ -162,16 +158,13 @@ body :is(.settings-intro,.library-masthead) h1,body .library-masthead h2{font-we
 body #thanks a{color:var(--signal);text-decoration:underline;text-underline-offset:.15em}
 body .tmdb-credit{display:flex;align-items:center;flex-wrap:wrap;gap:1rem}
 body .tmdb-credit img{display:block;width:80px;height:auto}
-/* Keep foreground posters visible at their source ratio; only cinematic backdrops may fill and crop. */
 body :is(img.poster,.poster img,.card img,.hero-poster){height:auto;object-fit:contain}
 body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 
-/* Capability discovery keeps the control row's geometry. */
 .player-optional-action{display:inline-flex;flex:0 0 44px;min-width:44px;min-height:max(44px,calc(2.125rem + 2px));align-items:center;justify-content:center}
 @media(max-width:700px){.player-optional-action{min-height:max(44px,calc(2.025rem + 2px))}}
 .player-stage-actions{min-width:44px;min-height:44px}
 .player-native-controls .player-control-dock{display:none}
-/* Native controls start in their final location below the reserved picture. */
 .player-native-options{position:relative;margin-bottom:1rem}
 .player-native-options>.player-stage-toolbar{position:relative;inset:auto;flex-wrap:wrap;gap:.5rem;padding:.5rem 0;background:var(--bg);color:var(--text)}
 .player-native-options>.player-stage-toolbar>strong{display:none}
@@ -179,5 +172,4 @@ body :is(.curation-poster>img,.collection-poster>img){object-fit:contain}
 .player-native-options>.player-stage-toolbar .player-mode-status{margin-left:0;margin-right:auto;max-width:100%}
 .player-native-options>.player-settings{position:static;max-height:none;overflow:visible;margin-top:.5rem;background:var(--overlay);color:var(--text)}
 .player-page .media-stage.has-settings:has(+.player-native-options){margin-bottom:1rem}
-/* Enlarged text wraps within the available picture/title width. */
 .player-shell .title-block h1{overflow-wrap:anywhere;min-width:0}

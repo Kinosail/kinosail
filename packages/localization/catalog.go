@@ -7,19 +7,16 @@ import (
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
-// Message is the stable subset of an i18n source message used by Kinosail.
 type Message struct {
 	ID, Other string
 }
 
-// Catalog applies one product's translated messages through Player's locale rules.
 type Catalog struct {
 	languages    []Language
 	messages     []Message
 	translations map[string]map[string]string
 }
 
-// NewCatalog compiles one product's bundle for the shared Player locale engine.
 func NewCatalog(bundle *i18n.Bundle, languages []Language, messages []Message) *Catalog {
 	translations := make(map[string]map[string]string, len(languages))
 	for _, supported := range languages {
@@ -39,7 +36,6 @@ func NewCatalog(bundle *i18n.Bundle, languages []Language, messages []Message) *
 	return &Catalog{languages: languages, messages: messages, translations: translations}
 }
 
-// Direction returns the writing direction for a supported tag.
 func (catalog *Catalog) Direction(tag string) string {
 	for _, supported := range catalog.languages {
 		if supported.Tag == tag {
@@ -49,7 +45,6 @@ func (catalog *Catalog) Direction(tag string) string {
 	return "ltr"
 }
 
-// Localize returns a translated message or the supplied source message.
 func (catalog *Catalog) Localize(tag, message string) string {
 	if translated := catalog.translations[tag][message]; translated != "" {
 		return translated
@@ -57,7 +52,6 @@ func (catalog *Catalog) Localize(tag, message string) string {
 	return message
 }
 
-// Knows reports whether the source catalog contains a message.
 func (catalog *Catalog) Knows(message string) bool {
 	for _, known := range catalog.messages {
 		if known.ID == message {
@@ -67,7 +61,6 @@ func (catalog *Catalog) Knows(message string) bool {
 	return false
 }
 
-// PickerHTML renders the full or compact Player language picker.
 func (catalog *Catalog) PickerHTML(tag, preference, csrf string, compact bool) template.HTML {
 	var picker strings.Builder
 	label := template.HTMLEscapeString(catalog.Localize(tag, "Language"))
@@ -95,7 +88,6 @@ func (catalog *Catalog) PickerHTML(tag, preference, csrf string, compact bool) t
 	return template.HTML(picker.String()) //nolint:gosec // Every dynamic value is escaped above.
 }
 
-// TranslateSource translates cataloged text and accessible attributes in HTML templates.
 func (catalog *Catalog) TranslateSource(source, tag string) string { //nolint:gocognit // Embedded HTML translation preserves markup while replacing cataloged text nodes.
 	var result strings.Builder
 	for source != "" {

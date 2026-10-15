@@ -13,9 +13,6 @@ import (
 	"time"
 )
 
-// These tests exercise the real authenticated application handler and public
-// routes. They do not simulate browser storage, claim media playback, or bypass
-// CSRF. The canonical API fixture supplies disposable Owner enrollment.
 const documentTargetsPath = "/api/v1/home-assistant/players"
 
 var documentTargetID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)

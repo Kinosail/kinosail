@@ -11,7 +11,6 @@ import (
 
 type remoteRequestContextKey struct{}
 
-// Remote marks requests from a dedicated public listener.
 func Remote(next http.Handler) http.Handler {
 	if next == nil {
 		return unavailableHandler()
@@ -22,7 +21,6 @@ func Remote(next http.Handler) http.Handler {
 	})
 }
 
-// RemoteRequest reports whether a trusted listener or proxy marked the request public.
 func RemoteRequest(request *http.Request) bool {
 	if request == nil {
 		return false
@@ -31,7 +29,6 @@ func RemoteRequest(request *http.Request) bool {
 	return remote
 }
 
-// TrustedProxy authenticates a reverse proxy and sanitizes forwarding headers.
 func TrustedProxy(token string, next http.Handler) http.Handler {
 	if next == nil {
 		return unavailableHandler()
@@ -59,7 +56,6 @@ func TrustedProxy(token string, next http.Handler) http.Handler {
 	})
 }
 
-// AllowedHost restricts requests to the canonical origin and configured aliases.
 func AllowedHost(rawURL string, aliases []string, defaultPort string, next http.Handler, reject func(http.ResponseWriter, *http.Request, string, int)) http.Handler { //nolint:cyclop // Host validation stays explicit at this boundary.
 	if next == nil || reject == nil || defaultPort == "" || len(defaultPort) > 5 {
 		return unavailableHandler()

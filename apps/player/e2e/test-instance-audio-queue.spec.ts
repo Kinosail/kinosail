@@ -5,7 +5,6 @@ import {registerAudioProgressTests} from "./test-instance-audio-progress-tests";
 import {configureTestInstance, login} from "./test-instance-helpers";
 
 configureTestInstance();
-// These HTTP fault controls require native page requests to remain interceptable.
 test.use({serviceWorkers: "block"});
 type Track = {id: string; title: string; artist: string; album: string; track: number; year: string; stream: string; artwork: string};
 type ActionWindow = Window & {r08Actions: Partial<Record<MediaSessionAction, MediaSessionActionHandler | null>>};
@@ -187,8 +186,6 @@ test("real album queue keeps system previous and next current and exposes only f
   await page.screenshot({path: testInfo.outputPath("fresh-second-track-actions.png"), fullPage: true});
 });
 
-// Actual Go markup and delivered CSS with isolated queue-read delay, 503, and
-// single-item projections. Canonical advances above remain unrouted.
 test("album queue keeps accessible responsive controls through pending loaded empty and failed reads", {tag: ["@smoke", "@routed-fault"]}, async ({page}, testInfo) => {
   await login(page);
   const [first] = await albumTracks(page);
