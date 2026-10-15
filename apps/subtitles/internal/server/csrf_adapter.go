@@ -12,5 +12,9 @@ var (
 )
 
 func newCSRFTemplate(name, source string) *template.Template {
-	return httpguard.NewCSRFTemplate(name, source, uiIcon)
+	return httpguard.NewCSRFTemplate(name, versionAssetReferences(source), uiIcon)
+}
+
+func httpguardTemplateSource(source string) string {
+	return httpguard.CSRFTemplateSource(source)
 }

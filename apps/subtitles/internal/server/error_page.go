@@ -3,7 +3,7 @@ package server
 import "net/http"
 
 const subtitleErrorHTML = `<!doctype html>
-<html lang="{{.Language}}" dir="{{.Direction}}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>{{.Title}} · Kinosail Subtitles</title><script src="/static/theme.js?v=electric-1"></script><link rel="stylesheet" href="/static/app.css?v=electric-1"></head>
+<html lang="{{.Language}}" dir="{{.Direction}}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d0b"><title>{{.Title}} · Kinosail Subtitles</title><script src="/static/theme.js"></script><link rel="stylesheet" href="/static/app.css"></head>
 <body class="library-page subtitle-app"><a class="skip" href="#main">Skip to content</a><header class="app-header"><a class="brand-lockup" href="/"><img class="brand-icon" src="/static/icon.svg?v=11" alt=""><h1>Kinosail Subtitles</h1></a></header>
 <main id="main" class="subtitle-main" tabindex="-1"><section class="subtitle-empty"><span class="eyebrow">Kinosail Subtitles</span><h2>{{.Title}}</h2><p>{{.Message}}</p><a class="mode" href="/">Return to Subtitles</a></section></main></body></html>`
 

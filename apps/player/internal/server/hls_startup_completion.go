@@ -8,8 +8,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-const startupCompletionMarker = ".startup-completion"
-const shortHEVCCompletionMarker = ".hevc-complete"
+const (
+	startupCompletionMarker   = ".startup-completion"
+	shortHEVCCompletionMarker = ".hevc-complete"
+)
 
 func startupJobStopping(job *hlsJob) bool {
 	return job != nil && job.preparation != nil &&
