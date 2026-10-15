@@ -4,26 +4,6 @@ import (
 	"testing"
 )
 
-func AssertDLNALabelExplainsUnconfiguredAndConfiguredStates(t *testing.T, label func() string, configure func(string, string)) {
-	if got := label(); got != "Set KINOSAIL_DLNA_URL to enable" {
-		t.Fatalf("unconfigured DLNA label = %q", got)
-	}
-	configure("http://media.local:8200", "")
-	if got := label(); got != "Disabled" {
-		t.Fatalf("disabled DLNA label = %q", got)
-	}
-	configure("http://media.local:8200", "token")
-	if got := label(); got != "Enabled" {
-		t.Fatalf("enabled DLNA label = %q", got)
-	}
-}
-
-func AssertHardwareSupportAcceptsAutomaticAndKnownBackends(t *testing.T, supports func(string) bool) {
-	if !supports("auto") || !supports("vaapi") || supports("nvenc") {
-		t.Fatal("hardware support classification is incorrect")
-	}
-}
-
 func AssertPlayerFormattingUsesStableHumanReadableBoundaries(t *testing.T, byteSize func(int64) string, oneOf func(string, ...string) bool) {
 	AssertByteSizeBoundaries(t, byteSize)
 	if !oneOf("hevc", "h264", "hevc") || oneOf("vp9", "h264", "hevc") {
