@@ -75,7 +75,7 @@ func TestLinksProjectPlayerNavigation(t *testing.T) {
 	}
 }
 
-func TestPreferencesPutVisibleDestinationsFirst(t *testing.T) { //nolint:cyclop // One projection checks each visible and hidden position state.
+func TestPreferencesPutVisibleDestinationsFirst(t *testing.T) {
 	t.Parallel()
 	localize := strings.ToUpper
 	got := Preferences([]string{"movies", "home"}, localize)

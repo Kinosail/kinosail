@@ -661,6 +661,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - run: test ! -e .gates-disabled
       - env:
           CI_APP: ${{ inputs.app }}
           CI_PLAN: ${{ inputs.plan }}

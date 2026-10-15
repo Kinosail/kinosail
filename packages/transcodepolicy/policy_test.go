@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestStableCodecsAndBackendsUsePlayerRecipes(t *testing.T) { //nolint:paralleltest // Subtests share no mutable state.
+func TestStableCodecsAndBackendsUsePlayerRecipes(t *testing.T) {
 	tests := []struct {
 		codec, accelerator, encoder string
 		want                        []string

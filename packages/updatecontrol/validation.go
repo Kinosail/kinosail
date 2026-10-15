@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func validateState(state State) error { //nolint:cyclop // Persisted-state validation remains below the repository complexity ceiling.
+func validateState(state State) error {
 	if state.SchemaVersion != 1 {
 		return errors.New("invalid persisted update schema")
 	}

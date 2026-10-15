@@ -84,7 +84,7 @@ func browseResult(t *testing.T, values url.Values, items []library.Item) catalog
 	return result
 }
 
-func TestHandlerBuildsCompleteLandingPage(t *testing.T) { //nolint:cyclop // The landing-page contract intentionally checks every populated projection.
+func TestHandlerBuildsCompleteLandingPage(t *testing.T) {
 	now := time.Now()
 	items := []library.Item{
 		{ID: "movie", Kind: "video", Title: "Movie", Added: now},
@@ -128,7 +128,7 @@ func TestHandlerBuildsCompleteLandingPage(t *testing.T) { //nolint:cyclop // The
 	}
 }
 
-func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) { //nolint:cyclop,gocognit // A table keeps every render and input failure boundary together.
+func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) {
 	internal := errors.New("index failed")
 	tests := []struct {
 		name       string

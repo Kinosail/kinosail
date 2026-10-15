@@ -13,7 +13,7 @@ type errorWriter struct{}
 
 func (errorWriter) Write([]byte) (int, error) { return 0, errors.New("write failed") }
 
-func TestRunCoversUsageDiscoveryEncodingAndSuccess(t *testing.T) { //nolint:cyclop // One command contract protects every exit and output boundary.
+func TestRunCoversUsageDiscoveryEncodingAndSuccess(t *testing.T) {
 	t.Parallel()
 	var output, failures bytes.Buffer
 	if code := run(nil, &output, &failures); code != 2 || !strings.Contains(failures.String(), "usage:") {

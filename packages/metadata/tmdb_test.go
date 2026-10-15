@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestTMDBEnrichesMoviesAndUsesFreshCache(t *testing.T) { //nolint:cyclop,gocognit // The assertions cover one provider workflow.
+func TestTMDBEnrichesMoviesAndUsesFreshCache(t *testing.T) {
 	t.Parallel()
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -115,7 +115,7 @@ func TestTMDBFetchPrefersUniqueIMDbMatch(t *testing.T) {
 	}
 }
 
-func TestTMDBRejectsInvalidProviderResponses(t *testing.T) { //nolint:funlen // Each case covers the same remote response boundary.
+func TestTMDBRejectsInvalidProviderResponses(t *testing.T) {
 	t.Parallel()
 	for name, handler := range map[string]http.HandlerFunc{
 		"status":     func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusBadGateway) },
@@ -138,7 +138,7 @@ func TestTMDBRejectsInvalidProviderResponses(t *testing.T) { //nolint:funlen // 
 			server := httptest.NewServer(handler)
 			defer server.Close()
 			client := NewTMDB(TMDBConfig{Token: "token", URL: server.URL, ImageURL: server.URL, CacheDir: t.TempDir()})
-			if _, err := client.fetch(context.Background(), library.Item{ID: "movie", Title: "Movie"}); err == nil { //nolint:usetesting // Explicit context exercises client ownership.
+			if _, err := client.fetch(context.Background(), library.Item{ID: "movie", Title: "Movie"}); err == nil {
 				t.Fatal("invalid TMDB response was accepted")
 			}
 		})
@@ -153,7 +153,7 @@ func TestTMDBRejectsInvalidProviderResponses(t *testing.T) { //nolint:funlen // 
 	}
 }
 
-func TestTMDBCacheValidationAndDownloadBoundaries(t *testing.T) { //nolint:cyclop,funlen,gocognit // Cache shape, paths, size, and content type are one trust boundary.
+func TestTMDBCacheValidationAndDownloadBoundaries(t *testing.T) {
 	t.Parallel()
 	if NewTMDB(TMDBConfig{}) != nil {
 		t.Fatal("empty TMDB configuration created a client")
@@ -237,7 +237,7 @@ func TestTMDBDownloadRejectsStatusAndContentType(t *testing.T) {
 	}
 }
 
-func TestTMDBIdentityAndValidation(t *testing.T) { //nolint:cyclop,gocognit // The assertions cover one provider boundary.
+func TestTMDBIdentityAndValidation(t *testing.T) {
 	t.Parallel()
 	if title, year := MovieIdentity(library.Item{Title: " Movie [2020] ", Year: ""}); title != "Movie" || year != "2020" {
 		t.Fatalf("identity = %q, %q", title, year)

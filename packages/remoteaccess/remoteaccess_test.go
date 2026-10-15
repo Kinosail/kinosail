@@ -23,7 +23,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 )
 
-func TestSecureInternetAccessUpdatesDuckDNSThenServesOnlyTLS(t *testing.T) { //nolint:cyclop,funlen,gocognit // Scores of 16 and 17 remain below the repository ceiling of 22 for the secure-access lifecycle.
+func TestSecureInternetAccessUpdatesDuckDNSThenServesOnlyTLS(t *testing.T) {
 	t.Parallel()
 	updates := make(chan url.Values, 1)
 	activeStarted, activeCanceled := make(chan struct{}), make(chan struct{})

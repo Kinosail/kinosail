@@ -60,7 +60,7 @@ func TestReadJobCoversConcurrentDeletionAndNonregularState(t *testing.T) {
 	}
 }
 
-func TestStateValidationCoversRemainingBoundaries(t *testing.T) { //nolint:cyclop // One compact boundary matrix covers independent persisted-state constraints.
+func TestStateValidationCoversRemainingBoundaries(t *testing.T) {
 	entries := make([]os.DirEntry, maximumJobs+1)
 	for index := range entries {
 		entries[index] = namedEntry("job.json")

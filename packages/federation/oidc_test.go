@@ -149,7 +149,7 @@ func TestOIDCMFAStoreIsBounded(t *testing.T) {
 	}
 }
 
-func TestOIDCFlowValidatesBeforeEffectsAndCompletesOnce(t *testing.T) { //nolint:funlen // One provider proves every transaction effect boundary.
+func TestOIDCFlowValidatesBeforeEffectsAndCompletesOnce(t *testing.T) {
 	t.Parallel()
 	flow, exchanges, setNonce := newOIDCTestFlow(t)
 	state, nonce := mustBeginOIDC(t, flow)
@@ -220,7 +220,7 @@ func newOIDCTestFlow(t *testing.T) (*OIDC, *atomic.Int32, func(string)) {
 	return flow, &exchanges, func(value string) { nonce = value }
 }
 
-func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) { //nolint:funlen // Table cases preserve each public error mode.
+func TestOIDCFlowRejectsProviderAndCallbackFailures(t *testing.T) {
 	t.Parallel()
 	if _, _, err := NewOIDC(OIDCConfig{}).Begin(t.Context(), "", ""); !errors.Is(err, ErrNotConfigured) {
 		t.Fatalf("unconfigured begin = %v", err)

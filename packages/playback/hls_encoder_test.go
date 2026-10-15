@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
 )
 
-func TestHLSSeekRequiresOriginalEncoder(t *testing.T) { //nolint:cyclop,gocognit // All rejected seeks must preserve the same original encoder identity.
+func TestHLSSeekRequiresOriginalEncoder(t *testing.T) {
 	root := t.TempDir()
 	options := transcodepolicy.Settings{Codec: "h264", Accelerator: "cuda", Encoder: "h264_nvenc", Device: "0"}
 	if err := BindHLSEncoder(root, options, false); err != nil {

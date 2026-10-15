@@ -29,7 +29,7 @@ func TestSubtitlePath(t *testing.T) {
 	}
 }
 
-func TestServeSubtitleDelivery(t *testing.T) { //nolint:cyclop // Direct, converted, and mapped delivery share one contract.
+func TestServeSubtitleDelivery(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	srt := filepath.Join(root, "film.srt")
@@ -76,7 +76,7 @@ func TestServeSubtitleDelivery(t *testing.T) { //nolint:cyclop // Direct, conver
 	assertSubtitleResponse(t, explicit, "00:00:01.000 --> 00:00:02.000", "direct")
 }
 
-func TestServeSubtitleRejectsBeforeDelivery(t *testing.T) { //nolint:cyclop // Negative paths must prove that no subtitle body is emitted.
+func TestServeSubtitleRejectsBeforeDelivery(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	tooLarge := filepath.Join(root, "large.srt")
@@ -114,7 +114,7 @@ func TestServeSubtitleRejectsBeforeDelivery(t *testing.T) { //nolint:cyclop // N
 	}
 }
 
-func TestLibrarySubtitleHandlerRejectsBeforeDelivery(t *testing.T) { //nolint:cyclop // Route failures must not start file delivery.
+func TestLibrarySubtitleHandlerRejectsBeforeDelivery(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/subtitle/item/bad", nil)
 	request.SetPathValue("id", "item")

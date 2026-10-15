@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestPolicyRequestAndAdapterReportShareOneContract(t *testing.T) { //nolint:cyclop // One contract covers policy, adapter, and report validation.
+func TestPolicyRequestAndAdapterReportShareOneContract(t *testing.T) {
 	db := newMemoryDocumentStore()
 	store, err := New(db, PlayerPolicy(1, 1))
 	if err != nil {
@@ -185,7 +185,7 @@ func TestPendingRequestRejectsMissingTargetAndOutOfOrderReports(t *testing.T) {
 	}
 }
 
-func TestFailedInstallRemainsRecoverableUntilRollbackCompletes(t *testing.T) { //nolint:cyclop // One failure scenario covers recovery state transitions.
+func TestFailedInstallRemainsRecoverableUntilRollbackCompletes(t *testing.T) {
 	store, _ := New(nil, PlayerPolicy(1, 1))
 	store.random = bytes.NewReader(bytes.Repeat([]byte{5}, 16))
 	requestID, _ := store.Request("v3.0.0")

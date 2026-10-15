@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestChangePlaybackValidationAndEffects(t *testing.T) { //nolint:cyclop // One table proves every validation branch has no persistence effect.
+func TestChangePlaybackValidationAndEffects(t *testing.T) {
 	t.Parallel()
 	managed, failed := errors.New("managed"), errors.New("failed")
 	tests := []struct {
@@ -65,7 +65,7 @@ func TestPersistAndRead(t *testing.T) {
 	}
 }
 
-func TestPlaybackAndScanDefaults(t *testing.T) { //nolint:cyclop // One assertion group proves the related persisted playback defaults.
+func TestPlaybackAndScanDefaults(t *testing.T) {
 	t.Parallel()
 	if PlaybackMode("") != "automatic" || PlaybackMode("direct") != "direct" || !(Playback{}).SubtitlesDefault() || (Playback{Subtitles: "off"}).SubtitlesDefault() || !(Playback{}).AutoplayDefault() || !(Playback{PlaybackMode: "direct", Autoplay: true}).AutoplayDefault() || (Playback{PlaybackMode: "direct"}).AutoplayDefault() {
 		t.Fatal("playback defaults are invalid")
@@ -96,7 +96,7 @@ func TestPlaybackAndScanDefaults(t *testing.T) { //nolint:cyclop // One assertio
 	}
 }
 
-func TestChangeScanFrequencyValidationAndEffects(t *testing.T) { //nolint:cyclop,gocognit // The compact matrix proves every validation and persistence outcome.
+func TestChangeScanFrequencyValidationAndEffects(t *testing.T) {
 	t.Parallel()
 	managed := errors.New("managed")
 	for _, test := range []struct {

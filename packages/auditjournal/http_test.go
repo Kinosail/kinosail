@@ -47,7 +47,7 @@ func trackerFixture(t *testing.T) (*HTTPTracker, *int) {
 	return tracker, &marked
 }
 
-func TestResponseWriterTracksStatusBytesAndUnwraps(t *testing.T) { //nolint:cyclop // One response-writer matrix covers optional interfaces and exact counters.
+func TestResponseWriterTracksStatusBytesAndUnwraps(t *testing.T) {
 	t.Parallel()
 	response := httptest.NewRecorder()
 	writer := &ResponseWriter{ResponseWriter: response}
@@ -110,7 +110,7 @@ func TestResponseWriterReadFromCountsPartialFailure(t *testing.T) {
 	}
 }
 
-func TestHTTPTrackerRecordsSuccessSnapshotsActorsAndTitles(t *testing.T) { //nolint:cyclop // Exact event assertions protect the shared audit contract.
+func TestHTTPTrackerRecordsSuccessSnapshotsActorsAndTitles(t *testing.T) {
 	t.Parallel()
 	tracker, _ := trackerFixture(t)
 	if tracker.ResolveTitle("one") != "" {
@@ -140,7 +140,7 @@ func TestHTTPTrackerRecordsSuccessSnapshotsActorsAndTitles(t *testing.T) { //nol
 	}
 }
 
-func TestHTTPTrackerHandlesPassThroughFailuresAndFallbackActors(t *testing.T) { //nolint:cyclop // Exact event assertions protect failure behavior.
+func TestHTTPTrackerHandlesPassThroughFailuresAndFallbackActors(t *testing.T) {
 	t.Parallel()
 	tracker, marked := trackerFixture(t)
 	served := 0
@@ -172,7 +172,7 @@ func TestHTTPTrackerHandlesPassThroughFailuresAndFallbackActors(t *testing.T) { 
 	}
 }
 
-func TestHTTPTrackerRecordsSecurityPasskeyAndPlaybackEvents(t *testing.T) { //nolint:cyclop // One sequence covers each specialized event type.
+func TestHTTPTrackerRecordsSecurityPasskeyAndPlaybackEvents(t *testing.T) {
 	t.Parallel()
 	tracker, marked := trackerFixture(t)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/security", nil)
@@ -193,7 +193,7 @@ func TestHTTPTrackerRecordsSecurityPasskeyAndPlaybackEvents(t *testing.T) { //no
 	}
 }
 
-func TestHTTPTrackerExportContextAndInvalidDependencies(t *testing.T) { //nolint:cyclop // One test verifies all nil-safe view methods.
+func TestHTTPTrackerExportContextAndInvalidDependencies(t *testing.T) {
 	t.Parallel()
 	tracker, _ := trackerFixture(t)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/security", nil)

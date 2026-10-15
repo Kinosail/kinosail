@@ -54,7 +54,7 @@ func testStore(t *testing.T, now time.Time, items ...library.Item) (*Store, *mem
 	return store, state
 }
 
-func TestStoreCapabilityLifecycle(t *testing.T) { //nolint:cyclop,gocognit // One lifecycle proves every capability transition.
+func TestStoreCapabilityLifecycle(t *testing.T) {
 	now := time.Date(2026, 9, 4, 12, 0, 0, 0, time.UTC)
 	directory := t.TempDir()
 	media := filepath.Join(directory, "movie.mp4")
@@ -164,7 +164,7 @@ func TestStoreFailsClosedOnDependencyRandomAndPersistenceErrors(t *testing.T) {
 	}
 }
 
-func TestClaimRevokeAndDeliveryFailurePaths(t *testing.T) { //nolint:cyclop // A compact matrix covers fail-closed capability reads.
+func TestClaimRevokeAndDeliveryFailurePaths(t *testing.T) {
 	t.Parallel()
 	now := time.Now()
 	store, _ := testStore(t, now, library.Item{ID: "item", Path: "movie"})
@@ -208,7 +208,7 @@ func TestClaimRevokeAndDeliveryFailurePaths(t *testing.T) { //nolint:cyclop // A
 	}
 }
 
-func TestStateValidationClonePruneAndRevokeAll(t *testing.T) { //nolint:cyclop // One state matrix covers independent validation branches.
+func TestStateValidationClonePruneAndRevokeAll(t *testing.T) {
 	t.Parallel()
 	secret := base64.RawURLEncoding.EncodeToString(make([]byte, 32))
 	hash := strings.Repeat("0", 64)

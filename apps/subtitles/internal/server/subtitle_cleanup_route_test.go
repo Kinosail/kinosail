@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestSubtitleCleanupAPIRequiresOptInAndKeepsSelectedLanguages(t *testing.T) { //nolint:cyclop,gocognit,funlen // The public API journey verifies rejection without side effects and successful confirmation together.
+func TestSubtitleCleanupAPIRequiresOptInAndKeepsSelectedLanguages(t *testing.T) {
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.es.srt", "Film.fr.srt"} {
@@ -135,7 +135,7 @@ func TestSubtitleCleanupDoesNotReplaceExistingHiddenFile(t *testing.T) {
 	}
 }
 
-func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) { //nolint:cyclop,gocognit,funlen // The browser-route journey covers opt-in, multi-language preservation, and forced-subtitle hiding together.
+func TestSubtitleCleanupRequiresOptInAndKeepsSeveralLanguages(t *testing.T) {
 	media := t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Film.mkv"), "video")
 	for _, name := range []string{"Film.en.srt", "Film.en.forced.srt", "Film.es.srt", "Film.es.forced.srt", "Film.fr.srt", "Film.fr.forced.srt"} {

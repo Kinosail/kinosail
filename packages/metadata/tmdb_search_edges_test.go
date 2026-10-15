@@ -27,7 +27,7 @@ func TestResolveTMDBMovieRejectsSearchAndArtworkIdentityFailures(t *testing.T) {
 	}
 }
 
-func TestResolveTMDBShowRejectsProviderAndArtworkFailures(t *testing.T) { //nolint:cyclop // Show lookup, details, and both artwork targets fail independently.
+func TestResolveTMDBShowRejectsProviderAndArtworkFailures(t *testing.T) {
 	t.Parallel()
 	providerCalls := 0
 	if _, err := resolveTMDBShow(t.Context(), library.Item{ID: "../episode", Show: "Show"}, "https://example.com", func(context.Context, string, any) error { providerCalls++; return nil }, func(context.Context, library.Item, int, string, string, *Record, *string) { providerCalls++ }, func(string) string { providerCalls++; return "" }); err == nil || providerCalls != 0 {
@@ -59,7 +59,7 @@ func TestResolveTMDBShowRejectsProviderAndArtworkFailures(t *testing.T) { //noli
 	}
 }
 
-func TestFindTMDBCandidateReturnsSearchAndFallbackErrors(t *testing.T) { //nolint:cyclop // Each provider-stage error is translated to the shared contract.
+func TestFindTMDBCandidateReturnsSearchAndFallbackErrors(t *testing.T) {
 	t.Parallel()
 	identity := library.Item{Title: "Show", Year: "2020"}
 	if _, err := FindTMDBCandidate(t.Context(), "https://example.com", "movie", identity, nil, func(context.Context, string, any) error { return errors.New("offline") }); err == nil {
@@ -82,7 +82,7 @@ func TestFindTMDBCandidateReturnsSearchAndFallbackErrors(t *testing.T) { //nolin
 	}
 }
 
-func TestTMDBIMDbAndTVFallbackEdgePolicies(t *testing.T) { //nolint:cyclop // Empty ID matches and conservative TV fallback behavior are explicit.
+func TestTMDBIMDbAndTVFallbackEdgePolicies(t *testing.T) {
 	t.Parallel()
 	empty, err := findTMDBByIMDb(t.Context(), "https://example.com", "movie", map[string]string{"imdb": "tt1234567"}, func(_ context.Context, _ string, target any) error {
 		*target.(*TMDBCandidates) = TMDBCandidates{}

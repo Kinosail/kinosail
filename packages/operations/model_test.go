@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestBuildDiagnosticReportUsesSafeSnapshot(t *testing.T) { //nolint:cyclop // One comparison set protects every safe report field.
+func TestBuildDiagnosticReportUsesSafeSnapshot(t *testing.T) {
 	t.Parallel()
 	started := time.Date(2026, time.September, 4, 12, 0, 0, 0, time.FixedZone("MDT", -6*60*60))
 	now := started.Add(95*time.Second + 900*time.Millisecond)

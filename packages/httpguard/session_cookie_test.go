@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-//nolint:cyclop,gocognit // Each precedence case verifies selection and both CSRF outcomes together.
 func TestScopedBrowserCookieUsesOneSessionForCSRF(t *testing.T) {
 	t.Parallel()
 	const scoped = "__Host-kinosail_player_session"

@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestNumericTitleJumpIsSharedByAPIAndWeb(t *testing.T) { //nolint:cyclop // One fixture compares the API and web projections.
+func TestNumericTitleJumpIsSharedByAPIAndWeb(t *testing.T) {
 	mediaDir := t.TempDir()
 	for _, name := range []string{"2001 A Space Odyssey.mp4", "Alpha.mp4"} {
 		if err := os.WriteFile(filepath.Join(mediaDir, name), []byte("video"), 0o600); err != nil {
@@ -32,7 +32,7 @@ func TestNumericTitleJumpIsSharedByAPIAndWeb(t *testing.T) { //nolint:cyclop // 
 	}
 }
 
-func TestLetterJumpUsesTheActiveLocaleForAccentedTitles(t *testing.T) { //nolint:cyclop // Locale-sensitive buckets are asserted together.
+func TestLetterJumpUsesTheActiveLocaleForAccentedTitles(t *testing.T) {
 	mediaDir := t.TempDir()
 	for _, name := range []string{"Alpha.mp4", "Ångström.mp4", "Beta.mp4"} {
 		if err := os.WriteFile(filepath.Join(mediaDir, name), []byte("video"), 0o600); err != nil {

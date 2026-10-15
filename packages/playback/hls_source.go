@@ -69,7 +69,7 @@ func oneOfInt(value int, allowed ...int) bool {
 	return false
 }
 
-func validHLSRecipeBounds(recipe HLSRecipe, sidecarCount int) bool { //nolint:cyclop // Validate all independent recipe fields before resolving source tracks.
+func validHLSRecipeBounds(recipe HLSRecipe, sidecarCount int) bool {
 	if !validHLSSelection(recipe) || !finiteTimelineValue(recipe.Offset) || len(recipe.Omitted) > 128 || sidecarCount > 256 {
 		return false
 	}

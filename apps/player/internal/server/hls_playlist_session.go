@@ -70,7 +70,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		writer.Header().Set("Content-Type", "video/mp4")
 	}
 	manager.adoptRecipeFile(request, key, path)
-	//nolint:gosec // G703: filepath.Localize and hlsFile reject non-local and unknown paths above.
 	http.ServeFile(writer, request, path)
 }
 

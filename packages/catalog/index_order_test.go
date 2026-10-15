@@ -38,7 +38,7 @@ func TestDecoratorPublicationPreservesPreviousReferences(t *testing.T) {
 	}
 }
 
-func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix compares every selected result field across locales, views, and changing profile state.
+func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 	items := []library.Item{
 		{ID: "z", Title: "Zebra", Kind: "video", Year: "2024"},
 		{ID: "ae", Title: "Ängel", Kind: "video", Year: "2023"},
@@ -110,7 +110,7 @@ func TestIndexedBrowsePreservesLocalePagesAndCurrentProfileState(t *testing.T) {
 	}
 }
 
-func TestIndexedBrowsePublicationAndRejectedRequests(t *testing.T) { //nolint:cyclop // One lifecycle test covers successful publication, failed scans, and rejected requests.
+func TestIndexedBrowsePublicationAndRejectedRequests(t *testing.T) {
 	index := catalog.NewMemoryIndex([]library.Item{{ID: "a", Title: "Alpha"}, {ID: "b", Title: "Beta"}}, true)
 	access := orderTestAccess()
 	read := func() []string {
@@ -184,7 +184,7 @@ func TestIndexedBrowseRejectedRequestsSkipProfileState(t *testing.T) {
 	}
 }
 
-func TestIndexedBrowseConcurrentReadersAndPublication(t *testing.T) { //nolint:cyclop,gocognit // Concurrent publication and canceled readers share one observable result contract.
+func TestIndexedBrowseConcurrentReadersAndPublication(t *testing.T) {
 	items := make([]library.Item, 2048)
 	for i := range items {
 		items[i] = library.Item{ID: strconv.Itoa(i), Title: fmt.Sprintf("Title %04d", len(items)-i)}

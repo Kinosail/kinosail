@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) { //nolint:cyclop,funlen,gocognit // Go implicitly maps HEAD to GET, so every authorization dimension is repeated here.
+func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) {
 	handler, owner := newRouteAuthorizationServer(t)
 	createRouteProfile(t, handler, owner, map[string]any{
 		"name": "Viewer", "password": "viewer-password", "rating": "all", "libraries": []string{"all"},

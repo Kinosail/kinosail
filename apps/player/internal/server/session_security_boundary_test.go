@@ -148,7 +148,7 @@ func TestPasswordResetImmediatelyRevokesActiveSessions(t *testing.T) {
 	}
 }
 
-func TestCredentialRateLimitSpansWebAPIAndJellyfin(t *testing.T) { //nolint:cyclop // Alternating adapters is the behavior under test.
+func TestCredentialRateLimitSpansWebAPIAndJellyfin(t *testing.T) {
 	t.Parallel()
 	handler := newJellyfinServer(t, server.Config{RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")

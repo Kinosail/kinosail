@@ -149,7 +149,7 @@ func TestSAMLRejectsUnsafeKeyFiles(t *testing.T) {
 	}
 }
 
-func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) { //nolint:cyclop,funlen // One lifecycle proves provider, key, state, and assertion behavior.
+func TestSAMLFlowStartsAndCompletesSignedResponse(t *testing.T) {
 	t.Parallel()
 	key, certificate := samlKeyPair(t)
 	provider := &samlTestServiceProvider{}

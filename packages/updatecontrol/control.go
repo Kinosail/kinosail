@@ -144,7 +144,7 @@ func (store *Store) Request(targetVersion string) (string, error) {
 	return state.RequestID, nil
 }
 
-func (store *Store) Report(report Report) error { //nolint:cyclop,gocognit // Report validation and persistence remain one atomic operation.
+func (store *Store) Report(report Report) error {
 	if err := validateReport(report); err != nil {
 		return err
 	}

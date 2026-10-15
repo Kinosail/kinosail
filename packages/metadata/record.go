@@ -157,7 +157,7 @@ func ApplyRecords(items []library.Item, records map[string]Record, currentArtwor
 }
 
 func RegularFile(path string) bool {
-	info, err := os.Lstat(path) //nolint:gosec // Callers derive the path from configured metadata storage or scanned Library Content.
+	info, err := os.Lstat(path)
 	return err == nil && info.Mode().IsRegular()
 }
 
@@ -191,7 +191,7 @@ func validMetadataID(value string) bool {
 	return value != "" && len(value) <= 128 && !strings.ContainsAny(value, `/\`) && strings.IndexFunc(value, unicode.IsControl) < 0
 }
 
-func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enrich func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) { //nolint:cyclop // One fail-closed guard keeps all cross-field episode invariants ahead of the provider call.
+func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enrich func(context.Context, library.Item, int, string, string, *Record, *string), artwork func(string) string) (Result, error) {
 	id, err := strconv.Atoi(show.ShowProviderIDs["tmdb"])
 	if ctx == nil || enrich == nil || artwork == nil || err != nil || id <= 0 || !validMetadataID(item.ID) || item.Season < 0 || item.Season > 100000 || item.Episode < 0 || item.Episode > 100000 || show.ShowTitle == "" || !Bounded(show) {
 		return Result{}, errors.New("show metadata is invalid")

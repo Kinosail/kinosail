@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 )
 
-func fetchPlexSections(ctx context.Context, client *http.Client, input Input, sections []plexViewingSection) ([]Activity, error) { //nolint:cyclop,gocognit,funlen // Validation, bounded fetches, and ordered collection share one source boundary.
+func fetchPlexSections(ctx context.Context, client *http.Client, input Input, sections []plexViewingSection) ([]Activity, error) { //nolint:gocognit // Validation, bounded fetches, and ordered collection share one source boundary.
 	for _, section := range sections {
 		if _, err := plexSectionType(section.Key, section.Type); err != nil {
 			return nil, err
@@ -68,7 +68,7 @@ func fetchPlexSections(ctx context.Context, client *http.Client, input Input, se
 		case <-workCtx.Done():
 			workers.Wait()
 			if overBudget.Load() {
-				return nil, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+				return nil, errors.New("Plex source returned too many items")
 			}
 			return nil, ctx.Err()
 		}
@@ -76,7 +76,7 @@ func fetchPlexSections(ctx context.Context, client *http.Client, input Input, se
 			cancel()
 			workers.Wait()
 			if overBudget.Load() {
-				return nil, errors.New("Plex source returned too many items") //nolint:staticcheck // Plex is a proper product name.
+				return nil, errors.New("Plex source returned too many items")
 			}
 			return nil, results[position].err
 		}

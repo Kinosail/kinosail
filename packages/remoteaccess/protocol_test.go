@@ -49,7 +49,7 @@ func TestPublicHTTP1RejectsAmbiguousFramingBeforeHandlerSideEffects(t *testing.T
 	}
 }
 
-func TestPublicHTTP2AdvertisesExplicitResourceBudgets(t *testing.T) { //nolint:cyclop,gocognit // One wire-level exchange verifies every advertised HTTP/2 resource budget.
+func TestPublicHTTP2AdvertisesExplicitResourceBudgets(t *testing.T) {
 	t.Parallel()
 	address, cancel := startProtocolServer(t, http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusNoContent) }))
 	defer cancel()

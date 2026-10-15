@@ -115,7 +115,7 @@ func descriptor(data []byte) (byte, []byte, error) {
 	return 0, nil, ErrInvalid
 }
 
-func audioDescriptor(data []byte) (string, error) { //nolint:cyclop // Validate nested descriptor headers before reading the audio object type.
+func audioDescriptor(data []byte) (string, error) {
 	tag, payload, err := descriptor(data)
 	if err != nil || tag != 3 || len(payload) < 3 {
 		return "", ErrInvalid

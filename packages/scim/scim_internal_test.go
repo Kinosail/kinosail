@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestSCIMPatchValuePathsAndRemoval(t *testing.T) { //nolint:gocognit,cyclop // Direct unit coverage enumerates the SCIM valuePath state transitions.
+func TestSCIMPatchValuePathsAndRemoval(t *testing.T) {
 	state := scimProfileInput{UserName: "viewer@example.com", Name: "Viewer", Active: true, Emails: []scimProfileEmail{{Value: "home@example.com", Type: "home"}}}
 	path, err := parseSCIMPatchPath(`emails[type eq "work"].value`)
 	if err != nil {
@@ -70,7 +70,7 @@ func TestSCIMPatchFieldTypesAndRemovals(t *testing.T) {
 	assertSCIMPatchPrecedenceAndPrimary(t)
 }
 
-func TestSCIMValidationAndWireTypes(t *testing.T) { //nolint:gocognit,cyclop,funlen // Direct unit coverage keeps persistence and wire validation boundaries explicit.
+func TestSCIMValidationAndWireTypes(t *testing.T) {
 	if _, err := scimString(strings.Repeat("x", 5), 4, false, "field"); err == nil {
 		t.Fatal("oversized SCIM value was accepted")
 	}

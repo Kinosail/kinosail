@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.T) { //nolint:cyclop,funlen,gocognit // Three sources prove the minimum-transform ladder and explicit color/subtitle branch.
+func TestPlannedHLSDeliversTheTransformationChosenByPlaybackPlanning(t *testing.T) {
 	tests := []struct {
 		name, probe, query string
 		want               []string

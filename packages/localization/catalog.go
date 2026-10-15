@@ -88,7 +88,7 @@ func (catalog *Catalog) PickerHTML(tag, preference, csrf string, compact bool) t
 	return template.HTML(picker.String()) //nolint:gosec // Every dynamic value is escaped above.
 }
 
-func (catalog *Catalog) TranslateSource(source, tag string) string { //nolint:gocognit // Embedded HTML translation preserves markup while replacing cataloged text nodes.
+func (catalog *Catalog) TranslateSource(source, tag string) string {
 	var result strings.Builder
 	for source != "" {
 		if source[0] == '<' {

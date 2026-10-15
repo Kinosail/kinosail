@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestTVPreviewsAreLocalBoundedAndContainNoSecrets(t *testing.T) { //nolint:cyclop // One preview response is checked for locality, bounds, and secret redaction.
+func TestTVPreviewsAreLocalBoundedAndContainNoSecrets(t *testing.T) {
 	t.Parallel()
 	broker := New(time.Minute)
 	viewer := Viewer{ID: "viewer"}
@@ -109,7 +109,7 @@ func TestPreviewHidesRemoteAndApprovedRequests(t *testing.T) {
 	}
 }
 
-func TestApprovalReadHTTPBoundaries(t *testing.T) { //nolint:cyclop // The endpoint table compares authorized and rejected approval reads.
+func TestApprovalReadHTTPBoundaries(t *testing.T) {
 	t.Parallel()
 	for _, path := range []string{"/api/v1/quick-connect/pending?unknown=1", "/api/v1/quick-connect/pending?"} {
 		fixture := newApplicationFixture(t)

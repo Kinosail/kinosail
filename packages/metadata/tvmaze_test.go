@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestTVMazeRecordAndFillUseValidatedCachedProviderData(t *testing.T) { //nolint:cyclop,gocognit // The assertions cover one provider workflow.
+func TestTVMazeRecordAndFillUseValidatedCachedProviderData(t *testing.T) {
 	t.Parallel()
 	var requests atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -66,7 +66,7 @@ func TestTVMazeRecordAndFillUseValidatedCachedProviderData(t *testing.T) { //nol
 	}
 }
 
-func TestTVMazeRejectsInvalidInputsAndResponses(t *testing.T) { //nolint:cyclop,funlen // The table covers one provider trust boundary.
+func TestTVMazeRejectsInvalidInputsAndResponses(t *testing.T) {
 	t.Parallel()
 	if NewTVMazeProvider("://bad") != nil || NewTVMazeProvider("http://example.com") != nil || NewTVMazeProvider("https://api.tvmaze.com/path") != nil {
 		t.Fatal("invalid provider endpoint was accepted")
@@ -133,7 +133,7 @@ func TestTVMazeRejectsMismatchedAndOversizedEpisodeData(t *testing.T) {
 			server := tvmazeFixtureServer(t, episode, `{"id":1,"name":"Show"}`)
 			defer server.Close()
 			item := library.Item{Show: "Show", Season: 1, Episode: 1, ProviderIDs: map[string]string{"tvdb": "1"}}
-			if _, ok := NewTVMazeProvider(server.URL).Record(context.Background(), item); ok { //nolint:usetesting // Explicit context exercises provider ownership.
+			if _, ok := NewTVMazeProvider(server.URL).Record(context.Background(), item); ok {
 				t.Fatal("invalid episode data was accepted")
 			}
 		})

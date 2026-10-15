@@ -44,7 +44,7 @@ func publicProfiles(profiles []viewerProfile) []apiProfile {
 	return result
 }
 
-func registerAdminAPI(mux *http.ServeMux, api apiServices) { //nolint:funlen // The explicit administrative route registry is intentionally centralized.
+func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner := func(pattern string, handler http.Handler) { mux.Handle(pattern, api.auth.owner(handler)) }
 	owner("GET /api/v1/settings", apiSettings(api))
 	registerUpdateAPI(owner, api.updates)
@@ -180,7 +180,7 @@ func apiUpdateProfile(profiles *profileStore) http.HandlerFunc {
 		if !readJSON(writer, request, &input) {
 			return
 		}
-		if err := profiles.setProfile(request.PathValue("id"), input.Owner, input.policy()); err != nil { //nolint:contextcheck // Authorization changes must finish after validation.
+		if err := profiles.setProfile(request.PathValue("id"), input.Owner, input.policy()); err != nil {
 			apiError(writer, err, http.StatusBadRequest)
 			return
 		}
@@ -192,13 +192,13 @@ func apiDeleteProfile(profiles *profileStore) http.HandlerFunc {
 	return apiAction(func(request *http.Request) error { return profiles.removeProfile(request.PathValue("id")) })
 }
 
-func apiPassword(profiles *profileStore) http.HandlerFunc { //nolint:contextcheck // A validated credential rotation must durably finish after request cancellation.
-	return func(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // The validated credential rotation must durably finish after disconnect.
+func apiPassword(profiles *profileStore) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
 		var input struct{ Password string }
 		if !readJSON(writer, request, &input) {
 			return
 		}
-		if err := profiles.resetPassword(request.PathValue("id"), input.Password); err != nil { //nolint:contextcheck // Credential and session changes form one durable commit.
+		if err := profiles.resetPassword(request.PathValue("id"), input.Password); err != nil {
 			apiError(writer, err, http.StatusBadRequest)
 			return
 		}

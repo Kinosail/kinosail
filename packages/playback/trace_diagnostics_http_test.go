@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy(t *testing.T) { //nolint:cyclop,funlen,gocognit // One HTTP matrix checks strict parsing, valid diagnostics and absence of rejected-input effects.
+func TestTraceHTTPDiagnosticsRejectAmbiguityAndProtectLogPrivacy(t *testing.T) {
 	const validBody = `{"session":"qa-session-427","event":"error","sequence":1,"detail":"fullscreen:NotAllowedError:playback-retained"}`
 	for _, fixture := range []struct {
 		name, body string

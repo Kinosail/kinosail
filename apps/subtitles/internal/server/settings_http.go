@@ -95,7 +95,7 @@ func restartOnboarding(settings *settingsStore) http.HandlerFunc {
 	}
 }
 
-func showSettings(settings *settingsStore, updates *updateChecker, profiles *profileStore, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, audit *auditStore, index *libraryIndex, hls *hlsManager, subtitles *subtitleProvider, metadata *metadataStore, markers *markerAnalyzer, maintenance *maintenanceManager, imports *viewingImportManager, notifications, authURL string) http.HandlerFunc { //nolint:funlen,gocognit // The settings view assembles one read-only projection.
+func showSettings(settings *settingsStore, updates *updateChecker, profiles *profileStore, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, audit *auditStore, index *libraryIndex, hls *hlsManager, subtitles *subtitleProvider, metadata *metadataStore, markers *markerAnalyzer, maintenance *maintenanceManager, imports *viewingImportManager, notifications, authURL string) http.HandlerFunc { //nolint:funlen // The settings view assembles one read-only projection.
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		transcoding := settings.transcoding()

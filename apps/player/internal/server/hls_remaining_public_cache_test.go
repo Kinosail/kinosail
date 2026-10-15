@@ -16,7 +16,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:funlen,gocognit,cyclop // One bounded public cache lifecycle retains its before/after evidence.
+func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) {
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
 		t.Skip("FFmpeg is required for real public AAC cache proof")
@@ -31,7 +31,7 @@ func TestRemainingPublicAACOldCacheRebuildAndColdReuse(t *testing.T) { //nolint:
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	source := filepath.Join(media, "Fixture.flac")
 	fixture := "aevalsrc='0.1*sin(2*PI*(440*t+20*t*t))|0.1*sin(2*PI*(670*t+31*t*t))':s=48000:d=10"
-	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", fixture, "-c:a", "flac", source) //nolint:gosec // Fixed synthetic fixture and discovered codec; no original media.
+	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-f", "lavfi", "-i", fixture, "-c:a", "flac", source)
 	if err := command.Run(); err != nil {
 		t.Fatalf("generate public cache fixture: %v", err)
 	}

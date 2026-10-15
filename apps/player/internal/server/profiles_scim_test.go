@@ -36,7 +36,7 @@ func TestSCIMManagedProfileAllowsLocalPolicyButRejectsIdentityLifecycleChanges(t
 	}
 }
 
-func TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject(t *testing.T) { //nolint:cyclop // One lifecycle test proves all stable-subject link outcomes.
+func TestSCIMOIDCLinkingRequiresOneStableProvisionedSubject(t *testing.T) {
 	identity := oidcIdentity{Issuer: "https://issuer.example", Subject: "subject-1"}
 	store := &profileStore{file: "profiles.json", persist: func(string, any) error { return nil }, profiles: []viewerProfile{{ID: "scim-1", Name: "Viewer", SCIMManaged: true, SCIMUserName: "viewer@example.com", SCIMExternalID: "directory-1"}}}
 	profiles := store.federatedProfiles()

@@ -25,7 +25,7 @@ func TestSelectionNormalizationAndAcceleratorCatalog(t *testing.T) {
 	}
 }
 
-func TestValidateSelectionPreservesPlayerPolicyAndNoInputMutation(t *testing.T) { //nolint:cyclop // One table verifies each ordered validation result.
+func TestValidateSelectionPreservesPlayerPolicyAndNoInputMutation(t *testing.T) {
 	capabilities := settingsCapabilities()
 	input := Selection{Transcoder: "automatic", ToneMap: true}
 	selection, err := capabilities.ValidateSelection(input)
@@ -53,7 +53,7 @@ func TestValidateSelectionPreservesPlayerPolicyAndNoInputMutation(t *testing.T) 
 	}
 }
 
-func TestReconcileSelectionPreservesExplicitChoicesAndRepairsDefaults(t *testing.T) { //nolint:cyclop // One table protects every persisted selection repair rule.
+func TestReconcileSelectionPreservesExplicitChoicesAndRepairsDefaults(t *testing.T) {
 	capabilities := settingsCapabilities()
 	supported := Selection{Transcoder: "speed", Accelerator: "", Codec: ""}
 	result, changed, err := capabilities.ReconcileSelection(supported, SelectionSources{Accelerator: true, Codec: true})
@@ -74,7 +74,7 @@ func TestReconcileSelectionPreservesExplicitChoicesAndRepairsDefaults(t *testing
 	}
 }
 
-func TestSettingsResolvesPlayerProfilesAndErrors(t *testing.T) { //nolint:cyclop // One table verifies each stable conversion profile.
+func TestSettingsResolvesPlayerProfilesAndErrors(t *testing.T) {
 	unprobed := Capabilities{Selected: "none"}
 	settings, err := unprobed.Settings(Selection{ToneMap: true}, "")
 	want := transcodepolicy.Settings{Name: "automatic", Preset: "veryfast", CRF: "22", Codec: "h264", Accelerator: "none", Encoder: "libx264", Cache: "automatic:h264:auto:policy=3:hdr", ToneMap: true}

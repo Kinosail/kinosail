@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func (store *settingsStore) auditSnapshot(request *http.Request) map[string]string { //nolint:cyclop,funlen // Each mutable settings projection is intentionally allowlisted.
+func (store *settingsStore) auditSnapshot(request *http.Request) map[string]string {
 	path := request.URL.Path
 	store.mu.RLock()
 	defer store.mu.RUnlock()

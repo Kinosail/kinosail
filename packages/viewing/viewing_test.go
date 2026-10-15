@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestMatchUsesConservativeIdentityOrder(t *testing.T) { //nolint:cyclop // One table proves every intentional match fallback.
+func TestMatchUsesConservativeIdentityOrder(t *testing.T) {
 	items := []library.Item{
 		{ID: "provider", Kind: "video", Title: "Different", Year: "2020", ProviderIDs: map[string]string{"imdb": "tt123"}},
 		{ID: "movie-a", Kind: "video", Title: "Arrival", Year: "2016", Path: "/a/Arrival.mkv"},
@@ -72,7 +72,7 @@ func TestActivityIdentifiersAndLabelsAreStable(t *testing.T) {
 	}
 }
 
-func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) { //nolint:cyclop // One preview proves all classification outcomes and callback boundaries.
+func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) {
 	items := []library.Item{
 		{ID: "ready", Kind: "video", Title: "Ready", Year: "2024"},
 		{ID: "same", Kind: "video", Title: "Same", Year: "2024"},
@@ -133,7 +133,7 @@ func TestBuildPreviewClassifiesWithoutSideEffects(t *testing.T) { //nolint:cyclo
 	}
 }
 
-func TestMergeProgressAndListsPreservesOptimisticState(t *testing.T) { //nolint:cyclop // One test covers the coupled optimistic merge results.
+func TestMergeProgressAndListsPreservesOptimisticState(t *testing.T) {
 	now := time.Now()
 	values := map[string]catalog.PlaybackState{"legacy": {Seconds: 2}, "viewer:conflict": {Seconds: 9}}
 	merged, applied, conflicts := MergeProgress(values, "viewer", true, []ProgressChange{
@@ -160,7 +160,7 @@ func TestMergeProgressAndListsPreservesOptimisticState(t *testing.T) { //nolint:
 	}
 }
 
-func TestProgressStoragePublishesOnlyPersistedImports(t *testing.T) { //nolint:cyclop // One test proves success, rollback, and conflict side effects.
+func TestProgressStoragePublishesOnlyPersistedImports(t *testing.T) {
 	values := map[string]catalog.PlaybackState{"viewer:item": {Seconds: 1}}
 	var mutex, persistMutex sync.Mutex
 	storage := ProgressStorage{Mutex: &mutex, PersistMutex: &persistMutex, Values: &values, File: "progress.json", ProfileID: "viewer", Persist: func(string, any) error { return errors.New("disk") }}
@@ -195,7 +195,7 @@ func TestEngineStopsAtValidationAndMissingProfile(t *testing.T) {
 	}
 }
 
-func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) { //nolint:cyclop,gocognit,funlen // One boundary test covers every request parser and mutation guard.
+func TestViewingFormsRejectAmbiguityAndOversize(t *testing.T) {
 	settingsPage, onboardingPage := PreviewPage("/settings/viewing-imports/preview"), PreviewPage("/onboarding/viewing-imports/preview")
 	if !settingsPage.AllowSync || settingsPage.ApplyPath != "/settings/viewing-imports/apply" || onboardingPage.AllowSync || onboardingPage.Step != "Step 4 of 4" {
 		t.Fatalf("preview pages = %#v / %#v", settingsPage, onboardingPage)

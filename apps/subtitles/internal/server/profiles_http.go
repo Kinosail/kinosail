@@ -23,15 +23,14 @@ var (
 )
 
 func (store *profileStore) login(writer http.ResponseWriter, request *http.Request, next string) {
-	//nolint:gosec // G705: localization substitutes only trusted embedded catalog messages into static HTML.
 	identitycore.Login(writer, request, next, profileLoginView.Execute, identitycore.PasswordLoginConfig[viewerProfile]{Error: localizedError, ReturnPath: safeLoginReturn, SetAudit: setAuditViewer, SignIn: store.signIn, ProfileID: func(profile viewerProfile) string { return profile.ID }, Authenticate: store.authenticate})
 }
 
-func resetViewerPassword(profiles *profileStore) http.HandlerFunc { //nolint:contextcheck // Credential rotation and session revocation must commit together after validation.
+func resetViewerPassword(profiles *profileStore) http.HandlerFunc {
 	return identitycore.ViewerPasswordResetHandler(profiles.resetPassword, localizedError)
 }
 
-func removeViewer(profiles *profileStore) http.HandlerFunc { //nolint:contextcheck // Profile, session, and API-key removal must commit together after validation.
+func removeViewer(profiles *profileStore) http.HandlerFunc {
 	return identitycore.ViewerRemovalHandler(profiles.removeProfile, localizedError)
 }
 
@@ -55,7 +54,7 @@ func addOnboardingViewer(profiles *profileStore) http.HandlerFunc {
 
 func setViewerPermissions(profiles *profileStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		if err := profiles.setProfile(request.FormValue("id"), request.FormValue("owner") == "true", identitycore.ProfilePolicyFromRequest(request)); err != nil { //nolint:contextcheck // Authorization changes must finish after validation.
+		if err := profiles.setProfile(request.FormValue("id"), request.FormValue("owner") == "true", identitycore.ProfilePolicyFromRequest(request)); err != nil {
 			localizedError(writer, request, err.Error(), http.StatusBadRequest)
 			return
 		}

@@ -87,7 +87,7 @@ func TestManualCheckMapsReleaseFailureToServiceUnavailable(t *testing.T) {
 	}
 }
 
-func TestInstallRequestValidatesEmptyInputBeforeManagerMutation(t *testing.T) { //nolint:cyclop // All rejected transport shapes share the manager side-effect assertion.
+func TestInstallRequestValidatesEmptyInputBeforeManagerMutation(t *testing.T) {
 	t.Parallel()
 	manager, err := New(nil, PlayerPolicy(1, 1))
 	if err != nil {
@@ -142,7 +142,7 @@ func TestInstallRequestRequiresAvailableReleaseAndWritableManager(t *testing.T) 
 	}
 }
 
-func TestSavePreferenceRejectsInvalidFormsBeforePersistence(t *testing.T) { //nolint:cyclop // All strict form cases share the persistence assertion.
+func TestSavePreferenceRejectsInvalidFormsBeforePersistence(t *testing.T) {
 	t.Parallel()
 	var saves atomic.Int32
 	checker := newHTTPTestChecker(t, nil, func(bool) error { saves.Add(1); return nil }, nil)

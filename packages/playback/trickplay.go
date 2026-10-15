@@ -40,7 +40,7 @@ func (frames *Trickplay) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /trickplay/{id}/{second}", frames.Serve)
 }
 
-func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop // Validation and presentation mapping precede the cache side effect.
+func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request) {
 	if frames == nil || request == nil {
 		http.Error(writer, "preview unavailable", http.StatusServiceUnavailable)
 		return
@@ -73,7 +73,7 @@ func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request
 		}
 	}
 	writer.Header().Set("Content-Type", "image/jpeg")
-	http.ServeFile(writer, request, target) //nolint:gosec // Target contains a scanned ID and validated integer.
+	http.ServeFile(writer, request, target)
 }
 
 func (frames *Trickplay) generate(ctx context.Context, source, target string, second int) error {

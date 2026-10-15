@@ -56,7 +56,7 @@ func playbackRequest(t *testing.T, method, id, body string) *http.Request {
 	return request
 }
 
-func TestPlaybackHTTPRegistersAndRunsPlayerPlanningOrder(t *testing.T) { //nolint:cyclop // One flow verifies the complete shared orchestration.
+func TestPlaybackHTTPRegistersAndRunsPlayerPlanningOrder(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "item", Kind: "video", Title: "Film"}
 	effects := make([]string, 0)
@@ -83,7 +83,7 @@ func TestPlaybackHTTPRegistersAndRunsPlayerPlanningOrder(t *testing.T) { //nolin
 	}
 }
 
-func TestPlaybackHTTPRejectsInvalidInputsBeforeExpensiveWork(t *testing.T) { //nolint:cyclop // The matrix proves no probe or session side effect.
+func TestPlaybackHTTPRejectsInvalidInputsBeforeExpensiveWork(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "item", Kind: "video"}
 	for name, request := range map[string]*http.Request{
@@ -160,7 +160,7 @@ func TestPlaybackHTTPMapsSessionAndSourceFailures(t *testing.T) {
 	module.PlaybackInfo(httptest.NewRecorder(), playbackRequest(t, http.MethodGet, item.ID, ""))
 }
 
-func TestPlaybackHTTPSelectsAndServesArtwork(t *testing.T) { //nolint:cyclop // One artwork matrix protects every media-kind selection and failure response.
+func TestPlaybackHTTPSelectsAndServesArtwork(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	art := filepath.Join(root, "art.jpg")

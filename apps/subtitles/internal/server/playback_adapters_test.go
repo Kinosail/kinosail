@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) { //nolint:cyclop // One adapter matrix proves direct-first playback and its adaptive fallback.
+func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) {
 	t.Parallel()
 	media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {
@@ -97,7 +97,7 @@ func TestExplicitPlaybackModesBypassAutomaticFallbackAcrossAPIAndWeb(t *testing.
 	assertPlayback("compatible", []string{`data-hls="/hls/`, `"mode":"transcode"`}, []string{`data-adaptive=`})
 }
 
-func TestTrustedOpeningOffsetAcrossAPIAndWeb(t *testing.T) { //nolint:cyclop,funlen // One contract covers the API and player adapters.
+func TestTrustedOpeningOffsetAcrossAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {

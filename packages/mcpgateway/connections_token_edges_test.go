@@ -20,7 +20,7 @@ func tokenRequest(t *testing.T, values url.Values) *http.Request {
 	return request
 }
 
-func TestTokenBoundaryFailuresCreateNoGrant(t *testing.T) { //nolint:cyclop // The score of 13 remains below the repository ceiling of 22 for the no-authority boundary matrix.
+func TestTokenBoundaryFailuresCreateNoGrant(t *testing.T) {
 	store := &memoryState{}
 	connections := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{}}, store)
 	wrongType := tokenRequest(t, url.Values{})

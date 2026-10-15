@@ -54,7 +54,7 @@ func TestDeSECProviderUpdatesAddressWithPrivateAuthorization(t *testing.T) {
 	}
 }
 
-func TestDeSECProviderManagesTXTWithPrivateAuthorization(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the provider boundary matrix.
+func TestDeSECProviderManagesTXTWithPrivateAuthorization(t *testing.T) {
 	t.Parallel()
 	deSEC, requests := deSECProviderTest(t)
 	if err := deSEC.PresentTXT(t.Context(), "dns-proof"); err != nil {

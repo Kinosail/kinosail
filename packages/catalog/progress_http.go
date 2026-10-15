@@ -26,7 +26,7 @@ func NewProgressHTTPHandlers(store *RequestProgressStore, index progressItemInde
 	return ProgressHTTPHandlers{Store: store, Index: index, Timeline: timeline, Error: writeError, NotFound: notFound, Status: status}
 }
 
-func (handlers ProgressHTTPHandlers) Save() http.HandlerFunc { //nolint:cyclop // One boundary validates the complete progress form before its single state change.
+func (handlers ProgressHTTPHandlers) Save() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		item, found := handlers.Index.VisibleItem(request, request.PathValue("id"))
 		id := item.ID

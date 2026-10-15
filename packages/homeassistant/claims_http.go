@@ -128,7 +128,7 @@ func (integration *Integration[P]) playerStateHTTP(writer http.ResponseWriter, r
 	var state Player
 	if !playerID.MatchString(id) || !readPlayerJSON(writer, request, &state, "state", id) {
 		if !playerID.MatchString(id) {
-			playerFailure(writer, request, "state", "", errors.New("Home Assistant player ID is invalid"), http.StatusBadRequest) //nolint:staticcheck // Preserve the public error.
+			playerFailure(writer, request, "state", "", errors.New("Home Assistant player ID is invalid"), http.StatusBadRequest)
 		}
 		return
 	}

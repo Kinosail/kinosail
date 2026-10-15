@@ -72,7 +72,7 @@ func TestEventsSmallAndNoExpiryRequestsGrantFiniteLifetime(t *testing.T) {
 	}
 }
 
-func TestEventsRetrySameBodyThenSuspendUntilRefresh(t *testing.T) { //nolint:cyclop // One callback journey proves retry identity, suspension, truncation, and recovery.
+func TestEventsRetrySameBodyThenSuspendUntilRefresh(t *testing.T) {
 	fixture := newEventFixture(t)
 	fixture.subscribe(t, "library.updated", map[string]any{})
 	fixture.status.Store(http.StatusServiceUnavailable)

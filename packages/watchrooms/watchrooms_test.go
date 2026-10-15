@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestRoomsCoordinateLeaderAndViewerState(t *testing.T) { //nolint:cyclop,gocognit // One interface test covers the complete room coordination lifecycle.
+func TestRoomsCoordinateLeaderAndViewerState(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
 	rooms := New(time.Hour)
@@ -82,7 +82,7 @@ func TestDeniedUpdateDoesNotEchoUntrustedPayload(t *testing.T) {
 	}
 }
 
-func TestRoomsBoundCapacityQueuesAndExpiry(t *testing.T) { //nolint:cyclop // One resource test covers room, subscriber, queue, and lifetime bounds.
+func TestRoomsBoundCapacityQueuesAndExpiry(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
 	rooms := New(time.Minute)
@@ -152,7 +152,7 @@ func TestRoomsRejectInvalidStateWithoutUsingCapacity(t *testing.T) {
 	}
 }
 
-func TestRoomMetricsTrackReconnectsAndBoundedDrift(t *testing.T) { //nolint:cyclop // One metrics test covers its complete connection lifecycle.
+func TestRoomMetricsTrackReconnectsAndBoundedDrift(t *testing.T) {
 	t.Parallel()
 	rooms := New(time.Hour)
 	id, ok := rooms.Create("leader", "movie", 0)

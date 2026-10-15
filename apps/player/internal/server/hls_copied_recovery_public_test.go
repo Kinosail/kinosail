@@ -39,7 +39,7 @@ func TestCopiedRecoveryRealFirstFragmentRegenerationReopens(t *testing.T) {
 	}
 }
 
-func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode, duration string) { //nolint:cyclop,gocognit,funlen // Serial public media lifecycle, with identity and joined-process receipts.
+func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode, duration string) {
 	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
 	defer cancel()
 	media := t.TempDir()
@@ -63,7 +63,7 @@ func copiedRecoveryRealReopen(t *testing.T, ffmpeg, ffprobe, audio, mode, durati
 	body := "#!/bin/sh\nset -eu\nprintf '%s\\n' $$ >> " + quote(owned) + "\nexec " + quote(ffmpeg) + " \"$@\"\n"
 	if err := os.WriteFile(adapter, []byte(body), 0o700); err != nil { //nolint:gosec // Owned executable adapter, not output data.
 		t.Fatal(err)
-	} //nolint:gosec // Owned hosted adapter records process identity and execs the real codec unchanged.
+	}
 	workers, cancelWorkers := context.WithCancel(ctx)
 	defer cancelWorkers()
 	cache := t.TempDir()
@@ -202,7 +202,7 @@ func copiedRecoveryWarmRefill(t *testing.T, ctx context.Context, ffmpeg string, 
 	after := speedTestGET(t, ctx, handler, base+segment)
 	var frames [][]byte
 	for index, media := range [][]byte{before, after} {
-		command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0", "-f", "framehash", "-hash", "sha256", "-") //nolint:gosec // Fixed codec arguments and owned synthetic fragment.
+		command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-copyts", "-i", "pipe:0", "-map", "0:v:0", "-f", "framehash", "-hash", "sha256", "-")
 		command.Stdin = bytes.NewReader(bytes.Join([][]byte{initialization, media}, nil))
 		output, err := command.Output()
 		if err != nil || !bytes.Contains(output, []byte("SHA256")) {
@@ -216,7 +216,7 @@ func copiedRecoveryWarmRefill(t *testing.T, ctx context.Context, ffmpeg string, 
 	t.Logf("long middle refill decoded video and timestamps sha256=%x", sha256.Sum256(frames[1]))
 }
 
-func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int { //nolint:cyclop,gocognit // Validate every recorded process and require three stable joined observations.
+func copiedRecoveryJoinedCodecs(t *testing.T, ctx context.Context, path string) int {
 	t.Helper()
 	stable := 0
 	for {

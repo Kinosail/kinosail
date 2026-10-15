@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-//nolint:cyclop,gocognit,funlen // The complete real-handler browser journey preserves its cookie and security assertions together.
+//nolint:cyclop,gocognit // The complete real-handler browser journey preserves its cookie and security assertions together.
 func AssertBrowserSessionCookieIsolation(t *testing.T, handler http.Handler, origin, ownName, siblingName string) {
 	t.Helper()
 	base, err := url.Parse(origin)
@@ -108,7 +108,6 @@ func assertScopedBrowserCSRF(t *testing.T, handler http.Handler, origin string, 
 	}
 }
 
-//nolint:cyclop // One real-handler lifecycle checks migration attributes and invalid-cookie precedence.
 func AssertLegacyBrowserCookieMigration(t *testing.T, handler http.Handler, origin, ownName string) {
 	t.Helper()
 	setup := httptest.NewRequestWithContext(t.Context(), http.MethodPost, origin+"/setup", strings.NewReader("name=Owner&password=owner-password"))

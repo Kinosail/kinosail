@@ -89,7 +89,7 @@ func TestHomeRecentlyAddedUsesShowPosterAndCleanTitle(t *testing.T) {
 	}
 }
 
-func TestHomeRecentlyAddedStacksEpisodesAndReusesArtwork(t *testing.T) { //nolint:cyclop // One populated-home scenario covers grouping and artwork reuse.
+func TestHomeRecentlyAddedStacksEpisodesAndReusesArtwork(t *testing.T) {
 	t.Parallel()
 	mediaDir := t.TempDir()
 	season := filepath.Join(mediaDir, "Shared Poster", "Season 01")
@@ -159,7 +159,7 @@ func TestHomeShowsRecentlyPlayedMedia(t *testing.T) {
 	}
 }
 
-func TestHomeRecentlyPlayedStacksEpisodesByShow(t *testing.T) { //nolint:cyclop // One populated-home scenario covers playback grouping.
+func TestHomeRecentlyPlayedStacksEpisodesByShow(t *testing.T) {
 	t.Parallel()
 
 	mediaDir := t.TempDir()

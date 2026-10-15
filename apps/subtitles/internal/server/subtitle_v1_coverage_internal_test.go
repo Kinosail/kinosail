@@ -74,7 +74,7 @@ func TestSubDLSearchUsesSeriesIdentity(t *testing.T) {
 	}
 }
 
-func TestSubtitleV1ValidationAndMigrationBranches(t *testing.T) { //nolint:cyclop // One table covers persisted v1 compatibility and strict rejection branches.
+func TestSubtitleV1ValidationAndMigrationBranches(t *testing.T) {
 	t.Parallel()
 	now := time.Now().Unix()
 	record := subtitleRecord{Fingerprint: strings.Repeat("0", 64), Source: "external", CheckedAt: now, InstalledAt: now, Synchronization: "none"}
@@ -124,7 +124,7 @@ func TestSubtitleV1ValidationAndMigrationBranches(t *testing.T) { //nolint:cyclo
 	}
 }
 
-func TestSubtitleV1RecoveryAndAlignmentUtilityBranches(t *testing.T) { //nolint:cyclop // One test covers small recovery and alignment boundary helpers.
+func TestSubtitleV1RecoveryAndAlignmentUtilityBranches(t *testing.T) {
 	t.Parallel()
 	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), t.TempDir(), nil, nil, "")
 	invalid := library.Item{Kind: "audio", ID: "0123456789abcdef"}
@@ -152,7 +152,7 @@ func TestSubtitleV1RecoveryAndAlignmentUtilityBranches(t *testing.T) { //nolint:
 	}
 }
 
-func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) { //nolint:cyclop,funlen,gocognit // One test proves corrupt persistence and quota rollback branches.
+func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) {
 	t.Parallel()
 	for name, contents := range map[string]string{
 		"malformed":  `{`,
@@ -224,7 +224,7 @@ func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) { //nol
 	}
 }
 
-func TestSubtitleAcquireAndUpgradeFailureBranches(t *testing.T) { //nolint:cyclop // One provider fixture proves aggregate outage and managed upgrade rejection.
+func TestSubtitleAcquireAndUpgradeFailureBranches(t *testing.T) {
 	t.Parallel()
 	remote := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		http.Error(writer, "unavailable", http.StatusServiceUnavailable)

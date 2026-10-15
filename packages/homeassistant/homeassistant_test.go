@@ -109,7 +109,7 @@ func response(handler http.Handler, request *http.Request) *httptest.ResponseRec
 	return recorder
 }
 
-func TestLifecycleAndSettings(t *testing.T) { //nolint:cyclop // One lifecycle matrix covers startup and every state-transition failure.
+func TestLifecycleAndSettings(t *testing.T) {
 	failed := Config[testProfile]{Random: strings.NewReader("short")}
 	failed.Enabled = func() bool { return true }
 	if _, err := New(failed); err == nil || !strings.Contains(err.Error(), "media secret") {
@@ -159,7 +159,7 @@ func TestLifecycleAndSettings(t *testing.T) { //nolint:cyclop // One lifecycle m
 	}
 }
 
-func TestGateAndSettingsHTTP(t *testing.T) { //nolint:cyclop,funlen // One transport matrix proves both settings adapters.
+func TestGateAndSettingsHTTP(t *testing.T) {
 	enabled := false
 	gate := Gate(func() bool { return enabled }, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) }))
 	for _, test := range []struct {

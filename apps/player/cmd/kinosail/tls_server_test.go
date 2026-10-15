@@ -15,7 +15,7 @@ import (
 
 const testServerStartTimeout = 90 * time.Second
 
-func TestCommandLineServesCompatibleHTTPSByDefault(t *testing.T) { //nolint:cyclop,funlen,gocognit // One process-level scenario verifies the complete externally visible TLS policy.
+func TestCommandLineServesCompatibleHTTPSByDefault(t *testing.T) {
 	address := unusedAddress(t)
 	dataDir := t.TempDir()
 	environment := append(os.Environ(), "KINOSAIL_CLI_HELPER=1", "KINOSAIL_DATA_DIR="+dataDir, "KINOSAIL_LISTEN="+address, `KINOSAIL_TLS_HOSTS=["media.home","192.0.2.10"]`)

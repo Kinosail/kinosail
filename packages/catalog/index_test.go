@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestScanAndIndexHelpers(t *testing.T) { //nolint:cyclop // One test covers the coupled scan and publication pipeline.
+func TestScanAndIndexHelpers(t *testing.T) {
 	directory := t.TempDir()
 	if err := os.WriteFile(filepath.Join(directory, "Movie (2024).mp4"), []byte("media"), 0o600); err != nil {
 		t.Fatal(err)
@@ -53,7 +53,7 @@ func TestScanAndIndexHelpers(t *testing.T) { //nolint:cyclop // One test covers 
 	}
 }
 
-func TestIndexOwnsScanLifecycle(t *testing.T) { //nolint:cyclop,funlen // One test covers the coupled index lifecycle and its detached read boundaries.
+func TestIndexOwnsScanLifecycle(t *testing.T) {
 	directory := t.TempDir()
 	media := filepath.Join(directory, "Movie (2024).mp4")
 	if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
@@ -122,7 +122,7 @@ func TestIndexOwnsScanLifecycle(t *testing.T) { //nolint:cyclop,funlen // One te
 	}
 }
 
-func TestIndexWatchRefreshesStableFilesystemChanges(t *testing.T) { //nolint:cyclop,gocognit // Watch registration and refresh publication form one lifecycle.
+func TestIndexWatchRefreshesStableFilesystemChanges(t *testing.T) {
 	directory := t.TempDir()
 	first := filepath.Join(directory, "First.mp4")
 	if err := os.WriteFile(first, []byte("first"), 0o600); err != nil {

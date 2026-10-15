@@ -29,7 +29,6 @@ func TestProbeFixturesExecuteDuringParallelPublication(t *testing.T) {
 				executable := filepath.Join(root, fmt.Sprintf("probe-%d", publication))
 				expected := fmt.Sprintf("worker-%d-publication-%d", worker, publication)
 				writeProbeScript(t, executable, "#!/bin/sh\nprintf '%s' '"+expected+"'\n")
-				//nolint:gosec // The executable is a private, generated test fixture.
 				output, err := exec.CommandContext(ctx, executable).Output()
 				if err != nil || string(output) != expected {
 					t.Fatalf("fixture worker=%d publication=%d output=%q error=%v", worker, publication, output, err)

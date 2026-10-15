@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestSubtitleAcquireSkipsRejectedAndInvalidCandidates(t *testing.T) { //nolint:cyclop,funlen // One provider fixture proves every candidate rejection stage.
+func TestSubtitleAcquireSkipsRejectedAndInvalidCandidates(t *testing.T) {
 	t.Parallel()
 	mode := "valid"
 	var modeMu sync.RWMutex

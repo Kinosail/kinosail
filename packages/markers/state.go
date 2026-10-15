@@ -22,7 +22,7 @@ func loadState(database *documentdb.Store, path string, target any) (bool, error
 		}
 		return true, httpguard.DecodeJSON(bytes.NewReader(data), documentdb.DocumentSizeLimit, target, true)
 	}
-	file, err := os.Open(path) //nolint:gosec // The path is fixed below the installation data directory.
+	file, err := os.Open(path)
 	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
 	}
@@ -37,7 +37,7 @@ func loadState(database *documentdb.Store, path string, target any) (bool, error
 	return true, httpguard.DecodeJSON(file, documentdb.DocumentSizeLimit, target, true)
 }
 
-func validateRecords(records map[string]Record) error { //nolint:cyclop // Persisted record identity, marker, and suppression bounds form one document contract.
+func validateRecords(records map[string]Record) error {
 	if len(records) > 100000 {
 		return errors.New("too many persisted marker records")
 	}

@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-func TestSyncStorageRejectsInvalidStateAndClonesSecrets(t *testing.T) { //nolint:cyclop,gocognit // One trust-boundary test covers strict restore and detached runtime updates.
+func TestSyncStorageRejectsInvalidStateAndClonesSecrets(t *testing.T) {
 	file := filepath.Join(t.TempDir(), "viewing_imports.json")
 	normalize := func(input Input) (Input, error) {
 		if input.ProfileID != "viewer" || input.Token == "" {
@@ -60,7 +60,7 @@ func TestSyncStorageRejectsInvalidStateAndClonesSecrets(t *testing.T) { //nolint
 	}
 }
 
-func TestSyncStorageRejectsEveryPendingBound(t *testing.T) { //nolint:cyclop // Each persisted batch field is an independent trust boundary.
+func TestSyncStorageRejectsEveryPendingBound(t *testing.T) {
 	largeChanges := make([]ProgressChange, maximumSyncItems+1)
 	largeLists := make([]ListChange, maximumSyncItems+1)
 	largePlaylists := make(map[string]int, maximumSyncPlaylists+1)

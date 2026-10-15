@@ -89,7 +89,7 @@ func TestStoredSAMLConfigurationRejectsConflictingSources(t *testing.T) {
 	}
 }
 
-func TestSAMLConfigurationChangesMetadataSourceAtomically(t *testing.T) { //nolint:cyclop // One configuration scenario covers valid and conflicting sources.
+func TestSAMLConfigurationChangesMetadataSourceAtomically(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	metadataURL, metadataXML := "https://identity.example/metadata", testSAMLMetadata(t)

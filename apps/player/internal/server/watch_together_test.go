@@ -27,8 +27,7 @@ type syncEvent struct {
 	Drift       float64   `json:"drift,omitempty"`
 }
 
-//nolint:cyclop,funlen // One workflow test covers room state transitions and expiry.
-func TestWatchTogetherEnforcesLeaderSyncAndExpiry(t *testing.T) { //nolint:cyclop,funlen // One workflow test covers room state transitions and expiry.
+func TestWatchTogetherEnforcesLeaderSyncAndExpiry(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	for _, name := range []string{"Movie.mp4", "Next.mp4"} {

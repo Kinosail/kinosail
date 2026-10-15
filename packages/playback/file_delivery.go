@@ -46,7 +46,6 @@ func LibraryFileHandler(dependencies LibraryFileDependencies) http.HandlerFunc {
 		} else if contentType := map[string]string{".m4a": "audio/mp4", ".m4b": "audio/mp4", ".flac": "audio/flac"}[strings.ToLower(filepath.Ext(path))]; contentType != "" {
 			writer.Header().Set("Content-Type", contentType)
 		}
-		//nolint:gosec // G703: the app validates that path belongs to scanned Library Content.
 		http.ServeFile(writer, request, path)
 	}
 }
@@ -74,7 +73,6 @@ func LibraryPersonHandler(lookup func(*http.Request, string) (library.Item, bool
 			http.NotFound(writer, request)
 			return
 		}
-		//nolint:gosec // G703: the image path belongs to an indexed Library cast member.
 		http.ServeFile(writer, request, item.Cast[person].Image)
 	}
 }
@@ -95,7 +93,6 @@ func LibraryDownloadHandler(dependencies LibraryDownloadDependencies) http.Handl
 			return
 		}
 		writer.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, filepath.Base(item.Path)))
-		//nolint:gosec // G703: the media path belongs to a visible indexed Library item.
 		http.ServeFile(writer, request, item.Path)
 	}
 }

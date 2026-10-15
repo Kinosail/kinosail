@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestRecordPersistencePublishesOnlyAfterCommit(t *testing.T) { //nolint:cyclop // The failure and success assertions share one durable commit sequence.
+func TestRecordPersistencePublishesOnlyAfterCommit(t *testing.T) {
 	values := map[string]PlaybackState{"viewer:item": {Seconds: 10}}
 	var mu, persistMu sync.Mutex
 	blocked := errors.New("disk unavailable")

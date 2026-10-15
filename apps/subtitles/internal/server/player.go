@@ -85,7 +85,7 @@ func watch(index *libraryIndex, progress *progressStore, settings *settingsStore
 	}
 }
 
-func buildPlayerData(request *http.Request, item library.Item, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, subtitles *subtitleProvider, metadata *metadataStore) playerData { //nolint:cyclop,gocognit // The player projection assembles each supported playback capability once.
+func buildPlayerData(request *http.Request, item library.Item, index *libraryIndex, progress *progressStore, settings *settingsStore, lists *listStore, probe *mediaProbe, subtitles *subtitleProvider, metadata *metadataStore) playerData {
 	state, viewer := progress.Get(request, item.ID), currentViewer(request)
 	data := sharedplayback.NewPlayerData(item, viewer.ID, randID())
 	data.Start = state.Seconds

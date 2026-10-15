@@ -57,7 +57,7 @@ func TestLibraryFoldersResolveAndProjectRoots(t *testing.T) {
 	}
 }
 
-func TestLibraryFoldersAddIsValidatedAndAtomic(t *testing.T) { //nolint:cyclop // One table proves validation and persistence have no partial effects.
+func TestLibraryFoldersAddIsValidatedAndAtomic(t *testing.T) {
 	t.Parallel()
 	mediaRoot := t.TempDir()
 	for _, path := range []string{"Movies", "Movies/HD", "TV"} {

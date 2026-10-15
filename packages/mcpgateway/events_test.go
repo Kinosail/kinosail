@@ -70,7 +70,7 @@ type eventReplyGate struct {
 	resume  chan struct{}
 }
 
-func newEventFixture(t *testing.T) *eventFixture { //nolint:cyclop,gocognit // The real TLS callback validates signing, challenges, redirects, and delivery in one fixture.
+func newEventFixture(t *testing.T) *eventFixture {
 	t.Helper()
 	principal := Principal{ID: "viewer", Name: "Viewer", Revision: 1}
 	fixture := &eventFixture{store: &memoryState{}, principals: &testPrincipals{values: map[string]Principal{"viewer": principal}}, received: make(chan []byte, 32), secret: "whsec_" + base64.StdEncoding.EncodeToString([]byte(strings.Repeat("k", 32)))}
@@ -146,7 +146,7 @@ func (fixture *eventFixture) subscribe(t *testing.T, name string, arguments map[
 	return envelope.Result
 }
 
-func TestEventsWebhookLifecycle(t *testing.T) { //nolint:cyclop // One public HTTP journey covers subscribe, refresh, application publish, and unsubscribe.
+func TestEventsWebhookLifecycle(t *testing.T) {
 	fixture := newEventFixture(t)
 	result := fixture.subscribe(t, "library.updated", map[string]any{})
 	refresh := fixture.subscribe(t, "library.updated", map[string]any{})

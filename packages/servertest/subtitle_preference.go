@@ -15,7 +15,7 @@ type SubtitlePreferenceFixture struct {
 	NewHandler func(media, data, ffprobe, ffmpeg string) http.Handler
 }
 
-func (fixture SubtitlePreferenceFixture) AlwaysOnSubtitlesRemainDirect(t *testing.T) { //nolint:cyclop // One lifecycle proves setting, direct media, and subtitle extraction.
+func (fixture SubtitlePreferenceFixture) AlwaysOnSubtitlesRemainDirect(t *testing.T) {
 	t.Parallel()
 	media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {

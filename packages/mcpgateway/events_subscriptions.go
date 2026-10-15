@@ -7,7 +7,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func (adapter *Gateway) subscribeEvent(ctx context.Context, _ *mcp.ServerSession, params *eventParams) (*eventResult, error) { //nolint:cyclop,gocognit // Verification and atomic persistence are ordered as one subscription transaction.
+func (adapter *Gateway) subscribeEvent(ctx context.Context, _ *mcp.ServerSession, params *eventParams) (*eventResult, error) {
 	subscription, err := adapter.prepareEventSubscription(ctx, params)
 	if err != nil {
 		return nil, err

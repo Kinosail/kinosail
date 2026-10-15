@@ -42,7 +42,7 @@ type tvmazeEpisode struct {
 	Summary string `json:"summary"`
 }
 
-func NewTVMazeProvider(rawURL string, versions ...string) *TVMazeProvider { //nolint:cyclop // Endpoint and optional user-agent validation belong to construction.
+func NewTVMazeProvider(rawURL string, versions ...string) *TVMazeProvider {
 	if rawURL == "" {
 		rawURL = defaultTVMazeURL
 	}
@@ -66,7 +66,7 @@ func ValidTVMazeEndpoint(endpoint *url.URL) bool {
 	return validProviderEndpoint(endpoint, "api.tvmaze.com", "")
 }
 
-func (provider *TVMazeProvider) Record(ctx context.Context, item library.Item) (Result, bool) { //nolint:cyclop // Identity, episode, show, and record bounds form one provider transaction.
+func (provider *TVMazeProvider) Record(ctx context.Context, item library.Item) (Result, bool) {
 	tvdbID, ok := tvmazeTVDBID(item)
 	if !ok || item.Episode <= 0 || item.Season < 0 {
 		return Result{}, false
@@ -100,7 +100,7 @@ func (provider *TVMazeProvider) Record(ctx context.Context, item library.Item) (
 	return Result{Record: record}, true
 }
 
-func (provider *TVMazeProvider) Fill(ctx context.Context, item library.Item, record *Record) { //nolint:cyclop // Fill preserves each local field while merging one validated provider record.
+func (provider *TVMazeProvider) Fill(ctx context.Context, item library.Item, record *Record) {
 	result, ok := provider.Record(ctx, item)
 	if !ok {
 		return
@@ -137,7 +137,7 @@ func TVMazeEligible(item library.Item) bool {
 	return item.Show != "" && item.Episode > 0 && item.Season >= 0 && ok
 }
 
-func (provider *TVMazeProvider) showID(ctx context.Context, tvdbID string) (int, bool) { //nolint:cyclop // Redirect status, location, path, and ID are one trust-boundary parse.
+func (provider *TVMazeProvider) showID(ctx context.Context, tvdbID string) (int, bool) {
 	provider.mu.Lock()
 	if id := provider.shows[tvdbID]; id > 0 {
 		provider.mu.Unlock()

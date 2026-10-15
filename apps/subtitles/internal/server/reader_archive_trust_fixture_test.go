@@ -27,7 +27,7 @@ type readerTrustEntry struct {
 	declaredSize uint64
 }
 
-func readerTrustArchive(t *testing.T, format string, entries []readerTrustEntry) []byte { //nolint:cyclop,gocognit // Archive fixtures retain ordered ZIP and TAR creation with per-step failures.
+func readerTrustArchive(t *testing.T, format string, entries []readerTrustEntry) []byte {
 	t.Helper()
 	var archive bytes.Buffer
 	if format == "cbt" {

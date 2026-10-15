@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
-func TestSyncStorageNumericBoundaries(t *testing.T) { //nolint:cyclop // Exact adjacent values lock every durable counter boundary.
+func TestSyncStorageNumericBoundaries(t *testing.T) {
 	if !withinMaximum(512, 512) || withinMaximum(513, 512) {
 		t.Fatal("maximum boundary changed")
 	}
@@ -72,7 +72,7 @@ func TestSyncStorageStateBoundaries(t *testing.T) {
 	}
 }
 
-func TestNormalizeSyncRejectsEveryPersistedInvariant(t *testing.T) { //nolint:cyclop // Every persisted field is an independent trust boundary.
+func TestNormalizeSyncRejectsEveryPersistedInvariant(t *testing.T) {
 	const id = "ABCDEFGHIJKLMNOP234567"
 	normalize := func(input Input) (Input, error) {
 		input.Source = strings.ToLower(input.Source)
@@ -115,7 +115,7 @@ func TestNormalizeSyncRejectsEveryPersistedInvariant(t *testing.T) { //nolint:cy
 	}
 }
 
-func TestSyncStorageExactLimits(t *testing.T) { //nolint:cyclop // Exact maxima distinguish accepted durable state from oversize state.
+func TestSyncStorageExactLimits(t *testing.T) {
 	for _, interval := range []string{"15m", "1h", "6h", "24h"} {
 		if !ValidSyncInterval(interval) {
 			t.Fatalf("valid interval rejected: %q", interval)

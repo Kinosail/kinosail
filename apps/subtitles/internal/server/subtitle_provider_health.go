@@ -126,8 +126,8 @@ func subtitleProviderBackoff(name string, failures int) time.Duration {
 	return base + time.Duration(int64(base)*int64(jitterPercent)/100)
 }
 
-func (registry *subtitleProviderHealthRegistry) load() { //nolint:cyclop,gocognit // Persisted provider state requires explicit validation of every bounded field.
-	file, err := os.Open(registry.path) //nolint:gosec // The path is fixed installation-owned state.
+func (registry *subtitleProviderHealthRegistry) load() {
+	file, err := os.Open(registry.path)
 	if err != nil {
 		return
 	}
@@ -205,7 +205,7 @@ func (registry *subtitleProviderHealthRegistry) views(configured map[string]bool
 	return result
 }
 
-func subtitleQuota(header http.Header, now time.Time, previous *int, previousReset time.Time) (*int, time.Time) { //nolint:cyclop,gocognit // Both standard and provider-specific quota forms share strict bounds.
+func subtitleQuota(header http.Header, now time.Time, previous *int, previousReset time.Time) (*int, time.Time) {
 	remaining := previous
 	for _, key := range []string{"RateLimit-Remaining", "X-RateLimit-Remaining"} {
 		if value, err := strconv.Atoi(strings.TrimSpace(header.Get(key))); err == nil && value >= 0 && value <= 1_000_000_000 {

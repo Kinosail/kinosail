@@ -14,7 +14,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestListMutationErrorEdges(t *testing.T) { //nolint:cyclop,funlen // One table proves each mutation failure is translated without a later effect.
+func TestListMutationErrorEdges(t *testing.T) {
 	t.Parallel()
 	wantErr := errors.New("failed")
 	failed := 0
@@ -91,7 +91,7 @@ func TestListHandlerDocumentAndCollectionFailures(t *testing.T) {
 	}
 }
 
-func TestListStorageAndProgressRemainingEdges(t *testing.T) { //nolint:cyclop // Persistence and progress failures share the same no-publication invariant.
+func TestListStorageAndProgressRemainingEdges(t *testing.T) {
 	t.Parallel()
 	values := map[string]bool{}
 	playlists := map[string]map[string]bool{}

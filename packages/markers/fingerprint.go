@@ -24,7 +24,7 @@ type visualFingerprintFile struct {
 	Points   []uint64 `json:"points"`
 }
 
-func (analyzer *Analyzer) fingerprint(ctx context.Context, item library.Item, window string, start, length float64) ([]uint32, error) { //nolint:cyclop,gocognit // Cache, extraction, and tool failures are handled at one fingerprint boundary.
+func (analyzer *Analyzer) fingerprint(ctx context.Context, item library.Item, window string, start, length float64) ([]uint32, error) {
 	if !finite(start) || !finite(length) || start < 0 || length <= 0 || length > 900 {
 		return nil, errors.New("audio fingerprint window is invalid")
 	}
@@ -77,7 +77,7 @@ func (analyzer *Analyzer) fingerprint(ctx context.Context, item library.Item, wi
 	return output.Fingerprint, nil
 }
 
-func (analyzer *Analyzer) visualFingerprint(ctx context.Context, item library.Item, window string, start, length float64) ([]uint64, error) { //nolint:cyclop,gocognit // Cache, extraction, and hashing form one fingerprint boundary.
+func (analyzer *Analyzer) visualFingerprint(ctx context.Context, item library.Item, window string, start, length float64) ([]uint64, error) {
 	if !finite(start) || !finite(length) || start < 0 || length <= 0 || length > 900 {
 		return nil, errors.New("visual fingerprint window is invalid")
 	}

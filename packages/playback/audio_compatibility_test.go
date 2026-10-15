@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-func TestAudioCompatibilityPreservesDirectAndConvertsFallback(t *testing.T) { //nolint:cyclop,gocognit // The table compares direct and fallback plans for the same source facts.
+func TestAudioCompatibilityPreservesDirectAndConvertsFallback(t *testing.T) {
 	for _, kind := range []string{"audio", "audiobook"} {
 		for _, codec := range []string{"aac", "mp3", "flac", "alac", "opus", "vorbis", "wmav2", "ape", "wavpack", "dts", "pcm_s24le"} {
 			facts := MediaFacts{Kind: kind, Container: "ogg", Duration: 30, Audio: []AudioFacts{{Index: 0, Codec: codec, Channels: 2}}, Video: VideoFacts{Codec: "mjpeg", Width: 600, Height: 600}}
@@ -35,7 +35,7 @@ func TestAudioCompatibilityPreservesDirectAndConvertsFallback(t *testing.T) { //
 	}
 }
 
-func TestAudioMasterDescribesOnlyObservedAAC(t *testing.T) { //nolint:cyclop // A manifest must match both observed streams and their published attributes.
+func TestAudioMasterDescribesOnlyObservedAAC(t *testing.T) {
 	root := t.TempDir()
 	directory := filepath.Join(root, "audio")
 	if err := os.Mkdir(directory, 0o700); err != nil {
@@ -98,7 +98,7 @@ func TestAudioCompatibilityHonorsClientDeliveryAndMissingTracks(t *testing.T) {
 	}
 }
 
-func TestAudioHLSArgumentsNeverRequireVideo(t *testing.T) { //nolint:cyclop // The argument table checks the complete audio-only encoder contract.
+func TestAudioHLSArgumentsNeverRequireVideo(t *testing.T) {
 	input := HLSCodecInput{AudioOnly: true, Arguments: []string{"-i", "source.ogg"}, AudioRate: "192000", CopyInput: "0", Recipe: HLSRecipe{Mode: "audio-transcode", Audio: 1}}
 	args, err := HLSCodecArguments(input)
 	if err != nil {

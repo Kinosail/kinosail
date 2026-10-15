@@ -16,7 +16,7 @@ import (
 
 var trustedHTTPSTestToken = strings.Repeat("t", 32)
 
-func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) { //nolint:cyclop,gocognit // One onboarding scenario covers both provider contracts and persistence.
+func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -52,7 +52,7 @@ func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) { //n
 	}
 }
 
-func TestOwnerCanTestTrustedHTTPSWithoutSaving(t *testing.T) { //nolint:cyclop,gocognit // One API scenario proves success, validation, failure, redaction, and no persistence.
+func TestOwnerCanTestTrustedHTTPSWithoutSaving(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -127,7 +127,7 @@ func TestTrustedHTTPSShowsDeploymentRequirementsBeforeSecrets(t *testing.T) {
 	}
 }
 
-func TestOwnerCanConfigureTrustedHTTPSDuringOnboarding(t *testing.T) { //nolint:cyclop,gocognit // One onboarding scenario covers rendered setup, localization, save, and redaction.
+func TestOwnerCanConfigureTrustedHTTPSDuringOnboarding(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -170,7 +170,7 @@ func TestTrustedHTTPSRejectsInvalidInputWithoutSideEffects(t *testing.T) {
 	servertest.AssertTrustedHTTPSRejectsInvalidInputWithoutSideEffects(t, trustedHTTPSFixture())
 }
 
-func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) { //nolint:cyclop // One settings flow verifies all read-only and secret-redaction boundaries.
+func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	raw := `{"domain":"family","token":"` + trustedHTTPSTestToken + `","address":"192.168.1.10","termsAccepted":true}`

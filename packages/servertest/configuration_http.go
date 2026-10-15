@@ -34,7 +34,7 @@ func (fixture ConfigurationHTTP[Source, S]) Run(t *testing.T) {
 	t.Run("OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb", fixture.OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb)
 }
 
-func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLocksSettings(t *testing.T) { //nolint:cyclop,funlen // One scenario checks API and web rendering without weakening the secret boundary.
+func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLocksSettings(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	media := t.TempDir()
@@ -120,7 +120,7 @@ func (fixture ConfigurationHTTP[Source, S]) OwnerCanSaveRestartConfigurationThro
 	}
 }
 
-func (fixture ConfigurationHTTP[Source, S]) OwnerCanConfigureOIDCSetThroughAPIAndWeb(t *testing.T) { //nolint:cyclop,funlen,gocognit // API, web, secret retention, reset, and no-side-effect parity are one boundary.
+func (fixture ConfigurationHTTP[Source, S]) OwnerCanConfigureOIDCSetThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := fixture.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -239,7 +239,7 @@ func (fixture ConfigurationHTTP[Source, S]) StandaloneOperatorSettingsRemainEdit
 	}
 }
 
-func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb(t *testing.T) { //nolint:cyclop // One adapter-parity scenario checks the API, web view, persistence, and default.
+func (fixture ConfigurationHTTP[Source, S]) OwnerCanDisableDefaultTLSSettingThroughAPIAndWeb(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := fixture.Load(directory, "", func(string) (string, bool) { return "", false })

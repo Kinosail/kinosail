@@ -41,7 +41,7 @@ func TestNewProgressStoragePreservesTheSharedTransaction(t *testing.T) {
 	}
 }
 
-func TestCommitStorePublishesAllCategoriesAfterPersistence(t *testing.T) { //nolint:cyclop // One assertion proves the atomic result across every stored category.
+func TestCommitStorePublishesAllCategoriesAfterPersistence(t *testing.T) {
 	var files []string
 	store, progress, listed, playlists, order := testCommitStore(func(file string, _ any) error { files = append(files, file); return nil })
 	progressChanges, listChanges := testCommitChanges()
@@ -56,7 +56,7 @@ func TestCommitStorePublishesAllCategoriesAfterPersistence(t *testing.T) { //nol
 	}
 }
 
-func TestCommitStoreRollsBackDurableWritesBeforePublishing(t *testing.T) { //nolint:cyclop // One assertion proves failure and rollback boundaries together.
+func TestCommitStoreRollsBackDurableWritesBeforePublishing(t *testing.T) {
 	calls := 0
 	store, progress, listed, playlists, _ := testCommitStore(func(string, any) error {
 		calls++

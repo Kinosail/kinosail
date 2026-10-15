@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *testing.T, segmentSeconds string, appArguments ...string) { //nolint:funlen // The public manifest and encoder contract are one playback outcome.
+func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *testing.T, segmentSeconds string, appArguments ...string) {
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)

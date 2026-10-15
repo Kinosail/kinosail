@@ -136,7 +136,7 @@ func scimComparisonFilter(attribute string, emailPath scimPatchPath, operator, v
 	}
 }
 
-func splitSCIMAnd(raw string) ([]string, error) { //nolint:cyclop,gocognit // Filter splitting tracks quote and bracket state explicitly.
+func splitSCIMAnd(raw string) ([]string, error) {
 	parts, start, depth, quoted := make([]string, 0, 4), 0, 0, false
 	for index := 0; index < len(raw); index++ {
 		switch raw[index] {
@@ -170,7 +170,7 @@ func splitSCIMAnd(raw string) ([]string, error) { //nolint:cyclop,gocognit // Fi
 	return parts, nil
 }
 
-func scimFilterAttributeEnd(raw string) int { //nolint:cyclop,gocognit // Attribute parsing tracks quote and bracket state explicitly.
+func scimFilterAttributeEnd(raw string) int {
 	depth, quoted := 0, false
 	for index := range len(raw) {
 		switch raw[index] {

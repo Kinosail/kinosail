@@ -14,7 +14,7 @@ import (
 
 var trustedHTTPSTestToken = strings.Repeat("t", 32)
 
-func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) { //nolint:cyclop // The wizard test covers both provider branches.
+func TestTrustedHTTPSWizardDefaultsToDuckDNSAndSupportsDeSEC(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	configured, err := configuration.Load(directory, "", func(string) (string, bool) { return "", false })
@@ -103,7 +103,7 @@ func TestTrustedHTTPSRejectsConflictingAccessWithoutWriting(t *testing.T) {
 	}
 }
 
-func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) { //nolint:cyclop // One settings flow verifies all read-only and secret-redaction boundaries.
+func TestExternallyManagedTrustedHTTPSIsReadOnlyAndRedacted(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	raw := `{"domain":"family","token":"` + trustedHTTPSTestToken + `","address":"192.168.1.10","termsAccepted":true}`

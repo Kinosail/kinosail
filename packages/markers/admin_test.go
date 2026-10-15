@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestAdminRoutesManageMarkersAndQueueAnalysis(t *testing.T) { //nolint:cyclop // The assertions exercise one HTTP workflow.
+func TestAdminRoutesManageMarkersAndQueueAnalysis(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "movie", Size: 1, Added: time.Unix(1, 0)}
 	analyzer := NewAnalyzer(Config{})
@@ -44,7 +44,7 @@ func TestAdminRoutesManageMarkersAndQueueAnalysis(t *testing.T) { //nolint:cyclo
 	}
 }
 
-func TestAdminRoutesRejectInvalidInputWithoutSideEffects(t *testing.T) { //nolint:funlen // All cases prove one strict HTTP mutation boundary.
+func TestAdminRoutesRejectInvalidInputWithoutSideEffects(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "movie", Size: 1, Added: time.Unix(1, 0)}
 	for name, request := range map[string]*http.Request{

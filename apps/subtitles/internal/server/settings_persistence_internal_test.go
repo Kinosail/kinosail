@@ -61,7 +61,7 @@ func TestSettingsRejectInvalidPersistedSubtitleLanguagesWithoutSave(t *testing.T
 	}
 }
 
-func TestServerRejectsInvalidLegacySubtitleLanguagesBeforeDatabaseMigration(t *testing.T) { //nolint:gocognit // Every rejected legacy input proves migration has no side effects.
+func TestServerRejectsInvalidLegacySubtitleLanguagesBeforeDatabaseMigration(t *testing.T) {
 	t.Parallel()
 	twentyOne, _ := json.Marshal(append([]string{"en", "fr", "de", "es", "it", "nl", "pl", "pt", "ru", "uk", "tr", "ar", "fa", "he", "hi", "bn", "ur", "id", "ms", "vi"}, "th"))
 	for name, document := range map[string]string{

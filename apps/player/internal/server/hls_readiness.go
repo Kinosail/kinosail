@@ -10,7 +10,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error { //nolint:cyclop // Final cache, active job, and restart recovery are distinct playback states.
+func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item, recipe hlsRecipe) error {
 	if manager.cache == "" {
 		return errors.New("compatible playback is not configured")
 	}

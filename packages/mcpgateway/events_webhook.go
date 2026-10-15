@@ -20,7 +20,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
-func (adapter *Gateway) verifyEventCallback(ctx context.Context, subscription eventSubscription) error { //nolint:cyclop // Challenge, status, and cache validation form one callback verification.
+func (adapter *Gateway) verifyEventCallback(ctx context.Context, subscription eventSubscription) error {
 	key := subscription.Scope + "\x00" + subscription.URL
 	adapter.eventMu.Lock()
 	verified := adapter.eventVerified[key] > adapter.connections.now().Unix()

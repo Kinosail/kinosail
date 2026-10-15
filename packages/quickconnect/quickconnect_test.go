@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func TestBrokerCompletesOneAuthorizationLifecycle(t *testing.T) { //nolint:cyclop // One interface test covers the complete one-time authorization lifecycle.
+func TestBrokerCompletesOneAuthorizationLifecycle(t *testing.T) {
 	t.Parallel()
 	now := time.Date(2026, time.August, 28, 12, 0, 0, 0, time.UTC)
 	broker := New(time.Minute)
@@ -125,7 +125,7 @@ func TestBrokerExpiresBoundsAndRevokesRequests(t *testing.T) {
 	}
 }
 
-func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) { //nolint:cyclop,gocognit // Scores of 16 and 17 remain below the repository ceiling of 22 for the rejection matrix.
+func TestBrokerRejectsUnboundedOrAmbiguousInputBeforeCapacity(t *testing.T) {
 	t.Parallel()
 	broker := New(time.Minute)
 	codeCalls := 0

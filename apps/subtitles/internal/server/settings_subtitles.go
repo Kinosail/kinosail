@@ -129,7 +129,7 @@ func subtitleLanguagesOverlap(left, right string) bool {
 	return settingsstate.Overlap(left, right)
 }
 
-func (store *settingsStore) changeSubtitleLanguages(action, language string) error { //nolint:cyclop,funlen,gocognit // All list mutation invariants are validated before persistence.
+func (store *settingsStore) changeSubtitleLanguages(action, language string) error {
 	if err := store.editable("subtitles.language"); err != nil {
 		return err
 	}

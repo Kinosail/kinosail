@@ -56,8 +56,8 @@ func (manager *viewingImportManager) APIPreview(writer http.ResponseWriter, requ
 	writeJSON(writer, preview, http.StatusOK)
 }
 
-func (manager *viewingImportManager) APIApply(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // A confirmed import commits every category despite client cancellation.
-	result, err := manager.previewer.Apply(request.PathValue("id")) //nolint:contextcheck // A confirmed import durably commits every category.
+func (manager *viewingImportManager) APIApply(writer http.ResponseWriter, request *http.Request) {
+	result, err := manager.previewer.Apply(request.PathValue("id"))
 	if err != nil {
 		apiError(writer, err, http.StatusConflict)
 		return
@@ -69,7 +69,7 @@ func (manager *viewingImportManager) APIListSyncs(writer http.ResponseWriter, _ 
 	writeJSON(writer, map[string]any{"syncs": manager.list()}, http.StatusOK)
 }
 
-func (manager *viewingImportManager) APICreateSync(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // Sync creation and its initial import share a durable finalization boundary.
+func (manager *viewingImportManager) APICreateSync(writer http.ResponseWriter, request *http.Request) {
 	var input struct {
 		PreviewID string `json:"previewId"`
 		Interval  string `json:"interval"`
@@ -77,7 +77,7 @@ func (manager *viewingImportManager) APICreateSync(writer http.ResponseWriter, r
 	if !readJSON(writer, request, &input) {
 		return
 	}
-	view, err := manager.createSync(input.PreviewID, input.Interval) //nolint:contextcheck // Sync creation and its initial import finalize together.
+	view, err := manager.createSync(input.PreviewID, input.Interval)
 	if err != nil {
 		apiError(writer, err, http.StatusBadRequest)
 		return
@@ -111,8 +111,8 @@ func (manager *viewingImportManager) WebPreview(writer http.ResponseWriter, requ
 	}
 }
 
-func (manager *viewingImportManager) WebApply(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // A confirmed import commits every category despite client cancellation.
-	result, status, err := viewing.ApplyForm(request, manager.previewer.Apply) //nolint:contextcheck // A confirmed import durably commits every category.
+func (manager *viewingImportManager) WebApply(writer http.ResponseWriter, request *http.Request) {
+	result, status, err := viewing.ApplyForm(request, manager.previewer.Apply)
 	if err != nil {
 		localizedError(writer, request, err.Error(), status)
 		return
@@ -124,13 +124,13 @@ func (manager *viewingImportManager) WebApply(writer http.ResponseWriter, reques
 	}
 }
 
-func (manager *viewingImportManager) WebCreateSync(writer http.ResponseWriter, request *http.Request) { //nolint:contextcheck // Sync creation and its initial import share a durable finalization boundary.
+func (manager *viewingImportManager) WebCreateSync(writer http.ResponseWriter, request *http.Request) {
 	id, interval, err := viewingSyncForm(request)
 	if err != nil {
 		localizedError(writer, request, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if _, err := manager.createSync(id, interval); err != nil { //nolint:contextcheck // Sync creation and its initial import finalize together.
+	if _, err := manager.createSync(id, interval); err != nil {
 		localizedError(writer, request, err.Error(), http.StatusBadRequest)
 		return
 	}

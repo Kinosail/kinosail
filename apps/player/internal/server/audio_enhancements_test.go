@@ -146,7 +146,7 @@ func TestPlaybackAudioEnhancementStreamDecodes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
 	defer cancel()
 	media := t.TempDir()
-	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", "sine=frequency=1200:duration=3", "-ac", "2", filepath.Join(media, "Dialog.wav")) //nolint:gosec // G204: the tool path and synthetic fixture are test-controlled.
+	command := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i", "sine=frequency=1200:duration=3", "-ac", "2", filepath.Join(media, "Dialog.wav"))
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate audio: %v: %s", err, output)
 	}

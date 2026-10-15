@@ -22,7 +22,7 @@ type viewingWrite struct {
 	persist  func(string, any) error
 }
 
-func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChange, listChanges []ListChange) (int, int, int, error) { //nolint:cyclop,funlen,gocognit // One lock and rollback seam prevents partial category commits.
+func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChange, listChanges []ListChange) (int, int, int, error) {
 	store.Progress.PersistMutex.Lock()
 	defer store.Progress.PersistMutex.Unlock()
 	store.Progress.Mutex.Lock()

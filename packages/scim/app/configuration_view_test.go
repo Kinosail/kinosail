@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TestConfigurationKeysAndView(t *testing.T) { //nolint:cyclop // One view matrix covers every derived state.
+func TestConfigurationKeysAndView(t *testing.T) {
 	t.Parallel()
 	keys := ConfigurationKeys()
 	keys[0] = "changed"

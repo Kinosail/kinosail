@@ -58,7 +58,7 @@ func plainHTTPError(writer http.ResponseWriter, _ *http.Request, message string,
 	http.Error(writer, message, status)
 }
 
-func TestStatusAndMutationAPIs(t *testing.T) { //nolint:cyclop,funlen // The paired endpoint contract verifies every status and failure translation.
+func TestStatusAndMutationAPIs(t *testing.T) {
 	t.Parallel()
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/remote-access", nil)
 	var payload map[string]any

@@ -209,7 +209,7 @@ func (manager *Manager) certificateError() error {
 	return err
 }
 
-func (manager *Manager) Kill() error { //nolint:cyclop // Every resource is closed even when persistence fails.
+func (manager *Manager) Kill() error {
 	manager.control.Lock()
 	defer manager.control.Unlock()
 	if !manager.config.Enabled || !manager.config.PublicHTTPS || manager.killPath == "" {

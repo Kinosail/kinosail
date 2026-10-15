@@ -42,7 +42,7 @@ func (store *Store) validateExisting(ctx context.Context) error {
 	return rows.Err()
 }
 
-func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) error { //nolint:cyclop,gocognit // Schema, integrity, cleanup, and import share one startup transaction.
+func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) error {
 	var version int
 	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil {
 		return fmt.Errorf("read SQLite schema version: %w", err)

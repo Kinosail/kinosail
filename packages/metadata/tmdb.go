@@ -90,7 +90,7 @@ func NewTMDB(config TMDBConfig) *TMDBClient {
 	return &TMDBClient{config.Token, strings.TrimRight(config.URL, "/"), strings.TrimRight(config.ImageURL, "/"), filepath.Join(config.CacheDir, "tmdb"), client}
 }
 
-func (client *TMDBClient) Enrich(ctx context.Context, items []library.Item) []library.Item { //nolint:cyclop // Cached fallback, duplicate identity, and bounded enrichment share one Library pass.
+func (client *TMDBClient) Enrich(ctx context.Context, items []library.Item) []library.Item {
 	if client == nil {
 		return items
 	}

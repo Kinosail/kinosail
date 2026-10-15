@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestOpenSubtitlesSearchAndDownloadUseTrustedSession(t *testing.T) { //nolint:gocognit,cyclop,funlen // One integration fixture covers login, search, cache reuse, download, and host trust.
+func TestOpenSubtitlesSearchAndDownloadUseTrustedSession(t *testing.T) {
 	t.Parallel()
 	var loginCount, searchCount atomic.Int32
 	var server *httptest.Server

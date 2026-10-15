@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestVisualFingerprintCacheAndMalformedOutput(t *testing.T) { //nolint:cyclop // The assertions cover one fingerprint cache workflow.
+func TestVisualFingerprintCacheAndMalformedOutput(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	tool := filepath.Join("testdata", "visual-tool.sh")

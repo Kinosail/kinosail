@@ -55,7 +55,7 @@ func TestOIDCConfigurationStoreRejectsBeforeSideEffects(t *testing.T) {
 	}
 }
 
-func TestOIDCConfigurationStoreSetAndReset(t *testing.T) { //nolint:cyclop // One lifecycle verifies retained, explicit, reset, and failed values.
+func TestOIDCConfigurationStoreSetAndReset(t *testing.T) {
 	t.Parallel()
 	effects := &oidcConfigurationEffects{current: "current-secret"}
 	store := testOIDCConfigurationStore(effects)

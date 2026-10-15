@@ -31,7 +31,7 @@ func (fixture LibraryAPIFixture) HomeAssistantIsDarkByDefault(t *testing.T) {
 	}
 }
 
-func (fixture LibraryAPIFixture) HomeAssistantBrowserApproval(t *testing.T) { //nolint:cyclop // One flow proves approval, PKCE, replay, and scope.
+func (fixture LibraryAPIFixture) HomeAssistantBrowserApproval(t *testing.T) {
 	t.Parallel()
 	handler, owner := fixture.Server(t)
 	AssertAPIBody(t, APICall(t, handler, owner, http.MethodPut, "/api/v1/settings/home-assistant", map[string]any{"enabled": true}), http.StatusOK)

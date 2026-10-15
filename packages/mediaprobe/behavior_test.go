@@ -96,7 +96,7 @@ func TestProbeCommandBoundsOutputAndExecutable(t *testing.T) {
 	}
 }
 
-func TestProbeChapterMarkerAndTagNormalization(t *testing.T) { //nolint:cyclop // One fixture covers related probe normalization rules.
+func TestProbeChapterMarkerAndTagNormalization(t *testing.T) {
 	t.Parallel()
 	data := `{"streams":[{"codec_type":"audio","codec_name":"aac"}],"chapters":[` +
 		`{"start_time":"0","end_time":"10","tags":{"title":"Previously on"}},` +

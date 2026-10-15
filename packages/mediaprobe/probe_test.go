@@ -14,7 +14,7 @@ func TestParseProbeSummarizesMediaAndAudioTracks(t *testing.T) {
 	}
 }
 
-func TestParseProbeNormalizesPlaybackAndAccessibilityFacts(t *testing.T) { //nolint:cyclop // One fixture verifies the related playback facts together.
+func TestParseProbeNormalizesPlaybackAndAccessibilityFacts(t *testing.T) {
 	t.Parallel()
 
 	result, valid := parse([]byte(`{
@@ -67,7 +67,7 @@ func TestRandomAccessIntervalsAreBoundedToEligibleMarkerEdges(t *testing.T) {
 	}
 }
 
-func TestVideoFactsPreserveInterlaceRotationAndDolbyBaseLayer(t *testing.T) { //nolint:cyclop // One probe response must preserve the complete video presentation metadata.
+func TestVideoFactsPreserveInterlaceRotationAndDolbyBaseLayer(t *testing.T) {
 	facts := videoFactsFor(probeStream{CodecName: "hevc", Width: 1920, Height: 1080, FieldOrder: "tt", ColorTransfer: "smpte2084", PixelFormat: "yuv420p10le", SideData: []probeSideData{{Type: "Display Matrix", Rotation: -90}, {Type: "DOVI configuration record", DVProfile: 8, DVCompatibility: 1}}})
 	if facts.FieldOrder != "tt" || facts.Rotation != -90 || facts.DolbyVisionProfile != 8 || facts.DolbyVisionCompatibility != 1 || facts.HDR != "dolby-vision" || facts.BitDepth != 10 {
 		t.Fatalf("video facts = %#v", facts)

@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestAutomaticSkipPreservesSelectedAudioCompatibilityEvidence(t *testing.T) { //nolint:cyclop,gocognit // One API and web contract checks audio selection against the same skip timeline.
+func TestAutomaticSkipPreservesSelectedAudioCompatibilityEvidence(t *testing.T) {
 	t.Parallel()
 	for _, sample := range []struct {
 		codec, video string

@@ -9,7 +9,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
 
-func TimelineForAutomaticSkip(duration float64, values []markers.Marker, enabled []string) Timeline { //nolint:cyclop // Normalization must reject and merge every marker boundary in one pass.
+func TimelineForAutomaticSkip(duration float64, values []markers.Marker, enabled []string) Timeline {
 	ranges := make([]Range, 0, len(values))
 	for _, marker := range values {
 		if !slices.Contains(enabled, marker.Type) || !automaticallySkippable(marker) || marker.Start < 0 || marker.End <= marker.Start || marker.Start >= duration {
@@ -52,7 +52,7 @@ func AutomaticSkipTypes(values []markers.Marker, enabled []string) []string {
 	return result
 }
 
-func AutomaticStart(current, duration float64, values []markers.Marker, enabled []string) float64 { //nolint:cyclop,gocognit // Intro trust decisions remain one auditable sequence.
+func AutomaticStart(current, duration float64, values []markers.Marker, enabled []string) float64 {
 	if !finiteTimelineValue(current) || current < 0 {
 		return 0
 	}
@@ -113,7 +113,7 @@ func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.C
 	return result
 }
 
-func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan { //nolint:cyclop,gocognit // Ordered compatibility and timeline fallbacks remain one auditable operation.
+func DecideWithAutomaticSkip(facts MediaFacts, client ClientCapabilities, policy ViewerPolicy, intent NetworkIntent, values []markers.Marker, enabled []string, product DecisionPolicy) PlaybackPlan {
 	if intent.PreferDirect {
 		plan := Decide(facts, client, policy, intent, product)
 		if facts.Kind != "video" || !plan.AudioCompatibilityRequired || !policy.AllowTranscode || intent.ForceDirect {

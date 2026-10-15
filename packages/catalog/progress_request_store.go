@@ -92,7 +92,7 @@ func (store *RequestProgressStore) Storage() ProgressStorage {
 	return storage
 }
 
-func (store *RequestProgressStore) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) { //nolint:contextcheck // A validated state commit must finish after client cancellation.
+func (store *RequestProgressStore) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
 	return store.Storage().Update(key, change)
 }
 

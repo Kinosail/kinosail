@@ -19,7 +19,7 @@ func TestScanStopsWhenCanceled(t *testing.T) {
 	}
 }
 
-func TestScanFindsVideoMusicAndPhotosWithoutSidecarArtwork(t *testing.T) { //nolint:cyclop // One fixture verifies every supported media family and artwork fallback.
+func TestScanFindsVideoMusicAndPhotosWithoutSidecarArtwork(t *testing.T) {
 	t.Parallel()
 
 	root := t.TempDir()
@@ -155,7 +155,7 @@ func TestScanReadsStableProviderIdentifiersFromNFO(t *testing.T) {
 	}
 }
 
-func TestScanSeparatesMovieTitleAndYearFromReleaseMetadata(t *testing.T) { //nolint:cyclop // One scan verifies all release-name parsing cases.
+func TestScanSeparatesMovieTitleAndYearFromReleaseMetadata(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	for _, name := range []string{
@@ -181,7 +181,7 @@ func TestScanSeparatesMovieTitleAndYearFromReleaseMetadata(t *testing.T) { //nol
 	}
 }
 
-func TestScanSeparatesShowTitleYearAndProviderIDFromFolder(t *testing.T) { //nolint:cyclop,gocognit // One table-driven scan covers the full parsed show identity contract.
+func TestScanSeparatesShowTitleYearAndProviderIDFromFolder(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	for _, path := range []string{

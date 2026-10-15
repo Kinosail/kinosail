@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCachedFactsNeverLaunchesProbeAndRejectsChangedSources(t *testing.T) { //nolint:cyclop // Cache hits and changed-source misses share one counted probe fixture.
+func TestCachedFactsNeverLaunchesProbeAndRejectsChangedSources(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	media, calls := filepath.Join(root, "film.mkv"), filepath.Join(root, "calls")

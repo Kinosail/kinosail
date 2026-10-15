@@ -28,7 +28,7 @@ func callMedia(t *testing.T, handler http.Handler, method, target, body string) 
 	return response
 }
 
-func TestMediaHandlersServePlayerCatalogRoutes(t *testing.T) { //nolint:cyclop,funlen,gocognit // One matrix proves the complete shared route interface.
+func TestMediaHandlersServePlayerCatalogRoutes(t *testing.T) {
 	items := mediaFixture()
 	handlers, _, progress, lists := mediaHandlersForTest(items)
 	server := registeredMediaHandler(handlers)
@@ -80,7 +80,7 @@ func TestMediaHandlersServePlayerCatalogRoutes(t *testing.T) { //nolint:cyclop,f
 	}
 }
 
-func TestMediaHandlersRejectInvalidInputsBeforeSideEffects(t *testing.T) { //nolint:cyclop,funlen,gocognit // One matrix proves every shared request rejection path.
+func TestMediaHandlersRejectInvalidInputsBeforeSideEffects(t *testing.T) {
 	items := mediaFixture()
 	handlers, index, progress, lists := mediaHandlersForTest(items)
 	server := registeredMediaHandler(handlers)
@@ -148,7 +148,7 @@ func TestMediaHandlersRejectInvalidInputsBeforeSideEffects(t *testing.T) { //nol
 	}
 }
 
-func TestMediaHandlersTranslateOperationFailures(t *testing.T) { //nolint:cyclop,funlen,gocognit // One matrix covers app-store and timeline error translation.
+func TestMediaHandlersTranslateOperationFailures(t *testing.T) {
 	items := mediaFixture()
 	handlers, _, _, _ := mediaHandlersForTest(items)
 	server := registeredMediaHandler(handlers)

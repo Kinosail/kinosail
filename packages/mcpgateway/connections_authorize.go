@@ -45,7 +45,7 @@ func (connections *Connections) authorize(writer http.ResponseWriter, request *h
 	})
 }
 
-func (connections *Connections) authorizationRequest(request *http.Request, profile Principal) (mcpOAuthRequest, error) { //nolint:cyclop // OAuth parameters are validated together before pending state is created.
+func (connections *Connections) authorizationRequest(request *http.Request, profile Principal) (mcpOAuthRequest, error) {
 	if len(request.URL.RawQuery) > 16<<10 {
 		return mcpOAuthRequest{}, errors.New("authorization query is too large")
 	}
@@ -264,5 +264,5 @@ func (connections *Connections) redirectAuthorization(writer http.ResponseWriter
 	}
 	query.Set("iss", connections.issuer)
 	redirect.RawQuery = query.Encode()
-	http.Redirect(writer, request, redirect.String(), http.StatusFound) //nolint:gosec // The exact registered redirect URI was validated before pending state was created.
+	http.Redirect(writer, request, redirect.String(), http.StatusFound)
 }

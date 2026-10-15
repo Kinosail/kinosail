@@ -13,7 +13,7 @@ import (
 	"github.com/crewjam/saml"
 )
 
-func TestOIDCHTTPCompletesLoginAndLinkCallbacks(t *testing.T) { //nolint:funlen // The provider lifecycle proves both callback destinations.
+func TestOIDCHTTPCompletesLoginAndLinkCallbacks(t *testing.T) {
 	flow, _, setNonce := newOIDCTestFlow(t)
 	identity := Identity{Issuer: flow.config.Issuer, Subject: "subject-1"}
 	values := []webProfile{{ID: "viewer", OIDC: identity}}
@@ -55,7 +55,7 @@ func completeOIDCHTTPCallback(t *testing.T, login *OIDCHTTP[webProfile], begin *
 	}
 }
 
-func TestOIDCHTTPRejectsCapacityPersistenceAndMFAEdges(t *testing.T) { //nolint:funlen // Each edge maps a bounded failure to its public response.
+func TestOIDCHTTPRejectsCapacityPersistenceAndMFAEdges(t *testing.T) {
 	flow, _, _ := newOIDCTestFlow(t)
 	if _, err := flow.getProvider(t.Context()); err != nil {
 		t.Fatal(err)
@@ -114,7 +114,7 @@ func TestOIDCHTTPAutoLinkPersistenceFailure(t *testing.T) {
 	}
 }
 
-func TestSAMLHTTPStartsMetadataAndMFA(t *testing.T) { //nolint:funlen // Redirect, post, metadata, and MFA adapters share one configuration fixture.
+func TestSAMLHTTPStartsMetadataAndMFA(t *testing.T) {
 	certificate := samlMetadataCertificate(t)
 	identity := Identity{Issuer: "issuer", Subject: "subject"}
 	values := []webProfile{{ID: "viewer", SAML: identity, MFA: true}}
@@ -155,7 +155,7 @@ func TestSAMLHTTPStartsMetadataAndMFA(t *testing.T) { //nolint:funlen // Redirec
 	}
 }
 
-func TestSAMLHTTPRejectsCapacityProfileAndStorageEdges(t *testing.T) { //nolint:funlen // Error adapters are verified independently of signed-response parsing.
+func TestSAMLHTTPRejectsCapacityProfileAndStorageEdges(t *testing.T) {
 	certificate := samlMetadataCertificate(t)
 	config := SAMLConfig{MetadataXML: samlMetadataDocument("https://identity.example", "/sso", certificate), RootURL: "http://localhost", DataDir: t.TempDir()}
 	values := []webProfile{{ID: "viewer", Managed: true, External: "directory", MFA: true}}

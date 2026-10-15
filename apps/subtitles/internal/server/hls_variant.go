@@ -12,14 +12,13 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, plan *copiedHLSPlan) error { //nolint:cyclop,funlen // One FFmpeg command is assembled from the validated playback recipe.
+func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, plan *copiedHLSPlan) error {
 	release, err := manager.workloads.Acquire(ctx, workload.Playback)
 	if err != nil {
 		return err
 	}
 	defer release()
 	directory := filepath.Join(root, name)
-	//nolint:gosec // G703: root is the validated cache path and name is a fixed rendition.
 	if err := os.MkdirAll(directory, 0o700); err != nil {
 		return err
 	}

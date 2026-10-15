@@ -24,7 +24,7 @@ func (auth *authentication) onboardingLoginNext(profile viewerProfile, request *
 	return next
 }
 
-func (auth *authentication) login(writer http.ResponseWriter, request *http.Request) { //nolint:cyclop,gocognit // Password, MFA, and session decisions remain one auditable login flow.
+func (auth *authentication) login(writer http.ResponseWriter, request *http.Request) {
 	if request.Method == http.MethodGet && auth.sso {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 		view := profileLoginSSOView

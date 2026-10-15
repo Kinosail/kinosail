@@ -17,7 +17,6 @@ func scopedSessionRequest(t *testing.T) *http.Request {
 	return request
 }
 
-//nolint:cyclop,gocognit // One lifecycle table checks each independent authorization and persistence boundary.
 func TestLegacyBrowserCookieMigrationPreservesSessionLimits(t *testing.T) {
 	t.Parallel()
 	for _, public := range []bool{false, true} {
@@ -55,7 +54,6 @@ func TestLegacyBrowserCookieMigrationPreservesSessionLimits(t *testing.T) {
 	}
 }
 
-//nolint:cyclop,gocognit // One lifecycle table checks each independent authorization and persistence boundary.
 func TestLegacyBrowserCookieMigrationRejectsUnselectedOrInvalidSessions(t *testing.T) {
 	t.Parallel()
 	for _, kind := range []string{"expired", "idle", "revoked", "disabled", "device", "bearer", "scoped", "empty scoped", "management mismatch", "public revision"} {
@@ -103,7 +101,6 @@ func TestLegacyBrowserCookieMigrationRejectsUnselectedOrInvalidSessions(t *testi
 	}
 }
 
-//nolint:cyclop,gocognit // One lifecycle table checks each independent authorization and persistence boundary.
 func TestCookieLogoutRetiresLegacyWithoutAffectingOtherAuthentication(t *testing.T) {
 	t.Parallel()
 	for _, kind := range []string{"cookie", "bearer", "management mismatch", "persistence failure"} {

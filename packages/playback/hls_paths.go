@@ -34,14 +34,14 @@ func HLSFile(name string) bool {
 	return len(parts) == 2 && QualityDirectory(parts[0]) && VariantFile(parts[1])
 }
 
-func ReadHLSPlaylist(path string) ([]byte, error) { //nolint:cyclop,gosec // Callers construct cache playlist paths from validated identifiers.
+func ReadHLSPlaylist(path string) ([]byte, error) {
 	return readHLSPlaylist(path, func(path string) (hlsPlaylistRoot, error) {
 		root, err := os.OpenRoot(path)
 		return osHLSPlaylistRoot{root}, err
 	})
 }
 
-func readHLSPlaylist(path string, openRoot func(string) (hlsPlaylistRoot, error)) ([]byte, error) { //nolint:cyclop // The injected root keeps every filesystem failure deterministic under test.
+func readHLSPlaylist(path string, openRoot func(string) (hlsPlaylistRoot, error)) ([]byte, error) {
 	directory := filepath.Dir(path)
 	rootPath := filepath.Dir(directory)
 	relative := filepath.Join(filepath.Base(directory), filepath.Base(path))

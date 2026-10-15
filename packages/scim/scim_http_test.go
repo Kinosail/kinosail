@@ -29,7 +29,7 @@ func TestSCIMRejectsExpiredBearerToken(t *testing.T) {
 	}
 }
 
-func TestSCIMRejectsInvalidFiltersAndPagesWithoutMutation(t *testing.T) { //nolint:cyclop // Boundary cases intentionally remain explicit and side-effect observable.
+func TestSCIMRejectsInvalidFiltersAndPagesWithoutMutation(t *testing.T) {
 	t.Parallel()
 	handler := serverWithSCIM(t)
 	for _, path := range []string{"/scim/v2/Users?filter=name%20eq%20%22bad%22", "/scim/v2/Users?filter=urn%3Aietf%3Aparams%3Ascim%3Aschemas%3Acore%3A2.0%3AUser%3Aunknown%20eq%20%22bad%22", "/scim/v2/Users?count=201", "/scim/v2/Users?count=1&count=2", "/scim/v2/Users?sort=id", "/scim/v2/Users?attributes=unknown", "/scim/v2/Users?attributes=userName&excludedAttributes=userName", "/scim/v2/Users?attributes=userName&excludedAttributes=displayName", "/scim/v2/Users?startIndex=0", "/scim/v2/Users?count=-1"} {

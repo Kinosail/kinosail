@@ -47,7 +47,7 @@ func TestProbePlatformDefaultsEachMissingField(t *testing.T) {
 	}
 }
 
-func TestProbeDiscoversPortableBackendsAndCodecs(t *testing.T) { //nolint:cyclop // One probe must expose coherent backend and codec evidence.
+func TestProbeDiscoversPortableBackendsAndCodecs(t *testing.T) {
 	ffmpeg := fakeFFmpeg(t, "libx264 libx265 libsvtav1 libvpx-vp9 libvvenc h264_qsv hevc_qsv av1_qsv vp9_qsv qsv h264_v4l2m2m hevc_v4l2m2m h264_mf hevc_mf av1_mf")
 	t.Parallel()
 	video := filepath.Join(t.TempDir(), "video11")
@@ -161,7 +161,7 @@ func TestHardwareMessagesCoverEveryState(t *testing.T) {
 	}
 }
 
-func TestDeviceDiscoveryAndBoundedProbeOutput(t *testing.T) { //nolint:cyclop // One fixture covers directory discovery and its bounded output primitive.
+func TestDeviceDiscoveryAndBoundedProbeOutput(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
 	paths := []string{"renderD128", "nvidia0", "mpp_service", "rga", "video11", "video", "unknown"}

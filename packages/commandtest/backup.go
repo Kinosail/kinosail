@@ -50,7 +50,7 @@ func EncryptedRestore(t *testing.T, command appcli.Command, writeEncrypted func(
 	}
 }
 
-func RecoveryBackup(t *testing.T, command appcli.Command) { //nolint:cyclop // One recovery scenario covers backup, verification, and restore.
+func RecoveryBackup(t *testing.T, command appcli.Command) {
 	t.Parallel()
 	key := "correct horse battery staple"
 	source, restored := t.TempDir(), t.TempDir()

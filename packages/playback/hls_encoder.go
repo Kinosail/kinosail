@@ -129,7 +129,7 @@ func canonicalHLSSourceVersion(sizeText, modifiedText string) (string, bool) {
 }
 
 func hlsSourceVersion(source string) (string, error) {
-	info, err := os.Stat(source) //nolint:gosec // Source comes from the scanned library.
+	info, err := os.Stat(source)
 	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 {
 		return "", errors.New("HLS source is not a regular media file")
 	}
@@ -137,7 +137,7 @@ func hlsSourceVersion(source string) (string, error) {
 }
 
 func openHLSSourceRoot(directory string) (*os.Root, error) {
-	parent, err := os.OpenRoot(filepath.Dir(directory)) //nolint:gosec // Directory is an installation cache path with a validated key.
+	parent, err := os.OpenRoot(filepath.Dir(directory))
 	if err != nil {
 		return nil, err
 	}

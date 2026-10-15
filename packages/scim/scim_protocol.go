@@ -213,7 +213,7 @@ func unmarshalSCIMObject(data []byte, target any, fields ...string) error {
 	return json.Unmarshal(data, target)
 }
 
-func scimObject(data []byte) (map[string]json.RawMessage, error) { //nolint:cyclop // Token-level parsing rejects malformed and ambiguous objects at one boundary.
+func scimObject(data []byte) (map[string]json.RawMessage, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	token, err := decoder.Token()
 	delimiter, isDelimiter := token.(json.Delim)

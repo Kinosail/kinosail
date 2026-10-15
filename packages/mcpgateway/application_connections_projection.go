@@ -60,7 +60,7 @@ func connectionOwners(state ProfileState) []ConnectionOwner {
 }
 
 func LocalCACertificate(dataDir string) []byte {
-	contents, err := os.ReadFile(filepath.Join(dataDir, "tls-ca.pem")) //nolint:gosec // Fixed installation-owned filename.
+	contents, err := os.ReadFile(filepath.Join(dataDir, "tls-ca.pem"))
 	if err != nil || len(contents) > 64<<10 {
 		return nil
 	}

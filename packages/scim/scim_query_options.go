@@ -45,7 +45,7 @@ func scimQueryValues(request *http.Request, allowed ...string) (url.Values, erro
 	return values, nil
 }
 
-func scimListOptions(request *http.Request) (scimQueryOptions, error) { //nolint:cyclop // List controls each have independent strict bounds.
+func scimListOptions(request *http.Request) (scimQueryOptions, error) {
 	values, err := scimQueryValues(request, "filter", "startIndex", "count", "attributes", "excludedAttributes")
 	if err != nil {
 		return scimQueryOptions{}, err
@@ -68,7 +68,7 @@ func scimListOptions(request *http.Request) (scimQueryOptions, error) { //nolint
 	return scimQueryOptions{filter: filter, start: start, count: count, selection: selection}, nil
 }
 
-func scimListPage(values url.Values) (int, int, error) { //nolint:cyclop // Pagination parameters have independent strict bounds.
+func scimListPage(values url.Values) (int, int, error) {
 	start, count := 1, 100
 	for name, target := range map[string]*int{"startIndex": &start, "count": &count} {
 		value, present := values[name]

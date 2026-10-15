@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestSessionTokenPrecedenceAndSources(t *testing.T) { //nolint:cyclop // The table proves the compatibility precedence contract.
+func TestSessionTokenPrecedenceAndSources(t *testing.T) {
 	t.Parallel()
 	query := func(*http.Request) (string, string) { return "query", "query-source" }
 	cases := []struct {

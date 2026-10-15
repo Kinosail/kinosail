@@ -103,7 +103,7 @@ func TestProfilePersistenceRejectsIncompleteFiles(t *testing.T) {
 	}
 }
 
-func TestProfilePersistenceSaveRelatedFiles(t *testing.T) { //nolint:gocognit // The score of 17 remains below the repository ceiling of 22 for the atomic write matrix.
+func TestProfilePersistenceSaveRelatedFiles(t *testing.T) {
 	t.Parallel()
 	profiles := []Profile{{ID: "viewer"}}
 	sessions := map[string]Session{"session": {ProfileID: "viewer"}}

@@ -22,7 +22,7 @@ func assertSCIMDiscovery(t *testing.T, handler http.Handler) {
 	assertSCIMResponse(t, "schema", scimCall(t, handler, scimTestToken, http.MethodGet, "/scim/v2/Schemas/"+scimUserSchema, nil), http.StatusOK, []string{`"id":"` + scimUserSchema + `"`, `"uniqueness":"none"`}, nil)
 }
 
-func createSCIMLifecycleProfile(t *testing.T, handler http.Handler) (string, string) { //nolint:cyclop // The response fixture validates one complete resource representation.
+func createSCIMLifecycleProfile(t *testing.T, handler http.Handler) (string, string) {
 	t.Helper()
 	invalid := map[string]any{"schemas": []string{scimUserSchema}, "displayName": "No username", "unknown": true}
 	assertSCIMResponse(t, "invalid create", scimCall(t, handler, scimTestToken, http.MethodPost, "/scim/v2/Users", invalid), http.StatusBadRequest, nil, nil)

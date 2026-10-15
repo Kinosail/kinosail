@@ -13,7 +13,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest/mp4fixture"
 )
 
-func TestHLSPlaylistLifecycle(t *testing.T) { //nolint:cyclop // One test covers the complete publication lifecycle.
+func TestHLSPlaylistLifecycle(t *testing.T) {
 	root := t.TempDir()
 	source := filepath.Join(root, "movie.mkv")
 	directory := filepath.Join(root, "0123456789abcdef", "360p")
@@ -59,7 +59,7 @@ func TestHLSPlaylistLifecycle(t *testing.T) { //nolint:cyclop // One test covers
 	}
 }
 
-func TestHLSPlaylistRejectsIncompleteAndUnsafeInputs(t *testing.T) { //nolint:cyclop // Negative playlist cases prove the shared trust boundary.
+func TestHLSPlaylistRejectsIncompleteAndUnsafeInputs(t *testing.T) {
 	root := t.TempDir()
 	source := filepath.Join(root, "source")
 	writeTestFile(t, source, "source")
@@ -126,7 +126,7 @@ func TestPublishVariantsCoversSuccessAndFailure(t *testing.T) {
 	}
 }
 
-func TestHLSCacheOperationsIgnoreUnownedData(t *testing.T) { //nolint:cyclop // Cache ownership and failure cases share one no-side-effect test.
+func TestHLSCacheOperationsIgnoreUnownedData(t *testing.T) {
 	root := t.TempDir()
 	policy := HLSRecipePolicy{MaxBitrate: 100_000_000, OffsetStepMilliseconds: 100}
 	old := filepath.Join(root, "0123456789abcdef")
@@ -187,7 +187,7 @@ func TestHLSCacheNamesAndFilesAreBounded(t *testing.T) {
 	}
 }
 
-func TestHLSDiagnosticsBoundOutputAndPreserveCause(t *testing.T) { //nolint:cyclop // Redaction, bounds, and subprocess behavior form one diagnostic contract.
+func TestHLSDiagnosticsBoundOutputAndPreserveCause(t *testing.T) {
 	t.Parallel()
 	cause := errors.New("exit status 1")
 	failure := NewHLSDiagnosticError(cause, strings.Repeat("x", HLSDiagnosticLimit)+" /private/Film.mkv", "/private/Film.mkv")

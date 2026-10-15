@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestRoomsRemainingLifecycleEdges(t *testing.T) { //nolint:cyclop // One white-box test covers independent bounded lifecycle edges.
+func TestRoomsRemainingLifecycleEdges(t *testing.T) {
 	t.Parallel()
 	rooms := New(0)
 	if rooms.ttl != defaultTTL {

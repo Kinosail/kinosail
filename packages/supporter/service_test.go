@@ -147,7 +147,7 @@ func TestActivateAndSaveCommitsOnlyValidatedChangedState(t *testing.T) {
 	}
 }
 
-func TestActivationBuildsBothBadgesAndStatus(t *testing.T) { //nolint:cyclop // One journey covers both badge families and their combined status.
+func TestActivationBuildsBothBadgesAndStatus(t *testing.T) {
 	fixture := newSigningFixture(t)
 	fixture.collection = true
 	service, _ := fixtureService(t, fixture)

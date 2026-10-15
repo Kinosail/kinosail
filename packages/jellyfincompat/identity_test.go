@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestIdentifierGenerationAndValidation(t *testing.T) { //nolint:cyclop // One boundary table verifies every permitted character range.
+func TestIdentifierGenerationAndValidation(t *testing.T) {
 	id, err := IDFrom(strings.NewReader("0123456789abcdef"))
 	if err != nil || id != "30313233343536373839616263646566" || !ValidID(id) {
 		t.Fatalf("identifier = %q, error = %v", id, err)
@@ -34,7 +34,7 @@ func TestIdentifierGenerationAndValidation(t *testing.T) { //nolint:cyclop // On
 	}
 }
 
-func TestEnsureIDValidatesBeforeGeneration(t *testing.T) { //nolint:cyclop // One lifecycle proves validation and generation have no mixed side effects.
+func TestEnsureIDValidatesBeforeGeneration(t *testing.T) {
 	calls := 0
 	generate := func() (string, error) {
 		calls++
@@ -106,7 +106,7 @@ func TestProviderIDsUseOnlyKnownNonemptyNames(t *testing.T) {
 	}
 }
 
-func TestItemIDsValidateOneBoundedQuery(t *testing.T) { //nolint:cyclop // One boundary table verifies every accepted and rejected query shape.
+func TestItemIDsValidateOneBoundedQuery(t *testing.T) {
 	normalize := func(value string) string { return "id:" + value }
 	if ids, err := ItemIDs(nil, normalize); err != nil || ids != nil {
 		t.Fatalf("missing IDs = %v, %v", ids, err)

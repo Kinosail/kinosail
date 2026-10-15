@@ -119,7 +119,7 @@ func TestPublicTripwireQuarantinesScannerWithoutStoppingLocalAccess(t *testing.T
 	}
 }
 
-func TestOwnerCanPersistAndResetPublicKillSwitch(t *testing.T) { //nolint:cyclop // One scenario checks API state, local recovery, persistence, and reset.
+func TestOwnerCanPersistAndResetPublicKillSwitch(t *testing.T) {
 	t.Parallel()
 	dataDir := t.TempDir()
 	config := remoteaccess.Config{Enabled: true, PublicHTTPS: true, Domain: "family-media", Token: strings.Repeat("k", 32), Listen: "127.0.0.1:8443", DataDir: dataDir}

@@ -80,7 +80,7 @@ func speedTestMedia(t *testing.T, ffmpeg, video, audio string, skip bool) string
 		arguments = append(arguments, "-preset", "ultrafast", "-sc_threshold", "0")
 	}
 	arguments = append(arguments, filepath.Join(media, "Episode.S01E01.mkv"))
-	command := exec.CommandContext(t.Context(), ffmpeg, arguments...) //nolint:gosec // Tool comes from LookPath and all arguments are fixed synthetic-test inputs.
+	command := exec.CommandContext(t.Context(), ffmpeg, arguments...)
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate speed fixture: %v: %s", err, output)
 	}
@@ -129,7 +129,7 @@ func assertSpeedTestDelivery(t *testing.T, ctx context.Context, handler http.Han
 		for _, segment := range segments[:int(duration/2)] {
 			fragments = append(fragments, speedTestGET(t, delivery, handler, rendition+segment)...)
 		}
-		decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-map", "0:a:0", "-f", "null", "-") //nolint:gosec // Tool comes from LookPath and all arguments are fixed synthetic-test inputs.
+		decode := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", "pipe:0", "-map", "0:v:0", "-map", "0:a:0", "-f", "null", "-")
 		decode.Stdin = bytes.NewReader(fragments)
 		if output, err := decode.CombinedOutput(); err != nil {
 			t.Fatalf("delivered rendition does not decode: %v: %s", err, output)

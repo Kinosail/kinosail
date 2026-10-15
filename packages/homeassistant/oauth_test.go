@@ -26,7 +26,7 @@ func oauthQuery(verifier string) url.Values {
 	}
 }
 
-func TestAuthorizationValidation(t *testing.T) { //nolint:cyclop // One boundary matrix proves the complete authorization request contract.
+func TestAuthorizationValidation(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{Source: testProfile{"owner"}, ID: "owner", Name: "Owner", Owner: true}}
 	integration := newTestIntegration(t, state)
 	verifier := strings.Repeat("A", 43)
@@ -82,7 +82,7 @@ func TestAuthorizationValidation(t *testing.T) { //nolint:cyclop // One boundary
 	}
 }
 
-func TestAuthorizeHTTP(t *testing.T) { //nolint:cyclop // The score of 11 remains below the repository ceiling of 22 for the authorization matrix.
+func TestAuthorizeHTTP(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{Source: testProfile{"owner"}, ID: "owner", Name: "Owner", Owner: true}}
 	integration := newTestIntegration(t, state)
 	verifier := strings.Repeat("A", 43)
@@ -119,7 +119,7 @@ func TestAuthorizeHTTP(t *testing.T) { //nolint:cyclop // The score of 11 remain
 	}
 }
 
-func TestApproveAuthorizationHTTP(t *testing.T) { //nolint:cyclop // The score of 12 remains below the repository ceiling of 22 for the approval matrix.
+func TestApproveAuthorizationHTTP(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{Source: testProfile{"owner"}, ID: "owner", Name: "Owner", Owner: true}}
 	integration := newTestIntegration(t, state)
 	integration.requests = map[string]authorization{secretHash("request"): {RedirectURI: testRedirect, State: "state", ProfileID: "owner", Expires: state.now.Add(time.Minute)}}
@@ -161,7 +161,7 @@ func TestApproveAuthorizationHTTP(t *testing.T) { //nolint:cyclop // The score o
 	}
 }
 
-func TestTokenExchange(t *testing.T) { //nolint:cyclop,gocognit,funlen // One matrix proves every token boundary and side effect.
+func TestTokenExchange(t *testing.T) {
 	state := &testState{enabled: true, profile: Profile[testProfile]{Source: testProfile{"owner"}, ID: "owner", Owner: true}}
 	integration := newTestIntegration(t, state)
 	verifier := strings.Repeat("A", 43)

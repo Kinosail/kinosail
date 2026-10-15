@@ -233,7 +233,6 @@ func saveWebLanguage(writer http.ResponseWriter, request *http.Request) {
 	if referer, err := url.Parse(request.Referer()); err == nil && referer.Host == request.Host && strings.HasPrefix(referer.Path, "/") {
 		destination = referer.RequestURI()
 	}
-	//nolint:gosec // The redirect is restricted to a parsed same-host absolute path above.
 	http.Redirect(writer, request, destination, http.StatusSeeOther)
 }
 

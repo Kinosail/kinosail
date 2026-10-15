@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestJellyseerrJellyfinSeamSupportsDiscoveryLookupAndOwnerAPIKey(t *testing.T) { //nolint:cyclop,gocognit,funlen // One client contract covers the setup sequence and all dependent reads.
+func TestJellyseerrJellyfinSeamSupportsDiscoveryLookupAndOwnerAPIKey(t *testing.T) {
 	t.Parallel()
 	mediaDir, dataDir := t.TempDir(), t.TempDir()
 	writeJellyseerrFixture(t, mediaDir)

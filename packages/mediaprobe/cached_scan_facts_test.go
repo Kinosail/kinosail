@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestCachedScanFactsUsesScanVersionWithoutReadingMedia(t *testing.T) { //nolint:cyclop,gocognit // Memory and restarted cache readers share the same deleted source fixture.
+func TestCachedScanFactsUsesScanVersionWithoutReadingMedia(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	path, calls := filepath.Join(root, "film.mkv"), filepath.Join(root, "calls")

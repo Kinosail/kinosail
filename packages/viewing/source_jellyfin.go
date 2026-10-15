@@ -38,11 +38,11 @@ func jellyfinViewingUserID(ctx context.Context, client *http.Client, input Input
 		ID string `json:"Id"`
 	}
 	if err := viewingSourceJSON(ctx, client, input, "/Users/Me", nil, &me); err != nil {
-		return "", errors.New("Jellyfin source user ID is required for this token") //nolint:staticcheck // Jellyfin is a proper product name.
+		return "", errors.New("Jellyfin source user ID is required for this token")
 	}
 	me.ID = strings.TrimSpace(me.ID)
 	if me.ID == "" || len(me.ID) > 512 {
-		return "", errors.New("Jellyfin source user ID is invalid") //nolint:staticcheck // Jellyfin is a proper product name.
+		return "", errors.New("Jellyfin source user ID is invalid")
 	}
 	return me.ID, nil
 }
@@ -66,7 +66,7 @@ func appendJellyfinViewingActivities(result []Activity, items []jellyfinViewingI
 			continue
 		}
 		if len(item.ProviderIDs) > 16 {
-			return nil, errors.New("Jellyfin source returned too many provider identifiers") //nolint:staticcheck // Jellyfin is a proper product name.
+			return nil, errors.New("Jellyfin source returned too many provider identifiers")
 		}
 		updated, err := parseViewingTime(item.UserData.LastPlayedDate)
 		if err != nil {

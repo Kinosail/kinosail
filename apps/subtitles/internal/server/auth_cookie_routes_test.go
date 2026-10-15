@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation(t *testing.T) { //nolint:cyclop,gocognit // Every route repeats the positive and negative cookie cases.
+func TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation(t *testing.T) {
 	handler, ownerToken := newRouteAuthorizationServer(t)
 	createRouteProfile(t, handler, ownerToken, map[string]any{
 		"name": "Viewer", "password": "viewer-password", "rating": "all", "libraries": []string{"all"},

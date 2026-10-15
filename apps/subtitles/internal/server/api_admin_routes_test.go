@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) { //nolint:cyclop // One route contract test checks all Owner operations.
+func TestOwnerSettingsAndOperationsAPIRoutes(t *testing.T) {
 	t.Parallel()
 	handler, token := apiServer(t)
 	assertAPIBody(t, apiCall(t, handler, token, http.MethodGet, "/api/v1/settings", nil), http.StatusOK, `"transcoder":"automatic"`, `"accelerator":"auto"`, `"onboardingPending":true`, `"updates":{"automatic":true,"state":"not-checked"`)

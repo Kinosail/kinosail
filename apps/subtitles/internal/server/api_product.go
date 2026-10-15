@@ -85,7 +85,7 @@ func registerProductAPI(mux *http.ServeMux, api apiServices) {
 	contractError := func(message string) error { return apiContractError(message) }
 	owner("POST /api/v1/remote-access/kill", remoteaccess.KillAPI(api.internet, func() error {
 		return revokePublicAuthorization(api.auth.profiles, api.auth.passkeys)
-	}, contractError, apiError)) //nolint:contextcheck // Once the kill switch begins, revocation must finish despite request cancellation.
+	}, contractError, apiError))
 	owner("DELETE /api/v1/remote-access/kill", remoteaccess.ResetKillAPI(api.internet, contractError, apiError))
 	owner("GET /api/v1/activity", auditjournal.ActivityAPI(api.auth.audit.HTTPTracker, func() []playbackView {
 		return catalogapi.RecentAdminProgress(api.progress, api.index, api.auth.profiles.list())

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func applyPlayback(request *http.Request, settings *settingsStore, facts MediaFacts, data *playerData) { //nolint:cyclop,gocognit // Playback selection and its fallback/shortened projection are one adapter operation.
+func applyPlayback(request *http.Request, settings *settingsStore, facts MediaFacts, data *playerData) {
 	if data.Kind != "video" {
 		data.ModeURL = ""
 		return
@@ -117,7 +117,7 @@ func playbackPresentation(plan PlaybackPlan) (string, string) {
 	return label, description
 }
 
-func directMediaType(path string, facts MediaFacts) string { //nolint:cyclop // Container-specific codec declarations stay conservative and truthful.
+func directMediaType(path string, facts MediaFacts) string {
 	extension := lower(filepath.Ext(path))
 	if extension == ".mkv" {
 		return "video/x-matroska"

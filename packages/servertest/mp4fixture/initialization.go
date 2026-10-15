@@ -23,7 +23,7 @@ func Track(format string, entry []byte) []byte {
 	return Box("trak", Box("mdia", Box("minf", Box("stbl", Box("stsd", description)))))
 }
 
-func Initialization(width, height int, codec, audio, hdr string) []byte { //nolint:cyclop // This fixture enumerates codec-specific sample-description headers.
+func Initialization(width, height int, codec, audio, hdr string) []byte {
 	if width < 0 || width > math.MaxUint16 || height < 0 || height > math.MaxUint16 {
 		panic("MP4 fixture dimensions are out of range")
 	}

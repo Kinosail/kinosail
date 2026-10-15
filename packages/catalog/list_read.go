@@ -32,7 +32,7 @@ func (storage ListStorage) EditablePlaylistNames(viewer string) []string {
 	return names
 }
 
-func (storage ListStorage) Playlist(viewer, name string, items []library.Item) []library.Item { //nolint:cyclop // Ordered and smart playlists share one small read path.
+func (storage ListStorage) Playlist(viewer, name string, items []library.Item) []library.Item {
 	key := viewer + ":" + name
 	if rule, ok := (*storage.Smart)[key]; ok {
 		selected := Filter(items, rule.Query)

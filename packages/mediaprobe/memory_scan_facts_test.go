@@ -8,7 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func TestMemoryScanFactsDoesNotHydrateFromDiskOrRunProbe(t *testing.T) { //nolint:cyclop // Warm and cold reads must preserve the same probe and filesystem evidence.
+func TestMemoryScanFactsDoesNotHydrateFromDiskOrRunProbe(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	path, calls := filepath.Join(root, "film.mkv"), filepath.Join(root, "calls")

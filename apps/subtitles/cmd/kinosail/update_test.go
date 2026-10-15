@@ -53,7 +53,7 @@ func TestUpdateReportCommandRejectsUntrustedInput(t *testing.T) {
 	updateTestContract().RejectedReport(t)
 }
 
-func TestUpdateCommandsReportUnavailableOrCorruptStorage(t *testing.T) { //nolint:cyclop // The table covers each storage failure boundary.
+func TestUpdateCommandsReportUnavailableOrCorruptStorage(t *testing.T) {
 	var output bytes.Buffer
 	if err := writeUpdatePlan(&output, ""); err == nil {
 		t.Fatal("empty update storage was accepted")
@@ -112,7 +112,7 @@ type updateAction struct {
 	run  func(string, *bytes.Buffer) error
 }
 
-func assertSemanticInvalidSettingsRejected(t *testing.T, run func(string, *bytes.Buffer) error) { //nolint:cyclop // One invalid-settings matrix remains below the repository complexity ceiling.
+func assertSemanticInvalidSettingsRejected(t *testing.T, run func(string, *bytes.Buffer) error) {
 	t.Helper()
 	dataDir := t.TempDir()
 	db, err := database.Open(dataDir, false)

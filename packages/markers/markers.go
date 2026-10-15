@@ -19,7 +19,7 @@ type Marker struct {
 	Source string  `json:"source,omitempty"`
 }
 
-func DetectPlaybackMarkers(chapters []metadata.Chapter) []Marker { //nolint:cyclop // All supported chapter-name classes are explicit here.
+func DetectPlaybackMarkers(chapters []metadata.Chapter) []Marker {
 	markers := make([]Marker, 0)
 	if len(chapters) > 4096 {
 		return markers

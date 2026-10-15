@@ -80,7 +80,7 @@ func TestTimelineMapsMarkersAndChapters(t *testing.T) {
 	}
 }
 
-func TestDecideWithAutomaticSkipPreservesPolicyAndChoosesDelivery(t *testing.T) { //nolint:cyclop // One matrix protects every delivery branch.
+func TestDecideWithAutomaticSkipPreservesPolicyAndChoosesDelivery(t *testing.T) {
 	facts := MediaFacts{Kind: "video", Container: "mp4", Duration: 60, Video: VideoFacts{Codec: "h264", FrameRate: 24}, Audio: []AudioFacts{{Codec: "aac"}}, RandomAccess: []float64{0, 10, 20, 60}}
 	client := ClientCapabilities{Containers: []string{"mp4"}, VideoCodecs: []string{"h264"}, AudioCodecs: []string{"aac"}, SupportsRemux: true}
 	policy := ViewerPolicy{AllowPlayback: true, AllowTranscode: true}
@@ -108,7 +108,7 @@ func TestDecideWithAutomaticSkipPreservesPolicyAndChoosesDelivery(t *testing.T) 
 	}
 }
 
-func TestTimelineAlignmentAndJellyfinProjectionCoverEdges(t *testing.T) { //nolint:cyclop // One matrix protects all timeline alignment edges.
+func TestTimelineAlignmentAndJellyfinProjectionCoverEdges(t *testing.T) {
 	timeline := Timeline{SourceDuration: 60, Duration: 50, Omitted: []Range{{10, 20}}}
 	if _, ok := randomAccessTimeline(timeline, nil, 0); ok {
 		t.Fatal("empty random access points aligned")
@@ -151,7 +151,7 @@ func (response *timelineResponse) SetPlaybackTimeline(duration, start float64, c
 	response.duration, response.start, response.chapters, response.markers, response.autoSkip, response.token = duration, start, chapters, values, autoSkip, token
 }
 
-func TestApplyAPIPlaybackTimelineProjectsServerAndClientModes(t *testing.T) { //nolint:cyclop // The score of 15 remains below the repository ceiling of 22 for the mode matrix.
+func TestApplyAPIPlaybackTimelineProjectsServerAndClientModes(t *testing.T) {
 	t.Parallel()
 	values := []markers.Marker{{Type: "intro", Start: 10, End: 20, Source: "manual"}}
 	chapters := []metadata.Chapter{{Start: 0, End: 30}}

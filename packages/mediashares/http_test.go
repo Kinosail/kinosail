@@ -63,7 +63,7 @@ func TestOwnerChoiceDefaults(t *testing.T) {
 	}
 }
 
-func TestRegisteredWebLifecycle(t *testing.T) { //nolint:cyclop,funlen // One handler lifecycle proves the shared route integration.
+func TestRegisteredWebLifecycle(t *testing.T) {
 	directory := t.TempDir()
 	media := directory + "/movie.mp4"
 	if err := os.WriteFile(media, []byte("movie"), 0o600); err != nil {
@@ -123,7 +123,7 @@ func TestRegisteredWebLifecycle(t *testing.T) { //nolint:cyclop,funlen // One ha
 	}
 }
 
-func TestAPIMutationsAreStrictAndAtomic(t *testing.T) { //nolint:cyclop // One matrix proves JSON validation and error mapping.
+func TestAPIMutationsAreStrictAndAtomic(t *testing.T) {
 	t.Parallel()
 	store, _ := testStore(t, time.Now(), library.Item{ID: "item", Path: "movie"})
 	for name, body := range map[string]string{

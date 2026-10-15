@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestBoundCommandOwnsRecoveryDispatch(t *testing.T) { //nolint:cyclop // One command contract remains below the repository complexity ceiling.
+func TestBoundCommandOwnsRecoveryDispatch(t *testing.T) {
 	service := testService(t, func(string) (Database, error) { return nil, nil }, func([]byte) error { return nil })
 	source, restored := t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(source, "settings.json"), []byte(`{"name":"Home"}`), 0o600); err != nil {

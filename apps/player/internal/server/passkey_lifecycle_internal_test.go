@@ -11,7 +11,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-func TestPasskeyInventoryRedactsCredentialMaterialAndRemovalIsFailClosed(t *testing.T) { //nolint:cyclop // One boundary test checks redaction and every malformed identifier.
+func TestPasskeyInventoryRedactsCredentialMaterialAndRemovalIsFailClosed(t *testing.T) {
 	t.Parallel()
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Owner", "owner-password", true)
@@ -63,7 +63,7 @@ func TestOwnerCannotRemoveOnlyStrongFactor(t *testing.T) {
 	}
 }
 
-func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) { //nolint:cyclop,funlen // One security lifecycle proves stale, weak, invalid, and valid removal attempts.
+func TestPasskeyRemovalRequiresRecentStrongAuthentication(t *testing.T) {
 	t.Parallel()
 	store := newProfileStore(t.TempDir())
 	profile, _ := newProfile("Viewer", "viewer-password", false)

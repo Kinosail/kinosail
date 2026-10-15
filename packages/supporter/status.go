@@ -2,7 +2,7 @@ package supporter
 
 import "time"
 
-func (service *Service) Status(state State) Status { //nolint:cyclop,gocognit // One projection preserves cross-version badge precedence.
+func (service *Service) Status(state State) Status { //nolint:gocognit // One projection preserves cross-version badge precedence.
 	state = service.migrateLegacy(cloneState(state))
 	patron := service.badge(service.decodeGrant(state, state.PatronOrder, FamilyPatron, true))
 	living := service.badge(service.decodeGrant(state, state.LivingStandard, FamilyLiving, true))

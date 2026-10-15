@@ -73,7 +73,7 @@ func TestConfigurationTransactionRecoversPairedFiles(t *testing.T) {
 	}
 }
 
-func TestConfigurationTransactionRejectsInvalidRecoveryState(t *testing.T) { //nolint:cyclop // Recovery failure paths share one direct matrix.
+func TestConfigurationTransactionRejectsInvalidRecoveryState(t *testing.T) {
 	directory := t.TempDir()
 	marker := filepath.Join(directory, configurationcore.TransactionFilename)
 	for _, data := range [][]byte{[]byte("{"), []byte(`{"regular":"e30="}`)} {
@@ -111,7 +111,7 @@ func TestConfigurationTransactionRejectsInvalidRecoveryState(t *testing.T) { //n
 	}
 }
 
-func TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects(t *testing.T) { //nolint:cyclop,gocognit // Each invalid journal state shares the same no-side-effect assertion.
+func TestConfigurationTransactionRejectsSemanticallyInvalidRecoveryWithoutSideEffects(t *testing.T) {
 	for name, transaction := range map[string][2][]byte{
 		"unknown key": {
 			[]byte(`{"unknown":"value"}`),

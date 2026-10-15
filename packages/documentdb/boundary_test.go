@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestRejectedSaveBoundariesKeepPriorDocuments(t *testing.T) { //nolint:cyclop,gocognit // Scores of 16 and 20 remain below the repository ceiling of 22 for the rejection matrix.
+func TestRejectedSaveBoundariesKeepPriorDocuments(t *testing.T) {
 	config := testConfig
 	config.Validate = func(_ string, data []byte) error {
 		if bytes.Contains(data, []byte(`"blocked":true`)) {

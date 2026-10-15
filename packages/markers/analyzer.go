@@ -127,7 +127,7 @@ func (analyzer *Analyzer) enqueueChanged(items []library.Item) {
 	analyzer.Enqueue(items)
 }
 
-func (analyzer *Analyzer) changedItems(items []library.Item) []library.Item { //nolint:cyclop // Movie revisions and season-wide episode invalidation are evaluated together.
+func (analyzer *Analyzer) changedItems(items []library.Item) []library.Item {
 	analyzer.mu.RLock()
 	defer analyzer.mu.RUnlock()
 	dirtySeasons := make(map[string]bool)
@@ -174,7 +174,7 @@ func (analyzer *Analyzer) Enqueue(items []library.Item) {
 	}
 }
 
-func (analyzer *Analyzer) work(ctx context.Context) { //nolint:cyclop,gocognit // The worker owns one bounded analysis lifecycle.
+func (analyzer *Analyzer) work(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():

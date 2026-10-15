@@ -20,7 +20,7 @@ func loadState(database *database.Store, path string, target any) (bool, error) 
 	if database != nil {
 		return database.LoadJSON(filepath.Base(path), target)
 	}
-	data, err := os.ReadFile(path) //nolint:gosec // Callers provide fixed installation-owned state paths.
+	data, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
 	}

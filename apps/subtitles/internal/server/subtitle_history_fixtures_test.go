@@ -12,7 +12,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func writeSubtitleHistoryUIFixtures(t *testing.T, dir string) { //nolint:funlen // One visual fixture covers each recorded operation using the production template.
+func writeSubtitleHistoryUIFixtures(t *testing.T, dir string) {
 	t.Helper()
 	manager, item := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
 	item.Title = "Signal Garden"
