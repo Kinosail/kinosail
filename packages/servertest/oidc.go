@@ -70,7 +70,7 @@ func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {
 
 	assertUnlinkedOIDCIdentity(t, handler, &nonce)
 	profiles := assertOIDCProfileLink(t, fixture, handler, dataDir, issuer, &nonce, owner)
-	assertLinkedOIDCSessions(t, fixture, handler, &nonce, profiles, result.TOTP.Secret, owner)
+	assertLinkedOIDCSessions(t, handler, &nonce, profiles, result.TOTP.Secret, owner)
 }
 
 func AssertOIDCSCIMIdentity(t *testing.T, fixture OIDCFixture) {
