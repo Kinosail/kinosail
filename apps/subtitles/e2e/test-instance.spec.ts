@@ -28,14 +28,3 @@ test("Viewer MFA enrollment gives account-neutral instructions @smoke", async ({
     await removeViewer(page, id);
   }
 });
-
-  expect(started.status()).toBe(201);
-  const pending = await started.json() as { code: string; secret: string };
-  await page.goto("/quick-connect");
-  await page.getByLabel("Code").fill(pending.code);
-  await page.getByRole("button", { name: "Authorize device" }).click();
-  await expect(page).toHaveURL("/");
-  const completed = await request.post("/api/v1/quick-connect/token", { data: { secret: pending.secret } });
-  expect(completed.status()).toBe(201);
-  expect((await completed.json()).token).toEqual(expect.any(String));
-});

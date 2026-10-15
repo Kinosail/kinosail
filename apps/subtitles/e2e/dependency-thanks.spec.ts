@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { login } from "./layout-audit-helpers";
+import { login } from "./subtitle-dashboard-helpers";
 
 test("Owner can read dependency thanks and notices on phone and desktop", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated test instance");
