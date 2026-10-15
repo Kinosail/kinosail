@@ -18,7 +18,7 @@ const (
 )
 
 func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Request, file *os.File, duration float64, plan *copiedHLSPlan) {
-	playID := jellyfinPlaySessionID(request)
+	playID := hlsPlaySessionID(request)
 	manifest, err := io.ReadAll(io.LimitReader(file, maxHLSPlaylistBytes+1))
 	if err != nil {
 		localizedNotFound(writer, request)
@@ -50,6 +50,10 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	writer.Header().Set("X-Content-Type-Options", "nosniff")
 	//nolint:gosec // G705: every URI is a fixed relative HLS filename and the optional session is URL-escaped.
 	_, _ = writer.Write(rewritten)
+}
+
+func hlsPlaySessionID(request *http.Request) string {
+	return request.URL.Query().Get("playSessionId")
 }
 
 func hlsPlaylistWithSession(manifest []byte, playID string) ([]byte, error) {

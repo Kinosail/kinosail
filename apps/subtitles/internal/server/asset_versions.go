@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
-	"github.com/MikeO7/kinosail/packages/quickconnect"
 )
 
 var assetVersions = contentVersions(map[string][]byte{
@@ -47,11 +46,6 @@ func versionAssetReferenceBytes(page []byte) []byte {
 
 func versionedTemplateSource(source string) string {
 	return versionAssetReferences(httpguardTemplateSource(source))
-}
-
-func quickConnectPage(page quickconnect.Page) quickconnect.Page {
-	page.ThemeScript, page.Stylesheet = assetURL("theme.js"), assetURL("app.css")
-	return page
 }
 
 func bulkMetadataPage(page sharedmetadata.BulkPage) sharedmetadata.BulkPage {

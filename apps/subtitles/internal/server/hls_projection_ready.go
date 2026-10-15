@@ -23,7 +23,7 @@ func (manager *hlsManager) waitForHLSProjection(request *http.Request, root *os.
 	if !active || invalidHLSProjectionDuration(duration) {
 		return nil
 	}
-	if playID := jellyfinPlaySessionID(request); playID != "" && !validPlaybackSession(playID) {
+	if playID := hlsPlaySessionID(request); playID != "" && !validPlaybackSession(playID) {
 		return nil
 	}
 	ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)

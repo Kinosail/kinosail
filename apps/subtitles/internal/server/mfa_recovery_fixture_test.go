@@ -9,10 +9,10 @@ import (
 
 func newMFARecoveryServer(t *testing.T, data string) http.Handler {
 	t.Helper()
-	return newJellyfinServer(t, server.Config{DataDir: data, RequireAuth: true})
+	return newTrustedServer(t, server.Config{DataDir: data, RequireAuth: true})
 }
 
 func restartMFARecoveryServer(t *testing.T, data string) http.Handler {
 	t.Helper()
-	return server.New(trustedJellyfinConfig(t, server.Config{DataDir: data, RequireAuth: true}))
+	return server.New(trustedHTTPSConfig(t, server.Config{DataDir: data, RequireAuth: true}))
 }

@@ -3,9 +3,7 @@ package server
 import (
 	"errors"
 	"log/slog"
-	"net"
 	"net/http"
-	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -115,18 +113,6 @@ func trustedHTTPSStatus(manager *trustedhttps.Manager) trustedhttps.Status {
 		return trustedhttps.Status{State: "disabled"}
 	}
 	return manager.Status()
-}
-
-func trustedConnectionURL(current, hostname string) string {
-	parsed, err := url.Parse(current)
-	if err != nil || hostname == "" {
-		return current
-	}
-	host := hostname
-	if port := parsed.Port(); port != "" {
-		host = net.JoinHostPort(hostname, port)
-	}
-	return (&url.URL{Scheme: "https", Host: host}).String()
 }
 
 func apiTrustedHTTPS(settings *settingsStore) http.HandlerFunc {

@@ -69,33 +69,6 @@ func TestExplicitCredentialsTakePrecedenceOverAnotherProfilesCookie(t *testing.T
 	}
 }
 
-func TestQueryCredentialsCannotAuthorizeJellyfinRequests(t *testing.T) {
-	t.Parallel()
-	handler := newJellyfinServer(t, server.Config{RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	paths := []string{
-		"/Sessions/Logout", "/Sessions/Capabilities", "/Items/missing/PlaybackInfo",
-		"/UserFavoriteItems/missing", "/Users/missing/PlayedItems/missing", "/QuickConnect/Authorize",
-	}
-	for _, path := range paths {
-		t.Run(path, func(t *testing.T) {
-			request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path+"?api_key="+owner.Value, strings.NewReader("{}"))
-			request.Header.Set("Content-Type", "application/json")
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, request)
-			if response.Code != http.StatusUnauthorized {
-				t.Fatalf("query credential authorized mutation = %d %q", response.Code, response.Body.String())
-			}
-		})
-	}
-	read := httptest.NewRequestWithContext(t.Context(), http.MethodHead, "/Users/Me?api_key="+owner.Value, nil)
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, read)
-	if response.Code != http.StatusUnauthorized {
-		t.Fatalf("Jellyfin query credential authorized HEAD = %d %q", response.Code, response.Body.String())
-	}
-}
-
 func TestPasswordLoginRotatesAnUntrustedBrowserSession(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
@@ -148,24 +121,21 @@ func TestPasswordResetImmediatelyRevokesActiveSessions(t *testing.T) {
 	}
 }
 
-func TestCredentialRateLimitSpansWebAPIAndJellyfin(t *testing.T) {
+func TestCredentialRateLimitSpansWebAndAPI(t *testing.T) {
 	t.Parallel()
-	handler := newJellyfinServer(t, server.Config{RequireAuth: true})
+	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	addTestViewer(t, handler, owner)
 	var last *httptest.ResponseRecorder
 	for attempt := range 11 {
 		var request *http.Request
-		switch attempt % 3 {
+		switch attempt % 2 {
 		case 0:
 			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Sam&password=wrong-password"))
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		case 1:
+		default:
 			body, _ := json.Marshal(map[string]string{"name": "Sam", "password": "wrong-password"})
 			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/session", bytes.NewReader(body))
-			request.Header.Set("Content-Type", "application/json")
-		default:
-			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/Users/AuthenticateByName", strings.NewReader(`{"Username":"Sam","Pw":"wrong-password"}`))
 			request.Header.Set("Content-Type", "application/json")
 		}
 		request.RemoteAddr = "192.0.2.80:1234"

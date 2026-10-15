@@ -12,6 +12,7 @@ type APIParityFixture struct {
 	Server    func(*testing.T) (http.Handler, string)
 	Bootstrap func(*testing.T) http.Handler
 	TOTP      func(*testing.T, string, time.Time) string
+	NoRooms   bool
 }
 
 func APIParityContract(t *testing.T, fixture APIParityFixture) {
@@ -181,12 +182,14 @@ func playbackCollaborationAndOperationsAreAvailableThroughAPI(t *testing.T, fixt
 
 	playback := APICall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
 	AssertAPIBody(t, playback, http.StatusOK, `"direct":"/media/`, `"compatible":"/hls/`, `"trickplay":"/trickplay/`)
-	created := APICall(t, handler, token, http.MethodPost, "/api/v1/watch-rooms", map[string]any{"media": id, "seconds": 12})
-	var room struct {
-		ID string `json:"id"`
+	if !fixture.NoRooms {
+		created := APICall(t, handler, token, http.MethodPost, "/api/v1/watch-rooms", map[string]any{"media": id, "seconds": 12})
+		var room struct {
+			ID string `json:"id"`
+		}
+		MustJSON(t, created, &room)
+		AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/watch-rooms/"+room.ID, nil), http.StatusOK, `"seconds":12`, `"leader":true`)
 	}
-	MustJSON(t, created, &room)
-	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/watch-rooms/"+room.ID, nil), http.StatusOK, `"seconds":12`, `"leader":true`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodPut, "/api/v1/items/"+id+"/metadata", map[string]any{"title": "API title"}), http.StatusOK, `"title":"API title"`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/remote-access", nil), http.StatusOK, `"directOnly":true`)
 	AssertAPIBody(t, APICall(t, handler, token, http.MethodGet, "/api/v1/shows", nil), http.StatusOK, `"shows"`)

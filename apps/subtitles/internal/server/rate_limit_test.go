@@ -10,8 +10,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"github.com/MikeO7/kinosail/packages/quickconnect"
 )
 
 var routeLoginIP atomic.Uint32
@@ -30,39 +28,6 @@ func TestCredentialLoginSuccessResetsItsAccountLimit(t *testing.T) {
 	auth.credentialLoginSucceeded("Owner")
 	if !auth.allowCredentialLogin("192.0.2.21:1234", "Owner") {
 		t.Fatal("successful login did not reset its account limit")
-	}
-}
-
-func TestQuickConnectBoundsPendingRequests(t *testing.T) {
-	t.Parallel()
-	broker := newQuickConnect(time.Minute)
-	for range 1024 {
-		if _, _, err := broker.connections.Create(quickconnect.Request{}); err != nil {
-			t.Fatal(err)
-		}
-	}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/quick-connect", nil)
-	response := httptest.NewRecorder()
-	broker.start(response, request)
-	if response.Code != http.StatusTooManyRequests {
-		t.Fatalf("pending Quick Connect = %d", response.Code)
-	}
-}
-
-func TestQuickConnectPollingIsIndependentlyRateLimited(t *testing.T) {
-	t.Parallel()
-	broker := newQuickConnect(time.Minute)
-	handler := broker.poll(newProfileStore(t.TempDir()))
-	var response *httptest.ResponseRecorder
-	for range 121 {
-		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/quick-connect/token", strings.NewReader("secret=unknown"))
-		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		request.RemoteAddr = "203.0.113.44:1234"
-		response = httptest.NewRecorder()
-		handler.ServeHTTP(response, request)
-	}
-	if response.Code != http.StatusTooManyRequests || response.Header().Get("Retry-After") != "60" {
-		t.Fatalf("poll limit = %d headers=%v", response.Code, response.Header())
 	}
 }
 

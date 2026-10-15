@@ -42,7 +42,6 @@ func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) {
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"languages": []string{"pt-br", "pt-BR"}}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "en", "languages": []string{"es"}}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "invalid"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/settings/dlna", Body: map[string]any{"enabled": true}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/libraries", Body: map[string]any{"path": "../outside"}, Status: http.StatusBadRequest},
 		{Method: http.MethodDelete, Path: "/api/v1/libraries", Body: map[string]any{"path": "missing"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/profiles", Body: map[string]any{"name": "", "password": "short"}, Status: http.StatusBadRequest},

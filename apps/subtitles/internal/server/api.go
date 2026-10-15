@@ -26,7 +26,6 @@ type apiServices struct {
 	probe         *mediaProbe
 	metadata      *metadataStore
 	subtitles     *subtitleProvider
-	rooms         *watchRoomAdapter
 	backups       *backupManager
 	downloads     *downloadManager
 	maintenance   *maintenanceManager
@@ -34,8 +33,6 @@ type apiServices struct {
 	connections   *mcpConnections
 	internet      *remoteaccess.Manager
 	trusted       *trustedhttps.Manager
-	shares        *mediaShareStore
-	quick         *quickConnectBroker
 	supporter     *supporterProgram
 	updates       *updateChecker
 	homeAssistant *homeAssistantIntegration

@@ -49,7 +49,7 @@ func TestEveryProtectedRouteEnforcesBrowserSessionRolesAndRevocation(t *testing.
 			}
 		})
 		switch pattern {
-		case "DELETE /api/v1/session", "POST /logout", "POST /Sessions/Logout":
+		case "DELETE /api/v1/session", "POST /logout":
 			owner = loginRouteCookie(t, handler, "Owner", "owner-password")
 			viewer = loginRouteCookie(t, handler, "Viewer", "viewer-password")
 		case "DELETE /api/v1/sessions", "POST /settings/sessions/revoke":

@@ -12,6 +12,7 @@ type NavigationFixture struct {
 	AddViewer                                 func(*testing.T, http.Handler, *http.Cookie, string, string) *http.Cookie
 	CheckSupporterTarget, CheckSupporterOrder bool
 	LibraryLink, RequiredCSS, ForbiddenCSS    string
+	NoQuickConnectOrShares                    bool
 }
 
 func MainNavigationMarkup(page string) string {

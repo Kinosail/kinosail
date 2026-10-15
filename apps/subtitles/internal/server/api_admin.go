@@ -86,8 +86,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 		api.index.SetFrequency(input.Frequency)
 		return nil
 	}))
-	owner("PUT /api/v1/settings/dlna", apiSetting(func(input apiSettingInput) error { return api.settings.setDLNA(input.Enabled) }))
-	owner("PUT /api/v1/settings/jellyfin", apiSetting(func(input apiSettingInput) error { return api.settings.setJellyfinCompatibility(input.Enabled) }))
 	owner("PUT /api/v1/settings/home-assistant", api.homeAssistant.SettingHandler())
 	owner("PUT /api/v1/settings/trusted-https", apiTrustedHTTPS(api.settings))
 	owner("DELETE /api/v1/settings/trusted-https", apiDisableTrustedHTTPS(api.settings))
@@ -116,11 +114,8 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 		writeJSON(writer, api.backups.Status(), http.StatusOK)
 	}))
 	owner("POST /api/v1/backups/verify", apiBackupVerify(api.backups))
-	owner("POST /api/v1/media-shares", http.HandlerFunc(api.shares.CreateHTTP))
-	owner("GET /api/v1/media-shares", http.HandlerFunc(api.shares.ListHTTP))
-	owner("DELETE /api/v1/media-shares/{id}", http.HandlerFunc(api.shares.RevokeHTTP))
 	owner("GET /api/v1/diagnostics", diagnostics(api.settings, api.index, api.auth.profiles, api.hls, api.auth.audit))
-	owner("GET /api/v1/metrics", metrics(api.index, api.auth.profiles, api.hls, api.auth.audit, api.imports, api.events, api.rooms))
+	owner("GET /api/v1/metrics", metrics(api.index, api.auth.profiles, api.hls, api.auth.audit, api.imports, api.events))
 	owner("GET /api/v1/maintenance", api.maintenance.StatusHandler())
 }
 
@@ -152,7 +147,7 @@ type apiSettingInput struct {
 }
 
 func apiSetting(save func(apiSettingInput) error) http.HandlerFunc {
-	return apihttp.Save(save, errManagedSetting, errJellyfinTrustedHTTPSRequired)
+	return apihttp.Save(save, errManagedSetting)
 }
 
 func apiLibrarySetting(settings *settingsStore, index *libraryIndex, change func(string) error) http.HandlerFunc {

@@ -9,8 +9,7 @@ import (
 func TestRemoteSecurityMutationsHaveStableAuditActions(t *testing.T) {
 	t.Parallel()
 	for name, test := range map[string]struct{ method, path, action string }{
-		"share claim": {http.MethodPost, "/api/v1/media-shares/claim", "media-share.claimed"},
-		"web kill":    {http.MethodPost, "/settings/remote/kill", "remote-access.killed"},
+		"web kill": {http.MethodPost, "/settings/remote/kill", "remote-access.killed"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			request := httptest.NewRequestWithContext(t.Context(), test.method, test.path, nil)

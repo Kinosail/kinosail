@@ -163,14 +163,14 @@ func TestSubtitleLanguagesMigrateLegacySettingAndSurviveRestart(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(dataDir, "settings.json"), []byte(`{"name":"Kinosail","libraries":["."],"subtitleLanguage":"es"}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	store := newSettingsStore("", dataDir, "", nil)
+	store := newSettingsStore("", dataDir, nil)
 	if store.err != nil || !slices.Equal(store.subtitleLanguages(), []string{"es"}) {
 		t.Fatalf("legacy setting: err=%v languages=%q", store.err, store.subtitleLanguages())
 	}
 	if err := store.setSubtitleLanguages([]string{"fr", "pt-BR", "zh-Hant"}); err != nil {
 		t.Fatal(err)
 	}
-	reloaded := newSettingsStore("", dataDir, "", nil)
+	reloaded := newSettingsStore("", dataDir, nil)
 	if reloaded.err != nil || !slices.Equal(reloaded.subtitleLanguages(), []string{"fr", "pt-BR", "zh-Hant"}) {
 		t.Fatalf("reloaded setting: err=%v languages=%q", reloaded.err, reloaded.subtitleLanguages())
 	}
@@ -253,7 +253,7 @@ printf '%s' '{"streams":[{"index":0,"codec_type":"subtitle","codec_name":"subrip
 	probe := newMediaProbe(executable)
 	probe.ffmpeg = "ffmpeg"
 	index := memoryLibraryIndex([]library.Item{item}, true)
-	settings := newSettingsStore("", "", "", nil)
+	settings := newSettingsStore("", "", nil)
 	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), t.TempDir(), index, settings, "")
 	manager := newSubtitleManager(index, settings, provider, probe)
 	if language, found := manager.searchableSubtitleLanguage(t.Context(), item, []string{"aa"}); found {

@@ -37,7 +37,7 @@ func newHomeAssistant(settings *settingsStore, profiles *profileStore, index *li
 			return homeAssistantProfile(currentViewer(request))
 		},
 		Server: func() homeassistant.Server {
-			return homeassistant.Server{Name: settings.serverName(), ID: settings.jellyfinID()}
+			return homeassistant.Server{Name: settings.serverName(), ID: settings.serverID()}
 		},
 		TrustedHTTPS: func() homeassistant.TrustedHTTPS {
 			trusted := settings.trustedHTTPS()

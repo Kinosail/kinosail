@@ -188,7 +188,7 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 	if err := os.WriteFile(target, data, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	settings := newSettingsStore(directory, t.TempDir(), "", nil)
+	settings := newSettingsStore(directory, t.TempDir(), nil)
 	settings.value.SubtitlePreference = "sdh"
 	provider := &subtitleProvider{ledger: newSubtitleLedger(t.TempDir())}
 	manager := &subtitleManager{settings: settings, provider: provider}

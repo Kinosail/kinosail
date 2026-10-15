@@ -148,7 +148,7 @@ func TestSubtitleAutomationCursorContinuesAfterFailedLanguage(t *testing.T) {
 		t.Fatal(err)
 	}
 	index := sidecarTestIndex(item)
-	settings := newSettingsStore(media, t.TempDir(), "", nil)
+	settings := newSettingsStore(media, t.TempDir(), nil)
 	settings.value.SubtitleLanguage, settings.value.SubtitleLanguages = "en", []string{"en", "es"}
 	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), t.TempDir(), index, settings, "")
 	if attempted, connected := provider.testCredentials(t.Context()); attempted != 1 || connected != 1 {

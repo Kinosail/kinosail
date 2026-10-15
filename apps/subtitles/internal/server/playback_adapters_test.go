@@ -12,63 +12,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestWebAPIAndJellyfinUseCapabilityDrivenPlaybackPlan(t *testing.T) {
-	t.Parallel()
-	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
-	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	ffprobe := filepath.Join(tools, "ffprobe")
-	writeExecutable(t, ffprobe, `#!/bin/sh
-printf '%s' '{"streams":[{"index":0,"codec_type":"video","codec_name":"hevc","profile":"Main 10","pix_fmt":"yuv420p10le","width":3840,"height":2160},{"index":1,"codec_type":"audio","codec_name":"eac3","channels":6,"disposition":{"default":1},"tags":{"language":"eng"}}],"format":{"format_name":"matroska,webm","bit_rate":"18000000"}}'
-`)
-	ffmpeg := filepath.Join(tools, "ffmpeg")
-	writeExecutable(t, ffmpeg, "#!/bin/sh\n"+fakePlayableHLS())
-	handler := newJellyfinServer(t, server.Config{MediaDir: media, DataDir: data, CacheDir: cache, FFprobe: ffprobe, FFmpeg: ffmpeg, RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	token, _ := jellyfinLogin(t, handler, owner)
-	items := jellyfinCall(t, handler, http.MethodGet, "/Items", "", token)
-	var catalog jellyfinItems
-	decodeJellyfin(t, items, &catalog)
-	id := catalog.Items[0].ID
-
-	assertCapabilityPlaybackWebAndAPI(t, handler, id, token, owner)
-
-	direct := jellyfinCall(t, handler, http.MethodPost, "/Items/"+id+"/PlaybackInfo", `{"DeviceProfile":{"DirectPlayProfiles":[{"Type":"Video","Container":"mkv","VideoCodec":"hevc","AudioCodec":"eac3"}]}}`, token)
-	if direct.Code != http.StatusOK || !strings.Contains(direct.Body.String(), `"SupportsDirectPlay":true`) || strings.Contains(direct.Body.String(), `"SupportsTranscoding":true`) {
-		t.Fatalf("direct profile = %d %q", direct.Code, direct.Body.String())
-	}
-	transcode := jellyfinCall(t, handler, http.MethodPost, "/Items/"+id+"/PlaybackInfo", `{"DeviceProfile":{"DirectPlayProfiles":[{"Type":"Video","Container":"mp4","VideoCodec":"h264","AudioCodec":"aac"}],"TranscodingProfiles":[{"Type":"Video","Container":"mp4","VideoCodec":"h264","AudioCodec":"aac","Protocol":"hls"}]}}`, token)
-	if transcode.Code != http.StatusOK || strings.Contains(transcode.Body.String(), `"SupportsDirectPlay":true`) || !strings.Contains(transcode.Body.String(), `"SupportsTranscoding":true`) || !strings.Contains(transcode.Body.String(), `"TranscodingUrl":"/Videos/`) {
-		t.Fatalf("transcode profile = %d %q", transcode.Code, transcode.Body.String())
-	}
-	var delivery struct {
-		MediaSources []struct {
-			TranscodingURL string `json:"TranscodingUrl"`
-		} `json:"MediaSources"`
-	}
-	decodeJellyfin(t, transcode, &delivery)
-	compatible := httptest.NewRecorder()
-	handler.ServeHTTP(compatible, httptest.NewRequestWithContext(t.Context(), http.MethodGet, delivery.MediaSources[0].TranscodingURL, nil))
-	if compatible.Code != http.StatusOK || !strings.Contains(compatible.Body.String(), "#EXTM3U") || !strings.Contains(compatible.Body.String(), "540p/index.m3u8?playSessionId=") {
-		t.Fatalf("transcode delivery = %d %q", compatible.Code, compatible.Body.String())
-	}
-	variantURL := strings.Replace(delivery.MediaSources[0].TranscodingURL, "/index.m3u8", "/540p/index.m3u8", 1)
-	noCapabilityVariant := jellyfinCall(t, handler, http.MethodGet, strings.Split(variantURL, "?")[0], "", "")
-	if noCapabilityVariant.Code != http.StatusUnauthorized {
-		t.Fatalf("transcode variant without capability = %d %q", noCapabilityVariant.Code, noCapabilityVariant.Body.String())
-	}
-	variant := jellyfinCall(t, handler, http.MethodGet, variantURL, "", "")
-	if variant.Code != http.StatusOK || !strings.Contains(variant.Body.String(), "#EXTINF") || !strings.Contains(variant.Body.String(), "segment-00000.m4s?playSessionId=") || !strings.Contains(variant.Body.String(), `URI="init.mp4?playSessionId=`) {
-		t.Fatalf("transcode variant = %d %q", variant.Code, variant.Body.String())
-	}
-	segment := jellyfinCall(t, handler, http.MethodGet, strings.Replace(variantURL, "/index.m3u8", "/segment-00000.m4s", 1), "", "")
-	if segment.Code != http.StatusOK || segment.Body.String() != "segment" {
-		t.Fatalf("transcode segment = %d %q", segment.Code, segment.Body.String())
-	}
-	assertRejectedJellyfinTranscodeChildren(t, handler, id, token, cache)
-}
-
 func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) {
 	t.Parallel()
 	media, data, tools := t.TempDir(), t.TempDir(), t.TempDir()
@@ -77,8 +20,8 @@ func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) {
 	}
 	ffprobe := filepath.Join(tools, "ffprobe")
 	writeExecutable(t, ffprobe, "#!/bin/sh\nprintf '%s' '{\"streams\":[{\"codec_type\":\"video\",\"codec_name\":\"h264\",\"profile\":\"High\",\"level\":40,\"width\":1920,\"height\":1080},{\"codec_type\":\"audio\",\"codec_name\":\"aac\",\"profile\":\"LC\"}],\"format\":{\"format_name\":\"mp4\"}}'\n")
-	handler := server.New(server.Config{MediaDir: media, DataDir: data, FFprobe: ffprobe, ProxyToken: "proxy-capability", RequireAuth: true})
-	public, token := trustedProxyPublicViewer(t, handler)
+	handler := server.New(server.Config{MediaDir: media, DataDir: data, FFprobe: ffprobe, RequireAuth: true})
+	token := localPlaybackViewer(t, handler)
 	homeRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	homeRequest.Header.Set("Authorization", "Bearer "+token)
 	home := serveRequest(handler, homeRequest)
@@ -96,18 +39,20 @@ func TestAutomaticPlaybackStartsDirectWithAdaptiveFallback(t *testing.T) {
 		t.Fatalf("local playback = %d %q", local.Code, local.Body.String())
 	}
 
-	remoteRequest := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil)
-	remoteRequest.Header.Set("Authorization", "Bearer "+token)
-	remote := httptest.NewRecorder()
-	public.ServeHTTP(remote, remoteRequest)
-	if remote.Code != http.StatusOK || !strings.Contains(remote.Body.String(), `src="/media/`+id+`?playbackSession=`) || !strings.Contains(remote.Body.String(), `data-adaptive="/hls/`) || strings.Contains(remote.Body.String(), `data-hls=`) || strings.Contains(remote.Body.String(), `/static/hls.min.js`) {
-		t.Fatalf("remote playback = %d %q", remote.Code, remote.Body.String())
+	api := apiCall(t, handler, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
+	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"mode":"direct"`) || !strings.Contains(api.Body.String(), `"compatible":"/hls/`) {
+		t.Fatalf("API playback = %d %q", api.Code, api.Body.String())
 	}
+}
 
-	api := apiCall(t, public, token, http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
-	if api.Code != http.StatusOK || !strings.Contains(api.Body.String(), `"mode":"direct"`) || !strings.Contains(api.Body.String(), `"compatible":"/hls/`) || !strings.Contains(api.Body.String(), `/p/r-`) {
-		t.Fatalf("remote API playback = %d %q", api.Code, api.Body.String())
+func localPlaybackViewer(t *testing.T, handler http.Handler) string {
+	t.Helper()
+	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
+	create := requestWithCookieRequest(t, http.MethodPost, "/settings/profiles", "name=Viewer&password=viewer-password&rating=all&libraries=all&transcode=true", owner)
+	if response := serveRequest(handler, create); response.Code != http.StatusSeeOther {
+		t.Fatalf("create Viewer = %d %q", response.Code, response.Body.String())
 	}
+	return signInTestProfile(t, handler, "/login", "name=Viewer&password=viewer-password").Value
 }
 
 func TestExplicitPlaybackModesBypassAutomaticFallbackAcrossAPIAndWeb(t *testing.T) {

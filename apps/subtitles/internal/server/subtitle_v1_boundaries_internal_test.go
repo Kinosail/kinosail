@@ -117,7 +117,7 @@ func TestSubtitleProviderHealthAuthenticationDateAndPersistenceBoundaries(t *tes
 func TestSubtitleAutomationStopsDuringCircuitDelay(t *testing.T) {
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
-	settings := newSettingsStore(media, data, "", nil)
+	settings := newSettingsStore(media, data, nil)
 	index := newLibraryIndex(t.Context(), settings.roots(), t.TempDir(), time.Hour, nil)
 	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), data, index, settings, "")
 	manager := newSubtitleManager(index, settings, provider, nil)
@@ -145,7 +145,7 @@ func TestSubtitleAutomationStopsDuringCircuitDelay(t *testing.T) {
 func TestSubtitleOperationsRejectMissingItemsAndEmptyLibraries(t *testing.T) {
 	t.Parallel()
 	media, data := t.TempDir(), t.TempDir()
-	settings := newSettingsStore(media, data, "", nil)
+	settings := newSettingsStore(media, data, nil)
 	index := newLibraryIndex(t.Context(), settings.roots(), t.TempDir(), time.Hour, nil)
 	provider := newSubtitleProvider(SubtitleConfig{}, t.TempDir(), data, index, settings, "")
 	manager := newSubtitleManager(index, settings, provider, nil)
@@ -233,7 +233,7 @@ func TestSubtitleOperationsReportProviderAndRecoveryFailures(t *testing.T) {
 	if err := os.WriteFile(video, []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	settings := newSettingsStore(media, data, "", nil)
+	settings := newSettingsStore(media, data, nil)
 	index := newLibraryIndex(t.Context(), settings.roots(), t.TempDir(), time.Hour, nil)
 	if err := index.Refresh(t.Context()); err != nil {
 		t.Fatal(err)

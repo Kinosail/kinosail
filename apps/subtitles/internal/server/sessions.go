@@ -57,10 +57,6 @@ func (store *profileStore) createSessionKind(id, name string, browser, strong bo
 	return store.sessionModule().CreateLocal(id, name, browser, strong)
 }
 
-func (store *profileStore) createCompatibilitySession(id, name string) (string, error) {
-	return store.sessionModule().CreateCompatibility(id, name)
-}
-
 func (store *profileStore) createSession(id, name string) (string, error) {
 	return store.createSessionKind(id, name, false, false)
 }

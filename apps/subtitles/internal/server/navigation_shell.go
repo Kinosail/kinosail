@@ -74,7 +74,7 @@ func withApplicationShell(settings *settingsStore, updates *updateChecker, patte
 
 func applicationShellRoute(pattern string) bool {
 	switch pattern {
-	case "GET /account", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}", "GET /metadata/bulk", "GET /offline-downloads", "GET /playlist/{name}", "GET /quick-connect", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/media-shares", "GET /settings/remote-readiness", "GET /settings/management", "GET /settings/system", "GET /show/{id}", "GET /supporter":
+	case "GET /account", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}", "GET /metadata/bulk", "GET /offline-downloads", "GET /playlist/{name}", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/remote-readiness", "GET /settings/management", "GET /settings/system", "GET /show/{id}", "GET /supporter":
 		return true
 	}
 	return false

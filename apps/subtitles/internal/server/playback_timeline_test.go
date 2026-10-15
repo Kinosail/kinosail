@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
@@ -40,16 +39,6 @@ func TestWebPlaybackStartsAfterATrustedOpeningWithoutTranscoding(t *testing.T) {
 
 func TestAutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline(t *testing.T) {
 	webPlaybackTimeline.AutomaticPlaybackKeepsSkipMarkersOnTheDirectTimeline(t)
-}
-
-func TestJellyfinOnlyExposesAutoEligibleMarkers(t *testing.T) {
-	segments := markerlogic.JellyfinSegments("episode", []playbackMarker{
-		{Type: "intro", Start: 10, End: 20, Source: "fingerprint"},
-		{Type: "credits", Start: 80, End: 100, Source: "visual"},
-	})
-	if len(segments) != 1 || segments[0].Type != "Intro" || segments[0].ItemID != "episode" {
-		t.Fatalf("Jellyfin segments = %#v", segments)
-	}
 }
 
 func TestAutomaticSkipFallbackPreservesNoTranscodePolicy(t *testing.T) {

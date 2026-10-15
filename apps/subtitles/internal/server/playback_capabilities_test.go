@@ -8,7 +8,7 @@ import (
 )
 
 func TestRequestedPlaybackCapabilitiesPreserveValidatedDisplayHints(t *testing.T) {
-	settings := newSettingsStore(t.TempDir(), "", "", nil)
+	settings := newSettingsStore(t.TempDir(), "", nil)
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/items/item/playback?hdrFormats=sdr,hdr10&maxAudioChannels=6&videoCodecs=h264&audioCodecs=aac", nil)
 	client, err := requestedPlaybackCapabilities(request, settings)
 	if err != nil {

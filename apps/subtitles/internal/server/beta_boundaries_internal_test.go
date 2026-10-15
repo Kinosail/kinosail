@@ -6,8 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/MikeO7/kinosail/packages/dlna"
-	"github.com/MikeO7/kinosail/packages/library"
 	sharedpasskeys "github.com/MikeO7/kinosail/packages/passkeys"
 	"github.com/go-webauthn/webauthn/webauthn"
 )
@@ -33,18 +31,5 @@ func TestStrongPublicSessionCookieAndPasskeyInventoryShape(t *testing.T) {
 	credentials := sharedpasskeys.CloneAll(profile.Passkeys)
 	if len(credentials) != 1 || !strings.EqualFold(string(credentials[0].ID), "credential") {
 		t.Fatalf("WebAuthn credentials = %#v", credentials)
-	}
-}
-
-func TestDLNADiscoveryBoundaries(t *testing.T) {
-	t.Parallel()
-	response := dlna.SSDPResponse("http://media.test/", "token")
-	if !strings.Contains(response, "LOCATION: http://media.test/dlna/token/device.xml") || !strings.Contains(response, "ST: urn:schemas-upnp-org:device:MediaServer:1") || strings.Contains(response, "token?") {
-		t.Fatalf("SSDP response = %q", response)
-	}
-	for kind, want := range map[string]string{"audio": "object.item.audioItem.musicTrack", "photo": "object.item.imageItem.photo", "video": "object.item.videoItem.movie"} {
-		if got := dlna.Class(library.Item{Kind: kind}); got != want {
-			t.Fatalf("dlnaClass(%q) = %q, want %q", kind, got, want)
-		}
 	}
 }

@@ -23,7 +23,6 @@ type settingsStore struct {
 	profiles         *profileStore
 	mu               sync.RWMutex
 	file, mediaRoot  string
-	dlnaURL          string
 	ffmpeg           string
 	value            installationSettings
 	config           configuration.Snapshot
@@ -43,27 +42,38 @@ func (store *settingsStore) changeInstallationSettings(change func(*installation
 	return settingsops.Persist(&store.mu, func() installationSettings { return store.value }, change, store.save, func(value installationSettings) { store.value = value })
 }
 
-func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Store, configured ...configuration.Snapshot) *settingsStore {
-	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, SubtitlePickerLimited: true, PickerKeepForced: true, Navigation: sharednavigation.Default()}, persist: statePersistence(stateDB)}
+func newSettingsStore(mediaRoot, dataDir string, stateDB *database.Store, configured ...configuration.Snapshot) *settingsStore {
+	store := &settingsStore{mediaRoot: mediaRoot, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, SubtitlePickerLimited: true, PickerKeepForced: true, Navigation: sharednavigation.Default()}, persist: statePersistence(stateDB)}
 	if len(configured) > 0 {
 		store.config = configured[0]
 	}
 	store.startupConfig = store.config.Clone()
 	if dataDir == "" {
-		if err := store.ensureJellyfinID(); err != nil {
+		if err := store.ensureServerID(); err != nil {
 			store.err = err
 			return store
 		}
 		store.applyConfiguration()
-		store.err = store.applyDLNAConfiguration()
 		return store
 	}
 	store.file = filepath.Join(dataDir, "settings.json")
+	if err := store.loadSaved(stateDB); err != nil {
+		store.err = err
+		return store
+	}
+	if err := store.ensureServerID(); err != nil {
+		store.err = err
+		return store
+	}
+	store.applyConfiguration()
+	return store
+}
+
+func (store *settingsStore) loadSaved(stateDB *database.Store) error {
 	saved := installationSettings{RequireMFA: true, UpdateChecks: true}
 	found, err := loadState(stateDB, store.file, &saved)
 	if err != nil {
-		store.err = err
-		return store
+		return err
 	}
 	if found && saved.Libraries != nil {
 		if saved.Name == "" {
@@ -72,19 +82,12 @@ func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Stor
 		store.value = saved
 	}
 	if (store.value.PublicSessionInactiveHours != 0 || store.value.PublicSessionAbsoluteHours != 0) && !validSessionTimeouts(store.value.PublicSessionInactiveHours, store.value.PublicSessionAbsoluteHours) {
-		store.err = errSessionTimeoutsInvalid
-		return store
+		return errSessionTimeoutsInvalid
 	}
 	if sharednavigation.Validate(store.value.Navigation) != nil {
 		store.value.Navigation = sharednavigation.Default()
 	}
-	if err := store.ensureJellyfinID(); err != nil {
-		store.err = err
-		return store
-	}
-	store.applyConfiguration()
-	store.err = store.applyDLNAConfiguration()
-	return store
+	return nil
 }
 
 func (store *settingsStore) applyConfiguration() {
@@ -131,9 +134,6 @@ func (store *settingsStore) applyConfiguration() {
 			settings.SubtitleLanguage = canonical
 			settings.SubtitleLanguages = []string{canonical}
 		}
-	}
-	if configured("integrations.jellyfin.enabled") {
-		settings.JellyfinCompatibility = store.config.Bool("integrations.jellyfin.enabled")
 	}
 	if configured("integrations.home_assistant.enabled") {
 		settings.HomeAssistant = store.config.Bool("integrations.home_assistant.enabled")
@@ -244,7 +244,7 @@ func (store *settingsStore) setRequireMFA(required bool) error {
 	return nil
 }
 
-func (store *settingsStore) jellyfinID() string {
+func (store *settingsStore) serverID() string {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
 	return store.value.JellyfinID
