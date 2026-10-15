@@ -34,4 +34,3 @@ async function openLogin(page: Page) {
   await expect(page.locator(".password-control").filter({has: password}).getByRole("button", {name: "Show secret", exact: true})).toBeVisible();
   await expect(page.getByRole("button", {name: "Sign in", exact: true})).toBeEnabled();
 }
-
