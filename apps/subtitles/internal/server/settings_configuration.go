@@ -12,7 +12,7 @@ import (
 
 const configurationHTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><script src="/static/theme.js"></script><link rel="stylesheet" href="/static/app.css"><title>Configuration · Kinosail Subtitles</title></head><body class="settings-page"><main class="settings-shell"><a class="back" href="/settings">{{icon "back"}} Settings</a><header class="settings-intro"><span class="eyebrow">Owner controls</span><h1>Advanced configuration</h1><p>Change settings normally managed by Docker, environment variables, or YAML. Provider and log detail changes take effect immediately. Other changes apply after a restart.</p></header>{{range .}}<section id="{{.Key}}"><h2>{{.Label}}</h2>{{if eq .Source "environment"}}<p>Set by your deployment environment.</p>{{else if eq .Source "yaml"}}<p>Set in your YAML configuration file.</p>{{else if eq .Source "gui"}}<p>Using a value saved here.</p>{{else}}<p>Using the Kinosail default.</p>{{end}}{{if .Secret}}<p>{{if .Configured}}A secret is configured. Its value is hidden.{{else}}No secret is configured.{{end}}</p>{{end}}{{if or (eq .Source "environment") (eq .Source "yaml")}}<p>To change this setting, update the external value and restart Kinosail Server.</p>{{else}}<form action="/settings/configuration" method="post"><input type="hidden" name="key" value="{{.Key}}"><label>{{if .Secret}}New secret{{else}}Value{{end}}<input aria-label="{{.Label}}" name="value" {{if .Secret}}type="password" autocomplete="off" placeholder="New secret"{{else}}value="{{.Value}}"{{end}} required></label><button>Save change</button><p>{{if .Live}}Changes take effect immediately.{{else}}Applies after a restart.{{end}}</p></form>{{if eq .Source "gui"}}<form action="/settings/configuration/reset" method="post"><button class="quiet" name="key" value="{{.Key}}">Use default</button></form>{{end}}{{end}}<details><summary>Technical details</summary><p>Configuration key: <code>{{.Key}}</code><br>Environment variable: <code>{{.Env}}</code></p></details></section>{{end}}</main></body></html>`
 
-var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+restartNoticeHTML+openSubtitlesConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML+scimConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
+var configurationView = newLocalizedTemplate("configuration", ignoreNonPasswordSecretAutofill(strings.NewReplacer("Set by your deployment environment.", `Configured via Docker: <code>{{.Env}}</code>.`, "</header>", "</header>"+restartNoticeHTML+openSubtitlesConfigurationHTML+oidcConfigurationHTML+samlConfigurationHTML, "{{range .}}", "{{range .Fields}}").Replace(configurationHTML)))
 
 type configurationField struct {
 	configuration.PublicValue
@@ -25,7 +25,6 @@ type configurationPage struct {
 	OpenSubtitles  openSubtitlesConfigurationView
 	OIDC           oidcConfigurationView
 	SAML           samlConfigurationView
-	SCIM           scimConfigurationView
 }
 
 const restartNoticeHTML = `{{if .RestartPending}}<section class="wide restart-notice" id="restart-required" role="status" aria-labelledby="restart-required-title"><h2 id="restart-required-title">Restart Kinosail Subtitles Server to apply saved changes</h2><p>These settings are saved but not active yet:</p><ul>{{range .RestartPending}}<li>{{.}}</li>{{end}}</ul><details><summary>How to restart</summary><p>Use the tool that runs this Server. For a release Docker Compose install, run <code>docker compose --file compose.release.yaml restart kinosail</code> in its installation directory. Include your usual override files. For another install method, restart its Server service.</p><p>Reopen Settings after the Server starts. This notice clears when the saved settings are active.</p></details></section>{{end}}`
@@ -79,8 +78,6 @@ var configurationLabels = map[string]string{ //nolint:gosec // These are display
 	"integrations.mcp.authorization_server": "MCP authorization server", "integrations.mcp.client_id": "MCP client ID", "integrations.mcp.client_secret": "MCP client secret", "integrations.mcp.introspection_url": "MCP token check address", "integrations.mcp.resource_url": "MCP resource address",
 	"integrations.oidc.client_id": "Single sign-on client ID", "integrations.oidc.client_secret": "Single sign-on client secret", "integrations.oidc.issuer": "Single sign-on issuer", "integrations.oidc.redirect_url": "Single sign-on return address",
 	"integrations.saml.metadata_url": "SAML provider metadata URL", "integrations.saml.metadata_xml": "SAML provider metadata XML",
-	"integrations.scim.token":             "SCIM provisioning token",
-	"integrations.scim.token_expires_at":  "SCIM provisioning token expiration",
 	"integrations.opensubtitles.api_key":  "OpenSubtitles API key",
 	"integrations.opensubtitles.password": "OpenSubtitles password",
 	"integrations.opensubtitles.url":      "OpenSubtitles address",
@@ -100,7 +97,7 @@ func (store *settingsStore) deploymentFields() []configurationField {
 	defer store.mu.RUnlock()
 	result := make([]configurationField, 0)
 	for _, field := range store.config.Fields() {
-		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && !strings.HasPrefix(field.Key, openSubtitlesConfigurationKey+".") && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, scimConfigurationKey+".") && !strings.HasPrefix(field.Key, subSourceConfigurationKey+".") {
+		if field.Restart && field.Key != "paths.data" && field.Key != "tls.duckdns" && !strings.HasPrefix(field.Key, openSubtitlesConfigurationKey+".") && !strings.HasPrefix(field.Key, oidcConfigurationKey+".") && !strings.HasPrefix(field.Key, samlConfigurationGroupKey+".") && !strings.HasPrefix(field.Key, subSourceConfigurationKey+".") {
 			view := configurationField{PublicValue: field, Label: configurationLabels[field.Key], Live: subtitleProviderSetting(field.Key) || field.Key == "logging.level"}
 			result = append(result, view)
 		}
@@ -109,12 +106,6 @@ func (store *settingsStore) deploymentFields() []configurationField {
 }
 
 func (store *settingsStore) changeConfiguration(key, value string, reset bool) error {
-	if key == "integrations.scim.token" || key == "integrations.scim.token_expires_at" {
-		if !reset {
-			return errors.New("SCIM token and expiration must be changed together")
-		}
-		return store.changeSCIMConfiguration("", "", true)
-	}
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	return store.changeConfigurationLocked(key, value, reset)
@@ -193,7 +184,7 @@ func subtitleProviderSetting(key string) bool {
 func showConfiguration(settings *settingsStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), RestartPending: settings.pendingRestart(), OpenSubtitles: settings.openSubtitlesConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request), SCIM: settings.scimConfiguration(request)}); err != nil {
+		if err := configurationView.Execute(writer, request, configurationPage{Fields: settings.deploymentFields(), RestartPending: settings.pendingRestart(), OpenSubtitles: settings.openSubtitlesConfiguration(), OIDC: settings.oidcConfiguration(), SAML: settings.samlConfiguration(request)}); err != nil {
 			localizedError(writer, request, err.Error(), http.StatusInternalServerError)
 		}
 	}
@@ -213,10 +204,6 @@ func saveConfiguration(settings *settingsStore, reset bool) http.HandlerFunc {
 			saveSAMLConfiguration(writer, request, settings)
 			return
 		}
-		if !reset && request.FormValue("key") == scimConfigurationKey {
-			saveSCIMConfiguration(writer, request, settings)
-			return
-		}
 		key, value, ok := configurationForm(request, reset)
 		if !ok {
 			localizedError(writer, request, "invalid configuration form", http.StatusBadRequest)
@@ -228,8 +215,6 @@ func saveConfiguration(settings *settingsStore, reset bool) http.HandlerFunc {
 			err = settings.changeOIDCConfiguration("", "", "", "", "", true)
 		case samlConfigurationGroupKey:
 			err = settings.changeSAMLConfiguration("", "", "", true)
-		case scimConfigurationKey:
-			err = settings.changeSCIMConfiguration("", "", true)
 		case openSubtitlesConfigurationKey:
 			err = settings.changeOpenSubtitlesConfiguration("", "", "", true)
 		default:

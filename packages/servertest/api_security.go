@@ -25,17 +25,15 @@ func APISecurityContract(t *testing.T, server func(*testing.T) (http.Handler, st
 				t.Fatalf("protected API route = %d %q", response.Code, response.Body.String())
 			}
 
-			profileName := "Rejected-" + strings.ReplaceAll(name, " ", "-")
-			response = APICall(t, handler, credential, http.MethodPost, "/api/v1/profiles", map[string]any{
-				"name": profileName, "password": "not-created", "rating": "all", "libraries": []string{"all"},
-			})
+			serverName := "Rejected-" + strings.ReplaceAll(name, " ", "-")
+			response = APICall(t, handler, credential, http.MethodPut, "/api/v1/settings/server", map[string]any{"name": serverName})
 			if response.Code != http.StatusUnauthorized {
 				t.Fatalf("protected API mutation = %d %q", response.Code, response.Body.String())
 			}
 
-			response = APICall(t, handler, token, http.MethodGet, "/api/v1/profiles", nil)
-			if response.Code != http.StatusOK || strings.Contains(response.Body.String(), profileName) {
-				t.Fatalf("rejected API mutation changed profiles = %d %q", response.Code, response.Body.String())
+			response = APICall(t, handler, token, http.MethodGet, "/api/v1/settings", nil)
+			if response.Code != http.StatusOK || strings.Contains(response.Body.String(), serverName) {
+				t.Fatalf("rejected API mutation changed settings = %d %q", response.Code, response.Body.String())
 			}
 		})
 	}

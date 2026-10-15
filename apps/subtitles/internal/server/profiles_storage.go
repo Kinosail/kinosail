@@ -8,10 +8,6 @@ func (store *profileStore) byID(id string) (viewerProfile, bool) {
 	return store.profileModule().ByID(id)
 }
 
-func (store *profileStore) list() []viewerProfile {
-	return store.profileModule().List()
-}
-
 func cloneProfiles(profiles []viewerProfile) []viewerProfile {
 	return identitycore.CloneProfiles(profiles)
 }

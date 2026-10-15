@@ -39,27 +39,6 @@ func TestFederationLinkRejectsRevokedOriginalAppSession(t *testing.T) {
 	}
 }
 
-func TestPasswordResetInvalidatesPreviouslyApprovedLocalGrant(t *testing.T) {
-	store := newProfileStore(t.TempDir())
-	profile, err := newProfile("Owner", "owner-password", true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := addSecurityTestOwner(store, profile); err != nil {
-		t.Fatal(err)
-	}
-	revision := store.profiles[0].Revision
-	if err := store.resetPassword(profile.ID, "replacement-password"); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := store.sessionModule().CreateLocalGrant(profile.ID, "TV", revision, false); err == nil {
-		t.Fatal("old Quick Connect approval created a session")
-	}
-	if len(store.sessions) != 0 {
-		t.Fatal("rejected approval persisted a session")
-	}
-}
-
 func TestFederatedSignInCanEnrollAFirstFactor(t *testing.T) {
 	store := newProfileStore(t.TempDir())
 	profile, err := newProfile("Owner", "owner-password", true)

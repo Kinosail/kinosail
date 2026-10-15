@@ -5,102 +5,11 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
-
-func TestProviderRejectsInvalidIMDbMatchesWithoutSideEffects(t *testing.T) {
-	t.Parallel()
-	for name, response := range map[string]string{
-		"missing":      `{}`,
-		"malformed":    `{`,
-		"trailing":     `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"/wrong.jpg"}]}{}`,
-		"out-of-range": `{"movie_results":[{"id":0,"title":"Wrong"}]}`,
-		"conflicting":  `{"movie_results":[{"id":1,"title":"Wrong one"},{"id":2,"title":"Wrong two"}]}`,
-		"oversized":    `{"movie_results":[{"id":1,"title":"` + strings.Repeat("x", 201) + `","poster_path":"/wrong.jpg"}]}`,
-		"invalid-path": `{"movie_results":[{"id":1,"title":"Wrong","poster_path":"https://images.example/wrong.jpg"}]}`,
-	} {
-		t.Run(name, func(t *testing.T) {
-			imageRequests := 0
-			provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-				if request.Header.Get("Authorization") != "Bearer token" {
-					http.Error(writer, "unauthorized", http.StatusUnauthorized)
-					return
-				}
-				switch request.URL.Path {
-				case "/find/tt0208654":
-					_, _ = writer.Write([]byte(response))
-				case "/movie/1":
-					_, _ = writer.Write([]byte(`{"belongs_to_collection":null}`))
-				case "/wrong.jpg":
-					imageRequests++
-					writer.Header().Set("Content-Type", "image/jpeg")
-					_, _ = writer.Write([]byte("wrong"))
-				default:
-					http.NotFound(writer, request)
-				}
-			}))
-			t.Cleanup(provider.Close)
-			mediaDir, dataDir := t.TempDir(), t.TempDir()
-			filename := "'Twas the Night Before Christmas (1974) {imdb tt0208654} [1080p].mkv"
-			if err := os.WriteFile(filepath.Join(mediaDir, filename), nil, 0o600); err != nil {
-				t.Fatal(err)
-			}
-			handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, CacheDir: t.TempDir(), Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
-			id := firstAPIItemID(t, handler, "")
-			refresh := httptest.NewRecorder()
-			handler.ServeHTTP(refresh, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/metadata/"+id+"/refresh", nil))
-			player := httptest.NewRecorder()
-			handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-			metadata, _ := os.ReadFile(filepath.Join(dataDir, "metadata.json"))
-			if refresh.Code != http.StatusBadGateway || imageRequests != 0 || len(metadata) != 0 || strings.Contains(player.Body.String(), "Wrong") || strings.Contains(player.Body.String(), strings.Repeat("x", 201)) {
-				t.Fatalf("refresh = %d, images = %d, metadata = %q, player = %q", refresh.Code, imageRequests, metadata, player.Body.String())
-			}
-		})
-	}
-}
-
-func TestProviderRejectsInvalidEpisodeArtworkWithoutSideEffects(t *testing.T) {
-	t.Parallel()
-	imageRequests := 0
-	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		switch request.URL.Path {
-		case "/search/tv":
-			_, _ = writer.Write([]byte(`{"results":[{"id":95396,"name":"Severance","poster_path":"/poster.jpg"}]}`))
-		case "/tv/95396/season/1/episode/1":
-			_, _ = writer.Write([]byte(`{"id":1947720,"name":"Good News About Hell","still_path":"https://images.example/wrong.jpg"}`))
-		default:
-			imageRequests++
-			writer.Header().Set("Content-Type", "image/jpeg")
-			_, _ = writer.Write([]byte("wrong"))
-		}
-	}))
-	t.Cleanup(provider.Close)
-	mediaDir, dataDir := t.TempDir(), t.TempDir()
-	season := filepath.Join(mediaDir, "Severance", "Season 01")
-	if err := os.MkdirAll(season, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(season, "Severance.S01E01.mkv"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, CacheDir: t.TempDir(), Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
-	libraryResponse := httptest.NewRecorder()
-	handler.ServeHTTP(libraryResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-	id := regexp.MustCompile(`"id":"([a-f0-9]+)"`).FindStringSubmatch(libraryResponse.Body.String())[1]
-	refresh := httptest.NewRecorder()
-	handler.ServeHTTP(refresh, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/items/"+id+"/metadata/refresh", nil))
-	player := httptest.NewRecorder()
-	handler.ServeHTTP(player, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
-	metadata, _ := os.ReadFile(filepath.Join(dataDir, "metadata.json"))
-
-	if refresh.Code != http.StatusBadGateway || imageRequests != 0 || len(metadata) != 0 || strings.Contains(player.Body.String(), "Good News About Hell") {
-		t.Fatalf("refresh = %d, images = %d, metadata = %q, player = %q", refresh.Code, imageRequests, metadata, player.Body.String())
-	}
-}
 
 func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) {
 	t.Parallel()

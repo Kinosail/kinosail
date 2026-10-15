@@ -10,16 +10,12 @@ import (
 
 func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) {
 	handler, token := apiServer(t)
-	itemID := firstAPIItemID(t, handler, token)
 	calls := []apiTestCall{
 		{Method: http.MethodPut, Path: "/api/v1/me/language", Body: map[string]any{"language": "xx"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/items/" + itemID + "/metadata", Body: map[string]any{}, Status: http.StatusBadRequest},
-		{Method: http.MethodPost, Path: "/api/v1/items/" + itemID + "/metadata/refresh", Body: nil, Status: http.StatusBadGateway},
 		{Method: http.MethodPut, Path: "/api/v1/configuration/paths.data", Body: map[string]any{"value": "/elsewhere"}, Status: http.StatusConflict},
 		{Method: http.MethodPut, Path: "/api/v1/configuration/server.name", Body: map[string]any{"value": "Restart name"}, Status: http.StatusConflict},
 		{Method: http.MethodPut, Path: "/api/v1/settings/server", Body: map[string]any{"name": ""}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/session-timeouts", Body: map[string]any{"inactiveHours": 48, "absoluteHours": 24}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/settings/navigation", Body: map[string]any{"items": []string{"home", "home"}}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "invalid"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"language": "en", "preference": "unknown"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPut, Path: "/api/v1/settings/subtitles", Body: map[string]any{"languages": []string{}}, Status: http.StatusBadRequest},
@@ -28,9 +24,6 @@ func TestVersionedAPIFailsClosedOnInvalidCapabilityInputs(t *testing.T) {
 		{Method: http.MethodPut, Path: "/api/v1/settings/scans", Body: map[string]any{"frequency": "invalid"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/libraries", Body: map[string]any{"path": "../outside"}, Status: http.StatusBadRequest},
 		{Method: http.MethodDelete, Path: "/api/v1/libraries", Body: map[string]any{"path": "missing"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPost, Path: "/api/v1/profiles", Body: map[string]any{"name": "", "password": "short"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/profiles/missing", Body: map[string]any{"rating": "all"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/profiles/missing/password", Body: map[string]any{"password": "new-long-password"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/api-keys", Body: map[string]any{"name": "Key", "scopes": "unknown"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/tasks/unknown", Body: nil, Status: http.StatusNotFound},
 		{Method: http.MethodPost, Path: "/api/v1/backups", Body: nil, Status: http.StatusServiceUnavailable},

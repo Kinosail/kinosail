@@ -33,11 +33,3 @@ func trustedHTTPSConfig(t *testing.T, config server.Config) server.Config {
 func testTrustedHTTPSValue() string {
 	return `{"domain":"family-media","token":"` + strings.Repeat("t", 32) + `","address":"192.168.1.10","termsAccepted":true}`
 }
-
-func addTestViewer(t *testing.T, handler http.Handler, owner *http.Cookie) {
-	t.Helper()
-	response := requestWithCookie(t, handler, http.MethodPost, "/settings/profiles", "name=Sam&password=viewer-password&rating=all&libraries=all", owner)
-	if response.Code != http.StatusSeeOther {
-		t.Fatalf("add Viewer = %d %q", response.Code, response.Body.String())
-	}
-}

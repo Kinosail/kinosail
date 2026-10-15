@@ -10,24 +10,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-type blockingResponseWriter struct {
-	header  http.Header
-	started chan struct{}
-	release chan struct{}
-}
-
-func (writer *blockingResponseWriter) Header() http.Header { return writer.header }
-func (writer *blockingResponseWriter) WriteHeader(int)     {}
-func (writer *blockingResponseWriter) Write(data []byte) (int, error) {
-	select {
-	case <-writer.started:
-	default:
-		close(writer.started)
-	}
-	<-writer.release
-	return len(data), nil
-}
-
 func TestAutomaticMaintenanceStatusIsAvailableThroughAPI(t *testing.T) {
 	t.Parallel()
 

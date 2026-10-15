@@ -188,10 +188,3 @@ func subtitlePasskeyIdentity(profile viewerProfile) (string, string, []webauthn.
 
 func subtitlePasskeyIsOwner(profile viewerProfile) bool  { return profile.Owner }
 func subtitlePasskeyIsRemote(profile viewerProfile) bool { return profile.Remote }
-
-func (auth *passkeyAuth) revokePublic() {
-	if auth == nil {
-		return
-	}
-	auth.engine.RevokePublic()
-}

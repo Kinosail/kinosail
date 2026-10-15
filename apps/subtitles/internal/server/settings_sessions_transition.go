@@ -16,10 +16,6 @@ func (store *settingsStore) changeSessionTimeouts(inactive, absolute float64, pu
 	return store.updateSessionTimeouts(inactive, absolute, public)
 }
 
-func (store *settingsStore) resetPublicSessionTimeouts() error {
-	return store.updateSessionTimeouts(0, 0, true)
-}
-
 func (store *settingsStore) updateSessionTimeouts(inactive, absolute float64, public bool) error {
 	if store.profiles != nil {
 		store.profiles.mu.Lock()

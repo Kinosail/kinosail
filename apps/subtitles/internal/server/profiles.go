@@ -57,15 +57,3 @@ func (store *profileStore) authenticate(name, password string) (viewerProfile, b
 func (store *profileStore) addOwner(profile viewerProfile) error {
 	return store.profileModule().AddOwner(profile)
 }
-
-func (store *profileStore) addProfile(name, password string, owner bool, policy profilePolicy) (string, error) {
-	return store.profileModule().AddProfile(name, password, owner, policy)
-}
-
-func (store *profileStore) setProfile(id string, owner bool, policy profilePolicy) error {
-	return store.profileModule().SetProfile(id, owner, policy)
-}
-
-func (store *profileStore) removeProfile(id string) error {
-	return store.profileModule().RemoveProfile(id)
-}

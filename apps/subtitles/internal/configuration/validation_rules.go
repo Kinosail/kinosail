@@ -67,8 +67,6 @@ var configurationValidators = map[string]func(string) error{
 	"remote.mode":                          allowed("off", "https"),
 	"remote.duckdns_domain":                optionalValid(validDNSLabel, "must be one DNS label"),
 	"remote.duckdns_token":                 optionalValid(validRemoteToken, "must contain 32 to 128 safe characters"),
-	"integrations.scim.token":              optionalValid(validSCIMToken, "must contain 32 to 256 non-whitespace characters"),
-	"integrations.scim.token_expires_at":   validateSCIMExpiration,
 	"integrations.oidc.issuer":             validateIdentityURL,
 	"integrations.oidc.redirect_url":       validateIdentityURL,
 	"integrations.saml.metadata_url":       validateIdentityURL,
@@ -134,15 +132,6 @@ func validateTLSHosts(raw string) error {
 	for _, host := range hosts {
 		if !validTLSHost(host) {
 			return errors.New("must contain only hostnames or IP addresses without ports")
-		}
-	}
-	return nil
-}
-
-func validateSCIMExpiration(raw string) error {
-	if raw != "" {
-		if _, err := time.Parse(time.RFC3339, raw); err != nil {
-			return errors.New("must be an RFC3339 time")
 		}
 	}
 	return nil

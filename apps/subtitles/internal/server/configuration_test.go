@@ -11,7 +11,7 @@ import (
 
 func TestConfigurationHTTPContract(t *testing.T) {
 	fixture := servertest.ConfigurationHTTP[configuration.Source, configuration.Snapshot]{
-		Load: configuration.Load, GUI: configuration.GUI, SCIMToken: scimTestToken,
+		Load: configuration.Load, GUI: configuration.GUI,
 		SignIn: signInTestProfile, WebCall: requestWithCookie,
 		NoPlayerSettings: true,
 		TMDBSection:      `href="/settings/configuration#integrations.tmdb.token"`, TMDBLabel: "TMDB access token", TMDBHelp: "Environment variable: <code>KINOSAIL_TMDB_TOKEN</code>",

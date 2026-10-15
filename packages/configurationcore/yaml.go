@@ -81,10 +81,7 @@ func (loader Loader) flatten(prefix string, input map[string]any, output map[str
 func (loader Loader) yamlValue(name string, item any) (string, error) {
 	invalid := func() (string, error) { return "", fmt.Errorf("invalid %s: wrong YAML value type", name) }
 	if loader.retired(name) {
-		if value, ok := item.(string); ok {
-			return value, nil
-		}
-		return invalid()
+		return "", nil
 	}
 	key := strings.TrimSuffix(name, "_file")
 	field, known := loader.find(key)

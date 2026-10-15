@@ -12,7 +12,7 @@ func TestMetadataStoreDetachesMutableRecords(t *testing.T) {
 	store := newMetadataStore(MetadataConfig{}, "", "")
 	servertest.MetadataStoreDetachesMutableRecords(t,
 		func(providerIDs, showProviderIDs map[string]string) error {
-			return store.set("item", metadataRecord{Title: "Arrival", ProviderIDs: providerIDs, ShowProviderIDs: showProviderIDs})
+			return store.setAll(map[string]metadataRecord{"item": {Title: "Arrival", ProviderIDs: providerIDs, ShowProviderIDs: showProviderIDs}})
 		},
 		func() map[string]string { return store.apply([]library.Item{{ID: "item"}})[0].ProviderIDs },
 	)

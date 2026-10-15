@@ -44,7 +44,6 @@ type Config struct {
 	BackupRetention     int
 	MaintenanceInterval time.Duration
 	Configuration       configuration.Snapshot
-	SCIM                SCIMConfig
 	InternetAccess      *remoteaccess.Manager
 	TrustedHTTPS        *trustedhttps.Manager
 	Supporter           SupporterConfig
@@ -151,8 +150,8 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /service-worker.js", serveServiceWorker)
 	mux.HandleFunc("GET /offline", serveOffline)
 	mux.HandleFunc("GET /favicon.ico", serveAsset(icon, "image/svg+xml"))
-	registerIdentity(mux, auth, config.OIDC, config.SAML, config.SCIM)
-	registerSettings(mux, settings, updates, index, auth, config.InternetAccess, config.TrustedHTTPS, subtitles, metadata, backups, maintenance, events)
+	registerIdentity(mux, auth, config.OIDC, config.SAML)
+	registerSettings(mux, settings, updates, index, auth, config.TrustedHTTPS, subtitles, metadata, backups, maintenance, events)
 	registerOwnerAccess(mux, auth, management, config.AuthURL)
 	registerSupporter(mux, auth, supporter)
 	registerAgentConnections(mux, auth, agentConnections, config.DataDir)
@@ -160,7 +159,6 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mux.HandleFunc("GET /language", showLanguage)
 	mux.HandleFunc("POST /language", saveWebLanguage)
 	subtitleManager.register(mux, auth)
-	metadata.register(mux, auth, index)
 	if managedLifecycle {
 		sharedmetadata.Schedule(config.Lifecycle, metadata.available(), index.AddAnalyzer, func(ctx context.Context) error { return metadata.refreshMissing(ctx, index) })
 	}
@@ -168,7 +166,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	mcpAdapter := registerMCPWithConnections(mux, config.MCP, auth, apiRouting(mux), agentConnections)
 	mcpAdapter.ObserveEvents(config.Lifecycle, events)
 	startApplicationMCPHost(config, managedLifecycle, mcpAdapter, auth.profiles)
-	registerFiles(mux, index)
+	registerFiles(mux, index, auth)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
 	mux.Handle("GET /{$}", auth.owner(http.HandlerFunc(subtitleManager.dashboard)))
 	handler := withApplicationRequests(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates)

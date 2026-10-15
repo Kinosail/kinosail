@@ -1,6 +1,8 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/MikeO7/kinosail/packages/scim"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
@@ -12,7 +14,6 @@ func init() {
 }
 
 var (
-	registeredRouteInventory    = servertest.RegisteredRouteInventory
 	newRouteAuthorizationServer = routeAuthorizationFixture.Server
 	routeTestTOTP               = servertest.CurrentTOTP
 	loginRouteProfile           = servertest.LoginRouteProfile
@@ -23,3 +24,8 @@ var (
 	routeJSON                   = servertest.RouteJSON
 	concreteRoutePath           = servertest.ConcreteRoutePath
 )
+
+func registeredRouteInventory(t *testing.T) []string {
+	t.Helper()
+	return servertest.RegisteredRouteInventory(t, scim.Patterns())
+}

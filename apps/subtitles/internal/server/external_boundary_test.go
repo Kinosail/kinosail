@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail/packages/scim"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
@@ -51,7 +52,7 @@ func TestSubtitleProviderRejectsMalformedSearchAndDownloads(t *testing.T) {
 	}
 }
 
-func TestExternalProviderActionsRejectInputBeforeNetworkContact(t *testing.T) {
+func TestSubtitleProviderActionRejectsInputBeforeNetworkContact(t *testing.T) {
 	t.Parallel()
 	requests := 0
 	provider := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { requests++ }))
@@ -62,22 +63,19 @@ func TestExternalProviderActionsRejectInputBeforeNetworkContact(t *testing.T) {
 	}
 	handler := server.New(server.Config{
 		MediaDir: media, CacheDir: t.TempDir(),
-		Metadata:  server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"},
 		Subtitles: server.SubtitleConfig{URL: provider.URL, APIKey: "key"},
 	})
 	id := firstAPIItemID(t, handler, "")
-	metadata := httptest.NewRecorder()
-	handler.ServeHTTP(metadata, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/metadata/"+id+"/refresh?extra=true", nil))
 	subtitles := apiCall(t, handler, "", http.MethodPost, "/api/v1/subtitle-library/"+id+"/fetch", map[string]any{"extra": true})
-	if metadata.Code != http.StatusBadRequest || subtitles.Code != http.StatusBadRequest || requests != 0 {
-		t.Fatalf("provider action validation = metadata %d, subtitles %d, network %d", metadata.Code, subtitles.Code, requests)
+	if subtitles.Code != http.StatusBadRequest || requests != 0 {
+		t.Fatalf("provider action validation = subtitles %d, network %d", subtitles.Code, requests)
 	}
 }
 
 func TestOIDCRejectsUnsafeOriginsAndInvalidProtocolTransitions(t *testing.T) {
 	servertest.AssertExternalOIDCBoundaries(t, servertest.OIDCFixture{
-		NewHandler: func(dataDir string, oidc server.OIDCConfig, scim server.SCIMConfig) http.Handler {
-			return server.New(server.Config{DataDir: dataDir, RequireAuth: true, OIDC: oidc, SCIM: scim})
+		NewHandler: func(dataDir string, oidc server.OIDCConfig, _ scim.Config) http.Handler {
+			return server.New(server.Config{DataDir: dataDir, RequireAuth: true, OIDC: oidc})
 		},
 	})
 }

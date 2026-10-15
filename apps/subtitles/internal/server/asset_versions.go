@@ -5,8 +5,6 @@ import (
 	"encoding/hex"
 	"regexp"
 	"strings"
-
-	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 )
 
 var assetVersions = contentVersions(map[string][]byte{
@@ -46,9 +44,4 @@ func versionAssetReferenceBytes(page []byte) []byte {
 
 func versionedTemplateSource(source string) string {
 	return versionAssetReferences(httpguardTemplateSource(source))
-}
-
-func bulkMetadataPage(page sharedmetadata.BulkPage) sharedmetadata.BulkPage {
-	page.ThemeScript, page.Stylesheet = assetURL("theme.js"), assetURL("app.css")
-	return page
 }

@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/MikeO7/kinosail/packages/federation"
 )
@@ -15,8 +14,6 @@ func coupledSettingError(key string) error {
 		return errors.New("OpenID Connect settings must be changed together")
 	case isSAMLKey(key):
 		return errors.New("SAML settings must be changed together")
-	case key == scimTokenKey || key == scimExpirationKey:
-		return fmt.Errorf("%s and %s must be changed together", scimTokenKey, scimExpirationKey)
 	case isSubSourceKey(key):
 		return errors.New("SubSource API key and personal-use acceptance must be changed together")
 	case isOpenSubtitlesKey(key):

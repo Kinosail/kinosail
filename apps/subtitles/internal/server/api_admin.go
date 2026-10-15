@@ -15,13 +15,6 @@ type apiProfileInput struct {
 	Owner, Downloads, Transcode, Remote            bool
 }
 
-func (input apiProfileInput) policy() profilePolicy {
-	return profilePolicy{
-		Downloads: input.Downloads, Transcode: input.Transcode, Remote: input.Remote,
-		Rating: input.Rating, AccessStart: input.AccessStart, AccessEnd: input.AccessEnd, Libraries: input.Libraries,
-	}
-}
-
 type apiProfile struct {
 	ID          string   `json:"id"`
 	Name        string   `json:"name"`
@@ -36,14 +29,6 @@ type apiProfile struct {
 	MFAEnabled  bool     `json:"mfaEnabled"`
 }
 
-func publicProfiles(profiles []viewerProfile) []apiProfile {
-	result := make([]apiProfile, 0, len(profiles))
-	for _, profile := range profiles {
-		result = append(result, apiProfile{profile.ID, profile.Name, profile.Rating, profile.AccessStart, profile.AccessEnd, profile.Owner, profile.Downloads, profile.Transcode, profile.Remote, profile.Libraries, profile.Secured()})
-	}
-	return result
-}
-
 func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner := func(pattern string, handler http.Handler) { mux.Handle(pattern, api.auth.owner(handler)) }
 	owner("GET /api/v1/settings", apiSettings(api))
@@ -55,12 +40,9 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("PUT /api/v1/configuration/{key}", apiChangeConfiguration(api.settings, false))
 	owner("DELETE /api/v1/configuration/{key}", apiChangeConfiguration(api.settings, true))
 	owner("PUT /api/v1/settings/server", apiSetting(func(input apiSettingInput) error { return api.settings.setName(input.Name) }))
-	owner("PUT /api/v1/settings/navigation", apiSetting(func(input apiSettingInput) error { return api.settings.setNavigation(input.Items) }))
 	owner("PUT /api/v1/settings/onboarding", settingsops.SaveOnboardingAPI(api.settings.setOnboardingPending, readJSON, writeJSON, apiError))
 	owner("PUT /api/v1/settings/mfa", apiMFARequirement(api.auth))
 	owner("PUT /api/v1/settings/session-timeouts", apiSessionTimeouts(api.settings))
-	owner("PUT /api/v1/settings/public-session-timeouts", apiSessionTimeouts(api.settings, true))
-	owner("DELETE /api/v1/settings/public-session-timeouts", resetPublicSessionTimeouts(api.settings, true))
 	owner("PUT /api/v1/settings/subtitles", apiSubtitleLanguages(api.settings))
 	owner("PUT /api/v1/settings/scans", apiSetting(func(input apiSettingInput) error {
 		if err := api.settings.setScanFrequency(input.Frequency); err != nil {
@@ -73,13 +55,6 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("DELETE /api/v1/settings/trusted-https", apiDisableTrustedHTTPS(api.settings))
 	owner("POST /api/v1/libraries", apiLibrarySetting(api.settings, api.index, api.settings.add))
 	owner("DELETE /api/v1/libraries", apiLibrarySetting(api.settings, api.index, api.settings.remove))
-	owner("GET /api/v1/profiles", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writeJSON(writer, map[string]any{"profiles": publicProfiles(api.auth.profiles.list())}, http.StatusOK)
-	}))
-	owner("POST /api/v1/profiles", apiCreateProfile(api.auth.profiles))
-	owner("PUT /api/v1/profiles/{id}", apiUpdateProfile(api.auth.profiles))
-	owner("DELETE /api/v1/profiles/{id}", apiDeleteProfile(api.auth.profiles))
-	owner("PUT /api/v1/profiles/{id}/password", apiPassword(api.auth.profiles))
 	owner("GET /api/v1/devices", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		writeJSON(writer, map[string]any{"devices": api.auth.profiles.devices()}, http.StatusOK)
 	}))
@@ -139,53 +114,6 @@ func apiLibrarySetting(settings *settingsStore, index *libraryIndex, change func
 		}
 		return settings.snapshot().Libraries, nil
 	})
-}
-
-func apiCreateProfile(profiles *profileStore) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		var input apiProfileInput
-		if !readJSON(writer, request, &input) {
-			return
-		}
-		id, err := profiles.addProfile(input.Name, input.Password, input.Owner, input.policy())
-		if err != nil {
-			apiError(writer, err, http.StatusBadRequest)
-			return
-		}
-		writeJSON(writer, map[string]string{"id": id, "name": input.Name}, http.StatusCreated)
-	}
-}
-
-func apiUpdateProfile(profiles *profileStore) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		var input apiProfileInput
-		if !readJSON(writer, request, &input) {
-			return
-		}
-		if err := profiles.setProfile(request.PathValue("id"), input.Owner, input.policy()); err != nil {
-			apiError(writer, err, http.StatusBadRequest)
-			return
-		}
-		writeJSON(writer, map[string]string{"status": "saved"}, http.StatusOK)
-	}
-}
-
-func apiDeleteProfile(profiles *profileStore) http.HandlerFunc {
-	return apiAction(func(request *http.Request) error { return profiles.removeProfile(request.PathValue("id")) })
-}
-
-func apiPassword(profiles *profileStore) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		var input struct{ Password string }
-		if !readJSON(writer, request, &input) {
-			return
-		}
-		if err := profiles.resetPassword(request.PathValue("id"), input.Password); err != nil {
-			apiError(writer, err, http.StatusBadRequest)
-			return
-		}
-		writer.WriteHeader(http.StatusNoContent)
-	}
 }
 
 func apiCreateKey(profiles *profileStore) http.HandlerFunc {

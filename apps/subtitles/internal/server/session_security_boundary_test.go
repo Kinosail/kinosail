@@ -38,103 +38,19 @@ func TestInvalidExplicitCredentialsDoNotFallBackToAValidCookie(t *testing.T) {
 	}
 }
 
-func TestExplicitCredentialsTakePrecedenceOverAnotherProfilesCookie(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	created := apiCall(t, handler, owner.Value, http.MethodPost, "/api/v1/profiles", map[string]any{"name": "Viewer", "password": "viewer-password"})
-	if created.Code != http.StatusCreated {
-		t.Fatalf("create Viewer = %d %q", created.Code, created.Body.String())
-	}
-	login := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password"})
-	var viewer struct{ Token string }
-	mustJSON(t, login, &viewer)
-
-	for name, header := range map[string]struct{ key, value string }{
-		"Bearer":       {"Authorization", "Bearer " + viewer.Token},
-		"ApiKey":       {"ApiKey", viewer.Token},
-		"X-Emby-Token": {"X-Emby-Token", viewer.Token},
-		"MediaBrowser": {"Authorization", `MediaBrowser Token="` + viewer.Token + `"`},
-	} {
-		t.Run(name, func(t *testing.T) {
-			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/me", nil)
-			request.AddCookie(owner)
-			request.Header.Set(header.key, header.value)
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, request)
-			if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `"name":"Viewer"`) || strings.Contains(response.Body.String(), `"name":"Owner"`) {
-				t.Fatalf("credential precedence = %d %q", response.Code, response.Body.String())
-			}
-		})
-	}
-}
-
-func TestPasswordLoginRotatesAnUntrustedBrowserSession(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	disableTestMFA(t, handler, owner.Value)
-	addTestViewer(t, handler, owner)
-	attacker := &http.Cookie{Name: "__Host-kinosail_session", Value: "attacker-chosen-session", Path: "/", Secure: true, HttpOnly: true, SameSite: http.SameSiteLaxMode}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Sam&password=viewer-password"))
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	request.AddCookie(attacker)
-	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, request)
-	cookies := response.Result().Cookies()
-	if response.Code != http.StatusSeeOther || len(cookies) != 1 || cookies[0].Value == "" || cookies[0].Value == attacker.Value {
-		t.Fatalf("login session was not rotated: %d cookies=%v", response.Code, cookies)
-	}
-
-	if stale := requestWithCookie(t, handler, http.MethodGet, "/", "", attacker); stale.Code != http.StatusSeeOther || stale.Header().Get("Location") != "/login" {
-		t.Fatalf("attacker session became valid = %d %q", stale.Code, stale.Header().Get("Location"))
-	}
-	if current := requestWithCookie(t, handler, http.MethodGet, "/account", "", cookies[0]); current.Code != http.StatusOK {
-		t.Fatalf("rotated session = %d %q", current.Code, current.Body.String())
-	}
-}
-
-func TestPasswordResetImmediatelyRevokesActiveSessions(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	created := apiCall(t, handler, owner.Value, http.MethodPost, "/api/v1/profiles", map[string]any{"name": "Viewer", "password": "viewer-password"})
-	var viewer struct {
-		ID string `json:"id"`
-	}
-	mustJSON(t, created, &viewer)
-	login := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password"})
-	var session struct {
-		Token string `json:"token"`
-	}
-	mustJSON(t, login, &session)
-
-	reset := apiCall(t, handler, owner.Value, http.MethodPut, "/api/v1/profiles/"+viewer.ID+"/password", map[string]any{"password": "new-viewer-password"})
-	if reset.Code != http.StatusNoContent {
-		t.Fatalf("password reset = %d %q", reset.Code, reset.Body.String())
-	}
-	if stale := apiCall(t, handler, session.Token, http.MethodGet, "/api/v1/me", nil); stale.Code != http.StatusUnauthorized {
-		t.Fatalf("pre-reset session remained valid = %d %q", stale.Code, stale.Body.String())
-	}
-	if fresh := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "new-viewer-password"}); fresh.Code != http.StatusCreated {
-		t.Fatalf("new password login = %d %q", fresh.Code, fresh.Body.String())
-	}
-}
-
 func TestCredentialRateLimitSpansWebAndAPI(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	addTestViewer(t, handler, owner)
+	_ = signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	var last *httptest.ResponseRecorder
 	for attempt := range 11 {
 		var request *http.Request
 		switch attempt % 2 {
 		case 0:
-			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Sam&password=wrong-password"))
+			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/login", strings.NewReader("name=Owner&password=wrong-password"))
 			request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		default:
-			body, _ := json.Marshal(map[string]string{"name": "Sam", "password": "wrong-password"})
+			body, _ := json.Marshal(map[string]string{"name": "Owner", "password": "wrong-password"})
 			request = httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/session", bytes.NewReader(body))
 			request.Header.Set("Content-Type", "application/json")
 		}

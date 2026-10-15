@@ -117,8 +117,6 @@ The following table describes typed application settings. Use the running config
 | `integrations.saml.metadata_url` | `KINOSAIL_SAML_METADATA_URL` | URL | blank | yes |
 | `integrations.saml.metadata_xml` | `KINOSAIL_SAML_METADATA_XML` | text | blank | yes |
 | `integrations.saml.identity_attribute` | `KINOSAIL_SAML_IDENTITY_ATTRIBUTE` | text | `NameID` | yes |
-| `integrations.scim.token` | `KINOSAIL_SCIM_TOKEN` | secret text | blank | yes |
-| `integrations.scim.token_expires_at` | `KINOSAIL_SCIM_TOKEN_EXPIRES_AT` | RFC3339 time | blank | yes |
 | `integrations.mcp.resource_url` | `KINOSAIL_MCP_RESOURCE_URL` | HTTPS URL | blank | yes |
 | `integrations.mcp.authorization_server` | `KINOSAIL_MCP_AUTHORIZATION_SERVER` | HTTPS URL | blank | yes |
 | `integrations.mcp.introspection_url` | `KINOSAIL_MCP_INTROSPECTION_URL` | HTTPS URL | blank | yes |
@@ -141,9 +139,10 @@ The following table describes typed application settings. Use the running config
 - `scanning.frequency`: `default`, `off`, `5m`, `15m`, or `1h`.
 - `remote.mode`: `off` or `https`.
 
-Remote HTTPS requires a DuckDNS domain and token plus an exact `https://<domain>.duckdns.org` `auth.url`. Enabling DLNA requires `dlna.url`. SCIM requires both its token and a future expiration time. MCP requires all five MCP OAuth values and a resource URL ending in `/mcp`.
+Remote HTTPS requires a DuckDNS domain and token plus an exact `https://<domain>.duckdns.org` `auth.url`. Enabling DLNA requires `dlna.url`. MCP requires all five MCP OAuth values and a resource URL ending in `/mcp`.
 
 Subtitles does not serve DLNA or Jellyfin routes. It still accepts `dlna.url`, `dlna.enabled`, and `integrations.jellyfin.enabled`, so existing configuration files keep loading. Subtitles ignores these values. The validation rules above still apply. Remove these keys when your configuration file is no longer shared with Kinosail Player.
+Subtitles also ignores and drops `integrations.scim.*` keys, because it has no Viewer provisioning.
 
 The Owner settings flow is the preferred setup. The historical `tls.duckdns` key now stores every supported trusted HTTPS provider. Its name remains for automatic upgrade compatibility.
 

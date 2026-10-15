@@ -16,7 +16,6 @@ func TestStoredConfigurationValidationEdges(t *testing.T) {
 	}{
 		"unknown key":           {regular: map[string]string{"unknown": "value"}},
 		"invalid value":         {regular: map[string]string{"server.name": ""}},
-		"SCIM expiration":       {regular: map[string]string{scimExpirationKey: "2030-01-01T00:00:00Z"}},
 		"OIDC partial":          {regular: map[string]string{"integrations.oidc.issuer": "https://identity.example"}},
 		"OpenSubtitles partial": {secrets: map[string]string{openSubtitlesAPIKey: "key"}},
 		"SubSource partial":     {regular: map[string]string{subSourcePersonalUse: "true"}},
@@ -57,10 +56,6 @@ func TestStoredConfigurationReadAndValidationHelpers(t *testing.T) {
 	}
 	if err := coupledSettingError(subSourceAPIKey); err == nil {
 		t.Fatal("individual SubSource setting was accepted")
-	}
-	expiresOnly := Snapshot{values: map[string]value{scimExpirationKey: {raw: "2030-01-01T00:00:00Z"}}}
-	if err := validateSCIM(expiresOnly); err == nil {
-		t.Fatal("SCIM expiration without token was accepted")
 	}
 }
 

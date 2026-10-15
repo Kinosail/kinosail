@@ -19,6 +19,8 @@ func readStoredConfiguration(dataDir string) (map[string]string, map[string]stri
 	if err != nil {
 		return nil, nil, err
 	}
+	retiredConfiguration.Discard(regular)
+	retiredConfiguration.Discard(secrets)
 	return regular, secrets, nil
 }
 
@@ -32,9 +34,6 @@ func validateStoredConfiguration(regular, secrets map[string]string) error {
 		values[key] = value{item.Raw, Source(item.Source)}
 	}
 	configured := Snapshot{values}
-	if err := validateSCIM(configured); err != nil {
-		return err
-	}
 	if err := federation.ValidateOIDC(configured.String); err != nil {
 		return err
 	}

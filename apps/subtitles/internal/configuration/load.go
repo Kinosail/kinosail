@@ -41,7 +41,7 @@ func configurationSchema() configurationcore.Schema {
 	for index, spec := range specs {
 		fields[index] = configurationcore.Field{Key: spec.Key, Env: spec.Env, Default: spec.Default, Kind: configurationcore.Kind(spec.Kind), Secret: spec.Secret}
 	}
-	return configurationcore.Schema{Fields: fields, Validate: validateConfigurationValue}
+	return configurationcore.Schema{Fields: fields, Retired: retiredConfiguration.Retired, Validate: validateConfigurationValue}
 }
 
 func validateConfigurationValue(key, raw string) error {
@@ -53,7 +53,7 @@ func validateConfiguredSnapshot(configured Snapshot) error {
 	if configured.Source("dlna.enabled") != Default && configured.Bool("dlna.enabled") && configured.String("dlna.url") == "" {
 		return errors.New("dlna.url is required when DLNA is enabled")
 	}
-	validators := []func(Snapshot) error{configurationcore.ValidateMCP[Snapshot], validateRemoteAccess, validateSCIM, validateFederatedOIDC, validateFederatedSAML, validateOpenSubtitles, validateSubSource, validateTrustedHTTPS, validateJellyfinCompatibility, validateSupporter}
+	validators := []func(Snapshot) error{configurationcore.ValidateMCP[Snapshot], validateRemoteAccess, validateFederatedOIDC, validateFederatedSAML, validateOpenSubtitles, validateSubSource, validateTrustedHTTPS, validateJellyfinCompatibility, validateSupporter}
 	for _, validator := range validators {
 		if err := validator(configured); err != nil {
 			return err

@@ -6,12 +6,11 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/mcpgateway"
 	"github.com/MikeO7/kinosail/packages/routeinventory"
-	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-func RegisteredRouteInventory(t *testing.T) []string {
+func RegisteredRouteInventory(t *testing.T, explicit ...[]string) []string {
 	t.Helper()
-	routes, err := routeinventory.Discover(".", "../../../../packages", scim.Patterns(), mcpgateway.Patterns())
+	routes, err := routeinventory.Discover(".", "../../../../packages", append([][]string{mcpgateway.Patterns()}, explicit...)...)
 	if err != nil {
 		t.Fatal(err)
 	}

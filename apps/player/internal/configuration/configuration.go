@@ -68,17 +68,7 @@ func Load(dataDir, yamlPath string, lookup func(string) (string, bool)) (Snapsho
 	return loadConfiguration(dataDir, yamlPath, lookup)
 }
 
-func retiredConfigurationKey(key string) bool {
-	return key == "integrations.subdl.url" || key == "integrations.subdl.api_key" || key == "integrations.subdl.api_key_file"
-}
-
-func discardRetiredConfiguration(values map[string]string) {
-	for key := range values {
-		if retiredConfigurationKey(key) {
-			delete(values, key)
-		}
-	}
-}
+var retiredConfiguration = configurationcore.RetiredPrefixes{"integrations.subdl."}
 
 func find(key string) (Spec, bool) {
 	for _, spec := range specs {

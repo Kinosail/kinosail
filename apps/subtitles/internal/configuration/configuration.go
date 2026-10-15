@@ -45,13 +45,19 @@ var specs = append(applicationSpecs(configurationcore.CommonApplicationFields("1
 	{"integrations.opensubtitles.password", "KINOSAIL_OPENSUBTITLES_PASSWORD", "", text, true, true},
 }...)
 
+var retiredConfiguration = configurationcore.RetiredPrefixes{"integrations.scim."}
+
 func applicationSpecs(fields []configurationcore.ApplicationField) []Spec {
-	result := make([]Spec, len(fields))
-	for index, field := range fields {
-		result[index] = Spec{field.Key, field.Env, field.Default, kind(field.Kind), field.Secret, field.Restart}
-		if field.Key == "supporter.activation_url" {
-			result[index].Default = DefaultSupporterActivationURL
+	result := make([]Spec, 0, len(fields))
+	for _, field := range fields {
+		if retiredConfiguration.Retired(field.Key) {
+			continue
 		}
+		spec := Spec{field.Key, field.Env, field.Default, kind(field.Kind), field.Secret, field.Restart}
+		if field.Key == "supporter.activation_url" {
+			spec.Default = DefaultSupporterActivationURL
+		}
+		result = append(result, spec)
 	}
 	return result
 }

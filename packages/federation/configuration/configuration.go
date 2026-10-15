@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	federation "github.com/MikeO7/kinosail/packages/federation"
@@ -227,4 +228,14 @@ func SaveSAMLConfiguration(writer http.ResponseWriter, request *http.Request, ch
 		return
 	}
 	http.Redirect(writer, request, "/settings/configuration#integrations.saml", http.StatusSeeOther)
+}
+
+func RequestOrigin(configured string, request *http.Request) string {
+	if origin := strings.TrimRight(configured, "/"); origin != "" {
+		return origin
+	}
+	if request.TLS != nil {
+		return "https://" + request.Host
+	}
+	return "http://" + request.Host
 }

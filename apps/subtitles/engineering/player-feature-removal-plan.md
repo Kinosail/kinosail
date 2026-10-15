@@ -186,7 +186,24 @@ Still open:
 
 ### Stage 2e: decided groups
 
-Apply the answers to the six questions above.
+This stage removed Viewer and Owner profile management, SCIM, metadata editing, navigation customization, public session timeouts, the remote-access kill switch and readiness page, and the subtitle picker setting.
+
+Result:
+
+- 40 routes are gone: 27 app routes, the shared `GET` and `POST /metadata/bulk` routes, and 11 SCIM routes. `removed-routes.txt` lists 196 routes. The registered-route inventory changed from 249 to 209.
+- Subtitles has one Owner per setup. Existing extra profiles in stored data still sign in, but nobody can add, edit, or remove profiles.
+- `GET /media/{id}` is Owner-only. The `stream` API-key scope now covers only `GET /api/v1/events`.
+- Subtitles retires the `integrations.scim.*` keys through `configurationcore.RetiredPrefixes`. Stored, YAML, and environment values load without error and are dropped on the next save. Player uses the same helper for SubDL.
+- Retired YAML values of any type are now ignored. Before, a non-string retired value stopped startup.
+- `federationconfig.RequestOrigin` gives SAML views their origin without the SCIM endpoint helper.
+- The shared TOTP replay, API security, and durable-state contracts use the Owner, so both apps run the same checks without Viewer profiles.
+- Tests that only covered removed behavior are deleted. The cookie and `HEAD` route contracts no longer check a Viewer.
+
+Still open:
+
+- Remote access. Owners are already denied on the public listener, and Subtitles has no Viewer routes. Remove `InternetAccess`, `remote_readiness.go`, `compose.remote-https.yaml`, and the gateway text in `AGENTS.md` in one change.
+- The stored-settings migration above. It also covers the Home Assistant, navigation, and public-timeout fields.
+- Owner binding of subtitle operations is no longer tested with a second Owner, because Subtitles cannot create one.
 
 ### Stage 3: shared code
 

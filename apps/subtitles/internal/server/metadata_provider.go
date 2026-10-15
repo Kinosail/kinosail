@@ -60,10 +60,6 @@ func (store *metadataStore) apply(items []library.Item) []library.Item {
 	return sharedmetadata.ApplyRecords(items, store.records, store.currentArtwork)
 }
 
-func (store *metadataStore) set(id string, record metadataRecord) error {
-	return store.setAll(map[string]metadataRecord{id: record})
-}
-
 func (store *metadataStore) setAll(updates map[string]metadataRecord) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
@@ -75,42 +71,6 @@ func (store *metadataStore) setAll(updates map[string]metadataRecord) error {
 	}
 	store.records = records
 	return nil
-}
-
-func (store *metadataStore) editHandler(index *libraryIndex) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		request.Body = http.MaxBytesReader(writer, request.Body, 8<<10)
-		if !formEncoded(request) || request.URL.RawQuery != "" || request.ParseForm() != nil || !onlyFormKeys(request.PostForm, "title", "year", "plot", "rating", "tagline", "genres") {
-			localizedError(writer, request, "metadata is invalid", http.StatusBadRequest)
-			return
-		}
-		item, found := index.Find(request.PathValue("id"))
-		store.mu.RLock()
-		record := store.records[item.ID]
-		store.mu.RUnlock()
-		record, valid := sharedmetadata.RecordFromForm(request.PostForm, record)
-		if !found || !valid {
-			localizedError(writer, request, "metadata is invalid", http.StatusBadRequest)
-			return
-		}
-		if err := store.set(item.ID, record); err != nil || index.Refresh(request.Context()) != nil {
-			localizedError(writer, request, "metadata could not be saved", http.StatusInternalServerError)
-			return
-		}
-		http.Redirect(writer, request, "/watch/"+item.ID, http.StatusSeeOther)
-	}
-}
-
-func (store *metadataStore) refreshHandler(index *libraryIndex) http.HandlerFunc {
-	return sharedmetadata.RefreshHandler(index, store.fetch, localizedError, localizedNotFound)
-}
-
-func (store *metadataStore) fetch(ctx context.Context, item library.Item) error {
-	record, err := store.fetchRecord(ctx, item)
-	if err != nil {
-		return err
-	}
-	return store.set(item.ID, record)
 }
 
 func (store *metadataStore) tvMetadata(ctx context.Context, item library.Item, id int, name, date string, record *metadataRecord, poster *string) {

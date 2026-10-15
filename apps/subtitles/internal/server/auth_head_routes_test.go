@@ -8,11 +8,6 @@ import (
 
 func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) {
 	handler, owner := newRouteAuthorizationServer(t)
-	createRouteProfile(t, handler, owner, map[string]any{
-		"name": "Viewer", "password": "viewer-password", "rating": "all", "libraries": []string{"all"},
-		"downloads": true, "transcode": true, "remote": true,
-	})
-	viewer := loginRouteProfile(t, handler, "Viewer", "viewer-password")
 	keys := make(map[string]string)
 	for _, scope := range []string{"library", "write", "stream", "download", "admin"} {
 		keys[scope] = createRouteAPIKey(t, handler, owner, scope)
@@ -43,14 +38,6 @@ func TestEveryGetEndpointAppliesTheSameAuthorizationToHead(t *testing.T) {
 			ownerResponse := exerciseRouteAsMethod(t, handler, pattern, http.MethodHead, owner, false, nil)
 			if routeAuthorizationDenied(pattern, ownerResponse) {
 				t.Fatalf("Owner HEAD was denied: %d %q", ownerResponse.Code, ownerResponse.Body.String())
-			}
-			viewerResponse := exerciseRouteAsMethod(t, handler, pattern, http.MethodHead, viewer, false, nil)
-			if ownerOnlyRoutes[pattern] {
-				if viewerResponse.Code != http.StatusForbidden || !strings.Contains(viewerResponse.Body.String(), "Owner access required") {
-					t.Fatalf("Viewer HEAD reached Owner route: %d %q", viewerResponse.Code, viewerResponse.Body.String())
-				}
-			} else if routeAuthorizationDenied(pattern, viewerResponse) {
-				t.Fatalf("Viewer HEAD was denied: %d %q", viewerResponse.Code, viewerResponse.Body.String())
 			}
 
 			expected := expectedAPIKeyScopes(pattern)

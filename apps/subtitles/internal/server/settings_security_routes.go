@@ -5,6 +5,4 @@ import "net/http"
 func registerSecuritySettings(mux *http.ServeMux, settings *settingsStore, auth *authentication) {
 	mux.Handle("POST /settings/mfa", auth.owner(saveMFARequirement(auth)))
 	mux.Handle("POST /settings/session-timeouts", auth.owner(saveSessionTimeouts(settings)))
-	mux.Handle("POST /settings/public-session-timeouts", auth.owner(saveSessionTimeouts(settings, true)))
-	mux.Handle("POST /settings/public-session-timeouts/reset", auth.owner(resetPublicSessionTimeouts(settings, false)))
 }

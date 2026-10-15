@@ -21,13 +21,7 @@ func TestManagementPageIsPrivateAndDefaultsOff(t *testing.T) {
 	if status.Code != http.StatusOK || !strings.Contains(status.Body.String(), `"enabled":false`) {
 		t.Fatalf("management status = %d", status.Code)
 	}
-	createRouteProfile(t, handler, owner, map[string]any{"name": "Viewer", "password": "viewer-password"})
-	viewer := loginRouteProfile(t, handler, "Viewer", "viewer-password")
 	for _, route := range []string{"POST /settings/management/enable", "POST /settings/management/disable", "POST /settings/management/devices", "POST /settings/management/devices/revoke", "GET /settings/management", "GET /api/v1/management-access", "POST /api/v1/management-access", "DELETE /api/v1/management-access", "POST /api/v1/management-access/devices", "DELETE /api/v1/management-access/devices"} {
-		denied := exerciseRoute(t, handler, route, viewer, false)
-		if !routeAuthorizationDenied(route, denied) {
-			t.Fatalf("Viewer reached %s: %d", route, denied.Code)
-		}
 		public := exerciseRoute(t, identitycore.Remote(handler), route, owner, false)
 		if public.Code != http.StatusNotFound {
 			t.Fatalf("public management route %s = %d", route, public.Code)
