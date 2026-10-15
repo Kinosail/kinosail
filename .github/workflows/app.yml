@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
@@ -53,13 +53,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
-      - name: Install deep media fixture codecs
-        if: fromJSON(inputs.plan).deep
+      - name: Install media fixture codecs
+        if: inputs.app == 'player' || fromJSON(inputs.plan).deep
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/deep-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
           printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/deep-ffmpeg.deb" | sha256sum --check
@@ -71,6 +71,13 @@ jobs:
           KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}
           KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ inputs.app == 'player' && fromJSON(inputs.plan).deep && format('{0}/transcode-refill', runner.temp) || '' }}
         run: ./scripts/ci/test-go.sh "$APP"
+      - name: Verify certified first-fragment regeneration and cold reopen
+        if: inputs.app == 'player' && !fromJSON(inputs.plan).deep
+        timeout-minutes: 3
+        env:
+          GOMAXPROCS: "2"
+          KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
+        run: timeout --kill-after=5s 180s go -C apps/player test -p=1 ./internal/server -run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$' -count=1 -timeout=170s -v
       - name: Checksum public transcode refill evidence
         if: always() && inputs.app == 'player' && fromJSON(inputs.plan).deep
         run: |
@@ -130,7 +137,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
@@ -149,7 +156,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: apps/${{ inputs.app }}/go.mod
           cache-dependency-path: "**/go.sum"
@@ -376,7 +383,7 @@ jobs:
         if: fromJSON(inputs.plan).deep
         run: ./gradlew :app:assembleDebugAndroidTest
         working-directory: apps/player/apps/android
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         if: fromJSON(inputs.plan).deep
         with:
           go-version-file: apps/player/go.mod
@@ -539,13 +546,7 @@ jobs:
               build-args: |
                 VERSION=ci
                 REVISION=${{ github.sha }}
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        if: matrix.engine == 'chromium'
-        with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
-          cache-dependency-path: "**/go.sum"
       - name: Install startup fixture codecs
-        if: inputs.app == 'player' || matrix.engine == 'chromium'
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
           printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check
@@ -565,228 +566,6 @@ jobs:
           KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           KINOSAIL_TEST_IMAGE_READY: "1"
         run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
-      - name: Verify Subtitles copied-video clocks
-        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
-        timeout-minutes: 10
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 64.5 --long-remux --direct-switch --pace-hls
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --resume-seconds 2.5
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode none
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --audio-mode ac3 --force-audio-conversion --decoded-audio
-          python3 apps/player/scripts/test-hls-resume-browser.py --app subtitles --engines chromium --copied-clock-errors
-      - name: Verify Subtitles copied generation plans
-        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
-        timeout-minutes: 10
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py --held-source-change
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py --held-fault policy
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py --held-fault producer
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py --index-fault unsupported
-          python3 apps/player/scripts/test-subtitles-copied-prefix.py --index-fault timeout
-          for fault in missing malformed policy cuts downgrade; do
-            python3 apps/player/scripts/test-subtitles-copied-prefix.py --plan-fault "$fault"
-          done
-          status=0
-          for boundary in previous origin on-key after-key; do
-            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume "$boundary" || status=1
-          done
-          for fault in unsupported timeout; do
-            python3 apps/player/scripts/test-subtitles-copied-prefix.py --long-resume --index-fault "$fault" || status=1
-          done
-          exit "$status"
-      - name: Verify Subtitles completed copied suffixes
-        if: ${{ !cancelled() && inputs.app == 'subtitles' && matrix.engine == 'chromium' }}
-        timeout-minutes: 5
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          status=0
-          for scenario in success producer timeout missing-plan mismatched-plan; do
-            python3 apps/player/scripts/test-subtitles-copied-prefix.py --completed-suffix "$scenario" || status=1
-          done
-          exit "$status"
-      - name: Keep safe Subtitles copied-clock evidence
-        if: always() && inputs.app == 'subtitles' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: subtitles-copied-clock-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-copied-prefix/*/receipt.json
-            .verification/hls-resume-browser/*/receipt.json
-            .verification/hls-resume-browser/*/chromium.json
-            .verification/hls-resume-browser/*/*-comparison.json
-            .verification/hls-resume-browser/*/*-pending.png
-            .verification/hls-resume-browser/*/*-failed.png
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify cold and damaged HLS cache reopen
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        env:
-          GOMAXPROCS: "2"
-        run: python3 apps/player/scripts/test-hls-cache-reopen.py
-      - name: Keep safe HLS cache reopen evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-hls-cache-reopen-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-cache-reopen/*/receipt.json
-            .verification/hls-cache-reopen/*/SHA256SUMS
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify prepared copied-video timeline
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 -B apps/player/scripts/test_hls_timeline_packets.py
-          python3 apps/player/scripts/test-hls-prepared-timeline.py
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --tail-recovery
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --first-recovery
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --small-video
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --prepared --controls
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --long-remux
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode none
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --resume-seconds .5
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --prepared --tail-recovery --audio-reference
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --audio-sample-rate 44100 --force-audio-conversion --prepared --first-recovery --audio-reference
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --prepared --resume-seconds 64.5 --tail-recovery --audio-reference
-          python3 apps/player/scripts/test-hls-resume-browser.py --engines chromium --audio-mode ac3 --force-audio-conversion --prepared --resume-seconds 2.5 --tail-recovery --audio-reference
-          python3 apps/player/scripts/test-hls-cold-suffix.py
-      - name: Keep safe prepared timeline evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-prepared-timeline-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-prepared-timeline/*/receipt.json
-            .verification/hls-prepared-timeline/*/SHA256SUMS
-            .verification/hls-resume-browser/*/receipt.json
-            .verification/hls-resume-browser/*/chromium.json
-            .verification/hls-cold-suffix/*/receipt.json
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify copied-video audio and legacy preparation
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        timeout-minutes: 10
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 -m unittest discover -s apps/player/scripts -p test_hls_followon_frames.py
-          python3 apps/player/scripts/test-hls-followon.py --suite audio
-      - name: Keep safe copied-video audio evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-hls-audio-conversion-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-followon/*/receipt.json
-            .verification/hls-followon/*/SHA256SUMS
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify continuous converted-audio recovery
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        timeout-minutes: 15
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 48000 --recovery tail
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 32000 --recovery first
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --video-offset .13
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --video-offset .075
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --fractional-video --submicrosecond-origin
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --quantized-mux-clock
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 44100 --recovery middle --half-sample-clock
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 96000 --recovery middle --coarse-video-clock
-          python3 apps/player/scripts/test-hls-audio-splice.py --audio-sample-rate 8000 --recovery early
-          python3 apps/player/scripts/test-hls-audio-source.py
-      - name: Keep safe converted-audio recovery evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-converted-audio-recovery-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-audio-splice/*/receipt.json
-            .verification/hls-audio-splice/*/*-comparison.json
-            .verification/hls-audio-splice/*/video.json
-            .verification/hls-audio-source/*/receipt.json
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify complete HEVC preparation
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        timeout-minutes: 10
-        env:
-          GOMAXPROCS: "2"
-        run: |
-          python3 apps/player/scripts/test-hls-followon.py --suite hevc
-          python3 apps/player/scripts/test-hls-short-completion.py
-      - name: Keep safe complete HEVC preparation evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-hls-hevc-preparation-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-hevc-startup/*/receipt.json
-            .verification/hls-hevc-startup/*/SHA256SUMS
-            .verification/hls-short-completion/*/receipt.json
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify HLS source-version freshness
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        env:
-          GOMAXPROCS: "4"
-        run: python3 apps/player/scripts/test-hls-source-version.py
-      - name: Keep safe HLS source-version evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-hls-source-version-evidence
-          include-hidden-files: true
-          path: |
-            .verification/hls-source-version/*/receipt.json
-            .verification/hls-source-version/*/SHA256SUMS
-          retention-days: 14
-          if-no-files-found: error
-      - name: Verify bounded startup and request boundary
-        if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}
-        env:
-          GOMAXPROCS: "4"
-          KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium
-        run: python3 apps/player/scripts/test-startup-local.py
-      - name: Verify bounded HLS phase evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        run: python3 apps/player/scripts/hls-phase-evidence.py
-      - name: Keep safe startup evidence
-        if: always() && inputs.app == 'player' && matrix.engine == 'chromium'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: player-startup-boundary-evidence
-          include-hidden-files: true
-          path: |
-            .verification/startup/*/receipt.json
-            .verification/startup/*/hls-phases.json
-            .verification/startup/*/hls-phases.sha256
-            .verification/startup/*/resources.json
-            .verification/startup/*/SHA256SUMS
-            .verification/startup/*/results/**/startup-measurements.json
-          retention-days: 7
-          if-no-files-found: error
       - name: Keep verifiable E2E artifact
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -797,10 +576,85 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
+  proof-plan:
+    name: ${{ inputs.app }} media proof shards
+    if: fromJSON(inputs.plan)[inputs.app]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          APP: ${{ inputs.app }}
+        run: python3 scripts/ci/proof_shard.py plan "$APP"
+
+  proofs:
+    name: ${{ inputs.app }} media proof (${{ matrix.shard }})
+    needs: proof-plan
+    if: fromJSON(inputs.plan)[inputs.app]
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.proof-plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/${{ inputs.app }}/go.mod
+          cache-dependency-path: "**/go.sum"
+      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
+        if: matrix.browser
+        with:
+          version: 11.28.5
+          install: false
+          node-version-file: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        if: matrix.browser
+        with:
+          node-version: 26
+          cache: pnpm
+          cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
+      - name: Install the Chromium journey driver
+        if: matrix.browser
+        env:
+          APP: ${{ inputs.app }}
+        run: |
+          pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
+          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps chromium
+      - name: Install proof fixture codecs
+        run: |
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/proof-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
+          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/proof-ffmpeg.deb" | sha256sum --check
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/proof-ffmpeg.deb"
+          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - name: Run the media proof shard
+        env:
+          APP: ${{ inputs.app }}
+          SHARD: ${{ matrix.shard }}
+        run: python3 scripts/ci/proof_shard.py run "$APP" "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"
+      - name: Keep safe media proof evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ inputs.app }}-proof-${{ matrix.shard }}-evidence
+          path: ${{ runner.temp }}/proof-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
   required:
     name: ${{ inputs.app }} suite complete
     if: always()
-    needs: [static, race, security, tooling, client, android, wear, system, browser]
+    needs: [static, race, security, tooling, client, android, wear, system, browser, proofs]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
