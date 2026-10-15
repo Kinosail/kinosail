@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { verifySettingsNavigation } from "./settings-navigation-geometry";
 import { configureLayoutAudit, layoutProblems, login, viewports } from "./layout-audit-helpers";
 
 configureLayoutAudit();
@@ -39,7 +40,7 @@ test("SCIM configuration stays usable at every supported width", async ({ page }
 
 test("single sign-on configuration stays usable at every supported width", async ({ page }, testInfo) => {
 	test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
-	test.setTimeout(120_000);
+	test.setTimeout(180_000);
 	await login(page);
 	for (const viewport of viewports) {
 		await page.setViewportSize(viewport);
@@ -60,6 +61,7 @@ test("single sign-on configuration stays usable at every supported width", async
 		expect((await new AxeBuilder({ page }).analyze()).violations.map(({ id }) => id), `${viewport.width}px accessibility`).toEqual([]);
 		await section.screenshot({ path: testInfo.outputPath(`oidc-configuration-${viewport.width}.png`) });
 	}
+	await verifySettingsNavigation(page, testInfo, false);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/settings/configuration#integrations.oidc");
 	const section = page.locator('section[id="integrations.oidc"]');
@@ -73,6 +75,22 @@ test("single sign-on configuration stays usable at every supported width", async
 	await expect(page.getByLabel("Single sign-on client secret")).toHaveAttribute("placeholder", "Leave blank to keep the configured secret");
 	await expect(page.getByRole("button", { name: "Disable single sign-on" })).toBeVisible();
 	await page.locator('section[id="integrations.oidc"]').screenshot({ path: testInfo.outputPath("oidc-configuration-configured-1440.png") });
+	const restartLabels: { route: string; width: number; labels: string[] }[] = [];
+	for (const route of ["/settings/configuration", "/settings"]) {
+		for (const viewport of [{ width: 320, height: 800 }, { width: 390, height: 844 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {
+			await page.setViewportSize(viewport);
+			await page.goto(route);
+			const notice = page.locator("#restart-required");
+			await expect(notice).toBeVisible();
+			const labels = await notice.locator("li").allTextContents();
+			restartLabels.push({ route, width: viewport.width, labels });
+			await notice.screenshot({ path: testInfo.outputPath(`restart-notice-${route.endsWith("configuration") ? "configuration" : "settings"}-${viewport.width}.png`) });
+			expect.soft(labels, `${route} at ${viewport.width}px names the saved identity setting`).toContain("Single sign-on identity claim");
+			expect.soft(labels, `${route} at ${viewport.width}px keeps the internal key out of the notice`).not.toContain("integrations.oidc.identity_claim");
+		}
+	}
+	await testInfo.attach("restart-notice-labels.json", { body: JSON.stringify(restartLabels), contentType: "application/json" });
+	await verifySettingsNavigation(page, testInfo, true);
 });
 
 test("SAML configuration stays usable at every supported width", async ({ page }, testInfo) => {
