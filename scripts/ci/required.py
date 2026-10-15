@@ -37,7 +37,7 @@ def verify(scope, needs, raw_plan=None, app=None):
                     "findings": codeql}
     else:
         select(app, raw_plan)
-        expected = dict.fromkeys(("static", "race", "security", "system", "browser"), plan[app])
+        expected = dict.fromkeys(("static", "race", "security", "system", "browser", "proofs"), plan[app])
         expected["tooling"] = plan[f"{app}_tools"]
         expected["client"] = app == "player" and plan["client"]
         expected["android"] = app == "player" and plan["android"]

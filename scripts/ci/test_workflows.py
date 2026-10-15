@@ -8,18 +8,13 @@ import tempfile
 import textwrap
 import unittest
 
+from proof_shard import load
+
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / '.github/workflows'
 
 
 class WorkflowSecurityTests(unittest.TestCase):
-    def test_independent_hls_evidence_producers_continue_after_a_failed_journey(self):
-        source = (WORKFLOWS / 'app.yml').read_text()
-        for name in ('Verify HLS source-version freshness', 'Verify bounded startup and request boundary'):
-            step = source.split('      - name: ' + name + '\n', 1)[1].split('      - name:', 1)[0]
-            self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
-            self.assertNotIn('continue-on-error', step)
-
     def test_wear_requires_both_independent_hardware_profiles(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  wear:\n', 1)[1].split('\n  system:', 1)[0]
         self.assertIn('fail-fast: false', source)
@@ -76,18 +71,24 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 self.assertTrue(all(not arg.startswith('-only-testing') for row in rows[1:] for arg in row['args']))
                 self.assertEqual(result.returncode, 1 if failure else 0, result.stderr)
 
-    def test_deep_go_lane_installs_real_media_dependencies_before_testing(self):
+    def test_go_lane_installs_real_media_dependencies_before_testing(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
         self.assertIn("KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}", source)
-        step = source.split('      - name: Install deep media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
-        self.assertIn('if: fromJSON(inputs.plan).deep', step)
+        step = source.split('      - name: Install media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
+        self.assertIn("if: inputs.app == 'player' || fromJSON(inputs.plan).deep", step)
         version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)',
                             (ROOT / 'apps/player/Containerfile').read_text()).group(1)
         self.assertIn(f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb', step)
         self.assertIn('sha256sum --check', step)
         self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', step)
         self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
-        self.assertLess(source.index('Install deep media fixture codecs'), source.index('scripts/ci/test-go.sh'))
+        self.assertLess(source.index('Install media fixture codecs'), source.index('scripts/ci/test-go.sh'))
+        fragment = source.split('      - name: Verify certified first-fragment regeneration and cold reopen\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn("if: inputs.app == 'player' && !fromJSON(inputs.plan).deep", fragment)
+        self.assertIn('KINOSAIL_COPIED_RECOVERY_MEDIA: "1"', fragment)
+        self.assertIn("-run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$'", fragment)
+        self.assertNotIn('continue-on-error', fragment)
+        self.assertLess(source.index('scripts/ci/test-go.sh'), source.index('Verify certified first-fragment'))
 
     def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
         source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
@@ -142,12 +143,16 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 self.assertNotIn('continue-on-error:', export)
                 self.assertNotIn('digests/', checks)
 
-    def test_player_browser_engines_receive_verified_fixture_codecs(self):
+    def test_browser_and_proof_lanes_receive_verified_fixture_codecs(self):
         app = (WORKFLOWS / 'app.yml').read_text()
-        step = app.split('      - name: Install startup fixture codecs\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn("if: inputs.app == 'player' || matrix.engine == 'chromium'\n", step)
-        self.assertIn('sha256sum --check', step)
-        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
+        for name in ('Install startup fixture codecs', 'Install proof fixture codecs'):
+            step = app.split('      - name: ' + name + '\n', 1)[1].split('      - name:', 1)[0]
+            self.assertNotIn('if:', step)
+            self.assertIn('sha256sum --check', step)
+            self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
+        browser = app.split('  browser:\n', 1)[1].split('\n  proof-plan:\n', 1)[0]
+        self.assertNotIn('actions/setup-go@', browser)
+        self.assertNotIn('apps/player/scripts/', browser)
 
     def test_subtitles_full_browser_selection_covers_removed_routes(self):
         script = (ROOT / 'apps/subtitles/scripts/test-container.sh').read_text()
@@ -156,17 +161,13 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertIn('removed-routes.spec.ts', selection.group(1).split())
 
     def test_startup_boundary_has_hosted_public_interface_evidence(self):
-        app = (WORKFLOWS / 'app.yml').read_text()
-        self.assertIn('name: Verify bounded startup and request boundary', app)
-        step = app.split('      - name: Verify bounded startup and request boundary\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn("if: ${{ !cancelled() && inputs.app == 'player' && matrix.engine == 'chromium' }}", step)
-        self.assertIn('run: python3 apps/player/scripts/test-startup-local.py', step)
-        self.assertIn('KINOSAIL_STARTUP_BROWSER_CHANNEL: chromium', app)
-        self.assertIn('name: player-startup-boundary-evidence', app)
-        self.assertIn('include-hidden-files: true', app)
-        self.assertIn('.verification/startup/*/receipt.json', app)
-        self.assertIn('.verification/startup/*/results/**/startup-measurements.json', app)
-        self.assertNotIn('.verification/startup/**\n', app)
+        startup = load()['player']['startup']
+        self.assertTrue(startup['browser'])
+        command = next(command for command in startup['commands'] if command['argv'][1] == 'apps/player/scripts/test-startup-local.py')
+        self.assertEqual(command['env'], {'KINOSAIL_STARTUP_BROWSER_CHANNEL': 'chromium'})
+        self.assertIn('.verification/startup/*/receipt.json', startup['evidence'])
+        self.assertIn('.verification/startup/*/results/**/startup-measurements.json', startup['evidence'])
+        self.assertNotIn('.verification/startup/**', startup['evidence'])
 
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
@@ -184,7 +185,7 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertNotIn('    paths:', ci)
         self.assertIn('needs: [plan, static, tooling, packages, web, docs]', ci)
         self.assertIn('needs: [plan, secrets, codeql, supply-chain, findings]', ci)
-        self.assertIn('needs: [static, race, security, tooling, client, android, wear, system, browser]', app)
+        self.assertIn('needs: [static, race, security, tooling, client, android, wear, system, browser, proofs]', app)
         self.assertNotIn('  validate:', app)
 
     def test_invalid_quality_scope_has_no_side_effects(self):

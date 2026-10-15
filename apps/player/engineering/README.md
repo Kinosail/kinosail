@@ -8,8 +8,8 @@ Contributor and agent material lives here. Start with the [app README](../README
 - [Research](research/): dated investigations; verify current behavior before relying on findings.
 - [Shared research](../../../engineering/research/): cross-app investigations kept in one place.
 - [Current design](../DESIGN.md): the active interface specification.
-- [Agent workflow](../../../engineering/agents/issue-tracker.md) and [domain vocabulary](../../../engineering/agents/domain.md).
+- [Domain vocabulary](../../../engineering/agents/domain.md) for agents.
 
-While the root `.gates-disabled` marker exists, do not run disabled checks. Source publication, deployment, health, TLS, and device acceptance remain separate facts. See the [cross-app engineering guide](../../../engineering/README.md).
+Source publication, deployment, health, TLS, and device acceptance remain separate facts. See the [cross-app engineering guide](../../../engineering/README.md).
 
 [Server discovery handoff](server-discovery-handoff.md) records the LAN announcement work and its remaining TV verification.

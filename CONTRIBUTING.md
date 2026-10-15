@@ -55,15 +55,15 @@ External contributors submit a pull request against `main`. Agents follow the au
 - Make the smallest complete production change and reuse existing shared application operations. Web and `/api/v1` adapters must enforce the same rules.
 - Validate untrusted input before side effects. Add negative tests for missing, malformed, unknown, oversized, out-of-range, and conflicting values where applicable; prove rejection makes no changes.
 - Test observable behavior and important regressions. Test code is outside production line-count limits.
-- Follow the affected app's `DESIGN.md` for visible changes. Exercise populated flows, keyboard use, narrow layouts, and recovery when gates permit.
+- Follow the affected app's `DESIGN.md` for visible changes. Exercise populated flows, keyboard use, narrow layouts, and recovery.
 - Update installation, configuration, API, and recovery instructions in the same change as the behavior they describe.
 - Keep secrets, private addresses, personal media, and real account data out of source, screenshots, logs, and issues.
 
 ## Verification
 
-**The root `.gates-disabled` marker overrides the commands below.** While it exists, do not run disabled suites manually or remove it without explicit maintainer authorization. Record checks as **not run — gates disabled**, not passed. GitHub Actions is disabled; retained workflow files do not prove that CI ran.
+GitHub Actions runs the required checks for each pull request and `main` push. Do not add a `.gates-disabled` marker. Record a check you did not run as **not run**, not passed.
 
-When gates are enabled, run the affected app checks and focused regressions. From the repository root:
+Run the affected app checks and focused regressions locally. From the repository root:
 
 ```sh
 make -C apps/player verify-changed

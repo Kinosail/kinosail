@@ -27,7 +27,7 @@ The native Player workspace has its own PRODUCT.md and platform guidance. Suppor
 - Web and versioned HTTP API adapters call shared validated application operations.
 - Validate untrusted inputs before side effects and preserve application-specific authorization.
 - Kinosail is source-available, not open source.
-- Existing AGENTS.md instructions remain authoritative. Quality gates remain disabled while .gates-disabled exists.
+- Existing AGENTS.md instructions remain authoritative.
 
 ## Evidence on Hand
 
