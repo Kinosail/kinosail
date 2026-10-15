@@ -50,7 +50,7 @@ struct ResilienceTests {
         }
         let result = try await store.synchronize(client: fixture.client)
         #expect(result["available"]?.conflict == false)
-        #expect(try await store.pending().map(\.itemID) == ["missing"])
+        #expect(try await store.pending().isEmpty)
         #expect(fixture.requests.count == 2)
     }
 

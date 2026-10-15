@@ -12,6 +12,7 @@ final class PlaybackStartupFixture: @unchecked Sendable {
         var counts: [String: Int] = [:]; var delayed = false; var denied = true; var media: Data?
         var savedSeconds: Double?; var holdPreferences = false; var denialStatus = 403
         var hlsResources: [String: Data] = [:]; var playbackResponse: Data?
+        var images: [String: Data] = [:]; var serverProgress: [String: WatchProgress]?; var missingItems: Set<String> = []; var conflicts = 0
         var progressReceipts: [ProgressReceipt] = []
         var progressSafetyMediaStatus: Int?
         var progressSafetyHTTPReceipts: [PlaybackFailureHTTPReceipt] = []
@@ -66,6 +67,10 @@ final class PlaybackStartupFixture: @unchecked Sendable {
     var media: Data? { get { state.withLock { $0.media } } set { state.withLock { $0.media = newValue } } }
     var hlsResources: [String: Data] { get { state.withLock { $0.hlsResources } } set { state.withLock { $0.hlsResources = newValue } } }
     var playbackResponse: Data? { get { state.withLock { $0.playbackResponse } } set { state.withLock { $0.playbackResponse = newValue } } }
+    var images: [String: Data] { get { state.withLock { $0.images } } set { state.withLock { $0.images = newValue } } }
+    var serverProgress: [String: WatchProgress]? { get { state.withLock { $0.serverProgress } } set { state.withLock { $0.serverProgress = newValue } } }
+    var missingItems: Set<String> { get { state.withLock { $0.missingItems } } set { state.withLock { $0.missingItems = newValue } } }
+    var conflicts: Int { state.withLock { $0.conflicts } }
     func count(_ path: String) -> Int { state.withLock { $0.counts[path] ?? 0 } }
     var savedSeconds: Double? { state.withLock { $0.savedSeconds } }
     var progressReceipts: [ProgressReceipt] { state.withLock { $0.progressReceipts } }
@@ -185,6 +190,7 @@ final class PlaybackStartupFixture: @unchecked Sendable {
                 state.counts[path, default: 0] += 1
                 return (state.counts[path]!, state.delayed, state.denied)
             }
+            if let image = self.images[path] { self.send(image, type: "image/png", head: parts[0] == "HEAD", connection: connection); return }
             if let resource = self.hlsResources[path] {
                 self.send(resource, type: path.hasSuffix(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp2t",
                           head: parts[0] == "HEAD", connection: connection)
@@ -203,6 +209,45 @@ final class PlaybackStartupFixture: @unchecked Sendable {
             }
             if path == "/api/v1/me", !denied {
                 self.send(try! JSONEncoder().encode(self.viewer.json), type: "application/json", connection: connection)
+                return
+            }
+            let segments = path.split(separator: "/").map(String.init)
+            if segments.count >= 4, segments[0] == "api", segments[2] == "items", self.missingItems.contains(segments[3]) {
+                let response = Data("HTTP/1.1 404 Not Found\r\nContent-Type: application/json\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}".utf8)
+                connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
+                return
+            }
+            if segments.count == 4, segments[0] == "api", segments[2] == "items", parts[0] == "GET", let progress = self.serverProgress {
+                let current = progress[segments[3]] ?? WatchProgress()
+                let body = JSONValue.object(["item": .object(["id": .string(segments[3]), "kind": .string("video"), "title": .string("Fixture"), "progress": current.json]),
+                                             "listed": .bool(false), "profileId": .string("fixture")])
+                self.send(try! JSONEncoder().encode(body), type: "application/json", connection: connection)
+                return
+            }
+            if path.hasSuffix("/progress/sync"), self.serverProgress != nil {
+                guard let raw = try? StrictJSON.decode(Data(next[boundary.upperBound..<(boundary.upperBound + length)])),
+                      let body = try? raw.object(allowing: ["progress", "expected", "playbackToken"]),
+                      let update = try? WatchProgress(body["progress"] ?? .null), let expected = try? WatchProgress(body["expected"] ?? .null),
+                      segments.count == 6 else { connection.cancel(); return }
+                let itemID = segments[3]
+                let (status, result): (Int, WatchProgress) = self.state.withLock { state in
+                    let current = state.serverProgress?[itemID] ?? WatchProgress()
+                    if current.session == update.session, current.revision >= update.revision { return (200, current) }
+                    if current.session != update.session, current.session != expected.session || current.revision != expected.revision
+                        || current.seconds != expected.seconds || current.watched != expected.watched {
+                        state.conflicts += 1
+                        return (409, current)
+                    }
+                    var saved = update; saved.dismissed = false
+                    state.serverProgress?[itemID] = saved
+                    state.savedSeconds = saved.seconds
+                    state.progressReceipts.append(ProgressReceipt(itemID: itemID, seconds: saved.seconds, watched: saved.watched, revision: saved.revision))
+                    return (200, saved)
+                }
+                let payload: JSONValue = status == 409 ? .object(["error": .string("Progress changed on another device."), "progress": result.synchronizationJSON]) : result.synchronizationJSON
+                let data = try! JSONEncoder().encode(payload)
+                let response = Data("HTTP/1.1 \(status) Fixture\r\nContent-Type: application/json\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n".utf8) + data
+                connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
                 return
             }
             if path.hasSuffix("/progress/sync") {
