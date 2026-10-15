@@ -36,17 +36,27 @@ for command in commands:
 if before != {path: digest(path) for path in OUTPUTS}:
     raise SystemExit("invalid generator input changed an architecture snapshot")
 
+def generated(app: str, published: Path) -> str:
+    committed = published.read_bytes()
+    try:
+        subprocess.run(
+            [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), app],
+            cwd=REPO, check=True, capture_output=True,
+            env=os.environ | {"GOOS": "windows", "GOARCH": "386", "CGO_ENABLED": "1"},
+        )
+        return published.read_text(encoding="utf-8")
+    finally:
+        published.write_bytes(committed)
+
+
 for app in APPS:
-    subprocess.run(
-        [sys.executable, str(REPO / "scripts/tooling/generate-architecture-explorer.py"), app, "--check"],
-        cwd=REPO, check=True,
-        env=os.environ | {"GOOS": "windows", "GOARCH": "386", "CGO_ENABLED": "1"},
-    )
     engineering = REPO / f"apps/{app}/engineering/architecture-explorer/index.html"
     published = REPO / f"apps/{app}/docs/architecture-explorer/index.html"
     if engineering.exists():
         raise SystemExit(f"{app} contains a redundant engineering snapshot")
-    html = published.read_text(encoding="utf-8")
+    html = generated(app, published)
+    if before[published] != digest(published):
+        raise SystemExit(f"{app} Code Atlas test changed the committed snapshot")
     if f'<title>Kinosail {app.title()} Code Atlas</title>' not in html:
         raise SystemExit(f"{app} Code Atlas needs a distinct product title")
     from importlib.util import module_from_spec, spec_from_file_location
