@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"embed"
 	"net/http"
 	"regexp"
@@ -101,7 +102,7 @@ var (
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
 	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
 	mainBundle          = joinScripts(pwaJS, shortcutsJS)
-	applicationStyle    = joinScripts(appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS)
+	applicationStyle    = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, subtitleDashboardCSS}, nil)
 )
 
 func joinScripts(scripts ...[]byte) []byte {
