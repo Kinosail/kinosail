@@ -8,4 +8,4 @@ Create and secure the first Owner over a private connection before exposing netw
 
 The canonical [API authorization matrix](../../SECURITY.md#api-authorization-matrix) defines the route-default, session, Viewer, Owner, API-key, capability, and remote-access rules enforced by this app.
 
-GitHub Actions is disabled. While `.gates-disabled` exists, quality checks are disabled too. Workflow definitions, development images, and skipped checks are not release or security certification.
+GitHub Actions runs the required quality checks. Development images and skipped checks are not release or security certification.

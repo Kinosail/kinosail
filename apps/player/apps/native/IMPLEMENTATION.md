@@ -60,7 +60,7 @@ Reading resources are restricted to the active book. Each chapter has request, c
 
 See [VERIFICATION.md](VERIFICATION.md) for the actual evidence, including its limits. Run the ordinary build commands in [README.md](README.md); simulator builds use ad-hoc signing for Keychain and the ordinary device build script stays unsigned. The configured device deployment helper supplies the existing development team for authorized signed installs.
 
-Only after the user enables quality gates, run the Swift test schemes against available simulators:
+Run the Swift test schemes against available simulators:
 
 ```sh
 xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS \
@@ -69,6 +69,6 @@ xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS \
   -destination 'platform=tvOS Simulator,id=<simulator-uuid>' test
 ```
 
-Do not run these while `.gates-disabled` exists. Physical verification still needs representative direct/HLS/HDR playback, interruptions, Picture in Picture, background transfers and recovery, physical PDF/EPUB/comic reading, Siri Remote/VoiceOver, and AirPlay/DLNA receivers.
+Physical verification still needs representative direct/HLS/HDR playback, interruptions, Picture in Picture, background transfers and recovery, physical PDF/EPUB/comic reading, Siri Remote/VoiceOver, and AirPlay/DLNA receivers.
 
 On 2026-09-12 the user explicitly authorized completing the native fixes and installing on their phone while leaving tests disabled. `KinosailImplementationState=implemented` now permits the configured signed-device deployment. Do not bypass the deployment helper or use legacy Expo prebuilds. Keep signing, installation, release upload, source publication and physical behavior as separate delivery facts.

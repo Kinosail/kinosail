@@ -25,4 +25,4 @@ Published instructions must work without screenshots. Add a local optimized imag
 
 The docs README explains Jekyll preview and deployment settings. Inspect rendered headings, links, code, tables, search, light/dark themes, narrow reflow, keyboard navigation, and focus at the intended hosting base path. A source review does not prove a deployed site works.
 
-Repository gate policy still applies: while `.gates-disabled` exists, do not run disabled suites or describe skipped checks as passing. Record manual observations separately. Site publication, signed app release, and application acceptance are different outcomes.
+Repository gate policy still applies: do not describe skipped checks as passing. Record manual observations separately. Site publication, signed app release, and application acceptance are different outcomes.
