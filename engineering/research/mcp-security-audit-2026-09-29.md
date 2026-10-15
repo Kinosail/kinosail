@@ -47,4 +47,4 @@ If saving replay revocation fails, the running process removes the connection an
 
 Rate limits use the transport's remote address and a one-minute window. A shared reverse proxy or NAT can group callers. Owner/Profile tool limits still apply across different connections.
 
-The [evidence packet](../qa/2026-09-29-mcp-audit/README.md) records source tests, official conformance checks, repeat commands, and environment limits. This audit does not prove production deployment, physical-device behavior, or a live external-provider login. It does not claim the full diagnostic conformance suite passed.
+The evidence packet (`engineering/qa/2026-09-29-mcp-audit/`, listed in [removed QA evidence](../qa/REMOVED-EVIDENCE.md)) records source tests, official conformance checks, repeat commands, and environment limits. This audit does not prove production deployment, physical-device behavior, or a live external-provider login. It does not claim the full diagnostic conformance suite passed.
