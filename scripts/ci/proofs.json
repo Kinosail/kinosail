@@ -1,0 +1,173 @@
+{
+  "player": {
+    "cache-reopen": {
+      "browser": false,
+      "timeout": 10,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-hls-cache-reopen.py"]}
+      ],
+      "evidence": [
+        ".verification/hls-cache-reopen/*/receipt.json",
+        ".verification/hls-cache-reopen/*/SHA256SUMS"
+      ]
+    },
+    "prepared-timeline": {
+      "browser": true,
+      "timeout": 20,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "-B", "apps/player/scripts/test_hls_timeline_packets.py"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-prepared-timeline.py"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--tail-recovery"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--first-recovery"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--small-video"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--controls"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--long-remux"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "none"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--resume-seconds", ".5"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--prepared", "--tail-recovery", "--audio-reference"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--audio-sample-rate", "44100", "--force-audio-conversion", "--prepared", "--first-recovery", "--audio-reference"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--prepared", "--resume-seconds", "64.5", "--tail-recovery", "--audio-reference"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--prepared", "--resume-seconds", "2.5", "--tail-recovery", "--audio-reference"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-cold-suffix.py"]}
+      ],
+      "evidence": [
+        ".verification/hls-prepared-timeline/*/receipt.json",
+        ".verification/hls-prepared-timeline/*/SHA256SUMS",
+        ".verification/hls-resume-browser/*/receipt.json",
+        ".verification/hls-resume-browser/*/chromium.json",
+        ".verification/hls-cold-suffix/*/receipt.json"
+      ]
+    },
+    "followon": {
+      "browser": false,
+      "timeout": 20,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "-m", "unittest", "discover", "-s", "apps/player/scripts", "-p", "test_hls_followon_frames.py"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-followon.py", "--suite", "audio"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-followon.py", "--suite", "hevc"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-short-completion.py"]}
+      ],
+      "evidence": [
+        ".verification/hls-followon/*/receipt.json",
+        ".verification/hls-followon/*/SHA256SUMS",
+        ".verification/hls-hevc-startup/*/receipt.json",
+        ".verification/hls-hevc-startup/*/SHA256SUMS",
+        ".verification/hls-short-completion/*/receipt.json"
+      ]
+    },
+    "audio-splice": {
+      "browser": true,
+      "timeout": 20,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "48000", "--recovery", "tail"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "32000", "--recovery", "first"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--video-offset", ".13"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--video-offset", ".075"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video", "--submicrosecond-origin"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--half-sample-clock"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-source.py"]}
+      ],
+      "evidence": [
+        ".verification/hls-audio-splice/*/receipt.json",
+        ".verification/hls-audio-splice/*/*-comparison.json",
+        ".verification/hls-audio-splice/*/video.json",
+        ".verification/hls-audio-source/*/receipt.json"
+      ]
+    },
+    "startup": {
+      "browser": true,
+      "timeout": 15,
+      "gomaxprocs": 4,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-hls-source-version.py"]},
+        {"argv": ["python3", "apps/player/scripts/test-startup-local.py"], "env": {"KINOSAIL_STARTUP_BROWSER_CHANNEL": "chromium"}},
+        {"argv": ["python3", "apps/player/scripts/hls-phase-evidence.py"], "always": true}
+      ],
+      "evidence": [
+        ".verification/hls-source-version/*/receipt.json",
+        ".verification/hls-source-version/*/SHA256SUMS",
+        ".verification/startup/*/receipt.json",
+        ".verification/startup/*/hls-phases.json",
+        ".verification/startup/*/hls-phases.sha256",
+        ".verification/startup/*/resources.json",
+        ".verification/startup/*/SHA256SUMS",
+        ".verification/startup/*/results/**/startup-measurements.json"
+      ]
+    }
+  },
+  "subtitles": {
+    "copied-clocks": {
+      "browser": true,
+      "timeout": 15,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--resume-seconds", "64.5", "--long-remux"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--resume-seconds", "64.5", "--long-remux", "--direct-switch"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--resume-seconds", "64.5", "--long-remux", "--direct-switch", "--pace-hls"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--resume-seconds", "2.5"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--audio-mode", "none"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--decoded-audio"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--app", "subtitles", "--engines", "chromium", "--copied-clock-errors"]}
+      ],
+      "evidence": [
+        ".verification/hls-resume-browser/*/receipt.json",
+        ".verification/hls-resume-browser/*/chromium.json",
+        ".verification/hls-resume-browser/*/*-comparison.json",
+        ".verification/hls-resume-browser/*/*-pending.png",
+        ".verification/hls-resume-browser/*/*-failed.png"
+      ]
+    },
+    "copied-plans": {
+      "browser": false,
+      "timeout": 15,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--held-source-change"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--held-fault", "policy"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--held-fault", "producer"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--index-fault", "unsupported"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--index-fault", "timeout"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--plan-fault", "missing"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--plan-fault", "malformed"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--plan-fault", "policy"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--plan-fault", "cuts"]},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--plan-fault", "downgrade"]}
+      ],
+      "evidence": [
+        ".verification/hls-copied-prefix/*/receipt.json"
+      ]
+    },
+    "copied-long-resume": {
+      "browser": false,
+      "timeout": 15,
+      "gomaxprocs": 2,
+      "commands": [
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "previous"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "origin"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "on-key"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "after-key"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "--index-fault", "unsupported"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--long-resume", "--index-fault", "timeout"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--completed-suffix", "success"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--completed-suffix", "producer"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--completed-suffix", "timeout"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--completed-suffix", "missing-plan"], "always": true},
+        {"argv": ["python3", "apps/player/scripts/test-subtitles-copied-prefix.py", "--completed-suffix", "mismatched-plan"], "always": true}
+      ],
+      "evidence": [
+        ".verification/hls-copied-prefix/*/receipt.json"
+      ]
+    }
+  }
+}

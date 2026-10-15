@@ -74,7 +74,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -100,7 +100,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: packages/go.mod
           cache-dependency-path: "**/go.sum"
@@ -249,7 +249,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -289,7 +289,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         if: matrix.language == 'go'
         with:
           go-version-file: go.work
@@ -453,7 +453,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
