@@ -62,6 +62,9 @@
 
 - Unless the user requests read-only work or says not to publish, complete implementation through a pull request into protected `origin/main`. Required GitHub checks must pass; never bypass protection or force-push main.
 - Merge the pull request with a merge commit so the reviewed task commit remains an ancestor of remote main.
+- Open each independent pull request against `main`. Do not stack pull requests by default.
+- Stack a pull request on another open pull request only when it needs that pull request's unmerged changes. Do not merge another open task branch into your branch to get those changes.
+- A stacked pull request merges after its base. When the base merges, retarget the stacked pull request to `main` if GitHub did not, then let the merge queue land it.
 - Fetch and reconcile current `origin/main`, rerun checks affected by reconciliation, and retry ordinary push races.
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
 - GitHub Actions is the CI and container-publication authority. Green main pushes publish affected app containers automatically; version tags and major releases are not required. Keep the local deployment watcher separate from artifact publication.
