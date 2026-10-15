@@ -158,12 +158,12 @@ const viewports = process.env.KINOSAIL_LAYOUT_QUICK ? [{width: 390, height: 844}
   [{width: 320, height: 800}, {width: 390, height: 844}, {width: 844, height: 390}, {width: 768, height: 1024}, {width: 1024, height: 768}, {width: 1440, height: 900}, {width: 1920, height: 1080}];
 let routes = ["/login", "/", "/?view=movies", "/settings", "/settings#access", "/account", `/watch/${item.id}?playback=direct`, "/?view=movies&q=no-synthetic-match", "/item/missing-layout-probe"];
 if(app==="player")routes.push(`/item/${item.id}`);
-else {routes=routes.map(path=>path.replace("view=movies","view=library").replace("#access","#provider"));routes.push("/?view=wanted","/?view=history");const sub=await pageRequestLibrary(); if(!sub)throw new Error("Synthetic subtitle library must include an inspector item");routes.push(`/subtitles/inspect/${sub}?language=en`);}
+else {routes=routes.filter(path=>!path.startsWith("/watch/")).map(path=>path.replace("view=movies","view=library").replace("#access","#provider"));routes.push("/?view=wanted","/?view=history");const sub=await pageRequestLibrary(); if(!sub)throw new Error("Synthetic subtitle library must include an inspector item");routes.push(`/subtitles/inspect/${sub}?language=en`);}
 routes.push(app==="player"?"/settings#session-timeouts":"/settings#security");
 async function pageRequestLibrary(){const c=await browser.newContext({baseURL, storageState:auth});try{const r=await c.request.get("/api/v1/subtitle-library?view=library");const d=await r.json();return (d.items?.find(i=>i.title==="Layout Example")||d.items?.[0])?.id;}finally{await c.close();}}
 if(process.env.KINOSAIL_LAYOUT_PATHS)routes=process.env.KINOSAIL_LAYOUT_PATHS.split(",");
 const cases=viewports.flatMap(viewport=>routes.map(path=>({viewport,path,variant:"default"})));
-if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",app==="player"?"/settings#session-timeouts":"/settings#security",`/watch/${item.id}?playback=direct`,...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/settings#access":"/settings#provider",app==="player"?"/settings#session-timeouts":"/settings#security",...(app==="player"?[`/watch/${item.id}?playback=direct`]:[]),...routes.filter(path=>path.startsWith("/subtitles/inspect/"))]){
   cases.push({viewport:{width:390,height:844},path,variant:"text-200",scale:"200%"});
   cases.push({viewport:{width:390,height:844},path,variant:"motion",motion:"no-preference"});
   if(path.startsWith("/settings"))for(const viewport of [{width:320,height:800},{width:844,height:390}])cases.push({viewport,path,variant:"text-200",scale:"200%"});
@@ -171,7 +171,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}])cases.push({viewport,path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
-if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM)cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
+if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM&&app==="player")cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:320,height:800},path:"/?view=library",variant:"text-200",scale:"200%"});
 try {
   for (const {viewport,path,variant,scale,motion,apple,savedTabs} of cases) {
@@ -263,7 +263,7 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},`/watch/${item.id}?playback=direct`,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
+  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));

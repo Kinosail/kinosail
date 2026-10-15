@@ -12,8 +12,13 @@ import sys
 
 GOVAD_VERSION = "v0.0.0-20260330155402-74750eabf3a4"
 BROWSER_HASHES = {
-    "hls.min.js": "a12e7ee1cd64a69dcdb314157e45dafcba705bfb0b1440b7935cb265d374423e",
-    "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
+    "player": {
+        "hls.min.js": "a12e7ee1cd64a69dcdb314157e45dafcba705bfb0b1440b7935cb265d374423e",
+        "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
+    },
+    "subtitles": {
+        "htmx.min.js": "e484d9171a9db30a39c8f16e3d709d4137f3211c659f8e6125816635033d593f",
+    },
 }
 MODEL_HASHES = {
     "vad.go": "73fc381fe750e5afc8be27c123682635bc344ac83602784cb834bbd7f939a9b8",
@@ -39,8 +44,8 @@ def verify(repo: Path, module: dict) -> None:
 
 
 def verify_browser(repo: Path) -> None:
-    for app in ("player", "subtitles"):
-        for name, digest in BROWSER_HASHES.items():
+    for app, hashes in BROWSER_HASHES.items():
+        for name, digest in hashes.items():
             check_file(repo / "apps" / app / "internal/server/static" / name, digest)
 
 
