@@ -18,6 +18,7 @@ LANGUAGES = {
     '.properties': 'properties',
 }
 BUILD_FILES = {'Makefile': 'make', 'Containerfile': 'dockerfile', 'Dockerfile': 'dockerfile',
+               'Containerfile.test': 'dockerfile',
                'Brewfile': 'ruby', 'Gemfile': 'ruby', 'impeccable': 'bash', '.env.example': 'bash'}
 VENDORED = {
     f'apps/{app}/internal/server/static/{asset}.min.js'
