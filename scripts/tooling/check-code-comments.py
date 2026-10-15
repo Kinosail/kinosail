@@ -12,11 +12,13 @@ from tree_sitter_language_pack import get_parser
 LANGUAGES = {
     '.go': 'go', '.py': 'python', '.swift': 'swift', '.kt': 'kotlin', '.kts': 'kotlin',
     '.js': 'javascript', '.mjs': 'javascript', '.cjs': 'javascript', '.ts': 'typescript',
-    '.tsx': 'tsx', '.css': 'css', '.html': 'html', '.sh': 'bash', '.yaml': 'yaml',
+    '.tsx': 'tsx', '.cts': 'typescript', '.java': 'java', '.cmd': 'batch',
+    '.css': 'css', '.html': 'html', '.sh': 'bash', '.yaml': 'yaml',
     '.yml': 'yaml', '.toml': 'toml', '.xml': 'xml', '.plist': 'xml', '.svg': 'xml',
+    '.properties': 'properties',
 }
 BUILD_FILES = {'Makefile': 'make', 'Containerfile': 'dockerfile', 'Dockerfile': 'dockerfile',
-               'Brewfile': 'ruby', 'Gemfile': 'ruby'}
+               'Brewfile': 'ruby', 'Gemfile': 'ruby', 'impeccable': 'bash', '.env.example': 'bash'}
 VENDORED = {
     f'apps/{app}/internal/server/static/{asset}.min.js'
     for app in ('player', 'subtitles') for asset in ('hls', 'htmx')
@@ -43,6 +45,10 @@ def language(path):
 
 
 def comment_spans(source, lang, offset=0):
+    if lang == 'batch':
+        for match in re.finditer(rb'(?im)^[ \t]*@?(?:rem(?:[ \t][^\r\n]*)?|::[^\r\n]*)\r?$', source):
+            yield offset + match.start(), offset + match.end()
+        return
     if lang == 'dockerfile':
         yield from docker_spans(source, offset)
         return

@@ -25,6 +25,12 @@ class CodeCommentsCommandTests(unittest.TestCase):
             'Makefile': 'all:\n\tprintf "%s" "# data"\n',
             'Containerfile': 'FROM scratch\nRUN echo "# data"\nLABEL value="# data"\n',
             'workflow.yaml': 'run: |\n  cat <<\'DATA\'\n  # data\n  DATA\n  echo "# data"\n',
+            'Main.java': 'class Main { String value = "https://example.invalid"; }\n',
+            'fixture.d.cts': 'declare const value: "// data";\n',
+            'impeccable': '#!/bin/sh\necho "# data"\n',
+            'launcher.cmd': '@echo off\necho "REM data"\n',
+            '.env.example': 'VALUE="https://example.invalid/#data"\n',
+            'gradle.properties': 'value=https://example.invalid/#data\n',
         }
         rejected = {
             'main.go': '// explanation\n',
@@ -39,6 +45,12 @@ class CodeCommentsCommandTests(unittest.TestCase):
             'Makefile': 'other:\n\techo value # explanation\n',
             'Containerfile': 'RUN echo value # explanation\n',
             'workflow.yaml': 'run: |\n  echo value # explanation\n',
+            'Main.java': '// explanation\n',
+            'fixture.d.cts': '// explanation\n',
+            'impeccable': '# explanation\n',
+            'launcher.cmd': 'rem explanation\n',
+            '.env.example': '# explanation\n',
+            'gradle.properties': '# explanation\n',
         }
         with tempfile.TemporaryDirectory() as directory:
             repo = Path(directory)
