@@ -1,6 +1,7 @@
 package playback
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -22,6 +23,7 @@ func TestTrickplayRoutingAndGenerationEdges(t *testing.T) {
 		Lookup: func(*http.Request, string) (library.Item, bool) {
 			return library.Item{ID: "0123456789abcdef", Kind: "video", Path: source}, true
 		},
+		Acquire:     func(context.Context) (func(), error) { return func() {}, nil },
 		NotFound:    func(http.ResponseWriter, *http.Request) { callback = "not-found" },
 		Unavailable: func(http.ResponseWriter, *http.Request) { callback = "unavailable" },
 	})
@@ -61,7 +63,16 @@ func TestTrickplayRoutingAndGenerationEdges(t *testing.T) {
 		t.Fatal("ignored trickplay directory failure")
 	}
 	failedTarget := filepath.Join(root, "failed.jpg")
-	if err := GenerateTrickplay(t.Context(), root, "/missing", source, failedTarget, 0); err == nil || pathExists(failedTarget+".tmp.jpg") {
+	if err := GenerateTrickplay(t.Context(), root, "/missing", source, failedTarget, 0); err == nil || len(scratchFiles(t, root)) != 0 {
 		t.Fatalf("failed generation = %v", err)
 	}
+}
+
+func scratchFiles(t *testing.T, directory string) []string {
+	t.Helper()
+	matches, err := filepath.Glob(filepath.Join(directory, "*.tmp.jpg"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return matches
 }
