@@ -23,7 +23,7 @@ class CodeCommentsCommandTests(unittest.TestCase):
             'main.html': '<script>const value = "// data";</script><style>.x{color:red}</style>\n',
             'main.css': '.x::before { content: "/* data */"; }\n',
             'Makefile': 'all:\n\tprintf "%s" "# data"\n',
-            'Containerfile': 'FROM scratch\nLABEL value="# data"\n',
+            'Containerfile': 'FROM scratch\nRUN echo "# data"\nLABEL value="# data"\n',
             'workflow.yaml': 'run: |\n  cat <<\'DATA\'\n  # data\n  DATA\n  echo "# data"\n',
         }
         rejected = {
@@ -36,8 +36,8 @@ class CodeCommentsCommandTests(unittest.TestCase):
             'main.yaml': 'text: value # explanation\n',
             'main.html': '<script>/* explanation */</script><style>/* explanation */</style>\n',
             'main.css': '/* explanation */\n',
-            'Makefile': '# explanation\n',
-            'Containerfile': '# explanation\n',
+            'Makefile': 'other:\n\techo value # explanation\n',
+            'Containerfile': 'RUN echo value # explanation\n',
             'workflow.yaml': 'run: |\n  echo value # explanation\n',
         }
         with tempfile.TemporaryDirectory() as directory:

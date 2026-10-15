@@ -43,12 +43,13 @@ def language(path):
 
 
 def comment_spans(source, lang, offset=0):
+    if lang == 'dockerfile':
+        yield from docker_spans(source, offset)
+        return
     stack = [parser_for(lang).parse(source).root_node]
     while stack:
         node = stack.pop()
         if node.type.lower() in COMMENT_TYPES:
-            if lang == 'dockerfile' and source[source.rfind(b'\n', 0, node.start_byte) + 1:node.start_byte].strip():
-                continue
             yield offset + node.start_byte, offset + node.end_byte
         elif lang == 'html' and node.type == 'raw_text':
             nested = {'script_element': 'javascript', 'style_element': 'css'}.get(node.parent.type)
@@ -66,6 +67,21 @@ def comment_spans(source, lang, offset=0):
                 yield from shell_block_spans(source[start:node.end_byte], offset + start)
         else:
             stack.extend(reversed(node.children))
+
+
+def docker_spans(source, offset):
+    spans = {(offset + match.start(), offset + match.end())
+             for match in re.finditer(rb'(?m)^[ \t]*#[^\n]*', source)}
+    for match in re.finditer(rb'(?im)^(?:ONBUILD[ \t]+)?(?:RUN|CMD|ENTRYPOINT)[ \t]+', source):
+        end = source.find(b'\n', match.end())
+        while end >= 0 and source[match.end():end].rstrip().endswith(b'\\'):
+            end = source.find(b'\n', end + 1)
+        if end < 0:
+            end = len(source)
+        command = source[match.end():end]
+        if not command.lstrip().startswith(b'['):
+            spans.update(comment_spans(command, 'bash', offset + match.end()))
+    yield from sorted(spans)
 
 
 def shell_block_spans(source, offset):
