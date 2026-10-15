@@ -30,8 +30,8 @@ final class RemotePlaybackCrashTests: RemoteTestCase {
             XCTAssertTrue(bookmarks.waitForNonExistence(timeout: 20))
             XCTAssertTrue(app.cells["Playback options"].waitForExistence(timeout: 30), app.debugDescription)
             let options = app.cells["Playback options"]
-            remote.press(.down)
-            remote.press(.up)
+            let preview = app.cells["Seek with preview"]
+            for _ in 0..<3 where !options.hasFocus && !preview.hasFocus { remote.press(.up) }
             for _ in 0..<12 where !options.hasFocus { remote.press(.right) }
             XCTAssertTrue(options.hasFocus, app.debugDescription)
             remote.press(.select)
