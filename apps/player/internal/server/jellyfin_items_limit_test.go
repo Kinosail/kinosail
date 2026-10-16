@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 
 const (
 	jellyfinLimitMovies   = 1007
-	jellyfinPageCeiling   = 1000
 	jellyfinLatestDefault = 20
 )
 
@@ -52,7 +52,7 @@ func newestFilms(first, count int) []string {
 	return names
 }
 
-func TestJellyfinItemsBoundEveryPageAndKeepTheTotal(t *testing.T) {
+func TestJellyfinItemsFollowJellyfinLimitSemantics(t *testing.T) {
 	t.Parallel()
 	handler, token := jellyfinLimitServer(t)
 	total := jellyfinLimitMovies + 1
@@ -61,14 +61,13 @@ func TestJellyfinItemsBoundEveryPageAndKeepTheTotal(t *testing.T) {
 		count, start  int
 		first, latest string
 	}{
-		{"/Items", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
-		{"/Items?limit=-1", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
-		{"/Items?Limit=abc", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
-		{"/Items?limit=99999999999999999999", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
-		{"/Items?limit=1001", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
-		{"/Items?limit=1000", jellyfinPageCeiling, 0, "Movie:Film 0000", "Movie:Film 0999"},
+		{"/Items", total, 0, "Movie:Film 0000", "Series:Severance"},
+		{"/Items?limit=", total, 0, "Movie:Film 0000", "Series:Severance"},
+		{"/Items?limit=-1", total, 0, "Movie:Film 0000", "Series:Severance"},
+		{"/Items?Limit=2147483647", total, 0, "Movie:Film 0000", "Series:Severance"},
+		{"/Items?limit=1001", 1001, 0, "Movie:Film 0000", "Movie:Film 1000"},
 		{"/Items?limit=3&startIndex=1004", 3, 1004, "Movie:Film 1004", "Movie:Film 1006"},
-		{"/Items?startIndex=1000&limit=5000", total - jellyfinPageCeiling, 1000, "Movie:Film 1000", "Series:Severance"},
+		{"/Items?startIndex=1000&limit=5000", total - 1000, 1000, "Movie:Film 1000", "Series:Severance"},
 		{"/Items?limit=0", 0, 0, "", ""},
 	} {
 		page := jellyfinPage(t, handler, token, test.path)
@@ -81,18 +80,9 @@ func TestJellyfinItemsBoundEveryPageAndKeepTheTotal(t *testing.T) {
 			t.Errorf("%s = %q..%q, want %q..%q", test.path, names[0], names[len(names)-1], test.first, test.latest)
 		}
 	}
-	seen := make(map[string]bool, total)
-	for _, path := range []string{"/Items", "/Items?StartIndex=1000"} {
-		for _, name := range jellyfinPageNames(jellyfinPage(t, handler, token, path)) {
-			seen[name] = true
-		}
-	}
-	if len(seen) != total {
-		t.Fatalf("paging returned %d distinct items, want %d", len(seen), total)
-	}
 }
 
-func TestJellyfinLatestReturnsABoundedNewestFirstSelection(t *testing.T) {
+func TestJellyfinLatestReturnsANewestFirstSelection(t *testing.T) {
 	t.Parallel()
 	handler, token := jellyfinLimitServer(t)
 	newest := jellyfinLimitMovies - 1
@@ -101,10 +91,9 @@ func TestJellyfinLatestReturnsABoundedNewestFirstSelection(t *testing.T) {
 		names []string
 	}{
 		{"/Items/Latest", newestFilms(newest, jellyfinLatestDefault)},
-		{"/Items/Latest?limit=-1", newestFilms(newest, jellyfinLatestDefault)},
-		{"/Items/Latest?Limit=abc", newestFilms(newest, jellyfinLatestDefault)},
+		{"/Items/Latest?limit=-1", newestFilms(newest, 1)},
 		{"/Items/Latest?limit=3", newestFilms(newest, 3)},
-		{"/Items/Latest?limit=99999999999999999999", newestFilms(newest, jellyfinPageCeiling)},
+		{"/Items/Latest?limit=2147483647", append(newestFilms(newest, jellyfinLimitMovies), "Series:Severance")},
 		{"/Items/Latest?Limit=0", []string{}},
 		{"/Items/Latest?ParentId=00000000000000000000000000000001&IncludeItemTypes=Movie&limit=2", newestFilms(newest, 2)},
 		{"/Items/Latest?searchTerm=film%20000&limit=2", newestFilms(9, 2)},
@@ -119,6 +108,20 @@ func TestJellyfinLatestReturnsABoundedNewestFirstSelection(t *testing.T) {
 		decodeJellyfin(t, response, &page.Items)
 		if got := jellyfinPageNames(page); !reflect.DeepEqual(got, test.names) {
 			t.Errorf("%s = %d items %q, want %d items %q", test.path, len(got), got, len(test.names), test.names)
+		}
+	}
+}
+
+func TestJellyfinListsRejectLimitsJellyfinCannotParse(t *testing.T) {
+	t.Parallel()
+	handler, token := jellyfinLimitServer(t)
+	for _, route := range []string{"/Items", "/Items/Latest"} {
+		for _, limit := range []string{"abc", "1.5", "2147483648", "99999999999999999999", "-2147483649"} {
+			path := route + "?limit=" + limit
+			response := jellyfinCall(t, handler, http.MethodGet, path, "", token)
+			if response.Code != http.StatusBadRequest || !strings.Contains(response.Body.String(), "limit") {
+				t.Errorf("%s = %d %q, want 400 naming the limit", path, response.Code, response.Body.String())
+			}
 		}
 	}
 }

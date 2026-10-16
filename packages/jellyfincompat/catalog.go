@@ -71,6 +71,10 @@ func (catalog Catalog) Views() map[string]any {
 }
 
 func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
+	limit, err := itemsLimit(values)
+	if err != nil {
+		return nil, err
+	}
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
 		return nil, err
@@ -79,11 +83,15 @@ func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	if entries == nil {
 		return Result(nil, 0, 0), nil
 	}
-	page, start, total := newEntryFilter(values, ids).page(entries, max(0, Int(values, "startIndex")), pageLimit(values, maximumPageSize))
+	page, start, total := newEntryFilter(values, ids).page(entries, max(0, Int(values, "startIndex")), limit)
 	return Result(catalog.projectEntries(page), start, total), nil
 }
 
 func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
+	limit, err := latestLimit(values)
+	if err != nil {
+		return nil, err
+	}
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
 		return nil, err
@@ -92,7 +100,7 @@ func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
 	if entries == nil {
 		return nil, nil
 	}
-	return catalog.projectEntries(newEntryFilter(values, ids).first(entries, pageLimit(values, defaultLatestLimit))), nil
+	return catalog.projectEntries(newEntryFilter(values, ids).first(entries, limit)), nil
 }
 
 func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any {

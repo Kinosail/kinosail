@@ -2,16 +2,16 @@ package jellyfincompat
 
 import (
 	"errors"
+	"math"
 	"net/url"
 	"slices"
 	"strconv"
 	"strings"
 )
 
-const (
-	maximumPageSize    = 1000
-	defaultLatestLimit = 20
-)
+const defaultLatestLimit = 20
+
+var errInvalidLimit = errors.New("limit must be a 32-bit integer")
 
 type entryFilter struct {
 	ids      map[string]bool
@@ -20,15 +20,35 @@ type entryFilter struct {
 	search   string
 }
 
-func pageLimit(values url.Values, fallback int) int {
-	limit, err := strconv.Atoi(Query(values, "limit"))
+func requestedLimit(values url.Values) (int, bool, error) {
+	text := Query(values, "limit")
+	if text == "" {
+		return 0, false, nil
+	}
+	limit, err := strconv.ParseInt(text, 10, 32)
+	if err != nil {
+		return 0, false, errInvalidLimit
+	}
+	return int(limit), true, nil
+}
+
+func itemsLimit(values url.Values) (int, error) {
+	limit, present, err := requestedLimit(values)
+	if !present || limit < 0 {
+		return math.MaxInt, err
+	}
+	return limit, nil
+}
+
+func latestLimit(values url.Values) (int, error) {
+	limit, present, err := requestedLimit(values)
 	switch {
-	case errors.Is(err, strconv.ErrRange) && limit > 0:
-		return maximumPageSize
-	case err != nil || limit < 0:
-		return fallback
+	case !present:
+		return defaultLatestLimit, err
+	case limit < 0:
+		return 1, nil
 	default:
-		return min(limit, maximumPageSize)
+		return limit, nil
 	}
 }
 
@@ -52,7 +72,7 @@ func (filter entryFilter) page(entries []catalogEntry, start, limit int) ([]cata
 		start = min(start, len(entries))
 		return entries[start : start+min(limit, len(entries)-start)], start, len(entries)
 	}
-	page, total := make([]catalogEntry, 0, min(limit, len(entries))), 0
+	page, total := make([]catalogEntry, 0), 0
 	for _, entry := range entries {
 		if filter.matches(entry) {
 			if total >= start && len(page) < limit {
@@ -68,7 +88,7 @@ func (filter entryFilter) first(entries []catalogEntry, limit int) []catalogEntr
 	if filter.all() {
 		return entries[:min(limit, len(entries))]
 	}
-	page := make([]catalogEntry, 0, min(limit, len(entries)))
+	page := make([]catalogEntry, 0)
 	for _, entry := range entries {
 		if len(page) == limit {
 			break
