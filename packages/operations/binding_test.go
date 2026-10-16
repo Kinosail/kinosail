@@ -98,13 +98,7 @@ func TestBindingProjectsEveryMetric(t *testing.T) {
 	t.Parallel()
 	snapshot := fullRuntimeSnapshot()
 	metrics := projectMetrics(snapshot)
-	want := Metrics{
-		Healthy: true, LibraryMonitoring: true, LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6, ActivityFailures: 7,
-		WorkloadCapacity: 8, WorkloadBackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13, ActiveInteractive: 31, WaitingInteractive: 32,
-		NotificationQueueDepth: 14, NotificationDropped: 15, ViewingSyncActive: 16, ViewingSyncDeferred: 17,
-		LiveEventSubscribers: 18, LiveEventsPublished: 19, LiveEventReconnects: 20, LiveEventRejected: 21, LiveEventSlowDrops: 22,
-		WatchRoomConnections: 23, WatchRoomJoins: 24, WatchRoomReconnects: 25, WatchRoomSlowDrops: 26, WatchRoomDriftObservations: 27, WatchRoomDriftSeconds: 28.5,
-	}
+	want := fullMetrics()
 	if !reflect.DeepEqual(metrics, want) {
 		t.Fatalf("metrics = %+v", metrics)
 	}
@@ -159,6 +153,16 @@ func completeEmptyMetadataRefresh() MetadataRefresh {
 		},
 		Download: func(context.Context, metadata.Result) (metadata.Record, error) { return metadata.Record{}, nil },
 		Store:    func(map[string]metadata.Record) error { return nil }, RefreshLibrary: func(context.Context) error { return nil },
+	}
+}
+
+func fullMetrics() Metrics {
+	return Metrics{
+		Healthy: true, LibraryMonitoring: true, LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6, ActivityFailures: 7,
+		WorkloadCapacity: 8, WorkloadBackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13, ActiveInteractive: 31, WaitingInteractive: 32,
+		NotificationQueueDepth: 14, NotificationDropped: 15, ViewingSyncActive: 16, ViewingSyncDeferred: 17,
+		LiveEventSubscribers: 18, LiveEventsPublished: 19, LiveEventReconnects: 20, LiveEventRejected: 21, LiveEventSlowDrops: 22,
+		WatchRoomConnections: 23, WatchRoomJoins: 24, WatchRoomReconnects: 25, WatchRoomSlowDrops: 26, WatchRoomDriftObservations: 27, WatchRoomDriftSeconds: 28.5,
 	}
 }
 

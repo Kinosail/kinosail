@@ -153,8 +153,15 @@ func TestDeviceSessionBudgetsLeavePlaybackHeadroom(t *testing.T) {
 		accelerator, device string
 		sessions            int
 	}{
-		{"vaapi", "/dev/dri/renderD128", 4}, {"qsv", "", 4}, {"cuda", "0", 3}, {"cuda", "", 3},
-		{"videotoolbox", "", 4}, {"amf", "", 4}, {"rkmpp", "/dev/dri/renderD129", 4}, {"mf", "", 2}, {"v4l2m2m", "", 2},
+		{"vaapi", "/dev/dri/renderD128", 4},
+		{"qsv", "", 4},
+		{"cuda", "0", 3},
+		{"cuda", "", 3},
+		{"videotoolbox", "", 4},
+		{"amf", "", 4},
+		{"rkmpp", "/dev/dri/renderD129", 4},
+		{"mf", "", 2},
+		{"v4l2m2m", "", 2},
 	}
 	keys := map[string]bool{}
 	for _, test := range tests {

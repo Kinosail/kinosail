@@ -77,19 +77,17 @@ func hardwareDecodeBackend(id string) bool {
 	return slices.Contains([]string{"qsv", "vaapi", "cuda", "rkmpp", "videotoolbox"}, id)
 }
 
-func verifyHardwareDecode(ctx context.Context, options ProbeOptions, settings transcodepolicy.Settings, backend *Backend, state *verification, check checkFunc) bool {
+func verifyHardwareDecode(ctx context.Context, options ProbeOptions, settings transcodepolicy.Settings, backend *Backend, state *verification, check checkFunc) {
 	if !hardwareDecodeBackend(backend.ID) || ctx.Err() != nil {
-		return false
+		return
 	}
 	settings.HardwareDecode = true
 	probeCtx, stop := context.WithTimeout(ctx, 3*time.Second)
 	defer stop()
 	result := check(probeCtx, options.FFmpeg, settings, backend.Name)
-	if result.Status != "passed" {
-		return false
+	if result.Status == "passed" {
+		state.markDecode(backend.ID, settings.Device, settings.Codec, settings.DecodeInput)
 	}
-	state.markDecode(backend.ID, settings.Device, settings.Codec, settings.DecodeInput)
-	return true
 }
 
 func (state *verification) verifyDecodeInputs(ctx context.Context, options ProbeOptions, backend *Backend, operation Operation, settings transcodepolicy.Settings, check checkFunc) {

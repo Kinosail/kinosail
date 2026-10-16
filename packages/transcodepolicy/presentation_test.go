@@ -49,6 +49,12 @@ func TestInstalledFFmpegAcceptsSoftwareRecipes(t *testing.T) {
 			}
 		})
 	}
+	for _, input := range []string{"hevc", "hevc10", "av1"} {
+		result := Check(t.Context(), ffmpeg, Settings{Codec: "h264", Accelerator: "none", Encoder: "libx264", DecodeInput: input, Preset: "veryfast", CRF: "30"}, "Software")
+		if result.Status != "passed" {
+			t.Fatalf("%s decode source check = %#v", input, result)
+		}
+	}
 	ffprobe, err := exec.LookPath("ffprobe")
 	if err != nil {
 		t.Skip("FFprobe is required to verify tone-mapped renditions")

@@ -32,9 +32,9 @@ func rank(class Class) int {
 		return 0
 	case Interactive:
 		return 1
-	default:
-		return 2
+	case Background:
 	}
+	return 2
 }
 
 func (lane *lane) possible(priority, cost int) bool {
