@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 type subtitleEditAnchor struct {
@@ -197,38 +199,35 @@ func (manager *subtitleManager) previewSubtitleEdit(request *http.Request, id st
 	return review, document, http.StatusOK, nil
 }
 
-func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id string, input subtitleEdit) (subtitleReview, int, error) {
-	if err := validateSubtitleEdit(input, true); err != nil {
-		return subtitleReview{}, http.StatusBadRequest, err
-	}
+func (manager *subtitleManager) writeSubtitleEdit(request *http.Request, id string, input subtitleEdit) (subtitleReview, library.Item, int, error) {
 	manager.provider.sidecar.Lock()
 	defer manager.provider.sidecar.Unlock()
 	review, document, status, err := manager.previewSubtitleEdit(request, id, input)
 	if err != nil {
-		return review, status, err
+		return review, library.Item{}, status, err
 	}
 	item, _, _ := manager.subtitleItem(request, id)
 	target, err := manager.provider.openSidecar(item, review.Language)
 	if err != nil {
-		return review, http.StatusConflict, err
+		return review, item, http.StatusConflict, err
 	}
 	defer target.close()
 	current, readErr := target.read("")
 	exists := readErr == nil
 	if !exists {
 		if _, statErr := target.root.Lstat(target.name); !errors.Is(statErr, os.ErrNotExist) {
-			return review, http.StatusConflict, errors.New("subtitle destination is unavailable")
+			return review, item, http.StatusConflict, errors.New("subtitle destination is unavailable")
 		}
 	}
 	if exists && subtitleFingerprint(current) != review.Fingerprint {
-		return review, http.StatusConflict, errors.New("the subtitle changed; reload its preview")
+		return review, item, http.StatusConflict, errors.New("the subtitle changed; reload its preview")
 	}
 	now := time.Now().Unix()
 	record := subtitleRecord{Source: "external", CheckedAt: now, InstalledAt: now, Managed: true, Frozen: true, Cleanup: document.Cleanup, Synchronization: firstNonempty(document.Synchronization, "none"), TimingEvidence: document.TimingEvidence, Backup: exists}
 	if input.DraftID != "" {
 		_, record.Source, err = manager.subtitleDraftData(item, review.Language, input.DraftID)
 		if err != nil {
-			return review, http.StatusConflict, err
+			return review, item, http.StatusConflict, err
 		}
 	}
 	previous, found, _ := manager.provider.ledger.record(subtitleRecordKey(id, review.Language))
@@ -238,15 +237,12 @@ func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id stri
 		record.Role = previous.Role
 	}
 	if status, err := manager.provider.retainEditedSubtitleOriginal(document.Original, previous, &record, reusesPrevious); err != nil {
-		return review, status, err
+		return review, item, status, err
 	}
 	if status, err := manager.provider.saveSubtitleEdit(target, subtitleRecordKey(id, review.Language), current, document.Data, previous, record, exists); err != nil {
-		return review, status, err
+		return review, item, status, err
 	}
-	if err = manager.index.Refresh(request.Context()); err != nil {
-		return review, http.StatusInternalServerError, errors.New("subtitle was saved but the library could not be refreshed")
-	}
-	return manager.inspectSubtitle(request, id, review.Language)
+	return review, item, http.StatusOK, nil
 }
 
 func (provider *subtitleProvider) saveSubtitleEdit(target *subtitleSidecar, key string, current, data []byte, previous, record subtitleRecord, exists bool) (int, error) {
