@@ -21,19 +21,18 @@ func TestAnalyzerGroupingAndUnavailableMediaBoundaries(t *testing.T) {
 	if media := analyzer.inspect(t.Context(), movie); media.Duration != 0 || media.Markers != nil {
 		t.Fatalf("nil probe media = %#v", media)
 	}
-	if err := analyzer.analyzeMovieOpenings(t.Context(), []library.Item{movie}); err == nil {
-		t.Fatal("unavailable analysis succeeded")
+	if err := analyzer.analyzeMovieOpenings(t.Context(), []library.Item{movie}); err != nil || !analyzer.failed[movie.ID] {
+		t.Fatalf("unavailable movie = %v, failed %#v", err, analyzer.failed)
 	}
+	analyzer.failed = nil
 	if err := analyzer.analyzeEpisodeGroups(t.Context(), map[string][]library.Item{"single": {episode}}); err != nil {
 		t.Fatal(err)
 	}
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{} })
-	if err := analyzer.analyzeEpisodeGroups(t.Context(), map[string][]library.Item{"season": {episode, episode}}); err == nil {
-		t.Fatal("unavailable analysis succeeded")
+	if err := analyzer.analyzeEpisodeGroups(t.Context(), map[string][]library.Item{"season": {episode, episode}}); err != nil || !analyzer.failed[episode.ID] {
+		t.Fatalf("unavailable season = %v, failed %#v", err, analyzer.failed)
 	}
-	if err := analyzer.analyzeSeason(t.Context(), []library.Item{episode, episode}); err == nil {
-		t.Fatal("unavailable analysis succeeded")
-	}
+	analyzer.failed = nil
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 100} })
 	analyzer.extract = func(context.Context, library.Item, string, float64, float64) ([]uint32, error) {
 		return nil, errors.New("audio unavailable")
@@ -41,11 +40,11 @@ func TestAnalyzerGroupingAndUnavailableMediaBoundaries(t *testing.T) {
 	analyzer.extractVisual = func(context.Context, library.Item, string, float64, float64) ([]uint64, error) {
 		return nil, errors.New("visual unavailable")
 	}
-	if err := analyzer.analyzeSeason(t.Context(), []library.Item{episode, episode}); err == nil {
-		t.Fatal("unavailable analysis succeeded")
+	if err := analyzer.analyzeSeason(t.Context(), []library.Item{episode, episode}); err != nil || !analyzer.failed[episode.ID] {
+		t.Fatalf("unavailable fingerprints = %v, failed %#v", err, analyzer.failed)
 	}
-	if err := analyzer.analyzeMovieOpenings(t.Context(), []library.Item{movie}); err == nil {
-		t.Fatal("unavailable analysis succeeded")
+	if err := analyzer.analyzeMovieOpenings(t.Context(), []library.Item{movie}); err != nil || !analyzer.failed[movie.ID] {
+		t.Fatalf("unavailable movie fingerprints = %v, failed %#v", err, analyzer.failed)
 	}
 }
 
@@ -78,11 +77,8 @@ func TestAnalyzerCreditsSkipsProtectedItemsAndStoresSuccess(t *testing.T) {
 		}
 		return nil, nil
 	}
-	if err := analyzer.analyzeCredits(t.Context(), items); err == nil {
-		t.Fatal("unavailable duration was reported as successful")
-	}
-	if err := analyzer.analyzeCredits(t.Context(), items[2:]); err == nil {
-		t.Fatal("failed extraction was reported as successful")
+	if err := analyzer.analyzeCredits(t.Context(), items); err != nil || !analyzer.failed["zero"] || !analyzer.failed["failed"] || len(analyzer.failed) != 2 {
+		t.Fatalf("credit failures = %v, %#v", err, analyzer.failed)
 	}
 	if _, found := analyzer.records["failed"]; found {
 		t.Fatal("failed credit analysis changed state")

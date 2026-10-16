@@ -4,6 +4,7 @@ import (
 	"errors"
 	"maps"
 	"math"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -14,18 +15,34 @@ import (
 var ErrPersistence = errors.New("playback segment results could not be saved")
 
 func (analyzer *Analyzer) storeLocked(item library.Item, markers []Marker, suppressed []string, version int) error {
-	next := analyzer.records
-	if analyzer.file != "" {
-		next = maps.Clone(next)
+	record := Record{Revision: mediaRevision(item), DetectorVersion: version, Markers: markers, Suppressed: suppressed}
+	if err := analyzer.persistLocked(map[string]Record{item.ID: record}); err != nil {
+		analyzer.err = ErrPersistence
+		return ErrPersistence
 	}
-	next[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: version, Markers: markers, Suppressed: suppressed}
-	if analyzer.file != "" {
+	return nil
+}
+
+func (analyzer *Analyzer) persistLocked(updates map[string]Record) error {
+	if len(updates) == 0 {
+		return nil
+	}
+	switch {
+	case analyzer.file == "":
+	case analyzer.saveEntry != nil:
+		for id, record := range updates {
+			if err := analyzer.saveEntry(filepath.Base(analyzer.file), id, record); err != nil {
+				return err
+			}
+		}
+	default:
+		next := maps.Clone(analyzer.records)
+		maps.Copy(next, updates)
 		if err := analyzer.persist(analyzer.file, next); err != nil {
-			analyzer.err = ErrPersistence
-			return ErrPersistence
+			return err
 		}
 	}
-	analyzer.records = next
+	maps.Copy(analyzer.records, updates)
 	return nil
 }
 
@@ -178,7 +195,7 @@ func (analyzer *Analyzer) Status() (string, int, string) {
 	}
 	items := 0
 	for _, record := range analyzer.records {
-		if record.DetectorVersion == DetectorVersion {
+		if record.DetectorVersion == DetectorVersion && record.Failed == 0 {
 			items++
 		}
 	}

@@ -43,7 +43,7 @@ func TestScheduleReportsWaitAndAcquireFailures(t *testing.T) {
 			if name == "wait" {
 				analyzer.SetWait(func(context.Context) error { return errors.New("not idle") })
 			}
-			analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{} })
+			analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 500} })
 			go analyzer.work(ctx)
 			analyzer.Enqueue([]library.Item{{ID: name, Kind: "video"}})
 			waitForMarkerState(t, analyzer, "failed")
@@ -59,7 +59,7 @@ func TestEnqueueKeepsOnlyTheNewestPendingBatch(t *testing.T) {
 	analyzer := NewAnalyzer(Config{})
 	analyzer.Enqueue([]library.Item{{ID: "old"}})
 	analyzer.Enqueue([]library.Item{{ID: "new"}})
-	batch := <-analyzer.jobs
+	batch := (<-analyzer.jobs).items
 	if len(batch) != 1 || batch[0].ID != "new" {
 		t.Fatalf("pending batch = %#v", batch)
 	}

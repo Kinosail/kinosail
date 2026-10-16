@@ -155,7 +155,7 @@ func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
 
 func cacheStatic(writer http.ResponseWriter, request *http.Request) {
 	value := "public, max-age=86400"
-	if request.URL.Query().Get("v") != "" {
+	if version := request.URL.Query().Get("v"); version != "" && version == assetVersions[path.Base(request.URL.Path)] {
 		value = "public, max-age=31536000, immutable"
 	}
 	writer.Header().Set("Cache-Control", value)

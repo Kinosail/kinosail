@@ -44,7 +44,7 @@ func TestBrowserSessionsHaveIdleAndAbsoluteTimeouts(t *testing.T) {
 	store.sessions[key] = session
 	request := httptest.NewRequestWithContext(t.Context(), "GET", "/", nil)
 	request.AddCookie(sessionCookie(token))
-	if _, ok := store.profile(request); ok {
+	if _, ok := store.access(request); ok {
 		t.Fatal("idle browser session was accepted")
 	}
 }
@@ -73,7 +73,7 @@ func TestBrowserSessionsUseCustomizedIdleAndAbsoluteTimeouts(t *testing.T) {
 	request.AddCookie(sessionCookie(token))
 	session.LastSeen = time.Now().Add(-25 * time.Hour).Unix()
 	store.sessions[key] = session
-	if _, ok := store.profile(request); ok {
+	if _, ok := store.access(request); ok {
 		t.Fatal("custom inactivity timeout was ignored")
 	}
 	if store.activeSessions() != 0 || len(store.devices()) != 0 {
@@ -152,7 +152,7 @@ func TestPublicSessionCannotSurviveProfilePolicyRevision(t *testing.T) {
 	}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.AddCookie(publicSessionCookie(token))
-	if _, ok := store.profile(request); ok {
+	if _, ok := store.access(request); ok {
 		t.Fatal("public session survived a profile-policy revision")
 	}
 }

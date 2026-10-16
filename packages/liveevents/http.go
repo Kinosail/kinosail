@@ -12,7 +12,15 @@ import (
 type Access struct {
 	Profile func(*http.Request) string
 	Allowed func(*http.Request) bool
+	Changed func() <-chan struct{}
 	Error   func(http.ResponseWriter, *http.Request, error, int)
+}
+
+func (access Access) changes() <-chan struct{} {
+	if access.Changed == nil {
+		return nil
+	}
+	return access.Changed()
 }
 
 func (hub *Hub) Register(mux *http.ServeMux, access Access) {
@@ -44,6 +52,8 @@ func (hub *Hub) openStream(writer http.ResponseWriter, request *http.Request, ac
 	writer.Header().Set("Content-Type", "text/event-stream")
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.Header().Set("X-Accel-Buffering", "no")
+	controller := http.NewResponseController(writer)
+	hub.extendWrite(controller)
 	_, _ = fmt.Fprint(writer, "retry: 3000\n\n")
 	for _, event := range backlog {
 		if writeEvent(writer, event) != nil {
@@ -51,7 +61,6 @@ func (hub *Hub) openStream(writer http.ResponseWriter, request *http.Request, ac
 			return nil, nil, false
 		}
 	}
-	controller := http.NewResponseController(writer)
 	if controller.Flush() != nil {
 		subscription.close()
 		return nil, nil, false
@@ -64,16 +73,22 @@ func (hub *Hub) stream(writer http.ResponseWriter, request *http.Request, access
 	accessCheck := time.NewTicker(hub.accessCheck)
 	defer heartbeat.Stop()
 	defer accessCheck.Stop()
+	changed := access.changes()
 	for {
 		select {
 		case <-request.Context().Done():
 			return
 		case event, open := <-subscription.events:
-			if !open || !writeAndFlush(writer, controller, event) {
+			if !open || !hub.writeAndFlush(writer, controller, event) {
 				return
 			}
 		case <-heartbeat.C:
-			if !writeHeartbeat(writer, controller) {
+			if !hub.writeHeartbeat(writer, controller) {
+				return
+			}
+		case <-changed:
+			changed = access.changes()
+			if !access.Allowed(request) {
 				return
 			}
 		case <-accessCheck.C:
@@ -84,11 +99,17 @@ func (hub *Hub) stream(writer http.ResponseWriter, request *http.Request, access
 	}
 }
 
-func writeAndFlush(writer http.ResponseWriter, controller *http.ResponseController, event Event) bool {
+func (hub *Hub) extendWrite(controller *http.ResponseController) {
+	_ = controller.SetWriteDeadline(time.Now().Add(hub.writeTimeout))
+}
+
+func (hub *Hub) writeAndFlush(writer http.ResponseWriter, controller *http.ResponseController, event Event) bool {
+	hub.extendWrite(controller)
 	return writeEvent(writer, event) == nil && controller.Flush() == nil
 }
 
-func writeHeartbeat(writer http.ResponseWriter, controller *http.ResponseController) bool {
+func (hub *Hub) writeHeartbeat(writer http.ResponseWriter, controller *http.ResponseController) bool {
+	hub.extendWrite(controller)
 	_, _ = fmt.Fprint(writer, ": keepalive\n\n")
 	return controller.Flush() == nil
 }

@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"io/fs"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -66,6 +65,7 @@ type Item struct {
 	Cast            []Person
 	ShowCast        []Person
 	LocalTitle      bool
+	LocalMetadata   bool
 	ProviderIDs     map[string]string
 }
 
@@ -97,24 +97,13 @@ type Album struct {
 	Tracks    []Item
 }
 
-func scanItem(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog) (Item, error) {
-	return scanItemWithRelative(root, namespace, path, entry, kind, catalog, filepath.Rel)
-}
-
-func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind string, catalog *scanCatalog, relativePath func(string, string) (string, error)) (Item, error) {
-	relative, err := relativePath(root, path)
-	if err != nil {
-		return Item{}, err
-	}
+func (view scanView) item(root, namespace, path, kind string, file mediaFile) Item {
+	relative, _ := filepath.Rel(root, path)
 	if (kind == "audio" || (kind == "video" && strings.EqualFold(filepath.Ext(path), ".mp4"))) && audiobookPath(namespace, relative) {
 		kind = "audiobook"
 	}
-	info, err := entry.Info()
-	if err != nil {
-		return Item{}, err
-	}
 	sum := sha256.Sum256([]byte(filepath.ToSlash(filepath.Join(namespace, relative))))
-	title := clean(strings.TrimSuffix(entry.Name(), filepath.Ext(path)))
+	title := clean(strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)))
 	year := ""
 	var providerIDs map[string]string
 	show, showTitle, showYear, season, episodeNumber := "", "", "", 0, 0
@@ -128,7 +117,7 @@ func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind 
 		}
 	}
 	base := strings.TrimSuffix(path, filepath.Ext(path))
-	metadata := readMetadata(base + ".nfo")
+	metadata := file.metadata
 	if metadata.Title != "" {
 		title = metadata.Title
 		if show != "" {
@@ -145,17 +134,17 @@ func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind 
 		providerIDs[provider] = id
 	}
 	directory := filepath.Dir(path)
-	artwork := catalog.first(base+".jpg", base+".jpeg", base+".png", base+".webp", filepath.Join(directory, "poster.jpg"))
-	backdrop := catalog.firstArtwork(base+"-fanart", base+"-backdrop", filepath.Join(directory, "fanart"), filepath.Join(directory, "backdrop"))
-	logo := catalog.firstArtwork(base+"-clearlogo", base+"-logo", filepath.Join(directory, "clearlogo"), filepath.Join(directory, "logo"))
+	artwork := view.first(base+".jpg", base+".jpeg", base+".png", base+".webp", filepath.Join(directory, "poster.jpg"))
+	backdrop := view.firstArtwork(base+"-fanart", base+"-backdrop", filepath.Join(directory, "fanart"), filepath.Join(directory, "backdrop"))
+	logo := view.firstArtwork(base+"-clearlogo", base+"-logo", filepath.Join(directory, "clearlogo"), filepath.Join(directory, "logo"))
 	showArtwork, showBackdrop, showLogo, seasonArtwork := "", "", "", ""
 	if show != "" {
 		showDirectory := filepath.Join(root, strings.Split(filepath.ToSlash(relative), "/")[0])
-		artwork = catalog.firstArtwork(base+"-thumb", base)
-		showArtwork = catalog.firstArtwork(filepath.Join(showDirectory, "poster"), filepath.Join(showDirectory, "folder"))
-		showBackdrop = catalog.firstArtwork(filepath.Join(showDirectory, "fanart"), filepath.Join(showDirectory, "backdrop"))
-		showLogo = catalog.firstArtwork(filepath.Join(showDirectory, "clearlogo"), filepath.Join(showDirectory, "logo"))
-		seasonArtwork = catalog.firstArtwork(filepath.Join(directory, "poster"), filepath.Join(directory, "folder"))
+		artwork = view.firstArtwork(base+"-thumb", base)
+		showArtwork = view.firstArtwork(filepath.Join(showDirectory, "poster"), filepath.Join(showDirectory, "folder"))
+		showBackdrop = view.firstArtwork(filepath.Join(showDirectory, "fanart"), filepath.Join(showDirectory, "backdrop"))
+		showLogo = view.firstArtwork(filepath.Join(showDirectory, "clearlogo"), filepath.Join(showDirectory, "logo"))
+		seasonArtwork = view.firstArtwork(filepath.Join(directory, "poster"), filepath.Join(directory, "folder"))
 		backdrop, logo = "", ""
 	}
 	if kind == "photo" {
@@ -165,34 +154,12 @@ func scanItemWithRelative(root, namespace, path string, entry fs.DirEntry, kind 
 	if rating == "" {
 		rating = metadata.ContentRating
 	}
-	subtitles := catalog.sidecarSubtitles(base)
+	subtitles := view.sidecarSubtitles(base)
 	primary := ""
 	if len(subtitles) > 0 {
 		primary = subtitles[0]
 	}
-	return Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: catalog.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: info.ModTime(), Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: info.Size(), Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: info.ModTime(), LocalTitle: metadata.Title != "", ProviderIDs: providerIDs}, nil
-}
-
-func (catalog *scanCatalog) firstArtwork(bases ...string) string {
-	for _, base := range bases {
-		if path := catalog.first(base+".jpg", base+".jpeg", base+".png", base+".webp"); path != "" {
-			return path
-		}
-	}
-	return ""
-}
-
-func (catalog *scanCatalog) sidecarSubtitles(base string) []string {
-	paths := make([]string, 0, len(catalog.subtitles[base]))
-	if exact := catalog.first(base+".vtt", base+".srt"); exact != "" {
-		paths = append(paths, exact)
-	}
-	for _, path := range catalog.subtitles[base] {
-		if path != base+".vtt" && path != base+".srt" {
-			paths = append(paths, path)
-		}
-	}
-	return paths
+	return Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: view.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: file.modified, Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: file.size, Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: file.modified, LocalTitle: metadata.Title != "", LocalMetadata: file.sidecar.present, ProviderIDs: providerIDs}
 }
 
 func episode(relative, title string) (string, int, int, string) {
@@ -213,8 +180,10 @@ func episode(relative, title string) (string, int, int, string) {
 	return show, season, number, episodeTitle
 }
 
+var separators = strings.NewReplacer(".", " ", "_", " ", "-", " ")
+
 func clean(value string) string {
-	value = strings.NewReplacer(".", " ", "_", " ", "-", " ").Replace(value)
+	value = separators.Replace(value)
 	return strings.Join(strings.Fields(value), " ")
 }
 
@@ -244,23 +213,6 @@ func mediaKind(extension string) string {
 	default:
 		return ""
 	}
-}
-
-func (catalog *scanCatalog) sidecarArtwork(path string) bool {
-	base := strings.TrimSuffix(path, filepath.Ext(path))
-	if catalog.hasMedia(base) {
-		return true
-	}
-	name := strings.ToLower(strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)))
-	if name == "poster" || name == "fanart" || name == "backdrop" || name == "thumb" || name == "folder" || name == "clearlogo" || name == "logo" {
-		return true
-	}
-	for _, suffix := range []string{"-thumb", "-fanart", "-backdrop", "-clearlogo", "-logo"} {
-		if strings.HasSuffix(name, suffix) {
-			return true
-		}
-	}
-	return false
 }
 
 func audiobookPath(namespace, relative string) bool {

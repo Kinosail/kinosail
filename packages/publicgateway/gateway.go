@@ -58,6 +58,7 @@ func unixTransport(path string) *http.Transport {
 		},
 		MaxIdleConns: 32, MaxIdleConnsPerHost: 32, MaxConnsPerHost: 128, IdleConnTimeout: 30 * time.Second,
 		ResponseHeaderTimeout: 30 * time.Second, MaxResponseHeaderBytes: 64 << 10,
+		DisableCompression: true,
 	}
 }
 

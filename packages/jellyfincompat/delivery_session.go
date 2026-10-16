@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 )
@@ -121,8 +122,7 @@ func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, req
 			}
 			return true
 		}
-		writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
-		_, _ = writer.Write(playback.MapWebVTT(data, session.JellyfinPlan().Timeline))
+		httpcompress.WriteWebVTT(writer, request, playback.MapWebVTT(data, session.JellyfinPlan().Timeline))
 		return true
 	}
 	return false

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log/slog"
 	"path/filepath"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/documentdb"
 	"github.com/MikeO7/kinosail/packages/library"
@@ -19,15 +19,22 @@ type Record struct {
 	DetectorVersion int      `json:"detectorVersion,omitempty"`
 	Markers         []Marker `json:"markers"`
 	Suppressed      []string `json:"suppressed,omitempty"`
+	Failed          int64    `json:"failed,omitempty"`
 }
 
-const DetectorVersion = 3
+const (
+	DetectorVersion     = 3
+	failedAnalysisRetry = 7 * 24 * time.Hour
+)
 
 type Analyzer struct {
 	mu                        sync.RWMutex
 	file, cache, ffmpeg, tool string
 	records                   map[string]Record
-	jobs                      chan []library.Item
+	jobs                      chan markerJob
+	targets, failed           map[string]bool
+	threads                   int
+	saveEntry                 func(string, string, any) error
 	probe                     func(context.Context, library.Item) Media
 	extract                   func(context.Context, library.Item, string, float64, float64) ([]uint32, error)
 	extractVisual             func(context.Context, library.Item, string, float64, float64) ([]uint64, error)
@@ -61,6 +68,12 @@ type Config struct {
 	DataDir, CacheDir, FFmpeg, Fingerprint string
 	Database                               *documentdb.Store
 	Acquire                                func(context.Context) (func(), error)
+	Threads                                int
+}
+
+type markerJob struct {
+	items   []library.Item
+	targets map[string]bool
 }
 
 type Media struct {
@@ -77,7 +90,7 @@ func NewAnalyzer(config Config) *Analyzer {
 	if acquire == nil {
 		acquire = func(context.Context) (func(), error) { return func() {}, nil }
 	}
-	analyzer := &Analyzer{cache: cache, ffmpeg: config.FFmpeg, tool: config.Fingerprint, records: make(map[string]Record), jobs: make(chan []library.Item, 1), acquire: acquire, state: "idle", persist: statePersistence(config.Database)}
+	analyzer := &Analyzer{cache: cache, ffmpeg: config.FFmpeg, tool: config.Fingerprint, records: make(map[string]Record), jobs: make(chan markerJob, 1), acquire: acquire, state: "idle", persist: statePersistence(config.Database), threads: max(1, config.Threads)}
 	if config.DataDir == "" {
 		return analyzer
 	}
@@ -89,6 +102,8 @@ func NewAnalyzer(config Config) *Analyzer {
 	}
 	if analyzer.err != nil {
 		analyzer.records = make(map[string]Record)
+	} else if config.Database != nil && config.Database.EnableEntries(filepath.Base(analyzer.file)) == nil {
+		analyzer.saveEntry = config.Database.SaveEntry
 	}
 	return analyzer
 }
@@ -115,8 +130,8 @@ func (analyzer *Analyzer) SetWait(wait func(context.Context) error) {
 }
 
 func (analyzer *Analyzer) enqueueChanged(items []library.Item) {
-	items = analyzer.changedItems(items)
-	if len(items) == 0 {
+	changed := analyzer.changedItems(items)
+	if len(changed) == 0 {
 		analyzer.mu.Lock()
 		if analyzer.state == "idle" {
 			analyzer.state = "complete"
@@ -124,51 +139,75 @@ func (analyzer *Analyzer) enqueueChanged(items []library.Item) {
 		analyzer.mu.Unlock()
 		return
 	}
-	analyzer.Enqueue(items)
+	targets := make(map[string]bool, len(changed))
+	movieLibraries := make(map[string]bool)
+	for _, item := range changed {
+		targets[item.ID] = true
+		if item.Show == "" {
+			movieLibraries[strings.ToLower(item.Library)] = true
+		}
+	}
+	for _, item := range items {
+		if item.Kind == "video" && item.Show == "" && !targets[item.ID] && movieLibraries[strings.ToLower(item.Library)] {
+			changed = append(changed, item)
+		}
+	}
+	analyzer.enqueue(markerJob{items: changed, targets: targets})
 }
 
 func (analyzer *Analyzer) changedItems(items []library.Item) []library.Item {
 	analyzer.mu.RLock()
 	defer analyzer.mu.RUnlock()
 	dirtySeasons := make(map[string]bool)
-	dirtyMovieLibraries := make(map[string]bool)
+	changed := make([]library.Item, 0)
 	for _, item := range items {
-		record, found := analyzer.records[item.ID]
-		if item.Kind != "video" || found && record.Revision == mediaRevision(item) && record.DetectorVersion == DetectorVersion {
+		if item.Kind != "video" || analyzer.records[item.ID].current(item) {
 			continue
 		}
 		if item.Show != "" {
-			dirtySeasons[strings.ToLower(item.Library+"\x00"+item.Show+"\x00"+strconv.Itoa(item.Season))] = true
+			dirtySeasons[seasonKey(item)] = true
 		} else {
-			dirtyMovieLibraries[strings.ToLower(item.Library)] = true
+			changed = append(changed, item)
 		}
 	}
-	changed := make([]library.Item, 0)
 	for _, item := range items {
-		season := strings.ToLower(item.Library + "\x00" + item.Show + "\x00" + strconv.Itoa(item.Season))
-		if item.Kind == "video" && (item.Show != "" && dirtySeasons[season] || item.Show == "" && dirtyMovieLibraries[strings.ToLower(item.Library)]) {
+		if item.Kind == "video" && item.Show != "" && dirtySeasons[seasonKey(item)] {
 			changed = append(changed, item)
 		}
 	}
 	return changed
 }
 
+func seasonKey(item library.Item) string {
+	return strings.ToLower(item.Library + "\x00" + item.Show + "\x00" + strconv.Itoa(item.Season))
+}
+
+func (record Record) current(item library.Item) bool {
+	if record.Revision != mediaRevision(item) || record.DetectorVersion != DetectorVersion {
+		return false
+	}
+	return record.Failed == 0 || time.Since(time.Unix(record.Failed, 0)) < failedAnalysisRetry
+}
+
 func (analyzer *Analyzer) Enqueue(items []library.Item) {
-	items = append([]library.Item(nil), items...)
+	analyzer.enqueue(markerJob{items: append([]library.Item(nil), items...)})
+}
+
+func (analyzer *Analyzer) enqueue(job markerJob) {
 	analyzer.mu.Lock()
 	if analyzer.state != "running" {
 		analyzer.state = "queued"
 	}
 	analyzer.mu.Unlock()
 	select {
-	case analyzer.jobs <- items:
+	case analyzer.jobs <- job:
 	default:
 		select {
 		case <-analyzer.jobs:
 		default:
 		}
 		select {
-		case analyzer.jobs <- items:
+		case analyzer.jobs <- job:
 		default:
 		}
 	}
@@ -179,7 +218,7 @@ func (analyzer *Analyzer) work(ctx context.Context) {
 		select {
 		case <-ctx.Done():
 			return
-		case items := <-analyzer.jobs:
+		case job := <-analyzer.jobs:
 			wait := analyzer.waiter()
 			if wait != nil {
 				analyzer.setStatus("waiting", nil)
@@ -189,11 +228,7 @@ func (analyzer *Analyzer) work(ctx context.Context) {
 				}
 			}
 			analyzer.setStatus("running", nil)
-			release, err := analyzer.acquire(ctx)
-			if err == nil {
-				err = analyzer.analyzeBatch(ctx, items)
-				release()
-			}
+			err := analyzer.analyzeBatch(ctx, job.items, job.targets)
 			state := "complete"
 			if err != nil {
 				state = "failed"
@@ -202,52 +237,8 @@ func (analyzer *Analyzer) work(ctx context.Context) {
 			if err != nil && !errors.Is(err, context.Canceled) {
 				slog.Warn("playback marker analysis failed", "error", err)
 			} else if err == nil {
-				slog.Debug("playback marker analysis completed", "items", len(items))
+				slog.Debug("playback marker analysis completed", "items", len(job.items))
 			}
 		}
 	}
-}
-
-func (analyzer *Analyzer) analyzeSeason(ctx context.Context, items []library.Item) error {
-	sort.Slice(items, func(i, j int) bool { return items[i].Episode < items[j].Episode })
-	episodes := make([]episodeFingerprint, 0, len(items))
-	for _, item := range items {
-		media := analyzer.inspect(ctx, item)
-		if !finite(media.Duration) || media.Duration <= 0 {
-			return errors.New("playback segment media duration is unavailable")
-		}
-		openingLength := min(media.Duration*.25, 600)
-		tailLength := min(media.Duration*.2, 900)
-		opening, audioErr := analyzer.fingerprint(ctx, item, "opening", 0, openingLength)
-		openingVisual, visualErr := analyzer.visualFingerprint(ctx, item, "opening", 0, openingLength)
-		if audioErr != nil && visualErr != nil {
-			return errors.New("playback opening analysis is unavailable")
-		}
-		tailOffset := media.Duration - tailLength
-		tail, audioErr := analyzer.fingerprint(ctx, item, "tail", tailOffset, tailLength)
-		tailVisual, visualErr := analyzer.visualFingerprint(ctx, item, "tail", tailOffset, tailLength)
-		if audioErr != nil && visualErr != nil {
-			return errors.New("playback ending analysis is unavailable")
-		}
-		episodes = append(episodes, episodeFingerprint{item: item, duration: media.Duration, opening: opening, tail: tail, openingVisual: openingVisual, tailVisual: tailVisual, tailOffset: tailOffset})
-	}
-	for _, pair := range markerCandidatePairs(episodes) {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		analyzer.comparePair(&episodes[pair[0]], &episodes[pair[1]])
-	}
-	for _, episode := range episodes {
-		markers := make([]Marker, 0, 2)
-		intro, source, ok := strongestRangeFromCandidates(episode.introAudio, episode.introVisual)
-		if ok {
-			markers = append(markers, Marker{Type: "intro", Label: "Intro", Start: intro.Start, End: intro.End, Source: source})
-		}
-		outro, source, ok := strongestRangeFromCandidates(episode.outroAudio, episode.outroVisual)
-		if ok {
-			markers = append(markers, Marker{Type: "outro", Label: "Outro", Start: outro.Start, End: outro.End, Source: source})
-		}
-		analyzer.replaceDetected(episode.item, []string{"intro", "outro"}, markers)
-	}
-	return ctx.Err()
 }

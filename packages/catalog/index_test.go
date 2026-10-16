@@ -4,8 +4,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -30,27 +28,21 @@ func TestScanAndIndexHelpers(t *testing.T) {
 		t.Fatalf("duplicate ID lookup = %#v, %t", item, found)
 	}
 
-	var mutex sync.RWMutex
-	var published atomic.Pointer[library.Snapshot]
-	published.Store(library.NewSnapshot([]library.Item{{ID: "old", Title: "Old"}}, 1))
-	var scanErr error
-	ready := false
-	var scanned time.Time
-	var decorator func([]library.Item) []library.Item
-	var analyzers []func([]library.Item)
-	storage := IndexStorage{Mutex: &mutex, Library: &published, Err: &scanErr, Ready: &ready, Scanned: &scanned, Decorator: &decorator, Analyzers: &analyzers}
-	storage.SetDecorator(func(items []library.Item) []library.Item { items[0].Title += "!"; return items })
+	memory := NewMemoryIndex([]library.Item{{ID: "old", Title: "Old"}}, true)
+	memory.SetDecorator(func(items []library.Item) []library.Item { items[0].Title += "!"; return items })
 	analyzed := ""
-	storage.AddAnalyzer(func(items []library.Item) { analyzed = items[0].Title })
-	if analyzed != "Old!" || published.Load().Items()[0].Title != "Old!" || published.Load().Generation() != 2 {
+	memory.AddAnalyzer(func(items []library.Item) { analyzed = items[0].Title })
+	if published, _ := memory.Library(); analyzed != "Old!" || published.Items()[0].Title != "Old!" || published.Generation() != 2 {
 		t.Fatal("decorator or analyzer snapshot failed")
 	}
-	if err := storage.Refresh(context.Background(), []ScanRoot{{directory, "Movies"}}); err != nil {
+	memory.SetRoots([]ScanRoot{{directory, "Movies"}})
+	if err := memory.Refresh(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	count, refreshedAt, statusErr := storage.Status()
-	if count != 1 || refreshedAt.IsZero() || statusErr != nil || !ready || analyzed != "Movie!" || published.Load().Items()[0].Title != "Movie!" || published.Load().Generation() != 3 {
-		t.Fatalf("status = %d %v %v, ready=%t, items=%#v", count, refreshedAt, statusErr, ready, published.Load().Items())
+	count, refreshedAt, statusErr := memory.Status()
+	published, _ := memory.Library()
+	if count != 1 || refreshedAt.IsZero() || statusErr != nil || analyzed != "Movie!" || published.Items()[0].Title != "Movie!" || published.Generation() != 3 {
+		t.Fatalf("status = %d %v %v, items=%#v", count, refreshedAt, statusErr, published.Items())
 	}
 }
 
@@ -154,9 +146,6 @@ func TestIndexWatchRefreshesStableFilesystemChanges(t *testing.T) {
 			t.Fatal("filesystem watcher did not start")
 		}
 		time.Sleep(time.Millisecond)
-	}
-	if roots := index.rootSet(); len(roots) != 1 {
-		t.Fatalf("root set = %#v", roots)
 	}
 	second := filepath.Join(directory, "Second.mp4")
 	if err := os.WriteFile(second, []byte("second"), 0o600); err != nil {

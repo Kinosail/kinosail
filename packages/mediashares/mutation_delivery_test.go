@@ -39,7 +39,7 @@ func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 	} {
 		store := base()
 		mutate(store)
-		if _, ok := store.Item(request, "item"); ok {
+		if _, _, ok := store.Item(request, "item"); ok {
 			t.Errorf("%s item was authorized", name)
 		}
 	}
@@ -60,21 +60,19 @@ func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 		}
 	}
 	store := base()
-	store.active[shareID] = 1
-	store.Release(request)
-	if store.active[shareID] != 0 {
-		t.Fatal("release did not return the active slot")
+	_, release, ok := store.Item(request, "item")
+	if !ok {
+		t.Fatal("stream was not admitted")
 	}
-	store.Release(request)
-	if store.active[shareID] != 0 {
-		t.Fatal("release made the active count negative")
+	release()
+	release()
+	if _, again, ok := store.Item(request, "item"); !ok || store.active[shareID] != 1 {
+		t.Fatalf("released slot was not reusable: active=%d", store.active[shareID])
+	} else {
+		again()
 	}
-	missing := base()
-	missing.state.Sessions = map[string]Session{}
-	missing.active[""] = 1
-	missing.Release(request)
-	if missing.active[""] != 1 {
-		t.Fatal("missing session changed active slots")
+	if store.active[shareID] != 0 {
+		t.Fatalf("release left active slots = %d", store.active[shareID])
 	}
 }
 

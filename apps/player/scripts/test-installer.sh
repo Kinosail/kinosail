@@ -6,7 +6,7 @@ fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT
 mkdir -p "$fixture/app/scripts" "$fixture/bin" "$fixture/media"
 cp "$source_root/scripts/install.sh" "$source_root/scripts/uninstall.sh" "$fixture/app/scripts/"
-cp "$source_root/compose.release.yaml" "$source_root/compose.config.yaml" "$source_root/compose.gpu.yaml" "$source_root/compose.rkmpp.yaml" "$source_root/compose.remote-https.yaml" "$fixture/app/"
+cp "$source_root/compose.release.yaml" "$source_root/compose.config.yaml" "$source_root/compose.gpu.yaml" "$source_root/compose.nvidia.yaml" "$source_root/compose.rkmpp.yaml" "$source_root/compose.remote-https.yaml" "$fixture/app/"
 grep -Fq "\${KINOSAIL_BIND:-127.0.0.1}" "$fixture/app/compose.release.yaml"
 grep -Fq "name: \"\${KINOSAIL_PROJECT_NAME:-kinosail}\"" "$fixture/app/compose.release.yaml"
 # shellcheck disable=SC2016 # The literal Compose interpolation is the assertion target.
@@ -19,6 +19,8 @@ grep -Fq 'user: "10001:10001"' "$fixture/app/compose.release.yaml"
 grep -Fq '/run/secrets/kinosail_backup_key:ro' "$fixture/app/compose.release.yaml"
 grep -Fq '/tmp:rw,noexec,nosuid,nodev,size=256m' "$fixture/app/compose.release.yaml"
 grep -Fq 'KINOSAIL_GPU_GROUP:-10001' "$fixture/app/compose.gpu.yaml"
+grep -Fq 'driver: nvidia' "$fixture/app/compose.nvidia.yaml"
+grep -Fq 'NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"' "$fixture/app/compose.nvidia.yaml"
 grep -Fq 'KINOSAIL_GPU_GROUP_1:-10001' "$fixture/app/compose.rkmpp.yaml"
 export KINOSAIL_IMAGE=unverified-image
 export KINOSAIL_INSTALL_TEST_LOG="$fixture/compose.log" KINOSAIL_INSTALL_TEST_STATE="$fixture/running" KINOSAIL_INSTALL_TEST_DATA="$fixture/private-state"

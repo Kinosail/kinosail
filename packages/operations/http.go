@@ -71,6 +71,7 @@ func MetricsHandler(snapshot func() Metrics) http.HandlerFunc {
 		_, _ = fmt.Fprintf(writer, "kinosail_notification_queue_depth %d\nkinosail_notification_dropped_total %d\nkinosail_viewing_sync_active %d\nkinosail_viewing_sync_deferred_total %d\n", value.NotificationQueueDepth, value.NotificationDropped, value.ViewingSyncActive, value.ViewingSyncDeferred)
 		_, _ = fmt.Fprintf(writer, "kinosail_live_event_subscribers %d\nkinosail_live_events_published_total %d\nkinosail_live_event_reconnects_total %d\nkinosail_live_event_rejected_total %d\nkinosail_live_event_slow_drops_total %d\n", value.LiveEventSubscribers, value.LiveEventsPublished, value.LiveEventReconnects, value.LiveEventRejected, value.LiveEventSlowDrops)
 		_, _ = fmt.Fprintf(writer, "kinosail_watch_room_connections %d\nkinosail_watch_room_joins_total %d\nkinosail_watch_room_reconnects_total %d\nkinosail_watch_room_slow_drops_total %d\nkinosail_watch_room_drift_observations_total %d\nkinosail_watch_room_drift_seconds %g\n", value.WatchRoomConnections, value.WatchRoomJoins, value.WatchRoomReconnects, value.WatchRoomSlowDrops, value.WatchRoomDriftObservations, value.WatchRoomDriftSeconds)
+		writeRuntimeMetrics(writer)
 	}
 }
 

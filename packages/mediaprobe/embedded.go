@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/privatefile"
@@ -75,9 +76,15 @@ func (probe *Probe) ServeEmbedded(writer http.ResponseWriter, request *http.Requ
 
 func (subtitle EmbeddedSubtitle) ServeHTTP(writer http.ResponseWriter, request *http.Request, modified time.Time) {
 	writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
-	if subtitle.Mapped {
-		_, _ = writer.Write(subtitle.Data)
-		return
+	if subtitle.Mapped || httpcompress.GzipRequested(request) {
+		data, err := subtitle.Data, error(nil)
+		if subtitle.Path != "" {
+			data, err = readEmbeddedSubtitle(subtitle.Path)
+		}
+		if err == nil {
+			httpcompress.WriteWebVTT(writer, request, data)
+			return
+		}
 	}
 	if subtitle.Path != "" {
 		http.ServeFile(writer, request, subtitle.Path)
@@ -104,7 +111,11 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	path := embeddedSubtitlePath(options.CacheDir, item, stream)
-	if data, err := readEmbeddedSubtitle(path); err == nil {
+	if options.Timeline == nil || len(options.Timeline.Omitted) == 0 {
+		if privatefile.Exists(path, embeddedSubtitleLimit) {
+			return EmbeddedSubtitle{Path: path}, nil
+		}
+	} else if data, err := readEmbeddedSubtitle(path); err == nil {
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
 	data, err := probe.embeddedData(ctx, item, stream, options, path)
@@ -112,6 +123,10 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, err
 	}
 	return presentEmbeddedSubtitle(path, data, options.Timeline), nil
+}
+
+func (probe *Probe) HasEmbedded(item library.Item, stream int, cacheDir string) bool {
+	return privatefile.Exists(embeddedSubtitlePath(cacheDir, item, stream), embeddedSubtitleLimit)
 }
 
 func textSubtitle(result Result, stream int) bool {

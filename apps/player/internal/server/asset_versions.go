@@ -8,13 +8,20 @@ import (
 
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/quickconnect"
+	"github.com/MikeO7/kinosail/packages/webassets"
 )
 
 var assetVersions = contentVersions(map[string][]byte{
 	"app.css": applicationStyle, "theme.js": themeJS, "main.kinosail.bundle.js": mainBundle, "supporter.js": supporterJS,
+	"htmx.min.js": htmx, "player.js": playerJS, "downloads.js": downloadsJS, "pwa.js": pwaJS,
+	"supporter.css": supporterCSS, "quick-connect.js": quickConnectJS, "connect.js": connectJS,
+	"quick-connect-scan.js": quickConnectScanJS, "qr-decoder.js": qrDecoderJS, "public-login.js": webassets.PublicLogin,
+	"passkeys.js": passkeysJS, "manrope.woff2": webassets.Manrope, "icon.svg": icon, "tmdb-logo.svg": tmdbLogo,
+	"icon-192.png": icon192, "icon-512.png": icon512, "icon-maskable-512.png": iconMaskable512,
+	"apple-touch-icon.png": appleTouchIcon, "cinema-backdrop.jpg": cinemaBackdrop,
 })
 
-var versionedAssetReference = regexp.MustCompile(`/static/(app\.css|theme\.js|main\.kinosail\.bundle\.js|supporter\.js)(\?v=[^"'\s>]*)?`)
+var versionedAssetReference = regexp.MustCompile(`/static/([A-Za-z0-9._-]+)(\?v=[^"'\s>]*)?`)
 
 func contentVersions(assets map[string][]byte) map[string]string {
 	versions := make(map[string]string, len(assets))
@@ -35,6 +42,9 @@ func versionAssetReferences(source string) string {
 		if cut := strings.IndexByte(name, '?'); cut >= 0 {
 			name = name[:cut]
 		}
+		if _, known := assetVersions[name]; !known {
+			return reference
+		}
 		return assetURL(name)
 	})
 }
@@ -44,7 +54,7 @@ func versionedTemplateSource(source string) string {
 }
 
 func quickConnectPage(page quickconnect.Page) quickconnect.Page {
-	page.ThemeScript, page.Stylesheet = assetURL("theme.js"), assetURL("app.css")
+	page.ThemeScript, page.Stylesheet, page.Icon = assetURL("theme.js"), assetURL("app.css"), assetURL("icon.svg")
 	return page
 }
 

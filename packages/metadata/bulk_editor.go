@@ -28,7 +28,7 @@ type BulkPatch struct {
 
 type BulkIndex interface {
 	Find(string) (library.Item, bool)
-	Refresh(context.Context) error
+	Redecorate()
 	Snapshot() ([]library.Item, error)
 }
 
@@ -80,10 +80,8 @@ func (editor *BulkEditor) Apply(ctx context.Context, ids []string, patch BulkPat
 	if err := editor.save(updates); err != nil {
 		return nil, errBulkSave
 	}
-	if err := editor.index.Refresh(ctx); err != nil {
-		return nil, errBulkSave
-	}
-	return updates, nil
+	editor.index.Redecorate()
+	return updates, ctx.Err()
 }
 
 func (editor *BulkEditor) snapshotRecords(items []library.Item) map[string]Record {

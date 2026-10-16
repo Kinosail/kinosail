@@ -14,13 +14,15 @@ import (
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
+const markerStateLimit = 256 << 20
+
 func loadState(database *documentdb.Store, path string, target any) (bool, error) {
 	if database != nil {
 		data, found, err := database.Load(filepath.Base(path))
 		if err != nil || !found {
 			return found, err
 		}
-		return true, httpguard.DecodeJSON(bytes.NewReader(data), documentdb.DocumentSizeLimit, target, true)
+		return true, httpguard.DecodeJSON(bytes.NewReader(data), markerStateLimit, target, true)
 	}
 	file, err := os.Open(path)
 	if errors.Is(err, os.ErrNotExist) {
@@ -31,10 +33,10 @@ func loadState(database *documentdb.Store, path string, target any) (bool, error
 	}
 	defer file.Close()
 	info, err := file.Stat()
-	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > documentdb.DocumentSizeLimit {
+	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > markerStateLimit {
 		return false, errors.New("invalid marker state file")
 	}
-	return true, httpguard.DecodeJSON(file, documentdb.DocumentSizeLimit, target, true)
+	return true, httpguard.DecodeJSON(file, markerStateLimit, target, true)
 }
 
 func validateRecords(records map[string]Record) error {

@@ -34,8 +34,8 @@ func (index *httpIndexStub) Find(id string) (library.Item, bool) {
 
 func (*httpIndexStub) Safe(path string) bool { return path != "unsafe" }
 
-func (index *httpIndexStub) Snapshot() ([]library.Item, error) {
-	return append([]library.Item(nil), index.items...), index.err
+func (index *httpIndexStub) Library() (*library.Snapshot, error) {
+	return library.NewSnapshot(append([]library.Item(nil), index.items...), 1), index.err
 }
 
 type httpHarness struct {

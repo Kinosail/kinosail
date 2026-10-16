@@ -2,15 +2,16 @@ package markers
 
 import (
 	"context"
-	"maps"
+	"log/slog"
 	"runtime"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item) error {
+func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item, targets map[string]bool) error {
 	groups := groupMarkerItems(items)
 	titles := make([][]library.Item, 0, len(groups.seasons)+len(groups.movies))
 	for _, group := range []map[string][]library.Item{groups.seasons, groups.movies} {
@@ -28,7 +29,7 @@ func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item
 		go func() {
 			defer workers.Done()
 			for position := range jobs {
-				failures[position] = analyzer.analyzeGroup(ctx, titles[position])
+				failures[position] = analyzer.analyzeGroup(ctx, titles[position], targets)
 			}
 		}()
 	}
@@ -53,13 +54,16 @@ dispatch:
 	return nil
 }
 
-func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item) error {
+func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item, targets map[string]bool) error {
 	analyzer.mu.RLock()
-	before := maps.Clone(analyzer.records)
+	before := make(map[string]Record, len(items))
+	for _, item := range items {
+		before[item.ID] = analyzer.records[item.ID]
+	}
 	staged := &Analyzer{
-		cache: analyzer.cache, ffmpeg: analyzer.ffmpeg, tool: analyzer.tool,
+		cache: analyzer.cache, ffmpeg: analyzer.ffmpeg, tool: analyzer.tool, threads: analyzer.threads, acquire: analyzer.acquire,
 		probe: analyzer.probe, extract: analyzer.extract, extractVisual: analyzer.extractVisual,
-		extractCredits: analyzer.extractCredits, records: make(map[string]Record),
+		extractCredits: analyzer.extractCredits, records: make(map[string]Record), targets: targets,
 	}
 	analyzer.mu.RUnlock()
 	for _, item := range items {
@@ -75,24 +79,37 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	next := maps.Clone(analyzer.records)
+	updates := make(map[string]Record)
 	for _, item := range items {
-		if item.Kind != "video" {
+		if item.Kind != "video" || !staged.targeted(item) {
 			continue
 		}
-		current := next[item.ID]
+		current := analyzer.records[item.ID]
 		if current.Revision != "" && current.Revision != before[item.ID].Revision && current.Revision != mediaRevision(item) {
 			continue
 		}
-		next[item.ID] = analyzedRecord(item, current, staged.records[item.ID].Markers)
-	}
-	if analyzer.file != "" {
-		if err := analyzer.persist(analyzer.file, next); err != nil {
-			return ErrPersistence
+		record := analyzedRecord(item, current, staged.records[item.ID].Markers)
+		if staged.failed[item.ID] {
+			record = failedRecord(item, current)
 		}
+		updates[item.ID] = record
 	}
-	analyzer.records = next
+	if err := analyzer.persistLocked(updates); err != nil {
+		return ErrPersistence
+	}
+	if len(staged.failed) > 0 {
+		slog.Warn("playback marker analysis skipped unreadable titles", "operation", "markers.analyze", "outcome", "partial", "failed", len(staged.failed), "titles", len(items))
+	}
 	return nil
+}
+
+func failedRecord(item library.Item, current Record) Record {
+	record := analyzedRecord(item, current, nil)
+	if current.Revision == record.Revision {
+		record.Markers = current.Markers
+	}
+	record.Failed = time.Now().Unix()
+	return record
 }
 
 func analyzedRecord(item library.Item, current Record, detected []Marker) Record {

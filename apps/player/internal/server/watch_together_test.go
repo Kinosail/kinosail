@@ -75,8 +75,8 @@ func TestWatchTogetherEnforcesLeaderSyncAndExpiry(t *testing.T) {
 	requestWithCookie(t, handler, http.MethodPost, "/settings/profiles/remove", "id="+storedProfileID(t, dataDir, "Sam"), owner)
 	closed, cancel := context.WithTimeout(t.Context(), 2*time.Second)
 	defer cancel()
-	if err := wsjson.Read(closed, participant, &syncEvent{}); err == nil {
-		t.Fatal("removed Viewer retained an active Watch Together connection")
+	if err := wsjson.Read(closed, participant, &syncEvent{}); err == nil || closed.Err() != nil {
+		t.Fatalf("removed Viewer retained an active Watch Together connection: %v", err)
 	}
 	_ = leader.Close(websocket.StatusNormalClosure, "done")
 	_ = participant.Close(websocket.StatusNormalClosure, "done")

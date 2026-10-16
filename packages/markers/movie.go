@@ -10,17 +10,14 @@ import (
 func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []library.Item) error {
 	titles := make([]episodeFingerprint, 0, len(items))
 	for _, item := range items {
-		media := analyzer.inspect(ctx, item)
-		if !finite(media.Duration) || media.Duration <= 0 {
-			return errors.New("playback segment media duration is unavailable")
+		title, err := analyzer.movieFingerprint(ctx, item)
+		if err != nil {
+			if err := analyzer.itemFailed(ctx, item, err); err != nil {
+				return err
+			}
+			continue
 		}
-		length := min(media.Duration*.1, 300)
-		opening, audioErr := analyzer.fingerprint(ctx, item, "opening", 0, length)
-		openingVisual, visualErr := analyzer.visualFingerprint(ctx, item, "opening", 0, length)
-		if audioErr != nil && visualErr != nil {
-			return errors.New("playback opening analysis is unavailable")
-		}
-		titles = append(titles, episodeFingerprint{item: item, duration: media.Duration, opening: opening, openingVisual: openingVisual})
+		titles = append(titles, title)
 	}
 	for _, pair := range markerCandidatePairs(titles) {
 		if err := ctx.Err(); err != nil {
@@ -37,6 +34,9 @@ func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []libr
 		}
 	}
 	for _, title := range titles {
+		if !analyzer.targeted(title.item) {
+			continue
+		}
 		markers := make([]Marker, 0, 1)
 		audio, audioOK := title.introAudio.consensus(2)
 		visual, visualOK := title.introVisual.consensus(2)
@@ -48,4 +48,18 @@ func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []libr
 		analyzer.replaceDetected(title.item, []string{"intro"}, markers)
 	}
 	return ctx.Err()
+}
+
+func (analyzer *Analyzer) movieFingerprint(ctx context.Context, item library.Item) (episodeFingerprint, error) {
+	media := analyzer.inspect(ctx, item)
+	if !finite(media.Duration) || media.Duration <= 0 {
+		return episodeFingerprint{}, errors.New("playback segment media duration is unavailable")
+	}
+	length := min(media.Duration*.1, 300)
+	opening, audioErr := analyzer.fingerprint(ctx, item, "opening", 0, length)
+	openingVisual, visualErr := analyzer.visualFingerprint(ctx, item, "opening", 0, length)
+	if audioErr != nil && visualErr != nil {
+		return episodeFingerprint{}, errors.Join(errors.New("playback opening analysis is unavailable"), audioErr, visualErr)
+	}
+	return episodeFingerprint{item: item, duration: media.Duration, opening: opening, openingVisual: openingVisual}, nil
 }

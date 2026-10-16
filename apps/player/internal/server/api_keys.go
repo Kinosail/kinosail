@@ -98,7 +98,7 @@ func cloneAPIKeys(keys map[string]apiKey) map[string]apiKey {
 func (store *profileStore) apiKeyViews() []apiKeyView {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
-	return identitycore.APIKeyViews(store.apiKeys)
+	return identitycore.APIKeyViews(store.accessUse.APIKeys(store.apiKeys))
 }
 
 func (store *profileStore) revokeAPIKey(id string) error {

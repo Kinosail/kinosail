@@ -11,19 +11,26 @@ import (
 const ArtworkMaxAge = 6 * 30 * 24 * time.Hour
 
 func CurrentArtwork(cache, path string) string {
-	if path == "" || cache == "" {
+	if _, current := currentArtworkInfo(cache, path); !current {
 		return ""
+	}
+	return path
+}
+
+func currentArtworkInfo(cache, path string) (os.FileInfo, bool) {
+	if path == "" || cache == "" {
+		return nil, false
 	}
 	root := filepath.Join(cache, "metadata")
 	relative, err := filepath.Rel(root, path)
 	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-		return ""
+		return nil, false
 	}
 	info, err := os.Stat(path)
 	if err != nil || !info.Mode().IsRegular() || time.Since(info.ModTime()) > ArtworkMaxAge {
-		return ""
+		return nil, false
 	}
-	return path
+	return info, true
 }
 
 func PruneExpiredArtwork(cache string) error {

@@ -29,6 +29,9 @@ type profileStore struct {
 	publicSessionTimeouts      func() (time.Duration, time.Duration)
 	publicSessionLifetime      func() time.Duration
 	accessRetry                map[string]int64
+	retryMu                    sync.Mutex
+	accessUse                  identitycore.AccessUse
+	changes                    identitycore.AccessSignal
 }
 
 func newProfileStore(dataDir string, databases ...*database.Store) *profileStore {
@@ -38,7 +41,8 @@ func newProfileStore(dataDir string, databases ...*database.Store) *profileStore
 		func(path string) (map[string]viewerSession, error) { return loadSessions(path, stateDB) },
 		func(path string) (map[string]apiKey, error) { return loadAPIKeys(path, stateDB) },
 	)
-	store := &profileStore{database: stateDB, persist: statePersistence(stateDB)}
+	store := &profileStore{database: stateDB}
+	store.persist = identitycore.NotifyingPersist(statePersistence(stateDB), &store.changes)
 	store.file, store.sessionFile, store.apiFile = state.ProfileFile, state.SessionFile, state.APIFile
 	store.profiles, store.sessions, store.apiKeys, store.err = state.Profiles, state.Sessions, state.APIKeys, state.Err
 	store.requireMFA = func() bool { return false }
