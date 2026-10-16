@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"log/slog"
@@ -25,6 +26,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		return
 	}
 	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
+		writer = playback.CacheSuccessfulResponses(writer, playback.HLSMediaCacheControl)
 		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
 			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
 			localizedNotFound(writer, request)
@@ -187,23 +189,43 @@ func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, du
 }
 
 func hlsPlaylistWithQuery(manifest []byte, query url.Values) []byte {
-	lines := strings.Split(string(manifest), "\n")
-	for index, line := range lines {
-		if line != "" && !strings.HasPrefix(line, "#") {
-			lines[index] = hlsURIWithQuery(line, query.Encode())
+	encoded := query.Encode()
+	var result bytes.Buffer
+	result.Grow(len(manifest) + bytes.Count(manifest, []byte("\n"))*(len(encoded)+1))
+	for index, line := range bytes.Split(manifest, []byte("\n")) {
+		if index > 0 {
+			result.WriteByte('\n')
+		}
+		if len(line) > 0 && line[0] != '#' {
+			writeHLSURIWithQuery(&result, line, encoded)
 			continue
 		}
-		start := strings.Index(line, `URI="`)
+		start := bytes.Index(line, []byte(`URI="`))
 		if start < 0 {
+			result.Write(line)
 			continue
 		}
 		start += len(`URI="`)
-		end := strings.IndexByte(line[start:], '"')
-		if end >= 0 {
-			lines[index] = line[:start] + hlsURIWithQuery(line[start:start+end], query.Encode()) + line[start+end:]
+		end := bytes.IndexByte(line[start:], '"')
+		if end < 0 {
+			result.Write(line)
+			continue
 		}
+		result.Write(line[:start])
+		writeHLSURIWithQuery(&result, line[start:start+end], encoded)
+		result.Write(line[start+end:])
 	}
-	return []byte(strings.Join(lines, "\n"))
+	return result.Bytes()
+}
+
+func writeHLSURIWithQuery(result *bytes.Buffer, uri []byte, query string) {
+	result.Write(uri)
+	if bytes.IndexByte(uri, '?') >= 0 {
+		result.WriteByte('&')
+	} else {
+		result.WriteByte('?')
+	}
+	result.WriteString(query)
 }
 
 func completeHLSVOD(manifest []byte, duration float64) []byte {

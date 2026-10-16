@@ -16,10 +16,10 @@ func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, w
 	mux.HandleFunc("GET /subtitle/{id}", serveSubtitle(index))
 	mux.HandleFunc("GET /subtitle/{id}/{track}", serveSubtitle(index))
 	mux.HandleFunc("GET /subtitle/{id}/embedded/{stream}", probe.serveEmbedded(index))
-	mux.HandleFunc("GET /art/{id}", serveArtwork(index))
-	mux.HandleFunc("GET /episode-art/{id}", serveEpisodeStill(index, probe, workloads))
-	mux.HandleFunc("GET /backdrop/{id}", serveFile(index, playback.BackdropPath, ""))
-	mux.HandleFunc("GET /person/{id}/{person}", playback.LibraryPersonHandler(index.VisibleItem))
+	mux.HandleFunc("GET /art/{id}", playback.CacheSuccessful(playback.ArtworkCacheControl, serveArtwork(index)))
+	mux.HandleFunc("GET /episode-art/{id}", playback.CacheSuccessful(playback.ArtworkCacheControl, serveEpisodeStill(index, probe, workloads)))
+	mux.HandleFunc("GET /backdrop/{id}", playback.CacheSuccessful(playback.ArtworkCacheControl, serveFile(index, playback.BackdropPath, "")))
+	mux.HandleFunc("GET /person/{id}/{person}", playback.CacheSuccessful(playback.ArtworkCacheControl, playback.LibraryPersonHandler(index.VisibleItem)))
 }
 
 func serveStartupMedia(index *libraryIndex, preparation []*startupPreparation) http.HandlerFunc {

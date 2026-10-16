@@ -68,7 +68,7 @@ func (manager *hlsManager) openRemainingAACAsset(ctx context.Context, item libra
 	if err != nil {
 		return nil, errCopiedHLSIndex
 	}
-	asset := &remainingAACAsset{file: file, info: info, content: io.NewSectionReader(file, 0, info.Size())}
+	asset := &remainingAACAsset{file: file, info: info, content: file}
 	if err := manager.admitRemainingAACAsset(ctx, item, recipe, root, name, options.Cache, asset); err != nil {
 		_ = file.Close()
 		return nil, err

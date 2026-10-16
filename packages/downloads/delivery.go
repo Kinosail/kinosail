@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -169,6 +170,15 @@ func (writer rangeDigestWriter) WriteHeader(status int) {
 	}
 	writer.ResponseWriter.WriteHeader(status)
 }
+
+func (writer rangeDigestWriter) ReadFrom(source io.Reader) (int64, error) {
+	if destination, ok := writer.ResponseWriter.(io.ReaderFrom); ok {
+		return destination.ReadFrom(source)
+	}
+	return io.Copy(writer.ResponseWriter, source)
+}
+
+func (writer rangeDigestWriter) Unwrap() http.ResponseWriter { return writer.ResponseWriter }
 
 func conditionalRequest(request *http.Request) bool {
 	for _, header := range []string{"If-Range", "If-Match", "If-None-Match", "If-Unmodified-Since", "If-Modified-Since"} {

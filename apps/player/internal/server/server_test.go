@@ -138,10 +138,25 @@ func TestViewerCanSeeSidecarArtwork(t *testing.T) {
 	if len(match) != 2 {
 		t.Fatalf("home has no artwork: %q", homeResponse.Body.String())
 	}
-	artResponse := httptest.NewRecorder()
-	handler.ServeHTTP(artResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/art/"+match[1], nil))
-	if artResponse.Body.String() != "poster" {
-		t.Fatalf("art = %q", artResponse.Body.String())
+	for _, route := range []string{"/art/", "/backdrop/"} {
+		artResponse := httptest.NewRecorder()
+		handler.ServeHTTP(artResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, route+match[1], nil))
+		modified := artResponse.Header().Get("Last-Modified")
+		if artResponse.Body.String() != "poster" || artResponse.Header().Get("Cache-Control") != "private, max-age=86400" || modified == "" {
+			t.Fatalf("%s = %q %v", route, artResponse.Body.String(), artResponse.Header())
+		}
+		conditional := httptest.NewRequestWithContext(t.Context(), http.MethodGet, route+match[1], nil)
+		conditional.Header.Set("If-Modified-Since", modified)
+		revalidated := httptest.NewRecorder()
+		handler.ServeHTTP(revalidated, conditional)
+		if revalidated.Code != http.StatusNotModified || revalidated.Header().Get("Cache-Control") != "private, max-age=86400" {
+			t.Fatalf("%s revalidation = %d %v", route, revalidated.Code, revalidated.Header())
+		}
+		missing := httptest.NewRecorder()
+		handler.ServeHTTP(missing, httptest.NewRequestWithContext(t.Context(), http.MethodGet, route+"0000000000000000", nil))
+		if missing.Code != http.StatusNotFound || missing.Header().Get("Cache-Control") != "no-store" {
+			t.Fatalf("%s missing = %d %v", route, missing.Code, missing.Header())
+		}
 	}
 }
 
