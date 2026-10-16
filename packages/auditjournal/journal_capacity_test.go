@@ -1,6 +1,8 @@
 package auditjournal
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -89,6 +91,39 @@ func TestConcurrentRecordsKeepOneVerifiableChain(t *testing.T) {
 	reloaded := New(t.Context(), Config{DataDir: directory})
 	if status := reloaded.Status(); !status.Healthy || !journal.Status().Healthy || len(reloaded.Query("", 1000)) != 200 {
 		t.Fatalf("concurrent journal = %#v, %#v, %d events", journal.Status(), status, len(reloaded.Query("", 1000)))
+	}
+}
+
+func TestEventTooLargeOnceSignedHasNoSideEffects(t *testing.T) {
+	t.Parallel()
+	directory := t.TempDir()
+	journal := New(t.Context(), Config{DataDir: directory})
+	journal.Record(benchmarkEvent("kept", time.Now().UTC()))
+	path := filepath.Join(directory, "audit.jsonl")
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	event := testEvent("exact", "security", time.Now().UTC())
+	event.Details = map[string]string{"final": ""}
+	for index := range 15 {
+		event.Details["padding-"+strconv.Itoa(index)] = strings.Repeat("x", 4096)
+	}
+	encoded, _ := json.Marshal(event)
+	event.Details["final"] = strings.Repeat("x", maxAuditEventBytes-len(encoded))
+	if encoded, _ = json.Marshal(event); len(encoded) != maxAuditEventBytes || !validEvent(event, false) {
+		t.Fatalf("fixture size = %d", len(encoded))
+	}
+	journal.Record(event)
+	after, err := os.ReadFile(path)
+	if status := journal.Status(); status.Healthy || err != nil || !bytes.Equal(before, after) || len(journal.Query("", 10)) != 1 {
+		t.Fatalf("oversized signed event = %#v, %v", status, err)
+	}
+	if reloaded := New(t.Context(), Config{DataDir: directory}); !reloaded.Status().Healthy {
+		t.Fatalf("journal after oversized event = %#v", reloaded.Status())
+	}
+	if _, line, signed := journal.signedLine(event); signed || line != nil {
+		t.Fatal("signer produced a line over the journal event limit")
 	}
 }
 

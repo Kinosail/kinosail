@@ -16,8 +16,8 @@ func (journal *Journal) persist(event Event, created, now time.Time) (Event, err
 	if count := len(journal.events); count != 0 {
 		event.Previous = journal.events[count-1].Integrity
 	}
-	event, line := journal.signedLine(event)
-	if len(line) > maxAuditEventBytes {
+	event, line, signed := journal.signedLine(event)
+	if !signed {
 		return event, errors.New("activity event is invalid")
 	}
 	if now.After(journal.expiry(event.Category, created)) {
@@ -127,7 +127,10 @@ func (journal *Journal) encodeChain(events []Event, metas []eventMeta) ([]byte, 
 	previous := ""
 	for index := range events {
 		events[index].Previous = previous
-		event, line := journal.signedLine(events[index])
+		event, line, signed := journal.signedLine(events[index])
+		if !signed {
+			return nil, errors.New("activity event is invalid")
+		}
 		events[index] = event
 		previous = event.Integrity
 		if !journalLineFits(data.Len(), len(line)) {
@@ -144,24 +147,32 @@ func journalLineFits(size, line int) bool {
 	return size+line+1 <= maxAuditJournalBytes
 }
 
-func (journal *Journal) signedLine(event Event) (Event, []byte) {
+const signedLineOverhead = len(`,"integrity":""`) + 2*sha256.Size + 1
+
+func (journal *Journal) signedLine(event Event) (Event, []byte, bool) {
 	event.Integrity = ""
-	data, _ := json.Marshal(event)
+	data, err := json.Marshal(event)
+	if err != nil || len(data) < 2 {
+		return event, nil, false
+	}
 	if len(journal.key) == 0 {
-		return event, data
+		return event, data, len(data) <= maxAuditEventBytes
+	}
+	if len(data) > maxAuditEventBytes-signedLineOverhead {
+		return event, nil, false
 	}
 	mac := hmac.New(sha256.New, journal.key)
 	_, _ = mac.Write(data)
 	event.Integrity = hex.EncodeToString(mac.Sum(nil))
-	line := make([]byte, 0, len(data)+len(event.Integrity)+len(`,"integrity":""`)+1)
+	line := make([]byte, 0, len(data)+signedLineOverhead)
 	line = append(line, data[:len(data)-1]...)
 	line = append(line, `,"integrity":"`...)
 	line = append(line, event.Integrity...)
-	return event, append(line, '"', '}')
+	return event, append(line, '"', '}'), true
 }
 
 func (journal *Journal) sign(event Event) string {
-	event, _ = journal.signedLine(event)
+	event, _, _ = journal.signedLine(event)
 	return event.Integrity
 }
 
