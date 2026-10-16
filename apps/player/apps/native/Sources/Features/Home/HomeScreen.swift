@@ -12,6 +12,7 @@ struct HomeScreen: View {
     @State private var quickPlay: ScreenDestination?
     @State private var spotlight = TVHomeSpotlight()
     @State private var launchFocusPending = true
+    @State private var preparation: Task<Void, Never>?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
@@ -154,6 +155,12 @@ struct HomeScreen: View {
     private func showWatching(_ item: MediaItem, proxy: ScrollViewProxy) {
         spotlight.show(item)
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { proxy.scrollTo(Self.topID, anchor: .top) }
+        preparation?.cancel()
+        preparation = Task {
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled, let client = session.client else { return }
+            try? await session.player.prepare(item, client: client)
+        }
     }
     #endif
 

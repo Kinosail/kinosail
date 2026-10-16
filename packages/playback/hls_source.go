@@ -55,8 +55,8 @@ func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recip
 	}
 	options.Deinterlace = Interlaced(facts.Video)
 	options.SoftwareFilters = recipe.Burn != "" || len(recipe.Omitted) > 0 || facts.Video.Rotation != 0 || facts.Video.SampleAspectRatio != "" && facts.Video.SampleAspectRatio != "1:1"
-	options.HardwareDecode = options.HardwareDecode && testedDecodeInput(facts.Video) && options.OutputHDR == ""
-	options.HardwareDecode = options.HardwareDecode && !options.ToneMap && !options.Deinterlace && !options.SoftwareFilters
+	options.DecodeInput = transcodepolicy.DecodeInput(facts.Video.Codec, facts.Video.BitDepth)
+	options.HardwareDecode = transcodepolicy.HardwareDecodeAvailable(options) && !options.Deinterlace && !options.SoftwareFilters
 	return options
 }
 
@@ -176,10 +176,6 @@ func sourceColor(options transcodepolicy.Settings, hdr string, recipe HLSRecipe)
 		}
 	}
 	return options
-}
-
-func testedDecodeInput(video VideoFacts) bool {
-	return video.Codec == "h264" && video.BitDepth <= 8 && video.Rotation == 0 && (video.SampleAspectRatio == "" || video.SampleAspectRatio == "1:1")
 }
 
 func validHLSSourceTimeline(recipe HLSRecipe, facts MediaFacts) bool {

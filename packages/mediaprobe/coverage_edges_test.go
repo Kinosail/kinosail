@@ -50,6 +50,9 @@ func TestProbeRemainingParsingEdges(t *testing.T) {
 	if video.BitDepth != 10 || video.HDR != "hlg" {
 		t.Fatalf("HLG video = %#v", video)
 	}
+	if deep := videoFactsFor(probeStream{PixelFormat: "yuv420p12le"}); deep.BitDepth != 12 {
+		t.Fatalf("12-bit video = %#v", deep)
+	}
 	video = videoFactsFor(probeStream{SideData: []probeSideData{{Type: "DOVI configuration"}}})
 	if video.HDR != "dolby-vision" {
 		t.Fatalf("Dolby Vision video = %#v", video)

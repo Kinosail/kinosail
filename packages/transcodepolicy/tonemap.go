@@ -39,7 +39,12 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 	if !options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg" {
 		return nil, ""
 	}
-	input, filter := toneMapDeviceFilter(options)
+	input, upload, filter := toneMapDeviceFilter(options)
+	if HardwareDecodedToneMap(options) {
+		input = acceleratedInput(options)
+	} else {
+		filter = upload + "," + filter
+	}
 	if !ToneMapSoftwareFrames(options) {
 		filter += "," + strings.Join(removeHDRMetadata(), ",")
 		scaler := map[string]string{"cuda": "scale_cuda", "qsv": "scale_qsv", "vaapi": "scale_vaapi"}[options.Accelerator]
@@ -66,6 +71,10 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 	return input, filter
 }
 
+func HardwareDecodedToneMap(options Settings) bool {
+	return options.HardwareDecode && options.HardwareToneMap != "" && options.HardwareToneMap == options.Accelerator && !ToneMapSoftwareFrames(options)
+}
+
 func removeHDRMetadata() []string {
 	var filters []string
 	for _, kind := range []string{"MASTERING_DISPLAY_METADATA", "CONTENT_LIGHT_LEVEL", "DYNAMIC_HDR_PLUS", "DOVI_RPU_BUFFER", "DOVI_METADATA"} {
@@ -78,9 +87,9 @@ func ToneMapSoftwareFrames(options Settings) bool {
 	return options.SoftwareFilters || options.Deinterlace || options.HardwareToneMap == "opencl" || options.HardwareToneMap == "vulkan" || options.HardwareToneMap == "d3d11" || options.Accelerator != "cuda" && options.Accelerator != "qsv" && options.Accelerator != "vaapi"
 }
 
-func toneMapDeviceFilter(options Settings) ([]string, string) {
+func toneMapDeviceFilter(options Settings) ([]string, string, string) {
 	var input []string
-	filter := ""
+	upload, filter := "format=p010le,hwupload", ""
 	color := ":format=nv12:p=bt709:t=bt709:m=bt709:r=tv"
 	switch options.HardwareToneMap {
 	case "cuda":
@@ -89,13 +98,13 @@ func toneMapDeviceFilter(options Settings) ([]string, string) {
 			device = "0"
 		}
 		input = []string{"-init_hw_device", "cuda=kino:" + device, "-filter_hw_device", "kino"}
-		filter = "format=p010le,hwupload,tonemap_cuda=tonemap=bt2390" + color
+		filter = "tonemap_cuda=tonemap=bt2390" + color
 	case "vaapi":
 		input = []string{"-init_hw_device", "vaapi=kino:" + renderDevice(options.Device), "-filter_hw_device", "kino"}
-		filter = "format=p010le,hwupload,tonemap_vaapi=format=nv12:p=bt709:t=bt709:m=bt709"
+		filter = "tonemap_vaapi=format=nv12:p=bt709:t=bt709:m=bt709"
 	case "qsv":
 		input = qsvDevice(options.Device)
-		filter = "format=p010le,hwupload=extra_hw_frames=32,vpp_qsv=tonemap=1:format=nv12:out_range=tv"
+		upload, filter = "format=p010le,hwupload=extra_hw_frames=32", "vpp_qsv=tonemap=1:format=nv12:out_range=tv"
 	case "opencl":
 		input, filter = openCLToneMapFilter(options, color)
 	case "vulkan":
@@ -104,28 +113,22 @@ func toneMapDeviceFilter(options Settings) ([]string, string) {
 			deviceType = "drm"
 		}
 		input = []string{"-init_hw_device", deviceType + "=kino_base:" + renderDevice(options.Device), "-init_hw_device", "vulkan=kino@kino_base", "-filter_hw_device", "kino_base"}
-		filter = "format=p010le,hwupload=derive_device=vulkan,libplacebo=format=nv12:tonemapping=bt.2390:color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv"
+		upload, filter = "format=p010le,hwupload=derive_device=vulkan", "libplacebo=format=nv12:tonemapping=bt.2390:color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv"
 	case "videotoolbox":
 		input = []string{"-init_hw_device", "videotoolbox=kino", "-filter_hw_device", "kino"}
-		filter = "format=p010le,hwupload,tonemap_videotoolbox=tonemap=bt2390" + color
+		filter = "tonemap_videotoolbox=tonemap=bt2390" + color
 	case "d3d11":
 		input = []string{"-init_hw_device", "d3d11va=kino", "-filter_hw_device", "kino"}
-		filter = "format=p010le,hwupload,tonemap_d3d11=tonemap=bt2390" + color
+		filter = "tonemap_d3d11=tonemap=bt2390" + color
 	}
-	return input, filter
+	return input, upload, filter
 }
 
 func openCLToneMapFilter(options Settings, color string) ([]string, string) {
-	var input []string
-	var filter string
 	if options.Accelerator == "vaapi" || options.Accelerator == "qsv" {
-		input = []string{"-init_hw_device", "vaapi=kino_va:" + renderDevice(options.Device), "-init_hw_device", "opencl=kino_cl@kino_va", "-filter_hw_device", "kino_va"}
-	} else {
-		input = []string{"-init_hw_device", "opencl=kino:,device_type=gpu", "-filter_hw_device", "kino"}
+		input := []string{"-init_hw_device", "vaapi=kino_va:" + renderDevice(options.Device), "-init_hw_device", "opencl=kino_cl@kino_va", "-filter_hw_device", "kino_va"}
+		return input, "hwmap=derive_device=opencl,tonemap_opencl=tonemap=bt2390" + color + ",hwmap=derive_device=vaapi:reverse=1"
 	}
-	filter = "format=p010le,hwupload,tonemap_opencl=tonemap=bt2390" + color
-	if options.Accelerator == "vaapi" || options.Accelerator == "qsv" {
-		filter = "format=p010le,hwupload,hwmap=derive_device=opencl,tonemap_opencl=tonemap=bt2390" + color + ",hwmap=derive_device=vaapi:reverse=1"
-	}
-	return input, filter
+	input := []string{"-init_hw_device", "opencl=kino:,device_type=gpu", "-filter_hw_device", "kino"}
+	return input, "tonemap_opencl=tonemap=bt2390" + color
 }

@@ -57,13 +57,14 @@ struct TVBackdrop: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         ZStack {
             KinoTheme.surface
             if let path, !path.isEmpty, colorScheme == .dark && contrast != .increased && !reduceTransparency {
                 ZStack(alignment: .leading) {
-                    Artwork(path: path, ratio: 16 / 9, dimension: 4096,
+                    Artwork(path: path, ratio: 16 / 9, dimension: displayScale > 1 ? 4096 : 1600,
                             fillsFrame: true, isBackdrop: true, canvasSize: canvas)
                     LinearGradient(stops: [
                         .init(color: .black.opacity(0.92), location: 0),
