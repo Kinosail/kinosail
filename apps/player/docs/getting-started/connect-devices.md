@@ -44,6 +44,8 @@ Keep provider tokens private. Use the most limited token you can. Trust only cer
 3. In a compatible Jellyfin app, add a Server and enter Kinosail's complete **Connect address** from Settings.
 4. Sign in with the intended Viewer Profile. Use **Quick Connect** when the app offers it; approve the matching request from a trusted Kinosail session.
 
+When a Jellyfin app downloads a title, Kinosail prepares a verified copy of the original file. If the copy is not ready within 10 seconds, Kinosail sends the original file directly. It finishes the verified copy for later downloads.
+
 Kinosail tests common client tasks. It does not support every Jellyfin feature or device. For sign-in help, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 ## Sign in and play
