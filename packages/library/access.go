@@ -22,20 +22,9 @@ func (policy Policy) Allows(item Item) bool {
 }
 
 type VisibilityIndex interface {
-	Snapshot() ([]Item, error)
+	View(Policy) (*View, error)
 	Find(string) (Item, bool)
 	Safe(string) bool
-}
-
-func Visible(index VisibilityIndex, allow func(Item) bool) ([]Item, error) {
-	items, err := index.Snapshot()
-	visible := items[:0]
-	for _, item := range items {
-		if allow(item) {
-			visible = append(visible, item)
-		}
-	}
-	return visible, err
 }
 
 func VisibleItem(index VisibilityIndex, id string, allow func(Item) bool) (Item, bool) {

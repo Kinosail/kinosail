@@ -56,10 +56,11 @@ func TestBrowseProjectionHelpersCoverAvailableAndMissingMedia(t *testing.T) {
 	if id := ShowBackdropID(library.Show{}); id != "" {
 		t.Fatalf("empty backdrop ID = %q", id)
 	}
-	if queue, found := AudioQueue(mediaFixture(), "track-two"); !found || len(queue) != 1 || queue[0].ID != "track-two" {
+	view := library.NewSnapshot(mediaFixture(), 1).View(library.NewPolicy(true, "", nil))
+	if queue, found := view.AudioQueue("track-two"); !found || len(queue) != 1 || queue[0].ID != "track-two" {
 		t.Fatalf("audio queue = %#v, %t", queue, found)
 	}
-	if _, found := AudioQueue(mediaFixture(), "missing"); found {
+	if _, found := view.AudioQueue("missing"); found {
 		t.Fatal("missing track produced an audio queue")
 	}
 }

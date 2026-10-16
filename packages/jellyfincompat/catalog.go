@@ -2,7 +2,7 @@ package jellyfincompat
 
 import (
 	"net/url"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -17,15 +17,12 @@ const (
 type ProjectItem func(library.Item) map[string]any
 
 type Catalog struct {
-	items   []library.Item
-	movies  []library.Item
-	shows   []library.Show
+	view    *library.View
 	project ProjectItem
 }
 
-func NewCatalog(items []library.Item, project ProjectItem) Catalog {
-	movies, shows := library.Organize(items)
-	return Catalog{items: items, movies: movies, shows: shows, project: project}
+func NewCatalog(view *library.View, project ProjectItem) Catalog {
+	return Catalog{view: view, project: project}
 }
 
 func Result(items []map[string]any, start int, totals ...int) map[string]any {
@@ -51,7 +48,11 @@ func Int(values url.Values, name string) int {
 }
 
 func Includes(values, value string) bool {
-	for _, candidate := range strings.Split(values, ",") {
+	return includesType(strings.Split(values, ","), value)
+}
+
+func includesType(candidates []string, value string) bool {
+	for _, candidate := range candidates {
 		if strings.EqualFold(strings.TrimSpace(candidate), value) {
 			return true
 		}
@@ -61,10 +62,10 @@ func Includes(values, value string) bool {
 
 func (catalog Catalog) Views() map[string]any {
 	views := make([]map[string]any, 0, 2)
-	if len(catalog.movies) > 0 {
+	if len(catalog.view.Movies()) > 0 {
 		views = append(views, FolderDTO(MoviesID, "Movies", "movies"))
 	}
-	if len(catalog.shows) > 0 {
+	if len(catalog.view.Shows()) > 0 {
 		views = append(views, FolderDTO(ShowsID, "Shows", "tvshows"))
 	}
 	return Result(views, 0)
@@ -77,7 +78,7 @@ func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	}
 	result := catalog.query(values, ids)
 	total := len(result)
-	start, limit := Int(values, "startIndex"), Int(values, "limit")
+	start, limit := max(0, Int(values, "startIndex")), Int(values, "limit")
 	if start > len(result) {
 		start = len(result)
 	}
@@ -85,7 +86,7 @@ func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	if limit > 0 && limit < len(result) {
 		result = result[:limit]
 	}
-	return Result(result, start, total), nil
+	return Result(catalog.projectEntries(result), start, total), nil
 }
 
 func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
@@ -94,20 +95,31 @@ func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
 		return nil, err
 	}
 	result := catalog.query(values, ids)
-	sort.SliceStable(result, func(left, right int) bool {
-		return stringValue(result[left]["DateCreated"]) > stringValue(result[right]["DateCreated"])
-	})
+	if result != nil {
+		result = slices.Clone(result)
+		created := make(map[*library.Item]string, len(result))
+		for _, entry := range result {
+			if entry.item != nil {
+				created[entry.item] = entry.created()
+			}
+		}
+		slices.SortStableFunc(result, func(left, right catalogEntry) int {
+			return strings.Compare(created[right.item], created[left.item])
+		})
+	}
 	if limit := Int(values, "limit"); limit > 0 && limit < len(result) {
 		result = result[:limit]
 	}
-	return result, nil
+	return catalog.projectEntries(result), nil
 }
 
 func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any {
 	result := make([]map[string]any, 0)
-	for _, item := range catalog.items {
-		progress := state(item)
-		if item.Kind == "video" && progress.Seconds > 0 && !progress.Watched {
+	for _, item := range catalog.view.Items() {
+		if item.Kind != "video" {
+			continue
+		}
+		if progress := state(item); progress.Seconds > 0 && !progress.Watched {
 			result = append(result, catalog.project(item))
 		}
 	}
@@ -115,8 +127,9 @@ func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any
 }
 
 func (catalog Catalog) NextUp(watched func(library.Item) bool) map[string]any {
-	result := make([]map[string]any, 0, len(catalog.shows))
-	for _, show := range catalog.shows {
+	shows := catalog.view.Shows()
+	result := make([]map[string]any, 0, len(shows))
+	for _, show := range shows {
 		for _, episode := range show.Episodes {
 			if !watched(episode) {
 				result = append(result, catalog.project(episode))
@@ -128,13 +141,13 @@ func (catalog Catalog) NextUp(watched func(library.Item) bool) map[string]any {
 }
 
 func (catalog Catalog) Item(id string) (map[string]any, bool) {
-	if item, found := findItem(catalog.items, RawID(id)); found {
+	if item, found := catalog.view.Find(RawID(id)); found {
 		return catalog.project(item), true
 	}
-	for _, show := range catalog.shows {
-		if ID(show.ID) == id || show.ID == id {
-			return SeriesDTO(show), true
-		}
+	if show, found := catalog.view.Show(RawID(id)); found && (ID(show.ID) == id || show.ID == id) {
+		return SeriesDTO(show), true
+	}
+	if show, found := catalog.seasonShow(id); found {
 		for _, season := range Seasons(show) {
 			if SeasonID(show.ID, season) == id {
 				return SeasonDTO(show, season), true
@@ -145,7 +158,7 @@ func (catalog Catalog) Item(id string) (map[string]any, bool) {
 }
 
 func (catalog Catalog) SeasonsResult(id string) (map[string]any, bool) {
-	show, found := catalog.show(RawID(id))
+	show, found := catalog.view.Show(RawID(id))
 	if !found {
 		return nil, false
 	}
@@ -157,7 +170,7 @@ func (catalog Catalog) SeasonsResult(id string) (map[string]any, bool) {
 }
 
 func (catalog Catalog) Episodes(id string, values url.Values) (map[string]any, bool) {
-	show, found := catalog.show(RawID(id))
+	show, found := catalog.view.Show(RawID(id))
 	if !found {
 		return nil, false
 	}
@@ -172,109 +185,90 @@ func (catalog Catalog) Episodes(id string, values url.Values) (map[string]any, b
 	return Result(result, 0), true
 }
 
-func (catalog Catalog) query(values url.Values, ids map[string]bool) []map[string]any {
+func (catalog Catalog) seasonShow(id string) (library.Show, bool) {
+	if len(id) < 16 {
+		return library.Show{}, false
+	}
+	return catalog.view.Show(id[:16])
+}
+
+func (catalog Catalog) query(values url.Values, ids map[string]bool) []catalogEntry {
 	parent, includes := Query(values, "parentId"), Query(values, "includeItemTypes")
 	result := catalog.under(parent, includes)
 	search := strings.ToLower(Query(values, "searchTerm"))
-	filtered := result[:0]
-	for _, item := range result {
-		kind, name, id := stringValue(item["Type"]), stringValue(item["Name"]), stringValue(item["Id"])
-		matchesID := len(ids) == 0 || ids[RawID(id)]
-		matchesType := includes == "" || Includes(includes, kind)
-		matchesName := search == "" || strings.Contains(strings.ToLower(name), search)
+	if result == nil || len(ids) == 0 && includes == "" && search == "" {
+		return result
+	}
+	types := strings.Split(includes, ",")
+	filtered := make([]catalogEntry, 0)
+	for _, entry := range result {
+		matchesID := len(ids) == 0 || ids[entry.raw]
+		matchesType := includes == "" || includesType(types, entry.kind)
+		matchesName := search == "" || strings.Contains(entry.lower, search)
 		if matchesID && matchesType && matchesName {
-			filtered = append(filtered, item)
+			filtered = append(filtered, entry)
 		}
 	}
 	return filtered
 }
 
-func (catalog Catalog) under(parent, includes string) []map[string]any {
+func (catalog Catalog) under(parent, includes string) []catalogEntry {
 	switch parent {
 	case MoviesID:
-		return catalog.itemDTOs(catalog.movies)
+		return library.Derive(catalog.view, "jellyfincompat.movies", movieEntries)
 	case ShowsID:
 		if Includes(includes, "Episode") {
-			return catalog.itemDTOs(allEpisodes(catalog.shows))
+			return library.Derive(catalog.view, "jellyfincompat.episodes", episodeEntries)
 		}
-		return seriesDTOs(catalog.shows)
+		return library.Derive(catalog.view, "jellyfincompat.series", seriesEntries)
 	case "":
 		if Includes(includes, "Episode") {
-			return catalog.itemDTOs(allEpisodes(catalog.shows))
+			return library.Derive(catalog.view, "jellyfincompat.episodes", episodeEntries)
 		}
-		return catalog.rootDTOs()
+		return library.Derive(catalog.view, "jellyfincompat.root", rootEntries)
 	default:
-		return catalog.hierarchyDTOs(parent)
+		return catalog.hierarchy(parent)
 	}
 }
 
-func (catalog Catalog) rootDTOs() []map[string]any {
-	result := append(catalog.itemDTOs(catalog.movies), seriesDTOs(catalog.shows)...)
-	for _, item := range catalog.items {
-		if item.Kind != "video" {
-			result = append(result, catalog.project(item))
+func (catalog Catalog) hierarchy(parent string) []catalogEntry {
+	show, found := catalog.seasonShow(parent)
+	if !found {
+		return nil
+	}
+	if parent == ID(show.ID) {
+		result := make([]catalogEntry, 0)
+		for _, season := range Seasons(show) {
+			result = append(result, seasonEntry(&show, season))
 		}
+		return result
+	}
+	result := make([]catalogEntry, 0)
+	for position := range show.Episodes {
+		if parent == SeasonID(show.ID, show.Episodes[position].Season) {
+			result = append(result, itemEntry(&show.Episodes[position]))
+		}
+	}
+	if len(result) == 0 {
+		return nil
 	}
 	return result
 }
 
-func (catalog Catalog) hierarchyDTOs(parent string) []map[string]any {
-	for _, show := range catalog.shows {
-		if parent == ID(show.ID) {
-			result := make([]map[string]any, 0)
-			for _, season := range Seasons(show) {
-				result = append(result, SeasonDTO(show, season))
-			}
-			return result
-		}
-		episodes := make([]library.Item, 0)
-		for _, item := range show.Episodes {
-			if parent == SeasonID(show.ID, item.Season) {
-				episodes = append(episodes, item)
-			}
-		}
-		if len(episodes) > 0 {
-			return catalog.itemDTOs(episodes)
-		}
+func (catalog Catalog) projectEntries(entries []catalogEntry) []map[string]any {
+	if entries == nil {
+		return nil
 	}
-	return nil
-}
-
-func (catalog Catalog) itemDTOs(items []library.Item) []map[string]any {
-	result := make([]map[string]any, 0, len(items))
-	for _, item := range items {
-		result = append(result, catalog.project(item))
+	result := make([]map[string]any, 0, len(entries))
+	for _, entry := range entries {
+		switch {
+		case entry.item != nil:
+			result = append(result, catalog.project(*entry.item))
+		case entry.kind == "Season":
+			result = append(result, SeasonDTO(*entry.show, entry.season))
+		default:
+			result = append(result, SeriesDTO(*entry.show))
+		}
 	}
 	return result
-}
-
-func (catalog Catalog) show(id string) (library.Show, bool) {
-	for _, show := range catalog.shows {
-		if show.ID == id {
-			return show, true
-		}
-	}
-	return library.Show{}, false
-}
-
-func allEpisodes(shows []library.Show) []library.Item {
-	result := make([]library.Item, 0)
-	for _, show := range shows {
-		result = append(result, show.Episodes...)
-	}
-	return result
-}
-
-func findItem(items []library.Item, id string) (library.Item, bool) {
-	for _, item := range items {
-		if item.ID == id {
-			return item, true
-		}
-	}
-	return library.Item{}, false
-}
-
-func stringValue(value any) string {
-	text, _ := value.(string)
-	return text
 }

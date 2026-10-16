@@ -53,16 +53,20 @@ func FolderDTO(id, name, collection string) map[string]any {
 	return map[string]any{"Id": id, "Name": name, "Type": "CollectionFolder", "CollectionType": collection, "IsFolder": true, "SortName": name}
 }
 
-func ItemDTO(item library.Item, options ItemOptions) map[string]any {
-	kind, mediaType, parent := "Movie", "Video", MoviesID
+func itemClass(item library.Item) (string, string, string) {
 	switch {
 	case item.Show != "":
-		kind, parent = "Episode", SeasonID(ShowID(item.Show), item.Season)
+		return "Episode", "Video", SeasonID(ShowID(item.Show), item.Season)
 	case item.Kind == "audio":
-		kind, mediaType, parent = "Audio", "Audio", ""
+		return "Audio", "Audio", ""
 	case item.Kind == "photo":
-		kind, mediaType, parent = "Photo", "Photo", ""
+		return "Photo", "Photo", ""
 	}
+	return "Movie", "Video", MoviesID
+}
+
+func ItemDTO(item library.Item, options ItemOptions) map[string]any {
+	kind, mediaType, parent := itemClass(item)
 	dto := map[string]any{
 		"Id": ID(item.ID), "Name": item.Title, "SortName": item.Title, "Type": kind, "MediaType": mediaType,
 		"IsFolder": false, "CanDelete": false, "CanDownload": options.CanDownload, "Container": strings.ToLower(item.Container),
@@ -123,12 +127,4 @@ func SeasonDTO(show library.Show, season int) map[string]any {
 		dto["ImageTags"] = map[string]string{"Primary": show.ArtworkID}
 	}
 	return dto
-}
-
-func seriesDTOs(shows []library.Show) []map[string]any {
-	result := make([]map[string]any, 0, len(shows))
-	for _, show := range shows {
-		result = append(result, SeriesDTO(show))
-	}
-	return result
 }

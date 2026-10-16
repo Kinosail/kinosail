@@ -25,21 +25,21 @@ func ownJellyfinUser(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func (api *jellyfinAPI) views(writer http.ResponseWriter, request *http.Request) {
-	items, err := visibleLibrary(request, api.index)
+	view, err := visibleView(request, api.index)
 	if err != nil {
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	jellyfinJSON(writer, api.catalog(request, items).Views())
+	jellyfinJSON(writer, api.listing(request, view).Views())
 }
 
 func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request) {
-	items, err := visibleLibrary(request, api.index)
+	view, err := visibleView(request, api.index)
 	if err != nil {
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	result, err := api.catalog(request, items).Items(request.URL.Query())
+	result, err := api.listing(request, view).Items(request.URL.Query())
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -48,8 +48,8 @@ func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request)
 }
 
 func (api *jellyfinAPI) item(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result, found := api.catalog(request, items).Item(request.PathValue("id"))
+	view, _ := visibleView(request, api.index)
+	result, found := sharedjellyfin.NewCatalog(view, func(item library.Item) map[string]any { return api.itemDTO(request, item, api.userDataDTO) }).Item(request.PathValue("id"))
 	if !found {
 		http.NotFound(writer, request)
 		return
@@ -58,8 +58,8 @@ func (api *jellyfinAPI) item(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (api *jellyfinAPI) seasons(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result, found := api.catalog(request, items).SeasonsResult(request.PathValue("id"))
+	view, _ := visibleView(request, api.index)
+	result, found := api.listing(request, view).SeasonsResult(request.PathValue("id"))
 	if !found {
 		http.NotFound(writer, request)
 		return
@@ -68,8 +68,8 @@ func (api *jellyfinAPI) seasons(writer http.ResponseWriter, request *http.Reques
 }
 
 func (api *jellyfinAPI) episodes(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result, found := api.catalog(request, items).Episodes(request.PathValue("id"), request.URL.Query())
+	view, _ := visibleView(request, api.index)
+	result, found := api.listing(request, view).Episodes(request.PathValue("id"), request.URL.Query())
 	if !found {
 		http.NotFound(writer, request)
 		return
@@ -77,15 +77,15 @@ func (api *jellyfinAPI) episodes(writer http.ResponseWriter, request *http.Reque
 	jellyfinJSON(writer, result)
 }
 
-func (api *jellyfinAPI) catalog(request *http.Request, items []library.Item) sharedjellyfin.Catalog {
-	return sharedjellyfin.NewCatalog(items, func(item library.Item) map[string]any { return api.itemDTO(request, item) })
+func (api *jellyfinAPI) listing(request *http.Request, view *library.View) sharedjellyfin.Catalog {
+	return sharedjellyfin.NewCatalog(view, func(item library.Item) map[string]any { return api.itemDTO(request, item, api.listingUserDataDTO) })
 }
 
-func (api *jellyfinAPI) itemDTO(request *http.Request, item library.Item) map[string]any {
+func (api *jellyfinAPI) itemDTO(request *http.Request, item library.Item, userData func(*http.Request, library.Item) map[string]any) map[string]any {
 	viewer := currentViewer(request)
 	return sharedjellyfin.ItemDTO(item, sharedjellyfin.ItemOptions{
 		CanDownload: viewer.Owner || viewer.Downloads,
-		UserData:    api.userDataDTO(request, item),
+		UserData:    userData(request, item),
 		MediaSource: jellyfinMediaSource(item, mediaFactsFor(item, probeResult{}), PlaybackPlan{Allowed: true, Mode: "direct", Reason: "catalog-summary", SubtitleMode: "none", ColorMode: "preserve"}, "", ""),
 	})
 }

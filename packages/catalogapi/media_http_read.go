@@ -4,30 +4,15 @@ import (
 	"errors"
 	"net/http"
 	"slices"
-
-	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func (handlers MediaHandlers) audioQueue(writer http.ResponseWriter, request *http.Request) {
-	items := handlers.Index.VisibleLibrary(request)
-	queue, found := AudioQueue(items, request.PathValue("id"))
+	queue, found := handlers.Index.VisibleView(request).AudioQueue(request.PathValue("id"))
 	if !found {
 		apiAction{notFound: true}.serve(writer)
 		return
 	}
 	apiAction{body: map[string]any{"items": handlers.Progress.ClientItems(request, queue)}, status: http.StatusOK}.serve(writer)
-}
-
-func AudioQueue(items []library.Item, id string) ([]library.Item, bool) {
-	_, albums := library.OrganizeMusic(items)
-	for _, album := range albums {
-		for position, track := range album.Tracks {
-			if track.ID == id {
-				return album.Tracks[position:], true
-			}
-		}
-	}
-	return nil, false
 }
 
 func (handlers MediaHandlers) history(writer http.ResponseWriter, request *http.Request) {

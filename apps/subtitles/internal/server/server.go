@@ -114,7 +114,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	})
 	auth.audit.SetSnapshot(settings.auditSnapshot)
 	management := newOwnerAccess(config, auth)
-	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg)
+	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg, stateDB)
 	settings.subtitleProvider = subtitles
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads, stateDB)
 	subtitleManager := newSubtitleManager(index, settings, subtitles, probe, backups)

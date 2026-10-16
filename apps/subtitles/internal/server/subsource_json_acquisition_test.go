@@ -66,10 +66,10 @@ func TestSubSourceRejectsAmbiguousJSONBeforeAcquisition(t *testing.T) {
 			}
 			item := library.Item{ID: "0123456789abcdef", Kind: "video", Path: media, Title: "Second", Show: "Show", ShowYear: "2024", Season: 1, Episode: 2, ShowProviderIDs: map[string]string{"imdb": "tt1234567"}}
 			data := t.TempDir()
-			provider := newSubtitleProvider(SubtitleConfig{SubSource: SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "isolated-fixture-key", PersonalUse: true}}, t.TempDir(), data, sidecarTestIndex(item), nil, "")
+			provider := newSubtitleProvider(SubtitleConfig{SubSource: SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "isolated-fixture-key", PersonalUse: true}}, t.TempDir(), data, sidecarTestIndex(item), nil, "", testStateDatabase(t, data))
 			fetchErr := provider.fetchSidecar(t.Context(), item, "en")
 			installed, readErr := os.ReadFile(filepath.Join(filepath.Dir(media), "Show.S01E02.en.srt"))
-			ledgerData, err := os.ReadFile(filepath.Join(data, "subtitle_acquisitions.json"))
+			ledgerData, err := persistedTestSubtitleLedger(data)
 			if err != nil {
 				t.Fatal(err)
 			}
