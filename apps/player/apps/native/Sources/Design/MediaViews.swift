@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.displayScale) private var displayScale
     #if os(tvOS)
     @FocusState private var focused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -25,7 +26,7 @@ struct MediaCard: View {
             VStack(alignment: .leading, spacing: 10) {
                 Artwork(path: landscape ? item.landscapeArtwork : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
-                        dimension: landscape || dynamicTypeSize.isAccessibilitySize ? 1600 : 800,
+                        dimension: MediaArtworkSize.dimension(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize, displayScale: displayScale),
                         fillsFrame: landscape && item.kind == .photo)
                     .background(KinoTheme.surface)
                     .overlay(alignment: .topTrailing) {
