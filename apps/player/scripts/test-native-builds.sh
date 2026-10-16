@@ -63,6 +63,17 @@ tar -xzf "$output/kinosail-core-v1.2.3-$host_os-$host_arch.tar.gz" -C "$output/h
 [[ "$("$output/host/kinosail" version)" == v1.2.3 ]]
 "$output/host/kinosail" update-artifact <"$output/kinosail-release.json" | grep -Fq "kinosail-core-v1.2.3-$host_os-$host_arch.tar.gz"
 python3 "$(dirname "$0")/test-native-contract.py" "$output/host/native-installation.json"
+mkdir "$output/plan-data"
+KINOSAIL_DATA_DIR="$output/plan-data" "$output/host/kinosail" update-plan >"$output/plan.json"
+python3 - "$output/plan.json" "$output/kinosail-release.json" "$output/host/native-installation.json" <<'PY'
+import json, sys
+plan, manifest, contract = (json.load(open(path, encoding="utf-8")) for path in sys.argv[1:])
+for field in ("stateSchema", "configurationSchema"):
+    if manifest[field] != plan[field]:
+        sys.exit(f"release manifest {field} {manifest[field]} differs from the binary's {plan[field]}")
+if contract["update"]["signatureIdentity"] != plan["signatureIdentity"]:
+    sys.exit("installation contract signature identity differs from the binary's update plan")
+PY
 archive_script="$(dirname "$0")/package-native-archive.py"
 if python3 "$archive_script" rar "$output/invalid" "$output/host/kinosail" "$output/kinosail-native-installation.json" LICENSE THIRD_PARTY_NOTICES.md >/dev/null 2>&1; then
 	printf 'archive helper accepted an unknown format\n' >&2
