@@ -65,7 +65,9 @@ func (ledger *subtitleLedger) open() error {
 		return errSubtitleLedgerInvalid
 	}
 	ledger.state = normalizeSubtitleLedgerState(state)
-	ledger.removeLegacyFile()
+	if _, err := os.Lstat(ledger.path); !errors.Is(err, os.ErrNotExist) {
+		slog.Warn("legacy subtitle acquisition state ignored", "operation", "subtitle.ledger.open", "reason", "state database already holds the ledger")
+	}
 	return nil
 }
 

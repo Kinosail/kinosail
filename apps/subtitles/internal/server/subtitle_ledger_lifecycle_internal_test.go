@@ -142,7 +142,4 @@ func TestSubtitleLedgerIgnoresLegacyFileThatSurvivedMigration(t *testing.T) {
 	if record := reloaded.state.Records[key]; reloaded.err != nil || !record.Frozen || record.Score != 70 || len(reloaded.state.Records) != 2 {
 		t.Fatalf("stale legacy file replaced newer state: %#v, %d records, %v", record, len(reloaded.state.Records), reloaded.err)
 	}
-	if _, err := os.Lstat(legacy); !os.IsNotExist(err) {
-		t.Fatalf("stale legacy ledger remains after restart: %v", err)
-	}
 }
