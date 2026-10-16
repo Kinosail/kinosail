@@ -50,8 +50,12 @@ const homeAssistantSettingsHTML = `{{template "configurationSource" .HomeAssista
 const jellyfinSettingsHTML = `<section id="jellyfin" data-settings-group="access"><h2>Jellyfin apps</h2>{{template "configurationSource" .JellyfinControl}}<p><strong>Trusted HTTPS is required.</strong> Many Jellyfin apps reject private certificates and cannot install a local certificate. Kinosail requires a supported trusted hostname so household members do not install a certificate or bypass a security warning.</p>{{if .Trusted.Configured}}{{if .JellyfinCompatibility}}<p role="status">Jellyfin routes are available. Use the trusted address after Kinosail restarts.</p>{{else}}<p>Trusted HTTPS is saved. You can enable Jellyfin apps, then restart Kinosail once.</p>{{end}}{{else}}<p>Set up <a href="#trusted-https">Trusted HTTPS</a> first. Jellyfin routes stay unavailable.</p>{{end}}<form action="/settings/jellyfin" method="post"><fieldset {{if or .JellyfinControl.Managed (not .Trusted.Configured)}}disabled aria-disabled="true"{{end}}><label><input type="checkbox" name="enabled" value="true" {{if .JellyfinCompatibility}}checked{{end}}> Allow compatible Jellyfin apps to connect</label><button>Save Jellyfin choice</button></fieldset></form></section>`
 
 var (
-	settingsView            = newLocalizedTemplate("settings", ignoreNonPasswordSecretAutofill(orderSettingsPage(settingControlHTML+viewingImportControlHTML+directFirstPlaybackCopy(jellyfinTrustedHTTPSPage(updateChoicePage(strings.NewReplacer(`<section data-settings-group="access"><h2>Integrations</h2>`, `<section data-settings-group="access"><h2>Integrations</h2>`+homeAssistantSettingsHTML, "#integrations.oidc.issuer", "#integrations.oidc").Replace(addSettingsSearch(settingsHTML))))))))
-	onboardingHouseholdView = newLocalizedTemplate("onboarding-household", ignoreNonPasswordSecretAutofill(`{{define "onboardingProgress"}}`+onboardingProgressHTML+`{{end}}`+updateChoicePage(onboardingHouseholdHTML)))
+	settingsView = newLazyLocalizedTemplate("settings", func() string {
+		return ignoreNonPasswordSecretAutofill(orderSettingsPage(settingControlHTML + viewingImportControlHTML + directFirstPlaybackCopy(jellyfinTrustedHTTPSPage(updateChoicePage(strings.NewReplacer(`<section data-settings-group="access"><h2>Integrations</h2>`, `<section data-settings-group="access"><h2>Integrations</h2>`+homeAssistantSettingsHTML, "#integrations.oidc.issuer", "#integrations.oidc").Replace(addSettingsSearch(settingsHTML)))))))
+	})
+	onboardingHouseholdView = newLazyLocalizedTemplate("onboarding-household", func() string {
+		return ignoreNonPasswordSecretAutofill(`{{define "onboardingProgress"}}` + onboardingProgressHTML + `{{end}}` + updateChoicePage(onboardingHouseholdHTML))
+	})
 )
 
 func jellyfinTrustedHTTPSPage(page string) string {

@@ -6,7 +6,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 )
 
-var remoteReadinessView = newLocalizedTemplate("remote-readiness", remoteaccess.ReadinessViewSource("Player", "75"))
+var remoteReadinessView = newLazyLocalizedTemplate("remote-readiness", func() string { return remoteaccess.ReadinessViewSource("Player", "75") })
 
 type remoteReadiness = remoteaccess.Readiness
 

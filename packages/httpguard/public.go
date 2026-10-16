@@ -10,13 +10,10 @@ import (
 )
 
 const (
-	publicQuarantine      = 15 * time.Minute
-	trackedSourceLimit    = 4096
-	trackedPrefixLimit    = 1024
-	trackedPrefixSources  = 32
-	globalConcurrentLimit = 64
-	sourceConcurrentLimit = 16
-	prefixConcurrentLimit = 32
+	publicQuarantine     = 15 * time.Minute
+	trackedSourceLimit   = 4096
+	trackedPrefixLimit   = 1024
+	trackedPrefixSources = 32
 )
 
 type tripwirePrefix struct {
@@ -126,53 +123,6 @@ func updateTripwireSource(state tripwireSource, now time.Time, maximum int) (tri
 		state.blocked = now.Add(publicQuarantine)
 	}
 	return state, blocked
-}
-
-type PublicCapacity struct {
-	global   chan struct{}
-	mu       sync.Mutex
-	sources  map[string]int
-	prefixes map[string]int
-}
-
-func NewPublicCapacity() *PublicCapacity {
-	return &PublicCapacity{global: make(chan struct{}, globalConcurrentLimit), sources: make(map[string]int), prefixes: make(map[string]int)}
-}
-
-func (capacity *PublicCapacity) Acquire(key string) bool {
-	select {
-	case capacity.global <- struct{}{}:
-	default:
-		return false
-	}
-	capacity.mu.Lock()
-	defer capacity.mu.Unlock()
-	prefix := abusePrefix(key)
-	if capacity.sources[key] >= sourceConcurrentLimit || prefix != "" && capacity.prefixes[prefix] >= prefixConcurrentLimit {
-		<-capacity.global
-		return false
-	}
-	capacity.sources[key]++
-	if prefix != "" {
-		capacity.prefixes[prefix]++
-	}
-	return true
-}
-
-func (capacity *PublicCapacity) Release(key string) {
-	capacity.mu.Lock()
-	capacity.sources[key]--
-	if capacity.sources[key] == 0 {
-		delete(capacity.sources, key)
-	}
-	if prefix := abusePrefix(key); prefix != "" {
-		capacity.prefixes[prefix]--
-		if capacity.prefixes[prefix] == 0 {
-			delete(capacity.prefixes, prefix)
-		}
-	}
-	capacity.mu.Unlock()
-	<-capacity.global
 }
 
 func SuspiciousPublicPath(path string) bool {

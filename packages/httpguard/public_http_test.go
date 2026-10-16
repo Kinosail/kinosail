@@ -186,12 +186,30 @@ func TestLimitPublicRequestsAppliesCapacityAndReleasesIt(t *testing.T) {
 			t.Fatal("request did not enter the handler")
 		}
 	}
+	impatient, cancel := context.WithTimeout(t.Context(), 20*time.Millisecond)
+	defer cancel()
 	blocked := httptest.NewRecorder()
-	limited.ServeHTTP(blocked, publicRequest(t, http.MethodGet, "/", "203.0.113.20:9999"))
+	limited.ServeHTTP(blocked, publicRequest(t, http.MethodGet, "/", "203.0.113.20:9999").WithContext(impatient))
 	if blocked.Code != http.StatusServiceUnavailable || blocked.Header().Get("Retry-After") != "1" {
 		t.Fatalf("capacity response = %d, %v", blocked.Code, blocked.Header())
 	}
+	queued := make(chan int, 1)
+	go func() {
+		response := httptest.NewRecorder()
+		limited.ServeHTTP(response, publicRequest(t, http.MethodGet, "/", "203.0.113.20:9998"))
+		queued <- response.Code
+	}()
+	select {
+	case code := <-queued:
+		t.Fatalf("burst request was not queued: %d", code)
+	case <-time.After(50 * time.Millisecond):
+	}
+	release <- struct{}{}
+	<-entered
 	close(release)
+	if code := <-queued; code != http.StatusNoContent {
+		t.Fatalf("queued burst request = %d", code)
+	}
 	group.Wait()
 	response := httptest.NewRecorder()
 	limited.ServeHTTP(response, publicRequest(t, http.MethodGet, "/", "203.0.113.20:9999"))

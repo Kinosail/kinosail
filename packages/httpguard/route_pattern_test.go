@@ -18,3 +18,32 @@ func TestNestedRoutePatternPreservesRootAndApplicationRoutes(t *testing.T) {
 		}
 	}
 }
+
+func TestMemoizedRoutePatternResolvesOncePerRequestRoute(t *testing.T) {
+	application := http.NewServeMux()
+	application.Handle("GET /items/{id}", http.NotFoundHandler())
+	application.Handle("POST /items/{id}", http.NotFoundHandler())
+	application.Handle("GET /settings", http.NotFoundHandler())
+	lookups := 0
+	resolve := MemoizedRoutePattern(func(request *http.Request) string {
+		lookups++
+		_, pattern := application.Handler(request)
+		return pattern
+	})
+	request := httptest.NewRequestWithContext(WithRouteMemo(t.Context()), http.MethodGet, "/items/one", nil)
+	for range 3 {
+		if got := resolve(request); got != "GET /items/{id}" {
+			t.Fatalf("memoized pattern = %q", got)
+		}
+	}
+	rewritten := request.Clone(request.Context())
+	rewritten.URL.Path = "/settings"
+	posted := request.Clone(request.Context())
+	posted.Method = http.MethodPost
+	if resolve(rewritten) != "GET /settings" || resolve(posted) != "POST /items/{id}" || resolve(request) != "GET /items/{id}" || lookups != 4 {
+		t.Fatalf("rewritten request reused a stale pattern; lookups = %d", lookups)
+	}
+	if resolve(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil)) != "GET /settings" || lookups != 5 {
+		t.Fatal("request without a memo did not resolve directly")
+	}
+}

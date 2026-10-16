@@ -13,3 +13,7 @@ func TestOwnerActivityRecordsSettingsDenialsAndPlaybackWithoutSecrets(t *testing
 func TestActivityJournalSurvivesRestartAndRecoveryBackup(t *testing.T) {
 	auditFixture.ActivityJournalSurvivesRestartAndRecoveryBackup(t)
 }
+
+func TestRepeatedDenialsFromOneSourceStayBounded(t *testing.T) {
+	auditFixture.RepeatedDenialsFromOneSourceStayBounded(t)
+}

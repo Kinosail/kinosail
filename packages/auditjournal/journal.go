@@ -6,17 +6,19 @@ import (
 	"errors"
 	"io"
 	"log/slog"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 )
 
 const (
-	defaultAuditRetention    time.Duration = 31_536_000_000_000_000
-	defaultPlaybackRetention time.Duration = 7_776_000_000_000_000
-	maxActivityEvents                      = 25_000
-	auditNotificationQueue                 = 128
+	defaultAuditRetention       time.Duration = 31_536_000_000_000_000
+	defaultPlaybackRetention    time.Duration = 7_776_000_000_000_000
+	maxActivityEvents                         = 25_000
+	compactedActivityEvents                   = 22_500
+	compactedJournalBytes                     = maxAuditJournalBytes - 8<<20
+	retentionCompactionInterval               = time.Hour
+	auditNotificationQueue                    = 128
 )
 
 type Event struct {
@@ -51,10 +53,21 @@ type Status struct {
 	LastError          string
 }
 
+type eventMeta struct {
+	created time.Time
+	size    int64
+}
+
 type Journal struct {
 	mu                sync.Mutex
+	writeMu           sync.Mutex
 	file              string
 	events            []Event
+	meta              []eventMeta
+	bytes             int64
+	nextExpiry        time.Time
+	compacted         time.Time
+	flood             floodGuard
 	notify            func(Event)
 	auditRetention    time.Duration
 	playbackRetention time.Duration
@@ -93,36 +106,40 @@ func New(ctx context.Context, config Config) *Journal {
 }
 
 func (journal *Journal) Record(event Event) {
-	journal.mu.Lock()
-	defer journal.mu.Unlock()
-	if !journal.writable || !validEvent(event, false) {
-		journal.failLocked("write activity journal", errors.New("activity event is invalid"))
+	event, created, admitted := journal.admit(event)
+	if !admitted {
 		return
 	}
-	event = cloneEvent(event)
-	previousEvents := append([]Event(nil), journal.events...)
-	if len(journal.events) != 0 {
-		event.Previous = journal.events[len(journal.events)-1].Integrity
-	}
-	event.Integrity = journal.sign(event)
-	journal.events = append(journal.events, event)
-	pruned := journal.pruneLocked(time.Now().UTC())
-	var err error
-	if journal.file != "" {
-		if pruned {
-			err = journal.rewriteLocked()
-		} else {
-			err = appendAuditEvent(journal.file, event)
-		}
-	}
+	journal.writeMu.Lock()
+	defer journal.writeMu.Unlock()
+	event, err := journal.persist(event, created, time.Now().UTC())
 	if err != nil {
-		journal.events = previousEvents
+		journal.mu.Lock()
 		journal.failLocked("write activity journal", err)
+		journal.mu.Unlock()
 		return
 	}
 	if journal.notify != nil && event.Category != "playback" {
 		journal.enqueueNotification(event)
 	}
+}
+
+func (journal *Journal) admit(event Event) (Event, time.Time, bool) {
+	journal.mu.Lock()
+	defer journal.mu.Unlock()
+	if !journal.writable || !validEvent(event, false) {
+		journal.failLocked("write activity journal", errors.New("activity event is invalid"))
+		return Event{}, time.Time{}, false
+	}
+	event = cloneEvent(event)
+	created, _ := time.Parse(time.RFC3339Nano, event.Time)
+	if !journal.flood.admit(&event, created) {
+		return Event{}, time.Time{}, false
+	}
+	if _, summarized := event.Details[suppressedDetail]; summarized && !validEvent(event, false) {
+		delete(event.Details, suppressedDetail)
+	}
+	return event, created, true
 }
 
 func (journal *Journal) Query(category string, limit int) []Event {
@@ -170,9 +187,10 @@ func (journal *Journal) TripwireWarning() string {
 
 func (journal *Journal) WriteJSONL(writer io.Writer) error {
 	journal.mu.Lock()
-	defer journal.mu.Unlock()
+	events := journal.events
+	journal.mu.Unlock()
 	encoder := json.NewEncoder(writer)
-	for _, event := range journal.events {
+	for _, event := range events {
 		if err := encoder.Encode(event); err != nil {
 			return err
 		}
@@ -206,52 +224,4 @@ func cloneEvent(event Event) Event {
 		event.Details = details
 	}
 	return event
-}
-
-func validEvent(event Event, stored bool) bool {
-	if !validCoreFields(event) || !validOptionalFields(event) || !validDetails(event.Details) {
-		return false
-	}
-	if !stored && (event.Previous != "" || event.Integrity != "") {
-		return false
-	}
-	data, err := json.Marshal(event)
-	return err == nil && len(data) <= maxAuditEventBytes
-}
-
-func validCoreFields(event Event) bool {
-	if !validRequiredString(event.ID, 128) || !validRequiredString(event.Time, 64) || !validRequiredString(event.Category, 64) || !validRequiredString(event.Action, 256) || !validRequiredString(event.Result, 64) {
-		return false
-	}
-	_, err := time.Parse(time.RFC3339Nano, event.Time)
-	return err == nil
-}
-
-func validOptionalFields(event Event) bool {
-	for _, value := range []string{event.Actor, event.ActorID, event.Target, event.TargetID, event.RequestID, event.Remote} {
-		if !validOptionalString(value, 4096) {
-			return false
-		}
-	}
-	return true
-}
-
-func validRequiredString(value string, limit int) bool {
-	return value != "" && validOptionalString(value, limit)
-}
-
-func validOptionalString(value string, limit int) bool {
-	return len(value) <= limit && !strings.ContainsRune(value, 0)
-}
-
-func validDetails(details map[string]string) bool {
-	if len(details) > 128 {
-		return false
-	}
-	for key, value := range details {
-		if !validRequiredString(key, 256) || !validOptionalString(value, 4096) {
-			return false
-		}
-	}
-	return true
 }
