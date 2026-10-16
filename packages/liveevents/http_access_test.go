@@ -57,7 +57,7 @@ func TestStalledStreamIsReleasedByItsWriteDeadline(t *testing.T) {
 		hub.Handler(testAccess(func(*http.Request) bool { return true })).ServeHTTP(writer, request)
 	}))
 	t.Cleanup(web.Close)
-	connection, err := net.Dial("tcp", web.Listener.Addr().String())
+	connection, err := (&net.Dialer{}).DialContext(t.Context(), "tcp", web.Listener.Addr().String())
 	if err != nil {
 		t.Fatal(err)
 	}
