@@ -5,7 +5,7 @@ final class RemoteSearchNavigationTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10))

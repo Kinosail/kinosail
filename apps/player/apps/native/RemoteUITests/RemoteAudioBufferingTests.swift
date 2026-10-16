@@ -11,7 +11,7 @@ final class RemoteAudioBufferingTests: RemoteTestCase {
         XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)

@@ -128,7 +128,7 @@ struct AudioPlayerScreen: View {
             #endif
         } }
         #if os(tvOS)
-        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() }.tvPlaybackPanel() }
         #endif
         .task(id: "\(itemID):\(revision)") { await load() }
         .onChange(of: session.player.seconds, initial: true) { _, position in if !seeking { seekValue = position } }

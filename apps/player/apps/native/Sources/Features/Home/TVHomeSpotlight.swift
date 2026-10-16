@@ -2,9 +2,7 @@
 import SwiftUI
 
 @MainActor @Observable final class TVHomeSpotlight {
-    var featured: MediaItem?
     private(set) var focused: MediaItem?
-    var current: MediaItem? { focused ?? featured }
 
     func show(_ item: MediaItem) { focused = item }
 
@@ -17,43 +15,10 @@ import SwiftUI
     }
 }
 
-struct TVHomeBackdropKey: PreferenceKey {
-    static var defaultValue: String? { nil }
-    static func reduce(value: inout String?, nextValue: () -> String?) { value = nextValue() ?? value }
-}
-
-struct TVHomeSpotlightBackdrop: View {
-    let spotlight: TVHomeSpotlight
-    @State private var path: String?
-
-    var body: some View {
-        Color.clear
-            .preference(key: TVHomeBackdropKey.self, value: path)
-            .task(id: spotlight.current?.backdrop) {
-                guard let next = spotlight.current?.backdrop, !next.isEmpty else { return }
-                if path != nil { try? await Task.sleep(for: .milliseconds(250)) }
-                if !Task.isCancelled { path = next }
-            }
-    }
-}
-
-struct TVHomeBackdrop: View {
-    let path: String?
-
-    var body: some View {
-        if let path, !path.isEmpty {
-            GeometryReader { geometry in
-                TVBackdrop(path: path, canvas: geometry.size, ambient: true)
-            }
-            .ignoresSafeArea()
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
-        }
-    }
-}
-
 struct TVHomeSpotlightHeader: View {
-    let item: MediaItem?
+    let spotlight: TVHomeSpotlight
+    let fallback: MediaItem?
+    private var item: MediaItem? { spotlight.focused ?? fallback }
     @Environment(\.dynamicTypeSize) private var dynamicType
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 56.0
 

@@ -115,7 +115,7 @@ final class RemoteLibraryNavigationTests: RemoteTestCase {
     }
 
     @MainActor private func openMovies(_ app: XCUIApplication) {
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         XCUIRemote.shared.press(.down)
         XCUIRemote.shared.press(.down)

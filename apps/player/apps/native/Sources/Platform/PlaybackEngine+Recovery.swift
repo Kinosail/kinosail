@@ -102,7 +102,8 @@ extension PlaybackEngine {
             try check(attempt, installation: installation)
             throw failure ?? nextItem.error ?? ClientError.unavailable
         }
-        recoveryLog.info("operation=playback-install outcome=ready compatible=\(self.usingCompatibility, privacy: .public) live=\(nextItem.duration.isIndefinite, privacy: .public) session=\(attempt.uuidString, privacy: .public)")
+        let mode = usingCompatibility ? source?.compatible?.mode ?? "unknown" : "direct"
+        recoveryLog.info("operation=playback-install outcome=ready compatible=\(self.usingCompatibility, privacy: .public) mode=\(mode, privacy: .public) live=\(nextItem.duration.isIndefinite, privacy: .public) session=\(attempt.uuidString, privacy: .public)")
         let actual = nextItem.duration.seconds
         if duration == 0, actual.isFinite, actual > 0 {
             let validated = try MediaTimeline(sourceDuration: actual, duration: actual)
@@ -113,6 +114,13 @@ extension PlaybackEngine {
         try check(attempt, installation: installation)
         try await applyPreferences(preferences)
         try check(attempt, installation: installation)
+        if let variantObserver { NotificationCenter.default.removeObserver(variantObserver) }
+        variantObserver = NotificationCenter.default.addObserver(forName: AVPlayerItem.newAccessLogEntryNotification, object: nextItem, queue: .main) { [weak nextItem] _ in
+            guard let event = nextItem?.accessLog()?.events.last, let size = nextItem?.presentationSize else { return }
+            let indicated = event.indicatedBitrate.isFinite ? Int(max(0, event.indicatedBitrate)) : 0
+            let observed = event.observedBitrate.isFinite ? Int(max(0, event.observedBitrate)) : 0
+            recoveryLog.info("operation=playback-variant indicatedBitrate=\(indicated, privacy: .public) observedBitrate=\(observed, privacy: .public) width=\(Int(size.width), privacy: .public) height=\(Int(size.height), privacy: .public) session=\(attempt.uuidString, privacy: .public)")
+        }
         let completion = Mutex((restoring: true, ended: false))
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
         endObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nextItem, queue: nil) { [weak self, weak next, weak nextItem] _ in

@@ -6,12 +6,12 @@ struct HomeScreen: View {
     var changeMode: ((PlayerMode) -> Void)?
     var selectTab: (PlayerTab) -> Void
     var focusTopBar: (() -> Void)? = nil
+    var launchFocus = true
     @Environment(AppSession.self) private var session
     #if os(tvOS)
-    @Namespace private var homeFocus
     @State private var quickPlay: ScreenDestination?
     @State private var spotlight = TVHomeSpotlight()
-    @State private var scrollPosition = ScrollPosition(edge: .top)
+    @State private var launchFocusPending = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
@@ -25,14 +25,21 @@ struct HomeScreen: View {
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
                 LazyVStack(alignment: .leading, spacing: 32) {
                     #if os(tvOS)
-                    if homeMode == .watch, selection.featured != nil {
-                        TVHomeSpotlightHeader(item: spotlight.focused ?? selection.featured)
-                            .task(id: selection.featured?.id) { spotlight.featured = selection.featured }
-                    }
-                    if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
-                        MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
-                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 }, onFocus: showWatching)
-                    } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
+                    if homeMode == .watch {
+                        ScrollViewReader { proxy in
+                            VStack(alignment: .leading, spacing: 32) {
+                                if selection.featured != nil {
+                                    TVHomeSpotlightHeader(spotlight: spotlight, fallback: selection.featured).id(Self.topID)
+                                }
+                                if !selection.tvWatchingRail.isEmpty {
+                                    MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
+                                               resumesPlayback: true, onQuickPlay: { quickPlay = $0 },
+                                               onFocus: { showWatching($0, proxy: proxy) },
+                                               takesFocus: takesLaunchFocus, onTookFocus: { launchFocusPending = false })
+                                }
+                            }
+                        }
+                    } else if !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
                     TVHomeBrowse(selectTab: selectTab)
@@ -67,10 +74,11 @@ struct HomeScreen: View {
                     }
                     #endif
                     if homeMode == .watch {
-                        recentShelf("Recently added movies", items: selection.recent(for: .video))
-                        recentShelf("Recently added TV shows", items: selection.recent(for: .show), opensShows: true)
-                        recentShelf("Unwatched TV shows", items: selection.unwatchedShows, opensShows: true)
-                        recentShelf("Unwatched movies", items: selection.unwatchedMovies)
+                        let lead = selection.tvLeadRecentShelf
+                        recentShelf("Recently added movies", items: selection.recent(for: .video), leads: lead == 0)
+                        recentShelf("Recently added TV shows", items: selection.recent(for: .show), opensShows: true, leads: lead == 1)
+                        recentShelf("Unwatched TV shows", items: selection.unwatchedShows, opensShows: true, leads: lead == 2)
+                        recentShelf("Unwatched movies", items: selection.unwatchedMovies, leads: lead == 3)
                         ForEach(selection.movieGenres) { genre in
                             recentShelf(LocalizedStringKey(genre.name), items: genre.items)
                         }
@@ -99,17 +107,6 @@ struct HomeScreen: View {
             session.contentRevision = UUID()
         }
         #if os(tvOS)
-        .mask {
-            VStack(spacing: 0) {
-                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom).frame(height: 48)
-                Color.black
-            }
-            .padding(.horizontal, -KinoTheme.contentPadding)
-            .ignoresSafeArea(edges: [.horizontal, .bottom])
-        }
-        .scrollPosition($scrollPosition)
-        .background { TVHomeSpotlightBackdrop(spotlight: spotlight) }
-        .focusScope(homeFocus)
         .focusSection()
         .onExitCommand { focusTopBar?() }
         .navigationTitle("")
@@ -151,9 +148,12 @@ struct HomeScreen: View {
     }
 
     #if os(tvOS)
-    private func showWatching(_ item: MediaItem) {
+    private static let topID = "home.top"
+    private var takesLaunchFocus: Bool { launchFocus && launchFocusPending }
+
+    private func showWatching(_ item: MediaItem, proxy: ScrollViewProxy) {
         spotlight.show(item)
-        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { scrollPosition.scrollTo(edge: .top) }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { proxy.scrollTo(Self.topID, anchor: .top) }
     }
     #endif
 
@@ -165,11 +165,11 @@ struct HomeScreen: View {
         #endif
     }
 
-    @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false) -> some View {
+    @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false, leads: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
             MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows,
-                       onFocus: { spotlight.show($0) })
+                       takesFocus: leads && takesLaunchFocus, onTookFocus: { launchFocusPending = false })
             #else
             MediaShelf(title: title, items: items, opensShows: opensShows)
             #endif
@@ -212,6 +212,10 @@ struct HomeSelection {
     }
 
     var unwatchedMovies: [MediaItem] { recent(for: .video).filter { !$0.progress.watched } }
+    var tvLeadRecentShelf: Int? {
+        guard tvWatchingRail.isEmpty else { return nil }
+        return [recent(for: .video), recent(for: .show), unwatchedShows, unwatchedMovies].firstIndex { !$0.isEmpty }
+    }
     var unwatchedShows: [MediaItem] { recent(for: .show).filter { !$0.progress.watched } }
     var movieGenres: [MovieGenre] {
         var grouped: [String: [MediaItem]] = [:]

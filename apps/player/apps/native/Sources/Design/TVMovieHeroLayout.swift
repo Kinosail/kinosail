@@ -34,7 +34,8 @@ private struct TVMovieHeroBackdrop: View {
                 if let anchor {
                     let frame = geometry[anchor.bounds]
                     let top = min(frame.minY, 0)
-                    let canvas = CGSize(width: geometry.size.width, height: max(0, frame.maxY - top))
+                    let canvas = CGSize(width: geometry.size.width,
+                                        height: max(frame.maxY - top, geometry.size.width * 9 / 16))
                     TVBackdrop(path: anchor.path, canvas: canvas)
                         .frame(width: canvas.width, height: canvas.height)
                         .clipped()
@@ -53,7 +54,6 @@ private struct TVMovieHeroBackdrop: View {
 struct TVBackdrop: View {
     let path: String?
     let canvas: CGSize
-    var ambient = false
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.colorSchemeContrast) private var contrast
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
@@ -71,11 +71,7 @@ struct TVBackdrop: View {
                         .init(color: .clear, location: 1)
                     ], startPoint: .leading, endPoint: .trailing)
                     .frame(width: min(canvas.width, 1120))
-                    LinearGradient(stops: ambient ? [
-                        .init(color: KinoTheme.background.opacity(0.2), location: 0),
-                        .init(color: KinoTheme.background.opacity(0.82), location: 0.5),
-                        .init(color: KinoTheme.background.opacity(0.94), location: 1)
-                    ] : [
+                    LinearGradient(stops: [
                         .init(color: .clear, location: 0),
                         .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
                         .init(color: KinoTheme.background, location: 1)
@@ -86,7 +82,7 @@ struct TVBackdrop: View {
         .mask {
             LinearGradient(stops: [
                 .init(color: .black, location: 0),
-                .init(color: .black, location: ambient ? 1 : 0.72),
+                .init(color: .black, location: 0.72),
                 .init(color: .clear, location: 1)
             ], startPoint: .top, endPoint: .bottom)
         }

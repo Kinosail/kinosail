@@ -44,11 +44,6 @@ struct SupporterScreen: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                #if os(tvOS)
-                Button("Back to Settings", systemImage: "chevron.left") { dismiss() }
-                    .buttonStyle(.bordered)
-                    .tvOSDefaultPlayFocus(in: supporterFocus, id: "supporter.back")
-                #endif
                 Text("A place in the story.").font(headingFont).accessibilityAddTraits(.isHeader)
                 Text("Your Server's existing badges appear here. Kinosail stays complete and free for everyone.")
                 if loading && collection == nil {
@@ -98,8 +93,8 @@ struct SupporterScreen: View {
             .padding(pagePadding)
         }
         #if os(tvOS)
-        .cinemaBackground()
         .focusScope(supporterFocus)
+        .tvOSConfigurationLayout(title: "Supporter collection", symbol: "sparkles")
         .navigationTitle("")
         #else
         .background(KinoTheme.background)
@@ -122,6 +117,7 @@ struct SupporterScreen: View {
             collection = try await client.supporterCollection()
             showingBadges = collection?.visible ?? false
         }
+        catch ClientError.http(404) { self.error = "Supporter badges are not available on this Server." }
         catch { self.error = AppSession.message(error) }
     }
     private func save(_ visible: Bool) {

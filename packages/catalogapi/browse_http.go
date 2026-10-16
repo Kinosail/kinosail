@@ -28,7 +28,7 @@ func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Re
 	result := make([]MediaGroup, 0, len(shows))
 	for _, show := range shows {
 		play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
-		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: ArtworkURL(show.ArtworkID), Backdrop: BackdropURL(ShowBackdropID(show), show.Backdrop != "" || show.Artwork != ""), Play: play})
+		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: ArtworkURL(show.ArtworkID), Backdrop: BackdropURL(ShowBackdropID(show), show.Backdrop != ""), Play: play})
 	}
 	apiAction{body: map[string]any{"shows": result}, status: http.StatusOK}.serve(writer)
 }
@@ -38,7 +38,7 @@ func (handlers MediaHandlers) show(writer http.ResponseWriter, request *http.Req
 	for _, show := range shows {
 		if show.ID == request.PathValue("id") {
 			play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
-			body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != "" || show.Artwork != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
+			body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
 			apiAction{body: body, status: http.StatusOK}.serve(writer)
 			return
 		}

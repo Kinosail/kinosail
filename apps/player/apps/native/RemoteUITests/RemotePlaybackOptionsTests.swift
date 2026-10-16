@@ -4,7 +4,7 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
     @MainActor func testPlaybackOptionsFitAndReturnToVideo() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15), app.debugDescription)
         remote.press(.down)
         remote.press(.down)
@@ -19,18 +19,18 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
         remote.press(.select)
         let options = app.cells["Playback options"]
         XCTAssertTrue(options.waitForExistence(timeout: 20), app.debugDescription)
-        remote.press(.down)
+        remote.press(.select)
         remote.press(.up)
         for _ in 0..<12 where !options.hasFocus { remote.press(.right) }
         XCTAssertTrue(options.hasFocus, app.debugDescription)
         remote.press(.select)
         let preferences = app.cells["This title’s preferences"]
-        let done = app.buttons["Done"]
         XCTAssertTrue(preferences.waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertTrue(done.exists)
         record("playback options", app)
-        XCTAssertLessThan(done.frame.maxX, app.frame.width * 0.25,
-                          "Options need a full-screen presentation to fit the TV settings layout")
+        XCTAssertTrue(app.staticTexts["After the Rain"].exists, "The panel should name the playing title")
+        XCTAssertFalse(app.buttons["Done"].exists, "Back closes the options panel, so it needs no Done button")
+        XCTAssertGreaterThan(preferences.frame.minX, app.frame.width * 0.5,
+                             "Options should sit in a side panel so the paused video stays visible")
         XCTAssertTrue(app.frame.contains(preferences.frame), "The title preferences control must fit on screen")
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Couldn’t save your position'")).firstMatch.exists)
         for _ in 0..<12 where !preferences.hasFocus { remote.press(.down) }

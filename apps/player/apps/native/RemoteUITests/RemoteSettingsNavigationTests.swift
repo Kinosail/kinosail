@@ -5,7 +5,7 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.right)
         remote.press(.select)
@@ -26,13 +26,11 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
             case "Progress sync":
                 XCTAssertTrue(app.staticTexts["Progress sync"].waitForExistence(timeout: 10))
             case "Supporter collection":
-                XCTAssertTrue(app.buttons["Back to Settings"].waitForExistence(timeout: 10))
                 XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 10),
                               "The navigation fixture deliberately does not supply supporter state")
-                remote.press(.down)
-                XCTAssertTrue(app.buttons["Try again"].hasFocus)
-                remote.press(.up)
-                XCTAssertTrue(app.buttons["Back to Settings"].hasFocus)
+                XCTAssertTrue(app.staticTexts["Supporter badges are not available on this Server."].exists)
+                XCTAssertFalse(app.buttons["Back to Settings"].exists)
+                XCTAssertFalse(app.staticTexts["The requested title is no longer available."].exists)
                 record("supporter failure return", app)
             case "Made possible by":
                 XCTAssertTrue(app.staticTexts["Thank you to the people who make private playback possible."]
@@ -53,7 +51,7 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.right)
         remote.press(.select)

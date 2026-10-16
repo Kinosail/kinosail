@@ -14,7 +14,6 @@ struct PrivacyPolicyLink: View {
                         .accessibilityLabel("Scan this code to read the privacy policy")
                     Text("Scan to read the full privacy policy, including storage and deletion: \(url.absoluteString)")
                         .frame(maxWidth: 700)
-                    Link("Privacy policy", destination: url)
                 }
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)

@@ -90,33 +90,48 @@ private struct ThanksScreen: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Thank you to the people who make private playback possible.")
-                    .font(.title2.bold())
-                Text("FFmpeg and the Jellyfin FFmpeg maintainers give your Server its media tools. hls.js, htmx, jsQR, Manrope, and many Go contributors help Kinosail work across devices.")
-                HStack(alignment: .center, spacing: 16) {
-                    Image("tmdb-logo").resizable().scaledToFit().frame(width: 80, height: 58)
-                        .accessibilityLabel("TMDB")
-                    Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
-                        .font(.footnote)
+            #if os(tvOS)
+            HStack(alignment: .top, spacing: 72) {
+                credits.frame(maxWidth: 760, alignment: .leading)
+                VStack(spacing: 16) {
+                    QRCodeView(value: notices.absoluteString)
+                        .frame(width: 224, height: 224)
+                        .accessibilityLabel("Scan to read third-party notices")
+                    Text("Scan to read the third-party notices.")
+                        .font(.footnote).foregroundStyle(.secondary).multilineTextAlignment(.center)
                 }
-                Text("TMDB logo by Travis Bell · CC BY-SA 4.0. Source and license are in the third-party notices.")
-                    .font(.footnote).foregroundStyle(.secondary)
-                Text("The Server image contains its third-party notices and license files at /licenses. These Apple apps use Apple's system frameworks and connect to your Server.")
-                    .foregroundStyle(.secondary)
-                #if os(tvOS)
-                QRCodeView(value: notices.absoluteString)
-                    .frame(width: 224, height: 224)
-                    .accessibilityLabel("Scan to read third-party notices")
-                Text(notices.absoluteString).font(.footnote).foregroundStyle(.secondary)
-                #else
+                .frame(width: 240)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(KinoTheme.contentPadding)
+            #else
+            VStack(alignment: .leading, spacing: 20) {
+                credits
                 Link("View third-party notices", destination: notices)
-                #endif
             }
             .frame(maxWidth: 700, alignment: .leading)
             .frame(maxWidth: .infinity)
             .padding(KinoTheme.contentPadding)
+            #endif
         }
         .navigationTitle("Made possible by")
+    }
+
+    private var credits: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Thank you to the people who make private playback possible.")
+                .font(.title2.bold())
+            Text("FFmpeg and the Jellyfin FFmpeg maintainers give your Server its media tools. hls.js, htmx, jsQR, Manrope, and many Go contributors help Kinosail work across devices.")
+            HStack(alignment: .center, spacing: 16) {
+                Image("tmdb-logo").resizable().scaledToFit().frame(width: 80, height: 58)
+                    .accessibilityLabel("TMDB")
+                Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
+                    .font(.footnote)
+            }
+            Text("TMDB logo by Travis Bell · CC BY-SA 4.0. Source and license are in the third-party notices.")
+                .font(.footnote).foregroundStyle(.secondary)
+            Text("The Server image contains its third-party notices and license files at /licenses. These Apple apps use Apple's system frameworks and connect to your Server.")
+                .foregroundStyle(.secondary)
+        }
     }
 }

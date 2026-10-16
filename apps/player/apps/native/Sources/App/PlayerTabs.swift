@@ -8,6 +8,7 @@ struct PlayerTabs: View {
     @State private var paths: [PlayerTab: NavigationPath] = [:]
     #if os(tvOS)
     @FocusState private var topFocus: PlayerTab?
+    @State private var homeLaunchFocus = true
     #endif
     init(profileKey: String) {
         let legacy = UserDefaults.standard.string(forKey: "kinosail.tabs.\(profileKey)")
@@ -58,10 +59,12 @@ struct PlayerTabs: View {
                         TVTopBar(focus: $topFocus, onSelect: selectBrowseTab)
                         PlayerTabScreen(tab: .home, mode: screenMode, showsSearch: false,
                                         changeMode: changeMode, selectTab: selectBrowseTab,
-                                        focusTopBar: { topFocus = .search })
+                                        focusTopBar: { topFocus = .search }, launchFocus: homeLaunchFocus)
                     }
-                    .backgroundPreferenceValue(TVHomeBackdropKey.self) { TVHomeBackdrop(path: $0) }
                     .cinemaBackground()
+                    .onChange(of: topFocus) { previous, current in
+                        if previous != nil, current != nil, previous != current { homeLaunchFocus = false }
+                    }
                 }
             }
             #else
@@ -219,12 +222,13 @@ private struct PlayerTabScreen: View {
     let changeMode: (PlayerMode) -> Void
     let selectTab: (PlayerTab) -> Void
     var focusTopBar: (() -> Void)? = nil
+    var launchFocus = true
     var body: some View {
         switch tab {
         case .movies: LibraryScreen(initialView: .movies)
         case .shows: LibraryScreen(initialView: .shows)
         case .home: HomeScreen(showsSearch: showsSearch, mode: mode, changeMode: mode == nil ? nil : changeMode,
-                               selectTab: selectTab, focusTopBar: focusTopBar)
+                               selectTab: selectTab, focusTopBar: focusTopBar, launchFocus: launchFocus)
         case .search: LibraryScreen(initialView: mode?.searchViews.first ?? .all, searchMode: true, mode: mode).id(mode)
         case .list: LibraryScreen(initialView: .list)
         case .library: LibraryHubScreen(mode: mode)

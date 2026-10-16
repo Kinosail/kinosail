@@ -199,7 +199,7 @@ final class RemoteArtworkStateTests: RemoteTestCase {
         let remote = XCUIRemote.shared
         app.launch()
         if next { print("ARTWORK_STATE appLaunchCompletedUnix=\(Date().timeIntervalSince1970)") }
-        XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
+        settleAtSearch(app)
         remote.press(.down)
         remote.press(.down)
         XCTAssertTrue(app.buttons["Movies"].hasFocus)

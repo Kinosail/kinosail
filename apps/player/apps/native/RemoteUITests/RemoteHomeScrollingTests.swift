@@ -6,7 +6,7 @@ final class RemoteHomeScrollingTests: RemoteTestCase {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         var downMovements = 1
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         remote.press(.down)

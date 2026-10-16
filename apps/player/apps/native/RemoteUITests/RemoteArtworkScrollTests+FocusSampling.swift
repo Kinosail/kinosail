@@ -49,7 +49,7 @@ extension RemoteArtworkScrollTests {
             "Requires an explicitly selected artwork focus-sampling control")
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         XCUIRemote.shared.press(.down)
         XCUIRemote.shared.press(.down)
