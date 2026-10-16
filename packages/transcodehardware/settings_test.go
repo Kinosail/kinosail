@@ -107,7 +107,7 @@ func TestSettingsResolvesPlayerProfilesAndErrors(t *testing.T) {
 		{"missing encoder", Capabilities{Probed: true, Backends: []Backend{{ID: "none", Supported: true, Usable: true}}, Codecs: []Codec{{ID: "h264", Supported: true, Usable: true}}}, "h264", "video codec is not available on this Server"},
 	} {
 		settings, err = test.capabilities.Settings(Selection{Accelerator: "none"}, test.codec)
-		if err == nil || err.Error() != test.message || settings != (transcodepolicy.Settings{}) {
+		if err == nil || err.Error() != test.message || !reflect.DeepEqual(settings, transcodepolicy.Settings{}) {
 			t.Errorf("%s = %#v, %v", test.name, settings, err)
 		}
 	}

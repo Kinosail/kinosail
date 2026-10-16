@@ -48,7 +48,7 @@ func TestPlannedHLSLoadingDoesNotRepeatPlaybackEnrichment(t *testing.T) {
 				err = manager.encodeVariants(t.Context(), item, directory, options, recipe, 0)
 			case "software recovery":
 				options.Accelerator = "cuda"
-				options.HardwareDecode = true
+				options.HardwareDecode, options.HardwareDecodeInputs = true, []string{"h264"}
 				job := &hlsJob{err: errors.New("device setup failed")}
 				if !manager.retrySoftwareHLSEncode(t.Context(), item, job, directory, options, recipe, 0, false) {
 					t.Fatalf("software recovery failed: %v", job.err)
@@ -174,7 +174,7 @@ func assertPublishedHLSRetained(t *testing.T, preserve bool) {
 		t.Fatal(err)
 	}
 	options.Accelerator = "cuda"
-	options.HardwareDecode = true
+	options.HardwareDecode, options.HardwareDecodeInputs = true, []string{"h264"}
 	original := errors.New("device setup failed")
 	job := &hlsJob{err: original}
 	if manager.retrySoftwareHLSEncode(t.Context(), item, job, directory, options, hlsRecipe{mode: "transcode"}, 0, preserve) || !errors.Is(job.err, original) {

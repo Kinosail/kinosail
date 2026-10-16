@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -53,10 +54,10 @@ func TestPreferredDecodeIsCheckedBeforeOptionalCodecBudgetExpires(t *testing.T) 
 		if options.HardwareDecode {
 			decodes++
 		}
-		return transcodepolicy.CheckResult{Status: "passed", HardwareDecode: options.HardwareDecode}
+		return transcodepolicy.CheckResult{Status: "passed", HardwareDecode: options.HardwareDecode, DecodeInput: options.DecodeInput}
 	})
 	settings, err := actual.Settings(Selection{Accelerator: "auto"}, "h264")
-	if err != nil || settings.Accelerator != "cuda" || !settings.HardwareDecode || decodes != 1 {
+	if err != nil || settings.Accelerator != "cuda" || !slices.Equal(settings.HardwareDecodeInputs, []string{"h264"}) || decodes != 1 {
 		t.Fatalf("preferred frame path lost its startup budget: %#v, %v, checks=%d", settings, err, decodes)
 	}
 	if actual.SupportsCodec("hevc") {
@@ -87,7 +88,7 @@ func TestFailedDeviceEvidenceIsSharedAndExpires(t *testing.T) {
 
 func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) {
 	state := &verification{operations: map[string][]Operation{
-		"cuda": {{Codec: "h264", Device: "0", DecodeH264: true, Status: "passed"}},
+		"cuda": {{Codec: "h264", Device: "0", DecodeInputs: []string{"h264"}, Status: "passed"}},
 		"none": {{Codec: "h264", Status: "passed"}},
 	}, failed: map[string]time.Time{}}
 	hardware := Capabilities{Probed: true, verification: state, Backends: []Backend{
@@ -96,12 +97,13 @@ func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) {
 	}}
 	selection := Selection{Accelerator: "auto"}
 	initial, err := hardware.Settings(selection, "h264")
-	if err != nil || !initial.HardwareDecode || initial.Accelerator != "cuda" {
+	if err != nil || !slices.Equal(initial.HardwareDecodeInputs, []string{"h264"}) || initial.Accelerator != "cuda" {
 		t.Fatalf("initial hardware settings = %#v, %v", initial, err)
 	}
+	initial.HardwareDecode, initial.DecodeInput = true, "h264"
 	hardware.RecordDecodeFailure(initial)
 	encodeOnly, err := hardware.Settings(selection, "h264")
-	if err != nil || encodeOnly.HardwareDecode || encodeOnly.Accelerator != "cuda" || encodeOnly.Cache != initial.Cache {
+	if err != nil || len(encodeOnly.HardwareDecodeInputs) != 0 || encodeOnly.Accelerator != "cuda" || encodeOnly.Cache != initial.Cache {
 		t.Fatalf("decode failure discarded encoding: %#v, %v", encodeOnly, err)
 	}
 	hardware.RecordFailure(encodeOnly)

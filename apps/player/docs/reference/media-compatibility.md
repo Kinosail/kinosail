@@ -60,6 +60,8 @@ The playback decision can select:
 
 Transcoded output uses MP4 with H.264 video and AAC audio. Hardware acceleration is optional and depends on the host and container image. Kinosail can use supported accelerators such as VA-API, QSV, CUDA/NVENC, VideoToolbox, RKMPP, or AMF when the deployment exposes them; the configured accelerator must still pass the Server's capability check.
 
+Hardware decoding is separate from hardware encoding. At startup, Kinosail tests each usable graphics device with small synthetic clips in H.264, HEVC, HEVC 10-bit, AV1, AV1 10-bit, VP9, and VP9 10-bit. A source decodes on the device only when its format passed that test. Other sources decode on the processor and encode on the device. When the device also passed the HDR tests, 10-bit HEVC HDR sources stay on the device for tone mapping or HDR output. **Settings → Video conversion → Video compatibility** lists the verified decode formats for each device.
+
 External and embedded text subtitles can remain a separate text track. Kinosail burns subtitles into video only when the client cannot use the selected text track. Tone mapping can convert unsupported HDR to SDR.
 
 ## Reader and non-video behavior
