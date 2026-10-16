@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -195,10 +194,7 @@ func TestSubtitlesAndTrickplay(t *testing.T) {
 	}
 	root := t.TempDir()
 	target := filepath.Join(root, "frame.jpg")
-	fake := filepath.Join(root, "ffmpeg")
-	if err := os.WriteFile(fake, []byte("#!/bin/sh\nfor target do :; done\nprintf frame > \"$target\"\n"), 0o700); err != nil { //nolint:gosec // Test fixture must be executable.
-		t.Fatal(err)
-	}
+	fake := linkFakeEncoder(t, root, "frame")
 	if err := GenerateTrickplay(t.Context(), root, fake, filepath.Join(root, "source.mkv"), target, 10); err != nil || !pathExists(target) {
 		t.Fatalf("trickplay generation = %v", err)
 	}

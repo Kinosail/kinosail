@@ -3,7 +3,6 @@ package playback
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -21,7 +20,7 @@ func TestTrickplayAdmissionGatesAndCollapsesConcurrentGeneration(t *testing.T) {
 	source := filepath.Join(root, "source.mkv")
 	writeTestFile(t, source, "source")
 	runs := filepath.Join(root, "runs.log")
-	ffmpeg := writeFakeFFmpeg(t, root, runs)
+	ffmpeg := linkFakeEncoder(t, root, "slow-frame")
 	var acquired, held atomic.Int64
 	acquire := func(ctx context.Context) (func(), error) {
 		if ctx.Err() != nil {
@@ -57,16 +56,6 @@ func TestTrickplayAdmissionGatesAndCollapsesConcurrentGeneration(t *testing.T) {
 	if response.Code != http.StatusServiceUnavailable || len(readTestFile(t, runs)) != 1 || pathExists(filepath.Join(root, "trickplay", "video", "40.jpg")) {
 		t.Fatalf("rejected admission = %d, runs = %d", response.Code, len(readTestFile(t, runs)))
 	}
-}
-
-func writeFakeFFmpeg(t *testing.T, root, runs string) string {
-	t.Helper()
-	ffmpeg := filepath.Join(root, "ffmpeg.sh")
-	script := fmt.Sprintf("#!/bin/sh\nprintf x >> %q\nsleep 0.2\nfor argument; do last=\"$argument\"; done\nprintf jpeg > \"$last\"\n", runs)
-	if err := os.WriteFile(ffmpeg, []byte(script), 0o700); err != nil { //nolint:gosec // The fake encoder must be executable by the test process.
-		t.Fatal(err)
-	}
-	return ffmpeg
 }
 
 func concurrentTrickplayCodes(t *testing.T, handler http.Handler, path string, count int) [6]int {
