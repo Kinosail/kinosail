@@ -40,7 +40,7 @@
     "schemaVersion": 2,
     "manifest": "kinosail-release.json",
     "signatureBundle": "kinosail-release.json.sigstore.json",
-    "signatureIdentity": "^https://github\\.com/MikeO7/kinosail/\\.github/workflows/subtitles-release\\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+    "signatureIdentity": "^https://github\\.com/Kinosail/kinosail/\\.github/workflows/release\\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
     "agent": {
       "schemaVersion": 1,
       "installWithServer": true,

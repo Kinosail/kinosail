@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -49,15 +50,16 @@ func TestPolicyRequestAndAdapterReportShareOneContract(t *testing.T) {
 func TestApplicationPoliciesKeepIndependentReleaseIdentities(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
-		name, wantURL, wantIdentity string
-		policy                      Policy
+		name, wantURL, signer, otherSigner string
+		policy                             Policy
 	}{
-		{name: "player", policy: PlayerPolicy(2, 3), wantURL: "https://github.com/Kinosail/kinosail/releases/download/player-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/Kinosail/kinosail/\.github/workflows/player-release\.yml@refs/tags/player-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
-		{name: "subtitles", policy: SubtitlesPolicy(4, 5), wantURL: "https://github.com/Kinosail/kinosail/releases/download/subtitles-v1.2.3/kinosail-release.json", wantIdentity: `^https://github\.com/Kinosail/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`},
+		{name: "player", policy: PlayerPolicy(2, 3), wantURL: "https://github.com/Kinosail/kinosail/releases/download/player-v1.2.3/kinosail-release.json", signer: "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-v1.2.3", otherSigner: "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/subtitles-v1.2.3"},
+		{name: "subtitles", policy: SubtitlesPolicy(4, 5), wantURL: "https://github.com/Kinosail/kinosail/releases/download/subtitles-v1.2.3/kinosail-release.json", signer: "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/subtitles-v1.2.3", otherSigner: "https://github.com/Kinosail/kinosail/.github/workflows/release.yml@refs/tags/player-v1.2.3"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			manifest, signature := releaseManifestURLs("v1.2.3", test.policy)
-			if manifest != test.wantURL || signature != manifest+".sigstore.json" || test.policy.signatureIdentity != test.wantIdentity {
+			identity := regexp.MustCompile(test.policy.signatureIdentity)
+			if manifest != test.wantURL || signature != manifest+".sigstore.json" || !identity.MatchString(test.signer) || identity.MatchString(test.otherSigner) {
 				t.Fatalf("release policy = %#v, %q, %q", test.policy, manifest, signature)
 			}
 		})
