@@ -11,7 +11,7 @@ import (
 func TestCopiedVariantPlaylistSurvivesLiveEncoderRewrites(t *testing.T) {
 	_, directory, playlist := boundCopiedPlaylistFixture(t)
 	variant := filepath.Join(directory, "360p", "index.m3u8")
-	manifest, err := os.ReadFile(variant) //nolint:gosec // The test reads its own cache fixture.
+	manifest, err := os.ReadFile(variant)
 	if err != nil {
 		t.Fatal(err)
 	}
