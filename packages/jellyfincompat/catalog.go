@@ -77,7 +77,7 @@ func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
 	}
 	result := catalog.query(values, ids)
 	total := len(result)
-	start, limit := Int(values, "startIndex"), Int(values, "limit")
+	start, limit := max(0, Int(values, "startIndex")), Int(values, "limit")
 	if start > len(result) {
 		start = len(result)
 	}
