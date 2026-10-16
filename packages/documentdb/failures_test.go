@@ -220,7 +220,7 @@ func expectHealthyDatabase(mock sqlmock.Sqlmock) {
 	mock.ExpectQuery(quickCheckPattern()).WillReturnRows(sqlmock.NewRows([]string{"quick_check"}).AddRow("ok"))
 }
 
-func versionPattern() string { return regexp.QuoteMeta(`PRAGMA user_version`) }
+func versionPattern() string    { return regexp.QuoteMeta(`PRAGMA user_version`) }
 func schemaPattern() string     { return "CREATE TABLE state" }
 func quickCheckPattern() string { return regexp.QuoteMeta(`PRAGMA quick_check`) }
 func selectStatePattern() string {

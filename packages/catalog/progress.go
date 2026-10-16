@@ -24,12 +24,12 @@ type PlaybackState struct {
 type ProgressChange func(PlaybackState) (PlaybackState, bool, error)
 
 type ProgressStorage struct {
-	Mutex               *sync.RWMutex
-	PersistMutex        *sync.Mutex
-	Values              *map[string]PlaybackState
-	File                string
-	Persist             func(string, any) error
-	PersistEntry        func(string, PlaybackState) error
+	Mutex        *sync.RWMutex
+	PersistMutex *sync.Mutex
+	Values       *map[string]PlaybackState
+	File         string
+	Persist      func(string, any) error
+	PersistEntry func(string, PlaybackState) error
 }
 
 func (storage ProgressStorage) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {

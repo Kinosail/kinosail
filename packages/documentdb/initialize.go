@@ -2,6 +2,7 @@ package documentdb
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 )
@@ -62,15 +63,8 @@ func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) er
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if version < 2 {
-		if _, err := tx.ExecContext(ctx, entrySchema); err != nil {
-			return fmt.Errorf("upgrade record storage: %w", err)
-		}
-	}
-	if version < 3 {
-		if _, err := tx.ExecContext(ctx, recordSchema); err != nil {
-			return fmt.Errorf("upgrade record limits: %w", err)
-		}
+	if err := migrateSchema(ctx, tx, version); err != nil {
+		return err
 	}
 	for _, name := range store.config.RetiredDocuments {
 		if _, err := tx.ExecContext(ctx, `DELETE FROM state_entries WHERE name = ?`, name); err != nil {
@@ -86,6 +80,20 @@ func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) er
 		}
 	}
 	return tx.Commit()
+}
+
+func migrateSchema(ctx context.Context, tx *sql.Tx, version int) error {
+	if version < 2 {
+		if _, err := tx.ExecContext(ctx, entrySchema); err != nil {
+			return fmt.Errorf("upgrade record storage: %w", err)
+		}
+	}
+	if version < 3 {
+		if _, err := tx.ExecContext(ctx, recordSchema); err != nil {
+			return fmt.Errorf("upgrade record limits: %w", err)
+		}
+	}
+	return nil
 }
 
 func (store *Store) validStoredDocument(document storedDocument, retired bool) bool {

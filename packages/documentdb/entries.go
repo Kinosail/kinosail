@@ -146,12 +146,14 @@ func (store *Store) writeEntries(ctx context.Context, tx *sql.Tx, name string, c
 		return err
 	}
 	remove := tx.StmtContext(ctx, store.deleteEntry)
+	defer remove.Close()
 	for _, key := range changes.deleted {
 		if _, err := remove.ExecContext(ctx, name, key); err != nil {
 			return err
 		}
 	}
 	upsert := tx.StmtContext(ctx, store.upsertEntry)
+	defer upsert.Close()
 	for key, data := range changes.set {
 		if _, err := upsert.ExecContext(ctx, name, key, data, entryCost(key, data)); err != nil {
 			return err

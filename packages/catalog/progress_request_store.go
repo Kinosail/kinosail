@@ -23,20 +23,20 @@ type ProgressAuditor interface {
 }
 
 type RequestProgressStore struct {
-	mu            sync.RWMutex
-	persistMu     sync.Mutex
-	coalescing    bool
-	flushFailed   bool
-	dirty         map[string]struct{}
-	file          string
-	values        map[string]PlaybackState
-	persist       func(string, any) error
-	database      *documentdb.Store
-	entries       bool
-	err           error
-	viewer        func(*http.Request) ProgressViewer
-	project       func(*http.Request, library.Item, PlaybackState) any
-	auditor       ProgressAuditor
+	mu          sync.RWMutex
+	persistMu   sync.Mutex
+	coalescing  bool
+	flushFailed bool
+	dirty       map[string]struct{}
+	file        string
+	values      map[string]PlaybackState
+	persist     func(string, any) error
+	database    *documentdb.Store
+	entries     bool
+	err         error
+	viewer      func(*http.Request) ProgressViewer
+	project     func(*http.Request, library.Item, PlaybackState) any
+	auditor     ProgressAuditor
 }
 
 func NewRequestProgressStore(dataDir string, database *documentdb.Store, load func(string, any) (bool, error), persist func(string, any) error, viewer func(*http.Request) ProgressViewer, project func(*http.Request, library.Item, PlaybackState) any) *RequestProgressStore {
