@@ -29,12 +29,6 @@ func NewPublicCapacity() *PublicCapacity {
 	return &PublicCapacity{released: make(chan struct{}), sources: make(map[string]int), prefixes: make(map[string]int), waiting: make(map[string]int)}
 }
 
-func (capacity *PublicCapacity) Acquire(key string) bool {
-	capacity.mu.Lock()
-	defer capacity.mu.Unlock()
-	return capacity.acquireLocked(key)
-}
-
 func (capacity *PublicCapacity) Wait(ctx context.Context, key string, patience time.Duration) bool {
 	capacity.mu.Lock()
 	if capacity.acquireLocked(key) {

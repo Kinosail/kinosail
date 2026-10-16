@@ -11,7 +11,7 @@ func TestPublicCapacityBoundsQueuedRequestsPerSource(t *testing.T) {
 	t.Parallel()
 	capacity := NewPublicCapacity()
 	for range sourceConcurrentLimit {
-		if !capacity.Acquire("192.0.2.9") {
+		if !capacity.Wait(t.Context(), "192.0.2.9", 0) {
 			t.Fatal("source request was rejected before its limit")
 		}
 	}
