@@ -120,7 +120,7 @@ func (preparation *subtitlePreparation) prepareItem(ctx context.Context, item li
 		if err != nil {
 			return err
 		}
-		work, cancel := context.WithTimeout(ctx, 5*time.Minute)
+		work, cancel := context.WithTimeout(workload.WithBackgroundPriority(ctx), 5*time.Minute)
 		finished := make(chan struct{})
 		go preparation.cancelOnForeground(work, cancel, finished)
 		err = preparation.probe.preparePreferredSubtitle(work, item, language)

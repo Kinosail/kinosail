@@ -32,9 +32,9 @@ type Analyzer struct {
 	file, cache, ffmpeg, tool string
 	records                   map[string]Record
 	jobs                      chan markerJob
-	targets, failed           map[string]bool
+	targets, failed, deferred map[string]bool
 	threads                   int
-	saveEntry                 func(string, string, any) error
+	saveEntries               func(string, map[string]any, []string) error
 	probe                     func(context.Context, library.Item) Media
 	extract                   func(context.Context, library.Item, string, float64, float64) ([]uint32, error)
 	extractVisual             func(context.Context, library.Item, string, float64, float64) ([]uint64, error)
@@ -77,8 +77,9 @@ type markerJob struct {
 }
 
 type Media struct {
-	Duration float64
-	Markers  []Marker
+	Duration    float64
+	Markers     []Marker
+	Interrupted bool
 }
 
 func NewAnalyzer(config Config) *Analyzer {
@@ -103,7 +104,7 @@ func NewAnalyzer(config Config) *Analyzer {
 	if analyzer.err != nil {
 		analyzer.records = make(map[string]Record)
 	} else if config.Database != nil && config.Database.EnableEntries(filepath.Base(analyzer.file)) == nil {
-		analyzer.saveEntry = config.Database.SaveEntry
+		analyzer.saveEntries = config.Database.SaveEntries
 	}
 	return analyzer
 }

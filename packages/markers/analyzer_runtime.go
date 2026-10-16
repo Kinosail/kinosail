@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func (analyzer *Analyzer) waiter() func(context.Context) error {
@@ -19,5 +20,5 @@ func (analyzer *Analyzer) inspect(ctx context.Context, item library.Item) Media 
 	if probe == nil {
 		return Media{}
 	}
-	return probe(ctx, item)
+	return probe(workload.WithBackgroundPriority(ctx), item)
 }

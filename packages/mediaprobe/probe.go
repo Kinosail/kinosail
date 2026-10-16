@@ -59,6 +59,7 @@ type Result struct {
 	RandomAccess  []float64
 	Tags          Tags
 	ReplayGain    ReplayGain
+	Interrupted   bool `json:"-"`
 }
 
 func (result Result) MediaFacts(item library.Item, fileVersion string, subtitleLanguage func(string, string) string, subtitleRole func(string) string) playback.MediaFacts {

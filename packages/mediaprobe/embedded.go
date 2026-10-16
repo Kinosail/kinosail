@@ -18,6 +18,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/privatefile"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 const embeddedSubtitleLimit = 16 << 20
@@ -175,7 +176,7 @@ func extractEmbeddedSubtitle(ctx context.Context, ffmpeg, media string, stream i
 	//nolint:gosec // The executable is installation config. The media path is scanned content. The stream index is probe-validated.
 	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-i", media, "-map", "0:"+strconv.Itoa(stream), "-f", "webvtt", "pipe:1")
 	command.Stdout = &output
-	err := command.Run()
+	err := workload.RunContext(ctx, command)
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}

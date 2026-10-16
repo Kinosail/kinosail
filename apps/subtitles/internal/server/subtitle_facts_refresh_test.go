@@ -1,10 +1,12 @@
 package server
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -18,9 +20,9 @@ func TestSubtitleFactsRefreshProbesInParallelAndBacksOffFailures(t *testing.T) {
 		t.Skip("parallel probing needs at least two cores")
 	}
 	root := t.TempDir()
-	calls := filepath.Join(root, "calls")
+	calls, priorities := filepath.Join(root, "calls"), filepath.Join(root, "priorities")
 	executable := filepath.Join(root, "ffprobe")
-	writeSubtitleFactsExecutable(t, executable, "#!/bin/sh\nfor argument in \"$@\"; do last=\"$argument\"; done\nprintf '%s\\n' \"$last\" >> '"+calls+"'\nsleep 0.4\ncase \"$last\" in *broken*) exit 1;; esac\nprintf '%s' '{\"format\":{\"duration\":\"10\"}}'\n")
+	writeSubtitleFactsExecutable(t, executable, "#!/bin/sh\ncut -d ' ' -f 19 /proc/self/stat >> '"+priorities+"' 2>/dev/null\nfor argument in \"$@\"; do last=\"$argument\"; done\nprintf '%s\\n' \"$last\" >> '"+calls+"'\nsleep 0.4\ncase \"$last\" in *broken*) exit 1;; esac\nprintf '%s' '{\"format\":{\"duration\":\"10\"}}'\n")
 	items := make([]library.Item, 0, 4)
 	for position := range 4 {
 		name := fmt.Sprintf("Film%d.mkv", position)
@@ -53,5 +55,34 @@ func TestSubtitleFactsRefreshProbesInParallelAndBacksOffFailures(t *testing.T) {
 	}
 	if broken := strings.Count(string(log), "broken.mkv"); broken != 1 {
 		t.Fatalf("failed probe ran %d times before its retry time", broken)
+	}
+	requireBackgroundProbes(t, priorities, 4)
+}
+
+func requireBackgroundProbes(t *testing.T, log string, want int) {
+	t.Helper()
+	if runtime.GOOS != "linux" {
+		return
+	}
+	stat, err := os.ReadFile("/proc/self/stat")
+	if err != nil {
+		t.Fatal(err)
+	}
+	own, err := strconv.Atoi(strings.Fields(string(stat[bytes.LastIndexByte(stat, ')')+1:]))[16])
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(log)
+	if err != nil {
+		t.Fatal(err)
+	}
+	priorities := strings.Fields(string(data))
+	if len(priorities) != want {
+		t.Fatalf("probe priorities = %q, want %d probes", priorities, want)
+	}
+	for _, value := range priorities {
+		if nice, err := strconv.Atoi(value); err != nil || nice < min(19, max(own, 10)) {
+			t.Fatalf("scan-time probe nice = %q, server nice = %d", value, own)
+		}
 	}
 }

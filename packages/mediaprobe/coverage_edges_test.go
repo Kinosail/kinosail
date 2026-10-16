@@ -22,7 +22,7 @@ func TestProbeRemainingExecutionAndCancellationEdges(t *testing.T) {
 	probe.calls[item.ID+"\x00"+version] = &probeCall{done: make(chan struct{})}
 	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
-	if result := probe.Inspect(ctx, item, Enrichment{}); !reflect.DeepEqual(result, Result{}) {
+	if result := probe.Inspect(ctx, item, Enrichment{}); !reflect.DeepEqual(result, Result{Interrupted: true}) {
 		t.Fatalf("canceled coalesced probe = %#v", result)
 	}
 	if result := New("\x00").Inspect(t.Context(), item, Enrichment{}); !reflect.DeepEqual(result, Result{}) {
