@@ -154,6 +154,11 @@ func (integration *Integration[P]) offerHTTP(writer http.ResponseWriter, request
 }
 
 func (integration *Integration[P]) pairHTTP(writer http.ResponseWriter, request *http.Request) {
+	if !integration.attempts.Allow("ip:"+httpguard.RemoteHost(request.RemoteAddr), maxPairAttempts) {
+		writer.Header().Set("Retry-After", "60")
+		apiError(writer, errors.New("too many Home Assistant pairing attempts"), http.StatusTooManyRequests)
+		return
+	}
 	var input struct{ Code, Name string }
 	if !readJSON(writer, request, &input) {
 		return
