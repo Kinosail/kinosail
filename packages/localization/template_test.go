@@ -245,3 +245,32 @@ func TestNewTemplateSetUsesPlayerScriptPolicy(t *testing.T) {
 		}
 	}
 }
+
+func TestTemplateSetPrepareParsesOneLanguageGroupBeforeAnyRender(t *testing.T) {
+	t.Parallel()
+	preprocessed := 0
+	var mutex sync.Mutex
+	view := NewTemplateSet("page", static(requestPage), "9", testCatalog(t), func(source string) string {
+		mutex.Lock()
+		defer mutex.Unlock()
+		preprocessed++
+		return source
+	}, nil, testRuntime())
+	if err := view.Prepare("en"); err != nil {
+		t.Fatal(err)
+	}
+	if err := view.Prepare("en"); err != nil {
+		t.Fatal(err)
+	}
+	body := renderPage(t, view, "/settings?lang=fr", "alpha", nil).Body.String()
+	if preprocessed != 1 || !strings.Contains(body, `<html lang="fr" dir="ltr"`) {
+		t.Fatalf("preprocessed %d times; body %s", preprocessed, body)
+	}
+	if err := view.Prepare("missing"); err == nil {
+		t.Fatal("unsupported language prepared")
+	}
+	broken := NewTemplateSet("page", static(`{{broken`), "9", testCatalog(t), identitySource, nil, testRuntime())
+	if err := broken.Prepare("en"); err == nil {
+		t.Fatal("broken template prepared")
+	}
+}

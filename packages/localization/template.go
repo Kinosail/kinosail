@@ -77,6 +77,11 @@ func (view *TemplateSet) template(tag string) (*template.Template, error) {
 	return view.views()[group]()
 }
 
+func (view *TemplateSet) Prepare(tag string) error {
+	_, err := view.template(tag)
+	return err
+}
+
 func (view *TemplateSet) Validate() error {
 	for _, supported := range view.catalog.languages {
 		page, err := view.template(supported.Tag)
