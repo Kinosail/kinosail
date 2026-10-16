@@ -120,10 +120,10 @@ func verify(ctx context.Context, options ProbeOptions, capabilities Capabilities
 		backend.verification, backend.Usable = state, false
 	}
 	state.verifyBaselines(ctx, options, capabilities.Backends, devices, eligible, check)
+	eachBackend(capabilities.Backends, func(backend *Backend) { state.verifyOptionalFormats(ctx, options, backend, check) })
 	for index := range capabilities.Backends {
 		backend := &capabilities.Backends[index]
-		state.verifyOptionalFormats(ctx, options, backend, check)
-		backend.Operations = append([]Operation(nil), state.operations[backend.ID]...)
+		backend.Operations = state.snapshot(backend.ID)
 		if !eligible[backend.ID] {
 			continue
 		}
@@ -216,22 +216,4 @@ func backendDevice(backend, device string) string {
 		return strings.TrimPrefix(filepath.Base(device), "nvidia")
 	}
 	return ""
-}
-
-func (state *verification) verifyBaselines(ctx context.Context, options ProbeOptions, backends []Backend, devices []string, eligible map[string]bool, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
-	for _, codec := range []string{"h264", "hevc", "av1", "vp9"} {
-		for index := range backends {
-			backend := &backends[index]
-			if !eligible[backend.ID] {
-				continue
-			}
-			state.verifyCodec(ctx, options, backend, codec, devices, check)
-		}
-		if codec == "h264" {
-			for index := range backends {
-				backend := &backends[index]
-				state.verifyBaselineDecode(ctx, options, backend, codec, check)
-			}
-		}
-	}
 }

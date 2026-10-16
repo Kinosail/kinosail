@@ -8,8 +8,6 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-
-	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *testing.T, segmentSeconds string, appArguments ...string) {
@@ -36,7 +34,7 @@ func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *t
 			t.Fatalf("manifest lacks %q: %q", expected, manifest)
 		}
 	}
-	for _, expected := range append(appArguments, []string{"-force_key_frames expr:gte(t,n_forced*2)", "-hls_time " + segmentSeconds, "-hls_flags temp_file+independent_segments", "-profile:v high", "-level:v 4.2", "-filter_threads 1", "-filter_complex_threads 1"}...) {
+	for _, expected := range append(appArguments, []string{"-force_key_frames expr:gte(t,n_forced*2)", "-hls_time " + segmentSeconds, "-hls_flags temp_file+independent_segments", "-profile:v high", "-level:v 4.2", "-filter_threads ", "-filter_complex_threads "}...) {
 		if !strings.Contains(used, expected) {
 			t.Fatalf("FFmpeg arguments lack %q: %q", expected, used)
 		}
@@ -46,14 +44,14 @@ func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *t
 
 func assertAdaptiveRenditions(t *testing.T, manifest, used string) {
 	t.Helper()
-	capacity := workload.HeavyCapacity()
 	qualities := []string{"360p", "432p", "540p", "720p", "1080p"}
-	for _, quality := range qualities[len(qualities)-capacity:] {
-		if !strings.Contains(manifest, quality+"/index.m3u8") {
-			t.Fatalf("manifest lacks %s: %s", quality, manifest)
-		}
+	renditions := strings.Count(manifest, "#EXT-X-STREAM-INF:")
+	if renditions < 1 || renditions > len(qualities) || strings.Count(used, "-threads:v ") != renditions {
+		t.Fatalf("advertised and encoded renditions must match: manifest=%s arguments=%s", manifest, used)
 	}
-	if strings.Count(manifest, "#EXT-X-STREAM-INF:") != capacity || strings.Count(used, "-threads:v ") != capacity {
-		t.Fatalf("advertised and encoded renditions must match capacity %d: manifest=%s arguments=%s", capacity, manifest, used)
+	for _, quality := range qualities[len(qualities)-renditions:] {
+		if !strings.Contains(manifest, quality+"/index.m3u8") {
+			t.Fatalf("manifest lacks the contiguous top rendition %s: %s", quality, manifest)
+		}
 	}
 }

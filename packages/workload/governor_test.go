@@ -62,9 +62,9 @@ func TestGovernorCancellationReleasesBackgroundSlot(t *testing.T) {
 			err     error
 		}{acquired, acquireErr}
 	}()
-	for deadline := time.Now().Add(time.Second); len(governor.background) == 0 && time.Now().Before(deadline); runtime.Gosched() {
+	for deadline := time.Now().Add(time.Second); governor.Metrics().WaitingBackground == 0 && time.Now().Before(deadline); runtime.Gosched() {
 	}
-	if len(governor.background) != 1 {
+	if governor.Metrics().WaitingBackground != 1 {
 		t.Fatal("background acquire did not reach total capacity")
 	}
 	cancel()
@@ -72,8 +72,8 @@ func TestGovernorCancellationReleasesBackgroundSlot(t *testing.T) {
 	if acquired.err == nil || acquired.release != nil {
 		t.Fatalf("canceled acquire returned release=%t, error=%v", acquired.release != nil, acquired.err)
 	}
-	if len(governor.background) != 0 {
-		t.Fatal("canceled acquire retained background capacity")
+	if metrics := governor.Metrics(); metrics.WaitingBackground != 0 || metrics.ActiveBackground != 0 {
+		t.Fatalf("canceled acquire retained background capacity: %#v", metrics)
 	}
 	release()
 
@@ -141,7 +141,7 @@ func TestGovernorReservesTwoHeavySlotsForPlayback(t *testing.T) {
 }
 
 func TestHeavyCapacityTracksAvailableProcessors(t *testing.T) {
-	want := min(3, max(1, runtime.GOMAXPROCS(0)-1))
+	want := max(1, runtime.GOMAXPROCS(0))
 	if got := HeavyCapacity(); got != want {
 		t.Fatalf("HeavyCapacity() = %d, want %d", got, want)
 	}
@@ -162,4 +162,19 @@ func BenchmarkPlaybackAdmissionWhileBackgroundWorkRuns(b *testing.B) {
 		}
 		release()
 	}
+}
+
+func BenchmarkParallelMixedAdmission(b *testing.B) {
+	governor := New(4)
+	b.ReportAllocs()
+	b.RunParallel(func(pb *testing.PB) {
+		for cost := 1; pb.Next(); cost = cost%3 + 1 {
+			release, err := governor.AcquireEncoding(b.Context(), Playback, cost, "")
+			if err != nil {
+				b.Error(err)
+				return
+			}
+			release()
+		}
+	})
 }

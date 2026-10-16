@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/isobmff"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 type CheckResult struct {
@@ -116,7 +117,7 @@ func checkBackend(options Settings, backend string) string {
 }
 
 func runFFmpeg(ctx context.Context, ffmpeg string, arguments ...string) error {
-	return exec.CommandContext(ctx, ffmpeg, arguments...).Run()
+	return workload.RunContext(ctx, exec.CommandContext(ctx, ffmpeg, arguments...))
 }
 
 func checkSetup(ffmpeg string, options Settings) string {

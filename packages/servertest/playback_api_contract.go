@@ -61,6 +61,7 @@ func (fixture PlaybackAPIFixture) PlaybackAPIUsesTheSmallestClientSupportedTrans
 	ffmpeg := filepath.Join(tools, "ffmpeg")
 	WriteExecutable(t, ffmpeg, "#!/bin/sh\n"+HardwareSmokeHLS()+"printf 'libx264 libx265 libsvtav1 libvpx-vp9 h264_qsv hevc_qsv av1_qsv vp9_qsv qsv\\n'\n")
 	handler, id := FirstWebItem(t, fixture.New(PlaybackAPIConfig{MediaDir: media, FFprobe: ffprobe, FFmpeg: ffmpeg, ProbeHardware: true, HardwareDevices: []string{device}, HardwareOS: "linux", HardwareArch: "amd64"}))
+	AwaitHardwareProbe(t, handler, "")
 	remux := APICall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback?videoCodecs=av1%2Chevc%2Ch264", nil)
 	AssertAPIBody(t, remux, http.StatusOK, `"compatible":"/hls/`+id+`/p/r-a0-s0-none-t0-b0/index.m3u8"`)
 	transcode := APICall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback?videoCodecs=av1%2Ch264", nil)

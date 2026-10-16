@@ -91,16 +91,10 @@ func TestTaskHandlersTranslateFailuresAndSelections(t *testing.T) {
 
 func TestMetricsHandlerWritesEveryPlayerMetric(t *testing.T) {
 	t.Parallel()
-	value := Metrics{
-		Healthy: true, LibraryMonitoring: true, LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6, ActivityFailures: 7,
-		WorkloadCapacity: 8, WorkloadBackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13,
-		NotificationQueueDepth: 14, NotificationDropped: 15, ViewingSyncActive: 16, ViewingSyncDeferred: 17,
-		LiveEventSubscribers: 18, LiveEventsPublished: 19, LiveEventReconnects: 20, LiveEventRejected: 21, LiveEventSlowDrops: 22,
-		WatchRoomConnections: 23, WatchRoomJoins: 24, WatchRoomReconnects: 25, WatchRoomSlowDrops: 26, WatchRoomDriftObservations: 27, WatchRoomDriftSeconds: 28.5,
-	}
+	value := fullMetrics()
 	response := httptest.NewRecorder()
 	MetricsHandler(func() Metrics { return value }).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	want := "kinosail_health 1\nkinosail_library_items 1\nkinosail_library_monitoring 1\nkinosail_sessions 2\nkinosail_transcode_cache_bytes 3\nkinosail_http_requests_total 4\nkinosail_http_errors_total 5\nkinosail_http_panics_total 6\nkinosail_audit_write_failures_total 7\nkinosail_workload_capacity 8\nkinosail_workload_background_capacity 9\nkinosail_workload_active{class=\"playback\"} 10\nkinosail_workload_active{class=\"background\"} 11\nkinosail_workload_waiting{class=\"playback\"} 12\nkinosail_workload_waiting{class=\"background\"} 13\nkinosail_notification_queue_depth 14\nkinosail_notification_dropped_total 15\nkinosail_viewing_sync_active 16\nkinosail_viewing_sync_deferred_total 17\nkinosail_live_event_subscribers 18\nkinosail_live_events_published_total 19\nkinosail_live_event_reconnects_total 20\nkinosail_live_event_rejected_total 21\nkinosail_live_event_slow_drops_total 22\nkinosail_watch_room_connections 23\nkinosail_watch_room_joins_total 24\nkinosail_watch_room_reconnects_total 25\nkinosail_watch_room_slow_drops_total 26\nkinosail_watch_room_drift_observations_total 27\nkinosail_watch_room_drift_seconds 28.5\n"
+	want := "kinosail_health 1\nkinosail_library_items 1\nkinosail_library_monitoring 1\nkinosail_sessions 2\nkinosail_transcode_cache_bytes 3\nkinosail_http_requests_total 4\nkinosail_http_errors_total 5\nkinosail_http_panics_total 6\nkinosail_audit_write_failures_total 7\nkinosail_workload_capacity 8\nkinosail_workload_background_capacity 9\nkinosail_workload_active{class=\"playback\"} 10\nkinosail_workload_active{class=\"background\"} 11\nkinosail_workload_waiting{class=\"playback\"} 12\nkinosail_workload_waiting{class=\"background\"} 13\nkinosail_workload_active{class=\"interactive\"} 31\nkinosail_workload_waiting{class=\"interactive\"} 32\nkinosail_notification_queue_depth 14\nkinosail_notification_dropped_total 15\nkinosail_viewing_sync_active 16\nkinosail_viewing_sync_deferred_total 17\nkinosail_live_event_subscribers 18\nkinosail_live_events_published_total 19\nkinosail_live_event_reconnects_total 20\nkinosail_live_event_rejected_total 21\nkinosail_live_event_slow_drops_total 22\nkinosail_watch_room_connections 23\nkinosail_watch_room_joins_total 24\nkinosail_watch_room_reconnects_total 25\nkinosail_watch_room_slow_drops_total 26\nkinosail_watch_room_drift_observations_total 27\nkinosail_watch_room_drift_seconds 28.5\n"
 	if response.Header().Get("Content-Type") != "text/plain; version=0.0.4" || response.Body.String() != want {
 		t.Fatalf("metrics headers=%v\n%s", response.Header(), response.Body.String())
 	}
