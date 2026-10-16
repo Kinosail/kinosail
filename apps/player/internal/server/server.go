@@ -18,6 +18,7 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/serverdiscovery"
+	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
@@ -137,7 +138,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		settings.tmdbCheck = config.TMDBCheck
 	}
 	supporter := newSupporterProgram(settings, config.Supporter)
-	workloads := workload.New(workload.HeavyCapacity())
+	workloads := workload.New(workload.HeavyCapacity(), workload.DeviceSessions(transcodehardware.DeviceSessions))
 	metadata := newMetadataStore(config.Metadata, config.DataDir, config.CacheDir, stateDB)
 	if metadata.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
@@ -153,7 +154,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		return workloads.Acquire(ctx, workload.Background)
 	})}
 	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(config.Lifecycle, items)))
+		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(workload.WithBackgroundPriority(config.Lifecycle), items)))
 	})
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {

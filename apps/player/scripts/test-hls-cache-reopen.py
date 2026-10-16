@@ -145,7 +145,7 @@ def journey(name, original, metadata, corrupt=False):
         check(real is not None, "ffmpeg_unavailable")
         wrapper = directory / "paced-ffmpeg"
         wrapper.write_text("#!/usr/bin/env python3\nimport os,sys\na=sys.argv[1:]\n"
-            "if '-hls_time' in a:\n i=a.index('-i'); a[i:i]=['-readrate','0.2']\n"
+            "if '-hls_time' in a and " + repr(str(source)) + " in a:\n i=a.index('-i'); a[i:i]=['-readrate','0.2']\n"
             + "os.execv(" + repr(real) + ", [" + repr(real) + "]+a)\n")
         wrapper.chmod(0o700)
         env["KINOSAIL_FFMPEG"] = str(wrapper)

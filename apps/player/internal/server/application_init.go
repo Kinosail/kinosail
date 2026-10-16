@@ -49,8 +49,7 @@ func initializeApplicationSettings(config Config, stateDB *database.Store, manag
 		updates.Schedule(config.Lifecycle)
 	}
 	settings.ffmpeg = config.FFmpeg
-	settings.hardware = probeHardware(config.Lifecycle, config.FFmpeg, config.HardwareDevices, config.ProbeHardware, config.HardwareOS, config.HardwareArch)
-	if settings.reconcileHardwareSelection() != nil {
+	if settings.startHardwareProbe(config) != nil {
 		return nil, nil, "transcoder configuration is unavailable"
 	}
 	return settings, updates, ""

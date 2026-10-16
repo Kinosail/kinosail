@@ -64,7 +64,13 @@ func (manager *hlsManager) acquireHLSEncode(ctx context.Context, cost int, devic
 		observation.mu.Unlock()
 		observation.emit("admission_wait", "")
 	}
-	release, err := manager.workloads.AcquireEncoding(ctx, class, cost, device)
+	acquire := manager.workloads.AcquireEncoding
+	if cost == 0 && device == "" {
+		acquire = func(ctx context.Context, class workload.Class, _ int, _ string) (func(), error) {
+			return manager.workloads.AcquireLight(ctx, class)
+		}
+	}
+	release, err := acquire(ctx, class, cost, device)
 	if observation != nil {
 		observation.mu.Lock()
 		observation.queueMS = time.Since(observation.queueStarted).Milliseconds()
