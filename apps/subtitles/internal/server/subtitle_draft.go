@@ -117,7 +117,7 @@ func (manager *subtitleManager) localSubtitleDraft(request *http.Request, id str
 	if _, err = rand.Read(token); err != nil {
 		return subtitleDraft{}, http.StatusInternalServerError, errors.New("local draft could not be started")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Hour)
+	ctx, cancel := context.WithTimeout(manager.lifecycle(), 2*time.Hour)
 	*current = subtitleDraft{ID: hex.EncodeToString(token), Item: id, Language: input.Language, Method: input.Method, State: "running", Message: "Generating locally. Review every result before saving.", version: version, cancel: cancel}
 	draft := *current
 	go manager.generateSubtitleDraft(ctx, item, draft, stream, language, executable, model, architecture, facts.Duration)
@@ -132,7 +132,7 @@ func (manager *subtitleManager) generateSubtitleDraft(ctx context.Context, item 
 	if draft.Method == "ocr" {
 		document, words, err = localSubtitleOCR(ctx, manager.probe.ffmpeg, executable, item.Path, stream, language, duration)
 	} else {
-		document, words, err = localSubtitleTranscription(ctx, manager.probe.ffmpeg, executable, item.Path, stream, language, model, architecture, duration)
+		document, words, err = localSubtitleTranscription(ctx, manager.probe.ffmpeg, executable, item.Path, stream, language, model, architecture, duration, manager.probe.cacheDir)
 	}
 	version, versionErr := subtitleMediaVersion(item)
 	manager.drafts.Lock()
@@ -169,4 +169,11 @@ func validSubtitleDraftText(text string) bool {
 	return len(text) <= 4096 && utf8.ValidString(text) && strings.IndexFunc(text, func(character rune) bool {
 		return unicode.IsControl(character) && character != '\n' && character != '\t'
 	}) < 0
+}
+
+func (manager *subtitleManager) lifecycle() context.Context {
+	if manager.operations == nil {
+		return context.Background()
+	}
+	return manager.operations.lifecycle
 }

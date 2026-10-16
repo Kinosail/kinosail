@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -16,8 +17,13 @@ import (
 	"unicode/utf8"
 )
 
-func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media string, stream int, language, model, architecture string, duration float64) (cleanedSubtitle, []subtitleDraftWord, error) {
-	directory, err := os.MkdirTemp("", "kinosail-transcription-")
+func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media string, stream int, language, model, architecture string, duration float64, workspace string) (cleanedSubtitle, []subtitleDraftWord, error) {
+	if workspace != "" {
+		if err := os.MkdirAll(workspace, 0o700); err != nil {
+			return cleanedSubtitle{}, nil, err
+		}
+	}
+	directory, err := os.MkdirTemp(workspace, "kinosail-transcription-")
 	if err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
@@ -27,7 +33,7 @@ func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media stri
 	if err = command.Run(); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
-	command = exec.CommandContext(ctx, whisper, "--model", model, "--language", language, "--file", wav, "--output-json-full", "--output-file", output, "--dtw", architecture, "--max-len", "42", "--split-on-word", "--threads", "4", "--no-prints")
+	command = exec.CommandContext(ctx, whisper, "--model", model, "--language", language, "--file", wav, "--output-json-full", "--output-file", output, "--dtw", architecture, "--max-len", "42", "--split-on-word", "--threads", strconv.Itoa(min(runtime.GOMAXPROCS(0), 8)), "--no-prints")
 	if err = command.Run(); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}

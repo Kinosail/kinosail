@@ -2,7 +2,6 @@ package server
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 )
@@ -10,12 +9,12 @@ import (
 func TestSubtitleLedgerPersistsRecordsAndDailyLimits(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
-	ledger := newSubtitleLedger(directory)
+	ledger := openTestSubtitleLedger(t, directory)
 	record := subtitleRecord{Fingerprint: subtitleFingerprint([]byte("subtitle")), Source: "subdl", Score: 90, CheckedAt: time.Now().Unix(), Managed: true}
 	if err := ledger.store("0123456789abcdef:en", record); err != nil {
 		t.Fatal(err)
 	}
-	reloaded := newSubtitleLedger(directory)
+	reloaded := openTestSubtitleLedger(t, directory)
 	stored, found, err := reloaded.record("0123456789abcdef:en")
 	if err != nil || !found || stored.Fingerprint != record.Fingerprint {
 		t.Fatalf("stored subtitle record = %#v, found %v, error %v", stored, found, err)
@@ -45,13 +44,8 @@ func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T)
 		t.Fatal("unavailable ledger granted a SubDL download")
 	}
 
-	directory := t.TempDir()
-	blocked := newSubtitleLedger(directory)
-	blocker := filepath.Join(directory, "blocker")
-	if err := os.WriteFile(blocker, []byte("file"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	blocked.path = filepath.Join(blocker, "subtitle_acquisitions.json")
+	blocked := openTestSubtitleLedger(t, t.TempDir())
+	blocked.db = closedTestStateDatabase(t)
 	record := subtitleRecord{Fingerprint: subtitleFingerprint([]byte("subtitle")), Source: "external", Score: 100, CheckedAt: time.Now().Unix()}
 	if err := blocked.store("0123456789abcdef:en", record); err == nil {
 		t.Fatal("subtitle record write failure was accepted")

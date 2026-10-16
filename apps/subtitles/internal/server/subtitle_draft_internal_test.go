@@ -190,7 +190,7 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 	}
 	settings := newSettingsStore(directory, t.TempDir(), nil)
 	settings.value.SubtitlePreference = "sdh"
-	provider := &subtitleProvider{ledger: newSubtitleLedger(t.TempDir())}
+	provider := &subtitleProvider{ledger: openTestSubtitleLedger(t, t.TempDir())}
 	manager := &subtitleManager{settings: settings, provider: provider}
 	record := completeSubtitleRecord(target, data, subtitleRecord{Source: "transcription", Role: "translation", Managed: true, Frozen: true, Synchronization: "none"})
 	if err := provider.ledger.store(subtitleRecordKey(item.ID, "en"), record); err != nil {
@@ -216,7 +216,7 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 
 func TestSubtitleRecoveryKeepsBothFormatOriginals(t *testing.T) {
 	directory := t.TempDir()
-	provider := &subtitleProvider{ledger: newSubtitleLedger(t.TempDir())}
+	provider := &subtitleProvider{ledger: openTestSubtitleLedger(t, t.TempDir())}
 	item := library.Item{ID: "0123456789abcdef", Kind: "video", Path: filepath.Join(directory, "Film.mp4")}
 	provider.index = sidecarTestIndex(item)
 	first, _ := cleanSubtitle([]byte("[Script Info]\n[Events]\nFormat: Start, End, Text\nDialogue: 0:00:01.00,0:00:02.00,First\n"))

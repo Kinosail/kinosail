@@ -25,7 +25,10 @@ func (manager *subtitleManager) scheduleFacts(ctx context.Context) {
 			}
 		}
 	}()
-	manager.index.AddAnalyzer(func([]library.Item) {
+	manager.index.AddAnalyzer(func(items []library.Item) {
+		if manager.provider != nil {
+			manager.provider.ledger.forgetMissing(items, time.Now())
+		}
 		select {
 		case trigger <- struct{}{}:
 		default:

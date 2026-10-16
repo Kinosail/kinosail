@@ -212,7 +212,7 @@ func TestSubtitleUpgradeEligibilityAndRecoveryRollback(t *testing.T) {
 	if upgraded, err := provider.upgradeSidecar(t.Context(), item, "en"); upgraded || err == nil {
 		t.Fatal("upgrade with an unavailable ledger was accepted")
 	}
-	provider.ledger.err, provider.ledger.path = nil, t.TempDir()
+	provider.ledger.err, provider.ledger.db = nil, closedTestStateDatabase(t)
 	if err := os.WriteFile(target+".kinosail.bak", previous, 0o600); err != nil {
 		t.Fatal(err)
 	}

@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -57,12 +58,12 @@ var (
 	errSubtitleProviderUnavailable = errors.New("subtitle providers are unavailable")
 )
 
-func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libraryIndex, settings *settingsStore, ffmpeg string) *subtitleProvider {
+func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libraryIndex, settings *settingsStore, ffmpeg string, databases ...*database.Store) *subtitleProvider {
 	if config.URL == "" {
 		config.URL = "https://api.subdl.com/api/v1"
 	}
 	health := newSubtitleProviderHealthRegistry(data)
-	provider := &subtitleProvider{config: config, cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: newSubtitleLedger(data), health: health}
+	provider := &subtitleProvider{config: config, cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: newSubtitleLedger(data, databases...), health: health}
 	provider.open.health, provider.subsource.health = health, health
 	provider.client = localIntegrationHTTPClient(15 * time.Second)
 	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)

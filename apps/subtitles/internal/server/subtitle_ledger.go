@@ -3,20 +3,17 @@ package server
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
-	"errors"
-	"io"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/MikeO7/kinosail-subtitles/internal/database"
 )
 
 const (
 	subtitleLedgerVersion       = 4
 	subtitleLedgerLimit         = 100000
-	subtitleLedgerSizeLimit     = 4 << 20
 	subDLAutomaticDownloadLimit = 40
 )
 
@@ -64,9 +61,11 @@ type subtitleLedgerState struct {
 type subtitleLedger struct {
 	mu      sync.Mutex
 	path    string
+	db      *database.Store
 	state   subtitleLedgerState
 	err     error
 	publish func()
+	missing map[string]time.Time
 }
 
 func (ledger *subtitleLedger) setPublisher(publish func()) {
@@ -84,45 +83,17 @@ func (ledger *subtitleLedger) publishChange() {
 	}
 }
 
-func newSubtitleLedger(dataDir string) *subtitleLedger {
-	ledger := &subtitleLedger{state: subtitleLedgerState{Version: subtitleLedgerVersion, Records: make(map[string]subtitleRecord), Searches: make(map[string]subtitleSearchRecord)}}
+func newSubtitleLedger(dataDir string, databases ...*database.Store) *subtitleLedger {
+	ledger := &subtitleLedger{state: emptySubtitleLedgerState()}
 	if dataDir == "" {
 		return ledger
 	}
-	ledger.path = filepath.Join(dataDir, "subtitle_acquisitions.json")
-	ledger.err = ledger.load()
+	ledger.path = filepath.Join(dataDir, subtitleLedgerLegacyFile)
+	ledger.db = configuredDatabase(databases)
+	if ledger.db != nil {
+		ledger.err = ledger.open()
+	}
 	return ledger
-}
-
-func (ledger *subtitleLedger) load() error {
-	info, err := os.Stat(ledger.path)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil
-	}
-	if err != nil || info.IsDir() || info.Size() > subtitleLedgerSizeLimit {
-		return errors.New("subtitle acquisition state is invalid")
-	}
-	file, err := os.Open(ledger.path)
-	if err != nil {
-		return errors.New("subtitle acquisition state is unavailable")
-	}
-	defer file.Close()
-	decoder := json.NewDecoder(io.LimitReader(file, subtitleLedgerSizeLimit+1))
-	decoder.DisallowUnknownFields()
-	var state subtitleLedgerState
-	if decoder.Decode(&state) != nil || decoder.Decode(&struct{}{}) != io.EOF || !validSubtitleLedgerState(state) {
-		return errors.New("subtitle acquisition state is invalid")
-	}
-	if state.Records == nil {
-		state.Records = make(map[string]subtitleRecord)
-	}
-	if state.Searches == nil {
-		state.Searches = make(map[string]subtitleSearchRecord)
-	}
-	state = migrateSubtitleHistory(state)
-	state.Version = subtitleLedgerVersion
-	ledger.state = state
-	return nil
 }
 
 func validSubtitleLedgerState(state subtitleLedgerState) bool { //nolint:cyclop // Persisted state requires explicit validation of every map key and record.
@@ -205,7 +176,9 @@ func (ledger *subtitleLedger) store(key string, record subtitleRecord) error {
 	ledger.mu.Lock()
 	defer ledger.mu.Unlock()
 	available := ledger.err == nil && validSubtitleRecord(record) && (len(ledger.state.Records) < subtitleLedgerLimit || ledger.state.Records[key].Fingerprint != "")
-	return storeLedgerRecord(ledger.state.Records, key, record, available, ledger.save)
+	return storeLedgerRecord(ledger.state.Records, key, record, available, func() error {
+		return ledger.persist(subtitleLedgerRecordsDocument, key, record)
+	})
 }
 
 func (ledger *subtitleLedger) search(key string) (subtitleSearchRecord, bool, error) {
@@ -219,12 +192,14 @@ func (ledger *subtitleLedger) storeSearch(key string, record subtitleSearchRecor
 	ledger.mu.Lock()
 	defer ledger.mu.Unlock()
 	available := ledger.err == nil && validSubtitleSearchRecord(record) && (len(ledger.state.Searches) < subtitleLedgerLimit || ledger.state.Searches[key].Outcome != "")
-	return storeLedgerRecord(ledger.state.Searches, key, record, available, ledger.save)
+	return storeLedgerRecord(ledger.state.Searches, key, record, available, func() error {
+		return ledger.persist(subtitleLedgerSearchesDocument, key, record)
+	})
 }
 
 func storeLedgerRecord[T any](records map[string]T, key string, record T, available bool, save func() error) error {
 	if !available {
-		return errors.New("subtitle acquisition state is unavailable")
+		return errSubtitleLedgerUnavailable
 	}
 	previous, found := records[key]
 	records[key] = record
@@ -264,16 +239,9 @@ func (ledger *subtitleLedger) takeSubDLDownload(now time.Time) bool {
 		return false
 	}
 	ledger.state.SubDLDownloads++
-	if err := ledger.save(); err != nil {
+	if err := ledger.saveSummary(); err != nil {
 		ledger.state.SubDLDay, ledger.state.SubDLDownloads = previousDay, previousCount
 		return false
 	}
 	return true
-}
-
-func (ledger *subtitleLedger) save() error {
-	if ledger.path == "" {
-		return nil
-	}
-	return saveDurableJSON(ledger.path, ledger.state)
 }
