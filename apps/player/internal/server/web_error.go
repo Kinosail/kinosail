@@ -8,11 +8,13 @@ import (
 
 var requestErrorView = newLocalizedTemplate("request-error", `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Could not complete the request · Kinosail Player</title><script src="/static/theme.js"></script><script defer src="/static/main.kinosail.bundle.js"></script><link rel="stylesheet" href="/static/app.css"></head><body class="auth"><a class="skip" href="#main">Skip to content</a><main id="main" class="grant-card"><img class="brand-mark" src="/static/icon.svg?v=8" alt=""><h1>Could not complete the request</h1><p role="alert">{{.Message}}</p><button type="button" data-return-to-form hidden>Return to form</button><a class="button quiet" href="{{.ReturnPath}}">Open previous page</a><a href="/">Library</a></main></body></html>`)
 
-var loginErrorView = newLocalizedTemplate("login-error", strings.NewReplacer(
-	`data-login-next="{{.}}"`, `data-login-next="{{.Next}}"`,
-	`<label>Name<input`, `<p role="alert">{{.Message}}</p><label>Name<input`,
-	`name="name" autocomplete`, `name="name" value="{{.Name}}" maxlength="120" autocomplete`,
-).Replace(profileLoginHTML))
+var loginErrorView = newLazyLocalizedTemplate("login-error", func() string {
+	return strings.NewReplacer(
+		`data-login-next="{{.}}"`, `data-login-next="{{.Next}}"`,
+		`<label>Name<input`, `<p role="alert">{{.Message}}</p><label>Name<input`,
+		`name="name" autocomplete`, `name="name" value="{{.Name}}" maxlength="120" autocomplete`,
+	).Replace(profileLoginHTML)
+})
 
 func writeWebError(writer http.ResponseWriter, request *http.Request, message string, status int) {
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")

@@ -2,20 +2,32 @@ package server
 
 import (
 	"context"
+	"os"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func (manager *subtitleManager) planCoverage(ctx context.Context, item library.Item, language string) (bool, []string) {
+	ready, _, tracks := manager.planSidecarCoverage(ctx, item, language)
+	return ready, tracks
+}
+
+func (manager *subtitleManager) planSidecarCoverage(ctx context.Context, item library.Item, language string) (bool, bool, []string) {
 	var media probeResult
 	if manager.probe != nil {
 		media = manager.probe.facts(ctx, item)
 	}
-	return manager.planCoverageFacts(item, language, media)
+	sidecarReady, tracks := manager.sidecarPlanCoverage(item, language)
+	ready, tracks := manager.embeddedPlanCoverage(language, media, sidecarReady, tracks)
+	return ready, sidecarReady, tracks
 }
 
 func (manager *subtitleManager) planCoverageFacts(item library.Item, language string, media probeResult) (bool, []string) {
 	ready, tracks := manager.sidecarPlanCoverage(item, language)
+	return manager.embeddedPlanCoverage(language, media, ready, tracks)
+}
+
+func (manager *subtitleManager) embeddedPlanCoverage(language string, media probeResult, ready bool, tracks []string) (bool, []string) {
 	preference := manager.preference()
 	for _, track := range media.SubtitleFacts {
 		if !track.Text || canonicalSubtitleLanguage(track.Language) != language || track.Forced {
@@ -41,11 +53,8 @@ func (manager *subtitleManager) sidecarPlanCoverage(item library.Item, language 
 	}
 	if manager.provider != nil {
 		record, found, err := manager.provider.ledger.record(subtitleRecordKey(item.ID, language))
-		if err == nil && found && record.Role == "captions" {
-			data, readErr := readUpgradeSidecar(subtitleSidecarPath(item, language))
-			if readErr == nil && record.Fingerprint == subtitleFingerprint(data) {
-				return true, tracks
-			}
+		if err == nil && found && record.Role == "captions" && recordedSidecarUnchanged(subtitleSidecarPath(item, language), record) {
+			return true, tracks
 		}
 	}
 	return false, tracks
@@ -57,4 +66,12 @@ func (manager *subtitleManager) preference() string {
 		preference = manager.settings.subtitlePreference()
 	}
 	return preference
+}
+
+func recordedSidecarUnchanged(path string, record subtitleRecord) bool {
+	if info, err := os.Lstat(path); err == nil && info.Mode().IsRegular() && record.Size > 0 && info.Size() == record.Size && info.ModTime().UnixNano() == record.Modified {
+		return true
+	}
+	data, err := readUpgradeSidecar(path)
+	return err == nil && record.Fingerprint == subtitleFingerprint(data)
 }

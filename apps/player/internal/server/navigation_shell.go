@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"net/http"
+	"slices"
 	"strings"
 
 	sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
@@ -92,52 +93,73 @@ func applicationShellView(pattern string) string {
 	return ""
 }
 
+type pageEdit struct {
+	at         int
+	text       string
+	navigation []byte
+}
+
 func injectApplicationShell(page, navigation []byte) []byte {
-	page = versionAssetReferenceBytes(page)
-	if !bytes.Contains(page, []byte(`/static/supporter.js?v=`)) {
-		page = bytes.Replace(page, []byte("</body>"), []byte(`<script defer src="`+assetURL("supporter.js")+`"></script></body>`), 1)
-	}
+	recognition := recognitionScriptEdit(page)
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
-		return page
+		return applyPageEdits(page, recognition)
 	}
 	bodyEnd := bodyStart + bytes.IndexByte(page[bodyStart:], '>')
 	if bodyEnd < bodyStart {
-		return page
+		return applyPageEdits(page, recognition)
 	}
-	body := page[bodyStart:bodyEnd]
-	if class := bytes.Index(body, []byte(`class="`)); class >= 0 {
-		class += bodyStart + len(`class="`)
-		page = append(append(append([]byte(nil), page[:class]...), []byte("library-page ")...), page[class:]...)
-		bodyEnd += len("library-page ")
+	edits := make([]pageEdit, 0, 4)
+	if class := bytes.Index(page[bodyStart:bodyEnd], []byte(`class="`)); class >= 0 {
+		edits = append(edits, pageEdit{at: bodyStart + class + len(`class="`), text: "library-page "})
 	} else {
-		page = append(append(append([]byte(nil), page[:bodyEnd]...), []byte(` class="library-page"`)...), page[bodyEnd:]...)
-		bodyEnd += len(` class="library-page"`)
+		edits = append(edits, pageEdit{at: bodyEnd, text: ` class="library-page"`})
 	}
 	if mainStart := bytes.Index(page, []byte("<main")); mainStart >= 0 {
-		mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>')
-		if mainEnd >= mainStart {
-			var attributes []byte
+		if mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>'); mainEnd >= mainStart {
+			attributes := ""
 			if !bytes.Contains(page[mainStart:mainEnd], []byte(` id="`)) {
-				attributes = append(attributes, []byte(` id="main"`)...)
+				attributes += ` id="main"`
 			}
 			if !bytes.Contains(page[mainStart:mainEnd], []byte(` tabindex=`)) {
-				attributes = append(attributes, []byte(` tabindex="-1"`)...)
+				attributes += ` tabindex="-1"`
 			}
-			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), attributes...), page[mainStart+len("<main"):]...)
+			edits = append(edits, pageEdit{at: mainStart + len("<main"), text: attributes})
 		}
 	}
-	insertAt := bodyEnd + 1
-	prefix := []byte(`<a class="skip" href="#main">Skip to content</a>`)
+	insertAt, prefix := bodyEnd+1, `<a class="skip" href="#main">Skip to content</a>`
 	if skip := bytes.Index(page[insertAt:], []byte(`<a class="skip"`)); skip >= 0 {
 		skip += insertAt
 		if end := bytes.Index(page[skip:], []byte("</a>")); end >= 0 {
-			insertAt = skip + end + len("</a>")
-			prefix = nil
+			insertAt, prefix = skip+end+len("</a>"), ""
 		}
 	}
-	addition := append(append(append([]byte("\n"), prefix...), '\n'), navigation...)
-	return append(append(append([]byte(nil), page[:insertAt]...), addition...), page[insertAt:]...)
+	return applyPageEdits(page, append(append(edits, pageEdit{at: insertAt, text: "\n" + prefix + "\n", navigation: navigation}), recognition...))
+}
+
+func recognitionScriptEdit(page []byte) []pageEdit {
+	if bytes.Contains(page, []byte(`/static/supporter.js`)) {
+		return nil
+	}
+	end := bytes.Index(page, []byte("</body>"))
+	if end < 0 {
+		return nil
+	}
+	return []pageEdit{{at: end, text: `<script defer src="` + assetURL("supporter.js") + `"></script>`}}
+}
+
+func applyPageEdits(page []byte, edits []pageEdit) []byte {
+	slices.SortStableFunc(edits, func(first, second pageEdit) int { return first.at - second.at })
+	size := len(page)
+	for _, edit := range edits {
+		size += len(edit.text) + len(edit.navigation)
+	}
+	result, cursor := make([]byte, 0, size), 0
+	for _, edit := range edits {
+		result = append(append(append(result, page[cursor:edit.at]...), edit.text...), edit.navigation...)
+		cursor = edit.at
+	}
+	return append(result, page[cursor:]...)
 }
 
 type bufferedPage struct {

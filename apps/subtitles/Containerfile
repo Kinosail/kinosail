@@ -16,8 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && wget -q -O /tmp/whisper.tar.gz https://codeload.github.com/ggml-org/whisper.cpp/tar.gz/refs/tags/v1.9.5 \
     && echo "ff1a9053feb509ff9d7729703355541ae9690073a6b1c40eb692c962e0dc1720  /tmp/whisper.tar.gz" | sha256sum -c - \
     && mkdir /whisper && tar -xzf /tmp/whisper.tar.gz -C /whisper --strip-components=1 \
-    && cmake -S /whisper -B /whisper/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DWHISPER_BUILD_TESTS=OFF \
+    && cmake -S /whisper -B /whisper/build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DGGML_BACKEND_DL=ON -DGGML_CPU_ALL_VARIANTS=ON -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DWHISPER_BUILD_TESTS=OFF '-DCMAKE_BUILD_RPATH=$ORIGIN' \
     && cmake --build /whisper/build --target whisper-cli -j2 \
+    && mkdir -p /whisper/dist/opt/whisper /whisper/dist/usr/local/bin \
+    && cp -a /whisper/build/bin/whisper-cli /whisper/build/bin/*.so* /whisper/dist/opt/whisper/ \
+    && ls /whisper/dist/opt/whisper/libggml-cpu-*.so >/dev/null \
+    && ln -s /opt/whisper/whisper-cli /whisper/dist/usr/local/bin/whisper-cli \
     && sed -n '/This software is available/,$p' /whisper/examples/miniaudio.h > /whisper/miniaudio-LICENSE \
     && sed -n '/This software is available/,$p' /whisper/examples/stb_vorbis.c > /whisper/stb_vorbis-LICENSE
 
@@ -52,7 +56,7 @@ ARG VERSION=dev
 ARG REVISION=unknown
 LABEL org.opencontainers.image.version=$VERSION org.opencontainers.image.revision=$REVISION
 COPY --from=build /kinosail /usr/local/bin/kinosail
-COPY --from=whisper /whisper/build/bin/whisper-cli /usr/local/bin/whisper-cli
+COPY --from=whisper /whisper/dist/ /
 COPY --from=whisper /whisper/LICENSE /licenses/third_party/whisper.cpp/LICENSE
 COPY --from=whisper /whisper/miniaudio-LICENSE /whisper/stb_vorbis-LICENSE /licenses/third_party/whisper.cpp/
 COPY apps/subtitles/LICENSE apps/subtitles/LICENSING.md apps/subtitles/THIRD_PARTY_NOTICES.md /licenses/

@@ -32,18 +32,18 @@ func (adapter SettingsFuncs) Token() string      { return adapter.TokenFunc() }
 func (adapter SettingsFuncs) ServerName() string { return adapter.ServerNameFunc() }
 
 type Library interface {
-	Snapshot() ([]library.Item, error)
+	Library() (*library.Snapshot, error)
 	Find(string) (library.Item, bool)
 	Safe(string) bool
 }
 
 type LibraryFuncs struct {
-	SnapshotFunc func() ([]library.Item, error)
-	FindFunc     func(string) (library.Item, bool)
-	SafeFunc     func(string) bool
+	LibraryFunc func() (*library.Snapshot, error)
+	FindFunc    func(string) (library.Item, bool)
+	SafeFunc    func(string) bool
 }
 
-func (adapter LibraryFuncs) Snapshot() ([]library.Item, error) { return adapter.SnapshotFunc() }
+func (adapter LibraryFuncs) Library() (*library.Snapshot, error) { return adapter.LibraryFunc() }
 func (adapter LibraryFuncs) Find(id string) (library.Item, bool) {
 	return adapter.FindFunc(id)
 }
@@ -112,25 +112,6 @@ func (server server) service(writer http.ResponseWriter, request *http.Request) 
 	_, _ = writer.Write([]byte(`<?xml version="1.0"?><scpd xmlns="urn:schemas-upnp-org:service-1-0"><specVersion><major>1</major><minor>0</minor></specVersion><actionList><action><name>Browse</name></action></actionList><serviceStateTable><stateVariable sendEvents="no"><name>SystemUpdateID</name><dataType>ui4</dataType></stateVariable></serviceStateTable></scpd>`))
 }
 
-func (server server) browse(writer http.ResponseWriter, request *http.Request) {
-	action := request.Header.Get("SOAPAction")
-	if !server.authorized(request) || len(action) > 256 || !strings.Contains(action, contentDirectory+"#Browse") {
-		server.config.NotFound(writer, request)
-		return
-	}
-	items, _ := server.config.Library.Snapshot()
-	items = safeItems(server.config.Library, items)
-	capability := server.config.Settings.Token()
-	var didl strings.Builder
-	didl.WriteString(`<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">`)
-	for _, item := range items {
-		_, _ = fmt.Fprintf(&didl, `<item id="%s" parentID="0" restricted="1"><dc:title>%s</dc:title><upnp:class>%s</upnp:class><res protocolInfo="http-get:*:%s:*">%s/dlna/%s/media/%s</res></item>`, item.ID, html.EscapeString(item.Title), Class(item), MediaType(item), strings.TrimRight(server.config.Base, "/"), capability, item.ID)
-	}
-	didl.WriteString(`</DIDL-Lite>`)
-	writer.Header().Set("Content-Type", `text/xml; charset="utf-8"`)
-	_, _ = fmt.Fprintf(writer, `<?xml version="1.0"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><s:Body><u:BrowseResponse xmlns:u="%s"><Result>%s</Result><NumberReturned>%d</NumberReturned><TotalMatches>%d</TotalMatches><UpdateID>1</UpdateID></u:BrowseResponse></s:Body></s:Envelope>`, contentDirectory, html.EscapeString(didl.String()), len(items), len(items))
-}
-
 func (server server) media(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	item, found := server.config.Library.Find(id)
@@ -152,22 +133,14 @@ func Class(item library.Item) string {
 	return "object.item.videoItem.movie"
 }
 
-func safeItems(index Library, items []library.Item) []library.Item {
-	result := make([]library.Item, 0, len(items))
-	for _, item := range items {
-		if index.Safe(item.Path) && (item.Kind == "video" || item.Kind == "audio" || item.Kind == "photo") {
-			result = append(result, item)
-		}
-	}
-	return result
+var mediaTypes = map[string]string{
+	"3G2": "video/3gpp2", "3GP": "video/3gpp", "ASF": "video/x-ms-asf", "AVI": "video/x-msvideo", "FLV": "video/x-flv", "M2TS": "video/mp2t", "M4V": "video/mp4", "MKV": "video/x-matroska", "MOV": "video/quicktime", "MP4": "video/mp4", "MPEG": "video/mpeg", "MPG": "video/mpeg", "MTS": "video/mp2t", "OGV": "video/ogg", "TS": "video/mp2t", "VOB": "video/mpeg", "WEBM": "video/webm", "WMV": "video/x-ms-wmv",
+	"AAC": "audio/aac", "AIF": "audio/aiff", "AIFF": "audio/aiff", "FLAC": "audio/flac", "M4A": "audio/mp4", "M4B": "audio/mp4", "MP3": "audio/mpeg", "OGA": "audio/ogg", "OGG": "audio/ogg", "OPUS": "audio/ogg", "WAV": "audio/wav", "WEBA": "audio/webm",
+	"AVIF": "image/avif", "BMP": "image/bmp", "GIF": "image/gif", "JPEG": "image/jpeg", "JPG": "image/jpeg", "PNG": "image/png", "WEBP": "image/webp",
 }
 
 func MediaType(item library.Item) string {
-	if mime := map[string]string{
-		"3G2": "video/3gpp2", "3GP": "video/3gpp", "ASF": "video/x-ms-asf", "AVI": "video/x-msvideo", "FLV": "video/x-flv", "M2TS": "video/mp2t", "M4V": "video/mp4", "MKV": "video/x-matroska", "MOV": "video/quicktime", "MP4": "video/mp4", "MPEG": "video/mpeg", "MPG": "video/mpeg", "MTS": "video/mp2t", "OGV": "video/ogg", "TS": "video/mp2t", "VOB": "video/mpeg", "WEBM": "video/webm", "WMV": "video/x-ms-wmv",
-		"AAC": "audio/aac", "AIF": "audio/aiff", "AIFF": "audio/aiff", "FLAC": "audio/flac", "M4A": "audio/mp4", "M4B": "audio/mp4", "MP3": "audio/mpeg", "OGA": "audio/ogg", "OGG": "audio/ogg", "OPUS": "audio/ogg", "WAV": "audio/wav", "WEBA": "audio/webm",
-		"AVIF": "image/avif", "BMP": "image/bmp", "GIF": "image/gif", "JPEG": "image/jpeg", "JPG": "image/jpeg", "PNG": "image/png", "WEBP": "image/webp",
-	}[item.Container]; mime != "" {
+	if mime := mediaTypes[item.Container]; mime != "" {
 		return mime
 	}
 	return "application/octet-stream"

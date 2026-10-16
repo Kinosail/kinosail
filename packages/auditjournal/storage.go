@@ -1,18 +1,18 @@
 package auditjournal
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
 	"os"
-	"time"
-
-	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
 func appendAuditEvent(path string, event Event) error {
 	line, _ := json.Marshal(event)
+	return appendAuditLine(path, line)
+}
+
+func appendAuditLine(path string, line []byte) error {
 	if len(line) > maxAuditEventBytes {
 		return errors.New("activity event is invalid")
 	}
@@ -144,50 +144,4 @@ func (journal *Journal) deliverNotifications(done <-chan struct{}) {
 			journal.notify(cloneEvent(event))
 		}
 	}
-}
-
-func (journal *Journal) pruneLocked(now time.Time) bool {
-	kept := journal.events[:0]
-	for _, event := range journal.events {
-		created, err := time.Parse(time.RFC3339Nano, event.Time)
-		retention := journal.auditRetention
-		if event.Category == "playback" {
-			retention = journal.playbackRetention
-		}
-		if err == nil && now.Sub(created) <= retention {
-			kept = append(kept, event)
-		}
-	}
-	pruned := len(kept) != len(journal.events)
-	if len(kept) > maxActivityEvents {
-		kept = kept[len(kept)-maxActivityEvents:]
-		pruned = true
-	}
-	journal.events = kept
-	return pruned
-}
-
-func (journal *Journal) rewriteLocked() error {
-	if journal.file == "" {
-		return nil
-	}
-	var data bytes.Buffer
-	previous := ""
-	for index, event := range journal.events {
-		event.Previous = previous
-		event.Integrity = journal.sign(event)
-		journal.events[index] = event
-		previous = event.Integrity
-		line, _ := json.Marshal(event)
-		if !journalLineFits(data.Len(), len(line)) {
-			return errors.New("activity journal is too large")
-		}
-		data.Write(line)
-		data.WriteByte('\n')
-	}
-	return privatefile.Write(journal.file, data.Bytes())
-}
-
-func journalLineFits(size, line int) bool {
-	return size+line+1 <= maxAuditJournalBytes
 }

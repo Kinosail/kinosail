@@ -22,20 +22,28 @@ func CSRFTemplateSource(source string) string {
 	return csrfHeadClose.ReplaceAllString(source, `{{csrfMeta}}</head>`)
 }
 
+func CSRFField(request *http.Request) template.HTML {
+	if token := CSRFForRequest(request); token != "" {
+		return template.HTML(`<input type="hidden" name="_csrf" value="` + token + `">`) //nolint:gosec // SHA-256 base64url tokens cannot contain HTML metacharacters.
+	}
+	return ""
+}
+
+func CSRFMeta(request *http.Request) template.HTML {
+	if token := CSRFForRequest(request); token != "" {
+		return template.HTML(`<meta name="kinosail-csrf" content="` + token + `">`) //nolint:gosec // SHA-256 base64url tokens cannot contain HTML metacharacters.
+	}
+	return ""
+}
+
+func CSRFRequestHTML() map[string]func(*http.Request) template.HTML {
+	return map[string]func(*http.Request) template.HTML{"csrfField": CSRFField, "csrfMeta": CSRFMeta}
+}
+
 func CSRFTemplateFuncs(request *http.Request) template.FuncMap {
 	return template.FuncMap{
-		"csrfField": func() template.HTML {
-			if token := CSRFForRequest(request); token != "" {
-				return template.HTML(`<input type="hidden" name="_csrf" value="` + token + `">`) //nolint:gosec // SHA-256 base64url tokens cannot contain HTML metacharacters.
-			}
-			return ""
-		},
-		"csrfMeta": func() template.HTML {
-			if token := CSRFForRequest(request); token != "" {
-				return template.HTML(`<meta name="kinosail-csrf" content="` + token + `">`) //nolint:gosec // SHA-256 base64url tokens cannot contain HTML metacharacters.
-			}
-			return ""
-		},
+		"csrfField": func() template.HTML { return CSRFField(request) },
+		"csrfMeta":  func() template.HTML { return CSRFMeta(request) },
 	}
 }
 

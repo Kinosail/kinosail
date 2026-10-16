@@ -147,6 +147,10 @@ type mediaIndexStub struct {
 
 func (stub *mediaIndexStub) VisibleLibrary(*http.Request) []library.Item { return stub.items }
 
+func (stub *mediaIndexStub) VisibleView(*http.Request) *library.View {
+	return library.NewSnapshot(stub.items, 1).View(library.NewPolicy(true, "", nil))
+}
+
 func (stub *mediaIndexStub) VisibleItem(*http.Request, string) (library.Item, bool) {
 	return stub.visible, stub.found
 }

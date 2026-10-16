@@ -15,7 +15,7 @@ const jellyfinOnboardingHTML = `<section class="wide onboarding-optional" id="je
 
 var tmdbOnboardingHTML = strings.NewReplacer(`action="/settings/configuration"`, `action="/onboarding/tmdb"`, `class="wide integration-setup"`, `class="wide integration-setup onboarding-optional"`).Replace(tmdbConfigurationHTML)
 
-var onboardingConnectionView = newLocalizedTemplate("onboarding-connection", onboardingConnectionTemplate())
+var onboardingConnectionView = newLazyLocalizedTemplate("onboarding-connection", onboardingConnectionTemplate)
 
 func onboardingConnectionTemplate() string {
 	content := strings.NewReplacer(

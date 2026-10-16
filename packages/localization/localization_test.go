@@ -1,9 +1,6 @@
 package localization
 
 import (
-	"html/template"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -30,9 +27,9 @@ func testCatalog(t *testing.T) *Catalog {
 	); err != nil {
 		t.Fatal(err)
 	}
-	languages := []Language{{Tag: "en", Name: "English", Direction: "ltr"}, {Tag: "es", Name: "Español", Direction: "ltr"}, {Tag: "ar", Name: "العربية", Direction: "rtl"}}
+	languages := []Language{{Tag: "en", Name: "English", Direction: "ltr"}, {Tag: "es", Name: "Español", Direction: "ltr"}, {Tag: "ar", Name: "العربية", Direction: "rtl"}, {Tag: "fr", Name: "Français", Direction: "ltr"}}
 	messages := []Message{{ID: "Automatic (browser)", Other: "Automatic (browser)"}, {ID: "Language", Other: "Language"}, {ID: "Save", Other: "Save"}, {ID: "Play", Other: "Play"}}
-	return NewCatalog(bundle, languages, messages)
+	return NewCatalog(languages, func() (*i18n.Bundle, []Message) { return bundle, messages })
 }
 
 func TestSupportedLanguagesUsePlayerOrderAndDirections(t *testing.T) {
@@ -107,24 +104,17 @@ func TestCatalogLocalizationAndHTMLTranslation(t *testing.T) {
 	}
 
 	source := `<html lang="en"><button aria-label="Play {{.Title}}" title="Play">Play</button><p>Display</p>`
-	want := `<html lang="es" dir="ltr"><button aria-label="Reproducir {{.Title}}" title="Reproducir">Reproducir</button><p>Display</p>`
-	if got := catalog.TranslateSource(source, "es"); got != want {
+	want := `<html lang="en"><button aria-label="Reproducir {{.Title}}" title="Reproducir">Reproducir</button><p>Display</p>`
+	if got := catalog.translateBody(source, "es"); got != want {
 		t.Fatalf("translated source = %q; want %q", got, want)
 	}
-	for _, tag := range []string{"es", "ar"} {
-		source := `<html lang="en" data-theme="dark"><body></body></html>`
-		want := `<html lang="` + tag + `" dir="` + catalog.Direction(tag) + `" data-theme="dark"><body></body></html>`
-		if got := catalog.TranslateSource(source, tag); got != want {
-			t.Fatalf("HTML attributes = %q; want %q", got, want)
-		}
-	}
-	if got := catalog.TranslateSource(`<p aria-label="Play>Play`, "es"); got != `<p aria-label="Play>Reproducir` {
+	if got := catalog.translateBody(`<p aria-label="Play>Play`, "es"); got != `<p aria-label="Play>Reproducir` {
 		t.Fatalf("malformed source translation = %q", got)
 	}
-	if got := catalog.TranslateSource(`{{broken`, "es"); got != `{{broken` {
+	if got := catalog.translateBody(`{{broken`, "es"); got != `{{broken` {
 		t.Fatalf("malformed template changed to %q", got)
 	}
-	if got := catalog.TranslateSource(`<broken`, "es"); got != `<broken` {
+	if got := catalog.translateBody(`<broken`, "es"); got != `<broken` {
 		t.Fatalf("malformed tag changed to %q", got)
 	}
 }
@@ -161,114 +151,5 @@ func TestPickerEscapesValuesAndSelectsPreference(t *testing.T) {
 	compact := string(catalog.PickerHTML("en", "auto", "", true))
 	if !strings.Contains(compact, `<option value="auto" selected>`) || !strings.Contains(compact, `class="mode"`) || strings.Contains(compact, `_csrf`) {
 		t.Fatalf("compact picker = %s", compact)
-	}
-}
-
-func TestTemplateRuntimeExecutesLocalizedViews(t *testing.T) {
-	t.Parallel()
-	catalog := testCatalog(t)
-	views := map[string]*template.Template{
-		"es": template.Must(template.New("page").Funcs(template.FuncMap{
-			"languagePicker": func() template.HTML { return "" },
-			"token":          func() string { return "" },
-		}).Parse(`{{define "named"}}named {{languagePicker}} {{token}}{{end}}page {{languagePicker}} {{token}}`)),
-	}
-	runtime := TemplateRuntime{
-		PreferredLanguage:  func(*http.Request) string { return "es" },
-		LanguagePreference: func(*http.Request) string { return "auto" },
-		MatchLanguage:      func(value string) (string, bool) { return value, value == "es" },
-		SetLanguageHeaders: func(writer http.ResponseWriter, tag string) { writer.Header().Set("Content-Language", tag) },
-		CSRFForRequest:     func(*http.Request) string { return "csrf" },
-		CSRFTemplateFuncs: func(*http.Request) template.FuncMap {
-			return template.FuncMap{"token": func() string { return "safe" }}
-		},
-	}
-
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/?lang=es", nil)
-	response := httptest.NewRecorder()
-	if err := runtime.ExecuteTemplate(views, catalog, response, request, "", nil); err != nil {
-		t.Fatal(err)
-	}
-	if response.Header().Get("Content-Language") != "es" || !strings.Contains(response.Body.String(), `option value="es" selected`) || !strings.Contains(response.Body.String(), "safe") {
-		t.Fatalf("localized page = %q", response.Body.String())
-	}
-
-	request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil)
-	response = httptest.NewRecorder()
-	if err := runtime.ExecuteTemplate(views, catalog, response, request, "named", nil); err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(response.Body.String(), "named") || strings.Contains(response.Body.String(), `class="mode"`) {
-		t.Fatalf("named page = %q", response.Body.String())
-	}
-}
-
-func TestTemplateRuntimeReportsCloneFailure(t *testing.T) {
-	t.Parallel()
-	catalog := testCatalog(t)
-	view := template.Must(template.New("page").Parse("page"))
-	if err := view.Execute(&strings.Builder{}, nil); err != nil {
-		t.Fatal(err)
-	}
-	runtime := TemplateRuntime{
-		PreferredLanguage:  func(*http.Request) string { return "es" },
-		LanguagePreference: func(*http.Request) string { return "auto" },
-		MatchLanguage:      func(string) (string, bool) { return "", false },
-		SetLanguageHeaders: func(http.ResponseWriter, string) {},
-		CSRFForRequest:     func(*http.Request) string { return "" },
-		CSRFTemplateFuncs:  func(*http.Request) template.FuncMap { return nil },
-	}
-	err := runtime.ExecuteTemplate(map[string]*template.Template{"es": view}, catalog, httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), "", nil)
-	if err == nil {
-		t.Fatal("expected clone failure")
-	}
-}
-
-func TestNewTemplateSetUsesPlayerScriptPolicy(t *testing.T) {
-	t.Parallel()
-	catalog := testCatalog(t)
-	runtime := TemplateRuntime{
-		PreferredLanguage:  func(*http.Request) string { return "es" },
-		LanguagePreference: func(*http.Request) string { return "auto" },
-		MatchLanguage:      func(string) (string, bool) { return "", false },
-		SetLanguageHeaders: func(http.ResponseWriter, string) {},
-		CSRFForRequest:     func(*http.Request) string { return "" },
-		CSRFTemplateFuncs:  func(*http.Request) template.FuncMap { return nil },
-	}
-	preprocessed := false
-	view := NewTemplateSet("page", `<html lang="en"><head><link rel="stylesheet" href="/static/app.css?v=cinema-1"></head><body>Play {{t "Play"}} {{languagePicker}}</body></html>`, "9", catalog, []Language{{Tag: "es"}}, func(source string) string {
-		preprocessed = true
-		return source
-	}, nil, runtime)
-	response := httptest.NewRecorder()
-	if err := view.Execute(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), nil); err != nil {
-		t.Fatal(err)
-	}
-	body := response.Body.String()
-	if !preprocessed || !strings.Contains(body, `main.kinosail.bundle.js?v=9`) || !strings.Contains(body, "Reproducir") {
-		t.Fatalf("compiled template = %q", body)
-	}
-	response = httptest.NewRecorder()
-	if err := view.ExecuteTemplate(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil), "missing", nil); err == nil {
-		t.Fatal("expected missing named template error")
-	}
-	var direct strings.Builder
-	if err := view.views["es"].Execute(&direct, nil); err != nil || !strings.Contains(direct.String(), "Reproducir") || !strings.Contains(direct.String(), "language-picker") {
-		t.Fatalf("stored localized template = %q, %v", direct.String(), err)
-	}
-
-	for _, source := range []string{
-		`<head><link rel="stylesheet" href="/static/app.css"><script src="/static/main.kinosail.bundle.js"></script></head>`,
-		`<head><link rel="stylesheet" href="/static/app.css"></head><body class="auth">`,
-		`<head></head>`,
-	} {
-		candidate := NewTemplateSet("page", source, "9", catalog, []Language{{Tag: "es"}}, func(value string) string { return value }, nil, runtime)
-		response = httptest.NewRecorder()
-		if err := candidate.Execute(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), nil); err != nil {
-			t.Fatal(err)
-		}
-		if strings.Count(response.Body.String(), "main.kinosail.bundle.js") > 1 {
-			t.Fatalf("script duplicated in %q", response.Body.String())
-		}
 	}
 }

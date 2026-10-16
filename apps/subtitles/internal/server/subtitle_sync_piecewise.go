@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"strconv"
 	"strings"
 	"time"
 
@@ -25,18 +24,34 @@ func parseSubtitleTiming(line string) (time.Duration, time.Duration, bool) {
 }
 
 func parseSubtitleTime(value string) (time.Duration, bool) {
-	match := subtitleTime.FindStringSubmatch(value)
-	if match == nil {
+	fraction := len(value) - 4
+	if fraction < 5 || value[fraction] != ',' && value[fraction] != '.' || value[fraction-3] != ':' {
 		return 0, false
 	}
-	hours, _ := strconv.Atoi(match[1])
-	minutes, _ := strconv.Atoi(match[2])
-	seconds, _ := strconv.Atoi(match[3])
-	millis, _ := strconv.Atoi(match[4])
-	if minutes > 59 || seconds > 59 {
+	millis, millisOK := subtitleTimeDigits(value[fraction+1:])
+	seconds, secondsOK := subtitleTimeDigits(value[fraction-2 : fraction])
+	minutes, minutesOK := subtitleTimeDigits(value[fraction-5 : fraction-3])
+	hours, hoursOK := 0, true
+	if prefix := value[:fraction-5]; prefix != "" {
+		digits := strings.TrimSuffix(prefix, ":")
+		hours, hoursOK = subtitleTimeDigits(digits)
+		hoursOK = hoursOK && len(digits) <= 3 && len(digits) == len(prefix)-1
+	}
+	if !millisOK || !secondsOK || !minutesOK || !hoursOK || minutes > 59 || seconds > 59 {
 		return 0, false
 	}
 	return time.Duration(hours)*time.Hour + time.Duration(minutes)*time.Minute + time.Duration(seconds)*time.Second + time.Duration(millis)*time.Millisecond, true
+}
+
+func subtitleTimeDigits(value string) (int, bool) {
+	number := 0
+	for position := range len(value) {
+		if value[position] < '0' || value[position] > '9' {
+			return 0, false
+		}
+		number = number*10 + int(value[position]-'0')
+	}
+	return number, value != ""
 }
 
 func (provider *subtitleProvider) downloadSubtitleCandidates(ctx context.Context, item library.Item, candidates []subtitleDownloadCandidate, accept func(subtitleDownloadCandidate) bool) (cleanedSubtitle, subtitleRecord, error) {

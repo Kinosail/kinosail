@@ -26,13 +26,13 @@ if [ "$1" = --output-file ]; then shift; output="$1"; fi
 shift
 done
 printf '%s' '`+transcript+`' > "$output.json"`)
-	document, words, err := localSubtitleTranscription(t.Context(), ffmpeg, whisper, "media", 0, "en", "model", "small", 10)
+	document, words, err := localSubtitleTranscription(t.Context(), ffmpeg, whisper, "media", 0, "en", "model", "small", 10, t.TempDir())
 	if err != nil || len(document.Cues) != 1 || len(words) != 2 || document.TimingEvidence != "unverified" {
 		t.Fatalf("transcript=%#v words=%d err=%v", document, len(words), err)
 	}
 	fail := subtitleProcessFixture(t, "exit 1")
 	for _, tools := range [][2]string{{fail, whisper}, {ffmpeg, fail}, {ffmpeg, ffmpeg}} {
-		if _, _, err := localSubtitleTranscription(t.Context(), tools[0], tools[1], "media", 0, "en", "model", "small", 10); err == nil {
+		if _, _, err := localSubtitleTranscription(t.Context(), tools[0], tools[1], "media", 0, "en", "model", "small", 10, t.TempDir()); err == nil {
 			t.Fatal("failed process or absent output accepted")
 		}
 	}

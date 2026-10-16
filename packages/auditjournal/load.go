@@ -48,11 +48,13 @@ func (journal *Journal) load(dataDir string) error {
 			return err
 		}
 	}
-	if legacy || journal.pruneLocked(time.Now().UTC()) {
+	now := time.Now().UTC()
+	if legacy || journal.pruneLocked(now) {
 		if err := journal.rewriteLocked(); err != nil {
 			return err
 		}
 	}
+	journal.compacted, journal.nextExpiry = now, journal.earliestExpiry()
 	journal.writable = true
 	return nil
 }
@@ -113,8 +115,18 @@ func (journal *Journal) loadJournal() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	journal.events = events
+	journal.events, journal.meta, journal.bytes = events, journalMeta(events), int64(len(data))
 	return mode == "legacy", nil
+}
+
+func journalMeta(events []Event) []eventMeta {
+	metas := make([]eventMeta, len(events))
+	for index, event := range events {
+		created, _ := time.Parse(time.RFC3339Nano, event.Time)
+		line, _ := json.Marshal(event)
+		metas[index] = eventMeta{created: created, size: int64(len(line) + 1)}
+	}
+	return metas
 }
 
 func (journal *Journal) decodeJournal(data []byte) ([]Event, string, error) {
@@ -188,17 +200,6 @@ func (journal *Journal) validSignedEvent(event Event, previous string) bool {
 	expected, _ := hex.DecodeString(journal.sign(event))
 	actual, _ := hex.DecodeString(event.Integrity)
 	return hmac.Equal(actual, expected)
-}
-
-func (journal *Journal) sign(event Event) string {
-	if len(journal.key) == 0 {
-		return ""
-	}
-	event.Integrity = ""
-	data, _ := json.Marshal(event)
-	mac := hmac.New(sha256.New, journal.key)
-	_, _ = mac.Write(data)
-	return hex.EncodeToString(mac.Sum(nil))
 }
 
 func validDigest(value string) bool {

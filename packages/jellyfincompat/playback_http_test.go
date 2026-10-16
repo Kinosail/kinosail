@@ -21,7 +21,9 @@ func playbackFixture(item library.Item, effects *[]string) PlaybackHTTP {
 			*effects = append(*effects, "visible")
 			return item, id == item.ID
 		},
-		VisibleLibrary: func(*http.Request) ([]library.Item, error) { return []library.Item{item}, nil },
+		VisibleView: func(*http.Request) (*library.View, error) {
+			return library.NewSnapshot([]library.Item{item}, 1).View(library.NewPolicy(true, "", nil)), nil
+		},
 		PrepareImageRequest: func(request *http.Request) *http.Request {
 			*effects = append(*effects, "prepare")
 			return request
@@ -189,7 +191,9 @@ func TestPlaybackHTTPSelectsAndServesArtwork(t *testing.T) {
 	episode := library.Item{ID: "episode", Kind: "video", Show: "Series", Season: 1, Episode: 1, Artwork: art, ShowArtwork: art}
 	secondary := playbackFixture(library.Item{}, &effects)
 	secondary.VisibleItem = func(*http.Request, string) (library.Item, bool) { return library.Item{}, false }
-	secondary.VisibleLibrary = func(*http.Request) ([]library.Item, error) { return []library.Item{episode}, nil }
+	secondary.VisibleView = func(*http.Request) (*library.View, error) {
+		return library.NewSnapshot([]library.Item{episode}, 1).View(library.NewPolicy(true, "", nil)), nil
+	}
 	showID := ID(ShowID("Series"))
 	if item, found := secondary.ArtworkItem(request, showID); !found || item.Artwork != art {
 		t.Fatalf("show artwork = %#v, %t", item, found)

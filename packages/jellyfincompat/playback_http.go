@@ -23,7 +23,7 @@ type MediaSourcePolicy struct {
 
 type PlaybackHTTP struct {
 	VisibleItem         func(*http.Request, string) (library.Item, bool)
-	VisibleLibrary      func(*http.Request) ([]library.Item, error)
+	VisibleView         func(*http.Request) (*library.View, error)
 	PrepareImageRequest func(*http.Request) *http.Request
 	Inspect             func(context.Context, library.Item) PlaybackMedia
 	PreferredVideoCodec func([]string) string
@@ -124,18 +124,22 @@ func (module PlaybackHTTP) ArtworkItem(request *http.Request, id string) (librar
 	if item, found := module.VisibleItem(request, RawID(id)); found {
 		return item, true
 	}
-	items, _ := module.VisibleLibrary(request)
-	_, shows := library.Organize(items)
-	for _, show := range shows {
-		if ID(show.ID) == id {
-			item, found := findItem(items, show.ArtworkID)
-			item.Artwork = show.Artwork
-			return item, found
-		}
-		for _, episode := range show.Episodes {
-			if SeasonID(show.ID, episode.Season) == id && episode.Artwork != "" {
-				return episode, true
-			}
+	view, _ := module.VisibleView(request)
+	if len(id) < 16 {
+		return library.Item{}, false
+	}
+	show, found := view.Show(id[:16])
+	if !found {
+		return library.Item{}, false
+	}
+	if ID(show.ID) == id {
+		item, found := view.Find(show.ArtworkID)
+		item.Artwork = show.Artwork
+		return item, found
+	}
+	for _, episode := range show.Episodes {
+		if SeasonID(show.ID, episode.Season) == id && episode.Artwork != "" {
+			return episode, true
 		}
 	}
 	return library.Item{}, false

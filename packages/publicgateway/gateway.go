@@ -62,6 +62,19 @@ func unixTransport(path string) *http.Transport {
 	}
 }
 
+type proxyBufferPool struct{ pool sync.Pool }
+
+var proxyBuffers = &proxyBufferPool{pool: sync.Pool{New: func() any { buffer := make([]byte, 128<<10); return &buffer }}}
+
+func (buffers *proxyBufferPool) Get() []byte { return *buffers.pool.Get().(*[]byte) }
+
+func (buffers *proxyBufferPool) Put(buffer []byte) {
+	if cap(buffer) == 128<<10 {
+		buffer = buffer[:cap(buffer)]
+		buffers.pool.Put(&buffer)
+	}
+}
+
 func Handler(hostname, path string) http.Handler {
 	proxy := &httputil.ReverseProxy{
 		Rewrite: func(p *httputil.ProxyRequest) {
@@ -72,7 +85,7 @@ func Handler(hostname, path string) http.Handler {
 			}
 			p.Out.Header.Set(ClientAddressHeader, p.In.RemoteAddr)
 		},
-		Transport: unixTransport(path), FlushInterval: -1,
+		Transport: unixTransport(path), BufferPool: proxyBuffers,
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
 			http.Error(w, "public access is unavailable", http.StatusServiceUnavailable)
 		},

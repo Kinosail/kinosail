@@ -19,6 +19,12 @@ func (store *listStore) collectionNames(items []library.Item) []string {
 	return store.storage().CollectionNames(items)
 }
 
+func (store *listStore) collectionNamesFor(view *library.View) []string {
+	store.mu.RLock()
+	defer store.mu.RUnlock()
+	return store.storage().CollectionNamesFor(view.Collections())
+}
+
 func (store *listStore) collection(name string, items []library.Item) []library.Item {
 	store.mu.RLock()
 	defer store.mu.RUnlock()

@@ -49,12 +49,6 @@ func versionAssetReferences(source string) string {
 	})
 }
 
-func versionAssetReferenceBytes(page []byte) []byte {
-	return versionedAssetReference.ReplaceAllFunc(page, func(reference []byte) []byte {
-		return []byte(versionAssetReferences(string(reference)))
-	})
-}
-
 func versionedTemplateSource(source string) string {
 	return versionAssetReferences(httpguardTemplateSource(source))
 }

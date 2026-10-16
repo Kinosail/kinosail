@@ -21,7 +21,6 @@ const (
 
 var (
 	subtitleBlocks   = regexp.MustCompile(`\n[ \t]*\n+`)
-	subtitleTime     = regexp.MustCompile(`^(?:(\d{1,3}):)?(\d{2}):(\d{2})[,.](\d{3})$`)
 	subtitleTags     = regexp.MustCompile(`(?i)</?[^>]{1,128}>`)
 	subtitleVoice    = regexp.MustCompile(`(?i)<v(?:\.[^ >]+)*[ \t]+([^>]{1,128})>`)
 	subtitleASSStyle = regexp.MustCompile(`\\([ibu])([01])\b`)
@@ -151,6 +150,19 @@ func cleanSubtitleCueLines(lines []string) []string {
 }
 
 func cleanSubtitleLine(line string) string {
+	if strings.ContainsAny(line, "<{&") {
+		line = cleanSubtitleMarkup(line)
+	}
+	line = strings.Map(func(character rune) rune {
+		if unicode.IsControl(character) && character != '\t' {
+			return -1
+		}
+		return character
+	}, line)
+	return norm.NFC.String(strings.Join(strings.Fields(line), " "))
+}
+
+func cleanSubtitleMarkup(line string) string {
 	line = subtitleVoice.ReplaceAllString(line, "$1: ")
 	line = subtitleASSTags.ReplaceAllStringFunc(line, func(block string) string {
 		var style strings.Builder
@@ -170,14 +182,7 @@ func cleanSubtitleLine(line string) string {
 		}
 		return ""
 	})
-	line = html.UnescapeString(line)
-	line = strings.Map(func(character rune) rune {
-		if unicode.IsControl(character) && character != '\t' {
-			return -1
-		}
-		return character
-	}, line)
-	return norm.NFC.String(strings.Join(strings.Fields(line), " "))
+	return html.UnescapeString(line)
 }
 
 func balanceSubtitleTags(text string) string {

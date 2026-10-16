@@ -58,7 +58,7 @@ var (
 	offlineHTML []byte
 )
 
-var offlineView = newLocalizedTemplate("offline", string(offlineHTML))
+var offlineView = newLazyLocalizedTemplate("offline", func() string { return string(offlineHTML) })
 
 func serveOffline(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
