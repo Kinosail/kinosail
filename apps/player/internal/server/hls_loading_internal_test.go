@@ -82,7 +82,7 @@ func TestHLSFactsDoNotRemovePlaybackPlanningEnrichment(t *testing.T) {
 	}
 }
 
-func hlsLoadingFixture(t *testing.T) (*hlsManager, library.Item, *atomic.Int32, string) {
+func hlsLoadingFixture(t testing.TB) (*hlsManager, library.Item, *atomic.Int32, string) {
 	t.Helper()
 	var chapterCalls atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -126,7 +126,7 @@ func assertNoHLSLoadingEnrichment(t *testing.T, calls *atomic.Int32, arguments s
 	}
 }
 
-func writeHLSLoadingFile(t *testing.T, path, data string) {
+func writeHLSLoadingFile(t testing.TB, path, data string) {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		t.Fatal(err)

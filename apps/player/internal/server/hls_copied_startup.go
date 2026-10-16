@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"math"
 	"net/http"
@@ -30,6 +31,10 @@ func (manager *hlsManager) preparedHLSOrigin(writer http.ResponseWriter, request
 	}
 	directory := filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
 	timeline, err := manager.readCopiedHLSTimelineContext(request.Context(), directory, options.Cache)
+	if errors.Is(err, errCopiedHLSBusy) {
+		writer.Header().Set("Retry-After", "2")
+		return false
+	}
 	if err != nil {
 		return !manager.copiedHLSTimelinePresent(directory)
 	}
@@ -59,7 +64,11 @@ func (manager *hlsManager) reusableCopiedHLS(ctx context.Context, item library.I
 	}
 	timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
 	if err != nil {
-		slog.WarnContext(ctx, "HLS copied cache rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode, "failure_class", "invalid-timeline")
+		failure := "invalid-timeline"
+		if errors.Is(err, errCopiedHLSBusy) {
+			failure = "verification-busy"
+		}
+		slog.WarnContext(ctx, "HLS copied cache rejected", "request_id", requestActivityID(ctx), "playback_session", requestPlaybackSession(ctx), "mode", recipe.mode, "failure_class", failure)
 		return false
 	}
 	return timeline.Clock != nil && ctx.Err() == nil
@@ -114,6 +123,10 @@ func (manager *hlsManager) copiedPlaylistProjection(ctx context.Context, item li
 			return nil
 		}
 		timeline, err := manager.readCopiedHLSTimelineContext(ctx, directory, policy)
+		if errors.Is(err, errCopiedHLSBusy) {
+			markCopiedHLSBusy(ctx, recipe.mode)
+			return nil
+		}
 		if err != nil && manager.copiedHLSTimelinePresent(directory) {
 			return nil
 		}

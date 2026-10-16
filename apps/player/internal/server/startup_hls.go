@@ -20,7 +20,7 @@ func startupActualPlayback(ctx context.Context) bool {
 
 func (manager *hlsManager) adoptStartupJob(ctx context.Context, job *hlsJob, key string) {
 	if startupActualPlayback(ctx) && job != nil && job.preparation != nil && !startupJobStopping(job) {
-		job.preparation.adopted.Store(true)
+		job.preparation.adopt()
 		manager.clearStartupCompletion(key)
 	}
 }

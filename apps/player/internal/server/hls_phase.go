@@ -20,10 +20,18 @@ type hlsObservation struct {
 	queueMS, seekMS               int64
 	cost, capacity, segment       int
 	ready, launched, pendingReady bool
+	published                     chan struct{}
 }
 
 func newHLSObservation(requestID string, segment int) *hlsObservation {
-	return &hlsObservation{requestID: requestID, segment: segment, phase: "queued", class: "unknown", seekMS: -1, started: time.Now()}
+	return &hlsObservation{requestID: requestID, segment: segment, phase: "queued", class: "unknown", seekMS: -1, started: time.Now(), published: make(chan struct{})}
+}
+
+func (observation *hlsObservation) mediaPublished() <-chan struct{} {
+	if observation == nil {
+		return nil
+	}
+	return observation.published
 }
 
 func hlsObservationFor(ctx context.Context) *hlsObservation {
@@ -90,6 +98,13 @@ func (observation *hlsObservation) emit(phase, outcome string) {
 	}
 	observation.mu.Lock()
 	if phase == "media_ready" {
+		select {
+		case <-observation.published:
+		default:
+			if observation.published != nil {
+				close(observation.published)
+			}
+		}
 		if !observation.launched {
 			observation.pendingReady = true
 			observation.mu.Unlock()

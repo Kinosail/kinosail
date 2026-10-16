@@ -264,6 +264,11 @@ func TestDeliveryDownloadMapsAllOutcomes(t *testing.T) {
 	if response := httptest.NewRecorder(); !module.serveDownload(response, request, state.item, state.viewer) || response.Code != http.StatusServiceUnavailable {
 		t.Fatalf("failed wait = %d", response.Code)
 	}
+	state.waitErr, state.item.Title = context.DeadlineExceeded, "Film"
+	streamed := httptest.NewRecorder()
+	if !module.serveDownload(streamed, request, state.item, state.viewer) || streamed.Code != http.StatusOK || streamed.Body.String() != "video" || streamed.Header().Get("Content-Disposition") != `attachment; filename="Film.mp4"` {
+		t.Fatalf("slow preparation = %d %q %v", streamed.Code, streamed.Body.String(), streamed.Header())
+	}
 	state.waitErr, state.download = nil, downloads.Job{ID: "job", File: filepath.Join(t.TempDir(), "missing")}
 	missing := httptest.NewRecorder()
 	if !module.serveDownload(missing, request, state.item, state.viewer) || missing.Code != http.StatusNotFound {

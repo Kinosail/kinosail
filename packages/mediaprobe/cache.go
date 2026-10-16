@@ -36,6 +36,12 @@ func New(executable string) *Probe {
 }
 
 func (probe *Probe) ConfigureCache(directory string) {
+	probe.mu.RLock()
+	configured := probe.cacheDir == directory
+	probe.mu.RUnlock()
+	if configured {
+		return
+	}
 	probe.mu.Lock()
 	probe.cacheDir = directory
 	probe.mu.Unlock()

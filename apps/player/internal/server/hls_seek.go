@@ -104,7 +104,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	return err
 }
 
-func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:cyclop,gocognit,funlen // Replacement and joining must stay atomic for concurrent segment requests.
+func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:gocognit // Segment validation precedes the keyed join or seek restart.
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -154,72 +154,24 @@ func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.I
 		manager.startup.playback(key)
 	}
 	for {
-		manager.mu.Lock()
 		if err := ctx.Err(); err != nil {
-			manager.mu.Unlock()
 			return nil, err
 		}
 		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-			manager.mu.Unlock()
 			return nil, err
 		}
-		if _, err = os.Stat(path); err == nil {
-			manager.mu.Unlock()
-			return nil, nil
-		}
-		job := manager.jobs[key]
-		if startupJobStopping(job) {
-			manager.mu.Unlock()
-			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return nil, err
-			}
-			continue
-		}
-		manager.adoptStartupJob(ctx, job, key)
-		if job.coversSegment(filepath.Dir(path), segment) {
-			manager.mu.Unlock()
-			return job, nil
-		}
-		if job != nil && ctx.Value(startupEncodingKey{}) != nil {
-			manager.mu.Unlock()
-			return nil, nil
-		}
-		if job != nil {
-			job.cancel(errHLSSeekRestart)
-			manager.mu.Unlock()
-			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return nil, err
-			}
-			continue
-		}
-		var recovery *transcodeHLSRecovery
-		if recipe.mode == "transcode" {
-			recovery, err = manager.readTranscodeHLSRecovery(ctx, directory, options.Cache, filepath.Base(filepath.Dir(path)), segment)
-			if err != nil {
-				manager.mu.Unlock()
-				return nil, err
-			}
-			if recovery != nil {
-				recovery.original = recipe
-			}
-		}
-		if err = writeAtomicFile(filepath.Join(directory, ".seekable"), []byte(options.Cache)); err != nil {
-			manager.mu.Unlock()
+		unlock, err := manager.lockHLSKey(ctx, key)
+		if err != nil {
 			return nil, err
 		}
-		jobContext, created := manager.newHLSJob(ctx, segment)
-		if indexed {
-			jobContext = context.WithValue(jobContext, copiedHLSRequiredKey{}, true)
+		job, retry, err := manager.joinOrSeekHLSJob(ctx, item, hlsSeekRequest{key: key, path: path, segment: segment, indexed: indexed, options: options, recipe: recipe, seek: seekRecipe})
+		unlock()
+		if retry == nil {
+			return job, err
 		}
-		if recovery != nil {
-			jobContext = context.WithValue(jobContext, transcodeHLSRecoveryKey{}, recovery)
+		if err := waitForReplacedHLSJob(ctx, retry); err != nil {
+			return nil, err
 		}
-		job = created
-		job.cachePolicy = options.Cache
-		manager.jobs[key] = job
-		manager.mu.Unlock()
-		go manager.encode(jobContext, item, job, key, options, seekRecipe, segment, true)
-		return job, nil
 	}
 }
 

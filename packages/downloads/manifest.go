@@ -44,7 +44,7 @@ func (reader contextReader) Read(data []byte) (int, error) {
 	if err := reader.ctx.Err(); err != nil {
 		return 0, err
 	}
-	return reader.input.Read(data[:min(len(data), 128<<10)])
+	return reader.input.Read(data[:min(len(data), copyBufferBytes)])
 }
 
 func digestFile(ctx context.Context, file *os.File, id string, destination io.Writer) (Manifest, error) {
@@ -60,9 +60,14 @@ func digestFile(ctx context.Context, file *os.File, id string, destination io.Wr
 	}
 	result := Manifest{Version: 1, ID: id, Size: info.Size(), ChunkSize: ChunkSize, Chunks: []string{}}
 	whole := sha256.New()
+	buffer := make([]byte, copyBufferBytes)
 	for offset := int64(0); offset < result.Size; offset += ChunkSize {
 		block := sha256.New()
-		if _, err := io.CopyN(io.MultiWriter(destination, whole, block), contextReader{ctx, file}, min(ChunkSize, result.Size-offset)); err != nil {
+		length := min(ChunkSize, result.Size-offset)
+		if copied, err := io.CopyBuffer(io.MultiWriter(destination, whole, block), io.LimitReader(contextReader{ctx, file}, length), buffer); err != nil || copied != length {
+			if err == nil {
+				err = io.ErrUnexpectedEOF
+			}
 			return Manifest{}, err
 		}
 		result.Chunks = append(result.Chunks, hex.EncodeToString(block.Sum(nil)))
@@ -91,11 +96,14 @@ func copyManifest(ctx context.Context, input, output, id string) (Manifest, erro
 	if err != nil || !validDownloadSource(info) || !validID(id) {
 		return Manifest{}, errors.New("download source is invalid")
 	}
-	destination, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0o600)
+	destination, err := os.OpenFile(output, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0o600)
 	if err != nil {
 		return Manifest{}, err
 	}
-	result, err := digestFile(ctx, source, id, destination)
+	result, err := cloneManifest(ctx, source, destination, info, id)
+	if errors.Is(err, errCloneUnavailable) {
+		result, err = digestFile(ctx, source, id, destination)
+	}
 	if err == nil {
 		err = destination.Sync()
 	}
@@ -108,6 +116,24 @@ func copyManifest(ctx context.Context, input, output, id string) (Manifest, erro
 		return Manifest{}, err
 	}
 	return result, nil
+}
+
+const copyBufferBytes = 1 << 20
+
+var errCloneUnavailable = errors.New("download clone is unavailable")
+
+func cloneManifest(ctx context.Context, source, destination *os.File, before os.FileInfo, id string) (Manifest, error) {
+	if cloneFile(destination, source) != nil {
+		if err := destination.Truncate(0); err != nil {
+			return Manifest{}, err
+		}
+		return Manifest{}, errCloneUnavailable
+	}
+	after, err := source.Stat()
+	if err != nil || !unchangedDownloadSource(before, after) {
+		return Manifest{}, errors.New("download changed during preparation")
+	}
+	return digestFile(ctx, destination, id, io.Discard)
 }
 
 func validManifest(value Manifest, job Job) bool {

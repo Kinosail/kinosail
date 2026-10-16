@@ -30,54 +30,70 @@ type hlsJob struct {
 
 func (manager *hlsManager) ensureHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, error) {
 	for {
-		manager.mu.Lock()
 		if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-			manager.mu.Unlock()
 			return nil, err
 		}
-		job := manager.jobs[key]
-		if startupJobStopping(job) {
-			manager.mu.Unlock()
-			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return nil, err
-			}
-			return nil, errHLSIdentityChanged
+		unlock, err := manager.lockHLSKey(ctx, key)
+		if err != nil {
+			return nil, err
 		}
-		if job != nil && job.cachePolicy != options.Cache {
-			replaceHLSIdentity(ctx, job, recipe)
-			manager.mu.Unlock()
-			if err := waitForReplacedHLSJob(ctx, job); err != nil {
-				return nil, err
-			}
-			continue
+		job, retry, err := manager.joinOrStartHLSJob(ctx, item, key, options, recipe)
+		unlock()
+		if retry == nil {
+			return job, err
 		}
-		if job == nil {
-			directory := filepath.Join(manager.cache, key)
-			if cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) || seekCacheFresh(directory, item.Path, options.Cache) {
-				if _, err := manager.readCopiedHLSTimelineContext(ctx, directory, options.Cache); err == nil {
-					manager.mu.Unlock()
-					return nil, errHLSIdentityChanged
-				}
-			}
-			if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
-				manager.mu.Unlock()
-				return nil, err
-			}
-			if err := os.RemoveAll(filepath.Join(manager.cache, key)); err != nil {
-				manager.mu.Unlock()
-				return nil, err
-			}
-			jobContext, created := manager.newHLSJob(ctx, 0)
-			job = created
-			job.cachePolicy = options.Cache
-			manager.jobs[key] = job
-			go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
+		if err := waitForReplacedHLSJob(ctx, retry); err != nil {
+			return nil, err
 		}
-		manager.adoptStartupJob(ctx, job, key)
-		retainHLSPage(job, ctx)
-		manager.mu.Unlock()
-		return job, nil
+		if err != nil {
+			return nil, err
+		}
 	}
+}
+
+func (manager *hlsManager) joinOrStartHLSJob(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) (*hlsJob, *hlsJob, error) {
+	manager.mu.Lock()
+	job := manager.jobs[key]
+	if startupJobStopping(job) {
+		manager.mu.Unlock()
+		return nil, job, errHLSIdentityChanged
+	}
+	if job != nil && job.cachePolicy != options.Cache {
+		replaceHLSIdentity(ctx, job, recipe)
+		manager.mu.Unlock()
+		return nil, job, nil
+	}
+	if job == nil {
+		manager.mu.Unlock()
+		if err := manager.discardStaleHLSOutput(ctx, item, key, options, recipe); err != nil {
+			return nil, nil, err
+		}
+		manager.mu.Lock()
+		jobContext, created := manager.newHLSJob(ctx, 0)
+		job = created
+		job.cachePolicy = options.Cache
+		manager.jobs[key] = job
+		go manager.encode(jobContext, item, job, key, options, recipe, 0, false)
+	}
+	manager.adoptStartupJob(ctx, job, key)
+	retainHLSPage(job, ctx)
+	manager.mu.Unlock()
+	return job, nil, nil
+}
+
+func (manager *hlsManager) discardStaleHLSOutput(ctx context.Context, item library.Item, key string, options transcodeSettings, recipe hlsRecipe) error {
+	directory := filepath.Join(manager.cache, key)
+	if cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, options.Cache) || seekCacheFresh(directory, item.Path, options.Cache) {
+		if _, err := manager.readCopiedHLSTimelineContext(ctx, directory, options.Cache); err == nil {
+			return errHLSIdentityChanged
+		} else if errors.Is(err, errCopiedHLSBusy) {
+			return err
+		}
+	}
+	if err := manager.validateHLSPolicy(ctx, item, recipe, options.Cache); err != nil {
+		return err
+	}
+	return os.RemoveAll(directory)
 }
 
 func replaceHLSIdentity(ctx context.Context, job *hlsJob, recipe hlsRecipe) {
@@ -137,8 +153,12 @@ func (manager *hlsManager) hlsSettings(item library.Item, recipe hlsRecipe) (tra
 			options.Cache += ":copied-audio-origin=3"
 		}
 	}
-	options.Cache += ":" + sourceVersion(item.Path) + ":" + recipe.token() + ":hls=15"
-	if err := playback.ValidateHLSSource(item.Path, options.Cache); err != nil {
+	current, err := playback.CurrentHLSSourceVersion(item.Path)
+	if err != nil {
+		return transcodeSettings{}, err
+	}
+	options.Cache += ":" + current + ":" + recipe.token() + ":hls=15"
+	if err := playback.ValidateHLSSourceVersion(current, options.Cache); err != nil {
 		return transcodeSettings{}, err
 	}
 	return options, nil

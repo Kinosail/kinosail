@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/binary"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -180,12 +181,15 @@ func remainingAACAssertCurrentCache(t *testing.T, asset string) {
 	writeHLSLoadingFile(t, filepath.Join(directory, asset), string(payload))
 	path := filepath.Join(directory, asset)
 	before := remainingAACAssetInfo(t, path)
-	response := httptest.NewRecorder()
+	response := &hlsFileReaderRecorder{ResponseRecorder: httptest.NewRecorder()}
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/"+item.ID+"/p/fixture/"+asset, nil)
 	manager.serveRecipe(response, request, item, recipe, asset)
 	after, err := os.Stat(path)
 	if response.Code != http.StatusOK || !bytes.Equal(response.Body.Bytes(), payload) || err != nil {
 		t.Fatalf("current policy asset %s rejected: status=%d error=%v", asset, response.Code, err)
+	}
+	if strings.HasSuffix(asset, ".m4s") && !response.fromFile {
+		t.Fatalf("segment %s did not reach the connection as a file", asset)
 	}
 	manager.mu.Lock()
 	jobs := len(manager.jobs)
@@ -193,6 +197,20 @@ func remainingAACAssertCurrentCache(t *testing.T, asset string) {
 	if !os.SameFile(before, after) || before.Size() != after.Size() || !before.ModTime().Equal(after.ModTime()) || jobs != 0 {
 		t.Fatal("cached delivery replaced the asset or scheduled encoding")
 	}
+}
+
+type hlsFileReaderRecorder struct {
+	*httptest.ResponseRecorder
+	fromFile bool
+}
+
+func (recorder *hlsFileReaderRecorder) ReadFrom(source io.Reader) (int64, error) {
+	inner := source
+	if limited, ok := source.(*io.LimitedReader); ok {
+		inner = limited.R
+	}
+	_, recorder.fromFile = inner.(*os.File)
+	return io.Copy(recorder.ResponseRecorder, source)
 }
 
 func remainingAACAssetInfo(t *testing.T, path string) os.FileInfo {

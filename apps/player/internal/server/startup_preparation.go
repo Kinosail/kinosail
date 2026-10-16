@@ -19,6 +19,8 @@ type startupEncodingKey struct{}
 
 type startupEncoding struct {
 	adopted       atomic.Bool
+	adoptedMu     sync.Mutex
+	adoptedSignal chan struct{}
 	timeline      *copiedHLSTimeline
 	completeVideo bool
 	stopping      bool
@@ -221,13 +223,13 @@ func (startup *startupPreparation) playback(key string) {
 	startup.queue = nil
 	job := startup.hls.jobs[key]
 	if startup.current != nil && startup.current.key == key && !startup.current.encoding.stopping && !startupJobStopping(job) {
-		startup.current.encoding.adopted.Store(true)
+		startup.current.encoding.adopt()
 	}
 	if startup.current != nil && startup.current.key != key {
 		startup.cancel()
 	}
 	if job != nil && job.preparation != nil && !startupJobStopping(job) {
-		job.preparation.adopted.Store(true)
+		job.preparation.adopt()
 		startup.hls.clearStartupCompletion(key)
 	}
 	startup.hls.startupMarker(key, false)
