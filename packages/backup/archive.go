@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -46,7 +47,7 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 			return fmt.Errorf("read %q: database document is not configured for backup", name)
 		}
 	}
-	names := service.state.archived(includeSecrets)
+	names := service.state.written(includeSecrets)
 	contents := make(map[string][]byte, len(names))
 	written := make([]string, 0, len(names))
 	for _, name := range names {
@@ -176,6 +177,10 @@ func (service *Service) Restore(reader io.Reader, dataDir string) error {
 	staged, err := service.read(reader, false)
 	if err != nil {
 		return err
+	}
+	if _, found := staged[auditJournal]; found {
+		delete(staged, auditJournal)
+		slog.Warn("activity journal not restored from unencrypted backup", "operation", "backup.restore", "outcome", "activity_journal_not_restored", "reason", "journal_key_not_in_archive")
 	}
 	return service.save(staged, dataDir, service.state.archived(false))
 }

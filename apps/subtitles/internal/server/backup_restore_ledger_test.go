@@ -23,6 +23,15 @@ type subtitleInventory struct {
 
 func TestBackupAndRestoreKeepSubtitleLedgerAndFrozenChoices(t *testing.T) {
 	t.Parallel()
+	for name, key := range map[string]string{"encrypted": "correct horse battery staple", "unencrypted": ""} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			backupAndRestoreLedger(t, key)
+		})
+	}
+}
+
+func backupAndRestoreLedger(t *testing.T, key string) {
 	media, source, restored := t.TempDir(), t.TempDir(), t.TempDir()
 	target := filepath.Join(media, "Arrival.en.srt")
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")
@@ -37,7 +46,6 @@ func TestBackupAndRestoreKeepSubtitleLedgerAndFrozenChoices(t *testing.T) {
 		t.Fatalf("keep subtitle = %d %q", response.Code, response.Body.String())
 	}
 	frozenSubtitleInventory(t, handler, true)
-	const key = "correct horse battery staple"
 	var archive bytes.Buffer
 	if handled, err := appbackup.Command([]string{"backup"}, nil, &archive, source, key); !handled || err != nil {
 		t.Fatalf("backup = %t, %v", handled, err)

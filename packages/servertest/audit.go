@@ -3,13 +3,13 @@ package servertest
 import (
 	"archive/tar"
 	"compress/gzip"
-	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -76,7 +76,7 @@ func (fixture AuditFixture) OwnerActivityRecordsSettingsDenialsAndPlaybackWithou
 	fixture.assertExport(t, handler, owner)
 }
 
-func (fixture AuditFixture) ActivityJournalSurvivesRestartAndRecoveryBackup(t *testing.T) {
+func (fixture AuditFixture) ActivityJournalSurvivesRestartAndStaysOutOfPortableBackup(t *testing.T) {
 	t.Helper()
 	dataDir := t.TempDir()
 	handler := fixture.New("", dataDir)
@@ -90,10 +90,10 @@ func (fixture AuditFixture) ActivityJournalSurvivesRestartAndRecoveryBackup(t *t
 	backup := fixture.CookieRequest(t, handler, http.MethodGet, "/settings/backup", "", owner)
 	gzipReader, err := gzip.NewReader(strings.NewReader(backup.Body.String()))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("portable backup = %d: %v", backup.Code, err)
 	}
 	archive := tar.NewReader(gzipReader)
-	found := false
+	var names []string
 	for {
 		header, nextErr := archive.Next()
 		if nextErr == io.EOF {
@@ -102,17 +102,10 @@ func (fixture AuditFixture) ActivityJournalSurvivesRestartAndRecoveryBackup(t *t
 		if nextErr != nil {
 			t.Fatal(nextErr)
 		}
-		if header.Name == "audit.jsonl" {
-			var event map[string]any
-			if err := json.NewDecoder(archive).Decode(&event); err != nil || event["action"] == "" {
-				t.Fatalf("backup activity event = %v, %v", event, err)
-			}
-			found = true
-			break
-		}
+		names = append(names, header.Name)
 	}
-	if !found {
-		t.Fatal("recovery backup omitted audit.jsonl")
+	if !slices.Contains(names, "settings.json") || slices.Contains(names, "audit.jsonl") || slices.Contains(names, "audit_key.json") {
+		t.Fatalf("portable backup members = %v; want settings without the signed activity journal", names)
 	}
 }
 

@@ -20,6 +20,12 @@ import (
 )
 
 func TestBackupAndRestoreKeepMediaSharesAndAgentConnections(t *testing.T) {
+	for name, key := range map[string]string{"encrypted": "correct horse battery staple", "unencrypted": ""} {
+		t.Run(name, func(t *testing.T) { backupAndRestoreState(t, key) })
+	}
+}
+
+func backupAndRestoreState(t *testing.T, key string) {
 	media, source, restored := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Arrival.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
@@ -41,7 +47,6 @@ func TestBackupAndRestoreKeepMediaSharesAndAgentConnections(t *testing.T) {
 	}
 	connectAgent(t, handler, session.Token)
 	assertAPIBody(t, apiCall(t, handler, session.Token, http.MethodGet, "/api/v1/agent-connections", nil), http.StatusOK, `"clientName":"Backup agent"`)
-	const key = "correct horse battery staple"
 	var archive bytes.Buffer
 	if handled, err := appbackup.Command([]string{"backup"}, nil, &archive, source, key); !handled || err != nil {
 		t.Fatalf("backup = %t, %v", handled, err)
@@ -52,6 +57,10 @@ func TestBackupAndRestoreKeepMediaSharesAndAgentConnections(t *testing.T) {
 	restarted := server.New(server.Config{MediaDir: media, DataDir: restored, RequireAuth: true})
 	assertAPIBody(t, apiCall(t, restarted, session.Token, http.MethodGet, "/api/v1/media-shares", nil), http.StatusOK, `"id":"`+share.ID+`"`)
 	assertAPIBody(t, apiCall(t, restarted, session.Token, http.MethodGet, "/api/v1/agent-connections", nil), http.StatusOK, `"clientName":"Backup agent"`)
+	activity := apiCall(t, restarted, session.Token, http.MethodGet, "/api/v1/activity", nil)
+	if restoredJournal := strings.Contains(activity.Body.String(), `"media-share.created"`); activity.Code != http.StatusOK || restoredJournal != (key != "") {
+		t.Fatalf("restored activity with key %t = %d %q", key != "", activity.Code, activity.Body.String())
+	}
 }
 
 func connectAgent(t *testing.T, handler http.Handler, token string) {

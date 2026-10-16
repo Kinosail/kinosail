@@ -6,10 +6,13 @@ import (
 	"strings"
 )
 
-const maxStateDocuments = 256
+const (
+	maxStateDocuments = 256
+	auditJournal      = "audit.jsonl"
+)
 
 var (
-	stateFiles  = []string{"audit.jsonl", "configuration.json", "server-identity.json"}
+	stateFiles  = []string{auditJournal, "configuration.json", "server-identity.json"}
 	secretFiles = []string{"audit_key.json", "secrets.json", "viewing_imports.json"}
 )
 
@@ -58,6 +61,13 @@ func (names stateNames) archived(includeSecrets bool) []string {
 	return names.plain
 }
 
+func (names stateNames) written(includeSecrets bool) []string {
+	if includeSecrets {
+		return names.recovery
+	}
+	return slices.DeleteFunc(slices.Clone(names.plain), func(name string) bool { return name == auditJournal })
+}
+
 func (names stateNames) document(name string) bool {
 	_, found := slices.BinarySearch(names.documents, name)
 	return found
@@ -70,7 +80,7 @@ func (names stateNames) entry(name string) bool {
 
 func (names stateNames) maxSize(name string) int {
 	switch {
-	case name == "audit.jsonl":
+	case name == auditJournal:
 		return maxAuditFileSize
 	case names.entry(name):
 		return maxEntryDocumentSize

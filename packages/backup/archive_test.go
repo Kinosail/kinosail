@@ -15,7 +15,6 @@ func TestArchiveRoundTrip(t *testing.T) {
 
 	source, restored := t.TempDir(), t.TempDir()
 	want := map[string]string{
-		"audit.jsonl":          "{\"time\":\"2026-08-23T00:00:00Z\",\"action\":\"owner.created\"}\n",
 		"configuration.json":   `{"backup.retention":"12"}`,
 		"lists.json":           `{"owner:item":true}`,
 		"playlists.json":       `{"owner:Favorites":{"item":true}}`,
@@ -29,6 +28,9 @@ func TestArchiveRoundTrip(t *testing.T) {
 		if err := os.WriteFile(filepath.Join(source, name), []byte(content), 0o600); err != nil {
 			t.Fatal(err)
 		}
+	}
+	if err := os.WriteFile(filepath.Join(source, "audit.jsonl"), []byte("{\"action\":\"owner.created\"}\n"), 0o600); err != nil {
+		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(source, "not-backed-up.txt"), []byte("private"), 0o600); err != nil {
 		t.Fatal(err)
@@ -51,6 +53,9 @@ func TestArchiveRoundTrip(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(restored, "not-backed-up.txt")); !os.IsNotExist(err) {
 		t.Fatalf("unexpected file restored: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(restored, "audit.jsonl")); !os.IsNotExist(err) {
+		t.Fatalf("activity journal was included in a plain backup without its key: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(restored, "viewing_imports.json")); !os.IsNotExist(err) {
 		t.Fatalf("viewing sync secret was included in a plain backup: %v", err)

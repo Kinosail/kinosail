@@ -21,9 +21,9 @@ Scheduled defaults are daily backups with seven retained files. Verify your effe
 
 ## What the archive contains
 
-Application backups contain portable stored state such as UI-managed settings, credential hashes, sessions, and retained activity. Encrypted recovery archives can include private stored secrets. They do not contain the external media tree, reproducible cache, deployment YAML, `.env`, or independently mounted secret files. An archive includes every document in the app state database, including Media Shares, agent connections, and update state.
+Application backups contain portable stored state such as UI-managed settings, credential hashes, and sessions. Encrypted recovery archives also include private stored secrets and the retained activity journal with its signing key. They do not contain the external media tree, reproducible cache, deployment YAML, `.env`, or independently mounted secret files. An archive includes every document in the app state database, including Media Shares, agent connections, and update state.
 
-The CLI `backup` command uses encryption when a key is configured. Without one, it can produce an unencrypted portable archive that omits private secret state; that is not a complete encrypted recovery backup. Treat every archive as sensitive.
+The CLI `backup` command uses encryption when a key is configured. Without one, it can produce an unencrypted portable archive that omits private secret state; that is not a complete encrypted recovery backup. An unencrypted archive does not contain the activity journal, because the journal's signing key is secret. Restoring an unencrypted archive starts a new activity journal. Treat every archive as sensitive.
 
 ## Create and verify an archive
 
