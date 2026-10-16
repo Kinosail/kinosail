@@ -44,7 +44,7 @@ func TestSubtitlePreparationRevisitsOnlyChangedTitles(t *testing.T) {
 		probe.core.ConfigureCache(probe.cacheDir)
 		return &subtitlePreparation{
 			probe: probe, language: func() string { return "en" }, prepared: make(map[string]string),
-			acquire: func(context.Context) (func(), error) { acquired.Add(1); return func() {}, nil },
+			acquire:  func(context.Context) (func(), error) { acquired.Add(1); return func() {}, nil },
 			waitIdle: func(context.Context) error { return nil }, busy: func() bool { return false }, started: func() <-chan struct{} { return nil },
 		}
 	}
