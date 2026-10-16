@@ -7,8 +7,10 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/localization"
@@ -40,11 +42,14 @@ var localeCatalogs embed.FS
 type catalogMessage = localization.Message
 
 var (
-	localizationBundle, sourceMessages = loadLocalization()
-	localeCatalog                      = localization.NewCatalog(localizationBundle, supportedLanguages, sourceMessages)
-	localeTemplateRuntime              = localization.TemplateRuntime{
+	localeCatalog         = localization.NewCatalog(supportedLanguages, loadLocalization)
+	localeTemplateRuntime = localization.TemplateRuntime{
 		PreferredLanguage: preferredLanguage, LanguagePreference: languagePreference, MatchLanguage: matchSupportedLanguage,
-		SetLanguageHeaders: setLanguageHeaders, CSRFForRequest: httpguard.CSRFForRequest, CSRFTemplateFuncs: httpguard.CSRFTemplateFuncs,
+		SetLanguageHeaders: setLanguageHeaders, CSRFForRequest: httpguard.CSRFForRequest, RequestHTML: httpguard.CSRFRequestHTML(),
+	}
+	localizedTemplates struct {
+		sync.Mutex
+		views []*localization.TemplateSet
 	}
 )
 
@@ -75,10 +80,29 @@ func loadLocalization() (*i18n.Bundle, []catalogMessage) {
 type localizedTemplate = *localization.TemplateSet
 
 func newLocalizedTemplate(name, source string) *localization.TemplateSet {
-	source = strings.Replace(source, `<html lang="en">`, `<html lang="en" data-theme="dark">`, 1)
+	return newLazyLocalizedTemplate(name, func() string { return source })
+}
+
+func newLazyLocalizedTemplate(name string, source func() string) *localization.TemplateSet {
 	funcs := httpguard.CSRFParseFuncs(uiIcon)
 	funcs["sidebarGroups"] = sidebarGroups
-	return localization.NewTemplateSet(name, source, assetVersions["main.kinosail.bundle.js"], localeCatalog, supportedLanguages, versionedTemplateSource, funcs, localeTemplateRuntime)
+	themed := func() string {
+		return strings.Replace(source(), `<html lang="en">`, `<html lang="en" data-theme="dark">`, 1)
+	}
+	return registerLocalizedTemplate(localization.NewTemplateSet(name, themed, assetVersions["main.kinosail.bundle.js"], localeCatalog, versionedTemplateSource, funcs, localeTemplateRuntime))
+}
+
+func registerLocalizedTemplate(view *localization.TemplateSet) *localization.TemplateSet {
+	localizedTemplates.Lock()
+	defer localizedTemplates.Unlock()
+	localizedTemplates.views = append(localizedTemplates.views, view)
+	return view
+}
+
+func registeredLocalizedTemplates() []*localization.TemplateSet {
+	localizedTemplates.Lock()
+	defer localizedTemplates.Unlock()
+	return slices.Clone(localizedTemplates.views)
 }
 
 func localized(next http.Handler) http.Handler {
