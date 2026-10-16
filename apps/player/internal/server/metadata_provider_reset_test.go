@@ -18,8 +18,8 @@ import (
 
 func TestChangingTMDBTokenRetriesTitlesThatMissedWithThePreviousToken(t *testing.T) {
 	const (
-		expired = "expired-tmdb-read-access-token-1234567890" //nolint:gosec // Deterministic fake token for a local HTTP fixture.
-		renewed = "renewed-tmdb-read-access-token-1234567890" //nolint:gosec // Deterministic fake token for a local HTTP fixture.
+		expired = "expired-tmdb-read-access-token-1234567890"
+		renewed = "renewed-tmdb-read-access-token-1234567890"
 	)
 	var expiredSecondSearches atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
