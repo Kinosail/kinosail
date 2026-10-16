@@ -25,7 +25,8 @@ func (store *profileStore) saveRelated(profiles []viewerProfile, sessions map[st
 }
 
 func (store *profileStore) profilePersistence() identitycore.ProfilePersistence {
-	return identitycore.NewProfilePersistence(store.database, store.database != nil, store.persist, store.file, store.sessionFile, store.apiFile)
+	batch := identitycore.NotifyingBatchStore{Store: store.database, Signal: &store.changes}
+	return identitycore.NewProfilePersistence(batch, store.database != nil, store.persist, store.file, store.sessionFile, store.apiFile)
 }
 
 func (store *profileStore) profileModule() identitycore.ProfileStore {

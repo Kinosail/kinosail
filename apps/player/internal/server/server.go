@@ -161,6 +161,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
+	startAccessFlush(config.Lifecycle, managedLifecycle, auth.profiles, shutdown.beforeClose)
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
 		auth.passkeys.redirectPages = false
 	}

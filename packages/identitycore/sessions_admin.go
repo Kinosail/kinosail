@@ -1,6 +1,7 @@
 package identitycore
 
 import (
+	"maps"
 	"sort"
 	"strings"
 	"time"
@@ -33,41 +34,83 @@ func (sessions *Sessions) Devices() []Device {
 }
 
 func (sessions *Sessions) RevokeDevice(id string) error {
-	return sessions.change(func(values map[string]Session) error {
+	return sessions.remove(func(values map[string]Session) ([]string, error) {
 		if _, found := values[id]; !found {
-			return ErrDeviceNotFound
+			return nil, ErrDeviceNotFound
 		}
-		delete(values, id)
-		return nil
+		return []string{id}, nil
 	})
 }
 
 func (sessions *Sessions) RevokeAll() error {
-	return sessions.change(func(values map[string]Session) error {
-		clear(values)
-		return nil
-	})
+	return sessions.replace(func(map[string]Session) (map[string]Session, error) { return map[string]Session{}, nil })
 }
 
-func (sessions *Sessions) change(change func(map[string]Session) error) error {
-	if !sessions.valid() || change == nil {
+func (sessions *Sessions) put(key string, session Session) error {
+	values := sessions.values()
+	previous, existed := values[key]
+	values[key] = session
+	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
+		if existed {
+			values[key] = previous
+		} else {
+			delete(values, key)
+		}
+		return err
+	}
+	return nil
+}
+
+func (sessions *Sessions) remove(selectKeys func(map[string]Session) ([]string, error)) error {
+	if !sessions.valid() {
 		return ErrCurrentSession
 	}
 	sessions.config.Mutex.Lock()
 	defer sessions.config.Mutex.Unlock()
-	values := CloneSessions(*sessions.config.Values)
-	if err := change(values); err != nil {
+	values := sessions.values()
+	keys, err := selectKeys(values)
+	if err != nil {
 		return err
 	}
-	return sessions.commit(values)
+	removed := make(map[string]Session, len(keys))
+	for _, key := range keys {
+		if session, found := values[key]; found {
+			removed[key] = session
+			delete(values, key)
+		}
+	}
+	if len(removed) == 0 {
+		return nil
+	}
+	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
+		maps.Copy(values, removed)
+		return err
+	}
+	return nil
 }
 
-func (sessions *Sessions) commit(values map[string]Session) error {
+func (sessions *Sessions) replace(next func(map[string]Session) (map[string]Session, error)) error {
+	if !sessions.valid() {
+		return ErrCurrentSession
+	}
+	sessions.config.Mutex.Lock()
+	defer sessions.config.Mutex.Unlock()
+	values, err := next(sessions.values())
+	if err != nil {
+		return err
+	}
 	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
 		return err
 	}
 	*sessions.config.Values = values
 	return nil
+}
+
+func (sessions *Sessions) values() map[string]Session {
+	if *sessions.config.Values == nil {
+		*sessions.config.Values = make(map[string]Session)
+	}
+	return *sessions.config.Values
 }
 
 func (sessions *Sessions) valid() bool {

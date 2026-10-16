@@ -62,6 +62,7 @@ func (store *settingsStore) commitSessionTimeouts(next installationSettings) err
 		}
 	}
 	if profiles.database != nil {
+		defer profiles.changes.Notify()
 		if err := profiles.database.SaveJSONBatch(map[string]any{"settings.json": next, "sessions.json": sessions}); err != nil {
 			return err
 		}

@@ -51,7 +51,7 @@ func TestManagementSessionReplayCannotTouchAppSessionState(t *testing.T) {
 		if bound {
 			request = identitycore.WithManagementDevice(request, "owner", base64.StdEncoding.EncodeToString([]byte(strings.Repeat("q", 32))))
 		}
-		if _, ok := store.profile(request); ok {
+		if _, ok := store.access(request); ok {
 			t.Fatal("replayed Owner session authenticated")
 		}
 	}

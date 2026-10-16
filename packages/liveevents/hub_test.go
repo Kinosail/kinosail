@@ -1,6 +1,7 @@
 package liveevents
 
 import (
+	"strconv"
 	"testing"
 	"time"
 )
@@ -33,9 +34,11 @@ func TestHubBoundsHistory(t *testing.T) {
 	for id := 0; id <= historyLimit; id++ {
 		hub.Publish("", "library.updated", "/api/v1/library")
 	}
-	if len(hub.history) != historyLimit || hub.history[0].ID != 2 {
-		t.Fatalf("bounded history = %d items starting at %d", len(hub.history), hub.history[0].ID)
+	backlog, subscription, ok := hub.subscribe("viewer", 0)
+	if !ok || len(backlog) != historyLimit || backlog[0].ID != 2 || backlog[historyLimit-1].ID != historyLimit+1 {
+		t.Fatalf("bounded history = %d items, accepted=%t", len(backlog), ok)
 	}
+	subscription.close()
 }
 
 func TestHubTracksReconnectsAndSlowStreams(t *testing.T) {
@@ -65,14 +68,41 @@ func TestHubTracksReconnectsAndSlowStreams(t *testing.T) {
 func TestHubRejectsExcessStreams(t *testing.T) {
 	full := New()
 	for id := 0; id < subscriberLimit; id++ {
-		if _, _, accepted := full.subscribe("viewer", 0); !accepted {
+		if _, _, accepted := full.subscribe("viewer-"+strconv.Itoa(id%(subscriberLimit/profileSubscriberLimit)), 0); !accepted {
 			t.Fatalf("subscription %d was rejected", id)
 		}
 	}
-	if backlog, subscription, accepted := full.subscribe("viewer", 0); accepted || backlog != nil || subscription != nil {
+	if backlog, subscription, accepted := full.subscribe("another-viewer", 0); accepted || backlog != nil || subscription != nil {
 		t.Fatalf("excess subscription = %+v, %+v, %t", backlog, subscription, accepted)
 	}
 	if metrics := full.Metrics(); metrics.Rejected != 1 || metrics.Subscribers != subscriberLimit {
 		t.Fatalf("capacity metrics = %+v", metrics)
+	}
+}
+
+func TestHubLimitsStreamsPerProfile(t *testing.T) {
+	hub := New()
+	streams := make([]*subscription, 0, profileSubscriberLimit)
+	for range profileSubscriberLimit {
+		_, stream, accepted := hub.subscribe("viewer", 0)
+		if !accepted {
+			t.Fatalf("stream %d was rejected", len(streams))
+		}
+		streams = append(streams, stream)
+	}
+	if _, _, accepted := hub.subscribe("viewer", 0); accepted {
+		t.Fatal("one profile exceeded its stream limit")
+	}
+	if _, other, accepted := hub.subscribe("other", 0); !accepted {
+		t.Fatal("another profile was rejected")
+	} else {
+		other.close()
+	}
+	streams[0].close()
+	if _, _, accepted := hub.subscribe("viewer", 0); !accepted {
+		t.Fatal("closed stream did not release its profile slot")
+	}
+	if metrics := hub.Metrics(); metrics.Rejected != 1 {
+		t.Fatalf("profile limit metrics = %+v", metrics)
 	}
 }

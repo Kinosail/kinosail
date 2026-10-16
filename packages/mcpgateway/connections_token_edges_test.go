@@ -149,14 +149,36 @@ func TestVerifyAndRevokePersistenceFailuresPreserveGrant(t *testing.T) {
 	}
 	connections.grants[grant.ID] = grant
 	connections.store = &saveErrorStore{err: errTestSave}
-	if _, err := connections.VerifyToken(t.Context(), access, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", nil)); err == nil || !reflect.DeepEqual(connections.grants[grant.ID], grant) {
-		t.Fatalf("failed token verification = %v grant=%#v", err, connections.grants[grant.ID])
+	if info, err := connections.VerifyToken(t.Context(), access, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", nil)); err != nil || info.UserID != profile.ID || connections.grants[grant.ID].LastUsed != now.Unix() {
+		t.Fatalf("unpersisted use rejected a valid token = %#v %v grant=%#v", info, err, connections.grants[grant.ID])
 	}
+	grant = connections.grants[grant.ID]
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/oauth/revoke", strings.NewReader(url.Values{"token": {access}, "client_id": {"agent"}}.Encode()))
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	response := httptest.NewRecorder()
 	connections.revokeToken(response, request)
 	if response.Code != http.StatusServiceUnavailable || !reflect.DeepEqual(connections.grants[grant.ID], grant) {
 		t.Fatalf("failed token revoke = %d grant=%#v", response.Code, connections.grants[grant.ID])
+	}
+}
+
+func TestVerifyTokenPersistsUseAtMostOncePerMinute(t *testing.T) {
+	now := time.Unix(1_800_000_000, 0)
+	profile := Principal{ID: "viewer", Name: "Viewer"}
+	store := &memoryState{}
+	connections := testConnections("https://kino.test", &testPrincipals{values: map[string]Principal{profile.ID: profile}}, store)
+	connections.now = func() time.Time { return now }
+	connections.grants["grant"] = mcpOAuthGrant{ID: "grant", ClientID: "agent", ProfileID: profile.ID, AccessHash: secretHash("access-token"), AccessExpires: now.Add(time.Hour).Unix(), RefreshHash: secretHash("refresh"), RefreshExpires: now.Add(time.Hour).Unix()}
+	for _, step := range []struct {
+		advance time.Duration
+		saves   int
+	}{{0, 1}, {0, 1}, {30 * time.Second, 1}, {31 * time.Second, 2}} {
+		now = now.Add(step.advance)
+		if _, err := connections.VerifyToken(t.Context(), "access-token", httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/mcp", nil)); err != nil || store.saves != step.saves {
+			t.Fatalf("verify at %s = %v saves=%d want %d", now, err, store.saves, step.saves)
+		}
+	}
+	if connections.grants["grant"].LastUsed != now.Unix() {
+		t.Fatalf("last use = %d", connections.grants["grant"].LastUsed)
 	}
 }

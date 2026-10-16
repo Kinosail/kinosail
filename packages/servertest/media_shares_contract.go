@@ -37,15 +37,16 @@ func mediaShareCapabilityBoundaries(t *testing.T, newStore MediaShareFactory) {
 	if listed, listErr := store.List(); listErr != nil || len(listed) != 1 || listed[0].ID != share.ID {
 		t.Fatalf("active shares = %#v, %v", listed, listErr)
 	}
-	request := assertMediaShareClaim(t, store, claim, media)
-	store.Release(request)
-	if _, ok := store.Item(request, "item"); !ok {
+	request, release := assertMediaShareClaim(t, store, claim, media)
+	release()
+	_, release, ok := store.Item(request, "item")
+	if !ok {
 		t.Fatal("first active stream was rejected")
 	}
-	if _, ok := store.Item(request, "item"); ok {
+	if _, _, ok := store.Item(request, "item"); ok {
 		t.Fatal("active stream limit was bypassed")
 	}
-	store.Release(request)
+	release()
 	assertMediaShareRanges(t, store)
 	if err := store.Revoke("short"); err == nil {
 		t.Fatal("invalid share ID was revoked")
@@ -66,7 +67,7 @@ func mediaSharesFailClosedOnCorruptPersistedGrantState(t *testing.T, newStore Me
 	}
 }
 
-func assertMediaShareClaim(t *testing.T, store *mediashares.Store, claim, media string) *http.Request {
+func assertMediaShareClaim(t *testing.T, store *mediashares.Store, claim, media string) (*http.Request, func()) {
 	t.Helper()
 	withoutCookie := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/share/items", nil)
 	if _, ok := store.Items(withoutCookie); ok {
@@ -84,11 +85,11 @@ func assertMediaShareClaim(t *testing.T, store *mediashares.Store, claim, media 
 	if items, ok := store.Items(request); !ok || len(items) != 1 || items[0].ID != "item" {
 		t.Fatalf("shared items = %#v, %v", items, ok)
 	}
-	path, ok := store.Item(request, "item")
+	path, release, ok := store.Item(request, "item")
 	if !ok || path != media {
 		t.Fatalf("shared item = %q, %v", path, ok)
 	}
-	return request
+	return request, release
 }
 
 func assertMediaShareRanges(t *testing.T, store *mediashares.Store) {

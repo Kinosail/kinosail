@@ -70,7 +70,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	beforeDatabaseClose := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
@@ -92,6 +92,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 		index.Watch(config.Lifecycle)
 	}
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
+	startAccessFlush(config.Lifecycle, managedLifecycle, auth.profiles, beforeDatabaseClose)
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
 		auth.passkeys.redirectPages = false
 	}

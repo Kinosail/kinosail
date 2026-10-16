@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -61,6 +62,14 @@ func loadCommonPasswords(source string) map[string]struct{} {
 	return passwords
 }
 
+var derivations = make(chan struct{}, max(1, runtime.GOMAXPROCS(0)))
+
+func deriveKey(password string, salt []byte) []byte {
+	derivations <- struct{}{}
+	defer func() { <-derivations }()
+	return argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+}
+
 var dummyHash = sync.OnceValue(func() string {
 	value, _ := hash("constant-time-dummy-password")
 	return value
@@ -95,7 +104,7 @@ func hashWithReader(password string, random io.Reader) (string, error) {
 	if _, err := io.ReadFull(random, salt); err != nil {
 		return "", err
 	}
-	digest := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+	digest := deriveKey(password, salt)
 	return fmt.Sprintf("$argon2id$v=%d$%s$%s$%s", argon2.Version, parameterString, base64.RawStdEncoding.EncodeToString(salt), base64.RawStdEncoding.EncodeToString(digest)), nil
 }
 
@@ -115,7 +124,7 @@ func Verify(encoded, password string) bool {
 	if saltErr != nil || hashErr != nil || len(want) != keyLength {
 		return false
 	}
-	got := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+	got := deriveKey(password, salt)
 	return subtle.ConstantTimeCompare(got, want) == 1
 }
 
@@ -134,6 +143,6 @@ func verifyArgon2id(encoded, password string) bool {
 	if saltErr != nil || hashErr != nil || len(salt) != 16 || len(want) != keyLength {
 		return false
 	}
-	got := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+	got := deriveKey(password, salt)
 	return subtle.ConstantTimeCompare(got, want) == 1
 }

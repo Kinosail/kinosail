@@ -44,15 +44,22 @@ func (store ProfileStore) HasProfiles() bool {
 }
 
 func (store ProfileStore) Authenticate(name, password string) (Profile, bool) {
+	profile, found := store.loginProfile(strings.TrimSpace(name))
+	if !found {
+		credentials.DummyVerify(password)
+		return Profile{}, false
+	}
+	return profile, credentials.Verify(profile.Credential, password)
+}
+
+func (store ProfileStore) loginProfile(name string) (Profile, bool) {
 	store.config.Mutex.RLock()
 	defer store.config.Mutex.RUnlock()
-	name = strings.TrimSpace(name)
 	for _, profile := range *store.config.Profiles {
 		if strings.EqualFold(profile.Name, name) && !profile.Disabled && !profile.SCIMDeleted {
-			return profile, credentials.Verify(profile.Credential, password)
+			return CloneProfiles([]Profile{profile})[0], true
 		}
 	}
-	credentials.DummyVerify(password)
 	return Profile{}, false
 }
 
