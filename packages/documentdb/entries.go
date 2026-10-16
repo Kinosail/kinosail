@@ -3,9 +3,14 @@ package documentdb
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"unicode/utf8"
+)
+
+const (
+	EntrySizeLimit         = 1 << 20
+	EntryDocumentSizeLimit = 256 << 20
+	EntryCountLimit        = 1_000_000
 )
 
 const entrySchema = `
@@ -20,7 +25,34 @@ CREATE TABLE state_entries (
 ) STRICT, WITHOUT ROWID;
 PRAGMA user_version=2;`
 
-const logicalValue = `CASE WHEN entry_mode = 1 THEN CASE WHEN (SELECT coalesce(sum(length(value)+length(CAST(json_quote(key) AS BLOB))+2),0) FROM state_entries WHERE state_entries.name=state.name) < 16777216 THEN CAST((SELECT coalesce(json_group_object(key,json(CAST(value AS TEXT))),'{}') FROM state_entries WHERE state_entries.name = state.name) AS BLOB) ELSE NULL END ELSE value END`
+const recordSchema = `
+CREATE TABLE state_next (
+    name TEXT PRIMARY KEY NOT NULL,
+    value BLOB NOT NULL CHECK(length(value) <= 16777216),
+    entry_mode INTEGER NOT NULL DEFAULT 0 CHECK(entry_mode IN (0,1)),
+    entry_bytes INTEGER NOT NULL DEFAULT 1 CHECK(entry_bytes BETWEEN 1 AND 268435456),
+    entry_count INTEGER NOT NULL DEFAULT 0 CHECK(entry_count BETWEEN 0 AND 1000000)
+) STRICT;
+INSERT INTO state_next(name,value,entry_mode,entry_bytes,entry_count) SELECT name,value,entry_mode,entry_bytes,entry_count FROM state;
+DROP TABLE state;
+ALTER TABLE state_next RENAME TO state;
+CREATE TRIGGER state_entries_inserted AFTER INSERT ON state_entries BEGIN
+    UPDATE state SET entry_bytes = entry_bytes + NEW.cost, entry_count = entry_count + 1 WHERE name = NEW.name;
+END;
+CREATE TRIGGER state_entries_updated AFTER UPDATE ON state_entries BEGIN
+    UPDATE state SET entry_bytes = entry_bytes - OLD.cost + NEW.cost WHERE name = NEW.name;
+END;
+CREATE TRIGGER state_entries_deleted AFTER DELETE ON state_entries BEGIN
+    UPDATE state SET entry_bytes = entry_bytes - OLD.cost, entry_count = entry_count - 1 WHERE name = OLD.name;
+END;
+PRAGMA user_version=3;`
+
+const (
+	upsertEntrySQL = `INSERT INTO state_entries(name,key,value,cost) VALUES(?,?,?,?) ON CONFLICT(name,key) DO UPDATE SET value=excluded.value,cost=excluded.cost`
+	deleteEntrySQL = `DELETE FROM state_entries WHERE name = ? AND key = ?`
+)
+
+var errEntriesDisabled = errors.New("record storage is not enabled")
 
 func (store *Store) EnableEntries(name string) error {
 	if store == nil {
@@ -30,50 +62,38 @@ func (store *Store) EnableEntries(name string) error {
 		return errors.New("unknown record document")
 	}
 	ctx := context.Background()
-	tx, err := store.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback() }()
-	data, mode, err := entryDocument(ctx, tx, name)
-	if err != nil {
-		return err
-	}
-	if mode == 1 {
-		return tx.Commit()
-	}
-	if !store.validDocument(name, data) {
-		return errors.New("invalid record document")
-	}
-	if err := replaceEntries(ctx, tx, name, data); err != nil {
-		return err
-	}
-	return tx.Commit()
+	return store.write(ctx, false, func(tx *sql.Tx) error {
+		data, mode, err := entryDocument(ctx, tx, name)
+		if err != nil || mode == 1 {
+			return err
+		}
+		if !store.validDocument(name, data) {
+			return errors.New("invalid record document")
+		}
+		return replaceEntries(ctx, tx, name, data)
+	})
 }
 
 func (store *Store) SaveEntry(name, key string, value any) error {
 	if store == nil {
 		return nil
 	}
-	data, err := store.entryValue(name, key, value)
-	if err != nil {
-		return err
+	return store.SaveEntries(name, map[string]any{key: value}, nil)
+}
+
+func (store *Store) SaveEntries(name string, set map[string]any, deleted []string) error {
+	if store == nil {
+		return nil
 	}
-	ctx := context.Background()
-	tx, err := store.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback() }()
-	if err := writeEntry(ctx, tx, name, key, data); err != nil {
-		return err
-	}
-	return tx.Commit()
+	return store.Commit(context.Background(), Batch{Entries: map[string]EntryChanges{name: {Set: set, Delete: deleted}}})
 }
 
 func entryCost(key string, data []byte) int {
-	encoded, _ := json.Marshal(key)
-	return len(encoded) + len(data) + 2
+	return jsonStringLength(key) + len(data) + 2
+}
+
+func validEntryKey(key string) bool {
+	return key != "" && len(key) <= 256 && utf8.ValidString(key)
 }
 
 func replaceEntries(ctx context.Context, tx *sql.Tx, name string, data []byte) error {
@@ -81,11 +101,13 @@ func replaceEntries(ctx context.Context, tx *sql.Tx, name string, data []byte) e
 	if err != nil {
 		return err
 	}
-	total, err := entriesBudget(entries)
-	if err != nil {
+	if err := entriesBudget(entries); err != nil {
 		return err
 	}
 	if _, err := tx.ExecContext(ctx, `DELETE FROM state_entries WHERE name = ?`, name); err != nil {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE state SET value=?, entry_mode=1, entry_bytes=1, entry_count=0 WHERE name=?`, []byte(`{}`), name); err != nil {
 		return err
 	}
 	statement, err := tx.PrepareContext(ctx, `INSERT INTO state_entries(name,key,value,cost) VALUES(?,?,?,?)`)
@@ -98,8 +120,7 @@ func replaceEntries(ctx context.Context, tx *sql.Tx, name string, data []byte) e
 			return err
 		}
 	}
-	_, err = tx.ExecContext(ctx, `UPDATE state SET value=?, entry_mode=1, entry_bytes=?, entry_count=? WHERE name=?`, []byte(`{}`), total, len(entries), name)
-	return err
+	return nil
 }
 
 func (store *Store) saveDocument(ctx context.Context, tx *sql.Tx, name string, data []byte) error {
@@ -115,10 +136,34 @@ func (store *Store) saveDocument(ctx context.Context, tx *sql.Tx, name string, d
 	return err
 }
 
-func (store *Store) validateEntries(ctx context.Context) error {
+func (store *Store) writeEntries(ctx context.Context, tx *sql.Tx, name string, changes encodedEntries) error {
+	var mode int
+	err := tx.QueryRowContext(ctx, `SELECT entry_mode FROM state WHERE name = ?`, name).Scan(&mode)
+	if errors.Is(err, sql.ErrNoRows) || err == nil && mode != 1 {
+		return errEntriesDisabled
+	}
+	if err != nil {
+		return err
+	}
+	remove := tx.StmtContext(ctx, store.deleteEntry)
+	for _, key := range changes.deleted {
+		if _, err := remove.ExecContext(ctx, name, key); err != nil {
+			return err
+		}
+	}
+	upsert := tx.StmtContext(ctx, store.upsertEntry)
+	for key, data := range changes.set {
+		if _, err := upsert.ExecContext(ctx, name, key, data, entryCost(key, data)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateEntries(ctx context.Context, query queryer) error {
 	var invalid bool
-	err := store.db.QueryRowContext(ctx, `SELECT EXISTS(
-        SELECT 1 FROM state_entries e LEFT JOIN state s ON s.name=e.name WHERE s.name IS NULL OR s.entry_mode<>1 OR e.cost < length(e.value)+length(CAST(json_quote(e.key) AS BLOB))+2 OR NOT json_valid(CAST(e.value AS TEXT))
+	err := query.QueryRowContext(ctx, `SELECT EXISTS(
+        SELECT 1 FROM state_entries e LEFT JOIN state s ON s.name=e.name WHERE s.name IS NULL OR s.entry_mode<>1 OR e.cost < length(e.value)+length(CAST(json_quote(e.key) AS BLOB))+2
         UNION ALL SELECT 1 FROM state s LEFT JOIN (SELECT name,count(*) AS n,sum(cost) AS bytes FROM state_entries GROUP BY name) e ON e.name=s.name
         WHERE s.entry_mode=1 AND (s.entry_count<>coalesce(e.n,0) OR s.entry_bytes<>1+coalesce(e.bytes,0))
     )`).Scan(&invalid)
@@ -127,46 +172,6 @@ func (store *Store) validateEntries(ctx context.Context) error {
 	}
 	if invalid {
 		return errors.New("invalid persisted record storage")
-	}
-	return nil
-}
-
-func (store *Store) entryValue(name, key string, value any) ([]byte, error) {
-	if key == "" || len(key) > 256 || !utf8.ValidString(key) {
-		return nil, errors.New("invalid record key")
-	}
-	data, err := json.Marshal(value)
-	if err != nil {
-		return nil, err
-	}
-	document, err := json.Marshal(map[string]json.RawMessage{key: data})
-	if err != nil || !store.validDocument(name, document) {
-		return nil, errors.New("invalid record value")
-	}
-
-	return data, nil
-}
-
-func writeEntry(ctx context.Context, tx *sql.Tx, name, key string, data []byte) error {
-	var mode int
-	if err := tx.QueryRowContext(ctx, `SELECT entry_mode FROM state WHERE name = ?`, name).Scan(&mode); err != nil {
-		return err
-	}
-	if mode != 1 {
-		return errors.New("record storage is not enabled")
-	}
-	oldCost, increment := 0, 0
-	err := tx.QueryRowContext(ctx, `SELECT cost FROM state_entries WHERE name = ? AND key = ?`, name, key).Scan(&oldCost)
-	if errors.Is(err, sql.ErrNoRows) {
-		increment = 1
-	} else if err != nil {
-		return err
-	}
-	if _, err := tx.ExecContext(ctx, `UPDATE state SET entry_bytes = entry_bytes + ?, entry_count = entry_count + ? WHERE name = ?`, entryCost(key, data)-oldCost, increment, name); err != nil {
-		return err
-	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO state_entries(name,key,value,cost) VALUES(?,?,?,?) ON CONFLICT(name,key) DO UPDATE SET value=excluded.value,cost=excluded.cost`, name, key, data, entryCost(key, data)); err != nil {
-		return err
 	}
 	return nil
 }

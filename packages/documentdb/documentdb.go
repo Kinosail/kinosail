@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 
@@ -15,15 +14,16 @@ import (
 
 const (
 	Filename          = "kinosail.db"
-	SchemaVersion     = 2
+	SchemaVersion     = 3
 	DocumentSizeLimit = 16 << 20
 )
 
 type Store struct {
-	db      *sql.DB
-	path    string
-	allowed map[string]struct{}
-	config  Config
+	db, reader               *sql.DB
+	upsertEntry, deleteEntry *sql.Stmt
+	path                     string
+	allowed, durable         map[string]struct{}
+	config                   Config
 }
 
 func Open(dataDir string, keepOpen bool, config Config) (*Store, error) {
@@ -57,22 +57,38 @@ func openContext(ctx context.Context, dataDir string, keepOpen bool, config Conf
 	if err != nil {
 		return nil, err
 	}
-	db, err := openDatabase(path, keepOpen, dependencies)
+	store, err := newStore(path, keepOpen, config, allowed, dependencies)
 	if err != nil {
 		return nil, err
 	}
-	store := &Store{db: db, path: path, allowed: allowed, config: config}
 	if err := store.prepare(ctx, legacy, databaseExists, dependencies); err != nil {
-		_ = db.Close()
+		_ = store.Close()
 		return nil, err
 	}
 	for name := range legacy {
 		if err := dependencies.remove(filepath.Join(dataDir, name)); err != nil && !errors.Is(err, os.ErrNotExist) {
-			_ = db.Close()
+			_ = store.Close()
 			return nil, fmt.Errorf("remove imported %s: %w", name, err)
 		}
 	}
 	return store, nil
+}
+
+func newStore(path string, keepOpen bool, config Config, allowed map[string]struct{}, dependencies dependencies) (*Store, error) {
+	db, err := openDatabase(path, keepOpen, dependencies)
+	if err != nil {
+		return nil, err
+	}
+	reader, err := openReader(path, keepOpen, dependencies)
+	if err != nil {
+		_ = db.Close()
+		return nil, err
+	}
+	durable := make(map[string]struct{}, len(config.DurableDocuments))
+	for _, name := range config.DurableDocuments {
+		durable[name] = struct{}{}
+	}
+	return &Store{db: db, reader: reader, path: path, allowed: allowed, durable: durable, config: config}, nil
 }
 
 func databaseFileExists(path string, dependencies dependencies) (bool, error) {
@@ -89,21 +105,6 @@ func databaseFileExists(path string, dependencies dependencies) (bool, error) {
 	return false, err
 }
 
-func openDatabase(path string, keepOpen bool, dependencies dependencies) (*sql.DB, error) {
-	dsn := (&url.URL{Scheme: "file", Path: path, RawQuery: "_txlock=immediate"}).String()
-	db, err := dependencies.openDB("sqlite3", dsn)
-	if err != nil {
-		return nil, err
-	}
-	db.SetMaxOpenConns(1)
-	if keepOpen {
-		db.SetMaxIdleConns(1)
-	} else {
-		db.SetMaxIdleConns(0)
-	}
-	return db, nil
-}
-
 func (store *Store) prepare(ctx context.Context, legacy map[string][]byte, databaseExists bool, dependencies dependencies) error {
 	if databaseExists && store.config.ValidateBeforeMigration {
 		if err := store.validateExisting(ctx); err != nil {
@@ -113,24 +114,51 @@ func (store *Store) prepare(ctx context.Context, legacy map[string][]byte, datab
 	if err := store.initialize(ctx, legacy); err != nil {
 		return err
 	}
+	if err := store.prepareStatements(ctx); err != nil {
+		return err
+	}
 	if _, err := store.ExportContext(ctx); err != nil {
 		return err
 	}
 	return dependencies.chmod(store.path, 0o600)
 }
 
-func (store *Store) validDocument(name string, data []byte) bool {
-	if _, ok := store.allowed[name]; !ok || len(data) > DocumentSizeLimit || !json.Valid(data) {
-		return false
+func (store *Store) prepareStatements(ctx context.Context) error {
+	var err error
+	if store.upsertEntry, err = store.db.PrepareContext(ctx, upsertEntrySQL); err != nil {
+		return err
 	}
-	return store.config.Validate == nil || store.config.Validate(name, data) == nil
+	store.deleteEntry, err = store.db.PrepareContext(ctx, deleteEntrySQL)
+	return err
+}
+
+func (store *Store) validDocument(name string, data []byte) bool {
+	return json.Valid(data) && store.acceptable(name, data, DocumentSizeLimit)
+}
+
+func (store *Store) acceptable(name string, data []byte, limit int) bool {
+	_, ok := store.allowed[name]
+	return ok && len(data) <= limit && (store.config.Validate == nil || store.config.Validate(name, data) == nil)
+}
+
+func (store *Store) validStored(document storedDocument) bool {
+	if document.entries {
+		return store.acceptable(document.name, document.data, EntryDocumentSizeLimit)
+	}
+	return store.validDocument(document.name, document.data)
 }
 
 func (store *Store) Close() error {
 	if store == nil {
 		return nil
 	}
-	return store.db.Close()
+	var errs []error
+	for _, statement := range []*sql.Stmt{store.upsertEntry, store.deleteEntry} {
+		if statement != nil {
+			errs = append(errs, statement.Close())
+		}
+	}
+	return errors.Join(append(errs, store.reader.Close(), store.db.Close())...)
 }
 
 func (store *Store) LoadJSON(name string, target any) (bool, error) {
@@ -151,18 +179,21 @@ func (store *Store) Load(name string) ([]byte, bool, error) {
 	if _, ok := store.allowed[name]; !ok {
 		return nil, false, fmt.Errorf("unknown state document %q", name)
 	}
-	var data []byte
-	err := store.db.QueryRowContext(context.Background(), `SELECT `+logicalValue+` FROM state WHERE name = ?`, name).Scan(&data)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, false, nil
-	}
-	if err != nil {
+	var document storedDocument
+	var found bool
+	err := store.read(context.Background(), func(tx *sql.Tx) error {
+		var err error
+		document.name = name
+		document.data, document.entries, found, err = readDocument(context.Background(), tx, name)
+		return err
+	})
+	if err != nil || !found {
 		return nil, false, err
 	}
-	if !store.validDocument(name, data) {
+	if !store.validStored(document) {
 		return nil, false, fmt.Errorf("invalid persisted %s", name)
 	}
-	return data, true, nil
+	return document.data, true, nil
 }
 
 func (store *Store) SaveJSON(name string, value any) error {
@@ -180,31 +211,7 @@ func (store *Store) SaveJSONBatchContext(ctx context.Context, values map[string]
 	if store == nil {
 		return nil
 	}
-	if ctx == nil || len(values) > len(store.allowed) {
-		return errors.New("invalid state document batch")
-	}
-	documents := make(map[string][]byte, len(values))
-	for name, value := range values {
-		data, err := json.Marshal(value)
-		if err != nil {
-			return err
-		}
-		if !store.validDocument(name, data) {
-			return fmt.Errorf("invalid state document %q", name)
-		}
-		documents[name] = data
-	}
-	tx, err := store.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback() }()
-	for name, data := range documents {
-		if err := store.saveDocument(ctx, tx, name, data); err != nil {
-			return err
-		}
-	}
-	return tx.Commit()
+	return store.Commit(ctx, Batch{Documents: values})
 }
 
 func (store *Store) Export() (map[string][]byte, error) {
@@ -219,23 +226,26 @@ func (store *Store) ExportContext(ctx context.Context) (map[string][]byte, error
 	if ctx == nil {
 		return nil, errors.New("context is required")
 	}
-	if err := store.validateEntries(ctx); err != nil {
-		return nil, err
-	}
-	rows, err := store.db.QueryContext(ctx, `SELECT name, `+logicalValue+` FROM state ORDER BY name`)
+	err := store.read(ctx, func(tx *sql.Tx) error {
+		if err := validateEntries(ctx, tx); err != nil {
+			return err
+		}
+		documents, err := readDocuments(ctx, tx, true)
+		if err != nil {
+			return err
+		}
+		for _, document := range documents {
+			if !store.validStored(document) {
+				return errInvalidState
+			}
+			result[document.name] = document.data
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var name string
-		var data []byte
-		if err := rows.Scan(&name, &data); err != nil || !store.validDocument(name, data) {
-			return nil, errors.New("database contains invalid state")
-		}
-		result[name] = append([]byte(nil), data...)
-	}
-	return result, rows.Err()
+	return result, nil
 }
 
 func readLegacy(dataDir string, config Config, allowed map[string]struct{}) (map[string][]byte, error) {

@@ -67,6 +67,9 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 		if os.IsNotExist(err) {
 			continue
 		}
+		if found && len(data) > maxStateFileSize(name) {
+			return fmt.Errorf("read %s: document exceeds the backup size limit", name)
+		}
 		if err != nil || !service.validState(name, data) {
 			return fmt.Errorf("read %s: invalid configuration file", name)
 		}

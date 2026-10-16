@@ -143,13 +143,8 @@ func TestInitializeSurfacesDatabaseFailures(t *testing.T) {
 		"version": func(mock sqlmock.Sqlmock) {
 			mock.ExpectQuery(versionPattern()).WillReturnError(errInjected)
 		},
-		"pragmas": func(mock sqlmock.Sqlmock) {
-			expectVersion(mock, 1)
-			mock.ExpectExec(pragmaPattern()).WillReturnError(errInjected)
-		},
 		"schema": func(mock sqlmock.Sqlmock) {
 			expectVersion(mock, 0)
-			mock.ExpectExec(pragmaPattern()).WillReturnResult(sqlmock.NewResult(0, 0))
 			mock.ExpectExec(schemaPattern()).WillReturnError(errInjected)
 		},
 		"quick query": func(mock sqlmock.Sqlmock) {
@@ -218,7 +213,6 @@ func expectVersion(mock sqlmock.Sqlmock, version int) {
 
 func expectBeforeQuickCheck(mock sqlmock.Sqlmock, version int) {
 	expectVersion(mock, version)
-	mock.ExpectExec(pragmaPattern()).WillReturnResult(sqlmock.NewResult(0, 0))
 }
 
 func expectHealthyDatabase(mock sqlmock.Sqlmock) {
@@ -227,9 +221,6 @@ func expectHealthyDatabase(mock sqlmock.Sqlmock) {
 }
 
 func versionPattern() string { return regexp.QuoteMeta(`PRAGMA user_version`) }
-func pragmaPattern() string {
-	return regexp.QuoteMeta(`PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=5000;`)
-}
 func schemaPattern() string     { return "CREATE TABLE state" }
 func quickCheckPattern() string { return regexp.QuoteMeta(`PRAGMA quick_check`) }
 func selectStatePattern() string {
