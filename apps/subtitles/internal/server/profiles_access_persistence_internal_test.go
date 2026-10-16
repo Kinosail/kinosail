@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //nolint:gocognit // One store lifecycle covers failure, bounded retry, recovery, and throttled use.
+func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) {
 	var output bytes.Buffer
 	previous := slog.Default()
 	slog.SetDefault(slog.New(slog.NewJSONHandler(&output, nil)))
