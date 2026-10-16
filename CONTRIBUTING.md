@@ -46,7 +46,7 @@ make worktree-lease TASK=docs-example
 
 Commit only task-owned files, with a message describing the behavior or documentation change. Review `git diff` and explicitly stage the intended paths. Do not stash, discard, stage, or rewrite another task's work.
 
-Before integration, fetch current `origin/main`, reconcile the topic branch, and repeat checks affected by reconciliation when gates are enabled. A maintainer completes local integration with `make agent-finish TASK=docs-example` from the task worktree. It requires clean task and main worktrees, locks integration, fast-forwards local `main`, and removes the merged task checkout and branch. If unrelated changes prevent this, preserve them and report the blocker. Do not force-push `main`.
+Before integration, fetch current `origin/main`, reconcile the topic branch, and repeat checks affected by reconciliation when gates are enabled. A maintainer completes local integration with `make agent-finish TASK=docs-example` from the task worktree. It requires clean task and main worktrees and a task commit that is already in fetched `origin/main`. It locks integration, fast-forwards local `main` to `origin/main`, and removes the merged task checkout and branch. If unrelated changes prevent this, preserve them and report the blocker. Do not force-push `main`.
 
 External contributors submit a pull request against `main`. Agents follow the authorized delivery policy in [AGENTS.md](AGENTS.md). Local integration, remote publication, deployment, and release acceptance are separate steps.
 
