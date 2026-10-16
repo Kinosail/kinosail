@@ -32,7 +32,7 @@ func HTTPSecretBearingResponsesStayUncompressed(t *testing.T, newHTTPServer func
 	}{{"/account", true, `name="kinosail-csrf"`}, {"/login", false, "<form"}, {"/api/v1/me", true, `"id"`}} {
 		for _, site := range []string{"same-origin", "none", ""} {
 			response := client.get(t, target.path, site, target.signedIn, nil)
-			if body := decodedBody(t, response, ""); response.StatusCode != http.StatusOK || len(body) < 1024 || !strings.Contains(body, target.marker) {
+			if body := decodedBody(t, response, ""); response.StatusCode != http.StatusOK || len(body) < 1024 || !strings.Contains(body, target.marker) || strings.Contains(strings.Join(response.Header.Values("Vary"), ","), "Accept-Encoding") {
 				t.Fatalf("%s from %q = %d %.120q", target.path, site, response.StatusCode, body)
 			}
 		}

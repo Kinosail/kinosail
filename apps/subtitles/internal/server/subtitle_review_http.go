@@ -9,12 +9,14 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 )
 
 func (manager *subtitleManager) registerSubtitleReview(mux *http.ServeMux, auth *authentication) {
 	mux.Handle("GET /subtitles/inspect/{id}", auth.owner(http.HandlerFunc(manager.subtitleInspectorWeb)))
 	mux.Handle("GET /api/v1/subtitle-library/{id}/inspect", auth.owner(http.HandlerFunc(manager.inspectSubtitleAPI)))
-	mux.Handle("GET /api/v1/subtitle-library/{id}/export", auth.owner(http.HandlerFunc(manager.exportSubtitleAPI)))
+	mux.Handle("GET /api/v1/subtitle-library/{id}/export", auth.owner(httpcompress.Handler(http.HandlerFunc(manager.exportSubtitleAPI))))
 	mux.Handle("GET /api/v1/subtitle-library/{id}/draft", auth.owner(http.HandlerFunc(manager.inspectSubtitleDraftAPI)))
 	mux.Handle("POST /api/v1/subtitle-library/{id}/draft", auth.owner(http.HandlerFunc(manager.subtitleDraftAPI)))
 	mux.Handle("POST /api/v1/subtitle-library/{id}/audio", auth.owner(manager.mutation("audio", manager.subtitleAudioAPI)))

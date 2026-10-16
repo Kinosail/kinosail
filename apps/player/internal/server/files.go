@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/MikeO7/kinosail/packages/catalogapi"
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/workload"
@@ -13,9 +14,9 @@ import (
 func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, workloads *workload.Governor, preparation ...*startupPreparation) {
 	mux.HandleFunc("GET /media/{id}", serveStartupMedia(index, preparation))
 	mux.HandleFunc("GET /download/{id}", download(index))
-	mux.HandleFunc("GET /subtitle/{id}", serveSubtitle(index))
-	mux.HandleFunc("GET /subtitle/{id}/{track}", serveSubtitle(index))
-	mux.HandleFunc("GET /subtitle/{id}/embedded/{stream}", probe.serveEmbedded(index))
+	mux.Handle("GET /subtitle/{id}", httpcompress.Handler(serveSubtitle(index)))
+	mux.Handle("GET /subtitle/{id}/{track}", httpcompress.Handler(serveSubtitle(index)))
+	mux.Handle("GET /subtitle/{id}/embedded/{stream}", httpcompress.Handler(probe.serveEmbedded(index)))
 	mux.HandleFunc("GET /art/{id}", serveArtwork(index))
 	mux.HandleFunc("GET /episode-art/{id}", serveEpisodeStill(index, probe, workloads))
 	mux.HandleFunc("GET /backdrop/{id}", serveFile(index, playback.BackdropPath, ""))
