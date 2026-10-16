@@ -135,3 +135,15 @@ func TestHLSSegmentDurationValidationBoundaries(t *testing.T) {
 		})
 	}
 }
+
+func TestCompleteVODProjectsFromASingleKeyframeSegment(t *testing.T) {
+	const event = "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-MAP:URI=\"init.mp4\"\n#EXTINF:4.000000,\nsegment-00000.m4s\n"
+	result, ready := CompleteVOD([]byte(event), 120, 2)
+	got := string(result)
+	if !ready || !strings.HasSuffix(got, "#EXTINF:4.000000,\nsegment-00029.m4s\n#EXT-X-ENDLIST\n") || !strings.Contains(got, "#EXT-X-PLAYLIST-TYPE:VOD") {
+		t.Fatalf("a cold copied-video playlist with one keyframe segment must project a VOD timeline, got %q ready=%t", got, ready)
+	}
+	if strings.Count(got, "#EXTINF:") != 30 {
+		t.Fatalf("projected %d segments for a 120-second source cut every 4 seconds", strings.Count(got, "#EXTINF:"))
+	}
+}
