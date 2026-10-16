@@ -168,3 +168,31 @@ func TestWatcherStartupDoesNotRepeatTheInitialScan(t *testing.T) {
 		t.Fatalf("library scans after watcher startup = %d, want 1", scans.Load())
 	}
 }
+
+func TestAnalyzerRegistrationNeverOverlapsAPublishAnalysis(t *testing.T) {
+	index := catalog.NewMemoryIndex([]library.Item{{ID: "film", Kind: "video", Title: "Film"}}, true)
+	var running, overlaps, calls atomic.Int32
+	second := make(chan struct{})
+	index.AddAnalyzer(func([]library.Item) {
+		if running.Add(1) > 1 {
+			overlaps.Add(1)
+		}
+		if calls.Add(1) == 1 {
+			go index.SetDecorator(func(items []library.Item) []library.Item {
+				items[0].Plot = "decorated"
+				return items
+			})
+			select {
+			case <-second:
+			case <-time.After(200 * time.Millisecond):
+			}
+		} else {
+			close(second)
+		}
+		running.Add(-1)
+	})
+	eventually(t, "publish analysis did not run", func() bool { return calls.Load() == 2 })
+	if overlaps.Load() != 0 {
+		t.Fatal("a publish analysis ran while the analyzer was still being registered")
+	}
+}
