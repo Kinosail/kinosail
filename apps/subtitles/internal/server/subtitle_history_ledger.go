@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"sort"
 	"strings"
 	"time"
@@ -68,7 +67,7 @@ func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, ac
 		event.PreviousSource, event.PreviousScore, event.PreviousReleaseMatch = previous.Source, &previous.Score, &previous.ReleaseMatch
 	}
 	if ledger.err != nil || !validSubtitleRecord(record) || !validSubtitleHistoryEvent(event) || len(ledger.state.Records) >= subtitleLedgerLimit && ledger.state.Records[key].Fingerprint == "" {
-		return errors.New("subtitle acquisition state is unavailable")
+		return errSubtitleLedgerUnavailable
 	}
 	before := ledger.state.History
 	ledger.state.Records[key] = record
@@ -76,7 +75,7 @@ func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, ac
 	if len(ledger.state.History) > subtitleHistoryLimit {
 		ledger.state.History = ledger.state.History[1:]
 	}
-	if err := ledger.save(); err != nil {
+	if err := ledger.saveHistoryRecord(key, record, before); err != nil {
 		if found {
 			ledger.state.Records[key] = previous
 		} else {

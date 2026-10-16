@@ -75,6 +75,7 @@
 ## Working style
 
 - Handle the task and verification yourself by default. Do not spawn subagents except for necessary independent reviews or when I explicitly ask you to.
+- Cloud sessions have no Xcode. When any step needs a Mac (Xcode builds, Swift test schemes, simulators, signed device installs, the native app's `make verify-changed`, physical Apple TV or iPhone checks), do not skip, defer or claim it: hand that step to the Remote Control session running on the user's Mac that holds the Kinosail checkout. Find it with the session list (the `bridge` Kinosail session), send one brief with the branch and head commit, the exact commands, the pass/fail report format and the instruction not to merge or mark the pull request ready, then record its results in `VERIFICATION.md` and the pull request. This applies to every current and future task.
 - Read only the files and references relevant to the task. Use `rg` and bounded output.
 - Continue authorized local work without routine approval stops. Ask only when missing input materially changes scope, permissions, or behavior.
 - The current user request takes precedence over these defaults. Keep working until the requested outcome is verified or a specific blocker requires user action.

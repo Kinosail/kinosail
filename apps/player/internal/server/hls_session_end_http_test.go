@@ -22,7 +22,7 @@ func phaseSessionDeparture(t *testing.T) {
 	if status := phaseStatus(t, fixture.request(t, 0, "t-a0-s0-none-t0-b0", "departure-shared", "shared-session")); status != http.StatusOK {
 		t.Fatalf("shared movie startup = %d", status)
 	}
-	next := fixture.request(t, 1, "a-a0-s0-none-t0-b0", "departure-next", "next-session")
+	next := fixture.request(t, 1, "t-a0-s0-none-t0-b0", "departure-next", "next-session")
 	phaseWait(t, func() bool {
 		return strings.Contains(strings.Join(phaseSequence(fixture.events("departure-next")), ","), "admission_wait")
 	})

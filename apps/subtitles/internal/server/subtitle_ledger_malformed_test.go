@@ -18,7 +18,7 @@ func TestSubtitleLedgerRejectsMalformedPersistedStateAndStopsDownloads(t *testin
 	if err := os.WriteFile(path, []byte(invalid), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	ledger := newSubtitleLedger(data)
+	ledger := openTestSubtitleLedger(t, data)
 	if ledger.err == nil || ledger.takeSubDLDownload(time.Now()) {
 		t.Fatalf("invalid ledger = %v, download allowed", ledger.err)
 	}
@@ -38,7 +38,7 @@ func TestSubtitleLedgerRejectsInvalidMediaVersionWithoutChangingState(t *testing
 			if err := os.WriteFile(path, []byte(contents), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			ledger := newSubtitleLedger(data)
+			ledger := openTestSubtitleLedger(t, data)
 			if ledger.err == nil || ledger.automaticSearchReady(subtitleSearchKey("0123456789abcdef", "en", "standard"), library.Item{}, time.Now()) || ledger.takeSubDLDownload(time.Now()) {
 				t.Fatalf("invalid state accepted: %v", ledger.err)
 			}

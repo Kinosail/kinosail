@@ -12,8 +12,8 @@ func (api *jellyfinAPI) persons(writer http.ResponseWriter, _ *http.Request) {
 }
 
 func (api *jellyfinAPI) latest(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result, err := api.catalog(request, items).Latest(request.URL.Query())
+	view, _ := visibleView(request, api.index)
+	result, err := api.listing(request, view).Latest(request.URL.Query())
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
@@ -22,8 +22,8 @@ func (api *jellyfinAPI) latest(writer http.ResponseWriter, request *http.Request
 }
 
 func (api *jellyfinAPI) resume(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result := api.catalog(request, items).Resume(func(item library.Item) sharedjellyfin.UserState {
+	view, _ := visibleView(request, api.index)
+	result := api.listing(request, view).Resume(func(item library.Item) sharedjellyfin.UserState {
 		state := api.progress.Get(request, item.ID)
 		return sharedjellyfin.UserState{Seconds: state.Seconds, Watched: state.Watched}
 	})
@@ -31,8 +31,8 @@ func (api *jellyfinAPI) resume(writer http.ResponseWriter, request *http.Request
 }
 
 func (api *jellyfinAPI) nextUp(writer http.ResponseWriter, request *http.Request) {
-	items, _ := visibleLibrary(request, api.index)
-	result := api.catalog(request, items).NextUp(func(item library.Item) bool { return api.progress.Watched(request, item.ID) })
+	view, _ := visibleView(request, api.index)
+	result := api.listing(request, view).NextUp(func(item library.Item) bool { return api.progress.Watched(request, item.ID) })
 	jellyfinJSON(writer, result)
 }
 

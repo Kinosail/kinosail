@@ -11,8 +11,8 @@ type visibilityStub struct {
 	safe  bool
 }
 
-func (stub visibilityStub) Snapshot() ([]Item, error) {
-	return append([]Item(nil), stub.items...), stub.err
+func (stub visibilityStub) View(policy Policy) (*View, error) {
+	return NewSnapshot(stub.items, 1).View(policy), stub.err
 }
 
 func (stub visibilityStub) Find(id string) (Item, bool) {
@@ -27,9 +27,9 @@ func (stub visibilityStub) Safe(string) bool { return stub.safe }
 
 func TestVisibilityIndexFiltering(t *testing.T) {
 	t.Parallel()
-	index := visibilityStub{items: []Item{{ID: "allowed", Path: "/media/allowed"}, {ID: "denied", Path: "/media/denied"}}, err: errors.New("snapshot warning"), safe: true}
-	items, err := Visible(index, func(item Item) bool { return item.ID == "allowed" })
-	if len(items) != 1 || items[0].ID != "allowed" || !errors.Is(err, index.err) {
+	index := visibilityStub{items: []Item{{ID: "allowed", Library: "movies", Rating: "PG", Path: "/media/allowed"}, {ID: "denied", Library: "movies", Rating: "R", Path: "/media/denied"}}, err: errors.New("snapshot warning"), safe: true}
+	view, err := index.View(NewPolicy(false, "", []string{"movies"}))
+	if items := view.Items(); len(items) != 1 || items[0].ID != "allowed" || !errors.Is(err, index.err) {
 		t.Fatalf("visible = %#v, %v", items, err)
 	}
 	if item, found := VisibleItem(index, "allowed", func(Item) bool { return true }); !found || item.ID != "allowed" {

@@ -1,8 +1,10 @@
 package localization
 
 import (
-	"html/template"
+	"maps"
+	"slices"
 	"strings"
+	"sync"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
@@ -12,28 +14,72 @@ type Message struct {
 }
 
 type Catalog struct {
-	languages    []Language
-	messages     []Message
-	translations map[string]map[string]string
+	languages []Language
+	state     func() *catalogState
+	options   func() pickerOptions
 }
 
-func NewCatalog(bundle *i18n.Bundle, languages []Language, messages []Message) *Catalog {
-	translations := make(map[string]map[string]string, len(languages))
-	for _, supported := range languages {
-		localizer := i18n.NewLocalizer(bundle, supported.Tag, "en")
-		translated := make(map[string]string, len(messages))
-		for _, message := range messages {
-			value, err := localizer.Localize(&i18n.LocalizeConfig{
-				MessageID:      message.ID,
-				DefaultMessage: &i18n.Message{ID: message.ID, Other: message.Other},
-			})
-			if err == nil {
-				translated[message.ID] = value
-			}
-		}
-		translations[supported.Tag] = translated
+type catalogState struct {
+	messages     []Message
+	translations map[string]map[string]string
+	groups       map[string]int
+	groupTags    []string
+}
+
+func NewCatalog(languages []Language, load func() (*i18n.Bundle, []Message)) *Catalog {
+	return &Catalog{
+		languages: languages,
+		state: sync.OnceValue(func() *catalogState {
+			bundle, messages := load()
+			return newCatalogState(bundle, languages, messages)
+		}),
+		options: sync.OnceValue(func() pickerOptions { return newPickerOptions(languages) }),
 	}
-	return &Catalog{languages: languages, messages: messages, translations: translations}
+}
+
+func newCatalogState(bundle *i18n.Bundle, languages []Language, messages []Message) *catalogState {
+	state := &catalogState{messages: messages, translations: make(map[string]map[string]string, len(languages)), groups: make(map[string]int, len(languages))}
+	for _, supported := range languages {
+		translated := localizeMessages(bundle, supported.Tag, messages)
+		group := slices.IndexFunc(state.groupTags, func(tag string) bool { return maps.Equal(state.translations[tag], translated) })
+		if group < 0 {
+			group = len(state.groupTags)
+			state.groupTags = append(state.groupTags, supported.Tag)
+		} else {
+			translated = state.translations[state.groupTags[group]]
+		}
+		state.translations[supported.Tag] = translated
+		state.groups[supported.Tag] = group
+	}
+	return state
+}
+
+func localizeMessages(bundle *i18n.Bundle, tag string, messages []Message) map[string]string {
+	localizer := i18n.NewLocalizer(bundle, tag, "en")
+	translated := make(map[string]string, len(messages))
+	for _, message := range messages {
+		value, err := localizer.Localize(&i18n.LocalizeConfig{
+			MessageID:      message.ID,
+			DefaultMessage: &i18n.Message{ID: message.ID, Other: message.Other},
+		})
+		if err == nil {
+			translated[message.ID] = value
+		}
+	}
+	return translated
+}
+
+func (catalog *Catalog) group(tag string) (int, string, bool) {
+	state := catalog.state()
+	group, ok := state.groups[tag]
+	if !ok {
+		return 0, "", false
+	}
+	return group, state.groupTags[group], true
+}
+
+func (catalog *Catalog) groupCount() int {
+	return len(catalog.state().groupTags)
 }
 
 func (catalog *Catalog) Direction(tag string) string {
@@ -46,14 +92,14 @@ func (catalog *Catalog) Direction(tag string) string {
 }
 
 func (catalog *Catalog) Localize(tag, message string) string {
-	if translated := catalog.translations[tag][message]; translated != "" {
+	if translated := catalog.state().translations[tag][message]; translated != "" {
 		return translated
 	}
 	return message
 }
 
 func (catalog *Catalog) Knows(message string) bool {
-	for _, known := range catalog.messages {
+	for _, known := range catalog.state().messages {
 		if known.ID == message {
 			return true
 		}
@@ -61,35 +107,9 @@ func (catalog *Catalog) Knows(message string) bool {
 	return false
 }
 
-func (catalog *Catalog) PickerHTML(tag, preference, csrf string, compact bool) template.HTML {
-	var picker strings.Builder
-	label := template.HTMLEscapeString(catalog.Localize(tag, "Language"))
-	picker.WriteString(`<form class="language-picker" action="/language" method="post" aria-label="` + label + `">`)
-	if csrf != "" {
-		picker.WriteString(`<input type="hidden" name="_csrf" value="` + template.HTMLEscapeString(csrf) + `">`)
-	}
-	picker.WriteString(`<label>` + label + `<select name="language" aria-label="` + label + `"><option value="auto"`)
-	if preference == "auto" {
-		picker.WriteString(` selected`)
-	}
-	picker.WriteString(`>` + template.HTMLEscapeString(catalog.Localize(tag, "Automatic (browser)")) + `</option>`)
-	for _, supported := range catalog.languages {
-		picker.WriteString(`<option value="` + template.HTMLEscapeString(supported.Tag) + `"`)
-		if supported.Tag == preference {
-			picker.WriteString(` selected`)
-		}
-		picker.WriteString(`>` + template.HTMLEscapeString(supported.Name) + `</option>`)
-	}
-	picker.WriteString(`</select></label><button class="quiet">` + template.HTMLEscapeString(catalog.Localize(tag, "Save")) + `</button>`)
-	if compact {
-		picker.WriteString(`<a class="mode" href="/language">` + label + `</a>`)
-	}
-	picker.WriteString(`</form>`)
-	return template.HTML(picker.String()) //nolint:gosec // Every dynamic value is escaped above.
-}
-
-func (catalog *Catalog) TranslateSource(source, tag string) string {
+func (catalog *Catalog) translateBody(source, tag string) string {
 	var result strings.Builder
+	result.Grow(len(source))
 	for source != "" {
 		if source[0] == '<' {
 			end := strings.IndexByte(source, '>')
@@ -120,12 +140,11 @@ func (catalog *Catalog) TranslateSource(source, tag string) string {
 		result.WriteString(catalog.translateText(source[:end], tag))
 		source = source[end:]
 	}
-	localized := result.String()
-	return strings.Replace(localized, `<html lang="en"`, `<html lang="`+tag+`" dir="`+catalog.Direction(tag)+`"`, 1)
+	return result.String()
 }
 
 func (catalog *Catalog) translateText(source, tag string) string {
-	for _, message := range catalog.messages {
+	for _, message := range catalog.state().messages {
 		if message.Other == "" || !strings.Contains(source, message.Other) {
 			continue
 		}

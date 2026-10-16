@@ -11,6 +11,7 @@ import (
 
 type MediaIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
+	VisibleView(*http.Request) *library.View
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 

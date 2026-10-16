@@ -118,6 +118,7 @@ func (fixture HardwareTranscodeFixture[S]) UnavailableAndUnknownCodecsAreRejecte
 	WriteExecutable(t, ffmpeg, "#!/bin/sh\ncase \"$*\" in *-encoders*) printf 'libx264\\n'; exit 0;; esac\n"+HardwareSmokeHLS())
 	handler := fixture.New(HardwareTranscodeConfig[S]{DataDir: t.TempDir(), FFmpeg: ffmpeg, ProbeHardware: true, HardwareOS: "linux", HardwareArch: "amd64", RequireAuth: true})
 	owner := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
+	AwaitHardwareProbe(t, handler, owner.Value)
 
 	for _, codec := range []string{"vvc", "av2", "unknown", strings.Repeat("a", 16<<10)} {
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/transcoder", strings.NewReader("quality=automatic&codec="+codec+"&accelerator=auto"))

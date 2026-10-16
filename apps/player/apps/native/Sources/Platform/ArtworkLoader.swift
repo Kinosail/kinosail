@@ -1,9 +1,8 @@
+import CoreGraphics
 import Foundation
-import ImageIO
-import UniformTypeIdentifiers
 
 actor ArtworkLoader {
-    private struct Key: Hashable, Sendable { let session: UUID; let path: String; let dimension: Int }
+    private typealias Key = ArtworkMemoryIndex.Key
     private struct Cached { let image: CGImage; var used: Date; let saved: Date; var background: Bool }
     private struct Loaded { let image: CGImage; let stale: Bool }
     private struct Pending {
@@ -24,6 +23,18 @@ actor ArtworkLoader {
     private var foreground: [String: Int] = [:]
     private var visible: [Key: Int] = [:]
     private var waiters: [(id: UUID, key: String, background: Bool, continuation: CheckedContinuation<Bool, Error>)] = []
+    nonisolated let recent = ArtworkMemoryIndex()
+    private let memoryBudget: Int
+    private let entryLimit: Int
+
+    init(memoryBudget: Int = ArtworkLoader.imageLimit, entryLimit: Int = 96) {
+        self.memoryBudget = memoryBudget
+        self.entryLimit = entryLimit
+    }
+
+    nonisolated func cachedImage(path: String, client: ServerClient, dimension: Int) -> CGImage? {
+        recent.image(for: Key(session: client.identity, path: path, dimension: dimension))
+    }
 
     func prefetch(paths: [String], client: ServerClient, dimension: Int = 800) async throws {
         try await warmup.prefetch(paths: paths, client: client, dimension: dimension, loader: self)
@@ -38,6 +49,7 @@ actor ArtworkLoader {
             throw ClientError.invalidResponse
         }
         let key = Key(session: client.identity, path: url.absoluteString, dimension: dimension)
+        recent.alias(Key(session: client.identity, path: path, dimension: dimension), to: key)
         if var found = cache[key] {
             if !background { found.background = false }
             found.used = Date(); cache[key] = found
@@ -131,47 +143,6 @@ actor ArtworkLoader {
         } else { pending[key] = request }
     }
 
-    static func decodedThumbnail(_ data: Data, dimension: Int) throws -> CGImage {
-        guard [400, 500, 800, 1600, 4096].contains(dimension), data.count <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
-        guard let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
-              CGImageSourceGetCount(source) <= 256,
-              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? Int,
-              let height = properties[kCGImagePropertyPixelHeight] as? Int,
-              width > 0, height > 0, width <= 32_768, height <= 32_768, width * height <= 80_000_000,
-              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [
-                kCGImageSourceCreateThumbnailFromImageAlways: true,
-                kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: dimension,
-                kCGImageSourceShouldCacheImmediately: true
-              ] as CFDictionary) else { throw ClientError.invalidResponse }
-        return image
-    }
-
-    static func decode(_ data: Data, dimension: Int) async throws -> CGImage {
-        let work = Task.detached(priority: Task.currentPriority) {
-            try Task.checkCancellation()
-            return try decodedThumbnail(data, dimension: dimension)
-        }
-        return try await withTaskCancellationHandler {
-            try await work.value
-        } onCancel: {
-            work.cancel()
-        }
-    }
-
-    static func thumbnail(_ data: Data, dimension: Int) throws -> Data {
-        let image = try decodedThumbnail(data, dimension: dimension)
-        let output = NSMutableData()
-        let alpha = ![CGImageAlphaInfo.none, .noneSkipFirst, .noneSkipLast].contains(image.alphaInfo)
-        guard let destination = CGImageDestinationCreateWithData(output, (alpha ? UTType.png.identifier : UTType.jpeg.identifier) as CFString, 1, nil) else {
-            throw ClientError.invalidResponse
-        }
-        CGImageDestinationAddImage(destination, image, [kCGImageDestinationLossyCompressionQuality: 0.88] as CFDictionary)
-        guard CGImageDestinationFinalize(destination), output.length <= 32 * 1024 * 1024 else { throw ClientError.invalidResponse }
-        return output as Data
-    }
-
     func clear() async {
         generation = UUID()
         for request in pending.values { request.task.cancel() }
@@ -181,6 +152,7 @@ actor ArtworkLoader {
         refreshTasks = [:]
         cache = [:]
         bytes = 0
+        recent.clear()
         await warmup.clear()
         await downloads.clear()
     }
@@ -222,31 +194,28 @@ actor ArtworkLoader {
 
     private func remember(_ image: CGImage, key: Key, saved: Date, background: Bool = false) {
         let cost = image.bytesPerRow * image.height
-        guard cost <= 32 * 1024 * 1024 else {
-            if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
-            return
-        }
+        guard cost <= Self.imageLimit else { forget(key); return }
         let retainedBackground = background && cache[key]?.background != false
         if background {
             let protected = cache.lazy.filter { $0.key != key && !$0.value.background }
-            guard protected.count < 96,
-                  protected.reduce(cost, { $0 + $1.value.image.bytesPerRow * $1.value.image.height }) <= 32 * 1024 * 1024 else {
-                if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
-                return
-            }
+            guard protected.count < entryLimit,
+                  protected.reduce(cost, { $0 + $1.value.image.bytesPerRow * $1.value.image.height }) <= memoryBudget else { forget(key); return }
         }
-        if let previous = cache.removeValue(forKey: key) {
-            bytes -= previous.image.bytesPerRow * previous.image.height
-        }
-        while bytes + cost > 32 * 1024 * 1024 || cache.count >= 96 {
+        forget(key)
+        while bytes + cost > memoryBudget || cache.count >= entryLimit {
             let oldest = cache.lazy.filter { $0.value.background }.min(by: { $0.value.used < $1.value.used })
                 ?? (background ? nil : cache.min(by: { $0.value.used < $1.value.used }))
             guard let oldest else { return }
-            bytes -= oldest.value.image.bytesPerRow * oldest.value.image.height
-            cache[oldest.key] = nil
+            forget(oldest.key)
         }
         cache[key] = Cached(image: image, used: Date(), saved: saved, background: retainedBackground)
+        recent.set(image, for: key)
         bytes += cost
+    }
+
+    private func forget(_ key: Key) {
+        if let previous = cache.removeValue(forKey: key) { bytes -= previous.image.bytesPerRow * previous.image.height }
+        recent.remove(key)
     }
 
     private func download(url: URL, client: ServerClient, background: Bool) async throws -> (Data, String) {

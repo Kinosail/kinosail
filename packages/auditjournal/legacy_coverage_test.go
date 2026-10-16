@@ -263,14 +263,15 @@ func TestJournalPruneRewriteAndOpenedValidationBranches(t *testing.T) {
 	for index := range events {
 		events[index] = testEvent("event", "security", time.Now().UTC())
 	}
-	journal := &Journal{events: events, auditRetention: time.Hour}
-	if !journal.pruneLocked(time.Now().UTC()) || len(journal.events) != maxActivityEvents {
+	journal := &Journal{events: events, meta: journalMeta(events), auditRetention: time.Hour}
+	if !journal.pruneLocked(time.Now().UTC()) || len(journal.events) != compactedActivityEvents {
 		t.Fatalf("pruned event count = %d", len(journal.events))
 	}
 	if err := (&Journal{}).rewriteLocked(); err != nil {
 		t.Fatalf("empty rewrite = %v", err)
 	}
-	journal = &Journal{file: filepath.Join(t.TempDir(), "audit.jsonl"), events: []Event{{Details: map[string]string{"value": strings.Repeat("x", maxAuditJournalBytes)}}}}
+	oversized := []Event{{Details: map[string]string{"value": strings.Repeat("x", maxAuditJournalBytes)}}}
+	journal = &Journal{file: filepath.Join(t.TempDir(), "audit.jsonl"), events: oversized, meta: journalMeta(oversized)}
 	if err := journal.rewriteLocked(); err == nil {
 		t.Fatal("oversized rewrite was accepted")
 	}

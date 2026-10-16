@@ -13,122 +13,141 @@ type Class uint8
 const (
 	Playback Class = iota
 	Background
+	Interactive
 )
 
 type Governor struct {
-	background                         chan struct{}
-	mu                                 sync.Mutex
-	capacity, used                     int
-	changed                            chan struct{}
-	devices                            map[string]bool
-	activePlayback, activeBackground   atomic.Int64
-	waitingPlayback, waitingBackground atomic.Int64
+	cpu, light      *lane
+	mu              sync.Mutex
+	devices         map[string]*lane
+	sessions        func(string) int
+	active, waiting [classCount]atomic.Int64
 }
 
 type Metrics struct {
-	Capacity, BackgroundCapacity       int
-	ActivePlayback, ActiveBackground   int64
-	WaitingPlayback, WaitingBackground int64
+	Capacity, BackgroundCapacity, InteractiveCapacity, LightCapacity int
+	ActivePlayback, ActiveBackground, ActiveInteractive              int64
+	WaitingPlayback, WaitingBackground, WaitingInteractive           int64
 }
 
-func New(capacity int) *Governor {
+type Option func(*Governor)
+
+func DeviceSessions(sessions func(string) int) Option {
+	return func(governor *Governor) { governor.sessions = sessions }
+}
+
+func New(capacity int, options ...Option) *Governor {
 	capacity = max(1, capacity)
-	return &Governor{capacity: capacity, changed: make(chan struct{}), devices: make(map[string]bool), background: make(chan struct{}, max(1, capacity-2))}
+	light := min(64, max(8, 2*capacity))
+	governor := &Governor{
+		cpu:      newLane(capacity, false, max(1, capacity/4), max(1, capacity/2)),
+		light:    newLane(light, false, light/2, light/2),
+		devices:  make(map[string]*lane),
+		sessions: func(string) int { return 2 },
+	}
+	for _, option := range options {
+		option(governor)
+	}
+	return governor
 }
 
-func HeavyCapacity() int { return min(3, max(1, runtime.GOMAXPROCS(0)-1)) }
+func HeavyCapacity() int { return capacityFor(runtime.GOMAXPROCS(0)) }
+
+func capacityFor(processors int) int { return max(1, processors) }
 
 func (governor *Governor) Acquire(ctx context.Context, class Class) (func(), error) {
 	return governor.AcquireEncoding(ctx, class, 1, "")
 }
 
+func (governor *Governor) AcquireLight(ctx context.Context, class Class) (func(), error) {
+	if !validClass(class) {
+		return nil, errors.New("invalid workload class")
+	}
+	if governor == nil {
+		return func() {}, nil
+	}
+	return governor.reserve(ctx, class, []laneCost{{governor.light, 1}})
+}
+
 func (governor *Governor) AcquireEncoding(ctx context.Context, class Class, cost int, device string) (func(), error) {
-	if !validEncodingReservation(class, cost, device) {
+	if cost < 1 || len(device) > 512 || !validClass(class) {
 		return nil, errors.New("invalid encoding reservation")
 	}
 	if governor == nil {
 		return func() {}, nil
 	}
-	if cost > governor.capacity {
-		return nil, errors.New("encoding reservation exceeds capacity")
+	if device == "" {
+		return governor.reserve(ctx, class, []laneCost{{governor.cpu, cost}})
 	}
-	waiting, active := &governor.waitingPlayback, &governor.activePlayback
-	if class == Background {
-		waiting, active = &governor.waitingBackground, &governor.activeBackground
-	}
-	waiting.Add(1)
-	defer waiting.Add(-1)
-	if err := governor.encodingQueue(ctx, class); err != nil {
-		return nil, err
-	}
-	if err := governor.waitEncoding(ctx, cost, device); err != nil {
-		if class == Background {
-			<-governor.background
+	return governor.reserve(ctx, class, []laneCost{{governor.light, 1}, {governor.device(device), cost}})
+}
+
+type laneCost struct {
+	lane *lane
+	cost int
+}
+
+func (governor *Governor) reserve(ctx context.Context, class Class, costs []laneCost) (func(), error) {
+	priority := rank(class)
+	for _, reservation := range costs {
+		if !reservation.lane.possible(priority, reservation.cost) {
+			return nil, errors.New("encoding reservation exceeds capacity")
 		}
+	}
+	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	active.Add(1)
+	governor.waiting[priority].Add(1)
+	defer governor.waiting[priority].Add(-1)
+	for index, reservation := range costs {
+		if err := reservation.lane.acquire(ctx, priority, reservation.cost); err != nil {
+			releaseLanes(costs[:index], priority)
+			return nil, err
+		}
+	}
+	governor.active[priority].Add(1)
 	var once sync.Once
 	return func() {
 		once.Do(func() {
-			active.Add(-1)
-			governor.mu.Lock()
-			governor.used -= cost
-			delete(governor.devices, device)
-			close(governor.changed)
-			governor.changed = make(chan struct{})
-			governor.mu.Unlock()
-			if class == Background {
-				<-governor.background
-			}
+			governor.active[priority].Add(-1)
+			releaseLanes(costs, priority)
 		})
 	}, nil
 }
 
+func releaseLanes(costs []laneCost, priority int) {
+	for index := len(costs) - 1; index >= 0; index-- {
+		costs[index].lane.release(priority, costs[index].cost)
+	}
+}
+
+func (governor *Governor) device(key string) *lane {
+	governor.mu.Lock()
+	defer governor.mu.Unlock()
+	device := governor.devices[key]
+	if device == nil {
+		sessions := max(1, governor.sessions(key))
+		device = newLane(sessions, true, sessions-1, sessions-1)
+		governor.devices[key] = device
+	}
+	return device
+}
+
 func (governor *Governor) Metrics() Metrics {
-	return Metrics{governor.capacity, cap(governor.background), governor.activePlayback.Load(), governor.activeBackground.Load(), governor.waitingPlayback.Load(), governor.waitingBackground.Load()}
+	return Metrics{
+		Capacity: governor.cpu.capacity, BackgroundCapacity: governor.cpu.limits[2], InteractiveCapacity: governor.cpu.limits[1], LightCapacity: governor.light.capacity,
+		ActivePlayback: governor.active[0].Load(), ActiveBackground: governor.active[2].Load(), ActiveInteractive: governor.active[1].Load(),
+		WaitingPlayback: governor.waiting[0].Load(), WaitingBackground: governor.waiting[2].Load(), WaitingInteractive: governor.waiting[1].Load(),
+	}
 }
 
 func (governor *Governor) EncodingCapacity() int {
 	if governor == nil {
 		return 1
 	}
-	return governor.capacity
+	return governor.cpu.capacity
 }
 
-func (governor *Governor) waitEncoding(ctx context.Context, cost int, device string) error {
-	for {
-		governor.mu.Lock()
-		if ctx.Err() == nil && governor.used+cost <= governor.capacity && (device == "" || !governor.devices[device]) {
-			governor.used += cost
-			if device != "" {
-				governor.devices[device] = true
-			}
-			governor.mu.Unlock()
-			break
-		}
-		changed := governor.changed
-		governor.mu.Unlock()
-		select {
-		case <-changed:
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
-	return nil
-}
-
-func (governor *Governor) encodingQueue(ctx context.Context, class Class) error {
-	if class == Background {
-		select {
-		case governor.background <- struct{}{}:
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	}
-	return nil
-}
-
-func validEncodingReservation(class Class, cost int, device string) bool {
-	return cost >= 1 && len(device) <= 512 && (class == Playback || class == Background)
+func validClass(class Class) bool {
+	return class == Playback || class == Background || class == Interactive
 }

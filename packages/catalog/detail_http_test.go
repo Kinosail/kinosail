@@ -187,6 +187,11 @@ func (index *detailIndexFixture) VisibleLibrary(*http.Request) []library.Item {
 	return index.items
 }
 
+func (index *detailIndexFixture) VisibleView(*http.Request) *library.View {
+	index.calls++
+	return library.NewSnapshot(index.items, 1).View(library.NewPolicy(true, "", nil))
+}
+
 func (index *detailIndexFixture) VisibleItem(*http.Request, string) (library.Item, bool) {
 	index.calls++
 	return index.item, index.found

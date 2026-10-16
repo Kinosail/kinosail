@@ -14,6 +14,8 @@ type Settings struct {
 	DisableHardwareToneMap bool
 	ToneMap                bool
 	HardwareDecode         bool
+	HardwareDecodeInputs   []string
+	DecodeInput            string
 	SoftwareFilters        bool
 	Deinterlace            bool
 	OutputHDR              string
@@ -40,11 +42,11 @@ func encoderArguments(name string, options Settings) []string {
 	case "vaapi":
 		return []string{"-c:v", name, "-qp", options.CRF}
 	case "qsv":
-		return []string{"-c:v", name, "-global_quality", options.CRF}
+		return []string{"-c:v", name, "-global_quality", options.CRF, "-preset", qsvPreset(options.Preset)}
 	case "cuda":
 		return cudaEncoderArguments(name, options)
 	case "videotoolbox":
-		return []string{"-c:v", name, "-q:v", options.CRF, "-allow_sw", "0"}
+		return []string{"-c:v", name, "-q:v", videoToolboxQuality(options.CRF), "-allow_sw", "0"}
 	case "rkmpp":
 		return []string{"-c:v", name, "-rc_mode", "CQP", "-qp_init", options.CRF}
 	case "amf":
@@ -71,11 +73,11 @@ func softwareVideoEncoderArguments(encoder string, options Settings) []string {
 		preset := map[string]string{"ultrafast": "10", "veryfast": "8", "medium": "6"}[options.Preset]
 		return []string{"-c:v", encoder, "-preset", preset, "-crf", options.CRF}
 	case "libaom-av1":
-		return []string{"-c:v", encoder, "-cpu-used", "6", "-crf", options.CRF}
+		return []string{"-c:v", encoder, "-usage", "realtime", "-cpu-used", "8", "-row-mt", "1", "-tile-columns", "2", "-crf", options.CRF}
 	case "librav1e":
 		return []string{"-c:v", encoder, "-speed", "8", "-qp", options.CRF}
 	case "libvpx-vp9":
-		return []string{"-c:v", encoder, "-deadline", "realtime", "-cpu-used", "6", "-crf", options.CRF, "-b:v", "0"}
+		return []string{"-c:v", encoder, "-deadline", "realtime", "-cpu-used", "6", "-row-mt", "1", "-tile-columns", "2", "-crf", options.CRF, "-b:v", "0"}
 	default:
 		return []string{"-c:v", encoder, "-preset", options.Preset, "-crf", options.CRF}
 	}
@@ -89,9 +91,34 @@ func renderDevice(device string) string {
 }
 
 func cudaEncoderArguments(name string, options Settings) []string {
-	args := []string{"-c:v", name, "-cq", options.CRF, "-preset", "p4"}
+	args := []string{"-c:v", name, "-cq", options.CRF, "-preset", nvencPreset(options.Preset)}
 	if options.Device != "" {
 		args = append(args, "-gpu", options.Device)
 	}
 	return args
+}
+
+func nvencPreset(preset string) string {
+	switch preset {
+	case "ultrafast":
+		return "p2"
+	case "medium":
+		return "p6"
+	default:
+		return "p4"
+	}
+}
+
+func qsvPreset(preset string) string {
+	if preset == "medium" {
+		return "medium"
+	}
+	return "veryfast"
+}
+
+func videoToolboxQuality(crf string) string {
+	if quality, ok := map[string]string{"19": "75", "22": "65", "26": "55"}[crf]; ok {
+		return quality
+	}
+	return "65"
 }

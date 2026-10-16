@@ -43,7 +43,7 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	if err := os.WriteFile(item.Path, []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), data, sidecarTestIndex(item), nil, "")
+	provider := newSubtitleProvider(SubtitleConfig{URL: remote.URL, APIKey: "key"}, t.TempDir(), data, sidecarTestIndex(item), nil, "", testStateDatabase(t, data))
 	if err := provider.fetchSidecar(t.Context(), item, "en"); err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestSubtitleProviderUpgradesManagedSidecarByMinimumScoreGain(t *testing.T) 
 	if err != nil || len(events) != 2 || events[0].Action != "added" || events[1].Action != "updated" {
 		t.Fatalf("provider history = %#v, %v", events, err)
 	}
-	evidence, marshalErr := json.Marshal(newSubtitleLedger(data).state.History)
+	evidence, marshalErr := json.Marshal(openTestSubtitleLedger(t, data).state.History)
 	if marshalErr != nil || !strings.Contains(string(evidence), `"reason":"higher-score"`) || !strings.Contains(string(evidence), `"previousScore":70`) || !strings.Contains(string(evidence), `"score":90`) || !strings.Contains(string(evidence), `"previousSource":"subdl"`) {
 		t.Fatalf("persisted upgrade explanation = %s, %v", evidence, marshalErr)
 	}

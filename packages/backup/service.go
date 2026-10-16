@@ -20,6 +20,14 @@ type Database interface {
 	Close() error
 }
 
+type Exporter interface {
+	Export() (map[string][]byte, error)
+}
+
+type liveDatabase struct{ Exporter }
+
+func (liveDatabase) Close() error { return nil }
+
 type Config struct {
 	DatabaseFilename string
 	OpenDatabase     func(string) (Database, error)
@@ -39,6 +47,12 @@ func New(config Config) (*Service, error) {
 		return nil, errors.New("invalid backup configuration")
 	}
 	return &Service{databaseFilename: config.DatabaseFilename, openDatabase: config.OpenDatabase, validateSettings: config.ValidateSettings, random: rand.Reader, restore: defaultRestoreOperations()}, nil
+}
+
+func (service *Service) WithLiveDatabase(database Exporter) *Service {
+	live := *service
+	live.openDatabase = func(string) (Database, error) { return liveDatabase{database}, nil }
+	return &live
 }
 
 func MustNew(config Config) *Service {

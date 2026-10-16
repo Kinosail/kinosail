@@ -36,7 +36,7 @@ support is not enabled.
 
 ## Optional local subtitle recognition
 
-The Subtitles container includes [whisper.cpp](https://github.com/ggml-org/whisper.cpp) at v1.9.5 under the MIT license; its license is installed at `/licenses/third_party/whisper.cpp/LICENSE`. The bundled miniaudio and stb_vorbis notices are retained in the same directory. The container also includes Debian's Tesseract OCR packages under Apache-2.0; package copyright notices remain under `/usr/share/doc/`. English OCR data is included. Additional Tesseract language data may be mounted using `TESSDATA_PREFIX`. Whisper model weights are supplied separately by the operator and retain their own license terms; Kinosail does not download models or send audio to an external recognition service.
+The Subtitles container includes [whisper.cpp](https://github.com/ggml-org/whisper.cpp) at v1.9.5 under the MIT license, with its ggml libraries and CPU backend variants in `/opt/whisper`; its license is installed at `/licenses/third_party/whisper.cpp/LICENSE`. The bundled miniaudio and stb_vorbis notices are retained in the same directory. The container also includes Debian's Tesseract OCR packages under Apache-2.0; package copyright notices remain under `/usr/share/doc/`. English OCR data is included. Additional Tesseract language data may be mounted using `TESSDATA_PREFIX`. Whisper model weights are supplied separately by the operator and retain their own license terms; Kinosail does not download models or send audio to an external recognition service.
 
 Private management includes the following Go dependencies. Their license files
 are included in the shared third-party notices directory in the container.

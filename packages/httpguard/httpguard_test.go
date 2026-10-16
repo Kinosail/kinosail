@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestDecodeJSONAcceptsOneBoundedDocument(t *testing.T) {
@@ -193,40 +192,54 @@ type errorReader struct{}
 
 func (errorReader) Read([]byte) (int, error) { return 0, errors.New("read failed") }
 
-func TestLimiterBoundsClients(t *testing.T) {
+func TestLimiterAdmitsNewClientsWhenItsTableIsFull(t *testing.T) {
 	t.Parallel()
 	var limiter Limiter
-	for client := range trackedClientLimit {
+	if !limiter.Allow("ip:203.0.113.1", 1) || limiter.Allow("ip:203.0.113.1", 1) {
+		t.Fatal("active client was not limited")
+	}
+	for client := range trackedClientLimit - 1 {
 		if !limiter.Allow("client-"+strconv.Itoa(client), 1) {
 			t.Fatal("limiter rejected a client before its state bound")
 		}
 	}
-	if limiter.Allow("overflow", 1) || len(limiter.windows) != trackedClientLimit {
-		t.Fatalf("tracked clients = %d", len(limiter.windows))
+	if limiter.Allow("ip:203.0.113.1", 1) {
+		t.Fatal("limited client was released by a full table")
+	}
+	for client := range 3 {
+		if !limiter.Allow("new-client-"+strconv.Itoa(client), 1) {
+			t.Fatal("full table refused a new client")
+		}
+	}
+	if limiter.TrackedClients() != trackedClientLimit || limiter.Allow("ip:203.0.113.1", 1) {
+		t.Fatalf("tracked clients = %d; recently limited client evicted first", limiter.TrackedClients())
+	}
+	limiter.Reset("ip:203.0.113.1")
+	if !limiter.Allow("ip:203.0.113.1", 1) || limiter.TrackedClients() != trackedClientLimit {
+		t.Fatalf("reset client = %d tracked", limiter.TrackedClients())
 	}
 }
 
-func TestLimiterPrunesWindowsAndResetsKeys(t *testing.T) {
+func TestLimiterGroupsIPv6ClientsByPrefix(t *testing.T) {
 	t.Parallel()
 	var limiter Limiter
-	for client := range trackedClientLimit {
-		if !limiter.Allow("client-"+strconv.Itoa(client), 1) {
-			t.Fatal("limiter rejected a client before its state bound")
+	for _, key := range []string{"2001:db8:1:2::1", "ip:2001:db8:1:2::1"} {
+		if !limiter.Allow(key, 1) {
+			t.Fatalf("first %q request was limited", key)
 		}
 	}
-	for key, tracked := range limiter.windows {
-		tracked.reset = time.Now().Add(-time.Second)
-		limiter.windows[key] = tracked
+	for _, key := range []string{"2001:db8:1:2:ffff::9", "ip:2001:db8:1:2::abcd"} {
+		if limiter.Allow(key, 1) {
+			t.Fatalf("rotated IPv6 address %q bypassed its /64 limit", key)
+		}
 	}
-	if !limiter.Allow("replacement", 1) || len(limiter.windows) != 1 || limiter.Allow("replacement", 1) {
-		t.Fatalf("pruned clients = %d", len(limiter.windows))
+	for _, key := range []string{"2001:db8:1:3::1", "ip:2001:db8:1:3::1", "198.51.100.1", "198.51.100.2", "account:Owner"} {
+		if !limiter.Allow(key, 1) {
+			t.Fatalf("unrelated client %q was limited", key)
+		}
 	}
-	limiter.Reset("replacement")
-	if !limiter.Allow("replacement", 1) || len(limiter.windows) != 1 {
-		t.Fatal("reset did not remove one counter")
-	}
-	if limiter.TrackedClients() != 1 {
-		t.Fatalf("tracked clients = %d", limiter.TrackedClients())
+	if limiter.Allow("::ffff:198.51.100.1", 1) {
+		t.Fatal("IPv4-mapped address bypassed its IPv4 limit")
 	}
 }
 

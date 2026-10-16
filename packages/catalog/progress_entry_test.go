@@ -8,7 +8,8 @@ import (
 
 func TestRecordPersistencePublishesOnlyAfterCommit(t *testing.T) {
 	values := map[string]PlaybackState{"viewer:item": {Seconds: 10}}
-	var mu, persistMu sync.Mutex
+	var mu sync.RWMutex
+	var persistMu sync.Mutex
 	blocked := errors.New("disk unavailable")
 	storage := ProgressStorage{
 		Mutex: &mu, PersistMutex: &persistMu, Values: &values, File: "progress.json",

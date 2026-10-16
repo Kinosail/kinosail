@@ -4,7 +4,8 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
+	"slices"
+	"sync"
 	"testing"
 	"time"
 
@@ -18,7 +19,10 @@ func TestVerificationDoesNotPromoteAnEncoderListing(t *testing.T) {
 		{ID: "vaapi", Name: "AMD", Usable: true, encoders: map[string]string{"h264": "h264_vaapi"}},
 	}}
 	var order []string
+	var mu sync.Mutex
 	actual := verify(t.Context(), ProbeOptions{Enabled: true, FFmpeg: "test-ffmpeg", Devices: []string{t.TempDir()}}, discovered, func(_ context.Context, _ string, options transcodepolicy.Settings, _ string) transcodepolicy.CheckResult {
+		mu.Lock()
+		defer mu.Unlock()
 		order = append(order, options.Accelerator+":"+options.Codec)
 		status := "failed"
 		if options.Accelerator == "none" || options.Accelerator == "vaapi" {
@@ -32,7 +36,7 @@ func TestVerificationDoesNotPromoteAnEncoderListing(t *testing.T) {
 	if actual.PreferredCodec("auto", "auto", []string{"av1", "h264"}) != "h264" {
 		t.Fatal("automatic ignored verified H.264")
 	}
-	if len(order) < 3 || strings.Join(order[:3], ",") != "none:h264,qsv:h264,vaapi:h264" {
+	if len(order) < 3 || !slices.Equal(slices.Sorted(slices.Values(order[:3])), []string{"none:h264", "qsv:h264", "vaapi:h264"}) {
 		t.Fatalf("baseline was not prioritized: %v", order)
 	}
 }
@@ -45,7 +49,10 @@ func TestPreferredDecodeIsCheckedBeforeOptionalCodecBudgetExpires(t *testing.T) 
 		{ID: "cuda", Usable: true, encoders: map[string]string{"h264": "h264_nvenc"}},
 	}}
 	decodes := 0
+	var mu sync.Mutex
 	actual := verify(ctx, ProbeOptions{Enabled: true, FFmpeg: "test-ffmpeg", Devices: []string{t.TempDir()}}, discovered, func(_ context.Context, _ string, options transcodepolicy.Settings, _ string) transcodepolicy.CheckResult {
+		mu.Lock()
+		defer mu.Unlock()
 		if options.Codec == "hevc" {
 			cancel()
 			return transcodepolicy.CheckResult{Status: "failed"}
@@ -53,10 +60,10 @@ func TestPreferredDecodeIsCheckedBeforeOptionalCodecBudgetExpires(t *testing.T) 
 		if options.HardwareDecode {
 			decodes++
 		}
-		return transcodepolicy.CheckResult{Status: "passed", HardwareDecode: options.HardwareDecode}
+		return transcodepolicy.CheckResult{Status: "passed", HardwareDecode: options.HardwareDecode, DecodeInput: options.DecodeInput}
 	})
 	settings, err := actual.Settings(Selection{Accelerator: "auto"}, "h264")
-	if err != nil || settings.Accelerator != "cuda" || !settings.HardwareDecode || decodes != 1 {
+	if err != nil || settings.Accelerator != "cuda" || !slices.Equal(settings.HardwareDecodeInputs, []string{"h264"}) || decodes != 1 {
 		t.Fatalf("preferred frame path lost its startup budget: %#v, %v, checks=%d", settings, err, decodes)
 	}
 	if actual.SupportsCodec("hevc") {
@@ -87,7 +94,7 @@ func TestFailedDeviceEvidenceIsSharedAndExpires(t *testing.T) {
 
 func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) {
 	state := &verification{operations: map[string][]Operation{
-		"cuda": {{Codec: "h264", Device: "0", DecodeH264: true, Status: "passed"}},
+		"cuda": {{Codec: "h264", Device: "0", DecodeInputs: []string{"h264"}, Status: "passed"}},
 		"none": {{Codec: "h264", Status: "passed"}},
 	}, failed: map[string]time.Time{}}
 	hardware := Capabilities{Probed: true, verification: state, Backends: []Backend{
@@ -96,12 +103,13 @@ func TestDecodeRecoveryPreservesEncodingAndPolicyCache(t *testing.T) {
 	}}
 	selection := Selection{Accelerator: "auto"}
 	initial, err := hardware.Settings(selection, "h264")
-	if err != nil || !initial.HardwareDecode || initial.Accelerator != "cuda" {
+	if err != nil || !slices.Equal(initial.HardwareDecodeInputs, []string{"h264"}) || initial.Accelerator != "cuda" {
 		t.Fatalf("initial hardware settings = %#v, %v", initial, err)
 	}
+	initial.HardwareDecode, initial.DecodeInput = true, "h264"
 	hardware.RecordDecodeFailure(initial)
 	encodeOnly, err := hardware.Settings(selection, "h264")
-	if err != nil || encodeOnly.HardwareDecode || encodeOnly.Accelerator != "cuda" || encodeOnly.Cache != initial.Cache {
+	if err != nil || len(encodeOnly.HardwareDecodeInputs) != 0 || encodeOnly.Accelerator != "cuda" || encodeOnly.Cache != initial.Cache {
 		t.Fatalf("decode failure discarded encoding: %#v, %v", encodeOnly, err)
 	}
 	hardware.RecordFailure(encodeOnly)
@@ -162,5 +170,33 @@ func TestChangedExecutableInvalidatesEvidenceUntilExplicitCheck(t *testing.T) {
 	hardware.RecordCheck(options, transcodepolicy.CheckResult{Status: "passed"})
 	if !hardware.SupportsCodec("h264") {
 		t.Fatal("new successful check did not replace stale identity")
+	}
+}
+
+func TestDeviceSessionBudgetsLeavePlaybackHeadroom(t *testing.T) {
+	tests := []struct {
+		accelerator, device string
+		sessions            int
+	}{
+		{"vaapi", "/dev/dri/renderD128", 4},
+		{"qsv", "", 4},
+		{"cuda", "0", 3},
+		{"cuda", "", 3},
+		{"videotoolbox", "", 4},
+		{"amf", "", 4},
+		{"rkmpp", "/dev/dri/renderD129", 4},
+		{"mf", "", 2},
+		{"v4l2m2m", "", 2},
+	}
+	keys := map[string]bool{}
+	for _, test := range tests {
+		key := DeviceKey(transcodepolicy.Settings{Accelerator: test.accelerator, Device: test.device})
+		if got := DeviceSessions(key); got != test.sessions {
+			t.Errorf("%s %q sessions = %d, want %d", test.accelerator, test.device, got, test.sessions)
+		}
+		keys[key] = true
+	}
+	if len(keys) != len(tests) || DeviceSessions("unknown") != 2 || DeviceKey(transcodepolicy.Settings{Accelerator: "none"}) != "" {
+		t.Fatalf("device keys = %v", keys)
 	}
 }

@@ -11,17 +11,25 @@ import (
 )
 
 type ProgressStorage struct {
-	Mutex, PersistMutex *sync.Mutex
-	Values              *map[string]catalog.PlaybackState
-	File                string
-	Persist             func(string, any) error
-	Database            *documentdb.Store
-	ProfileID           string
-	Owner               bool
+	Mutex        *sync.RWMutex
+	PersistMutex *sync.Mutex
+	Values       *map[string]catalog.PlaybackState
+	File         string
+	Persist      func(string, any) error
+	Database     *documentdb.Store
+	Entries      bool
+	ProfileID    string
+	Owner        bool
 }
 
+const progressDocument = "progress.json"
+
 func NewProgressStorage(storage catalog.ProgressStorage, database *documentdb.Store) ProgressStorage {
-	return ProgressStorage{Mutex: storage.Mutex, PersistMutex: storage.PersistMutex, Values: storage.Values, File: storage.File, Persist: storage.Persist, Database: database}
+	return ProgressStorage{Mutex: storage.Mutex, PersistMutex: storage.PersistMutex, Values: storage.Values, File: storage.File, Persist: storage.Persist, Database: database, Entries: database != nil && storage.PersistEntry != nil}
+}
+
+func (storage ProgressStorage) entryWrites() bool {
+	return storage.Entries && storage.Database != nil && storage.File != ""
 }
 
 func (storage ProgressStorage) Import(changes []ProgressChange, now time.Time) (int, int, error) {
@@ -29,23 +37,37 @@ func (storage ProgressStorage) Import(changes []ProgressChange, now time.Time) (
 	defer storage.PersistMutex.Unlock()
 	storage.Mutex.Lock()
 	defer storage.Mutex.Unlock()
-	values, applied, conflicts := MergeProgress(*storage.Values, storage.ProfileID, storage.Owner, changes, now)
+	updates, applied, conflicts := progressUpdates(*storage.Values, storage.ProfileID, storage.Owner, changes, now)
 	if applied > 0 && storage.File != "" {
-		if err := storage.Persist(storage.File, values); err != nil {
+		var err error
+		if storage.entryWrites() {
+			err = storage.Database.SaveEntries(progressDocument, entryValues(updates), nil)
+		} else {
+			err = storage.Persist(storage.File, mergedProgress(*storage.Values, updates))
+		}
+		if err != nil {
 			return 0, conflicts, err
 		}
 	}
-	*storage.Values = values
+	publishProgress(storage.Values, updates)
 	return applied, conflicts, nil
 }
 
 func MergeProgress(values map[string]catalog.PlaybackState, profileID string, owner bool, changes []ProgressChange, now time.Time) (map[string]catalog.PlaybackState, int, int) {
-	result, applied, conflicts := maps.Clone(values), 0, 0
+	updates, applied, conflicts := progressUpdates(values, profileID, owner, changes, now)
+	return mergedProgress(values, updates), applied, conflicts
+}
+
+func progressUpdates(values map[string]catalog.PlaybackState, profileID string, owner bool, changes []ProgressChange, now time.Time) (map[string]catalog.PlaybackState, int, int) {
+	updates, applied, conflicts := make(map[string]catalog.PlaybackState), 0, 0
 	for _, change := range changes {
 		key := profileID + ":" + change.TargetID
-		current, found := result[key]
+		current, found := updates[key]
+		if !found {
+			current, found = values[key]
+		}
 		if !found && owner {
-			current = result[change.TargetID]
+			current = values[change.TargetID]
 		}
 		if current == change.Expected {
 			state := change.State
@@ -53,12 +75,36 @@ func MergeProgress(values map[string]catalog.PlaybackState, profileID string, ow
 				state.Updated = now.UTC()
 			}
 			state.Dismissed, state.Session, state.Revision = false, "", 0
-			result[key], applied = state, applied+1
+			updates[key], applied = state, applied+1
 		} else {
 			conflicts++
 		}
 	}
-	return result, applied, conflicts
+	return updates, applied, conflicts
+}
+
+func mergedProgress(values, updates map[string]catalog.PlaybackState) map[string]catalog.PlaybackState {
+	result := maps.Clone(values)
+	if result == nil {
+		result = make(map[string]catalog.PlaybackState, len(updates))
+	}
+	maps.Copy(result, updates)
+	return result
+}
+
+func publishProgress(values *map[string]catalog.PlaybackState, updates map[string]catalog.PlaybackState) {
+	if *values == nil {
+		*values = make(map[string]catalog.PlaybackState, len(updates))
+	}
+	maps.Copy(*values, updates)
+}
+
+func entryValues(updates map[string]catalog.PlaybackState) map[string]any {
+	values := make(map[string]any, len(updates))
+	for key, state := range updates {
+		values[key] = state
+	}
+	return values
 }
 
 func MergeLists(values map[string]bool, playlists map[string]map[string]bool, order map[string][]string, smart map[string]catalog.PlaylistRule, viewer string, changes []ListChange) (map[string]bool, map[string]map[string]bool, map[string][]string, int) {

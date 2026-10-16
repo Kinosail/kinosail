@@ -18,6 +18,7 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/serverdiscovery"
+	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
@@ -25,8 +26,6 @@ import (
 const appMobileMore = `{{if or .NavigationMore .Owner .CanLogout}}<details class="nav-more"><summary {{range .NavigationMore}}{{if .Active}}class="active"{{end}}{{end}}>More</summary><div class="nav-more-menu">{{if .CanLogout}}<section class="nav-more-section nav-more-account" role="group" aria-labelledby="nav-more-profile"><span id="nav-more-profile" class="nav-more-heading">{{t "Profile"}}</span><a class="profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></section>{{end}}<section class="nav-more-section nav-more-actions" aria-labelledby="nav-more-actions"><span id="nav-more-actions" class="nav-more-heading">{{t "Actions"}}</span><button hidden class="quiet" type="button" data-install>{{t "Install"}}</button><a href="/quick-connect">{{t "Quick Connect"}}</a>{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="nav-supporter" href="/supporter">Supporter</a><a href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a><a class="nav-edit-menu" href="/settings#navigation">Edit navigation</a>{{end}}</section>{{if .NavigationMore}}<section class="nav-more-section nav-more-library" aria-labelledby="nav-more-library"><span id="nav-more-library" class="nav-more-heading">{{t "Library"}}</span>{{if .CommandMenu}}<button class="quiet" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Browse library"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a href="/">{{t "Browse library"}}</a>{{end}}{{range .NavigationMore}}<a{{if .Active}} class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}</section>{{end}}</div></details>{{end}}`
 
 const appHeader = `<header class="app-header"><a class="brand-lockup" href="/"><img class="brand-icon" src="/static/icon.svg?v=8" alt=""><h1>{{.ServerName}}</h1><span class="web-beta-badge">Beta</span></a><form class="search" action="/" role="search"><label for="library-search">{{t "Search library"}}</label><input id="library-search" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="{{t "Search all libraries"}}" name="q" value="{{.Query}}" placeholder="{{t "Search all libraries"}}" hx-get="/" hx-target="#main" hx-select="#main" hx-swap="outerHTML" hx-push-url="true" hx-trigger="input changed delay:250ms, search" aria-keyshortcuts="/"><input type="hidden" name="sort" value="{{.Sort}}"><input type="hidden" name="view" value="all"></form><a class="header-supporter mobile-supporter" href="{{if .Owner}}/supporter{{else}}/supporter/collection{{end}}">Support Kinosail</a><nav aria-label="Main navigation" class="mobile-navigation" data-mobile-tabs data-nav-profile="{{.ViewerID}}" data-nav-view="{{.View}}">{{range .NavigationPrimary}}<a {{if .Active}}class="active" aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{range .NavigationMore}}<a class="nav-main-overflow{{if .Active}} active{{end}}"{{if .Active}} aria-current="page"{{end}} href="{{.Href}}">{{.Name}}</a>{{end}}{{if .Owner}}<a class="nav-main-supporter" href="/supporter">Supporter</a><a class="nav-main-edit" href="/settings#navigation">Edit navigation</a>{{end}}` + appMobileMore + `</nav><aside class="desktop-sidebar"><nav aria-label="Main navigation">{{range sidebarGroups .NavigationPrimary .NavigationMore}}<section class="sidebar-group" aria-labelledby="sidebar-{{.ID}}"><h2 id="sidebar-{{.ID}}">{{t .Name}}</h2>{{range .Links}}<a{{if .Active}} class="active" aria-current="page"{{end}} href="{{.Href}}"><span>{{.Name}}</span></a>{{end}}</section>{{end}}{{if .Owner}}<a class="sidebar-edit" href="/settings#navigation">Edit navigation</a>{{end}}</nav></aside><div class="header-actions"><a class="header-supporter" href="{{if .Owner}}/supporter{{else}}/supporter/collection{{end}}">Support Kinosail</a><details class="header-compact-menu"><summary>{{t "Actions"}}</summary><div class="header-compact-panel">{{if .CommandMenu}}<button class="quiet command-open" type="button" data-command-open aria-keyshortcuts="Control+K Meta+K">{{t "Actions"}} <kbd data-command-shortcut>⌘K</kbd></button>{{else}}<a class="header-link command-open" href="/">{{t "Browse library"}}</a>{{end}}<button hidden class="quiet" type="button" data-install>{{t "Install"}}</button><div class="header-utility-links{{if .Owner}} owner-utilities{{end}}"><a class="header-link" href="/quick-connect">{{t "Quick Connect"}}</a>{{if .Owner}}<form action="/scan" method="post"><button class="quiet">{{t "Sync"}}</button></form><a class="header-link" href="/settings">{{t "Settings"}}{{if .UpdateAvailable}} · Update{{end}}</a>{{end}}</div>{{if .CanLogout}}<div class="header-account" role="group" aria-label="{{t "Profile"}}"><a class="header-link profile-chip" href="/account">{{.ViewerName}}</a><form action="/logout" method="post"><button class="quiet">{{t "Sign out"}}</button></form></div>{{end}}</div></details></div></header>`
-
-var home = homeTemplateSource()
 
 func homeTemplateSource() string {
 	return `<!doctype html>
@@ -65,7 +64,7 @@ func homeTemplateSource() string {
 {{if and (not .Shows) (not .Items) (not .Albums) (not .Music) (not .Audiobooks) (not .Books) (not .Photos)}}<div class="empty"><h2>{{if .Query}}No matching titles.{{else if eq .View "list"}}My List is empty.{{else if eq .View "history"}}Nothing played yet.{{else if eq .View "unwatched"}}Everything here is watched.{{else}}No media here yet.{{end}}</h2><p>{{if .Query}}Try another title, person, or genre.{{else if eq .View "list"}}Add a title from its detail page to keep it here.{{else if eq .View "history"}}Start a title and its progress will appear here.{{else if eq .View "unwatched"}}Browse Movies or Shows to replay something.{{else}}Add a library folder in Settings to get started.{{end}}</p>{{if eq .View "list"}}<a class="mode" href="/">Browse library</a>{{end}}</div>{{end}}</section>{{if or .Previous .Next}}<nav class="pagination" data-library-pagination aria-label="Library pages">{{if .Previous}}<a class="mode" href="{{.Previous}}">Previous</a>{{end}}{{if .Next}}<a class="mode" href="{{.Next}}" data-library-next>Load more</a>{{end}}</nav>{{end}}<p class="infinite-status" role="status" aria-live="polite" data-library-status></p>{{end}}`
 }
 
-var homeView = newLocalizedTemplate("home", homeWithPlaylistImport)
+var homeView = newLazyLocalizedTemplate("home", homeWithPlaylistImport)
 
 type Config struct {
 	Lifecycle           context.Context
@@ -130,7 +129,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	shutdown := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
@@ -139,7 +138,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		settings.tmdbCheck = config.TMDBCheck
 	}
 	supporter := newSupporterProgram(settings, config.Supporter)
-	workloads := workload.New(workload.HeavyCapacity())
+	workloads := workload.New(workload.HeavyCapacity(), workload.DeviceSessions(transcodehardware.DeviceSessions))
 	metadata := newMetadataStore(config.Metadata, config.DataDir, config.CacheDir, stateDB)
 	if metadata.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
@@ -155,7 +154,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		return workloads.Acquire(ctx, workload.Background)
 	})}
 	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(config.Lifecycle, items)))
+		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(workload.WithBackgroundPriority(config.Lifecycle), items)))
 	})
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
@@ -167,6 +166,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if progress.Err() != nil || lists.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
+	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
 		auth.passkeys.redirectPages = false
@@ -192,7 +192,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	hls.startup = newStartupPreparation(hls, auth, config.TranscodeCacheLimit)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index, workloads)
-	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
+	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads, stateDB)
 	maintenance := newMaintenanceManager(lifecycle, hls, backups, metadata, markers, config.MaintenanceInterval, config.TranscodeCacheLimit)
 	markers.SetProbe(markerProbe(probe))
 	if managedLifecycle {

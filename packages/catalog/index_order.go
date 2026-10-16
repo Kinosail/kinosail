@@ -81,7 +81,7 @@ func countTitleView(ctx context.Context, references []*library.Item, view string
 func (index *Index) titleReferences(key titleOrderKey) ([]*library.Item, uint64, bool, error) {
 	index.mu.Lock()
 	version := index.titleOrderVersion
-	snapshot := index.items
+	snapshot := index.current.Load()
 	err := index.err
 	if index.ready {
 		err = nil
@@ -98,18 +98,15 @@ func (index *Index) titleReferences(key titleOrderKey) ([]*library.Item, uint64,
 	if entry != nil {
 		return append([]*library.Item(nil), entry.items...), version, true, err
 	}
-	items := make([]*library.Item, len(snapshot))
-	for position := range snapshot {
-		items[position] = &snapshot[position]
-	}
-	return items, version, false, err
+	return snapshotReferences(snapshot), version, false, err
 }
 
 func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, complete int, items []*library.Item) {
 	index.mu.Lock()
 	defer index.mu.Unlock()
-	capacity := min(4, titleOrderReferenceBudget/max(1, len(index.items)))
-	if capacity == 0 || version != index.titleOrderVersion || len(items) != complete || len(index.byID) != len(index.items) || index.titleOrders[key] != nil {
+	snapshot := index.current.Load()
+	capacity := min(4, titleOrderReferenceBudget/max(1, snapshot.Len()))
+	if capacity == 0 || version != index.titleOrderVersion || len(items) != complete || !snapshot.DistinctIDs() || index.titleOrders[key] != nil {
 		return
 	}
 	if index.titleOrders == nil {

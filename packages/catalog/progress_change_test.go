@@ -21,7 +21,7 @@ func TestProgressRevisionRejectsChangesWithoutPersistenceOrAudit(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			original := PlaybackState{Seconds: 120, Session: "phone", Revision: 2, Updated: now}
 			values := map[string]PlaybackState{"viewer:item": original}
-			storage := ProgressStorage{Mutex: new(sync.Mutex), PersistMutex: new(sync.Mutex), Values: &values, File: "progress.json", Persist: func(string, any) error { t.Fatal("rejected event persisted"); return nil }}
+			storage := ProgressStorage{Mutex: new(sync.RWMutex), PersistMutex: new(sync.Mutex), Values: &values, File: "progress.json", Persist: func(string, any) error { t.Fatal("rejected event persisted"); return nil }}
 			watched := true
 			previous, current, accepted, err := storage.Update("viewer:item", ProgressRevision(test.seconds, &watched, test.session, test.revision, now.Add(time.Hour)))
 			started, completed := ProgressAudit(previous, current, test.seconds, &watched, accepted, err)

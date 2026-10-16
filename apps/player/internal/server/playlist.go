@@ -10,7 +10,7 @@ import (
 
 const playlistHTML = playerweb.PlaylistHTML
 
-var playlistView = newLocalizedTemplate("playlist", playlistHTMLWithExport)
+var playlistView = newLazyLocalizedTemplate("playlist", playlistHTMLWithExport)
 
 func playlistHandlers(index *libraryIndex, store *listStore) catalog.PlaylistHandlers {
 	return catalog.NewPlaylistHandlers(catalog.PlaylistHandlersConfig{

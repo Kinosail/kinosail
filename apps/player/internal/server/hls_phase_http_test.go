@@ -21,11 +21,12 @@ import (
 )
 
 func TestHLSPhasePublicHTTP(t *testing.T) {
-	previousCapacity := runtime.GOMAXPROCS(4)
+	previousCapacity := runtime.GOMAXPROCS(1)
 	t.Cleanup(func() { runtime.GOMAXPROCS(previousCapacity) })
 	t.Run("failed launch is never called started", phaseLaunchFailure)
 	t.Run("started child waits for valid presentation", phasePendingAndReady)
 	t.Run("queued admission is distinct from running child", phaseQueuedAdmission)
+	t.Run("stream copy is admitted while a transcode holds the CPU", phaseCopyBesideTranscode)
 	t.Run("page departure releases admission for the next movie", phaseSessionDeparture)
 }
 
@@ -208,7 +209,7 @@ func phaseQueuedAdmission(t *testing.T) {
 	fixture := phaseFixture(t, 2, true)
 	first := fixture.request(t, 0, "t-a0-s0-none-t0-b0", "phase-first")
 	phaseWait(t, func() bool { data, _ := os.ReadFile(fixture.starts); return len(data) > 0 })
-	second := fixture.request(t, 1, "a-a0-s0-none-t0-b0", "phase-second")
+	second := fixture.request(t, 1, "t-a0-s0-none-t0-b0", "phase-second")
 	phaseWait(t, func() bool { return len(fixture.events("phase-second")) > 0 })
 	time.Sleep(100 * time.Millisecond)
 	events := fixture.events("phase-second")

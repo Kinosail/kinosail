@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/mediashares"
 )
@@ -26,7 +27,7 @@ type requestActivity struct {
 func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		facts := &requestActivity{id: acceptedRequestID(request.Header.Get("X-Request-ID")), playbackSession: acceptedPlaybackSession(request)}
-		request = request.WithContext(context.WithValue(request.Context(), requestActivityKey{}, facts))
+		request = request.WithContext(httpguard.WithRouteMemo(context.WithValue(request.Context(), requestActivityKey{}, facts)))
 		writer.Header().Set("X-Request-ID", facts.id)
 		capture := &auditWriter{ResponseWriter: writer}
 		started := time.Now()
@@ -47,9 +48,11 @@ func finishObservedRequest(activity *auditStore, route func(*http.Request) strin
 	activity.failures.Record(facts.id, request.Method, request.URL.Path, status, time.Since(started))
 	pattern := route(request)
 	if jellyfinMediaPath(request.URL.Path) && status >= http.StatusBadRequest {
-		slog.Warn("Jellyfin media authentication diagnostic", "diagnostic", "[PLAYBACK-AUTH]", "request_id", facts.id, "route", pattern, "status", status, "token_source", sessionTokenSource(request), "api_key_query", jellyfinQueryShape(request, "api_key"), "play_session_query", jellyfinQueryShape(request, "playSessionId"), "client", jellyfinClientClass(request))
+		slog.Warn("Jellyfin media authentication diagnostic", "diagnostic", "[PLAYBACK-AUTH]", "request_id", httpguard.LogText(facts.id, 64), "route", pattern, "status", status, "token_source", sessionTokenSource(request), "api_key_query", jellyfinQueryShape(request, "api_key"), "play_session_query", jellyfinQueryShape(request, "playSessionId"), "client", jellyfinClientClass(request))
 	}
-	slog.Log(request.Context(), observedRequestLevel(request, pattern, status, facts), "request", observedRequestAttributes(capture, request, facts, pattern, status, started)...)
+	if level := observedRequestLevel(request, pattern, status, facts); slog.Default().Enabled(request.Context(), level) {
+		slog.Log(request.Context(), level, "request", observedRequestAttributes(capture, request, facts, pattern, status, started)...)
+	}
 }
 
 func recoverObservedRequest(capture *auditWriter, request *http.Request, facts *requestActivity, route func(*http.Request) string, recovered any) bool {
@@ -59,7 +62,7 @@ func recoverObservedRequest(capture *auditWriter, request *http.Request, facts *
 	if capture.Status == 0 {
 		http.Error(capture, "internal server error", http.StatusInternalServerError)
 	}
-	slog.Error("request panic", "request_id", facts.id, "method", request.Method, "route", route(request), "panic", fmt.Sprint(recovered), "stack", string(debug.Stack()))
+	slog.Error("request panic", "request_id", httpguard.LogText(facts.id, 64), "method", httpguard.LogMethod(request.Method), "route", route(request), "panic", fmt.Sprint(recovered), "stack", string(debug.Stack()))
 	return true
 }
 
@@ -91,25 +94,25 @@ func observedRequestLevel(request *http.Request, pattern string, status int, fac
 }
 
 func observedRequestAttributes(capture *auditWriter, request *http.Request, facts *requestActivity, pattern string, status int, started time.Time) []any {
-	attributes := []any{"request_id", facts.id, "method", request.Method, "route", pattern, "status", status, "duration_ms", time.Since(started).Milliseconds()}
+	attributes := []any{"request_id", httpguard.LogText(facts.id, 64), "method", httpguard.LogMethod(request.Method), "route", pattern, "status", status, "duration_ms", time.Since(started).Milliseconds()}
 	if jellyfinMediaPath(request.URL.Path) {
 		attributes = append(attributes, "stream_shape", jellyfinStreamShape(request.URL.Path), "client", jellyfinClientClass(request))
 	}
 	if path := identitycore.SafeCompatibilityPath(request, pattern); path != "" {
-		attributes = append(attributes, "compatibility_path", path)
+		attributes = append(attributes, "compatibility_path", httpguard.LogText(path, 512))
 	}
 	if facts.playbackSession == "" {
 		return attributes
 	}
-	attributes = append(attributes, "playback_session", facts.playbackSession, "response_bytes", capture.Bytes)
+	attributes = append(attributes, "playback_session", httpguard.LogText(facts.playbackSession, 64), "response_bytes", capture.Bytes)
 	if value := request.Header.Get("Range"); mediashares.ValidSingleByteRange(value) {
-		attributes = append(attributes, "request_range", value)
+		attributes = append(attributes, "request_range", httpguard.LogText(value, 128))
 	}
 	if value := capture.Header().Get("Content-Range"); identitycore.ValidContentRange(value) {
-		attributes = append(attributes, "response_range", value)
+		attributes = append(attributes, "response_range", httpguard.LogText(value, 128))
 	}
 	if value, _, err := mime.ParseMediaType(capture.Header().Get("Content-Type")); err == nil {
-		attributes = append(attributes, "response_type", value)
+		attributes = append(attributes, "response_type", httpguard.LogText(value, 128))
 	}
 	return attributes
 }

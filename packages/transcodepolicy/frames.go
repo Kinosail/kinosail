@@ -7,8 +7,8 @@ func frameArguments(options Settings, width string) ([]string, string) {
 		return input, filter
 	}
 	if options.HardwareDecode && !options.SoftwareFilters && !options.ToneMap && !options.Deinterlace {
-		if input, filter := acceleratedFrames(options, width); len(input) > 0 {
-			return input, filter
+		if input := acceleratedInput(options); len(input) > 0 {
+			return input, acceleratedScaler(options, width)
 		}
 	}
 	filters := softwareFrameFilters(options, width)
@@ -26,25 +26,45 @@ func frameArguments(options Settings, width string) ([]string, string) {
 	return input, strings.Join(filters, ",")
 }
 
-func acceleratedFrames(options Settings, width string) ([]string, string) {
-	format := surfaceFormat(options)
+func acceleratedInput(options Settings) []string {
 	switch options.Accelerator {
 	case "cuda":
 		input := []string{"-hwaccel", "cuda", "-hwaccel_output_format", "cuda"}
 		if options.Device != "" {
 			input = append(input, "-hwaccel_device", options.Device)
 		}
-		return input, "scale_cuda=w=" + width + ":h=-2:format=" + PixelFormat(options)
+		return input
 	case "qsv":
-		input := qsvDevice(options.Device)
-		input = append(input, "-hwaccel", "qsv", "-hwaccel_device", "kino", "-hwaccel_output_format", "qsv")
-		return input, "scale_qsv=w=" + width + ":h=-2:format=" + format
+		return append(qsvDevice(options.Device), "-hwaccel", "qsv", "-hwaccel_device", "kino", "-hwaccel_output_format", "qsv")
 	case "vaapi":
-		return []string{"-hwaccel", "vaapi", "-hwaccel_device", renderDevice(options.Device), "-hwaccel_output_format", "vaapi"}, "scale_vaapi=w=" + width + ":h=-2:format=" + format
+		return []string{"-hwaccel", "vaapi", "-hwaccel_device", renderDevice(options.Device), "-hwaccel_output_format", "vaapi"}
 	case "rkmpp":
-		return []string{"-init_hw_device", "rkmpp=rk", "-hwaccel", "rkmpp", "-hwaccel_output_format", "drm_prime"}, "scale_rkrga=w=" + width + ":h=-2:format=" + format
+		return []string{"-init_hw_device", "rkmpp=rk", "-hwaccel", "rkmpp", "-hwaccel_output_format", "drm_prime"}
+	case "videotoolbox":
+		return []string{"-hwaccel", "videotoolbox", "-hwaccel_output_format", "videotoolbox"}
 	}
-	return nil, ""
+	return nil
+}
+
+func acceleratedScaler(options Settings, width string) string {
+	size := "=w=" + width + ":h=-2"
+	switch options.Accelerator {
+	case "cuda":
+		return "scale_cuda" + size + ":format=" + cudaFormat(options)
+	case "qsv":
+		return "scale_qsv" + size + ":format=" + surfaceFormat(options)
+	case "vaapi":
+		return "scale_vaapi" + size + ":format=" + surfaceFormat(options)
+	case "rkmpp":
+		return "scale_rkrga" + size + ":format=" + surfaceFormat(options)
+	case "videotoolbox":
+		return "scale_vt" + size
+	}
+	return ""
+}
+
+func HardwareDecodeInput(accelerator string) bool {
+	return acceleratedInput(Settings{Accelerator: accelerator}) != nil
 }
 
 func qsvDevice(device string) []string {
@@ -68,6 +88,13 @@ func surfaceFormat(options Settings) string {
 	return "nv12"
 }
 
+func cudaFormat(options Settings) string {
+	if PixelFormat(options) == "yuv420p10le" {
+		return "p010le"
+	}
+	return "yuv420p"
+}
+
 func ColorArguments(options Settings) []string {
 	if options.ToneMap {
 		return []string{"-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv"}
@@ -88,9 +115,12 @@ func softwareFrameFilters(options Settings, width string) []string {
 		filters = append(filters, "bwdif=mode=send_frame:parity=auto:deint=interlaced")
 	}
 	if options.ToneMap {
-		filters = append(filters, "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv")
-		filters = append(filters, removeHDRMetadata()...)
+		filters = append(filters, softwareToneMapFilters()...)
 	}
 	filters = append(filters, "scale=w="+width+":h='trunc(ow/dar/2)*2'", "setsar=1", "format="+PixelFormat(options))
 	return filters
+}
+
+func softwareToneMapFilters() []string {
+	return append([]string{"zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv"}, removeHDRMetadata()...)
 }

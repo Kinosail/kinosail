@@ -47,7 +47,7 @@ func (ledger *subtitleLedger) clearSearches() {
 	}
 	previous := ledger.state.Searches
 	ledger.state.Searches = make(map[string]subtitleSearchRecord)
-	if err := ledger.save(); err != nil {
+	if err := ledger.persist(subtitleLedgerSearchesDocument, "", ledger.state.Searches); err != nil {
 		ledger.state.Searches = previous
 	}
 }

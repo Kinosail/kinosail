@@ -15,8 +15,11 @@ import (
 )
 
 func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:gocognit // One decode feeds the complete switchable presentation.
-	device := transcodehardware.DeviceKey(options)
-	release, err := manager.acquireHLSEncode(ctx, len(qualities), device, start, startNumber)
+	device, cost := transcodehardware.DeviceKey(options), len(qualities)
+	if device == "" {
+		cost = manager.workloads.LadderCost(ladderRungs(qualities))
+	}
+	release, err := manager.acquireHLSEncode(ctx, cost, device, start, startNumber)
 	if err != nil {
 		return err
 	}
@@ -36,6 +39,10 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if refill != nil {
 		arguments = refill.input(arguments, item.Path)
 	}
+	graph := presentationFilterGraph(options, recipe, qualities)
+	if graph != "" {
+		arguments = append(arguments, "-filter_complex", graph)
+	}
 	for index, quality := range qualities {
 		layoutNumber := startNumber
 		if refill != nil {
@@ -49,6 +56,9 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		mapping, encoded := applyBurnIn(video, item.Path, recipe)
 		label := "[v" + strconv.Itoa(index) + "]"
 		mapping = presentationVideoMapping(mapping, label)
+		if graph != "" {
+			mapping, encoded = []string{"-map", label}, video[2:]
+		}
 		arguments = append(arguments, mapping...)
 		if audioBitrate > 0 {
 			if refill != nil {
