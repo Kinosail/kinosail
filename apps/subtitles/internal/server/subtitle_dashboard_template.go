@@ -8,4 +8,6 @@ var subtitleDashboardHTML string
 //go:embed subtitle_dashboard_item.html
 var subtitleDashboardItemHTML string
 
-var subtitleDashboardView = newLocalizedTemplate("subtitle-dashboard", subtitleDashboardHTML+subtitleDashboardItemHTML+`{{define "subtitle-navigation"}}`+subtitleAppHeader+`{{end}}`)
+var subtitleDashboardView = newLazyLocalizedTemplate("subtitle-dashboard", func() string {
+	return subtitleDashboardHTML + subtitleDashboardItemHTML + `{{define "subtitle-navigation"}}` + subtitleAppHeader + `{{end}}`
+})

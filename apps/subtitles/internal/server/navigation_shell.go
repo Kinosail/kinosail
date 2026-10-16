@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"net/http"
+	"slices"
 	"strings"
 
 	sharednavigation "github.com/MikeO7/kinosail/packages/navigation"
@@ -79,8 +80,13 @@ func applicationShellView(pattern string) string {
 	return ""
 }
 
+type pageEdit struct {
+	at         int
+	text       string
+	navigation []byte
+}
+
 func injectApplicationShell(page, navigation []byte) []byte {
-	page = versionAssetReferenceBytes(page)
 	bodyStart := bytes.Index(page, []byte("<body"))
 	if bodyStart < 0 {
 		return page
@@ -89,32 +95,39 @@ func injectApplicationShell(page, navigation []byte) []byte {
 	if bodyEnd < bodyStart {
 		return page
 	}
-	body := page[bodyStart:bodyEnd]
-	if class := bytes.Index(body, []byte(`class="`)); class >= 0 {
-		class += bodyStart + len(`class="`)
-		page = append(append(append([]byte(nil), page[:class]...), []byte("library-page subtitle-app subtitle-dashboard ")...), page[class:]...)
-		bodyEnd += len("library-page subtitle-app subtitle-dashboard ")
+	edits := make([]pageEdit, 0, 3)
+	if class := bytes.Index(page[bodyStart:bodyEnd], []byte(`class="`)); class >= 0 {
+		edits = append(edits, pageEdit{at: bodyStart + class + len(`class="`), text: "library-page subtitle-app subtitle-dashboard "})
 	} else {
-		page = append(append(append([]byte(nil), page[:bodyEnd]...), []byte(` class="library-page subtitle-app subtitle-dashboard"`)...), page[bodyEnd:]...)
-		bodyEnd += len(` class="library-page subtitle-app subtitle-dashboard"`)
+		edits = append(edits, pageEdit{at: bodyEnd, text: ` class="library-page subtitle-app subtitle-dashboard"`})
 	}
 	if mainStart := bytes.Index(page, []byte("<main")); mainStart >= 0 {
-		mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>')
-		if mainEnd >= mainStart && !bytes.Contains(page[mainStart:mainEnd], []byte(`id="`)) {
-			page = append(append(append([]byte(nil), page[:mainStart+len("<main")]...), []byte(` id="main"`)...), page[mainStart+len("<main"):]...)
+		if mainEnd := mainStart + bytes.IndexByte(page[mainStart:], '>'); mainEnd >= mainStart && !bytes.Contains(page[mainStart:mainEnd], []byte(`id="`)) {
+			edits = append(edits, pageEdit{at: mainStart + len("<main"), text: ` id="main"`})
 		}
 	}
-	insertAt := bodyEnd + 1
-	prefix := []byte(`<a class="skip" href="#main">Skip to content</a>`)
+	insertAt, prefix := bodyEnd+1, `<a class="skip" href="#main">Skip to content</a>`
 	if skip := bytes.Index(page[insertAt:], []byte(`<a class="skip"`)); skip >= 0 {
 		skip += insertAt
 		if end := bytes.Index(page[skip:], []byte("</a>")); end >= 0 {
-			insertAt = skip + end + len("</a>")
-			prefix = nil
+			insertAt, prefix = skip+end+len("</a>"), ""
 		}
 	}
-	addition := append(append(append([]byte("\n"), prefix...), '\n'), navigation...)
-	return append(append(append([]byte(nil), page[:insertAt]...), addition...), page[insertAt:]...)
+	return applyPageEdits(page, append(edits, pageEdit{at: insertAt, text: "\n" + prefix + "\n", navigation: navigation}))
+}
+
+func applyPageEdits(page []byte, edits []pageEdit) []byte {
+	slices.SortStableFunc(edits, func(first, second pageEdit) int { return first.at - second.at })
+	size := len(page)
+	for _, edit := range edits {
+		size += len(edit.text) + len(edit.navigation)
+	}
+	result, cursor := make([]byte, 0, size), 0
+	for _, edit := range edits {
+		result = append(append(append(result, page[cursor:edit.at]...), edit.text...), edit.navigation...)
+		cursor = edit.at
+	}
+	return append(result, page[cursor:]...)
 }
 
 type bufferedPage struct {
