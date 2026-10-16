@@ -74,7 +74,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"hevc","width":1920,
 		t.Fatal("adaptive hardware variants did not finish")
 	}
 	used, err := os.ReadFile(arguments)
-	if err != nil || strings.Contains(string(used), "-hwaccel qsv") || !strings.Contains(string(used), "-c:v hevc_qsv") || !strings.Contains(masterCodec(t, cache, id), `CODECS="hvc1.`) {
+	if err != nil || !strings.Contains(string(used), "-hwaccel qsv") || !strings.Contains(string(used), "scale_qsv=w=1920:h=-2:format=nv12") || !strings.Contains(string(used), "-c:v hevc_qsv") || !strings.Contains(masterCodec(t, cache, id), `CODECS="hvc1.`) {
 		t.Fatalf("automatic hardware arguments = %q, %v", used, err)
 	}
 	settings := httptest.NewRecorder()

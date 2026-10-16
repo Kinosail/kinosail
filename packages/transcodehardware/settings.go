@@ -103,8 +103,7 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	}
 	if operation, ok := capabilities.Backend(accelerator).operation(codec, ""); ok {
 		settings.Device = operation.Device
-		settings.HardwareDecode = operation.DecodeH264
-		settings.HardwareDecodeHEVC, settings.HardwareDecodeHEVC10, settings.HardwareDecodeAV1 = operation.DecodeHEVC, operation.DecodeHEVC10, operation.DecodeAV1
+		settings.HardwareDecodeInputs = append([]string(nil), operation.DecodeInputs...)
 	}
 	if selection.ToneMap {
 		settings.Cache += ":hdr"
@@ -127,6 +126,6 @@ func (capabilities Capabilities) ColorSettings(options transcodepolicy.Settings)
 		return transcodepolicy.Settings{}, errors.New("the selected encoder has no verified HDR output operation")
 	}
 	options.Device = operation.Device
-	options.HardwareDecode = false
+	options.HardwareDecode = options.HardwareDecode && operation.decodes(options.DecodeInput)
 	return options, nil
 }

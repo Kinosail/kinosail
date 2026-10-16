@@ -2,6 +2,7 @@ package transcodepolicy
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,6 +20,7 @@ type CheckResult struct {
 	Backend         string `json:"backend"`
 	Message         string `json:"message"`
 	HardwareDecode  bool   `json:"hardwareDecode"`
+	DecodeInput     string `json:"decodeInput,omitempty"`
 	HardwareToneMap string `json:"hardwareToneMap,omitempty"`
 	ToneMapInput    string `json:"toneMapInput,omitempty"`
 	OutputHDR       string `json:"outputHDR,omitempty"`
@@ -52,12 +54,9 @@ func runCheck(ctx context.Context, ffmpeg string, options Settings, backend stri
 		return result
 	}
 	defer os.RemoveAll(directory)
-	source, sourceArguments := checkSource(directory, options)
-	if err = run(ctx, ffmpeg, sourceArguments...); err != nil {
-		result.Stage, result.Message = "source", "FFmpeg could not create the local test clip. Check that FFmpeg includes H.264 and AAC."
-		if options.HardwareToneMap != "" {
-			result.Message = "FFmpeg could not create the local HDR test clip."
-		}
+	source, candidates := checkSources(directory, options)
+	if err = runFirst(ctx, ffmpeg, candidates, run); err != nil {
+		result.Stage, result.Message = "source", checkSourceMessage(options)
 		return result
 	}
 	input, output := VideoArguments(options, "320")
@@ -83,9 +82,30 @@ func runCheck(ctx context.Context, ffmpeg string, options Settings, backend stri
 		return result
 	}
 	result.HardwareToneMap, result.ToneMapInput = options.HardwareToneMap, options.ToneMapInput
-	result.HardwareDecode, result.OutputHDR, result.DurationMS = options.HardwareDecode, options.OutputHDR, time.Since(started).Milliseconds()
+	result.HardwareDecode, result.DecodeInput, result.OutputHDR, result.DurationMS = options.HardwareDecode, options.DecodeInput, options.OutputHDR, time.Since(started).Milliseconds()
 	result.Status, result.Message = "passed", "Kinosail encoded and decoded a local HLS clip with "+backend+". This is a smoke check, not a device or performance certification."
 	return result
+}
+
+func runFirst(ctx context.Context, ffmpeg string, candidates [][]string, run func(context.Context, string, ...string) error) error {
+	err := errors.New("no source encoder is available")
+	for _, arguments := range candidates {
+		if err = run(ctx, ffmpeg, arguments...); err == nil || ctx.Err() != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func checkSourceMessage(options Settings) string {
+	switch {
+	case options.HardwareDecode && options.DecodeInput != "":
+		return "FFmpeg could not create the local " + Definition(decodeInputCodec(options.DecodeInput)).Name + " test clip."
+	case options.HardwareToneMap != "":
+		return "FFmpeg could not create the local HDR test clip."
+	default:
+		return "FFmpeg could not create the local test clip. Check that FFmpeg includes H.264 and AAC."
+	}
 }
 
 func checkBackend(options Settings, backend string) string {
@@ -103,14 +123,31 @@ func checkSetup(ffmpeg string, options Settings) string {
 	if ffmpeg == "" || !ValidCodec(options.Codec) || options.Codec == "auto" || options.Encoder == "" {
 		return "Choose an available video encoder before running the check."
 	}
-	if !validDecodeInput(options.DecodeInput) {
-		return "The requested decode input is unsupported."
+	if options.HardwareToneMap != "" && (!options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg") {
+		return "The requested hardware tone mapping operation is unsupported."
 	}
-	if options.HardwareToneMap != "" && (!options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || options.HardwareDecode && !ToneMapHardwareFrames(options) || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg") {
+	if options.HardwareToneMap != "" && options.HardwareDecode && !HardwareDecodedToneMap(options) {
 		return "The requested hardware tone mapping operation is unsupported."
 	}
 	if options.OutputHDR != "" && (options.Codec != "hevc" || options.OutputHDR != "hdr10" && options.OutputHDR != "hlg") {
 		return "The requested output color format is unsupported."
+	}
+	return checkDecodeSetup(options)
+}
+
+func checkDecodeSetup(options Settings) string {
+	if options.DecodeInput != "" && !ValidDecodeInput(options.DecodeInput) {
+		return "The requested decode input is unsupported."
+	}
+	if !options.HardwareDecode {
+		return ""
+	}
+	_, depth := DecodeInputCodec(options.DecodeInput)
+	if depth == 0 || !HardwareDecodeInput(options.Accelerator) {
+		return "The requested hardware decoding operation is unsupported."
+	}
+	if (options.HardwareToneMap != "" || options.OutputHDR != "") && depth != 10 {
+		return "The requested hardware decoding operation is unsupported."
 	}
 	return ""
 }

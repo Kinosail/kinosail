@@ -55,9 +55,8 @@ func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recip
 	}
 	options.Deinterlace = Interlaced(facts.Video)
 	options.SoftwareFilters = recipe.Burn != "" || len(recipe.Omitted) > 0 || facts.Video.Rotation != 0 || facts.Video.SampleAspectRatio != "" && facts.Video.SampleAspectRatio != "1:1"
-	options.DecodeInput = decodeInput(facts.Video)
-	options.HardwareDecode = verifiedDecodeInput(options) && facts.Video.Rotation == 0 && (facts.Video.SampleAspectRatio == "" || facts.Video.SampleAspectRatio == "1:1") && options.OutputHDR == ""
-	options.HardwareDecode = options.HardwareDecode && !options.ToneMap && !options.Deinterlace && !options.SoftwareFilters
+	options.DecodeInput = transcodepolicy.DecodeInput(facts.Video.Codec, facts.Video.BitDepth)
+	options.HardwareDecode = transcodepolicy.HardwareDecodeAvailable(options) && !options.Deinterlace && !options.SoftwareFilters
 	return options
 }
 
@@ -177,36 +176,6 @@ func sourceColor(options transcodepolicy.Settings, hdr string, recipe HLSRecipe)
 		}
 	}
 	return options
-}
-
-func decodeInput(video VideoFacts) string {
-	switch {
-	case video.Codec == "h264" && video.BitDepth <= 8:
-		return "h264"
-	case video.Codec == "hevc" && video.BitDepth <= 8:
-		return "hevc"
-	case video.Codec == "hevc" && video.BitDepth <= 10:
-		return "hevc10"
-	case video.Codec == "av1" && video.BitDepth <= 10:
-		return "av1"
-	default:
-		return ""
-	}
-}
-
-func verifiedDecodeInput(options transcodepolicy.Settings) bool {
-	switch options.DecodeInput {
-	case "h264":
-		return options.HardwareDecode
-	case "hevc":
-		return options.HardwareDecodeHEVC
-	case "hevc10":
-		return options.HardwareDecodeHEVC10
-	case "av1":
-		return options.HardwareDecodeAV1
-	default:
-		return false
-	}
 }
 
 func validHLSSourceTimeline(recipe HLSRecipe, facts MediaFacts) bool {

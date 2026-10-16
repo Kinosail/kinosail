@@ -88,7 +88,7 @@ func TestRunCheckPreservesSetupSourceEncodeAndSuccessResults(t *testing.T) {
 			t.Errorf("%s encode arguments = %v", test.name, arguments)
 		}
 	}
-	if options != original {
+	if !reflect.DeepEqual(options, original) {
 		t.Fatalf("synthetic check changed selection: %#v", options)
 	}
 }

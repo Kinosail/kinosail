@@ -3,6 +3,7 @@ import Foundation
 actor ArtworkWarmup {
     private struct Request {
         let path: String
+        let url: String
         let client: ServerClient
         let dimension: Int
     }
@@ -13,20 +14,20 @@ actor ArtworkWarmup {
     func prefetch(paths: [String], client: ServerClient, dimension: Int, loader: ArtworkLoader) throws {
         try Task.checkCancellation()
         guard paths.count <= 24, [400, 500, 800, 1600].contains(dimension) else { throw ClientError.invalidResponse }
-        let urls = try paths.map { path in
+        let urls = try paths.map { path -> (path: String, url: String) in
             guard !path.isEmpty, path.utf8.count <= 16_384,
                   path.rangeOfCharacter(from: .controlCharacters) == nil else { throw ClientError.invalidResponse }
             let url = try client.server.mediaURL(path)
             guard ["/art/", "/episode-art/", "/backdrop/", "/person/"].contains(where: { url.path.hasPrefix($0) }),
                   let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
                   ServerClient.cacheableMediaURL(components) else { throw ClientError.invalidResponse }
-            return url.absoluteString
+            return (path, url.absoluteString)
         }
         var seen: Set<String> = []
-        for path in urls where seen.insert(path).inserted {
+        for (path, url) in urls where seen.insert(url).inserted {
             guard queue.count < 64 else { break }
-            if !queue.contains(where: { $0.client.identity == client.identity && $0.path == path && $0.dimension == dimension }) {
-                queue.append(Request(path: path, client: client, dimension: dimension))
+            if !queue.contains(where: { $0.client.identity == client.identity && $0.url == url && $0.dimension == dimension }) {
+                queue.append(Request(path: path, url: url, client: client, dimension: dimension))
             }
         }
         guard task == nil, !queue.isEmpty else { return }

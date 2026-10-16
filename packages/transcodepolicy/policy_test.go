@@ -42,7 +42,7 @@ func TestEveryPlayerHardwareBackendHasAnFFmpegRecipe(t *testing.T) {
 		"vaapi":        {"-hwaccel vaapi", "scale_vaapi", "-c:v h264_vaapi"},
 		"rkmpp":        {"-init_hw_device rkmpp=rk", "scale_rkrga", "-c:v h264_rkmpp"},
 		"v4l2m2m":      {"scale=w=", "-c:v h264_v4l2m2m"},
-		"videotoolbox": {"scale=w=", "-c:v h264_videotoolbox"},
+		"videotoolbox": {"-hwaccel videotoolbox", "scale_vt=w=1280:h=-2", "-c:v h264_videotoolbox", "-q:v 65"},
 		"amf":          {"scale=w=", "-c:v h264_amf"},
 		"mf":           {"scale=w=", "-c:v h264_mf"},
 	}

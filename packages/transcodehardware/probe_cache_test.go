@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -48,7 +49,7 @@ func cachedFixture(t *testing.T) (ProbeOptions, Capabilities, string) {
 		if settings.Codec == "hevc" && settings.Accelerator == "vaapi" || settings.ToneMap {
 			status = "failed"
 		}
-		return transcodepolicy.CheckResult{Status: status, HardwareDecode: settings.HardwareDecode}
+		return transcodepolicy.CheckResult{Status: status, HardwareDecode: settings.HardwareDecode, DecodeInput: settings.DecodeInput}
 	})
 	return options, verified, filepath.Join(tools, "hardware-probe.json")
 }
@@ -68,9 +69,12 @@ func TestCachedProbeRestoresVerifiedEvidence(t *testing.T) {
 	for _, codec := range []string{"h264", "hevc"} {
 		want, wantErr := verified.Settings(Selection{Transcoder: "automatic", Accelerator: "auto"}, codec)
 		got, gotErr := restored.Settings(Selection{Transcoder: "automatic", Accelerator: "auto"}, codec)
-		if got != want || (gotErr == nil) != (wantErr == nil) {
+		if !reflect.DeepEqual(got, want) || (gotErr == nil) != (wantErr == nil) {
 			t.Fatalf("%s settings = %#v, %v; want %#v, %v", codec, got, gotErr, want, wantErr)
 		}
+	}
+	if decoded, _ := restored.Settings(Selection{Transcoder: "automatic", Accelerator: "auto"}, "h264"); len(decoded.HardwareDecodeInputs) == 0 {
+		t.Fatalf("restored evidence lost verified decode inputs: %#v", decoded)
 	}
 	if !restored.SupportsCodec("hevc") || restored.Backend("vaapi").EncoderFor("hevc") != "" || restored.Backend("vaapi").EncoderFor("h264") != "h264_vaapi" {
 		t.Fatalf("restored evidence = %#v", restored.Backend("vaapi"))
@@ -112,14 +116,15 @@ func TestCachedProbeRejectsChangedInstallationsAndTampering(t *testing.T) {
 	options, verified, path = cachedFixture(t)
 	store()
 	data, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
+	if err != nil || !strings.Contains(string(data), `"decodeInputs":["`) {
+		t.Fatalf("cache lacks decode evidence: %v", err)
 	}
 	device := verified.Backend("vaapi").Device
 	for name, tampered := range map[string]string{
 		"device":   strings.ReplaceAll(string(data), `"`+device+`"`, `"/dev/../etc/passwd"`),
 		"encoder":  strings.Replace(string(data), `"h264_vaapi"`, `"-filter_complex"`, 1),
 		"backend":  strings.Replace(string(data), `"id":"vaapi"`, `"id":"unknown"`, 1),
+		"decode":   strings.Replace(string(data), `"decodeInputs":["`, `"decodeInputs":["-vf","`, 1),
 		"garbage":  "{",
 		"oversize": strings.Repeat(" ", 2<<20) + string(data),
 	} {

@@ -34,8 +34,10 @@ func parseStreams(streams []probeStream) ([]string, VideoFacts, []AudioFacts, []
 
 func videoFactsFor(stream probeStream) VideoFacts {
 	depth, _ := strconv.Atoi(stream.BitsPerRawSample)
-	if depth == 0 && strings.Contains(stream.PixelFormat, "10") {
-		depth = 10
+	for _, candidate := range []int{10, 12, 14, 16} {
+		if depth == 0 && strings.Contains(stream.PixelFormat, strconv.Itoa(candidate)) {
+			depth = candidate
+		}
 	}
 	hdr, rotation, dvProfile, dvCompatibility := videoSideData(stream)
 	return VideoFacts{Codec: lower(stream.CodecName), Profile: stream.Profile, Level: strconv.Itoa(stream.Level), PixelFormat: stream.PixelFormat, HDR: hdr, SampleAspectRatio: stream.SampleAspect, ColorRange: stream.ColorRange, ColorSpace: stream.ColorSpace, Transfer: stream.ColorTransfer, Primaries: stream.Primaries, Width: stream.Width, Height: stream.Height, BitDepth: depth, FrameRate: rational(stream.FrameRate), FieldOrder: lower(stream.FieldOrder), Rotation: rotation, DolbyVisionProfile: dvProfile, DolbyVisionCompatibility: dvCompatibility}

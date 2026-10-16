@@ -182,6 +182,9 @@ func validCachedBackend(entry cachedBackend, devices []string) bool {
 
 func validCachedOperation(backend string, operation cachedOperation) bool {
 	method := operation.HardwareToneMap == "" || slices.Contains(transcodepolicy.ToneMapMethods(backend, operation.Device), operation.HardwareToneMap)
+	if len(operation.DecodeInputs) > len(transcodepolicy.DecodeInputs()) || slices.ContainsFunc(operation.DecodeInputs, func(input string) bool { return !transcodepolicy.ValidDecodeInput(input) }) {
+		return false
+	}
 	return method && transcodepolicy.ValidCodec(operation.Codec) && operation.Codec != "auto" && operation.Codec != "" &&
 		slices.Contains([]string{"passed", "failed"}, operation.Status) && slices.Contains([]string{"", "hdr10", "hlg"}, operation.OutputHDR) &&
 		slices.Contains([]string{"", "hdr10", "hlg"}, operation.ToneMapInput) && len(operation.Identity) == 64 && strings.Trim(operation.Identity, "0123456789abcdef") == ""
