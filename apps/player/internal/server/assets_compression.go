@@ -3,6 +3,8 @@ package server
 import (
 	"bytes"
 	"compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -15,13 +17,18 @@ var contentCoding = regexp.MustCompile("^[!#$%&'*+.^_`|~0-9a-z-]+$")
 
 func compressedAsset(content []byte, contentType string) http.HandlerFunc {
 	compressed := gzipAsset(content, contentType)
+	sum := sha256.Sum256(content)
+	identityTag := `"` + hex.EncodeToString(sum[:8]) + `"`
+	gzipTag := `"` + hex.EncodeToString(sum[:8]) + `-gzip"`
 	return func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", contentType)
 		cacheStatic(writer, request)
-		payload := content
+		payload, tag := content, identityTag
+		gzipAccepted := false
 		if len(compressed) != 0 {
 			writer.Header().Add("Vary", "Accept-Encoding")
-			gzipAccepted, status := assetEncoding(request.Header.Values("Accept-Encoding"))
+			var status int
+			gzipAccepted, status = assetEncoding(request.Header.Values("Accept-Encoding"))
 			if status != 0 {
 				writer.Header().Set("Cache-Control", "no-store")
 				writer.Header().Set("Content-Length", "0")
@@ -29,15 +36,40 @@ func compressedAsset(content []byte, contentType string) http.HandlerFunc {
 				return
 			}
 			if gzipAccepted {
-				writer.Header().Set("Content-Encoding", "gzip")
-				payload = compressed
+				payload, tag = compressed, gzipTag
 			}
+		}
+		writer.Header().Set("ETag", tag)
+		if validatorMatches(request.Header.Values("If-None-Match"), tag) {
+			writer.WriteHeader(http.StatusNotModified)
+			return
+		}
+		if gzipAccepted {
+			writer.Header().Set("Content-Encoding", "gzip")
 		}
 		writer.Header().Set("Content-Length", strconv.Itoa(len(payload)))
 		if request.Method != http.MethodHead {
 			_, _ = writer.Write(payload)
 		}
 	}
+}
+
+func validatorMatches(headers []string, tag string) bool {
+	if len(headers) > 16 {
+		return false
+	}
+	for _, header := range headers {
+		if len(header) > 4096 {
+			return false
+		}
+		for _, candidate := range strings.Split(header, ",") {
+			candidate = strings.TrimPrefix(strings.TrimSpace(candidate), "W/")
+			if candidate == "*" || candidate == tag {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func gzipAsset(content []byte, contentType string) []byte {

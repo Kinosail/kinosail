@@ -20,10 +20,14 @@ const storePrivateImage = async (cache, request, response) => {
   await trimPrivateImages(cache);
   return response;
 };
-const refreshPrivateImage = async (request, cacheNameForProfile, profile) => {
+const refreshPrivateImage = async (request, cacheNameForProfile, profile, cached) => {
   try {
-    const response = await fetch(request, {credentials: "include", cache: "no-cache"});
-    if (profile === viewerProfile) await storePrivateImage(await caches.open(cacheNameForProfile), request, response);
+    const headers = new Headers();
+    const modified = cached?.headers.get("Last-Modified");
+    if (modified) headers.set("If-Modified-Since", modified);
+    const response = await fetch(new Request(request.url, {headers, mode: "same-origin", credentials: "include", cache: "no-cache"}));
+    if (response.status === 304 || profile !== viewerProfile) return;
+    await storePrivateImage(await caches.open(cacheNameForProfile), request, response);
   } catch { return; }
 };
 const servePrivateImage = (event, url) => {
@@ -33,7 +37,7 @@ const servePrivateImage = (event, url) => {
   event.respondWith(caches.open(cacheNameForProfile).then(async (cache) => {
     const cached = await cache.match(event.request);
     if (cached) {
-      event.waitUntil(refreshPrivateImage(event.request, cacheNameForProfile, profile));
+      event.waitUntil(refreshPrivateImage(event.request, cacheNameForProfile, profile, cached));
       return cached;
     }
     const response = await fetch(event.request, {credentials: "include", cache: "no-cache"});

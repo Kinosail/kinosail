@@ -18,10 +18,18 @@ var assetVersions = contentVersions(map[string][]byte{
 	"quick-connect-scan.js": quickConnectScanJS, "qr-decoder.js": qrDecoderJS, "public-login.js": webassets.PublicLogin,
 	"passkeys.js": passkeysJS, "manrope.woff2": webassets.Manrope, "icon.svg": icon, "tmdb-logo.svg": tmdbLogo,
 	"icon-192.png": icon192, "icon-512.png": icon512, "icon-maskable-512.png": iconMaskable512,
-	"apple-touch-icon.png": appleTouchIcon, "cinema-backdrop.jpg": cinemaBackdrop,
+	"apple-touch-icon.png": appleTouchIcon, "cinema-backdrop.jpg": cinemaBackdrop, "hls.min.js": hlsJS,
 })
 
-var versionedAssetReference = regexp.MustCompile(`/static/([A-Za-z0-9._-]+)(\?v=[^"'\s>]*)?`)
+var (
+	versionedAssetReference = regexp.MustCompile(`/static/([A-Za-z0-9._-]+)(\?v=[^"'\s>]*)?`)
+	hlsAssetReference       = regexp.MustCompile(`/static/hls\.min\.js(\?v=[^"'\s>]*)?`)
+	hlsVersion              = contentVersions(map[string][]byte{"hls.min.js": hlsJS})["hls.min.js"]
+)
+
+func versionHLSReferences(script []byte) []byte {
+	return hlsAssetReference.ReplaceAll(script, []byte("/static/hls.min.js?v="+hlsVersion))
+}
 
 func contentVersions(assets map[string][]byte) map[string]string {
 	versions := make(map[string]string, len(assets))

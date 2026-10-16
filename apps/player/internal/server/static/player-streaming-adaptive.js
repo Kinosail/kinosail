@@ -108,6 +108,8 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
   };
   hls = new Hls({
     bufferController,
+    backBufferLength: 90,
+    lowLatencyMode: false,
     startLevel: -1,
     testBandwidth: true,
     startFragPrefetch: true,
