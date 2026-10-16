@@ -8,6 +8,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
+const subtitleMaintenanceParallelism = 3
+
 type subtitleMaintenanceResult struct {
 	Attempted  int `json:"attempted"`
 	Added      int `json:"added"`
@@ -25,14 +27,50 @@ func (manager *subtitleManager) maintainLanguageItems(ctx context.Context, items
 	languages = canonical
 	pairCount := len(items) * len(languages)
 	start %= pairCount
-	for offset := 0; offset < pairCount && result.Attempted < limit; offset++ {
-		position := (start + offset) % pairCount
-		item := items[position/len(languages)]
-		language := languages[position%len(languages)]
-		result.NextCursor = (position + 1) % pairCount
-		result.add(manager.maintainLanguageItem(ctx, item, language))
+	type outcome struct {
+		subtitleMaintenanceResult
+		offset   int
+		admitted bool
 	}
+	done := make(chan outcome)
+	inflight, busy, offset := 0, pairCount, 0
+	collect := func() {
+		finished := <-done
+		inflight--
+		result.add(finished.subtitleMaintenanceResult)
+		if !finished.admitted {
+			busy = min(busy, finished.offset)
+		}
+	}
+	for ; offset < pairCount && busy == pairCount; offset++ {
+		for inflight > 0 && (inflight >= subtitleMaintenanceParallelism || result.Attempted+inflight >= limit) {
+			collect()
+		}
+		if result.Attempted >= limit || busy < pairCount {
+			break
+		}
+		position := (start + offset) % pairCount
+		item, language, pairOffset := items[position/len(languages)], languages[position%len(languages)], offset
+		inflight++
+		go func() {
+			pairResult, admitted := manager.maintainAdmittedLanguageItem(ctx, item, language)
+			done <- outcome{pairResult, pairOffset, admitted}
+		}()
+	}
+	for inflight > 0 {
+		collect()
+	}
+	result.NextCursor = (start + min(offset, busy)) % pairCount
 	return result
+}
+
+func (manager *subtitleManager) maintainAdmittedLanguageItem(ctx context.Context, item library.Item, language string) (subtitleMaintenanceResult, bool) {
+	ctx, settled, err := manager.provider.admission.enterBackground(ctx)
+	if err != nil {
+		return subtitleMaintenanceResult{}, false
+	}
+	defer settled()
+	return manager.maintainLanguageItem(ctx, item, language), true
 }
 
 func (result *subtitleMaintenanceResult) add(outcome subtitleMaintenanceResult) {

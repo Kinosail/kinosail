@@ -48,8 +48,6 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, admissionErr
 	}
 	defer settled()
-	provider.sidecar.Lock()
-	defer provider.sidecar.Unlock()
 	if !provider.upgradeAvailable(item, language) {
 		return false, errors.New("subtitle upgrade is unavailable")
 	}
@@ -75,6 +73,11 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return subtitleUpgradeImproves(candidate, previous, managed)
 	}
 	cleaned, next, err := provider.acquire(ctx, item, language, accept)
+	provider.sidecar.Lock()
+	defer provider.sidecar.Unlock()
+	if !provider.sidecarUnchanged(target, key, fingerprint, previous, found) {
+		return false, nil
+	}
 	if err != nil {
 		observed := subtitleRecord{Source: "external"}
 		if managed {
@@ -96,6 +99,15 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, provider.ledger.store(key, target.record(current, next))
 	}
 	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next, managed)
+}
+
+func (provider *subtitleProvider) sidecarUnchanged(target *subtitleSidecar, key, fingerprint string, previous subtitleRecord, found bool) bool {
+	latest, err := target.read("")
+	if err != nil || subtitleFingerprint(latest) != fingerprint {
+		return false
+	}
+	record, recorded, err := provider.ledger.record(key)
+	return err == nil && recorded == found && record.Fingerprint == previous.Fingerprint && record.CheckedAt == previous.CheckedAt && record.Frozen == previous.Frozen && record.InstalledAt == previous.InstalledAt
 }
 
 func subtitleUpgradeImproves(candidate subtitleDownloadCandidate, previous subtitleRecord, managed bool) bool {
