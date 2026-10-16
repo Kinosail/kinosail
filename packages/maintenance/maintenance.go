@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -35,6 +36,8 @@ type Manager struct {
 	now          func() time.Time
 	foreground   atomic.Int64
 	quietUntil   atomic.Int64
+	signalMu     sync.Mutex
+	started      chan struct{}
 }
 
 func New(ctx context.Context, interval time.Duration, limit int64, dependencies Dependencies) *Manager {
@@ -128,13 +131,33 @@ func (manager *Manager) Track(next http.Handler) http.Handler {
 			next.ServeHTTP(writer, request)
 			return
 		}
-		manager.foreground.Add(1)
+		if manager.foreground.Add(1) == 1 {
+			manager.signalForeground()
+		}
 		defer func() {
 			manager.foreground.Add(-1)
 			manager.quietUntil.Store(manager.now().Add(2 * time.Second).UnixNano())
 		}()
 		next.ServeHTTP(writer, request)
 	})
+}
+
+func (manager *Manager) ForegroundStarted() <-chan struct{} {
+	manager.signalMu.Lock()
+	defer manager.signalMu.Unlock()
+	if manager.started == nil {
+		manager.started = make(chan struct{})
+	}
+	return manager.started
+}
+
+func (manager *Manager) signalForeground() {
+	manager.signalMu.Lock()
+	defer manager.signalMu.Unlock()
+	if manager.started != nil {
+		close(manager.started)
+		manager.started = nil
+	}
 }
 
 func mediaWorkPath(path string) bool {

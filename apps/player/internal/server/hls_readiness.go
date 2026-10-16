@@ -51,9 +51,12 @@ func (manager *hlsManager) prepareAttempt(ctx context.Context, item library.Item
 	return manager.waitHLSReadiness(ctx, item, recipe, playlist, options.Cache, job)
 }
 
+const hlsReadinessFallback = 100 * time.Millisecond
+
 func (manager *hlsManager) waitHLSReadiness(ctx context.Context, item library.Item, recipe hlsRecipe, playlist, policy string, job *hlsJob) error {
-	ticker := time.NewTicker(25 * time.Millisecond)
+	ticker := time.NewTicker(hlsReadinessFallback)
 	defer ticker.Stop()
+	published := job.observation.mediaPublished()
 	complete := ctx.Value(startupEncodingKey{}) == nil && manager.shortHEVCNeedsCompletion(ctx, item, recipe)
 	ready := func() bool { return manager.hlsPlaybackOutputReady(ctx, item, playlist, policy, complete) }
 	for !ready() {
@@ -67,6 +70,8 @@ func (manager *hlsManager) waitHLSReadiness(ctx context.Context, item library.It
 			if !ready() {
 				return errHLSIdentityChanged
 			}
+		case <-published:
+			published = nil
 		case <-ticker.C:
 		}
 	}

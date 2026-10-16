@@ -3,29 +3,40 @@ package mediashares
 import (
 	"net/http"
 	"slices"
+	"sync"
 
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (store *Store) Item(request *http.Request, id string) (string, bool) {
+func (store *Store) Item(request *http.Request, id string) (string, func(), bool) {
 	cookie, _ := request.Cookie("__Host-kinosail_share")
 	if cookie == nil {
-		return "", false
+		return "", nil, false
 	}
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	if store.err != nil {
-		return "", false
+		return "", nil, false
 	}
 	session, found := store.state.Sessions[sessionKey(cookie.Value)]
 	share, active := store.state.Shares[session.ShareID]
 	item, exists := store.find(id)
 	if !canStream(found, active, exists, session, share, store.now().Unix(), slices.Contains(share.ItemIDs, id), store.active[share.ID]) {
-		return "", false
+		return "", nil, false
 	}
 	store.active[share.ID]++
-	return item.Path, true
+	return item.Path, sync.OnceFunc(func() { store.release(share.ID) }), true
+}
+
+func (store *Store) release(shareID string) {
+	store.mu.Lock()
+	defer store.mu.Unlock()
+	if store.active[shareID] > 1 {
+		store.active[shareID]--
+		return
+	}
+	delete(store.active, shareID)
 }
 
 func (store *Store) Items(request *http.Request) ([]library.Item, bool) {
@@ -60,29 +71,17 @@ func canRead(found, active bool, session Session, share Share, now int64) bool {
 	return found && active && session.ExpiresAt > now && share.ExpiresAt > now
 }
 
-func (store *Store) Release(request *http.Request) {
-	cookie, _ := request.Cookie("__Host-kinosail_share")
-	if cookie == nil {
-		return
-	}
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	if session, found := store.state.Sessions[sessionKey(cookie.Value)]; found && store.active[session.ShareID] > 0 {
-		store.active[session.ShareID]--
-	}
-}
-
 func (store *Store) Serve(writer http.ResponseWriter, request *http.Request) {
 	if value := request.Header.Get("Range"); value != "" && !ValidSingleByteRange(value) {
 		http.Error(writer, "invalid media range", http.StatusRequestedRangeNotSatisfiable)
 		return
 	}
-	path, ok := store.Item(request, request.PathValue("id"))
+	path, release, ok := store.Item(request, request.PathValue("id"))
 	if !ok {
 		http.NotFound(writer, request)
 		return
 	}
-	defer store.Release(request)
+	defer release()
 	writer.Header().Set("Cache-Control", "no-store, private")
 	http.ServeFile(writer, request, path)
 }

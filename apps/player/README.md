@@ -121,6 +121,14 @@ podman compose --file compose.yaml --file compose.gpu.yaml up --build --detach
 
 Select Automatic in Settings. Source installs can override `KINOSAIL_GPU_DEVICE` and `KINOSAIL_GPU_GROUP` for a different device or host group.
 
+For an NVIDIA GPU with Docker and the NVIDIA Container Toolkit, use `compose.nvidia.yaml` instead of `compose.gpu.yaml`:
+
+```sh
+docker compose --file compose.yaml --file compose.nvidia.yaml up --build --detach
+```
+
+This overlay reserves the NVIDIA GPUs through the NVIDIA runtime. It also exposes the compute, video, and utility driver libraries that NVENC and NVDEC need. Use it when your host has no NVIDIA CDI device. With a release install, replace `compose.yaml` with `compose.release.yaml`.
+
 Release installs detect Intel, AMD, NVIDIA CDI, and standard RK3588 devices automatically. The installer also adds the detected host device groups to the non-root container user. Set `KINOSAIL_GPU_BACKEND=off` in `.env` only when you want software transcoding. VideoToolbox and Windows AMF require a native Server process and cannot be enabled inside Kinosail's Linux container.
 
 Useful lifecycle commands:

@@ -194,6 +194,30 @@ func TestManagerTracksOnlyInteractiveMediaReads(t *testing.T) {
 	}
 }
 
+func TestManagerSignalsWhenInteractiveMediaWorkStarts(t *testing.T) {
+	manager := New(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies())
+	started := manager.ForegroundStarted()
+	manager.Track(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})).ServeHTTP(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/media/id", nil))
+	select {
+	case <-started:
+		t.Fatal("unprotected request signaled media work")
+	default:
+	}
+	release := make(chan struct{})
+	go manager.Track(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { <-release })).ServeHTTP(httptest.NewRecorder(), httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/id", nil))
+	select {
+	case <-started:
+	case <-time.After(time.Second):
+		t.Fatal("media work did not signal waiters")
+	}
+	close(release)
+	select {
+	case <-manager.ForegroundStarted():
+		t.Fatal("a new waiter observed an earlier signal")
+	default:
+	}
+}
+
 func TestManagerWaitsForIdleOrCancellation(t *testing.T) {
 	manager := New(canceledContext(t), time.Hour, 1, (&fixture{}).dependencies())
 	idleContext, stopIdle := context.WithTimeout(t.Context(), 30*time.Millisecond)

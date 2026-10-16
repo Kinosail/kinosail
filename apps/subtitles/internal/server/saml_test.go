@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlsp"
 )
@@ -233,11 +234,14 @@ func strongOwnerSession(t *testing.T, handler http.Handler) string {
 		TOTP  struct{ Secret string }
 	}
 	mustJSON(t, apiCall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Owner", "password": "owner-password", "totp": true}), &setup)
-	now := time.Now()
-	if response := apiCall(t, handler, setup.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": testTOTP(t, setup.TOTP.Secret, now)}); response.Code != http.StatusOK {
+	if response := apiCall(t, handler, setup.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": servertest.NextTOTP(t, setup.TOTP.Secret)}); response.Code != http.StatusOK {
 		t.Fatalf("enable Owner MFA = %d %q", response.Code, response.Body.String())
 	}
+	created := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": servertest.NextTOTP(t, setup.TOTP.Secret)})
+	if created.Code != http.StatusCreated {
+		t.Fatalf("create Owner session = %d %q", created.Code, created.Body.String())
+	}
 	var session struct{ Token string }
-	mustJSON(t, apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": testTOTP(t, setup.TOTP.Secret, now.Add(-30*time.Second))}), &session)
+	mustJSON(t, created, &session)
 	return session.Token
 }

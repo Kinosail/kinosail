@@ -19,6 +19,8 @@ type startupEncodingKey struct{}
 
 type startupEncoding struct {
 	adopted       atomic.Bool
+	adoptedMu     sync.Mutex
+	adoptedSignal chan struct{}
 	timeline      *copiedHLSTimeline
 	completeVideo bool
 	stopping      bool
@@ -181,8 +183,9 @@ func (startup *startupPreparation) startRequest(request *http.Request, value sta
 
 func (startup *startupPreparation) authorizedItem(ctx context.Context, original *http.Request, value startupRequest) (library.Item, bool) {
 	request := original.Clone(ctx)
-	viewer, authenticated := startup.auth.identity(request)
-	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(viewer, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
+	access, authenticated := startup.auth.identity(request)
+	viewer := access.profile
+	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(access, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
 		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "authorization-expired")
 		return library.Item{}, false
 	}
@@ -220,13 +223,13 @@ func (startup *startupPreparation) playback(key string) {
 	startup.queue = nil
 	job := startup.hls.jobs[key]
 	if startup.current != nil && startup.current.key == key && !startup.current.encoding.stopping && !startupJobStopping(job) {
-		startup.current.encoding.adopted.Store(true)
+		startup.current.encoding.adopt()
 	}
 	if startup.current != nil && startup.current.key != key {
 		startup.cancel()
 	}
 	if job != nil && job.preparation != nil && !startupJobStopping(job) {
-		job.preparation.adopted.Store(true)
+		job.preparation.adopt()
 		startup.hls.clearStartupCompletion(key)
 	}
 	startup.hls.startupMarker(key, false)

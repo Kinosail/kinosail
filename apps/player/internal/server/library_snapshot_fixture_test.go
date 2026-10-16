@@ -69,7 +69,7 @@ func newSnapshotFixture(t testing.TB, items []library.Item, media ...int) snapsh
 	progress, lists, settings := newProgressStore(""), newListStore(""), newSettingsStore("", "", "", nil)
 	probe := newMediaProbe("")
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, newMetadataStore(MetadataConfig{}, "", ""), newWatchRooms(time.Hour, index, nil)))
+	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, newMetadataStore(MetadataConfig{}, "", ""), newWatchRooms(time.Hour, index, &authentication{profiles: &profileStore{}})))
 	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, nil, false))
 	mux.HandleFunc("GET /api/v1/library", func(writer http.ResponseWriter, request *http.Request) {
 		projectionBenchmarkHandler(index, progress, lists)(writer, request)

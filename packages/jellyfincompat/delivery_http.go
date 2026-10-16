@@ -2,7 +2,11 @@ package jellyfincompat
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -141,6 +145,8 @@ func (module DeliveryHTTP) serveSessionHLSFile(writer http.ResponseWriter, reque
 	return true
 }
 
+const downloadPreparationWait = 10 * time.Second
+
 func (module DeliveryHTTP) serveDownload(writer http.ResponseWriter, request *http.Request, item library.Item, viewer DeliveryViewer) bool {
 	if !strings.HasSuffix(request.URL.Path, "/Download") {
 		return false
@@ -154,7 +160,16 @@ func (module DeliveryHTTP) serveDownload(writer http.ResponseWriter, request *ht
 	}
 	job, err := module.StartDownload(viewer.ID, item)
 	if err == nil {
-		job, err = module.WaitDownload(request.Context(), viewer.ID, job.ID)
+		wait, cancel := context.WithTimeout(request.Context(), downloadPreparationWait)
+		job, err = module.WaitDownload(wait, viewer.ID, job.ID)
+		cancel()
+	}
+	if errors.Is(err, context.DeadlineExceeded) && request.Context().Err() == nil {
+		slog.InfoContext(request.Context(), "Jellyfin download streamed from source while preparation continues", "item_id", item.ID, "outcome", "source-stream")
+		writer.Header().Set("Cache-Control", "private, no-transform")
+		writer.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, item.Title+filepath.Ext(item.Path)))
+		http.ServeFile(writer, request, item.Path)
+		return true
 	}
 	if err != nil {
 		http.Error(writer, "download is unavailable", http.StatusServiceUnavailable)

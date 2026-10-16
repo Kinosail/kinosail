@@ -19,7 +19,6 @@ type bulkIndexStub struct {
 	items       map[string]library.Item
 	snapshot    []library.Item
 	snapshotErr error
-	refreshErr  error
 	finds       int
 	refreshes   int
 	snapshots   int
@@ -35,12 +34,11 @@ func (index *bulkIndexStub) Find(id string) (library.Item, bool) {
 	return item, found
 }
 
-func (index *bulkIndexStub) Refresh(context.Context) error {
+func (index *bulkIndexStub) Redecorate() {
 	index.refreshes++
 	if index.events != nil {
 		*index.events = append(*index.events, "refresh")
 	}
-	return index.refreshErr
 }
 
 func (index *bulkIndexStub) Snapshot() ([]library.Item, error) {
@@ -172,18 +170,17 @@ func TestBulkEditorApplyFailures(t *testing.T) {
 	t.Parallel()
 	title, rating := "Title", "PG"
 	tests := []struct {
-		name       string
-		item       library.Item
-		patch      BulkPatch
-		saveErr    error
-		refreshErr error
-		want       error
-		refreshes  int
+		name      string
+		item      library.Item
+		patch     BulkPatch
+		saveErr   error
+		want      error
+		refreshes int
 	}{
-		{"missing item", library.Item{}, BulkPatch{Title: &title}, nil, nil, ErrBulkSelection, 0},
-		{"invalid fallback", library.Item{ID: bulkIDOne}, BulkPatch{Rating: &rating}, nil, nil, ErrBulkFields, 0},
-		{"save", library.Item{ID: bulkIDOne, Title: "Base"}, BulkPatch{Title: &title}, errors.New("disk"), nil, errBulkSave, 0},
-		{"refresh", library.Item{ID: bulkIDOne, Title: "Base"}, BulkPatch{Title: &title}, nil, errors.New("scan"), errBulkSave, 1},
+		{"missing item", library.Item{}, BulkPatch{Title: &title}, nil, ErrBulkSelection, 0},
+		{"invalid fallback", library.Item{ID: bulkIDOne}, BulkPatch{Rating: &rating}, nil, ErrBulkFields, 0},
+		{"save", library.Item{ID: bulkIDOne, Title: "Base"}, BulkPatch{Title: &title}, errors.New("disk"), errBulkSave, 0},
+		{"republish", library.Item{ID: bulkIDOne, Title: "Base"}, BulkPatch{Title: &title}, nil, nil, 1},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -191,7 +188,7 @@ func TestBulkEditorApplyFailures(t *testing.T) {
 			if test.item.ID != "" {
 				items[test.item.ID] = test.item
 			}
-			index := &bulkIndexStub{items: items, refreshErr: test.refreshErr}
+			index := &bulkIndexStub{items: items}
 			effects := &bulkEffects{initial: map[string]Record{}, saveErr: test.saveErr}
 			if _, err := effects.editor(index).Apply(context.Background(), []string{bulkIDOne}, test.patch); !errors.Is(err, test.want) {
 				t.Fatalf("Apply() error = %v, want %v", err, test.want)

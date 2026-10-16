@@ -1,12 +1,8 @@
 package metadata
 
 import (
-	"context"
 	"errors"
-	"fmt"
-	"net/url"
 	pathpkg "path"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -37,57 +33,6 @@ type TMDBCandidates struct {
 
 func ValidTMDBPath(path string) bool {
 	return path == "" || len(path) <= 2048 && strings.HasPrefix(path, "/") && !strings.HasPrefix(path, "//") && pathpkg.Clean(path) == path && !strings.ContainsAny(path, `\?#%`) && !hasControlText(path)
-}
-
-func (client *TMDBClient) fetch(ctx context.Context, item library.Item) (TMDBMetadata, error) { //nolint:cyclop // One provider operation validates ID-first matching and the search fallback together.
-	title, year := MovieIdentity(item)
-	if !validTMDBCacheID(item.ID) || title == "" || len(title) > 200 || !validMetadataYear(year) || hasControlText(title) {
-		return TMDBMetadata{}, errors.New("TMDB identity is invalid")
-	}
-	var candidates TMDBCandidates
-	if imdb := item.ProviderIDs["imdb"]; ValidIMDbID(imdb) {
-		query := url.Values{"external_source": {"imdb_id"}}
-		if err := client.get(ctx, "/find/"+url.PathEscape(imdb)+"?"+query.Encode(), &candidates); err != nil || len(candidates.MovieResults) > 1 {
-			return TMDBMetadata{}, fmt.Errorf("no unique match for %q", imdb)
-		}
-		if len(candidates.MovieResults) == 1 {
-			candidates.Results = candidates.MovieResults
-		} else {
-			candidates = TMDBCandidates{}
-		}
-	}
-	if len(candidates.Results) == 0 {
-		query := url.Values{"query": {title}, "include_adult": {"false"}}
-		if year != "" {
-			query.Set("primary_release_year", year)
-		}
-		if err := client.get(ctx, "/search/movie?"+query.Encode(), &candidates); err != nil {
-			return TMDBMetadata{}, err
-		}
-	}
-	if len(candidates.Results) == 0 || len(candidates.Results) > 100 || candidates.Results[0].ID <= 0 {
-		return TMDBMetadata{}, fmt.Errorf("no match for %q", title)
-	}
-	var movie tmdbMovie
-	if err := client.get(ctx, fmt.Sprintf("/movie/%d?append_to_response=credits,release_dates", candidates.Results[0].ID), &movie); err != nil {
-		return TMDBMetadata{}, err
-	}
-	metadata := metadataFor(movie)
-	rating, err := movieCertification(movie.ReleaseDates)
-	if err != nil {
-		return TMDBMetadata{}, err
-	}
-	metadata.Rating = rating
-	if !validTMDBText(metadata) || !ValidTMDBPath(movie.PosterPath) || !ValidTMDBCast(movie.Credits.Cast) {
-		return TMDBMetadata{}, errors.New("TMDB returned invalid metadata")
-	}
-	metadata.TMDBID = candidates.Results[0].ID
-	directory := filepath.Join(client.cacheDir, item.ID)
-	if item.Artwork == "" {
-		metadata.Poster, _ = client.download(ctx, movie.PosterPath, filepath.Join(directory, "poster"))
-	}
-	metadata.Cast = client.downloadCast(ctx, movie.Credits.Cast, directory)
-	return metadata, nil
 }
 
 func ValidTMDBCast(cast []TMDBCastMember) bool {

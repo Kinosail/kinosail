@@ -8,88 +8,107 @@ import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
-func (store *profileStore) profile(request *http.Request) (viewerProfile, bool) {
+type tokenAccess struct {
+	profile                viewerProfile
+	session                viewerSession
+	resolved, sessionFound bool
+}
+
+type tokenOutcome int
+
+const (
+	tokenDenied tokenOutcome = iota
+	tokenAccepted
+	tokenSettle
+)
+
+func (store *profileStore) access(request *http.Request) (tokenAccess, bool) {
 	token := sessionToken(request)
 	if token == "" {
-		return viewerProfile{}, false
+		return tokenAccess{}, false
 	}
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	ctx, now := request.Context(), time.Now().Unix()
-	store.retryAccessState(ctx, now)
-	key := sessionKey(token)
+	key, now := sessionKey(token), time.Now().Unix()
+	store.mu.RLock()
+	access, outcome := store.evaluateToken(request, key, now, false)
+	store.mu.RUnlock()
+	if outcome == tokenSettle {
+		store.mu.Lock()
+		defer store.mu.Unlock()
+		access, outcome = store.evaluateToken(request, key, now, true)
+	}
+	return access, outcome == tokenAccepted
+}
+
+func (store *profileStore) evaluateToken(request *http.Request, key string, now int64, settle bool) (tokenAccess, tokenOutcome) {
+	ctx := request.Context()
 	session, found := store.sessions[key]
 	if found && !identitycore.SessionMatchesRequest(session, request) || !found && identitycore.ManagementDeviceKey(request) != "" {
-		return viewerProfile{}, false
+		return tokenAccess{}, tokenDenied
 	}
+	session = store.accessUse.Session(key, session, now)
 	api, apiFound := store.apiKeys[key]
-	api, apiFound = store.refreshAPIKey(ctx, key, api, apiFound, now)
+	if apiFound && api.ExpiresAt != 0 && api.ExpiresAt <= now {
+		if !settle {
+			return tokenAccess{}, tokenSettle
+		}
+		delete(store.apiKeys, key)
+		store.saveAccessState(ctx, "api-key-expire", store.apiFile, now)
+		apiFound = false
+	}
 	if !apiFound && (!found || store.sessionExpired(session, now)) {
+		if found && !settle {
+			return tokenAccess{}, tokenSettle
+		}
 		if found {
 			delete(store.sessions, key)
 			store.saveAccessState(ctx, "session-expire", store.sessionFile, now)
 		}
-		return viewerProfile{}, false
+		return tokenAccess{}, tokenDenied
 	}
-	store.recordTokenUse(ctx, key, session, found, api, apiFound, now)
+	api = store.accessUse.APIKey(key, api, now)
 	profileID := session.ProfileID
 	if apiFound {
 		profileID = api.ProfileID
 	}
-	return store.profileForToken(ctx, now, profileID, key, session, found, api, apiFound)
+	return store.profileForToken(ctx, now, profileID, key, session, found, api, apiFound, settle)
 }
 
-func (store *profileStore) profileForToken(ctx context.Context, now int64, profileID, key string, session viewerSession, sessionFound bool, api apiKey, apiFound bool) (viewerProfile, bool) {
-	for _, profile := range store.profiles {
-		if profile.ID == profileID {
-			if !store.validProfileToken(ctx, now, profile, key, session, sessionFound) {
-				return viewerProfile{}, false
-			}
-			profile.APIKey, profile.Scopes = apiFound, append([]string(nil), api.Scopes...)
-			if sessionFound && session.Channel == "compatibility" && profile.Owner {
-				profile = compatibilityProfile(profile)
-			}
-			return profile, true
+func (store *profileStore) profileForToken(ctx context.Context, now int64, profileID, key string, session viewerSession, sessionFound bool, api apiKey, apiFound, settle bool) (tokenAccess, tokenOutcome) {
+	profile, exists := identitycore.FindProfile(store.profiles, profileID)
+	if !exists || profile.Disabled || profile.SCIMDeleted {
+		return tokenAccess{}, tokenDenied
+	}
+	if sessionFound && (session.Channel == "public" || session.ManagementDevice != "") && session.ProfileRevision != profile.Revision {
+		if !settle {
+			return tokenAccess{}, tokenSettle
 		}
+		delete(store.sessions, key)
+		store.saveAccessState(ctx, "session-revoke", store.sessionFile, now)
+		return tokenAccess{}, tokenDenied
 	}
-	return viewerProfile{}, false
-}
-
-func (store *profileStore) refreshAPIKey(ctx context.Context, key string, api apiKey, found bool, now int64) (apiKey, bool) {
-	if found && api.ExpiresAt != 0 && api.ExpiresAt <= now {
-		delete(store.apiKeys, key)
-		store.saveAccessState(ctx, "api-key-expire", store.apiFile, now)
-		return api, false
+	store.accessUse.Record(key, session, sessionFound, api, apiFound, now)
+	profile.APIKey, profile.Scopes = apiFound, append([]string(nil), api.Scopes...)
+	if sessionFound && session.Channel == "compatibility" && profile.Owner {
+		profile = compatibilityProfile(profile)
 	}
-	return api, found
-}
-
-func (store *profileStore) recordTokenUse(ctx context.Context, key string, session viewerSession, sessionFound bool, api apiKey, apiFound bool, now int64) {
-	if sessionFound && session.Browser && session.LastSeen+sessionUseWriteSeconds <= now {
-		session.LastSeen = now
-		store.sessions[key] = session
-		store.saveAccessState(ctx, "session-use", store.sessionFile, now)
-	}
-	if apiFound && (api.LastUsed == 0 || api.LastUsed+apiKeyUseWriteSeconds <= now) {
-		api.LastUsed = now
-		store.apiKeys[key] = api
-		store.saveAccessState(ctx, "api-key-use", store.apiFile, now)
-	}
+	return tokenAccess{profile: profile, session: session, resolved: true, sessionFound: sessionFound}, tokenAccepted
 }
 
 func (store *profileStore) sessionExpired(session viewerSession, now int64) bool {
-	inactive, absolute := store.sessionModule().TimeoutsFor(session)
+	inactive, absolute := identitycore.SessionTimeouts(session, store.sessionTimeouts, store.publicSessionTimeouts)
 	return identitycore.SessionExpired(session, now, inactive, absolute)
 }
 
-func (store *profileStore) validProfileToken(ctx context.Context, now int64, profile viewerProfile, key string, session viewerSession, sessionFound bool) bool {
-	if profile.Disabled || profile.SCIMDeleted {
-		return false
+func (store *profileStore) accessPublic(request *http.Request, access tokenAccess) bool {
+	if access.resolved {
+		return access.sessionFound && access.session.Channel == "public"
 	}
-	if sessionFound && (session.Channel == "public" || session.ManagementDevice != "") && session.ProfileRevision != profile.Revision {
-		delete(store.sessions, key)
-		store.saveAccessState(ctx, "session-revoke", store.sessionFile, now)
-		return false
+	return store.publicSession(request)
+}
+
+func (store *profileStore) accessRecentlyAuthenticated(request *http.Request, access tokenAccess, maximumAge time.Duration) bool {
+	if access.resolved {
+		return access.sessionFound && identitycore.RecentlyStrong(access.session, maximumAge, time.Now())
 	}
-	return true
+	return store.recentlyAuthenticated(request, maximumAge)
 }

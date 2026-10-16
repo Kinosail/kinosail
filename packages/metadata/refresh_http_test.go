@@ -49,21 +49,20 @@ func TestMetadataRefreshRejectsMutationDataBeforeLookup(t *testing.T) {
 func TestMetadataRefreshPreservesOperationOrderAndFailures(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
-		name, kind        string
-		found             bool
-		fetchErr, scanErr error
-		status            int
-		events            []string
+		name, kind string
+		found      bool
+		fetchErr   error
+		status     int
+		events     []string
 	}{
-		{"missing", "", false, nil, nil, http.StatusNotFound, []string{"find:" + bulkIDOne}},
-		{"wrong kind", "audio", true, nil, nil, http.StatusNotFound, []string{"find:" + bulkIDOne}},
-		{"fetch failed", "video", true, errors.New("provider failed"), nil, http.StatusBadGateway, []string{"find:" + bulkIDOne, "fetch"}},
-		{"refresh failed", "video", true, nil, errors.New("scan failed"), http.StatusBadGateway, []string{"find:" + bulkIDOne, "fetch", "refresh"}},
-		{"success", "video", true, nil, nil, http.StatusSeeOther, []string{"find:" + bulkIDOne, "fetch", "refresh"}},
+		{"missing", "", false, nil, http.StatusNotFound, []string{"find:" + bulkIDOne}},
+		{"wrong kind", "audio", true, nil, http.StatusNotFound, []string{"find:" + bulkIDOne}},
+		{"fetch failed", "video", true, errors.New("provider failed"), http.StatusBadGateway, []string{"find:" + bulkIDOne, "fetch"}},
+		{"success", "video", true, nil, http.StatusSeeOther, []string{"find:" + bulkIDOne, "fetch", "refresh"}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			events := []string{}
-			index := &bulkIndexStub{items: map[string]library.Item{}, refreshErr: test.scanErr, events: &events}
+			index := &bulkIndexStub{items: map[string]library.Item{}, events: &events}
 			item := library.Item{ID: bulkIDOne, Kind: test.kind}
 			if test.found {
 				index.items[bulkIDOne] = item

@@ -73,7 +73,7 @@ func TestProbeRemainingParsingEdges(t *testing.T) {
 	if len(chapters) != 1 || chapters[0].Title != "Chapter 1" {
 		t.Fatalf("untitled chapter = %#v", chapters)
 	}
-	if points := New("\x00").randomAccess(t.Context(), "movie", "0%1"); len(points) != 0 {
+	if points, ok := New("\x00").randomAccess(t.Context(), "movie", "0%1"); ok || len(points) != 0 {
 		t.Fatalf("failed random-access probe = %#v", points)
 	}
 }

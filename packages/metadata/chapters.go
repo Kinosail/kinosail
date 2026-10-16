@@ -51,7 +51,13 @@ func (value Chapter) Timestamp() string {
 type chapterLookup struct {
 	chapters []Chapter
 	found    bool
+	expires  time.Time
 }
+
+const (
+	chapterFailureTTL    = 10 * time.Minute
+	maximumChapterLookup = 4096
+)
 
 type chapterLookupCall struct {
 	done     chan struct{}
@@ -141,12 +147,13 @@ func needsChapterDBLookup(chapters []Chapter) bool {
 }
 
 func (provider *ChapterProvider) lookup(ctx context.Context, id string, duration float64) ([]Chapter, bool) {
+	key := id + "\x00" + strconv.FormatInt(int64(math.Round(duration)), 10)
 	provider.mu.Lock()
-	if result, found := provider.cached[id]; found {
+	if result, found := provider.cached[key]; found && (result.expires.IsZero() || time.Now().Before(result.expires)) {
 		provider.mu.Unlock()
 		return cloneChapters(result.chapters), result.found
 	}
-	if call := provider.calls[id]; call != nil {
+	if call := provider.calls[key]; call != nil {
 		provider.mu.Unlock()
 		select {
 		case <-call.done:
@@ -156,15 +163,20 @@ func (provider *ChapterProvider) lookup(ctx context.Context, id string, duration
 		}
 	}
 	call := &chapterLookupCall{done: make(chan struct{})}
-	provider.calls[id] = call
+	provider.calls[key] = call
 	provider.mu.Unlock()
 
 	chapters, found := provider.fetch(ctx, id, duration)
 	provider.mu.Lock()
 	call.chapters, call.found = chapters, found
-	delete(provider.calls, id)
+	delete(provider.calls, key)
+	if len(provider.cached) >= maximumChapterLookup {
+		clear(provider.cached)
+	}
 	if found {
-		provider.cached[id] = chapterLookup{chapters: cloneChapters(chapters), found: true}
+		provider.cached[key] = chapterLookup{chapters: cloneChapters(chapters), found: true}
+	} else if ctx.Err() == nil {
+		provider.cached[key] = chapterLookup{expires: time.Now().Add(chapterFailureTTL)}
 	}
 	close(call.done)
 	provider.mu.Unlock()

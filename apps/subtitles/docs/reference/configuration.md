@@ -45,6 +45,8 @@ Do not place secrets in a committed YAML file. Prefer a mounted secret file or t
 
 The table lists application-process variables. Compose only passes variables explicitly declared in the chosen Compose files; setting an arbitrary variable in `.env` does not forward it. Host mount/binding variables such as `KINOSAIL_MEDIA_PATH`, `KINOSAIL_BACKUP_PATH`, `KINOSAIL_BIND`, and `KINOSAIL_PORT` configure Compose itself. Read `.env.example` alongside `compose.yaml` and any overrides.
 
+Two process variables are not typed settings. `GOMEMLIMIT` replaces the automatic Go memory limit. `KINOSAIL_PROFILING=1` opens a private profiling socket in the data directory. Both apply at startup. See [Collect performance diagnostics]({{ '/troubleshooting/' | relative_url }}#collect-performance-diagnostics).
+
 For SubSource, prefer Owner Settings unless you explicitly add its environment mappings; the supplied Compose files do not forward those provider variables. Playback compatibility fields in this shared configuration describe retained framework settings, not a household Player workflow.
 
 ## Settings

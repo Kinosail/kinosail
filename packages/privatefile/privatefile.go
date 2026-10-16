@@ -55,6 +55,11 @@ func inspect(path string, maximum int64) (os.FileInfo, error) {
 	return info, nil
 }
 
+func Exists(path string, maximum int64) bool {
+	info, err := inspect(path, maximum)
+	return path != "" && err == nil && info.Size() > 0
+}
+
 func valid(info os.FileInfo, maximum int64) bool {
 	return info.Mode().IsRegular() && securePermissions(info) && info.Size() <= maximum
 }

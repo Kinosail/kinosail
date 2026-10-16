@@ -17,6 +17,7 @@ FILES = (
     "compose.release.yaml",
     "compose.config.yaml",
     "compose.gpu.yaml",
+    "compose.nvidia.yaml",
     "compose.rkmpp.yaml",
     "compose.remote-https.yaml",
     "kinosail.example.yaml",

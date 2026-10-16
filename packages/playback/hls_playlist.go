@@ -159,37 +159,15 @@ func SeekCacheFresh(directory, source, transcoder string) bool {
 	return err == nil && string(marker) == transcoder
 }
 
-func FinalizedVariant(directory string) bool {
-	manifest, err := ReadHLSPlaylist(filepath.Join(directory, "index.m3u8"))
-	if err != nil || !PlaylistHas(manifest, "#EXT-X-PLAYLIST-TYPE:EVENT") || !PlaylistHas(manifest, "#EXT-X-ENDLIST") {
-		return false
-	}
-	initReady, segments := false, 0
-	for _, line := range strings.Split(string(manifest), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") && !strings.HasPrefix(line, `#EXT-X-MAP:URI="`) {
-			continue
-		}
-		name := strings.TrimSuffix(strings.TrimPrefix(line, `#EXT-X-MAP:URI="`), `"`)
-		if strings.HasPrefix(line, `#EXT-X-MAP:URI="`) {
-			initReady = line == `#EXT-X-MAP:URI="init.mp4"`
-		} else {
-			name, segments = line, segments+1
-		}
-		if !VariantFile(name) || name != "init.mp4" && !strings.HasPrefix(name, "segment-") {
-			return false
-		}
-		info, statErr := os.Lstat(filepath.Join(directory, name))
-		if statErr != nil || !info.Mode().IsRegular() || info.Size() == 0 {
-			return false
-		}
-	}
-	return initReady && segments > 0
-}
-
 func PlaylistHas(manifest []byte, tag string) bool {
-	for _, line := range strings.Split(string(manifest), "\n") {
-		if strings.TrimSpace(line) == tag {
+	for len(manifest) > 0 {
+		line := manifest
+		if end := bytes.IndexByte(manifest, '\n'); end >= 0 {
+			line, manifest = manifest[:end], manifest[end+1:]
+		} else {
+			manifest = nil
+		}
+		if string(bytes.TrimSpace(line)) == tag {
 			return true
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
@@ -45,17 +46,46 @@ func RetainProviderBackdrop(ctx context.Context, baseURL, cache, target string) 
 	return err == nil && validateBackdropJPEG(ctx, data) == nil
 }
 
+type backdropIdentity struct {
+	path     string
+	size     int64
+	modified int64
+}
+
+var legacyBackdrops = struct {
+	sync.Mutex
+	entries map[backdropIdentity]bool
+}{entries: make(map[backdropIdentity]bool)}
+
 func LegacyProviderBackdrop(baseURL, cache, path string) bool {
-	if baseURL != defaultImageURL || CurrentArtwork(cache, path) == "" {
+	if baseURL != defaultImageURL {
 		return false
 	}
-	file, err := os.Open(path) // #nosec G304 -- CurrentArtwork confines the path to the metadata cache.
+	info, current := currentArtworkInfo(cache, path)
+	if !current {
+		return false
+	}
+	identity := backdropIdentity{path: path, size: info.Size(), modified: info.ModTime().UnixNano()}
+	legacyBackdrops.Lock()
+	legacy, found := legacyBackdrops.entries[identity]
+	legacyBackdrops.Unlock()
+	if found {
+		return legacy
+	}
+	file, err := os.Open(path) // #nosec G304 -- currentArtworkInfo confines the path to the metadata cache.
 	if err != nil {
 		return false
 	}
 	defer func() { _ = file.Close() }()
 	config, err := jpeg.DecodeConfig(io.LimitReader(file, 1<<20))
-	return err == nil && config.Width <= legacyBackdropWidth
+	legacy = err == nil && config.Width <= legacyBackdropWidth
+	legacyBackdrops.Lock()
+	if len(legacyBackdrops.entries) >= 16_384 {
+		clear(legacyBackdrops.entries)
+	}
+	legacyBackdrops.entries[identity] = legacy
+	legacyBackdrops.Unlock()
+	return legacy
 }
 
 func validateBackdropJPEG(ctx context.Context, data []byte) error {

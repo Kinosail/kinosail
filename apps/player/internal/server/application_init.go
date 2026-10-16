@@ -63,6 +63,18 @@ func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store
 	return shutdown
 }
 
+func startAccessFlush(lifecycle context.Context, managed bool, profiles *profileStore, beforeClose func(func())) {
+	if !managed {
+		return
+	}
+	flushed := make(chan struct{})
+	go func() {
+		defer close(flushed)
+		profiles.runAccessFlush(lifecycle, accessFlushInterval)
+	}()
+	beforeClose(func() { <-flushed })
+}
+
 func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, string) {
 	settings := newSettingsStore(config.MediaDir, config.DataDir, config.DLNAURL, stateDB, config.Configuration)
 	if config.TrustedHTTPSCheck != nil {

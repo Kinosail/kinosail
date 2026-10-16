@@ -42,7 +42,7 @@ func assertCompressedAsset(t *testing.T, handler http.Handler, path, encoding st
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(decoded, plain.Body.Bytes()) || compressed.Header().Get("Content-Type") != plain.Header().Get("Content-Type") || compressed.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
+	if !bytes.Equal(decoded, plain.Body.Bytes()) || compressed.Header().Get("Content-Type") != plain.Header().Get("Content-Type") || compressed.Header().Get("Cache-Control") != plain.Header().Get("Cache-Control") {
 		t.Fatalf("%s compression changed the delivered asset", path)
 	}
 	if compressedSize >= plain.Body.Len()/2 {

@@ -34,6 +34,10 @@ The page reports **Watching for changes** or **Polling for changes**. Choose a *
 
 Safety scans repair missed file-system events on network mounts, containers, and supported desktop hosts. Wait for a copy to finish before you scan. A scan can run in the background while you browse.
 
+Kinosail rescans only the folders that changed when it receives file-system events. It checks folder change times once a minute when it cannot watch for changes, and always for NFS, SMB, and FUSE mounts. A folder check finds added, removed, and renamed files. It does not find a file that a remote host edits in place. The next safety scan finds that edit.
+
+Kinosail skips a folder or file that it cannot read and shows the rest of the root. The log reports how many entries it skipped. If a whole root is missing or unreadable, the scan fails and Kinosail keeps the last Library it showed.
+
 ## Refresh metadata and markers
 
 Kinosail uses local NFO files, embedded tags, folder artwork, and media facts first. If TMDB is configured, select **Refresh missing metadata** in **Library discovery**. TMDB requests leave the Server and follow the provider's terms and attribution requirements.

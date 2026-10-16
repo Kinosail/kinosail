@@ -10,7 +10,7 @@ import (
 
 func TestOutboundClientRejectsResolutionAndProhibitedAddresses(t *testing.T) {
 	t.Parallel()
-	transport := outboundHTTPClient(0, allowedOutboundIP).Transport.(*http.Transport)
+	transport := outboundHTTPClient(0, allowedOutboundIP).Transport.(*providerTransport).next.(*http.Transport)
 	if _, err := transport.DialContext(context.Background(), "tcp", ":80"); err == nil {
 		t.Fatal("unresolvable outbound address accepted")
 	}

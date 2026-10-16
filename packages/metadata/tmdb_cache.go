@@ -1,70 +1,90 @@
 package metadata
 
 import (
+	"bytes"
+	"errors"
+	"io"
+	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
 var tmdbCacheID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,128}$`)
 
-func (client *TMDBClient) Active() bool {
-	if client == nil || client.cacheDir == "" {
-		return client != nil && client.token != ""
-	}
-	return client.token != "" || HasTMDBCache(client.cacheDir)
-}
+const maximumLegacyTMDBEntries = 100_000
 
-func HasTMDBCache(directory string) bool {
-	root, err := os.Open(directory)
-	if err != nil {
+func MigrateLegacyTMDB(cache string, known func(string) bool, save func(map[string]Record) error, durable bool) bool {
+	directory := filepath.Join(cache, "tmdb")
+	if cache == "" {
 		return false
 	}
-	defer root.Close()
-	for {
-		entries, err := root.ReadDir(100)
-		for _, entry := range entries {
-			if !entry.IsDir() {
-				continue
-			}
-			info, statErr := os.Lstat(filepath.Join(directory, entry.Name(), "metadata.json"))
-			if statErr == nil && info.Mode().IsRegular() {
-				return true
-			}
+	entries, err := os.ReadDir(directory)
+	if errors.Is(err, fs.ErrNotExist) {
+		return false
+	}
+	if err != nil {
+		slog.Warn("legacy TMDB cache migration failed", "operation", "metadata.migrate", "failure_class", "read")
+		return false
+	}
+	updates := make(map[string]Record)
+	for _, entry := range entries[:min(len(entries), maximumLegacyTMDBEntries)] {
+		if !entry.IsDir() || !validTMDBCacheID(entry.Name()) || known(entry.Name()) {
+			continue
 		}
-		if err != nil {
-			return false
+		if record, ok := legacyTMDBRecord(cache, entry.Name()); ok {
+			updates[entry.Name()] = record
 		}
 	}
+	if len(updates) > 0 && save(updates) != nil {
+		slog.Warn("legacy TMDB cache migration failed", "operation", "metadata.migrate", "failure_class", "save", "records", len(updates))
+		return true
+	}
+	if durable {
+		if err := os.RemoveAll(directory); err != nil {
+			slog.Warn("legacy TMDB cache removal failed", "operation", "metadata.migrate", "failure_class", "remove")
+		}
+	}
+	slog.Info("legacy TMDB cache migrated", "operation", "metadata.migrate", "records", len(updates))
+	return true
 }
 
-func (client *TMDBClient) Load(id string) (TMDBMetadata, bool) {
-	if client == nil || !validTMDBCacheID(id) {
-		return TMDBMetadata{}, false
+func legacyTMDBRecord(cache, id string) (Record, bool) {
+	directory := filepath.Join(cache, "tmdb", id)
+	data, err := readLegacyFile(filepath.Join(directory, "metadata.json"), 1<<20)
+	var legacy TMDBMetadata
+	if err != nil || decodeExternalJSON(bytes.NewReader(data), 1<<20, &legacy) != nil || !validCachedTMDB(legacy, directory) {
+		return Record{}, false
 	}
-	path := client.metadataPath(id)
+	record := Record{Title: legacy.Title, Year: legacy.Year, Plot: legacy.Plot, Rating: legacy.Rating, Genres: legacy.Genres, ProviderIDs: map[string]string{"tmdb": strconv.Itoa(legacy.TMDBID)}}
+	if legacy.Poster != "" {
+		if poster, err := readLegacyFile(legacy.Poster, 8<<20); err == nil {
+			target := filepath.Join(cache, "metadata", id+".jpg")
+			if privatefile.WriteCache(target, poster) == nil {
+				record.Artwork = target
+			}
+		}
+	}
+	return record, Bounded(record)
+}
+
+func readLegacyFile(path string, maximum int64) ([]byte, error) {
 	info, err := os.Lstat(path)
-	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > 1<<20 {
-		return TMDBMetadata{}, false
+	if err != nil || !info.Mode().IsRegular() || info.Size() <= 0 || info.Size() > maximum {
+		return nil, errors.New("legacy TMDB cache file is invalid")
 	}
-	file, err := os.Open(path) // #nosec G304 -- fixed cache path beneath the installation cache directory.
+	file, err := os.Open(path) // #nosec G304 -- fixed legacy cache path beneath the installation cache directory.
 	if err != nil {
-		return TMDBMetadata{}, false
+		return nil, err
 	}
 	defer file.Close()
-	var metadata TMDBMetadata
-	if decodeExternalJSON(file, 1<<20, &metadata) != nil || !validCachedTMDB(metadata, filepath.Dir(path)) {
-		return TMDBMetadata{}, false
-	}
-	return metadata, freshTMDBCache(metadata, info.ModTime())
-}
-
-func freshTMDBCache(metadata TMDBMetadata, modified time.Time) bool {
-	return metadata.Version == 2 && time.Since(modified) < 7*24*time.Hour
+	return io.ReadAll(io.LimitReader(file, maximum))
 }
 
 func validCachedTMDB(metadata TMDBMetadata, directory string) bool {
@@ -93,10 +113,6 @@ func validTMDBCachePath(directory, path string) bool {
 	}
 	info, err := os.Lstat(path)
 	return err == nil && info.Mode().IsRegular()
-}
-
-func (client *TMDBClient) metadataPath(id string) string {
-	return filepath.Join(client.cacheDir, id, "metadata.json")
 }
 
 func validTMDBCacheID(id string) bool {

@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 )
 
 func (manager *subtitleManager) registerSubtitleReview(mux *http.ServeMux, auth *authentication) {
@@ -81,6 +83,10 @@ func (manager *subtitleManager) exportSubtitleAPI(writer http.ResponseWriter, re
 	writer.Header().Set("Content-Type", mediaType)
 	writer.Header().Set("Content-Disposition", `attachment; filename="`+subtitleOriginalName(format, data)+`"`)
 	writer.Header().Set("Cache-Control", "private, no-store")
+	if strings.HasPrefix(mediaType, "text/vtt") {
+		httpcompress.WriteWebVTT(writer, request, data)
+		return
+	}
 	writer.WriteHeader(status)
 	_, _ = writer.Write(data)
 }

@@ -2,28 +2,19 @@ package server
 
 import (
 	"context"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func watchCopiedHLSAdoption(scan context.Context, preparation *startupEncoding, cancel context.CancelFunc) func() {
+	adopted := preparation.adoption()
 	done := make(chan struct{})
 	go func() {
-		ticker := time.NewTicker(25 * time.Millisecond)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-done:
-				return
-			case <-scan.Done():
-				return
-			case <-ticker.C:
-				if preparation.adopted.Load() {
-					cancel()
-					return
-				}
-			}
+		select {
+		case <-done:
+		case <-scan.Done():
+		case <-adopted:
+			cancel()
 		}
 	}()
 	return func() { close(done) }

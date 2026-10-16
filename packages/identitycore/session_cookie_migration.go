@@ -61,11 +61,11 @@ func (sessions *RequestSessions) signOutBrowserTokens(request *http.Request, tok
 			legacy = cookie.Value
 		}
 	}
-	return sessions.core().change(func(values map[string]Session) error {
-		delete(values, SessionKey(token))
+	return sessions.core().remove(func(values map[string]Session) ([]string, error) {
+		keys := []string{SessionKey(token)}
 		if current, found := values[SessionKey(legacy)]; legacy != "" && found && SessionMatchesRequest(current, request) {
-			delete(values, SessionKey(legacy))
+			keys = append(keys, SessionKey(legacy))
 		}
-		return nil
+		return keys, nil
 	})
 }

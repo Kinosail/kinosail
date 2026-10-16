@@ -90,11 +90,12 @@ func (auth *authentication) redirectToSignIn(writer http.ResponseWriter, request
 	http.Redirect(writer, request, signIn, http.StatusSeeOther)
 }
 
-func (auth *authentication) viewerAccess(profile viewerProfile, request *http.Request, matched string) identitycore.Denial {
+func (auth *authentication) viewerAccess(access tokenAccess, request *http.Request, matched string) identitycore.Denial {
+	profile := access.profile
 	input := identitycore.AccessInput{
 		EnrollmentRoute: mfaEnrollmentRoute(matched), Secured: profile.Secured(), MFARequired: auth.settings.requireMFA(), LocalOwner: profile.ID == "local-owner",
 		APIKeyAllowed: profileAllowsAPI(profile, matched), ScheduleAllowed: profile.Allowed(publicInternetRequest(request), time.Now()), RemoteRouteAllowed: publicViewerRouteAllowed(matched),
-		PublicSession: auth.profiles.publicSession(request), RecentlyAuthenticated: auth.profiles.recentlyAuthenticated(request, auth.publicAuthenticationMaximumAge()),
+		PublicSession: auth.profiles.accessPublic(request, access), RecentlyAuthenticated: auth.profiles.accessRecentlyAuthenticated(request, access, auth.publicAuthenticationMaximumAge()),
 		APIKey: profile.APIKey, Owner: profile.Owner, Public: publicInternetRequest(request),
 	}
 	return identitycore.EvaluateAccess(input)
@@ -129,12 +130,12 @@ func publicPattern(pattern string) bool {
 	return publicRoutes[pattern]
 }
 
-func (auth *authentication) identity(request *http.Request) (viewerProfile, bool) {
-	if profile, found := auth.profiles.profile(request); found {
-		return profile, true
+func (auth *authentication) identity(request *http.Request) (tokenAccess, bool) {
+	if access, found := auth.profiles.access(request); found {
+		return access, true
 	}
 	open := !auth.required && !auth.profiles.hasProfiles()
-	return viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}, open
+	return tokenAccess{profile: viewerProfile{ID: "local-owner", Name: "Owner", Owner: true}}, open
 }
 
 func (auth *authentication) signInPath() string {
@@ -198,11 +199,12 @@ func currentViewer(request *http.Request) viewerProfile {
 }
 
 func (auth *authentication) serveIdentity(next http.Handler, writer http.ResponseWriter, request *http.Request, matched string) bool {
-	profile, found := auth.identity(request)
+	access, found := auth.identity(request)
 	if !found {
 		return false
 	}
-	if bound := owneraccess.ProfileID(request); bound != "" && !auth.managementIdentityAllowed(profile, request, bound) {
+	profile := access.profile
+	if bound := owneraccess.ProfileID(request); bound != "" && !auth.managementIdentityAllowed(access, request, bound) {
 		if authenticationErrorRequest(request) {
 			localizedError(writer, request, "sign in as the Owner paired to this device using two-step sign-in", http.StatusForbidden)
 		} else {
@@ -211,9 +213,8 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 		return true
 	}
 	setAuditViewer(request, profile)
-	access := auth.viewerAccess(profile, request, matched)
-	if access != identitycore.Allowed {
-		auth.denyViewerAccess(writer, request, access)
+	if denial := auth.viewerAccess(access, request, matched); denial != identitycore.Allowed {
+		auth.denyViewerAccess(writer, request, denial)
 		return true
 	}
 	auth.profiles.sessionModule().MigrateBrowserCookie(writer, request)
@@ -222,6 +223,7 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 	return true
 }
 
-func (auth *authentication) managementIdentityAllowed(profile viewerProfile, request *http.Request, bound string) bool {
-	return profile.ID == bound && profile.Owner && !profile.APIKey && profile.Secured() && !auth.profiles.publicSession(request) && auth.profiles.recentlyAuthenticated(request, 8*time.Hour)
+func (auth *authentication) managementIdentityAllowed(access tokenAccess, request *http.Request, bound string) bool {
+	profile := access.profile
+	return profile.ID == bound && profile.Owner && !profile.APIKey && profile.Secured() && !auth.profiles.accessPublic(request, access) && auth.profiles.accessRecentlyAuthenticated(request, access, 8*time.Hour)
 }

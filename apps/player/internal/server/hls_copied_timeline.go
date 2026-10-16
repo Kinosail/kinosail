@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"math"
 	"os"
@@ -108,8 +109,12 @@ func (manager *hlsManager) readCopiedHLSTimelineRoot(ctx context.Context, direct
 	if err != nil || ctx.Err() != nil {
 		return nil, errCopiedHLSIndex
 	}
-	if timeline.Clock != nil && manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline) != nil {
-		return nil, errCopiedHLSIndex
+	if timeline.Clock != nil {
+		if err := manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline); errors.Is(err, errCopiedHLSBusy) {
+			return nil, errCopiedHLSBusy
+		} else if err != nil {
+			return nil, errCopiedHLSIndex
+		}
 	}
 	return timeline, nil
 }

@@ -43,7 +43,7 @@ func TestMarkerBatchBoundsConcurrentGroupsAndPersistsSuccess(t *testing.T) {
 		}
 	}
 	done := make(chan error, 1)
-	go func() { done <- analyzer.analyzeBatch(t.Context(), items) }()
+	go func() { done <- analyzer.analyzeBatch(t.Context(), items, nil) }()
 	for range 2 {
 		select {
 		case <-entered:
@@ -61,7 +61,7 @@ func TestMarkerBatchBoundsConcurrentGroupsAndPersistsSuccess(t *testing.T) {
 	}
 }
 
-func TestMarkerBatchFailureStillPublishesOtherGroups(t *testing.T) {
+func TestMarkerBatchRecordsFailedTitleBesideOtherGroups(t *testing.T) {
 	items := []library.Item{
 		{ID: "good", Kind: "video", Library: "Good", Size: 1, Added: time.Unix(1, 0)},
 		{ID: "bad", Kind: "video", Library: "Bad", Size: 1, Added: time.Unix(1, 0)},
@@ -74,13 +74,13 @@ func TestMarkerBatchFailureStillPublishesOtherGroups(t *testing.T) {
 		return Media{Duration: 100}
 	})
 	analyzer.extractCredits = func(context.Context, library.Item, float64, float64) ([]byte, error) { return nil, nil }
-	if err := analyzer.analyzeBatch(t.Context(), items); err == nil || len(analyzer.records) != 1 {
+	if err := analyzer.analyzeBatch(t.Context(), items, nil); err != nil || len(analyzer.records) != 2 {
 		t.Fatalf("batch = %d records, %v", len(analyzer.records), err)
 	}
-	if _, found := analyzer.records["good"]; !found {
-		t.Fatal("successful group was not published")
+	if good, bad := analyzer.records["good"], analyzer.records["bad"]; good.Failed != 0 || bad.Failed == 0 {
+		t.Fatalf("records = %#v, %#v", good, bad)
 	}
-	if reloaded := NewAnalyzer(Config{DataDir: filepathDir(analyzer.file)}); len(reloaded.records) != 1 {
+	if reloaded := NewAnalyzer(Config{DataDir: filepathDir(analyzer.file)}); len(reloaded.records) != 2 || len(reloaded.changedItems(items)) != 0 {
 		t.Fatalf("persisted records = %d", len(reloaded.records))
 	}
 }
@@ -109,12 +109,12 @@ func BenchmarkMarkerBatch(b *testing.B) {
 				var err error
 				if mode == "serial" {
 					for _, item := range items {
-						if err = analyzer.analyzeGroup(b.Context(), []library.Item{item}); err != nil {
+						if err = analyzer.analyzeGroup(b.Context(), []library.Item{item}, nil); err != nil {
 							break
 						}
 					}
 				} else {
-					err = analyzer.analyzeBatch(b.Context(), items)
+					err = analyzer.analyzeBatch(b.Context(), items, nil)
 				}
 				if err != nil || len(analyzer.records) != len(items) {
 					b.Fatalf("marker batch = %d records, %v", len(analyzer.records), err)

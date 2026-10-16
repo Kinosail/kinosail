@@ -3,6 +3,7 @@ package server_test
 import (
 	"bufio"
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -38,8 +39,15 @@ func TestLiveEventAPIStreamsThroughTheServerMiddleware(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer response.Body.Close()
-	line, err := bufio.NewReader(response.Body).ReadString('\n')
+	reader := bufio.NewReader(response.Body)
+	line, err := reader.ReadString('\n')
 	if err != nil || response.StatusCode != http.StatusOK || response.Header.Get("Content-Type") != "text/event-stream" || response.Header.Get("Cache-Control") != "no-store" || !strings.HasPrefix(line, "retry: ") {
 		t.Fatalf("event stream = %d %q %q, line %q, error %v", response.StatusCode, response.Header.Get("Content-Type"), response.Header.Get("Cache-Control"), line, err)
+	}
+	if signedOut := requestWithCookie(t, handler, http.MethodPost, "/logout", "", cookie); signedOut.Code != http.StatusSeeOther {
+		t.Fatalf("sign out = %d %q", signedOut.Code, signedOut.Body.String())
+	}
+	if _, err := io.Copy(io.Discard, reader); err != nil {
+		t.Fatalf("signed-out event stream stayed open: %v", err)
 	}
 }

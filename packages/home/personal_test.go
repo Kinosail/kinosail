@@ -34,11 +34,12 @@ func (probe *personalProbe) listed(request *http.Request, items []library.Item) 
 
 func (probe *personalProbe) played(request *http.Request, items []library.Item) []library.Item {
 	probe.calls = append(probe.calls, "played")
-	if request != probe.request || &items[0] == &probe.items[0] {
-		probe.t.Fatal("played did not receive an isolated input")
+	if request != probe.request || &items[0] != &probe.items[0] {
+		probe.t.Fatal("played did not receive canonical input")
 	}
-	items[0].Title = "Played"
-	return items
+	played := append([]library.Item(nil), items...)
+	played[0].Title = "Played"
+	return played
 }
 
 func (probe *personalProbe) collections(items []library.Item) []string {
@@ -57,7 +58,7 @@ func (probe *personalProbe) playlists(request *http.Request) []string {
 	return []string{"one"}
 }
 
-func TestPersonalBuildsPlayerProjectionWithoutAliasingItems(t *testing.T) {
+func TestPersonalBuildsPlayerProjectionFromOneSharedLibrary(t *testing.T) {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	items := []library.Item{{ID: "movie", Title: "Movie"}}
 	probe := &personalProbe{t: t, request: request, items: items, calls: make([]string, 0, 5)}

@@ -87,13 +87,14 @@ func TestStoreCapabilityLifecycle(t *testing.T) {
 	if items, ok := store.Items(request); !ok || len(items) != 1 || items[0].ID != "item" {
 		t.Fatalf("items = %#v, %v", items, ok)
 	}
-	if path, ok := store.Item(request, "item"); !ok || path != media {
+	path, release, ok := store.Item(request, "item")
+	if !ok || path != media {
 		t.Fatalf("item = %q, %v", path, ok)
 	}
-	if _, ok := store.Item(request, "item"); ok {
+	if _, _, ok := store.Item(request, "item"); ok {
 		t.Fatal("active stream limit was bypassed")
 	}
-	store.Release(request)
+	release()
 	response := httptest.NewRecorder()
 	store.Serve(response, request)
 	if response.Code != http.StatusOK || response.Body.String() != "movie" || response.Header().Get("Cache-Control") != "no-store, private" {

@@ -1,8 +1,10 @@
 package server_test
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -38,10 +40,11 @@ func TestSubtitleInspectorStylesheetUsesFreshImmutableURL(t *testing.T) {
 	handler, base, _ := subtitleInspectorFixture(t, "")
 	id := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
 	page := requestApp(t, handler, http.MethodGet, "/subtitles/inspect/"+id+"?language=en", "")
-	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), "/static/subtitle-inspector.css?v=5") {
-		t.Fatalf("inspector did not request stylesheet version 5: status %d", page.Code)
+	current := fmt.Sprintf("/static/subtitle-inspector.css?v=%x", sha256.Sum256(requestApp(t, handler, http.MethodGet, "/static/subtitle-inspector.css", "").Body.Bytes()))
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), current) {
+		t.Fatalf("inspector did not request the content-versioned stylesheet: status %d", page.Code)
 	}
-	style := requestApp(t, handler, http.MethodGet, "/static/subtitle-inspector.css?v=5", "")
+	style := requestApp(t, handler, http.MethodGet, current, "")
 	if style.Code != http.StatusOK || style.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
 		t.Fatalf("inspector stylesheet = %d %q", style.Code, style.Header().Get("Cache-Control"))
 	}

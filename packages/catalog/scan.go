@@ -2,9 +2,10 @@ package catalog
 
 import (
 	"context"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -22,17 +23,6 @@ func ScanRoots[T any](values []T, fields func(T) (string, string)) []ScanRoot {
 	return roots
 }
 
-type IndexStorage struct {
-	Mutex     *sync.RWMutex
-	Library   *atomic.Pointer[library.Snapshot]
-	Err       *error
-	Ready     *bool
-	Scanned   *time.Time
-	Decorator *func([]library.Item) []library.Item
-	Analyzers *[]func([]library.Item)
-	published func()
-}
-
 func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Context) (func(), error), refresh func(context.Context) error) error {
 	mutex.Lock()
 	defer mutex.Unlock()
@@ -42,15 +32,6 @@ func RefreshWork(ctx context.Context, mutex *sync.Mutex, acquire func(context.Co
 	}
 	defer release()
 	return refresh(ctx)
-}
-
-func RefreshIndex[T any](ctx context.Context, refreshMutex *sync.Mutex, rootMutex *sync.RWMutex, roots *[]T, acquire func(context.Context) (func(), error), storage IndexStorage, fields func(T) (string, string)) error {
-	return RefreshWork(ctx, refreshMutex, acquire, func(ctx context.Context) error {
-		rootMutex.RLock()
-		values := append([]T(nil), (*roots)...)
-		rootMutex.RUnlock()
-		return storage.Refresh(ctx, ScanRoots(values, fields))
-	})
 }
 
 func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan struct{}, request func()) bool {
@@ -76,32 +57,41 @@ func WaitRefresh(ctx context.Context, interval time.Duration, reschedule <-chan 
 }
 
 func Scan(ctx context.Context, roots []ScanRoot, decorate func([]library.Item) []library.Item) ([]library.Item, error) {
+	scanners := make([]*library.Scanner, len(roots))
+	for position, root := range roots {
+		scanners[position] = library.NewScanner(root.Path, root.Namespace)
+	}
+	items, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) { return scanner.Scan(ctx) })
+	if err != nil {
+		return items, err
+	}
+	if decorate != nil {
+		items = decorate(items)
+	}
+	return items, nil
+}
+
+func scanRoots(ctx context.Context, scanners []*library.Scanner, scan func(*library.Scanner) ([]library.Item, error)) ([]library.Item, error) {
 	items := make([]library.Item, 0)
-	if len(roots) == 0 {
-		if decorate != nil {
-			items = decorate(items)
-		}
+	if len(scanners) == 0 {
 		return items, nil
 	}
 	type result struct {
 		items []library.Item
 		err   error
 	}
-	results := make([]result, len(roots))
+	results := make([]result, len(scanners))
 	jobs := make(chan int)
 	var workers sync.WaitGroup
-	for range min(len(roots), max(1, min(2, runtime.GOMAXPROCS(0)-1))) {
-		workers.Add(1)
-		go func() {
-			defer workers.Done()
+	for range min(len(scanners), max(1, min(2, runtime.GOMAXPROCS(0)-1))) {
+		workers.Go(func() {
 			for position := range jobs {
-				root := roots[position]
-				results[position].items, results[position].err = library.ScanContext(ctx, root.Path, root.Namespace)
+				results[position].items, results[position].err = scan(scanners[position])
 			}
-		}()
+		})
 	}
 dispatch:
-	for position := range roots {
+	for position := range scanners {
 		select {
 		case jobs <- position:
 		case <-ctx.Done():
@@ -116,66 +106,50 @@ dispatch:
 			return items, result.err
 		}
 	}
-	if err := ctx.Err(); err != nil {
-		return items, err
-	}
-	if decorate != nil {
-		items = decorate(items)
-	}
-	return items, nil
+	return items, ctx.Err()
 }
 
-func (storage IndexStorage) publish(items []library.Item) *library.Snapshot {
-	generation := uint64(1)
-	if current := storage.Library.Load(); current != nil {
-		generation = current.Generation() + 1
-	}
-	snapshot := library.NewSnapshot(items, generation)
-	storage.Library.Store(snapshot)
-	if storage.published != nil {
-		storage.published()
-	}
-	return snapshot
+func (index *Index) Refresh(ctx context.Context) error {
+	index.resolveRoots()
+	return RefreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
+		scanners := index.rootScanners()
+		raw, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) { return scanner.Scan(ctx) })
+		return index.commit(ctx, raw, err, true)
+	})
 }
 
-func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error {
-	storage.Mutex.RLock()
-	decorate := *storage.Decorator
-	storage.Mutex.RUnlock()
-	items, err := Scan(ctx, roots, decorate)
-	storage.Mutex.Lock()
-	*storage.Err = err
-	if err == nil {
-		items = storage.publish(items).Items()
-		*storage.Ready, *storage.Scanned = true, time.Now()
+func (index *Index) refreshChanged(ctx context.Context, paths []string) error {
+	return RefreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
+		scanners := index.rootScanners()
+		raw, err := scanRoots(ctx, scanners, func(scanner *library.Scanner) ([]library.Item, error) {
+			return scanner.Rescan(ctx, pathsWithin(scanner.Root(), paths))
+		})
+		return index.commit(ctx, raw, err, false)
+	})
+}
+
+func (index *Index) rootScanners() []*library.Scanner {
+	roots := index.Roots()
+	scanners := make([]*library.Scanner, len(roots))
+	next := make(map[ScanRoot]*library.Scanner, len(roots))
+	for position, root := range roots {
+		scanner := index.scanners[root]
+		if scanner == nil {
+			scanner = library.NewScanner(root.Path, root.Namespace)
+		}
+		scanners[position], next[root] = scanner, scanner
 	}
-	analyzers := append([]func([]library.Item){}, (*storage.Analyzers)...)
-	storage.Mutex.Unlock()
-	if err == nil {
-		for _, analyze := range analyzers {
-			analyze(items)
+	index.scanners = next
+	return scanners
+}
+
+func pathsWithin(root string, paths []string) []string {
+	within := make([]string, 0)
+	prefix := root + string(filepath.Separator)
+	for _, path := range paths {
+		if path == root || strings.HasPrefix(path, prefix) {
+			within = append(within, path)
 		}
 	}
-	return err
-}
-
-func (storage IndexStorage) SetDecorator(decorate func([]library.Item) []library.Item) {
-	storage.Mutex.Lock()
-	*storage.Decorator = decorate
-	storage.publish(decorate(append([]library.Item(nil), storage.Library.Load().Items()...)))
-	storage.Mutex.Unlock()
-}
-
-func (storage IndexStorage) AddAnalyzer(analyze func([]library.Item)) {
-	storage.Mutex.Lock()
-	*storage.Analyzers = append(*storage.Analyzers, analyze)
-	items := storage.Library.Load().Items()
-	storage.Mutex.Unlock()
-	analyze(items)
-}
-
-func (storage IndexStorage) Status() (int, time.Time, error) {
-	storage.Mutex.RLock()
-	defer storage.Mutex.RUnlock()
-	return storage.Library.Load().Len(), *storage.Scanned, *storage.Err
+	return within
 }

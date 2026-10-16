@@ -57,8 +57,8 @@ func TestMalformedCreditFramesPreserveLastGoodMarkers(t *testing.T) {
 	analyzer.records[item.ID] = Record{Revision: mediaRevision(item), DetectorVersion: DetectorVersion, Markers: []Marker{marker}}
 	analyzer.extractCredits = func(_ context.Context, _ library.Item, _, _ float64) ([]byte, error) { return []byte{1}, nil }
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 7200} })
-	if err := analyzer.analyzeBatch(t.Context(), []library.Item{item}); err == nil {
-		t.Fatal("malformed credits succeeded")
+	if err := analyzer.analyzeBatch(t.Context(), []library.Item{item}, nil); err != nil || analyzer.records[item.ID].Failed == 0 {
+		t.Fatalf("malformed credits = %v, record %#v", err, analyzer.records[item.ID])
 	}
 	if got := analyzer.Markers(item, nil); !reflect.DeepEqual(got, []Marker{marker}) {
 		t.Fatalf("markers after malformed frames = %#v", got)

@@ -145,14 +145,14 @@ func TestHLSCacheOperationsIgnoreUnownedData(t *testing.T) {
 	if size, err := HLSCacheStats(root, policy); err != nil || size != 20 {
 		t.Fatalf("cache stats = %d, %v", size, err)
 	}
-	remaining, err := PruneHLSCache(root, 10, func(name string) bool { return name == filepath.Base(active) }, policy)
+	remaining, err := testHLSCache(root, func(name string) bool { return name == filepath.Base(active) }, policy).Prune(10)
 	if err != nil || remaining != 10 || pathExists(old) || !pathExists(active) || !pathExists(unowned) {
 		t.Fatalf("prune = %d, %v", remaining, err)
 	}
-	if _, err := PruneHLSCache(root, -1, func(string) bool { return false }, policy); err == nil {
+	if _, err := testHLSCache(root, neverActive, policy).Prune(-1); err == nil {
 		t.Fatal("accepted a negative cache limit")
 	}
-	if err := ClearHLSCache(root, policy); err != nil || pathExists(active) || !pathExists(unowned) {
+	if err := testHLSCache(root, nil, policy).Clear(); err != nil || pathExists(active) || !pathExists(unowned) {
 		t.Fatalf("clear = %v", err)
 	}
 	if size, err := HLSCacheStats("", policy); err != nil || size != 0 {

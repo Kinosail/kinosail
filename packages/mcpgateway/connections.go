@@ -18,6 +18,7 @@ const (
 	mcpRequestLifetime     = 10 * time.Minute
 	mcpConnectionLimit     = 128
 	mcpRefreshHistoryLimit = 1024
+	mcpUseWriteSeconds     = 60
 )
 
 type Connections struct {
