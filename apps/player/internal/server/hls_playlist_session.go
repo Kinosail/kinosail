@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"log/slog"
@@ -36,6 +35,9 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 	key := hlsRecipeKey(item.ID, recipe)
 	start := 0
 	duration := 0.0
+	if filepath.Ext(localName) == ".m3u8" {
+		request = request.WithContext(withCopiedHLSRetry(request.Context()))
+	}
 	if filepath.Base(name) == "index.m3u8" {
 		var validStart bool
 		start, duration, validStart = manager.recipePlaylistStart(writer, request, item)
@@ -157,6 +159,10 @@ func serveHLSPlaylistWithSession(writer http.ResponseWriter, request *http.Reque
 	} else {
 		manifest = hlsPlaylistWithSession(manifest, playID, jellyfinMediaQueryToken(request), start, duration, projection...)
 	}
+	if manifest == nil && copiedHLSRetryable(request.Context()) {
+		hlsRetryLater(writer, request)
+		return true
+	}
 	if manifest == nil {
 		localizedNotFound(writer, request)
 		return true
@@ -186,46 +192,6 @@ func hlsPlaylistWithSession(manifest []byte, playID, token string, start int, du
 	text := strings.Replace(string(manifest), "#EXT-X-PLAYLIST-TYPE:VOD\n", "#EXT-X-PLAYLIST-TYPE:VOD\n#EXT-X-START:TIME-OFFSET="+strconv.Itoa(start)+",PRECISE=YES\n", 1)
 	text = strings.Replace(text, "#EXT-X-PLAYLIST-TYPE:EVENT\n", "#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-START:TIME-OFFSET="+strconv.Itoa(start)+",PRECISE=YES\n", 1)
 	return hlsPlaylistWithQuery([]byte(text), query)
-}
-
-func hlsPlaylistWithQuery(manifest []byte, query url.Values) []byte {
-	encoded := query.Encode()
-	var result bytes.Buffer
-	result.Grow(len(manifest) + bytes.Count(manifest, []byte("\n"))*(len(encoded)+1))
-	for index, line := range bytes.Split(manifest, []byte("\n")) {
-		if index > 0 {
-			result.WriteByte('\n')
-		}
-		if len(line) > 0 && line[0] != '#' {
-			writeHLSURIWithQuery(&result, line, encoded)
-			continue
-		}
-		start := bytes.Index(line, []byte(`URI="`))
-		if start < 0 {
-			result.Write(line)
-			continue
-		}
-		start += len(`URI="`)
-		end := bytes.IndexByte(line[start:], '"')
-		if end < 0 {
-			result.Write(line)
-			continue
-		}
-		result.Write(line[:start])
-		writeHLSURIWithQuery(&result, line[start:start+end], encoded)
-		result.Write(line[start+end:])
-	}
-	return result.Bytes()
-}
-
-func writeHLSURIWithQuery(result *bytes.Buffer, uri []byte, query string) {
-	result.Write(uri)
-	if bytes.IndexByte(uri, '?') >= 0 {
-		result.WriteByte('&')
-	} else {
-		result.WriteByte('?')
-	}
-	result.WriteString(query)
 }
 
 func completeHLSVOD(manifest []byte, duration float64) []byte {
@@ -266,7 +232,11 @@ func (manager *hlsManager) prepareRecipePlaylist(writer http.ResponseWriter, req
 	defer cancel()
 	started := time.Now()
 	cached := manager.startupWindowReady(item, recipe)
-	if err := manager.prepare(prepareContext, item, recipe); err != nil { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
+	if err := manager.prepare(prepareContext, item, recipe); errors.Is(err, errCopiedHLSBusy) { //nolint:contextcheck // Playlist preparation uses the Server lifecycle so a disconnected request does not destroy shared output.
+		markCopiedHLSBusy(request.Context(), recipe.mode)
+		hlsRetryLater(writer, request)
+		return false
+	} else if err != nil {
 		slog.ErrorContext(request.Context(), "HLS playlist preparation failed", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "encoder_phase", hlsReadinessPhase(err), "error", hlsDiagnostic(err, item.Path))
 		status := http.StatusServiceUnavailable
 		if errors.Is(err, playback.ErrHLSSource) {

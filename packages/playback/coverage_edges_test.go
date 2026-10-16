@@ -31,48 +31,48 @@ func TestHLSCacheErrorAndEvictionEdges(t *testing.T) {
 	if size, err := HLSCacheStats(missing, policy); err != nil || size != 0 {
 		t.Fatalf("missing stats = %d, %v", size, err)
 	}
-	if err := ClearHLSCache("", policy); err != nil {
+	if err := testHLSCache("", nil, policy).Clear(); err != nil {
 		t.Fatal(err)
 	}
-	if err := ClearHLSCache(missing, policy); err != nil {
+	if err := testHLSCache(missing, nil, policy).Clear(); err != nil {
 		t.Fatal(err)
 	}
-	if remaining, err := PruneHLSCache("", 0, func(string) bool { return false }, policy); err != nil || remaining != 0 {
+	if remaining, err := testHLSCache("", neverActive, policy).Prune(0); err != nil || remaining != 0 {
 		t.Fatalf("empty prune = %d, %v", remaining, err)
 	}
-	if remaining, err := PruneHLSCache(missing, 0, func(string) bool { return false }, policy); err != nil || remaining != 0 {
+	if remaining, err := testHLSCache(missing, neverActive, policy).Prune(0); err != nil || remaining != 0 {
 		t.Fatalf("missing prune = %d, %v", remaining, err)
 	}
-	if _, err := PruneHLSCache(t.TempDir(), 0, nil, policy); err == nil {
+	if _, err := testHLSCache(t.TempDir(), nil, policy).Prune(0); err == nil {
 		t.Fatal("accepted nil active callback")
 	}
 	file := filepath.Join(t.TempDir(), "file")
 	writeTestFile(t, file, "x")
 	for name, operation := range map[string]func() error{
 		"stats": func() error { _, err := HLSCacheStats(file, policy); return err },
-		"clear": func() error { return ClearHLSCache(file, policy) },
-		"prune": func() error { _, err := PruneHLSCache(file, 0, func(string) bool { return false }, policy); return err },
+		"clear": func() error { return testHLSCache(file, nil, policy).Clear() },
+		"prune": func() error { _, err := testHLSCache(file, neverActive, policy).Prune(0); return err },
 	} {
 		if err := operation(); err == nil {
 			t.Errorf("%s accepted a file cache root", name)
 		}
 	}
 	valid := "0123456789abcdef"
-	if _, _, err := prunableHLSEntries(missing, []os.DirEntry{failingCacheEntry{name: valid}}, func(string) bool { return false }, policy); err == nil {
-		t.Fatal("ignored cache walk failure")
+	if candidates, total, err := prunableHLSEntries(missing, []os.DirEntry{failingCacheEntry{name: valid, infoErr: fs.ErrNotExist}}, policy); err != nil || len(candidates) != 0 || total != 0 {
+		t.Fatalf("vanished cache entry = %v, %d, %v", candidates, total, err)
 	}
 	root := t.TempDir()
 	if err := os.Mkdir(filepath.Join(root, valid), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err := prunableHLSEntries(root, []os.DirEntry{failingCacheEntry{name: valid, infoErr: errors.New("info")}}, func(string) bool { return false }, policy); err == nil {
+	if _, _, err := prunableHLSEntries(root, []os.DirEntry{failingCacheEntry{name: valid, infoErr: errors.New("info")}}, policy); err == nil {
 		t.Fatal("ignored cache info failure")
 	}
 	candidates := []hlsCacheEntry{{name: "fedcba9876543210", size: 1, modified: time.Now()}, {name: valid, size: 1, modified: time.Now().Add(-time.Hour)}}
-	if remaining, err := evictHLSCacheEntries(root, candidates, 1, 2); err != nil || remaining != 1 {
+	if remaining, err := evictHLSCacheEntries(candidates, 1, 2, discardHLSCacheEntry(root)); err != nil || remaining != 1 {
 		t.Fatalf("bounded eviction = %d, %v", remaining, err)
 	}
-	if _, err := evictHLSCacheEntries(file, candidates[:1], 1, 0); err == nil {
+	if _, err := evictHLSCacheEntries(candidates[:1], 1, 0, discardHLSCacheEntry(file)); err == nil {
 		t.Fatal("ignored cache removal failure")
 	}
 	pruneRoot := t.TempDir()
@@ -87,7 +87,7 @@ func TestHLSCacheErrorAndEvictionEdges(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if remaining, err := PruneHLSCache(pruneRoot, 0, func(string) bool { return false }, policy); err != nil || remaining != 0 {
+	if remaining, err := testHLSCache(pruneRoot, neverActive, policy).Prune(0); err != nil || remaining != 0 {
 		t.Fatalf("ordered prune = %d, %v", remaining, err)
 	}
 }

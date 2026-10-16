@@ -23,6 +23,7 @@ type hlsManager struct {
 	settings       *settingsStore
 	mu             sync.Mutex
 	jobs           map[string]*hlsJob
+	keys           map[string]*hlsKeyLock
 	workloads      *workload.Governor
 	cacheOps       playback.HLSCacheControl
 }

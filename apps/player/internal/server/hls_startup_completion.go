@@ -32,8 +32,9 @@ func (manager *hlsManager) shortHEVCNeedsCompletion(ctx context.Context, item li
 
 func (manager *hlsManager) shortHEVCOutputReady(ctx context.Context, item library.Item, directory, policy string) bool {
 	manager.mu.Lock()
-	defer manager.mu.Unlock()
-	if manager.jobs[filepath.Base(directory)] != nil || ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) {
+	active := manager.jobs[filepath.Base(directory)] != nil
+	manager.mu.Unlock()
+	if active || ctx.Err() != nil || !cacheFresh(filepath.Join(directory, "index.m3u8"), item.Path, policy) {
 		return false
 	}
 	root, err := manager.openCopiedHLSRoot(directory)

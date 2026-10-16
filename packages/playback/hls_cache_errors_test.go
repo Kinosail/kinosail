@@ -24,7 +24,7 @@ func TestHLSCachePropagatesTraversalAndRemovalFailures(t *testing.T) {
 	if _, err := HLSCacheStats(root, policy); err == nil {
 		t.Fatal("cache stats ignored traversal failure")
 	}
-	if _, err := PruneHLSCache(root, 0, func(string) bool { return false }, policy); err == nil {
+	if _, err := testHLSCache(root, neverActive, policy).Prune(0); err == nil {
 		t.Fatal("cache prune ignored traversal failure")
 	}
 	if err := os.Chmod(blocked, 0o700); err != nil { //nolint:gosec // The test restores owner traversal before exercising removal failure.
@@ -34,7 +34,7 @@ func TestHLSCachePropagatesTraversalAndRemovalFailures(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = os.Chmod(root, 0o700) }) //nolint:gosec // Cleanup must restore directory access before TempDir removal.
-	if err := ClearHLSCache(root, policy); err == nil {
+	if err := testHLSCache(root, nil, policy).Clear(); err == nil {
 		t.Fatal("cache clear ignored removal failure")
 	}
 }

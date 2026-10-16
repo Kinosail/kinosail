@@ -15,7 +15,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func copiedRecoveryFixture(t *testing.T) (*hlsManager, library.Item, hlsRecipe, string, string, *copiedHLSTimeline) {
+func copiedRecoveryFixture(t testing.TB) (*hlsManager, library.Item, hlsRecipe, string, string, *copiedHLSTimeline) {
 	t.Helper()
 	manager, item, _, _ := hlsLoadingFixture(t)
 	recipe := hlsRecipe{mode: "remux"}
@@ -105,7 +105,7 @@ func copiedRecoveryQuote(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
 }
 
-func copiedRecoveryProbe(t *testing.T, manager *hlsManager, action string) {
+func copiedRecoveryProbe(t testing.TB, manager *hlsManager, action string) {
 	t.Helper()
 	probe := filepath.Join(t.TempDir(), "clock-probe")
 	body := "#!/bin/sh\nset -eu\ncat >/dev/null\n" + action + "\nprintf '%s' '{\"packets\":[{\"pts_time\":\"0.083333\",\"flags\":\"K\"}]}'\n"

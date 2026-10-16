@@ -50,8 +50,6 @@ func (manager *hlsManager) validateRecipeSegmentPolicy(ctx context.Context, item
 	if err != nil {
 		return err
 	}
-	manager.mu.Lock()
-	defer manager.mu.Unlock()
 	return manager.validateHLSPolicy(ctx, item, localHLSRecipe(resolved), expected)
 }
 

@@ -193,13 +193,24 @@ func writeHLSSource(root *os.Root, data []byte) error {
 }
 
 func ValidateHLSSource(source, policy string) error {
-	expected, valid := hlsPolicySourceVersion(policy)
-	if !valid {
+	if _, valid := hlsPolicySourceVersion(policy); !valid {
 		return errors.New("HLS source policy is invalid")
 	}
 	current, err := hlsSourceVersion(source)
 	if err != nil {
 		return err
+	}
+	return ValidateHLSSourceVersion(current, policy)
+}
+
+func CurrentHLSSourceVersion(source string) (string, error) {
+	return hlsSourceVersion(source)
+}
+
+func ValidateHLSSourceVersion(current, policy string) error {
+	expected, valid := hlsPolicySourceVersion(policy)
+	if !valid {
+		return errors.New("HLS source policy is invalid")
 	}
 	if current != expected {
 		return ErrHLSSourceChanged

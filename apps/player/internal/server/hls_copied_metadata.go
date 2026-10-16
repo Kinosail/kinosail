@@ -19,6 +19,7 @@ type copiedHLSMetadata struct {
 	mu        sync.Mutex
 	gate      chan struct{}
 	endpoints map[string]copiedHLSEndpoint
+	verified  map[string]copiedHLSVerifiedAssets
 }
 
 type copiedHLSEndpoint struct {
@@ -101,17 +102,12 @@ func (manager *hlsManager) verifyCopiedHLSCertificate(ctx context.Context, direc
 	if err != nil || selected != certificate.Rendition {
 		return errCopiedHLSIndex
 	}
-	ctx, release, err := manager.copiedHLSClockAdmission(ctx)
-	if err != nil {
-		return err
-	}
-	defer release()
 	rendition, err := root.OpenRoot(certificate.Rendition)
 	if err != nil {
 		return errCopiedHLSIndex
 	}
 	defer rendition.Close()
-	if err := verifyCopiedHLSRenditionAssets(ctx, rendition, certificate); err != nil {
+	if err := manager.verifyCopiedHLSRenditionAssetsOnce(ctx, filepath.Join(directory, certificate.Rendition), rendition, certificate); err != nil {
 		return err
 	}
 	return manager.verifyCopiedHLSBoundManifest(ctx, directory, root, rendition, data, certificateData, certificate.Rendition, timeline)
@@ -174,7 +170,7 @@ func (manager *hlsManager) copiedHLSMetadataAdmission(parent context.Context) (c
 	metadata := &manager.copiedMetadata
 	metadata.mu.Lock()
 	if metadata.gate == nil {
-		metadata.gate = make(chan struct{}, 1)
+		metadata.gate = make(chan struct{}, copiedHLSAdmissionSlots)
 		metadata.endpoints = make(map[string]copiedHLSEndpoint)
 	}
 	gate := metadata.gate
@@ -184,6 +180,9 @@ func (manager *hlsManager) copiedHLSMetadataAdmission(parent context.Context) (c
 		return context.WithValue(ctx, copiedHLSMetadataKey{}, manager), func() { cancel(); <-gate }, nil
 	case <-ctx.Done():
 		cancel()
+		if parent.Err() == nil {
+			return nil, nil, errCopiedHLSBusy
+		}
 		return nil, nil, errCopiedHLSIndex
 	}
 }
