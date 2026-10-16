@@ -92,6 +92,9 @@ func observedVODPrefix(manifest []byte, cadence float64) (vodPrefix, bool) {
 		}
 		previous = observed
 	}
+	if !prefix.ready && prefix.segments == 1 && math.Round(previous) > 0 {
+		prefix.cadence, prefix.ready = previous, true
+	}
 	return prefix, prefix.segments > 0
 }
 
