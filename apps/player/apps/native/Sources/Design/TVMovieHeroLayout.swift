@@ -83,6 +83,13 @@ struct TVBackdrop: View {
                 }
             }
         }
+        .mask {
+            LinearGradient(stops: [
+                .init(color: .black, location: 0),
+                .init(color: .black, location: ambient ? 1 : 0.72),
+                .init(color: .clear, location: 1)
+            ], startPoint: .top, endPoint: .bottom)
+        }
         .accessibilityHidden(true)
     }
 }
