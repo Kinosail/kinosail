@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -117,7 +118,9 @@ func TestRunUsesSharedLifecycleAndToleratesOptionalManagerFailures(t *testing.T)
 	exit := run(
 		settings,
 		nil,
-		func(context.Context, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server { return server },
+		func(context.Context, *sync.WaitGroup, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server {
+			return server
+		},
 		func(handler http.Handler) http.Handler { remoteHandled <- struct{}{}; return handler },
 		func(Settings) (*remoteaccess.Manager, error) { return remote, nil },
 		func(Settings) (*trustedhttps.Manager, error) { return trusted, nil },
@@ -142,7 +145,7 @@ func TestRunFailurePaths(t *testing.T) {
 	t.Parallel()
 	settings := testSettings{"remote.mode": "off"}
 	managerFailure := errors.New("manager failed")
-	build := func(_ context.Context, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
+	build := func(_ context.Context, _ *sync.WaitGroup, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
 		if internet != nil || trusted != nil {
 			t.Fatal("failed optional managers must be discarded")
 		}
@@ -160,7 +163,9 @@ func TestRunFailurePaths(t *testing.T) {
 		func(*http.Server, servertransport.TLSConfig) error { return http.ErrServerClosed }); exit != 0 {
 		t.Fatalf("closed server exit = %d", exit)
 	}
-	if exit := run(settings, nil, func(context.Context, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server { return nil }, func(handler http.Handler) http.Handler { return handler },
+	if exit := run(settings, nil, func(context.Context, *sync.WaitGroup, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server {
+		return nil
+	}, func(handler http.Handler) http.Handler { return handler },
 		func(Settings) (*remoteaccess.Manager, error) { return nil, nil },
 		func(Settings) (*trustedhttps.Manager, error) { return nil, nil },
 		func(*http.Server, servertransport.TLSConfig) error { return nil }); exit != 1 {

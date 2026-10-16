@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/backup"
@@ -97,7 +98,9 @@ type Settings interface {
 	Strings(string) []string
 }
 
-type ServerBuilder func(context.Context, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server
+type ServerBuilder func(context.Context, *sync.WaitGroup, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server
+
+const applicationDrainTimeout = 10 * time.Second
 
 func Run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHandler func(http.Handler) http.Handler) int {
 	return run(configured, signals, build, remoteHandler, RemoteAccess, TrustedHTTPS, servertransport.Serve)
@@ -119,7 +122,8 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 	lifecycle, endLifecycle := context.WithCancel(context.Background())
 	defer endLifecycle()
 	internet, trusted := accessManagers(configured, createRemote, createTrusted)
-	httpServer := build(lifecycle, internet, trusted)
+	var drain sync.WaitGroup
+	httpServer := build(lifecycle, &drain, internet, trusted)
 	if httpServer == nil {
 		slog.Error("server lifecycle returned no HTTP server")
 		return 1
@@ -135,11 +139,27 @@ func run(configured Settings, signals []os.Signal, build ServerBuilder, remoteHa
 		<-shutdownDone
 	}
 	endLifecycle()
+	awaitApplicationDrain(&drain)
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("server failed", "error", err)
 		return 1
 	}
 	return 0
+}
+
+func awaitApplicationDrain(drain *sync.WaitGroup) {
+	drained := make(chan struct{})
+	go func() {
+		drain.Wait()
+		close(drained)
+	}()
+	timeout := time.NewTimer(applicationDrainTimeout)
+	defer timeout.Stop()
+	select {
+	case <-drained:
+	case <-timeout.C:
+		slog.Warn("application drain timed out; unsaved state may be lost", "operation", "shutdown", "outcome", "timeout", "timeout_seconds", int(applicationDrainTimeout/time.Second))
+	}
 }
 
 func accessManagers(configured Settings, createRemote remoteFactory, createTrusted trustedFactory) (*remoteaccess.Manager, *trustedhttps.Manager) {

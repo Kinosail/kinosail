@@ -114,3 +114,40 @@ func TestProfilingStaysOffByDefaultAndRefusesNonSocketPaths(t *testing.T) {
 		t.Fatalf("profiling replaced a regular file: %q %v", contents, err)
 	}
 }
+
+func TestProfilingFallsBackToAPrivateShortSocketForLongDataPaths(t *testing.T) {
+	temporary := shortDataDir(t)
+	t.Setenv("TMPDIR", temporary)
+	dataDir := filepath.Join(shortDataDir(t), strings.Repeat("d", 60), strings.Repeat("e", 60))
+	if err := os.MkdirAll(dataDir, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	settings := testSettings{"paths.data": dataDir, "logging.level": "info"}
+	enabled := func(name string) string { return map[string]string{profilingVariable: "1"}[name] }
+	var socket string
+	exit := Execute(nil, nil, io.Discard, enabled, nil, profilingApplication(settings, func(testSettings) int {
+		sockets, err := filepath.Glob(filepath.Join(temporary, "kinosail-profiling-*", "pprof.sock"))
+		if err != nil || len(sockets) != 1 {
+			t.Fatalf("fallback profiling sockets = %v, %v", sockets, err)
+		}
+		socket = sockets[0]
+		directory, err := os.Lstat(filepath.Dir(socket))
+		if err != nil || !directory.IsDir() || directory.Mode().Perm() != 0o700 {
+			t.Fatalf("fallback profiling directory = %v, %v", directory, err)
+		}
+		info, err := os.Lstat(socket)
+		if err != nil || info.Mode().Type() != os.ModeSocket || info.Mode().Perm() != 0o600 {
+			t.Fatalf("fallback profiling socket = %v, %v", info, err)
+		}
+		if status, body := socketGet(t, socket, "/debug/pprof/heap?debug=1"); status != http.StatusOK || !strings.Contains(body, "heap profile") {
+			t.Fatalf("fallback heap profile = %d %.80q", status, body)
+		}
+		return 0
+	}))
+	if exit != 0 {
+		t.Fatalf("exit = %d", exit)
+	}
+	if _, err := os.Lstat(filepath.Dir(socket)); !os.IsNotExist(err) {
+		t.Fatalf("fallback profiling directory remained after shutdown: %v", err)
+	}
+}

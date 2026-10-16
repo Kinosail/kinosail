@@ -14,13 +14,16 @@ import (
 	"time"
 )
 
-const profilingVariable = "KINOSAIL_PROFILING"
+const (
+	profilingVariable  = "KINOSAIL_PROFILING"
+	portableSocketPath = 103
+)
 
 func startProfiling(getenv func(string) string, dataDir string) func() {
 	if getenv(profilingVariable) != "1" {
 		return func() {}
 	}
-	listener, err := listenPrivateSocket(filepath.Join(dataDir, "profiling", "pprof.sock"))
+	listener, location, release, err := profilingListener(dataDir)
 	if err != nil {
 		slog.Warn("profiling socket unavailable", "operation", "profiling", "error", err)
 		return func() {}
@@ -31,9 +34,10 @@ func startProfiling(getenv func(string) string, dataDir string) func() {
 	}
 	server := &http.Server{Handler: profilingHandler(recorder), ReadHeaderTimeout: 5 * time.Second}
 	go func() { _ = server.Serve(listener) }()
-	slog.Info("profiling socket listening", "operation", "profiling", "socket", "profiling/pprof.sock")
+	slog.Info("profiling socket listening", "operation", "profiling", "socket", location)
 	return func() {
 		_ = server.Close()
+		release()
 		if recorder.Enabled() {
 			recorder.Stop()
 		}
@@ -59,6 +63,26 @@ func profilingHandler(recorder *trace.FlightRecorder) http.Handler {
 		}
 	})
 	return mux
+}
+
+func profilingListener(dataDir string) (net.Listener, string, func(), error) {
+	socket := filepath.Join(dataDir, "profiling", "pprof.sock")
+	if len(socket) <= portableSocketPath {
+		listener, err := listenPrivateSocket(socket)
+		return listener, "profiling/pprof.sock", func() {}, err
+	}
+	directory, err := os.MkdirTemp("", "kinosail-profiling-")
+	if err != nil {
+		return nil, "", nil, err
+	}
+	socket = filepath.Join(directory, "pprof.sock")
+	listener, err := listenPrivateSocket(socket)
+	if err != nil {
+		_ = os.Remove(directory)
+		return nil, "", nil, err
+	}
+	slog.Warn("profiling socket path is too long for the data directory; using a private temporary directory", "operation", "profiling", "outcome", "fallback", "socket", socket)
+	return listener, socket, func() { _ = os.Remove(directory) }, nil
 }
 
 func listenPrivateSocket(socket string) (net.Listener, error) {

@@ -23,25 +23,28 @@ func prepareApplicationConfig(config *Config) (context.Context, bool) {
 	return lifecycle, lifecycle != nil
 }
 
-func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) func(func()) {
+func closeApplicationDatabase(lifecycle context.Context, drain *sync.WaitGroup, stateDB *database.Store, managed bool) func(func()) {
 	if !managed || stateDB == nil {
 		return func(func()) {}
 	}
+	if drain == nil {
+		drain = new(sync.WaitGroup)
+	}
 	var mu sync.Mutex
-	var drains []func()
-	go func() {
+	var hooks []func()
+	drain.Go(func() {
 		<-lifecycle.Done()
 		mu.Lock()
 		defer mu.Unlock()
-		for _, drain := range drains {
-			drain()
+		for _, hook := range hooks {
+			hook()
 		}
 		_ = stateDB.Close()
-	}()
-	return func(drain func()) {
+	})
+	return func(hook func()) {
 		mu.Lock()
 		defer mu.Unlock()
-		drains = append(drains, drain)
+		hooks = append(hooks, hook)
 	}
 }
 

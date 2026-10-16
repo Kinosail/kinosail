@@ -50,16 +50,19 @@ func (shutdown *databaseShutdown) run() {
 	}
 }
 
-func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) *databaseShutdown {
+func closeApplicationDatabase(lifecycle context.Context, drain *sync.WaitGroup, stateDB *database.Store, managed bool) *databaseShutdown {
 	shutdown := new(databaseShutdown)
 	if !managed || stateDB == nil {
 		return shutdown
 	}
-	go func() {
+	if drain == nil {
+		drain = new(sync.WaitGroup)
+	}
+	drain.Go(func() {
 		<-lifecycle.Done()
 		shutdown.run()
 		_ = stateDB.Close()
-	}()
+	})
 	return shutdown
 }
 

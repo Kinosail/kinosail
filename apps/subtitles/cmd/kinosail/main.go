@@ -60,13 +60,15 @@ func serveConfiguredMCP(ctx context.Context, configured configuration.Snapshot, 
 }
 
 func run(configured configuration.Snapshot) int {
-	return appcli.Run(configured, terminationSignals(), func(ctx context.Context, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
-		return newConfiguredHTTPServerWithAccess(ctx, configured, internet, trusted)
+	return appcli.Run(configured, terminationSignals(), func(ctx context.Context, drain *sync.WaitGroup, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
+		return newConfiguredHTTPServerWithAccess(ctx, drain, configured, internet, trusted)
 	}, server.Remote)
 }
 
-func newConfiguredHTTPServerWithAccess(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
-	handler := server.New(configuredServerConfig(ctx, configured, internet, trusted)) //nolint:contextcheck // Durable state commits intentionally finish independently of request cancellation.
+func newConfiguredHTTPServerWithAccess(ctx context.Context, drain *sync.WaitGroup, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
+	config := configuredServerConfig(ctx, configured, internet, trusted)
+	config.Drain = drain
+	handler := server.New(config) //nolint:contextcheck // Durable state commits intentionally finish independently of request cancellation.
 	httpServer := servertransport.NewServer(configured.String("listen"), handler)
 	warmAfterListening(ctx, httpServer)
 	return httpServer

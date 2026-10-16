@@ -44,7 +44,7 @@ func TestServeWarmsDefaultLanguageViewsAfterListening(t *testing.T) {
 	t.Cleanup(func() { warmLocalizedViews = previous })
 	ctx, cancel := context.WithCancel(context.WithValue(t.Context(), warmupKey{}, "serve"))
 	defer cancel()
-	httpServer := newConfiguredHTTPServerWithAccess(ctx, configured, nil, nil)
+	httpServer := newConfiguredHTTPServerWithAccess(ctx, nil, configured, nil, nil)
 	select {
 	case result := <-results:
 		t.Fatalf("warm-up ran before the listener served: %+v", result)
