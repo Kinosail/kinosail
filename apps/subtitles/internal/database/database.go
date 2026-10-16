@@ -13,7 +13,7 @@ const (
 	DocumentSizeLimit = documentdb.DocumentSizeLimit
 )
 
-var Documents = documentdb.PlayerDocuments()
+var Documents = append(documentdb.PlayerDocuments(), "subtitle_ledger.json", "subtitle_records.json", "subtitle_searches.json")
 
 type Store = documentdb.Store
 

@@ -13,7 +13,7 @@ func HardwareFailure(detail string) bool {
 			return false
 		}
 	}
-	for _, marker := range []string{"device setup failed", "device creation failed", "cannot load libcuda", "no capable devices", "no device available", "failed to initialise vaapi", "error initializing an internal mfx", "error while opening encoder", "failed to initialize encoder", "failed setup for format", "impossible to convert between the formats", "tonemap_cuda", "tonemap_opencl", "tonemap_vaapi", "tonemap_videotoolbox", "tonemap_d3d11", "vpp_qsv", "libplacebo", "failed to create vulkan", "failed to initialise opencl", "failed to initialize opencl", "parsed_hwupload", "parsed_hwmap", "parsed_scale_cuda", "parsed_scale_qsv", "parsed_scale_vaapi"} {
+	for _, marker := range []string{"device setup failed", "device creation failed", "cannot load libcuda", "no capable devices", "no device available", "failed to initialise vaapi", "error initializing an internal mfx", "error while opening encoder", "failed to initialize encoder", "failed setup for format", "impossible to convert between the formats", "tonemap_cuda", "tonemap_opencl", "tonemap_vaapi", "tonemap_videotoolbox", "tonemap_d3d11", "vpp_qsv", "libplacebo", "failed to create vulkan", "failed to initialise opencl", "failed to initialize opencl", "parsed_hwupload", "parsed_hwmap", "parsed_scale_cuda", "parsed_scale_qsv", "parsed_scale_vaapi", "parsed_scale_vt", "parsed_scale_rkrga", "parsed_tonemap", "parsed_vpp_qsv", "hwaccel initialisation returned error", "hardware accelerator failed to decode picture", "no decoder surfaces left", "failed to get hw surface", "failed to create a videotoolbox"} {
 		if strings.Contains(detail, marker) {
 			return true
 		}
@@ -23,6 +23,11 @@ func HardwareFailure(detail string) bool {
 
 func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []transcodepolicy.Settings {
 	var result []transcodepolicy.Settings
+	if options.HardwareToneMap != "" && options.HardwareDecode {
+		next := options
+		next.HardwareDecode = false
+		result = append(result, next)
+	}
 	if options.HardwareToneMap != "" {
 		next := options
 		next.HardwareToneMap, next.HardwareDecode, next.DisableHardwareToneMap = "", false, true
@@ -42,7 +47,7 @@ func (capabilities Capabilities) Recovery(options transcodepolicy.Settings) []tr
 		}
 		next := options
 		next.HardwareToneMap, next.DisableHardwareToneMap = "", true
-		next.Accelerator, next.Encoder, next.Device, next.HardwareDecode = backend.ID, backend.encoders[options.Codec], operation.Device, false
+		next.Accelerator, next.Encoder, next.Device, next.HardwareDecode, next.HardwareDecodeInputs = backend.ID, backend.encoders[options.Codec], operation.Device, false, nil
 		result = append(result, next)
 		if len(result) == 3 {
 			break

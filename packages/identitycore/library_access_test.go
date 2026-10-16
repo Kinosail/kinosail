@@ -13,8 +13,8 @@ type libraryAccessIndex struct {
 	safe  bool
 }
 
-func (index libraryAccessIndex) Snapshot() ([]library.Item, error) {
-	return append([]library.Item(nil), index.items...), index.err
+func (index libraryAccessIndex) View(policy library.Policy) (*library.View, error) {
+	return library.NewSnapshot(index.items, 1).View(policy), index.err
 }
 
 func (index libraryAccessIndex) Find(id string) (library.Item, bool) {

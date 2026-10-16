@@ -3,6 +3,7 @@ package transcodehardware
 import (
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestBackendPresentationCoversEveryState(t *testing.T) {
@@ -65,4 +66,27 @@ func TestCodecPresentationCoversEveryState(t *testing.T) {
 func verifiedPresentationBackend(id string) Backend {
 	state := &verification{operations: map[string][]Operation{id: {{Codec: "h264", Status: "passed"}}}}
 	return Backend{ID: id, Usable: true, verification: state, encoders: map[string]string{"h264": "encoder"}}
+}
+
+func TestDecodeSummaryListsVerifiedInputsInPriorityOrder(t *testing.T) {
+	state := &verification{operations: map[string][]Operation{"cuda": {
+		{Codec: "h264", Device: "0", Status: "passed", DecodeInputs: []string{"av110", "h264"}},
+		{Codec: "h264", Device: "1", Status: "passed", DecodeInputs: []string{"hevc10"}},
+		{Codec: "h264", Device: "0", Status: "passed", HardwareToneMap: "cuda", ToneMapInput: "hdr10", DecodeInputs: []string{"vp9"}},
+	}}, failed: map[string]time.Time{}}
+	backend := Backend{ID: "cuda", verification: state, encoders: map[string]string{"h264": "h264_nvenc"}}
+	if got := backend.DecodeSummary(); got != "AVC / H.264, HEVC / H.265 10-bit, AV1 10-bit. Other inputs decode on the processor." {
+		t.Fatalf("decode summary = %q", got)
+	}
+	unverified := Backend{ID: "vaapi", verification: &verification{operations: map[string][]Operation{}, failed: map[string]time.Time{}}}
+	if got := unverified.DecodeSummary(); !strings.HasPrefix(got, "Not verified.") {
+		t.Fatalf("unverified summary = %q", got)
+	}
+	if (Backend{ID: "none", verification: state}).DecodeSummary() != "" || (Backend{ID: "cuda"}).DecodeSummary() != "" {
+		t.Fatal("software or undetected backends reported decoding")
+	}
+	page := EnhanceSettingsPage(legacyTranscoderSupportHTML)
+	if !strings.Contains(page, "{{if .DecodeSummary}}<p><strong>Hardware decoding:</strong> {{.DecodeSummary}}</p>{{end}}") {
+		t.Fatal("settings page lacks the decode summary")
+	}
 }

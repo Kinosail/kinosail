@@ -53,23 +53,28 @@ func TestApplicationShellRouteBoundary(t *testing.T) {
 	}
 }
 
-func TestApplicationShellRefreshesCachedStylesheetVersions(t *testing.T) {
+func TestTemplateSourcesRefreshCachedStylesheetVersions(t *testing.T) {
 	response := httptest.NewRecorder()
 	serveStyle(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
 	current := fmt.Sprintf("%x", sha256.Sum256(response.Body.Bytes()))
 	for _, version := range []string{"72", "80", "81", "82", "83", "84", "85", "91", "93", "94", "impeccable-1", "electric-1", "electric-4", "electric-18"} {
-		page := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + version + `">`)
-		want := []byte(`<link rel="stylesheet" href="/static/app.css?v=` + current + `">`)
-		if actual := versionAssetReferenceBytes(page); !bytes.Equal(actual, want) {
+		source := `<link rel="stylesheet" href="/static/app.css?v=` + version + `">`
+		want := `<link rel="stylesheet" href="/static/app.css?v=` + current + `">`
+		if actual := versionedTemplateSource(source); actual != want {
 			t.Fatalf("stylesheet %s was not refreshed: %s", version, actual)
 		}
 	}
 }
 
 func TestApplicationShellLoadsRecognitionOnce(t *testing.T) {
-	for _, existing := range []string{"", `<script defer src="/static/supporter.js?v=19-htmx4"></script>`, `<script defer src="/static/supporter.js"></script>`} {
-		page := injectApplicationShell([]byte(`<html><body><main>Account</main>`+existing+`</body></html>`), nil)
-		if bytes.Count(page, []byte(assetURL("supporter.js"))) != 1 || bytes.Count(page, []byte(`/static/supporter.js`)) != 1 {
+	current := `<script defer src="` + assetURL("supporter.js") + `"></script>`
+	for _, test := range []struct{ existing, want string }{
+		{"", assetURL("supporter.js")},
+		{current, assetURL("supporter.js")},
+		{`<script defer src="/static/supporter.js"></script>`, `/static/supporter.js"`},
+	} {
+		page := injectApplicationShell([]byte(`<html><body><main>Account</main>`+test.existing+`</body></html>`), nil)
+		if !bytes.Contains(page, []byte(test.want)) || bytes.Count(page, []byte(`/static/supporter.js`)) != 1 {
 			t.Fatalf("recognition script missing or duplicated: %s", page)
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -13,13 +14,14 @@ import (
 type Index struct {
 	mu                sync.RWMutex
 	refreshMu         sync.Mutex
+	resolveMu         sync.Mutex
 	roots             []ScanRoot
 	cache             string
-	items             []library.Item
+	allowed           atomic.Pointer[allowedRoots]
+	current           atomic.Pointer[library.Snapshot]
 	titleOrders       map[titleOrderKey]*titleOrder
 	titleOrderUse     uint64
 	titleOrderVersion uint64
-	byID              map[string]int
 	err               error
 	ready             bool
 	scanned           time.Time
@@ -53,27 +55,16 @@ func NewIndex(ctx context.Context, roots []ScanRoot, cache string, interval time
 }
 
 func NewMemoryIndex(items []library.Item, ready bool) *Index {
-	copyItems := append([]library.Item(nil), items...)
 	index := &Index{
-		items: copyItems, byID: ItemsByID(copyItems), ready: ready,
+		ready:      ready,
 		reschedule: make(chan struct{}, 1), refreshes: make(chan struct{}, 1), watchChange: make(chan struct{}, 1),
 		watchDebounce: libraryWatchDebounce, watchStability: libraryWatchStability, watchRetry: libraryWatchRetry, pollInterval: libraryPollInterval,
 		acquire: func(context.Context) (func(), error) { return func() {}, nil },
 	}
 	index.watch, index.openWatcher, index.snapshot = index.watchChanges, func() (*fsnotify.Watcher, error) { return fsnotify.NewBufferedWatcher(1024) }, snapshotFiles
+	index.current.Store(library.NewSnapshot(append([]library.Item(nil), items...), 1))
+	index.resolveRoots()
 	return index
-}
-
-func (index *Index) Safe(path string) bool {
-	index.mu.RLock()
-	roots, cache := append([]ScanRoot(nil), index.roots...), index.cache
-	index.mu.RUnlock()
-	allowed := make([]string, 1, len(roots)+1)
-	allowed[0] = cache
-	for _, root := range roots {
-		allowed = append(allowed, root.Path)
-	}
-	return SafePath(path, allowed)
 }
 
 func (index *Index) Roots() []ScanRoot {
@@ -86,6 +77,7 @@ func (index *Index) SetRoots(roots []ScanRoot) {
 	index.mu.Lock()
 	index.roots = append([]ScanRoot(nil), roots...)
 	index.mu.Unlock()
+	index.resolveRoots()
 	index.signalWatchChange()
 }
 
@@ -95,6 +87,7 @@ func (index *Index) UpdateRoots(ctx context.Context, roots []ScanRoot) error {
 }
 
 func (index *Index) Refresh(ctx context.Context) error {
+	index.resolveRoots()
 	return RefreshIndex(ctx, &index.refreshMu, &index.mu, &index.roots, index.acquire, index.storage(), func(root ScanRoot) (string, string) {
 		return root.Path, root.Namespace
 	})
@@ -164,40 +157,44 @@ func (index *Index) SetFrequency(frequency string) {
 	}
 }
 
-func (index *Index) Snapshot() ([]library.Item, error) {
+func (index *Index) Library() (*library.Snapshot, error) {
 	index.mu.RLock()
 	defer index.mu.RUnlock()
 	err := index.err
 	if index.ready {
 		err = nil
 	}
-	return append([]library.Item(nil), index.items...), err
+	return index.current.Load(), err
+}
+
+func (index *Index) View(policy library.Policy) (*library.View, error) {
+	snapshot, err := index.Library()
+	return snapshot.View(policy), err
+}
+
+func (index *Index) Snapshot() ([]library.Item, error) {
+	snapshot, err := index.Library()
+	return append([]library.Item(nil), snapshot.Items()...), err
 }
 
 func (index *Index) References() ([]*library.Item, error) {
-	index.mu.RLock()
-	defer index.mu.RUnlock()
-	err := index.err
-	if index.ready {
-		err = nil
+	snapshot, err := index.Library()
+	return snapshotReferences(snapshot), err
+}
+
+func snapshotReferences(snapshot *library.Snapshot) []*library.Item {
+	items := snapshot.Items()
+	references := make([]*library.Item, len(items))
+	for position := range items {
+		references[position] = &items[position]
 	}
-	items := make([]*library.Item, len(index.items))
-	for position := range index.items {
-		items[position] = &index.items[position]
-	}
-	return items, err
+	return references
 }
 
 func (index *Index) Find(id string) (library.Item, bool) {
-	index.mu.RLock()
-	defer index.mu.RUnlock()
-	position, found := index.byID[id]
-	if !found {
-		return library.Item{}, false
-	}
-	return index.items[position], true
+	return index.current.Load().Find(id)
 }
 
 func (index *Index) storage() IndexStorage {
-	return IndexStorage{Mutex: &index.mu, Items: &index.items, ByID: &index.byID, Err: &index.err, Ready: &index.ready, Scanned: &index.scanned, Decorator: &index.decorate, Analyzers: &index.analyzers, published: func() { index.titleOrders = nil; index.titleOrderVersion++ }}
+	return IndexStorage{Mutex: &index.mu, Library: &index.current, Err: &index.err, Ready: &index.ready, Scanned: &index.scanned, Decorator: &index.decorate, Analyzers: &index.analyzers, published: func() { index.titleOrders = nil; index.titleOrderVersion++ }}
 }

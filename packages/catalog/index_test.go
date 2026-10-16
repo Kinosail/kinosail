@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -20,36 +21,36 @@ func TestScanAndIndexHelpers(t *testing.T) {
 		items[0].Title = "Decorated"
 		return items
 	})
-	if err != nil || len(items) != 1 || items[0].Title != "Decorated" || ItemsByID(append(items, items...))[items[0].ID] != 0 || ScanRoots([]string{directory}, func(path string) (string, string) { return path, "Movies" })[0].Path != directory {
+	if err != nil || len(items) != 1 || items[0].Title != "Decorated" || ScanRoots([]string{directory}, func(path string) (string, string) { return path, "Movies" })[0].Path != directory {
 		t.Fatalf("items = %#v, error = %v", items, err)
 	}
 
+	duplicate := NewMemoryIndex([]library.Item{{ID: "same", Title: "First"}, {ID: "same", Title: "Second"}}, true)
+	if item, found := duplicate.Find("same"); !found || item.Title != "First" {
+		t.Fatalf("duplicate ID lookup = %#v, %t", item, found)
+	}
+
 	var mutex sync.RWMutex
-	indexed, byID := []library.Item{{ID: "old", Title: "Old"}}, map[string]int{"old": 0}
+	var published atomic.Pointer[library.Snapshot]
+	published.Store(library.NewSnapshot([]library.Item{{ID: "old", Title: "Old"}}, 1))
 	var scanErr error
 	ready := false
 	var scanned time.Time
 	var decorator func([]library.Item) []library.Item
 	var analyzers []func([]library.Item)
-	storage := IndexStorage{Mutex: &mutex, Items: &indexed, ByID: &byID, Err: &scanErr, Ready: &ready, Scanned: &scanned, Decorator: &decorator, Analyzers: &analyzers}
+	storage := IndexStorage{Mutex: &mutex, Library: &published, Err: &scanErr, Ready: &ready, Scanned: &scanned, Decorator: &decorator, Analyzers: &analyzers}
 	storage.SetDecorator(func(items []library.Item) []library.Item { items[0].Title += "!"; return items })
-	analyzed, analysisRuns := "", 0
-	storage.AddAnalyzer(func(items []library.Item) {
-		analysisRuns++
-		analyzed = items[0].Title
-		if analysisRuns == 1 {
-			items[0].Title = "detached"
-		}
-	})
-	if analyzed != "Old!" || indexed[0].Title != "Old!" {
-		t.Fatal("decorator or detached analyzer snapshot failed")
+	analyzed := ""
+	storage.AddAnalyzer(func(items []library.Item) { analyzed = items[0].Title })
+	if analyzed != "Old!" || published.Load().Items()[0].Title != "Old!" || published.Load().Generation() != 2 {
+		t.Fatal("decorator or analyzer snapshot failed")
 	}
 	if err := storage.Refresh(context.Background(), []ScanRoot{{directory, "Movies"}}); err != nil {
 		t.Fatal(err)
 	}
 	count, refreshedAt, statusErr := storage.Status()
-	if count != 1 || refreshedAt.IsZero() || statusErr != nil || !ready || indexed[0].Title != "Movie!" {
-		t.Fatalf("status = %d %v %v, ready=%t, items=%#v", count, refreshedAt, statusErr, ready, indexed)
+	if count != 1 || refreshedAt.IsZero() || statusErr != nil || !ready || analyzed != "Movie!" || published.Load().Items()[0].Title != "Movie!" || published.Load().Generation() != 3 {
+		t.Fatalf("status = %d %v %v, ready=%t, items=%#v", count, refreshedAt, statusErr, ready, published.Load().Items())
 	}
 }
 

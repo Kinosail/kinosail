@@ -7,9 +7,11 @@ import (
 	sharedoperations "github.com/MikeO7/kinosail/packages/operations"
 )
 
-var systemView = newLocalizedTemplate("system", sharedoperations.SystemViewSource(sharedoperations.SystemBrand{
-	Product: "Subtitles", IconVersion: "8", ThemeVersion: "4", StylesheetVersion: "81",
-}))
+var systemView = newLazyLocalizedTemplate("system", func() string {
+	return sharedoperations.SystemViewSource(sharedoperations.SystemBrand{
+		Product: "Subtitles", IconVersion: "8", ThemeVersion: "4", StylesheetVersion: "81",
+	})
+})
 
 func showSystem(settings *settingsStore, index *libraryIndex, profiles *profileStore, audit *auditStore) http.HandlerFunc {
 	return sharedoperations.NewSystemHandler(sharedoperations.SystemSource[catalog.PlaybackView]{

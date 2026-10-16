@@ -6,6 +6,7 @@ private struct ArtworkPrefetch: ViewModifier {
     @Environment(AppSession.self) private var session
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(\.displayScale) private var displayScale
     private struct Key: Hashable {
         let clientID: UUID?
         let paths: [String]
@@ -15,7 +16,7 @@ private struct ArtworkPrefetch: ViewModifier {
     func body(content: Content) -> some View {
         let key = Key(clientID: session.client?.identity,
                       paths: items.prefix(24).map { landscape ? $0.landscapeArtwork : $0.poster }.filter { !$0.isEmpty },
-                      dimension: landscape || dynamicType.isAccessibilitySize ? 1600 : 800,
+                      dimension: MediaArtworkSize.dimension(landscape: landscape, accessibility: dynamicType.isAccessibilitySize, displayScale: displayScale),
                       active: scenePhase == .active)
         content.task(id: key) {
             guard key.active, let client = session.client else { return }

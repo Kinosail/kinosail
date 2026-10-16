@@ -18,7 +18,9 @@ const viewingImportControlHTML = `{{define "viewingOverwriteField"}}<label><inpu
 var (
 	viewingImportPreviewView    = newLocalizedTemplate("viewing-import-preview", viewingImportPreviewHTML)
 	viewingImportResultView     = newLocalizedTemplate("viewing-import-result", viewingImportResultHTML)
-	viewingImportOnboardingView = newLocalizedTemplate("viewing-import-onboarding", ignoreNonPasswordSecretAutofill(viewingImportControlHTML+`{{define "onboardingProgress"}}`+onboardingProgressHTML+`{{end}}`+updateChoicePage(strings.Replace(strings.Replace(viewingImportOnboardingHTML, `{{template "onboardingProgress"}}`, `{{template "onboardingProgress" .Step}}`, 1), `{{range .}}`, `{{range .Profiles}}`, 1))))
+	viewingImportOnboardingView = newLazyLocalizedTemplate("viewing-import-onboarding", func() string {
+		return ignoreNonPasswordSecretAutofill(viewingImportControlHTML + `{{define "onboardingProgress"}}` + onboardingProgressHTML + `{{end}}` + updateChoicePage(strings.Replace(strings.Replace(viewingImportOnboardingHTML, `{{template "onboardingProgress"}}`, `{{template "onboardingProgress" .Step}}`, 1), `{{range .}}`, `{{range .Profiles}}`, 1)))
+	})
 )
 
 type viewingImportWebPage struct {

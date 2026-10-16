@@ -24,16 +24,19 @@ type SubSourceConfig struct {
 }
 
 type subSourceProvider struct {
-	config SubSourceConfig
-	client *http.Client
-	health *subtitleProviderHealthRegistry
+	config    SubSourceConfig
+	client    *http.Client
+	health    *subtitleProviderHealthRegistry
+	now       func() time.Time
+	movies    subSourceCache[subSourceMovieResponse]
+	subtitles subSourceCache[subSourceSubtitleResponse]
 }
 
 func newSubSourceProvider(config SubSourceConfig) *subSourceProvider {
 	if config.URL == "" {
 		config.URL = "https://api.subsource.net/api/v1"
 	}
-	provider := &subSourceProvider{config: config, client: localIntegrationHTTPClient(15 * time.Second), health: newSubtitleProviderHealthRegistry()}
+	provider := &subSourceProvider{config: config, client: localIntegrationHTTPClient(15 * time.Second), health: newSubtitleProviderHealthRegistry(), now: time.Now}
 	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
 }
@@ -70,8 +73,8 @@ func (provider *subSourceProvider) search(ctx context.Context, item library.Item
 		query.Set("q", title)
 	}
 	endpoint.RawQuery = query.Encode()
-	var movies subSourceMovieResponse
-	if err = provider.requestJSON(ctx, endpoint.String(), &movies); err != nil {
+	movies, err := cachedSubSourceJSON(ctx, provider, &provider.movies, endpoint.String())
+	if err != nil {
 		return nil, err
 	}
 	movie, ok := selectSubSourceMovie(item, ids, title, year, movies)
@@ -88,8 +91,8 @@ func (provider *subSourceProvider) search(ctx context.Context, item library.Item
 	query.Set("movieId", strconv.FormatInt(movie.MovieID, 10))
 	query.Set("sort", "rating")
 	endpoint.RawQuery = query.Encode()
-	var subtitles subSourceSubtitleResponse
-	if err = provider.requestJSON(ctx, endpoint.String(), &subtitles); err != nil {
+	subtitles, err := cachedSubSourceJSON(ctx, provider, &provider.subtitles, endpoint.String())
+	if err != nil {
 		return nil, err
 	}
 	return rankSubSourceCandidates(item, movie, requestedLanguage, subtitles), nil

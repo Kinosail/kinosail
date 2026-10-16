@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/backup"
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
@@ -22,14 +24,19 @@ var version = "dev"
 func main() {
 	backup.ApplicationVersion = version
 	server.ApplicationVersion = version
-	exit := appcli.Execute(os.Args[1:], os.Stdin, os.Stdout, os.Getenv, terminationSignals(), appcli.Application[configuration.Snapshot]{Configuration: executeConfigurationCommand, Load: loadConfiguration, MCP: serveConfiguredMCP, Command: command, AuthURL: configuredAuthURL, Run: run})
+	exit := appcli.Execute(os.Args[1:], os.Stdin, os.Stdout, os.Getenv, terminationSignals(), application())
 	if exit != 0 {
 		os.Exit(exit)
 	}
 }
 
+func application() appcli.Application[configuration.Snapshot] {
+	return appcli.Application[configuration.Snapshot]{Configuration: executeConfigurationCommand, Load: loadConfiguration, MCP: serveConfiguredMCP, Command: command, AuthURL: configuredAuthURL, Run: run}
+}
+
 var (
-	updateCommand = updatecontrol.BindCommand(updatecontrol.CommandConfig{
+	warmLocalizedViews = server.WarmLocalizedViews
+	updateCommand      = updatecontrol.BindCommand(updatecontrol.CommandConfig{
 		Policy:       updatecontrol.SubtitlesPolicy(database.SchemaVersion, configuration.SchemaVersion),
 		OpenDatabase: openUpdateDatabase,
 		Version:      func() string { return version },
@@ -60,7 +67,17 @@ func run(configured configuration.Snapshot) int {
 
 func newConfiguredHTTPServerWithAccess(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
 	handler := server.New(configuredServerConfig(ctx, configured, internet, trusted)) //nolint:contextcheck // Durable state commits intentionally finish independently of request cancellation.
-	return servertransport.NewServer(configured.String("listen"), handler)
+	httpServer := servertransport.NewServer(configured.String("listen"), handler)
+	warmAfterListening(ctx, httpServer)
+	return httpServer
+}
+
+func warmAfterListening(ctx context.Context, httpServer *http.Server) {
+	var once sync.Once
+	httpServer.BaseContext = func(net.Listener) context.Context {
+		once.Do(func() { go func() { _ = warmLocalizedViews(ctx) }() })
+		return context.Background()
+	}
 }
 
 func configuredServerConfig(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) server.Config {

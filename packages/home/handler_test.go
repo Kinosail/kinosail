@@ -40,6 +40,10 @@ func (source *testSource) Personal(*http.Request, []library.Item) PersonalProjec
 
 func (source *testSource) HasArtwork(item library.Item) bool { return source.artwork[item.ID] }
 
+func (source *testSource) Library(*http.Request) *library.View {
+	return library.NewSnapshot(source.result.AllItems(), 1).View(library.NewPolicy(true, "", nil))
+}
+
 type testView struct {
 	data          any
 	fullCalls     int

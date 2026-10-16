@@ -5,11 +5,14 @@ actor ProgressWriter {
     private let client: ServerClient
     private let store: ProgressSyncStore
     private var baseline: WatchProgress
+    private var refresh: Task<WatchProgress?, Never>?
     private var progress = WatchProgress()
 
-    init(itemID: String, expected: WatchProgress, client: ServerClient, store: ProgressSyncStore) throws {
+    init(itemID: String, expected: WatchProgress, refresh: Task<WatchProgress?, Never>? = nil,
+         client: ServerClient, store: ProgressSyncStore) throws {
         self.itemID = try Input.id(itemID)
         baseline = try expected.validated(required: false)
+        self.refresh = refresh
         self.client = client
         self.store = store
         progress.session = UUID().uuidString
@@ -17,6 +20,13 @@ actor ProgressWriter {
 
     func update(seconds: Double, watched: Bool) async throws -> Bool {
         try Input.position(seconds)
+        if let refresh {
+            let fresh = await refresh.value
+            if self.refresh != nil {
+                self.refresh = nil
+                if let fresh, let valid = try? fresh.validated(required: false) { baseline = valid }
+            }
+        }
         progress.revision += 1
         progress.seconds = seconds
         progress.watched = watched

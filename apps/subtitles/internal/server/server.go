@@ -10,6 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/library"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -115,7 +116,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	})
 	auth.audit.SetSnapshot(settings.auditSnapshot)
 	management := newOwnerAccess(config, auth)
-	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg)
+	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg, stateDB)
 	settings.subtitleProvider = subtitles
 	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
 	subtitleManager := newSubtitleManager(index, settings, subtitles, probe, backups)
@@ -179,9 +180,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 }
 
 func withApplicationRequests(app http.Handler, appMux *http.ServeMux, auth *authentication, config Config, settings *settingsStore, updates *updateChecker) http.Handler {
-	pattern := func(request *http.Request) string {
+	pattern := httpguard.MemoizedRoutePattern(func(request *http.Request) string {
 		_, matched := appMux.Handler(request)
 		return matched
-	}
+	})
 	return protectApplicationTransport(auth, config, pattern, applicationRequests(auth, settings, updates, pattern, app))
 }

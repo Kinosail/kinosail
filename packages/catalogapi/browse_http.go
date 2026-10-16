@@ -24,7 +24,7 @@ func (handlers MediaHandlers) registerBrowse(mux *http.ServeMux) {
 }
 
 func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Request) {
-	_, shows := library.Organize(handlers.Index.VisibleLibrary(request))
+	shows := handlers.Index.VisibleView(request).Shows()
 	result := make([]MediaGroup, 0, len(shows))
 	for _, show := range shows {
 		play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
@@ -34,20 +34,18 @@ func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Re
 }
 
 func (handlers MediaHandlers) show(writer http.ResponseWriter, request *http.Request) {
-	_, shows := library.Organize(handlers.Index.VisibleLibrary(request))
-	for _, show := range shows {
-		if show.ID == request.PathValue("id") {
-			play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
-			body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
-			apiAction{body: body, status: http.StatusOK}.serve(writer)
-			return
-		}
+	show, found := handlers.Index.VisibleView(request).Show(request.PathValue("id"))
+	if !found {
+		apiAction{notFound: true}.serve(writer)
+		return
 	}
-	apiAction{notFound: true}.serve(writer)
+	play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
+	body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
+	apiAction{body: body, status: http.StatusOK}.serve(writer)
 }
 
 func (handlers MediaHandlers) albums(writer http.ResponseWriter, request *http.Request) {
-	_, albums := library.OrganizeMusic(handlers.Index.VisibleLibrary(request))
+	albums := handlers.Index.VisibleView(request).Albums()
 	result := make([]MediaGroup, 0, len(albums))
 	for _, album := range albums {
 		result = append(result, MediaGroup{ID: album.ID, Title: album.Title, Artwork: ArtworkURL(album.ArtworkID), Artist: album.Artist})
@@ -56,15 +54,13 @@ func (handlers MediaHandlers) albums(writer http.ResponseWriter, request *http.R
 }
 
 func (handlers MediaHandlers) album(writer http.ResponseWriter, request *http.Request) {
-	_, albums := library.OrganizeMusic(handlers.Index.VisibleLibrary(request))
-	for _, album := range albums {
-		if album.ID == request.PathValue("id") {
-			body := map[string]any{"id": album.ID, "title": album.Title, "artist": album.Artist, "tracks": handlers.Progress.ClientItems(request, album.Tracks)}
-			apiAction{body: body, status: http.StatusOK}.serve(writer)
-			return
-		}
+	album, found := handlers.Index.VisibleView(request).Album(request.PathValue("id"))
+	if !found {
+		apiAction{notFound: true}.serve(writer)
+		return
 	}
-	apiAction{notFound: true}.serve(writer)
+	body := map[string]any{"id": album.ID, "title": album.Title, "artist": album.Artist, "tracks": handlers.Progress.ClientItems(request, album.Tracks)}
+	apiAction{body: body, status: http.StatusOK}.serve(writer)
 }
 
 func ArtworkURL(id string) string {

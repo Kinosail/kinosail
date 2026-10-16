@@ -1,6 +1,11 @@
 package transcodehardware
 
-import "strings"
+import (
+	"slices"
+	"strings"
+
+	"github.com/MikeO7/kinosail/packages/transcodepolicy"
+)
 
 const legacyHardwareOptionsHTML = `{{range .Hardware}}{{if ne .ID "none"}}<option value="{{.ID}}" {{if eq $.Accelerator .ID}}selected{{end}} {{if not .Supported}}disabled{{end}}>{{if eq .ID "vaapi"}}VA-API (AMD/Intel){{else}}{{.Name}}{{end}}</option>{{end}}{{end}}`
 
@@ -8,7 +13,7 @@ const hardwareOptionsHTML = `{{range .Hardware}}{{if and (ne .ID "none") .Releva
 
 const legacyTranscoderSupportHTML = `<details><summary>Codec and hardware support</summary><h3>Video codecs</h3>{{range .Codecs}}<p><strong>{{.Name}}</strong>: {{if .Usable}}ready{{else if .Detected}}detected, unavailable{{else}}not detected{{end}}{{if .Reason}} · {{.Reason}}{{end}}</p>{{end}}<h3>Hardware</h3>{{range .Hardware}}<p><strong>{{.Name}}</strong>: {{if .Usable}}ready{{else if not .Supported}}not supported on this Server{{else if .Detected}}detected, unavailable{{else}}not detected{{end}}{{if .Reason}} · {{.Reason}}{{end}}</p>{{end}}</details>`
 
-const transcoderSupportHTML = `<details class="capability-report"><summary>Video compatibility</summary><p>Automatic prefers a verified H.264 pipeline for broad compatibility. Other formats require matching device and encoder evidence.</p><h3>Video formats</h3><div class="capability-list">{{range .Codecs}}<article><header><strong>{{.Name}}</strong><span>{{.SimpleStatus}}</span></header><p>{{.SimpleReason}}</p>{{if .Action}}<details class="capability-technical"><summary>Technical details</summary><p>{{.Reason}}</p><p><strong>Next step:</strong> {{.Action}}</p></details>{{end}}</article>{{end}}</div><h3>Ways to convert video</h3><div class="capability-list">{{range .Hardware}}{{if .Relevant}}<article><header><strong>{{.FriendlyName}}</strong><span>{{.SimpleStatus}}</span></header><p>{{.SimpleReason}}</p><details class="capability-technical"><summary>Technical details</summary><p><strong>FFmpeg option:</strong> {{.Name}}</p><p>{{.Reason}}</p>{{if .Action}}<p><strong>Next step:</strong> {{.Action}}</p>{{end}}</details></article>{{end}}{{end}}</div></details>`
+const transcoderSupportHTML = `<details class="capability-report"><summary>Video compatibility</summary><p>Automatic prefers a verified H.264 pipeline for broad compatibility. Other formats require matching device and encoder evidence.</p><h3>Video formats</h3><div class="capability-list">{{range .Codecs}}<article><header><strong>{{.Name}}</strong><span>{{.SimpleStatus}}</span></header><p>{{.SimpleReason}}</p>{{if .Action}}<details class="capability-technical"><summary>Technical details</summary><p>{{.Reason}}</p><p><strong>Next step:</strong> {{.Action}}</p></details>{{end}}</article>{{end}}</div><h3>Ways to convert video</h3><div class="capability-list">{{range .Hardware}}{{if .Relevant}}<article><header><strong>{{.FriendlyName}}</strong><span>{{.SimpleStatus}}</span></header><p>{{.SimpleReason}}</p><details class="capability-technical"><summary>Technical details</summary><p><strong>FFmpeg option:</strong> {{.Name}}</p><p>{{.Reason}}</p>{{if .DecodeSummary}}<p><strong>Hardware decoding:</strong> {{.DecodeSummary}}</p>{{end}}{{if .Action}}<p><strong>Next step:</strong> {{.Action}}</p>{{end}}</details></article>{{end}}{{end}}</div></details>`
 
 var transcoderCopy = strings.NewReplacer(
 	legacyHardwareOptionsHTML, hardwareOptionsHTML,
@@ -119,4 +124,32 @@ func (backend Backend) currentlyUsable() bool {
 		}
 	}
 	return false
+}
+
+func (backend Backend) DecodeSummary() string {
+	if backend.ID == "none" || backend.verification == nil {
+		return ""
+	}
+	var inputs []string
+	for _, operation := range backend.verification.operationsFor(backend.ID, "h264") {
+		if operation.baseline() {
+			inputs = mergeDecodeInputs(inputs, operation.DecodeInputs)
+		}
+	}
+	names := make([]string, 0, len(inputs))
+	for _, input := range transcodepolicy.DecodeInputs() {
+		if !slices.Contains(inputs, input) {
+			continue
+		}
+		codec, depth := transcodepolicy.DecodeInputCodec(input)
+		name := transcodepolicy.Definition(codec).Name
+		if depth == 10 {
+			name += " 10-bit"
+		}
+		names = append(names, name)
+	}
+	if len(names) == 0 {
+		return "Not verified. Kinosail decodes on the processor and encodes on this device."
+	}
+	return strings.Join(names, ", ") + ". Other inputs decode on the processor."
 }

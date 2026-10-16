@@ -5,17 +5,15 @@ import (
 	"context"
 	"errors"
 	"math"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-func recognizeSubtitleFrame(ctx context.Context, executable, language string, pixels []byte) (string, []subtitleDraftWord, error) {
-	image := subtitleOCRImage(pixels, 1920, 1080)
-	if len(image) == 0 {
-		return "", []subtitleDraftWord{}, nil
-	}
+func recognizeSubtitleImage(ctx context.Context, executable, language string, image []byte) (string, []subtitleDraftWord, error) {
 	command := exec.CommandContext(ctx, executable, "stdin", "stdout", "-l", language, "--psm", "6", "tsv")
+	command.Env = append(os.Environ(), "OMP_THREAD_LIMIT=1")
 	command.Stdin = bytes.NewReader(image)
 	buffer := &subtitleLimitedOutput{limit: 1 << 20}
 	command.Stdout = buffer
