@@ -65,7 +65,7 @@ func openContext(ctx context.Context, dataDir string, keepOpen bool, config Conf
 		_ = store.Close()
 		return nil, err
 	}
-	for name := range legacy {
+	for _, name := range legacy.names() {
 		if err := dependencies.remove(filepath.Join(dataDir, name)); err != nil && !errors.Is(err, os.ErrNotExist) {
 			_ = store.Close()
 			return nil, fmt.Errorf("remove imported %s: %w", name, err)
@@ -105,7 +105,7 @@ func databaseFileExists(path string, dependencies dependencies) (bool, error) {
 	return false, err
 }
 
-func (store *Store) prepare(ctx context.Context, legacy map[string][]byte, databaseExists bool, dependencies dependencies) error {
+func (store *Store) prepare(ctx context.Context, legacy legacyState, databaseExists bool, dependencies dependencies) error {
 	if databaseExists && store.config.ValidateBeforeMigration {
 		if err := store.validateExisting(ctx); err != nil {
 			return err
@@ -246,25 +246,4 @@ func (store *Store) ExportContext(ctx context.Context) (map[string][]byte, error
 		return nil, err
 	}
 	return result, nil
-}
-
-func readLegacy(dataDir string, config Config, allowed map[string]struct{}) (map[string][]byte, error) {
-	store := &Store{allowed: allowed, config: config}
-	legacy := make(map[string][]byte)
-	for _, name := range config.Documents {
-		path := filepath.Join(dataDir, name)
-		info, err := os.Lstat(path)
-		if errors.Is(err, os.ErrNotExist) {
-			continue
-		}
-		if err != nil || !info.Mode().IsRegular() || info.Size() > DocumentSizeLimit {
-			return nil, fmt.Errorf("invalid legacy state %s", name)
-		}
-		data, err := os.ReadFile(path)
-		if err != nil || !store.validDocument(name, data) {
-			return nil, fmt.Errorf("invalid legacy state %s", name)
-		}
-		legacy[name] = data
-	}
-	return legacy, nil
 }

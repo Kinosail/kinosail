@@ -34,7 +34,7 @@ func (store *Store) validateExisting(ctx context.Context) error {
 	return nil
 }
 
-func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) error {
+func (store *Store) initialize(ctx context.Context, legacy legacyState) error {
 	var version int
 	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil {
 		return fmt.Errorf("read SQLite schema version: %w", err)
@@ -74,8 +74,13 @@ func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) er
 			return fmt.Errorf("remove retired state %s: %w", name, err)
 		}
 	}
-	for name, data := range legacy {
+	for name, data := range legacy.documents {
 		if err := store.saveDocument(ctx, tx, name, data); err != nil {
+			return fmt.Errorf("import %s: %w", name, err)
+		}
+	}
+	for name, path := range legacy.entries {
+		if err := store.importEntries(ctx, tx, name, path); err != nil {
 			return fmt.Errorf("import %s: %w", name, err)
 		}
 	}

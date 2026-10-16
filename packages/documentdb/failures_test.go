@@ -180,9 +180,9 @@ func TestInitializeSurfacesDatabaseFailures(t *testing.T) {
 			store, mock, closeStore := mockStore(t)
 			defer closeStore()
 			configure(mock)
-			legacy := map[string][]byte(nil)
+			var legacy legacyState
 			if name == "legacy import" {
-				legacy = map[string][]byte{"settings.json": []byte(`{}`)}
+				legacy.documents = map[string][]byte{"settings.json": []byte(`{}`)}
 			}
 			if err := store.initialize(t.Context(), legacy); err == nil {
 				t.Fatal("database failure was accepted")

@@ -15,6 +15,8 @@ var playerDocuments = []string{
 	"sessions.json", "settings.json", "smart_playlists.json", "updates.json",
 }
 
+var entryPlayerDocuments = []string{"metadata.json", "progress.json"}
+
 var durablePlayerDocuments = []string{"agent_connections.json", "api_keys.json", "media_shares.json", "profiles.json", "sessions.json", "settings.json"}
 
 type Validator func(name string, data []byte) error
@@ -23,6 +25,7 @@ type Config struct {
 	Documents               []string
 	RetiredDocuments        []string
 	DurableDocuments        []string
+	EntryDocuments          []string
 	Validate                Validator
 	ValidateBeforeMigration bool
 }
@@ -30,16 +33,17 @@ type Config struct {
 func PlayerDocuments() []string { return slices.Clone(playerDocuments) }
 
 func PlayerConfig() Config {
-	return Config{Documents: PlayerDocuments(), RetiredDocuments: []string{"live-tv.json"}, DurableDocuments: slices.Clone(durablePlayerDocuments)}
+	return Config{Documents: PlayerDocuments(), RetiredDocuments: []string{"live-tv.json"}, DurableDocuments: slices.Clone(durablePlayerDocuments), EntryDocuments: slices.Clone(entryPlayerDocuments)}
 }
 
 func validateConfig(config Config) (Config, map[string]struct{}, error) {
-	if len(config.Documents) == 0 || len(config.Documents) > maxDocuments || len(config.RetiredDocuments) > maxDocuments || len(config.DurableDocuments) > len(config.Documents) {
+	if len(config.Documents) == 0 || len(config.Documents) > maxDocuments || len(config.RetiredDocuments) > maxDocuments || len(config.DurableDocuments) > len(config.Documents) || len(config.EntryDocuments) > len(config.Documents) {
 		return Config{}, nil, errors.New("invalid document configuration")
 	}
 	config.Documents = slices.Clone(config.Documents)
 	config.RetiredDocuments = slices.Clone(config.RetiredDocuments)
 	config.DurableDocuments = slices.Clone(config.DurableDocuments)
+	config.EntryDocuments = slices.Clone(config.EntryDocuments)
 	allowed := make(map[string]struct{}, len(config.Documents))
 	all := make(map[string]struct{}, len(config.Documents)+len(config.RetiredDocuments))
 	for _, name := range config.Documents {
@@ -53,7 +57,7 @@ func validateConfig(config Config) (Config, map[string]struct{}, error) {
 			return Config{}, nil, err
 		}
 	}
-	for _, name := range config.DurableDocuments {
+	for _, name := range slices.Concat(config.DurableDocuments, config.EntryDocuments) {
 		if _, ok := allowed[name]; !ok {
 			return Config{}, nil, errors.New("invalid document configuration")
 		}

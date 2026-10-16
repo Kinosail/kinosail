@@ -51,9 +51,7 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 		return err
 	}
 	names := files
-	maximum := maxArchiveSize
 	if includeSecrets {
-		maximum -= encryptedOverhead
 		names = append(append([]string(nil), files...), secretFiles...)
 	}
 	contents := make(map[string][]byte, len(names))
@@ -78,6 +76,10 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 	}
 	if len(written) == 0 {
 		return errors.New("no configuration state to back up")
+	}
+	maximum := maxArchiveSize + entryAllowance(contents, written)
+	if includeSecrets {
+		maximum -= encryptedOverhead
 	}
 	return writeArchiveLimit(writer, version, contents, written, maximum)
 }
@@ -191,9 +193,10 @@ func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string]
 		return nil, err
 	}
 	defer gzipReader.Close()
-	decoded := &io.LimitedReader{R: gzipReader, N: maxDecodedSize + 1}
+	decoded := &io.LimitedReader{R: gzipReader, N: maxDecodedTotal + 1}
 	archive := tar.NewReader(decoded)
 	staged := make(map[string][]byte)
+	whole := int64(1024)
 	for {
 		header, nextErr := archive.Next()
 		if errors.Is(nextErr, io.EOF) {
@@ -205,11 +208,14 @@ func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string]
 		if err := service.stage(archive, header, staged, includeSecrets); err != nil {
 			return nil, err
 		}
+		if !entryDocument(header.Name) {
+			whole += archiveEntrySize(int(header.Size))
+		}
 	}
 	if _, err := io.Copy(io.Discard, decoded); err != nil {
 		return nil, err
 	}
-	if decoded.N == 0 {
+	if decoded.N == 0 || whole > maxDecodedSize {
 		return nil, errors.New("backup exceeds maximum decoded size")
 	}
 	if err := validateManifest(staged); err != nil {
@@ -241,6 +247,9 @@ func (service *Service) stage(archive *tar.Reader, header *tar.Header, staged ma
 func maxStateFileSize(name string) int {
 	if name == "audit.jsonl" {
 		return maxAuditFileSize
+	}
+	if entryDocument(name) {
+		return maxEntryDocumentSize
 	}
 	if slices.Contains(databaseDocuments, name) {
 		return databaseDocumentLimit

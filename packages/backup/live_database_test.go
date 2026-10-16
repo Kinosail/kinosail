@@ -18,9 +18,9 @@ func TestBackupRejectsDocumentsTheArchiveCannotRestore(t *testing.T) {
 		t.Fatal(err)
 	}
 	large := []byte(`"` + strings.Repeat("x", 16<<20) + `"`)
-	live := testArchive.service.WithLiveDatabase(exportedDocuments{"metadata.json": large, "settings.json": []byte(`{}`)})
+	live := testArchive.service.WithLiveDatabase(exportedDocuments{"collections.json": large, "settings.json": []byte(`{}`)})
 	var archive bytes.Buffer
-	if err := live.Write(&archive, directory, "dev"); err == nil || !strings.Contains(err.Error(), "metadata.json") || archive.Len() != 0 {
+	if err := live.Write(&archive, directory, "dev"); err == nil || !strings.Contains(err.Error(), "collections.json") || archive.Len() != 0 {
 		t.Fatalf("oversized document = %v with %d archive bytes", err, archive.Len())
 	}
 	live = testArchive.service.WithLiveDatabase(exportedDocuments{"settings.json": []byte(`{"name":"Live"}`)})

@@ -75,7 +75,7 @@ func TestPersistedBackupRejectsAggregateAndEncodedOverflowBeforeOutput(t *testin
 		t.Run(kind, func(t *testing.T) {
 			dataDir := t.TempDir()
 			documents := map[string][]byte{}
-			names := []string{"collections.json", "history.json", "lists.json", "metadata.json", "progress.json"}
+			names := []string{"collections.json", "history.json", "lists.json", "playlists.json", "smart_playlists.json"}
 			payload := jsonPayload(14 << 20)
 			if kind == "encoded" {
 				payload = incompressibleJSON()
@@ -163,7 +163,7 @@ func saveOversizedSnapshot(t *testing.T, dataDir string) {
 		t.Fatal(err)
 	}
 	documents := map[string][]byte{}
-	for _, name := range []string{"collections.json", "history.json", "lists.json", "metadata.json", "progress.json"} {
+	for _, name := range []string{"collections.json", "history.json", "lists.json", "playlists.json", "smart_playlists.json"} {
 		documents[name] = jsonPayload(14 << 20)
 	}
 	values := map[string]any{}
@@ -189,9 +189,9 @@ func incompressibleJSON() []byte {
 
 func boundaryDocuments(extra int) map[string][]byte {
 	documents := map[string][]byte{}
-	for _, name := range []string{"collections.json", "history.json", "lists.json", "metadata.json"} {
+	for _, name := range []string{"collections.json", "history.json", "lists.json", "playlists.json"} {
 		size := (16 << 20) - 1024
-		if name == "metadata.json" {
+		if name == "playlists.json" {
 			size += extra
 		}
 		documents[name] = jsonPayload(size)
