@@ -144,13 +144,8 @@ func TestEventsSecretRotationAndSaveFailure(t *testing.T) {
 
 type eventFailStore struct {
 	*memoryState
-	calls int
 }
 
-func (store *eventFailStore) Save(value any) error {
-	store.calls++
-	if store.calls == 2 {
-		return errors.New("storage failed")
-	}
-	return store.memoryState.Save(value)
+func (store *eventFailStore) Save(any) error {
+	return errors.New("storage failed")
 }

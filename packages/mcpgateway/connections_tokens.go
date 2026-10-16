@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"log/slog"
 	"mime"
 	"net/http"
 	"net/url"
@@ -164,16 +165,22 @@ func (connections *Connections) VerifyToken(_ context.Context, token string, req
 		if !found || profile.Revision != grant.ProfileRevision || !connections.principals.Allowed(profile, request, now) {
 			return nil, mcpauth.ErrInvalidToken
 		}
-		grant.LastUsed = now.Unix()
-		state := connections.stateLocked()
-		state.Grants[id] = grant
-		if connections.commitLocked(state) != nil {
-			return nil, mcpauth.ErrInvalidToken
-		}
+		connections.recordUseLocked(id, grant, now.Unix())
 		connections.principals.Attribute(request, profile)
 		return &mcpauth.TokenInfo{Scopes: append([]string(nil), grant.Scopes...), Expiration: time.Unix(grant.AccessExpires, 0), UserID: grant.ProfileID, Extra: map[string]any{"eventGrant": grant.ID, "eventRemote": identitycore.RemoteRequest(request)}}, nil
 	}
 	return nil, mcpauth.ErrInvalidToken
+}
+
+func (connections *Connections) recordUseLocked(id string, grant mcpOAuthGrant, now int64) {
+	if grant.LastUsed+mcpUseWriteSeconds > now {
+		return
+	}
+	grant.LastUsed = now
+	connections.grants[id] = grant
+	if err := connections.store.Save(connections.stateLocked()); err != nil {
+		slog.Warn("MCP connection use was not saved", "operation", "oauth/token-use", "outcome", "retry-next-use", "failure", "state-save")
+	}
 }
 
 func (connections *Connections) revokeToken(writer http.ResponseWriter, request *http.Request) {
