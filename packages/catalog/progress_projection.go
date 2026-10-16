@@ -52,14 +52,14 @@ func ActiveProgress(values map[string]PlaybackState, profile string, owner bool,
 }
 
 func ProgressHistory(values map[string]PlaybackState, profile string, owner bool, items []library.Item) []library.Item {
-	state := func(item library.Item) PlaybackState { return ViewerProgress(values, profile, owner, item.ID) }
-	sort.SliceStable(items, func(left, right int) bool { return state(items[left]).Updated.After(state(items[right]).Updated) })
-	for index, item := range items {
-		if state(item).Updated.IsZero() {
-			return items[:index]
+	history, updated := make([]library.Item, 0), make(map[string]time.Time)
+	for _, item := range items {
+		if state := ViewerProgress(values, profile, owner, item.ID); !state.Updated.IsZero() {
+			history, updated[item.ID] = append(history, item), state.Updated
 		}
 	}
-	return items
+	sort.SliceStable(history, func(left, right int) bool { return updated[history[left].ID].After(updated[history[right].ID]) })
+	return history
 }
 
 func RecentAdminProgress(values map[string]PlaybackState, items []library.Item, names map[string]string) []PlaybackView {

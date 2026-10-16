@@ -56,14 +56,14 @@ func TestDestinationProjection(t *testing.T) {
 		{ID: "book", Kind: "book", Title: "Book"},
 		{ID: "photo", Kind: "photo", Title: "Photo"},
 	}
-	groups := Destinations(items, 1, 2, 3)
+	groups := destinations(countLibrary(library.NewSnapshot(items, 1).View(library.NewPolicy(true, "", nil))), 1, 2, 3)
 	if len(groups) != 3 || len(groups[0].Destinations) != 3 || len(groups[1].Destinations) != 3 || len(groups[2].Destinations) != 3 {
 		t.Fatalf("groups=%+v", groups)
 	}
 	if groups[0].Destinations[0].CountLabel != "1 item" || groups[2].Destinations[1].CountLabel != "2 items" || CountLabel(0) != "0 items" {
 		t.Fatalf("count labels=%+v", groups)
 	}
-	if groups := Destinations(nil, 0, 0, 0); len(groups) != 0 {
+	if groups := destinations(libraryCounts{}, 0, 0, 0); len(groups) != 0 {
 		t.Fatalf("empty groups=%+v", groups)
 	}
 }

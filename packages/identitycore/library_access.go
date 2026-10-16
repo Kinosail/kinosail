@@ -6,8 +6,13 @@ func LibraryPolicy(profile Profile) library.Policy {
 	return library.NewPolicy(profile.Owner, profile.Rating, profile.Libraries)
 }
 
+func VisibleView(index library.VisibilityIndex, profile Profile) (*library.View, error) {
+	return index.View(LibraryPolicy(profile))
+}
+
 func VisibleLibrary(index library.VisibilityIndex, profile Profile) ([]library.Item, error) {
-	return library.Visible(index, LibraryPolicy(profile).Allows)
+	view, err := VisibleView(index, profile)
+	return view.Items(), err
 }
 
 func VisibleItem(index library.VisibilityIndex, profile Profile, id string) (library.Item, bool) {

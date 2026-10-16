@@ -18,3 +18,8 @@ func (source homeSource) Personal(request *http.Request, items []library.Item) h
 }
 
 func (homeSource) HasArtwork(item library.Item) bool { return artworkPath(item) != "" }
+
+func (source homeSource) Library(request *http.Request) *library.View {
+	view, _ := visibleView(request, source.index)
+	return view
+}

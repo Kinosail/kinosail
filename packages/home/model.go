@@ -43,6 +43,7 @@ type Source[Show, Resume, Playlist, Collection any] interface {
 	Catalog(*http.Request, []library.Show, catalog.Result, bool) CatalogProjection[Show, Playlist, Collection]
 	Personal(*http.Request, []library.Item) PersonalProjection[Resume]
 	HasArtwork(library.Item) bool
+	Library(*http.Request) *library.View
 }
 
 type View interface {

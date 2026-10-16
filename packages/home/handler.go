@@ -41,7 +41,7 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 			NavigationPrimary: shell.NavigationPrimary, NavigationMore: shell.NavigationMore, UpdateAvailable: shell.UpdateAvailable, CommandMenu: true,
 		}
 		if !fragment && page.Query == "" && page.View == "all" && page.Offset == 0 {
-			populateLanding(request, source, page.AllItems(), &data)
+			populateLanding(request, source, source.Library(request), page.AllItems(), &data)
 		}
 		if renderErr := render(view, writer, request, data, fragment); renderErr != nil {
 			slog.Error("render home", "error", renderErr)
@@ -49,15 +49,16 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 	}
 }
 
-func populateLanding[Show, Resume, Playlist, Collection any](request *http.Request, source Source[Show, Resume, Playlist, Collection], items []library.Item, page *Page[Show, Resume, Playlist, Collection]) {
-	page.HomeArtwork, page.HomeShowTitle = MediaPresentation(items, source.HasArtwork)
+func populateLanding[Show, Resume, Playlist, Collection any](request *http.Request, source Source[Show, Resume, Playlist, Collection], view *library.View, items []library.Item, page *Page[Show, Resume, Playlist, Collection]) {
+	cached := libraryLanding(view, source.HasArtwork)
+	page.HomeArtwork, page.HomeShowTitle = cached.artwork, cached.titles
 	personal := source.Personal(request, items)
 	page.Continue, page.List = personal.Continue, personal.List
 	page.Played = RecentlyPlayed(personal.Played, page.HomeArtwork, page.HomeShowTitle)
-	page.Recent = RecentlyAdded(items, page.HomeArtwork, page.HomeShowTitle)
-	page.MovieGenres = MovieGenres(items, page.HomeArtwork)
-	page.HomeShelves = HomeShelves(items, personal.Unwatched, page.HomeArtwork, page.HomeShowTitle, page.MovieGenres)
-	page.Destinations = Destinations(items, len(personal.List), personal.CollectionCount, personal.PlaylistCount)
+	page.Recent = cached.recent
+	page.MovieGenres = cached.genres
+	page.HomeShelves = homeShelves(cached, personal.Unwatched)
+	page.Destinations = destinations(cached.counts, len(personal.List), personal.CollectionCount, personal.PlaylistCount)
 }
 
 func render(view View, writer http.ResponseWriter, request *http.Request, data any, fragment bool) error {

@@ -77,6 +77,7 @@ type DetailView interface {
 
 type DetailIndex interface {
 	VisibleLibrary(*http.Request) []library.Item
+	VisibleView(*http.Request) *library.View
 	VisibleItem(*http.Request, string) (library.Item, bool)
 }
 
@@ -110,18 +111,16 @@ func (details DetailHTTP) Album(index DetailIndex) http.HandlerFunc {
 			details.notFound(writer, request)
 			return
 		}
-		_, albums := library.OrganizeMusic(index.VisibleLibrary(request))
-		for _, album := range albums {
-			if album.ID == id {
-				data := AlbumPage{Album: album}
-				if len(album.Tracks) != 0 {
-					data.First = &album.Tracks[0]
-				}
-				details.render(writer, request, details.album, data)
-				return
-			}
+		album, found := index.VisibleView(request).Album(id)
+		if !found {
+			details.notFound(writer, request)
+			return
 		}
-		details.notFound(writer, request)
+		data := AlbumPage{Album: album}
+		if len(album.Tracks) != 0 {
+			data.First = &album.Tracks[0]
+		}
+		details.render(writer, request, details.album, data)
 	}
 }
 

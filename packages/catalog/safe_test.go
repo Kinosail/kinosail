@@ -41,7 +41,7 @@ func TestIndexSafeRejectsEscapesFromLibraryRoots(t *testing.T) {
 	for path, want := range map[string]bool{
 		inside: true, cached: true, internalLink: true,
 		secret: false, sibling: false, fileLink: false,
-		filepath.Join(directoryLink, "Secret.mp4"): false,
+		filepath.Join(directoryLink, "Secret.mp4"):         false,
 		filepath.Join(root, "..", "outside", "Secret.mp4"): false,
 		filepath.Join(root, "Missing.mp4"):                 false,
 		root:                                               true,

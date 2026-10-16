@@ -22,40 +22,18 @@ type HomeShelf struct {
 	Genres []MovieGenre
 }
 
-func HomeShelves(items, unwatched []library.Item, artwork, showTitles map[string]string, genres []MovieGenre) []HomeShelf {
-	shelves := []HomeShelf{
-		{Key: "recent-movies", Title: "Recently added movies", Items: recentFor(items, artwork, showTitles, "movie")},
-		{Key: "recent-shows", Title: "Recently added TV shows", Items: recentFor(items, artwork, showTitles, "show")},
-		{Key: "unwatched-shows", Title: "Unwatched TV shows", Items: recentFor(unwatched, artwork, showTitles, "show")},
-		{Key: "unwatched-movies", Title: "Unwatched movies", Items: recentFor(unwatched, artwork, showTitles, "movie")},
-		{Key: "movie-genres", Title: "Movie genres", Genres: genres},
-		{Key: "recent-music", Title: "Recently added music", Items: recentFor(items, artwork, showTitles, "audio")},
-		{Key: "recent-audiobooks", Title: "Recently added audiobooks", Items: recentFor(items, artwork, showTitles, "audiobook")},
-		{Key: "recent-other", Title: "Recently added", Items: recentFor(items, artwork, showTitles, "other")},
-	}
-	visible := shelves[:0]
-	for _, shelf := range shelves {
-		if len(shelf.Items) > 0 || len(shelf.Genres) > 0 {
-			visible = append(visible, shelf)
-		}
-	}
-	for index := range visible {
-		for card := range visible[index].Items {
-			visible[index].Items[card].Priority = index == 0 && card < 2
-		}
-	}
-	return visible
-}
-
 func recentFor(items []library.Item, artwork, showTitles map[string]string, kind string) []ShelfItem {
-	selected := make([]library.Item, 0, len(items))
-	for _, item := range items {
-		if homeKind(item, kind) {
-			selected = append(selected, item)
+	matched := make([]*library.Item, 0)
+	for position := range items {
+		if homeKind(items[position], kind) {
+			matched = append(matched, &items[position])
 		}
 	}
-	sort.SliceStable(selected, func(i, j int) bool { return selected[i].Added.After(selected[j].Added) })
-	selected = selected[:min(len(selected), recentItemLimit)]
+	sort.SliceStable(matched, func(i, j int) bool { return matched[i].Added.After(matched[j].Added) })
+	selected := make([]library.Item, min(len(matched), recentItemLimit))
+	for position := range selected {
+		selected[position] = *matched[position]
+	}
 	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
 }
 
