@@ -1,6 +1,9 @@
 package catalog
 
 import (
+	"bytes"
+	"encoding/json"
+	"log/slog"
 	"net/http"
 	"testing"
 	"time"
@@ -83,16 +86,30 @@ func TestProgressFlushFailureMakesLaterHeartbeatsSynchronous(t *testing.T) {
 	if err := store.Set(request, "movie", 20, nil); err != nil {
 		t.Fatal(err)
 	}
+	var logs bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+	defer slog.SetDefault(previous)
+	if err := store.Flush(); err != nil || logs.Len() != 0 {
+		t.Fatalf("successful flush = %v, logs %q", err, logs.String())
+	}
+	if err := store.Set(request, "movie", 25, nil); err != nil {
+		t.Fatal(err)
+	}
 	if err := database.Close(); err != nil {
 		t.Fatal(err)
 	}
 	if err := store.Flush(); err == nil {
 		t.Fatal("flush to a closed database succeeded")
 	}
+	var entry map[string]any
+	if err := json.Unmarshal(logs.Bytes(), &entry); err != nil || entry["level"] != "WARN" || entry["operation"] != "progress.flush" || entry["trigger"] != "stop" || entry["pending"] != float64(1) || bytes.Contains(logs.Bytes(), []byte("viewer:movie")) {
+		t.Fatalf("flush failure log = %q, %v", logs.String(), err)
+	}
 	if err := store.Set(request, "movie", 30, nil); err == nil {
 		t.Fatal("heartbeat after a failed flush was accepted without storage")
 	}
-	if got := store.Get(request, "movie").Seconds; got != 20 {
+	if got := store.Get(request, "movie").Seconds; got != 25 {
 		t.Fatalf("failed heartbeat changed memory to %v", got)
 	}
 }
