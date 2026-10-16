@@ -18,6 +18,7 @@ import (
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/serverdiscovery"
+	"github.com/MikeO7/kinosail/packages/transcodehardware"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
@@ -128,7 +129,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	shutdown := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
@@ -137,7 +138,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		settings.tmdbCheck = config.TMDBCheck
 	}
 	supporter := newSupporterProgram(settings, config.Supporter)
-	workloads := workload.New(workload.HeavyCapacity())
+	workloads := workload.New(workload.HeavyCapacity(), workload.DeviceSessions(transcodehardware.DeviceSessions))
 	metadata := newMetadataStore(config.Metadata, config.DataDir, config.CacheDir, stateDB)
 	if metadata.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
@@ -153,7 +154,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 		return workloads.Acquire(ctx, workload.Background)
 	})}
 	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(config.Lifecycle, items)))
+		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(workload.WithBackgroundPriority(config.Lifecycle), items)))
 	})
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
@@ -165,6 +166,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if progress.Err() != nil || lists.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
+	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
 		auth.passkeys.redirectPages = false
@@ -190,7 +192,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	hls := newHLS(config.Lifecycle, config.CacheDir, config.FFmpeg, index, probe, settings, workloads)
 	hls.startup = newStartupPreparation(hls, auth, config.TranscodeCacheLimit)
 	frames := newTrickplay(config.CacheDir, config.FFmpeg, index, workloads)
-	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
+	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads, stateDB)
 	maintenance := newMaintenanceManager(lifecycle, hls, backups, metadata, markers, config.MaintenanceInterval, config.TranscodeCacheLimit)
 	markers.SetProbe(markerProbe(probe))
 	if managedLifecycle {

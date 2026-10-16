@@ -11,6 +11,7 @@ import (
 type WorkloadSnapshot struct {
 	Capacity, BackgroundCapacity                                         int
 	ActivePlayback, ActiveBackground, WaitingPlayback, WaitingBackground int64
+	ActiveInteractive, WaitingInteractive                                int64
 }
 
 type runtimeSnapshot struct {
@@ -36,6 +37,7 @@ type Metrics struct {
 	HTTPRequests, HTTPErrors, HTTPPanics, ActivityFailures                              uint64
 	WorkloadCapacity, WorkloadBackgroundCapacity                                        int
 	ActivePlayback, ActiveBackground, WaitingPlayback, WaitingBackground                int64
+	ActiveInteractive, WaitingInteractive                                               int64
 	NotificationQueueDepth                                                              int
 	NotificationDropped, ViewingSyncDeferred                                            uint64
 	ViewingSyncActive                                                                   int
@@ -51,7 +53,7 @@ func projectMetrics(snapshot runtimeSnapshot) Metrics {
 	return Metrics{
 		Healthy: activity.Healthy && snapshot.ScanError == nil, LibraryMonitoring: snapshot.LibraryMonitoring, LibraryItems: snapshot.LibraryItems, Sessions: snapshot.Sessions,
 		TranscodeCacheBytes: snapshot.TranscodeCacheBytes, HTTPRequests: snapshot.HTTPRequests, HTTPErrors: snapshot.HTTPErrors, HTTPPanics: snapshot.HTTPPanics, ActivityFailures: activity.WriteFailures,
-		WorkloadCapacity: workload.Capacity, WorkloadBackgroundCapacity: workload.BackgroundCapacity, ActivePlayback: workload.ActivePlayback, ActiveBackground: workload.ActiveBackground, WaitingPlayback: workload.WaitingPlayback, WaitingBackground: workload.WaitingBackground,
+		WorkloadCapacity: workload.Capacity, WorkloadBackgroundCapacity: workload.BackgroundCapacity, ActivePlayback: workload.ActivePlayback, ActiveBackground: workload.ActiveBackground, WaitingPlayback: workload.WaitingPlayback, WaitingBackground: workload.WaitingBackground, ActiveInteractive: workload.ActiveInteractive, WaitingInteractive: workload.WaitingInteractive,
 		NotificationQueueDepth: activity.NotificationQueued, NotificationDropped: activity.NotificationDrops, ViewingSyncActive: snapshot.ViewingSyncActive, ViewingSyncDeferred: snapshot.ViewingSyncDeferred,
 		LiveEventSubscribers: live.Subscribers, LiveEventsPublished: live.Published, LiveEventReconnects: live.Reconnects, LiveEventRejected: live.Rejected, LiveEventSlowDrops: live.SlowDrops,
 		WatchRoomConnections: rooms.Connections, WatchRoomJoins: rooms.Joins, WatchRoomReconnects: rooms.Reconnects, WatchRoomSlowDrops: rooms.SlowDrops, WatchRoomDriftObservations: rooms.DriftObservations, WatchRoomDriftSeconds: rooms.DriftSeconds,

@@ -36,7 +36,7 @@ func (state *verification) verifyToneMapInput(ctx context.Context, options Probe
 		if !verifiedToneMapResult(result, method, hdr) {
 			continue
 		}
-		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, baseline.Device), Codec: baseline.Codec, Device: baseline.Device, HardwareToneMap: method, ToneMapInput: hdr, ToneMapSoftwareFrames: cpuFrames, Status: "passed"})
+		state.record(backend.ID, Operation{identity: operationIdentity(options.FFmpeg, baseline.Device), Codec: baseline.Codec, Device: baseline.Device, HardwareToneMap: method, ToneMapInput: hdr, ToneMapSoftwareFrames: cpuFrames, Status: "passed"})
 		if !cpuFrames && method == backend.ID && slices.Contains(state.deviceDecodeInputs(backend.ID, baseline.Device), "hevc10") {
 			state.verifyHardwareDecode(ctx, options, settings, backend, "hevc10", check)
 		}
@@ -100,15 +100,14 @@ func (capabilities Capabilities) RecordProcessingFailure(options transcodepolicy
 func (state *verification) verifyToneMaps(parent context.Context, options ProbeOptions, backends []Backend, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	ctx, cancel := context.WithTimeout(parent, 30*time.Second)
 	defer cancel()
-	for index := range backends {
-		backend := &backends[index]
-		for _, operation := range append([]Operation(nil), state.operations[backend.ID]...) {
+	eachBackend(backends, func(backend *Backend) {
+		for _, operation := range state.snapshot(backend.ID) {
 			if operation.Status != "passed" || operation.OutputHDR != "" || operation.HardwareToneMap != "" {
 				continue
 			}
 			settings := transcodepolicy.Settings{Codec: operation.Codec, Accelerator: backend.ID, Encoder: backend.encoders[operation.Codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
 			state.verifyToneMapping(ctx, options, backend, operation, settings, check)
 		}
-		backend.Operations = append([]Operation(nil), state.operations[backend.ID]...)
-	}
+		backend.Operations = state.snapshot(backend.ID)
+	})
 }

@@ -117,7 +117,7 @@ func saveSubtitlePicker(settings *settingsStore) http.HandlerFunc {
 
 func downloadBackup(settings *settingsStore) http.HandlerFunc {
 	return settingsops.DownloadBackup(settings.file != "", func(writer io.Writer) error {
-		return backup.Write(writer, filepath.Dir(settings.file))
+		return backup.LiveWrite(settings.stateDB)(writer, filepath.Dir(settings.file))
 	}, localizedError)
 }
 

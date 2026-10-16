@@ -11,6 +11,6 @@ import (
 type trickplay struct{ register func(*http.ServeMux) }
 
 func newTrickplay(cache, ffmpeg string, index *libraryIndex, workloads *workload.Governor) trickplay {
-	acquire := func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }
+	acquire := func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Interactive) }
 	return trickplay{register: playback.MustTrickplayRegistration(cache, ffmpeg, hlsPolicy(), index.VisibleItem, acquire, localizedError)}
 }

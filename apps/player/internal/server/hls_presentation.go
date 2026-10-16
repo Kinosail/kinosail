@@ -15,14 +15,19 @@ import (
 )
 
 func (manager *hlsManager) encodePresentation(ctx context.Context, item library.Item, root string, options transcodeSettings, recipe hlsRecipe, qualities []PlaybackQuality, audioBitrate int64, start float64, startNumber int) error { //nolint:gocognit // One decode feeds the complete switchable presentation.
-	device := transcodehardware.DeviceKey(options)
-	release, err := manager.acquireHLSEncode(ctx, len(qualities), device, start, startNumber)
+	device, cost := transcodehardware.DeviceKey(options), len(qualities)
+	if device == "" {
+		cost = manager.workloads.LadderCost(ladderRungs(qualities))
+	}
+	release, err := manager.acquireHLSEncode(ctx, cost, device, start, startNumber)
 	if err != nil {
 		return err
 	}
 	defer release()
 	input, _ := videoArguments(options, strconv.Itoa(qualities[len(qualities)-1].Width))
-	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}), input...)
+	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
+	filterThreads := strconv.Itoa(encoderThreads)
+	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", filterThreads, "-filter_complex_threads", filterThreads, "-y"}), input...)
 	if startNumber > 0 {
 		arguments = append(arguments, "-max_delay", "5000000")
 	}
@@ -34,7 +39,10 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if refill != nil {
 		arguments = refill.input(arguments, item.Path)
 	}
-	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
+	graph := presentationFilterGraph(options, recipe, qualities)
+	if graph != "" {
+		arguments = append(arguments, "-filter_complex", graph)
+	}
 	for index, quality := range qualities {
 		layoutNumber := startNumber
 		if refill != nil {
@@ -48,6 +56,9 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		mapping, encoded := applyBurnIn(video, item.Path, recipe)
 		label := "[v" + strconv.Itoa(index) + "]"
 		mapping = presentationVideoMapping(mapping, label)
+		if graph != "" {
+			mapping, encoded = []string{"-map", label}, video[2:]
+		}
 		arguments = append(arguments, mapping...)
 		if audioBitrate > 0 {
 			if refill != nil {

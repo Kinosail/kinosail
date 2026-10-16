@@ -40,7 +40,7 @@ for target in amd64:GOAMD64=v2 arm64:GOARM64=v8.0; do
 	grep -Fq "$(printf 'build\t%s' "${target#*:}")" <<<"$build_info" || { printf 'native release lacks %s\n' "${target#*:}" >&2; exit 1; }
 done
 [[ "$(grep -o '"os":' "$output/kinosail-release.json" | wc -l | tr -d ' ')" == 6 ]]
-grep -Fq '"schemaVersion":2,"version":"v1.2.3","updateSchema":2,"stateSchema":2,"minimumStateSchema":1,"configurationSchema":1,"minimumConfigurationSchema":1' "$output/kinosail-release.json"
+grep -Fq '"schemaVersion":2,"version":"v1.2.3","updateSchema":2,"stateSchema":3,"minimumStateSchema":1,"configurationSchema":1,"minimumConfigurationSchema":1' "$output/kinosail-release.json"
 contract_digest="$(shasum -a 256 "$output/kinosail-native-installation.json" | awk '{print $1}')"
 contract_size="$(wc -c <"$output/kinosail-native-installation.json" | tr -d ' ')"
 grep -Fq '"installation":{"schemaVersion":3,"file":"kinosail-native-installation.json","sha256":"'"$contract_digest"'","size":'"$contract_size"'}' "$output/kinosail-release.json"

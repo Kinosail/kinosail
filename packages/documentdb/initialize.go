@@ -2,8 +2,8 @@ package documentdb
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -16,42 +16,31 @@ func (store *Store) validateExisting(ctx context.Context) error {
 	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil {
 		return err
 	}
-	query := `SELECT name, value FROM state ORDER BY name`
 	if version >= 2 {
-		if err := store.validateEntries(ctx); err != nil {
+		if err := validateEntries(ctx, store.db); err != nil {
 			return err
 		}
-		query = `SELECT name, ` + logicalValue + ` FROM state ORDER BY name`
 	}
-	rows, err := store.db.QueryContext(ctx, query)
+	documents, err := readDocuments(ctx, store.db, version >= 2)
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var name string
-		var data []byte
-		if err := rows.Scan(&name, &data); err != nil {
-			return errors.New("database contains invalid state")
-		}
-		_, isRetired := retired[name]
-		if !store.validStoredDocument(name, data, isRetired) {
-			return errors.New("database contains invalid state")
+	for _, document := range documents {
+		_, isRetired := retired[document.name]
+		if !store.validStoredDocument(document, isRetired) {
+			return errInvalidState
 		}
 	}
-	return rows.Err()
+	return nil
 }
 
-func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) error {
+func (store *Store) initialize(ctx context.Context, legacy legacyState) error {
 	var version int
 	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil {
 		return fmt.Errorf("read SQLite schema version: %w", err)
 	}
 	if version < 0 || version > SchemaVersion {
 		return fmt.Errorf("unsupported SQLite schema version %d", version)
-	}
-	if _, err := store.db.ExecContext(ctx, `PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=5000;`); err != nil {
-		return fmt.Errorf("initialize SQLite: %w", err)
 	}
 	if version == 0 {
 		if _, err := store.db.ExecContext(ctx, `CREATE TABLE state (
@@ -74,10 +63,8 @@ func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) er
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if version < 2 {
-		if _, err := tx.ExecContext(ctx, entrySchema); err != nil {
-			return fmt.Errorf("upgrade record storage: %w", err)
-		}
+	if err := migrateSchema(ctx, tx, version); err != nil {
+		return err
 	}
 	for _, name := range store.config.RetiredDocuments {
 		if _, err := tx.ExecContext(ctx, `DELETE FROM state_entries WHERE name = ?`, name); err != nil {
@@ -87,17 +74,40 @@ func (store *Store) initialize(ctx context.Context, legacy map[string][]byte) er
 			return fmt.Errorf("remove retired state %s: %w", name, err)
 		}
 	}
-	for name, data := range legacy {
+	for name, data := range legacy.documents {
 		if err := store.saveDocument(ctx, tx, name, data); err != nil {
+			return fmt.Errorf("import %s: %w", name, err)
+		}
+	}
+	for name, path := range legacy.entries {
+		if err := store.importEntries(ctx, tx, name, path); err != nil {
 			return fmt.Errorf("import %s: %w", name, err)
 		}
 	}
 	return tx.Commit()
 }
 
-func (store *Store) validStoredDocument(name string, data []byte, retired bool) bool {
-	if retired {
-		return len(data) <= DocumentSizeLimit && json.Valid(data)
+func migrateSchema(ctx context.Context, tx *sql.Tx, version int) error {
+	if version < 2 {
+		if _, err := tx.ExecContext(ctx, entrySchema); err != nil {
+			return fmt.Errorf("upgrade record storage: %w", err)
+		}
 	}
-	return store.validDocument(name, data)
+	if version < 3 {
+		if _, err := tx.ExecContext(ctx, recordSchema); err != nil {
+			return fmt.Errorf("upgrade record limits: %w", err)
+		}
+	}
+	return nil
+}
+
+func (store *Store) validStoredDocument(document storedDocument, retired bool) bool {
+	if retired {
+		limit := DocumentSizeLimit
+		if document.entries {
+			limit = EntryDocumentSizeLimit
+		}
+		return len(document.data) <= limit && json.Valid(document.data)
+	}
+	return store.validStored(document)
 }

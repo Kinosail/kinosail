@@ -63,7 +63,7 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 }
 
 func generateEpisodeStill(request *http.Request, probe *mediaProbe, workloads *workload.Governor, item library.Item, target string) error {
-	release, err := workloads.Acquire(request.Context(), workload.Background)
+	release, err := workloads.Acquire(request.Context(), workload.Interactive)
 	if err != nil {
 		return err
 	}
