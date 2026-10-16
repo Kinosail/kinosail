@@ -121,6 +121,29 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertLess(scan.start(), evidence.start())
         self.assertNotIn('background:', source)
 
+    def test_each_run_builds_the_amd64_app_image_once(self):
+        app = (WORKFLOWS / 'app.yml').read_text()
+        publish = (WORKFLOWS / 'publish.yml').read_text()
+        image = app.split('\n  image:\n', 1)[1].split('\n  system:\n', 1)[0]
+        system = app.split('\n  system:\n', 1)[1].split('\n  browser:\n', 1)[0]
+        browser = app.split('\n  browser:\n', 1)[1].split('\n  proof-plan:\n', 1)[0]
+        self.assertEqual(app.count('uses: docker/build-push-action@'), 2)
+        self.assertEqual(image.count('uses: docker/build-push-action@'), 1)
+        self.assertIn('platforms: linux/amd64', image)
+        self.assertIn('outputs: type=docker,dest=${{ runner.temp }}/image.tar', image)
+        self.assertIn('name: ${{ inputs.app }}-amd64-image-${{ github.sha }}', image)
+        for job in (system, browser):
+            self.assertIn('\n    needs: image\n', job)
+            self.assertIn('name: ${{ inputs.app }}-amd64-image-${{ github.sha }}', job)
+            self.assertIn('docker load --input "$RUNNER_TEMP/image/image.tar"', job)
+        self.assertNotIn('docker/build-push-action@', browser)
+        arm_build = system.split('uses: docker/build-push-action@', 1)[0].rsplit('\n      - ', 1)[1]
+        self.assertEqual(arm_build, "if: matrix.platform != 'linux/amd64'\n        ")
+        versions = set(re.findall(r'^\s+(VERSION=.+)$', app + publish, re.M))
+        self.assertEqual(versions, {'VERSION=sha-${{ github.sha }}'})
+        self.assertIn('cache-to: type=gha,mode=max,scope=${{ inputs.app }}-linux/amd64', image)
+        self.assertIn('cache-from: type=gha,scope=${{ matrix.app }}-linux/${{ matrix.arch }}', publish)
+
     def test_parallel_image_checks_finish_before_digest_export(self):
         for workflow, test_name, export_name in (
                 ('publish.yml', 'Test the production image by digest', 'Export tested and scanned digest'),
