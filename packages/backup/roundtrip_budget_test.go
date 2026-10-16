@@ -147,7 +147,7 @@ func persistedService(t *testing.T, directory string, documents map[string][]byt
 	if err := db.Close(); err != nil {
 		t.Fatal(err)
 	}
-	return backup.MustNew(backup.Config{DatabaseFilename: "kinosail.db", OpenDatabase: func(dir string) (backup.Database, error) {
+	return backup.MustNew(backup.Config{DatabaseFilename: "kinosail.db", Documents: testDocuments, EntryDocuments: testEntryDocuments, OpenDatabase: func(dir string) (backup.Database, error) {
 		return documentdb.Open(dir, false, documentdb.PlayerConfig())
 	}, ValidateSettings: func([]byte) error { return nil }})
 }

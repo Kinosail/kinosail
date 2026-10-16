@@ -11,6 +11,8 @@ var ApplicationVersion = "dev"
 
 var service = sharedbackup.MustNew(sharedbackup.Config{
 	DatabaseFilename: database.Filename,
+	Documents:        database.Documents,
+	EntryDocuments:   database.EntryDocuments,
 	OpenDatabase: func(dataDir string) (sharedbackup.Database, error) {
 		return database.Open(dataDir, false)
 	},

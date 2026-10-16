@@ -173,7 +173,7 @@ func TestBackupValidatesAuditJournalAndEncryptedSecrets(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			source := t.TempDir()
 			writeBackupFile(t, filepath.Join(source, "audit.jsonl"), contents)
-			if err := testArchive.Write(io.Discard, source); err == nil {
+			if err := testArchive.WriteEncrypted(io.Discard, source, "correct horse battery staple"); err == nil {
 				t.Fatal("invalid audit journal was archived")
 			}
 		})
