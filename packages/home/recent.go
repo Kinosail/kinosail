@@ -22,7 +22,7 @@ type HomeShelf struct {
 	Genres []MovieGenre
 }
 
-func recentFor(items []library.Item, artwork, showTitles map[string]string, kind string) []ShelfItem {
+func newestFirst(items []library.Item, kind string) []*library.Item {
 	matched := make([]*library.Item, 0)
 	for position := range items {
 		if homeKind(items[position], kind) {
@@ -30,9 +30,18 @@ func recentFor(items []library.Item, artwork, showTitles map[string]string, kind
 		}
 	}
 	sort.SliceStable(matched, func(i, j int) bool { return matched[i].Added.After(matched[j].Added) })
-	selected := make([]library.Item, min(len(matched), recentItemLimit))
-	for position := range selected {
-		selected[position] = *matched[position]
+	return matched
+}
+
+func recentShelf(newest []*library.Item, artwork, showTitles map[string]string, include func(library.Item) bool) []ShelfItem {
+	selected := make([]library.Item, 0, recentItemLimit)
+	for _, item := range newest {
+		if len(selected) == recentItemLimit {
+			break
+		}
+		if include(*item) {
+			selected = append(selected, *item)
+		}
 	}
 	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
 }

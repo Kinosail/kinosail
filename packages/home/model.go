@@ -32,7 +32,7 @@ type PersonalProjection[Resume any] struct {
 	Continue        []Resume
 	List            []library.Item
 	Played          []library.Item
-	Unwatched       []library.Item
+	Watched         func(library.Item) bool
 	CollectionCount int
 	PlaylistCount   int
 }

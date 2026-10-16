@@ -85,9 +85,11 @@ func (api *jellyfinAPI) favorite(writer http.ResponseWriter, request *http.Reque
 }
 
 func (api *jellyfinAPI) userDataDTO(request *http.Request, item library.Item) map[string]any {
-	return api.projectUserData(request, item, func(seconds float64) float64 {
-		return api.presentationSeconds(api.probe.inspect(request.Context(), item), seconds)
-	})
+	return api.projectUserData(request, item, func(seconds float64) float64 { return api.jellyfinPresentationSeconds(request, item, seconds) })
+}
+
+func (api *jellyfinAPI) jellyfinPresentationSeconds(request *http.Request, item library.Item, seconds float64) float64 {
+	return api.presentationSeconds(api.probe.inspect(request.Context(), item), seconds)
 }
 
 func (api *jellyfinAPI) listingUserDataDTO(request *http.Request, item library.Item) map[string]any {

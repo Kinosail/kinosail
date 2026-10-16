@@ -44,8 +44,7 @@ func snapshotFixtureItems(count int) []library.Item {
 }
 
 func snapshotRequest(ctx context.Context, method, target string, profile viewerProfile) *http.Request {
-	request := httptest.NewRequestWithContext(ctx, method, target, nil)
-	return request.WithContext(context.WithValue(request.Context(), viewerContextKey{}, profile))
+	return httptest.NewRequestWithContext(context.WithValue(ctx, viewerContextKey{}, profile), method, target, nil)
 }
 
 func newSnapshotFixture(t testing.TB, items []library.Item, media ...int) snapshotFixture {
