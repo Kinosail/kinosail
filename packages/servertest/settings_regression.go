@@ -119,7 +119,7 @@ func (suite SettingsRegression) SettingsThankDependencies(t *testing.T) {
 	handler.ServeHTTP(settings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
 	for _, expected := range []string{
 		`href="#thanks"`, `id="thanks"`, "Made possible by", "FFmpeg", "View third-party notices",
-		`src="/static/tmdb-logo.svg"`, "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+		`src="/static/tmdb-logo.svg?v=`, "This product uses the TMDB API but is not endorsed or certified by TMDB.",
 	} {
 		if settings.Code != http.StatusOK || !strings.Contains(settings.Body.String(), expected) {
 			t.Fatalf("settings status %d lacks %q", settings.Code, expected)

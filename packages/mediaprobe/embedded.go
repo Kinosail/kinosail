@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/playback"
 	"github.com/MikeO7/kinosail/packages/privatefile"
@@ -75,9 +76,15 @@ func (probe *Probe) ServeEmbedded(writer http.ResponseWriter, request *http.Requ
 
 func (subtitle EmbeddedSubtitle) ServeHTTP(writer http.ResponseWriter, request *http.Request, modified time.Time) {
 	writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
-	if subtitle.Mapped {
-		_, _ = writer.Write(subtitle.Data)
-		return
+	if subtitle.Mapped || httpcompress.GzipRequested(request) {
+		data, err := subtitle.Data, error(nil)
+		if subtitle.Path != "" {
+			data, err = readEmbeddedSubtitle(subtitle.Path)
+		}
+		if err == nil {
+			httpcompress.WriteWebVTT(writer, request, data)
+			return
+		}
 	}
 	if subtitle.Path != "" {
 		http.ServeFile(writer, request, subtitle.Path)
