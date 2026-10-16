@@ -24,8 +24,12 @@ func BenchmarkLibrarySnapshotRequests(b *testing.B) {
 		{"show-page", "/show/" + show},
 		{"api-show", "/api/v1/shows/" + show},
 		{"home-landing", "/"},
+		{"title-browse-movies", "/?view=movies&offset=100"},
 		{"jellyfin-items-page", "/Items?startIndex=10000&limit=50"},
 		{"jellyfin-items-search", "/Items?searchTerm=movie%20001&limit=50"},
+		{"jellyfin-items-unbounded", "/Items?limit=-1"},
+		{"jellyfin-latest", "/Items/Latest?limit=16"},
+		{"jellyfin-latest-unbounded", "/Items/Latest"},
 		{"jellyfin-item", "/Items/" + movie.ID + "0000000000000000"},
 		{"jellyfin-series-image", "/Items/" + show + "0000000000000000/Images/Primary"},
 	} {

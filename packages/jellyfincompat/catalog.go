@@ -2,7 +2,6 @@ package jellyfincompat
 
 import (
 	"net/url"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -72,45 +71,36 @@ func (catalog Catalog) Views() map[string]any {
 }
 
 func (catalog Catalog) Items(values url.Values) (map[string]any, error) {
+	limit, err := itemsLimit(values)
+	if err != nil {
+		return nil, err
+	}
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
 		return nil, err
 	}
-	result := catalog.query(values, ids)
-	total := len(result)
-	start, limit := max(0, Int(values, "startIndex")), Int(values, "limit")
-	if start > len(result) {
-		start = len(result)
+	entries := catalog.under(Query(values, "parentId"), Query(values, "includeItemTypes"))
+	if entries == nil {
+		return Result(nil, 0, 0), nil
 	}
-	result = result[start:]
-	if limit > 0 && limit < len(result) {
-		result = result[:limit]
-	}
-	return Result(catalog.projectEntries(result), start, total), nil
+	page, start, total := newEntryFilter(values, ids).page(entries, max(0, Int(values, "startIndex")), limit)
+	return Result(catalog.projectEntries(page), start, total), nil
 }
 
 func (catalog Catalog) Latest(values url.Values) ([]map[string]any, error) {
+	limit, err := latestLimit(values)
+	if err != nil {
+		return nil, err
+	}
 	ids, err := ItemIDs(values, RawID)
 	if err != nil {
 		return nil, err
 	}
-	result := catalog.query(values, ids)
-	if result != nil {
-		result = slices.Clone(result)
-		created := make(map[*library.Item]string, len(result))
-		for _, entry := range result {
-			if entry.item != nil {
-				created[entry.item] = entry.created()
-			}
-		}
-		slices.SortStableFunc(result, func(left, right catalogEntry) int {
-			return strings.Compare(created[right.item], created[left.item])
-		})
+	entries := catalog.newest(Query(values, "parentId"), Query(values, "includeItemTypes"))
+	if entries == nil {
+		return nil, nil
 	}
-	if limit := Int(values, "limit"); limit > 0 && limit < len(result) {
-		result = result[:limit]
-	}
-	return catalog.projectEntries(result), nil
+	return catalog.projectEntries(newEntryFilter(values, ids).first(entries, limit)), nil
 }
 
 func (catalog Catalog) Resume(state func(library.Item) UserState) map[string]any {
@@ -192,42 +182,36 @@ func (catalog Catalog) seasonShow(id string) (library.Show, bool) {
 	return catalog.view.Show(id[:16])
 }
 
-func (catalog Catalog) query(values url.Values, ids map[string]bool) []catalogEntry {
-	parent, includes := Query(values, "parentId"), Query(values, "includeItemTypes")
-	result := catalog.under(parent, includes)
-	search := strings.ToLower(Query(values, "searchTerm"))
-	if result == nil || len(ids) == 0 && includes == "" && search == "" {
-		return result
+func (catalog Catalog) under(parent, includes string) []catalogEntry {
+	if key, build := catalogListing(parent, includes); build != nil {
+		return library.Derive(catalog.view, key, build)
 	}
-	types := strings.Split(includes, ",")
-	filtered := make([]catalogEntry, 0)
-	for _, entry := range result {
-		matchesID := len(ids) == 0 || ids[entry.raw]
-		matchesType := includes == "" || includesType(types, entry.kind)
-		matchesName := search == "" || strings.Contains(entry.lower, search)
-		if matchesID && matchesType && matchesName {
-			filtered = append(filtered, entry)
-		}
-	}
-	return filtered
+	return catalog.hierarchy(parent)
 }
 
-func (catalog Catalog) under(parent, includes string) []catalogEntry {
-	switch parent {
-	case MoviesID:
-		return library.Derive(catalog.view, "jellyfincompat.movies", movieEntries)
-	case ShowsID:
-		if Includes(includes, "Episode") {
-			return library.Derive(catalog.view, "jellyfincompat.episodes", episodeEntries)
-		}
-		return library.Derive(catalog.view, "jellyfincompat.series", seriesEntries)
-	case "":
-		if Includes(includes, "Episode") {
-			return library.Derive(catalog.view, "jellyfincompat.episodes", episodeEntries)
-		}
-		return library.Derive(catalog.view, "jellyfincompat.root", rootEntries)
+func (catalog Catalog) newest(parent, includes string) []catalogEntry {
+	key, build := catalogListing(parent, includes)
+	if build == nil {
+		return newestFirst(catalog.hierarchy(parent))
+	}
+	return library.Derive(catalog.view, key+".newest", func(view *library.View) []catalogEntry {
+		return newestFirst(library.Derive(view, key, build))
+	})
+}
+
+func catalogListing(parent, includes string) (string, func(*library.View) []catalogEntry) {
+	episodes := Includes(includes, "Episode")
+	switch {
+	case parent == MoviesID:
+		return "jellyfincompat.movies", movieEntries
+	case (parent == ShowsID || parent == "") && episodes:
+		return "jellyfincompat.episodes", episodeEntries
+	case parent == ShowsID:
+		return "jellyfincompat.series", seriesEntries
+	case parent == "":
+		return "jellyfincompat.root", rootEntries
 	default:
-		return catalog.hierarchy(parent)
+		return "", nil
 	}
 }
 

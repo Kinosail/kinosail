@@ -3,7 +3,6 @@ package jellyfincompat
 import (
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -13,10 +12,6 @@ type catalogEntry struct {
 	item             *library.Item
 	show             *library.Show
 	season           int
-}
-
-func (entry catalogEntry) created() string {
-	return entry.item.Added.UTC().Format(time.RFC3339Nano)
 }
 
 func itemEntry(item *library.Item) catalogEntry {

@@ -20,38 +20,14 @@ type titleOrderKey struct {
 }
 
 func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale string, access func() BrowseAccess) (Result, error) {
-	var key titleOrderKey
-	var version uint64
-	var references []*library.Item
-	var owner bool
-	var ordered bool
-	result, err := browseLibrary(ctx, values, locale, func(browse Browse) ([]*library.Item, bool, error) {
-		key = browseTitleOrderKey(&browse, locale)
+	return browseLibrary(ctx, values, locale, func(browse Browse) ([]*library.Item, bool, error) {
+		key := browseTitleOrderKey(&browse, locale)
 		if key.locale == "" {
 			items, err := index.References()
 			return items, false, err
 		}
-		items, captured, cached, err := index.titleReferences(key)
-		version, ordered, references = captured, cached, items
-		return items, cached, err
-	}, func() BrowseAccess {
-		viewer := access()
-		owner = viewer.Owner
-		return viewer
-	})
-	if err == nil && key.locale != "" && !ordered && result.View != "shows" && ctx.Err() == nil {
-		complete := len(references)
-		if key.view != "all" {
-			if !owner {
-				return result, err
-			}
-			complete = countTitleView(ctx, references, key.view)
-		}
-		if ctx.Err() == nil {
-			index.rememberTitleOrder(key, version, complete, result.references)
-		}
-	}
-	return result, err
+		return index.titleReferences(ctx, key, locale)
+	}, access)
 }
 
 func browseTitleOrderKey(browse *Browse, locale string) titleOrderKey {
@@ -65,20 +41,7 @@ func browseTitleOrderKey(browse *Browse, locale string) titleOrderKey {
 	return key
 }
 
-func countTitleView(ctx context.Context, references []*library.Item, view string) int {
-	complete := 0
-	for position, item := range references {
-		if position%64 == 0 && ctx.Err() != nil {
-			break
-		}
-		if viewMatches(Candidate{Item: item}, view) {
-			complete++
-		}
-	}
-	return complete
-}
-
-func (index *Index) titleReferences(key titleOrderKey) ([]*library.Item, uint64, bool, error) {
+func (index *Index) titleReferences(ctx context.Context, key titleOrderKey, locale string) ([]*library.Item, bool, error) {
 	index.mu.Lock()
 	version := index.titleOrderVersion
 	snapshot := index.current.Load()
@@ -95,18 +58,46 @@ func (index *Index) titleReferences(key titleOrderKey) ([]*library.Item, uint64,
 		entry.used = index.titleOrderUse
 	}
 	index.mu.Unlock()
-	if entry != nil {
-		return append([]*library.Item(nil), entry.items...), version, true, err
+	if err != nil {
+		return nil, false, err
 	}
-	return snapshotReferences(snapshot), version, false, err
+	if entry != nil {
+		return append([]*library.Item(nil), entry.items...), true, nil
+	}
+	if titleOrderCapacity(snapshot) == 0 || !snapshot.DistinctIDs() {
+		return snapshotReferences(snapshot), false, nil
+	}
+	items := titleViewReferences(snapshot, key.view)
+	if err := sortReferences(ctx, items, "title", "", locale); err != nil {
+		return nil, false, err
+	}
+	index.rememberTitleOrder(key, version, items)
+	return append([]*library.Item(nil), items...), true, nil
 }
 
-func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, complete int, items []*library.Item) {
+func titleViewReferences(snapshot *library.Snapshot, view string) []*library.Item {
+	references := snapshotReferences(snapshot)
+	if view == "all" {
+		return references
+	}
+	selected := references[:0]
+	for _, item := range references {
+		if viewMatches(Candidate{Item: item}, view) {
+			selected = append(selected, item)
+		}
+	}
+	return selected
+}
+
+func titleOrderCapacity(snapshot *library.Snapshot) int {
+	return min(4, titleOrderReferenceBudget/max(1, snapshot.Len()))
+}
+
+func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, items []*library.Item) {
 	index.mu.Lock()
 	defer index.mu.Unlock()
-	snapshot := index.current.Load()
-	capacity := min(4, titleOrderReferenceBudget/max(1, snapshot.Len()))
-	if capacity == 0 || version != index.titleOrderVersion || len(items) != complete || !snapshot.DistinctIDs() || index.titleOrders[key] != nil {
+	capacity := titleOrderCapacity(index.current.Load())
+	if capacity == 0 || version != index.titleOrderVersion || index.titleOrders[key] != nil {
 		return
 	}
 	if index.titleOrders == nil {

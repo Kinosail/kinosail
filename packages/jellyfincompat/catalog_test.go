@@ -45,7 +45,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 	}
 	assertResultCount(t, result, 1)
 
-	result, err = catalog.Items(url.Values{"StartIndex": {"999"}, "Limit": {"invalid"}})
+	result, err = catalog.Items(url.Values{"StartIndex": {"999"}})
 	if err != nil {
 		t.Fatal(err)
 	}
