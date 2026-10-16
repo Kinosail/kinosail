@@ -8,6 +8,12 @@ Keep application-specific web adapters and presentation in `apps/<app>/`. Put sh
 
 Examples of shared ownership include [configuration](configurationcore/), [library discovery](library/), and [identity](identitycore/). Consult each package's exported API and tests before extending it. Third-party code under [third_party/](third_party/) retains its own licenses and notices.
 
+## Library snapshots
+
+`catalog.Index` publishes one immutable `library.Snapshot` after each scan or decorator change. `Library()`, `View(policy)`, `References()`, and analyzer callbacks share the published items. Treat these items as read-only. Do not assign to them, sort them, or append into their slices. Copy a slice before you change it. `Snapshot()` returns a private copy for callers that must change items.
+
+A `library.View` organizes shows, albums, next episodes, and collections once for each snapshot and viewer policy. `library.Derive` caches other per-view results, and the values it returns are shared in the same way.
+
 ## Build and verify consumers
 
 From this directory, `go build ./...` compiles the shared module. Changes can affect more than one app; review all callers and their observable behavior.

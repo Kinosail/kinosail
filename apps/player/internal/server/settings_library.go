@@ -17,6 +17,11 @@ func (index *libraryIndex) VisibleLibrary(request *http.Request) []library.Item 
 	return items
 }
 
+func (index *libraryIndex) VisibleView(request *http.Request) *library.View {
+	view, _ := visibleView(request, index)
+	return view
+}
+
 func (index *libraryIndex) VisibleItem(request *http.Request, id string) (library.Item, bool) {
 	return visibleItem(request, index, id)
 }
