@@ -54,6 +54,8 @@ func TestRestoreRejectsAmbiguousRecoveryManifest(t *testing.T) {
 			databaseOpens := 0
 			service := sharedbackup.MustNew(sharedbackup.Config{
 				DatabaseFilename: "kinosail.db",
+				Documents:        testDocuments,
+				EntryDocuments:   testEntryDocuments,
 				OpenDatabase: func(string) (sharedbackup.Database, error) {
 					databaseOpens++
 					return nil, errors.New("unexpected test database")

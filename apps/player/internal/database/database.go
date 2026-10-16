@@ -12,13 +12,17 @@ const (
 	DocumentSizeLimit = documentdb.DocumentSizeLimit
 )
 
-var Documents = documentdb.PlayerDocuments()
+var (
+	Documents      = documentdb.PlayerDocuments()
+	EntryDocuments = documentdb.PlayerConfig().EntryDocuments
+)
 
 type Store = documentdb.Store
 
 func config() documentdb.Config {
 	config := documentdb.PlayerConfig()
 	config.Documents = Documents
+	config.EntryDocuments = EntryDocuments
 	return config
 }
 

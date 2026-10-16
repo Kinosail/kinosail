@@ -12,7 +12,7 @@ import (
 
 func TestSQLiteBackupContract(t *testing.T) {
 	servertest.SQLiteBackupContract(t, servertest.SQLiteBackupFixture[*database.Store]{
-		Filename: database.Filename, Open: database.Open, Write: Write, Restore: service.Restore,
+		Filename: database.Filename, Documents: database.Documents, EntryDocuments: database.EntryDocuments, Open: database.Open, Write: Write, Restore: service.Restore,
 	})
 }
 

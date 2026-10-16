@@ -15,7 +15,7 @@ var playerDocuments = []string{
 	"sessions.json", "settings.json", "smart_playlists.json", "updates.json",
 }
 
-var entryPlayerDocuments = []string{"metadata.json", "progress.json"}
+var entryPlayerDocuments = []string{"metadata.json", "playback_markers.json", "progress.json"}
 
 var durablePlayerDocuments = []string{"agent_connections.json", "api_keys.json", "media_shares.json", "profiles.json", "sessions.json", "settings.json"}
 

@@ -2,7 +2,6 @@ package backup
 
 import (
 	"archive/tar"
-	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"errors"
@@ -10,10 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 	"time"
-
-	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 const (
@@ -23,11 +19,6 @@ const (
 )
 
 const manifestName = "manifest.json"
-
-var (
-	files       = []string{"api_keys.json", "audit.jsonl", "collections.json", "configuration.json", "history.json", "lists.json", "metadata.json", "playback_markers.json", "playlist_order.json", "playlists.json", "profiles.json", "progress.json", "server-identity.json", "sessions.json", "settings.json", "smart_playlists.json"}
-	secretFiles = []string{"audit_key.json", "secrets.json", "viewing_imports.json"}
-)
 
 type manifest struct {
 	Format          int      `json:"format"`
@@ -50,22 +41,24 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 	if err != nil {
 		return err
 	}
-	names := files
-	if includeSecrets {
-		names = append(append([]string(nil), files...), secretFiles...)
+	for name := range documents {
+		if !service.state.document(name) {
+			return fmt.Errorf("read %q: database document is not configured for backup", name)
+		}
 	}
+	names := service.state.archived(includeSecrets)
 	contents := make(map[string][]byte, len(names))
 	written := make([]string, 0, len(names))
 	for _, name := range names {
 		data, found := documents[name]
 		var err error
 		if !found {
-			data, err = readStateFile(filepath.Join(dataDir, name), maxStateFileSize(name))
+			data, err = readStateFile(filepath.Join(dataDir, name), service.state.maxSize(name))
 		}
 		if os.IsNotExist(err) {
 			continue
 		}
-		if found && len(data) > maxStateFileSize(name) {
+		if found && len(data) > service.state.maxSize(name) {
 			return fmt.Errorf("read %s: document exceeds the backup size limit", name)
 		}
 		if err != nil || !service.validState(name, data) {
@@ -77,11 +70,11 @@ func (service *Service) write(writer io.Writer, dataDir, version string, include
 	if len(written) == 0 {
 		return errors.New("no configuration state to back up")
 	}
-	maximum := maxArchiveSize + entryAllowance(contents, written)
+	maximum := maxArchiveSize + entryAllowance(contents, written, service.state.entry)
 	if includeSecrets {
 		maximum -= encryptedOverhead
 	}
-	return writeArchiveLimit(writer, version, contents, written, maximum)
+	return writeArchiveLimit(writer, version, contents, written, maximum, service.state.entry)
 }
 
 func (service *Service) readDocuments(dataDir string) (map[string][]byte, error) {
@@ -107,12 +100,12 @@ func (service *Service) readDocuments(dataDir string) (map[string][]byte, error)
 }
 
 func writeArchive(writer io.Writer, version string, contents map[string][]byte, written []string) error {
-	return writeArchiveLimit(writer, version, contents, written, maxArchiveSize)
+	return writeArchiveLimit(writer, version, contents, written, maxArchiveSize, func(string) bool { return false })
 }
 
-func writeArchiveLimit(writer io.Writer, version string, contents map[string][]byte, written []string, maximum int) error {
+func writeArchiveLimit(writer io.Writer, version string, contents map[string][]byte, written []string, maximum int, entry func(string) bool) error {
 	manifestData := archiveManifest(version, written)
-	if err := validateArchiveSize(contents, written, manifestData); err != nil {
+	if err := validateArchiveSize(contents, written, manifestData, entry); err != nil {
 		return err
 	}
 	output := &archiveBuffer{maximum: maximum}
@@ -184,7 +177,7 @@ func (service *Service) Restore(reader io.Reader, dataDir string) error {
 	if err != nil {
 		return err
 	}
-	return service.save(staged, dataDir, files)
+	return service.save(staged, dataDir, service.state.archived(false))
 }
 
 func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string][]byte, error) {
@@ -208,7 +201,7 @@ func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string]
 		if err := service.stage(archive, header, staged, includeSecrets); err != nil {
 			return nil, err
 		}
-		if !entryDocument(header.Name) {
+		if !service.state.entry(header.Name) {
 			whole += archiveEntrySize(int(header.Size))
 		}
 	}
@@ -225,75 +218,4 @@ func (service *Service) read(reader io.Reader, includeSecrets bool) (map[string]
 		return nil, errors.New("backup contains no configuration state")
 	}
 	return staged, nil
-}
-
-func (service *Service) stage(archive *tar.Reader, header *tar.Header, staged map[string][]byte, includeSecrets bool) error {
-	allowed := slices.Contains(files, header.Name) || includeSecrets && slices.Contains(secretFiles, header.Name) || header.Name == manifestName
-	maximum := maxStateFileSize(header.Name)
-	if header.Typeflag != tar.TypeReg || !filepath.IsLocal(header.Name) || filepath.Base(header.Name) != header.Name || !allowed || header.Size < 0 || header.Size > int64(maximum) {
-		return fmt.Errorf("backup contains invalid entry %q", header.Name)
-	}
-	if _, exists := staged[header.Name]; exists {
-		return fmt.Errorf("backup contains duplicate entry %q", header.Name)
-	}
-	data, err := io.ReadAll(io.LimitReader(archive, int64(maximum+1)))
-	if err != nil || int64(len(data)) != header.Size || !service.validState(header.Name, data) {
-		return fmt.Errorf("backup contains invalid %s", header.Name)
-	}
-	staged[header.Name] = data
-	return nil
-}
-
-func maxStateFileSize(name string) int {
-	if name == "audit.jsonl" {
-		return maxAuditFileSize
-	}
-	if entryDocument(name) {
-		return maxEntryDocumentSize
-	}
-	if slices.Contains(databaseDocuments, name) {
-		return databaseDocumentLimit
-	}
-	return maxFileSize
-}
-
-func (service *Service) validState(name string, data []byte) bool {
-	if name != "audit.jsonl" {
-		return json.Valid(data) && (name != "settings.json" || service.validateSettings(data) == nil)
-	}
-	lines := bytes.Split(bytes.TrimSpace(data), []byte{'\n'})
-	if len(lines) == 1 && len(lines[0]) == 0 {
-		return false
-	}
-	for _, line := range lines {
-		if !json.Valid(line) {
-			return false
-		}
-	}
-	return true
-}
-
-func validateManifest(staged map[string][]byte) error {
-	data, exists := staged[manifestName]
-	if !exists {
-		return nil
-	}
-	delete(staged, manifestName)
-	var description manifest
-	if httpguard.DecodeUniqueJSON(bytes.NewReader(data), maxFileSize, &description) != nil || description.Format != 1 || description.StateSchema != 1 || description.KinosailVersion == "" {
-		return errors.New("backup manifest is invalid")
-	}
-	if _, err := time.Parse(time.RFC3339, description.CreatedAt); err != nil {
-		return errors.New("backup manifest is invalid")
-	}
-	actual := make([]string, 0, len(staged))
-	for name := range staged {
-		actual = append(actual, name)
-	}
-	slices.Sort(actual)
-	slices.Sort(description.Files)
-	if !slices.Equal(actual, description.Files) || description.MediaIncluded {
-		return errors.New("backup manifest does not match archive")
-	}
-	return nil
 }

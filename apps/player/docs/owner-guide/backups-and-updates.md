@@ -21,7 +21,7 @@ Scheduled defaults are daily backups with seven retained files. Verify your effe
 
 ## What the archive contains
 
-Application backups contain portable stored state such as UI-managed settings, credential hashes, sessions, and retained activity. Encrypted recovery archives can include private stored secrets. They do not contain the external media tree, reproducible cache, deployment YAML, `.env`, or independently mounted secret files.
+Application backups contain portable stored state such as UI-managed settings, credential hashes, sessions, and retained activity. Encrypted recovery archives can include private stored secrets. They do not contain the external media tree, reproducible cache, deployment YAML, `.env`, or independently mounted secret files. An archive includes every document in the app state database, including Media Shares, agent connections, and update state.
 
 The CLI `backup` command uses encryption when a key is configured. Without one, it can produce an unencrypted portable archive that omits private secret state; that is not a complete encrypted recovery backup. Treat every archive as sensitive.
 
@@ -49,6 +49,8 @@ docker compose --file compose.release.yaml run --rm --no-deps -T kinosail restor
 docker compose --file compose.release.yaml up --detach
 docker compose --file compose.release.yaml exec -T kinosail kinosail healthcheck
 ```
+
+An older app revision can reject an archive that contains state it does not know. Restore with the revision that made the archive or a newer one. An archive from an older revision restores only the state that it contains.
 
 If restore fails, keep the service stopped while investigating the error and preserve the original state/backup. Restore validates the archive before writing, including unknown paths, duplicates, malformed state, and size limits.
 

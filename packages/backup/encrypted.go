@@ -62,7 +62,7 @@ func (service *Service) RestoreEncrypted(reader io.Reader, dataDir, passphrase s
 		if err != nil {
 			return err
 		}
-		return service.save(staged, dataDir, append(files, secretFiles...))
+		return service.save(staged, dataDir, service.state.archived(true))
 	})
 }
 
