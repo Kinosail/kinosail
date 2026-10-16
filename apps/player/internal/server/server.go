@@ -130,7 +130,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	shutdown := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
@@ -167,6 +167,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	if progress.Err() != nil || lists.err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
+	startProgressCoalescing(progress, shutdown, managedLifecycle)
 	auth := newAuthentication(config.Lifecycle, config.DataDir, config.RequireAuth, config.AuthURL, settings, config.Notifications, stateDB, config.Configuration.Duration("logging.audit_retention"), config.Configuration.Duration("logging.playback_retention"))
 	if config.InternetAccess != nil && config.InternetAccess.Status().Mode == "https" {
 		auth.passkeys.redirectPages = false
