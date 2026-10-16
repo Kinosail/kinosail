@@ -31,18 +31,18 @@ func HTTPSecretBearingResponsesStayUncompressed(t *testing.T, newHTTPServer func
 		marker   string
 	}{{"/account", true, `name="kinosail-csrf"`}, {"/login", false, "<form"}, {"/api/v1/me", true, `"id"`}} {
 		for _, site := range []string{"same-origin", "none", ""} {
-			response := client.get(t, http.MethodGet, target.path, site, target.signedIn, nil)
+			response := client.get(t, target.path, site, target.signedIn, nil)
 			if body := decodedBody(t, response, ""); response.StatusCode != http.StatusOK || len(body) < 1024 || !strings.Contains(body, target.marker) {
 				t.Fatalf("%s from %q = %d %.120q", target.path, site, response.StatusCode, body)
 			}
 		}
 	}
-	plainStyle := decodedBody(t, client.get(t, http.MethodGet, "/static/app.css", "", false, http.Header{"Accept-Encoding": {"identity"}}), "")
-	if style := decodedBody(t, client.get(t, http.MethodGet, "/static/app.css", "", true, nil), "gzip"); style != plainStyle {
+	plainStyle := decodedBody(t, client.get(t, "/static/app.css", "", false, http.Header{"Accept-Encoding": {"identity"}}), "")
+	if style := decodedBody(t, client.get(t, "/static/app.css", "", true, nil), "gzip"); style != plainStyle {
 		t.Fatal("compressed stylesheet differs from the identity stylesheet")
 	}
 	for _, signedIn := range []bool{false, true} {
-		profile := client.get(t, http.MethodGet, "/debug/pprof/", "same-origin", signedIn, nil)
+		profile := client.get(t, "/debug/pprof/", "same-origin", signedIn, nil)
 		if body := decodedBody(t, profile, profile.Header.Get("Content-Encoding")); profile.StatusCode == http.StatusOK || strings.Contains(body, "goroutine") {
 			t.Fatalf("application listener served profiling: %d %.80q", profile.StatusCode, body)
 		}
@@ -66,15 +66,15 @@ func ownerSession(t *testing.T, httpServer *http.Server) *http.Cookie {
 }
 
 type observedResponse struct {
-	StatusCode   int
-	Header       http.Header
-	method, path string
-	body         []byte
+	StatusCode int
+	Header     http.Header
+	path       string
+	body       []byte
 }
 
-func (client compressionClient) get(t *testing.T, method, path, site string, signedIn bool, extra http.Header) observedResponse {
+func (client compressionClient) get(t *testing.T, path, site string, signedIn bool, extra http.Header) observedResponse {
 	t.Helper()
-	request, err := http.NewRequestWithContext(t.Context(), method, client.server.URL+path, nil)
+	request, err := http.NewRequestWithContext(t.Context(), http.MethodGet, client.server.URL+path, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,13 +101,13 @@ func (client compressionClient) get(t *testing.T, method, path, site string, sig
 	if err != nil {
 		t.Fatal(err)
 	}
-	return observedResponse{StatusCode: response.StatusCode, Header: response.Header, method: method, path: path, body: body}
+	return observedResponse{StatusCode: response.StatusCode, Header: response.Header, path: path, body: body}
 }
 
 func decodedBody(t *testing.T, response observedResponse, encoding string) string {
 	t.Helper()
 	if got := response.Header.Get("Content-Encoding"); got != encoding {
-		t.Fatalf("%s %s Content-Encoding = %q, want %q (status %d %v)", response.method, response.path, got, encoding, response.StatusCode, response.Header)
+		t.Fatalf("%s %s Content-Encoding = %q, want %q (status %d %v)", http.MethodGet, response.path, got, encoding, response.StatusCode, response.Header)
 	}
 	if encoding != "gzip" {
 		return string(response.body)
