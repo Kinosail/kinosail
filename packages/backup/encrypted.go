@@ -70,9 +70,9 @@ func (service *Service) decrypt(reader io.Reader, passphrase string, use func([]
 	if len(passphrase) < 16 || len(passphrase) > maxPassphraseSize {
 		return errors.New("backup passphrase must contain 16 to 4096 characters")
 	}
-	data, err := io.ReadAll(io.LimitReader(reader, maxArchiveSize+1))
+	data, err := io.ReadAll(io.LimitReader(reader, int64(maxEncodedSize)+1))
 	header := len(encryptedMagic) + 16 + 12
-	if err != nil || len(data) > maxArchiveSize || len(data) < header || !bytes.Equal(data[:len(encryptedMagic)], encryptedMagic) {
+	if err != nil || len(data) > maxEncodedSize || len(data) < header || !bytes.Equal(data[:len(encryptedMagic)], encryptedMagic) {
 		return errors.New("encrypted backup is invalid")
 	}
 	salt, nonce := data[len(encryptedMagic):len(encryptedMagic)+16], data[len(encryptedMagic)+16:header]
@@ -94,8 +94,8 @@ func (service *Service) VerifyEncrypted(reader io.Reader, passphrase string) err
 }
 
 func (service *Service) VerifyAuto(reader io.Reader, passphrase string) error {
-	data, err := io.ReadAll(io.LimitReader(reader, maxArchiveSize+1))
-	if err != nil || len(data) > maxArchiveSize {
+	data, err := io.ReadAll(io.LimitReader(reader, int64(maxEncodedSize)+1))
+	if err != nil || len(data) > maxEncodedSize {
 		if err == nil {
 			err = errors.New("backup exceeds maximum size")
 		}
@@ -109,8 +109,8 @@ func (service *Service) VerifyAuto(reader io.Reader, passphrase string) error {
 }
 
 func (service *Service) RestoreAuto(reader io.Reader, dataDir, passphrase string) error {
-	data, err := io.ReadAll(io.LimitReader(reader, maxArchiveSize+1))
-	if err != nil || len(data) > maxArchiveSize {
+	data, err := io.ReadAll(io.LimitReader(reader, int64(maxEncodedSize)+1))
+	if err != nil || len(data) > maxEncodedSize {
 		if err == nil {
 			err = errors.New("backup exceeds maximum size")
 		}

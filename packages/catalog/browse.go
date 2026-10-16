@@ -30,7 +30,7 @@ type Candidate struct {
 }
 
 type BrowseAccess struct {
-	ProgressMutex *sync.Mutex
+	ProgressMutex sync.Locker
 	ListMutex     *sync.RWMutex
 	Progress      *map[string]PlaybackState
 	Listed        *map[string]bool
@@ -39,7 +39,7 @@ type BrowseAccess struct {
 	Visible       func(library.Item) bool
 }
 
-func NewBrowseAccess(progressMutex *sync.Mutex, listMutex *sync.RWMutex, progress *map[string]PlaybackState, listed *map[string]bool, profileID string, owner bool, visible func(library.Item) bool) BrowseAccess {
+func NewBrowseAccess(progressMutex sync.Locker, listMutex *sync.RWMutex, progress *map[string]PlaybackState, listed *map[string]bool, profileID string, owner bool, visible func(library.Item) bool) BrowseAccess {
 	return BrowseAccess{ProgressMutex: progressMutex, ListMutex: listMutex, Progress: progress, Listed: listed, ProfileID: profileID, Owner: owner, Visible: visible}
 }
 
@@ -135,11 +135,7 @@ func browseLibrary(ctx context.Context, values url.Values, locale string, load f
 }
 
 func ProfileProgress(values map[string]PlaybackState, profileID string, owner bool, itemID string) PlaybackState {
-	state, found := values[profileID+":"+itemID]
-	if !found && owner {
-		state = values[itemID]
-	}
-	return state
+	return ViewerProgress(values, profileID, owner, itemID)
 }
 
 func (result Result) AllItems() []library.Item {

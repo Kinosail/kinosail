@@ -1,13 +1,14 @@
 package viewing
 
 import (
+	"context"
 	"errors"
-	"maps"
 	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
 type CommitStore struct {
@@ -30,15 +31,11 @@ func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChang
 	store.ListMutex.Lock()
 	defer store.ListMutex.Unlock()
 
-	oldProgress := maps.Clone(*store.Progress.Values)
-	newProgress, applied, conflicts := MergeProgress(oldProgress, profile.ID, profile.Owner, progressChanges, time.Now())
+	updates, applied, conflicts := progressUpdates(*store.Progress.Values, profile.ID, profile.Owner, progressChanges, time.Now())
 	oldLists := catalog.CloneListState(*store.Lists.Values, *store.Lists.Playlists, *store.Lists.PlaylistOrder, nil)
 	newLists := catalog.CloneListState(oldLists.Values, oldLists.Playlists, oldLists.PlaylistOrder, nil)
 	newValues, newPlaylists, newOrder, listsApplied := MergeLists(newLists.Values, newLists.Playlists, newLists.PlaylistOrder, *store.Lists.Smart, profile.ID, listChanges)
-	writes := make([]viewingWrite, 0, 4)
-	if applied > 0 {
-		writes = append(writes, viewingWrite{store.Progress.File, oldProgress, newProgress, store.Progress.Persist})
-	}
+	writes := make([]viewingWrite, 0, 3)
 	if listsApplied > 0 {
 		writes = append(writes,
 			viewingWrite{store.Lists.Paths.Values, oldLists.Values, newValues, store.Lists.Persist},
@@ -46,17 +43,44 @@ func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChang
 			viewingWrite{store.Lists.Paths.PlaylistOrder, oldLists.PlaylistOrder, newOrder, store.Lists.Persist},
 		)
 	}
+	var err error
 	if store.Progress.Database != nil && store.Progress.Database == store.Lists.Database {
-		documents := make(map[string]any, len(writes))
-		for _, write := range writes {
-			if write.file != "" {
-				documents[filepath.Base(write.file)] = write.new
-			}
+		err = store.commitDatabase(updates, applied, writes)
+	} else {
+		err = store.commitFiles(updates, applied, writes)
+	}
+	if err != nil {
+		return 0, conflicts, 0, err
+	}
+	publishProgress(store.Progress.Values, updates)
+	*store.Lists.Values, *store.Lists.Playlists, *store.Lists.PlaylistOrder = newValues, newPlaylists, newOrder
+	return applied, conflicts, listsApplied, nil
+}
+
+func (store CommitStore) commitDatabase(updates map[string]catalog.PlaybackState, applied int, writes []viewingWrite) error {
+	batch := documentdb.Batch{Documents: make(map[string]any, len(writes)+1)}
+	for _, write := range writes {
+		if write.file != "" {
+			batch.Documents[filepath.Base(write.file)] = write.new
 		}
-		if err := store.Progress.Database.SaveJSONBatch(documents); err != nil {
-			return 0, conflicts, 0, err
+	}
+	if applied > 0 && store.Progress.File != "" {
+		if store.Progress.entryWrites() {
+			batch.Entries = map[string]documentdb.EntryChanges{progressDocument: {Set: entryValues(updates)}}
+		} else {
+			batch.Documents[filepath.Base(store.Progress.File)] = mergedProgress(*store.Progress.Values, updates)
 		}
-		writes = nil
+	}
+	if len(batch.Documents) == 0 && len(batch.Entries) == 0 {
+		return nil
+	}
+	return store.Progress.Database.Commit(context.Background(), batch)
+}
+
+func (store CommitStore) commitFiles(updates map[string]catalog.PlaybackState, applied int, writes []viewingWrite) error {
+	if applied > 0 {
+		progress := viewingWrite{store.Progress.File, *store.Progress.Values, mergedProgress(*store.Progress.Values, updates), store.Progress.Persist}
+		writes = append([]viewingWrite{progress}, writes...)
 	}
 	done := make([]viewingWrite, 0, len(writes))
 	for _, write := range writes {
@@ -64,13 +88,11 @@ func (store CommitStore) Commit(profile Profile, progressChanges []ProgressChang
 			continue
 		}
 		if err := write.persist(write.file, write.new); err != nil {
-			return 0, conflicts, 0, rollbackViewingWrites(done, err)
+			return rollbackViewingWrites(done, err)
 		}
 		done = append(done, write)
 	}
-	*store.Progress.Values = newProgress
-	*store.Lists.Values, *store.Lists.Playlists, *store.Lists.PlaylistOrder = newValues, newPlaylists, newOrder
-	return applied, conflicts, listsApplied, nil
+	return nil
 }
 
 func rollbackViewingWrites(writes []viewingWrite, cause error) error {

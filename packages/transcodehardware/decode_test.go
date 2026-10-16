@@ -4,6 +4,7 @@ import (
 	"context"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -11,7 +12,10 @@ import (
 )
 
 func decodeCheck(decodable map[string]bool, order *[]string) func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult {
+	var mu sync.Mutex
 	return func(_ context.Context, _ string, options transcodepolicy.Settings, _ string) transcodepolicy.CheckResult {
+		mu.Lock()
+		defer mu.Unlock()
 		label := options.Accelerator + ":" + options.Codec
 		if options.OutputHDR != "" {
 			label += ":" + options.OutputHDR

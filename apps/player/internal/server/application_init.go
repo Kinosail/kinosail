@@ -23,26 +23,44 @@ func prepareApplicationConfig(config *Config) (context.Context, bool) {
 	return lifecycle, lifecycle != nil
 }
 
-func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) func(func()) {
-	if !managed || stateDB == nil {
-		return func(func()) {}
+type databaseShutdown struct {
+	mu     sync.Mutex
+	closed bool
+	hooks  []func()
+}
+
+func (shutdown *databaseShutdown) beforeClose(hook func()) {
+	shutdown.mu.Lock()
+	if !shutdown.closed {
+		shutdown.hooks = append(shutdown.hooks, hook)
+		shutdown.mu.Unlock()
+		return
 	}
-	var mu sync.Mutex
-	var drains []func()
+	shutdown.mu.Unlock()
+	hook()
+}
+
+func (shutdown *databaseShutdown) run() {
+	shutdown.mu.Lock()
+	hooks := shutdown.hooks
+	shutdown.closed, shutdown.hooks = true, nil
+	shutdown.mu.Unlock()
+	for _, hook := range hooks {
+		hook()
+	}
+}
+
+func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) *databaseShutdown {
+	shutdown := new(databaseShutdown)
+	if !managed || stateDB == nil {
+		return shutdown
+	}
 	go func() {
 		<-lifecycle.Done()
-		mu.Lock()
-		defer mu.Unlock()
-		for _, drain := range drains {
-			drain()
-		}
+		shutdown.run()
 		_ = stateDB.Close()
 	}()
-	return func(drain func()) {
-		mu.Lock()
-		defer mu.Unlock()
-		drains = append(drains, drain)
-	}
+	return shutdown
 }
 
 func startAccessFlush(lifecycle context.Context, managed bool, profiles *profileStore, beforeClose func(func())) {
@@ -74,8 +92,7 @@ func initializeApplicationSettings(config Config, stateDB *database.Store, manag
 		updates.Schedule(config.Lifecycle)
 	}
 	settings.ffmpeg = config.FFmpeg
-	settings.hardware = probeHardware(config.Lifecycle, config.FFmpeg, config.HardwareDevices, config.ProbeHardware, config.HardwareOS, config.HardwareArch)
-	if settings.reconcileHardwareSelection() != nil {
+	if settings.startHardwareProbe(config) != nil {
 		return nil, nil, "transcoder configuration is unavailable"
 	}
 	return settings, updates, ""

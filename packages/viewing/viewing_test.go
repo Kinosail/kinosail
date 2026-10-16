@@ -162,7 +162,8 @@ func TestMergeProgressAndListsPreservesOptimisticState(t *testing.T) {
 
 func TestProgressStoragePublishesOnlyPersistedImports(t *testing.T) {
 	values := map[string]catalog.PlaybackState{"viewer:item": {Seconds: 1}}
-	var mutex, persistMutex sync.Mutex
+	var mutex sync.RWMutex
+	var persistMutex sync.Mutex
 	storage := ProgressStorage{Mutex: &mutex, PersistMutex: &persistMutex, Values: &values, File: "progress.json", ProfileID: "viewer", Persist: func(string, any) error { return errors.New("disk") }}
 	change := ProgressChange{TargetID: "item", Expected: catalog.PlaybackState{Seconds: 1}, State: catalog.PlaybackState{Seconds: 2}}
 	applied, conflicts, err := storage.Import([]ProgressChange{change}, time.Now())

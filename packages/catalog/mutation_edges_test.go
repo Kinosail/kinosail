@@ -130,7 +130,8 @@ func TestListStorageAndProgressRemainingEdges(t *testing.T) {
 		t.Fatalf("file list commit = %v", err)
 	}
 	progress := map[string]PlaybackState{}
-	var mutex, persistMutex sync.Mutex
+	var mutex sync.RWMutex
+	var persistMutex sync.Mutex
 	progressStorage := ProgressStorage{Mutex: &mutex, PersistMutex: &persistMutex, Values: &progress}
 	if _, _, changed, err := progressStorage.Update("item", func(current PlaybackState) (PlaybackState, bool, error) { return current, false, nil }); err != nil || changed {
 		t.Fatalf("unchanged progress = %t, %v", changed, err)

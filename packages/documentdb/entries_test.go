@@ -192,16 +192,22 @@ func TestEntryAggregateLimitRollsBackBothTables(t *testing.T) {
 	if err := store.EnableEntries("progress.json"); err != nil {
 		t.Fatal(err)
 	}
-	large := strings.Repeat("x", DocumentSizeLimit/2)
-	if err := store.SaveEntry("progress.json", "first", large); err != nil {
+	if err := store.SaveEntry("progress.json", "first", "kept"); err != nil {
 		t.Fatal(err)
 	}
-	if err := store.SaveEntry("progress.json", "second", large); err == nil {
+	headroom := EntryDocumentSizeLimit - 64
+	if _, err := store.db.ExecContext(t.Context(), `UPDATE state SET entry_bytes = entry_bytes + ? WHERE name = 'progress.json'`, headroom); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.SaveEntries("progress.json", map[string]any{"second": strings.Repeat("x", 128), "third": 3}, []string{"first"}); err == nil {
 		t.Fatal("aggregate overflow accepted")
 	}
+	if _, err := store.db.ExecContext(t.Context(), `UPDATE state SET entry_bytes = entry_bytes - ? WHERE name = 'progress.json'`, headroom); err != nil {
+		t.Fatal(err)
+	}
 	var got map[string]string
-	if _, err := store.LoadJSON("progress.json", &got); err != nil || len(got) != 1 || got["first"] != large {
-		t.Fatalf("rollback failed: %d records, %v", len(got), err)
+	if _, err := store.LoadJSON("progress.json", &got); err != nil || len(got) != 1 || got["first"] != "kept" {
+		t.Fatalf("rollback failed: %#v, %v", got, err)
 	}
 	if _, err := store.Export(); err != nil {
 		t.Fatalf("rollback left invalid counters: %v", err)
