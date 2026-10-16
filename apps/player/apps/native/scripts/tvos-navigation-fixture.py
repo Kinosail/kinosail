@@ -1,5 +1,5 @@
 """Disposable loopback TV QA: large catalog and loaded/pending/empty/failed states."""
-import json, math, os, re, sys, time
+import colorsys, json, math, os, re, sys, time, zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -46,10 +46,12 @@ def artwork(path):
     if path not in ART:
         landscape=path.startswith(('/backdrop/','/episode-art/'))
         w,h=(1600,900) if landscape else (900,900) if path.endswith(('/music','/audiobook')) else (600,900)
-        img=Image.new('RGB',(w,h),(24,54,120)); draw=ImageDraw.Draw(img)
-        for y in range(h): draw.line((0,y,w,y),fill=(24+int(y/h*45),54+int(y/h*35),120+int(y/h*75)))
+        hue=zlib.crc32(path.split('/')[-1].encode())%360/360
+        top,bottom,ridge=(tuple(int(c*255) for c in colorsys.hsv_to_rgb(hue,s,v)) for s,v in [(.72,.45),(.55,.78),(.6,.22)])
+        img=Image.new('RGB',(w,h),top); draw=ImageDraw.Draw(img)
+        for y in range(h): draw.line((0,y,w,y),fill=tuple(int(a+(b-a)*y/h) for a,b in zip(top,bottom)))
         draw.ellipse((w*.57,h*.17,w*.88,h*.48),fill=(216,218,233))
-        draw.polygon([(0,h*.82),(w*.35,h*.36),(w*.68,h*.88),(w,h*.55),(w,h),(0,h)],fill=(19,29,58))
+        draw.polygon([(0,h*.82),(w*.35,h*.36),(w*.68,h*.88),(w,h*.55),(w,h),(0,h)],fill=ridge)
         draw.text((36,h-90),path.split('/')[-1].replace('-',' ').upper(),fill='white',font_size=38)
         data=BytesIO(); img.save(data,'JPEG',quality=90); ART[path]=data.getvalue()
     return ART[path]

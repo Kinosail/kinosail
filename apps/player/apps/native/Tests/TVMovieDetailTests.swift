@@ -4,7 +4,7 @@ import Testing
 @testable import KinosailPlayer
 
 @Suite(.serialized) struct TVMovieDetailTests {
-    @Test func usesBackdropOnlyForMoviesWithArtwork() throws {
+    @Test func usesBackdropForVideosWithArtwork() throws {
         let server = try ServerAddress("https://media.example")
         func item(_ fields: [String: JSONValue]) throws -> MediaItem {
             try MediaItem(.object(["id": .string("movie"), "kind": .string("video"),
@@ -13,8 +13,7 @@ import Testing
         }
         #expect(try TVMovieDetail(item: item([:])).usesBackdrop)
         #expect(try !TVMovieDetail(item: item(["backdrop": .string("")])).usesBackdrop)
-        #expect(try !TVMovieDetail(item: item(["show": .string("Series")])).usesBackdrop)
-        #expect(try !TVMovieDetail(item: item(["showId": .string("0123456789abcdef")])).usesBackdrop)
+        #expect(try TVMovieDetail(item: item(["show": .string("Series"), "showId": .string("0123456789abcdef")])).usesBackdrop)
         #expect(try !TVMovieDetail(item: item(["kind": .string("music")])).usesBackdrop)
     }
 
@@ -27,6 +26,12 @@ import Testing
         let sparse = try MediaItem(.object(["id": .string("movie"), "kind": .string("video"),
                                             "title": .string("Movie"), "genres": .string("Drama")]), server: server)
         #expect(TVMovieDetail(item: sparse).metadata == "Drama")
+        let episode = try MediaItem(.object(["id": .string("episode"), "kind": .string("video"),
+                                             "title": .string("S01E02 · Pilot"), "show": .string("Series"),
+                                             "showId": .string("0123456789abcdef"), "season": .number(1),
+                                             "episode": .number(2), "rating": .string("PG")]), server: server)
+        #expect(TVMovieDetail(item: episode).metadata == "Series · S1 E2 · PG")
+        #expect(TVMovieDetail(item: episode).title == "Pilot")
     }
 
     @Test @MainActor func pendingDetailReservesHeroAndCastSpace() {

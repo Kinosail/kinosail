@@ -11,11 +11,12 @@ struct LoadingState: View {
     var body: some View {
         VStack(alignment: .leading, spacing: layout == .tvHome || layout == .tvHomeAudio ? 32 : 20) {
             if layout == .tvHome || layout == .tvHomeAudio {
+                if layout == .tvHome { TVHomeSpotlightSkeleton() }
                 VStack(alignment: .leading, spacing: layout == .tvHomeAudio ? 12 : 16) {
                     line(width: 180, height: 28).accessibilityHidden(true)
                     if layout == .tvHome {
                         ScrollView(.horizontal) {
-                            HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true, showsSubtitle: false).frame(width: 390) } }
+                            HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) { ForEach(0..<4) { _ in card(ratio: 16 / 9, showsProgress: true, showsSubtitle: true).frame(width: 390) } }
                             .padding(.vertical, 24)
                         }
                         .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
@@ -26,23 +27,7 @@ struct LoadingState: View {
                         .padding(.vertical, 20).accessibilityHidden(true)
                     }
                 }
-                VStack(alignment: .leading, spacing: 16) {
-                    line(width: 130, height: 28).accessibilityHidden(true)
-                    ScrollView(.horizontal) {
-                        HStack(spacing: KinoTheme.shelfSpacing) {
-                            ForEach(0..<4) { _ in
-                                HStack(spacing: 18) {
-                                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(width: 60, height: 60)
-                                    line(width: 120, height: 20)
-                                    Spacer(minLength: 0)
-                                }
-                                .frame(width: 400, height: 100)
-                            }
-                        }
-                        .padding(.vertical, 24)
-                    }
-                    .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
-                }
+                TVHomeBrowseSkeleton()
                 VStack(alignment: .leading, spacing: 16) {
                     line(width: 230, height: 28).accessibilityHidden(true)
                     ScrollView(.horizontal) {
@@ -86,17 +71,16 @@ struct LoadingState: View {
             }
             if layout == .show {
                 #if os(tvOS)
-                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).frame(height: 480)
-                    .overlay(alignment: .bottomLeading) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            line(width: 320, height: 52)
-                            line(width: 400, height: 24)
-                            line(width: 580, height: 22)
-                            line(width: 360, height: 22)
-                            Capsule().fill(KinoTheme.raised).frame(width: 280, height: 58)
-                        }.padding(40)
-                    }
-                    .accessibilityHidden(true)
+                TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
+                    line(width: 440, height: 82)
+                    line(width: 260, height: 34)
+                    line(width: 580, height: 32)
+                    line(width: 360, height: 28)
+                    Capsule().fill(KinoTheme.raised).frame(width: 240, height: 92)
+                } }
+                .tvMovieHeroArtwork()
+                .tvMovieHeroBleed()
+                .accessibilityHidden(true)
                 HStack(spacing: 16) {
                     ForEach(0..<3) { _ in Capsule().fill(KinoTheme.raised).frame(width: 156, height: 52) }
                 }
@@ -294,7 +278,6 @@ struct LoadingState: View {
         #endif
     }
     private func line(width: CGFloat, height: CGFloat) -> some View {
-        RoundedRectangle(cornerRadius: 5).fill(KinoTheme.raised).frame(maxWidth: width).frame(height: height)
-            .frame(height: height == 28 ? KinoTheme.shelfHeadingHeight : nil)
+        SkeletonLine(width: width, height: height)
     }
 }

@@ -27,9 +27,6 @@ private struct TVMovieHeroAnchorKey: PreferenceKey {
 
 private struct TVMovieHeroBackdrop: View {
     let anchor: TVMovieHeroAnchor?
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.colorSchemeContrast) private var contrast
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     var body: some View {
         GeometryReader { geometry in
@@ -38,7 +35,7 @@ private struct TVMovieHeroBackdrop: View {
                     let frame = geometry[anchor.bounds]
                     let top = min(frame.minY, 0)
                     let canvas = CGSize(width: geometry.size.width, height: max(0, frame.maxY - top))
-                    backdrop(path: anchor.path, canvas: canvas)
+                    TVBackdrop(path: anchor.path, canvas: canvas)
                         .frame(width: canvas.width, height: canvas.height)
                         .clipped()
                         .position(x: canvas.width / 2, y: top + canvas.height / 2)
@@ -51,11 +48,20 @@ private struct TVMovieHeroBackdrop: View {
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
+}
 
-    private func backdrop(path: String?, canvas: CGSize) -> some View {
+struct TVBackdrop: View {
+    let path: String?
+    let canvas: CGSize
+    var ambient = false
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    var body: some View {
         ZStack {
             KinoTheme.surface
-            if let path, colorScheme == .dark && contrast != .increased && !reduceTransparency {
+            if let path, !path.isEmpty, colorScheme == .dark && contrast != .increased && !reduceTransparency {
                 ZStack(alignment: .leading) {
                     Artwork(path: path, ratio: 16 / 9, dimension: 4096,
                             fillsFrame: true, isBackdrop: true, canvasSize: canvas)
@@ -65,7 +71,11 @@ private struct TVMovieHeroBackdrop: View {
                         .init(color: .clear, location: 1)
                     ], startPoint: .leading, endPoint: .trailing)
                     .frame(width: min(canvas.width, 1120))
-                    LinearGradient(stops: [
+                    LinearGradient(stops: ambient ? [
+                        .init(color: KinoTheme.background.opacity(0.2), location: 0),
+                        .init(color: KinoTheme.background.opacity(0.82), location: 0.5),
+                        .init(color: KinoTheme.background.opacity(0.94), location: 1)
+                    ] : [
                         .init(color: .clear, location: 0),
                         .init(color: KinoTheme.background.opacity(0.12), location: 0.55),
                         .init(color: KinoTheme.background, location: 1)
@@ -73,6 +83,7 @@ private struct TVMovieHeroBackdrop: View {
                 }
             }
         }
+        .accessibilityHidden(true)
     }
 }
 

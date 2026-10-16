@@ -60,6 +60,7 @@ struct PlayerTabs: View {
                                         changeMode: changeMode, selectTab: selectBrowseTab,
                                         focusTopBar: { topFocus = .search })
                     }
+                    .backgroundPreferenceValue(TVHomeBackdropKey.self) { TVHomeBackdrop(path: $0) }
                     .cinemaBackground()
                 }
             }

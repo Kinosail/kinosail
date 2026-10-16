@@ -7,9 +7,8 @@ struct ShowScreen: View {
     @State private var selectedSeason: Int?
     @Namespace private var showFocus
     @State private var quickPlay: ScreenDestination?
-    @Environment(\.colorSchemeContrast) private var contrast
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @ScaledMetric(relativeTo: .body) private var playHeight = 44
     #endif
 
     var body: some View {
@@ -62,6 +61,9 @@ struct ShowScreen: View {
             }
             .padding(KinoTheme.contentPadding)
         }
+        #if os(tvOS)
+        .tvMovieHeroViewport()
+        #endif
         .cinemaBackground()
         #if os(tvOS)
         .focusScope(showFocus)
@@ -81,7 +83,7 @@ struct ShowScreen: View {
     #if os(tvOS)
     private func tvHero(show: ShowDetail, next: MediaItem?) -> some View {
         let metadata = [show.year, show.genres].filter { !$0.isEmpty }.joined(separator: " · ")
-        return VStack(alignment: .leading, spacing: 14) {
+        return TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
             Text(show.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
@@ -94,35 +96,20 @@ struct ShowScreen: View {
             if let next {
                 Text(ShowSeasonSelection.episodeSummary(next))
                     .font(.headline).foregroundStyle(KinoTheme.muted)
+                if next.progress.seconds > 0 && !next.progress.watched { WatchPosition(item: next) }
                 NavigationLink(value: ScreenDestination.playback(next.id)) {
                     Label(next.playLabel, systemImage: "play.fill")
-                        .frame(minWidth: 240).padding(.vertical, 12)
+                        .frame(minWidth: 240, minHeight: playHeight)
                         .foregroundStyle(KinoTheme.tvOSPrimaryInk)
-                        .background(KinoTheme.tvOSPrimaryFill, in: Capsule())
                 }
-                .buttonStyle(.card)
+                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
+                .controlSize(.large).tint(KinoTheme.tvOSPrimaryFill)
                 .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
             }
-        }
-        .frame(maxWidth: 740, alignment: .leading)
-        .padding(40)
-        .frame(maxWidth: .infinity, minHeight: 480, alignment: .bottomLeading)
-        .background {
-            ZStack {
-                KinoTheme.surface
-                if !show.backdrop.isEmpty && contrast != .increased && !reduceTransparency {
-                    GeometryReader { geometry in
-                        Artwork(path: show.backdrop, ratio: 16 / 9, dimension: 1600,
-                                fillsFrame: true, isBackdrop: true, canvasSize: geometry.size)
-                    }
-                    LinearGradient(colors: [.black.opacity(0.88), .black.opacity(0.38), .clear],
-                                   startPoint: .leading, endPoint: .trailing)
-                    LinearGradient(colors: [.clear, .black.opacity(0.75)], startPoint: .top, endPoint: .bottom)
-                }
-            }
-        }
-        .clipShape(.rect(cornerRadius: 12))
+        } }
+        .tvMovieHeroArtwork(show.backdrop)
         .foregroundStyle(KinoTheme.text)
+        .tvMovieHeroBleed()
         .focusSection()
     }
 
