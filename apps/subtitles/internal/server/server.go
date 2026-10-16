@@ -83,6 +83,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	}
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
+	sweepSubtitleTranscriptionWorkspaces(config.CacheDir)
 	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
 	}, libraryDecoration(metadata, probe, managedLifecycle))}
