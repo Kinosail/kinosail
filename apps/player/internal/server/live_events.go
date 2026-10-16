@@ -26,6 +26,7 @@ func liveEventAccess(auth *authentication) sharedlive.Access {
 			profile := access.profile
 			return found && profile.Allowed(publicInternetRequest(request), time.Now()) && (!profile.APIKey || profileAllowsAPI(profile, "GET /api/v1/events"))
 		},
+		Changed: auth.profiles.changes.Changed,
 		Error: func(writer http.ResponseWriter, _ *http.Request, err error, status int) {
 			apiError(writer, err, status)
 		},

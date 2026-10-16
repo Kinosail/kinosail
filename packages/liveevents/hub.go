@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	historyLimit    = 128
-	subscriberLimit = 256
-	subscriberQueue = 16
+	historyLimit           = 128
+	subscriberLimit        = 256
+	profileSubscriberLimit = 16
+	subscriberQueue        = 16
 )
 
 type Event struct {
@@ -43,27 +44,32 @@ type subscriber struct {
 }
 
 type Hub struct {
-	mu          sync.Mutex
-	nextEvent   uint64
-	nextClient  uint64
-	published   uint64
-	reconnects  uint64
-	rejected    uint64
-	slowDrops   uint64
-	history     []scopedEvent
-	subscribers map[uint64]subscriber
-	now         func() time.Time
-	heartbeat   time.Duration
-	accessCheck time.Duration
-	observer    func(string, string, string)
+	mu           sync.Mutex
+	nextEvent    uint64
+	nextClient   uint64
+	published    uint64
+	reconnects   uint64
+	rejected     uint64
+	slowDrops    uint64
+	history      [historyLimit]scopedEvent
+	historySize  int
+	subscribers  map[uint64]subscriber
+	profiles     map[string]int
+	now          func() time.Time
+	heartbeat    time.Duration
+	accessCheck  time.Duration
+	writeTimeout time.Duration
+	observer     func(string, string, string)
 }
 
 func New() *Hub {
 	return &Hub{
-		subscribers: make(map[uint64]subscriber),
-		now:         time.Now,
-		heartbeat:   15 * time.Second,
-		accessCheck: time.Second,
+		subscribers:  make(map[uint64]subscriber),
+		profiles:     make(map[string]int),
+		now:          time.Now,
+		heartbeat:    15 * time.Second,
+		accessCheck:  15 * time.Second,
+		writeTimeout: 10 * time.Second,
 	}
 }
 
@@ -72,10 +78,8 @@ func (hub *Hub) Publish(profile, eventType, resource string) {
 	hub.nextEvent++
 	hub.published++
 	event := scopedEvent{Event: Event{ID: hub.nextEvent, Type: eventType, Resource: resource, At: hub.now().UTC()}, profile: profile}
-	hub.history = append(hub.history, event)
-	if len(hub.history) > historyLimit {
-		hub.history = append([]scopedEvent(nil), hub.history[len(hub.history)-historyLimit:]...)
-	}
+	hub.history[(event.ID-1)%historyLimit] = event
+	hub.historySize = min(hub.historySize+1, historyLimit)
 	for id, subscriber := range hub.subscribers {
 		if event.profile != "" && event.profile != subscriber.profile {
 			continue
@@ -83,8 +87,7 @@ func (hub *Hub) Publish(profile, eventType, resource string) {
 		select {
 		case subscriber.events <- event.Event:
 		default:
-			close(subscriber.events)
-			delete(hub.subscribers, id)
+			hub.removeLocked(id)
 			hub.slowDrops++
 		}
 	}
@@ -104,7 +107,7 @@ func (hub *Hub) SetObserver(observer func(string, string, string)) {
 func (hub *Hub) subscribe(profile string, after uint64) ([]Event, *subscription, bool) {
 	hub.mu.Lock()
 	defer hub.mu.Unlock()
-	if len(hub.subscribers) >= subscriberLimit {
+	if len(hub.subscribers) >= subscriberLimit || hub.profiles[profile] >= profileSubscriberLimit {
 		hub.rejected++
 		return nil, nil, false
 	}
@@ -112,7 +115,8 @@ func (hub *Hub) subscribe(profile string, after uint64) ([]Event, *subscription,
 		hub.reconnects++
 	}
 	backlog := make([]Event, 0)
-	for _, event := range hub.history {
+	for index := range hub.historySize {
+		event := hub.history[(hub.nextEvent-uint64(hub.historySize)+uint64(index))%historyLimit]
 		if event.ID > after && (event.profile == "" || event.profile == profile) {
 			backlog = append(backlog, event.Event)
 		}
@@ -120,6 +124,7 @@ func (hub *Hub) subscribe(profile string, after uint64) ([]Event, *subscription,
 	hub.nextClient++
 	events := make(chan Event, subscriberQueue)
 	hub.subscribers[hub.nextClient] = subscriber{profile: profile, events: events}
+	hub.profiles[profile]++
 	return backlog, &subscription{hub: hub, id: hub.nextClient, events: events}, true
 }
 
@@ -137,9 +142,18 @@ func (subscription *subscription) close() {
 		return
 	}
 	subscription.hub.mu.Lock()
-	if current, found := subscription.hub.subscribers[subscription.id]; found {
-		close(current.events)
-		delete(subscription.hub.subscribers, subscription.id)
-	}
+	subscription.hub.removeLocked(subscription.id)
 	subscription.hub.mu.Unlock()
+}
+
+func (hub *Hub) removeLocked(id uint64) {
+	current, found := hub.subscribers[id]
+	if !found {
+		return
+	}
+	close(current.events)
+	delete(hub.subscribers, id)
+	if hub.profiles[current.profile]--; hub.profiles[current.profile] <= 0 {
+		delete(hub.profiles, current.profile)
+	}
 }

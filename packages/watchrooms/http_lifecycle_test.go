@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -41,6 +42,13 @@ func TestHTTPAccessMonitorClosesInvisibleRoom(t *testing.T) {
 	visible.Store(true)
 	config := httpConfig(harness.rooms, harness.index)
 	config.CanView = func(*http.Request, library.Item) bool { return visible.Load() }
+	var signal sync.Mutex
+	changed := make(chan struct{})
+	config.Changed = func() <-chan struct{} {
+		signal.Lock()
+		defer signal.Unlock()
+		return changed
+	}
 	harness.handler = MustNewHTTP(config)
 	mux := http.NewServeMux()
 	harness.handler.Register(mux)
@@ -50,6 +58,10 @@ func TestHTTPAccessMonitorClosesInvisibleRoom(t *testing.T) {
 	connection := dialHTTPRoom(t, server.URL, roomID, "leader", "")
 	readHTTPEvent(t, connection)
 	visible.Store(false)
+	signal.Lock()
+	close(changed)
+	changed = make(chan struct{})
+	signal.Unlock()
 	assertHTTPConnectionClosed(t, connection)
 }
 
@@ -65,7 +77,8 @@ func TestWriteEventsClosesSubscriptionAfterWriteFailure(t *testing.T) {
 		t.Fatal("event was not queued")
 	}
 	events := subscription.Events()
-	newHTTPHarness(t).handler.writeEvents(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil), server, subscription)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	newHTTPHarness(t).handler.writeEvents(request, currentRequest(request), server, subscription)
 	if _, open := <-events; open {
 		t.Fatal("subscription remained open after write failure")
 	}
@@ -132,7 +145,10 @@ func TestEventDeliveryReauthorizesBeforeSendingHiddenMedia(t *testing.T) {
 		t.Fatal("leader update rejected")
 	}
 	done := make(chan struct{})
-	go func() { defer close(done); harness.handler.writeEvents(request, server, restricted) }()
+	go func() {
+		defer close(done)
+		harness.handler.writeEvents(request, currentRequest(request), server, restricted)
+	}()
 	assertHTTPConnectionClosed(t, client)
 	<-done
 }
@@ -155,7 +171,16 @@ func TestDeniedEventStillRequiresRoomVisibility(t *testing.T) {
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
 	request.Header.Set("X-Viewer", "restricted")
 	done := make(chan struct{})
-	go func() { defer close(done); harness.handler.writeEvents(request, server, restricted) }()
+	go func() {
+		defer close(done)
+		harness.handler.writeEvents(request, currentRequest(request), server, restricted)
+	}()
 	assertHTTPConnectionClosed(t, client)
 	<-done
+}
+
+func currentRequest(request *http.Request) *atomic.Pointer[http.Request] {
+	var current atomic.Pointer[http.Request]
+	current.Store(request)
+	return &current
 }

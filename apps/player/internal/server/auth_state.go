@@ -13,6 +13,7 @@ type authRelatedDocument struct {
 
 func (auth *authentication) persistSettingsAnd(ctx context.Context, next installationSettings, related authRelatedDocument, value any) error {
 	if auth.profiles.database != nil {
+		defer auth.profiles.changes.Notify()
 		return auth.profiles.database.SaveJSONBatchContext(ctx, map[string]any{
 			"settings.json": next,
 			related.name:    value,

@@ -23,6 +23,7 @@ func newWatchRooms(ttl time.Duration, index *libraryIndex, auth *authentication)
 		Reauthorize: func(request *http.Request, route string) (*http.Request, string, bool) {
 			return reauthorizeWatchRoom(auth, request, route)
 		},
+		Changed: auth.profiles.changes.Changed,
 		Failure: localizedError, NotFound: localizedNotFound,
 	})
 	return &watchRoomAdapter{rooms: rooms, handler: handler}
