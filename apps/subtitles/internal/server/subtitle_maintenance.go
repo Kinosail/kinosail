@@ -46,8 +46,7 @@ func (manager *subtitleManager) maintainLanguageItem(ctx context.Context, item l
 	if item.Kind != "video" {
 		return subtitleMaintenanceResult{}
 	}
-	ready, tracks := manager.planCoverage(ctx, item, language)
-	sidecarReady, _ := manager.sidecarPlanCoverage(item, language)
+	ready, sidecarReady, tracks := manager.planSidecarCoverage(ctx, item, language)
 	if ready {
 		return manager.maintainReadySubtitle(ctx, item, language, tracks, sidecarReady)
 	}

@@ -206,6 +206,16 @@ func TestGeneratedDialogueDoesNotSatisfyCaptionCoverage(t *testing.T) {
 	if ready, _ := manager.sidecarPlanCoverage(item, "en"); !ready {
 		t.Fatal("explicitly reviewed captions did not satisfy coverage")
 	}
+	sameSize := bytes.Replace(data, []byte("Dialogue"), []byte("Rewrites"), 1)
+	if err := os.WriteFile(target, sameSize, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(target, time.Now(), time.Unix(record.Modified/1e9+60, 0)); err != nil {
+		t.Fatal(err)
+	}
+	if ready, _ := manager.sidecarPlanCoverage(item, "en"); ready {
+		t.Fatal("same-size rewrite kept stale caption evidence")
+	}
 	if err := os.WriteFile(target, []byte("changed dialogue"), 0o600); err != nil {
 		t.Fatal(err)
 	}
