@@ -117,7 +117,7 @@ func (manager *subtitleManager) localSubtitleDraft(request *http.Request, id str
 	if _, err = rand.Read(token); err != nil {
 		return subtitleDraft{}, http.StatusInternalServerError, errors.New("local draft could not be started")
 	}
-	ctx, cancel := context.WithTimeout(manager.lifecycle(), 2*time.Hour)
+	ctx, cancel := manager.draftContext(request.Context())
 	*current = subtitleDraft{ID: hex.EncodeToString(token), Item: id, Language: input.Language, Method: input.Method, State: "running", Message: "Generating locally. Review every result before saving.", version: version, cancel: cancel}
 	draft := *current
 	go manager.generateSubtitleDraft(ctx, item, draft, stream, language, executable, model, architecture, facts.Duration)
@@ -171,9 +171,16 @@ func validSubtitleDraftText(text string) bool {
 	}) < 0
 }
 
-func (manager *subtitleManager) lifecycle() context.Context {
-	if manager.operations == nil {
-		return context.Background()
+func (manager *subtitleManager) draftContext(request context.Context) (context.Context, context.CancelFunc) {
+	base, stop := context.WithCancel(context.WithoutCancel(request))
+	stopLifecycle := func() bool { return false }
+	if manager.operations != nil {
+		stopLifecycle = context.AfterFunc(manager.operations.lifecycle, stop)
 	}
-	return manager.operations.lifecycle
+	ctx, cancel := context.WithTimeout(base, 2*time.Hour)
+	return ctx, func() {
+		cancel()
+		stopLifecycle()
+		stop()
+	}
 }

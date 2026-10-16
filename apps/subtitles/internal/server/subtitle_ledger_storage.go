@@ -166,13 +166,6 @@ func (ledger *subtitleLedger) saveSummary() error {
 	return ledger.persist(subtitleLedgerDocument, "", summarizeSubtitleLedger(ledger.state))
 }
 
-func (ledger *subtitleLedger) save() error {
-	if ledger.persist(subtitleLedgerRecordsDocument, "", ledger.state.Records) != nil || ledger.persist(subtitleLedgerSearchesDocument, "", ledger.state.Searches) != nil {
-		return errSubtitleLedgerUnavailable
-	}
-	return ledger.saveSummary()
-}
-
 func (ledger *subtitleLedger) saveHistoryRecord(key string, record subtitleRecord, before []subtitleHistoryEvent) error {
 	if err := ledger.saveSummary(); err != nil {
 		return err

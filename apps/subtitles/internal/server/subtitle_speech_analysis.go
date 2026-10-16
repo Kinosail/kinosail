@@ -35,26 +35,15 @@ func processSubtitleAudio(reader io.Reader, workers int, slots chan struct{}) (s
 	var mu sync.Mutex
 	var unavailable atomic.Bool
 	var group sync.WaitGroup
+	store := func(index int, result subtitleAudioReference) {
+		mu.Lock()
+		defer mu.Unlock()
+		results[index] = result
+	}
 	for range max(workers, 1) {
 		group.Go(func() {
-			detector, err := govad.New()
-			if err != nil {
+			if !analyzeSubtitleSpeechChunks(jobs, slots, store) {
 				unavailable.Store(true)
-			}
-			for chunk := range jobs {
-				if detector == nil {
-					continue
-				}
-				if slots != nil {
-					slots <- struct{}{}
-				}
-				result := analyzeSubtitleSpeechChunk(detector, chunk)
-				if slots != nil {
-					<-slots
-				}
-				mu.Lock()
-				results[chunk.index] = result
-				mu.Unlock()
 			}
 		})
 	}
@@ -73,6 +62,24 @@ func processSubtitleAudio(reader io.Reader, workers int, slots chan struct{}) (s
 		reference.Waveform = append(reference.Waveform, results[index].Waveform...)
 	}
 	return reference, nil
+}
+
+func analyzeSubtitleSpeechChunks(jobs <-chan subtitleSpeechChunk, slots chan struct{}, store func(int, subtitleAudioReference)) bool {
+	detector, err := govad.New()
+	for chunk := range jobs {
+		if err != nil {
+			continue
+		}
+		if slots != nil {
+			slots <- struct{}{}
+		}
+		result := analyzeSubtitleSpeechChunk(detector, chunk)
+		if slots != nil {
+			<-slots
+		}
+		store(chunk.index, result)
+	}
+	return err == nil
 }
 
 func readSubtitleSpeechChunks(reader io.Reader, jobs chan<- subtitleSpeechChunk) (int, error) {
@@ -111,7 +118,11 @@ func analyzeSubtitleSpeechChunk(detector *govad.VAD, chunk subtitleSpeechChunk) 
 	for frame := range frames {
 		input := chunk.pcm[frame*subtitleSpeechFrameBytes:]
 		for position := range samples {
-			samples[position] = float32(int16(binary.LittleEndian.Uint16(input[position*2:]))) / 32768
+			sample := int32(binary.LittleEndian.Uint16(input[position*2:]))
+			if sample >= 1<<15 {
+				sample -= 1 << 16
+			}
+			samples[position] = float32(sample) / 32768
 			if frame >= chunk.warmup {
 				peak = max(peak, math.Abs(float64(samples[position])))
 			}

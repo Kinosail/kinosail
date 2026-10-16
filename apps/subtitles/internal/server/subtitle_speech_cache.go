@@ -44,9 +44,6 @@ func (synchronizer *subtitleSynchronizer) audioReference(ctx context.Context, it
 	}
 	key := item.Path + "\x00" + strconv.FormatInt(info.Size(), 10) + ":" + strconv.FormatInt(info.ModTime().UnixNano(), 10) + "\x00" + stream
 	return synchronizer.cachedReference(ctx, key, func(ctx context.Context) (subtitleAudioReference, error) {
-		if synchronizer.ffmpeg == "" {
-			return subtitleAudioReference{}, errors.New("subtitle synchronization is unavailable")
-		}
 		return synchronizer.extractAudio(ctx, item.Path, stream)
 	})
 }

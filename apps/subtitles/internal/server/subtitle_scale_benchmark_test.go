@@ -56,7 +56,7 @@ func BenchmarkSubtitleLedgerStoreLargeLibrary(b *testing.B) {
 		ledger.state.Records[subtitleRecordKey(fmt.Sprintf("%016x", position+1), "en")] = record(position)
 		ledger.state.Searches[subtitleSearchKey(fmt.Sprintf("%016x", position+1), "en", "standard")] = subtitleSearchRecord{Outcome: "installed", CheckedAt: now.Unix(), NextAt: now.Add(time.Hour).Unix()}
 	}
-	if err := ledger.save(); err != nil {
+	if err := ledger.migrate(ledger.state, false); err != nil {
 		b.Fatal(err)
 	}
 	b.ReportMetric(pairs, "pairs")

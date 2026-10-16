@@ -10,8 +10,6 @@ import (
 	"testing/iotest"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/library"
-
 	"github.com/zserge/govad"
 )
 
@@ -83,7 +81,7 @@ func TestSubtitleAudioAnalysisHandlesFramesAndFailures(t *testing.T) {
 	if _, err = processSubtitleAudioReference(iotest.ErrReader(errors.New("read failed"))); err == nil {
 		t.Fatal("audio reader failure was accepted")
 	}
-	if _, err = newSubtitleSynchronizer("").analyzeAudio(t.Context(), library.Item{Path: "/media/movie.mkv"}, ""); err == nil {
+	if _, err = newSubtitleSynchronizer("").extractAudio(t.Context(), "/media/movie.mkv", "0:a:0"); err == nil {
 		t.Fatal("missing analyzer was accepted")
 	}
 	ffmpeg := filepath.Join(t.TempDir(), "ffmpeg")
@@ -93,10 +91,10 @@ func TestSubtitleAudioAnalysisHandlesFramesAndFailures(t *testing.T) {
 	if err = os.Chmod(ffmpeg, 0o700); err != nil { //nolint:gosec // The local test fixture must be executable.
 		t.Fatal(err)
 	}
-	if reference, err = newSubtitleSynchronizer(ffmpeg).analyzeAudio(t.Context(), library.Item{Path: "/media/movie.mkv"}, ""); err != nil || len(reference.Speech) < int(time.Minute/subtitleFrame) {
+	if reference, err = newSubtitleSynchronizer(ffmpeg).extractAudio(t.Context(), "/media/movie.mkv", "0:a:0"); err != nil || len(reference.Speech) < int(time.Minute/subtitleFrame) {
 		t.Fatalf("local audio analysis = %d frames, %v", len(reference.Speech), err)
 	}
-	if _, err = newSubtitleSynchronizer("/usr/bin/false").analyzeAudio(t.Context(), library.Item{Path: "/media/movie.mkv"}, ""); err == nil {
+	if _, err = newSubtitleSynchronizer("/usr/bin/false").extractAudio(t.Context(), "/media/movie.mkv", "0:a:0"); err == nil {
 		t.Fatal("failed audio analyzer was accepted")
 	}
 }

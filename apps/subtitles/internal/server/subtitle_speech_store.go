@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/sha256"
-	"encoding/binary"
 	"encoding/hex"
 	"io"
 	"log/slog"
@@ -12,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -55,12 +56,19 @@ func (synchronizer *subtitleSynchronizer) loadSpeech(key string) (subtitleAudioR
 		return subtitleAudioReference{}, false
 	}
 	maximumFrames := int(subtitleAudioLimit / subtitleFrame)
-	data, err := io.ReadAll(io.LimitReader(reader, int64(12+maximumFrames+maximumFrames/subtitleWaveformFrames+2)))
-	if err != nil || len(data) < 12 || string(data[:4]) != subtitleSpeechMagic {
+	data, err := io.ReadAll(io.LimitReader(reader, int64(64+maximumFrames+maximumFrames/subtitleWaveformFrames+2)))
+	end := bytes.IndexByte(data[:min(len(data), 64)], '\n')
+	if err != nil || end < 0 {
 		return subtitleAudioReference{}, false
 	}
-	speech, waveform := int(binary.LittleEndian.Uint32(data[4:])), int(binary.LittleEndian.Uint32(data[8:]))
-	if speech < int(time.Minute/subtitleFrame) || speech > maximumFrames || waveform != (speech+subtitleWaveformFrames-1)/subtitleWaveformFrames || len(data) != 12+speech+waveform {
+	header := strings.Fields(string(data[:end]))
+	data = data[end+1:]
+	if len(header) != 3 || header[0] != subtitleSpeechMagic {
+		return subtitleAudioReference{}, false
+	}
+	speech, speechErr := strconv.Atoi(header[1])
+	waveform, waveformErr := strconv.Atoi(header[2])
+	if speechErr != nil || waveformErr != nil || speech < int(time.Minute/subtitleFrame) || speech > maximumFrames || waveform != (speech+subtitleWaveformFrames-1)/subtitleWaveformFrames || len(data) != speech+waveform {
 		return subtitleAudioReference{}, false
 	}
 	dequantize := func(values []byte) []float64 {
@@ -72,7 +80,7 @@ func (synchronizer *subtitleSynchronizer) loadSpeech(key string) (subtitleAudioR
 	}
 	now := time.Now()
 	_ = os.Chtimes(path, now, now)
-	return subtitleAudioReference{Speech: dequantize(data[12 : 12+speech]), Waveform: dequantize(data[12+speech:])}, true
+	return subtitleAudioReference{Speech: dequantize(data[:speech]), Waveform: dequantize(data[speech:])}, true
 }
 
 func (synchronizer *subtitleSynchronizer) saveSpeech(key string, reference subtitleAudioReference) {
@@ -82,10 +90,7 @@ func (synchronizer *subtitleSynchronizer) saveSpeech(key string, reference subti
 	}
 	var encoded bytes.Buffer
 	writer := gzip.NewWriter(&encoded)
-	header := make([]byte, 12)
-	copy(header, subtitleSpeechMagic)
-	binary.LittleEndian.PutUint32(header[4:], uint32(len(reference.Speech)))
-	binary.LittleEndian.PutUint32(header[8:], uint32(len(reference.Waveform)))
+	header := []byte(subtitleSpeechMagic + " " + strconv.Itoa(len(reference.Speech)) + " " + strconv.Itoa(len(reference.Waveform)) + "\n")
 	values := make([]byte, 0, len(reference.Speech)+len(reference.Waveform))
 	for _, value := range append(append([]float64(nil), reference.Speech...), reference.Waveform...) {
 		values = append(values, byte(math.Round(max(0, min(1, value))*255)))

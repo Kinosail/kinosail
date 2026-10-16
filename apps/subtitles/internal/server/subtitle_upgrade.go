@@ -79,13 +79,7 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, nil
 	}
 	if err != nil {
-		observed := subtitleRecord{Source: "external"}
-		if managed {
-			observed = previous
-		}
-		observed.CheckedAt = time.Now().Unix()
-		observed = target.record(current, observed)
-		_ = provider.ledger.store(key, observed)
+		provider.recordUpgradeCheck(target, key, current, previous, managed)
 		return false, err
 	}
 	if err = provider.retainSubtitleOriginal(cleaned.Original, &next); err != nil {
@@ -99,6 +93,15 @@ func (provider *subtitleProvider) upgradeSidecar(ctx context.Context, item libra
 		return false, provider.ledger.store(key, target.record(current, next))
 	}
 	return provider.installSubtitleUpgrade(target, key, current, cleaned.Data, previous, next, managed)
+}
+
+func (provider *subtitleProvider) recordUpgradeCheck(target *subtitleSidecar, key string, current []byte, previous subtitleRecord, managed bool) {
+	observed := subtitleRecord{Source: "external"}
+	if managed {
+		observed = previous
+	}
+	observed.CheckedAt = time.Now().Unix()
+	_ = provider.ledger.store(key, target.record(current, observed))
 }
 
 func (provider *subtitleProvider) sidecarUnchanged(target *subtitleSidecar, key, fingerprint string, previous subtitleRecord, found bool) bool {

@@ -67,7 +67,7 @@ var subtitleParseSamples = []string{
 	"001:00:00,000", "٠٠:٠٠:٠١,٠٠٠", "00:00:01,000\n", "-1:00:00,000", "+1:00:00,000", "1::00:00,000",
 	"Hello there", "  spaced\tline  ", "<i>Italic</i> text", "<v Narrator>Story</v>", "{\\i1}ASS{\\i0} line", "Tom &amp; Jerry",
 	"Café", "plain\x07bell", "a & b", "{not ass}", "<font color=\"red\">Red</font>", "<<>>", "&#39;quoted&#39;",
-	" nbsp ", "​zero width", "MIXED <B>bold</B> & {\\b1}ass{\\b0}",
+	"\u00a0nbsp\u00a0", "\u200bzero width", "MIXED <B>bold</B> & {\\b1}ass{\\b0}",
 }
 
 func TestSubtitleTimestampParserMatchesRegularExpression(t *testing.T) {

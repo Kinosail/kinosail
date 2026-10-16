@@ -7,7 +7,7 @@ import (
 )
 
 func BenchmarkSubtitleSpeechAnalysisTenMinutes(b *testing.B) {
-	pcm := syntheticSpeechPCM(10*time.Minute+30*time.Second, 3)
+	pcm, _ := syntheticSpeechPCM(10*time.Minute+30*time.Second, 3)
 	b.SetBytes(int64(len(pcm)))
 	for b.Loop() {
 		reference, err := processSubtitleAudioReference(bytes.NewReader(pcm))

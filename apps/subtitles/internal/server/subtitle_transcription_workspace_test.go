@@ -30,8 +30,8 @@ printf '%s' '`+transcript+`' > "$output.json"`)
 	if err != nil || !strings.HasPrefix(string(wav), cache+string(filepath.Separator)) {
 		t.Fatalf("audio workspace = %q, %v; want inside %s", wav, err, cache)
 	}
-	if _, err := os.Stat(filepath.Dir(string(wav))); !os.IsNotExist(err) {
-		t.Fatalf("audio workspace remains after transcription: %v", err)
+	if remaining, err := os.ReadDir(cache); err != nil || len(remaining) != 0 {
+		t.Fatalf("audio workspace remains after transcription: %v, %v", remaining, err)
 	}
 	arguments, err := os.ReadFile(whisperLog)
 	threads := strconv.Itoa(min(runtime.GOMAXPROCS(0), 8))

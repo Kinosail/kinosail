@@ -98,17 +98,6 @@ func synchronizeSubtitle(probabilities []float64, subtitle cleanedSubtitle) (cle
 	return aligned, err == nil, err
 }
 
-func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item library.Item, language string) (subtitleAudioReference, error) {
-	if synchronizer.ffmpeg == "" {
-		return subtitleAudioReference{}, errors.New("subtitle synchronization is unavailable")
-	}
-	stream, err := synchronizer.dialogueStream(ctx, item, language)
-	if err != nil {
-		return subtitleAudioReference{}, err
-	}
-	return synchronizer.extractAudio(ctx, item.Path, stream)
-}
-
 func (synchronizer *subtitleSynchronizer) dialogueStream(ctx context.Context, item library.Item, language string) (string, error) {
 	if synchronizer.probe == nil {
 		return "0:a:0", nil
@@ -125,6 +114,9 @@ func (synchronizer *subtitleSynchronizer) dialogueStream(ctx context.Context, it
 }
 
 func (synchronizer *subtitleSynchronizer) extractAudio(ctx context.Context, media, stream string) (subtitleAudioReference, error) {
+	if synchronizer.ffmpeg == "" {
+		return subtitleAudioReference{}, errors.New("subtitle synchronization is unavailable")
+	}
 	ctx, cancel := context.WithTimeout(ctx, 20*time.Minute)
 	defer cancel()
 	command := exec.CommandContext(ctx, synchronizer.ffmpeg, "-v", "error", "-i", media, "-map", stream, "-vn", "-ac", "1", "-ar", "16000", "-t", strconv.Itoa(int(subtitleAudioLimit.Seconds())), "-f", "s16le", "pipe:1") //nolint:gosec // The executable and scanned media path are trusted server configuration.

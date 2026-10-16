@@ -69,7 +69,7 @@ func TestSubtitleLedgerRejectsInvalidStateAndRollsBackFailedWrites(t *testing.T)
 			t.Fatalf("failed history write changed memory: %q, %#v", action, blocked.state)
 		}
 	}
-	if err := newSubtitleLedger("").save(); err != nil {
+	if err := newSubtitleLedger("").saveSummary(); err != nil {
 		t.Fatalf("memory-only subtitle ledger save: %v", err)
 	}
 }
