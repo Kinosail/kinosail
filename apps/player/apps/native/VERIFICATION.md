@@ -1,5 +1,20 @@
 # Swift Apple verification
 
+## Apple TV speed pass — 2026-10-16
+
+This pass changed only native Swift sources, the build script and these notes. It was written in a Linux container without Xcode, so **nothing in this section was compiled, run or measured**. The claims below describe what the code does, not observed timings.
+
+- Apple TV cards now decode posters at 400 pixels on 1080p output and 500 pixels on 4K output, and landscape cards at 800 pixels instead of 1600. The Apple TV decoded-image budget is 64 MiB with 160 entries; iPhone and iPad keep the previous 32 MiB and 96 entries. The retained artwork tests construct `ArtworkLoader()` with those defaults.
+- `ArtworkMemoryIndex` mirrors the loader's decoded cache behind a `Mutex`. `Artwork` reads it synchronously, so a card that scrolls back into view shows its image on the first frame instead of after an actor hop. Prefetch requests now keep the raw artwork path so prefetched images are found by the same lookup.
+- The full-bleed detail and show hero decodes at 1600 pixels on 1080p Apple TVs and still at 4096 pixels on 4K output.
+- The launch cover now waits 120 ms instead of 250 ms before it can fade, and the fade lasts 0.3 s instead of 0.45 s.
+- Top Shelf publishing waits 4 s after the app becomes active, runs at utility priority, requests artwork through the background lane and encodes JPEGs off the main thread. It still clears the snapshot before every rebuild, when sharing is disabled and on sign-out.
+- Playback start no longer waits for the fresh progress baseline before installing the player. `ProgressWriter` receives the baseline request and applies the fresh value before its first write. Player readiness uses `AVPlayerItem.status` observation instead of a 100 ms poll. The show page prepares the featured episode, and Home prepares the focused Continue watching title after 400 ms of settled focus.
+- `ServerClient` allows six connections per host instead of four so catalog requests are not queued behind four artwork fetches on HTTP/1.1.
+- `scripts/build-apple.sh` accepts `KINOSAIL_BUILD_CONFIGURATION=Release`. The Debug default compiles with `-Onone`, which is a large share of Apple TV sluggishness when a Debug build is installed on hardware.
+
+Checks run here: `make max-loc` and `git diff --check` pass. Not run: both simulator builds, the Swift test schemes, the tvOS Remote UI tests, populated simulator or physical Apple TV inspection, and any timing measurement. Run `./scripts/build-apple.sh tvos`, the `Kinosail-tvOS` test scheme and a populated Apple TV 4K and Apple TV HD session before treating this pass as verified.
+
 ## SDK 27 readiness follow-up — 2026-09-19
 
 Toolchain: Xcode 27.0, build 27A266a. Deployment minimums remain iOS/tvOS 26. Source includes authenticated foreground Search library / Play title / Continue watching App Intents, opt-in dynamic Top Shelf, per-Apple-TV-user storage, scoped media navigation and the app-only UserDefaults privacy declaration. The existing native design guidance kept these additions in system navigation and progressive settings rather than adding a new app shell.

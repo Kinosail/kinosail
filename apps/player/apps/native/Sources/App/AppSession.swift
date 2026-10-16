@@ -27,7 +27,7 @@ final class AppSession {
     let remotePlayer = RemotePlayerMonitor()
     #endif
     let casting = CastCoordinator()
-    let artwork = ArtworkLoader()
+    let artwork = ArtworkLoader(memoryBudget: ArtworkLoader.deviceMemoryBudget, entryLimit: ArtworkLoader.deviceEntryLimit)
     let resourceSnapshots = ResourceSnapshotCache()
     private(set) var progress: ProgressSyncStore?
     #if os(iOS)

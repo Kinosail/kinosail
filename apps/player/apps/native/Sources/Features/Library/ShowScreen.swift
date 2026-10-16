@@ -111,6 +111,10 @@ struct ShowScreen: View {
         .foregroundStyle(KinoTheme.text)
         .tvMovieHeroBleed()
         .focusSection()
+        .task(id: "\(session.profileKey ?? ""):\(next?.id ?? "")") {
+            guard let next, let client = session.client else { return }
+            try? await session.player.prepare(next, client: client)
+        }
     }
 
     private func tvSeasons(_ groups: [ShowSeasonSelection.Group], selected: Int) -> some View {

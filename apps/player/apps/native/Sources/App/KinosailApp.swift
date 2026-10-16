@@ -69,7 +69,7 @@ private struct LaunchingAppShell: View {
             .accessibilityHidden(!showingLaunch)
         }
         .task {
-            do { try await Task.sleep(for: .milliseconds(250)) }
+            do { try await Task.sleep(for: .milliseconds(120)) }
             catch { return }
             launchMinimumElapsed = true
         }
@@ -78,7 +78,7 @@ private struct LaunchingAppShell: View {
             if reduceMotion {
                 showingLaunch = false
             } else {
-                withAnimation(.easeOut(duration: 0.45)) { showingLaunch = false }
+                withAnimation(.easeOut(duration: 0.3)) { showingLaunch = false }
             }
         }
     }

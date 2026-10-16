@@ -10,17 +10,23 @@ struct Artwork: View {
     var canvasSize: CGSize? = nil
     @Environment(AppSession.self) private var session
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var image: UIImage?
+    @State private var image: CGImage?
     @State private var imageIdentity = UUID()
     @State private var loadedProfileKey: String?
     @State private var loading = true
     @State private var generation = UUID()
 
+    private var instant: CGImage? {
+        guard image == nil, !path.isEmpty, let client = session.client else { return nil }
+        return session.artwork.cachedImage(path: path, client: client, dimension: dimension)
+    }
+
     var body: some View {
+        let shown = image ?? instant
         canvas
             .overlay {
-                if let image {
-                    Image(uiImage: image).resizable()
+                if let shown {
+                    Image(decorative: shown, scale: 1).resizable()
                         .aspectRatio(contentMode: Self.contentMode(fillsFrame: fillsFrame))
                         .id(imageIdentity).transition(.opacity)
                 }
@@ -33,15 +39,16 @@ struct Artwork: View {
                 generation = attempt
                 if !isBackdrop || loadedProfileKey != session.profileKey || path.isEmpty { image = nil }
                 loadedProfileKey = session.profileKey
-                loading = !path.isEmpty
+                guard !path.isEmpty, let client = session.client else { loading = false; return }
+                if image == nil, let cached = session.artwork.cachedImage(path: path, client: client, dimension: dimension) { image = cached }
+                loading = image == nil
                 defer { if generation == attempt { loading = false } }
-                guard !path.isEmpty, let client = session.client else { return }
                 do {
                     let decoded = try await session.artwork.image(path: path, client: client, dimension: dimension)
                     try Task.checkCancellation()
-                    guard generation == attempt else { return }
+                    guard generation == attempt, decoded !== image else { return }
                     withAnimation(isBackdrop && !reduceMotion ? .easeInOut(duration: 0.45) : nil) {
-                        image = UIImage(cgImage: decoded)
+                        image = decoded
                         imageIdentity = UUID()
                     }
                 } catch {
