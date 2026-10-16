@@ -67,6 +67,57 @@ func TestTwoPlaybacksShareOneGPU(t *testing.T) {
 	}
 }
 
+func TestQueuedGPUEncodesDoNotHoldStreamCopySlots(t *testing.T) {
+	governor := New(4, DeviceSessions(func(string) int { return 2 }))
+	const device = "vaapi:/dev/dri/renderD128"
+	acquireGPU := func(ctx context.Context) (func(), error) { return governor.AcquireEncoding(ctx, Playback, 1, device) }
+	acquireLight := func(ctx context.Context) (func(), error) { return governor.AcquireLight(ctx, Playback) }
+	encoding := []func(){admitted(t, acquireGPU), admitted(t, acquireGPU)}
+	queued, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	failures := make(chan error, 8)
+	for range 8 {
+		go func() {
+			release, err := acquireGPU(queued)
+			if err == nil {
+				release()
+			}
+			failures <- err
+		}()
+	}
+	waitFor(t, func(metrics Metrics) bool { return metrics.WaitingPlayback == 8 }, governor)
+	streams := make([]func(), 0, governor.Metrics().LightCapacity)
+	for range governor.Metrics().LightCapacity - len(encoding) {
+		streams = append(streams, admitted(t, acquireLight))
+	}
+	blocked(t, acquireLight)
+	cancel()
+	for range 8 {
+		if err := <-failures; !errors.Is(err, context.Canceled) {
+			t.Fatalf("queued GPU encode error = %v", err)
+		}
+	}
+	encoding[0]()
+	streams = append(streams, admitted(t, acquireLight))
+	blocked(t, acquireGPU)
+	for _, release := range streams {
+		release()
+	}
+	replacement := admitted(t, acquireGPU)
+	replacement()
+	encoding[1]()
+	if metrics := governor.Metrics(); metrics.ActivePlayback != 0 || metrics.WaitingPlayback != 0 {
+		t.Fatalf("reservations leaked: %#v", metrics)
+	}
+	streams = streams[:0]
+	for range governor.Metrics().LightCapacity {
+		streams = append(streams, admitted(t, acquireLight))
+	}
+	for _, release := range streams {
+		release()
+	}
+}
+
 func TestBackgroundNeverHoldsTheLastPlaybackGPUSlot(t *testing.T) {
 	governor := New(8, DeviceSessions(func(string) int { return 3 }))
 	const device = "/dev/dri/renderD128"
