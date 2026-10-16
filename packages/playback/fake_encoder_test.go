@@ -14,6 +14,10 @@ const writeFakeFrame = "for argument; do last=\"$argument\"; done\nprintf jpeg >
 var fakeEncoderScripts = map[string]string{
 	"frame":      "#!/bin/sh\nfor target do :; done\nprintf frame > \"$target\"\n",
 	"slow-frame": recordFakeEncoderRun + "sleep 0.2\n" + writeFakeFrame,
+	"gated-frame": recordFakeEncoderRun + "while [ ! -e \"$(dirname \"$0\")/release\" ]; do sleep 0.01; done\n" +
+		writeFakeFrame,
+	"empty-frame":  recordFakeEncoderRun + "exit 0\n",
+	"failed-frame": recordFakeEncoderRun + "exit 234\n",
 }
 
 var fakeEncoders string
