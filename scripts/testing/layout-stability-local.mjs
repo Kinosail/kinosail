@@ -170,6 +170,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:390,height:844},path:app==="player"?"/?view=movies":"/?view=library",variant:"slow-css"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}])cases.push({viewport,path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM&&app==="player")cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:320,height:800},path:"/?view=library",variant:"text-200",scale:"200%"});
