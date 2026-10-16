@@ -59,11 +59,15 @@ func TestRepeatedSecurityEventsFromOneSourceAreAggregated(t *testing.T) {
 	clock = clock.Add(61 * time.Second)
 	remote = "203.0.113.9"
 	tracker.Denied(request, "authentication required")
-	latest := tracker.Query("security", 1)[0]
-	if latest.Remote != remote || latest.Details["suppressed"] != "180" {
-		t.Fatalf("summary event = %#v", latest)
+	latest := tracker.Query("security", 3)
+	summaries := map[string]string{}
+	for _, event := range latest[1:] {
+		summaries[event.Remote] = event.Details["suppressed"]
 	}
-	if reloaded := New(t.Context(), Config{DataDir: directory}); !reloaded.Status().Healthy || len(reloaded.Query("security", 1000)) != len(events)+1 {
+	if latest[0].Remote != remote || latest[0].Details["suppressed"] != "" || summaries["203.0.113.9"] != "180" || summaries["2001:db8:1:2::32"] != "30" {
+		t.Fatalf("summary events = %#v", latest)
+	}
+	if reloaded := New(t.Context(), Config{DataDir: directory}); !reloaded.Status().Healthy || len(reloaded.Query("security", 1000)) != len(events)+3 {
 		t.Fatalf("reloaded aggregated journal = %#v", reloaded.Status())
 	}
 }

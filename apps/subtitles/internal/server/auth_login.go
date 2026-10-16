@@ -81,9 +81,8 @@ func (auth *authentication) allowLogin(remote string) bool {
 }
 
 func (auth *authentication) allowCredentialLogin(remote, name string) bool {
-	ip := auth.logins.Allow("ip:"+httpguard.RemoteHost(remote), 30)
-	account := auth.logins.Allow("account:"+strings.ToLower(strings.TrimSpace(name)), 10)
-	return ip && account
+	return auth.logins.Allow("ip:"+httpguard.RemoteHost(remote), 30) &&
+		auth.logins.Allow("account:"+strings.ToLower(strings.TrimSpace(name)), 10)
 }
 
 func (auth *authentication) credentialLoginSucceeded(name string) {

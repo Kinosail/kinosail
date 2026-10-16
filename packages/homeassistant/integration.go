@@ -8,14 +8,18 @@ import (
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 const (
-	pairingTTL time.Duration = 600_000_000_000
-	playerTTL  time.Duration = 30_000_000_000
-	mediaTTL   time.Duration = 300_000_000_000
-	maxPairs                 = 32
-	maxPlayers               = 64
+	pairingTTL      time.Duration = 600_000_000_000
+	playerTTL       time.Duration = 30_000_000_000
+	mediaTTL        time.Duration = 300_000_000_000
+	maxPairs                      = 32
+	maxPairAttempts               = 10
+	maxPairFailures               = 100
+	maxPlayers                    = 64
 )
 
 type Profile[P any] struct {
@@ -63,6 +67,7 @@ type Integration[P any] struct {
 	mu        sync.Mutex
 	config    Config[P]
 	pairs     map[string]pairing[P]
+	attempts  httpguard.Limiter
 	players   map[string]playerRecord
 	requests  map[string]authorization
 	codes     map[string]authorization

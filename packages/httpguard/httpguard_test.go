@@ -1,13 +1,16 @@
 package httpguard
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestDecodeJSONAcceptsOneBoundedDocument(t *testing.T) {
@@ -192,10 +195,13 @@ type errorReader struct{}
 
 func (errorReader) Read([]byte) (int, error) { return 0, errors.New("read failed") }
 
-func TestLimiterAdmitsNewClientsWhenItsTableIsFull(t *testing.T) {
-	t.Parallel()
+func TestLimiterRefusesNewClientsUntilAWindowExpires(t *testing.T) {
+	var logs bytes.Buffer
+	logger := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+	t.Cleanup(func() { slog.SetDefault(logger) })
 	var limiter Limiter
-	if !limiter.Allow("ip:203.0.113.1", 1) || limiter.Allow("ip:203.0.113.1", 1) {
+	if !limiter.Allow("account:owner", 1) || limiter.Allow("account:owner", 1) {
 		t.Fatal("active client was not limited")
 	}
 	for client := range trackedClientLimit - 1 {
@@ -203,19 +209,30 @@ func TestLimiterAdmitsNewClientsWhenItsTableIsFull(t *testing.T) {
 			t.Fatal("limiter rejected a client before its state bound")
 		}
 	}
-	if limiter.Allow("ip:203.0.113.1", 1) {
-		t.Fatal("limited client was released by a full table")
-	}
 	for client := range 3 {
-		if !limiter.Allow("new-client-"+strconv.Itoa(client), 1) {
-			t.Fatal("full table refused a new client")
+		if limiter.Allow("new-client-"+strconv.Itoa(client), 1) {
+			t.Fatal("full table admitted a new client")
 		}
 	}
-	if limiter.TrackedClients() != trackedClientLimit || limiter.Allow("ip:203.0.113.1", 1) {
-		t.Fatalf("tracked clients = %d; recently limited client evicted first", limiter.TrackedClients())
+	if limiter.TrackedClients() != trackedClientLimit || limiter.Allow("account:owner", 1) {
+		t.Fatalf("tracked clients = %d; limited client released by new clients", limiter.TrackedClients())
 	}
-	limiter.Reset("ip:203.0.113.1")
-	if !limiter.Allow("ip:203.0.113.1", 1) || limiter.TrackedClients() != trackedClientLimit {
+	if lines := strings.Count(logs.String(), "\n"); lines != 1 || !strings.Contains(logs.String(), `"level":"WARN"`) || !strings.Contains(logs.String(), `"outcome":"table_full","tracked":4096`) || strings.Contains(logs.String(), "new-client") {
+		t.Fatalf("full-table log = %q", logs.String())
+	}
+	limiter.mu.Lock()
+	for _, element := range limiter.windows {
+		element.Value.(*window).reset = time.Now().Add(-time.Second)
+	}
+	limiter.mu.Unlock()
+	if !limiter.Allow("new-client-0", 1) || limiter.TrackedClients() != 1 || limiter.Allow("new-client-0", 1) {
+		t.Fatalf("expired windows were not reclaimed: tracked = %d", limiter.TrackedClients())
+	}
+	if !limiter.Allow("account:owner", 1) || limiter.Allow("account:owner", 1) {
+		t.Fatal("expired window did not restart its limit")
+	}
+	limiter.Reset("account:owner")
+	if !limiter.Allow("account:owner", 1) || limiter.TrackedClients() != 2 {
 		t.Fatalf("reset client = %d tracked", limiter.TrackedClients())
 	}
 }
