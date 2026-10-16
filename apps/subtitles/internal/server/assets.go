@@ -67,11 +67,7 @@ func serveOffline(writer http.ResponseWriter, request *http.Request) {
 }
 
 func serveScript(content []byte) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", "text/javascript; charset=utf-8")
-		cacheStatic(writer, request)
-		_, _ = writer.Write(content)
-	}
+	return webassets.Static(content, "text/javascript; charset=utf-8")
 }
 
 var (
@@ -102,24 +98,12 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write(serviceWorker)
 }
 
-func serveStyle(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "text/css; charset=utf-8")
-	cacheStatic(writer, request)
-	_, _ = writer.Write(applicationStyle)
-}
+var serveStyle = webassets.Static(applicationStyle, "text/css; charset=utf-8")
 
-func serveSupporterStyle(writer http.ResponseWriter, request *http.Request) {
-	writer.Header().Set("Content-Type", "text/css; charset=utf-8")
-	cacheStatic(writer, request)
-	_, _ = writer.Write(supporterCSS)
-}
+var serveSupporterStyle = webassets.Static(supporterCSS, "text/css; charset=utf-8")
 
 func serveAsset(content []byte, contentType string) http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", contentType)
-		cacheStatic(writer, request)
-		_, _ = writer.Write(content)
-	}
+	return webassets.Static(content, contentType)
 }
 
 var supporterBadgeFile = regexp.MustCompile(`^(living-standard|patron-order)-(?:[1-9]|10)\.svg$`)
@@ -136,12 +120,4 @@ func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	serveAsset(content, "image/svg+xml")(writer, request)
-}
-
-func cacheStatic(writer http.ResponseWriter, request *http.Request) {
-	value := "public, max-age=86400"
-	if request.URL.Query().Get("v") != "" {
-		value = "public, max-age=31536000, immutable"
-	}
-	writer.Header().Set("Cache-Control", value)
 }

@@ -1,6 +1,7 @@
 package appcli
 
 import (
+	"context"
 	"errors"
 	"io/fs"
 	"log/slog"
@@ -79,7 +80,7 @@ func listenPrivateSocket(socket string) (net.Listener, error) {
 			return nil, err
 		}
 	}
-	listener, err := net.Listen("unix", socket)
+	listener, err := (&net.ListenConfig{}).Listen(context.Background(), "unix", socket)
 	if err != nil {
 		return nil, err
 	}

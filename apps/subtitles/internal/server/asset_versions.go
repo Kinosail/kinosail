@@ -5,13 +5,19 @@ import (
 	"encoding/hex"
 	"regexp"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/webassets"
 )
 
 var assetVersions = contentVersions(map[string][]byte{
 	"app.css": applicationStyle, "theme.js": themeJS, "main.kinosail.bundle.js": mainBundle, "supporter.js": supporterJS,
+	"htmx.min.js": htmx, "pwa.js": pwaJS, "subtitle-inspector.js": subtitleInspectorJS, "subtitle-inspector.css": subtitleInspectorCSS,
+	"subtitle-status.js": subtitleStatusJS, "supporter.css": supporterCSS, "passkeys.js": passkeysJS, "manrope.woff2": webassets.Manrope,
+	"icon.svg": icon, "tmdb-logo.svg": tmdbLogo, "icon-192.png": icon192, "icon-512.png": icon512,
+	"icon-maskable-512.png": iconMaskable512, "apple-touch-icon.png": appleTouchIcon, "cinema-backdrop.jpg": cinemaBackdrop,
 })
 
-var versionedAssetReference = regexp.MustCompile(`/static/(app\.css|theme\.js|main\.kinosail\.bundle\.js|supporter\.js)(\?v=[^"'\s>]*)?`)
+var versionedAssetReference = regexp.MustCompile(`/static/([A-Za-z0-9._-]+)(\?v=[^"'\s>]*)?`)
 
 func contentVersions(assets map[string][]byte) map[string]string {
 	versions := make(map[string]string, len(assets))
@@ -31,6 +37,9 @@ func versionAssetReferences(source string) string {
 		name := strings.TrimPrefix(reference, "/static/")
 		if cut := strings.IndexByte(name, '?'); cut >= 0 {
 			name = name[:cut]
+		}
+		if _, known := assetVersions[name]; !known {
+			return reference
 		}
 		return assetURL(name)
 	})

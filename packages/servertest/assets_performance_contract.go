@@ -79,9 +79,13 @@ func (fixture AssetsFixture) VersionedStaticAssetsUseImmutableCaching(t *testing
 	t.Helper()
 	t.Parallel()
 	handler := fixture.NewHandler("", "", false)
+	plain := httptest.NewRecorder()
+	handler.ServeHTTP(plain, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/player.js", nil))
+	current := fmt.Sprintf("/static/player.js?v=%x", sha256.Sum256(plain.Body.Bytes()))
 	for target, expected := range map[string]string{
 		"/static/player.js":      "public, max-age=86400",
-		"/static/player.js?v=32": "public, max-age=31536000, immutable",
+		"/static/player.js?v=32": "public, max-age=86400",
+		current:                  "public, max-age=31536000, immutable",
 	} {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, target, nil))

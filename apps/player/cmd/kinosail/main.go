@@ -11,6 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail-player/internal/server"
 	"github.com/MikeO7/kinosail/packages/appcli"
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/servertransport"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
@@ -60,7 +61,7 @@ func run(configured configuration.Snapshot) int {
 
 func newConfiguredHTTPServerWithAccess(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) *http.Server {
 	handler := server.New(configuredServerConfig(ctx, configured, internet, trusted)) //nolint:contextcheck // Durable state commits intentionally finish independently of request cancellation.
-	return servertransport.NewServer(configured.String("listen"), handler)
+	return servertransport.NewServer(configured.String("listen"), httpcompress.Handler(handler))
 }
 
 func configuredServerConfig(ctx context.Context, configured configuration.Snapshot, internet *remoteaccess.Manager, trusted *trustedhttps.Manager) server.Config {

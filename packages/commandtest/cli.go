@@ -45,6 +45,7 @@ func (cli CLI) Run(t *testing.T) {
 	t.Run("TestRemoteAccessRequiresStrongProxyCapability", func(t *testing.T) { ProxyCapability(t, cli.SecureProxy) })
 	t.Run("TestHTTPServerBoundsSlowClientsWithoutTimingOutStreams", func(t *testing.T) { HTTPBounds(t, cli.HTTPServer, cli.Listen) })
 	t.Run("TestHTTPTransportLogsRedactClientAddress", func(t *testing.T) { HTTPLogPrivacy(t, cli.HTTPServer) })
+	t.Run("TestHTTPServerCompressesOnlySameOriginText", func(t *testing.T) { HTTPCompression(t, cli.HTTPServer) })
 	t.Run("TestCommandLineEntrypointReportsVersionAndErrors", Entrypoint)
 	t.Run("TestCommandLineServerReportsListenFailure", ListenFailure)
 }

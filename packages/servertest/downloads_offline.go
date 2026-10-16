@@ -36,7 +36,8 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 		t.Fatalf("start = %d %q", started.Code, started.Body.String())
 	}
 	pending := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", owner)
-	AssertAPIBody(t, pending, http.StatusOK, `data-downloads-pending="true"`, fixture.DownloadsScript, `"includeIndicatorCSS":false`, `role="status"`, `<progress`, `Preparing Film for offline use`)
+	script := CurrentAssetURL(t, handler, fixture.DownloadsScript)
+	AssertAPIBody(t, pending, http.StatusOK, `data-downloads-pending="true"`, script, `"includeIndicatorCSS":false`, `role="status"`, `<progress`, `Preparing Film for offline use`)
 	if strings.Contains(pending.Body.String(), `http-equiv="refresh"`) {
 		t.Fatalf("downloads page uses a timed full-page refresh: %q", pending.Body.String())
 	}
@@ -68,7 +69,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	page := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", owner)
 	AssertAPIBody(t, page, http.StatusOK, "Film", "Ready to download", "Downloads on this device", "Play offline", `data-download-play`, "File verified on the Server", "15 bytes", "720p", `data-viewer-profile="`+job.ProfileID+`"`)
 	player := fixture.CookieRequest(t, handler, http.MethodGet, "/watch/"+catalog.Items[0].ID, "", owner)
-	AssertAPIBody(t, player, http.StatusOK, `data-viewer-profile="`+job.ProfileID+`"`, fixture.DownloadsScript)
+	AssertAPIBody(t, player, http.StatusOK, `data-viewer-profile="`+job.ProfileID+`"`, script)
 	if strings.Contains(page.Body.String(), `data-downloads-pending="true"`) {
 		t.Fatalf("completed downloads page remains pending: %q", page.Body.String())
 	}

@@ -2,6 +2,8 @@ package server_test
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,9 +16,12 @@ import (
 func TestVersionedStaticAssetsUseImmutableCaching(t *testing.T) {
 	t.Parallel()
 	handler := server.New(server.Config{})
+	plain := httptest.NewRecorder()
+	handler.ServeHTTP(plain, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/theme.js", nil))
 	for target, expected := range map[string]string{
 		"/static/theme.js":      "public, max-age=86400",
-		"/static/theme.js?v=32": "public, max-age=31536000, immutable",
+		"/static/theme.js?v=32": "public, max-age=86400",
+		fmt.Sprintf("/static/theme.js?v=%x", sha256.Sum256(plain.Body.Bytes())): "public, max-age=31536000, immutable",
 	} {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, target, nil))
@@ -43,7 +48,7 @@ func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 	want := append(append(append(append([]byte(nil), webassets.SubtitlesCSS...), webassets.LastLightCSS...), supporter...), append(dashboard, workspace...)...)
 	response := httptest.NewRecorder()
 	assetContracts.NewHandler("", "", false).ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css?v=impeccable-1", nil))
-	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" || !bytes.Equal(response.Body.Bytes(), want) {
+	if response.Code != http.StatusOK || response.Header().Get("Cache-Control") != "public, max-age=86400" || !bytes.Equal(response.Body.Bytes(), want) {
 		t.Fatalf("versioned application stylesheet = status %d, cache %q, bytes %d; want bytes %d", response.Code, response.Header().Get("Cache-Control"), response.Body.Len(), len(want))
 	}
 }

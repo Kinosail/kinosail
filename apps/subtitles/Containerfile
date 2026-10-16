@@ -9,7 +9,7 @@ COPY apps/subtitles/internal ./apps/subtitles/internal
 ARG VERSION=dev
 ARG TARGETOS
 ARG TARGETARCH
-RUN cd apps/subtitles && CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
+RUN --mount=type=cache,target=/root/.cache/go-build cd apps/subtitles && GOCACHE=/root/.cache/go-build CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v2 GOARM64=v8.0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
 
 FROM docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS whisper
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates cmake g++ make wget \

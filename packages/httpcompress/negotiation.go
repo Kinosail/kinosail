@@ -1,8 +1,6 @@
-package server
+package httpcompress
 
 import (
-	"bytes"
-	"compress/gzip"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -13,47 +11,7 @@ var encodingQuality = regexp.MustCompile(`^(0(\.[0-9]{0,3})?|1(\.0{0,3})?)$`)
 
 var contentCoding = regexp.MustCompile("^[!#$%&'*+.^_`|~0-9a-z-]+$")
 
-func compressedAsset(content []byte, contentType string) http.HandlerFunc {
-	compressed := gzipAsset(content, contentType)
-	return func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", contentType)
-		cacheStatic(writer, request)
-		payload := content
-		if len(compressed) != 0 {
-			writer.Header().Add("Vary", "Accept-Encoding")
-			gzipAccepted, status := assetEncoding(request.Header.Values("Accept-Encoding"))
-			if status != 0 {
-				writer.Header().Set("Cache-Control", "no-store")
-				writer.Header().Set("Content-Length", "0")
-				writer.WriteHeader(status)
-				return
-			}
-			if gzipAccepted {
-				writer.Header().Set("Content-Encoding", "gzip")
-				payload = compressed
-			}
-		}
-		writer.Header().Set("Content-Length", strconv.Itoa(len(payload)))
-		if request.Method != http.MethodHead {
-			_, _ = writer.Write(payload)
-		}
-	}
-}
-
-func gzipAsset(content []byte, contentType string) []byte {
-	var compressed []byte
-	if len(content) >= 1024 && (strings.HasPrefix(contentType, "text/") || contentType == "image/svg+xml" || contentType == "application/manifest+json") {
-		var output bytes.Buffer
-		encoder := gzip.NewWriter(&output)
-		_, writeErr := encoder.Write(content)
-		if closeErr := encoder.Close(); writeErr == nil && closeErr == nil && output.Len() < len(content) {
-			compressed = output.Bytes()
-		}
-	}
-	return compressed
-}
-
-func assetEncoding(headers []string) (bool, int) {
+func Negotiate(headers []string) (bool, int) {
 	weights, valid := encodingWeights(headers)
 	if !valid {
 		return false, http.StatusBadRequest
