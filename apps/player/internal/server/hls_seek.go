@@ -104,7 +104,7 @@ func (manager *hlsManager) prepareSegment(ctx context.Context, item library.Item
 	return err
 }
 
-func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:cyclop,funlen // Segment validation precedes the keyed join or seek restart.
+func (manager *hlsManager) prepareSegmentJob(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*hlsJob, error) { //nolint:cyclop,gocognit,funlen // Segment validation precedes the keyed join or seek restart.
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}

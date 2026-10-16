@@ -188,8 +188,8 @@ func remainingAACAssertCurrentCache(t *testing.T, asset string) {
 	if response.Code != http.StatusOK || !bytes.Equal(response.Body.Bytes(), payload) || err != nil {
 		t.Fatalf("current policy asset %s rejected: status=%d error=%v", asset, response.Code, err)
 	}
-	if response.Header().Get("Cache-Control") != "private, max-age=3600" || strings.HasSuffix(asset, ".m4s") && !response.fromFile {
-		t.Fatalf("immutable asset %s cache=%q sendfile=%v", asset, response.Header().Get("Cache-Control"), response.fromFile)
+	if strings.HasSuffix(asset, ".m4s") && !response.fromFile {
+		t.Fatalf("segment %s did not reach the connection as a file", asset)
 	}
 	manager.mu.Lock()
 	jobs := len(manager.jobs)

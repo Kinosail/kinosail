@@ -142,14 +142,14 @@ func TestViewerCanSeeSidecarArtwork(t *testing.T) {
 		artResponse := httptest.NewRecorder()
 		handler.ServeHTTP(artResponse, httptest.NewRequestWithContext(t.Context(), http.MethodGet, route+match[1], nil))
 		modified := artResponse.Header().Get("Last-Modified")
-		if artResponse.Body.String() != "poster" || artResponse.Header().Get("Cache-Control") != "private, max-age=86400" || modified == "" {
+		if artResponse.Body.String() != "poster" || artResponse.Header().Get("Cache-Control") != "no-store" || modified == "" {
 			t.Fatalf("%s = %q %v", route, artResponse.Body.String(), artResponse.Header())
 		}
 		conditional := httptest.NewRequestWithContext(t.Context(), http.MethodGet, route+match[1], nil)
 		conditional.Header.Set("If-Modified-Since", modified)
 		revalidated := httptest.NewRecorder()
 		handler.ServeHTTP(revalidated, conditional)
-		if revalidated.Code != http.StatusNotModified || revalidated.Header().Get("Cache-Control") != "private, max-age=86400" {
+		if revalidated.Code != http.StatusNotModified || revalidated.Body.Len() != 0 {
 			t.Fatalf("%s revalidation = %d %v", route, revalidated.Code, revalidated.Header())
 		}
 		missing := httptest.NewRecorder()

@@ -25,7 +25,6 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		return
 	}
 	if filepath.Ext(localName) == ".m4s" || filepath.Base(localName) == "init.mp4" {
-		writer = playback.CacheSuccessfulResponses(writer, playback.HLSMediaCacheControl)
 		if err := manager.remainingAACCacheAsset(request.Context(), item, recipe, localName); err != nil {
 			slog.WarnContext(request.Context(), "HLS cache asset rejected", "diagnostic", "[PLAYBACK-HLS]", "request_id", requestActivityID(request.Context()), "playback_session", requestPlaybackSession(request.Context()), "mode", recipe.mode, "error", hlsDiagnostic(err, item.Path))
 			localizedNotFound(writer, request)
