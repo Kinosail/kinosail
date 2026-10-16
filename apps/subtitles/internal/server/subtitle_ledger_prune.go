@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -45,29 +46,26 @@ func (ledger *subtitleLedger) forgetMissing(items []library.Item, now time.Time)
 	ledger.missing = absent
 	records, removedRecords := withoutSubtitleItems(ledger.state.Records, expired)
 	searches, removedSearches := withoutSubtitleItems(ledger.state.Searches, expired)
-	if removedRecords > 0 {
-		if ledger.persist(subtitleLedgerRecordsDocument, "", records) != nil {
-			return
-		}
-		ledger.state.Records = records
+	changes := make(map[string]database.EntryChanges, 2)
+	if len(removedRecords) > 0 {
+		changes[subtitleLedgerRecordsDocument] = database.EntryChanges{Delete: removedRecords}
 	}
-	if removedSearches > 0 {
-		if ledger.persist(subtitleLedgerSearchesDocument, "", searches) != nil {
-			return
-		}
-		ledger.state.Searches = searches
+	if len(removedSearches) > 0 {
+		changes[subtitleLedgerSearchesDocument] = database.EntryChanges{Delete: removedSearches}
 	}
-	if removedRecords+removedSearches > 0 {
-		slog.Info("subtitle acquisition state pruned", "records", removedRecords, "searches", removedSearches)
+	if len(changes) == 0 || ledger.commit(subtitleLedgerRecordsDocument, database.Batch{Entries: changes}) != nil {
+		return
 	}
+	ledger.state.Records, ledger.state.Searches = records, searches
+	slog.Info("subtitle acquisition state pruned", "records", len(removedRecords), "searches", len(removedSearches))
 }
 
-func withoutSubtitleItems[T any](entries map[string]T, expired map[string]bool) (map[string]T, int) {
-	kept, removed := make(map[string]T, len(entries)), 0
+func withoutSubtitleItems[T any](entries map[string]T, expired map[string]bool) (map[string]T, []string) {
+	kept, removed := make(map[string]T, len(entries)), make([]string, 0)
 	for key, value := range entries {
 		itemID, _, _ := strings.Cut(key, ":")
 		if expired[itemID] {
-			removed++
+			removed = append(removed, key)
 			continue
 		}
 		kept[key] = value

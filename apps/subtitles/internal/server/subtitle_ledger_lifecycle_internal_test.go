@@ -1,7 +1,9 @@
 package server
 
 import (
+	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -110,5 +112,37 @@ func TestSubtitleLedgerValidatesStrictCalendarDays(t *testing.T) {
 		if got := validSubtitleDay(value); got != valid {
 			t.Fatalf("day %q validity = %v", value, got)
 		}
+	}
+}
+
+func TestSubtitleLedgerIgnoresLegacyFileThatSurvivedMigration(t *testing.T) {
+	t.Parallel()
+	directory, now := t.TempDir(), time.Now()
+	key, added := subtitleRecordKey("0000000000000001", "en"), subtitleRecordKey("0000000000000002", "en")
+	state := emptySubtitleLedgerState()
+	state.Records[key] = largeLibraryRecord("0000000000000001", now)
+	encoded, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy := filepath.Join(directory, subtitleLedgerLegacyFile)
+	if err := os.WriteFile(legacy, encoded, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	migrated := openTestSubtitleLedger(t, directory)
+	changed := migrated.state.Records[key]
+	changed.Frozen, changed.Score = true, 70
+	if migrated.err != nil || migrated.store(key, changed) != nil || migrated.store(added, largeLibraryRecord("0000000000000002", now)) != nil {
+		t.Fatalf("migrated ledger rejected writes: %v", migrated.err)
+	}
+	if err := os.WriteFile(legacy, encoded, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	reloaded := openTestSubtitleLedger(t, directory)
+	if record := reloaded.state.Records[key]; reloaded.err != nil || !record.Frozen || record.Score != 70 || len(reloaded.state.Records) != 2 {
+		t.Fatalf("stale legacy file replaced newer state: %#v, %d records, %v", record, len(reloaded.state.Records), reloaded.err)
+	}
+	if _, err := os.Lstat(legacy); !os.IsNotExist(err) {
+		t.Fatalf("stale legacy ledger remains after restart: %v", err)
 	}
 }

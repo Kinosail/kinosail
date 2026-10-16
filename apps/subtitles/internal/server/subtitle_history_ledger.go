@@ -75,7 +75,7 @@ func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, ac
 	if len(ledger.state.History) > subtitleHistoryLimit {
 		ledger.state.History = ledger.state.History[1:]
 	}
-	if err := ledger.saveHistoryRecord(key, record, before); err != nil {
+	if err := ledger.saveHistoryRecord(key, record); err != nil {
 		if found {
 			ledger.state.Records[key] = previous
 		} else {

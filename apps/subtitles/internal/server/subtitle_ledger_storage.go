@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -40,25 +41,23 @@ func (ledger *subtitleLedger) open() error {
 			return errSubtitleLedgerUnavailable
 		}
 	}
-	state, legacy, err := readLegacySubtitleLedger(ledger.path)
-	if err != nil {
-		return err
-	}
-	if legacy {
-		return ledger.migrate(state, true)
-	}
 	var summary subtitleLedgerSummary
-	found, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerDocument, &summary)
+	found, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerDocument, database.DocumentSizeLimit, &summary)
 	if err != nil {
 		return err
 	}
 	if !found {
-		return ledger.migrate(state, false)
+		state, legacy, err := readLegacySubtitleLedger(ledger.path)
+		if err != nil {
+			return err
+		}
+		return ledger.migrate(state, legacy)
 	}
-	if _, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerRecordsDocument, &state.Records); err != nil {
+	state := emptySubtitleLedgerState()
+	if _, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerRecordsDocument, database.EntryDocumentSizeLimit, &state.Records); err != nil {
 		return err
 	}
-	if _, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerSearchesDocument, &state.Searches); err != nil {
+	if _, err := loadSubtitleLedgerDocument(ledger.db, subtitleLedgerSearchesDocument, database.EntryDocumentSizeLimit, &state.Searches); err != nil {
 		return err
 	}
 	state.Version, state.History, state.SubDLDay, state.SubDLDownloads = summary.Version, summary.History, summary.SubDLDay, summary.SubDLDownloads
@@ -66,10 +65,11 @@ func (ledger *subtitleLedger) open() error {
 		return errSubtitleLedgerInvalid
 	}
 	ledger.state = normalizeSubtitleLedgerState(state)
+	ledger.removeLegacyFile()
 	return nil
 }
 
-func loadSubtitleLedgerDocument(store *database.Store, name string, target any) (bool, error) {
+func loadSubtitleLedgerDocument(store *database.Store, name string, limit int64, target any) (bool, error) {
 	data, found, err := store.Load(name)
 	if err != nil {
 		return false, errSubtitleLedgerInvalid
@@ -77,14 +77,14 @@ func loadSubtitleLedgerDocument(store *database.Store, name string, target any) 
 	if !found {
 		return false, nil
 	}
-	if decodeSubtitleLedger(bytes.NewReader(data), target) != nil {
+	if decodeSubtitleLedger(bytes.NewReader(data), limit, target) != nil {
 		return false, errSubtitleLedgerInvalid
 	}
 	return true, nil
 }
 
-func decodeSubtitleLedger(reader io.Reader, target any) error {
-	decoder := json.NewDecoder(io.LimitReader(reader, database.DocumentSizeLimit+1))
+func decodeSubtitleLedger(reader io.Reader, limit int64, target any) error {
+	decoder := json.NewDecoder(io.LimitReader(reader, limit+1))
 	decoder.DisallowUnknownFields()
 	if decoder.Decode(target) != nil || decoder.Decode(&struct{}{}) != io.EOF {
 		return errSubtitleLedgerInvalid
@@ -93,7 +93,8 @@ func decodeSubtitleLedger(reader io.Reader, target any) error {
 }
 
 func (ledger *subtitleLedger) migrate(state subtitleLedgerState, legacy bool) error {
-	if ledger.db.SaveJSON(subtitleLedgerRecordsDocument, state.Records) != nil || ledger.db.SaveJSON(subtitleLedgerSearchesDocument, state.Searches) != nil || ledger.db.SaveJSON(subtitleLedgerDocument, summarizeSubtitleLedger(state)) != nil {
+	documents := map[string]any{subtitleLedgerRecordsDocument: state.Records, subtitleLedgerSearchesDocument: state.Searches, subtitleLedgerDocument: summarizeSubtitleLedger(state)}
+	if ledger.db.Commit(context.Background(), database.Batch{Documents: documents, Durable: true}) != nil {
 		return errSubtitleLedgerUnavailable
 	}
 	ledger.state = state
@@ -118,7 +119,7 @@ func readLegacySubtitleLedger(path string) (subtitleLedgerState, bool, error) {
 	}
 	defer file.Close()
 	var state subtitleLedgerState
-	if decodeSubtitleLedger(file, &state) != nil || !validSubtitleLedgerState(state) {
+	if decodeSubtitleLedger(file, database.DocumentSizeLimit, &state) != nil || !validSubtitleLedgerState(state) {
 		return subtitleLedgerState{}, false, errSubtitleLedgerInvalid
 	}
 	return normalizeSubtitleLedgerState(migrateSubtitleHistory(state)), true, nil
@@ -146,16 +147,17 @@ func (ledger *subtitleLedger) removeLegacyFile() {
 }
 
 func (ledger *subtitleLedger) persist(name, key string, value any) error {
+	if key == "" {
+		return ledger.commit(name, database.Batch{Documents: map[string]any{name: value}})
+	}
+	return ledger.commit(name, database.Batch{Entries: map[string]database.EntryChanges{name: {Set: map[string]any{key: value}}}})
+}
+
+func (ledger *subtitleLedger) commit(name string, batch database.Batch) error {
 	if ledger.db == nil {
 		return nil
 	}
-	var err error
-	if key == "" {
-		err = ledger.db.SaveJSON(name, value)
-	} else {
-		err = ledger.db.SaveEntry(name, key, value)
-	}
-	if err != nil {
+	if err := ledger.db.Commit(context.Background(), batch); err != nil {
 		slog.Warn("subtitle acquisition state write failed", "document", name, "error", err)
 		return errSubtitleLedgerUnavailable
 	}
@@ -166,16 +168,9 @@ func (ledger *subtitleLedger) saveSummary() error {
 	return ledger.persist(subtitleLedgerDocument, "", summarizeSubtitleLedger(ledger.state))
 }
 
-func (ledger *subtitleLedger) saveHistoryRecord(key string, record subtitleRecord, before []subtitleHistoryEvent) error {
-	if err := ledger.saveSummary(); err != nil {
-		return err
-	}
-	if err := ledger.persist(subtitleLedgerRecordsDocument, key, record); err != nil {
-		after := ledger.state.History
-		ledger.state.History = before
-		_ = ledger.saveSummary()
-		ledger.state.History = after
-		return err
-	}
-	return nil
+func (ledger *subtitleLedger) saveHistoryRecord(key string, record subtitleRecord) error {
+	return ledger.commit(subtitleLedgerDocument, database.Batch{
+		Documents: map[string]any{subtitleLedgerDocument: summarizeSubtitleLedger(ledger.state)},
+		Entries:   map[string]database.EntryChanges{subtitleLedgerRecordsDocument: {Set: map[string]any{key: record}}},
+	})
 }
