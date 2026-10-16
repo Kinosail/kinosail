@@ -1,19 +1,14 @@
 package server
 
 import (
-	"bufio"
 	"context"
-	"encoding/binary"
 	"errors"
-	"io"
-	"math"
 	"os/exec"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
-
-	"github.com/zserge/govad"
 )
 
 const (
@@ -30,8 +25,11 @@ var subtitleTimeScales = []float64{1, 25.0 / 23.976, 23.976 / 25.0}
 type subtitleSynchronizer struct {
 	ffmpeg    string
 	probe     *mediaProbe
-	analysis  chan struct{}
+	slots     chan struct{}
+	mu        sync.Mutex
+	calls     map[string]*subtitleSpeechCall
 	cache     []subtitleSpeechCacheEntry
+	cacheDir  string
 	admission *subtitleAdmission
 }
 
@@ -47,7 +45,7 @@ type subtitleAlignmentAnchor struct {
 }
 
 func newSubtitleSynchronizer(ffmpeg string) *subtitleSynchronizer {
-	return &subtitleSynchronizer{ffmpeg: ffmpeg, analysis: make(chan struct{}, 1)}
+	return &subtitleSynchronizer{ffmpeg: ffmpeg, slots: make(chan struct{}, subtitleWorkerCount())}
 }
 
 func synchronizeSubtitle(probabilities []float64, subtitle cleanedSubtitle) (cleanedSubtitle, bool, error) {
@@ -100,22 +98,24 @@ func synchronizeSubtitle(probabilities []float64, subtitle cleanedSubtitle) (cle
 	return aligned, err == nil, err
 }
 
-func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item library.Item, language string) (subtitleAudioReference, error) {
-	media := item.Path
+func (synchronizer *subtitleSynchronizer) dialogueStream(ctx context.Context, item library.Item, language string) (string, error) {
+	if synchronizer.probe == nil {
+		return "0:a:0", nil
+	}
+	facts := synchronizer.probe.facts(ctx, item)
+	if facts.Duration > subtitleAudioLimit.Seconds() {
+		return "", errors.New("video exceeds synchronization limit")
+	}
+	selected, found := subtitleDialogueTrack(facts.AudioFacts, language)
+	if !found {
+		return "", errors.New("main dialogue audio is unavailable")
+	}
+	return "0:" + strconv.Itoa(selected), nil
+}
+
+func (synchronizer *subtitleSynchronizer) extractAudio(ctx context.Context, media, stream string) (subtitleAudioReference, error) {
 	if synchronizer.ffmpeg == "" {
 		return subtitleAudioReference{}, errors.New("subtitle synchronization is unavailable")
-	}
-	stream := "0:a:0"
-	if synchronizer.probe != nil {
-		facts := synchronizer.probe.facts(ctx, item)
-		if facts.Duration > subtitleAudioLimit.Seconds() {
-			return subtitleAudioReference{}, errors.New("video exceeds synchronization limit")
-		}
-		selected, found := subtitleDialogueTrack(facts.AudioFacts, language)
-		if !found {
-			return subtitleAudioReference{}, errors.New("main dialogue audio is unavailable")
-		}
-		stream = "0:" + strconv.Itoa(selected)
 	}
 	ctx, cancel := context.WithTimeout(ctx, 20*time.Minute)
 	defer cancel()
@@ -127,7 +127,7 @@ func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item
 	if err = command.Start(); err != nil {
 		return subtitleAudioReference{}, errors.New("audio analysis failed")
 	}
-	reference, readErr := processSubtitleAudioReference(stdout)
+	reference, readErr := processSubtitleAudio(stdout, subtitleWorkerCount(), synchronizer.slots)
 	if readErr != nil {
 		cancel()
 	}
@@ -141,43 +141,4 @@ func (synchronizer *subtitleSynchronizer) analyzeAudio(ctx context.Context, item
 type subtitleAudioReference struct {
 	Speech   []float64
 	Waveform []float64
-}
-
-func processSubtitleAudioReference(reader io.Reader) (subtitleAudioReference, error) {
-	detector, err := govad.New()
-	if err != nil {
-		return subtitleAudioReference{}, errors.New("voice detector is unavailable")
-	}
-	maximumFrames := int(subtitleAudioLimit / subtitleFrame)
-	probabilities := make([]float64, 0, maximumFrames)
-	waveform := make([]float64, 0, maximumFrames/64+1)
-	peak := 0.0
-	input := make([]byte, govad.SamplesPerFrame*2)
-	samples := make([]float32, govad.SamplesPerFrame)
-	buffered := bufio.NewReaderSize(reader, len(input)*4)
-	for len(probabilities) < maximumFrames {
-		if _, err = io.ReadFull(buffered, input); err != nil {
-			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
-				break
-			}
-			return subtitleAudioReference{}, errors.New("audio analysis failed")
-		}
-		for index := range samples {
-			sample := int32(binary.LittleEndian.Uint16(input[index*2:]))
-			if sample >= 1<<15 {
-				sample -= 1 << 16
-			}
-			samples[index] = float32(sample) / 32768
-			peak = max(peak, math.Abs(float64(samples[index])))
-		}
-		probabilities = append(probabilities, float64(detector.Process(samples)))
-		if len(probabilities)%64 == 0 {
-			waveform = append(waveform, peak)
-			peak = 0
-		}
-	}
-	if len(probabilities)%64 != 0 {
-		waveform = append(waveform, peak)
-	}
-	return subtitleAudioReference{Speech: probabilities, Waveform: waveform}, nil
 }

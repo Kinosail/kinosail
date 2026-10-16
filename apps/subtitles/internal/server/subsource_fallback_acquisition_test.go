@@ -115,7 +115,7 @@ func TestSubSourceAcquisitionRecoversFromInvalidCandidate(t *testing.T) {
 			}))
 			t.Cleanup(remote.Close)
 			config := SubtitleConfig{SubSource: SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "key", PersonalUse: true}}
-			provider := newSubtitleProvider(config, t.TempDir(), data, sidecarTestIndex(item), nil, "")
+			provider := newSubtitleProvider(config, t.TempDir(), data, sidecarTestIndex(item), nil, "", testStateDatabase(t, data))
 			fetchErr := provider.fetchSidecar(t.Context(), item, "en")
 			after, effectErr := readSubSourceAcquisitionEffects(media, data)
 			if effectErr != nil {
@@ -232,7 +232,7 @@ func readSubSourceAcquisitionEffects(media, data string) (subSourceAcquisitionEf
 }
 
 func readSubSourceAcquisitionLedger(data string) (int, int, error) {
-	encoded, err := os.ReadFile(filepath.Join(data, "subtitle_acquisitions.json"))
+	encoded, err := persistedTestSubtitleLedger(data)
 	if os.IsNotExist(err) {
 		return 0, 0, nil
 	}

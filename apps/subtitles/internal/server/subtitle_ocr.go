@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"math"
 	"os/exec"
 	"regexp"
@@ -85,48 +84,6 @@ func localSubtitleOCR(ctx context.Context, ffmpeg, tesseract, media string, stre
 		document.TimingEvidence = "unverified"
 	}
 	return document, words, err
-}
-
-func readSubtitleOCRFrames(ctx context.Context, output io.Reader, times <-chan float64, executable, language string, duration float64) ([]subtitleCue, []subtitleDraftWord, error) {
-	pixels := make([]byte, 1920*1080)
-	cues, words := []subtitleCue{}, []subtitleDraftWord{}
-	previous, previousWords, start, last := "", []subtitleDraftWord{}, 0.0, -1.0
-	closeCue := func(end float64) {
-		cues, words = appendSubtitleOCRCue(cues, words, previousWords, previous, start, end)
-	}
-	for count := 0; ; count++ {
-		_, err := io.ReadFull(output, pixels)
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil || count >= 40000 {
-			return nil, nil, errors.New("bitmap subtitle frame limit exceeded")
-		}
-		at, err := nextSubtitleFrameTime(ctx, times)
-		if err != nil {
-			return nil, nil, err
-		}
-		if at < last {
-			return nil, nil, errors.New("bitmap subtitle times are out of order")
-		}
-		last = at
-		text, recognized, err := recognizeSubtitleFrame(ctx, executable, language, pixels)
-		if err != nil {
-			return nil, nil, err
-		}
-		if text != previous {
-			closeCue(at)
-			previous, previousWords, start = text, recognized, at
-		}
-		if len(cues) > 20000 || len(words) > 100000 {
-			return nil, nil, errors.New("bitmap subtitle output exceeds the limit")
-		}
-	}
-	closeCue(duration)
-	if len(cues) > 20000 || len(words) > 100000 {
-		return nil, nil, errors.New("bitmap subtitle output exceeds the limit")
-	}
-	return cues, words, nil
 }
 
 type subtitleLimitedOutput struct {
