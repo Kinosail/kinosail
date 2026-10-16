@@ -14,6 +14,12 @@ type subtitleSpeechCacheEntry struct {
 	reference subtitleAudioReference
 }
 
+type subtitleSpeechCall struct {
+	done      chan struct{}
+	reference subtitleAudioReference
+	err       error
+}
+
 func (synchronizer *subtitleSynchronizer) speechForLanguage(ctx context.Context, item library.Item, language string) ([]float64, error) {
 	reference, err := synchronizer.audioReference(ctx, item, language)
 	return reference.Speech, err
@@ -32,19 +38,56 @@ func (synchronizer *subtitleSynchronizer) audioReference(ctx context.Context, it
 	if err != nil || !info.Mode().IsRegular() {
 		return subtitleAudioReference{}, errors.New("video is unavailable")
 	}
-	key := item.Path + "\x00" + strconv.FormatInt(info.Size(), 10) + ":" + strconv.FormatInt(info.ModTime().UnixNano(), 10) + ":" + language
-	select {
-	case synchronizer.analysis <- struct{}{}:
-		defer func() { <-synchronizer.analysis }()
-	case <-ctx.Done():
-		return subtitleAudioReference{}, ctx.Err()
+	stream, err := synchronizer.dialogueStream(ctx, item, language)
+	if err != nil {
+		return subtitleAudioReference{}, err
 	}
+	key := item.Path + "\x00" + strconv.FormatInt(info.Size(), 10) + ":" + strconv.FormatInt(info.ModTime().UnixNano(), 10) + "\x00" + stream
+	return synchronizer.cachedReference(ctx, key, func(ctx context.Context) (subtitleAudioReference, error) {
+		if synchronizer.ffmpeg == "" {
+			return subtitleAudioReference{}, errors.New("subtitle synchronization is unavailable")
+		}
+		return synchronizer.extractAudio(ctx, item.Path, stream)
+	})
+}
+
+func (synchronizer *subtitleSynchronizer) cachedReference(ctx context.Context, key string, analyze func(context.Context) (subtitleAudioReference, error)) (subtitleAudioReference, error) {
+	synchronizer.mu.Lock()
 	for _, cached := range synchronizer.cache {
 		if cached.key == key {
+			synchronizer.mu.Unlock()
 			return cached.reference, nil
 		}
 	}
-	reference, err := synchronizer.analyzeAudio(ctx, item, language)
+	if call := synchronizer.calls[key]; call != nil {
+		synchronizer.mu.Unlock()
+		select {
+		case <-call.done:
+			return call.reference, call.err
+		case <-ctx.Done():
+			return subtitleAudioReference{}, ctx.Err()
+		}
+	}
+	call := &subtitleSpeechCall{done: make(chan struct{})}
+	if synchronizer.calls == nil {
+		synchronizer.calls = make(map[string]*subtitleSpeechCall)
+	}
+	synchronizer.calls[key] = call
+	synchronizer.mu.Unlock()
+	reference, found := synchronizer.loadSpeech(key)
+	var err error
+	if !found {
+		reference, err = analyze(ctx)
+		if err == nil {
+			reference = quantizeSubtitleSpeech(reference)
+			synchronizer.saveSpeech(key, reference)
+		}
+	}
+	synchronizer.mu.Lock()
+	defer synchronizer.mu.Unlock()
+	delete(synchronizer.calls, key)
+	call.reference, call.err = reference, err
+	close(call.done)
 	if err != nil {
 		return subtitleAudioReference{}, err
 	}

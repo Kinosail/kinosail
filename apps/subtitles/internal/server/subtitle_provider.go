@@ -65,6 +65,7 @@ func newSubtitleProvider(config SubtitleConfig, cache, data string, index *libra
 	health := newSubtitleProviderHealthRegistry(data)
 	provider := &subtitleProvider{config: config, cache: cache, index: index, settings: settings, sync: newSubtitleSynchronizer(ffmpeg), open: newOpenSubtitlesProvider(config.OpenSubtitles), subsource: newSubSourceProvider(config.SubSource), ledger: newSubtitleLedger(data, databases...), health: health}
 	provider.open.health, provider.subsource.health = health, health
+	provider.sync.cacheDir = cache
 	provider.client = localIntegrationHTTPClient(15 * time.Second)
 	provider.client.CheckRedirect = subtitleProviderRedirect(provider.allowed)
 	return provider
