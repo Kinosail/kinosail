@@ -449,9 +449,40 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
+  image:
+    name: ${{ inputs.app }} amd64 image
+    if: fromJSON(inputs.plan)[inputs.app]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+        with:
+          context: .
+          file: apps/${{ inputs.app }}/Containerfile
+          platforms: linux/amd64
+          cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
+          cache-to: type=gha,mode=max,scope=${{ inputs.app }}-linux/amd64
+          outputs: type=docker,dest=${{ runner.temp }}/image.tar
+          tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
+          build-args: |
+            VERSION=sha-${{ github.sha }}
+            REVISION=${{ github.sha }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
+          path: ${{ runner.temp }}/image.tar
+          retention-days: 1
+          compression-level: 1
+          overwrite: true
+          if-no-files-found: error
   system:
     name: ${{ inputs.app }} production container (${{ matrix.platform }})
     if: fromJSON(inputs.plan)[inputs.app]
+    needs: image
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     strategy:
@@ -462,8 +493,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+      - name: Download the run's amd64 image
+        if: matrix.platform == 'linux/amd64'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
+          path: ${{ runner.temp }}/image
+      - name: Load the run's amd64 image
+        if: matrix.platform == 'linux/amd64'
+        run: docker load --input "$RUNNER_TEMP/image/image.tar"
+      - if: matrix.platform != 'linux/amd64'
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - if: matrix.platform != 'linux/amd64'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
         with:
           context: .
           file: apps/${{ inputs.app }}/Containerfile
@@ -474,7 +516,7 @@ jobs:
           push: false
           tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
           build-args: |
-            VERSION=ci
+            VERSION=sha-${{ github.sha }}
             REVISION=${{ github.sha }}
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
@@ -503,6 +545,7 @@ jobs:
   browser:
     name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
     if: fromJSON(inputs.plan)[inputs.app]
+    needs: image
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -526,7 +569,6 @@ jobs:
       - env:
           APP: ${{ inputs.app }}
         run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - env:
               APP: ${{ inputs.app }}
@@ -534,18 +576,13 @@ jobs:
             run: |
               read -ra browsers <<< "$BROWSERS"
               pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
-          - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+          - name: Download the run's amd64 image
+            uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
             with:
-              context: .
-              file: apps/${{ inputs.app }}/Containerfile
-              platforms: linux/amd64
-              cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
-              load: true
-              push: false
-              tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-              build-args: |
-                VERSION=ci
-                REVISION=${{ github.sha }}
+              name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
+              path: ${{ runner.temp }}/image
+      - name: Load the run's amd64 image
+        run: docker load --input "$RUNNER_TEMP/image/image.tar"
       - name: Install startup fixture codecs
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
