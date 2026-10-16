@@ -104,7 +104,6 @@ struct HomeScreen: View {
             session.contentRevision = UUID()
         }
         #if os(tvOS)
-        .cinemaBackground()
         .focusScope(homeFocus)
         .focusSection()
         .onExitCommand { focusTopBar?() }
