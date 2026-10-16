@@ -26,7 +26,7 @@ func (state *syntheticSpeechRandom) next() uint64 {
 
 func (state *syntheticSpeechRandom) Float64() float64 { return float64(state.next()>>11) / (1 << 53) }
 
-func (state *syntheticSpeechRandom) IntN(limit int) int { return int(state.next() % uint64(limit)) }
+func (state *syntheticSpeechRandom) seconds() int { return []int{1, 2, 3}[state.next()%3] }
 
 func syntheticSpeechPCM(duration time.Duration, seed uint64) ([]byte, []subtitleCue) {
 	random := syntheticSpeechRandom(seed | 1)
@@ -37,7 +37,7 @@ func syntheticSpeechPCM(duration time.Duration, seed uint64) ([]byte, []subtitle
 	for position := range samples {
 		if remaining == 0 {
 			talking = !talking
-			remaining = 16000 * (1 + random.IntN(3))
+			remaining = 16000 * random.seconds()
 			pitch = 100 + random.Float64()*120
 			if talking {
 				start := time.Duration(position) * time.Second / 16000
