@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -20,7 +21,7 @@ type subtitleDashboardOptions struct {
 	Page   int    `json:"page"`
 }
 
-func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, error) {
+func subtitleDashboardQuery(request *http.Request, ignored ...string) (subtitleDashboardOptions, error) {
 	invalid := errors.New("invalid subtitle dashboard request")
 	options := subtitleDashboardOptions{View: "summary", Status: "all", Kind: "all", Sort: "title", Page: 1}
 	if len(request.URL.RawQuery) > 1024 {
@@ -31,7 +32,7 @@ func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, er
 		return options, invalid
 	}
 	for key, entries := range values {
-		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") {
+		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") && !slices.Contains(ignored, key) {
 			return options, invalid
 		}
 	}

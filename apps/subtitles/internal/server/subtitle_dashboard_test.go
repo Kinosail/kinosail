@@ -75,6 +75,26 @@ func TestSubtitleDashboardRejectsAmbiguousAndOversizedQueries(t *testing.T) {
 	}
 }
 
+func TestSubtitleDashboardAcceptsPageLanguageSelection(t *testing.T) {
+	t.Parallel()
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: t.TempDir(), DataDir: t.TempDir(), CacheDir: t.TempDir()})
+	for path, want := range map[string]string{
+		"/?lang=en":              `<html lang="en" dir="ltr">`,
+		"/?view=library&lang=he": `<html lang="he" dir="rtl">`,
+		"/?view=history&lang=ar": `<html lang="ar" dir="rtl">`,
+	} {
+		response := requestApp(t, handler, http.MethodGet, path, "")
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), want) {
+			t.Fatalf("%s = %d; want %s in %q", path, response.Code, want, response.Body.String())
+		}
+	}
+	for _, path := range []string{"/?view=library&lang=he&lang=ar", "/api/v1/subtitle-library?view=library&lang=he"} {
+		if response := requestApp(t, handler, http.MethodGet, path, ""); response.Code != http.StatusBadRequest {
+			t.Fatalf("%s = %d %q", path, response.Code, response.Body.String())
+		}
+	}
+}
+
 func TestBrowserErrorsRenderBrandedShellAndAPIErrorsRemainJSON(t *testing.T) {
 	t.Parallel()
 	media := t.TempDir()
