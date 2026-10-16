@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -237,7 +236,7 @@ func RegisterJellyfinPlayback(mux *http.ServeMux, handlers JellyfinPlaybackHandl
 	mux.HandleFunc("GET /Videos/{id}/{stream}", handlers.Stream)
 	mux.HandleFunc("GET /Videos/{id}/{stream...}", handlers.Stream)
 	mux.HandleFunc("GET /Audio/{id}/{stream}", handlers.Stream)
-	mux.Handle("GET /Videos/{id}/{source}/Subtitles/{index}/{stream}", httpcompress.Handler(handlers.Subtitle))
+	mux.HandleFunc("GET /Videos/{id}/{source}/Subtitles/{index}/{stream}", handlers.Subtitle)
 	mux.HandleFunc("POST /Sessions/Playing", handlers.Progress)
 	mux.HandleFunc("POST /Sessions/Playing/Progress", handlers.Progress)
 	mux.HandleFunc("POST /Sessions/Playing/Stopped", handlers.Progress)

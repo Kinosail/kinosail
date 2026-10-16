@@ -31,13 +31,12 @@ func TestGatewayPassesApplicationCompressionThroughUnchanged(t *testing.T) {
 	page := "WEBVTT\n\n" + strings.Repeat("00:00:01.000 --> 00:00:02.000\nShared with you\n\n", 60)
 	var mu sync.Mutex
 	var offered []string
-	backend := &http.Server{Handler: httpcompress.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	backend := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		offered = append(offered, r.Header.Get("Accept-Encoding"))
 		mu.Unlock()
-		w.Header().Set("Content-Type", "text/vtt; charset=utf-8")
-		_, _ = io.WriteString(w, page)
-	})), ReadHeaderTimeout: time.Second}
+		httpcompress.WriteWebVTT(w, r, []byte(page))
+	}), ReadHeaderTimeout: time.Second}
 	go func() { _ = backend.Serve(listener) }()
 	t.Cleanup(func() { _ = backend.Close() })
 	for _, encoding := range []string{"gzip", ""} {

@@ -71,6 +71,10 @@ func TestConfiguredServerCompressesSubtitleTracks(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(media, "Arrival.en.srt"), []byte(track.String()), 0o600); err != nil {
 		t.Fatal(err)
 	}
+	webVTT := "WEBVTT\n\nNOTE stored WebVTT file\n\n" + strings.ReplaceAll(track.String(), ",", ".")
+	if err := os.WriteFile(filepath.Join(media, "Arrival.fr.vtt"), []byte(webVTT), 0o600); err != nil {
+		t.Fatal(err)
+	}
 	t.Setenv("KINOSAIL_DATA_DIR", t.TempDir())
 	t.Setenv("KINOSAIL_CACHE_DIR", t.TempDir())
 	t.Setenv("KINOSAIL_MEDIA_DIR", media)
@@ -119,4 +123,29 @@ func TestConfiguredServerCompressesSubtitleTracks(t *testing.T) {
 	if _, header, _ = client.call(t, http.MethodGet, path, nil, http.Header{"Accept-Encoding": {"gzip"}, "Range": {"bytes=0-99"}}); header.Get("Content-Encoding") != "" {
 		t.Fatalf("range subtitle = %v", header)
 	}
+	assertStoredWebVTTDelivery(t, client, "/subtitle/"+library.Items[0].ID, []byte(webVTT))
+}
+
+func assertStoredWebVTTDelivery(t *testing.T, client subtitleClient, base string, webVTT []byte) {
+	t.Helper()
+	for track := range 2 {
+		path := fmt.Sprintf("%s/%d", base, track)
+		if _, _, plain := client.call(t, http.MethodGet, path, nil, http.Header{"Accept-Encoding": {"identity"}}); !bytes.Equal(plain, webVTT) {
+			continue
+		}
+		status, header, partial := client.call(t, http.MethodGet, path, nil, http.Header{"Accept-Encoding": {"gzip"}, "Range": {"bytes=0-99"}})
+		if status != http.StatusPartialContent || header.Get("Content-Encoding") != "" || !bytes.Equal(partial, webVTT[:100]) {
+			t.Fatalf("stored WebVTT range = %d %v %q", status, header, partial)
+		}
+		status, header, compressed := client.call(t, http.MethodGet, path, nil, http.Header{"Accept-Encoding": {"gzip"}})
+		reader, err := gzip.NewReader(bytes.NewReader(compressed))
+		if status != http.StatusOK || header.Get("Content-Encoding") != "gzip" || err != nil {
+			t.Fatalf("stored WebVTT gzip = %d %v %v", status, header, err)
+		}
+		if decoded, err := io.ReadAll(reader); err != nil || !bytes.Equal(decoded, webVTT) {
+			t.Fatalf("stored WebVTT decoded differently: %v", err)
+		}
+		return
+	}
+	t.Fatal("no subtitle track served the stored WebVTT file")
 }

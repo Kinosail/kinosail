@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -57,6 +58,12 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 	vtt := strings.EqualFold(filepath.Ext(path), ".vtt")
 	if vtt && len(timelines) == 0 {
 		setSubtitleHeaders(writer)
+		if httpcompress.GzipRequested(request) {
+			if data, err := readSubtitle(path); err == nil {
+				httpcompress.WriteWebVTT(writer, request, data)
+				return
+			}
+		}
 		http.ServeFile(writer, request, path)
 		return
 	}
@@ -74,7 +81,7 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 		data = MapWebVTT(data, timelines[0])
 	}
 	setSubtitleHeaders(writer)
-	_, _ = writer.Write(data)
+	httpcompress.WriteWebVTT(writer, request, data)
 }
 
 func LibrarySubtitleHandler(dependencies LibrarySubtitleDependencies) http.HandlerFunc {
