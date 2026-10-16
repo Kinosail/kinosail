@@ -17,3 +17,11 @@ func TestViewerCanSignOut(t *testing.T) {
 func TestRepeatedLoginAttemptsAreLimited(t *testing.T) {
 	servertest.AssertRepeatedLoginAttemptsAreLimited(t, libraryAPIFixture)
 }
+
+func TestLoginLimitsSurviveClientChurn(t *testing.T) {
+	servertest.AssertLoginLimitsSurviveClientChurn(t, libraryAPIFixture)
+}
+
+func TestLoginNameFloodDoesNotLockOutOtherClients(t *testing.T) {
+	servertest.AssertLoginNameFloodDoesNotLockOutOtherClients(t, libraryAPIFixture)
+}
