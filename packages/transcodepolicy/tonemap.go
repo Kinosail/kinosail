@@ -106,7 +106,7 @@ func toneMapDeviceFilter(options Settings) ([]string, string, string) {
 		input = qsvDevice(options.Device)
 		upload, filter = "format=p010le,hwupload=extra_hw_frames=32", "vpp_qsv=tonemap=1:format=nv12:out_range=tv"
 	case "opencl":
-		input, upload, filter = openCLToneMapFilter(options, color)
+		input, filter = openCLToneMapFilter(options, color)
 	case "vulkan":
 		deviceType := "vaapi"
 		if options.Accelerator == "rkmpp" {
@@ -124,11 +124,11 @@ func toneMapDeviceFilter(options Settings) ([]string, string, string) {
 	return input, upload, filter
 }
 
-func openCLToneMapFilter(options Settings, color string) ([]string, string, string) {
+func openCLToneMapFilter(options Settings, color string) ([]string, string) {
 	if options.Accelerator == "vaapi" || options.Accelerator == "qsv" {
 		input := []string{"-init_hw_device", "vaapi=kino_va:" + renderDevice(options.Device), "-init_hw_device", "opencl=kino_cl@kino_va", "-filter_hw_device", "kino_va"}
-		return input, "format=p010le,hwupload", "hwmap=derive_device=opencl,tonemap_opencl=tonemap=bt2390" + color + ",hwmap=derive_device=vaapi:reverse=1"
+		return input, "hwmap=derive_device=opencl,tonemap_opencl=tonemap=bt2390" + color + ",hwmap=derive_device=vaapi:reverse=1"
 	}
 	input := []string{"-init_hw_device", "opencl=kino:,device_type=gpu", "-filter_hw_device", "kino"}
-	return input, "format=p010le,hwupload", "tonemap_opencl=tonemap=bt2390" + color
+	return input, "tonemap_opencl=tonemap=bt2390" + color
 }

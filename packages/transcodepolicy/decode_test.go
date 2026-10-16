@@ -16,8 +16,18 @@ func TestDecodeInputsCoverTenBitAndModernCodecs(t *testing.T) {
 		depth int
 		want  string
 	}{
-		{"h264", 8, "h264"}, {"h264", 0, "h264"}, {"h264", 10, ""}, {"hevc", 8, "hevc"}, {"hevc", 10, "hevc10"}, {"hevc", 12, ""},
-		{"vp9", 8, "vp9"}, {"vp9", 10, "vp910"}, {"av1", 8, "av1"}, {"av1", 10, "av110"}, {"mpeg2video", 8, ""}, {"", 8, ""},
+		{"h264", 8, "h264"},
+		{"h264", 0, "h264"},
+		{"h264", 10, ""},
+		{"hevc", 8, "hevc"},
+		{"hevc", 10, "hevc10"},
+		{"hevc", 12, ""},
+		{"vp9", 8, "vp9"},
+		{"vp9", 10, "vp910"},
+		{"av1", 8, "av1"},
+		{"av1", 10, "av110"},
+		{"mpeg2video", 8, ""},
+		{"", 8, ""},
 	} {
 		if got := DecodeInput(test.codec, test.depth); got != test.want {
 			t.Errorf("DecodeInput(%q, %d) = %q, want %q", test.codec, test.depth, got, test.want)
@@ -93,9 +103,14 @@ func TestHardwareDecodedHDROutputUsesTenBitDeviceSurfaces(t *testing.T) {
 func TestEncoderPresetsFollowTheConversionPreference(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct{ accelerator, preset, crf, want string }{
-		{"cuda", "ultrafast", "26", "-preset p2"}, {"cuda", "veryfast", "22", "-preset p4"}, {"cuda", "medium", "19", "-preset p6"},
-		{"qsv", "ultrafast", "26", "-preset veryfast"}, {"qsv", "medium", "19", "-preset medium"},
-		{"videotoolbox", "ultrafast", "26", "-q:v 55"}, {"videotoolbox", "medium", "19", "-q:v 75"}, {"videotoolbox", "veryfast", "unknown", "-q:v 65"},
+		{"cuda", "ultrafast", "26", "-preset p2"},
+		{"cuda", "veryfast", "22", "-preset p4"},
+		{"cuda", "medium", "19", "-preset p6"},
+		{"qsv", "ultrafast", "26", "-preset veryfast"},
+		{"qsv", "medium", "19", "-preset medium"},
+		{"videotoolbox", "ultrafast", "26", "-q:v 55"},
+		{"videotoolbox", "medium", "19", "-q:v 75"},
+		{"videotoolbox", "veryfast", "unknown", "-q:v 65"},
 	} {
 		_, output := VideoArguments(Settings{Codec: "h264", Accelerator: test.accelerator, Preset: test.preset, CRF: test.crf}, "1280")
 		if command := strings.Join(output, " "); !strings.Contains(command, test.want) {
