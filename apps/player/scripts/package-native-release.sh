@@ -43,7 +43,7 @@ for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 wi
 	file="kinosail-core-$version-$platform-$arch.$format"
 	stage="$temporary/$platform-$arch"
 	mkdir -p "$stage"
-	CGO_ENABLED=0 GOOS="$goos" GOARCH="$arch" GOAMD64=v2 GOARM64=v8.0 go build -trimpath -ldflags "-s -w -X main.version=$version" -o "$stage/$executable" "$root/cmd/kinosail"
+	CGO_ENABLED=0 GOOS="$goos" GOARCH="$arch" GOAMD64=v1 GOARM64=v8.0 go build -trimpath -ldflags "-s -w -X main.version=$version" -o "$stage/$executable" "$root/cmd/kinosail"
 	python3 "$root/scripts/package-native-archive.py" "$format" "$release/$file" "$stage/$executable" "$contract" "$root/LICENSE" "$root/THIRD_PARTY_NOTICES.md"
 	digest="$(shasum -a 256 "$release/$file" | awk '{print $1}')"
 	size="$(wc -c <"$release/$file" | tr -d ' ')"
