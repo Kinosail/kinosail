@@ -123,11 +123,11 @@ func (auth *authentication) serveIdentity(next http.Handler, writer http.Respons
 }
 
 func (auth *authentication) viewerAccess(access tokenAccess, request *http.Request, matched string) identitycore.Denial {
-	profile := access.profile
-	return identitycore.EvaluateAccess(identitycore.AccessInput{Public: publicInternetRequest(request), Owner: profile.Owner, APIKey: profile.APIKey,
+	return identitycore.EvaluateAccess(identitycore.AccessInput{
+		Public: publicInternetRequest(request), Owner: access.profile.Owner, APIKey: access.profile.APIKey,
 		RecentlyAuthenticated: auth.profiles.accessRecentlyAuthenticated(request, access, auth.publicAuthenticationMaximumAge()), PublicSession: auth.profiles.accessPublic(request, access),
-		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(profile, matched),
-		LocalOwner: profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
+		RemoteRouteAllowed: publicViewerRouteAllowed(matched), ScheduleAllowed: access.profile.Allowed(publicInternetRequest(request), time.Now()), APIKeyAllowed: profileAllowsAPI(access.profile, matched),
+		LocalOwner: access.profile.ID == "local-owner", MFARequired: auth.settings.requireMFA(), Secured: access.profile.Secured(), EnrollmentRoute: mfaEnrollmentRoute(matched),
 	})
 }
 

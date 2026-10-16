@@ -23,13 +23,13 @@ func TestAPIKeysExpireAndTrackUse(t *testing.T) {
 	}
 	request := httptest.NewRequestWithContext(t.Context(), "GET", "/api/v1/library", nil)
 	request.Header.Set("Authorization", "Bearer "+secret)
-	if _, ok := store.profile(request); !ok || len(store.apiKeyViews()) != 1 || store.apiKeyViews()[0].LastUsed == "" {
+	if _, ok := store.access(request); !ok || len(store.apiKeyViews()) != 1 || store.apiKeyViews()[0].LastUsed == "" {
 		t.Fatal("active API key was not accepted and tracked")
 	}
 	expired := store.apiKeys[keyID]
 	expired.ExpiresAt = time.Now().Add(-time.Second).Unix()
 	store.apiKeys[keyID] = expired
-	if _, ok := store.profile(request); ok {
+	if _, ok := store.access(request); ok {
 		t.Fatal("expired API key was accepted")
 	}
 }

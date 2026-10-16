@@ -22,11 +22,6 @@ const (
 	tokenSettle
 )
 
-func (store *profileStore) profile(request *http.Request) (viewerProfile, bool) {
-	access, found := store.access(request)
-	return access.profile, found
-}
-
 func (store *profileStore) access(request *http.Request) (tokenAccess, bool) {
 	token := sessionToken(request)
 	if token == "" {

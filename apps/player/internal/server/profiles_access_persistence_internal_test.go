@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //nolint:cyclop,funlen,gocognit // One store lifecycle covers failure, bounded retry, recovery, and throttled use.
+func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //nolint:gocognit // One store lifecycle covers failure, bounded retry, recovery, and throttled use.
 	var output bytes.Buffer
 	previous := slog.Default()
 	slog.SetDefault(slog.New(slog.NewJSONHandler(&output, nil)))
@@ -42,7 +42,7 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 		sessionTimeouts: func() (time.Duration, time.Duration) { return 15 * time.Minute, 8 * time.Hour },
 	}
 	for _, token := range []string{"expired-token", "stale-public-token", "expired-key"} {
-		if _, ok := store.profile(accessStateRequest(t, token)); ok {
+		if _, ok := store.access(accessStateRequest(t, token)); ok {
 			t.Fatalf("%s was accepted", token)
 		}
 	}
@@ -53,7 +53,7 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 		requireAccessStateLog(t, output.String(), "WARN", operation, "retry-scheduled")
 	}
 	for range 5 {
-		if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok {
+		if _, ok := store.access(accessStateRequest(t, "active-token")); !ok {
 			t.Fatal("active session was rejected during the write outage")
 		}
 	}
@@ -64,7 +64,7 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 	for file := range store.accessRetry {
 		store.accessRetry[file] = now - 1
 	}
-	if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
+	if _, ok := store.access(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
 		t.Fatalf("request retried state writes: ok=%v attempts=%v", ok, attempts)
 	}
 	store.flushAccessState(t.Context())
@@ -82,7 +82,7 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 	store.apiKeys[sessionKey("active-key")] = apiKey{ProfileID: "viewer", ExpiresAt: now + 3600}
 	store.mu.Unlock()
 	for _, token := range []string{"active-token", "active-key", "active-token", "active-key"} {
-		if _, ok := store.profile(accessStateRequest(t, token)); !ok {
+		if _, ok := store.access(accessStateRequest(t, token)); !ok {
 			t.Fatalf("%s was rejected", token)
 		}
 	}
@@ -127,7 +127,7 @@ func TestAccessUseIsFlushedWhenTheLifecycleEnds(t *testing.T) {
 		defer close(stopped)
 		store.runAccessFlush(lifecycle, time.Hour)
 	}()
-	if _, ok := store.profile(accessStateRequest(t, "browser-token")); !ok {
+	if _, ok := store.access(accessStateRequest(t, "browser-token")); !ok {
 		t.Fatal("browser session was rejected")
 	}
 	end()

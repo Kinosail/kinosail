@@ -123,7 +123,7 @@ func TestAPIRequireMFASettingsFailureKeepsActiveSessions(t *testing.T) {
 	for _, token := range []string{"current-session", "other-session"} {
 		probe := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/me", nil)
 		probe.Header.Set("Authorization", "Bearer "+token)
-		if _, found := profiles.profile(probe); !found {
+		if _, found := profiles.access(probe); !found {
 			t.Fatalf("failed MFA setting revoked %s", token)
 		}
 	}
