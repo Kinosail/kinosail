@@ -11,6 +11,8 @@ struct HomeScreen: View {
     @Namespace private var homeFocus
     @State private var quickPlay: ScreenDestination?
     @State private var spotlight = TVHomeSpotlight()
+    @State private var scrollPosition = ScrollPosition(edge: .top)
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
     var body: some View {
@@ -29,7 +31,7 @@ struct HomeScreen: View {
                     }
                     if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
                         MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
-                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 }, onFocus: { spotlight.show($0) })
+                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 }, onFocus: showWatching)
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
@@ -105,6 +107,7 @@ struct HomeScreen: View {
             .padding(.horizontal, -KinoTheme.contentPadding)
             .ignoresSafeArea(edges: [.horizontal, .bottom])
         }
+        .scrollPosition($scrollPosition)
         .background { TVHomeSpotlightBackdrop(spotlight: spotlight) }
         .focusScope(homeFocus)
         .focusSection()
@@ -146,6 +149,13 @@ struct HomeScreen: View {
         item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
         #endif
     }
+
+    #if os(tvOS)
+    private func showWatching(_ item: MediaItem) {
+        spotlight.show(item)
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { scrollPosition.scrollTo(edge: .top) }
+    }
+    #endif
 
     private var tvHomeLoadingLayout: LoadingLayout {
         #if os(tvOS)

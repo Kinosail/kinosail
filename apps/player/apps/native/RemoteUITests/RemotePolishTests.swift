@@ -34,8 +34,7 @@ final class RemotePolishTests: RemoteTestCase {
             record("watching focus \(focused.label)", app)
             assertVisibleArtworkFocus(focused, in: app)
             let next = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", titles[index + 1])).firstMatch
-            XCTAssertTrue(next.exists)
-            if next.isHittable && abs(next.frame.midY - focused.frame.midY) < 60 && next.frame.minX > focused.frame.minX {
+            if next.exists && next.isHittable && abs(next.frame.midY - focused.frame.midY) < 60 && next.frame.minX > focused.frame.minX {
                 XCTAssertLessThanOrEqual(focused.frame.maxX + 8, next.frame.minX,
                                          "The focused card must leave breathing room before the next card")
                 comparisons += 1

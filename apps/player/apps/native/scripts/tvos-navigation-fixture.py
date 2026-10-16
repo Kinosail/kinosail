@@ -46,7 +46,7 @@ def artwork(path):
     if path not in ART:
         landscape=path.startswith(('/backdrop/','/episode-art/'))
         w,h=(1600,900) if landscape else (900,900) if path.endswith(('/music','/audiobook')) else (600,900)
-        hue=zlib.crc32(path.split('/')[-1].encode())%360/360
+        hue=.58+zlib.crc32(path.split("/")[-1].encode())%100/100*.14
         top,bottom,ridge=(tuple(int(c*255) for c in colorsys.hsv_to_rgb(hue,s,v)) for s,v in [(.72,.45),(.55,.78),(.6,.22)])
         img=Image.new('RGB',(w,h),top); draw=ImageDraw.Draw(img)
         for y in range(h): draw.line((0,y,w,y),fill=tuple(int(a+(b-a)*y/h) for a,b in zip(top,bottom)))

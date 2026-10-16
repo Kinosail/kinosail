@@ -4,6 +4,7 @@ struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if os(tvOS)
     @FocusState private var focused: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     let item: MediaItem
     var landscape = false
@@ -47,7 +48,9 @@ struct MediaCard: View {
                                 .allowsHitTesting(false)
                         }
                     }
-                    .hoverEffect(.highlight)
+                    .scaleEffect(focused ? 1.06 : 1)
+                    .shadow(color: .black.opacity(focused ? 0.55 : 0), radius: 24, y: 16)
+                    .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
                     #endif
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
