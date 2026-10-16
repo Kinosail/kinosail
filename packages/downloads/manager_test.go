@@ -122,11 +122,7 @@ func TestQueueRejectsOverflowBeforeCreatingAJob(t *testing.T) {
 func TestTranscodeRetriesWithSoftware(t *testing.T) {
 	t.Parallel()
 	directory := t.TempDir()
-	count, executable := filepath.Join(directory, "count"), filepath.Join(directory, "ffmpeg")
-	script := "#!/bin/sh\ncount=0; [ ! -f '" + count + "' ] || count=$(cat '" + count + "'); count=$((count+1)); echo $count > '" + count + "'; [ $count -gt 1 ] || exit 1; for output; do :; done; printf media > \"$output\"\n"
-	if err := os.WriteFile(executable, []byte(script), 0o700); err != nil { //nolint:gosec // Test fixture must be executable.
-		t.Fatal(err)
-	}
+	executable := linkFakeEncoder(t, directory, "media-on-retry")
 	var software atomic.Bool
 	manager := &Manager{
 		ctx: t.Context(), root: t.TempDir(), ffmpeg: executable, persist: persistJSON, jobs: make(map[string]Job),

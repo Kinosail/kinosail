@@ -79,7 +79,7 @@ func (governor *Governor) AcquireEncoding(ctx context.Context, class Class, cost
 	if device == "" {
 		return governor.reserve(ctx, class, []laneCost{{governor.cpu, cost}})
 	}
-	return governor.reserve(ctx, class, []laneCost{{governor.light, 1}, {governor.device(device), cost}})
+	return governor.reserve(ctx, class, []laneCost{{governor.device(device), cost}, {governor.light, 1}})
 }
 
 type laneCost struct {

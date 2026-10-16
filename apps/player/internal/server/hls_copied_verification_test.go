@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-func TestCopiedHLSPlaylistsReuseVerifiedTimelineAndRetryWhenVerificationIsBusy(t *testing.T) {
+func boundCopiedPlaylistFixture(t *testing.T) (*hlsManager, string, func(string) *httptest.ResponseRecorder) {
+	t.Helper()
 	manager, item, recipe, directory, policy, timeline := copiedRecoveryFixture(t)
 	copiedRecoveryProbe(t, manager, "")
 	if err := manager.bindCopiedHLSClock(t.Context(), item, recipe, directory, "360p/index.m3u8", policy, timeline); err != nil {
@@ -22,12 +23,16 @@ func TestCopiedHLSPlaylistsReuseVerifiedTimelineAndRetryWhenVerificationIsBusy(t
 			t.Fatal(err)
 		}
 	}
-	playlist := func(name string) *httptest.ResponseRecorder {
+	return manager, directory, func(name string) *httptest.ResponseRecorder {
 		response := httptest.NewRecorder()
 		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/hls/"+item.ID+"/p/"+recipe.token()+"/"+name, nil)
 		manager.serveRecipe(response, request, item, recipe, name)
 		return response
 	}
+}
+
+func TestCopiedHLSPlaylistsReuseVerifiedTimelineAndRetryWhenVerificationIsBusy(t *testing.T) {
+	manager, directory, playlist := boundCopiedPlaylistFixture(t)
 	if response := playlist("360p/index.m3u8"); response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "#EXT-X-PLAYLIST-TYPE:VOD") {
 		t.Fatalf("cold rendition = %d %q", response.Code, response.Body.String())
 	}
