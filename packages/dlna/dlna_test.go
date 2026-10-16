@@ -128,6 +128,7 @@ func TestRegisterRejectsMissingAdapters(t *testing.T) {
 
 type fakeSSDPConnection struct {
 	message string
+	sender  string
 	err     error
 	wrote   string
 	cancel  context.CancelFunc
@@ -144,7 +145,11 @@ func (connection *fakeSSDPConnection) Close() error {
 func (connection *fakeSSDPConnection) ReadFromUDP(buffer []byte) (int, *net.UDPAddr, error) {
 	length := copy(buffer, connection.message)
 	connection.cancel()
-	return length, &net.UDPAddr{IP: net.ParseIP("127.0.0.1"), Port: 1900}, connection.err
+	sender := connection.sender
+	if sender == "" {
+		sender = "127.0.0.1"
+	}
+	return length, &net.UDPAddr{IP: net.ParseIP(sender), Port: 1900}, connection.err
 }
 
 func (connection *fakeSSDPConnection) WriteToUDP(data []byte, _ *net.UDPAddr) (int, error) {
@@ -155,17 +160,21 @@ func (connection *fakeSSDPConnection) WriteToUDP(data []byte, _ *net.UDPAddr) (i
 func TestSSDPConnectionRecognizesOnlyValidSearches(t *testing.T) {
 	t.Parallel()
 	for _, test := range []struct {
-		name, message string
-		err           error
-		writes        bool
+		name, message, sender string
+		err                   error
+		writes                bool
 	}{
-		{"recognized", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", nil, true},
-		{"unknown", "M-SEARCH * HTTP/1.1\r\nST: other\r\n", nil, false},
-		{"read failure", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", errors.New("read"), false},
+		{"recognized", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "", nil, true},
+		{"private sender", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "192.168.1.20", nil, true},
+		{"link-local sender", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "169.254.10.2", nil, true},
+		{"unique local sender", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "fd00::20", nil, true},
+		{"public sender", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "203.0.113.5", nil, false},
+		{"unknown", "M-SEARCH * HTTP/1.1\r\nST: other\r\n", "", nil, false},
+		{"read failure", "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", "", errors.New("read"), false},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			ctx, cancel := context.WithCancel(t.Context())
-			connection := &fakeSSDPConnection{message: test.message, err: test.err, cancel: cancel}
+			connection := &fakeSSDPConnection{message: test.message, sender: test.sender, err: test.err, cancel: cancel}
 			serveSSDPConnection(ctx, "http://media.test", SettingsFuncs{TokenFunc: func() string { return "token" }, ServerNameFunc: func() string { return "Kinosail" }}, connection)
 			if (connection.wrote != "") != test.writes {
 				t.Fatalf("SSDP write = %q", connection.wrote)
@@ -214,4 +223,26 @@ func TestRegisterStartsDiscoveryAndSSDPClosesItsConnection(t *testing.T) {
 	serveSSDPWith(t.Context(), config.Base, config.Settings, func(string, *net.UDPAddr) (ssdpConnection, error) {
 		return nil, errors.New("listen failed")
 	})
+}
+
+func TestSSDPAnswersPublicSendersOnADirectlyConnectedNetwork(t *testing.T) {
+	t.Parallel()
+	addresses, err := net.InterfaceAddrs()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, address := range addresses {
+		network, ok := address.(*net.IPNet)
+		if !ok || network.IP.To4() == nil || network.IP.IsPrivate() || network.IP.IsLoopback() || network.IP.IsLinkLocalUnicast() {
+			continue
+		}
+		ctx, cancel := context.WithCancel(t.Context())
+		connection := &fakeSSDPConnection{message: "M-SEARCH * HTTP/1.1\r\nST: ssdp:all\r\n", sender: network.IP.String(), cancel: cancel}
+		serveSSDPConnection(ctx, "http://media.test", SettingsFuncs{TokenFunc: func() string { return "token" }, ServerNameFunc: func() string { return "Kinosail" }}, connection)
+		if connection.wrote == "" {
+			t.Fatalf("SSDP ignored a sender on directly connected network %s", network)
+		}
+		return
+	}
+	t.Skip("host has no public IPv4 interface network")
 }
