@@ -74,13 +74,8 @@ func (store *Store) importEntries(ctx context.Context, tx *sql.Tx, name, path st
 	if _, err := tx.ExecContext(ctx, `UPDATE state SET value=?, entry_mode=1, entry_bytes=1, entry_count=0 WHERE name=?`, []byte(`{}`), name); err != nil {
 		return err
 	}
-	statement, err := tx.PrepareContext(ctx, `INSERT INTO state_entries(name,key,value,cost) VALUES(?,?,?,?)`)
-	if err != nil {
-		return err
-	}
-	defer statement.Close()
 	return store.scanEntryFile(name, path, func(key string, value []byte) error {
-		_, err := statement.ExecContext(ctx, name, key, value, entryCost(key, value))
+		_, err := tx.ExecContext(ctx, `INSERT INTO state_entries(name,key,value,cost) VALUES(?,?,?,?)`, name, key, value, entryCost(key, value))
 		return err
 	})
 }
