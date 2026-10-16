@@ -81,8 +81,9 @@ const showReadyPlaybackMode = () => {
 player.addEventListener("canplay", showReadyPlaybackMode);
 player.addEventListener("playing", showReadyPlaybackMode);
 let bufferingRecoveryTimer, bufferingPosition, bufferingRecoveryGeneration, bufferingRecoveryHls, bufferingRecoverySource, bufferingRetryAt = -Infinity;
-let playbackHasStarted = false;
+let playbackHasStarted = false, mediaProgressAt = -Infinity;
 player.addEventListener("playing", () => { playbackHasStarted = true; });
+player.addEventListener("progress", () => { mediaProgressAt = performance.now(); });
 const clearBufferingRecovery = () => { clearTimeout(bufferingRecoveryTimer); bufferingRecoveryTimer = undefined; };
 const retryStalledPlayback = (position = player.currentTime) => {
   clearRecovery();
@@ -94,7 +95,7 @@ const retryStalledPlayback = (position = player.currentTime) => {
 const watchBuffering = (position = player.currentTime, startedAt = performance.now()) => {
   clearBufferingRecovery();
   bufferingPosition = position;
-  const generation = adaptiveGeneration;
+  const generation = adaptiveGeneration, bufferedAtStart = bufferedAhead();
   const activeHls = hls;
   const source = player.currentSrc || player.src;
   bufferingRecoveryGeneration = generation;
@@ -108,6 +109,10 @@ const watchBuffering = (position = player.currentTime, startedAt = performance.n
     if (adaptiveActive && !hls && !playbackHasStarted && player.networkState === HTMLMediaElement.NETWORK_LOADING) {
       if (performance.now() - startedAt < 90000) return watchBuffering(position, startedAt);
       return showFailure("Playback has not advanced. You can retry from this position.", "Retry playback", retryStalledPlayback);
+    }
+    if (performance.now() - startedAt < 60000 && performance.now() - mediaProgressAt < 12000 && bufferedAhead() > bufferedAtStart) {
+      playbackTrace("buffering-wait", adaptiveActive ? "compatible" : "direct");
+      return watchBuffering(position, startedAt);
     }
     if (performance.now() - bufferingRetryAt >= 30000) {
       bufferingRetryAt = performance.now();

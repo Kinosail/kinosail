@@ -102,3 +102,29 @@ test("an aborted audio-compatible source switch does not trigger recovery", asyn
   expect(await page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances)).toBe(1);
   await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
 });
+
+test("a stalled stream that is still receiving data waits before reloading", async ({ page }) => {
+  await startDirectPlayer(page, { initialSource: false, initialHls: true, compatibleMode: "audio-transcode", compatibleLabel: "Transcoding audio" });
+  await page.clock.install();
+  const video = page.locator("video");
+  const instances = () => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances);
+  await video.evaluate((media: HTMLVideoElement) => {
+    const state = window as Window & { bufferedEnd?: number };
+    state.bufferedEnd = 42;
+    Object.defineProperty(media, "buffered", { configurable: true, get: () => ({ length: 1, start: () => 0, end: () => state.bufferedEnd ?? 0 }) });
+    media.currentTime = 42;
+  });
+  const started = await instances();
+  await video.dispatchEvent("waiting");
+  await page.clock.fastForward(6_000);
+  await video.evaluate((media: HTMLVideoElement) => {
+    (window as Window & { bufferedEnd?: number }).bufferedEnd = 43;
+    media.dispatchEvent(new Event("progress"));
+  });
+  await page.clock.fastForward(6_100);
+  expect(await instances()).toBe(started);
+  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
+  await page.clock.fastForward(12_100);
+  await expect.poll(instances).toBe(started + 1);
+  await expect(video).toHaveJSProperty("currentTime", 42);
+});

@@ -90,9 +90,9 @@ var (
 	pwaSettingsJS       = webassets.PWASettings
 	shortcutsJS         = webassets.Shortcuts
 	settingsInitialJS   = prepareSettingsInitial(settingsInitialSource)
-	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupPreparationJS, settingsInitialJS, webassets.MobileTabs)
+	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, versionHLSReferences(startupPreparationJS), settingsInitialJS, webassets.MobileTabs)
 	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
-	playerJS            = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, playerCoreJS, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
+	playerJS            = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, versionHLSReferences(playerCoreJS), playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
 	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
 	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
 	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)

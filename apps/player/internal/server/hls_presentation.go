@@ -22,7 +22,9 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	}
 	defer release()
 	input, _ := videoArguments(options, strconv.Itoa(qualities[len(qualities)-1].Width))
-	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", "1", "-filter_complex_threads", "1", "-y"}), input...)
+	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
+	filterThreads := strconv.Itoa(encoderThreads)
+	arguments := append(startupInputArguments(ctx, []string{"-hide_banner", "-loglevel", "error", "-filter_threads", filterThreads, "-filter_complex_threads", filterThreads, "-y"}), input...)
 	if startNumber > 0 {
 		arguments = append(arguments, "-max_delay", "5000000")
 	}
@@ -34,7 +36,6 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if refill != nil {
 		arguments = refill.input(arguments, item.Path)
 	}
-	encoderThreads := startupEncoderThreads(ctx, max(1, runtime.GOMAXPROCS(0)/len(qualities)))
 	for index, quality := range qualities {
 		layoutNumber := startNumber
 		if refill != nil {

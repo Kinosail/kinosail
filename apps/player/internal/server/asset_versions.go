@@ -11,10 +11,18 @@ import (
 )
 
 var assetVersions = contentVersions(map[string][]byte{
-	"app.css": applicationStyle, "theme.js": themeJS, "main.kinosail.bundle.js": mainBundle, "supporter.js": supporterJS,
+	"app.css": applicationStyle, "theme.js": themeJS, "main.kinosail.bundle.js": mainBundle, "supporter.js": supporterJS, "hls.min.js": hlsJS,
 })
 
-var versionedAssetReference = regexp.MustCompile(`/static/(app\.css|theme\.js|main\.kinosail\.bundle\.js|supporter\.js)(\?v=[^"'\s>]*)?`)
+var (
+	versionedAssetReference = regexp.MustCompile(`/static/(app\.css|theme\.js|main\.kinosail\.bundle\.js|supporter\.js|hls\.min\.js)(\?v=[^"'\s>]*)?`)
+	hlsAssetReference       = regexp.MustCompile(`/static/hls\.min\.js(\?v=[^"'\s>]*)?`)
+	hlsVersion              = contentVersions(map[string][]byte{"hls.min.js": hlsJS})["hls.min.js"]
+)
+
+func versionHLSReferences(script []byte) []byte {
+	return hlsAssetReference.ReplaceAll(script, []byte("/static/hls.min.js?v="+hlsVersion))
+}
 
 func contentVersions(assets map[string][]byte) map[string]string {
 	versions := make(map[string]string, len(assets))

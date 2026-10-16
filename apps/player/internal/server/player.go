@@ -110,8 +110,10 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	if supportsOffline(item) {
 		data.OfflineQuality = optimizedDownloadLabel(item)
 	}
-	if queue, ok := audioQueue(request, index, item.ID); ok && len(queue) > 1 {
-		data.Queue = "/api/v1/audio/" + item.ID + "/queue"
+	if item.Kind == "audio" {
+		if queue, ok := audioQueue(request, index, item.ID); ok && len(queue) > 1 {
+			data.Queue = "/api/v1/audio/" + item.ID + "/queue"
+		}
 	}
 	media := probe.inspect(request.Context(), item)
 	data.ApplyMedia(media)
@@ -160,6 +162,9 @@ func autoNext(request *http.Request, settings *settingsStore, index *libraryInde
 }
 
 func nextEpisode(request *http.Request, index *libraryIndex, current library.Item) string {
+	if current.Kind != "video" || current.Show == "" {
+		return ""
+	}
 	items, _ := visibleLibrary(request, index)
 	_, shows := library.Organize(items)
 	for _, show := range shows {
