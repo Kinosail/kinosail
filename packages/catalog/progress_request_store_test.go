@@ -110,9 +110,6 @@ func TestRequestProgressStoreProjectsViewerState(t *testing.T) {
 	if store.ReaderPage(viewer, "book", 5) != 3 || store.ReaderPage(viewer, "missing", 5) != 1 || store.ReaderPage(viewer, "book", 2) != 1 {
 		t.Fatal("reader page bounds were not applied")
 	}
-	if active := store.Active(viewer, []library.Item{item}); len(active) != 1 || active[0].ID != "movie" {
-		t.Fatalf("active progress = %#v", active)
-	}
 	if store.Get(owner, "legacy").Seconds != 7 {
 		t.Fatal("Owner legacy fallback was not preserved")
 	}
@@ -154,8 +151,11 @@ func TestRequestProgressStoreMutationsAndHistory(t *testing.T) {
 	if history := store.History(request, append([]library.Item(nil), items...)); len(history) != 21 || history[0].ID != "u" {
 		t.Fatalf("history = %#v", history)
 	}
-	if recent := store.Recent(request, append([]library.Item(nil), items...)); len(recent) != 20 || recent[0].ID != "u" {
-		t.Fatalf("recent = %#v", recent)
+	listed := map[string]bool{"viewer:a": true}
+	access := store.BrowseAccess(new(sync.RWMutex), &listed, request, func(library.Item) bool { return true })
+	page, err := BrowseLibrary(t.Context(), nil, "en", func() ([]*library.Item, error) { return snapshotReferences(library.NewSnapshot(items, 1)), nil }, func() BrowseAccess { return access })
+	if shelves := page.ViewerShelves(access); err != nil || len(shelves.Recent) != 20 || shelves.Recent[0].ID != "u" || len(shelves.Listed) != 1 || shelves.Listed[0].ID != "a" {
+		t.Fatalf("shelves = %#v, %v", shelves, err)
 	}
 	if admin := store.RecentAdmin(items, map[string]string{"viewer": "Viewer"}); len(admin) != 20 || admin[0].Profile != "Viewer" {
 		t.Fatalf("admin progress = %#v", admin)
