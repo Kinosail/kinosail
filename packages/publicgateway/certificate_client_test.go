@@ -31,7 +31,7 @@ func gatewayCertificate(t *testing.T) tls.Certificate {
 	return tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}
 }
 
-func certificateSocket(t *testing.T, handler http.Handler) string {
+func certificateSocket(t testing.TB, handler http.Handler) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("/tmp", "certificate-rpc-")
 	if err != nil {
