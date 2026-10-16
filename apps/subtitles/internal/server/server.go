@@ -116,7 +116,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	management := newOwnerAccess(config, auth)
 	subtitles := newSubtitleProvider(config.Subtitles, config.CacheDir, config.DataDir, index, settings, config.FFmpeg)
 	settings.subtitleProvider = subtitles
-	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads)
+	backups := newBackupManager(lifecycle, config.DataDir, config.BackupDir, config.BackupKey, config.BackupInterval, config.BackupRetention, workloads, stateDB)
 	subtitleManager := newSubtitleManager(index, settings, subtitles, probe, backups)
 	subtitleManager.operations = newSubtitleOperations(config)
 	subtitles.admission = subtitleManager.operations.admission

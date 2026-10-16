@@ -28,6 +28,16 @@ func WriteEncrypted(writer io.Writer, dataDir, passphrase string) error {
 	return service.WriteEncrypted(writer, dataDir, passphrase, ApplicationVersion)
 }
 
+func LiveWriteEncrypted(store *database.Store) func(io.Writer, string, string) error {
+	live := service
+	if store != nil {
+		live = service.WithLiveDatabase(store)
+	}
+	return func(writer io.Writer, dataDir, passphrase string) error {
+		return live.WriteEncrypted(writer, dataDir, passphrase, ApplicationVersion)
+	}
+}
+
 func VerifyAuto(reader io.Reader, passphrase string) error {
 	return service.VerifyAuto(reader, passphrase)
 }
