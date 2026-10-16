@@ -13,8 +13,24 @@ struct TVOSConfigurationLayout<Content: View>: View {
         self.content = content
     }
 
+    #if os(tvOS)
+    @Environment(\.tvPanelPresentation) private var panel
+    #endif
+
     var body: some View {
         #if os(tvOS)
+        if panel {
+            TVPanelSection(title: title, layoutID: layoutID, content: content)
+        } else {
+            configurationBody
+        }
+        #else
+        content()
+        #endif
+    }
+
+    #if os(tvOS)
+    private var configurationBody: some View {
         GeometryReader { proxy in
             let brandWidth = min(280, max(220, proxy.size.width * 0.22))
             let contentWidth = min(720, max(560, proxy.size.width * 0.46))
@@ -34,10 +50,8 @@ struct TVOSConfigurationLayout<Content: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .cinemaBackground()
-        #else
-        content()
-        #endif
     }
+    #endif
 }
 
 extension View {
@@ -105,6 +119,60 @@ private struct TVOSConfigurationBrand: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title). Kinosail settings.")
+    }
+}
+#endif
+
+#if os(tvOS)
+extension EnvironmentValues {
+    @Entry var tvPanelPresentation = false
+}
+
+private struct TVPlaybackPanel: ViewModifier {
+    func body(content: Content) -> some View {
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            content
+                .frame(width: 820)
+                .background(KinoTheme.background.opacity(0.94).ignoresSafeArea())
+        }
+        .background {
+            LinearGradient(colors: [.clear, .black.opacity(0.6)], startPoint: .leading, endPoint: .trailing)
+                .ignoresSafeArea()
+                .accessibilityHidden(true)
+        }
+        .environment(\.tvPanelPresentation, true)
+        .presentationBackground(.clear)
+    }
+}
+
+private struct TVPanelSection<Content: View>: View {
+    let title: String
+    let layoutID: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.title2.bold())
+                .foregroundStyle(KinoTheme.text)
+                .lineLimit(2)
+                .accessibilityAddTraits(.isHeader)
+                .padding(.horizontal, 56)
+                .padding(.top, 64)
+            content()
+                .focusSection()
+                .id(layoutID)
+                .accessibilityIdentifier(layoutID)
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .navigationTitle("")
+    }
+}
+
+extension View {
+    func tvPlaybackPanel() -> some View {
+        modifier(TVPlaybackPanel())
     }
 }
 #endif

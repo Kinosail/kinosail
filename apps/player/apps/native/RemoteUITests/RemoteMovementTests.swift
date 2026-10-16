@@ -2,10 +2,44 @@ import XCTest
 
 final class RemoteMovementTests: RemoteTestCase {
     @MainActor
-    func testTopRailFarEdgeUpReachesSettingsAboveIt() {
+    func testLaunchAndLibraryStartOnTopLeftTitle() {
+        continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         app.launch()
+        XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15), app.debugDescription)
+        let firstCard = app.buttons.matching(NSPredicate(format: "hasFocus == true")).firstMatch
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 5))
+        let launchFocus = focusedLabels(app)
+        record("launch focus", app)
+        XCTAssertFalse(app.buttons["Search"].hasFocus, "Launch should not focus Search")
+        XCTAssertFalse(app.buttons["Settings"].hasFocus, "Launch should not focus Settings")
+        remote.press(.left)
+        XCTAssertEqual(focusedLabels(app), launchFocus, "Launch should focus the leftmost Continue watching title")
+        remote.press(.down)
+        XCTAssertTrue(app.buttons["Movies"].hasFocus, "Down from the first title should reach Browse")
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["Sort: Title"].waitForExistence(timeout: 10), app.debugDescription)
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'After the Rain'")).firstMatch
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+        let focused = expectation(for: NSPredicate(format: "hasFocus == true"), evaluatedWith: card)
+        wait(for: [focused], timeout: 5)
+        record("movies focus", app)
+        XCTAssertFalse(focusedLabels(app).contains(where: { $0.hasPrefix("Sort:") }), "Movies should not open on Sort")
+        remote.press(.menu)
+        XCTAssertTrue(app.buttons["Movies"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Movies"].hasFocus)
+        remote.press(.up)
+        XCTAssertEqual(focusedLabels(app), launchFocus)
+        remote.press(.up)
+        XCTAssertTrue(app.buttons["Search"].hasFocus)
+    }
+
+    @MainActor
+    func testTopRailFarEdgeUpReachesSettingsAboveIt() {
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        let remote = XCUIRemote.shared
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         remote.press(.down)
         for _ in 0..<3 { remote.press(.right) }
@@ -26,7 +60,7 @@ final class RemoteMovementTests: RemoteTestCase {
     func testTopBarAndBrowseReturnPaths() {
         let remote = XCUIRemote.shared
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
-        app.launch()
+        launchAtSearch(app)
         let search = app.buttons["Search"]
         let settings = app.buttons["Settings"]
         XCTAssertTrue(search.waitForExistence(timeout: 15), app.debugDescription)
@@ -103,7 +137,7 @@ final class RemoteMovementTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15), app.debugDescription)
         remote.press(.down)
         remote.press(.down)
@@ -156,7 +190,7 @@ final class RemoteMovementTests: RemoteTestCase {
     func testPlaybackMenuReturnsToMovieDetail() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15), app.debugDescription)
         remote.press(.down)
         remote.press(.down)
@@ -184,7 +218,7 @@ final class RemoteMovementTests: RemoteTestCase {
     func testPhotoZoomAndBackRestoresBrowseFocus() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15), app.debugDescription)
         remote.press(.down)
         remote.press(.down)
@@ -220,7 +254,7 @@ final class RemoteMovementTests: RemoteTestCase {
     func testShowSeasonsAndBackRestoreFocus() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)

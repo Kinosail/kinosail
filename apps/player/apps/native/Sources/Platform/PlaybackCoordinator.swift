@@ -10,6 +10,11 @@ struct PlayerTrack: Identifiable {
     let id: String
     let title: String
 
+    static func audioTitle(_ name: String, hasLanguage: Bool, index: Int, count: Int) -> String {
+        if hasLanguage, !name.isEmpty { return name }
+        return count > 1 ? "Audio track \(index + 1)" : "Original audio"
+    }
+
     static func embeddedSubtitleTitle(_ title: String) -> String {
         for role in ["Transcribed", "Forced"] where title.hasSuffix(" \(role)") {
             return String(title.dropLast(role.count + 1)) + " · " + role
@@ -146,6 +151,7 @@ final class PlaybackEngine {
     @ObservationIgnored var subtitleGroup: AVMediaSelectionGroup?
     @ObservationIgnored var resumeAfterInterruption = false
     @ObservationIgnored var endObserver: NSObjectProtocol?
+    @ObservationIgnored var variantObserver: NSObjectProtocol?
     @ObservationIgnored var subtitleDocument: SubtitleDocument?
     @ObservationIgnored var subtitleGeneration = UUID()
     @ObservationIgnored var lastNowPlayingSecond = -1
@@ -262,6 +268,7 @@ final class PlaybackEngine {
         notifications.forEach(NotificationCenter.default.removeObserver)
         notifications.removeAll()
         if let endObserver { NotificationCenter.default.removeObserver(endObserver); self.endObserver = nil }
+        if let variantObserver { NotificationCenter.default.removeObserver(variantObserver); self.variantObserver = nil }
         nowPlaying.deactivate()
         presentation.clear()
         player = nil; currentItem = nil; source = nil; subtitlePolicy = nil; writer = nil; committedPosition = nil

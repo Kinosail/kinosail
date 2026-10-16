@@ -20,9 +20,11 @@ struct BookmarksScreen: View {
     var body: some View {
         List {
             #if os(tvOS)
-            Section {
-                Button("Back", systemImage: "chevron.left") { dismiss() }
-                    .tvOSDefaultPlayFocus(in: bookmarksFocus, id: "bookmarks.back")
+            if !canAdd && bookmarks.isEmpty && message == nil {
+                Section {
+                    Button("Back", systemImage: "chevron.left") { dismiss() }
+                        .tvOSDefaultPlayFocus(in: bookmarksFocus, id: "bookmarks.back")
+                }
             }
             #endif
             if canAdd {
@@ -64,10 +66,11 @@ struct BookmarksScreen: View {
         }
     }
     private var emptyMessage: String {
+        if canAdd { return "Name this position above to save it." }
         #if os(tvOS)
-        "Save a position while playing a title."
+        return "Save a position while playing a title."
         #else
-        "Save a position while playing or reading a title."
+        return "Save a position while playing or reading a title."
         #endif
     }
     private var canAdd: Bool { readingPosition != nil || session.player.currentItem?.id == itemID }

@@ -37,9 +37,17 @@ enum KinoTheme {
         #endif
     }
 
+    static var cardTitle: Font {
+        #if os(tvOS)
+        .callout.weight(.medium)
+        #else
+        .headline
+        #endif
+    }
+
     static var mediaTitleHeight: CGFloat? {
         #if os(tvOS)
-        UIFont.preferredFont(forTextStyle: .headline).lineHeight * 2
+        UIFont.preferredFont(forTextStyle: .callout).lineHeight * 2
         #else
         nil
         #endif

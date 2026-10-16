@@ -68,7 +68,7 @@ final class RemoteAudioStateTests: RemoteTestCase {
     @MainActor private func openTrack() -> XCUIApplication {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)

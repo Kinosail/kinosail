@@ -16,7 +16,7 @@ final class RemoteArtworkControlRouteTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)

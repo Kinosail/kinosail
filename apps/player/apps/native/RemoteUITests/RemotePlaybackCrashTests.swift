@@ -6,7 +6,7 @@ final class RemotePlaybackCrashTests: RemoteTestCase {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
         remote.press(.home)
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 20), app.debugDescription)
         XCTAssertTrue(app.buttons["Movies"].waitForExistence(timeout: 30), app.debugDescription)
         for _ in 0..<30 where !app.buttons["Movies"].hasFocus { remote.press(.down) }

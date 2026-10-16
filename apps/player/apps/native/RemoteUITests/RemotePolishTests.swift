@@ -5,7 +5,7 @@ final class RemotePolishTests: RemoteTestCase {
     @MainActor
     func testPlayPauseStartsTheFocusedHomeTitle() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         XCUIRemote.shared.press(.down)
         XCUIRemote.shared.press(.playPause)
@@ -21,7 +21,7 @@ final class RemotePolishTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         record("home search", app)
         remote.press(.down)
@@ -70,7 +70,7 @@ final class RemotePolishTests: RemoteTestCase {
     func testAudioOptionsKeepUnfocusedLabelsLegible() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)
@@ -109,7 +109,7 @@ final class RemotePolishTests: RemoteTestCase {
     func testMovieAndShowHeroArtworkActuallyRenders() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)
@@ -132,6 +132,34 @@ final class RemotePolishTests: RemoteTestCase {
         remote.press(.select)
         XCTAssertTrue(app.staticTexts["Episodes"].waitForExistence(timeout: 10))
         assertBlueFixtureArtwork(app, name: "show hero artwork")
+    }
+
+    @MainActor
+    func testMovieBackdropShowsTheWholeLandscape() {
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        let remote = XCUIRemote.shared
+        launchAtSearch(app)
+        remote.press(.down)
+        remote.press(.down)
+        XCTAssertTrue(app.buttons["Movies"].hasFocus)
+        remote.press(.select)
+        let card = app.buttons.matching(NSPredicate(format: "label CONTAINS 'After the Rain'")).firstMatch
+        XCTAssertTrue(card.waitForExistence(timeout: 10))
+        if !card.hasFocus { remote.press(.down) }
+        XCTAssertTrue(card.hasFocus)
+        remote.press(.select)
+        XCTAssertTrue(app.buttons["Bookmarks"].waitForExistence(timeout: 10))
+        let predicate = NSPredicate { _, _ in
+            let image = app.screenshot().image
+            return [0.22, 0.4].allSatisfy { y in
+                let color = self.pixel(image, x: 0.72, y: y)
+                return color[0...2].allSatisfy { $0 > 165 }
+            }
+        }
+        let wait = XCTNSPredicateExpectation(predicate: predicate, object: nil)
+        let result = XCTWaiter.wait(for: [wait], timeout: 10)
+        record("movie backdrop framing", app)
+        XCTAssertEqual(result, .completed, "The 16:9 backdrop should fill the screen width without cropping its top or bottom")
     }
 
     @MainActor

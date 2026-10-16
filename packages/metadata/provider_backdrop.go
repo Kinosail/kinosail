@@ -4,12 +4,16 @@ import (
 	"bytes"
 	"context"
 	"image/jpeg"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
 const defaultBackdropURL = "https://image.tmdb.org/t/p/original"
+
+const legacyBackdropWidth = 780
 
 var backdropDecodeSlot = make(chan struct{}, 1)
 
@@ -39,6 +43,19 @@ func RetainProviderBackdrop(ctx context.Context, baseURL, cache, target string) 
 	}
 	data, err := privatefile.Read(target, 8<<20)
 	return err == nil && validateBackdropJPEG(ctx, data) == nil
+}
+
+func LegacyProviderBackdrop(baseURL, cache, path string) bool {
+	if baseURL != defaultImageURL || CurrentArtwork(cache, path) == "" {
+		return false
+	}
+	file, err := os.Open(path) // #nosec G304 -- CurrentArtwork confines the path to the metadata cache.
+	if err != nil {
+		return false
+	}
+	defer func() { _ = file.Close() }()
+	config, err := jpeg.DecodeConfig(io.LimitReader(file, 1<<20))
+	return err == nil && config.Width <= legacyBackdropWidth
 }
 
 func validateBackdropJPEG(ctx context.Context, data []byte) error {

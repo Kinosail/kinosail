@@ -58,7 +58,7 @@ struct PlaybackScreen: View {
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
         .toolbar(.hidden, for: .navigationBar, .tabBar)
         #if os(tvOS)
-        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
+        .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() }.tvPlaybackPanel() }
         .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
         #else
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
@@ -159,7 +159,8 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.close = close
         if controller.player !== player { controller.player = player }
         if controller.view.isUserInteractionEnabled != interactive { controller.view.isUserInteractionEnabled = interactive }
-        DispatchQueue.main.async { presentation.isolateRemoteTouches() }
+        if interactive { DispatchQueue.main.async { presentation.isolateRemoteTouches() } }
+        else { presentation.restoreRemoteTouches() }
     }
     func makeCoordinator() -> PlayerPresentation { presentation }
     static func dismantleUIViewController(_ controller: AVPlayerViewController, coordinator: PlayerPresentation) {
@@ -182,8 +183,8 @@ struct PlaybackToolsScreen: View {
     var body: some View {
         List {
             if let item = session.player.currentItem {
-                Section(item.title) {
-                    Text(session.player.usingCompatibility ? "Playing a compatible version" : "Playing the original file").foregroundStyle(.secondary)
+                Section {
+                    Text(sourceStatus).foregroundStyle(.secondary)
                     if let progress = session.player.progressMessage { Text(progress) }
                     NavigationLink("This title’s preferences") { PlaybackPreferencesScreen(itemID: item.id) }
                     NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id))
@@ -191,6 +192,10 @@ struct PlaybackToolsScreen: View {
                     NavigationLink("Play on another device", value: ScreenDestination.playOnTV(item.id))
                     #endif
                     NavigationLink("Playback speed") { PlaybackSpeedScreen() }
+                } header: {
+                    #if !os(tvOS)
+                    Text(item.title)
+                    #endif
                 }
                 if let message { Text(message).foregroundStyle(.secondary) }
                 PlaybackTrackSections()
@@ -215,13 +220,18 @@ struct PlaybackToolsScreen: View {
                 }
             }
         }
-        .tvOSConfigurationLayout(title: "Playback options", symbol: "play.circle")
+        .tvOSConfigurationLayout(title: session.player.currentItem?.title ?? "Playback options", symbol: "play.circle",
+                                 id: "configuration.Playback options")
         .configurationNavigationTitle("Playback options")
         #if os(tvOS)
         .focusScope(playbackToolsFocus)
-        #endif
+        #else
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+        #endif
         .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
+    }
+    private var sourceStatus: String {
+        session.player.usingCompatibility ? "Playing a compatible version" : "Playing the original file"
     }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         Task { do { try await action(); message = nil } catch { message = AppSession.message(error) } }

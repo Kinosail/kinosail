@@ -6,7 +6,7 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.buttons["Search"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)
@@ -65,8 +65,9 @@ final class RemoteDetailMovementTests: RemoteTestCase {
         XCTAssertTrue(app.cells["This title’s preferences"].waitForExistence(timeout: 10))
         record("audio Playback options", app)
         XCTAssertTrue(app.frame.contains(app.cells["This title’s preferences"].frame))
-        XCTAssertLessThan(app.buttons["Done"].frame.maxX, app.frame.width * 0.25,
-                          "Audio options need the same full-screen TV settings layout as video")
+        XCTAssertFalse(app.buttons["Done"].exists, "The options panel closes with Menu, not a Done button")
+        XCTAssertGreaterThan(app.cells["This title’s preferences"].frame.minX, app.frame.width * 0.5,
+                             "Audio options need the same right-side panel as video")
         remote.press(.menu)
         XCTAssertTrue(options.waitForExistence(timeout: 10))
         XCTAssertTrue(options.hasFocus)
@@ -159,7 +160,7 @@ final class RemoteDetailMovementTests: RemoteTestCase {
     func testSettingsPlaybackBackRestoresRowAndTopBarFocus() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         let settings = app.buttons["Settings"]
         XCTAssertTrue(settings.waitForExistence(timeout: 15), app.debugDescription)
         remote.press(.right)
@@ -215,7 +216,7 @@ final class RemoteDetailMovementTests: RemoteTestCase {
     func testHomeDirectionalRowsAndLeftEdge() {
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         let search = app.buttons["Search"]
         XCTAssertTrue(search.waitForExistence(timeout: 15), app.debugDescription)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 10), app.debugDescription)

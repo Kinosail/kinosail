@@ -36,7 +36,7 @@ struct MusicScreen: View {
                             VStack(alignment: .leading, spacing: 10) {
                                 Artwork(path: album.artwork, symbol: "music.note", ratio: 1).clipShape(.rect(cornerRadius: 12))
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text(album.title).font(.headline).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                                    Text(album.title).font(KinoTheme.cardTitle).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                                     Text(album.artist).font(.caption).foregroundStyle(.secondary).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                                 }
                                 #if os(tvOS)

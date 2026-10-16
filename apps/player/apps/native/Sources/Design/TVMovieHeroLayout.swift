@@ -34,7 +34,8 @@ private struct TVMovieHeroBackdrop: View {
                 if let anchor {
                     let frame = geometry[anchor.bounds]
                     let top = min(frame.minY, 0)
-                    let canvas = CGSize(width: geometry.size.width, height: max(0, frame.maxY - top))
+                    let canvas = CGSize(width: geometry.size.width,
+                                        height: max(frame.maxY - top, geometry.size.width * 9 / 16))
                     TVBackdrop(path: anchor.path, canvas: canvas)
                         .frame(width: canvas.width, height: canvas.height)
                         .clipped()

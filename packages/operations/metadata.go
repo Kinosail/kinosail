@@ -22,6 +22,7 @@ type MetadataRefresh struct {
 	Resolve               func(context.Context, library.Item) (metadata.Result, error)
 	ResolveEpisode        func(context.Context, library.Item, metadata.Record) (metadata.Result, error)
 	Download              func(context.Context, metadata.Result) (metadata.Record, error)
+	LegacyBackdrop        func(string) bool
 	Store                 func(map[string]metadata.Record) error
 	RefreshLibrary        func(context.Context) error
 }
@@ -54,7 +55,7 @@ func missingMetadata(config MetadataRefresh) []library.Item {
 	missing := make([]library.Item, 0)
 	for _, item := range config.Items {
 		record, found := config.Record(item.ID)
-		if needsMetadata(item, record, found, config.Configured) {
+		if needsMetadata(item, record, found, config.Configured) || config.Configured && found && legacyBackdrop(item, record, config.LegacyBackdrop) {
 			missing = append(missing, item)
 		}
 	}
@@ -147,7 +148,7 @@ func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []lib
 	for position, item := range group {
 		var missingImages []string
 		for _, image := range results[position].Images {
-			if !metadata.RegularFile(image.Target) {
+			if config.replacesImage(image) {
 				missingImages = append(missingImages, image.Target)
 			}
 		}
@@ -207,6 +208,24 @@ func needsMetadata(item library.Item, record metadata.Record, found, configured 
 
 func needsConfiguredMetadata(item library.Item, record metadata.Record) bool {
 	return !record.CastFetched || needsBackdrop(item, record) || needsMovieRating(item, record)
+}
+
+func (config MetadataRefresh) replacesImage(image metadata.Image) bool {
+	if !metadata.RegularFile(image.Target) {
+		return true
+	}
+	return image.Backdrop && config.LegacyBackdrop != nil && config.LegacyBackdrop(image.Target)
+}
+
+func legacyBackdrop(item library.Item, record metadata.Record, legacy func(string) bool) bool {
+	if legacy == nil || item.Kind != "video" || record.Owner {
+		return false
+	}
+	backdrop := record.Backdrop
+	if item.Show != "" {
+		backdrop = record.ShowBackdrop
+	}
+	return backdrop != "" && legacy(backdrop)
 }
 
 func needsMovieRating(item library.Item, record metadata.Record) bool {

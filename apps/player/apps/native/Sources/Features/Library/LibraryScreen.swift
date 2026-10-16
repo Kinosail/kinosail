@@ -15,6 +15,7 @@ struct LibraryScreen: View {
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
     @State private var focusedLetter: String?
+    @State private var gridFocusPending = true
     #endif
     @State private var selection: LibraryView
     @State private var sort = LibrarySort.title
@@ -98,7 +99,8 @@ struct LibraryScreen: View {
                         }
                     }, onQuickPlay: { quickPlay = $0 },
                     requestFirstCardFocus: !searchMode,
-                    opensShows: selection == .shows)
+                    opensShows: selection == .shows,
+                    takesFirstFocus: !searchMode && gridFocusPending, onTookFocus: { gridFocusPending = false })
                     .id("library-results")
                     #else
                     if let page = visiblePage {

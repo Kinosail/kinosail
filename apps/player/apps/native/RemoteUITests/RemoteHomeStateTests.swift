@@ -28,6 +28,7 @@ final class RemoteHomeStateTests: RemoteTestCase {
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 30))
         XCTAssertFalse(app.descendants(matching: .any)["Loading your library…"].exists)
+        XCTAssertTrue(app.buttons["Search"].hasFocus, "Loaded titles must not steal focus from a viewer already using the top bar")
         XCTAssertEqual(app.buttons["Search"].frame, searchFrame)
         record("quality-home-pending-loaded", app)
     }

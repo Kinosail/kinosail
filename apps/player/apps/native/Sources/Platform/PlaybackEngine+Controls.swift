@@ -190,7 +190,11 @@ extension PlaybackEngine {
         try check(attempt, installation: installation)
         audioOptions = audioGroup?.options ?? []
         subtitleOptions = subtitleGroup?.options ?? []
-        audioTracks = audioOptions.enumerated().map { PlayerTrack(id: String($0.offset), title: $0.element.displayName) }
+        audioTracks = audioOptions.enumerated().map { index, option in
+            let tag = option.extendedLanguageTag ?? option.locale?.identifier ?? ""
+            return PlayerTrack(id: String(index), title: PlayerTrack.audioTitle(option.displayName, hasLanguage: !tag.isEmpty && tag != "und",
+                                                                               index: index, count: audioOptions.count))
+        }
         var regularShown = false
         subtitleTracks = subtitleOptions.enumerated().compactMap { index, option in
             guard allowsSubtitleLanguage(option.extendedLanguageTag ?? option.locale?.identifier ?? "") else { return nil }

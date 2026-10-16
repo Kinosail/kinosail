@@ -10,7 +10,7 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         XCTAssertTrue(app.buttons["Search"].hasFocus)
         var movements = 0
@@ -62,7 +62,7 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         remote.press(.down)
         let origin = focusedLabels(app).first ?? ""
@@ -101,7 +101,7 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)
@@ -155,7 +155,7 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
-        app.launch()
+        launchAtSearch(app)
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 15))
         remote.press(.down)
         remote.press(.down)

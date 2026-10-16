@@ -21,7 +21,9 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored var close: (() -> Void)?
     @ObservationIgnored var userNavigated: ((AVPlayer, Double) -> Void)?
     @ObservationIgnored private var closing: Task<Void, Never>?
-    @ObservationIgnored private var isolatedTouchTypes: [(UIGestureRecognizer, [NSNumber])] = []
+    @ObservationIgnored private var isolatedRecognizers: [(UIGestureRecognizer, touches: [NSNumber], presses: [NSNumber])] = []
+    @ObservationIgnored private var releasedTouchDelays: [(UIGestureRecognizer, began: Bool, ended: Bool)] = []
+    @ObservationIgnored private var touchDelaySweep: Timer?
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -130,21 +132,51 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     }
 
     func isolateRemoteTouches() {
-        guard isolatedTouchTypes.isEmpty, controller.view.window != nil else { return }
+        guard touchDelaySweep == nil, controller.view.window != nil else { return }
         let indirect = NSNumber(value: UITouch.TouchType.indirect.rawValue)
+        let select = NSNumber(value: UIPress.PressType.select.rawValue)
         var view = controller.view.superview
         while let current = view, !(current is UIWindow) {
-            for recognizer in current.gestureRecognizers ?? [] where recognizer.allowedTouchTypes.contains(indirect) {
-                isolatedTouchTypes.append((recognizer, recognizer.allowedTouchTypes))
+            for recognizer in current.gestureRecognizers ?? []
+            where recognizer.allowedTouchTypes.contains(indirect) || recognizer.allowedPressTypes.contains(select) {
+                isolatedRecognizers.append((recognizer, recognizer.allowedTouchTypes, recognizer.allowedPressTypes))
                 recognizer.allowedTouchTypes = recognizer.allowedTouchTypes.filter { $0 != indirect }
+                recognizer.allowedPressTypes = recognizer.allowedPressTypes.filter { $0 != select }
             }
             view = current.superview
         }
+        guard let window = controller.view.window else { return }
+        releaseTouchDelays(in: window)
+        touchDelaySweep = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self, let window = self.controller.view.window else { return }
+                self.releaseTouchDelays(in: window)
+            }
+        }
+    }
+
+    private func releaseTouchDelays(in view: UIView) {
+        for recognizer in view.gestureRecognizers ?? [] where recognizer.delaysTouchesBegan || recognizer.delaysTouchesEnded {
+            releasedTouchDelays.append((recognizer, recognizer.delaysTouchesBegan, recognizer.delaysTouchesEnded))
+            recognizer.delaysTouchesBegan = false
+            recognizer.delaysTouchesEnded = false
+        }
+        view.subviews.forEach(releaseTouchDelays)
     }
 
     func restoreRemoteTouches() {
-        for (recognizer, types) in isolatedTouchTypes { recognizer.allowedTouchTypes = types }
-        isolatedTouchTypes = []
+        for (recognizer, touches, presses) in isolatedRecognizers {
+            recognizer.allowedTouchTypes = touches
+            recognizer.allowedPressTypes = presses
+        }
+        isolatedRecognizers = []
+        touchDelaySweep?.invalidate()
+        touchDelaySweep = nil
+        for (recognizer, began, ended) in releasedTouchDelays {
+            recognizer.delaysTouchesBegan = began
+            recognizer.delaysTouchesEnded = ended
+        }
+        releasedTouchDelays = []
     }
 
     func limitSubtitleLanguages(to language: String?) {

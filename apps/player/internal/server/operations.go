@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/metadata"
 	sharedoperations "github.com/MikeO7/kinosail/packages/operations"
 )
@@ -39,6 +40,10 @@ func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIn
 
 func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations.MetadataRefresh {
 	items, _ := index.Snapshot()
+	return metadataRefreshConfig(store, items, index.Refresh)
+}
+
+func metadataRefreshConfig(store *metadataStore, items []library.Item, refresh func(context.Context) error) sharedoperations.MetadataRefresh {
 	provider := store.providerSnapshot()
 	return sharedoperations.MetadataRefresh{
 		Available: provider.available(), Configured: provider.configured(), Items: items,
@@ -49,7 +54,10 @@ func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations
 			return record, found
 		},
 		Resolve: provider.resolveRecord, ResolveEpisode: provider.resolveEpisodeRecord, Download: provider.downloadMetadataImages,
-		Store: store.setAll, RefreshLibrary: index.Refresh,
+		LegacyBackdrop: func(path string) bool {
+			return metadata.LegacyProviderBackdrop(provider.config.ImageURL, provider.cache, path)
+		},
+		Store: store.setAll, RefreshLibrary: refresh,
 	}
 }
 

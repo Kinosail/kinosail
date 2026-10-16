@@ -8,6 +8,8 @@ final class RemoteScreenAuditTests: RemoteTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["Continue watching"].waitForExistence(timeout: 20))
         sleep(2)
+        capture("launch-focus", app)
+        settleAtSearch(app)
         return app
     }
 
@@ -84,6 +86,18 @@ final class RemoteScreenAuditTests: RemoteTestCase {
         sleep(2)
         capture("music-04-settled", app)
         press(.down, then: "music-05-down", in: app)
+        press(.select, in: app)
+        sleep(4)
+        capture("music-06-player", app)
+        press(.down, then: "music-07-player-down", in: app)
+        press(.up, then: "music-08-player-up", in: app)
+        press(.up, then: "music-09-player-up2", in: app)
+        press(.right, then: "music-10-player-right", in: app)
+        press(.right, then: "music-11-player-right2", in: app)
+        press(.select, then: "music-12-player-select", in: app)
+        sleep(1)
+        capture("music-13-player-select-settled", app)
+        press(.menu, then: "music-14-player-back", in: app)
     }
 
     @MainActor func testAudit05Audiobooks() {
@@ -127,6 +141,18 @@ final class RemoteScreenAuditTests: RemoteTestCase {
         press(.up, 8, in: app)
         press(.select, then: "settings-10-first-row", in: app)
         press(.menu, then: "settings-11-back", in: app)
+        for (index, row) in ["Connect a TV", "Playback", "Progress sync", "Supporter collection", "Made possible by", "Privacy policy"].enumerated() {
+            let element = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", row)).firstMatch
+            guard element.waitForExistence(timeout: 5) else { continue }
+            for _ in 0..<12 where !element.hasFocus { remote.press(.down); usleep(350_000) }
+            guard element.hasFocus else { continue }
+            press(.select, in: app)
+            sleep(2)
+            capture("settings-\(20 + index * 2)-\(row.lowercased().replacingOccurrences(of: " ", with: "-"))", app)
+            press(.down, 2, then: "settings-\(21 + index * 2)-\(row.lowercased().replacingOccurrences(of: " ", with: "-"))-down", in: app)
+            press(.menu, in: app)
+            sleep(1)
+        }
     }
 
     @MainActor func testAudit09Playback() {
@@ -139,6 +165,20 @@ final class RemoteScreenAuditTests: RemoteTestCase {
         press(.down, then: "play-03-info", in: app)
         press(.menu, in: app)
         press(.up, then: "play-04-up", in: app)
+        let options = app.cells["Playback options"]
+        for _ in 0..<12 where options.exists && !options.hasFocus { remote.press(.right) }
+        if options.hasFocus {
+            press(.select, in: app)
+            sleep(2)
+            capture("play-06-options", app)
+            press(.select, then: "play-07-options-preferences", in: app)
+            press(.menu, in: app)
+            press(.down, then: "play-09-options-bookmarks", in: app)
+            press(.select, then: "play-10-options-bookmarks-open", in: app)
+            press(.menu, in: app)
+            press(.down, 3, then: "play-11-options-down", in: app)
+            press(.menu, then: "play-08-options-closed", in: app)
+        }
         press(.menu, 2, then: "play-05-exit", in: app)
     }
 

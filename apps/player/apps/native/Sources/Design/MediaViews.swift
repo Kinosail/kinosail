@@ -13,6 +13,8 @@ struct MediaCard: View {
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var opensShow = false
     #if os(tvOS)
+    var takesFocus = false
+    var onTookFocus: (() -> Void)?
     private var quickPlayAction: (() -> Void)? {
         guard let onQuickPlay, let destination = TVOSQuickPlay.destination(for: item) else { return nil }
         return { if focused { onQuickPlay(destination) } }
@@ -53,7 +55,7 @@ struct MediaCard: View {
                     .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
                     #endif
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
+                    Text(item.title).font(KinoTheme.cardTitle).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(minHeight: KinoTheme.mediaTitleHeight, alignment: .topLeading)
@@ -85,6 +87,11 @@ struct MediaCard: View {
         .buttonStyle(.borderless)
         .focused($focused)
         .onChange(of: focused) { _, value in if value { onFocus?(item) } }
+        .task(id: takesFocus) {
+            guard takesFocus else { return }
+            focused = true
+            onTookFocus?()
+        }
         .onPlayPauseCommand(perform: quickPlayAction)
         .accessibilityHint(item.kind == .photo ? "Select to view photo."
                            : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
@@ -129,15 +136,23 @@ struct MediaGrid: View {
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var requestFirstCardFocus = false
     var opensShows = false
+    #if os(tvOS)
+    var takesFirstFocus = false
+    var onTookFocus: (() -> Void)?
+    #endif
     var body: some View {
         LazyVGrid(columns: Self.columns(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize), alignment: .leading, spacing: 28) {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                #if os(tvOS)
+                MediaCard(item: item, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay,
+                          opensShow: opensShows, takesFocus: takesFirstFocus && index == 0, onTookFocus: onTookFocus)
+                    .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
+                    .prefersDefaultFocus(requestFirstCardFocus && item.id == items.first?.id, in: gridFocus)
+                #else
                 MediaCard(item: item, landscape: landscape, onFocus: onFocus, onQuickPlay: onQuickPlay,
                           opensShow: opensShows)
                     .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
-                    #if os(tvOS)
-                    .prefersDefaultFocus(requestFirstCardFocus && item.id == items.first?.id, in: gridFocus)
-                    #endif
+                #endif
             }
         }
         #if os(tvOS)
@@ -178,6 +193,10 @@ struct MediaShelf: View {
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var opensShows = false
     var onFocus: ((MediaItem) -> Void)?
+    #if os(tvOS)
+    var takesFocus = false
+    var onTookFocus: (() -> Void)?
+    #endif
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
@@ -193,9 +212,16 @@ struct MediaShelf: View {
             ScrollView(.horizontal) {
                 LazyHStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        #if os(tvOS)
+                        MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
+                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
+                                  takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
+                            .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
+                        #else
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
                                   onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
+                        #endif
                     }
                 }
                 #if os(tvOS)

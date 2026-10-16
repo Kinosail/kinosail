@@ -23,7 +23,7 @@ enum PlaybackExternalMetadata {
             let episode = item.season > 0 && item.episode > 0 ? "S\(item.season), E\(item.episode)" : ""
             return [item.show, episode].filter { !$0.isEmpty }.joined(separator: " · ")
         }
-        return [item.artist, item.year].filter { !$0.isEmpty }.joined(separator: " · ")
+        return item.artist
     }
 
     static func artworkPath(for item: MediaItem) -> String {
