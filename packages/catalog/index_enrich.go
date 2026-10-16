@@ -11,7 +11,8 @@ import (
 
 const (
 	enrichmentBatch           = 32
-	enrichmentPublishInterval = time.Second
+	enrichmentPublishInterval = 10 * time.Second
+	enrichmentPublishCost     = 20
 )
 
 func (index *Index) signalEnrichment() {
@@ -38,7 +39,7 @@ func (index *Index) enrichLoop(ctx context.Context) {
 
 func (index *Index) enrichBackground(ctx context.Context) {
 	attempted := make(map[string]bool)
-	published, enriched := time.Now(), false
+	published, enriched, composed := time.Now(), false, time.Duration(0)
 	for ctx.Err() == nil {
 		release, err := index.acquire(ctx)
 		if err != nil {
@@ -53,10 +54,12 @@ func (index *Index) enrichBackground(ctx context.Context) {
 			break
 		}
 		enriched = true
-		if time.Since(published) >= enrichmentPublishInterval {
+		if time.Since(published) >= max(enrichmentPublishInterval, enrichmentPublishCost*composed) {
+			started := time.Now()
 			index.composeMu.Lock()
 			index.publishComposed(index.compose(index.raw), false, false)
 			published = time.Now()
+			composed = published.Sub(started)
 		}
 	}
 	if enriched && ctx.Err() == nil {

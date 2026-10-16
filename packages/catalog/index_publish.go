@@ -129,6 +129,8 @@ func (index *Index) SetDecorator(decorate func([]library.Item) []library.Item) {
 }
 
 func (index *Index) AddAnalyzer(analyze func([]library.Item)) {
+	index.analyzeMu.Lock()
+	defer index.analyzeMu.Unlock()
 	index.mu.Lock()
 	index.analyzers = append(index.analyzers, analyze)
 	index.mu.Unlock()

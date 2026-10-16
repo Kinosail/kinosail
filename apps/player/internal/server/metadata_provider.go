@@ -36,6 +36,7 @@ type metadataStore struct {
 	tvmaze      *sharedmetadata.TVMazeProvider
 	persist     func(string, any) error
 	misses      *sharedmetadata.Misses
+	artwork     sharedmetadata.ArtworkCache
 	tmdbRecords bool
 	stateDB     *database.Store
 	err         error
@@ -92,7 +93,9 @@ func (store *metadataStore) configureTMDB(token, url, imageURL string) {
 	config := *store.active.Load()
 	config.Token, config.URL, config.ImageURL = token, url, imageURL
 	config = sharedmetadata.NormalizeConfig(config)
-	store.active.Store(&config)
+	if previous := store.active.Swap(&config); previous == nil || *previous != config {
+		store.misses.Reset()
+	}
 }
 
 func (store *metadataStore) available() bool { return store.configured() || store.tvmaze != nil }

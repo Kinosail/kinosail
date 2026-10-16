@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -71,4 +72,45 @@ func pruneArtworkEntry(root string, entry os.DirEntry, remove func(string) error
 		}
 	}
 	return nil
+}
+
+const (
+	artworkRecheck       = 5 * time.Minute
+	maximumArtworkChecks = 1 << 18
+)
+
+type ArtworkCache struct {
+	mu      sync.Mutex
+	entries map[artworkKey]artworkCheck
+}
+
+type artworkKey struct {
+	cache, path string
+}
+
+type artworkCheck struct {
+	checked, expires time.Time
+}
+
+func (artwork *ArtworkCache) Current(cache, path string) string {
+	now := time.Now()
+	key := artworkKey{cache, path}
+	artwork.mu.Lock()
+	entry, found := artwork.entries[key]
+	artwork.mu.Unlock()
+	if found && now.Sub(entry.checked) < artworkRecheck && now.Before(entry.expires) {
+		return path
+	}
+	info, current := currentArtworkInfo(cache, path)
+	artwork.mu.Lock()
+	defer artwork.mu.Unlock()
+	if !current {
+		delete(artwork.entries, key)
+		return ""
+	}
+	if artwork.entries == nil || len(artwork.entries) >= maximumArtworkChecks {
+		artwork.entries = make(map[artworkKey]artworkCheck)
+	}
+	artwork.entries[key] = artworkCheck{checked: now, expires: info.ModTime().Add(ArtworkMaxAge)}
+	return path
 }

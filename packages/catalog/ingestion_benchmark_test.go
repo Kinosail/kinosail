@@ -56,7 +56,7 @@ func BenchmarkPollCycle(b *testing.B) {
 	index := NewIndex(b.Context(), roots, "", time.Hour, nil)
 	b.ReportAllocs()
 	for b.Loop() {
-		if changed := index.changedDirectories(b.Context(), roots); len(changed) != 0 {
+		if changed := index.changedDirectories(b.Context(), roots, nil); len(changed) != 0 {
 			b.Fatalf("unchanged tree reported %d directories", len(changed))
 		}
 	}

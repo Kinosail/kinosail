@@ -155,7 +155,7 @@ func TestRefreshMetadataReturnsNoWorkWithoutSideEffects(t *testing.T) {
 	}
 }
 
-func TestRefreshMetadataResolvesMissingEpisodeAndReportsGroupFailure(t *testing.T) {
+func TestRefreshMetadataKeepsResolvedEpisodesWhenOneEpisodeFails(t *testing.T) {
 	t.Parallel()
 	items := []library.Item{{ID: "first", Kind: "video", Library: "TV", Show: "Show"}, {ID: "second", Kind: "video", Library: "TV", Show: "Show"}}
 	config := metadataFixture(items, map[string]metadata.Record{"second": {Plot: "invalid without title"}})
@@ -165,11 +165,15 @@ func TestRefreshMetadataResolvesMissingEpisodeAndReportsGroupFailure(t *testing.
 		}
 		return metadata.Result{}, errors.New("episode failed")
 	}
-	var stored bool
-	config.Store = func(map[string]metadata.Record) error { stored = true; return nil }
+	var stored map[string]metadata.Record
+	config.Store = func(updates map[string]metadata.Record) error { stored = updates; return nil }
+	config.Misses = metadata.NewMisses()
 	err := RefreshMetadata(t.Context(), config)
-	if err == nil || err.Error() != "metadata refresh failed for 2 of 2 items" || stored {
-		t.Fatalf("error=%v stored=%t", err, stored)
+	if _, kept := stored["first"]; err == nil || err.Error() != "metadata refresh failed for 1 of 2 items" || !kept || len(stored) != 1 {
+		t.Fatalf("error=%v stored=%#v", err, stored)
+	}
+	if config.Misses.Blocked(items[0]) || !config.Misses.Blocked(items[1]) {
+		t.Fatalf("backoff first=%t second=%t", config.Misses.Blocked(items[0]), config.Misses.Blocked(items[1]))
 	}
 }
 
