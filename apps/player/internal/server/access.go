@@ -11,6 +11,10 @@ func visibleLibrary(request *http.Request, index *libraryIndex) ([]library.Item,
 	return identitycore.VisibleLibrary(index, currentViewer(request))
 }
 
+func visibleView(request *http.Request, index *libraryIndex) (*library.View, error) {
+	return identitycore.VisibleView(index, currentViewer(request))
+}
+
 func visibleItem(request *http.Request, index *libraryIndex, id string) (library.Item, bool) {
 	return identitycore.VisibleItem(index, currentViewer(request), id)
 }

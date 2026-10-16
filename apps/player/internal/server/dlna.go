@@ -14,7 +14,7 @@ func registerDLNA(mux *http.ServeMux, ctx context.Context, base string, settings
 			TokenFunc: settings.dlnaToken, ServerNameFunc: settings.serverName,
 		},
 		Library: dlna.LibraryFuncs{
-			SnapshotFunc: index.Snapshot, FindFunc: index.Find, SafeFunc: index.Safe,
+			LibraryFunc: index.Library, FindFunc: index.Find, SafeFunc: index.Safe,
 		},
 		NotFound: localizedNotFound,
 	})

@@ -14,10 +14,10 @@ func (storage ListStorage) CollectionNames(items []library.Item) []string {
 			values = append(values, item.Collection)
 		}
 	}
-	return storage.collectionNamesWith(values)
+	return storage.CollectionNamesFor(values)
 }
 
-func (storage ListStorage) collectionNamesWith(values []string) []string {
+func (storage ListStorage) CollectionNamesFor(values []string) []string {
 	unique := make(map[string]bool)
 	for key := range *storage.Playlists {
 		if strings.HasPrefix(key, "collection:") && !(*storage.Playlists)[key]["!collection"] {

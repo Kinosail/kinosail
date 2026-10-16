@@ -32,7 +32,7 @@ type PersonalProjection[Resume any] struct {
 	Continue        []Resume
 	List            []library.Item
 	Played          []library.Item
-	Unwatched       []library.Item
+	Watched         func(library.Item) bool
 	CollectionCount int
 	PlaylistCount   int
 }
@@ -43,6 +43,7 @@ type Source[Show, Resume, Playlist, Collection any] interface {
 	Catalog(*http.Request, []library.Show, catalog.Result, bool) CatalogProjection[Show, Playlist, Collection]
 	Personal(*http.Request, []library.Item) PersonalProjection[Resume]
 	HasArtwork(library.Item) bool
+	Library(*http.Request) *library.View
 }
 
 type View interface {

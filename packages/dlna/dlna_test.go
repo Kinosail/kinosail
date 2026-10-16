@@ -28,7 +28,7 @@ func (fixture *dlnaFixture) settings() SettingsFuncs {
 
 func (fixture *dlnaFixture) library() LibraryFuncs {
 	return LibraryFuncs{
-		SnapshotFunc: func() ([]library.Item, error) { return fixture.items, nil },
+		LibraryFunc: func() (*library.Snapshot, error) { return library.NewSnapshot(fixture.items, 1), nil },
 		FindFunc: func(id string) (library.Item, bool) {
 			for _, item := range fixture.items {
 				if item.ID == id {

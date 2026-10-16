@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
-	"github.com/MikeO7/kinosail/packages/catalogapi"
 	"github.com/MikeO7/kinosail/packages/library"
 	sharedplayback "github.com/MikeO7/kinosail/packages/playerweb"
 )
@@ -31,11 +30,6 @@ const playerHTML = `<!doctype html>
 </body></html>{{define "player-extra-controls"}}<button type="button" aria-label="Settings" aria-controls="player-settings" aria-expanded="false" data-player-settings><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M19.4 13a7.8 7.8 0 0 0 .05-1 7.8 7.8 0 0 0-.05-1l2.1-1.65-2-3.46-2.5 1a7.6 7.6 0 0 0-1.74-1L14.9 3h-4l-.4 2.89a7.6 7.6 0 0 0-1.74 1l-2.5-1-2 3.46L6.4 11a7.8 7.8 0 0 0-.05 1 7.8 7.8 0 0 0 .05 1l-2.1 1.65 2 3.46 2.5-1a7.6 7.6 0 0 0 1.74 1l.4 2.89h4l.4-2.89a7.6 7.6 0 0 0 1.74-1l2.5 1 2-3.46L19.4 13M13 15.5A3.5 3.5 0 1 1 13 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></button>{{if .SubtitlePickerLimited}}<button type="button" aria-label="Theater" aria-controls="player-media" aria-keyshortcuts="T" aria-pressed="false" data-theater><svg aria-hidden="true" data-theater-label viewBox="0 0 24 24"><path d="M3 5h18v14H3V5m2 2v10h14V7H5Z"/></svg></button>{{end}}<button type="button" aria-label="Enter fullscreen" data-player-fullscreen><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4V4m10 0h6v6h-2V6h-4V4M4 14h2v4h4v2H4v-6m14 0h2v6h-6v-2h4v-4Z"/></svg></button>{{end}}`
 
 var playerView = newLocalizedTemplate("player", playerTemplate(playerHTML))
-
-func audioQueue(request *http.Request, index *libraryIndex, id string) ([]library.Item, bool) {
-	items, _ := visibleLibrary(request, index)
-	return catalogapi.AudioQueue(items, id)
-}
 
 func playerTemplate(template string) string {
 	template = strings.Replace(template, `/static/downloads.js?v=3-htmx4`, `/static/downloads.js?v=30-htmx4`, 1)
@@ -99,6 +93,7 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	data.Listed = lists.Has(request, item.ID)
 	data.CanDownload = viewer.Owner || viewer.Downloads
 	data.CanTranscode = viewerPlaybackPolicy(viewer).AllowTranscode
+	view, _ := visibleView(request, index)
 	data.Next = autoNext(request, settings, index, item)
 	data.AutoSkip = strings.Join(settings.autoSkip(), ",")
 	data.FileSize = byteSize(item.Size)
@@ -110,16 +105,17 @@ func buildPlayerData(request *http.Request, item library.Item, index *libraryInd
 	if supportsOffline(item) {
 		data.OfflineQuality = optimizedDownloadLabel(item)
 	}
-	if queue, ok := audioQueue(request, index, item.ID); ok && len(queue) > 1 {
-		data.Queue = "/api/v1/audio/" + item.ID + "/queue"
+	if item.Kind == "audio" {
+		if queue, ok := view.AudioQueue(item.ID); ok && len(queue) > 1 {
+			data.Queue = "/api/v1/audio/" + item.ID + "/queue"
+		}
 	}
 	media := probe.inspect(request.Context(), item)
 	data.ApplyMedia(media)
 	for _, name := range lists.editablePlaylistNames(request) {
 		data.Playlists = append(data.Playlists, playlistOption{Name: name, Included: len(lists.Playlist(request, name, []library.Item{item})) == 1})
 	}
-	items, _ := visibleLibrary(request, index)
-	for _, name := range lists.collectionNames(items) {
+	for _, name := range lists.collectionNamesFor(view) {
 		data.Collections = append(data.Collections, playlistOption{Name: name, Included: len(lists.collection(name, []library.Item{item})) == 1})
 	}
 	data.Owner, data.CanRefreshMetadata = viewer.Owner, viewer.Owner && metadata.configured()
@@ -160,14 +156,6 @@ func autoNext(request *http.Request, settings *settingsStore, index *libraryInde
 }
 
 func nextEpisode(request *http.Request, index *libraryIndex, current library.Item) string {
-	items, _ := visibleLibrary(request, index)
-	_, shows := library.Organize(items)
-	for _, show := range shows {
-		for position, episode := range show.Episodes {
-			if episode.ID == current.ID && position+1 < len(show.Episodes) {
-				return show.Episodes[position+1].ID
-			}
-		}
-	}
-	return ""
+	view, _ := visibleView(request, index)
+	return view.NextEpisode(current.ID)
 }

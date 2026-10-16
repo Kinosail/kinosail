@@ -38,7 +38,7 @@ func (api *jellyfinAPI) playbackModule() sharedjellyfin.PlaybackHTTP {
 		VisibleItem: func(request *http.Request, id string) (library.Item, bool) {
 			return visibleItem(request, api.index, id)
 		},
-		VisibleLibrary: func(request *http.Request) ([]library.Item, error) { return visibleLibrary(request, api.index) },
+		VisibleView: func(request *http.Request) (*library.View, error) { return visibleView(request, api.index) },
 		PrepareImageRequest: func(request *http.Request) *http.Request {
 			if currentViewer(request).ID == "" {
 				viewer := viewerProfile{Libraries: []string{"all"}, Rating: "all"}

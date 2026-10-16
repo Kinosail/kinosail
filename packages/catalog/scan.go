@@ -2,29 +2,13 @@ package catalog
 
 import (
 	"context"
-	"path/filepath"
 	"runtime"
-	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
-
-func SafePath(path string, allowed []string) bool {
-	resolved, err := filepath.EvalSymlinks(path)
-	if err != nil {
-		return false
-	}
-	for _, candidate := range allowed {
-		root, rootErr := filepath.EvalSymlinks(candidate)
-		relative, relErr := filepath.Rel(root, resolved)
-		if candidate != "" && rootErr == nil && relErr == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-			return true
-		}
-	}
-	return false
-}
 
 type ScanRoot struct {
 	Path, Namespace string
@@ -40,8 +24,7 @@ func ScanRoots[T any](values []T, fields func(T) (string, string)) []ScanRoot {
 
 type IndexStorage struct {
 	Mutex     *sync.RWMutex
-	Items     *[]library.Item
-	ByID      *map[string]int
+	Library   *atomic.Pointer[library.Snapshot]
 	Err       *error
 	Ready     *bool
 	Scanned   *time.Time
@@ -142,14 +125,17 @@ dispatch:
 	return items, nil
 }
 
-func ItemsByID(items []library.Item) map[string]int {
-	byID := make(map[string]int, len(items))
-	for position, item := range items {
-		if _, found := byID[item.ID]; !found {
-			byID[item.ID] = position
-		}
+func (storage IndexStorage) publish(items []library.Item) *library.Snapshot {
+	generation := uint64(1)
+	if current := storage.Library.Load(); current != nil {
+		generation = current.Generation() + 1
 	}
-	return byID
+	snapshot := library.NewSnapshot(items, generation)
+	storage.Library.Store(snapshot)
+	if storage.published != nil {
+		storage.published()
+	}
+	return snapshot
 }
 
 func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error {
@@ -160,10 +146,8 @@ func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error
 	storage.Mutex.Lock()
 	*storage.Err = err
 	if err == nil {
-		*storage.Items, *storage.ByID, *storage.Ready, *storage.Scanned = items, ItemsByID(items), true, time.Now()
-		if storage.published != nil {
-			storage.published()
-		}
+		items = storage.publish(items).Items()
+		*storage.Ready, *storage.Scanned = true, time.Now()
 	}
 	analyzers := append([]func([]library.Item){}, (*storage.Analyzers)...)
 	storage.Mutex.Unlock()
@@ -178,18 +162,14 @@ func (storage IndexStorage) Refresh(ctx context.Context, roots []ScanRoot) error
 func (storage IndexStorage) SetDecorator(decorate func([]library.Item) []library.Item) {
 	storage.Mutex.Lock()
 	*storage.Decorator = decorate
-	*storage.Items = decorate(append([]library.Item(nil), (*storage.Items)...))
-	*storage.ByID = ItemsByID(*storage.Items)
-	if storage.published != nil {
-		storage.published()
-	}
+	storage.publish(decorate(append([]library.Item(nil), storage.Library.Load().Items()...)))
 	storage.Mutex.Unlock()
 }
 
 func (storage IndexStorage) AddAnalyzer(analyze func([]library.Item)) {
 	storage.Mutex.Lock()
 	*storage.Analyzers = append(*storage.Analyzers, analyze)
-	items := append([]library.Item(nil), (*storage.Items)...)
+	items := storage.Library.Load().Items()
 	storage.Mutex.Unlock()
 	analyze(items)
 }
@@ -197,5 +177,5 @@ func (storage IndexStorage) AddAnalyzer(analyze func([]library.Item)) {
 func (storage IndexStorage) Status() (int, time.Time, error) {
 	storage.Mutex.RLock()
 	defer storage.Mutex.RUnlock()
-	return len(*storage.Items), *storage.Scanned, *storage.Err
+	return storage.Library.Load().Len(), *storage.Scanned, *storage.Err
 }

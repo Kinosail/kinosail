@@ -16,7 +16,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 
 	views := catalog.Views()
 	assertResultCount(t, views, 2)
-	assertResultCount(t, NewCatalog(nil, fixtureProject).Views(), 0)
+	assertResultCount(t, fixtureCatalog(nil).Views(), 0)
 
 	if _, err := catalog.Items(url.Values{"IDs": {"one", "two"}}); err == nil {
 		t.Fatal("duplicate ids query succeeded")
@@ -139,9 +139,6 @@ func TestCatalogFeedsAndQueryHelpers(t *testing.T) {
 	if Int(values, "limit") != 7 || !Includes(" Movie,EPISODE ", "episode") || Includes("Movie", "Series") {
 		t.Fatal("query helpers mismatch")
 	}
-	if stringValue(42) != "" {
-		t.Fatal("non-string value was projected")
-	}
 }
 
 func TestDTOProjectionUsesPlayerContract(t *testing.T) {
@@ -217,7 +214,9 @@ func catalogFixture() []library.Item {
 	}
 }
 
-func fixtureCatalog(items []library.Item) Catalog { return NewCatalog(items, fixtureProject) }
+func fixtureCatalog(items []library.Item) Catalog {
+	return NewCatalog(library.NewSnapshot(items, 1).View(library.NewPolicy(true, "", nil)), fixtureProject)
+}
 
 func fixtureProject(item library.Item) map[string]any {
 	return ItemDTO(item, ItemOptions{UserData: ProjectUserDataDTO(item, UserState{}, false, nil), MediaSource: map[string]any{"Id": item.ID}})

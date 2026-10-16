@@ -71,46 +71,28 @@ func showCards(request *http.Request, index *libraryIndex, progress *progressSto
 	if len(shows) == 0 {
 		return result
 	}
-	positions := make(map[string]int, len(shows))
+	view, _ := visibleView(request, index)
 	for position, show := range shows {
-		positions[show.ID] = position
-	}
-	episodes := make([]library.Item, 0, len(shows))
-	references, _ := index.References()
-	policy := viewerPolicy(currentViewer(request))
-	for _, item := range references {
-		if item.Kind != "video" || item.Show == "" {
-			continue
+		if complete, found := view.Show(show.ID); found {
+			show = complete
 		}
-		if _, selected := positions[library.ShowID(item.Show)]; selected && policy.Allows(*item) {
-			episodes = append(episodes, *item)
-		}
-	}
-	_, complete := library.Organize(episodes)
-	for _, show := range complete {
-		shows[positions[show.ID]] = show
-	}
-	for index, show := range shows {
-		result[index] = showCard{show, showPlay(request, progress, show)}
+		result[position] = showCard{show, showPlay(request, progress, show)}
 	}
 	return result
 }
 
 func browseShow(index *libraryIndex, progress *progressStore) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		items, _ := visibleLibrary(request, index)
-		_, shows := library.Organize(items)
-		for _, show := range shows {
-			if show.ID != request.PathValue("id") {
-				continue
-			}
-			writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-			if err := showView.Execute(writer, request, projectShowPage(request, progress, show)); err != nil {
-				localizedError(writer, request, err.Error(), http.StatusInternalServerError)
-			}
+		view, _ := visibleView(request, index)
+		show, found := view.Show(request.PathValue("id"))
+		if !found {
+			localizedNotFound(writer, request)
 			return
 		}
-		localizedNotFound(writer, request)
+		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		if err := showView.Execute(writer, request, projectShowPage(request, progress, show)); err != nil {
+			localizedError(writer, request, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }
 
