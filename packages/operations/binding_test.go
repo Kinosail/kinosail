@@ -100,7 +100,7 @@ func TestBindingProjectsEveryMetric(t *testing.T) {
 	metrics := projectMetrics(snapshot)
 	want := Metrics{
 		Healthy: true, LibraryMonitoring: true, LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6, ActivityFailures: 7,
-		WorkloadCapacity: 8, WorkloadBackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13,
+		WorkloadCapacity: 8, WorkloadBackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13, ActiveInteractive: 31, WaitingInteractive: 32,
 		NotificationQueueDepth: 14, NotificationDropped: 15, ViewingSyncActive: 16, ViewingSyncDeferred: 17,
 		LiveEventSubscribers: 18, LiveEventsPublished: 19, LiveEventReconnects: 20, LiveEventRejected: 21, LiveEventSlowDrops: 22,
 		WatchRoomConnections: 23, WatchRoomJoins: 24, WatchRoomReconnects: 25, WatchRoomSlowDrops: 26, WatchRoomDriftObservations: 27, WatchRoomDriftSeconds: 28.5,
@@ -167,7 +167,7 @@ func fullRuntimeSnapshot() runtimeSnapshot {
 		LastScan: time.Date(2026, time.September, 4, 11, 0, 0, 0, time.UTC), PlaybackMode: "direct", Transcoder: "fast", ScanFrequency: "hourly", LibraryMonitoring: true,
 		LibraryItems: 1, Sessions: 2, TranscodeCacheBytes: 3, HTTPRequests: 4, HTTPErrors: 5, HTTPPanics: 6,
 		Activity:          auditjournal.Status{Healthy: true, WriteFailures: 7, NotificationQueued: 14, NotificationDrops: 15},
-		Workload:          WorkloadSnapshot{Capacity: 8, BackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13},
+		Workload:          WorkloadSnapshot{Capacity: 8, BackgroundCapacity: 9, ActivePlayback: 10, ActiveBackground: 11, WaitingPlayback: 12, WaitingBackground: 13, ActiveInteractive: 31, WaitingInteractive: 32},
 		ViewingSyncActive: 16, ViewingSyncDeferred: 17,
 		LiveEvents: liveevents.Metrics{Subscribers: 18, Published: 19, Reconnects: 20, Rejected: 21, SlowDrops: 22},
 		WatchRooms: watchrooms.Metrics{Connections: 23, Joins: 24, Reconnects: 25, SlowDrops: 26, DriftObservations: 27, DriftSeconds: 28.5},

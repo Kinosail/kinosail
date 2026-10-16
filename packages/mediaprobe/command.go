@@ -6,6 +6,8 @@ import (
 	"errors"
 	"os/exec"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 const maximumProbeOutput = 2 << 20
@@ -36,7 +38,7 @@ func runProbe(ctx context.Context, executable string, arguments ...string) ([]by
 	output := boundedOutput{remaining: maximumProbeOutput}
 	command := exec.CommandContext(ctx, executable, arguments...)
 	command.Stdout = &output
-	if err := command.Run(); err != nil {
+	if err := workload.RunContext(ctx, command); err != nil {
 		return nil, err
 	}
 	return output.Bytes(), nil

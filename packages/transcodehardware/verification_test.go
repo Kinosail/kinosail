@@ -141,6 +141,27 @@ func TestRecoveryClassifiesFailureAndNeverChangesNegotiatedCodec(t *testing.T) {
 	}
 }
 
+func TestDeviceSessionBudgetsLeavePlaybackHeadroom(t *testing.T) {
+	tests := []struct {
+		accelerator, device string
+		sessions            int
+	}{
+		{"vaapi", "/dev/dri/renderD128", 4}, {"qsv", "", 4}, {"cuda", "0", 3}, {"cuda", "", 3},
+		{"videotoolbox", "", 4}, {"amf", "", 4}, {"rkmpp", "/dev/dri/renderD129", 4}, {"mf", "", 2}, {"v4l2m2m", "", 2},
+	}
+	keys := map[string]bool{}
+	for _, test := range tests {
+		key := DeviceKey(transcodepolicy.Settings{Accelerator: test.accelerator, Device: test.device})
+		if got := DeviceSessions(key); got != test.sessions {
+			t.Errorf("%s %q sessions = %d, want %d", test.accelerator, test.device, got, test.sessions)
+		}
+		keys[key] = true
+	}
+	if len(keys) != len(tests) || DeviceSessions("unknown") != 2 || DeviceKey(transcodepolicy.Settings{Accelerator: "none"}) != "" {
+		t.Fatalf("device keys = %v", keys)
+	}
+}
+
 func TestChangedExecutableInvalidatesEvidenceUntilExplicitCheck(t *testing.T) {
 	executable := filepath.Join(t.TempDir(), "ffmpeg")
 	if err := os.WriteFile(executable, []byte("old"), 0o700); err != nil { //nolint:gosec // This private temporary fixture must be executable by the test.

@@ -14,7 +14,7 @@ func TestVideoArgumentsCoverBackendAndSoftwareEdges(t *testing.T) {
 		{"unresolved automatic uses software", Settings{Accelerator: "auto", CRF: "22"}, "-c:v libx264"},
 		{"VAAPI tone map", Settings{Accelerator: "vaapi", Device: "/dev/custom", ToneMap: true, CRF: "22"}, "tonemap=hable"},
 		{"QSV device", Settings{Accelerator: "qsv", Device: "/dev/custom", CRF: "22"}, "-init_hw_device vaapi=kino_va:/dev/custom"},
-		{"AOM", Settings{Encoder: "libaom-av1", CRF: "22"}, "-cpu-used 6"},
+		{"AOM", Settings{Encoder: "libaom-av1", CRF: "22"}, "-cpu-used 8"},
 		{"Rav1e", Settings{Encoder: "librav1e", CRF: "22"}, "-speed 8"},
 	} {
 		t.Run(test.name, func(t *testing.T) {

@@ -71,11 +71,11 @@ func softwareVideoEncoderArguments(encoder string, options Settings) []string {
 		preset := map[string]string{"ultrafast": "10", "veryfast": "8", "medium": "6"}[options.Preset]
 		return []string{"-c:v", encoder, "-preset", preset, "-crf", options.CRF}
 	case "libaom-av1":
-		return []string{"-c:v", encoder, "-cpu-used", "6", "-crf", options.CRF}
+		return []string{"-c:v", encoder, "-usage", "realtime", "-cpu-used", "8", "-row-mt", "1", "-tile-columns", "2", "-crf", options.CRF}
 	case "librav1e":
 		return []string{"-c:v", encoder, "-speed", "8", "-qp", options.CRF}
 	case "libvpx-vp9":
-		return []string{"-c:v", encoder, "-deadline", "realtime", "-cpu-used", "6", "-crf", options.CRF, "-b:v", "0"}
+		return []string{"-c:v", encoder, "-deadline", "realtime", "-cpu-used", "6", "-row-mt", "1", "-tile-columns", "2", "-crf", options.CRF, "-b:v", "0"}
 	default:
 		return []string{"-c:v", encoder, "-preset", options.Preset, "-crf", options.CRF}
 	}

@@ -41,7 +41,7 @@ func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler
 func (fixture HLSSchedulerFixture) LimitsConcurrentFFmpegWork(t *testing.T) {
 	t.Helper()
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
-	for _, name := range []string{"One.mkv", "Two.mkv"} {
+	for _, name := range []string{"One.mkv", "Two.mkv", "Three.mkv"} {
 		if err := os.WriteFile(filepath.Join(media, name), []byte("video"), 0o600); err != nil {
 			t.Fatal(err)
 		}
@@ -49,8 +49,8 @@ func (fixture HLSSchedulerFixture) LimitsConcurrentFFmpegWork(t *testing.T) {
 	starts, release, ffmpeg := filepath.Join(tools, "starts"), filepath.Join(tools, "release"), filepath.Join(tools, "ffmpeg")
 	WriteExecutable(t, ffmpeg, fmt.Sprintf("#!/bin/sh\nprintf 'start\\n' >> '%s'\nwhile [ ! -f '%s' ]; do sleep 0.02; done\n", starts, release)+fixture.PlayableHLS)
 	handler := fixture.New(HLSSchedulerConfig{MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg})
-	expected := 1
-	ids := scheduledWatchIDs(t, handler)
+	expected := 2
+	ids := scheduledWatchIDs(t, handler, 3)
 	var wait sync.WaitGroup
 	for _, id := range ids {
 		wait.Add(1)
@@ -86,6 +86,8 @@ func uniqueWatchIDs(body string) []string {
 
 func (fixture HLSSchedulerFixture) PublishesOneCompleteStableMaster(t *testing.T) {
 	t.Helper()
+	previous := runtime.GOMAXPROCS(8)
+	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
 	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
@@ -170,7 +172,7 @@ func assertScheduledMasters(t *testing.T, cache string, ids []string) {
 		complete := true
 		for _, id := range ids {
 			master, err := os.ReadFile(filepath.Join(cache, id+"-plan-t-a0-s0-none-t0-b0-z1920x1080", "index.m3u8"))
-			if err != nil || !strings.Contains(string(master), "540p/index.m3u8") || !strings.Contains(string(master), "1080p/index.m3u8") {
+			if err != nil || !strings.Contains(string(master), "1080p/index.m3u8") {
 				complete = false
 			}
 		}
@@ -182,16 +184,16 @@ func assertScheduledMasters(t *testing.T, cache string, ids []string) {
 	t.Fatal("admitted FFmpeg work did not finish")
 }
 
-func scheduledWatchIDs(t *testing.T, handler http.Handler) []string {
+func scheduledWatchIDs(t *testing.T, handler http.Handler, count int) []string {
 	t.Helper()
 	var ids []string
-	for deadline := time.Now().Add(5 * time.Second); len(ids) < 2 && time.Now().Before(deadline); time.Sleep(10 * time.Millisecond) {
+	for deadline := time.Now().Add(5 * time.Second); len(ids) < count && time.Now().Before(deadline); time.Sleep(10 * time.Millisecond) {
 		home := httptest.NewRecorder()
 		handler.ServeHTTP(home, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 		ids = uniqueWatchIDs(home.Body.String())
 	}
-	if len(ids) != 2 {
-		t.Fatalf("scanned media items = %d, want 2", len(ids))
+	if len(ids) != count {
+		t.Fatalf("scanned media items = %d, want %d", len(ids), count)
 	}
 	return ids
 }

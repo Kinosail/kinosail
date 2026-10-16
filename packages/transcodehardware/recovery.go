@@ -56,10 +56,22 @@ func DeviceKey(options transcodepolicy.Settings) string {
 		return ""
 	}
 	if options.Device == "" {
-		return "system-default-gpu"
+		return options.Accelerator + ":default"
 	}
 	if strings.HasPrefix(options.Device, "/") {
 		return options.Device
 	}
 	return options.Accelerator + ":" + options.Device
+}
+
+func DeviceSessions(key string) int {
+	backend, _, _ := strings.Cut(key, ":")
+	switch {
+	case strings.HasPrefix(key, "/dev/dri/"), backend == "vaapi", backend == "qsv", backend == "videotoolbox", backend == "amf", backend == "rkmpp":
+		return 4
+	case backend == "cuda":
+		return 3
+	default:
+		return 2
+	}
 }

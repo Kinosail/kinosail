@@ -165,7 +165,7 @@ func sourceQuality(facts MediaFacts, maximum int64) PlaybackQuality {
 }
 
 func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item, root, name, width, videoRate, audioRate string, duration float64, options transcodeSettings, sourceRecipe, recipe hlsRecipe, start float64, startNumber int) error { //nolint:cyclop,gocognit // One FFmpeg command is assembled from the validated playback recipe.
-	release, err := manager.acquireHLSEncode(ctx, 1, "", start, startNumber)
+	release, err := manager.acquireHLSEncode(ctx, 0, "", start, startNumber)
 	if err != nil {
 		return err
 	}
@@ -252,12 +252,9 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 
 func (manager *hlsManager) availableHLSQualities(facts MediaFacts, recipe hlsRecipe, options transcodeSettings) []PlaybackQuality {
 	qualities := hlsTranscodeQualities(facts, recipe)
-	capacity := manager.workloads.EncodingCapacity()
-	if options.Accelerator != "none" {
-		capacity = 1
+	count := 1
+	if options.Accelerator == "none" {
+		count = manager.workloads.LadderRungs(ladderRungs(qualities))
 	}
-	if len(qualities) > capacity {
-		qualities = qualities[len(qualities)-capacity:]
-	}
-	return qualities
+	return qualities[len(qualities)-min(count, len(qualities)):]
 }
