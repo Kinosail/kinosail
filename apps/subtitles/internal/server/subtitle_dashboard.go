@@ -134,7 +134,7 @@ func (manager *subtitleManager) register(mux *http.ServeMux, auth *authenticatio
 }
 
 func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *http.Request) {
-	options, err := subtitleDashboardQuery(request)
+	options, err := subtitleDashboardQuery(request, "lang")
 	if err != nil {
 		localizedPageError(writer, request, "Request could not be completed.", "Check the view and search values, then try again.", http.StatusBadRequest)
 		return
