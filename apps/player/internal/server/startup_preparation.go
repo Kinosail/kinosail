@@ -181,8 +181,9 @@ func (startup *startupPreparation) startRequest(request *http.Request, value sta
 
 func (startup *startupPreparation) authorizedItem(ctx context.Context, original *http.Request, value startupRequest) (library.Item, bool) {
 	request := original.Clone(ctx)
-	viewer, authenticated := startup.auth.identity(request)
-	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(viewer, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
+	access, authenticated := startup.auth.identity(request)
+	viewer := access.profile
+	if !authenticated || viewer.ID != value.viewer || startup.auth.viewerAccess(access, request, "POST /api/v1/items/{id}/playback-prepare") != identitycore.Allowed {
 		slog.InfoContext(ctx, "HLS startup preparation", "request_id", requestActivityID(ctx), "state", "authorization-expired")
 		return library.Item{}, false
 	}

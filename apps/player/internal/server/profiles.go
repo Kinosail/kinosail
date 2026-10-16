@@ -29,6 +29,8 @@ type profileStore struct {
 	publicSessionTimeouts      func() (time.Duration, time.Duration)
 	publicSessionLifetime      func() time.Duration
 	accessRetry                map[string]int64
+	retryMu                    sync.Mutex
+	accessUse                  identitycore.AccessUse
 }
 
 func newProfileStore(dataDir string, databases ...*database.Store) *profileStore {

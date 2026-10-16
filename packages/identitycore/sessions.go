@@ -179,13 +179,11 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 	if !ValidSessionToken(token) {
 		return "", ErrSessionToken
 	}
-	values := CloneSessions(*sessions.config.Values)
 	inactive, _ := sessions.TimeoutsFor(Session{Channel: channel})
-	values[SessionKey(token)] = Session{InactiveSeconds: browserInactiveSeconds(browser, inactive), ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
-	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
+	created := Session{InactiveSeconds: browserInactiveSeconds(browser, inactive), ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
+	if err := sessions.put(SessionKey(token), created); err != nil {
 		return "", err
 	}
-	*sessions.config.Values = values
 	return token, nil
 }
 
@@ -201,9 +199,7 @@ func (sessions *Sessions) MarkStrong(token string) error {
 		return ErrCurrentSession
 	}
 	current.StrongAt = sessions.config.Now().Unix()
-	values := CloneSessions(*sessions.config.Values)
-	values[key] = current
-	return sessions.commit(values)
+	return sessions.put(key, current)
 }
 
 func (sessions *Sessions) RecentlyAuthenticated(token string, maximumAge time.Duration) bool {
@@ -213,13 +209,7 @@ func (sessions *Sessions) RecentlyAuthenticated(token string, maximumAge time.Du
 	sessions.config.Mutex.RLock()
 	defer sessions.config.Mutex.RUnlock()
 	current, found := (*sessions.config.Values)[SessionKey(token)]
-	if !found {
-		return false
-	}
-	if current.StrongAt == 0 {
-		return false
-	}
-	return time.Unix(current.StrongAt, 0).Add(maximumAge).After(sessions.config.Now())
+	return found && RecentlyStrong(current, maximumAge, sessions.config.Now())
 }
 
 func (sessions *Sessions) Public(token string) bool {
@@ -235,10 +225,7 @@ func (sessions *Sessions) SignOut(token string) error {
 	if token == "" {
 		return nil
 	}
-	return sessions.change(func(values map[string]Session) error {
-		delete(values, SessionKey(token))
-		return nil
-	})
+	return sessions.remove(func(map[string]Session) ([]string, error) { return []string{SessionKey(token)}, nil })
 }
 
 func (sessions *Sessions) Active() int {
@@ -260,14 +247,12 @@ func (sessions *Sessions) Active() int {
 
 func (sessions *Sessions) RevokeOthers(token string) error {
 	key := SessionKey(token)
-	return sessions.change(func(values map[string]Session) error {
+	return sessions.replace(func(values map[string]Session) (map[string]Session, error) {
 		current, found := values[key]
 		if !found {
-			return ErrCurrentSession
+			return nil, ErrCurrentSession
 		}
-		clear(values)
-		values[key] = current
-		return nil
+		return map[string]Session{key: current}, nil
 	})
 }
 

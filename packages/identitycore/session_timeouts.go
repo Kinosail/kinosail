@@ -3,10 +3,7 @@ package identitycore
 import "time"
 
 func (sessions *Sessions) TimeoutsFor(session Session) (time.Duration, time.Duration) {
-	if session.Channel == "public" && sessions.config.PublicTimeouts != nil {
-		return sessions.config.PublicTimeouts()
-	}
-	return sessions.config.Timeouts()
+	return SessionTimeouts(session, sessions.config.Timeouts, sessions.config.PublicTimeouts)
 }
 
 func browserInactiveSeconds(browser bool, inactive time.Duration) int64 {

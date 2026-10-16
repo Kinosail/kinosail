@@ -278,8 +278,8 @@ func TestInvalidSessionManagers(t *testing.T) {
 	t.Parallel()
 	assertInvalidSessionsFailClosed(t)
 	configured := NewSessions(SessionConfig{})
-	if !errors.Is(configured.change(nil), ErrCurrentSession) {
-		t.Fatal("nil change did not fail closed")
+	if !errors.Is(configured.SignOut("token"), ErrCurrentSession) {
+		t.Fatal("unconfigured sign-out did not fail closed")
 	}
 	defaults := newSessionFixture()
 	defaultSessions := defaults.sessions(func(config *SessionConfig) {

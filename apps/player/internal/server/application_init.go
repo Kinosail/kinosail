@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"log/slog"
+	"sync"
 
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
@@ -22,14 +23,38 @@ func prepareApplicationConfig(config *Config) (context.Context, bool) {
 	return lifecycle, lifecycle != nil
 }
 
-func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) {
+func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) func(func()) {
 	if !managed || stateDB == nil {
-		return
+		return func(func()) {}
 	}
+	var mu sync.Mutex
+	var drains []func()
 	go func() {
 		<-lifecycle.Done()
+		mu.Lock()
+		defer mu.Unlock()
+		for _, drain := range drains {
+			drain()
+		}
 		_ = stateDB.Close()
 	}()
+	return func(drain func()) {
+		mu.Lock()
+		defer mu.Unlock()
+		drains = append(drains, drain)
+	}
+}
+
+func startAccessFlush(lifecycle context.Context, managed bool, profiles *profileStore, beforeClose func(func())) {
+	if !managed {
+		return
+	}
+	flushed := make(chan struct{})
+	go func() {
+		defer close(flushed)
+		profiles.runAccessFlush(lifecycle, accessFlushInterval)
+	}()
+	beforeClose(func() { <-flushed })
 }
 
 func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, string) {

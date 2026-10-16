@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"log/slog"
@@ -59,13 +60,14 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 	if attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
 		t.Fatalf("requests inside the retry window wrote state: %v", attempts)
 	}
+	failing = false
 	for file := range store.accessRetry {
 		store.accessRetry[file] = now - 1
 	}
-	failing = false
-	if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok {
-		t.Fatal("active session was rejected after recovery")
+	if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 2 || attempts["api_keys.json"] != 1 {
+		t.Fatalf("request retried state writes: ok=%v attempts=%v", ok, attempts)
 	}
+	store.flushAccessState(t.Context())
 	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 || len(store.accessRetry) != 0 {
 		t.Fatalf("retry attempts=%v pending=%v", attempts, store.accessRetry)
 	}
@@ -73,19 +75,66 @@ func TestAccessStateWriteFailuresAreLoggedRetriedAndThrottled(t *testing.T) { //
 		t.Fatalf("retried deletions were not durable: %v", persisted)
 	}
 	requireAccessStateLog(t, output.String(), "INFO", "retry", "persisted")
-	if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 3 {
-		t.Fatalf("recent session use wrote state: ok=%v attempts=%v", ok, attempts)
-	}
+	store.mu.Lock()
 	active := store.sessions[sessionKey("active-token")]
 	active.LastSeen = now - 61
 	store.sessions[sessionKey("active-token")] = active
-	if _, ok := store.profile(accessStateRequest(t, "active-token")); !ok || attempts["sessions.json"] != 4 || store.sessions[sessionKey("active-token")].LastSeen < now {
-		t.Fatalf("stale session use was not recorded: ok=%v attempts=%v session=%+v", ok, attempts, store.sessions[sessionKey("active-token")])
+	store.apiKeys[sessionKey("active-key")] = apiKey{ProfileID: "viewer", ExpiresAt: now + 3600}
+	store.mu.Unlock()
+	for _, token := range []string{"active-token", "active-key", "active-token", "active-key"} {
+		if _, ok := store.profile(accessStateRequest(t, token)); !ok {
+			t.Fatalf("%s was rejected", token)
+		}
+	}
+	if attempts["sessions.json"] != 3 || attempts["api_keys.json"] != 2 {
+		t.Fatalf("request path wrote use timestamps: %v", attempts)
+	}
+	store.flushAccessState(t.Context())
+	store.flushAccessState(t.Context())
+	if attempts["sessions.json"] != 4 || attempts["api_keys.json"] != 3 {
+		t.Fatalf("use timestamps were not flushed once: %v", attempts)
+	}
+	var sessions map[string]viewerSession
+	var keys map[string]apiKey
+	if json.Unmarshal([]byte(persisted["sessions.json"]), &sessions) != nil || sessions[sessionKey("active-token")].LastSeen < now || json.Unmarshal([]byte(persisted["api_keys.json"]), &keys) != nil || keys[sessionKey("active-key")].LastUsed < now {
+		t.Fatalf("flushed use timestamps = %v", persisted)
 	}
 	for _, secret := range []string{"expired-token", "stale-public-token", "active-token", "expired-key", sessionKey("expired-token"), sessionKey("active-token"), sessionKey("expired-key")} {
 		if strings.Contains(output.String(), secret) {
 			t.Fatalf("access state log exposed %q: %s", secret, output.String())
 		}
+	}
+}
+
+func TestAccessUseIsFlushedWhenTheLifecycleEnds(t *testing.T) {
+	now := time.Now().Unix()
+	persisted := map[string]string{}
+	store := &profileStore{
+		file: "profiles.json", sessionFile: "sessions.json", apiFile: "api_keys.json",
+		profiles: []viewerProfile{{ID: "viewer"}},
+		sessions: map[string]viewerSession{sessionKey("browser-token"): {ProfileID: "viewer", Browser: true, CreatedAt: now - 120, LastSeen: now - 120, ExpiresAt: now + 3600}},
+		apiKeys:  map[string]apiKey{},
+		persist: func(file string, value any) error {
+			data, err := json.Marshal(value)
+			persisted[file] = string(data)
+			return err
+		},
+		sessionTimeouts: func() (time.Duration, time.Duration) { return 15 * time.Minute, 8 * time.Hour },
+	}
+	lifecycle, end := context.WithCancel(t.Context())
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		store.runAccessFlush(lifecycle, time.Hour)
+	}()
+	if _, ok := store.profile(accessStateRequest(t, "browser-token")); !ok {
+		t.Fatal("browser session was rejected")
+	}
+	end()
+	<-stopped
+	var sessions map[string]viewerSession
+	if json.Unmarshal([]byte(persisted["sessions.json"]), &sessions) != nil || sessions[sessionKey("browser-token")].LastSeen < now {
+		t.Fatalf("lifecycle end did not flush session use: %v", persisted)
 	}
 }
 
