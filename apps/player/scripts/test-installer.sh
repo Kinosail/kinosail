@@ -21,6 +21,7 @@ grep -Fq '/tmp:rw,noexec,nosuid,nodev,size=256m' "$fixture/app/compose.release.y
 grep -Fq 'KINOSAIL_GPU_GROUP:-10001' "$fixture/app/compose.gpu.yaml"
 grep -Fq 'driver: nvidia' "$fixture/app/compose.nvidia.yaml"
 grep -Fq 'NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"' "$fixture/app/compose.nvidia.yaml"
+"$source_root/scripts/test-installer-nvidia.sh" "$fixture/app" "$fixture/media"
 grep -Fq 'KINOSAIL_GPU_GROUP_1:-10001' "$fixture/app/compose.rkmpp.yaml"
 export KINOSAIL_IMAGE=unverified-image
 export KINOSAIL_INSTALL_TEST_LOG="$fixture/compose.log" KINOSAIL_INSTALL_TEST_STATE="$fixture/running" KINOSAIL_INSTALL_TEST_DATA="$fixture/private-state"

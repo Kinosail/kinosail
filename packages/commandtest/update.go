@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"os"
 	"strings"
 	"testing"
 
@@ -11,11 +12,28 @@ import (
 )
 
 type UpdateContract struct {
-	Run                        updatecontrol.Command
-	Open                       func(string) (updatecontrol.CommandDatabase, error)
-	Policy                     updatecontrol.Policy
-	Product, SignatureIdentity string
-	StateSchema                int
+	Run                           updatecontrol.Command
+	Open                          func(string) (updatecontrol.CommandDatabase, error)
+	Policy                        updatecontrol.Policy
+	Product, InstallationContract string
+	StateSchema                   int
+}
+
+func (contract UpdateContract) signatureIdentity(t *testing.T) string {
+	t.Helper()
+	raw, err := os.ReadFile(contract.InstallationContract)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var installation struct {
+		Update struct {
+			SignatureIdentity string `json:"signatureIdentity"`
+		} `json:"update"`
+	}
+	if err := json.Unmarshal(raw, &installation); err != nil || installation.Update.SignatureIdentity == "" {
+		t.Fatalf("installation contract signature identity = %q, %v", installation.Update.SignatureIdentity, err)
+	}
+	return installation.Update.SignatureIdentity
 }
 
 func (contract UpdateContract) writePlan(output io.Writer, directory string) error {
@@ -40,7 +58,7 @@ func (contract UpdateContract) Versioned(t *testing.T) {
 	if err := json.Unmarshal(output.Bytes(), &plan); err != nil {
 		t.Fatal(err)
 	}
-	if plan.SchemaVersion != updatecontrol.PlanSchemaVersion || plan.StateSchema != contract.StateSchema || plan.ConfigurationSchema != 1 || plan.SignatureIdentity != contract.SignatureIdentity || plan.Automatic || !plan.RequireSignature || !plan.BackupBeforeInstall || !plan.DeferWhilePlaying || !plan.RollbackOnUnhealthy || !plan.Recovery.IncludesSecrets || !plan.Recovery.RequiresKey || !plan.Recovery.RestoreOnRollback {
+	if plan.SchemaVersion != updatecontrol.PlanSchemaVersion || plan.StateSchema != contract.StateSchema || plan.ConfigurationSchema != 1 || plan.SignatureIdentity != contract.signatureIdentity(t) || plan.Automatic || !plan.RequireSignature || !plan.BackupBeforeInstall || !plan.DeferWhilePlaying || !plan.RollbackOnUnhealthy || !plan.Recovery.IncludesSecrets || !plan.Recovery.RequiresKey || !plan.Recovery.RestoreOnRollback {
 		t.Fatalf("update plan = %#v", plan)
 	}
 	db, err := contract.Open(dataDir)
@@ -128,7 +146,7 @@ func (contract UpdateContract) PendingTarget(t *testing.T) {
 		t.Fatal(err)
 	}
 	var plan updatecontrol.Plan
-	if json.Unmarshal(output.Bytes(), &plan) != nil || plan.TargetVersion != "v4.5.6" || !strings.HasSuffix(plan.ManifestURL, "/"+contract.Product+"-v4.5.6/kinosail-release.json") || plan.ManifestSignatureURL != plan.ManifestURL+".sigstore.json" || plan.SignatureIdentity != contract.SignatureIdentity {
+	if json.Unmarshal(output.Bytes(), &plan) != nil || plan.TargetVersion != "v4.5.6" || !strings.HasSuffix(plan.ManifestURL, "/"+contract.Product+"-v4.5.6/kinosail-release.json") || plan.ManifestSignatureURL != plan.ManifestURL+".sigstore.json" || plan.SignatureIdentity != contract.signatureIdentity(t) {
 		t.Fatalf("plan = %#v", plan)
 	}
 }

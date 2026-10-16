@@ -49,7 +49,7 @@ assert set(update) == {
 assert update["schemaVersion"] == 2
 assert update["manifest"] == "kinosail-release.json"
 assert update["signatureBundle"] == "kinosail-release.json.sigstore.json"
-assert update["signatureIdentity"] == r"^https://github\.com/MikeO7/kinosail/\.github/workflows/subtitles-release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
+assert update["signatureIdentity"] == r"^https://github\.com/Kinosail/kinosail/\.github/workflows/release\.yml@refs/tags/subtitles-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$"
 assert update["terminalStates"] == ["current", "rolled-back"]
 assert update["agent"] == {
     "schemaVersion": 1,
