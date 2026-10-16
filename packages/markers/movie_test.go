@@ -94,7 +94,7 @@ func TestMarkerCandidatePairsAndStaleDetectorVersion(t *testing.T) {
 	stale.DetectorVersion--
 	analyzer.records[libraryItems[0].ID] = stale
 	changed := analyzer.changedItems(libraryItems)
-	if len(changed) != 2 || changed[0].ID != "one" || changed[1].ID != "two" {
+	if len(changed) != 1 || changed[0].ID != "one" {
 		t.Fatalf("changed items = %#v", changed)
 	}
 }

@@ -3,12 +3,19 @@ package markers
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
 const creditFrameWidth, creditFrameHeight = 160, 90
+
+type creditFile struct {
+	Revision string   `json:"revision"`
+	Version  int      `json:"version"`
+	Markers  []Marker `json:"markers"`
+}
 
 func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, duration float64) ([]Marker, error) {
 	if !finite(duration) || duration <= 0 {
@@ -18,10 +25,18 @@ func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, 
 	if window < 20 {
 		return nil, nil
 	}
+	path := filepath.Join(analyzer.cache, item.ID+"-credits.json")
+	var cached creditFile
+	if analyzer.cache != "" && readCache(path, &cached) && cached.Revision == mediaRevision(item) && cached.Version == DetectorVersion && validCachedCredits(cached.Markers) {
+		return cached.Markers, nil
+	}
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 	defer cancel()
-	frames, err := analyzer.creditFrames(ctx, item, duration-window, window)
-	if err != nil {
+	var frames []byte
+	if err := analyzer.slot(ctx, func() (err error) {
+		frames, err = analyzer.creditFrames(ctx, item, duration-window, window)
+		return err
+	}); err != nil {
 		return nil, err
 	}
 	frameSize := creditFrameWidth * creditFrameHeight
@@ -34,14 +49,30 @@ func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, 
 			points = append(points, float64(index))
 		}
 	}
-	return creditMarkers(points, duration-window, duration), nil
+	markers := creditMarkers(points, duration-window, duration)
+	if analyzer.cache != "" {
+		_ = saveJSON(path, creditFile{Revision: mediaRevision(item), Version: DetectorVersion, Markers: markers})
+	}
+	return markers, nil
+}
+
+func validCachedCredits(markers []Marker) bool {
+	if len(markers) > 64 {
+		return false
+	}
+	for _, marker := range markers {
+		if marker.Type != "credits" || !validPersistedMarker(marker) {
+			return false
+		}
+	}
+	return true
 }
 
 func (analyzer *Analyzer) creditFrames(ctx context.Context, item library.Item, start, length float64) ([]byte, error) {
 	if analyzer.extractCredits != nil {
 		return analyzer.extractCredits(ctx, item, start, length)
 	}
-	command := analysisCommand(ctx, analyzer.ffmpeg, "-ss", seconds(start), "-i", item.Path, "-t", seconds(length), "-map", "0:v:0", "-vf", "fps=1,scale=160:90:force_original_aspect_ratio=decrease,pad=160:90:(ow-iw)/2:(oh-ih)/2,format=gray", "-an", "-f", "rawvideo", "-pix_fmt", "gray", "-")
+	command := analysisCommand(ctx, analyzer.ffmpeg, analyzer.threads, "-ss", seconds(start), "-i", item.Path, "-t", seconds(length), "-map", "0:v:0", "-vf", "fps=1,scale=160:90:force_original_aspect_ratio=decrease,pad=160:90:(ow-iw)/2:(oh-ih)/2,format=gray", "-an", "-f", "rawvideo", "-pix_fmt", "gray", "-")
 	return command.Output()
 }
 

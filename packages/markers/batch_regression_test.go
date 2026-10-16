@@ -13,7 +13,7 @@ import (
 )
 
 func TestFailedBatchPreservesPublishedMarkersAndRetries(t *testing.T) {
-	for _, failure := range []string{"duration", "extract", "malformed", "cancel", "persist"} {
+	for _, failure := range []string{"cancel", "persist"} {
 		t.Run(failure, func(t *testing.T) {
 			items := movieItems(2)
 			analyzer := NewAnalyzer(Config{DataDir: t.TempDir()})
@@ -46,7 +46,7 @@ func TestFailedBatchPreservesPublishedMarkersAndRetries(t *testing.T) {
 			if failure == "persist" {
 				analyzer.persist = func(string, any) error { return errors.New("private/storage/path") }
 			}
-			if err := analyzer.analyzeBatch(ctx, items); err == nil || strings.Contains(err.Error(), "private/") {
+			if err := analyzer.analyzeBatch(ctx, items, nil); err == nil || strings.Contains(err.Error(), "private/") {
 				t.Fatalf("failure = %v", err)
 			}
 			if !reflect.DeepEqual(analyzer.records, before) {
@@ -61,7 +61,7 @@ func TestFailedBatchPreservesPublishedMarkersAndRetries(t *testing.T) {
 			analyzer.persist = persist
 			analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 200} })
 			analyzer.extractCredits = func(context.Context, library.Item, float64, float64) ([]byte, error) { return nil, nil }
-			if err := analyzer.analyzeBatch(t.Context(), items); err != nil {
+			if err := analyzer.analyzeBatch(t.Context(), items, nil); err != nil {
 				t.Fatal(err)
 			}
 			if got := analyzer.changedItems(items); len(got) != 0 {
@@ -91,7 +91,7 @@ func TestBatchPreservesOwnerEditsMadeDuringExtraction(t *testing.T) {
 		}
 		return frames, nil
 	}
-	if err := analyzer.analyzeBatch(t.Context(), items); err != nil {
+	if err := analyzer.analyzeBatch(t.Context(), items, nil); err != nil {
 		t.Fatal(err)
 	}
 	reloaded := NewAnalyzer(Config{DataDir: filepathDir(analyzer.file)})
@@ -116,14 +116,13 @@ func TestWorkerReportsExtractionFailureAndRecovery(t *testing.T) {
 	defer cancel()
 	go analyzer.work(ctx)
 	analyzer.Enqueue(movieItems(1))
-	waitForMarkerState(t, analyzer, "failed")
+	waitForMarkerState(t, analyzer, "complete")
 	_, count, message := analyzer.Status()
-	if count != 0 || message == "" {
-		t.Fatalf("failed status: %d %q", count, message)
+	if count != 0 || message != "" || analyzer.records["one"].Failed == 0 {
+		t.Fatalf("failed title status: %d %q %#v", count, message, analyzer.records["one"])
 	}
-	analyzer.enqueueChanged(nil)
-	if state, _, message := analyzer.Status(); state != "failed" || message == "" {
-		t.Fatal("unchanged scan hid failure")
+	if pending := analyzer.changedItems(movieItems(1)); len(pending) != 0 {
+		t.Fatalf("failed title is retried on every scan: %#v", pending)
 	}
 	analyzer.SetProbe(func(context.Context, library.Item) Media { return Media{Duration: 50} })
 	analyzer.Enqueue(movieItems(1))
