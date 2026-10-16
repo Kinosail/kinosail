@@ -90,3 +90,28 @@ func TestIndexSafeFollowsRootChanges(t *testing.T) {
 		t.Fatal("removed roots stayed allowed")
 	}
 }
+
+func BenchmarkIndexSafe(b *testing.B) {
+	base := b.TempDir()
+	roots := []ScanRoot{{Path: filepath.Join(base, "movies"), Namespace: "Movies"}, {Path: filepath.Join(base, "shows"), Namespace: "Shows"}, {Path: filepath.Join(base, "music"), Namespace: "Music"}}
+	for _, root := range roots {
+		if err := os.MkdirAll(root.Path, 0o700); err != nil {
+			b.Fatal(err)
+		}
+	}
+	media := filepath.Join(roots[2].Path, "Album", "Track.mp3")
+	if err := os.MkdirAll(filepath.Dir(media), 0o700); err != nil {
+		b.Fatal(err)
+	}
+	if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
+		b.Fatal(err)
+	}
+	index := NewMemoryIndex(nil, true)
+	index.SetRoots(roots)
+	b.ReportAllocs()
+	for b.Loop() {
+		if !index.Safe(media) {
+			b.Fatal("media outside roots")
+		}
+	}
+}
