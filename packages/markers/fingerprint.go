@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 type fingerprintFile struct {
@@ -87,12 +88,12 @@ func (analyzer *Analyzer) audioFingerprint(ctx context.Context, item library.Ite
 		_ = temporary.Close()
 		defer os.Remove(input)
 		command := analysisCommand(ctx, analyzer.ffmpeg, analyzer.threads, "-ss", seconds(start), "-t", seconds(length), "-i", item.Path, "-map", "0:a:0", "-ac", "1", "-ar", "11025", "-y", input)
-		if output, err := command.CombinedOutput(); err != nil {
+		if output, err := workload.BackgroundCombinedOutput(command); err != nil {
 			return nil, errors.New(strings.TrimSpace(string(output)))
 		}
 	}
 	command := exec.CommandContext(ctx, analyzer.tool, "-raw", "-json", "-length", seconds(length), input) //nolint:gosec // Executable is installation config; input is scanned media or a private temporary file.
-	data, err := command.Output()
+	data, err := workload.BackgroundOutput(command)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +144,7 @@ func (analyzer *Analyzer) visualFingerprint(ctx context.Context, item library.It
 
 func (analyzer *Analyzer) visualPoints(ctx context.Context, item library.Item, start, length float64) ([]uint64, error) {
 	command := analysisCommand(ctx, analyzer.ffmpeg, analyzer.threads, "-ss", seconds(start), "-i", item.Path, "-t", seconds(length), "-map", "0:v:0", "-vf", "fps=1,scale=9:8:force_original_aspect_ratio=decrease,pad=9:8:(ow-iw)/2:(oh-ih)/2,format=gray", "-an", "-f", "rawvideo", "-pix_fmt", "gray", "-")
-	data, err := command.Output()
+	data, err := workload.BackgroundOutput(command)
 	if err != nil || len(data) == 0 || len(data)%72 != 0 {
 		return nil, errors.New("visual fingerprint is unavailable")
 	}

@@ -143,13 +143,8 @@ func TestInitializeSurfacesDatabaseFailures(t *testing.T) {
 		"version": func(mock sqlmock.Sqlmock) {
 			mock.ExpectQuery(versionPattern()).WillReturnError(errInjected)
 		},
-		"pragmas": func(mock sqlmock.Sqlmock) {
-			expectVersion(mock, 1)
-			mock.ExpectExec(pragmaPattern()).WillReturnError(errInjected)
-		},
 		"schema": func(mock sqlmock.Sqlmock) {
 			expectVersion(mock, 0)
-			mock.ExpectExec(pragmaPattern()).WillReturnResult(sqlmock.NewResult(0, 0))
 			mock.ExpectExec(schemaPattern()).WillReturnError(errInjected)
 		},
 		"quick query": func(mock sqlmock.Sqlmock) {
@@ -185,9 +180,9 @@ func TestInitializeSurfacesDatabaseFailures(t *testing.T) {
 			store, mock, closeStore := mockStore(t)
 			defer closeStore()
 			configure(mock)
-			legacy := map[string][]byte(nil)
+			var legacy legacyState
 			if name == "legacy import" {
-				legacy = map[string][]byte{"settings.json": []byte(`{}`)}
+				legacy.documents = map[string][]byte{"settings.json": []byte(`{}`)}
 			}
 			if err := store.initialize(t.Context(), legacy); err == nil {
 				t.Fatal("database failure was accepted")
@@ -218,7 +213,6 @@ func expectVersion(mock sqlmock.Sqlmock, version int) {
 
 func expectBeforeQuickCheck(mock sqlmock.Sqlmock, version int) {
 	expectVersion(mock, version)
-	mock.ExpectExec(pragmaPattern()).WillReturnResult(sqlmock.NewResult(0, 0))
 }
 
 func expectHealthyDatabase(mock sqlmock.Sqlmock) {
@@ -226,10 +220,7 @@ func expectHealthyDatabase(mock sqlmock.Sqlmock) {
 	mock.ExpectQuery(quickCheckPattern()).WillReturnRows(sqlmock.NewRows([]string{"quick_check"}).AddRow("ok"))
 }
 
-func versionPattern() string { return regexp.QuoteMeta(`PRAGMA user_version`) }
-func pragmaPattern() string {
-	return regexp.QuoteMeta(`PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA busy_timeout=5000;`)
-}
+func versionPattern() string    { return regexp.QuoteMeta(`PRAGMA user_version`) }
 func schemaPattern() string     { return "CREATE TABLE state" }
 func quickCheckPattern() string { return regexp.QuoteMeta(`PRAGMA quick_check`) }
 func selectStatePattern() string {

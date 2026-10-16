@@ -63,6 +63,11 @@ class PublicServer:
             raise RuntimeError("mfa_confirmation")
         if self.http("/onboarding/finish")[0] != 303:
             raise RuntimeError("onboarding_completion")
+        limit = time.monotonic() + 120
+        while self.call("/api/v1/hardware").get("probing"):
+            if time.monotonic() > limit:
+                raise RuntimeError("hardware_probe_not_finished")
+            time.sleep(0.1)
 
 
 def sha(path):

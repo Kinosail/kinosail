@@ -76,7 +76,7 @@ func operationMetrics(index *libraryIndex, profiles *profileStore, hls *hlsManag
 		},
 		Workload: func() sharedoperations.WorkloadSnapshot {
 			value := hls.workloads.Metrics()
-			return sharedoperations.WorkloadSnapshot{Capacity: value.Capacity, BackgroundCapacity: value.BackgroundCapacity, ActivePlayback: value.ActivePlayback, ActiveBackground: value.ActiveBackground, WaitingPlayback: value.WaitingPlayback, WaitingBackground: value.WaitingBackground}
+			return sharedoperations.WorkloadSnapshot{Capacity: value.Capacity, BackgroundCapacity: value.BackgroundCapacity, ActivePlayback: value.ActivePlayback, ActiveBackground: value.ActiveBackground, WaitingPlayback: value.WaitingPlayback, WaitingBackground: value.WaitingBackground, ActiveInteractive: value.ActiveInteractive, WaitingInteractive: value.WaitingInteractive}
 		},
 	})
 }

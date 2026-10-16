@@ -16,7 +16,8 @@ func TestStableCodecsAndBackendsUsePlayerRecipes(t *testing.T) {
 		{"av1", "cuda", "av1_nvenc", []string{"-c:v av1_nvenc", "-cq 22", "-preset p4"}},
 		{"av1", "none", "libsvtav1", []string{"-c:v libsvtav1", "-preset 8", "-crf 22"}},
 		{"vp9", "vaapi", "vp9_vaapi", []string{"-c:v vp9_vaapi", "-qp 22"}},
-		{"vp9", "none", "libvpx-vp9", []string{"-c:v libvpx-vp9", "-deadline realtime", "-cpu-used 6"}},
+		{"vp9", "none", "libvpx-vp9", []string{"-c:v libvpx-vp9", "-deadline realtime", "-cpu-used 6", "-row-mt 1", "-tile-columns 2"}},
+		{"av1", "none", "libaom-av1", []string{"-c:v libaom-av1", "-usage realtime", "-cpu-used 8", "-row-mt 1", "-tile-columns 2"}},
 		{"hevc", "v4l2m2m", "hevc_v4l2m2m", []string{"-c:v hevc_v4l2m2m", "-tag:v hvc1"}},
 		{"av1", "mf", "av1_mf", []string{"-c:v av1_mf", "-hw_encoding 1"}},
 	}

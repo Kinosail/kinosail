@@ -39,6 +39,7 @@ type Capabilities struct {
 	Backends     []Backend `json:"backends"`
 	Codecs       []Codec   `json:"codecs"`
 	Selected     string    `json:"selected"`
+	Probing      bool      `json:"probing,omitempty"`
 	Probed       bool      `json:"-"`
 	verification *verification
 }
@@ -63,6 +64,9 @@ func codecCapabilities(hardware Capabilities) []Codec {
 }
 
 func (capabilities Capabilities) Resolve(configured string) string {
+	if capabilities.Probing {
+		return "none"
+	}
 	if configured != "auto" {
 		return configured
 	}

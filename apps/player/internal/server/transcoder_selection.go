@@ -8,11 +8,11 @@ func (store *settingsStore) transcoding() transcodeSettings {
 }
 
 func (store *settingsStore) transcodingFor(codec string) (transcodeSettings, error) {
-	return store.transcoderState().Settings(store.hardware, codec)
+	return store.transcoderState().Settings(store.hardware(), codec)
 }
 
 func (store *settingsStore) preferredVideoCodec(client []string) string {
-	return store.transcoderState().PreferredCodec(store.hardware, client)
+	return store.transcoderState().PreferredCodec(store.hardware(), client)
 }
 
 var normalizeAccelerator, normalizeCodecSetting = transcodehardware.NormalizeAccelerator, transcodehardware.NormalizeCodec

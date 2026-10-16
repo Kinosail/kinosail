@@ -9,6 +9,7 @@ import (
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func Transcoding(current func() transcodepolicy.Settings, softwareEncoder func(string) string) func(bool) transcodepolicy.Settings {
@@ -57,7 +58,7 @@ func (manager *Manager) encodeSelectedContext(ctx context.Context, item library.
 		args = append(args, "-i", item.Path, "-vn", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-y", output)
 	}
 	//nolint:gosec // Executable is installation configuration. Paths are scanned content and derived cache targets.
-	return exec.CommandContext(ctx, manager.ffmpeg, args...).Run()
+	return workload.RunBackground(exec.CommandContext(ctx, manager.ffmpeg, args...))
 }
 
 func copyFileContext(ctx context.Context, inputPath, outputPath string) error {

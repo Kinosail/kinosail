@@ -115,9 +115,12 @@ func softwareFrameFilters(options Settings, width string) []string {
 		filters = append(filters, "bwdif=mode=send_frame:parity=auto:deint=interlaced")
 	}
 	if options.ToneMap {
-		filters = append(filters, "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv")
-		filters = append(filters, removeHDRMetadata()...)
+		filters = append(filters, softwareToneMapFilters()...)
 	}
 	filters = append(filters, "scale=w="+width+":h='trunc(ow/dar/2)*2'", "setsar=1", "format="+PixelFormat(options))
 	return filters
+}
+
+func softwareToneMapFilters() []string {
+	return append([]string{"zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv"}, removeHDRMetadata()...)
 }

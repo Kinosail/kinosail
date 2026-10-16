@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"log/slog"
+	"sync"
 
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
@@ -22,14 +23,44 @@ func prepareApplicationConfig(config *Config) (context.Context, bool) {
 	return lifecycle, lifecycle != nil
 }
 
-func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) {
-	if !managed || stateDB == nil {
+type databaseShutdown struct {
+	mu     sync.Mutex
+	closed bool
+	hooks  []func()
+}
+
+func (shutdown *databaseShutdown) beforeClose(hook func()) {
+	shutdown.mu.Lock()
+	if !shutdown.closed {
+		shutdown.hooks = append(shutdown.hooks, hook)
+		shutdown.mu.Unlock()
 		return
+	}
+	shutdown.mu.Unlock()
+	hook()
+}
+
+func (shutdown *databaseShutdown) run() {
+	shutdown.mu.Lock()
+	hooks := shutdown.hooks
+	shutdown.closed, shutdown.hooks = true, nil
+	shutdown.mu.Unlock()
+	for _, hook := range hooks {
+		hook()
+	}
+}
+
+func closeApplicationDatabase(lifecycle context.Context, stateDB *database.Store, managed bool) *databaseShutdown {
+	shutdown := new(databaseShutdown)
+	if !managed || stateDB == nil {
+		return shutdown
 	}
 	go func() {
 		<-lifecycle.Done()
+		shutdown.run()
 		_ = stateDB.Close()
 	}()
+	return shutdown
 }
 
 func initializeApplicationSettings(config Config, stateDB *database.Store, managed bool) (*settingsStore, *updateChecker, string) {
@@ -49,8 +80,7 @@ func initializeApplicationSettings(config Config, stateDB *database.Store, manag
 		updates.Schedule(config.Lifecycle)
 	}
 	settings.ffmpeg = config.FFmpeg
-	settings.hardware = probeHardware(config.Lifecycle, config.FFmpeg, config.HardwareDevices, config.ProbeHardware, config.HardwareOS, config.HardwareArch)
-	if settings.reconcileHardwareSelection() != nil {
+	if settings.startHardwareProbe(config) != nil {
 		return nil, nil, "transcoder configuration is unavailable"
 	}
 	return settings, updates, ""

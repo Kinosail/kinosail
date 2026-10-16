@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"maps"
 	"net/http"
 	"path/filepath"
 	"sync"
@@ -20,6 +21,11 @@ type MetadataConfig = sharedmetadata.Config
 
 type metadataRecord = sharedmetadata.Record
 
+const (
+	metadataDocument    = "metadata.json"
+	metadataRecordLimit = 100_000
+)
+
 type metadataStore struct {
 	mu          sync.RWMutex
 	file, cache string
@@ -31,8 +37,11 @@ type metadataStore struct {
 	persist     func(string, any) error
 	misses      *sharedmetadata.Misses
 	tmdbRecords bool
+	stateDB     *database.Store
 	err         error
 }
+
+var errMetadataRecordLimit = errors.New("metadata record limit reached")
 
 func newMetadataStore(config MetadataConfig, dataDir, cache string, databases ...*database.Store) *metadataStore {
 	stateDB := configuredDatabase(databases)
@@ -48,10 +57,18 @@ func (store *metadataStore) load(dataDir string, stateDB *database.Store) {
 	if dataDir == "" {
 		return
 	}
-	store.file = filepath.Join(dataDir, "metadata.json")
+	store.file = filepath.Join(dataDir, metadataDocument)
 	_, store.err = loadState(stateDB, store.file, &store.records)
 	if store.err == nil {
 		store.err = sharedmetadata.ValidateRecords(store.records)
+	}
+	if store.records == nil {
+		store.records = make(map[string]metadataRecord)
+	}
+	if store.err == nil && stateDB != nil {
+		if store.err = stateDB.EnableEntries(metadataDocument); store.err == nil {
+			store.stateDB = stateDB
+		}
 	}
 }
 
@@ -98,15 +115,45 @@ func (store *metadataStore) set(id string, record metadataRecord) error {
 }
 
 func (store *metadataStore) setAll(updates map[string]metadataRecord) error {
+	if err := sharedmetadata.ValidateRecords(updates); err != nil {
+		return err
+	}
 	store.mu.Lock()
 	defer store.mu.Unlock()
+	if store.stateDB != nil {
+		return store.saveEntries(updates)
+	}
 	records := sharedmetadata.MergeRecords(store.records, updates)
+	if len(records) > metadataRecordLimit {
+		return errMetadataRecordLimit
+	}
 	if store.file != "" {
 		if err := store.persist(store.file, records); err != nil {
 			return err
 		}
 	}
 	store.records = records
+	return nil
+}
+
+func (store *metadataStore) saveEntries(updates map[string]metadataRecord) error {
+	cloned := make(map[string]metadataRecord, len(updates))
+	values := make(map[string]any, len(updates))
+	added := 0
+	for id, record := range updates {
+		if _, exists := store.records[id]; !exists {
+			added++
+		}
+		cloned[id] = sharedmetadata.Clone(record)
+		values[id] = cloned[id]
+	}
+	if len(store.records)+added > metadataRecordLimit {
+		return errMetadataRecordLimit
+	}
+	if err := store.stateDB.SaveEntries(metadataDocument, values, nil); err != nil {
+		return err
+	}
+	maps.Copy(store.records, cloned)
 	return nil
 }
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 const creditFrameWidth, creditFrameHeight = 160, 90
@@ -73,7 +74,7 @@ func (analyzer *Analyzer) creditFrames(ctx context.Context, item library.Item, s
 		return analyzer.extractCredits(ctx, item, start, length)
 	}
 	command := analysisCommand(ctx, analyzer.ffmpeg, analyzer.threads, "-ss", seconds(start), "-i", item.Path, "-t", seconds(length), "-map", "0:v:0", "-vf", "fps=1,scale=160:90:force_original_aspect_ratio=decrease,pad=160:90:(ow-iw)/2:(oh-ih)/2,format=gray", "-an", "-f", "rawvideo", "-pix_fmt", "gray", "-")
-	return command.Output()
+	return workload.BackgroundOutput(command)
 }
 
 func creditFrameLikely(frame []byte) bool {
