@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -100,5 +101,42 @@ func TestSubtitleLedgerForgetsItemsMissingBeyondGrace(t *testing.T) {
 	reloaded := openTestSubtitleLedger(t, directory)
 	if _, found := reloaded.state.Records[subtitleRecordKey("0000000000000002", "en")]; found || len(reloaded.state.Records) != 1 || len(reloaded.state.Searches) != 1 {
 		t.Fatalf("missing item was not forgotten: %d records, %d searches", len(reloaded.state.Records), len(reloaded.state.Searches))
+	}
+}
+
+func TestSubtitleLedgerReloadsAndPrunesRecordsBeyondDocumentLimit(t *testing.T) {
+	t.Parallel()
+	directory, now := t.TempDir(), time.Now()
+	ledger := openTestSubtitleLedger(t, directory)
+	const total = 26000
+	live := make([]library.Item, 0, total)
+	for start := 0; start < total; start += 2000 {
+		records := make(map[string]any, 2000)
+		for position := start; position < min(start+2000, total); position++ {
+			itemID := fmt.Sprintf("%016x", position+1)
+			records[subtitleRecordKey(itemID, "en")] = largeLibraryRecord(itemID, now)
+			live = append(live, library.Item{ID: itemID})
+		}
+		if err := ledger.db.SaveEntries(subtitleLedgerRecordsDocument, records, nil); err != nil {
+			t.Fatalf("store records from %d: %v", start, err)
+		}
+	}
+	missing := live[total-1].ID
+	if err := ledger.db.SaveEntry(subtitleLedgerSearchesDocument, subtitleSearchKey(missing, "en", "standard"), subtitleSearchRecord{Outcome: "no-result", CheckedAt: now.Unix(), NextAt: now.Add(time.Hour).Unix()}); err != nil {
+		t.Fatal(err)
+	}
+	if data, found, err := ledger.db.Load(subtitleLedgerRecordsDocument); err != nil || !found || len(data) <= database.DocumentSizeLimit {
+		t.Fatalf("records document = %d bytes, %v, %v; want more than %d", len(data), found, err, database.DocumentSizeLimit)
+	}
+	reloaded := openTestSubtitleLedger(t, directory)
+	if reloaded.err != nil || len(reloaded.state.Records) != total || len(reloaded.state.Searches) != 1 {
+		t.Fatalf("restart = %d records, %d searches, %v", len(reloaded.state.Records), len(reloaded.state.Searches), reloaded.err)
+	}
+	present := live[:total-1]
+	reloaded.forgetMissing(present, now)
+	reloaded.forgetMissing(present, now.Add(subtitleLedgerMissingGrace))
+	pruned := openTestSubtitleLedger(t, directory)
+	if _, found := pruned.state.Records[subtitleRecordKey(missing, "en")]; found || pruned.err != nil || len(pruned.state.Records) != total-1 || len(pruned.state.Searches) != 0 {
+		t.Fatalf("prune after restart = %d records, %d searches, %v", len(pruned.state.Records), len(pruned.state.Searches), pruned.err)
 	}
 }

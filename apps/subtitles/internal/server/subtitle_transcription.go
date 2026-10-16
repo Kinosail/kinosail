@@ -23,7 +23,7 @@ func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media stri
 			return cleanedSubtitle{}, nil, err
 		}
 	}
-	directory, err := os.MkdirTemp(workspace, "kinosail-transcription-")
+	directory, err := os.MkdirTemp(workspace, subtitleTranscriptionWorkspacePrefix)
 	if err != nil {
 		return cleanedSubtitle{}, nil, err
 	}

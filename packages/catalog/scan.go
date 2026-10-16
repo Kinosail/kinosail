@@ -118,6 +118,10 @@ func (index *Index) Refresh(ctx context.Context) error {
 	})
 }
 
+func (index *Index) RefreshPaths(ctx context.Context, paths []string) error {
+	return index.refreshChanged(ctx, paths)
+}
+
 func (index *Index) refreshChanged(ctx context.Context, paths []string) error {
 	return RefreshWork(ctx, &index.refreshMu, index.acquire, func(ctx context.Context) error {
 		scanners := index.rootScanners()

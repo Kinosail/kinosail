@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -28,7 +29,7 @@ func (manager *subtitleManager) fetch(request *http.Request, id, language string
 		}
 		return http.StatusBadGateway, errors.New("subtitle provider unavailable")
 	}
-	if err := manager.index.Refresh(request.Context()); err != nil {
+	if err := manager.refreshSidecarFolders(request.Context(), item.Path); err != nil {
 		return http.StatusInternalServerError, errors.New("subtitle library could not be refreshed")
 	}
 	return http.StatusCreated, nil
@@ -51,7 +52,7 @@ func (manager *subtitleManager) restoreLanguage(request *http.Request, id, langu
 	if err = manager.provider.restorePrevious(item, language); err != nil {
 		return http.StatusConflict, err
 	}
-	if err = manager.index.Refresh(request.Context()); err != nil {
+	if err = manager.refreshSidecarFolders(request.Context(), item.Path); err != nil {
 		return http.StatusInternalServerError, errors.New("subtitle library could not be refreshed")
 	}
 	return http.StatusNoContent, nil
@@ -100,7 +101,7 @@ func (manager *subtitleManager) fetchWantedLanguages(request *http.Request, lang
 	if err != nil {
 		return 0, 0, err
 	}
-	attempted, written := 0, 0
+	attempted, changed := 0, make([]string, 0)
 	for _, item := range items {
 		if item.Kind != "video" || attempted == limit {
 			continue
@@ -112,17 +113,17 @@ func (manager *subtitleManager) fetchWantedLanguages(request *http.Request, lang
 			}
 			attempted++
 			if saved {
-				written++
+				changed = append(changed, item.Path)
 			}
 		}
 	}
-	if written > 0 {
-		err = manager.index.Refresh(request.Context())
+	if len(changed) > 0 {
+		err = manager.refreshSidecarFolders(request.Context(), changed...)
 	}
-	if attempted > written && err == nil {
+	if attempted > len(changed) && err == nil {
 		err = errors.New("one or more subtitle searches failed")
 	}
-	return attempted, written, err
+	return attempted, len(changed), err
 }
 
 func (manager *subtitleManager) fetchWantedLanguage(ctx context.Context, item library.Item, language string, atLimit bool) (bool, bool) {
@@ -142,11 +143,33 @@ func (manager *subtitleManager) maintainLanguages(request *http.Request, languag
 		return subtitleMaintenanceResult{}, err
 	}
 	result := manager.maintainLanguageItems(request.Context(), items, languages, limit, 0)
-	if result.Added+result.Upgraded > 0 {
-		err = manager.index.Refresh(request.Context())
+	if len(result.changed) > 0 {
+		err = manager.refreshSidecarFolders(request.Context(), result.changed...)
 	}
 	if result.Failed > 0 && err == nil {
 		err = errors.New("one or more subtitle maintenance actions failed")
 	}
 	return result, err
+}
+
+func (manager *subtitleManager) applySubtitleEdit(request *http.Request, id string, input subtitleEdit) (subtitleReview, int, error) {
+	if err := validateSubtitleEdit(input, true); err != nil {
+		return subtitleReview{}, http.StatusBadRequest, err
+	}
+	review, item, status, err := manager.writeSubtitleEdit(request, id, input) //nolint:contextcheck // Ledger commits must finish after client cancellation.
+	if err != nil {
+		return review, status, err
+	}
+	if err = manager.refreshSidecarFolders(request.Context(), item.Path); err != nil {
+		return review, http.StatusInternalServerError, errors.New("subtitle was saved but the library could not be refreshed")
+	}
+	return manager.inspectSubtitle(request, id, review.Language)
+}
+
+func (manager *subtitleManager) refreshSidecarFolders(ctx context.Context, media ...string) error {
+	folders := make([]string, len(media))
+	for position, path := range media {
+		folders[position] = filepath.Dir(path)
+	}
+	return manager.index.RefreshPaths(ctx, folders)
 }
