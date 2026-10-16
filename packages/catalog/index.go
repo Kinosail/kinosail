@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"context"
-	"log/slog"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -41,15 +40,33 @@ type Index struct {
 	pollInterval      time.Duration
 	watch             func(context.Context) error
 	openWatcher       func() (*fsnotify.Watcher, error)
-	snapshot          func(map[string]struct{}) (map[string]fileStamp, error)
+	lifecycle         context.Context
+	scanners          map[ScanRoot]*library.Scanner
+	composeMu         sync.Mutex
+	analyzeMu         sync.Mutex
+	analyzed          uint64
+	raw               []library.Item
+	enriched          map[string]enrichedItem
+	enrich            func(context.Context, []library.Item) []library.Item
+	enriches          func(library.Item) bool
+	background        bool
+	enrichStart       sync.Once
+	enrichSignal      chan struct{}
+	pendingMu         sync.Mutex
+	pending           refreshRequest
 }
 
 func NewIndex(ctx context.Context, roots []ScanRoot, cache string, interval time.Duration, acquire func(context.Context) (func(), error)) *Index {
+	return NewDecoratedIndex(ctx, roots, cache, interval, acquire, Decoration{})
+}
+
+func NewDecoratedIndex(ctx context.Context, roots []ScanRoot, cache string, interval time.Duration, acquire func(context.Context) (func(), error), decoration Decoration) *Index {
 	if acquire == nil {
 		acquire = func(context.Context) (func(), error) { return func() {}, nil }
 	}
 	index := NewMemoryIndex(nil, false)
 	index.roots, index.cache, index.interval, index.defaultInterval, index.acquire = roots, cache, interval, interval, acquire
+	index.lifecycle, index.decorate, index.enrich, index.enriches, index.background = ctx, decoration.Apply, decoration.Enrich, decoration.Enriches, decoration.Background
 	_ = index.Refresh(ctx)
 	return index
 }
@@ -59,9 +76,10 @@ func NewMemoryIndex(items []library.Item, ready bool) *Index {
 		ready:      ready,
 		reschedule: make(chan struct{}, 1), refreshes: make(chan struct{}, 1), watchChange: make(chan struct{}, 1),
 		watchDebounce: libraryWatchDebounce, watchStability: libraryWatchStability, watchRetry: libraryWatchRetry, pollInterval: libraryPollInterval,
-		acquire: func(context.Context) (func(), error) { return func() {}, nil },
+		acquire: func(context.Context) (func(), error) { return func() {}, nil }, lifecycle: context.Background(), enrichSignal: make(chan struct{}, 1),
 	}
-	index.watch, index.openWatcher, index.snapshot = index.watchChanges, func() (*fsnotify.Watcher, error) { return fsnotify.NewBufferedWatcher(1024) }, snapshotFiles
+	index.watch, index.openWatcher = index.watchChanges, func() (*fsnotify.Watcher, error) { return fsnotify.NewBufferedWatcher(1024) }
+	index.raw = append([]library.Item(nil), items...)
 	index.current.Store(library.NewSnapshot(append([]library.Item(nil), items...), 1))
 	index.resolveRoots()
 	return index
@@ -86,25 +104,6 @@ func (index *Index) UpdateRoots(ctx context.Context, roots []ScanRoot) error {
 	return index.Refresh(ctx)
 }
 
-func (index *Index) Refresh(ctx context.Context) error {
-	index.resolveRoots()
-	return RefreshIndex(ctx, &index.refreshMu, &index.mu, &index.roots, index.acquire, index.storage(), func(root ScanRoot) (string, string) {
-		return root.Path, root.Namespace
-	})
-}
-
-func (index *Index) SetDecorator(decorate func([]library.Item) []library.Item) {
-	index.storage().SetDecorator(decorate)
-}
-
-func (index *Index) AddAnalyzer(analyze func([]library.Item)) {
-	index.storage().AddAnalyzer(analyze)
-}
-
-func (index *Index) Status() (int, time.Time, error) {
-	return index.storage().Status()
-}
-
 func (index *Index) Schedule(ctx context.Context) {
 	go index.runRefreshes(ctx)
 	go func() {
@@ -118,29 +117,6 @@ func (index *Index) wait(ctx context.Context) bool {
 	interval := index.interval
 	index.mu.RUnlock()
 	return WaitRefresh(ctx, interval, index.reschedule, index.RequestRefresh)
-}
-
-func (index *Index) runRefreshes(ctx context.Context) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-index.refreshes:
-			if err := index.Refresh(ctx); err != nil {
-				slog.Warn("background Library scan failed", "error", err)
-			} else {
-				items, scanned, _ := index.Status()
-				slog.Debug("background Library scan completed", "items", items, "scanned", scanned)
-			}
-		}
-	}
-}
-
-func (index *Index) RequestRefresh() {
-	select {
-	case index.refreshes <- struct{}{}:
-	default:
-	}
 }
 
 func (index *Index) SetFrequency(frequency string) {
@@ -193,8 +169,4 @@ func snapshotReferences(snapshot *library.Snapshot) []*library.Item {
 
 func (index *Index) Find(id string) (library.Item, bool) {
 	return index.current.Load().Find(id)
-}
-
-func (index *Index) storage() IndexStorage {
-	return IndexStorage{Mutex: &index.mu, Library: &index.current, Err: &index.err, Ready: &index.ready, Scanned: &index.scanned, Decorator: &index.decorate, Analyzers: &index.analyzers, published: func() { index.titleOrders = nil; index.titleOrderVersion++ }}
 }

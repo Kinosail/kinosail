@@ -104,7 +104,11 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	path := embeddedSubtitlePath(options.CacheDir, item, stream)
-	if data, err := readEmbeddedSubtitle(path); err == nil {
+	if options.Timeline == nil || len(options.Timeline.Omitted) == 0 {
+		if privatefile.Exists(path, embeddedSubtitleLimit) {
+			return EmbeddedSubtitle{Path: path}, nil
+		}
+	} else if data, err := readEmbeddedSubtitle(path); err == nil {
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
 	data, err := probe.embeddedData(ctx, item, stream, options, path)
@@ -112,6 +116,10 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, err
 	}
 	return presentEmbeddedSubtitle(path, data, options.Timeline), nil
+}
+
+func (probe *Probe) HasEmbedded(item library.Item, stream int, cacheDir string) bool {
+	return privatefile.Exists(embeddedSubtitlePath(cacheDir, item, stream), embeddedSubtitleLimit)
 }
 
 func textSubtitle(result Result, stream int) bool {

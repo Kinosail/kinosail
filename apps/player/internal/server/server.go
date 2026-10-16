@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"log/slog"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/webassets"
@@ -13,7 +14,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/httpguard"
-	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -82,9 +82,6 @@ type Config struct {
 	AuthURL             string
 	ScanInterval        time.Duration
 	Metadata            MetadataConfig
-	TMDBToken           string
-	TMDBURL             string
-	TMDBImageURL        string
 	TMDBCheck           func(context.Context, string, string) error
 	DLNAURL             string
 	WatchRoomTTL        time.Duration
@@ -147,15 +144,11 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
 	probe.chapters = newChapterProvider(config.Metadata.ChaptersURL)
-	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
+	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Threads: min(4, max(1, runtime.GOMAXPROCS(0)/workload.HeavyCapacity())), Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
 	probe.markers = markers
-	legacyMetadata := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{Token: config.TMDBToken, URL: config.TMDBURL, ImageURL: config.TMDBImageURL, CacheDir: config.CacheDir})
-	index := &libraryIndex{Index: catalog.NewIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
+	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	})}
-	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(workload.WithBackgroundPriority(config.Lifecycle), items)))
-	})
+	}, libraryDecoration(metadata, probe, managedLifecycle))}
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
 		index.Schedule(config.Lifecycle)
@@ -269,7 +262,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	registerFiles(mux, index, probe, workloads, hls.startup)
 	downloads.registerWeb(mux, index)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
-	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))
+	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, metadata.configured() || metadata.tmdbRecords))
 	handler := withDLNA(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates, index)
 	if management != nil && managedLifecycle {
 		management.Attach(config.Lifecycle, handler)

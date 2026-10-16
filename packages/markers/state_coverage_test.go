@@ -60,7 +60,7 @@ func TestMarkerStateFileShapeBoundaries(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = file.Truncate(documentdb.DocumentSizeLimit + 1); err != nil {
+	if err = file.Truncate(markerStateLimit + 1); err != nil {
 		t.Fatal(err)
 	}
 	_ = file.Close()

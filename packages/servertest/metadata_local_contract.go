@@ -10,11 +10,10 @@ import (
 	"testing"
 )
 
-type MetadataConfig struct{ MediaDir, CacheDir, TMDBToken, TMDBURL, TMDBImageURL string }
+type MetadataConfig struct{ MediaDir, DataDir, CacheDir, TMDBToken string }
 
 type MetadataFixture struct {
-	New     func(MetadataConfig) http.Handler
-	IDFirst func(string, string, bool, *int, *int) http.HandlerFunc
+	New func(MetadataConfig) http.Handler
 }
 
 func (fixture MetadataFixture) ViewerCanSeeLocalNfoMetadata(t *testing.T) {

@@ -41,9 +41,24 @@ func outboundHTTPClient(timeout time.Duration, allowed func(net.IP) bool) *http.
 				return nil, errors.New("outbound host resolved to a prohibited address")
 			}
 		}
-		return dialer.DialContext(ctx, network, net.JoinHostPort(addresses[0].String(), port))
+		var dialErr error
+		for _, resolved := range addresses {
+			connection, err := dialer.DialContext(ctx, network, net.JoinHostPort(resolved.String(), port))
+			if err == nil {
+				return connection, nil
+			}
+			if dialErr = err; ctx.Err() != nil {
+				break
+			}
+		}
+		return nil, dialErr
 	}
-	return &http.Client{Timeout: timeout, Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+	transport.MaxIdleConnsPerHost = providerIdleConnections
+	return &http.Client{Timeout: timeout, Transport: newProviderTransport(transport), CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+}
+
+func IntegrationHTTPClient(timeout time.Duration) *http.Client {
+	return localIntegrationHTTPClient(timeout)
 }
 
 func allowedOutboundIP(address net.IP) bool {

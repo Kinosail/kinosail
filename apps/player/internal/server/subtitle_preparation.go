@@ -4,71 +4,126 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
+const subtitlePreparationWorkers = 2
+
+type subtitlePreparation struct {
+	probe    *mediaProbe
+	language func() string
+	acquire  func(context.Context) (func(), error)
+	waitIdle func(context.Context) error
+	busy     func() bool
+	started  func() <-chan struct{}
+	mu       sync.Mutex
+	prepared map[string]string
+}
+
 func (probe *mediaProbe) scheduleSubtitles(ctx context.Context, index *libraryIndex, settings *settingsStore, workloads *workload.Governor, maintenance *maintenanceManager) {
 	if probe.ffmpeg == "" || probe.cacheDir == "" {
 		return
 	}
-	pending := make(chan struct{}, 1)
-	index.AddAnalyzer(func([]library.Item) {
+	probe.core.ConfigureCache(probe.cacheDir)
+	preparation := &subtitlePreparation{
+		probe: probe, language: settings.subtitleLanguage, prepared: make(map[string]string),
+		acquire:  func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) },
+		waitIdle: maintenance.WaitIdle, busy: maintenance.Busy, started: maintenance.ForegroundStarted,
+	}
+	pending := make(chan []library.Item, 1)
+	index.AddAnalyzer(func(items []library.Item) {
 		select {
-		case pending <- struct{}{}:
+		case <-pending:
 		default:
 		}
+		pending <- items
 	})
-	go probe.runSubtitlePreparation(ctx, index, settings, workloads, maintenance, pending)
+	go preparation.run(ctx, pending)
 }
 
-func (probe *mediaProbe) runSubtitlePreparation(ctx context.Context, index *libraryIndex, settings *settingsStore, workloads *workload.Governor, maintenance *maintenanceManager, pending <-chan struct{}) {
+func (preparation *subtitlePreparation) run(ctx context.Context, pending <-chan []library.Item) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
-		case <-pending:
-			if !probe.prepareSubtitleSnapshot(ctx, index, settings, workloads, maintenance) {
-				return
-			}
+		case items := <-pending:
+			preparation.prepare(ctx, items)
 		}
 	}
 }
 
-func (probe *mediaProbe) prepareSubtitleSnapshot(ctx context.Context, index *libraryIndex, settings *settingsStore, workloads *workload.Governor, maintenance *maintenanceManager) bool {
-	items, err := index.Snapshot()
-	if err != nil {
-		return true
+func (preparation *subtitlePreparation) prepare(ctx context.Context, items []library.Item) {
+	language := preparation.language()
+	work := make(chan library.Item)
+	var workers sync.WaitGroup
+	for range subtitlePreparationWorkers {
+		workers.Go(func() { preparation.work(ctx, work, language) })
 	}
+	present := make(map[string]bool, len(items))
 	for _, item := range items {
-		if ctx.Err() != nil {
-			return false
-		}
-		if item.Kind != "video" {
+		present[item.ID] = true
+		preparation.mu.Lock()
+		done := preparation.prepared[item.ID] == subtitlePreparationKey(item, language)
+		preparation.mu.Unlock()
+		if item.Kind != "video" || done {
 			continue
 		}
-		if err := probe.prepareIdleSubtitle(ctx, item, settings.subtitleLanguage(), workloads, maintenance); err != nil && ctx.Err() == nil {
-			slog.Warn("background subtitle preparation failed", "error", hlsDiagnostic(err, item.Path, probe.cacheDir))
+		select {
+		case work <- item:
+		case <-ctx.Done():
 		}
 	}
-	return true
+	close(work)
+	workers.Wait()
+	preparation.mu.Lock()
+	for id := range preparation.prepared {
+		if !present[id] {
+			delete(preparation.prepared, id)
+		}
+	}
+	preparation.mu.Unlock()
 }
 
-func (probe *mediaProbe) prepareIdleSubtitle(ctx context.Context, item library.Item, language string, workloads *workload.Governor, maintenance *maintenanceManager) error {
+func (preparation *subtitlePreparation) work(ctx context.Context, work <-chan library.Item, language string) {
+	for item := range work {
+		err := preparation.prepareItem(ctx, item, language)
+		if ctx.Err() != nil || errors.Is(err, context.Canceled) {
+			continue
+		}
+		if err != nil {
+			slog.Warn("background subtitle preparation failed", "operation", "subtitles.prepare", "error", hlsDiagnostic(err, item.Path, preparation.probe.cacheDir))
+		}
+		preparation.mu.Lock()
+		preparation.prepared[item.ID] = subtitlePreparationKey(item, language)
+		preparation.mu.Unlock()
+	}
+}
+
+func subtitlePreparationKey(item library.Item, language string) string {
+	return strconv.FormatInt(item.Size, 10) + ":" + strconv.FormatInt(item.Added.UnixNano(), 10) + ":" + language
+}
+
+func (preparation *subtitlePreparation) prepareItem(ctx context.Context, item library.Item, language string) error {
+	if preparation.probe.subtitlePrepared(item, language) {
+		return nil
+	}
 	for ctx.Err() == nil {
-		if err := maintenance.WaitIdle(ctx); err != nil {
+		if err := preparation.waitIdle(ctx); err != nil {
 			return err
 		}
-		release, err := workloads.Acquire(ctx, workload.Background)
+		release, err := preparation.acquire(ctx)
 		if err != nil {
 			return err
 		}
 		work, cancel := context.WithTimeout(ctx, 5*time.Minute)
 		finished := make(chan struct{})
-		go cancelBusySubtitle(work, cancel, maintenance, finished)
-		err = probe.preparePreferredSubtitle(work, item, language)
+		go preparation.cancelOnForeground(work, cancel, finished)
+		err = preparation.probe.preparePreferredSubtitle(work, item, language)
 		cancel()
 		<-finished
 		release()
@@ -79,21 +134,45 @@ func (probe *mediaProbe) prepareIdleSubtitle(ctx context.Context, item library.I
 	return ctx.Err()
 }
 
-func cancelBusySubtitle(work context.Context, cancel context.CancelFunc, maintenance *maintenanceManager, finished chan<- struct{}) {
+func (preparation *subtitlePreparation) cancelOnForeground(work context.Context, cancel context.CancelFunc, finished chan<- struct{}) {
 	defer close(finished)
-	ticker := time.NewTicker(250 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		if maintenance.Busy() {
-			cancel()
-			return
-		}
-		select {
-		case <-work.Done():
-			return
-		case <-ticker.C:
-		}
+	started := preparation.started()
+	if preparation.busy() {
+		cancel()
+		return
 	}
+	select {
+	case <-work.Done():
+	case <-started:
+		cancel()
+	}
+}
+
+func (probe *mediaProbe) subtitlePrepared(item library.Item, language string) bool {
+	preferred, err := canonicalSubtitleLanguage(language)
+	if err != nil || item.Kind != "video" {
+		return err == nil
+	}
+	facts, found := probe.core.CachedFacts(item)
+	if !found {
+		return false
+	}
+	stream, selected := preferredTextStream(item, facts, preferred)
+	return !selected || probe.core.HasEmbedded(item, stream, probe.cacheDir)
+}
+
+func preferredTextStream(item library.Item, facts probeResult, preferred string) (int, bool) {
+	selected := defaultTextSubtitle(playbackSubtitles(item, facts, preferred, true), preferred, true)
+	for _, track := range facts.SubtitleFacts {
+		if !track.Text {
+			continue
+		}
+		if selected == 0 {
+			return track.SourceIndex, true
+		}
+		selected--
+	}
+	return 0, false
 }
 
 func (probe *mediaProbe) preparePreferredSubtitle(ctx context.Context, item library.Item, language string) error {
@@ -104,18 +183,9 @@ func (probe *mediaProbe) preparePreferredSubtitle(ctx context.Context, item libr
 	if item.Kind != "video" {
 		return nil
 	}
-	probe.core.ConfigureCache(probe.cacheDir)
-	facts := probe.core.Facts(ctx, item)
-	selected := defaultTextSubtitle(playbackSubtitles(item, facts, preferred, true), preferred, true)
-	for _, track := range facts.SubtitleFacts {
-		if !track.Text {
-			continue
-		}
-		if selected == 0 {
-			_, _, err := probe.extractEmbedded(ctx, item, track.SourceIndex)
-			return err
-		}
-		selected--
+	if stream, selected := preferredTextStream(item, probe.core.Facts(ctx, item), preferred); selected {
+		_, _, err := probe.extractEmbedded(ctx, item, stream)
+		return err
 	}
 	return ctx.Err()
 }

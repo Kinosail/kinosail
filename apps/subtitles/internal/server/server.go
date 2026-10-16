@@ -11,7 +11,6 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/httpguard"
-	"github.com/MikeO7/kinosail/packages/library"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
@@ -31,9 +30,6 @@ type Config struct {
 	ScanInterval        time.Duration
 	Subtitles           SubtitleConfig
 	Metadata            MetadataConfig
-	TMDBToken           string
-	TMDBURL             string
-	TMDBImageURL        string
 	OIDC                OIDCConfig
 	SAML                SAMLConfig
 	MCP                 MCPConfig
@@ -57,7 +53,7 @@ func New(config Config) http.Handler {
 	return newApplication(config)
 }
 
-func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocognit // The composition root validates defaults and wires every adapter to shared application services.
+func newApplication(config Config) http.Handler { //nolint:funlen // The composition root validates defaults and wires every adapter to shared application services.
 	lifecycle, managedLifecycle := prepareApplicationConfig(&config)
 	startupReady := false
 	if managedLifecycle {
@@ -87,13 +83,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
-	legacyMetadata := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{Token: config.TMDBToken, URL: config.TMDBURL, ImageURL: config.TMDBImageURL, CacheDir: config.CacheDir})
-	index := &libraryIndex{Index: catalog.NewIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
+	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	})}
-	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(config.Lifecycle, items)))
-	})
+	}, libraryDecoration(metadata, probe, managedLifecycle))}
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
 		index.Schedule(config.Lifecycle)

@@ -6,7 +6,6 @@ import (
 	"maps"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode"
@@ -147,7 +146,7 @@ func ApplyRecords(items []library.Item, records map[string]Record, currentArtwor
 				cast[index].Image = currentArtwork(cast[index].Image)
 			}
 		}
-		if !record.Owner && RegularFile(strings.TrimSuffix(items[position].Path, filepath.Ext(items[position].Path))+".nfo") {
+		if !record.Owner && items[position].LocalMetadata {
 			ApplyMissing(&items[position], record)
 			continue
 		}

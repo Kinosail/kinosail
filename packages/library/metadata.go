@@ -46,14 +46,7 @@ func (metadata localMetadata) providerIDs() map[string]string {
 }
 
 func readMetadata(path string) localMetadata {
-	return readMetadataWith(path, os.Open)
-}
-
-func readMetadataWith(path string, open func(string) (*os.File, error)) localMetadata {
-	if info, err := os.Lstat(path); err != nil || !info.Mode().IsRegular() {
-		return localMetadata{}
-	}
-	file, err := open(path) // #nosec G304 -- fixed sidecar beside scanned Library Content.
+	file, err := os.Open(path) // #nosec G304 -- regular sidecar listed beside scanned Library Content.
 	if err != nil {
 		return localMetadata{}
 	}
