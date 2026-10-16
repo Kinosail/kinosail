@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/transcodehardware"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 type (
@@ -50,7 +51,7 @@ func (store *settingsStore) startHardwareProbe(config Config) error {
 
 func (store *settingsStore) completeHardwareProbe(ctx context.Context, options transcodehardware.ProbeOptions, cache string) {
 	started := time.Now()
-	capabilities := transcodehardware.Probe(ctx, options)
+	capabilities := transcodehardware.Probe(workload.WithBackgroundPriority(ctx), options)
 	if ctx.Err() != nil {
 		return
 	}
