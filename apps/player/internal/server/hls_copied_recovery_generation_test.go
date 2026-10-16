@@ -15,9 +15,14 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func copiedRecoveryFixture(t testing.TB) (*hlsManager, library.Item, hlsRecipe, string, string, *copiedHLSTimeline) {
+func copiedRecoveryFixture(t testing.TB, sourceModified ...time.Time) (*hlsManager, library.Item, hlsRecipe, string, string, *copiedHLSTimeline) {
 	t.Helper()
 	manager, item, _, _ := hlsLoadingFixture(t)
+	for _, modified := range sourceModified {
+		if err := os.Chtimes(item.Path, modified, modified); err != nil {
+			t.Fatal(err)
+		}
+	}
 	recipe := hlsRecipe{mode: "remux"}
 	options, err := manager.hlsSettings(item, recipe)
 	if err != nil {

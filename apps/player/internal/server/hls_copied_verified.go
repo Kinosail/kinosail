@@ -12,7 +12,7 @@ import (
 const (
 	copiedHLSSettledAge         = 2 * time.Second
 	copiedHLSVerificationMaxAge = 10 * time.Minute
-	copiedHLSAdmissionSlots     = 2
+	copiedHLSAdmissionSlots     = 1
 )
 
 var errCopiedHLSBusy = errors.New("copied HLS timeline verification is busy")
