@@ -22,7 +22,7 @@ func (probe *Probe) Decorate(ctx context.Context, items []library.Item, enrichme
 		}()
 	}
 	for index := range items {
-		if items[index].Kind == "audio" || items[index].Kind == "audiobook" {
+		if Decorates(items[index]) {
 			if ctx.Err() != nil {
 				close(jobs)
 				wait.Wait()
@@ -34,6 +34,10 @@ func (probe *Probe) Decorate(ctx context.Context, items []library.Item, enrichme
 	close(jobs)
 	wait.Wait()
 	return items
+}
+
+func Decorates(item library.Item) bool {
+	return item.Kind == "audio" || item.Kind == "audiobook"
 }
 
 func (probe *Probe) decorateItem(ctx context.Context, item *library.Item, enrichment Enrichment) {

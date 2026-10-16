@@ -138,59 +138,42 @@ func TestWatchFailureAndRetryEdges(t *testing.T) {
 	cancel()
 }
 
-func TestPollErrorAndCancellationEdges(t *testing.T) {
-	wantErr := errors.New("snapshot failed")
-	t.Run("current snapshot error", func(t *testing.T) {
-		index := NewMemoryIndex(nil, true)
-		index.pollInterval = time.Millisecond
-		calls := make(chan int, 3)
-		count := 0
-		index.snapshot = func(map[string]struct{}) (map[string]fileStamp, error) {
-			count++
-			calls <- count
-			if count > 1 {
-				return nil, wantErr
-			}
-			return nil, nil
+func TestPollRescansChangedDirectoriesOnlyWhileTheWatcherIsUnavailable(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "First.mp4"), []byte("first"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	index := NewIndex(t.Context(), []ScanRoot{{Path: root, Namespace: "Movies"}}, "", time.Hour, nil)
+	index.pollInterval, index.watchStability = 5*time.Millisecond, 5*time.Millisecond
+	if polled := index.pollRoots(); len(polled) != 1 {
+		t.Fatalf("roots polled without a watcher = %#v", polled)
+	}
+	index.setMonitoring(true, nil)
+	if polled := index.pollRoots(); len(polled) != 0 {
+		t.Fatalf("local roots polled while the watcher is healthy = %#v", polled)
+	}
+	index.setMonitoring(false, errors.New("watch failed"))
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	index.Schedule(ctx)
+	go index.poll(ctx)
+	nested := filepath.Join(root, "Collection")
+	if err := os.Mkdir(nested, 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(nested, "Second.mp4"), []byte("second"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		if items, _ := index.Snapshot(); len(items) == 2 {
+			return
 		}
-		cancel, done := runPoll(t, index)
-		waitCall(t, calls, 2)
-		cancel()
-		<-done
-	})
-	t.Run("stability cancellation", func(t *testing.T) {
-		index := NewMemoryIndex(nil, true)
-		index.pollInterval, index.watchStability = time.Millisecond, time.Hour
-		calls := make(chan int, 2)
-		count := 0
-		index.snapshot = func(map[string]struct{}) (map[string]fileStamp, error) {
-			count++
-			calls <- count
-			return map[string]fileStamp{"movie": {size: int64(count)}}, nil
+		if time.Now().After(deadline) {
+			t.Fatal("polling did not publish the new directory")
 		}
-		cancel, done := runPoll(t, index)
-		waitCall(t, calls, 2)
-		cancel()
-		<-done
-	})
-	t.Run("stable snapshot error", func(t *testing.T) {
-		index := NewMemoryIndex(nil, true)
-		index.pollInterval, index.watchStability = time.Millisecond, time.Millisecond
-		calls := make(chan int, 4)
-		count := 0
-		index.snapshot = func(map[string]struct{}) (map[string]fileStamp, error) {
-			count++
-			calls <- count
-			if count == 3 {
-				return nil, wantErr
-			}
-			return map[string]fileStamp{"movie": {size: int64(count)}}, nil
-		}
-		cancel, done := runPoll(t, index)
-		waitCall(t, calls, 3)
-		cancel()
-		<-done
-	})
+		time.Sleep(5 * time.Millisecond)
+	}
 }
 
 func TestWatchChangesAndCycleEdges(t *testing.T) {

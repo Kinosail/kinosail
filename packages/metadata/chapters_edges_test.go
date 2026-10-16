@@ -171,7 +171,7 @@ func TestChapterLookupReturnsCompletedInFlightResult(t *testing.T) {
 	provider := &ChapterProvider{
 		cached: make(map[string]chapterLookup),
 		calls: map[string]*chapterLookupCall{
-			"1": {done: done, chapters: []Chapter{{Title: "Intro"}}, found: true},
+			"1\x0060": {done: done, chapters: []Chapter{{Title: "Intro"}}, found: true},
 		},
 	}
 	chapters, found := provider.lookup(t.Context(), "1", 60)

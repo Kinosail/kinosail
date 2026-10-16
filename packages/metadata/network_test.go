@@ -99,7 +99,7 @@ func TestExternalJSONAndAtomicSave(t *testing.T) {
 func TestOutboundClientRejectsMalformedAddressAndRedirect(t *testing.T) {
 	t.Parallel()
 	client := outboundHTTPClient(0, allowedIntegrationIP)
-	transport := client.Transport.(*http.Transport)
+	transport := client.Transport.(*providerTransport).next.(*http.Transport)
 	if _, err := transport.DialContext(context.Background(), "tcp", "missing-port"); err == nil {
 		t.Fatal("malformed outbound address accepted")
 	}

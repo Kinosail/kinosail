@@ -124,10 +124,11 @@ func TestScanClassifiesMP4InsideAudiobookLibraryAsAudiobook(t *testing.T) {
 
 func TestSubtitleIndexStopsAtOrphanStem(t *testing.T) {
 	t.Parallel()
-	catalog := &scanCatalog{media: make(map[string]struct{}), subtitles: make(map[string][]string), subtitleFiles: []string{"/library/Orphan.en.srt"}}
+	directory := &scanDir{media: make(map[string]struct{}), regular: map[string]struct{}{"Orphan.en.srt": {}}}
+	var subtitles map[string][]string
 	done := make(chan struct{})
 	go func() {
-		catalog.indexSubtitles()
+		subtitles = directory.subtitleIndex("/library")
 		close(done)
 	}()
 	select {
@@ -135,8 +136,8 @@ func TestSubtitleIndexStopsAtOrphanStem(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("orphan subtitle indexing did not terminate")
 	}
-	if len(catalog.subtitles) != 0 {
-		t.Fatalf("orphan subtitles = %#v", catalog.subtitles)
+	if len(subtitles) != 0 {
+		t.Fatalf("orphan subtitles = %#v", subtitles)
 	}
 }
 

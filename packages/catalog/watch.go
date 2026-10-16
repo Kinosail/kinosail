@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"maps"
 	"path/filepath"
+	"slices"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -16,7 +17,7 @@ const (
 	libraryWatchDebounce  = 2 * time.Second
 	libraryWatchStability = 2 * time.Second
 	libraryWatchRetry     = 30 * time.Second
-	libraryPollInterval   = 30 * time.Second
+	libraryPollInterval   = time.Minute
 )
 
 func (index *Index) Watch(ctx context.Context) {
@@ -48,7 +49,6 @@ func (index *Index) Watch(ctx context.Context) {
 }
 
 func (index *Index) poll(ctx context.Context) {
-	previous, _ := index.snapshot(index.rootSet())
 	ticker := time.NewTicker(index.pollInterval)
 	defer ticker.Stop()
 	for {
@@ -57,12 +57,12 @@ func (index *Index) poll(ctx context.Context) {
 			return
 		case <-ticker.C:
 		}
-		current, err := index.snapshot(index.rootSet())
-		if err != nil {
-			slog.Warn("Library polling failed; retrying automatically", "error", err)
+		roots := index.pollRoots()
+		if len(roots) == 0 {
 			continue
 		}
-		for !maps.Equal(previous, current) {
+		current := index.changedDirectories(ctx, roots)
+		for len(current) > 0 {
 			timer := time.NewTimer(index.watchStability)
 			select {
 			case <-ctx.Done():
@@ -70,26 +70,28 @@ func (index *Index) poll(ctx context.Context) {
 				return
 			case <-timer.C:
 			}
-			next, err := index.snapshot(index.rootSet())
-			if err != nil {
-				slog.Warn("Library polling failed; retrying automatically", "error", err)
+			next := index.changedDirectories(ctx, roots)
+			if maps.Equal(current, next) {
+				index.RequestChanges(slices.Collect(maps.Keys(current)))
 				break
 			}
-			if maps.Equal(current, next) {
-				index.RequestRefresh()
-			}
-			previous, current = current, next
+			current = next
 		}
 	}
 }
 
-func (index *Index) rootSet() map[string]struct{} {
+func (index *Index) pollRoots() []ScanRoot {
 	roots := index.Roots()
-	result := make(map[string]struct{}, len(roots))
-	for _, root := range roots {
-		result[root.Path] = struct{}{}
+	if watching, _ := index.Monitoring(); !watching {
+		return roots
 	}
-	return result
+	polled := make([]ScanRoot, 0, len(roots))
+	for _, root := range roots {
+		if networkFilesystem(root.Path) {
+			polled = append(polled, root)
+		}
+	}
+	return polled
 }
 
 func (index *Index) watchChanges(ctx context.Context) error {
@@ -104,7 +106,7 @@ func (index *Index) watchChanges(ctx context.Context) error {
 		}
 	}
 	index.setMonitoring(true, nil)
-	index.RequestRefresh()
+	index.requestVerify()
 
 	cycle := newWatchCycle()
 	defer cycle.close()
@@ -159,8 +161,9 @@ func (cycle *watchCycle) settle(index *Index) error {
 		cycle.arm(index.watchStability)
 		return nil
 	}
+	changed := slices.Collect(maps.Keys(cycle.dirty))
 	cycle.dirty, cycle.sample = make(map[string]struct{}), nil
-	index.RequestRefresh()
+	index.RequestChanges(changed)
 	return nil
 }
 

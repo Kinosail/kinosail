@@ -35,7 +35,7 @@ type metadataStore struct {
 func newMetadataStore(config MetadataConfig, dataDir, cache string, databases ...*database.Store) *metadataStore {
 	stateDB := configuredDatabase(databases)
 	config = sharedmetadata.NormalizeConfig(config)
-	store := &metadataStore{cache: cache, config: config, records: make(map[string]metadataRecord), client: localIntegrationHTTPClient(15 * time.Second), tvmaze: sharedmetadata.NewTVMazeProvider(config.TVMazeURL, ApplicationVersion), persist: statePersistence(stateDB)}
+	store := &metadataStore{cache: cache, config: config, records: make(map[string]metadataRecord), client: sharedmetadata.IntegrationHTTPClient(15 * time.Second), tvmaze: sharedmetadata.NewTVMazeProvider(config.TVMazeURL, ApplicationVersion), persist: statePersistence(stateDB)}
 	store.active.Store(&config)
 	store.load(dataDir, stateDB)
 	return store

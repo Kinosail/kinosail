@@ -13,7 +13,6 @@ import (
 	"github.com/MikeO7/kinosail-player/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/httpguard"
-	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -151,12 +150,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
 	probe.markers = markers
 	legacyMetadata := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{Token: config.TMDBToken, URL: config.TMDBURL, ImageURL: config.TMDBImageURL, CacheDir: config.CacheDir})
-	index := &libraryIndex{Index: catalog.NewIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
+	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	})}
-	index.SetDecorator(func(items []library.Item) []library.Item {
-		return metadata.apply(legacyMetadata.Enrich(config.Lifecycle, probe.decorate(config.Lifecycle, items)))
-	})
+	}, libraryDecoration(metadata, probe, legacyMetadata, managedLifecycle))}
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
 		index.Schedule(config.Lifecycle)
