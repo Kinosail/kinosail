@@ -92,7 +92,9 @@ func (store *metadataStore) configureTMDB(token, url, imageURL string) {
 	config := *store.active.Load()
 	config.Token, config.URL, config.ImageURL = token, url, imageURL
 	config = sharedmetadata.NormalizeConfig(config)
-	store.active.Store(&config)
+	if previous := store.active.Swap(&config); previous == nil || *previous != config {
+		store.misses.Reset()
+	}
 }
 
 func (store *metadataStore) available() bool { return store.configured() || store.tvmaze != nil }
