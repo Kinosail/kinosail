@@ -17,7 +17,7 @@ func (state *verification) verifyCodec(ctx context.Context, options ProbeOptions
 		probeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
 		result := check(probeCtx, options.FFmpeg, settings, backend.Name)
 		stop()
-		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, device), Codec: codec, Device: device, Status: result.Status})
+		state.record(backend.ID, Operation{identity: operationIdentity(options.FFmpeg, device), Codec: codec, Device: device, Status: result.Status})
 		if result.Status == "passed" {
 			backend.Usable = true
 		}
@@ -25,8 +25,8 @@ func (state *verification) verifyCodec(ctx context.Context, options ProbeOptions
 }
 
 func (state *verification) verifyBaselineDecode(ctx context.Context, options ProbeOptions, backend *Backend, codec string, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
-	for _, operation := range state.operations[backend.ID] {
-		if operation.Status != "passed" || operation.HardwareToneMap != "" {
+	for _, operation := range state.snapshot(backend.ID) {
+		if operation.Status != "passed" || operation.HardwareToneMap != "" || operation.Codec != codec {
 			continue
 		}
 		settings := transcodepolicy.Settings{Name: "automatic", Codec: codec, Accelerator: backend.ID, Encoder: backend.encoders[codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
@@ -35,8 +35,7 @@ func (state *verification) verifyBaselineDecode(ctx context.Context, options Pro
 }
 
 func (state *verification) verifyOptionalFormats(ctx context.Context, options ProbeOptions, backend *Backend, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
-	baseline := append([]Operation(nil), state.operations[backend.ID]...)
-	for _, operation := range baseline {
+	for _, operation := range state.snapshot(backend.ID) {
 		if operation.Status != "passed" || operation.HardwareToneMap != "" {
 			continue
 		}
@@ -44,6 +43,7 @@ func (state *verification) verifyOptionalFormats(ctx context.Context, options Pr
 		if operation.Codec != "h264" {
 			verifyHardwareDecode(ctx, options, settings, backend, state, check)
 		}
+		state.verifyDecodeInputs(ctx, options, backend, operation, settings, check)
 		if operation.Codec == "hevc" {
 			state.verifyHDR(ctx, options, backend, operation, settings, check)
 		}
@@ -59,6 +59,6 @@ func (state *verification) verifyHDR(ctx context.Context, options ProbeOptions, 
 		probeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
 		result := check(probeCtx, options.FFmpeg, settings, backend.Name)
 		stop()
-		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, operation.Device), Codec: operation.Codec, Device: operation.Device, OutputHDR: hdr, Status: result.Status})
+		state.record(backend.ID, Operation{identity: operationIdentity(options.FFmpeg, operation.Device), Codec: operation.Codec, Device: operation.Device, OutputHDR: hdr, Status: result.Status})
 	}
 }

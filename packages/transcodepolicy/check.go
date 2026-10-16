@@ -103,7 +103,10 @@ func checkSetup(ffmpeg string, options Settings) string {
 	if ffmpeg == "" || !ValidCodec(options.Codec) || options.Codec == "auto" || options.Encoder == "" {
 		return "Choose an available video encoder before running the check."
 	}
-	if options.HardwareToneMap != "" && (!options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || options.HardwareDecode || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg") {
+	if !validDecodeInput(options.DecodeInput) {
+		return "The requested decode input is unsupported."
+	}
+	if options.HardwareToneMap != "" && (!options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || options.HardwareDecode && !ToneMapHardwareFrames(options) || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg") {
 		return "The requested hardware tone mapping operation is unsupported."
 	}
 	if options.OutputHDR != "" && (options.Codec != "hevc" || options.OutputHDR != "hdr10" && options.OutputHDR != "hlg") {

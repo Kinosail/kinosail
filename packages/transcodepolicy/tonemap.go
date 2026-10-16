@@ -39,6 +39,11 @@ func hardwareToneMapFrames(options Settings, width string) ([]string, string) {
 	if !options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || !validToneMapMethod(options) || options.ToneMapInput != "hdr10" && options.ToneMapInput != "hlg" {
 		return nil, ""
 	}
+	if ToneMapHardwareFrames(options) {
+		input, _ := acceleratedFrames(options, width)
+		scaler := map[string]string{"cuda": "scale_cuda", "qsv": "scale_qsv", "vaapi": "scale_vaapi"}[options.Accelerator]
+		return input, hardwareFrameToneMap[options.HardwareToneMap] + "," + strings.Join(removeHDRMetadata(), ",") + "," + scaler + "=w=" + width + ":h=-2:format=nv12,setsar=1"
+	}
 	input, filter := toneMapDeviceFilter(options)
 	if !ToneMapSoftwareFrames(options) {
 		filter += "," + strings.Join(removeHDRMetadata(), ",")
@@ -128,4 +133,14 @@ func openCLToneMapFilter(options Settings, color string) ([]string, string) {
 		filter = "format=p010le,hwupload,hwmap=derive_device=opencl,tonemap_opencl=tonemap=bt2390" + color + ",hwmap=derive_device=vaapi:reverse=1"
 	}
 	return input, filter
+}
+
+var hardwareFrameToneMap = map[string]string{
+	"cuda":  "tonemap_cuda=tonemap=bt2390:format=nv12:p=bt709:t=bt709:m=bt709:r=tv",
+	"vaapi": "tonemap_vaapi=format=nv12:p=bt709:t=bt709:m=bt709",
+	"qsv":   "vpp_qsv=tonemap=1:format=nv12:out_range=tv",
+}
+
+func ToneMapHardwareFrames(options Settings) bool {
+	return options.HardwareDecode && options.DecodeInput == "hevc10" && options.HardwareToneMap == options.Accelerator && hardwareFrameToneMap[options.HardwareToneMap] != "" && !ToneMapSoftwareFrames(options)
 }

@@ -52,10 +52,10 @@ func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner("DELETE /api/v1/agent-connections/{id}", apiRevokeAgentConnection(api.connections))
 	owner("GET /api/v1/agent-connections/certificate", apiAgentConnectionCertificate(api.connections))
 	owner("GET /api/v1/hardware", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writeJSON(writer, api.settings.hardware, http.StatusOK)
+		writeJSON(writer, api.settings.hardware(), http.StatusOK)
 	}))
 	owner("POST /api/v1/transcoder/test", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		result := api.settings.transcoderState().CheckCoordinator(api.settings.ffmpeg, api.settings.hardware).Run(request.Context())
+		result := api.settings.transcoderState().CheckCoordinator(api.settings.ffmpeg, api.settings.hardware()).Run(request.Context())
 		status := http.StatusOK
 		if result.Status != "passed" {
 			status = http.StatusServiceUnavailable

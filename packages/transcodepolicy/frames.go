@@ -43,6 +43,8 @@ func acceleratedFrames(options Settings, width string) ([]string, string) {
 		return []string{"-hwaccel", "vaapi", "-hwaccel_device", renderDevice(options.Device), "-hwaccel_output_format", "vaapi"}, "scale_vaapi=w=" + width + ":h=-2:format=" + format
 	case "rkmpp":
 		return []string{"-init_hw_device", "rkmpp=rk", "-hwaccel", "rkmpp", "-hwaccel_output_format", "drm_prime"}, "scale_rkrga=w=" + width + ":h=-2:format=" + format
+	case "videotoolbox":
+		return []string{"-hwaccel", "videotoolbox"}, strings.Join(softwareFrameFilters(options, width), ",")
 	}
 	return nil, ""
 }

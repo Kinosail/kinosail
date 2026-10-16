@@ -4,7 +4,8 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
+	"slices"
+	"sync"
 	"testing"
 	"time"
 
@@ -18,7 +19,10 @@ func TestVerificationDoesNotPromoteAnEncoderListing(t *testing.T) {
 		{ID: "vaapi", Name: "AMD", Usable: true, encoders: map[string]string{"h264": "h264_vaapi"}},
 	}}
 	var order []string
+	var mu sync.Mutex
 	actual := verify(t.Context(), ProbeOptions{Enabled: true, FFmpeg: "test-ffmpeg", Devices: []string{t.TempDir()}}, discovered, func(_ context.Context, _ string, options transcodepolicy.Settings, _ string) transcodepolicy.CheckResult {
+		mu.Lock()
+		defer mu.Unlock()
 		order = append(order, options.Accelerator+":"+options.Codec)
 		status := "failed"
 		if options.Accelerator == "none" || options.Accelerator == "vaapi" {
@@ -32,7 +36,7 @@ func TestVerificationDoesNotPromoteAnEncoderListing(t *testing.T) {
 	if actual.PreferredCodec("auto", "auto", []string{"av1", "h264"}) != "h264" {
 		t.Fatal("automatic ignored verified H.264")
 	}
-	if len(order) < 3 || strings.Join(order[:3], ",") != "none:h264,qsv:h264,vaapi:h264" {
+	if len(order) < 3 || !slices.Equal(slices.Sorted(slices.Values(order[:3])), []string{"none:h264", "qsv:h264", "vaapi:h264"}) {
 		t.Fatalf("baseline was not prioritized: %v", order)
 	}
 }
@@ -45,7 +49,10 @@ func TestPreferredDecodeIsCheckedBeforeOptionalCodecBudgetExpires(t *testing.T) 
 		{ID: "cuda", Usable: true, encoders: map[string]string{"h264": "h264_nvenc"}},
 	}}
 	decodes := 0
+	var mu sync.Mutex
 	actual := verify(ctx, ProbeOptions{Enabled: true, FFmpeg: "test-ffmpeg", Devices: []string{t.TempDir()}}, discovered, func(_ context.Context, _ string, options transcodepolicy.Settings, _ string) transcodepolicy.CheckResult {
+		mu.Lock()
+		defer mu.Unlock()
 		if options.Codec == "hevc" {
 			cancel()
 			return transcodepolicy.CheckResult{Status: "failed"}

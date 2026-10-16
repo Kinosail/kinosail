@@ -103,7 +103,7 @@ func (manager *hlsManager) encodeVariants(ctx context.Context, item library.Item
 	}
 	options = playback.SourceTranscoding(options, facts, sharedHLSRecipe(recipe))
 	var err error
-	options, err = manager.settings.hardware.ColorSettings(options)
+	options, err = manager.settings.hardware().ColorSettings(options)
 	if err != nil {
 		return err
 	}

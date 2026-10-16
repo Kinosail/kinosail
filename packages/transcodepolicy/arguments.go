@@ -14,6 +14,10 @@ type Settings struct {
 	DisableHardwareToneMap bool
 	ToneMap                bool
 	HardwareDecode         bool
+	DecodeInput            string
+	HardwareDecodeHEVC     bool
+	HardwareDecodeHEVC10   bool
+	HardwareDecodeAV1      bool
 	SoftwareFilters        bool
 	Deinterlace            bool
 	OutputHDR              string

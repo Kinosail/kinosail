@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/MikeO7/kinosail-player/internal/configuration"
 	"github.com/MikeO7/kinosail-player/internal/database"
@@ -38,7 +39,7 @@ type settingsStore struct {
 	metadata          *metadataStore
 	metadataChanged   func()
 	tmdbCheck         func(context.Context, string, string) error
-	hardware          hardwareCapabilities
+	hardwareState     atomic.Pointer[hardwareCapabilities]
 	transcoderCheck   transcodepolicy.CheckResult
 	trustedHTTPSCheck func(context.Context, trustedhttps.Config) error
 	persist           func(string, any) error

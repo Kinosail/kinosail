@@ -132,6 +132,7 @@ func (fixture HLSSchedulerFixture) FallsBackToSoftwareAfterHardwareFailure(t *te
 		t.Fatal(err)
 	}
 	handler, id := FirstWebItem(t, fixture.New(HLSSchedulerConfig{ProbeHardware: true, HardwareDevices: []string{device}, MediaDir: media, DataDir: t.TempDir(), CacheDir: cache, FFmpeg: ffmpeg, HardwareOS: "linux", HardwareArch: "amd64"}))
+	AwaitHardwareProbe(t, handler, "")
 	settings := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/transcoder", strings.NewReader("quality=automatic&accelerator=vaapi"))
 	settings.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	handler.ServeHTTP(httptest.NewRecorder(), settings)

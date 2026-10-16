@@ -104,6 +104,7 @@ func (capabilities Capabilities) Settings(selection Selection, requestedCodec st
 	if operation, ok := capabilities.Backend(accelerator).operation(codec, ""); ok {
 		settings.Device = operation.Device
 		settings.HardwareDecode = operation.DecodeH264
+		settings.HardwareDecodeHEVC, settings.HardwareDecodeHEVC10, settings.HardwareDecodeAV1 = operation.DecodeHEVC, operation.DecodeHEVC10, operation.DecodeAV1
 	}
 	if selection.ToneMap {
 		settings.Cache += ":hdr"

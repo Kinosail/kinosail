@@ -42,6 +42,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"hevc","width":1920,
 		Token string `json:"token"`
 	}
 	session.Token = owner.Value
+	AwaitHardwareProbe(t, handler, session.Token)
 	hardware := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/hardware", nil)
 	AssertAPIBody(t, hardware, http.StatusOK, `"selected":"qsv"`, "Intel Quick Sync", `"supported":true`, `"usable":true`, `"status":"Smoke check passed"`, "NVIDIA NVENC/NVDEC", "Container Toolkit", `"supported":false`, "native macOS Server", "native Windows Server", "Linux V4L2 hardware encoder", "Windows Media Foundation")
 	request := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/settings/transcoder", strings.NewReader("quality=automatic&codec=hevc&accelerator=auto"))
