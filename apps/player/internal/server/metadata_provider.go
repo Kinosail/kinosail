@@ -36,6 +36,7 @@ type metadataStore struct {
 	tvmaze      *sharedmetadata.TVMazeProvider
 	persist     func(string, any) error
 	misses      *sharedmetadata.Misses
+	artwork     sharedmetadata.ArtworkCache
 	tmdbRecords bool
 	stateDB     *database.Store
 	err         error
