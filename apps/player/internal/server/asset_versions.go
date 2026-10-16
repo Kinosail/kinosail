@@ -54,7 +54,7 @@ func versionedTemplateSource(source string) string {
 }
 
 func quickConnectPage(page quickconnect.Page) quickconnect.Page {
-	page.ThemeScript, page.Stylesheet = assetURL("theme.js"), assetURL("app.css")
+	page.ThemeScript, page.Stylesheet, page.Icon = assetURL("theme.js"), assetURL("app.css"), assetURL("icon.svg")
 	return page
 }
 
