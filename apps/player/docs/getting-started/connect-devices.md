@@ -46,6 +46,8 @@ Keep provider tokens private. Use the most limited token you can. Trust only cer
 
 When a Jellyfin app downloads a title, Kinosail prepares a verified copy of the original file. If the copy is not ready within 10 seconds, Kinosail sends the original file directly. It finishes the verified copy for later downloads.
 
+A Jellyfin app receives at most 1,000 titles in one list request. The response also reports the total number of titles, so apps that load the library in pages still show every title. A "Recently added" request returns 20 titles unless the app asks for a different number.
+
 Kinosail tests common client tasks. It does not support every Jellyfin feature or device. For sign-in help, see [Jellyfin app troubleshooting]({{ '/troubleshooting/sign-in-and-access/' | relative_url }}).
 
 ## Sign in and play
