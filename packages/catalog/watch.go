@@ -91,11 +91,11 @@ func (index *Index) poll(ctx context.Context) {
 			return
 		case <-ticker.C:
 		}
-		roots := index.pollRoots()
+		roots, within := index.pollRoots()
 		if len(roots) == 0 {
 			continue
 		}
-		current := index.changedDirectories(ctx, roots)
+		current := index.changedDirectories(ctx, roots, within)
 		for len(current) > 0 {
 			timer := time.NewTimer(index.watchStability)
 			select {
@@ -104,7 +104,7 @@ func (index *Index) poll(ctx context.Context) {
 				return
 			case <-timer.C:
 			}
-			next := index.changedDirectories(ctx, roots)
+			next := index.changedDirectories(ctx, roots, within)
 			if maps.Equal(current, next) {
 				index.RequestChanges(slices.Collect(maps.Keys(current)))
 				break
@@ -114,18 +114,26 @@ func (index *Index) poll(ctx context.Context) {
 	}
 }
 
-func (index *Index) pollRoots() []ScanRoot {
+func (index *Index) pollRoots() ([]ScanRoot, map[ScanRoot][]string) {
 	roots := index.Roots()
 	if watching, _ := index.Monitoring(); !watching {
-		return roots
+		return roots, nil
 	}
-	polled := make([]ScanRoot, 0, len(roots))
+	polled, local := make([]ScanRoot, 0, len(roots)), make([]ScanRoot, 0, len(roots))
 	for _, root := range roots {
 		if networkFilesystem(root.Path) {
 			polled = append(polled, root)
+		} else {
+			local = append(local, root)
 		}
 	}
-	return polled
+	within := nestedNetworkMounts(local)
+	for _, root := range local {
+		if len(within[root]) > 0 {
+			polled = append(polled, root)
+		}
+	}
+	return polled, within
 }
 
 func (index *Index) watchChanges(ctx context.Context) error {

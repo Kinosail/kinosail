@@ -89,7 +89,7 @@ func (index *Index) serveRequest(ctx context.Context, request refreshRequest) {
 	}
 	changed := slices.Collect(maps.Keys(request.changed))
 	if request.verify {
-		changed = append(changed, slices.Collect(maps.Keys(index.changedDirectories(ctx, index.Roots())))...)
+		changed = append(changed, slices.Collect(maps.Keys(index.changedDirectories(ctx, index.Roots(), nil)))...)
 	}
 	if len(changed) == 0 {
 		return
@@ -113,18 +113,18 @@ func (index *Index) unscannedRoot() bool {
 	return false
 }
 
-func (index *Index) changedDirectories(ctx context.Context, roots []ScanRoot) map[string]int64 {
+func (index *Index) changedDirectories(ctx context.Context, roots []ScanRoot, within map[ScanRoot][]string) map[string]int64 {
 	index.refreshMu.Lock()
-	scanners := make([]*library.Scanner, 0, len(roots))
+	scanners := make(map[ScanRoot]*library.Scanner, len(roots))
 	for _, root := range roots {
 		if scanner := index.scanners[root]; scanner != nil {
-			scanners = append(scanners, scanner)
+			scanners[root] = scanner
 		}
 	}
 	index.refreshMu.Unlock()
 	changed := make(map[string]int64)
-	for _, scanner := range scanners {
-		maps.Copy(changed, scanner.Changed(ctx))
+	for root, scanner := range scanners {
+		maps.Copy(changed, scanner.Changed(ctx, within[root]...))
 	}
 	return changed
 }
