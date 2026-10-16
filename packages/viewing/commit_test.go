@@ -17,7 +17,8 @@ func testCommitStore(persist func(string, any) error) (CommitStore, *map[string]
 	playlists := map[string]map[string]bool{}
 	order := map[string][]string{}
 	smart := map[string]catalog.PlaylistRule{}
-	var progressMutex, persistMutex sync.Mutex
+	var progressMutex sync.RWMutex
+	var persistMutex sync.Mutex
 	var listMutex sync.RWMutex
 	return CommitStore{
 		Progress:  ProgressStorage{Mutex: &progressMutex, PersistMutex: &persistMutex, Values: &progress, File: "progress.json", Persist: persist},
@@ -32,7 +33,7 @@ func testCommitChanges() ([]ProgressChange, []ListChange) {
 
 func TestNewProgressStoragePreservesTheSharedTransaction(t *testing.T) {
 	values := map[string]catalog.PlaybackState{}
-	mutex, persistMutex := new(sync.Mutex), new(sync.Mutex)
+	mutex, persistMutex := new(sync.RWMutex), new(sync.Mutex)
 	database := new(documentdb.Store)
 	persist := func(string, any) error { return nil }
 	storage := NewProgressStorage(catalog.ProgressStorage{Mutex: mutex, PersistMutex: persistMutex, Values: &values, File: "progress.json", Persist: persist}, database)

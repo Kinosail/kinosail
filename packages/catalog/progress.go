@@ -24,7 +24,8 @@ type PlaybackState struct {
 type ProgressChange func(PlaybackState) (PlaybackState, bool, error)
 
 type ProgressStorage struct {
-	Mutex, PersistMutex *sync.Mutex
+	Mutex               *sync.RWMutex
+	PersistMutex        *sync.Mutex
 	Values              *map[string]PlaybackState
 	File                string
 	Persist             func(string, any) error
@@ -34,6 +35,10 @@ type ProgressStorage struct {
 func (storage ProgressStorage) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
 	storage.PersistMutex.Lock()
 	defer storage.PersistMutex.Unlock()
+	return storage.commit(key, change)
+}
+
+func (storage ProgressStorage) commit(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
 	storage.Mutex.Lock()
 	previous, current, changed, err := progressChange(*storage.Values, key, change)
 	var values map[string]PlaybackState

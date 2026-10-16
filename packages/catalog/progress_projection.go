@@ -33,7 +33,9 @@ func ResumeAt(seconds float64) string {
 }
 
 func ViewerProgress(values map[string]PlaybackState, profile string, owner bool, id string) PlaybackState {
-	value, found := values[profile+":"+id]
+	var buffer [128]byte
+	key := append(append(append(buffer[:0], profile...), ':'), id...)
+	value, found := values[string(key)]
 	if !found && owner {
 		value = values[id]
 	}
@@ -52,14 +54,22 @@ func ActiveProgress(values map[string]PlaybackState, profile string, owner bool,
 }
 
 func ProgressHistory(values map[string]PlaybackState, profile string, owner bool, items []library.Item) []library.Item {
-	state := func(item library.Item) PlaybackState { return ViewerProgress(values, profile, owner, item.ID) }
-	sort.SliceStable(items, func(left, right int) bool { return state(items[left]).Updated.After(state(items[right]).Updated) })
-	for index, item := range items {
-		if state(item).Updated.IsZero() {
-			return items[:index]
+	type played struct {
+		position int
+		updated  time.Time
+	}
+	history := make([]played, 0, min(len(items), len(values)))
+	for position := range items {
+		if updated := ViewerProgress(values, profile, owner, items[position].ID).Updated; !updated.IsZero() {
+			history = append(history, played{position, updated})
 		}
 	}
-	return items
+	sort.SliceStable(history, func(left, right int) bool { return history[left].updated.After(history[right].updated) })
+	result := make([]library.Item, len(history))
+	for index, entry := range history {
+		result[index] = items[entry.position]
+	}
+	return result
 }
 
 func RecentAdminProgress(values map[string]PlaybackState, items []library.Item, names map[string]string) []PlaybackView {
