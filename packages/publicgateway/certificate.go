@@ -1,16 +1,12 @@
 package publicgateway
 
 import (
-	"bytes"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"net/http"
 	"slices"
-	"strings"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 	"golang.org/x/crypto/acme"
@@ -57,42 +53,6 @@ func CertificateHandler(hostname string, get func(*tls.ClientHelloInfo) (*tls.Ce
 		w.Header().Set("Content-Type", "application/x-pem-file")
 		_, _ = w.Write(body)
 	})
-}
-
-func CertificateClient(hostname, path string) func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
-	client := &http.Client{Transport: unixTransport(path), Timeout: 30 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	return func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
-		if hello.ServerName != hostname {
-			return nil, errors.New("public TLS name is not allowed")
-		}
-		input := certificateRequest{Name: hostname}
-		input.ECDSA = ecdsaCapable(hello)
-		for _, protocol := range hello.SupportedProtos {
-			if protocol == acme.ALPNProto {
-				input.ACME = true
-			}
-		}
-		body, _ := json.Marshal(input)
-		r, err := http.NewRequestWithContext(hello.Context(), http.MethodPost, "http://certificate/", bytes.NewReader(body))
-		if err != nil {
-			return nil, errors.New("public certificate is unavailable")
-		}
-		r.Header.Set("Content-Type", "application/json")
-		response, err := client.Do(r)
-		if err != nil {
-			return nil, errors.New("public certificate is unavailable")
-		}
-		defer response.Body.Close()
-		data, err := readBounded(response.Body, 256<<10)
-		if err != nil || response.StatusCode != http.StatusOK || !strings.HasPrefix(response.Header.Get("Content-Type"), "application/x-pem-file") {
-			return nil, errors.New("public certificate is unavailable")
-		}
-		certificate, err := tls.X509KeyPair(data, data)
-		if err != nil {
-			return nil, errors.New("public certificate is unavailable")
-		}
-		return &certificate, nil
-	}
 }
 
 func ecdsaCapable(hello *tls.ClientHelloInfo) bool {

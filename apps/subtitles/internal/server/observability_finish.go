@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 )
 
@@ -27,8 +28,9 @@ func (observation requestObservation) finish(ctx context.Context) {
 	status := observation.status()
 	observation.record(status, panicked)
 	pattern := observation.route(observation.request)
-	attributes := observation.attributes(status, pattern)
-	slog.Log(ctx, requestLogLevel(observation.request, observation.facts, pattern, status), "request", attributes...)
+	if level := requestLogLevel(observation.request, observation.facts, pattern, status); slog.Default().Enabled(ctx, level) {
+		slog.Log(ctx, level, "request", observation.attributes(status, pattern)...)
+	}
 }
 
 func (observation requestObservation) recover(recovered any) bool {
@@ -38,7 +40,7 @@ func (observation requestObservation) recover(recovered any) bool {
 	if observation.capture.Status == 0 {
 		http.Error(observation.capture, "internal server error", http.StatusInternalServerError)
 	}
-	slog.Error("request panic", "request_id", observation.facts.id, "method", observation.request.Method, "route", observation.route(observation.request), "panic", fmt.Sprint(recovered), "stack", string(debug.Stack()))
+	slog.Error("request panic", "request_id", httpguard.LogText(observation.facts.id, 64), "method", httpguard.LogMethod(observation.request.Method), "route", observation.route(observation.request), "panic", fmt.Sprint(recovered), "stack", string(debug.Stack()))
 	return true
 }
 
@@ -78,22 +80,22 @@ func requestLogLevel(request *http.Request, facts *requestActivity, pattern stri
 }
 
 func (observation requestObservation) attributes(status int, pattern string) []any {
-	attributes := []any{"request_id", observation.facts.id, "method", observation.request.Method, "route", pattern, "status", status, "duration_ms", time.Since(observation.started).Milliseconds()}
+	attributes := []any{"request_id", httpguard.LogText(observation.facts.id, 64), "method", httpguard.LogMethod(observation.request.Method), "route", pattern, "status", status, "duration_ms", time.Since(observation.started).Milliseconds()}
 	if path := identitycore.SafeCompatibilityPath(observation.request, pattern); path != "" {
-		attributes = append(attributes, "compatibility_path", path)
+		attributes = append(attributes, "compatibility_path", httpguard.LogText(path, 512))
 	}
 	if observation.facts.playbackSession == "" {
 		return attributes
 	}
-	attributes = append(attributes, "playback_session", observation.facts.playbackSession, "response_bytes", observation.capture.Bytes)
+	attributes = append(attributes, "playback_session", httpguard.LogText(observation.facts.playbackSession, 64), "response_bytes", observation.capture.Bytes)
 	if value := observation.request.Header.Get("Range"); identitycore.ValidSingleByteRange(value) {
-		attributes = append(attributes, "request_range", value)
+		attributes = append(attributes, "request_range", httpguard.LogText(value, 128))
 	}
 	if value := observation.capture.Header().Get("Content-Range"); identitycore.ValidContentRange(value) {
-		attributes = append(attributes, "response_range", value)
+		attributes = append(attributes, "response_range", httpguard.LogText(value, 128))
 	}
 	if value, _, err := mime.ParseMediaType(observation.capture.Header().Get("Content-Type")); err == nil {
-		attributes = append(attributes, "response_type", value)
+		attributes = append(attributes, "response_type", httpguard.LogText(value, 128))
 	}
 	return attributes
 }

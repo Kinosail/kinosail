@@ -123,13 +123,13 @@ func assertJSONRequestRecord(t *testing.T, line []byte, message, attack string) 
 	if err := json.Unmarshal(line, &record); err != nil {
 		t.Fatal(err)
 	}
-	if record["msg"] != message || record["method"] != attack {
+	if record["msg"] != message || record["method"] != "OTHER" {
 		t.Fatalf("record changed shape: %#v", record)
 	}
 	if message == "request panic" && record["panic"] != attack {
 		t.Fatalf("panic detail lost: %#v", record)
 	}
-	if record["request_id"] == attack || strings.Contains(string(line), "api_key") || bytes.ContainsAny(line, "\r\x1b") {
+	if record["request_id"] == attack || strings.Contains(string(line), "api_key") || strings.Contains(string(line), "forged") && message == "request" || bytes.ContainsAny(line, "\r\x1b") {
 		t.Fatalf("unescaped or private data in log: %q", line)
 	}
 }

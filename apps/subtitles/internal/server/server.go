@@ -10,6 +10,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/configuration"
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/library"
 	sharedmetadata "github.com/MikeO7/kinosail/packages/metadata"
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
@@ -178,9 +179,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 }
 
 func withApplicationRequests(app http.Handler, appMux *http.ServeMux, auth *authentication, config Config, settings *settingsStore, updates *updateChecker) http.Handler {
-	pattern := func(request *http.Request) string {
+	pattern := httpguard.MemoizedRoutePattern(func(request *http.Request) string {
 		_, matched := appMux.Handler(request)
 		return matched
-	}
+	})
 	return protectApplicationTransport(auth, config, pattern, applicationRequests(auth, settings, updates, pattern, app))
 }
