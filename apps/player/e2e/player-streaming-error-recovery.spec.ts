@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { failDirect, startDirectPlayer } from "./player-direct-fallback-fixture";
 
 test("a stalled audio-compatible stream retries itself once, then offers recovery", async ({ page }) => {
@@ -103,28 +103,60 @@ test("an aborted audio-compatible source switch does not trigger recovery", asyn
   await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
 });
 
-test("a stalled stream that is still receiving data waits before reloading", async ({ page }) => {
+async function freezeWithBuffer(page: Page) {
   await startDirectPlayer(page, { initialSource: false, initialHls: true, compatibleMode: "audio-transcode", compatibleLabel: "Transcoding audio" });
   await page.clock.install();
-  const video = page.locator("video");
-  const instances = () => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances);
-  await video.evaluate((media: HTMLVideoElement) => {
+  await page.locator("video").evaluate((media: HTMLVideoElement) => {
     const state = window as Window & { bufferedEnd?: number };
     state.bufferedEnd = 42;
     Object.defineProperty(media, "buffered", { configurable: true, get: () => ({ length: 1, start: () => 0, end: () => state.bufferedEnd ?? 0 }) });
     media.currentTime = 42;
   });
-  const started = await instances();
-  await video.dispatchEvent("waiting");
-  await page.clock.fastForward(6_000);
-  await video.evaluate((media: HTMLVideoElement) => {
-    (window as Window & { bufferedEnd?: number }).bufferedEnd = 43;
+  const instances = () => page.evaluate(() => (window as Window & { FakeHls: { instances: number } }).FakeHls.instances);
+  const receive = (end: number) => page.locator("video").evaluate((media: HTMLVideoElement, value: number) => {
+    (window as Window & { bufferedEnd?: number }).bufferedEnd = value;
     media.dispatchEvent(new Event("progress"));
-  });
+  }, end);
+  const started = await instances();
+  await page.locator("video").dispatchEvent("waiting");
+  return { instances, receive, started };
+}
+
+test("a stalled stream that is still receiving data waits before reloading", async ({ page }) => {
+  const { instances, receive, started } = await freezeWithBuffer(page);
+  await page.clock.fastForward(6_000);
+  await receive(43);
   await page.clock.fastForward(6_100);
   expect(await instances()).toBe(started);
   await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
   await page.clock.fastForward(12_100);
   await expect.poll(instances).toBe(started + 1);
-  await expect(video).toHaveJSProperty("currentTime", 42);
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 42);
+});
+
+test("a frozen stream with a ready buffer retries at the first stall check", async ({ page }) => {
+  const { instances, receive, started } = await freezeWithBuffer(page);
+  await page.clock.fastForward(6_000);
+  await receive(72);
+  await page.clock.fastForward(6_100);
+  await expect.poll(instances).toBe(started + 1);
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 42);
+});
+
+test("a frozen stream that keeps filling its buffer defers the retry only once", async ({ page }) => {
+  const { instances, receive, started } = await freezeWithBuffer(page);
+  for (const end of [42.4, 42.8]) {
+    await page.clock.fastForward(4_000);
+    await receive(end);
+  }
+  await page.clock.fastForward(4_100);
+  expect(await instances()).toBe(started);
+  for (const end of [43.2, 43.6]) {
+    await page.clock.fastForward(4_000);
+    await receive(end);
+  }
+  await page.clock.fastForward(4_000);
+  await expect.poll(instances).toBe(started + 1);
+  await expect(page.locator("[data-player-status] [data-player-fallback]")).toBeHidden();
+  await expect(page.locator("video")).toHaveJSProperty("currentTime", 42);
 });

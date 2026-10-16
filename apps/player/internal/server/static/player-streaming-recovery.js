@@ -110,7 +110,7 @@ const watchBuffering = (position = player.currentTime, startedAt = performance.n
       if (performance.now() - startedAt < 90000) return watchBuffering(position, startedAt);
       return showFailure("Playback has not advanced. You can retry from this position.", "Retry playback", retryStalledPlayback);
     }
-    if (performance.now() - startedAt < 60000 && performance.now() - mediaProgressAt < 12000 && bufferedAhead() > bufferedAtStart) {
+    if (performance.now() - startedAt < 24000 && performance.now() - mediaProgressAt < 12000 && bufferedAtStart < bufferedAhead() && bufferedAhead() < 3) {
       playbackTrace("buffering-wait", adaptiveActive ? "compatible" : "direct");
       return watchBuffering(position, startedAt);
     }
