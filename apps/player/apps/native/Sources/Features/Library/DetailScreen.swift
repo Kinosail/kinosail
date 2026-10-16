@@ -85,9 +85,9 @@ private struct DetailContent: View {
 
     #if os(tvOS)
     private var tvMovieHero: some View {
-        let metadata = TVMovieDetail(item: item).metadata
+        let movie = TVMovieDetail(item: item), metadata = movie.metadata
         return TVMovieHeroLayout { VStack(alignment: .leading, spacing: 14) {
-            Text(item.title)
+            Text(movie.title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
@@ -230,9 +230,12 @@ private struct DetailContent: View {
 #if os(tvOS)
 struct TVMovieDetail {
     let item: MediaItem
-    var usesBackdrop: Bool {
-        item.kind == .video && item.show.isEmpty && item.showID.isEmpty && !item.backdrop.isEmpty
+    var usesBackdrop: Bool { item.kind == .video && !item.backdrop.isEmpty }
+    var title: String { item.show.isEmpty ? item.title : ShowSeasonSelection.episodeTitle(item) }
+    var metadata: String {
+        let facts = item.show.isEmpty ? [item.year, item.rating, item.genres]
+            : [item.show, "S\(item.season) E\(item.episode)", item.rating]
+        return facts.filter { !$0.isEmpty }.joined(separator: " · ")
     }
-    var metadata: String { [item.year, item.rating, item.genres].filter { !$0.isEmpty }.joined(separator: " · ") }
 }
 #endif

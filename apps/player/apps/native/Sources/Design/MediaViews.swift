@@ -4,6 +4,7 @@ struct MediaCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if os(tvOS)
     @FocusState private var focused: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     let item: MediaItem
     var landscape = false
@@ -26,7 +27,7 @@ struct MediaCard: View {
                         fillsFrame: landscape && item.kind == .photo)
                     .background(KinoTheme.surface)
                     .overlay(alignment: .topTrailing) {
-                        if item.isUnwatched {
+                        if item.isUnwatched && item.progress.seconds == 0 {
                             UnwatchedCorner().fill(KinoTheme.signal).frame(width: 32, height: 32)
                                 .accessibilityHidden(true)
                         }
@@ -35,6 +36,7 @@ struct MediaCard: View {
                         if item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
                             WatchPosition(item: item, barOnly: true)
                                 .padding(.horizontal, 12).padding(.bottom, 8)
+                                .accessibilityHidden(true)
                         }
                     }
                     .clipShape(.rect(cornerRadius: 12))
@@ -46,17 +48,25 @@ struct MediaCard: View {
                                 .allowsHitTesting(false)
                         }
                     }
+                    .scaleEffect(focused ? 1.06 : 1)
+                    .shadow(color: .black.opacity(focused ? 0.55 : 0), radius: 24, y: 16)
+                    .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
                     #endif
                 VStack(alignment: .leading, spacing: 8) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
                         .mediaLineLimit(2, accessibility: dynamicTypeSize.isAccessibilitySize)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(minHeight: KinoTheme.mediaTitleHeight, alignment: .topLeading)
-                    let subtitle = item.kind == .video || item.kind == .show ? item.subtitleWithoutYear : item.subtitle
+                    let subtitle = cardSubtitle
                     if !subtitle.isEmpty {
                         Text(subtitle).font(.caption).foregroundStyle(KinoTheme.muted)
                             .mediaLineLimit(1, accessibility: dynamicTypeSize.isAccessibilitySize)
                     }
+                    #if os(tvOS)
+                    if resumesPlayback && item.kind == .video && item.progress.seconds > 0 && !item.progress.watched {
+                        WatchPosition(item: item, textOnly: true)
+                    }
+                    #endif
                     if item.kind != .video && item.kind != .show {
                         if resumesPlayback { WatchPosition(item: item) }
                         else if item.progress.seconds > 0 && !item.progress.watched {
@@ -85,6 +95,15 @@ struct MediaCard: View {
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnwatched ? (item.progress.seconds > 0 ? "Unwatched, continue from \(item.progress.seconds.clock)" : "Unwatched")
                             : item.progress.watched && (item.kind == .video || item.kind == .show) ? "Watched" : "")
+    }
+}
+
+extension MediaCard {
+    var cardSubtitle: String {
+        guard item.kind == .video || item.kind == .show else { return item.subtitle }
+        guard !item.show.isEmpty, item.season > 0 || item.episode > 0 else { return item.subtitleWithoutYear }
+        let code = "S\(item.season) E\(item.episode)"
+        return resumesPlayback || opensShow ? "\(item.show) · \(code)" : code
     }
 }
 
@@ -158,6 +177,7 @@ struct MediaShelf: View {
     var moreDestination: ScreenDestination?
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var opensShows = false
+    var onFocus: ((MediaItem) -> Void)?
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
@@ -174,7 +194,7 @@ struct MediaShelf: View {
                 LazyHStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
-                                  onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width)
+                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows).frame(width: width)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                     }
                 }
@@ -239,7 +259,7 @@ extension Double {
     }
 }
 
-private extension View {
+extension View {
     @ViewBuilder func mediaLineLimit(_ lines: Int, accessibility: Bool) -> some View {
         if accessibility { lineLimit(nil) }
         else { lineLimit(lines, reservesSpace: true) }

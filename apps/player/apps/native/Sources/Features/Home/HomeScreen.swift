@@ -10,6 +10,9 @@ struct HomeScreen: View {
     #if os(tvOS)
     @Namespace private var homeFocus
     @State private var quickPlay: ScreenDestination?
+    @State private var spotlight = TVHomeSpotlight()
+    @State private var scrollPosition = ScrollPosition(edge: .top)
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
     var body: some View {
@@ -22,9 +25,13 @@ struct HomeScreen: View {
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
                 LazyVStack(alignment: .leading, spacing: 32) {
                     #if os(tvOS)
+                    if homeMode == .watch, selection.featured != nil {
+                        TVHomeSpotlightHeader(item: spotlight.focused ?? selection.featured)
+                            .task(id: selection.featured?.id) { spotlight.featured = selection.featured }
+                    }
                     if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
                         MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
-                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 })
+                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 }, onFocus: showWatching)
                     } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
@@ -64,13 +71,8 @@ struct HomeScreen: View {
                         recentShelf("Recently added TV shows", items: selection.recent(for: .show), opensShows: true)
                         recentShelf("Unwatched TV shows", items: selection.unwatchedShows, opensShows: true)
                         recentShelf("Unwatched movies", items: selection.unwatchedMovies)
-                        if !selection.movieGenres.isEmpty {
-                            VStack(alignment: .leading, spacing: 18) {
-                                Text("Movie genres").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                                ForEach(selection.movieGenres) { genre in
-                                    recentShelf(LocalizedStringKey(genre.name), items: genre.items)
-                                }
-                            }
+                        ForEach(selection.movieGenres) { genre in
+                            recentShelf(LocalizedStringKey(genre.name), items: genre.items)
                         }
                     } else {
                         recentShelf("Recently added music", items: selection.recent(for: .music))
@@ -97,6 +99,16 @@ struct HomeScreen: View {
             session.contentRevision = UUID()
         }
         #if os(tvOS)
+        .mask {
+            VStack(spacing: 0) {
+                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom).frame(height: 48)
+                Color.black
+            }
+            .padding(.horizontal, -KinoTheme.contentPadding)
+            .ignoresSafeArea(edges: [.horizontal, .bottom])
+        }
+        .scrollPosition($scrollPosition)
+        .background { TVHomeSpotlightBackdrop(spotlight: spotlight) }
         .focusScope(homeFocus)
         .focusSection()
         .onExitCommand { focusTopBar?() }
@@ -138,6 +150,13 @@ struct HomeScreen: View {
         #endif
     }
 
+    #if os(tvOS)
+    private func showWatching(_ item: MediaItem) {
+        spotlight.show(item)
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { scrollPosition.scrollTo(edge: .top) }
+    }
+    #endif
+
     private var tvHomeLoadingLayout: LoadingLayout {
         #if os(tvOS)
         homeMode == .listen ? .tvHomeAudio : .tvHome
@@ -149,7 +168,8 @@ struct HomeScreen: View {
     @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
-            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows)
+            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows,
+                       onFocus: { spotlight.show($0) })
             #else
             MediaShelf(title: title, items: items, opensShows: opensShows)
             #endif
@@ -204,68 +224,3 @@ struct HomeSelection {
             .prefix(4))
     }
 }
-
-#if os(tvOS)
-private struct TVHomeBrowse: View {
-    @FocusState private var focusedTitle: String?
-    let selectTab: (PlayerTab) -> Void
-    private let tabs: [PlayerTab] = [.movies, .shows, .music, .audiobooks, .photos]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Browse").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-            ScrollView(.horizontal) {
-                HStack(alignment: .top, spacing: KinoTheme.shelfSpacing) {
-                    ForEach(tabs) { tab in
-                        tile(title: tab.title, icon: icon(for: tab)) { selectTab(tab) }
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 24)
-                .scrollTargetLayout()
-            }
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.viewAligned)
-            .scrollClipDisabled()
-            .padding(.horizontal, -24)
-        }
-        .focusSection()
-    }
-
-    private func tile(title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 18) {
-                Image(icon).resizable().scaledToFit().frame(width: 60, height: 60).accessibilityHidden(true)
-                Text(title).font(.title3.weight(.semibold)).foregroundStyle(KinoTheme.text)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(2).fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: 0)
-            }
-            .frame(width: 400)
-            .frame(minHeight: 100)
-            .contentShape(.rect)
-            .overlay {
-                if focusedTitle == title {
-                    RoundedRectangle(cornerRadius: 14).strokeBorder(KinoTheme.text, lineWidth: 4)
-                }
-            }
-        }
-        .buttonStyle(.plain).focusEffectDisabled()
-        .focused($focusedTitle, equals: title)
-        .accessibilityLabel(title)
-    }
-
-    private func icon(for tab: PlayerTab) -> String {
-        switch tab {
-        case .movies: "BrowseMovies"
-        case .shows: "BrowseShows"
-        case .music: "BrowseMusic"
-        case .audiobooks: "BrowseAudiobooks"
-        case .photos: "BrowsePhotos"
-        case .collections: "BrowseCollections"
-        default: tab.symbol
-        }
-    }
-
-}
-#endif
