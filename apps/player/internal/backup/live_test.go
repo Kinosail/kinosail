@@ -41,6 +41,10 @@ func TestScheduledBackupReadsLiveStoreWhileAWriterHoldsTheLock(t *testing.T) {
 	if err != nil || time.Since(started) > 2*time.Second {
 		t.Fatalf("backup during held write lock = %v after %s", err, time.Since(started))
 	}
+	var download bytes.Buffer
+	if err := LiveWrite(store)(&download, directory); err != nil || download.Len() == 0 {
+		t.Fatalf("download during held write lock = %v", err)
+	}
 	if err := held.Rollback(); err != nil {
 		t.Fatal(err)
 	}
