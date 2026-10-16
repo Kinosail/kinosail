@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpcompress"
 )
@@ -36,7 +37,7 @@ func TestGatewayPassesApplicationCompressionThroughUnchanged(t *testing.T) {
 		mu.Unlock()
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		_, _ = io.WriteString(w, page)
-	}))}
+	})), ReadHeaderTimeout: time.Second}
 	go func() { _ = backend.Serve(listener) }()
 	t.Cleanup(func() { _ = backend.Close() })
 	for _, encoding := range []string{"gzip", ""} {

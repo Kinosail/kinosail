@@ -42,6 +42,7 @@ func (writer *responseWriter) WriteHeader(status int) {
 		writer.ResponseWriter.WriteHeader(status)
 	case compressing:
 		writer.start()
+	case undecided, buffering:
 	}
 }
 
@@ -93,9 +94,9 @@ func (writer *responseWriter) Write(data []byte) (int, error) {
 		return len(data), nil
 	case compressing:
 		return writer.encoder.Write(data)
-	default:
-		return writer.ResponseWriter.Write(data)
+	case undecided, passthrough:
 	}
+	return writer.ResponseWriter.Write(data)
 }
 
 func (writer *responseWriter) ReadFrom(source io.Reader) (int64, error) {
@@ -141,5 +142,6 @@ func (writer *responseWriter) finish() {
 		writer.encoder.Reset(io.Discard)
 		writers.Put(writer.encoder)
 		writer.encoder = nil
+	case undecided, passthrough:
 	}
 }

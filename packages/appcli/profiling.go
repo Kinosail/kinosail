@@ -69,7 +69,7 @@ func listenPrivateSocket(socket string) (net.Listener, error) {
 	if info, err := os.Lstat(directory); err != nil || !info.IsDir() {
 		return nil, errors.New("profiling directory is not a directory")
 	}
-	if err := os.Chmod(directory, 0o700); err != nil {
+	if err := os.Chmod(directory, 0o700); err != nil { //nolint:gosec // Only the owner may traverse the profiling directory.
 		return nil, err
 	}
 	if info, err := os.Lstat(socket); err == nil {

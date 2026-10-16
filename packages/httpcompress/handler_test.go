@@ -15,7 +15,12 @@ import (
 
 var page = strings.Repeat(`<article class="card"><a href="/item/0123456789abcdef"><img src="/artwork/0123456789abcdef" width="400" height="600" alt=""></a><h2>Arrival</h2></article>`, 64)
 
-func get(t *testing.T, server *httptest.Server, method string, header http.Header) (*http.Response, []byte) {
+type observed struct {
+	header http.Header
+	length int64
+}
+
+func get(t *testing.T, server *httptest.Server, method string, header http.Header) (observed, []byte) {
 	t.Helper()
 	request, err := http.NewRequestWithContext(t.Context(), method, server.URL, nil)
 	if err != nil {
@@ -33,7 +38,7 @@ func get(t *testing.T, server *httptest.Server, method string, header http.Heade
 	if err != nil {
 		t.Fatal(err)
 	}
-	return response, body
+	return observed{header: response.Header, length: response.ContentLength}, body
 }
 
 func gunzip(t *testing.T, body []byte) []byte {
@@ -60,8 +65,8 @@ func TestHandlerCompressesEligibleTextAndKeepsTheRepresentationConsistent(t *tes
 	})))
 	defer server.Close()
 	response, body := get(t, server, http.MethodGet, http.Header{"Accept-Encoding": {"gzip"}, "Sec-Fetch-Site": {"same-origin"}, "Cookie": {"session=1"}})
-	if response.Header.Get("Content-Encoding") != "gzip" || response.Header.Get("Vary") != "Accept-Encoding" || response.Header.Get("ETag") != `W/"page-1"` || response.ContentLength != -1 && response.ContentLength != int64(len(body)) {
-		t.Fatalf("headers = %v", response.Header)
+	if response.header.Get("Content-Encoding") != "gzip" || response.header.Get("Vary") != "Accept-Encoding" || response.header.Get("ETag") != `W/"page-1"` || response.length != -1 && response.length != int64(len(body)) {
+		t.Fatalf("headers = %v", response.header)
 	}
 	if decoded := gunzip(t, body); !bytes.HasPrefix(decoded, []byte(page)) || len(body) >= len(decoded)/4 {
 		t.Fatalf("decoded %d bytes from %d", len(decoded), len(body))
@@ -123,8 +128,8 @@ func TestHandlerLeavesIneligibleResponsesUntouched(t *testing.T) {
 			})))
 			defer server.Close()
 			response, body := get(t, server, test.method, test.header)
-			if response.Header.Get("Content-Encoding") == "gzip" {
-				t.Fatalf("compressed: %v", response.Header)
+			if response.header.Get("Content-Encoding") == "gzip" {
+				t.Fatalf("compressed: %v", response.header)
 			}
 			if test.method == http.MethodGet && !strings.HasPrefix(page, string(body)) && !strings.HasPrefix(string(body), `{"ok"`) {
 				t.Fatalf("body changed: %.40q", body)

@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	immutableCache = "public, max-age=31536000, immutable"
+	immutableCache  = "public, max-age=31536000, immutable"
 	revalidateCache = "public, max-age=86400"
 )
 

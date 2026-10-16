@@ -75,7 +75,14 @@ func ownerSession(t *testing.T, httpServer *http.Server) *http.Cookie {
 	return nil
 }
 
-func (client compressionClient) get(t *testing.T, method, path, site string, signedIn bool, extra http.Header) *http.Response {
+type observedResponse struct {
+	StatusCode   int
+	Header       http.Header
+	method, path string
+	body         []byte
+}
+
+func (client compressionClient) get(t *testing.T, method, path, site string, signedIn bool, extra http.Header) observedResponse {
 	t.Helper()
 	request, err := http.NewRequestWithContext(t.Context(), method, client.server.URL+path, nil)
 	if err != nil {
@@ -99,28 +106,23 @@ func (client compressionClient) get(t *testing.T, method, path, site string, sig
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
-	_ = response.Body.Close()
 	if err != nil {
 		t.Fatal(err)
 	}
-	response.Body = io.NopCloser(bytes.NewReader(body))
-	return response
+	return observedResponse{StatusCode: response.StatusCode, Header: response.Header, method: method, path: path, body: body}
 }
 
-func decodedBody(t *testing.T, response *http.Response, encoding string) string {
+func decodedBody(t *testing.T, response observedResponse, encoding string) string {
 	t.Helper()
 	if got := response.Header.Get("Content-Encoding"); got != encoding {
-		t.Fatalf("%s %s Content-Encoding = %q, want %q (status %d %v)", response.Request.Method, response.Request.URL.Path, got, encoding, response.StatusCode, response.Header)
-	}
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("%s %s Content-Encoding = %q, want %q (status %d %v)", response.method, response.path, got, encoding, response.StatusCode, response.Header)
 	}
 	if encoding != "gzip" {
-		return string(body)
+		return string(response.body)
 	}
-	reader, err := gzip.NewReader(bytes.NewReader(body))
+	reader, err := gzip.NewReader(bytes.NewReader(response.body))
 	if err != nil {
 		t.Fatal(err)
 	}
