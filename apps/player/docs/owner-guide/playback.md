@@ -46,7 +46,7 @@ Select **Improve HDR colors on non-HDR screens** when a target device cannot dis
 
 Run **Run quick check** under **Quick compatibility check**. The check makes a small test video. It does not use Library Content. A passed check does not certify every file or playback device.
 
-Open **Video compatibility** for detected formats, available conversion methods, and focused setup guidance.
+Open **Video compatibility** for detected formats, available conversion methods, and focused setup guidance. The technical details of each graphics device list the source formats it decodes in hardware. Kinosail decodes other formats on the processor and still encodes on the device.
 
 
 ## Control Viewer capacity

@@ -60,7 +60,7 @@ actor ServerClient {
         configuration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         configuration.timeoutIntervalForRequest = 20
         configuration.timeoutIntervalForResource = 60
-        configuration.httpMaximumConnectionsPerHost = 4
+        configuration.httpMaximumConnectionsPerHost = 6
         configuration.protocolClasses = protocolClasses
         session = URLSession(configuration: configuration, delegate: HTTPPolicy(), delegateQueue: nil)
     }

@@ -91,12 +91,7 @@ extension PlaybackEngine {
             self.nativeRecoveryPosition = self.timeline?.sourceTime(time) ?? time
         }
         #endif
-        let deadline = Date().addingTimeInterval(45)
-        while nextItem.status == .unknown {
-            try await Task.sleep(for: .milliseconds(100))
-            try check(attempt, installation: installation)
-            guard Date() < deadline else { throw URLError(.timedOut) }
-        }
+        try await awaitReadiness(of: nextItem, attempt: attempt, installation: installation)
         if nextItem.status == .failed {
             let failure = await transport.failure()
             try check(attempt, installation: installation)

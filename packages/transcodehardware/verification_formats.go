@@ -2,6 +2,7 @@ package transcodehardware
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
@@ -17,10 +18,12 @@ func (state *verification) verifyCodec(ctx context.Context, options ProbeOptions
 		probeCtx, stop := context.WithTimeout(ctx, 5*time.Second)
 		result := check(probeCtx, options.FFmpeg, settings, backend.Name)
 		stop()
-		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, device), Codec: codec, Device: device, Status: result.Status})
+		operation := Operation{identity: operationIdentity(options.FFmpeg, device), Codec: codec, Device: device, Status: result.Status}
 		if result.Status == "passed" {
+			operation.DecodeInputs = state.deviceDecodeInputs(backend.ID, device)
 			backend.Usable = true
 		}
+		state.operations[backend.ID] = append(state.operations[backend.ID], operation)
 	}
 }
 
@@ -30,22 +33,32 @@ func (state *verification) verifyBaselineDecode(ctx context.Context, options Pro
 			continue
 		}
 		settings := transcodepolicy.Settings{Name: "automatic", Codec: codec, Accelerator: backend.ID, Encoder: backend.encoders[codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
-		verifyHardwareDecode(ctx, options, settings, backend, state, check)
+		state.verifyHardwareDecode(ctx, options, settings, backend, "h264", check)
 	}
 }
 
 func (state *verification) verifyOptionalFormats(ctx context.Context, options ProbeOptions, backend *Backend, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
 	baseline := append([]Operation(nil), state.operations[backend.ID]...)
+	inputs := transcodepolicy.DecodeInputs()[1:]
+	state.verifyDecodeInputs(ctx, options, backend, baseline, inputs[:2], check)
 	for _, operation := range baseline {
-		if operation.Status != "passed" || operation.HardwareToneMap != "" {
+		if operation.Status != "passed" || !operation.baseline() || operation.Codec != "hevc" {
 			continue
 		}
 		settings := transcodepolicy.Settings{Name: "automatic", Codec: operation.Codec, Accelerator: backend.ID, Encoder: backend.encoders[operation.Codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
-		if operation.Codec != "h264" {
-			verifyHardwareDecode(ctx, options, settings, backend, state, check)
+		state.verifyHDR(ctx, options, backend, operation, settings, check)
+	}
+	state.verifyDecodeInputs(ctx, options, backend, baseline, inputs[2:], check)
+}
+
+func (state *verification) verifyDecodeInputs(ctx context.Context, options ProbeOptions, backend *Backend, baseline []Operation, inputs []string, check func(context.Context, string, transcodepolicy.Settings, string) transcodepolicy.CheckResult) {
+	for _, operation := range baseline {
+		if operation.Status != "passed" || !operation.baseline() || operation.Codec != "h264" {
+			continue
 		}
-		if operation.Codec == "hevc" {
-			state.verifyHDR(ctx, options, backend, operation, settings, check)
+		settings := transcodepolicy.Settings{Name: "automatic", Codec: operation.Codec, Accelerator: backend.ID, Encoder: backend.encoders[operation.Codec], Device: operation.Device, Preset: "veryfast", CRF: "22"}
+		for _, input := range inputs {
+			state.verifyHardwareDecode(ctx, options, settings, backend, input, check)
 		}
 	}
 }
@@ -60,5 +73,8 @@ func (state *verification) verifyHDR(ctx context.Context, options ProbeOptions, 
 		result := check(probeCtx, options.FFmpeg, settings, backend.Name)
 		stop()
 		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, operation.Device), Codec: operation.Codec, Device: operation.Device, OutputHDR: hdr, Status: result.Status})
+		if result.Status == "passed" && slices.Contains(state.deviceDecodeInputs(backend.ID, operation.Device), "hevc10") {
+			state.verifyHardwareDecode(ctx, options, settings, backend, "hevc10", check)
+		}
 	}
 }

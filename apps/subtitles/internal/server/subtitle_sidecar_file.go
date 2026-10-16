@@ -53,13 +53,28 @@ func (file *subtitleSidecar) write(suffix string, data []byte, exclusive bool) e
 	if _, err = output.Write(data); err != nil {
 		return err
 	}
+	if err = output.Sync(); err != nil {
+		return err
+	}
 	if err = output.Close(); err != nil {
 		return err
 	}
 	if exclusive {
-		return file.root.Link(temporary, name)
+		err = file.root.Link(temporary, name)
+	} else {
+		err = file.root.Rename(temporary, name)
 	}
-	return file.root.Rename(temporary, name)
+	if err == nil {
+		file.syncDirectory()
+	}
+	return err
+}
+
+func (file *subtitleSidecar) syncDirectory() {
+	if directory, err := file.root.Open("."); err == nil {
+		_ = directory.Sync()
+		_ = directory.Close()
+	}
 }
 
 func (file *subtitleSidecar) record(data []byte, record subtitleRecord) subtitleRecord {

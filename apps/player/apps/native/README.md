@@ -29,6 +29,12 @@ From `apps/player/apps/native/`, open `Kinosail.xcodeproj` and select `Kinosail-
 
 Output is `.build/<platform>-<simulator|device>/Build/Products/`. Repository aliases are `make -C apps/player client-build-ios` and `make -C apps/player client-build-tvos`.
 
+The script builds the Debug configuration. Debug builds turn off Swift optimization, so they scroll and start playback more slowly than a release build. Set `KINOSAIL_BUILD_CONFIGURATION=Release` when you install on an Apple TV or iPhone to judge speed:
+
+```sh
+KINOSAIL_BUILD_CONFIGURATION=Release ./scripts/build-apple.sh tvos device
+```
+
 The project uses Swift 6, strict concurrency, Observation, SwiftUI, App Intents, AVFoundation, AVKit, Network, Security, PDFKit and a protected WebKit reader. The deployment baseline is iOS/tvOS 26; current builds use SDK 27. [RESEARCH.md](RESEARCH.md) records the dated toolchain research. No third-party runtime, Expo prebuild, CocoaPods or package installation is needed.
 
 Siri/Shortcuts on iPhone and iPad offers Search library, Play title and Continue watching. Connect to a Server first; playback by title requires an unambiguous exact match. Everyone using an Apple TV shares its connected Viewer Profile, including library access and watch history. Switching Apple TV users does not switch Kinosail profiles. In TV Settings, enable **Show titles on Apple TV Home**, then put Kinosail in the top row to use dynamic Top Shelf. The TV app and `KinosailTopShelf` extension require provisioning with App Group `group.com.kinosail.player`; User Management is not required; unsigned simulator builds do not prove those hardware capabilities.

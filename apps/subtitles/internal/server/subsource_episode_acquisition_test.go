@@ -68,7 +68,7 @@ func TestSubSourceAcquisitionRequiresExactEpisode(t *testing.T) {
 				item := library.Item{ID: "0123456789abcdef", Kind: "video", Path: media, Title: "Second", Show: "Show", ShowYear: "2024", Season: 1, Episode: 2, ShowProviderIDs: map[string]string{"imdb": "tt1234567"}}
 				data := t.TempDir()
 				config := SubtitleConfig{SubSource: SubSourceConfig{URL: remote.URL + "/api/v1", APIKey: "key", PersonalUse: true}}
-				provider := newSubtitleProvider(config, t.TempDir(), data, sidecarTestIndex(item), nil, "")
+				provider := newSubtitleProvider(config, t.TempDir(), data, sidecarTestIndex(item), nil, "", testStateDatabase(t, data))
 				err := provider.fetchSidecar(t.Context(), item, "en")
 				installed, readErr := os.ReadFile(filepath.Join(filepath.Dir(media), "Show.S01E02.en.srt"))
 				if episode.valid {
@@ -87,7 +87,7 @@ func TestSubSourceAcquisitionRequiresExactEpisode(t *testing.T) {
 						t.Fatalf("unexpected download count: got=%d want=%d", downloads.Load(), expectedDownloads)
 					}
 				}
-				ledgerData, ledgerErr := os.ReadFile(filepath.Join(data, "subtitle_acquisitions.json"))
+				ledgerData, ledgerErr := persistedTestSubtitleLedger(data)
 				if ledgerErr != nil {
 					t.Fatal(ledgerErr)
 				}

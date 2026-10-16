@@ -2,6 +2,7 @@ package transcodehardware
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/transcodepolicy"
@@ -36,6 +37,9 @@ func (state *verification) verifyToneMapInput(ctx context.Context, options Probe
 			continue
 		}
 		state.operations[backend.ID] = append(state.operations[backend.ID], Operation{identity: operationIdentity(options.FFmpeg, baseline.Device), Codec: baseline.Codec, Device: baseline.Device, HardwareToneMap: method, ToneMapInput: hdr, ToneMapSoftwareFrames: cpuFrames, Status: "passed"})
+		if !cpuFrames && method == backend.ID && slices.Contains(state.deviceDecodeInputs(backend.ID, baseline.Device), "hevc10") {
+			state.verifyHardwareDecode(ctx, options, settings, backend, "hevc10", check)
+		}
 		break
 	}
 }
@@ -46,25 +50,35 @@ func verifiedToneMapResult(result transcodepolicy.CheckResult, method, hdr strin
 
 func (capabilities Capabilities) toneMapSettings(options transcodepolicy.Settings) transcodepolicy.Settings {
 	options.HardwareToneMap = ""
-	if !options.ToneMap || options.DisableHardwareToneMap || options.OutputHDR != "" || capabilities.verification == nil {
+	if !options.ToneMap {
+		return options
+	}
+	if options.DisableHardwareToneMap || options.OutputHDR != "" || capabilities.verification == nil {
+		options.HardwareDecode = false
 		return options
 	}
 	for _, operation := range capabilities.verification.operationsFor(options.Accelerator, options.Codec) {
-		if operation.Device == options.Device && operation.HardwareToneMap != "" && operation.ToneMapInput == options.ToneMapInput {
-			options.HardwareToneMap = operation.HardwareToneMap
-			if operation.ToneMapSoftwareFrames != transcodepolicy.ToneMapSoftwareFrames(options) {
-				options.HardwareToneMap = ""
-				continue
-			}
-			options.HardwareDecode = false
-			break
+		if operation.Device != options.Device || operation.HardwareToneMap == "" || operation.ToneMapInput != options.ToneMapInput {
+			continue
 		}
+		candidate := options
+		candidate.HardwareToneMap = operation.HardwareToneMap
+		if operation.ToneMapSoftwareFrames != transcodepolicy.ToneMapSoftwareFrames(candidate) {
+			continue
+		}
+		candidate.HardwareDecode = options.HardwareDecode && operation.decodes(options.DecodeInput)
+		return candidate
 	}
+	options.HardwareDecode = false
 	return options
 }
 
 func (capabilities Capabilities) RecordProcessingFailure(options transcodepolicy.Settings) {
 	if options.HardwareToneMap != "" && capabilities.verification != nil {
+		if options.HardwareDecode {
+			capabilities.RecordDecodeFailure(options)
+			return
+		}
 		state := capabilities.verification
 		state.mu.Lock()
 		defer state.mu.Unlock()

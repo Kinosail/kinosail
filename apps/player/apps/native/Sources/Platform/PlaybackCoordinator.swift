@@ -180,7 +180,7 @@ final class PlaybackEngine {
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
         defer { if generation == attempt, self.installation == installation { loading = false } }
         do {
-            async let current = try? client.item(id: item.id, policy: .reload)
+            let refresh = Task { [id = item.id] in (try? await client.item(id: id, policy: .reload)).flatMap { $0.id == id ? $0.progress : nil } }
             let prepared = try await preparedPlayback(for: item, client: client)
             let details = prepared.source
             try check(attempt, installation: installation)
@@ -190,9 +190,7 @@ final class PlaybackEngine {
             #endif
             preferences = DevicePlaybackChoices.load(scope: scope).apply(to: prepared.preferences)
             duration = details.duration
-            let baseline = await current.flatMap { $0.id == item.id ? $0.progress : nil } ?? item.progress
-            try check(attempt, installation: installation)
-            writer = try ProgressWriter(itemID: item.id, expected: baseline, client: client, store: store)
+            writer = try ProgressWriter(itemID: item.id, expected: item.progress, refresh: refresh, client: client, store: store)
             let pending = try await store.pending().first { $0.itemID == item.id }
             try check(attempt, installation: installation)
             let start = pending.map { $0.progress.watched ? 0 : $0.progress.seconds } ?? details.start

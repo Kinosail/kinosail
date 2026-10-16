@@ -18,11 +18,17 @@ case "${2:-simulator}" in
   *) printf 'Choose simulator or device.\n' >&2; exit 2 ;;
 esac
 
+configuration="${KINOSAIL_BUILD_CONFIGURATION:-Debug}"
+case "$configuration" in
+  Debug|Release) ;;
+  *) printf 'Set KINOSAIL_BUILD_CONFIGURATION to Debug or Release.\n' >&2; exit 2 ;;
+esac
+
 revision="$(git -C "$root" rev-parse HEAD)"
 if [[ -n "$(git -C "$root" status --porcelain -- .)" ]]; then
   revision="$revision-working-tree"
 fi
 exec xcodebuild -project "$root/Kinosail.xcodeproj" -scheme "$scheme" \
-  -configuration Debug -destination "$destination" \
+  -configuration "$configuration" -destination "$destination" \
   -derivedDataPath "$root/.build/$1-${2:-simulator}" -jobs 4 \
   "${signing[@]}" "KINOSAIL_SOURCE_REVISION=$revision" build

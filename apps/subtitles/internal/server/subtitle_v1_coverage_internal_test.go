@@ -112,13 +112,13 @@ func TestSubtitleV1ValidationAndMigrationBranches(t *testing.T) {
 	if err := os.WriteFile(ledgerPath, []byte(contents), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	ledger := newSubtitleLedger(data)
+	ledger := openTestSubtitleLedger(t, data)
 	if ledger.err != nil || ledger.state.Version != subtitleLedgerVersion || ledger.state.Searches == nil {
 		t.Fatalf("v1 migration = %#v, %v", ledger.state, ledger.err)
 	}
 
 	broken := newSubtitleLedger("")
-	broken.path = t.TempDir()
+	broken.db = closedTestStateDatabase(t)
 	if broken.store("0123456789abcdef:en", record) == nil || broken.storeSearch("0123456789abcdef:en:standard", search) == nil {
 		t.Fatal("durable store failure was accepted")
 	}
@@ -164,7 +164,7 @@ func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(data, "subtitle_acquisitions.json"), []byte(contents), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			if ledger := newSubtitleLedger(data); ledger.err == nil {
+			if ledger := openTestSubtitleLedger(t, data); ledger.err == nil {
 				t.Fatal("corrupt ledger was accepted")
 			}
 		})
@@ -173,14 +173,14 @@ func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(nilMaps, "subtitle_acquisitions.json"), []byte(`{"version":2,"records":null,"searches":null}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if loaded := newSubtitleLedger(nilMaps); loaded.err != nil || loaded.state.Records == nil || loaded.state.Searches == nil {
+	if loaded := openTestSubtitleLedger(t, nilMaps); loaded.err != nil || loaded.state.Records == nil || loaded.state.Searches == nil {
 		t.Fatalf("nil ledger maps were not initialized: %#v, %v", loaded.state, loaded.err)
 	}
 	directoryData := t.TempDir()
 	if err := os.Mkdir(filepath.Join(directoryData, "subtitle_acquisitions.json"), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	if ledger := newSubtitleLedger(directoryData); ledger.err == nil {
+	if ledger := openTestSubtitleLedger(t, directoryData); ledger.err == nil {
 		t.Fatal("ledger directory was accepted as a file")
 	}
 
@@ -199,7 +199,7 @@ func TestSubtitleLedgerRejectsCorruptionAndBoundsDownloads(t *testing.T) {
 	if !ledger.takeSubDLDownload(now) || ledger.state.SubDLDownloads != 1 {
 		t.Fatal("new UTC day did not reset the download limit")
 	}
-	ledger.path, ledger.state.SubDLDay, ledger.state.SubDLDownloads = t.TempDir(), "previous", 7
+	ledger.db, ledger.state.SubDLDay, ledger.state.SubDLDownloads = closedTestStateDatabase(t), "previous", 7
 	if ledger.takeSubDLDownload(now) || ledger.state.SubDLDay != "previous" || ledger.state.SubDLDownloads != 7 {
 		t.Fatal("failed quota persistence did not roll state back")
 	}
