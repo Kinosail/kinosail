@@ -25,4 +25,30 @@ Server logs use `debug`, `info`, `warn`, and `error`; the default is `info`. An 
 - [Subtitle timing and saves]({{ '/troubleshooting/playback/' | relative_url }})
 - [Sign-in and access]({{ '/troubleshooting/sign-in-and-access/' | relative_url }})
 
+## Collect performance diagnostics
+
+Use this section when the Server is slow, uses too much memory, or stops under load.
+
+The Owner metrics page reports Go runtime values. Look for `kinosail_go_heap_live_bytes`, `kinosail_go_memory_total_bytes`, `kinosail_go_memory_limit_bytes`, `kinosail_go_goroutines`, `kinosail_go_gc_pause_seconds`, and `kinosail_go_sched_latency_seconds`. The pause and latency values are totals since the Server started.
+
+At startup, the Server reads the container memory limit. It sets the Go memory limit to 40% of that value, because whisper.cpp, Tesseract, and FFmpeg share the same limit. The public HTTPS gateway uses 80%. The log line `Go memory limit configured` shows the value. To choose your own value, set the standard `GOMEMLIMIT` variable, for example `GOMEMLIMIT=1GiB`.
+
+For deeper analysis, turn on the profiling socket. Profiling is off by default. It never opens a network port.
+
+1. Add `KINOSAIL_PROFILING: "1"` to the `environment` list of the `kinosail` service in a Compose override file. Compose does not forward variables that a Compose file does not declare.
+2. Restart the Server. The log shows `profiling socket listening`.
+3. Find the socket at `profiling/pprof.sock` in the data directory. Only the Server account can open it.
+4. On the host, as an account that can open the socket, save a profile. For a rootless Podman volume, run the command inside `podman unshare`.
+
+   ```sh
+   curl --unix-socket /path/to/data/profiling/pprof.sock --output heap.pprof http://localhost/debug/pprof/heap
+   curl --unix-socket /path/to/data/profiling/pprof.sock --output cpu.pprof 'http://localhost/debug/pprof/profile?seconds=30'
+   curl --unix-socket /path/to/data/profiling/pprof.sock --output flight.trace http://localhost/debug/pprof/flight-recorder
+   ```
+
+5. Open a profile with `go tool pprof heap.pprof`. Open a trace with `go tool trace flight.trace`.
+6. Remove the variable and restart the Server when you are done.
+
+The flight recorder keeps about the last 30 seconds of runtime activity. Profiles can contain file paths and titles. Review them before you share them.
+
 Do not delete the state volume to fix sign-in or startup. Restore deliberately from a known backup; see [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).

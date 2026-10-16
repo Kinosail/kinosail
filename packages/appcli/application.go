@@ -66,6 +66,9 @@ func Execute[Configuration Settings](args []string, input io.Reader, output io.W
 		slog.Error("remote access requires a 32-character proxy capability")
 		return 1
 	}
+	applyMemoryLimit(getenv, os.DirFS("/"), serverMemoryShare)
+	stopProfiling := startProfiling(getenv, configured.String("paths.data"))
+	defer stopProfiling()
 	return application.Run(configured)
 }
 
@@ -107,6 +110,7 @@ func executePublicGateway(args []string, getenv func(string) string, signals []o
 	if len(args) != 1 || getenv == nil {
 		return 1
 	}
+	applyMemoryLimit(getenv, os.DirFS("/"), gatewayMemoryShare)
 	ctx, stop := signal.NotifyContext(context.Background(), signals...)
 	defer stop()
 	return commandResult("public gateway stopped", publicgateway.Run(ctx, getenv("KINOSAIL_PUBLIC_HOSTNAME")))
