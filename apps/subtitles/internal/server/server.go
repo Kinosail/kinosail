@@ -52,7 +52,7 @@ func New(config Config) http.Handler {
 	return newApplication(config)
 }
 
-func newApplication(config Config) http.Handler { //nolint:funlen,gocognit // The composition root validates defaults and wires every adapter to shared application services.
+func newApplication(config Config) http.Handler { //nolint:funlen // The composition root validates defaults and wires every adapter to shared application services.
 	lifecycle, managedLifecycle := prepareApplicationConfig(&config)
 	startupReady := false
 	if managedLifecycle {
