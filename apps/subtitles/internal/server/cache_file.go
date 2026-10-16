@@ -28,10 +28,24 @@ func writeAtomicFileExclusive(target string, data []byte) error {
 	if _, err := file.Write(data); err != nil {
 		return err
 	}
+	if err := file.Sync(); err != nil {
+		return err
+	}
 	if err := file.Close(); err != nil {
 		return err
 	}
-	return os.Link(temporary, target)
+	if err := os.Link(temporary, target); err != nil {
+		return err
+	}
+	syncDirectory(directory)
+	return nil
+}
+
+func syncDirectory(path string) {
+	if directory, err := os.Open(path); err == nil {
+		_ = directory.Sync()
+		_ = directory.Close()
+	}
 }
 
 func writeDurableFile(target string, data []byte) error {

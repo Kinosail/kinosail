@@ -9,8 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/library"
-
 	"github.com/zserge/govad"
 )
 
@@ -83,11 +81,11 @@ func TestProcessSubtitleAudioHandlesFramesAndReadFailures(t *testing.T) {
 
 func TestSpeechProbabilityAnalysisRejectsUnavailableTools(t *testing.T) {
 	t.Parallel()
-	if _, err := newSubtitleSynchronizer("").analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
+	if _, err := newSubtitleSynchronizer("").extractAudio(t.Context(), "film.mkv", "0:a:0"); err == nil {
 		t.Fatal("missing FFmpeg was accepted")
 	}
 	missing := filepath.Join(t.TempDir(), "missing-ffmpeg")
-	if _, err := newSubtitleSynchronizer(missing).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
+	if _, err := newSubtitleSynchronizer(missing).extractAudio(t.Context(), "film.mkv", "0:a:0"); err == nil {
 		t.Fatal("unavailable FFmpeg was accepted")
 	}
 }
@@ -99,7 +97,7 @@ func TestSpeechProbabilityAnalysisReadsBoundedPCM(t *testing.T) {
 	if err := os.WriteFile(success, []byte("#!/bin/sh\ndd if=/dev/zero bs=1920000 count=1 2>/dev/null\n"), 0o700); err != nil { //nolint:gosec // The owner-only file is an executable test fixture.
 		t.Fatal(err)
 	}
-	reference, err := newSubtitleSynchronizer(success).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, "")
+	reference, err := newSubtitleSynchronizer(success).extractAudio(t.Context(), "film.mkv", "0:a:0")
 	if err != nil || len(reference.Speech) != int(time.Minute/subtitleFrame) {
 		t.Fatalf("speech probabilities = %d, error %v", len(reference.Speech), err)
 	}
@@ -107,7 +105,7 @@ func TestSpeechProbabilityAnalysisReadsBoundedPCM(t *testing.T) {
 	if err = os.WriteFile(empty, []byte("#!/bin/sh\nexit 0\n"), 0o700); err != nil { //nolint:gosec // The owner-only file is an executable test fixture.
 		t.Fatal(err)
 	}
-	if _, err = newSubtitleSynchronizer(empty).analyzeAudio(t.Context(), library.Item{Path: "film.mkv"}, ""); err == nil {
+	if _, err = newSubtitleSynchronizer(empty).extractAudio(t.Context(), "film.mkv", "0:a:0"); err == nil {
 		t.Fatal("empty PCM analysis was accepted")
 	}
 }

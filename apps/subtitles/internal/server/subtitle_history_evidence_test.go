@@ -43,7 +43,7 @@ func TestSubtitleHistoryRejectsInvalidEvidenceWithoutSideEffects(t *testing.T) {
 			if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			ledger := newSubtitleLedger(dir)
+			ledger := openTestSubtitleLedger(t, dir)
 			if ledger.err == nil || ledger.takeSubDLDownload(time.Now()) {
 				t.Fatal("invalid history allowed downloads")
 			}

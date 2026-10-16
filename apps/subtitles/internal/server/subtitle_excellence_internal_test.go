@@ -91,7 +91,7 @@ func TestSubtitleCleanupPreservesSpokenURLsAndRepeatedDialogue(t *testing.T) {
 
 func TestSubtitleOriginalArchiveIsImmutableAndBounded(t *testing.T) {
 	dir := t.TempDir()
-	provider := &subtitleProvider{cache: dir, ledger: newSubtitleLedger(dir)}
+	provider := &subtitleProvider{cache: dir, ledger: openTestSubtitleLedger(t, dir)}
 	data := []byte("original subtitle bytes")
 	var record subtitleRecord
 	if err := provider.retainSubtitleOriginal(data, &record); err != nil {
