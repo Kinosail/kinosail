@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -49,9 +50,13 @@ func copiedHLSOpenFile(root *os.Root, name string, limit int64) (*os.File, os.Fi
 		return nil, nil, errCopiedHLSIndex
 	}
 	opened, err := file.Stat()
-	if err != nil || !sameCopiedHLSFile(info, opened) {
+	if err != nil {
 		_ = file.Close()
 		return nil, nil, errCopiedHLSIndex
+	}
+	if !sameCopiedHLSFile(info, opened) {
+		_ = file.Close()
+		return nil, nil, errCopiedHLSReplaced
 	}
 	return file, info, nil
 }
@@ -129,6 +134,9 @@ func verifyCopiedHLSRenditionAssets(ctx context.Context, rendition *os.Root, cer
 
 func (manager *hlsManager) verifyCopiedHLSBoundManifest(ctx context.Context, directory string, root, rendition *os.Root, data, certificateData []byte, name string, timeline *copiedHLSTimeline) error {
 	manifest, err := copiedHLSCacheFile(rendition, "index.m3u8", maximumCopiedHLSTimelineBytes)
+	if errors.Is(err, errCopiedHLSReplaced) {
+		return err
+	}
 	_, valid := copiedHLSManifest(manifest, timeline)
 	if err != nil || !valid || !copiedHLSBoundMetadata(root, data, certificateData, timeline.Policy) || ctx.Err() != nil || !manager.copiedHLSCanonicalGeneration(directory, name, root, rendition) {
 		return errCopiedHLSIndex

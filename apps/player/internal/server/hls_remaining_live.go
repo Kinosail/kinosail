@@ -5,22 +5,27 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-const remainingAACReadAttempts = 5
+const hlsStableReadAttempts = 5
 
-func remainingAACStableRead[T any](read func() (T, error)) (T, error) {
+func hlsStableRead[T any](read func() (T, error), retryable ...error) (T, error) {
 	var value T
 	var err error
-	for range remainingAACReadAttempts {
+	for range hlsStableReadAttempts {
 		value, err = read()
-		if !errors.Is(err, errCopiedHLSIndex) && !errors.Is(err, errHLSIdentityChanged) {
+		if !slices.ContainsFunc(retryable, func(target error) bool { return errors.Is(err, target) }) {
 			return value, err
 		}
 	}
 	return value, err
+}
+
+func remainingAACStableRead[T any](read func() (T, error)) (T, error) {
+	return hlsStableRead(read, errCopiedHLSIndex, errHLSIdentityChanged)
 }
 
 func (manager *hlsManager) remainingAACCacheAsset(ctx context.Context, item library.Item, recipe hlsRecipe, name string) error {
