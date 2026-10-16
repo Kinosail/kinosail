@@ -65,6 +65,7 @@ type Item struct {
 	Cast            []Person
 	ShowCast        []Person
 	LocalTitle      bool
+	LocalMetadata   bool
 	ProviderIDs     map[string]string
 }
 
@@ -158,7 +159,7 @@ func (view scanView) item(root, namespace, path, kind string, file mediaFile) It
 	if len(subtitles) > 0 {
 		primary = subtitles[0]
 	}
-	return Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: view.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: file.modified, Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: file.size, Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: file.modified, LocalTitle: metadata.Title != "", ProviderIDs: providerIDs}
+	return Item{ID: hex.EncodeToString(sum[:8]), Library: namespace, Kind: kind, Title: title, SortTitle: metadata.SortTitle, Year: year, Plot: metadata.Plot, Rating: rating, Tagline: metadata.Tagline, Genres: strings.Join(metadata.Genres, " · "), Director: metadata.Director, Studio: metadata.Studio, Artist: metadata.Artist, AlbumArtist: metadata.AlbumArtist, Album: metadata.Album, Disc: metadata.Disc, Track: metadata.Track, Lyrics: view.first(base+".lrc", base+".txt"), Folder: filepath.ToSlash(filepath.Dir(relative)), DateTaken: file.modified, Container: strings.ToUpper(strings.TrimPrefix(filepath.Ext(path), ".")), Size: file.size, Path: path, Artwork: artwork, Backdrop: backdrop, Logo: logo, ShowTitle: showTitle, ShowYear: showYear, ShowArtwork: showArtwork, ShowBackdrop: showBackdrop, ShowLogo: showLogo, SeasonArtwork: seasonArtwork, ShowProviderIDs: showProviderIDs, Subtitle: primary, Subtitles: subtitles, Show: show, Season: season, Episode: episodeNumber, Added: file.modified, LocalTitle: metadata.Title != "", LocalMetadata: file.sidecar.present, ProviderIDs: providerIDs}
 }
 
 func episode(relative, title string) (string, int, int, string) {

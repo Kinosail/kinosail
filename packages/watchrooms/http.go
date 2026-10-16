@@ -18,7 +18,7 @@ const roomEventsRoute = "GET /api/v1/watch-rooms/{id}/events"
 type HTTPIndex interface {
 	Find(string) (library.Item, bool)
 	Safe(string) bool
-	Snapshot() ([]library.Item, error)
+	Library() (*library.Snapshot, error)
 }
 
 type HTTPConfig struct {
@@ -63,9 +63,9 @@ func (handler *HTTP) Player(request *http.Request, item library.Item) (string, b
 	if !found || event.Media != item.ID || !handler.mediaVisible(request, event.Media) {
 		return "", false, nil
 	}
-	items, _ := handler.config.Index.Snapshot()
-	playable := make([]library.Item, 0, len(items))
-	for _, candidate := range items {
+	snapshot, _ := handler.config.Index.Library()
+	playable := make([]library.Item, 0)
+	for _, candidate := range snapshot.Items() {
 		if handler.config.CanView(request, candidate) && (candidate.Kind == "video" || candidate.Kind == "audio") {
 			playable = append(playable, candidate)
 		}

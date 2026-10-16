@@ -19,7 +19,7 @@ func Personal[Resume any](
 	return PersonalProjection[Resume]{
 		Continue:        active(request, items),
 		List:            list,
-		Played:          played(request, append([]library.Item(nil), items...)),
+		Played:          played(request, items),
 		CollectionCount: len(collections(items)),
 		PlaylistCount:   len(playlists(request)),
 	}

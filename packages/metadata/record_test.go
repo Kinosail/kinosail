@@ -179,7 +179,7 @@ func TestApplyRecordSetHonorsLocalNFO(t *testing.T) {
 	if err := os.WriteFile(strings.TrimSuffix(video, filepath.Ext(video))+".nfo", []byte("local"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	items := []library.Item{{ID: "missing", Title: "missing"}, {ID: "owner", Title: "old"}, {ID: "local", Title: "local", Path: video}}
+	items := []library.Item{{ID: "missing", Title: "missing"}, {ID: "owner", Title: "old"}, {ID: "local", Title: "local", Path: video, LocalMetadata: true}}
 	records := map[string]Record{"owner": {Owner: true, Title: "owner", Artwork: "poster"}, "local": {Title: "remote", Plot: "plot", ShowArtwork: "show"}}
 	items = ApplyRecords(items, records, func(value string) string { return "current:" + value })
 	if items[0].Title != "missing" || items[1].Title != "owner" || items[1].Artwork != "current:poster" || items[2].Title != "local" || items[2].Plot != "plot" || items[2].ShowArtwork != "current:show" {

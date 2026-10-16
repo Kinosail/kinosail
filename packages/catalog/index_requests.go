@@ -75,6 +75,9 @@ func (index *Index) runRefreshes(ctx context.Context) {
 }
 
 func (index *Index) serveRequest(ctx context.Context, request refreshRequest) {
+	if request.verify && index.unscannedRoot() {
+		request.full = true
+	}
 	if request.full {
 		if err := index.Refresh(ctx); err != nil {
 			slog.Warn("background Library scan failed", "error", err)
@@ -97,6 +100,17 @@ func (index *Index) serveRequest(ctx context.Context, request refreshRequest) {
 	}
 	items, _, _ := index.Status()
 	slog.Debug("incremental Library scan completed", "operation", "library.rescan", "paths", len(changed), "items", items)
+}
+
+func (index *Index) unscannedRoot() bool {
+	index.refreshMu.Lock()
+	defer index.refreshMu.Unlock()
+	for _, root := range index.Roots() {
+		if index.scanners[root] == nil {
+			return true
+		}
+	}
+	return false
 }
 
 func (index *Index) changedDirectories(ctx context.Context, roots []ScanRoot) map[string]int64 {

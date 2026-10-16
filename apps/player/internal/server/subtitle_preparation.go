@@ -62,20 +62,7 @@ func (preparation *subtitlePreparation) prepare(ctx context.Context, items []lib
 	work := make(chan library.Item)
 	var workers sync.WaitGroup
 	for range subtitlePreparationWorkers {
-		workers.Go(func() {
-			for item := range work {
-				err := preparation.prepareItem(ctx, item, language)
-				if ctx.Err() != nil || errors.Is(err, context.Canceled) {
-					continue
-				}
-				if err != nil {
-					slog.Warn("background subtitle preparation failed", "operation", "subtitles.prepare", "error", hlsDiagnostic(err, item.Path, preparation.probe.cacheDir))
-				}
-				preparation.mu.Lock()
-				preparation.prepared[item.ID] = subtitlePreparationKey(item, language)
-				preparation.mu.Unlock()
-			}
-		})
+		workers.Go(func() { preparation.work(ctx, work, language) })
 	}
 	present := make(map[string]bool, len(items))
 	for _, item := range items {
@@ -100,6 +87,21 @@ func (preparation *subtitlePreparation) prepare(ctx context.Context, items []lib
 		}
 	}
 	preparation.mu.Unlock()
+}
+
+func (preparation *subtitlePreparation) work(ctx context.Context, work <-chan library.Item, language string) {
+	for item := range work {
+		err := preparation.prepareItem(ctx, item, language)
+		if ctx.Err() != nil || errors.Is(err, context.Canceled) {
+			continue
+		}
+		if err != nil {
+			slog.Warn("background subtitle preparation failed", "operation", "subtitles.prepare", "error", hlsDiagnostic(err, item.Path, preparation.probe.cacheDir))
+		}
+		preparation.mu.Lock()
+		preparation.prepared[item.ID] = subtitlePreparationKey(item, language)
+		preparation.mu.Unlock()
+	}
 }
 
 func subtitlePreparationKey(item library.Item, language string) string {

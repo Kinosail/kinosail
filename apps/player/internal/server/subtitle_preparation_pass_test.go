@@ -24,7 +24,7 @@ func TestSubtitlePreparationRevisitsOnlyChangedTitles(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	items := make([]library.Item, 3)
+	items := make([]library.Item, 3, 4)
 	for index := range items {
 		path := filepath.Join(root, string(rune('a'+index))+".mkv")
 		if err := os.WriteFile(path, []byte("media"), 0o600); err != nil {
