@@ -23,16 +23,20 @@ type ProgressAuditor interface {
 }
 
 type RequestProgressStore struct {
-	mu, persistMu sync.Mutex
-	file          string
-	values        map[string]PlaybackState
-	persist       func(string, any) error
-	database      *documentdb.Store
-	entries       bool
-	err           error
-	viewer        func(*http.Request) ProgressViewer
-	project       func(*http.Request, library.Item, PlaybackState) any
-	auditor       ProgressAuditor
+	mu          sync.RWMutex
+	persistMu   sync.Mutex
+	coalescing  bool
+	flushFailed bool
+	dirty       map[string]struct{}
+	file        string
+	values      map[string]PlaybackState
+	persist     func(string, any) error
+	database    *documentdb.Store
+	entries     bool
+	err         error
+	viewer      func(*http.Request) ProgressViewer
+	project     func(*http.Request, library.Item, PlaybackState) any
+	auditor     ProgressAuditor
 }
 
 func NewRequestProgressStore(dataDir string, database *documentdb.Store, load func(string, any) (bool, error), persist func(string, any) error, viewer func(*http.Request) ProgressViewer, project func(*http.Request, library.Item, PlaybackState) any) *RequestProgressStore {
@@ -47,7 +51,7 @@ func NewRequestProgressStore(dataDir string, database *documentdb.Store, load fu
 		store.err = ValidateStoredProgress(store.values)
 	}
 	if store.err == nil && database != nil {
-		store.err = database.EnableEntries("progress.json")
+		store.err = database.EnableEntries(progressDocument)
 		store.entries = store.err == nil
 	}
 	if store.values == nil {
@@ -68,17 +72,20 @@ func (store *RequestProgressStore) SetPersistence(persist func(string, any) erro
 }
 
 func (store *RequestProgressStore) Replace(values map[string]PlaybackState) {
+	store.persistMu.Lock()
+	defer store.persistMu.Unlock()
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	if values == nil {
 		values = make(map[string]PlaybackState)
 	}
 	store.values = values
+	clear(store.dirty)
 }
 
 func (store *RequestProgressStore) Len() int {
-	store.mu.Lock()
-	defer store.mu.Unlock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	return len(store.values)
 }
 
@@ -86,19 +93,15 @@ func (store *RequestProgressStore) Storage() ProgressStorage {
 	storage := ProgressStorage{Mutex: &store.mu, PersistMutex: &store.persistMu, Values: &store.values, File: store.file, Persist: store.persist}
 	if store.entries {
 		storage.PersistEntry = func(key string, value PlaybackState) error {
-			return store.database.SaveEntry("progress.json", key, value)
+			return store.database.SaveEntry(progressDocument, key, value)
 		}
 	}
 	return storage
 }
 
-func (store *RequestProgressStore) Update(key string, change ProgressChange) (PlaybackState, PlaybackState, bool, error) {
-	return store.Storage().Update(key, change)
-}
-
 func (store *RequestProgressStore) BrowseAccess(listMutex *sync.RWMutex, listed *map[string]bool, request *http.Request, visible func(library.Item) bool) BrowseAccess {
 	viewer := store.viewer(request)
-	return NewBrowseAccess(&store.mu, listMutex, &store.values, listed, viewer.ID, viewer.Owner, visible)
+	return NewBrowseAccess(store.mu.RLocker(), listMutex, &store.values, listed, viewer.ID, viewer.Owner, visible)
 }
 
 func (store *RequestProgressStore) Get(request *http.Request, id string) PlaybackState {
@@ -107,8 +110,8 @@ func (store *RequestProgressStore) Get(request *http.Request, id string) Playbac
 }
 
 func (store *RequestProgressStore) GetFor(profile string, owner bool, id string) PlaybackState {
-	store.mu.Lock()
-	defer store.mu.Unlock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	return ViewerProgress(store.values, profile, owner, id)
 }
 
@@ -153,8 +156,8 @@ func (store *RequestProgressStore) SetReaderPosition(request *http.Request, id s
 }
 
 func (store *RequestProgressStore) Active(request *http.Request, items []library.Item) []ResumeItem {
-	store.mu.Lock()
-	defer store.mu.Unlock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	viewer := store.viewer(request)
 	return ActiveProgress(store.values, viewer.ID, viewer.Owner, items)
 }
@@ -165,8 +168,8 @@ func (store *RequestProgressStore) Recent(request *http.Request, items []library
 }
 
 func (store *RequestProgressStore) History(request *http.Request, items []library.Item) []library.Item {
-	store.mu.Lock()
-	defer store.mu.Unlock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	viewer := store.viewer(request)
 	return ProgressHistory(store.values, viewer.ID, viewer.Owner, items)
 }
@@ -181,8 +184,8 @@ func (store *RequestProgressStore) Dismiss(request *http.Request, id string) err
 }
 
 func (store *RequestProgressStore) RecentAdmin(items []library.Item, names map[string]string) []PlaybackView {
-	store.mu.Lock()
-	defer store.mu.Unlock()
+	store.mu.RLock()
+	defer store.mu.RUnlock()
 	return RecentAdminProgress(store.values, items, names)
 }
 
@@ -205,6 +208,7 @@ func (store *RequestProgressStore) SetRevision(request *http.Request, id string,
 }
 
 func (store *RequestProgressStore) Stop(request *http.Request, id string, seconds float64) {
+	_ = store.Flush()
 	store.audit(request, "playback.stopped", id, seconds, false)
 }
 

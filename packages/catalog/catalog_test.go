@@ -184,7 +184,8 @@ func TestSearchListAndProgressRules(t *testing.T) {
 
 func TestStatePersistenceAndShowSelection(t *testing.T) {
 	values := map[string]PlaybackState{}
-	var mutex, persistMutex sync.Mutex
+	var mutex sync.RWMutex
+	var persistMutex sync.Mutex
 	persisted := false
 	storage := ProgressStorage{Mutex: &mutex, PersistMutex: &persistMutex, Values: &values, File: "progress.json", Persist: func(string, any) error { persisted = true; return nil }}
 	if _, _, changed, err := storage.Update("viewer:item", func(state PlaybackState) (PlaybackState, bool, error) { state.Seconds = 3; return state, true, nil }); err != nil || !changed || !persisted || values["viewer:item"].Seconds != 3 {

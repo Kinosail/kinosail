@@ -20,7 +20,7 @@ func TestProgressProjectionKeepsViewerIsolationAndHistoryOrder(t *testing.T) {
 		t.Fatalf("active = %#v", active)
 	}
 	history := ProgressHistory(values, "viewer", true, items)
-	if len(history) != 2 || history[0].ID != "new" || history[1].ID != "legacy" {
+	if len(history) != 2 || history[0].ID != "new" || history[1].ID != "legacy" || items[0].ID != "legacy" || items[1].ID != "new" {
 		t.Fatalf("history = %#v", history)
 	}
 	if len(ProgressHistory(values, "viewer", true, history)) != 2 {

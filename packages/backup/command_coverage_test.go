@@ -59,7 +59,7 @@ func TestBackupCoverageClosesArchiveFailureEdges(t *testing.T) {
 		t.Fatal(err)
 	}
 	second := gzip.NewWriter(&oversized)
-	if _, err := io.CopyN(second, zeroReader{}, maxDecodedSize+1); err != nil || second.Close() != nil {
+	if _, err := io.CopyN(second, zeroReader{}, maxDecodedTotal+1); err != nil || second.Close() != nil {
 		t.Fatal(err)
 	}
 	if err := service.Restore(bytes.NewReader(oversized.Bytes()), t.TempDir()); err == nil {

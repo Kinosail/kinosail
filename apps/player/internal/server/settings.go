@@ -30,6 +30,7 @@ type settingsStore struct {
 	profiles          *profileStore
 	mu                sync.RWMutex
 	file              string
+	stateDB           *database.Store
 	mediaRoot         string
 	dlnaURL           string
 	ffmpeg            string
@@ -55,7 +56,7 @@ func (store *settingsStore) changeInstallationSettings(change func(*installation
 }
 
 func newSettingsStore(mediaRoot, dataDir, dlnaURL string, stateDB *database.Store, configured ...configuration.Snapshot) *settingsStore {
-	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, Navigation: sharednavigation.Default()}, trustedHTTPSCheck: func(ctx context.Context, config trustedhttps.Config) error { return trustedhttps.Check(ctx, config) }, persist: statePersistence(stateDB)}
+	store := &settingsStore{mediaRoot: mediaRoot, dlnaURL: dlnaURL, value: installationSettings{Name: "Kinosail", Libraries: []string{"."}, RequireMFA: true, UpdateChecks: true, Navigation: sharednavigation.Default()}, stateDB: stateDB, trustedHTTPSCheck: func(ctx context.Context, config trustedhttps.Config) error { return trustedhttps.Check(ctx, config) }, persist: statePersistence(stateDB)}
 	store.tmdbCheck = checkTMDBToken
 	if len(configured) > 0 {
 		store.config = configured[0]
