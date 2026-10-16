@@ -52,3 +52,7 @@ func TestVersionedApplicationStylesheetIncludesSupporterStyles(t *testing.T) {
 		t.Fatalf("versioned application stylesheet = status %d, cache %q, bytes %d; want bytes %d", response.Code, response.Header().Get("Cache-Control"), response.Body.Len(), len(want))
 	}
 }
+
+func TestStaticAssetsRevalidateWithETag(t *testing.T) {
+	assetContracts.StaticAssetsRevalidateWithETag(t, []string{"/static/app.css", "/static/theme.js", "/static/cinema-backdrop.jpg", "/manifest.webmanifest"})
+}

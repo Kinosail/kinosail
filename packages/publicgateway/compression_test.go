@@ -28,14 +28,14 @@ func TestGatewayPassesApplicationCompressionThroughUnchanged(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	page := strings.Repeat("<p>Shared with you</p>", 200)
+	page := "WEBVTT\n\n" + strings.Repeat("00:00:01.000 --> 00:00:02.000\nShared with you\n\n", 60)
 	var mu sync.Mutex
 	var offered []string
 	backend := &http.Server{Handler: httpcompress.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		offered = append(offered, r.Header.Get("Accept-Encoding"))
 		mu.Unlock()
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Content-Type", "text/vtt; charset=utf-8")
 		_, _ = io.WriteString(w, page)
 	})), ReadHeaderTimeout: time.Second}
 	go func() { _ = backend.Serve(listener) }()

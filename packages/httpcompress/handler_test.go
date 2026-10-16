@@ -54,17 +54,17 @@ func gunzip(t *testing.T, body []byte) []byte {
 	return decoded
 }
 
-func TestHandlerCompressesEligibleTextAndKeepsTheRepresentationConsistent(t *testing.T) {
+func TestHandlerCompressesSubtitlesAndKeepsTheRepresentationConsistent(t *testing.T) {
 	t.Parallel()
 	server := httptest.NewServer(Handler(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+		writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
 		writer.Header().Set("ETag", `"page-1"`)
 		for chunk := range strings.SplitSeq(page, "</article>") {
 			_, _ = io.WriteString(writer, chunk+"</article>")
 		}
 	})))
 	defer server.Close()
-	response, body := get(t, server, http.MethodGet, http.Header{"Accept-Encoding": {"gzip"}, "Sec-Fetch-Site": {"same-origin"}, "Cookie": {"session=1"}})
+	response, body := get(t, server, http.MethodGet, http.Header{"Accept-Encoding": {"gzip"}, "Cookie": {"session=1"}})
 	if response.header.Get("Content-Encoding") != "gzip" || response.header.Get("Vary") != "Accept-Encoding" || response.header.Get("ETag") != `W/"page-1"` || response.length != -1 && response.length != int64(len(body)) {
 		t.Fatalf("headers = %v", response.header)
 	}
@@ -80,13 +80,18 @@ func TestHandlerLeavesIneligibleResponsesUntouched(t *testing.T) {
 		method   string
 		response func(http.ResponseWriter)
 	}{
-		"no gzip":                       {http.Header{"Accept-Encoding": {"br"}}, http.MethodGet, htmlPage},
-		"malformed accept":              {http.Header{"Accept-Encoding": {"gzip;q=2"}}, http.MethodGet, htmlPage},
-		"cross-site":                    {http.Header{"Accept-Encoding": {"gzip"}, "Sec-Fetch-Site": {"cross-site"}}, http.MethodGet, htmlPage},
-		"same-site":                     {http.Header{"Accept-Encoding": {"gzip"}, "Sec-Fetch-Site": {"same-site"}}, http.MethodGet, htmlPage},
-		"cookie without fetch metadata": {http.Header{"Accept-Encoding": {"gzip"}, "Cookie": {"session=1"}}, http.MethodGet, htmlPage},
-		"range request":                 {http.Header{"Accept-Encoding": {"gzip"}, "Range": {"bytes=0-9"}}, http.MethodGet, htmlPage},
-		"head":                          {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodHead, htmlPage},
+		"no gzip":          {http.Header{"Accept-Encoding": {"br"}}, http.MethodGet, subtitlePage},
+		"malformed accept": {http.Header{"Accept-Encoding": {"gzip;q=2"}}, http.MethodGet, subtitlePage},
+		"html page": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
+			writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+			_, _ = io.WriteString(writer, page)
+		}},
+		"json": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
+			writer.Header().Set("Content-Type", "application/json")
+			_, _ = io.WriteString(writer, page)
+		}},
+		"range request": {http.Header{"Accept-Encoding": {"gzip"}, "Range": {"bytes=0-9"}}, http.MethodGet, subtitlePage},
+		"head":          {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodHead, subtitlePage},
 		"partial content": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
 			writer.Header().Set("Content-Type", "text/vtt")
 			writer.Header().Set("Content-Range", "bytes 0-1999/4000")
@@ -106,17 +111,17 @@ func TestHandlerLeavesIneligibleResponsesUntouched(t *testing.T) {
 			writer.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 			_, _ = io.WriteString(writer, page)
 		}},
-		"small json": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
-			writer.Header().Set("Content-Type", "application/json")
-			_, _ = io.WriteString(writer, `{"ok":true}`)
+		"small subtitles": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
+			writer.Header().Set("Content-Type", "text/vtt")
+			_, _ = io.WriteString(writer, page[:200])
 		}},
 		"small declared": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
-			writer.Header().Set("Content-Type", "text/html")
+			writer.Header().Set("Content-Type", "text/vtt")
 			writer.Header().Set("Content-Length", "20")
 			_, _ = io.WriteString(writer, page[:20])
 		}},
 		"not found": {http.Header{"Accept-Encoding": {"gzip"}}, http.MethodGet, func(writer http.ResponseWriter) {
-			writer.Header().Set("Content-Type", "text/html")
+			writer.Header().Set("Content-Type", "text/vtt")
 			writer.WriteHeader(http.StatusNotFound)
 			_, _ = io.WriteString(writer, page)
 		}},
@@ -131,21 +136,21 @@ func TestHandlerLeavesIneligibleResponsesUntouched(t *testing.T) {
 			if response.header.Get("Content-Encoding") == "gzip" {
 				t.Fatalf("compressed: %v", response.header)
 			}
-			if test.method == http.MethodGet && !strings.HasPrefix(page, string(body)) && !strings.HasPrefix(string(body), `{"ok"`) {
+			if test.method == http.MethodGet && !strings.HasPrefix(page, string(body)) {
 				t.Fatalf("body changed: %.40q", body)
 			}
 		})
 	}
 }
 
-func htmlPage(writer http.ResponseWriter) {
-	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+func subtitlePage(writer http.ResponseWriter) {
+	writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
 	_, _ = io.WriteString(writer, page)
 }
 
 func TestHandlerFlushesCompressedAndEventStreams(t *testing.T) {
 	t.Parallel()
-	for contentType, encoding := range map[string]string{"application/json": "gzip", "text/event-stream": ""} {
+	for contentType, encoding := range map[string]string{"text/vtt": "gzip", "text/event-stream": ""} {
 		proceed := make(chan struct{})
 		server := httptest.NewServer(Handler(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 			writer.Header().Set("Content-Type", contentType)
@@ -219,21 +224,22 @@ func TestHandlerKeepsZeroCopyPathsAndUnwraps(t *testing.T) {
 	}
 }
 
-func libraryPage() string {
+func subtitleTrack() string {
 	var builder strings.Builder
-	titles := []string{"Arrival", "Blade Runner 2049", "Dune: Part Two", "Everything Everywhere All at Once", "Mad Max: Fury Road", "Past Lives", "The Zone of Interest"}
-	for index := range 400 {
-		id := fmt.Sprintf("%016x", uint64(index+1)*0x9e3779b97f4a7c15)
-		fmt.Fprintf(&builder, `<article class="card" data-item="%s"><a href="/item/%s"><img src="/artwork/%s?v=%d" width="400" height="600" decoding="async" loading="lazy" alt=""></a><h2>%s</h2><p>%d · %d min</p><progress value="%d" max="100"></progress></article>`, id, id, id, index*7919%1000, titles[index%len(titles)], 1990+index%35, 85+index%70, index*37%100)
+	builder.WriteString("WEBVTT\n\n")
+	lines := []string{"Where are you going?", "We have to leave before the tide turns.", "I never said that.", "Keep the lights low and stay close.", "[distant thunder]"}
+	for index := range 1500 {
+		start := index * 2400
+		fmt.Fprintf(&builder, "%02d:%02d:%02d.%03d --> %02d:%02d:%02d.%03d\n%s\n\n", start/3600000, start/60000%60, start/1000%60, start%1000, (start+2000)/3600000, (start+2000)/60000%60, (start+2000)/1000%60, (start+2000)%1000, lines[index*7%len(lines)])
 	}
 	return builder.String()
 }
 
-func BenchmarkHandlerHTMLPage(b *testing.B) {
-	library := libraryPage()
+func BenchmarkHandlerSubtitleTrack(b *testing.B) {
+	track := subtitleTrack()
 	handler := Handler(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-		writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = io.WriteString(writer, library)
+		writer.Header().Set("Content-Type", "text/vtt; charset=utf-8")
+		_, _ = io.WriteString(writer, track)
 	}))
 	for _, encoding := range []string{"identity", "gzip"} {
 		b.Run(encoding, func(b *testing.B) {

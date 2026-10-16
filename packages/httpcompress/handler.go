@@ -13,10 +13,7 @@ const (
 	level       = 5
 )
 
-var compressibleTypes = map[string]bool{
-	"text/html": true, "text/css": true, "text/javascript": true, "application/javascript": true,
-	"application/json": true, "text/vtt": true,
-}
+var compressibleTypes = map[string]bool{"text/vtt": true}
 
 var writers = sync.Pool{New: func() any {
 	writer, _ := gzip.NewWriterLevel(nil, level)
@@ -39,19 +36,11 @@ func compressionAllowed(request *http.Request) bool {
 	if request.Method != http.MethodGet || request.Header.Get("Range") != "" {
 		return false
 	}
-	if accepted, status := Negotiate(request.Header.Values("Accept-Encoding")); !accepted || status != 0 {
-		return false
-	}
-	switch request.Header.Get("Sec-Fetch-Site") {
-	case "same-origin", "none":
-		return true
-	case "":
-		return request.Header.Get("Cookie") == ""
-	}
-	return false
+	accepted, status := Negotiate(request.Header.Values("Accept-Encoding"))
+	return accepted && status == 0
 }
 
-func Compressible(contentType string) bool {
+func compressible(contentType string) bool {
 	mediaType, _, err := mime.ParseMediaType(contentType)
 	return err == nil && compressibleTypes[mediaType]
 }

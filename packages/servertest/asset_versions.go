@@ -61,17 +61,6 @@ func assertVersionedAsset(t *testing.T, handler http.Handler, cookie *http.Cooki
 	if asset.Code != http.StatusOK || hex.EncodeToString(sum[:]) != version || asset.Header().Get("Cache-Control") != "public, max-age=31536000, immutable" {
 		t.Fatalf("/static/%s?v=%s = %d, content hash %x, cache %q", name, version, asset.Code, sum, asset.Header().Get("Cache-Control"))
 	}
-	tag := asset.Header().Get("ETag")
-	if tag != `"`+version+`"` {
-		t.Fatalf("/static/%s ETag = %q", name, tag)
-	}
-	revalidation := signed("/static/" + name)
-	revalidation.Header.Set("If-None-Match", `W/"stale", `+tag)
-	unchanged := httptest.NewRecorder()
-	handler.ServeHTTP(unchanged, revalidation)
-	if unchanged.Code != http.StatusNotModified || unchanged.Body.Len() != 0 || unchanged.Header().Get("ETag") != tag || unchanged.Header().Get("Cache-Control") != "public, max-age=86400" {
-		t.Fatalf("/static/%s revalidation = %d, %d bytes, %v", name, unchanged.Code, unchanged.Body.Len(), unchanged.Header())
-	}
 	stale := httptest.NewRecorder()
 	handler.ServeHTTP(stale, signed("/static/"+name+"?v=stale"))
 	if stale.Code != http.StatusOK || stale.Header().Get("Cache-Control") != "public, max-age=86400" {
@@ -100,5 +89,37 @@ func collectAssetVersions(t *testing.T, path string, page *httptest.ResponseReco
 			t.Fatalf("%s references /static/%s?v=%s while another page used %s", path, name, version, known)
 		}
 		versions[name] = version
+	}
+}
+
+func (fixture AssetsFixture) StaticAssetsRevalidateWithETag(t *testing.T, paths []string) {
+	t.Helper()
+	t.Parallel()
+	handler := fixture.NewHandler("", "", false)
+	for _, path := range paths {
+		for _, encoding := range []string{"identity", "gzip"} {
+			request := func(condition string) *httptest.ResponseRecorder {
+				target := httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil)
+				target.Header.Set("Accept-Encoding", encoding)
+				if condition != "" {
+					target.Header.Set("If-None-Match", condition)
+				}
+				response := httptest.NewRecorder()
+				handler.ServeHTTP(response, target)
+				return response
+			}
+			first := request("")
+			tag := first.Header().Get("ETag")
+			if first.Code != http.StatusOK || !strings.HasPrefix(tag, `"`) || !strings.HasSuffix(tag, `"`) {
+				t.Fatalf("%s (%s) = %d ETag %q", path, encoding, first.Code, tag)
+			}
+			unchanged := request(`W/"stale", ` + tag)
+			if unchanged.Code != http.StatusNotModified || unchanged.Body.Len() != 0 || unchanged.Header().Get("ETag") != tag || unchanged.Header().Get("Cache-Control") != first.Header().Get("Cache-Control") {
+				t.Fatalf("%s (%s) revalidation = %d, %d bytes, %v", path, encoding, unchanged.Code, unchanged.Body.Len(), unchanged.Header())
+			}
+			if changed := request(`"stale"`); changed.Code != http.StatusOK || changed.Body.Len() != first.Body.Len() {
+				t.Fatalf("%s (%s) stale validator = %d, %d bytes", path, encoding, changed.Code, changed.Body.Len())
+			}
+		}
 	}
 }

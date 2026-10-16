@@ -115,7 +115,7 @@ func serveOffline(writer http.ResponseWriter, request *http.Request) {
 }
 
 func serveScript(content []byte) http.HandlerFunc {
-	return webassets.Static(content, "text/javascript; charset=utf-8")
+	return compressedAsset(content, "text/javascript; charset=utf-8")
 }
 
 var mainBundle = append(append([]byte(nil), pwaJS...), shortcutsJS...)
@@ -129,12 +129,12 @@ func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 
 var applicationStyle = bytes.Join([][]byte{appCSS, webassets.LastLightCSS, supporterCSS, homeCSS, mobileTabsCSS, quickConnectCSS, settingsCSS}, nil)
 
-var serveStyle = webassets.Static(applicationStyle, "text/css; charset=utf-8")
+var serveStyle = compressedAsset(applicationStyle, "text/css; charset=utf-8")
 
-var serveSupporterStyle = webassets.Static(supporterCSS, "text/css; charset=utf-8")
+var serveSupporterStyle = compressedAsset(supporterCSS, "text/css; charset=utf-8")
 
 func serveAsset(content []byte, contentType string) http.HandlerFunc {
-	return webassets.Static(content, contentType)
+	return compressedAsset(content, contentType)
 }
 
 func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
@@ -148,5 +148,15 @@ func serveSupporterBadge(writer http.ResponseWriter, request *http.Request) {
 		http.NotFound(writer, request)
 		return
 	}
-	webassets.Static(content, "image/svg+xml")(writer, request)
+	writer.Header().Set("Content-Type", "image/svg+xml")
+	cacheStatic(writer, request)
+	_, _ = writer.Write(content) //nolint:gosec // SVG bytes come only from the embedded badge assets.
+}
+
+func cacheStatic(writer http.ResponseWriter, request *http.Request) {
+	value := "public, max-age=86400"
+	if version := request.URL.Query().Get("v"); version != "" && version == assetVersions[path.Base(request.URL.Path)] {
+		value = "public, max-age=31536000, immutable"
+	}
+	writer.Header().Set("Cache-Control", value)
 }

@@ -17,7 +17,7 @@ type compressionClient struct {
 	session *http.Cookie
 }
 
-func HTTPCompression(t *testing.T, newHTTPServer func(context.Context) *http.Server) {
+func HTTPSecretBearingResponsesStayUncompressed(t *testing.T, newHTTPServer func(context.Context) *http.Server) {
 	t.Setenv("KINOSAIL_DATA_DIR", t.TempDir())
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -25,27 +25,17 @@ func HTTPCompression(t *testing.T, newHTTPServer func(context.Context) *http.Ser
 	client := compressionClient{server: httptest.NewServer(httpServer.Handler), host: httpServer.Addr}
 	defer client.server.Close()
 	client.session = ownerSession(t, httpServer)
-	page := client.get(t, http.MethodGet, "/account", "same-origin", true, nil)
-	html := decodedBody(t, page, "gzip")
-	if !strings.Contains(html, `name="kinosail-csrf"`) || !strings.Contains(strings.Join(page.Header.Values("Vary"), ","), "Accept-Encoding") {
-		t.Fatalf("same-origin page = %v %.120q", page.Header, html)
-	}
-	for _, site := range []string{"cross-site", "same-site", ""} {
-		identity := decodedBody(t, client.get(t, http.MethodGet, "/account", site, true, nil), "")
-		if !strings.Contains(identity, `name="kinosail-csrf"`) || len(identity) < 1024 {
-			t.Fatalf("%q identity page = %.120q", site, identity)
+	for _, target := range []struct {
+		path     string
+		signedIn bool
+		marker   string
+	}{{"/account", true, `name="kinosail-csrf"`}, {"/login", false, "<form"}, {"/api/v1/me", true, `"id"`}} {
+		for _, site := range []string{"same-origin", "none", ""} {
+			response := client.get(t, http.MethodGet, target.path, site, target.signedIn, nil)
+			if body := decodedBody(t, response, ""); response.StatusCode != http.StatusOK || len(body) < 1024 || !strings.Contains(body, target.marker) {
+				t.Fatalf("%s from %q = %d %.120q", target.path, site, response.StatusCode, body)
+			}
 		}
-	}
-	decodedBody(t, client.get(t, http.MethodGet, "/account", "same-origin", true, http.Header{"Range": {"bytes=0-99"}}), "")
-	if head := client.get(t, http.MethodHead, "/account", "same-origin", true, nil); head.Header.Get("Content-Encoding") != "" {
-		t.Fatalf("HEAD = %v", head.Header)
-	}
-	if login := decodedBody(t, client.get(t, http.MethodGet, "/login", "", false, nil), "gzip"); !strings.Contains(login, "<form") {
-		t.Fatalf("public login = %.120q", login)
-	}
-	settings := client.get(t, http.MethodGet, "/api/v1/me", "same-origin", true, nil)
-	if body := decodedBody(t, settings, "gzip"); !strings.HasPrefix(settings.Header.Get("Content-Type"), "application/json") || !strings.HasPrefix(body, "{") {
-		t.Fatalf("profile JSON = %v %.80q", settings.Header, body)
 	}
 	plainStyle := decodedBody(t, client.get(t, http.MethodGet, "/static/app.css", "", false, http.Header{"Accept-Encoding": {"identity"}}), "")
 	if style := decodedBody(t, client.get(t, http.MethodGet, "/static/app.css", "", true, nil), "gzip"); style != plainStyle {

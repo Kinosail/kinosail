@@ -48,7 +48,7 @@ func (writer *responseWriter) WriteHeader(status int) {
 
 func (writer *responseWriter) decide(status int) mode {
 	header := writer.Header()
-	if !Compressible(header.Get("Content-Type")) {
+	if !compressible(header.Get("Content-Type")) {
 		return passthrough
 	}
 	AddVary(header)
