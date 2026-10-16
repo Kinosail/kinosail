@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -31,7 +32,9 @@ func TestRunWaitsForActiveRequestBeforeExiting(t *testing.T) {
 			_, _ = writer.Write([]byte("finished"))
 		}), ReadHeaderTimeout: time.Second}
 		os.Exit(run(testSettings{"remote.mode": "off"}, []os.Signal{syscall.SIGTERM},
-			func(context.Context, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server { return server },
+			func(context.Context, *sync.WaitGroup, *remoteaccess.Manager, *trustedhttps.Manager) *http.Server {
+				return server
+			},
 			func(handler http.Handler) http.Handler { return handler },
 			func(Settings) (*remoteaccess.Manager, error) { return nil, nil },
 			func(Settings) (*trustedhttps.Manager, error) { return nil, nil },

@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"sync"
 	"testing"
 
 	"github.com/MikeO7/kinosail/packages/appcli"
@@ -21,7 +22,7 @@ type CLI struct {
 	Listen           string
 }
 
-func RunCLI[Snapshot, Internet, Trusted any](t *testing.T, cli CLI, load func() (Snapshot, error), build func(context.Context, Snapshot, *Internet, *Trusted) *http.Server, serve func(context.Context, Snapshot, string) error) {
+func RunCLI[Snapshot, Internet, Trusted any](t *testing.T, cli CLI, load func() (Snapshot, error), build func(context.Context, *sync.WaitGroup, Snapshot, *Internet, *Trusted) *http.Server, serve func(context.Context, Snapshot, string) error) {
 	cli.HTTPServer = HTTPFactory(load, build)
 	cli.ServeMCP = func(ctx context.Context) error {
 		configured, err := load()

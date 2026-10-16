@@ -6,14 +6,15 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
 
-func HTTPFactory[Snapshot, Internet, Trusted any](load func() (Snapshot, error), build func(context.Context, Snapshot, *Internet, *Trusted) *http.Server) func(context.Context) *http.Server {
+func HTTPFactory[Snapshot, Internet, Trusted any](load func() (Snapshot, error), build func(context.Context, *sync.WaitGroup, Snapshot, *Internet, *Trusted) *http.Server) func(context.Context) *http.Server {
 	return func(ctx context.Context) *http.Server {
 		configured, _ := load()
-		return build(ctx, configured, nil, nil)
+		return build(ctx, nil, configured, nil, nil)
 	}
 }
 

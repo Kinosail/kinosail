@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/webassets"
@@ -19,6 +20,7 @@ import (
 
 type Config struct {
 	Lifecycle           context.Context
+	Drain               *sync.WaitGroup
 	MediaDir            string
 	DataDir             string
 	CacheDir            string
@@ -70,7 +72,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	beforeDatabaseClose := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	beforeDatabaseClose := closeApplicationDatabase(config.Lifecycle, config.Drain, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
