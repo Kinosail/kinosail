@@ -21,7 +21,7 @@ const maximumItemID = 128
 
 type MetadataIndex interface {
 	Find(string) (library.Item, bool)
-	Refresh(context.Context) error
+	Redecorate()
 }
 
 type MetadataStore interface {
@@ -82,10 +82,11 @@ func EditMetadata(index MetadataIndex, store MetadataStore) http.HandlerFunc {
 			apihttp.Error(writer, errors.New("metadata is invalid"), http.StatusBadRequest)
 			return
 		}
-		if store.Save(item.ID, record) != nil || index.Refresh(request.Context()) != nil {
+		if store.Save(item.ID, record) != nil {
 			apihttp.Error(writer, errors.New("metadata could not be saved"), http.StatusInternalServerError)
 			return
 		}
+		index.Redecorate()
 		apihttp.WriteJSON(writer, map[string]string{"id": item.ID, "title": record.Title}, http.StatusOK)
 	}
 }
@@ -131,10 +132,11 @@ func RefreshMetadata(index MetadataIndex, store MetadataStore) http.HandlerFunc 
 			apihttp.NotFound(writer)
 			return
 		}
-		if store.Fetch(request.Context(), item) != nil || index.Refresh(request.Context()) != nil {
+		if store.Fetch(request.Context(), item) != nil {
 			apihttp.Error(writer, errors.New("metadata provider unavailable"), http.StatusBadGateway)
 			return
 		}
+		index.Redecorate()
 		writer.WriteHeader(http.StatusNoContent)
 	}
 }

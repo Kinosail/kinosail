@@ -83,9 +83,6 @@ type Config struct {
 	AuthURL             string
 	ScanInterval        time.Duration
 	Metadata            MetadataConfig
-	TMDBToken           string
-	TMDBURL             string
-	TMDBImageURL        string
 	TMDBCheck           func(context.Context, string, string) error
 	DLNAURL             string
 	WatchRoomTTL        time.Duration
@@ -150,10 +147,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	probe.chapters = newChapterProvider(config.Metadata.ChaptersURL)
 	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Threads: min(4, max(1, runtime.GOMAXPROCS(0)/workload.HeavyCapacity())), Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
 	probe.markers = markers
-	legacyMetadata := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{Token: config.TMDBToken, URL: config.TMDBURL, ImageURL: config.TMDBImageURL, CacheDir: config.CacheDir})
 	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	}, libraryDecoration(metadata, probe, legacyMetadata, managedLifecycle))}
+	}, libraryDecoration(metadata, probe, managedLifecycle))}
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
 		index.Schedule(config.Lifecycle)
@@ -266,7 +262,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	registerFiles(mux, index, probe, workloads, hls.startup)
 	downloads.registerWeb(mux, index)
 	mux.Handle("POST /scan", auth.owner(catalog.RescanHandler(index.Index, localizedError)))
-	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, legacyMetadata.Active() || metadata.configured()))
+	mux.HandleFunc("GET /{$}", showHome(index, progress, lists, settings, updates, metadata.configured() || metadata.tmdbRecords))
 	handler := withDLNA(maintenance.Track(apiRouting(mux)), mux, auth, config, settings, updates, index)
 	if management != nil && managedLifecycle {
 		management.Attach(config.Lifecycle, handler)

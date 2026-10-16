@@ -14,12 +14,12 @@ import (
 )
 
 type metadataService struct {
-	item                          library.Item
-	found                         bool
-	record                        metadata.Record
-	saveErr, fetchErr, refreshErr error
-	finds, records, saves         int
-	fetches, refreshes            int
+	item                  library.Item
+	found                 bool
+	record                metadata.Record
+	saveErr, fetchErr     error
+	finds, records, saves int
+	fetches, refreshes    int
 }
 
 func (service *metadataService) Find(string) (library.Item, bool) {
@@ -27,9 +27,8 @@ func (service *metadataService) Find(string) (library.Item, bool) {
 	return service.item, service.found
 }
 
-func (service *metadataService) Refresh(context.Context) error {
+func (service *metadataService) Redecorate() {
 	service.refreshes++
-	return service.refreshErr
 }
 
 func (service *metadataService) Record(string) metadata.Record {
@@ -113,12 +112,11 @@ func TestEditMetadataOutcomeOrdering(t *testing.T) {
 	for name, service := range map[string]*metadataService{
 		"not found":    {item: library.Item{ID: "movie"}},
 		"save failure": {item: library.Item{ID: "movie"}, found: true, saveErr: errors.New("save")},
-		"scan failure": {item: library.Item{ID: "movie"}, found: true, refreshErr: errors.New("scan")},
 		"success":      {item: library.Item{ID: "movie"}, found: true},
 	} {
 		t.Run(name, func(t *testing.T) {
 			response := editRequest(t, EditMetadata(service, service), "movie", body, "application/json; charset=utf-8", "")
-			want := map[string]int{"not found": http.StatusNotFound, "save failure": http.StatusInternalServerError, "scan failure": http.StatusInternalServerError, "success": http.StatusOK}[name]
+			want := map[string]int{"not found": http.StatusNotFound, "save failure": http.StatusInternalServerError, "success": http.StatusOK}[name]
 			if response.Code != want {
 				t.Fatalf("response = %d %q", response.Code, response.Body.String())
 			}
@@ -206,7 +204,6 @@ func TestRefreshMetadataValidationAndOrdering(t *testing.T) {
 		"not found":     {service: &metadataService{}, id: "movie", status: http.StatusNotFound},
 		"not video":     {service: &metadataService{found: true, item: library.Item{ID: "movie", Kind: "photo"}}, id: "movie", status: http.StatusNotFound},
 		"fetch failure": {service: &metadataService{found: true, item: library.Item{ID: "movie", Kind: "video"}, fetchErr: errors.New("fetch")}, id: "movie", status: http.StatusBadGateway},
-		"scan failure":  {service: &metadataService{found: true, item: library.Item{ID: "movie", Kind: "video"}, refreshErr: errors.New("scan")}, id: "movie", status: http.StatusBadGateway},
 		"success":       {service: &metadataService{found: true, item: library.Item{ID: "movie", Kind: "video"}}, id: "movie", content: "application/x-www-form-urlencoded", status: http.StatusNoContent},
 	}
 	for name, test := range tests {

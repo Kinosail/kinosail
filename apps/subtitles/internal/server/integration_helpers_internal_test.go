@@ -58,59 +58,6 @@ func TestAtomicJSONWriterIsSafeAcrossConcurrentCalls(t *testing.T) {
 	}
 }
 
-func TestTMDBCacheDiscoveryUsesLiteralPathsAndRegularFiles(t *testing.T) {
-	directory := filepath.Join(t.TempDir(), "tmdb[home]")
-	item := filepath.Join(directory, "item")
-	if err := os.MkdirAll(item, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(item, "metadata.json"), []byte(`{}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if !sharedmetadata.HasTMDBCache(directory) {
-		t.Fatal("literal TMDB cache path was not discovered")
-	}
-	if err := os.Remove(filepath.Join(item, "metadata.json")); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Mkdir(filepath.Join(item, "metadata.json"), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	if sharedmetadata.HasTMDBCache(directory) {
-		t.Fatal("non-file TMDB metadata was discovered")
-	}
-}
-
-func TestTMDBCacheRequiresBoundedExactLocalState(t *testing.T) {
-	directory := filepath.Join(t.TempDir(), "tmdb")
-	item := filepath.Join(directory, "item")
-	if err := os.MkdirAll(item, 0o700); err != nil {
-		t.Fatal(err)
-	}
-	path := filepath.Join(item, "metadata.json")
-	client := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{CacheDir: filepath.Dir(directory)})
-	if err := os.WriteFile(path, []byte(`{"Title":"Arrival","Year":"2016","TMDBID":329865}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if metadata, _ := client.Load("item"); metadata.Title != "Arrival" {
-		t.Fatalf("valid cache = %#v", metadata)
-	}
-	for name, data := range map[string]string{
-		"trailing":  `{"Title":"Arrival","Year":"2016","TMDBID":329865}{}`,
-		"outside":   `{"Title":"Arrival","Year":"2016","Poster":"/etc/passwd","TMDBID":329865}`,
-		"oversized": `{"Title":"` + strings.Repeat("x", 201) + `","Year":"2016","TMDBID":329865}`,
-	} {
-		t.Run(name, func(t *testing.T) {
-			if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
-				t.Fatal(err)
-			}
-			if metadata, fresh := client.Load("item"); metadata.Title != "" || metadata.TMDBID != 0 || fresh {
-				t.Fatalf("invalid cache = %#v, %v", metadata, fresh)
-			}
-		})
-	}
-}
-
 func TestMetadataStateAndFormValidation(t *testing.T) {
 	t.Parallel()
 	record, ok := sharedmetadata.RecordFromForm(url.Values{

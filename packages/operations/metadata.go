@@ -25,6 +25,7 @@ type MetadataRefresh struct {
 	LegacyBackdrop        func(string) bool
 	Store                 func(map[string]metadata.Record) error
 	RefreshLibrary        func(context.Context) error
+	Misses                *metadata.Misses
 }
 
 func RefreshMetadata(ctx context.Context, config MetadataRefresh) error {
@@ -55,6 +56,9 @@ func missingMetadata(config MetadataRefresh) []library.Item {
 	missing := make([]library.Item, 0)
 	for _, item := range config.Items {
 		record, found := config.Record(item.ID)
+		if config.Misses.Blocked(item) {
+			continue
+		}
 		if needsMetadata(item, record, found, config.Configured) || config.Configured && found && legacyBackdrop(item, record, config.LegacyBackdrop) {
 			missing = append(missing, item)
 		}
@@ -84,8 +88,11 @@ func fetchMissing(ctx context.Context, config MetadataRefresh, missing []library
 			groupUpdates, err := fetchMetadataGroup(ctx, config, group)
 			updateMu.Lock()
 			defer updateMu.Unlock()
-			if err != nil {
+			if err != nil && ctx.Err() == nil {
 				failed += len(group)
+				config.Misses.Fail(group[0])
+			} else if err == nil {
+				config.Misses.Clear(group[0])
 			}
 			for id, record := range groupUpdates {
 				updates[id] = record

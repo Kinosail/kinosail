@@ -29,15 +29,18 @@ type metadataStore struct {
 	client      *http.Client
 	tvmaze      *sharedmetadata.TVMazeProvider
 	persist     func(string, any) error
+	misses      *sharedmetadata.Misses
+	tmdbRecords bool
 	err         error
 }
 
 func newMetadataStore(config MetadataConfig, dataDir, cache string, databases ...*database.Store) *metadataStore {
 	stateDB := configuredDatabase(databases)
 	config = sharedmetadata.NormalizeConfig(config)
-	store := &metadataStore{cache: cache, config: config, records: make(map[string]metadataRecord), client: sharedmetadata.IntegrationHTTPClient(15 * time.Second), tvmaze: sharedmetadata.NewTVMazeProvider(config.TVMazeURL, ApplicationVersion), persist: statePersistence(stateDB)}
+	store := &metadataStore{cache: cache, config: config, records: make(map[string]metadataRecord), client: sharedmetadata.IntegrationHTTPClient(15 * time.Second), misses: sharedmetadata.NewMisses(), tvmaze: sharedmetadata.NewTVMazeProvider(config.TVMazeURL, ApplicationVersion), persist: statePersistence(stateDB)}
 	store.active.Store(&config)
 	store.load(dataDir, stateDB)
+	store.migrateLegacyTMDB()
 	return store
 }
 
@@ -123,10 +126,11 @@ func (store *metadataStore) editHandler(index *libraryIndex) http.HandlerFunc {
 			localizedError(writer, request, "metadata is invalid", http.StatusBadRequest)
 			return
 		}
-		if err := store.set(item.ID, record); err != nil || index.Refresh(request.Context()) != nil {
+		if err := store.set(item.ID, record); err != nil {
 			localizedError(writer, request, "metadata could not be saved", http.StatusInternalServerError)
 			return
 		}
+		index.Redecorate()
 		http.Redirect(writer, request, "/watch/"+item.ID, http.StatusSeeOther)
 	}
 }

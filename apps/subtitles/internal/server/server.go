@@ -29,9 +29,6 @@ type Config struct {
 	ScanInterval        time.Duration
 	Subtitles           SubtitleConfig
 	Metadata            MetadataConfig
-	TMDBToken           string
-	TMDBURL             string
-	TMDBImageURL        string
 	OIDC                OIDCConfig
 	SAML                SAMLConfig
 	MCP                 MCPConfig
@@ -55,7 +52,7 @@ func New(config Config) http.Handler {
 	return newApplication(config)
 }
 
-func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocognit // The composition root validates defaults and wires every adapter to shared application services.
+func newApplication(config Config) http.Handler { //nolint:funlen,gocognit // The composition root validates defaults and wires every adapter to shared application services.
 	lifecycle, managedLifecycle := prepareApplicationConfig(&config)
 	startupReady := false
 	if managedLifecycle {
@@ -85,10 +82,9 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	}
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
-	legacyMetadata := sharedmetadata.NewTMDB(sharedmetadata.TMDBConfig{Token: config.TMDBToken, URL: config.TMDBURL, ImageURL: config.TMDBImageURL, CacheDir: config.CacheDir})
 	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
-	}, libraryDecoration(metadata, probe, legacyMetadata, managedLifecycle))}
+	}, libraryDecoration(metadata, probe, managedLifecycle))}
 	index.SetFrequency(settings.scanFrequency())
 	if managedLifecycle {
 		index.Schedule(config.Lifecycle)

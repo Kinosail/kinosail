@@ -35,12 +35,19 @@ func operationTasks(index *libraryIndex, hls *hlsManager, metadata *metadataStor
 }
 
 func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIndex) error {
-	return sharedoperations.NewBinding(sharedoperations.BindingConfig{Metadata: func() sharedoperations.MetadataRefresh { return metadataRefresh(store, index) }}).RefreshMetadata(ctx)
+	return sharedoperations.NewBinding(sharedoperations.BindingConfig{Metadata: func() sharedoperations.MetadataRefresh {
+		config := metadataRefresh(store, index)
+		config.Misses = store.misses
+		return config
+	}}).RefreshMetadata(ctx)
 }
 
 func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations.MetadataRefresh {
 	items, _ := index.Snapshot()
-	return metadataRefreshConfig(store, items, index.Refresh)
+	return metadataRefreshConfig(store, items, func(context.Context) error {
+		index.Redecorate()
+		return nil
+	})
 }
 
 func metadataRefreshConfig(store *metadataStore, items []library.Item, refresh func(context.Context) error) sharedoperations.MetadataRefresh {

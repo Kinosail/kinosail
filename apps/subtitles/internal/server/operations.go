@@ -20,7 +20,7 @@ func metadataRefresh(store *metadataStore, index *libraryIndex) sharedoperations
 	items, _ := index.Snapshot()
 	return sharedoperations.MetadataRefresh{
 		Items: items, Configured: store.configured(), Available: store.available(),
-		Store: store.setAll, RefreshLibrary: index.Refresh,
+		Store: store.setAll, RefreshLibrary: func(context.Context) error { index.Redecorate(); return nil },
 		Download: store.downloadMetadataImages, ResolveEpisode: store.resolveEpisodeRecord, Resolve: store.resolveRecord,
 		Record: func(id string) (metadata.Record, bool) {
 			store.mu.RLock()
@@ -66,7 +66,11 @@ func metrics(index *libraryIndex, profiles *profileStore, audit *auditStore, eve
 }
 
 func (store *metadataStore) refreshMissing(ctx context.Context, index *libraryIndex) error {
-	return sharedoperations.NewBinding(sharedoperations.BindingConfig{Metadata: func() sharedoperations.MetadataRefresh { return metadataRefresh(store, index) }}).RefreshMetadata(ctx)
+	return sharedoperations.NewBinding(sharedoperations.BindingConfig{Metadata: func() sharedoperations.MetadataRefresh {
+		config := metadataRefresh(store, index)
+		config.Misses = store.misses
+		return config
+	}}).RefreshMetadata(ctx)
 }
 
 func operationTasks(index *libraryIndex, metadata *metadataStore, maintenance *maintenanceManager) sharedoperations.Tasks {

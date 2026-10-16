@@ -232,7 +232,7 @@ func (service productRooms) Create(viewer viewerProfile, media string, seconds f
 
 func (service productMetadata) Find(id string) (library.Item, bool) { return service.index.Find(id) }
 
-func (service productMetadata) Refresh(ctx context.Context) error { return service.index.Refresh(ctx) }
+func (service productMetadata) Redecorate() { service.index.Redecorate() }
 
 func (service productMetadata) Record(id string) sharedmetadata.Record {
 	service.store.mu.RLock()

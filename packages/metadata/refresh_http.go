@@ -19,10 +19,11 @@ func RefreshHandler(index BulkIndex, fetch func(context.Context, library.Item) e
 			notFound(writer, request)
 			return
 		}
-		if err := fetch(request.Context(), item); err != nil || index.Refresh(request.Context()) != nil {
+		if err := fetch(request.Context(), item); err != nil {
 			fail(writer, request, "metadata provider unavailable", http.StatusBadGateway)
 			return
 		}
+		index.Redecorate()
 		http.Redirect(writer, request, "/watch/"+item.ID, http.StatusSeeOther)
 	}
 }

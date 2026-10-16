@@ -2,9 +2,13 @@ package metadata
 
 import (
 	"context"
+	"math/rand/v2"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
+
+const scheduleDelay = 250 * time.Millisecond
 
 func Schedule(ctx context.Context, available bool, observe func(func([]library.Item)), refresh func(context.Context) error) func() {
 	if ctx == nil || !available || observe == nil || refresh == nil {
@@ -24,6 +28,17 @@ func Schedule(ctx context.Context, available bool, observe func(func([]library.I
 			case <-ctx.Done():
 				return
 			case <-jobs:
+				timer := time.NewTimer(scheduleDelay + time.Duration(rand.Int64N(int64(scheduleDelay)))) //nolint:gosec // Refresh jitter only spreads provider load.
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+					return
+				case <-timer.C:
+				}
+				select {
+				case <-jobs:
+				default:
+				}
 				_ = refresh(ctx)
 			}
 		}

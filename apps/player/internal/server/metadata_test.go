@@ -15,9 +15,8 @@ import (
 
 var metadataContracts = servertest.MetadataFixture{
 	New: func(config servertest.MetadataConfig) http.Handler {
-		return server.New(server.Config{MediaDir: config.MediaDir, CacheDir: config.CacheDir, TMDBToken: config.TMDBToken, TMDBURL: config.TMDBURL, TMDBImageURL: config.TMDBImageURL})
+		return server.New(server.Config{MediaDir: config.MediaDir, DataDir: config.DataDir, CacheDir: config.CacheDir, Metadata: server.MetadataConfig{Token: config.TMDBToken}})
 	},
-	IDFirst: idFirstTMDB,
 }
 
 func TestViewerCanSeeLocalNfoMetadata(t *testing.T) {
@@ -57,12 +56,8 @@ func TestViewerCanBrowseAndSearchRichLocalMetadata(t *testing.T) {
 	metadataContracts.ViewerCanBrowseAndSearchRichLocalMetadata(t)
 }
 
-func TestViewerCanSeeTMDBMovieMetadataAndArtwork(t *testing.T) {
-	metadataContracts.ViewerCanSeeTMDBMovieMetadataAndArtwork(t)
-}
-
-func TestLegacyTMDBUsesFilenameIMDbIDBeforeTitleSearch(t *testing.T) {
-	metadataContracts.LegacyTMDBUsesFilenameIMDbIDBeforeTitleSearch(t)
+func TestViewerKeepsMigratedLegacyTMDBMetadata(t *testing.T) {
+	metadataContracts.ViewerKeepsMigratedLegacyTMDBMetadata(t)
 }
 
 func TestTMDBAttributionIsVisibleWhenEnabled(t *testing.T) {
