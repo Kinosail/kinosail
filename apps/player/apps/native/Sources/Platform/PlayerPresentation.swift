@@ -21,6 +21,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored var close: (() -> Void)?
     @ObservationIgnored var userNavigated: ((AVPlayer, Double) -> Void)?
     @ObservationIgnored private var closing: Task<Void, Never>?
+    @ObservationIgnored private var isolatedTouchTypes: [(UIGestureRecognizer, [NSNumber])] = []
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -85,6 +86,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         videoView.playerLayer.player = nil
         presentationMessage = nil
         #else
+        restoreRemoteTouches()
         controller.player = nil
         controller.allowedSubtitleOptionLanguages = nil
         showOptions = nil
@@ -125,6 +127,24 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
             self?.closing = nil
             close?()
         }
+    }
+
+    func isolateRemoteTouches() {
+        guard isolatedTouchTypes.isEmpty, controller.view.window != nil else { return }
+        let indirect = NSNumber(value: UITouch.TouchType.indirect.rawValue)
+        var view = controller.view.superview
+        while let current = view, !(current is UIWindow) {
+            for recognizer in current.gestureRecognizers ?? [] where recognizer.allowedTouchTypes.contains(indirect) {
+                isolatedTouchTypes.append((recognizer, recognizer.allowedTouchTypes))
+                recognizer.allowedTouchTypes = recognizer.allowedTouchTypes.filter { $0 != indirect }
+            }
+            view = current.superview
+        }
+    }
+
+    func restoreRemoteTouches() {
+        for (recognizer, types) in isolatedTouchTypes { recognizer.allowedTouchTypes = types }
+        isolatedTouchTypes = []
     }
 
     func limitSubtitleLanguages(to language: String?) {

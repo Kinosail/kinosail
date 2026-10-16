@@ -149,6 +149,7 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.controller.player = player
         presentation.controller.view.isUserInteractionEnabled = interactive
         presentation.appeared()
+        DispatchQueue.main.async { presentation.isolateRemoteTouches() }
         return presentation.controller
     }
     func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
@@ -158,10 +159,12 @@ struct NativePlayerView: UIViewControllerRepresentable {
         presentation.close = close
         if controller.player !== player { controller.player = player }
         if controller.view.isUserInteractionEnabled != interactive { controller.view.isUserInteractionEnabled = interactive }
+        DispatchQueue.main.async { presentation.isolateRemoteTouches() }
     }
     func makeCoordinator() -> PlayerPresentation { presentation }
     static func dismantleUIViewController(_ controller: AVPlayerViewController, coordinator: PlayerPresentation) {
         coordinator.visible = false
+        coordinator.restoreRemoteTouches()
         coordinator.close = nil
         if !coordinator.pictureInPicture { controller.player = nil }
     }

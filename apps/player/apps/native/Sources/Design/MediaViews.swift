@@ -49,7 +49,7 @@ struct MediaCard: View {
                         }
                     }
                     .scaleEffect(focused ? 1.06 : 1)
-                    .shadow(color: .black.opacity(focused ? 0.55 : 0), radius: 24, y: 16)
+                    .shadow(color: .black.opacity(focused ? 0.55 : 0), radius: focused ? 24 : 0, y: focused ? 16 : 0)
                     .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
                     #endif
                 VStack(alignment: .leading, spacing: 8) {

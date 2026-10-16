@@ -117,6 +117,13 @@ func TestShowPosterFallbackKeepsThePosterSeparateFromBackdrop(t *testing.T) {
 	if !strings.Contains(body, `class="hero-poster" src="/art/`) {
 		t.Fatalf("poster fallback is missing poster artwork: %q", body)
 	}
+	for _, path := range []string{"/api/v1/shows/" + showID, "/api/v1/library?view=shows"} {
+		api := httptest.NewRecorder()
+		handler.ServeHTTP(api, httptest.NewRequestWithContext(t.Context(), http.MethodGet, path, nil))
+		if api.Code != http.StatusOK || strings.Contains(api.Body.String(), `"backdrop":"/`) {
+			t.Fatalf("%s offered the poster as a backdrop: %d %q", path, api.Code, api.Body.String())
+		}
+	}
 }
 
 func TestBackdropFallsBackToPosterAndMissingArtworkStaysPlain(t *testing.T) {

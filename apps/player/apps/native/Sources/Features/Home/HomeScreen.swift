@@ -11,7 +11,6 @@ struct HomeScreen: View {
     @Namespace private var homeFocus
     @State private var quickPlay: ScreenDestination?
     @State private var spotlight = TVHomeSpotlight()
-    @State private var scrollPosition = ScrollPosition(edge: .top)
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
@@ -25,14 +24,20 @@ struct HomeScreen: View {
                 let selection = HomeSelection(continueWatching: home.continueWatching, recent: home.recent, mode: homeMode)
                 LazyVStack(alignment: .leading, spacing: 32) {
                     #if os(tvOS)
-                    if homeMode == .watch, selection.featured != nil {
-                        TVHomeSpotlightHeader(item: spotlight.focused ?? selection.featured)
-                            .task(id: selection.featured?.id) { spotlight.featured = selection.featured }
-                    }
-                    if homeMode == .watch, !selection.tvWatchingRail.isEmpty {
-                        MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
-                                   resumesPlayback: true, onQuickPlay: { quickPlay = $0 }, onFocus: showWatching)
-                    } else if homeMode == .listen, !selection.featuredAndContinuation.isEmpty {
+                    if homeMode == .watch {
+                        ScrollViewReader { proxy in
+                            VStack(alignment: .leading, spacing: 32) {
+                                if selection.featured != nil {
+                                    TVHomeSpotlightHeader(spotlight: spotlight, fallback: selection.featured).id(Self.topID)
+                                }
+                                if !selection.tvWatchingRail.isEmpty {
+                                    MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
+                                               resumesPlayback: true, onQuickPlay: { quickPlay = $0 },
+                                               onFocus: { showWatching($0, proxy: proxy) })
+                                }
+                            }
+                        }
+                    } else if !selection.featuredAndContinuation.isEmpty {
                         ResumeRows(items: selection.featuredAndContinuation, title: "Listening", showsAll: false)
                     }
                     TVHomeBrowse(selectTab: selectTab)
@@ -99,16 +104,7 @@ struct HomeScreen: View {
             session.contentRevision = UUID()
         }
         #if os(tvOS)
-        .mask {
-            VStack(spacing: 0) {
-                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom).frame(height: 48)
-                Color.black
-            }
-            .padding(.horizontal, -KinoTheme.contentPadding)
-            .ignoresSafeArea(edges: [.horizontal, .bottom])
-        }
-        .scrollPosition($scrollPosition)
-        .background { TVHomeSpotlightBackdrop(spotlight: spotlight) }
+        .cinemaBackground()
         .focusScope(homeFocus)
         .focusSection()
         .onExitCommand { focusTopBar?() }
@@ -151,9 +147,11 @@ struct HomeScreen: View {
     }
 
     #if os(tvOS)
-    private func showWatching(_ item: MediaItem) {
+    private static let topID = "home.top"
+
+    private func showWatching(_ item: MediaItem, proxy: ScrollViewProxy) {
         spotlight.show(item)
-        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { scrollPosition.scrollTo(edge: .top) }
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) { proxy.scrollTo(Self.topID, anchor: .top) }
     }
     #endif
 
@@ -168,8 +166,7 @@ struct HomeScreen: View {
     @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
-            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows,
-                       onFocus: { spotlight.show($0) })
+            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows)
             #else
             MediaShelf(title: title, items: items, opensShows: opensShows)
             #endif
