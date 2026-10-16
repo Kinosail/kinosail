@@ -31,7 +31,7 @@ func gatewayCertificate(t *testing.T) tls.Certificate {
 	return tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}
 }
 
-func certificateSocket(t testing.TB, handler http.Handler) string {
+func unixSocketServer(t testing.TB, handler http.Handler) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("/tmp", "certificate-rpc-")
 	if err != nil {
@@ -52,7 +52,7 @@ func certificateSocket(t testing.TB, handler http.Handler) string {
 func TestCertificateClientPerformsTrustedTLSHandshake(t *testing.T) {
 	cert := gatewayCertificate(t)
 	requested := make(chan *tls.ClientHelloInfo, 1)
-	path := certificateSocket(t, CertificateHandler("family.example", func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) { requested <- hello; return &cert, nil }))
+	path := unixSocketServer(t, CertificateHandler("family.example", func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) { requested <- hello; return &cert, nil }))
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNoContent) }))
 	server.TLS = &tls.Config{MinVersion: tls.VersionTLS12, GetCertificate: CertificateClient("family.example", path)}
 	server.StartTLS()

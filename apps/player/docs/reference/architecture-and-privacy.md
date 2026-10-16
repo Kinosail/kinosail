@@ -60,7 +60,7 @@ Outbound integration URLs are validated. Kinosail does not follow redirects by d
 
 Library Content, Profile policy, credentials, and Viewing Activity stay on the owner-hosted Server unless the Owner explicitly exports or sends related data through an enabled integration. Passwords are stored as Argon2id hashes. API keys are scoped, hashed, tracked, and normally expire after 30 days. Automatic backups are encrypted and fail closed without a key.
 
-The local activity journal links records with an integrity chain. Security events omit passwords, tokens, secret values, request bodies, and URL queries. The release container uses a non-root, read-only runtime with no capabilities and resource limits.
+The local activity journal links records with an integrity chain. Security events omit passwords, tokens, secret values, request bodies, and URL queries. The journal records at most 20 denied requests and 20 scanner quarantines per minute from one source. A source is one IPv4 address or one IPv6 /64 network. The next record from that source shows how many events were not recorded in `details.suppressed`. The release container uses a non-root, read-only runtime with no capabilities and resource limits.
 
 Privacy does not remove host duties. Protect the host, disks, backups and backup key, router, DNS account, TLS trust, firewall, and physical access. Remove private paths and titles before sharing diagnostics.
 

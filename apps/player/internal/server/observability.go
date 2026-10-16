@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/mediashares"
 )
@@ -26,7 +27,7 @@ type requestActivity struct {
 func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		facts := &requestActivity{id: acceptedRequestID(request.Header.Get("X-Request-ID")), playbackSession: acceptedPlaybackSession(request)}
-		request = request.WithContext(context.WithValue(request.Context(), requestActivityKey{}, facts))
+		request = request.WithContext(httpguard.WithRouteMemo(context.WithValue(request.Context(), requestActivityKey{}, facts)))
 		writer.Header().Set("X-Request-ID", facts.id)
 		capture := &auditWriter{ResponseWriter: writer}
 		started := time.Now()
@@ -49,7 +50,9 @@ func finishObservedRequest(activity *auditStore, route func(*http.Request) strin
 	if jellyfinMediaPath(request.URL.Path) && status >= http.StatusBadRequest {
 		slog.Warn("Jellyfin media authentication diagnostic", "diagnostic", "[PLAYBACK-AUTH]", "request_id", facts.id, "route", pattern, "status", status, "token_source", sessionTokenSource(request), "api_key_query", jellyfinQueryShape(request, "api_key"), "play_session_query", jellyfinQueryShape(request, "playSessionId"), "client", jellyfinClientClass(request))
 	}
-	slog.Log(request.Context(), observedRequestLevel(request, pattern, status, facts), "request", observedRequestAttributes(capture, request, facts, pattern, status, started)...)
+	if level := observedRequestLevel(request, pattern, status, facts); slog.Default().Enabled(request.Context(), level) {
+		slog.Log(request.Context(), level, "request", observedRequestAttributes(capture, request, facts, pattern, status, started)...)
+	}
 }
 
 func recoverObservedRequest(capture *auditWriter, request *http.Request, facts *requestActivity, route func(*http.Request) string, recovered any) bool {

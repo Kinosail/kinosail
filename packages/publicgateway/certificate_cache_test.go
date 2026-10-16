@@ -34,7 +34,7 @@ func certificateValidFor(t testing.TB, validity time.Duration) tls.Certificate {
 func countedCertificateClient(t *testing.T, issue func(*tls.ClientHelloInfo) (*tls.Certificate, error)) (func(*tls.ClientHelloInfo) (*tls.Certificate, error), *atomic.Int32) {
 	t.Helper()
 	var calls atomic.Int32
-	path := certificateSocket(t, CertificateHandler("family.example", func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	path := unixSocketServer(t, CertificateHandler("family.example", func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 		calls.Add(1)
 		return issue(hello)
 	}))

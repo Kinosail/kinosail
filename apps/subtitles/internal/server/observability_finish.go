@@ -27,8 +27,9 @@ func (observation requestObservation) finish(ctx context.Context) {
 	status := observation.status()
 	observation.record(status, panicked)
 	pattern := observation.route(observation.request)
-	attributes := observation.attributes(status, pattern)
-	slog.Log(ctx, requestLogLevel(observation.request, observation.facts, pattern, status), "request", attributes...)
+	if level := requestLogLevel(observation.request, observation.facts, pattern, status); slog.Default().Enabled(ctx, level) {
+		slog.Log(ctx, level, "request", observation.attributes(status, pattern)...)
+	}
 }
 
 func (observation requestObservation) recover(recovered any) bool {

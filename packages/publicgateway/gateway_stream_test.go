@@ -3,37 +3,17 @@ package publicgateway
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"crypto/tls"
 	"io"
-	"net"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 )
-
-func gatewayBackend(tb testing.TB, handler http.Handler) string {
-	tb.Helper()
-	dir, err := os.MkdirTemp("/tmp", "gateway-stream-")
-	if err != nil {
-		tb.Fatal(err)
-	}
-	tb.Cleanup(func() { _ = os.RemoveAll(dir) })
-	path := filepath.Join(dir, "http.sock")
-	listener, err := (&net.ListenConfig{}).Listen(tb.Context(), "unix", path)
-	if err != nil {
-		tb.Fatal(err)
-	}
-	backend := &http.Server{Handler: handler, ReadHeaderTimeout: time.Second}
-	go func() { _ = backend.Serve(listener) }()
-	tb.Cleanup(func() { _ = backend.Close() })
-	return path
-}
 
 func gatewayFront(tb testing.TB, path string) *httptest.Server {
 	tb.Helper()
@@ -51,7 +31,7 @@ func TestGatewayStreamsEventsAndUnknownLengthResponsesImmediately(t *testing.T) 
 	for name, contentType := range map[string]string{"server-sent events": "text/event-stream", "growing playlist": "application/vnd.apple.mpegurl"} {
 		t.Run(name, func(t *testing.T) {
 			release := make(chan struct{})
-			path := gatewayBackend(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+			path := unixSocketServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				w.Header().Set("Content-Type", contentType)
 				_, _ = io.WriteString(w, "first\n")
 				w.(http.Flusher).Flush()
@@ -62,34 +42,26 @@ func TestGatewayStreamsEventsAndUnknownLengthResponsesImmediately(t *testing.T) 
 				_, _ = io.WriteString(w, "second\n")
 			}))
 			front := gatewayFront(t, path)
-			request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, front.URL+"/events", nil)
+			defer close(release)
+			ctx, cancel := context.WithTimeout(t.Context(), 2*time.Second)
+			defer cancel()
+			request := httptest.NewRequestWithContext(ctx, http.MethodGet, front.URL+"/events", nil)
 			request.RequestURI = ""
 			response, err := front.Client().Do(request)
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer response.Body.Close()
-			lines := make(chan string, 1)
-			go func() {
-				line, _ := bufio.NewReader(response.Body).ReadString('\n')
-				lines <- line
-			}()
-			select {
-			case line := <-lines:
-				if line != "first\n" {
-					t.Fatalf("first streamed line = %q", line)
-				}
-			case <-time.After(2 * time.Second):
-				t.Fatal("gateway buffered a streaming response")
+			if line, err := bufio.NewReader(response.Body).ReadString('\n'); err != nil || line != "first\n" {
+				t.Fatalf("gateway buffered a streaming response: %q, %v", line, err)
 			}
-			close(release)
 		})
 	}
 }
 
 func TestGatewayDeliversKnownLengthMediaIntact(t *testing.T) {
 	media := bytes.Repeat([]byte("kinosail-media-"), 1<<18)
-	path := gatewayBackend(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	path := unixSocketServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "video/mp4")
 		w.Header().Set("Content-Length", strconv.Itoa(len(media)))
 		_, _ = w.Write(media)
@@ -112,7 +84,7 @@ func TestGatewayDeliversKnownLengthMediaIntact(t *testing.T) {
 
 func BenchmarkGatewayProxiesKnownLengthMedia(b *testing.B) {
 	media := bytes.Repeat([]byte{7}, 64<<20)
-	path := gatewayBackend(b, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	path := unixSocketServer(b, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "video/mp4")
 		w.Header().Set("Content-Length", strconv.Itoa(len(media)))
 		_, _ = w.Write(media)
