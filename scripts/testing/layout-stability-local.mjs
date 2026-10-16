@@ -53,7 +53,7 @@ function recordFailure(error, failedPage = flowProbe.page || activePage) {
   return failureCapture;
 }
 flowProbe.openPage = async context => {
-  await context.tracing.start({screenshots: true, snapshots: true});
+  if (engine !== "firefox") await context.tracing.start({screenshots: true, snapshots: true});
   return flowProbe.page = await context.newPage();
 };
 flowProbe.captureFailure = recordFailure;
@@ -63,7 +63,8 @@ process.once("uncaughtException", async error => {
   await browser?.close();
   process.exit(1);
 });
-browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+const launchBrowser = () => ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+browser = await launchBrowser();
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 await context.tracing.start({screenshots:true,snapshots:true});
 loginTracing = true;
@@ -264,7 +265,7 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
+  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";if(engine==="firefox"){await browser.close();browser=await launchBrowser();}await measureFlows(browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
