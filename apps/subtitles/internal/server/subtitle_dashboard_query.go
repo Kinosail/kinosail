@@ -31,10 +31,8 @@ func subtitleDashboardQuery(request *http.Request, ignored ...string) (subtitleD
 	if err != nil {
 		return options, invalid
 	}
-	for key, entries := range values {
-		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") && !slices.Contains(ignored, key) {
-			return options, invalid
-		}
+	if !subtitleDashboardKeysValid(values, ignored) {
+		return options, invalid
 	}
 	if value, exists := values["view"]; exists {
 		options.View = value[0]
@@ -69,6 +67,15 @@ func subtitleDashboardQuery(request *http.Request, ignored ...string) (subtitleD
 		return options, invalid
 	}
 	return options, nil
+}
+
+func subtitleDashboardKeysValid(values url.Values, ignored []string) bool {
+	for key, entries := range values {
+		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") && !slices.Contains(ignored, key) {
+			return false
+		}
+	}
+	return true
 }
 
 func (options subtitleDashboardOptions) pageURL(page int) string {
