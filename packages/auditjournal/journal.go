@@ -94,52 +94,62 @@ func New(ctx context.Context, config Config) *Journal {
 	if err := journal.load(config.DataDir); err != nil {
 		journal.failLocked("load activity journal", err)
 	}
+	var done <-chan struct{}
+	if ctx != nil {
+		done = ctx.Done()
+	}
 	if config.Notify != nil && journal.writable {
 		journal.notifications = make(chan Event, auditNotificationQueue)
-		var done <-chan struct{}
-		if ctx != nil {
-			done = ctx.Done()
-		}
 		go journal.deliverNotifications(done)
+	}
+	if ctx != nil && journal.writable {
+		go journal.summarizeSecurityEvents(done)
 	}
 	return journal
 }
 
 func (journal *Journal) Record(event Event) {
-	event, created, admitted := journal.admit(event)
-	if !admitted {
+	journal.store(journal.admit(event))
+}
+
+func (journal *Journal) store(events []admittedEvent) {
+	if len(events) == 0 {
 		return
 	}
 	journal.writeMu.Lock()
 	defer journal.writeMu.Unlock()
-	event, err := journal.persist(event, created, time.Now().UTC())
-	if err != nil {
-		journal.mu.Lock()
-		journal.failLocked("write activity journal", err)
-		journal.mu.Unlock()
-		return
-	}
-	if journal.notify != nil && event.Category != "playback" {
-		journal.enqueueNotification(event)
+	for _, admitted := range events {
+		event, err := journal.persist(admitted.event, admitted.created, time.Now().UTC())
+		if err != nil {
+			journal.mu.Lock()
+			journal.failLocked("write activity journal", err)
+			journal.mu.Unlock()
+			return
+		}
+		if journal.notify != nil && event.Category != "playback" {
+			journal.enqueueNotification(event)
+		}
 	}
 }
 
-func (journal *Journal) admit(event Event) (Event, time.Time, bool) {
+func (journal *Journal) admit(event Event) []admittedEvent {
 	journal.mu.Lock()
 	defer journal.mu.Unlock()
 	if !journal.writable || !validEvent(event, false) {
 		journal.failLocked("write activity journal", errors.New("activity event is invalid"))
-		return Event{}, time.Time{}, false
+		return nil
 	}
 	event = cloneEvent(event)
 	created, _ := time.Parse(time.RFC3339Nano, event.Time)
-	if !journal.flood.admit(&event, created) {
-		return Event{}, time.Time{}, false
+	admitted, summaries := journal.flood.admit(&event, created)
+	events := summarizedEvents(summaries, created)
+	if !admitted {
+		return events
 	}
 	if _, summarized := event.Details[suppressedDetail]; summarized && !validEvent(event, false) {
 		delete(event.Details, suppressedDetail)
 	}
-	return event, created, true
+	return append(events, admittedEvent{event, created})
 }
 
 func (journal *Journal) Query(category string, limit int) []Event {
