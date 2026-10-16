@@ -24,7 +24,7 @@ func TestStoreCoversFailClosedBranches(t *testing.T) {
 	now := time.Date(2026, 9, 4, 12, 0, 0, 0, time.UTC)
 	missing := New("", Dependencies{})
 	request := capabilityRequest(t, strings.Repeat("x", 43))
-	if _, ok := missing.Item(request, "item"); ok {
+	if _, _, ok := missing.Item(request, "item"); ok {
 		t.Fatal("failed store returned an item")
 	}
 	if _, ok := missing.Items(request); ok {
@@ -62,8 +62,9 @@ func TestStoreCoversFailClosedBranches(t *testing.T) {
 	if err != nil || !expires.Equal(now.Add(8*time.Hour)) {
 		t.Fatalf("bounded claim = %q, %v, %v", session, expires, err)
 	}
-	store.Release(httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
-	store.Release(capabilityRequest(t, "unknown"))
+	if _, release, ok := store.Item(capabilityRequest(t, "unknown"), "item"); ok || release != nil {
+		t.Fatal("unknown capability received a stream slot")
+	}
 
 	store.random = errorReader{}
 	if _, _, err := store.Claim(firstClaim, "Browser"); err == nil {

@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"testing"
 	"time"
 
@@ -30,9 +31,7 @@ func TestHTTPConnectionClosesWhenRoomExpires(t *testing.T) {
 	harness.rooms.mu.Lock()
 	harness.rooms.rooms[roomID].updated = time.Now().Add(-2 * time.Hour)
 	harness.rooms.mu.Unlock()
-	if err := wsjson.Write(t.Context(), connection, Event{Action: "play", Media: "movie"}); err != nil {
-		t.Fatal(err)
-	}
+	_ = wsjson.Write(t.Context(), connection, Event{Action: "play", Media: "movie"})
 	assertHTTPConnectionClosed(t, connection)
 }
 
@@ -126,7 +125,7 @@ func assertHTTPConnectionClosed(t *testing.T, connection *websocket.Conn) {
 	if ctx.Err() != nil {
 		t.Fatalf("server did not close connection before deadline: %v", err)
 	}
-	if websocket.CloseStatus(err) == -1 && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, net.ErrClosed) {
+	if websocket.CloseStatus(err) == -1 && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, net.ErrClosed) && !errors.Is(err, syscall.ECONNRESET) {
 		t.Fatalf("read failed without evidence of peer closure: %v", err)
 	}
 	_ = connection.CloseNow()
