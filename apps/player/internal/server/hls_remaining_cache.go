@@ -42,40 +42,6 @@ func (manager *hlsManager) serveRemainingAACFile(writer http.ResponseWriter, req
 	return true
 }
 
-func (manager *hlsManager) openRemainingAACAsset(ctx context.Context, item library.Item, recipe hlsRecipe, name string) (*remainingAACAsset, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	if !hlsFile(name) || filepath.Dir(name) != "audio" {
-		return nil, errCopiedHLSIndex
-	}
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		return nil, err
-	}
-	root, err := manager.openCopiedHLSRoot(filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe)))
-	if err != nil {
-		return nil, errCopiedHLSIndex
-	}
-	defer root.Close()
-	if err := remainingAACReadyRoot(root, options.Cache); err != nil {
-		return nil, err
-	}
-	if err := remainingAACManifestAsset(root, name, manager.probe.duration(ctx, item)); err != nil {
-		return nil, err
-	}
-	file, info, err := copiedHLSOpenFile(root, name, 64<<20)
-	if err != nil {
-		return nil, errCopiedHLSIndex
-	}
-	asset := &remainingAACAsset{file: file, info: info, content: file}
-	if err := manager.admitRemainingAACAsset(ctx, item, recipe, root, name, options.Cache, asset); err != nil {
-		_ = file.Close()
-		return nil, err
-	}
-	return asset, nil
-}
-
 func (manager *hlsManager) admitRemainingAACAsset(ctx context.Context, item library.Item, recipe hlsRecipe, root *os.Root, name, policy string, asset *remainingAACAsset) error {
 	if filepath.Base(name) == "init.mp4" {
 		if err := asset.retainInitialization(); err != nil {
@@ -108,32 +74,6 @@ func (asset *remainingAACAsset) retainInitialization() error {
 func remainingAACOriginRecipe(item library.Item, recipe hlsRecipe) bool {
 	return item.Kind == "audio" && remainingPlainAudio(recipe) && recipe.offset == 0 && recipe.outputTime == 0 &&
 		(recipe.maxBitrate == 0 || recipe.maxBitrate >= 192000)
-}
-
-func (manager *hlsManager) remainingAACCacheAsset(ctx context.Context, item library.Item, recipe hlsRecipe, name string) error {
-	if !remainingAACOriginRecipe(item, recipe) {
-		return nil
-	}
-	options, err := manager.hlsSettings(item, recipe)
-	if err != nil {
-		return err
-	}
-	directory := filepath.Join(manager.cache, hlsRecipeKey(item.ID, recipe))
-	root, err := manager.openCopiedHLSRoot(directory)
-	if err != nil {
-		return errCopiedHLSIndex
-	}
-	defer root.Close()
-	if err := remainingAACReadyRoot(root, options.Cache); err != nil {
-		return err
-	}
-	if err := remainingAACManifestAsset(root, name, manager.probe.duration(ctx, item)); err != nil {
-		return err
-	}
-	if err := remainingAACExistingAsset(root, name); err != nil {
-		return err
-	}
-	return manager.validateHLSPolicy(ctx, item, recipe, options.Cache)
 }
 
 func remainingAACReadyRoot(root *os.Root, policy string) error {
