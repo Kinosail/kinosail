@@ -105,8 +105,8 @@ while IFS= read -r file; do [[ -z "$file" || ! -f "$file" ]] || shell_args+=("$f
 remote_setup_files="$(grep -E '^scripts/(setup-remote-access|test-remote-setup)\.sh$' <<<"$changed" || true)"
 [[ -z "$remote_setup_files" ]] || run_stage remote-setup "$(git ls-files scripts/setup-remote-access.sh scripts/test-remote-setup.sh 'compose*.yaml')" ./scripts/test-remote-setup.sh
 
-installer_files="$(grep -E '^scripts/(install|uninstall|test-installer)\.sh$|^compose.*\.ya?ml$' <<<"$changed" || true)"
-[[ -z "$installer_files" ]] || run_stage installer "$(git ls-files scripts/install.sh scripts/uninstall.sh scripts/test-installer.sh 'compose*.yaml')" ./scripts/test-installer.sh
+installer_files="$(grep -E '^scripts/(install|uninstall|test-installer|test-installer-nvidia)\.sh$|^compose.*\.ya?ml$' <<<"$changed" || true)"
+[[ -z "$installer_files" ]] || run_stage installer "$(git ls-files scripts/install.sh scripts/uninstall.sh scripts/test-installer.sh scripts/test-installer-nvidia.sh 'compose*.yaml')" ./scripts/test-installer.sh
 
 nox_deploy_files="$(grep -E '^scripts/(deploy-nox|test-deploy-nox)\.sh$' <<<"$changed" || true)"
 [[ -z "$nox_deploy_files" ]] || run_stage nox-deploy "$(git ls-files scripts/deploy-nox.sh scripts/test-deploy-nox.sh)" ./scripts/test-deploy-nox.sh
