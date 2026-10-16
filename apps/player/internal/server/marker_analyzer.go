@@ -12,6 +12,6 @@ type markerAnalyzer = markerlogic.Analyzer
 func markerProbe(probe *mediaProbe) func(context.Context, library.Item) markerlogic.Media {
 	return func(ctx context.Context, item library.Item) markerlogic.Media {
 		media := probe.inspect(ctx, item)
-		return markerlogic.Media{Duration: media.Duration, Markers: media.Markers}
+		return markerlogic.Media{Duration: media.Duration, Markers: media.Markers, Interrupted: media.Interrupted}
 	}
 }

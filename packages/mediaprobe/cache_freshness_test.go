@@ -54,7 +54,7 @@ func TestProbeRemembersFailedProbesForTheSameSourceVersion(t *testing.T) {
 	probe := New(executable)
 	item := library.Item{ID: "broken", Kind: "video", Path: media}
 	for range 3 {
-		if result := probe.Facts(context.Background(), item); result.Video.Codec != "" {
+		if result := probe.Facts(context.Background(), item); result.Video.Codec != "" || result.Interrupted {
 			t.Fatalf("failed probe = %#v", result)
 		}
 	}

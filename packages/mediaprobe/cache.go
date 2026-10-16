@@ -9,7 +9,6 @@ import (
 	"io"
 	"path/filepath"
 	"strconv"
-	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 	markerlogic "github.com/MikeO7/kinosail/packages/markers"
@@ -27,8 +26,9 @@ type probeCacheEntry struct {
 }
 
 type probeCall struct {
-	done   chan struct{}
-	result Result
+	done    chan struct{}
+	result  Result
+	outcome probeOutcome
 }
 
 func New(executable string) *Probe {
@@ -101,70 +101,68 @@ func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *
 	}
 	version := playback.SourceVersion(item.Path)
 	complete := func(result Result) Result { return probe.completeOptional(ctx, item, version, result, enrichment) }
-	result, found := probe.cachedFacts(item, version)
-	if found {
+	if result, found := probe.cachedFacts(item, version); found {
 		return complete(result)
 	}
 	key := item.ID + "\x00" + version
-	probe.mu.Lock()
-	if cached, ok := probe.cache[item.ID]; ok && (probe.versions[item.ID] == "" || probe.versions[item.ID] == version) {
-		probe.mu.Unlock()
-		return complete(cached)
-	}
-	if probe.failedRecently(item.ID, version) {
-		probe.mu.Unlock()
-		return Result{}
-	}
-	if call := probe.calls[key]; call != nil {
+	for ctx.Err() == nil {
+		probe.mu.Lock()
+		if cached, ok := probe.cache[item.ID]; ok && (probe.versions[item.ID] == "" || probe.versions[item.ID] == version) {
+			probe.mu.Unlock()
+			return complete(cached)
+		}
+		if probe.failedRecently(item.ID, version) {
+			probe.mu.Unlock()
+			return Result{}
+		}
+		call := probe.calls[key]
+		if call == nil {
+			call = &probeCall{done: make(chan struct{})}
+			probe.calls[key] = call
+			probe.mu.Unlock()
+			return probe.lead(ctx, item, version, key, call, complete)
+		}
 		probe.mu.Unlock()
 		select {
 		case <-call.done:
-			return complete(call.result)
+			if call.outcome == probeFound {
+				return complete(call.result)
+			}
+			if call.outcome != probeInterrupted {
+				return Result{}
+			}
 		case <-ctx.Done():
-			return Result{}
 		}
 	}
-	call := &probeCall{done: make(chan struct{})}
-	probe.calls[key] = call
-	probe.mu.Unlock()
-	defer func() {
-		probe.mu.Lock()
-		call.result = result
-		delete(probe.calls, key)
-		close(call.done)
-		probe.mu.Unlock()
-	}()
-	var failed bool
-	result, found, failed = probe.run(ctx, item)
-	if !found {
-		if failed && ctx.Err() == nil {
-			probe.mu.Lock()
-			probe.recordFailure(item.ID, version)
-			probe.mu.Unlock()
-		}
-		return Result{}
-	}
+	return Result{Interrupted: true}
+}
+
+func (probe *Probe) lead(ctx context.Context, item library.Item, version, key string, call *probeCall, complete func(Result) Result) Result {
+	result, outcome := probe.run(ctx, item)
 	probe.mu.Lock()
-	delete(probe.failures, item.ID)
-	probe.remember(item.ID, version, result)
+	switch {
+	case outcome == probeFound:
+		delete(probe.failures, item.ID)
+		probe.remember(item.ID, version, result)
+	case outcome == probeBroken && ctx.Err() == nil:
+		probe.recordFailure(item.ID, version)
+	case ctx.Err() != nil:
+		outcome = probeInterrupted
+	}
+	call.result, call.outcome = result, outcome
+	delete(probe.calls, key)
+	close(call.done)
 	probe.mu.Unlock()
+	if outcome != probeFound {
+		logProbeFailure(ctx, item, outcome)
+		return Result{Interrupted: outcome == probeInterrupted}
+	}
 	probe.save(item, version, result)
 	return complete(result)
 }
 
 func (probe *Probe) Duration(ctx context.Context, item library.Item) float64 {
 	return probe.Facts(ctx, item).Duration
-}
-
-func (probe *Probe) run(ctx context.Context, item library.Item) (Result, bool, bool) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	data, err := runProbe(ctx, probe.executable, "-v", "error", "-show_entries", "stream=index,codec_type,codec_name,profile,level,pix_fmt,field_order,width,height,r_frame_rate,sample_aspect_ratio,sample_rate,channels,channel_layout,color_range,color_space,color_transfer,color_primaries,bits_per_raw_sample:stream_disposition:stream_tags=language,title:stream_side_data:chapter=start_time,end_time:chapter_tags=title:format=format_name,duration,bit_rate:format_tags=title,artist,album_artist,album,genre,track,disc,replaygain_track_gain,replaygain_album_gain,r128_track_gain,r128_album_gain", "-of", "json", item.Path)
-	if err != nil {
-		return Result{}, false, true
-	}
-	result, found := parse(data)
-	return result, found, false
 }
 
 func (probe *Probe) load(item library.Item, version string) (Result, bool) {

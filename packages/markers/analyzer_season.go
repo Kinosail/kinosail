@@ -8,7 +8,10 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-var errAnalysisCapacity = errors.New("playback segment analysis capacity is unavailable")
+var (
+	errAnalysisCapacity = errors.New("playback segment analysis capacity is unavailable")
+	errMediaInterrupted = errors.New("playback segment media inspection was interrupted")
+)
 
 func (analyzer *Analyzer) itemFailed(ctx context.Context, item library.Item, err error) error {
 	if ctxErr := ctx.Err(); ctxErr != nil {
@@ -17,10 +20,27 @@ func (analyzer *Analyzer) itemFailed(ctx context.Context, item library.Item, err
 	if errors.Is(err, errAnalysisCapacity) {
 		return err
 	}
+	if errors.Is(err, errMediaInterrupted) {
+		if analyzer.deferred == nil {
+			analyzer.deferred = make(map[string]bool)
+		}
+		analyzer.deferred[item.ID] = true
+		return nil
+	}
 	if analyzer.failed == nil {
 		analyzer.failed = make(map[string]bool)
 	}
 	analyzer.failed[item.ID] = true
+	return nil
+}
+
+func mediaUnavailable(media Media) error {
+	if media.Interrupted {
+		return errMediaInterrupted
+	}
+	if !finite(media.Duration) || media.Duration <= 0 {
+		return errors.New("playback segment media duration is unavailable")
+	}
 	return nil
 }
 
@@ -30,8 +50,8 @@ func (analyzer *Analyzer) targeted(item library.Item) bool {
 
 func (analyzer *Analyzer) episodeFingerprints(ctx context.Context, item library.Item) (episodeFingerprint, error) {
 	media := analyzer.inspect(ctx, item)
-	if !finite(media.Duration) || media.Duration <= 0 {
-		return episodeFingerprint{}, errors.New("playback segment media duration is unavailable")
+	if err := mediaUnavailable(media); err != nil {
+		return episodeFingerprint{}, err
 	}
 	openingLength := min(media.Duration*.25, 600)
 	tailLength := min(media.Duration*.2, 900)

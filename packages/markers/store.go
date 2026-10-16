@@ -29,11 +29,13 @@ func (analyzer *Analyzer) persistLocked(updates map[string]Record) error {
 	}
 	switch {
 	case analyzer.file == "":
-	case analyzer.saveEntry != nil:
+	case analyzer.saveEntries != nil:
+		set := make(map[string]any, len(updates))
 		for id, record := range updates {
-			if err := analyzer.saveEntry(filepath.Base(analyzer.file), id, record); err != nil {
-				return err
-			}
+			set[id] = record
+		}
+		if err := analyzer.saveEntries(filepath.Base(analyzer.file), set, nil); err != nil {
+			return err
 		}
 	default:
 		next := maps.Clone(analyzer.records)

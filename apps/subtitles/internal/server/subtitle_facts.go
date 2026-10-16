@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 type subtitleFactVersion struct {
@@ -69,7 +70,7 @@ func (manager *subtitleManager) refreshFacts(ctx context.Context) {
 	for range min(len(pending), subtitleWorkerCount()) {
 		workers.Go(func() {
 			for item := range jobs {
-				manager.refreshItemFacts(ctx, item, now)
+				manager.refreshItemFacts(workload.WithBackgroundPriority(ctx), item, now)
 			}
 		})
 	}
