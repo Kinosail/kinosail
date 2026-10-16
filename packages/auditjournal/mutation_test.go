@@ -279,7 +279,7 @@ func TestPruneKeepsExactRetentionBoundary(t *testing.T) {
 	now := time.Now().UTC()
 	exact := testEvent("exact", "security", now.Add(-time.Hour))
 	old := testEvent("old", "security", now.Add(-time.Hour-time.Nanosecond))
-	journal := &Journal{events: []Event{exact, old}, auditRetention: time.Hour}
+	journal := &Journal{events: []Event{exact, old}, meta: journalMeta([]Event{exact, old}), auditRetention: time.Hour}
 	if !journal.pruneLocked(now) || len(journal.events) != 1 || journal.events[0].ID != "exact" {
 		t.Fatalf("retention boundary = %#v", journal.events)
 	}
@@ -287,7 +287,7 @@ func TestPruneKeepsExactRetentionBoundary(t *testing.T) {
 	for index := range exactCount {
 		exactCount[index] = testEvent("event", "security", now)
 	}
-	journal = &Journal{events: exactCount, auditRetention: time.Hour}
+	journal = &Journal{events: exactCount, meta: journalMeta(exactCount), auditRetention: time.Hour}
 	if journal.pruneLocked(now) || len(journal.events) != maxActivityEvents {
 		t.Fatalf("exact activity count was pruned: %d", len(journal.events))
 	}

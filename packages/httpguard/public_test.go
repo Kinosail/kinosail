@@ -52,14 +52,14 @@ func TestPublicCapacityBoundsSourcesAndIPv6Prefixes(t *testing.T) {
 	keys := make([]string, prefixConcurrentLimit)
 	for index := range keys {
 		keys[index] = "2001:db8:1:2::" + strconv.Itoa(index+1)
-		if !capacity.Acquire(keys[index]) {
+		if !capacity.Wait(t.Context(), keys[index], 0) {
 			t.Fatalf("prefix request %d rejected too early", index)
 		}
 	}
-	if capacity.Acquire("2001:db8:1:2::ffff") {
+	if capacity.Wait(t.Context(), "2001:db8:1:2::ffff", 0) {
 		t.Fatal("rotating IPv6 address bypassed the /64 concurrency bound")
 	}
-	if !capacity.Acquire("2001:db8:1:3::1") {
+	if !capacity.Wait(t.Context(), "2001:db8:1:3::1", 0) {
 		t.Fatal("one busy /64 blocked an unrelated prefix")
 	}
 	capacity.Release("2001:db8:1:3::1")
@@ -67,11 +67,11 @@ func TestPublicCapacityBoundsSourcesAndIPv6Prefixes(t *testing.T) {
 		capacity.Release(key)
 	}
 	for range sourceConcurrentLimit {
-		if !capacity.Acquire("192.0.2.1") {
+		if !capacity.Wait(t.Context(), "192.0.2.1", 0) {
 			t.Fatal("source request was rejected before its limit")
 		}
 	}
-	if capacity.Acquire("192.0.2.1") {
+	if capacity.Wait(t.Context(), "192.0.2.1", 0) {
 		t.Fatal("source concurrency limit was bypassed")
 	}
 	for range sourceConcurrentLimit {
@@ -150,11 +150,11 @@ func TestPublicGuardRemainingCapacityAndExpiryEdges(t *testing.T) {
 
 	capacity := NewPublicCapacity()
 	for index := range globalConcurrentLimit {
-		if !capacity.Acquire("192.0.2." + strconv.Itoa(index+1)) {
+		if !capacity.Wait(t.Context(), "192.0.2."+strconv.Itoa(index+1), 0) {
 			t.Fatalf("global request %d rejected early", index)
 		}
 	}
-	if capacity.Acquire("198.51.100.1") {
+	if capacity.Wait(t.Context(), "198.51.100.1", 0) {
 		t.Fatal("global concurrency limit was bypassed")
 	}
 	for index := range globalConcurrentLimit {

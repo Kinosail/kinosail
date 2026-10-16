@@ -32,7 +32,7 @@ func TestCredentialLoginSuccessResetsItsAccountLimit(t *testing.T) {
 }
 
 func TestPublicRequestsEnforcePerSourceConcurrencyBound(t *testing.T) {
-	entered := make(chan struct{}, 16)
+	entered := make(chan struct{}, 32)
 	release := make(chan struct{})
 	handler := Remote(publicRequestLimits(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		entered <- struct{}{}
@@ -40,7 +40,7 @@ func TestPublicRequestsEnforcePerSourceConcurrencyBound(t *testing.T) {
 		writer.WriteHeader(http.StatusNoContent)
 	})))
 	var group sync.WaitGroup
-	for range 16 {
+	for range 32 {
 		group.Add(1)
 		go func() {
 			defer group.Done()
@@ -49,25 +49,27 @@ func TestPublicRequestsEnforcePerSourceConcurrencyBound(t *testing.T) {
 			handler.ServeHTTP(httptest.NewRecorder(), request)
 		}()
 	}
-	for range 16 {
+	for range 32 {
 		select {
 		case <-entered:
 		case <-time.After(time.Second):
 			t.Fatal("public request did not enter bounded handler")
 		}
 	}
-	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil)
+	impatient, cancel := context.WithTimeout(t.Context(), 20*time.Millisecond)
+	defer cancel()
+	request := httptest.NewRequestWithContext(impatient, http.MethodGet, "/", nil)
 	request.RemoteAddr = "203.0.113.8:9999"
 	response := httptest.NewRecorder()
 	handler.ServeHTTP(response, request)
 	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "1" {
-		t.Fatalf("seventeenth public request = %d headers=%v", response.Code, response.Header())
+		t.Fatalf("thirty-third public request = %d headers=%v", response.Code, response.Header())
 	}
 	close(release)
 	group.Wait()
 
 	local := publicRequestLimits(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) { writer.WriteHeader(http.StatusNoContent) }))
-	for range 17 {
+	for range 33 {
 		response := httptest.NewRecorder()
 		local.ServeHTTP(response, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/", nil))
 		if response.Code != http.StatusNoContent {

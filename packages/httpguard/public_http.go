@@ -55,7 +55,7 @@ func LimitPublicRequests(next http.Handler, public func(*http.Request) bool, wri
 			return
 		}
 		key := RemoteHost(request.RemoteAddr)
-		if !capacity.Acquire(key) {
+		if !capacity.Wait(request.Context(), key, publicCapacityPatience) {
 			writer.Header().Set("Retry-After", "1")
 			writeError(writer, request, "public request capacity is temporarily unavailable", http.StatusServiceUnavailable)
 			return

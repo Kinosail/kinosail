@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/MikeO7/kinosail/packages/httpguard"
 )
 
 type requestActivityKey struct{}
@@ -23,7 +25,7 @@ type requestActivity struct {
 func observeRequests(activity *auditStore, route func(*http.Request) string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		facts := &requestActivity{id: acceptedRequestID(request.Header.Get("X-Request-ID")), playbackSession: acceptedPlaybackSession(request)}
-		request = request.WithContext(context.WithValue(request.Context(), requestActivityKey{}, facts))
+		request = request.WithContext(httpguard.WithRouteMemo(context.WithValue(request.Context(), requestActivityKey{}, facts)))
 		writer.Header().Set("X-Request-ID", facts.id)
 		capture := &auditWriter{ResponseWriter: writer}
 		observation := requestObservation{activity: activity, route: route, request: request, facts: facts, capture: capture, started: time.Now()}
