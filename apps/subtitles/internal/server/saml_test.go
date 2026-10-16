@@ -104,7 +104,7 @@ func TestSAMLPublishesMetadataAndStartsProviderLogin(t *testing.T) {
 	}
 }
 
-func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) {
+func TestSAMLValidatesSignedResponseAndLinksOwnerSubject(t *testing.T) {
 	t.Parallel()
 	key, certificate := samlTestKeyPair(t)
 	provider := &samlTestServiceProvider{}
@@ -125,16 +125,8 @@ func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) {
 	idp.MetadataURL, idp.SSOURL, idp.LoginURL = *idpOrigin.ResolveReference(&url.URL{Path: "/metadata"}), *idpOrigin.ResolveReference(&url.URL{Path: "/sso"}), *idpOrigin.ResolveReference(&url.URL{Path: "/login"})
 
 	dataDir := t.TempDir()
-	handler := server.New(server.Config{DataDir: dataDir, RequireAuth: true, SAML: server.SAMLConfig{MetadataURL: idp.MetadataURL.String(), RootURL: "http://localhost", IdentityAttribute: "objectGUID"}, SCIM: server.SCIMConfig{Token: scimTestToken, TokenExpiresAt: time.Now().Add(time.Hour)}})
-	setup := httptest.NewRecorder()
-	handler.ServeHTTP(setup, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/setup", strings.NewReader(`{"name":"Owner","password":"owner-password"}`)))
-	if setup.Code != http.StatusCreated {
-		t.Fatalf("SAML setup = %d %q", setup.Code, setup.Body.String())
-	}
-	created := scimCall(t, handler, scimTestToken, http.MethodPost, "/scim/v2/Users", map[string]any{"schemas": []string{scimUserSchema}, "userName": "saml@example.com", "externalId": "directory-1"})
-	if created.Code != http.StatusCreated {
-		t.Fatalf("SAML SCIM fixture = %d %q", created.Code, created.Body.String())
-	}
+	handler := server.New(server.Config{DataDir: dataDir, RequireAuth: true, SAML: server.SAMLConfig{MetadataURL: idp.MetadataURL.String(), RootURL: "http://localhost", IdentityAttribute: "objectGUID"}})
+	owner := strongOwnerSession(t, handler)
 	metadata := httptest.NewRecorder()
 	handler.ServeHTTP(metadata, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/login/saml/metadata", nil))
 	var err error
@@ -142,8 +134,7 @@ func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	start := httptest.NewRecorder()
-	handler.ServeHTTP(start, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/session/saml", nil))
+	start := apiCall(t, handler, owner, http.MethodGet, "/api/v1/me/saml/link", nil)
 	idpRequest, err := http.NewRequestWithContext(t.Context(), http.MethodGet, start.Header().Get("Location"), nil)
 	if err != nil {
 		t.Fatal(err)
@@ -164,7 +155,7 @@ func TestSAMLValidatesSignedResponseAndLinksProvisionedSubject(t *testing.T) {
 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	callback := httptest.NewRecorder()
 	handler.ServeHTTP(callback, request)
-	if callback.Code != http.StatusSeeOther || callback.Header().Get("Location") != "/" || len(callback.Result().Cookies()) == 0 || !strings.Contains(string(storedState(t, dataDir, "profiles.json")), `"samlSubject":"directory-1"`) {
+	if callback.Code != http.StatusSeeOther || !strings.Contains(string(storedState(t, dataDir, "profiles.json")), `"samlSubject":"directory-1"`) {
 		t.Fatalf("SAML callback = %d location=%q cookies=%v body=%q", callback.Code, callback.Header().Get("Location"), callback.Result().Cookies(), callback.Body.String())
 	}
 }
@@ -233,4 +224,20 @@ func samlTestKeyPair(t *testing.T) (*rsa.PrivateKey, *x509.Certificate) {
 		t.Fatal(err)
 	}
 	return key, certificate
+}
+
+func strongOwnerSession(t *testing.T, handler http.Handler) string {
+	t.Helper()
+	var setup struct {
+		Token string
+		TOTP  struct{ Secret string }
+	}
+	mustJSON(t, apiCall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Owner", "password": "owner-password", "totp": true}), &setup)
+	now := time.Now()
+	if response := apiCall(t, handler, setup.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": testTOTP(t, setup.TOTP.Secret, now)}); response.Code != http.StatusOK {
+		t.Fatalf("enable Owner MFA = %d %q", response.Code, response.Body.String())
+	}
+	var session struct{ Token string }
+	mustJSON(t, apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": testTOTP(t, setup.TOTP.Secret, now.Add(-30*time.Second))}), &session)
+	return session.Token
 }

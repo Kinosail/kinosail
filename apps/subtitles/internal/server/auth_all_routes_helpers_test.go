@@ -3,15 +3,8 @@ package server
 import (
 	"testing"
 
-	"github.com/MikeO7/kinosail/packages/scim"
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
-
-func init() {
-	for _, pattern := range scim.Patterns() {
-		explicitlyAnonymousRoutes[pattern] = true
-	}
-}
 
 var (
 	newRouteAuthorizationServer = routeAuthorizationFixture.Server

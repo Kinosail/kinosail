@@ -34,23 +34,4 @@ func TestUnsafePasswordsAreRejectedWithoutAccountSideEffects(t *testing.T) {
 	if response := apiCall(t, handler, owner.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": testTOTP(t, owner.TOTP.Secret, time.Now())}); response.Code != http.StatusOK {
 		t.Fatalf("enable owner MFA = %d %q", response.Code, response.Body.String())
 	}
-	for name, password := range rejected {
-		if response := apiCall(t, handler, owner.Token, http.MethodPost, "/api/v1/profiles", map[string]any{"name": "Viewer", "password": password}); response.Code != http.StatusBadRequest {
-			t.Fatalf("%s-password profile create = %d %q", name, response.Code, response.Body.String())
-		}
-	}
-	created := apiCall(t, handler, owner.Token, http.MethodPost, "/api/v1/profiles", map[string]any{"name": "Viewer", "password": "viewer-password"})
-	var viewer struct{ ID string }
-	mustJSON(t, created, &viewer)
-	if created.Code != http.StatusCreated {
-		t.Fatalf("create Viewer = %d %q", created.Code, created.Body.String())
-	}
-	for name, password := range rejected {
-		if response := apiCall(t, handler, owner.Token, http.MethodPut, "/api/v1/profiles/"+viewer.ID+"/password", map[string]any{"password": password}); response.Code != http.StatusBadRequest {
-			t.Fatalf("%s-password reset = %d %q", name, response.Code, response.Body.String())
-		}
-	}
-	if response := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password"}); response.Code != http.StatusCreated {
-		t.Fatalf("rejected reset changed password = %d %q", response.Code, response.Body.String())
-	}
 }

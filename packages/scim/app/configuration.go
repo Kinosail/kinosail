@@ -7,9 +7,10 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
+
+	federationconfig "github.com/MikeO7/kinosail/packages/federation/configuration"
 
 	"github.com/MikeO7/kinosail/packages/httpguard"
 )
@@ -61,15 +62,7 @@ func Expired(raw string, now time.Time) bool {
 }
 
 func Endpoint(configured string, request *http.Request) string {
-	origin := strings.TrimRight(configured, "/")
-	if origin == "" {
-		scheme := "http"
-		if request.TLS != nil {
-			scheme = "https"
-		}
-		origin = scheme + "://" + request.Host
-	}
-	return origin + "/scim/v2"
+	return federationconfig.RequestOrigin(configured, request) + "/scim/v2"
 }
 
 type ConfigurationStore[S ~string] struct {

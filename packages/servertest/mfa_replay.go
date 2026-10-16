@@ -3,6 +3,7 @@ package servertest
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -13,21 +14,12 @@ func AssertTOTPCodesCannotBeReplayed(t *testing.T, handler http.Handler) {
 		Token string
 		TOTP  struct{ Secret string }
 	}
-	var viewer struct{ Token string }
 	MustJSON(t, APICall(t, handler, "", http.MethodPost, "/api/v1/setup", map[string]any{"name": "Owner", "password": "owner-password", "totp": true}), &owner)
-	AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": TestTOTP(t, owner.TOTP.Secret, time.Now())}), http.StatusOK, `"enabled":true`)
-	if created := APICall(t, handler, owner.Token, http.MethodPost, "/api/v1/profiles", map[string]any{"name": "Viewer", "password": "viewer-password"}); created.Code != http.StatusCreated {
-		t.Fatalf("create Viewer = %d %q", created.Code, created.Body.String())
-	}
-	MustJSON(t, APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password"}), &viewer)
-	var enrollment struct{ Secret string }
-	MustJSON(t, APICall(t, handler, viewer.Token, http.MethodPost, "/api/v1/me/mfa/setup", map[string]any{}), &enrollment)
 	now := stableTOTPWindow()
-	AssertAPIBody(t, APICall(t, handler, viewer.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": TestTOTP(t, enrollment.Secret, now)}), http.StatusOK, `"enabled":true`)
-
-	previous, current, next := TestTOTP(t, enrollment.Secret, now.Add(-30*time.Second)), TestTOTP(t, enrollment.Secret, now), TestTOTP(t, enrollment.Secret, now.Add(30*time.Second))
+	previous, current, next := TestTOTP(t, owner.TOTP.Secret, now.Add(-30*time.Second)), TestTOTP(t, owner.TOTP.Secret, now), TestTOTP(t, owner.TOTP.Secret, now.Add(30*time.Second))
+	AssertAPIBody(t, APICall(t, handler, owner.Token, http.MethodPut, "/api/v1/me/mfa", map[string]any{"code": current}), http.StatusOK, `"enabled":true`)
 	login := func(code string) *httptest.ResponseRecorder {
-		return APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password", "code": code})
+		return APICall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Owner", "password": "owner-password", "code": code})
 	}
 	if first := login(previous); first.Code != http.StatusCreated {
 		t.Fatalf("first login with a fresh code = %d %q", first.Code, first.Body.String())
@@ -44,8 +36,8 @@ func AssertTOTPCodesCannotBeReplayed(t *testing.T, handler http.Handler) {
 	if disabled := APICall(t, handler, session.Token, http.MethodDelete, "/api/v1/me/mfa", map[string]any{"code": current}); disabled.Code != http.StatusUnauthorized {
 		t.Fatalf("MFA disable with a replayed code = %d %q", disabled.Code, disabled.Body.String())
 	}
-	if disabled := APICall(t, handler, session.Token, http.MethodDelete, "/api/v1/me/mfa", map[string]any{"code": next}); disabled.Code != http.StatusNoContent {
-		t.Fatalf("MFA disable with a fresh code = %d %q", disabled.Code, disabled.Body.String())
+	if disabled := APICall(t, handler, session.Token, http.MethodDelete, "/api/v1/me/mfa", map[string]any{"code": next}); disabled.Code != http.StatusConflict || !strings.Contains(disabled.Body.String(), "owner must retain") {
+		t.Fatalf("MFA disable with a fresh code did not reach the Owner policy = %d %q", disabled.Code, disabled.Body.String())
 	}
 }
 

@@ -42,8 +42,10 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 		values := map[string]string{
 			"KINOSAIL_SERVER_NAME": "Environment Home", "KINOSAIL_REQUIRE_MFA": "false", "KINOSAIL_LIBRARIES": `["."]`,
 			"KINOSAIL_PLAYBACK_MODE": "direct", "KINOSAIL_SUBTITLE_LANGUAGE": "es", "KINOSAIL_TRANSCODE_QUALITY": "speed",
-			"KINOSAIL_SCAN_FREQUENCY": "off", "KINOSAIL_DLNA_ENABLED": "false", "KINOSAIL_JELLYFIN_ENABLED": "false", "KINOSAIL_TMDB_TOKEN": "hidden-token", "KINOSAIL_SCIM_TOKEN": fixture.SCIMToken,
-			"KINOSAIL_SCIM_TOKEN_EXPIRES_AT": time.Now().UTC().Add(time.Hour).Format(time.RFC3339),
+			"KINOSAIL_SCAN_FREQUENCY": "off", "KINOSAIL_DLNA_ENABLED": "false", "KINOSAIL_JELLYFIN_ENABLED": "false", "KINOSAIL_TMDB_TOKEN": "hidden-token",
+		}
+		if fixture.SCIMToken != "" {
+			values["KINOSAIL_SCIM_TOKEN"], values["KINOSAIL_SCIM_TOKEN_EXPIRES_AT"] = fixture.SCIMToken, time.Now().UTC().Add(time.Hour).Format(time.RFC3339)
 		}
 		value, ok := values[name]
 		return value, ok
@@ -64,7 +66,10 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 	if !fixture.NoPlayerSettings {
 		lockedJellyfin = APICall(t, handler, session.Token, http.MethodPut, "/api/v1/settings/jellyfin", map[string]bool{"enabled": true})
 	}
-	lockedSCIM := APICall(t, handler, session.Token, http.MethodPut, "/api/v1/configuration/integrations.scim.token", map[string]string{"value": strings.Repeat("s", 32), "tokenExpiresAt": time.Now().UTC().Add(time.Hour).Format(time.RFC3339)})
+	lockedSCIM := locked
+	if fixture.SCIMToken != "" {
+		lockedSCIM = APICall(t, handler, session.Token, http.MethodPut, "/api/v1/configuration/integrations.scim.token", map[string]string{"value": strings.Repeat("s", 32), "tokenExpiresAt": time.Now().UTC().Add(time.Hour).Format(time.RFC3339)})
+	}
 	afterRejectedChanges := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/settings", nil)
 	settingsPage := APICall(t, handler, session.Token, http.MethodGet, "/settings", nil)
 	configurationResponse := APICall(t, handler, session.Token, http.MethodGet, "/api/v1/configuration", nil)
@@ -98,7 +103,7 @@ func (fixture ConfigurationHTTP[Source, S]) ExternalConfigurationOverridesAndLoc
 		t.Fatalf("configuration leaked or lacks source: %q", configurationResponse.Body.String())
 	}
 	configurationHTML := configurationPage.Body.String()
-	if configurationPage.Code != http.StatusOK || strings.Contains(configurationHTML, "hidden-token") || !strings.Contains(configurationHTML, fixture.TMDBLabel) || !strings.Contains(configurationHTML, "Configured via Docker: <code>KINOSAIL_TMDB_TOKEN</code>.") || !strings.Contains(configurationHTML, "Configured via Docker: <code>KINOSAIL_SCIM_TOKEN</code>.") || !strings.Contains(configurationHTML, fixture.TMDBHelp) {
+	if configurationPage.Code != http.StatusOK || strings.Contains(configurationHTML, "hidden-token") || !strings.Contains(configurationHTML, fixture.TMDBLabel) || !strings.Contains(configurationHTML, "Configured via Docker: <code>KINOSAIL_TMDB_TOKEN</code>.") || (fixture.SCIMToken != "" && !strings.Contains(configurationHTML, "Configured via Docker: <code>KINOSAIL_SCIM_TOKEN</code>.")) || !strings.Contains(configurationHTML, fixture.TMDBHelp) {
 		t.Fatalf("configuration page = %d %q", configurationPage.Code, configurationHTML)
 	}
 }

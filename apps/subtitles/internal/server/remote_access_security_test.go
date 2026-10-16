@@ -13,27 +13,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/remoteaccess"
 )
 
-func TestPublicInternetListenerDeniesSetupOwnersAndUnsecuredPasswordLogin(t *testing.T) {
-	t.Parallel()
-	handler := server.New(server.Config{DataDir: t.TempDir(), RequireAuth: true})
-	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
-	ownerRequest := requestWithCookieRequest(t, http.MethodGet, "/settings", "", owner)
-	if response := serveRequest(server.Remote(handler), ownerRequest); response.Code != http.StatusForbidden {
-		t.Fatalf("remote Owner settings = %d %q", response.Code, response.Body.String())
-	}
-	if response := serveRequest(server.Remote(handler), requestWithBody(t, http.MethodGet, "/setup", "")); response.Code != http.StatusNotFound {
-		t.Fatalf("remote setup = %d %q", response.Code, response.Body.String())
-	}
-	create := requestWithCookieRequest(t, http.MethodPost, "/settings/profiles", "name=Viewer&password=viewer-password&rating=all&libraries=all&remote=true", owner)
-	if response := serveRequest(handler, create); response.Code != http.StatusSeeOther {
-		t.Fatalf("create Viewer = %d %q", response.Code, response.Body.String())
-	}
-	login := requestWithBody(t, http.MethodPost, "/login", "name=Viewer&password=viewer-password")
-	if response := serveRequest(server.Remote(handler), login); response.Code != http.StatusForbidden || !strings.Contains(response.Body.String(), "passkey or Quick Connect") {
-		t.Fatalf("remote password login = %d %q", response.Code, response.Body.String())
-	}
-}
-
 func TestPublicPasskeyOriginKeepsExplicitLANAliasesAvailable(t *testing.T) {
 	t.Parallel()
 	configured, err := configuration.Load(t.TempDir(), "", func(key string) (string, bool) {

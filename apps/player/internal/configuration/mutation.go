@@ -91,8 +91,8 @@ func readStoredConfiguration(dataDir string) (map[string]string, map[string]stri
 	if err != nil {
 		return nil, nil, err
 	}
-	discardRetiredConfiguration(regular)
-	discardRetiredConfiguration(secrets)
+	retiredConfiguration.Discard(regular)
+	retiredConfiguration.Discard(secrets)
 	return regular, secrets, nil
 }
 

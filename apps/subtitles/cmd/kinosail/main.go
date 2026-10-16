@@ -72,7 +72,7 @@ func configuredServerConfig(ctx context.Context, configured configuration.Snapsh
 		AuthURL: values.AuthURL, ProxyToken: values.ProxyToken, ScanInterval: values.ScanInterval,
 		Configuration: configured, Supporter: server.SupporterConfig{ActivationURL: values.SupporterActivationURL, SupportURL: values.SupportURL},
 		Subtitles: configuredSubtitleProviders(configured), Metadata: values.Metadata, OIDC: values.OIDC, SAML: values.SAML,
-		SCIM: values.SCIM, MCP: values.MCP, Notifications: values.Notifications,
+		MCP: values.MCP, Notifications: values.Notifications,
 	}
 	config.InternetAccess, config.TrustedHTTPS = internet, trusted
 	return config

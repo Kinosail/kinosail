@@ -84,7 +84,7 @@ func (auth *authentication) protect(next http.Handler, pattern func(*http.Reques
 
 func (auth *authentication) redirectToSignIn(writer http.ResponseWriter, request *http.Request) {
 	signIn := auth.signInPath()
-	if signIn == "/login" && request.Method == http.MethodGet && (request.URL.Path == "/oauth/authorize" || request.URL.Path == "/home-assistant/authorize") && len(request.URL.RequestURI()) <= 4096 {
+	if signIn == "/login" && request.Method == http.MethodGet && request.URL.Path == "/oauth/authorize" && len(request.URL.RequestURI()) <= 4096 {
 		signIn += "?next=" + url.QueryEscape(request.URL.RequestURI())
 	}
 	http.Redirect(writer, request, signIn, http.StatusSeeOther)
@@ -126,7 +126,7 @@ func authenticationErrorRequest(request *http.Request) bool {
 }
 
 func publicPattern(pattern string) bool {
-	return publicRoutes[pattern] != 0
+	return publicRoutes[pattern]
 }
 
 func (auth *authentication) identity(request *http.Request) (viewerProfile, bool) {
@@ -157,12 +157,11 @@ func (auth *authentication) register(mux *http.ServeMux) {
 	auth.passkeys.register(mux, auth.allowLogin)
 }
 
-func registerIdentity(mux *http.ServeMux, auth *authentication, oidcConfig OIDCConfig, samlConfig SAMLConfig, scimConfig SCIMConfig) {
+func registerIdentity(mux *http.ServeMux, auth *authentication, oidcConfig OIDCConfig, samlConfig SAMLConfig) {
 	sso, saml := auth.configureFederation(oidcConfig, samlConfig)
 	auth.register(mux)
 	sso.Register(mux)
 	saml.Register(mux)
-	registerSCIM(mux, scimConfig, auth.profiles)
 }
 
 func (auth *authentication) logout(writer http.ResponseWriter, request *http.Request) {

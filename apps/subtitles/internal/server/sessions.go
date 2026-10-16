@@ -61,23 +61,6 @@ func (store *profileStore) createSession(id, name string) (string, error) {
 	return store.createSessionKind(id, name, false, false)
 }
 
-func (store *profileStore) revokePublicSessions() error {
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	profiles := cloneProfiles(store.profiles)
-	for index, profile := range profiles {
-		if !profile.Owner && profile.Remote {
-			profiles[index].Revision++
-		}
-	}
-	sessions := identitycore.WithoutPublicSessions(store.sessions)
-	if err := store.saveRelated(profiles, sessions, store.apiKeys); err != nil {
-		return err
-	}
-	store.profiles, store.sessions = profiles, sessions
-	return nil
-}
-
 func (store *profileStore) signOut(request *http.Request) error {
 	return store.sessionModule().SignOut(request)
 }
@@ -112,10 +95,6 @@ func publicSessionCookie(token string, requests ...*http.Request) *http.Cookie {
 
 func withoutPublicProfileSessions(sessions map[string]viewerSession, profileID string) map[string]viewerSession {
 	return identitycore.WithoutProfile(sessions, profileID, true)
-}
-
-func withoutProfile(sessions map[string]viewerSession, profileID string) map[string]viewerSession {
-	return identitycore.WithoutProfile(sessions, profileID, false)
 }
 
 func loadSessions(path string, databases ...*database.Store) (map[string]viewerSession, error) {

@@ -22,25 +22,12 @@ func TestSubtitleOperationPreservesActiveOwnerAndCSRFBoundaries(t *testing.T) {
 	writeTestFile(t, target, subtitleActionInitial)
 	handler := server.New(server.Config{SubtitleApp: true, RequireAuth: true, MediaDir: media, DataDir: data, CacheDir: t.TempDir()})
 	owner := signInSubtitleOperationProfile(t, handler, "/setup", "name=Owner&password=fixture-owner-password")
-	for _, profile := range []string{"name=Partner&password=fixture-partner-password&owner=true", "name=Viewer&password=fixture-viewer-password"} {
-		response := subtitleOperationForm(t, handler, "/settings/profiles", profile, owner)
-		if response.Code != http.StatusSeeOther {
-			t.Fatalf("disposable profile creation prerequisite = %d", response.Code)
-		}
-	}
-	partner := signInSubtitleOperationProfile(t, handler, "/login", "name=Partner&password=fixture-partner-password")
-	viewer := signInSubtitleOperationProfile(t, handler, "/login", "name=Viewer&password=fixture-viewer-password")
 	base := subtitleOperationOwnerItem(t, handler, owner)
 	item := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
 	input, _ := json.Marshal(map[string]string{"action": "replacement", "item": item})
 	receipt := prepareSubtitleOperationOwnerReceipt(t, handler, string(input), owner)
 	statusPath := "/api/v1/subtitle-operations/" + receipt.ID
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", nil, "", http.StatusUnauthorized)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", viewer, "", http.StatusForbidden)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath, "", partner, "", http.StatusNotFound)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, statusPath+"/result", "", partner, "", http.StatusNotFound)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodPost, base+"/replacement", `{"replaceable":false}`, partner, receipt.ID, http.StatusNotFound)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodPost, "/api/v1/subtitle-operations", string(input), viewer, "", http.StatusForbidden)
 	assertSubtitleOperationCrossOriginDenied(t, handler, string(input), owner)
 	assertSubtitleOperationActivationCrossOriginDenied(t, handler, base+"/replacement", receipt.ID, owner)
 	assertSubtitleActionBytes(t, target, []byte(subtitleActionInitial))

@@ -34,13 +34,13 @@ func APIDurableStateFailures(t *testing.T, fixture APIDurableStateFixture) {
 	}
 	calls := []APITestCall{
 		{Method: http.MethodPut, Path: "/api/v1/settings/server", Body: map[string]any{"name": "Changed"}, Status: http.StatusBadRequest},
-		{Method: http.MethodPut, Path: "/api/v1/settings/navigation", Body: map[string]any{"items": []string{"home", "movies"}}, Status: http.StatusBadRequest},
-		{Method: http.MethodPost, Path: "/api/v1/profiles", Body: map[string]any{"name": "Viewer", "password": "viewer-password"}, Status: http.StatusBadRequest},
 		{Method: http.MethodPost, Path: "/api/v1/api-keys", Body: map[string]any{"name": "Device", "scopes": "library"}, Status: http.StatusBadRequest},
 		{Method: http.MethodDelete, Path: "/api/v1/me/oidc", Body: nil, Status: http.StatusBadRequest},
 	}
 	if !fixture.NoPlayback {
 		calls = append(calls,
+			APITestCall{Method: http.MethodPut, Path: "/api/v1/settings/navigation", Body: map[string]any{"items": []string{"home", "movies"}}, Status: http.StatusBadRequest},
+			APITestCall{Method: http.MethodPost, Path: "/api/v1/profiles", Body: map[string]any{"name": "Viewer", "password": "viewer-password"}, Status: http.StatusBadRequest},
 			APITestCall{Method: http.MethodPut, Path: "/api/v1/items/" + itemID + "/progress", Body: map[string]any{"seconds": 10}, Status: http.StatusInternalServerError},
 			APITestCall{Method: http.MethodPut, Path: "/api/v1/items/" + itemID + "/list", Body: map[string]any{"listed": true}, Status: http.StatusInternalServerError},
 			APITestCall{Method: http.MethodPost, Path: "/api/v1/playlists", Body: map[string]any{"name": "Favorites"}, Status: http.StatusBadRequest},

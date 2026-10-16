@@ -22,12 +22,4 @@ func TestDefaultMFADoesNotBlockOpenInitialServer(t *testing.T) {
 
 var enrollTestAPIFactor = servertest.EnrollTestAPIFactor
 
-func disableTestMFA(t *testing.T, handler http.Handler, token string) {
-	t.Helper()
-	response := apiCall(t, handler, token, http.MethodPut, "/api/v1/settings/mfa", map[string]any{"required": false})
-	if response.Code != http.StatusOK {
-		t.Fatalf("disable test MFA = %d %q", response.Code, response.Body.String())
-	}
-}
-
 var testTOTP = servertest.TestTOTP

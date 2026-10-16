@@ -58,11 +58,6 @@ func TestSubtitleCompletedAudioResultRetainsOwnerBinding(t *testing.T) {
 	config.RequireAuth = true
 	handler := server.New(config)
 	owner := signInSubtitleOperationProfile(t, handler, "/setup", "name=Owner&password=fixture-owner-password")
-	created := subtitleOperationForm(t, handler, "/settings/profiles", "name=Partner&password=fixture-partner-password&owner=true", owner)
-	if created.Code != http.StatusSeeOther {
-		t.Fatalf("disposable second Owner prerequisite = %d", created.Code)
-	}
-	partner := signInSubtitleOperationProfile(t, handler, "/login", "name=Partner&password=fixture-partner-password")
 	base := subtitleOperationOwnerItem(t, handler, owner)
 	item := strings.TrimPrefix(base, "/api/v1/subtitle-library/")
 	prepared := subtitleOperationAuthenticated(t, handler, http.MethodPost, "/api/v1/subtitle-operations", `{"action":"audio","item":"`+item+`"}`, owner, "")
@@ -75,7 +70,6 @@ func TestSubtitleCompletedAudioResultRetainsOwnerBinding(t *testing.T) {
 	waitSubtitleOperationOwnerAudio(t, handler, receipt.ID, owner)
 	resultPath := "/api/v1/subtitle-operations/" + receipt.ID + "/result"
 	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, resultPath, "", nil, "", http.StatusUnauthorized)
-	assertSubtitleOperationAccessDenied(t, handler, http.MethodGet, resultPath, "", partner, "", http.StatusNotFound)
 	result := subtitleOperationAuthenticated(t, handler, http.MethodGet, resultPath, "", owner, "")
 	if result.Code != http.StatusOK || result.Header().Get("Cache-Control") != "private, no-store" {
 		t.Fatalf("bound Owner audio result = %d", result.Code)

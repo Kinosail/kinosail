@@ -18,10 +18,6 @@ func (store *settingsStore) navigationController() sharednavigation.Controller {
 	})
 }
 
-func saveNavigation(settings *settingsStore) http.HandlerFunc {
-	return settings.navigationController().Handler(localizedError)
-}
-
 var applicationNavigationView = newLocalizedTemplate("application-navigation", subtitleAppHeader)
 
 type applicationNavigationData struct {
@@ -70,7 +66,7 @@ func withApplicationShell(settings *settingsStore, updates *updateChecker, patte
 
 func applicationShellRoute(pattern string) bool {
 	switch pattern {
-	case "GET /account", "GET /album/{id}", "GET /book/{id}", "GET /collection/{name}", "GET /metadata/bulk", "GET /offline-downloads", "GET /playlist/{name}", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/remote-readiness", "GET /settings/management", "GET /settings/system", "GET /show/{id}", "GET /supporter":
+	case "GET /account", "GET /settings", "GET /settings/agent-connections", "GET /settings/backups", "GET /settings/configuration", "GET /settings/management", "GET /settings/system", "GET /supporter":
 		return true
 	}
 	return false
@@ -79,18 +75,6 @@ func applicationShellRoute(pattern string) bool {
 func applicationShellView(pattern string) string {
 	if strings.HasPrefix(pattern, "GET /settings") {
 		return "settings"
-	}
-	switch pattern {
-	case "GET /album/{id}":
-		return "music"
-	case "GET /book/{id}":
-		return "books"
-	case "GET /collection/{name}":
-		return "collections"
-	case "GET /playlist/{name}":
-		return "playlists"
-	case "GET /show/{id}":
-		return "shows"
 	}
 	return ""
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/playback"
 )
 
-func registerFiles(mux *http.ServeMux, index *libraryIndex) {
-	mux.HandleFunc("GET /media/{id}", serveFile(index, playback.MediaPath, ""))
+func registerFiles(mux *http.ServeMux, index *libraryIndex, auth *authentication) {
+	mux.Handle("GET /media/{id}", auth.owner(serveFile(index, playback.MediaPath, "")))
 	mux.HandleFunc("GET /art/{id}", serveFile(index, playback.ArtworkPath, ""))
 }
 

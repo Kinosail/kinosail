@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"slices"
 	"strings"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/database"
@@ -28,12 +27,6 @@ func loadAPIKeys(path string, databases ...*database.Store) (map[string]apiKey, 
 func (store *profileStore) commitAPIKey(secret string, key apiKey) error {
 	store.mu.Lock()
 	defer store.mu.Unlock()
-	if slices.Contains(key.Scopes, "home-assistant") {
-		profile, found := identitycore.FindProfile(store.profiles, key.ProfileID)
-		if !found || !profile.Owner || profile.Disabled || profile.SCIMDeleted {
-			return errors.New("Home Assistant pairing requires a current Owner")
-		}
-	}
 	keys := cloneAPIKeys(store.apiKeys)
 	keys[sessionKey(secret)] = key
 	if err := store.persist(store.apiFile, keys); err != nil {
@@ -100,7 +93,7 @@ var apiLibraryRoutes = routeSet(
 )
 
 var apiStreamRoutes = routeSet(
-	"GET /media/{id}", "GET /api/v1/events",
+	"GET /api/v1/events",
 )
 
 func routeSet(patterns ...string) map[string]bool {

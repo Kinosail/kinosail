@@ -19,8 +19,6 @@ func validateFederationSetting(key, value string) error {
 }
 
 const (
-	scimTokenKey      = configurationcore.SCIMTokenKey
-	scimExpirationKey = configurationcore.SCIMExpirationKey
 	configurationFile = "configuration.json"
 	secretsFile       = "secrets.json"
 )
@@ -55,12 +53,6 @@ func configurationMutation() configurationcore.Mutation {
 
 func Set(dataDir, key, raw string) error { return configurationMutation().Set(dataDir, key, raw) }
 func Delete(dataDir, key string) error   { return configurationMutation().Delete(dataDir, key) }
-
-func SetSCIM(dataDir, token, expiresAt string) error {
-	return configurationMutation().SetSCIM(dataDir, token, expiresAt)
-}
-
-func DeleteSCIM(dataDir string) error { return configurationMutation().DeleteSCIM(dataDir) }
 
 func persistStoredConfiguration(dataDir string, regular, secrets map[string]string, writeRegular, writeSecrets bool) error {
 	return storedConfigurationPair.Persist(dataDir, regular, secrets, writeRegular, writeSecrets)

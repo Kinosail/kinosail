@@ -78,11 +78,6 @@ func TestAPIKeyCreationRejectsUnknownScopes(t *testing.T) {
 	}
 }
 
-func TestRemovingProfileRevokesItsAPIKeys(t *testing.T) {
-	t.Parallel()
-	libraryAPIFixture.RemovingProfileRevokesItsAPIKeys(t)
-}
-
 func assertNoStore(t *testing.T, response *httptest.ResponseRecorder) {
 	t.Helper()
 	if response.Header().Get("Cache-Control") != "no-store" {

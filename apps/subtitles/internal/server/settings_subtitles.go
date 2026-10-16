@@ -43,10 +43,6 @@ func (store *settingsStore) saveSubtitleLanguages(languages []string, limited, k
 	return nil
 }
 
-func (store *settingsStore) setSubtitlePickerLimited(limited bool) error {
-	return store.changeInstallationSettings(func(value *installationSettings) { value.SubtitlePickerLimited = limited })
-}
-
 func (store *settingsStore) setSubtitlePickerChoices(limited, keepForced bool) error {
 	return store.changeInstallationSettings(func(value *installationSettings) {
 		value.SubtitlePickerLimited = limited

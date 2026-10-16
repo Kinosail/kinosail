@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
 	"os/exec"
 	"strings"
@@ -26,26 +25,6 @@ func TestAgentConnectionSettingsInRepresentativeBrowserViewports(t *testing.T) {
 		result := browserAudit(t, chrome, web.URL+"/settings/agent-connections", viewport.width, viewport.height)
 		if result.Width != viewport.width || result.Height != viewport.height || result.Overflow != 0 || result.Main != 1 || result.Unnamed != 0 {
 			t.Fatalf("agent connection browser audit = %+v", result)
-		}
-	}
-}
-
-func TestCustomizedNavigationInRepresentativeBrowserViewports(t *testing.T) {
-	chrome := chromeExecutable(t)
-	data := t.TempDir()
-	app := server.New(server.Config{DataDir: data})
-	response := webFormCall(t, app, "", "/settings/navigation", url.Values{"items": {"home", "books", "movies"}})
-	if response.Code != http.StatusSeeOther {
-		t.Fatalf("save navigation = %d %q", response.Code, response.Body.String())
-	}
-	web := httptest.NewServer(server.New(server.Config{DataDir: data}))
-	t.Cleanup(web.Close)
-	for _, viewport := range []struct{ width, height int }{{1440, 900}, {1024, 768}, {720, 450}, {390, 844}, {320, 800}} {
-		for _, path := range []string{"/", "/settings#navigation"} {
-			result := browserAudit(t, chrome, web.URL+path, viewport.width, viewport.height)
-			if result.Width != viewport.width || result.Height != viewport.height || result.Overflow != 0 || result.Main != 1 || result.Unnamed != 0 {
-				t.Fatalf("%s at %dpx browser audit = %+v", path, viewport.width, result)
-			}
 		}
 	}
 }

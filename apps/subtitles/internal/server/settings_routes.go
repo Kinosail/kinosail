@@ -3,12 +3,11 @@ package server
 import (
 	"net/http"
 
-	"github.com/MikeO7/kinosail/packages/remoteaccess"
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, auth *authentication, internet *remoteaccess.Manager, trusted *trustedhttps.Manager, subtitles *subtitleProvider, metadata *metadataStore, backups *backupManager, maintenance *maintenanceManager, events *liveEventHub) {
+func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *updateChecker, index *libraryIndex, auth *authentication, trusted *trustedhttps.Manager, subtitles *subtitleProvider, metadata *metadataStore, backups *backupManager, maintenance *maintenanceManager, events *liveEventHub) {
 	registerOperations(mux, auth, settings, index, metadata, maintenance, events)
 	mux.Handle("GET /onboarding/finish", auth.owner(finishOnboarding(settings)))
 	registerSubtitleOnboardingActions(mux, auth, settings, index)
@@ -18,12 +17,10 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("GET /settings", auth.owner(showSubtitleSettings(settings, subtitles, trusted)))
 	mux.Handle("GET /settings/subtitles/cleanup", auth.owner(previewSubtitleCleanup(index, settings)))
 	mux.Handle("POST /settings/subtitles/cleanup", auth.owner(hideSubtitleCleanup(index, settings)))
-	mux.Handle("POST /settings/subtitles/picker", auth.owner(saveSubtitlePicker(settings)))
 	mux.Handle("POST /settings/updates", auth.owner(saveUpdatePreference(updates, "/settings#updates")))
 	mux.Handle("POST /settings/updates/check", auth.owner(checkForUpdate(updates, "/settings#updates")))
 	mux.Handle("POST /settings/trusted-https", auth.owner(saveTrustedHTTPS(settings, "/settings#trusted-https")))
 	mux.Handle("POST /settings/trusted-https/disable", auth.owner(disableTrustedHTTPS(settings)))
-	mux.Handle("GET /settings/remote-readiness", auth.owner(showRemoteReadiness(internet, auth.profiles)))
 	mux.Handle("GET /settings/system", auth.owner(showSystem(settings, index, auth.profiles, auth.audit)))
 	mux.Handle("GET /settings/configuration", auth.owner(showConfiguration(settings)))
 	mux.Handle("POST /settings/configuration", auth.owner(saveConfiguration(settings, false)))
@@ -33,18 +30,11 @@ func registerSettings(mux *http.ServeMux, settings *settingsStore, updates *upda
 	mux.Handle("POST /settings/libraries", auth.owner(changeLibrary(settings, index, settings.add, "/settings")))
 	mux.Handle("POST /settings/libraries/remove", auth.owner(changeLibrary(settings, index, settings.remove, "/settings")))
 	mux.Handle("POST /settings/server", auth.owner(saveServerName(settings)))
-	mux.Handle("POST /settings/navigation", auth.owner(saveNavigation(settings)))
 	mux.Handle("POST /settings/onboarding", auth.owner(restartOnboarding(settings)))
 	registerSecuritySettings(mux, settings, auth)
 	mux.Handle("POST /settings/subtitles", auth.owner(saveSubtitleLanguage(settings, "/settings#language")))
 	registerSubSourceConfiguration(mux, auth, settings)
 	mux.Handle("POST /settings/scans", auth.owner(saveScanFrequency(settings, index, "/settings")))
-	mux.Handle("POST /settings/profiles", auth.owner(addViewer(auth.profiles)))
-	mux.Handle("POST /settings/profiles/remove", auth.owner(removeViewer(auth.profiles)))
-	mux.Handle("POST /settings/profiles/password", auth.owner(resetViewerPassword(auth.profiles)))
-	mux.Handle("POST /settings/profiles/permissions", auth.owner(setViewerPermissions(auth.profiles)))
-	mux.Handle("POST /settings/remote/kill", auth.owner(remoteaccess.KillHTTP(internet, func() error { return revokePublicAuthorization(auth.profiles, auth.passkeys) }, localizedError)))
-	mux.Handle("POST /settings/remote/enable", auth.owner(remoteaccess.ResetKillHTTP(internet, localizedError)))
 	mux.Handle("GET /settings/backup", auth.freshOwner(downloadBackup(settings)))
 	mux.Handle("POST /settings/encrypted-backup", auth.owner(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if err := backups.WriteNow(); err != nil {

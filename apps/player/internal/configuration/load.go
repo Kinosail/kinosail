@@ -41,7 +41,7 @@ func configurationSchema() configurationcore.Schema {
 	for index, spec := range specs {
 		fields[index] = configurationcore.Field{Key: spec.Key, Env: spec.Env, Default: spec.Default, Kind: configurationcore.Kind(spec.Kind), Secret: spec.Secret}
 	}
-	return configurationcore.Schema{Fields: fields, Retired: retiredConfigurationKey, Validate: validateConfigurationValue}
+	return configurationcore.Schema{Fields: fields, Retired: retiredConfiguration.Retired, Validate: validateConfigurationValue}
 }
 
 func validateConfigurationValue(key, raw string) error {

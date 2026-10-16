@@ -3,42 +3,30 @@ package server
 import (
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/mcpgateway"
-	"github.com/MikeO7/kinosail/packages/scim"
 )
 
-type routeAccess uint8
-
-const (
-	publicRoute routeAccess = iota + 1
-	capabilityRoute
-)
-
-var publicRoutes = map[string]routeAccess{
-	"GET /healthz": publicRoute, "POST /mcp": publicRoute, "GET /mcp": publicRoute, "DELETE /mcp": publicRoute,
-	"GET /.well-known/oauth-protected-resource/mcp": publicRoute, "GET /.well-known/oauth-authorization-server": publicRoute,
-	"POST /oauth/register": publicRoute, "POST /oauth/token": publicRoute, "POST /oauth/revoke": publicRoute,
-	"GET /manifest.webmanifest": publicRoute, "GET /service-worker.js": publicRoute, "GET /offline": publicRoute, "GET /favicon.ico": publicRoute,
-	"GET /static/subtitle-inspector.js": publicRoute, "GET /static/subtitle-inspector.css": publicRoute,
-	"GET /static/htmx.min.js": publicRoute, "GET /static/pwa.js": publicRoute,
-	"GET /static/main.kinosail.bundle.js": publicRoute, "GET /static/theme.js": publicRoute, "GET /static/app.css": publicRoute, "GET /static/supporter.js": publicRoute, "GET /static/supporter.css": publicRoute, "GET /static/supporter/badges/{file}": publicRoute, "GET /static/manrope.woff2": publicRoute, "GET /static/tmdb-logo.svg": publicRoute, "GET /static/icon.svg": publicRoute,
-	"GET /static/icon-192.png": publicRoute, "GET /static/icon-512.png": publicRoute, "GET /static/icon-maskable-512.png": publicRoute, "GET /static/apple-touch-icon.png": publicRoute, "GET /static/cinema-backdrop.jpg": publicRoute, "GET /static/passkeys.js": publicRoute,
-	"GET /login": publicRoute, "POST /login": publicRoute, "GET /setup": publicRoute, "GET /language": publicRoute, "POST /setup": publicRoute, "POST /language": publicRoute,
-	"POST /api/v1/session": publicRoute, "POST /api/v1/setup": publicRoute, "GET /api/v1/session/oidc": publicRoute,
-	"GET /api/v1/session/saml": publicRoute, "GET /login/saml": publicRoute, "GET /login/saml/metadata": publicRoute,
-	"POST /login/saml/acs":       publicRoute,
-	"GET /api/v1/home-assistant": publicRoute, "POST /api/v1/home-assistant/pair": publicRoute, "POST /api/v1/home-assistant/token": publicRoute, "GET /home-assistant/media/{id}": capabilityRoute,
-	"GET /login/oidc": publicRoute, "GET /login/oidc/callback": publicRoute, "GET /login/mfa": publicRoute, "POST /login/mfa": publicRoute,
-	"POST /api/v1/passkeys/login/begin": publicRoute, "POST /api/v1/passkeys/login/finish": publicRoute,
-	"POST /auth/passkeys/login/begin": publicRoute, "POST /auth/passkeys/login/finish": publicRoute,
+var publicRoutes = map[string]bool{
+	"GET /healthz": true, "POST /mcp": true, "GET /mcp": true, "DELETE /mcp": true,
+	"GET /.well-known/oauth-protected-resource/mcp": true, "GET /.well-known/oauth-authorization-server": true,
+	"POST /oauth/register": true, "POST /oauth/token": true, "POST /oauth/revoke": true,
+	"GET /manifest.webmanifest": true, "GET /service-worker.js": true, "GET /offline": true, "GET /favicon.ico": true,
+	"GET /static/subtitle-inspector.js": true, "GET /static/subtitle-inspector.css": true,
+	"GET /static/htmx.min.js": true, "GET /static/pwa.js": true,
+	"GET /static/main.kinosail.bundle.js": true, "GET /static/theme.js": true, "GET /static/app.css": true, "GET /static/supporter.js": true, "GET /static/supporter.css": true, "GET /static/supporter/badges/{file}": true, "GET /static/manrope.woff2": true, "GET /static/tmdb-logo.svg": true, "GET /static/icon.svg": true,
+	"GET /static/icon-192.png": true, "GET /static/icon-512.png": true, "GET /static/icon-maskable-512.png": true, "GET /static/apple-touch-icon.png": true, "GET /static/cinema-backdrop.jpg": true, "GET /static/passkeys.js": true,
+	"GET /login": true, "POST /login": true, "GET /setup": true, "GET /language": true, "POST /setup": true, "POST /language": true,
+	"POST /api/v1/session": true, "POST /api/v1/setup": true, "GET /api/v1/session/oidc": true,
+	"GET /api/v1/session/saml": true, "GET /login/saml": true, "GET /login/saml/metadata": true,
+	"POST /login/saml/acs": true,
+	"GET /login/oidc":      true, "GET /login/oidc/callback": true, "GET /login/mfa": true, "POST /login/mfa": true,
+	"POST /api/v1/passkeys/login/begin": true, "POST /api/v1/passkeys/login/finish": true,
+	"POST /auth/passkeys/login/begin": true, "POST /auth/passkeys/login/finish": true,
 }
 
 func init() {
-	for _, pattern := range scim.Patterns() {
-		publicRoutes[pattern] = publicRoute
-	}
 	for _, pattern := range mcpgateway.Patterns() {
 		if pattern != "GET /oauth/authorize" && pattern != "POST /oauth/authorize" {
-			publicRoutes[pattern] = publicRoute
+			publicRoutes[pattern] = true
 		}
 	}
 }

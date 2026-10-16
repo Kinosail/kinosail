@@ -10,14 +10,6 @@ import (
 
 type metadataResult = sharedmetadata.Result
 
-func (store *metadataStore) fetchRecord(ctx context.Context, item library.Item) (metadataRecord, error) {
-	result, err := store.resolveRecord(ctx, item)
-	if err != nil {
-		return metadataRecord{}, err
-	}
-	return store.downloadMetadataImages(ctx, result)
-}
-
 func (store *metadataStore) resolveRecord(ctx context.Context, item library.Item) (metadataResult, error) {
 	if store.configured() {
 		result, err := store.resolveTMDBRecord(ctx, item)

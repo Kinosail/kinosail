@@ -71,7 +71,7 @@ func TestVersionedAPIReadModelsAreReachableThroughOwnerSession(t *testing.T) {
 	handler, token := apiServer(t)
 	for _, path := range []string{
 		"/api/v1", "/api/v1/me", "/api/v1/openapi.json",
-		"/api/v1/settings", "/api/v1/updates", "/api/v1/supporter", "/api/v1/configuration", "/api/v1/profiles", "/api/v1/devices", "/api/v1/api-keys", "/api/v1/backups", "/api/v1/diagnostics", "/api/v1/metrics", "/api/v1/maintenance", "/api/v1/remote-access", "/api/v1/activity",
+		"/api/v1/settings", "/api/v1/updates", "/api/v1/supporter", "/api/v1/configuration", "/api/v1/devices", "/api/v1/api-keys", "/api/v1/backups", "/api/v1/diagnostics", "/api/v1/metrics", "/api/v1/maintenance", "/api/v1/activity",
 	} {
 		response := apiCall(t, handler, token, http.MethodGet, path, nil)
 		if response.Code != http.StatusOK {

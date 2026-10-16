@@ -20,12 +20,11 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 		if apiChangeConfigurationGroup(writer, request, settings, key, reset) {
 			return
 		}
-		value, expiresAt, ok := apiConfigurationInput(writer, request, key, reset)
+		value, ok := apiConfigurationInput(writer, request, reset)
 		if !ok {
 			return
 		}
-		err := applyAPIConfiguration(settings, key, value, expiresAt, reset)
-		if err != nil {
+		if err := settings.changeConfiguration(key, value, reset); err != nil {
 			apiError(writer, err, http.StatusConflict)
 			return
 		}
@@ -33,30 +32,15 @@ func apiChangeConfiguration(settings *settingsStore, reset bool) http.HandlerFun
 	}
 }
 
-func apiConfigurationInput(writer http.ResponseWriter, request *http.Request, key string, reset bool) (string, string, bool) {
+func apiConfigurationInput(writer http.ResponseWriter, request *http.Request, reset bool) (string, bool) {
 	if reset {
-		return "", "", true
-	}
-	if key == "integrations.scim.token" {
-		var input struct {
-			Value     string `json:"value"`
-			ExpiresAt string `json:"tokenExpiresAt"`
-		}
-		ok := readJSON(writer, request, &input)
-		return input.Value, input.ExpiresAt, ok
+		return "", true
 	}
 	var input struct {
 		Value string `json:"value"`
 	}
 	ok := readJSON(writer, request, &input)
-	return input.Value, "", ok
-}
-
-func applyAPIConfiguration(settings *settingsStore, key, value, expiresAt string, reset bool) error {
-	if key == "integrations.scim.token" && !reset {
-		return settings.changeSCIMConfiguration(value, expiresAt, false)
-	}
-	return settings.changeConfiguration(key, value, reset)
+	return input.Value, ok
 }
 
 func apiChangeConfigurationGroup(writer http.ResponseWriter, request *http.Request, settings *settingsStore, key string, reset bool) bool {
@@ -67,8 +51,6 @@ func apiChangeConfigurationGroup(writer http.ResponseWriter, request *http.Reque
 		apiChangeOpenSubtitlesConfiguration(writer, request, settings, reset)
 	case samlConfigurationGroupKey:
 		apiChangeSAMLConfiguration(writer, request, settings, reset)
-	case scimConfigurationKey:
-		apiChangeSCIMConfiguration(writer, request, settings, reset)
 	case subSourceConfigurationKey:
 		apiChangeSubSourceConfiguration(writer, request, settings, reset)
 	default:
@@ -105,21 +87,6 @@ func apiChangeSAMLConfiguration(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 	if err := settings.changeSAMLConfiguration(input.MetadataURL, input.MetadataXML, input.IdentityAttribute, reset); err != nil {
-		apiError(writer, err, http.StatusConflict)
-		return
-	}
-	writeJSON(writer, map[string]any{"status": "saved", "restartRequired": len(settings.pendingRestart()) > 0}, http.StatusAccepted)
-}
-
-func apiChangeSCIMConfiguration(writer http.ResponseWriter, request *http.Request, settings *settingsStore, reset bool) {
-	var input struct {
-		Token     string `json:"token"`
-		ExpiresAt string `json:"tokenExpiresAt"`
-	}
-	if !reset && !readJSON(writer, request, &input) {
-		return
-	}
-	if err := settings.changeSCIMConfiguration(input.Token, input.ExpiresAt, reset); err != nil {
 		apiError(writer, err, http.StatusConflict)
 		return
 	}

@@ -24,12 +24,15 @@ type OIDCFixture struct {
 	NewHandler  func(string, federation.OIDCConfig, scim.Config) http.Handler
 	StoredState func(*testing.T, string, string) []byte
 	TOTP        func(*testing.T, string, time.Time) string
+	NoSCIM      bool
 }
 
 func OIDCContract(t *testing.T, fixture OIDCFixture) {
 	t.Helper()
 	t.Run("ValidatesAuthorizationCodeAndLinksProfile", func(t *testing.T) { AssertOIDCLinksProfile(t, fixture) })
-	t.Run("LinksSCIMProfileByConfiguredIdentityClaim", func(t *testing.T) { AssertOIDCSCIMIdentity(t, fixture) })
+	if !fixture.NoSCIM {
+		t.Run("LinksSCIMProfileByConfiguredIdentityClaim", func(t *testing.T) { AssertOIDCSCIMIdentity(t, fixture) })
+	}
 }
 
 func AssertOIDCLinksProfile(t *testing.T, fixture OIDCFixture) {

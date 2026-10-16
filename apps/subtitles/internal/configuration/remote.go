@@ -9,5 +9,3 @@ func validateRemoteAccess(configured Snapshot) error {
 }
 
 func validRemoteToken(token string) bool { return sharedvalidation.ValidRemoteToken(token) }
-
-func validSCIMToken(token string) bool { return sharedvalidation.ValidSCIMToken(token) }

@@ -5,20 +5,12 @@ import "testing"
 func TestApplicationShellRouteBoundary(t *testing.T) {
 	for _, pattern := range []string{
 		"GET /account",
-		"GET /album/{id}",
-		"GET /book/{id}",
-		"GET /collection/{name}",
-		"GET /metadata/bulk",
-		"GET /offline-downloads",
-		"GET /playlist/{name}",
 		"GET /settings",
 		"GET /settings/agent-connections",
 		"GET /settings/backups",
 		"GET /settings/configuration",
-		"GET /settings/remote-readiness",
 		"GET /settings/management",
 		"GET /settings/system",
-		"GET /show/{id}",
 		"GET /supporter",
 	} {
 		if !applicationShellRoute(pattern) {

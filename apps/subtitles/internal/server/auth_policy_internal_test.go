@@ -9,7 +9,7 @@ import (
 
 func TestPublicRoutePolicyIsExactAndDefaultsProtected(t *testing.T) {
 	t.Parallel()
-	if !publicPattern("POST /api/v1/passkeys/login/begin") || !publicPattern("GET /home-assistant/media/{id}") {
+	if !publicPattern("POST /api/v1/passkeys/login/begin") {
 		t.Fatal("explicit public routes were not public")
 	}
 	for _, pattern := range []string{
@@ -17,6 +17,7 @@ func TestPublicRoutePolicyIsExactAndDefaultsProtected(t *testing.T) {
 		"POST /auth/passkeys/register/begin",
 		"GET /static/{file...}",
 		"GET /api/v1/library",
+		"GET /home-assistant/media/{id}",
 	} {
 		if publicPattern(pattern) {
 			t.Fatalf("unlisted route %q was public", pattern)

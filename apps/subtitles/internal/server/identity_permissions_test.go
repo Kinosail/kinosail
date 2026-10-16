@@ -3,29 +3,9 @@ package server_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 )
-
-func setupPolicyMedia(t *testing.T, mediaDir, dataDir string) {
-	t.Helper()
-	for _, folder := range []string{"Movies", "Shows"} {
-		if err := os.Mkdir(filepath.Join(mediaDir, folder), 0o700); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := os.WriteFile(filepath.Join(mediaDir, "Movies", "Arrival.mp4"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(mediaDir, "Shows", "Pilot S01E01.mp4"), nil, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(dataDir, "settings.json"), []byte(`{"name":"Kinosail","libraries":["Movies","Shows"]}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
-}
 
 func requestWithCookieRequest(t *testing.T, method, path, body string, cookie *http.Cookie) *http.Request {
 	t.Helper()

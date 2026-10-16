@@ -1,11 +1,12 @@
 import {expect, test, type Page} from "@playwright/test";
 import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
-import {login, loginViewer} from "./test-instance-helpers";
+import {login} from "./test-instance-helpers";
 
 const theme = await readFile(new URL("../../../packages/webassets/static/theme.js", import.meta.url), "utf8");
 
-for (const account of ["Owner", "Viewer"] as const) test(`${account} login preserves initialized native form evidence before Firefox recovery`, {tag: "@smoke"}, async ({browser}, info) => {
+const account = "Owner";
+test(`${account} login preserves initialized native form evidence before Firefox recovery`, {tag: "@smoke"}, async ({browser}, info) => {
   let gets = 0, posts = 0, calls = 0;
   const server = createServer((request, response) => {
     const path = new URL(request.url!, "http://fixture").pathname;
@@ -37,8 +38,7 @@ for (const account of ["Owner", "Viewer"] as const) test(`${account} login prese
     return result;
   };
   try {
-    if (account === "Owner") await login(page);
-    else await loginViewer(page, "Synthetic Viewer", "synthetic-password");
+    await login(page);
     await expect(page.getByRole("heading", {name: "Fixture home"})).toBeVisible();
     expect(gets).toBe(browser.browserType().name() === "firefox" ? 2 : 1);
     expect(calls).toBe(gets);
