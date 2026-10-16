@@ -34,6 +34,8 @@ type Probe struct {
 	versions      map[string]string
 	calls         map[string]*probeCall
 	embeddedCalls map[string]*embeddedCall
+	access        map[string]accessEntry
+	failures      map[string]probeFailure
 }
 
 type Enrichment struct {
@@ -139,7 +141,7 @@ type randomAccessOutput struct {
 	} `json:"frames"`
 }
 
-func (probe *Probe) complete(ctx context.Context, item library.Item, result Result, enrichment Enrichment) Result {
+func (probe *Probe) complete(ctx context.Context, item library.Item, version string, result Result, enrichment Enrichment) Result {
 	if enrichment.Chapters != nil {
 		chapters := enrichment.Chapters(ctx, item, result.Duration, result.Chapters)
 		if len(chapters) != len(result.Chapters) || !sameChapterTitles(chapters, result.Chapters) {
@@ -150,16 +152,21 @@ func (probe *Probe) complete(ctx context.Context, item library.Item, result Resu
 	if enrichment.Markers != nil {
 		result.Markers = enrichment.Markers(item, result.Markers)
 	}
+	result.RandomAccess = nil
 	intervals := randomAccessIntervals(result.Markers, result.Duration)
-	if item.Kind != "video" || intervals == "" || result.RandomAccess != nil {
+	if item.Kind != "video" || intervals == "" {
 		return result
 	}
-	result.RandomAccess = probe.randomAccess(ctx, item.Path, intervals)
-	probe.mu.Lock()
-	cached := probe.cache[item.ID]
-	cached.RandomAccess = result.RandomAccess
-	probe.cache[item.ID] = cached
-	probe.mu.Unlock()
+	if points, found := probe.cachedAccess(item.ID, version, intervals); found {
+		result.RandomAccess = points
+		return result
+	}
+	points, ok := probe.randomAccess(ctx, item.Path, intervals)
+	if !ok {
+		return result
+	}
+	result.RandomAccess = points
+	probe.storeAccess(item, version, intervals, points)
 	return result
 }
 
@@ -175,21 +182,21 @@ func sameChapterTitles(left, right []Chapter) bool {
 	return true
 }
 
-func (probe *Probe) randomAccess(ctx context.Context, path, intervals string) []float64 {
+func (probe *Probe) randomAccess(ctx context.Context, path, intervals string) ([]float64, bool) {
 	points := make([]float64, 0)
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	data, err := runProbe(ctx, probe.executable, "-v", "error", "-skip_frame", "nokey", "-select_streams", "v:0", "-read_intervals", intervals, "-show_frames", "-show_entries", "frame=key_frame,best_effort_timestamp_time", "-of", "json", path)
 	var output randomAccessOutput
 	if err != nil || json.Unmarshal(data, &output) != nil {
-		return points
+		return nil, false
 	}
 	for _, frame := range output.Frames {
 		if value, parseErr := strconv.ParseFloat(frame.Time, 64); frame.KeyFrame == 1 && parseErr == nil && value >= 0 {
 			points = append(points, value)
 		}
 	}
-	return points
+	return points, true
 }
 
 func randomAccessIntervals(markers []Marker, duration float64) string {

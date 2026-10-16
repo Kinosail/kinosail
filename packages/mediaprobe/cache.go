@@ -20,9 +20,10 @@ import (
 const probeCacheLimit = 512 << 10
 
 type probeCacheEntry struct {
-	Schema  int    `json:"schema"`
-	Version string `json:"version"`
-	Result  Result `json:"result"`
+	Schema          int    `json:"schema"`
+	Version         string `json:"version"`
+	Result          Result `json:"result"`
+	RandomAccessFor string `json:"randomAccessFor,omitempty"`
 }
 
 type probeCall struct {
@@ -31,7 +32,7 @@ type probeCall struct {
 }
 
 func New(executable string) *Probe {
-	return &Probe{executable: executable, cache: make(map[string]Result), versions: make(map[string]string), calls: make(map[string]*probeCall)}
+	return &Probe{executable: executable, cache: make(map[string]Result), versions: make(map[string]string), calls: make(map[string]*probeCall), access: make(map[string]accessEntry), failures: make(map[string]probeFailure)}
 }
 
 func (probe *Probe) ConfigureCache(directory string) {
@@ -82,18 +83,18 @@ func (probe *Probe) cachedFacts(item library.Item, version string) (Result, bool
 	}
 	if result, found = probe.load(item, version); found {
 		probe.mu.Lock()
-		probe.cache[item.ID], probe.versions[item.ID] = result, version
+		probe.remember(item.ID, version, result)
 		probe.mu.Unlock()
 	}
 	return result, found
 }
 
 func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *Enrichment) Result {
-	complete := func(result Result) Result { return probe.completeOptional(ctx, item, result, enrichment) }
 	if probe.executable == "" {
-		return complete(Result{})
+		return probe.completeOptional(ctx, item, "", Result{}, enrichment)
 	}
 	version := playback.SourceVersion(item.Path)
+	complete := func(result Result) Result { return probe.completeOptional(ctx, item, version, result, enrichment) }
 	result, found := probe.cachedFacts(item, version)
 	if found {
 		return complete(result)
@@ -103,6 +104,10 @@ func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *
 	if cached, ok := probe.cache[item.ID]; ok && (probe.versions[item.ID] == "" || probe.versions[item.ID] == version) {
 		probe.mu.Unlock()
 		return complete(cached)
+	}
+	if probe.failedRecently(item.ID, version) {
+		probe.mu.Unlock()
+		return Result{}
 	}
 	if call := probe.calls[key]; call != nil {
 		probe.mu.Unlock()
@@ -123,12 +128,19 @@ func (probe *Probe) inspect(ctx context.Context, item library.Item, enrichment *
 		close(call.done)
 		probe.mu.Unlock()
 	}()
-	result, found = probe.run(ctx, item)
+	var failed bool
+	result, found, failed = probe.run(ctx, item)
 	if !found {
+		if failed && ctx.Err() == nil {
+			probe.mu.Lock()
+			probe.recordFailure(item.ID, version)
+			probe.mu.Unlock()
+		}
 		return Result{}
 	}
 	probe.mu.Lock()
-	probe.cache[item.ID], probe.versions[item.ID] = result, version
+	delete(probe.failures, item.ID)
+	probe.remember(item.ID, version, result)
 	probe.mu.Unlock()
 	probe.save(item, version, result)
 	return complete(result)
@@ -138,14 +150,15 @@ func (probe *Probe) Duration(ctx context.Context, item library.Item) float64 {
 	return probe.Facts(ctx, item).Duration
 }
 
-func (probe *Probe) run(ctx context.Context, item library.Item) (Result, bool) {
+func (probe *Probe) run(ctx context.Context, item library.Item) (Result, bool, bool) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	data, err := runProbe(ctx, probe.executable, "-v", "error", "-show_entries", "stream=index,codec_type,codec_name,profile,level,pix_fmt,field_order,width,height,r_frame_rate,sample_aspect_ratio,sample_rate,channels,channel_layout,color_range,color_space,color_transfer,color_primaries,bits_per_raw_sample:stream_disposition:stream_tags=language,title:stream_side_data:chapter=start_time,end_time:chapter_tags=title:format=format_name,duration,bit_rate:format_tags=title,artist,album_artist,album,genre,track,disc,replaygain_track_gain,replaygain_album_gain,r128_track_gain,r128_album_gain", "-of", "json", item.Path)
 	if err != nil {
-		return Result{}, false
+		return Result{}, false, true
 	}
-	return parse(data)
+	result, found := parse(data)
+	return result, found, false
 }
 
 func (probe *Probe) load(item library.Item, version string) (Result, bool) {
@@ -164,13 +177,23 @@ func (probe *Probe) load(item library.Item, version string) (Result, bool) {
 		return Result{}, false
 	}
 	entry.Result.Markers = markerlogic.DetectPlaybackMarkers(entry.Result.Chapters)
+	if entry.RandomAccessFor != "" && len(entry.Result.RandomAccess) > 0 {
+		probe.mu.Lock()
+		probe.rememberAccess(item.ID, accessEntry{version: version, intervals: entry.RandomAccessFor, points: entry.Result.RandomAccess})
+		probe.mu.Unlock()
+	}
+	entry.Result.RandomAccess = nil
 	return entry.Result, true
 }
 
 func (probe *Probe) save(item library.Item, version string, result Result) {
+	probe.saveEntry(item, probeCacheEntry{Schema: 3, Version: version, Result: result})
+}
+
+func (probe *Probe) saveEntry(item library.Item, entry probeCacheEntry) {
 	path := probe.cachePath(item.ID)
-	if path != "" && version != "missing" && validProbeResult(result) {
-		if data, err := json.Marshal(probeCacheEntry{Schema: 3, Version: version, Result: result}); err == nil {
+	if path != "" && entry.Version != "missing" && len(entry.RandomAccessFor) <= 4096 && validProbeResult(entry.Result) {
+		if data, err := json.Marshal(entry); err == nil {
 			_ = privatefile.Write(path, data)
 		}
 	}
@@ -187,7 +210,7 @@ func (probe *Probe) cachePath(id string) string {
 }
 
 func validProbeCache(entry probeCacheEntry, version string) bool {
-	return entry.Schema == 3 && entry.Version == version && validProbeResult(entry.Result)
+	return entry.Schema == 3 && entry.Version == version && len(entry.RandomAccessFor) <= 4096 && validProbeResult(entry.Result)
 }
 
 func validProbeResult(result Result) bool {
@@ -233,9 +256,9 @@ func validRandomAccess(points []float64) bool {
 	return true
 }
 
-func (probe *Probe) completeOptional(ctx context.Context, item library.Item, result Result, enrichment *Enrichment) Result {
+func (probe *Probe) completeOptional(ctx context.Context, item library.Item, version string, result Result, enrichment *Enrichment) Result {
 	if enrichment == nil {
 		return result
 	}
-	return probe.complete(ctx, item, result, *enrichment)
+	return probe.complete(ctx, item, version, result, *enrichment)
 }
