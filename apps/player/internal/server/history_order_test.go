@@ -100,4 +100,17 @@ func TestLibraryHistoryViewListsMostRecentFirstBeyondOnePage(t *testing.T) {
 	if rendered.Code != http.StatusOK || newest < 0 || oldest < 0 || newest > oldest || strings.Contains(body, items[watched[0]].Title) || strings.Contains(body, "data-title-jump") {
 		t.Fatalf("/?view=history = %d newest@%d older@%d, want newest first, one page, no title jump", rendered.Code, newest, oldest)
 	}
+	if !strings.Contains(body, `<option value="title" selected>Recently played</option>`) || strings.Contains(body, `<option value="title" selected>Title</option>`) {
+		t.Fatalf("/?view=history sort menu does not label its default order as Recently played")
+	}
+	german := httptest.NewRecorder()
+	fixture.mux.ServeHTTP(german, snapshotRequest(t.Context(), http.MethodGet, "/?view=history&lang=de", owner))
+	if !strings.Contains(german.Body.String(), `<option value="title" selected>Zuletzt gespielt</option>`) {
+		t.Fatalf("/?view=history&lang=de sort menu does not reuse the localized Recently played label")
+	}
+	movies := httptest.NewRecorder()
+	fixture.mux.ServeHTTP(movies, snapshotRequest(t.Context(), http.MethodGet, "/?view=movies", owner))
+	if !strings.Contains(movies.Body.String(), `<option value="title" selected>Title</option>`) || strings.Contains(movies.Body.String(), "Recently played</option>") {
+		t.Fatalf("/?view=movies sort menu lost its Title label")
+	}
 }
