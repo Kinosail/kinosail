@@ -576,6 +576,47 @@ jobs:
             -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
           jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
 
+  warm:
+    name: Warm Go caches (${{ matrix.scope }})
+    needs: plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scope: repository
+            directories: apps/player apps/subtitles packages
+          - scope: player
+            directories: apps/player
+          - scope: subtitles
+            directories: apps/subtitles
+          - scope: packages
+            directories: packages
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - id: go
+        uses: ./.github/actions/setup-go
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+          cache-scope: ${{ matrix.scope }}
+      - name: Compile every package and test binary
+        env:
+          DIRECTORIES: ${{ matrix.directories }}
+        run: |
+          set -euo pipefail
+          for directory in $DIRECTORIES; do
+            go -C "$directory" test -count=1 -run '^$' ./...
+          done
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ${{ steps.go.outputs.cache-paths }}
+          key: ${{ steps.go.outputs.cache-key }}
+
   repository-required:
     name: Repository checks
     if: always()

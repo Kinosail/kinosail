@@ -1,5 +1,5 @@
 name: Set up Go from the workspace toolchain
-description: Put the exact go.work toolchain from go.dev first on PATH and restore the toolchain, module, and build caches
+description: Put the exact go.work toolchain from go.dev first on PATH and restore the toolchain, module, and build caches saved by main
 inputs:
   go-version-file:
     description: Module or workspace file whose toolchain the checkout requires
@@ -8,8 +8,15 @@ inputs:
     description: Glob of dependency files that key the Go caches
     default: "**/go.sum"
   cache-scope:
-    description: Job family that saves its own complete module and build cache
+    description: Job family whose main-push warm job saves the complete module and build cache
     default: shared
+outputs:
+  cache-key:
+    description: Exact cache key for this scope and dependency set
+    value: ${{ steps.key.outputs.key }}
+  cache-paths:
+    description: Toolchain, module, and build cache directories, one per line
+    value: ${{ steps.key.outputs.paths }}
 runs:
   using: composite
   steps:
@@ -35,16 +42,30 @@ runs:
         printf '%s\n%s\n' "$toolchain/bin" "$HOME/go/bin" >> "$GITHUB_PATH"
         printf 'version=%s\nplatform=%s\ntoolchain=%s\nmodcache=%s\nbuildcache=%s\n' \
           "$version" "$platform" "$toolchain" "$modcache" "$buildcache" >> "$GITHUB_OUTPUT"
-    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+    - id: key
+      shell: bash
+      env:
+        PREFIX: go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}
+        SCOPE: ${{ inputs.cache-scope }}
+        DEPENDENCIES: ${{ hashFiles(inputs.cache-dependency-path) }}
+        TOOLCHAIN: ${{ steps.paths.outputs.toolchain }}
+        MODCACHE: ${{ steps.paths.outputs.modcache }}
+        BUILDCACHE: ${{ steps.paths.outputs.buildcache }}
+      run: |
+        set -euo pipefail
+        [[ "$SCOPE" =~ ^[a-z][a-z0-9-]{0,31}$ ]]
+        [[ "$DEPENDENCIES" =~ ^[0-9a-f]{64}$ ]]
+        printf 'key=%s-%s-%s\n' "$PREFIX" "$SCOPE" "$DEPENDENCIES" >> "$GITHUB_OUTPUT"
+        printf 'scoped=%s-%s-\n' "$PREFIX" "$SCOPE" >> "$GITHUB_OUTPUT"
+        printf 'shared=%s-\n' "$PREFIX" >> "$GITHUB_OUTPUT"
+        printf 'paths<<EOF\n%s\n%s\n%s\nEOF\n' "$TOOLCHAIN" "$MODCACHE" "$BUILDCACHE" >> "$GITHUB_OUTPUT"
+    - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
       with:
-        path: |
-          ${{ steps.paths.outputs.toolchain }}
-          ${{ steps.paths.outputs.modcache }}
-          ${{ steps.paths.outputs.buildcache }}
-        key: go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-${{ inputs.cache-scope }}-${{ hashFiles(inputs.cache-dependency-path) }}
+        path: ${{ steps.key.outputs.paths }}
+        key: ${{ steps.key.outputs.key }}
         restore-keys: |
-          go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-${{ inputs.cache-scope }}-
-          go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-
+          ${{ steps.key.outputs.scoped }}
+          ${{ steps.key.outputs.shared }}
     - shell: bash
       env:
         VERSION: ${{ steps.paths.outputs.version }}

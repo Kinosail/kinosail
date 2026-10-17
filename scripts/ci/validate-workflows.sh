@@ -41,6 +41,9 @@ require "$ci" 'KINOSAIL_BROWSER_PHASE: ${{ matrix.phase }}'
 require "$ci" 'cache-scope: ${{ matrix.module }}'
 require "$ci" 'cache-scope: ${{ matrix.app }}'
 require "$ci" 'cache-scope: player'
+require "$ci" "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+require "$ci" 'uses: actions/cache/save@'
+require "$(dirname "$ci")/../actions/setup-go/action.yml" 'uses: actions/cache/restore@'
 require "$ci" 'runs-on: ubuntu-24.04-arm'
 require "$ci" 'actions/deploy-pages@'
 require "$ci" "needs.plan.outputs.verified != 'true'"
