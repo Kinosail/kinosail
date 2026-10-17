@@ -27,8 +27,9 @@ class DeriveTests(unittest.TestCase):
         self.assertEqual([(entry["module"], entry["shard"], entry["fragment"]) for entry in full["modules"]],
                          [("player", "1/2", "true"), ("player", "2/2", "false"), ("subtitles", "", "false"), ("packages", "", "false")])
         self.assertEqual([(entry["app"], entry["phase"]) for entry in full["apps"]],
-                         [("player", "journeys"), ("player", "populated"), ("subtitles", "all")])
-        self.assertEqual({entry["system"] for entry in full["apps"] if entry["phase"] != "populated"}, {"true"})
+                         [("player", "journeys"), ("player", "smoke"), ("player", "populated"), ("subtitles", "all")])
+        self.assertEqual([entry["phase"] for entry in full["apps"] if entry["system"] == "true"], ["journeys", "all"])
+        self.assertEqual([entry["workers"] for entry in full["apps"]], ["1", "3", "1", "1"])
         self.assertEqual(full["arm"], list(APPS))
         self.assertEqual(full["tools"], list(APPS))
         self.assertEqual(full["codeql"], "javascript-typescript,python,actions")

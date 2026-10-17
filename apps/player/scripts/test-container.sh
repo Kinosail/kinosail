@@ -18,7 +18,7 @@ case "${KINOSAIL_BROWSER_SMOKE:-}" in
 esac
 browser_phase="${KINOSAIL_BROWSER_PHASE:-all}"
 case "$browser_phase" in
-  all|journeys|populated) ;;
+  all|journeys|smoke|populated) ;;
   *) echo 'unsupported browser phase' >&2; exit 2 ;;
 esac
 browser_projects=""

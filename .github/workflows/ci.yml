@@ -59,6 +59,7 @@ jobs:
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
+          cache-scope: repository
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
           version: 11.28.5
@@ -126,6 +127,7 @@ jobs:
         with:
           go-version-file: ${{ matrix.directory }}/go.mod
           cache-dependency-path: "**/go.sum"
+          cache-scope: ${{ matrix.module }}
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install media fixture codecs
         env:
@@ -178,6 +180,7 @@ jobs:
         with:
           go-version-file: apps/${{ matrix.app }}/go.mod
           cache-dependency-path: "**/go.sum"
+          cache-scope: ${{ matrix.app }}
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
       - parallel:
           - uses: ./.github/actions/setup-e2e
@@ -262,6 +265,7 @@ jobs:
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
+          cache-scope: player
       - uses: ./.github/actions/setup-e2e
         with:
           app: player
@@ -355,6 +359,7 @@ jobs:
         with:
           go-version-file: apps/${{ matrix.app }}/go.mod
           cache-dependency-path: "**/go.sum"
+          cache-scope: ${{ matrix.app }}
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:

@@ -81,10 +81,12 @@ class RuntimeContracts(unittest.TestCase):
         launcher = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
         self.assertIn('run_browser_phases "$project" "$browser_phase" "$port"', launcher)
         player = (ROOT / 'apps/player/scripts/test-browser-journeys.sh').read_text()
-        self.assertIn('if [[ "$phase" != populated ]]; then', player)
-        self.assertIn('if [[ "$phase" != journeys ]]; then', player)
-        self.assertLess(player.index('run_local_player_journeys "$project"'), player.index('if [[ "$phase" != journeys ]]; then'))
-        self.assertLess(player.index('if [[ "$phase" != journeys ]]; then'), player.index('run_populated_player_journeys "$project" "$url"'))
+        for phase in ('journeys', 'smoke', 'populated'):
+            self.assertIn(f'if [[ "$phase" == all || "$phase" == {phase} ]]; then', player)
+        self.assertLess(player.index('run_local_player_journeys "$project"'), player.index('if [[ "$phase" == all || "$phase" == smoke ]]; then'))
+        self.assertLess(player.index('pnpm --dir e2e test "${browser_args[@]}"'), player.index('if [[ "$phase" == all || "$phase" == populated ]]; then'))
+        self.assertLess(player.index('if [[ "$phase" == all || "$phase" == populated ]]; then'), player.index('run_populated_player_journeys "$project" "$url"'))
+        self.assertIn('all|journeys|smoke|populated) ;;', launcher)
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
