@@ -176,7 +176,7 @@ func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, star
 }
 
 func automaticallySkippable(marker markers.Marker) bool {
-	return marker.Source == "manual" || marker.Source == "chapter" || marker.Source == "fingerprint"
+	return marker.Source == "manual" || marker.Source == "chapter" || marker.Source == "fingerprint" || marker.Source == "text"
 }
 
 func randomAccessTimeline(timeline Timeline, points []float64, frameRate float64) (Timeline, bool) {
