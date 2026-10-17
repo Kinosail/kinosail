@@ -8,11 +8,14 @@ struct DownloadsScreen: View {
     @State private var busy = false
     @State private var reset = false
     @State private var removal: OfflineDownload?
+    @State private var selection = Set<String>()
+    @State private var editing = EditMode.inactive
+    @State private var bulkRemoval = false
     #endif
 
     var body: some View {
         #if os(iOS)
-        List {
+        List(selection: $selection) {
             if session.connection.unavailable {
                 Section {
                     Text("Completed downloads are ready to play offline. Unfinished downloads need a connection to continue.")
@@ -49,11 +52,21 @@ struct DownloadsScreen: View {
                                 .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                         } else {
                             Text(download.state == .preparing ? "Preparing on your Server" : download.state.rawValue.capitalized).font(.callout)
+                            if download.state == .preparing || (download.state == .queued && download.totalBytes == 0) {
+                                if let percent = download.preparingPercent {
+                                    ProgressView(value: Double(percent), total: 100).accessibilityLabel("Preparing download").accessibilityValue("\(percent) percent")
+                                } else {
+                                    ProgressView().progressViewStyle(.linear).accessibilityLabel("Preparing download")
+                                }
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    Text(preparingDetail(download, now: context.date)).font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
                             if download.totalBytes > 0 {
                                 ProgressView(value: Double(download.receivedBytes), total: Double(download.totalBytes))
                                     .accessibilityLabel("Download progress")
                                     .accessibilityValue("\(Int(Double(download.receivedBytes) / Double(download.totalBytes) * 100)) percent")
-                                Text("\(bytes(download.receivedBytes)) of \(bytes(download.totalBytes))").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                                Text(transferDetail(download)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                             }
                         }
                         if let message = download.message { Text(message).font(.caption).foregroundStyle(.secondary) }
@@ -73,7 +86,29 @@ struct DownloadsScreen: View {
         }
         .navigationTitle("Downloads")
         .scrollContentBackground(.hidden).background(KinoTheme.background)
-        .toolbar { ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } } }
+        .environment(\.editMode, $editing)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } }
+            if !session.downloads.downloads.isEmpty { ToolbarItem(placement: .secondaryAction) { EditButton() } }
+            if editing.isEditing {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(selection.count == session.downloads.downloads.count ? "Select none" : "Select all") {
+                        selection = selection.count == session.downloads.downloads.count ? [] : Set(session.downloads.downloads.map(\.id))
+                    }
+                    Spacer()
+                    Button("Remove\(selection.isEmpty ? "" : " \(selection.count)")", role: .destructive) { bulkRemoval = true }
+                        .disabled(selection.isEmpty || busy || session.downloads.busy)
+                }
+            }
+        }
+        .onChange(of: session.downloads.downloads.map(\.id)) { _, ids in selection.formIntersection(ids) }
+        .alert("Remove \(selection.count) downloads?", isPresented: $bulkRemoval) {
+            Button("Remove downloads", role: .destructive) {
+                let ids = Array(selection)
+                perform { for id in ids { try await session.downloads.remove(id: id) }; selection = []; editing = .inactive }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { Text("This removes the selected downloads from this device. The titles stay in your Server library.") }
         .alert("Reset downloads?", isPresented: $reset) {
             Button("Remove all downloads", role: .destructive) { perform {
                 try await session.downloads.resetDeviceStorage()
@@ -91,6 +126,26 @@ struct DownloadsScreen: View {
     }
     #if os(iOS)
     private func bytes(_ value: Int64) -> String { ByteCountFormatter.string(fromByteCount: value, countStyle: .file) }
+    private func transferDetail(_ download: OfflineDownload) -> String {
+        var parts = ["\(bytes(download.receivedBytes)) of \(bytes(download.totalBytes))"]
+        if let rate = download.bytesPerSecond {
+            parts.append("\(bytes(Int64(rate)))/s")
+            parts.append("\(remaining(Double(download.totalBytes - download.receivedBytes) / rate)) left")
+        }
+        return parts.joined(separator: " · ")
+    }
+    private func remaining(_ seconds: Double) -> String {
+        let minutes = Int((seconds / 60).rounded(.up))
+        return minutes < 1 ? "under a minute" : minutes < 60 ? "\(minutes) min" : "\(minutes / 60) h \(minutes % 60) min"
+    }
+    private func preparingDetail(_ download: OfflineDownload, now: Date) -> String {
+        let what = download.quality == .original ? "Packaging the original file" : "Making a \(download.quality.title.lowercased()) copy"
+        let percent = download.preparingPercent.map { "\($0)% · " } ?? ""
+        guard let since = download.preparingSince else { return "\(percent)\(what). This can take several minutes." }
+        let seconds = max(0, now.timeIntervalSince(since))
+        if let done = download.preparingPercent, done >= 3 { return "\(percent)\(what) · about \(remaining(seconds * Double(100 - done) / Double(done))) left" }
+        return "\(percent)\(what) · \(Int(seconds / 60)) min \(Int(seconds) % 60)s so far. This can take several minutes."
+    }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         guard !busy else { return }
         busy = true
@@ -123,6 +178,7 @@ struct DownloadOptionsScreen: View {
                 Picker("Quality", selection: $quality) {
                     ForEach(qualities) { value in Text(value.title).tag(value) }
                 }
+                Text(qualityNote).font(.caption).foregroundStyle(.secondary)
                 if quality == .original { Text("Original includes all audio and subtitle tracks in the file. This device must support the file’s format.").foregroundStyle(.secondary) }
                 else { Text("Choose which audio and subtitle tracks to include in the compatible copy. The original file stays on your Server.").foregroundStyle(.secondary) }
             }
@@ -167,6 +223,13 @@ struct DownloadOptionsScreen: View {
         #else
         ContentUnavailableView("Download on iPhone or iPad", systemImage: "iphone")
         #endif
+    }
+    private var qualityNote: String {
+        switch quality {
+        case .compatible: "Keeps the video as-is when this device can already play it, so the file can be as big as the original. Choose 1080p or 720p for a smaller file."
+        case .fullHD, .hd: "Re-encoded on your Server to H.264 at up to \(quality.title). Smaller, but preparation takes longer."
+        default: ""
+        }
     }
     private var qualities: [DownloadQuality] { item.isAudio ? [.audio, .original] : [.compatible, .fullHD, .hd, .original] }
     private func selected(_ index: Int, in values: Binding<Set<Int>>) -> Binding<Bool> {

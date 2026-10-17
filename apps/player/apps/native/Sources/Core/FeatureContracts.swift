@@ -196,6 +196,7 @@ struct PreparedDownload: Sendable {
     let quality: DownloadQuality
     let state: State
     let size: Int64
+    let progress: Int
     let sha256: String
     let error: String?
 }
@@ -220,6 +221,9 @@ struct OfflineDownload: Identifiable, Sendable {
     let receivedBytes: Int64
     let totalBytes: Int64
     let message: String?
+    var preparingSince: Date? = nil
+    var preparingPercent: Int? = nil
+    var bytesPerSecond: Double? = nil
 }
 
 struct ReaderBook: Identifiable, Sendable {

@@ -40,7 +40,7 @@ func (manager *Manager) load() error {
 		manager.restoring[id] = job
 		ctx, cancel := context.WithCancel(manager.ctx)
 		manager.attempts[id] = &attempt{ctx, cancel}
-		job.State, job.ReadyOffline, job.SHA256, job.Size = "preparing", false, "", 0
+		job.State, job.ReadyOffline, job.SHA256, job.Size, job.Progress = "preparing", false, "", 0, 0
 		jobs[id] = job
 	}
 	manager.jobs = jobs

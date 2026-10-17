@@ -52,13 +52,25 @@ func (manager *Manager) encodeSelectedContext(ctx context.Context, item library.
 	}
 	defer release()
 	args := []string{"-v", "error"}
+	total := plan.duration
+	if item.Kind != "video" && manager.inspect != nil {
+		total = manager.inspect(ctx, item).Duration
+	}
+	report := progressFrom(ctx)
+	if report != nil && total > 0 {
+		args = append(args, "-nostats", "-progress", "pipe:1")
+	}
 	if item.Kind == "video" {
 		args = append(args, plan.arguments(item.Path, output)...)
 	} else {
 		args = append(args, "-i", item.Path, "-vn", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-y", output)
 	}
 	//nolint:gosec // Executable is installation configuration. Paths are scanned content and derived cache targets.
-	return workload.RunBackground(exec.CommandContext(ctx, manager.ffmpeg, args...))
+	command := exec.CommandContext(ctx, manager.ffmpeg, args...)
+	if report != nil && total > 0 {
+		command.Stdout = &progressWriter{total: total, report: report}
+	}
+	return workload.RunBackground(command)
 }
 
 func copyFileContext(ctx context.Context, inputPath, outputPath string) error {
