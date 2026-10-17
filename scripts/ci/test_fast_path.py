@@ -51,6 +51,24 @@ class FastPathContracts(unittest.TestCase):
         self.assertNotIn('  schedule:', ci)
         self.assertIn('  schedule:', (WORKFLOWS / 'deep.yml').read_text())
 
+    def test_only_main_pushes_save_go_caches(self):
+        action = (ROOT / '.github/actions/setup-go/action.yml').read_text()
+        self.assertIn('uses: actions/cache/restore@', action)
+        self.assertNotIn('uses: actions/cache@', action)
+        self.assertNotIn('actions/cache/save', action)
+        for workflow in WORKFLOWS.glob('*.yml'):
+            with self.subTest(workflow=workflow.name):
+                self.assertEqual(workflow.read_text().count('actions/cache/save@'), 1 if workflow.name == 'ci.yml' else 0)
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        warm = ci.split('\n  warm:\n', 1)[1].split('\n  repository-required:\n', 1)[0]
+        self.assertIn("if: github.event_name == 'push' && github.ref == 'refs/heads/main'", warm)
+        self.assertEqual(re.findall(r'scope: ([a-z]+)', warm), ['repository', 'player', 'subtitles', 'packages'])
+        self.assertIn("go -C \"$directory\" test -count=1 -run '^$' ./...", warm)
+        self.assertIn('key: ${{ steps.go.outputs.cache-key }}', warm)
+        self.assertIn('path: ${{ steps.go.outputs.cache-paths }}', warm)
+        for job, nxt in (('repository', 'go'), ('go', 'e2e'), ('e2e', 'proofs'), ('proofs', 'arm'), ('tools', 'client')):
+            self.assertIn('cache-scope: ', ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0])
+
     def test_layout_evidence_is_opt_in_for_pull_requests(self):
         source = (WORKFLOWS / 'layout-stability.yml').read_text()
         self.assertIn('types: [opened, synchronize, reopened, labeled]', source)
