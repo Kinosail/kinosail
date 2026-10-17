@@ -147,7 +147,10 @@ actor ServerClient {
             }
         } catch is CancellationError { throw CancellationError() }
         catch let error as ClientError {
-            if case .http(let status) = error {
+            if case .retryAfter(let seconds) = error {
+                recordConnection(.reachable, sequence: sequence)
+                networkLog.warning("HTTP request deferred request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=503 retry_after=\(seconds)")
+            } else if case .http(let status) = error {
                 recordConnection(status >= 500 ? .unreachable : .reachable, sequence: sequence)
                 if status >= 500, operation != "items-playback-events" {
                     networkLog.error("HTTP request failed request_id=\(requestID, privacy: .public) operation=\(operation, privacy: .public) method=\(method, privacy: .public) status=\(status)")

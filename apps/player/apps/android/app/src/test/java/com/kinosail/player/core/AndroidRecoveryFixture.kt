@@ -29,6 +29,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
     val tvId = "454bcb89-1e30-4c48-9b9e-ce2b965e381b"
     @Volatile var failingOffset: Int? = null
     @Volatile var catalogFailure = 400
+    @Volatile var catalogRetryAfter: String? = null
     @Volatile var playbackFailure = true
     @Volatile var duplicatePage = false
     @Volatile var catalogGate = CountDownLatch(0)
@@ -112,6 +113,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                 else -> { status = 404; "{}" }
             }.toByteArray(Charsets.UTF_8)
             request.responseHeaders.set("Content-Type", "application/json")
+            if (catalogQuery != null && status == 503) catalogRetryAfter?.let { request.responseHeaders.set("Retry-After", it) }
             request.sendResponseHeaders(status, body.size.toLong())
             request.responseBody.use { it.write(body) }
             progressReply?.written?.countDown()

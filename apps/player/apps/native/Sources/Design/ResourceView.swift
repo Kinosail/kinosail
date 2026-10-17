@@ -41,6 +41,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var value: Value?
     @State private var failure: String?
+    @State private var deferred: DeferredRetry?
     @State private var revision = 0
     @State private var generation = UUID()
     @State private var loadedIdentity: String?
@@ -67,6 +68,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                 await refresh(force: false)
             }
         }
+        .retrying(after: deferred) { revision += 1 }
     }
 
     private var resourceContent: some View {
@@ -80,6 +82,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                     content(value)
                 }
             } else if loadedIdentity == identity, let failure { RetryState(message: failure, focusesRetry: focusesRetry) { revision += 1 } }
+            else if let deferred { DeferredLoadingState(retry: deferred, layout: loadingLayout) }
             else { LoadingState(layout: loadingLayout) }
         }
     }
@@ -107,10 +110,17 @@ struct ResourceView<Value: Sendable, Content: View>: View {
             value = next
             if revalidates, let clientID { session.resourceSnapshots.store(next, for: identity, clientID: clientID, refreshID: expectedRevision) }
             failure = nil
+            deferred = nil
         } catch is CancellationError {}
         catch {
             if generation == attempt, session.client?.identity == clientID,
                (!revalidates || cacheRevision == expectedRevision) {
+                if let retry = DeferredRetry(error) {
+                    failure = nil
+                    deferred = retry
+                    return
+                }
+                deferred = nil
                 if (error as? ClientError)?.discardsCachedContent == true {
                     value = nil
                     if let clientID { session.resourceSnapshots.remove(for: identity, clientID: clientID, as: Value.self) }

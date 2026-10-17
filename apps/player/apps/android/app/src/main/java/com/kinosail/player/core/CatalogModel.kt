@@ -264,8 +264,8 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {
-            failed(attempt, offset, error.status == 401 || error.status == 403)
-            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt, offset)
+            failed(attempt, offset, error.status == 401 || error.status == 403, error.retryAfterSeconds != null)
+            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt, offset, error.retryAfterSeconds?.times(1_000L) ?: 15_000L)
         } catch (_: IOException) {
             failed(attempt, offset)
             retryLater(attempt, offset)
@@ -274,19 +274,20 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun failed(attempt: Int, offset: Int, expired: Boolean = false) {
+    private fun failed(attempt: Int, offset: Int, expired: Boolean = false, preparing: Boolean = false) {
         if (attempt == generation) state = state.copy(loading = false, failedOffset = offset,
             connectionExpired = expired,
             notice = if (expired) "This connection expired. Disconnect and connect again."
+                else if (preparing) SERVER_PREPARING
                 else if (offset > 0) "Could not load more titles. Try again."
                 else if (state.items.isEmpty()) "Could not load your library. Try again." else null)
     }
 
-    private fun retryLater(attempt: Int, offset: Int) {
+    private fun retryLater(attempt: Int, offset: Int, delayMillis: Long = 15_000L) {
         if (attempt != generation) return
         retryJob?.cancel()
         retryJob = viewModelScope.launch {
-            delay(15_000)
+            delay(delayMillis)
             if (attempt == generation && state.failedOffset == offset && !state.loading) {
                 retryJob = null
                 retry()

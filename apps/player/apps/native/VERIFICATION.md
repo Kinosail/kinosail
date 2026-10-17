@@ -1,5 +1,16 @@
 # Swift Apple verification
 
+## Library scan retry — 2026-10-17
+
+This change was written in a Linux container without Xcode. **Nothing in this section was compiled or run here.** The Mac results are recorded below when they arrive.
+
+- While the Server's first Library scan runs, Library reads return `503` with `Retry-After`. `BoundedHTTPResponse` now turns a `503` with a whole-second `Retry-After` into `ClientError.retryAfter(seconds)`, clamped to 1–60 seconds. A malformed value, an HTTP date, or another status keeps `ClientError.http(status)`.
+- `ServerClient` does not use its quick 250 ms retries for that error. It records the Server as reachable and logs a warning with the request ID, the operation and `retry_after`.
+- `ResourceView` (Home, details, shows, collections, music) and `LibraryScreen` keep the loading layout and show "Your Server is still getting ready. Kinosail will try again shortly." They read again after the Server's delay, with no tap needed. A view-scoped task does the waiting, so it stops when the screen goes away. Content that is already shown stays on screen without an error.
+- Tests: `RetryAfterTests` (HTTP mapping and bounds) and `LibraryScanRetryJourneys`. The journeys host `LibraryScreen` and a `ResourceView` against the loopback `LibraryRecoveryFixture`, which answers two `503` + `Retry-After: 1` reads before the Library. They require exactly three reads, at least 0.9 s apart, with no extra reads afterward. They write snapshots to `apple-library-scan-retry-evidence`.
+
+Not run here: `./scripts/build-apple.sh ios`, `./scripts/build-apple.sh tvos`, the `Kinosail-iOS` and `Kinosail-tvOS` test schemes, simulator and physical-device checks.
+
 ## Apple TV speed pass — 2026-10-16
 
 This pass changed only native Swift sources, the build script and these notes. It was written in a Linux container without Xcode, so **nothing in this section was compiled, run or measured**. The claims below describe what the code does, not observed timings.

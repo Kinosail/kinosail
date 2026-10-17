@@ -26,7 +26,14 @@ data class Viewer(val server: String, val serverId: String, val id: String, val 
         return this
     }
 }
-class ServerHttpException(val status: Int) : IOException("Server request failed ($status).")
+class ServerHttpException(val status: Int, val retryAfterSeconds: Int? = null) : IOException("Server request failed ($status).")
+
+const val SERVER_PREPARING = "Your Server is still getting ready. Kinosail will try again shortly."
+
+internal fun retryAfterSeconds(status: Int, value: String?): Int? {
+    if (status != 503 || value == null || value.length !in 1..4 || !value.all { it in '0'..'9' }) return null
+    return value.toInt().coerceIn(1, 60)
+}
 
 internal fun boundedContentLength(connection: HttpURLConnection, maximum: Long): Boolean {
     val value = connection.getHeaderField("Content-Length") ?: return true
@@ -252,7 +259,7 @@ class ServerApi(
             }
             val status = connection.responseCode
             statusCode = status
-            if (status !in expected) throw ServerHttpException(status)
+            if (status !in expected) throw ServerHttpException(status, retryAfterSeconds(status, connection.getHeaderField("Retry-After")))
             if (status == 204 || status == 404) return status to kotlinx.serialization.json.JsonNull
             require(connection.contentType?.substringBefore(';')?.trim()?.lowercase() == "application/json" &&
                 boundedContentLength(connection, maximum.toLong())) { INVALID_RESPONSE }
@@ -273,16 +280,16 @@ class ServerApi(
             return status to StrictJson.parse(decoded)
         } catch (failure: Exception) {
             val kind = when (failure) {
-                is ServerHttpException -> "http"
+                is ServerHttpException -> if (failure.retryAfterSeconds != null) "deferred" else "http"
                 is IOException -> "transport"
                 else -> "invalid_response"
             }
             val message = "HTTP request failed request_id=$requestId operation=${diagnosticOperation(path)} " +
                 "method=$method status=${statusCode ?: 0} kind=$kind cause=${failure.javaClass.simpleName}"
-            if ((statusCode != null && statusCode >= 500) || kind == "invalid_response") Log.e("KinosailNetwork", message)
+            if (kind != "deferred" && ((statusCode != null && statusCode >= 500) || kind == "invalid_response")) Log.e("KinosailNetwork", message)
             else Log.w("KinosailNetwork", message)
             val transient = when (failure) {
-                is ServerHttpException -> failure.status in setOf(408, 500, 502, 503, 504)
+                is ServerHttpException -> failure.retryAfterSeconds == null && failure.status in setOf(408, 500, 502, 503, 504)
                 is javax.net.ssl.SSLException, is java.net.ProtocolException -> false
                 is IOException -> failure.message != INVALID_RESPONSE
                 else -> false

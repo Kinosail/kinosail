@@ -265,7 +265,7 @@ extension PlaybackEngine {
         guard depth < 8, let error else { return false }
         if let client = error as? ClientError {
             switch client {
-            case .unavailable: return true
+            case .unavailable, .retryAfter: return true
             case .http(let code): return [408, 429, 500, 502, 503, 504].contains(code)
             default: return false
             }

@@ -94,8 +94,10 @@ class HomeModel(application: Application) : AndroidViewModel(application) {
         } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {
             if (attempt == generation) state = state.copy(loading = false,
                 notice = if (error.status in setOf(401, 403)) "Reconnect to load your home."
-                    else if (state.continueWatching.isEmpty() && state.recent.isEmpty()) "Could not load your home. Try again." else null)
-            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt, viewer)
+                    else if (state.continueWatching.isEmpty() && state.recent.isEmpty()) {
+                        if (error.retryAfterSeconds != null) SERVER_PREPARING else "Could not load your home. Try again."
+                    } else null)
+            if (error.status in setOf(408, 429, 500, 502, 503, 504)) retryLater(attempt, viewer, error.retryAfterSeconds?.times(1_000L) ?: 15_000L)
         } catch (_: IOException) {
             if (attempt == generation) state = state.copy(loading = false,
                 notice = if (state.continueWatching.isEmpty() && state.recent.isEmpty()) "Could not load your home. Try again." else null)
@@ -106,9 +108,9 @@ class HomeModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun retryLater(attempt: Int, viewer: Viewer) {
+    private fun retryLater(attempt: Int, viewer: Viewer, delayMillis: Long = 15_000L) {
         viewModelScope.launch {
-            delay(15_000)
+            delay(delayMillis)
             if (attempt == generation) fetch(attempt, viewer)
         }
     }
