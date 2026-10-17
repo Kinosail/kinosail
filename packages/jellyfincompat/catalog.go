@@ -33,6 +33,15 @@ func Query(values url.Values, name string) string {
 	return ""
 }
 
+func HasField(values url.Values, field string) bool {
+	for _, fields := range foldedValues(values, "fields") {
+		if Includes(fields, field) {
+			return true
+		}
+	}
+	return false
+}
+
 func Int(values url.Values, name string) int {
 	value, _ := strconv.Atoi(Query(values, name))
 	return value
@@ -162,7 +171,7 @@ func (catalog Catalog) Episodes(id string, values url.Values) (Page, bool) {
 	for position := range show.Episodes {
 		item := &show.Episodes[position]
 		all := seasonID == "" && seasonNumber == 0
-		if all || seasonID == SeasonID(show.ID, item.Season) || seasonNumber == item.Season {
+		if all || seasonMatches(show.ID, item.Season, seasonID) || seasonNumber == item.Season {
 			result = append(result, catalogEntry{item: item})
 		}
 	}

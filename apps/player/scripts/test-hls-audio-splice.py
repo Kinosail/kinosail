@@ -87,7 +87,7 @@ try:
         metadata.update(shiftCommand=command, sha256=sha(source), durationSeconds=frames / frame_rate + args.video_offset)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
-    source_pcm, receipt['decodeCommand'] = decode_source(source)
+    source_pcm, receipt['decodeCommand'] = decode_source(source, args.audio_sample_rate)
     with (run / 'build-private.log').open('w') as log:
         subprocess.run(build, cwd=ROOT, check=True, stdout=log, stderr=log, timeout=180)
     receipt['binarySHA256'] = sha(run / 'player')
@@ -133,12 +133,13 @@ try:
                 check(api.http(base + f'segment-{number:05d}.m4s')[0] == 200, 'population_status')
             settled(server, source)
             receipt['initialGrid'] = packet_grid(rendition)
+            check(all(row['sampleRate'] == args.audio_sample_rate for row in receipt['initialGrid']), 'served_audio_rate')
             target = len(keys) - 1 if args.recovery == 'tail' else 0 if args.recovery == 'first' else 1 if args.recovery == 'early' else 10
             point, span = keys[target] - 1, 3 if args.recovery == 'tail' else keys[target + 1] - keys[target] + 2
             if args.recovery == 'first':
                 point, span = keys[0] + .2, keys[1] - keys[0] + 1
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm))
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm, args.audio_sample_rate))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm, args.audio_sample_rate))
             fragment = rendition / f'segment-{target:05d}.m4s'
             check(fragment.exists(), 'eviction_requires_existing_fragment')
             neighbors = [rendition / f'segment-{n:05d}.m4s' for n in (target - 1, target + 1) if 0 <= n < len(keys)]
@@ -148,7 +149,7 @@ try:
             stable += [rendition / 'index.m3u8', rendition / 'init.mp4']
             stable_hashes = {p.name + str(n): sha(p) for n, p in enumerate(stable)}
             fragment.unlink()
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm, args.audio_sample_rate))
             settled(server, source)
             receipt['neighborHashesAfterRecovery'] = {p.name: sha(p) for p in neighbors}
             if args.recovery != 'tail':
@@ -156,7 +157,7 @@ try:
                     temporary = p.with_suffix('.qa-pending')
                     temporary.write_bytes(saved[p.name])
                     temporary.replace(p)
-                receipt['captures'].append(capture_audio(ROOT, run, api, item, 'retained-neighbors', point, span, source_pcm))
+                receipt['captures'].append(capture_audio(ROOT, run, api, item, 'retained-neighbors', point, span, source_pcm, args.audio_sample_rate))
                 receipt['neighborHashesRetained'] = {p.name: sha(p) for p in neighbors}
                 check(receipt['neighborHashesBefore'] == receipt['neighborHashesRetained'], 'retained_neighbor_changed')
             receipt['recoveredGrid'] = packet_grid(rendition)
