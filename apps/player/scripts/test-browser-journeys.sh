@@ -108,18 +108,20 @@ run_browser_phases() {
   local project="$1" phase="$2" port="$3"
   local results="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}"
   local artifacts="${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}"
-  if [[ "$phase" != populated ]]; then
+  if [[ "$phase" == all || "$phase" == journeys ]]; then
     run_local_player_journeys "$project" "$results-$project-library-pagination" "$artifacts/library-pagination-$project"
     run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
       "$results-$project-caption-recovery" "$artifacts/caption-recovery-$project"
     run_download_pause_journeys "$project" "$results-$project" "$artifacts/downloads-$project"
+  fi
+  if [[ "$phase" == all || "$phase" == smoke ]]; then
     start_fresh_server "$port"
     KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$results-$project" pnpm --dir e2e test "${browser_args[@]}"
     if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then
       run_native_intent_regression "$project" "$results-$project-native-intent" "$artifacts/native-intent-$project"
     fi
   fi
-  if [[ "$phase" != journeys ]]; then
+  if [[ "$phase" == all || "$phase" == populated ]]; then
     start_fresh_server "$port"
     run_populated_player_journeys "$project" "$url" "$artifacts/settings-$project"
   fi

@@ -7,6 +7,9 @@ inputs:
   cache-dependency-path:
     description: Glob of dependency files that key the Go caches
     default: "**/go.sum"
+  cache-scope:
+    description: Job family that saves its own complete module and build cache
+    default: shared
 runs:
   using: composite
   steps:
@@ -38,8 +41,10 @@ runs:
           ${{ steps.paths.outputs.toolchain }}
           ${{ steps.paths.outputs.modcache }}
           ${{ steps.paths.outputs.buildcache }}
-        key: go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-${{ hashFiles(inputs.cache-dependency-path) }}
-        restore-keys: go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-
+        key: go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-${{ inputs.cache-scope }}-${{ hashFiles(inputs.cache-dependency-path) }}
+        restore-keys: |
+          go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-${{ inputs.cache-scope }}-
+          go-${{ runner.os }}-${{ runner.arch }}-${{ steps.paths.outputs.version }}-
     - shell: bash
       env:
         VERSION: ${{ steps.paths.outputs.version }}

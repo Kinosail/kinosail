@@ -21,7 +21,8 @@ MODULES = ({"module": "player", "directory": "apps/player", "media": "true", "co
             "shard": "", "fragment": "false"},
            {"module": "packages", "directory": "packages", "media": "false", "contract": "tidy-check",
             "shard": "", "fragment": "false"})
-PHASES = {"player": (("journeys", "true", "3"), ("populated", "false", "1")), "subtitles": (("all", "true", "1"),)}
+PHASES = {"player": (("journeys", "true", "1"), ("smoke", "false", "3"), ("populated", "false", "1")),
+          "subtitles": (("all", "true", "1"),)}
 
 
 def derive(plan):
