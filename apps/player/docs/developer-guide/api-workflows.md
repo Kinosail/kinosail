@@ -18,6 +18,8 @@ Use these sequences as integration shapes. Read the live OpenAPI document for th
 
 Keep pagination bounded. Do not assume that every Profile sees the same items or fields.
 
+With `view=history` and the default `title` sort, the most recent playback comes first. This view returns no `letters`.
+
 ## Start playback
 
 1. Call `GET /api/v1/items/{id}/playback` with the client video codecs when known.
@@ -34,7 +36,9 @@ Use the same token for the Profile whose state the integration represents:
 - `PUT /api/v1/items/{id}/progress` saves viewing progress;
 - `DELETE /api/v1/items/{id}/continue-watching` dismisses a shelf item;
 - `PUT /api/v1/items/{id}/list` changes My List; and
-- `GET /api/v1/history` reads that Profile's history.
+- `GET /api/v1/history` reads that Profile's history, most recent first.
+
+To read history one page at a time, add `offset` and `limit` (1 to 200) to `GET /api/v1/history`. A paged response also returns `total`, `offset`, and `limit`.
 
 Do not use an Owner token for shared automation unless the automation truly acts as the Owner.
 

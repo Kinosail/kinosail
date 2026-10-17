@@ -32,13 +32,13 @@ func TestCoverageBrowseTitleOrderMatchesUniqueLetterBuckets(t *testing.T) {
 		{Label: "B", Count: 2, Offset: 1, Href: "/?lang=en", Current: true},
 		{Label: "C", Count: 2, Offset: 3, Href: "/?lang=en&letter=C"},
 	}
-	if got := browseLetters(values, items, "B", "en"); !reflect.DeepEqual(got, want) {
+	if got := browseLetterLinks(values, letterBuckets(items, "en"), "B"); !reflect.DeepEqual(got, want) {
 		t.Fatalf("letter buckets = %#v, want %#v", got, want)
 	}
 	if !reflect.DeepEqual(values, before) {
 		t.Fatalf("letter projection mutated values: got %v, want %v", values, before)
 	}
-	if got := browseLetters(values, nil, "", "en"); len(got) != 0 {
+	if got := browseLetterLinks(values, letterBuckets(nil, "en"), ""); len(got) != 0 {
 		t.Fatalf("empty letter buckets = %#v", got)
 	}
 }

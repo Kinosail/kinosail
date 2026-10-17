@@ -30,7 +30,7 @@ func (handlers MediaHandlers) shows(writer http.ResponseWriter, request *http.Re
 		play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
 		result = append(result, MediaGroup{ID: show.ID, Title: show.Title, Artwork: ArtworkURL(show.ArtworkID), Backdrop: BackdropURL(ShowBackdropID(show), show.Backdrop != ""), Play: play})
 	}
-	apiAction{body: map[string]any{"shows": result}, status: http.StatusOK}.serve(writer)
+	serveListing(writer, request, map[string]any{"shows": result})
 }
 
 func (handlers MediaHandlers) show(writer http.ResponseWriter, request *http.Request) {
@@ -41,7 +41,7 @@ func (handlers MediaHandlers) show(writer http.ResponseWriter, request *http.Req
 	}
 	play := catalog.ShowPlay(show, func(id string) catalog.PlaybackState { return handlers.Progress.Get(request, id) })
 	body := map[string]any{"id": show.ID, "title": show.Title, "backdrop": BackdropURL(ShowBackdropID(show), show.Backdrop != ""), "play": play, "episodes": handlers.Progress.ClientItems(request, show.Episodes), "cast": ShowCast(show), "year": show.Year, "plot": show.Plot, "genres": show.Genres, "studio": show.Studio}
-	apiAction{body: body, status: http.StatusOK}.serve(writer)
+	serveListing(writer, request, body)
 }
 
 func (handlers MediaHandlers) albums(writer http.ResponseWriter, request *http.Request) {
@@ -50,7 +50,7 @@ func (handlers MediaHandlers) albums(writer http.ResponseWriter, request *http.R
 	for _, album := range albums {
 		result = append(result, MediaGroup{ID: album.ID, Title: album.Title, Artwork: ArtworkURL(album.ArtworkID), Artist: album.Artist})
 	}
-	apiAction{body: map[string]any{"albums": result}, status: http.StatusOK}.serve(writer)
+	serveListing(writer, request, map[string]any{"albums": result})
 }
 
 func (handlers MediaHandlers) album(writer http.ResponseWriter, request *http.Request) {
@@ -60,7 +60,7 @@ func (handlers MediaHandlers) album(writer http.ResponseWriter, request *http.Re
 		return
 	}
 	body := map[string]any{"id": album.ID, "title": album.Title, "artist": album.Artist, "tracks": handlers.Progress.ClientItems(request, album.Tracks)}
-	apiAction{body: body, status: http.StatusOK}.serve(writer)
+	serveListing(writer, request, body)
 }
 
 func ArtworkURL(id string) string {

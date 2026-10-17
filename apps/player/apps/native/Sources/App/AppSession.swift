@@ -141,48 +141,41 @@ final class AppSession {
             guard generation == attempt else { throw CancellationError() }
             challenge = created
             pairingCode = created.code
-            let deadline = Date().addingTimeInterval(300)
-            while Date() < deadline {
-                try await Task.sleep(for: .seconds(2))
-                guard generation == attempt else { throw CancellationError() }
-                if let token = try await candidate.pollQuickConnect(secret: created.secret) {
-                    let authenticated = try ServerClient(server: candidate.server, token: token)
-                    do {
-                        let profile = try await authenticated.viewer()
-                        guard generation == attempt, !Task.isCancelled else { throw CancellationError() }
-                        let saved = try SavedSession(server: candidate.server, token: token, viewer: profile)
-                        try await keychain.save(saved)
-                        guard generation == attempt, !Task.isCancelled else {
-                            try await keychain.discard(saved)
-                            throw CancellationError()
-                        }
-                        player.stop()
-                        await casting.clear()
-                        await artwork.clear()
-                        resourceSnapshots.clear()
-                        guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
-                        let previous = client
-                        clearSystemContent()
-                        client = authenticated
-                        viewer = profile
-                        configureProgress()
-                        showsSetup = false
-                        contentRevision = UUID()
-                        #if os(iOS)
-                        await downloads.restore(viewer: profile, server: candidate.server, client: authenticated)
-                        #endif
-                        if let previous { await previous.close() }
-                    } catch {
-                        try? await authenticated.signOut()
-                        await authenticated.close()
-                        throw error
-                    }
-                    finishPairing(attempt: attempt)
-                    await candidate.close()
-                    return
+            let token = try await candidate.awaitQuickConnect(secret: created.secret, until: Date().addingTimeInterval(300))
+            guard generation == attempt else { throw CancellationError() }
+            let authenticated = try ServerClient(server: candidate.server, token: token)
+            do {
+                let profile = try await authenticated.viewer()
+                guard generation == attempt, !Task.isCancelled else { throw CancellationError() }
+                let saved = try SavedSession(server: candidate.server, token: token, viewer: profile)
+                try await keychain.save(saved)
+                guard generation == attempt, !Task.isCancelled else {
+                    try await keychain.discard(saved)
+                    throw CancellationError()
                 }
+                player.stop()
+                await casting.clear()
+                await artwork.clear()
+                resourceSnapshots.clear()
+                guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
+                let previous = client
+                clearSystemContent()
+                client = authenticated
+                viewer = profile
+                configureProgress()
+                showsSetup = false
+                contentRevision = UUID()
+                #if os(iOS)
+                await downloads.restore(viewer: profile, server: candidate.server, client: authenticated)
+                #endif
+                if let previous { await previous.close() }
+            } catch {
+                try? await authenticated.signOut()
+                await authenticated.close()
+                throw error
             }
-            throw ClientError.invalidInput("That code expired. Connect again to get a new code.")
+            finishPairing(attempt: attempt)
+            await candidate.close()
         } catch {
             if let pending { try? await candidate.cancelQuickConnect(secret: pending.secret) }
             await candidate.close()

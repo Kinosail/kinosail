@@ -11,8 +11,9 @@ import (
 const titleOrderReferenceBudget = 1 << 20
 
 type titleOrder struct {
-	items []*library.Item
-	used  uint64
+	items   []*library.Item
+	used    uint64
+	visible map[string]*visibleOrder
 }
 
 type titleOrderKey struct {
@@ -20,11 +21,11 @@ type titleOrderKey struct {
 }
 
 func (index *Index) BrowseLibrary(ctx context.Context, values url.Values, locale string, access func() BrowseAccess) (Result, error) {
-	return browseLibrary(ctx, values, locale, func(browse Browse) ([]*library.Item, bool, error) {
+	return browseLibrary(ctx, values, locale, func(browse Browse) (browseSource, error) {
 		key := browseTitleOrderKey(&browse, locale)
 		if key.locale == "" {
 			items, err := index.References()
-			return items, false, err
+			return browseSource{items: items}, err
 		}
 		return index.titleReferences(ctx, key, locale)
 	}, access)
@@ -41,7 +42,7 @@ func browseTitleOrderKey(browse *Browse, locale string) titleOrderKey {
 	return key
 }
 
-func (index *Index) titleReferences(ctx context.Context, key titleOrderKey, locale string) ([]*library.Item, bool, error) {
+func (index *Index) titleReferences(ctx context.Context, key titleOrderKey, locale string) (browseSource, error) {
 	index.mu.Lock()
 	version := index.titleOrderVersion
 	snapshot := index.current.Load()
@@ -59,20 +60,22 @@ func (index *Index) titleReferences(ctx context.Context, key titleOrderKey, loca
 	}
 	index.mu.Unlock()
 	if err != nil {
-		return nil, false, err
+		return browseSource{}, err
 	}
 	if entry != nil {
-		return append([]*library.Item(nil), entry.items...), true, nil
+		return index.titleSource(entry), nil
 	}
 	if titleOrderCapacity(snapshot) == 0 || !snapshot.DistinctIDs() {
-		return snapshotReferences(snapshot), false, nil
+		return browseSource{items: snapshotReferences(snapshot)}, nil
 	}
 	items := titleViewReferences(snapshot, key.view)
 	if err := sortReferences(ctx, items, "title", "", locale); err != nil {
-		return nil, false, err
+		return browseSource{}, err
 	}
-	index.rememberTitleOrder(key, version, items)
-	return append([]*library.Item(nil), items...), true, nil
+	if entry := index.rememberTitleOrder(key, version, items); entry != nil {
+		return index.titleSource(entry), nil
+	}
+	return browseSource{items: items, ordered: true}, nil
 }
 
 func titleViewReferences(snapshot *library.Snapshot, view string) []*library.Item {
@@ -93,12 +96,15 @@ func titleOrderCapacity(snapshot *library.Snapshot) int {
 	return min(4, titleOrderReferenceBudget/max(1, snapshot.Len()))
 }
 
-func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, items []*library.Item) {
+func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, items []*library.Item) *titleOrder {
 	index.mu.Lock()
 	defer index.mu.Unlock()
 	capacity := titleOrderCapacity(index.current.Load())
-	if capacity == 0 || version != index.titleOrderVersion || index.titleOrders[key] != nil {
-		return
+	if capacity == 0 || version != index.titleOrderVersion {
+		return nil
+	}
+	if existing := index.titleOrders[key]; existing != nil {
+		return existing
 	}
 	if index.titleOrders == nil {
 		index.titleOrders = make(map[titleOrderKey]*titleOrder)
@@ -107,7 +113,9 @@ func (index *Index) rememberTitleOrder(key titleOrderKey, version uint64, items 
 		index.evictTitleOrder()
 	}
 	index.titleOrderUse++
-	index.titleOrders[key] = &titleOrder{items: items, used: index.titleOrderUse}
+	entry := &titleOrder{items: items, used: index.titleOrderUse}
+	index.titleOrders[key] = entry
+	return entry
 }
 
 func (index *Index) evictTitleOrder() {

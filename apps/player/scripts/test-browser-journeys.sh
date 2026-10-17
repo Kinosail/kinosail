@@ -39,7 +39,7 @@ prepare_audio_queue_fixture() {
 run_library_pagination_journey() {
   GOMAXPROCS=2 KINOSAIL_LIBRARY_BROWSER=1 KINOSAIL_BROWSER_PROJECT="$1" \
     KINOSAIL_E2E_OUTPUT_DIR="$2" KINOSAIL_E2E_ARTIFACT_DIR="$3" \
-    ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^TestLibraryPaginationBrowserJourney$' -count=1 -timeout=6m
+    ../../scripts/tooling/with-go-module.sh go test -p 1 ./internal/server -run '^(TestLibraryPaginationBrowserJourney|TestLibraryHistoryBrowserJourney)$' -count=1 -timeout=8m
 }
 
 run_queue_loading_journey() {

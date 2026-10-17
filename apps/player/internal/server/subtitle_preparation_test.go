@@ -46,7 +46,7 @@ func checkSubtitlePreparation(t *testing.T, scenario subtitlePreparationScenario
 		}
 	}
 	write(ffprobe, "#!/bin/sh\nprintf '%s' '{\"streams\":"+scenario.streams+",\"format\":{\"duration\":\"30\"}}'\n", 0o700)
-	write(ffmpeg, "#!/bin/sh\nprintf '%s\\n' \"$@\" >> '"+calls+"'\nprintf 'WEBVTT\\n\\n00:00.000 --> 00:02.000\\nCaptions\\n'\n", 0o700)
+	write(ffmpeg, "#!/bin/sh\nprintf '%s\\n' \"$@\" >> '"+calls+"'\noutputs=0\nfor argument in \"$@\"; do case \"$argument\" in file:*) outputs=1; printf 'WEBVTT\\n\\n00:00.000 --> 00:02.000\\nCaptions\\n' > \"${argument#file:}\";; esac; done\n[ \"$outputs\" = 1 ] || printf 'WEBVTT\\n\\n00:00.000 --> 00:02.000\\nCaptions\\n'\n", 0o700)
 	item := library.Item{ID: "film", Path: filepath.Join(root, "film.mkv"), Kind: scenario.kind}
 	write(item.Path, "media", 0o600)
 	if scenario.sidecar != "" {

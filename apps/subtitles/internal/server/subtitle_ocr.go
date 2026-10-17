@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func subtitleOCRLanguage(language string) string {
@@ -39,7 +41,7 @@ func localSubtitleOCR(ctx context.Context, ffmpeg, tesseract, media string, stre
 	if err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
-	if err = command.Start(); err != nil {
+	if err = workload.StartBackground(command); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
 	times := make(chan float64, 8)

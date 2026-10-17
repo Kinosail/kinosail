@@ -291,7 +291,7 @@ extension PlaybackEngine {
             do {
                 let synced = try await writer.update(seconds: position, watched: watched)
                 guard let self, self.generation == attempt else { return }
-                self.progressMessage = synced ? nil : "Progress is saved on this device. Open Progress sync to retry or resolve a conflict."
+                self.progressMessage = synced ? nil : "Progress is saved on this device and will sync when the Server is reachable."
             } catch { if let self, self.generation == attempt { self.progressMessage = "Couldn’t save your position. \(AppSession.message(error))" } }
         }
     }

@@ -72,7 +72,7 @@ import Testing
         fixture.serverProgress = ["movie": progress(9, "other-device", 9)]
         try await store.record(itemID: "movie", progress: progress(4, "earlier-session", 2), expected: progress(2, "older", 1))
         _ = try await store.synchronize(client: fixture.client)
-        try #require(try await store.pending().first?.conflict != nil, "Prerequisite: an earlier session left a conflict")
+        try #require(fixture.conflicts == 1, "Prerequisite: an earlier session conflicted")
         let coordinator = PlaybackCoordinator()
         defer { coordinator.stop() }
         try await coordinator.play(try fixture.item("movie"), client: fixture.client, store: store)
