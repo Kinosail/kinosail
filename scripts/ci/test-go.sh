@@ -11,6 +11,9 @@ case "$mode" in quick|deep) ;; *) echo 'invalid Go test mode' >&2; exit 2 ;; esa
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo/$directory"
 if [[ "$mode" == quick ]]; then
+  if [[ -n "${KINOSAIL_GO_SHARD:-}" ]]; then
+    exec python3 "$repo/scripts/ci/go_shard.py" "$directory" "$KINOSAIL_GO_SHARD"
+  fi
   go test -count=1 ./...
   exit
 fi

@@ -122,7 +122,7 @@ class RequiredTests(unittest.TestCase):
             if scope == "repository":
                 self.assertEqual(states, {"repository": "skipped", "docs": "success"})
             elif scope == "security":
-                self.assertEqual(states, {"security": "success", "codeql-compiled": "success"})
+                self.assertEqual(states, {"security": "skipped", "codeql-compiled": "skipped"})
             else:
                 self.assertEqual(set(states.values()), {"skipped"})
             verify(scope, needs, "push")

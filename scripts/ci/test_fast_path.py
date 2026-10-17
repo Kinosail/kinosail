@@ -38,9 +38,11 @@ class FastPathContracts(unittest.TestCase):
             section = ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
             condition = section.split('    if: ', 1)[1].split('\n', 1)[0]
             self.assertTrue(condition.startswith("needs.plan.outputs.verified != 'true'"), (job, condition))
-        for job, nxt in (('docs', 'security'), ('security', 'codeql-compiled'), ('codeql-compiled', 'repository-required')):
+        docs = ci.split('\n  docs:\n', 1)[1].split('\n  security:\n', 1)[0]
+        self.assertIn("(needs.plan.outputs.verified != 'true' || github.event_name == 'push')", docs)
+        for job, nxt in (('security', 'codeql-compiled'), ('codeql-compiled', 'repository-required')):
             section = ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
-            self.assertIn("needs.plan.outputs.verified != 'true' || github.event_name == 'push'", section)
+            self.assertIn("needs.plan.outputs.verified != 'true' && github.event_name != 'merge_group'", section)
         publish = (WORKFLOWS / 'publish.yml').read_text()
         verified = publish.split('\n  verified:\n', 1)[1].split('\n  images:\n', 1)[0]
         self.assertIn('      actions: read\n', verified)
@@ -80,6 +82,9 @@ class FastPathContracts(unittest.TestCase):
         self.assertIn('sha256sum --check', repository)
         self.assertIn('./scripts/quality/check-lint.sh', repository)
         self.assertIn('KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || \'HEAD~1\' }}', repository)
+        self.assertIn('KINOSAIL_GO_SHARD: ${{ matrix.shard }}', go)
+        self.assertIn("if: matrix.fragment == 'true'", go)
+        self.assertIn("name: Go (${{ matrix.module }}${{ matrix.shard && format(' {0}', matrix.shard) || '' }})", go)
         self.assertIn('path: ~/.cache/golangci-lint', repository)
         self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.8.0', repository)
         self.assertIn("jq -r '.[].directory'", repository)

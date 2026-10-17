@@ -13,9 +13,14 @@ from proof_shard import load, plan as proof_plan
 KEYS = ("plan", "codeql", "compiled", "modules", "apps", "shards", "arm", "tools", "verified")
 INTERPRETED = ("javascript-typescript", "python", "actions")
 COMPILED = ("go", "java-kotlin")
-MODULES = ({"module": "player", "directory": "apps/player", "media": "true", "contract": "single-container tidy-check"},
-           {"module": "subtitles", "directory": "apps/subtitles", "media": "false", "contract": "single-container tidy-check"},
-           {"module": "packages", "directory": "packages", "media": "false", "contract": "tidy-check"})
+MODULES = ({"module": "player", "directory": "apps/player", "media": "true", "contract": "single-container tidy-check",
+            "shard": "1/2", "fragment": "true"},
+           {"module": "player", "directory": "apps/player", "media": "true", "contract": "single-container tidy-check",
+            "shard": "2/2", "fragment": "false"},
+           {"module": "subtitles", "directory": "apps/subtitles", "media": "false", "contract": "single-container tidy-check",
+            "shard": "", "fragment": "false"},
+           {"module": "packages", "directory": "packages", "media": "false", "contract": "tidy-check",
+            "shard": "", "fragment": "false"})
 PHASES = {"player": (("journeys", "true", "3"), ("populated", "false", "1")), "subtitles": (("all", "true", "1"),)}
 
 
@@ -49,8 +54,8 @@ def expected(plan, event_name):
         "tools": live and bool(derived["tools"]),
         "client": live and plan["client"],
         "android": live and plan["android"],
-        "security": live or event_name == "push",
-        "codeql-compiled": (live or event_name == "push") and bool(derived["compiled"]),
+        "security": live and event_name != "merge_group",
+        "codeql-compiled": live and event_name != "merge_group" and bool(derived["compiled"]),
     }
 
 
