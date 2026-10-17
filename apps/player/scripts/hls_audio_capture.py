@@ -33,17 +33,15 @@ def correlation(left, right):
 
 
 def render_continuity(blocks):
-    expected, previous, gaps, stale = blocks[0]['frame'] if blocks else 0, None, [], 0
+    recorded, previous, starts, stale = 0, None, [], 0
     for block in blocks:
-        if block['frame'] != expected:
-            if block['frame'] == previous and block['frame'] < expected:
-                stale += 1
-            else:
-                gaps.append(block['frame'] - expected)
-                expected = block['frame']
+        if block['frame'] == previous or block['frame'] == 0 and not starts:
+            stale += previous is not None
+        elif block['frame'] - recorded not in starts:
+            starts.append(block['frame'] - recorded)
         previous = block['frame']
-        expected += block['length']
-    return gaps, stale
+        recorded += block['length']
+    return [later - earlier for earlier, later in zip(starts, starts[1:])], stale
 
 
 def capture_audio(root, run, api, item, label, point, span, source_pcm, rate):
@@ -79,7 +77,7 @@ def capture_audio(root, run, api, item, label, point, span, source_pcm, rate):
                   'renderGapFrames': gaps, 'staleFrameReads': stale, 'leadingSilentFrames': leading, 'passed': verdict,
                   'pcmSHA256': sha(run / (label + '.f32')),
                   'startup': {key: facts['capture'][key] for key in ['checkpoints', 'events']},
-                  'oracle': 'Capture at the served AAC rate; skip render quanta of exact zeros that the media element emits before its sink starts, at most 250ms; one fixed source alignment; all 42.7ms windows at least .90 correlation; initial offset at most 1ms; no render quantum missing, where an unchanged currentFrame read is a stale counter.'}
+                  'oracle': 'Capture at the served AAC rate; skip render quanta of exact zeros that the media element emits before its sink starts, at most 250ms; one fixed source alignment; all 42.7ms windows at least .90 correlation; initial offset at most 1ms; one render clock origin across all render quanta, where a repeated or initial zero currentFrame read is a stale counter.'}
     (run / (label + '-comparison.json')).write_text(json.dumps(comparison, indent=2) + '\n')
     return {key: comparison[key] for key in ['label', 'point', 'span', 'sampleRate', 'lagSamples', 'minimumCorrelation', 'renderGapFrames',
                                              'staleFrameReads', 'leadingSilentFrames', 'passed', 'pcmSHA256', 'startup']}
