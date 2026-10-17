@@ -15,6 +15,7 @@ type downloadVideoEncoding struct {
 	width               int
 	inputs, maps        []string
 	matroska, copyVideo bool
+	duration            float64
 }
 
 func (manager *Manager) videoEncoding(ctx context.Context, item library.Item, quality string, selection *TrackSelection, options transcodepolicy.Settings) (downloadVideoEncoding, error) {
@@ -50,7 +51,7 @@ func (manager *Manager) videoEncoding(ctx context.Context, item library.Item, qu
 	if sourceWidth > 0 && sourceHeight > 0 {
 		width, _ = playback.FitDimensions(sourceWidth, sourceHeight, width, map[string]int{"compatible": 1080, "1080p": 1080, "720p": 720, "480p": 480}[quality])
 	}
-	return downloadVideoEncoding{options, width, trackInputs, trackMaps, matroska, copyVideo}, nil
+	return downloadVideoEncoding{options, width, trackInputs, trackMaps, matroska, copyVideo, facts.Duration}, nil
 }
 
 func (plan downloadVideoEncoding) arguments(source, output string) []string {

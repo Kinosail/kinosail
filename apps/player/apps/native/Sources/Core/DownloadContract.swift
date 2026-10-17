@@ -26,7 +26,7 @@ extension DownloadTrackSelection {
 
 extension PreparedDownload {
     init(_ raw: JSONValue, profileID: String?) throws {
-        let value = try raw.object(allowing: ["sourceVersion", "tracks", "id", "itemId", "profileId", "title", "quality", "state", "sha256", "size", "readyOffline", "error", "extension", "created"])
+        let value = try raw.object(allowing: ["sourceVersion", "tracks", "id", "itemId", "profileId", "title", "quality", "state", "sha256", "size", "readyOffline", "error", "extension", "created", "progress"])
         id = try Input.hex(value.text("id", max: 16, required: true), count: 16)
         itemID = try Input.id(value.text("itemId", max: 128, required: true))
         let profile = try Input.id(value.text("profileId", max: 128, required: true))
@@ -35,6 +35,7 @@ extension PreparedDownload {
               let state = try State(rawValue: value.text("state", max: 32, required: true)) else { throw ClientError.invalidResponse }
         self.quality = quality; self.state = state
         size = Int64(try value.number("size", max: Double(OfflineManifest.blockSize * 16_384), integer: true))
+        progress = Int(try value.number("progress", max: 100, integer: true))
         sha256 = try value.text("sha256", max: 64)
         if !sha256.isEmpty { _ = try Input.hex(sha256, count: 64) }
         let error = try value.text("error", max: 1000)

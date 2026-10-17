@@ -38,6 +38,7 @@ type Job struct {
 	SHA256        string          `json:"sha256,omitempty"`
 	Size          int64           `json:"size,omitempty"`
 	ReadyOffline  bool            `json:"readyOffline"`
+	Progress      int             `json:"progress,omitempty"`
 	Error         string          `json:"error,omitempty"`
 	File          string          `json:"-"`
 	Extension     string          `json:"extension,omitempty"`
@@ -146,6 +147,7 @@ func (manager *Manager) prepareTask(next task) {
 	if next.attempt != nil {
 		ctx = next.attempt.ctx
 	}
+	ctx = withProgress(ctx, manager.progressReporter(job))
 	if ctx.Err() != nil {
 		return
 	}
@@ -217,6 +219,7 @@ func (manager *Manager) prepareFile(ctx context.Context, item library.Item, job 
 }
 
 func (manager *Manager) publishPrepared(ctx context.Context, job Job, temporary string, manifest Manifest, err error) Job {
+	job.Progress = 0
 	if err == nil {
 		err = ctx.Err()
 	}

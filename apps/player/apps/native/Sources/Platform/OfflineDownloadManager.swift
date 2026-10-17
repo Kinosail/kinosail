@@ -13,11 +13,12 @@ final class OfflineDownloadManager {
     var catalog = OfflineCatalog()
     private(set) var storage: OfflineCatalogStore?
     private(set) var scope: String?
-    private var client: ServerClient?
+    var client: ServerClient?
     private(set) var generation = UUID()
-    private var playback = false
+    var playback = false
     private(set) var operation = false
     private var completedItems: [OfflineCompletion] = []
+    @ObservationIgnored var rates = TransferRate()
     private var smartRetry = Date.distantPast
     private var processingSmart = false
 
@@ -271,6 +272,8 @@ final class OfflineDownloadManager {
         let attempt = generation
         do {
             let snapshots = try await engine.snapshot(scope)
+            let percents = await preparationPercents(snapshots)
+            let now = Date(); for snapshot in snapshots { rates.update(snapshot.key, bytes: snapshot.bytes, now: now) }
             try check(attempt)
             downloads = catalog.records.map { record in
                 let snapshot = snapshots.first { $0.key == record.key }
@@ -281,18 +284,13 @@ final class OfflineDownloadManager {
                 else { state = OfflineDownload.State(rawValue: snapshot?.status ?? (record.error.isEmpty ? "queued" : "failed")) ?? .failed }
                 let explanation = record.deleting ? "Removal interrupted. Remove this download again." : playback && state == .waiting ? "Downloads resume after playback." : snapshot?.message ?? record.error
                 return OfflineDownload(id: record.key, item: record.item, quality: record.quality, state: state, receivedBytes: snapshot?.bytes ?? 0,
-                                       totalBytes: snapshot?.total ?? 0, message: explanation.isEmpty ? nil : explanation, preparingSince: snapshot?.preparingSince)
+                                       totalBytes: snapshot?.total ?? 0, message: explanation.isEmpty ? nil : explanation, preparingSince: snapshot?.preparingSince,
+                                       preparingPercent: state == .preparing ? percents[record.key] : nil,
+                                       bytesPerSecond: state == .downloading ? rates.rate(record.key) : nil)
             }
             message = nil
         } catch is CancellationError {} catch { if generation == attempt { message = AppSession.message(error) } }
     }
 
-    var quota: Int64 { Int64(preferences.downloadLimitGiB) * 1_073_741_824 }
-    private func activeScope(id: String) throws -> String {
-        _ = try Input.hex(id, count: 64)
-        guard let scope, catalog.records.contains(where: { $0.key == id }) else { throw ClientError.invalidInput("The download is unavailable for this Viewer Profile.") }
-        return scope
-    }
-    func check(_ attempt: UUID) throws { try Task.checkCancellation(); guard generation == attempt else { throw CancellationError() } }
 }
 #endif
