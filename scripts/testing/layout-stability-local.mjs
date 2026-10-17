@@ -53,19 +53,8 @@ function recordFailure(error, failedPage = flowProbe.page || activePage) {
   return failureCapture;
 }
 flowProbe.openPage = async context => {
-  if (engine !== "firefox") await context.tracing.start({screenshots: true, snapshots: true});
+  await context.tracing.start({screenshots: true, snapshots: true});
   return flowProbe.page = await context.newPage();
-};
-const isolatedBrowsers = new Set();
-const isolatedFlowBrowser = {
-  browserType: () => browser.browserType(),
-  newContext: async options => {
-    const isolated = await launchBrowser();
-    isolatedBrowsers.add(isolated);
-    const context = await isolated.newContext(options);
-    context.once("close", () => { isolatedBrowsers.delete(isolated); isolated.close().catch(() => {}); });
-    return context;
-  },
 };
 flowProbe.captureFailure = recordFailure;
 flowProbe.captureSnapshot = (name, page) => page.screenshot({path: join(run, name + ".png")});
@@ -76,8 +65,7 @@ process.once("uncaughtException", async error => {
 });
 const launchOptions = engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} :
   engine === "firefox" ? {firefoxUserPrefs: {"browser.tabs.remote.useCrossOriginOpenerPolicy": false}} : {};
-const launchBrowser = () => ({chromium, webkit, firefox}[engine]).launch(launchOptions);
-browser = await launchBrowser();
+browser = await ({chromium, webkit, firefox}[engine]).launch(launchOptions);
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 await context.tracing.start({screenshots:true,snapshots:true});
 loginTracing = true;
@@ -278,9 +266,8 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(engine==="firefox"?isolatedFlowBrowser:browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
+  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
-  await Promise.all([...isolatedBrowsers].map(isolated => isolated.close().catch(() => {})));
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),browserLaunch:launchOptions,
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
 }
