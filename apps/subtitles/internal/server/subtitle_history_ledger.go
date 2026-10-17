@@ -60,7 +60,7 @@ func (ledger *subtitleLedger) storeHistory(key string, record subtitleRecord, ac
 	defer ledger.mu.Unlock()
 	previous, found := ledger.state.Records[key]
 	event := subtitleHistoryEvent{Key: key, Action: action, Source: record.Source, InstalledAt: record.InstalledAt, subtitleHistoryEvidence: subtitleHistoryEvidence{Reason: reason}}
-	if oneOf(reason, "missing", "embedded", "higher-score", "exact-hash") {
+	if oneOf(reason, "missing", "embedded", "image", "higher-score", "exact-hash") {
 		event.Score, event.ReleaseMatch = &record.Score, &record.ReleaseMatch
 	}
 	if reason == "higher-score" && found {
@@ -116,6 +116,8 @@ func validSubtitleHistoryEvidence(event subtitleHistoryEvent) bool { //nolint:cy
 		return event.Action == "added" && oneOf(event.Source, "subdl", "opensubtitles", "subsource") && event.Score != nil
 	case "embedded":
 		return event.Action == "added" && event.Source == "embedded" && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
+	case "image":
+		return event.Action == "added" && event.Source == "ocr" && event.Score != nil && *event.ReleaseMatch == 1
 	case "exact-hash":
 		return event.Action == "updated" && oneOf(event.Source, "subdl", "opensubtitles", "subsource") && event.Score != nil && *event.Score == 100 && *event.ReleaseMatch == 1
 	case "manual":

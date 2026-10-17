@@ -32,7 +32,7 @@ var (
 
 type ImageTextOptions struct {
 	FFmpeg, Tesseract, CacheDir string
-	Language                    string
+	Language, TessdataDir       string
 }
 
 func ImageSubtitle(codec string) bool { return slices.Contains(imageSubtitleCodecs, lower(codec)) }
@@ -57,13 +57,13 @@ func (probe *Probe) WithConvertedSubtitles(item library.Item, result Result, cac
 }
 
 func (probe *Probe) ImageTextCandidates(ctx context.Context, item library.Item, result Result, options ImageTextOptions) []int {
-	recognized := probe.ocrLanguage(ctx, options.Tesseract, options.Language)
+	recognized, _ := probe.ocrLanguage(ctx, options)
 	if recognized == "" {
 		return nil
 	}
 	var streams []int
 	for _, track := range result.SubtitleFacts {
-		if len(streams) == imageSubtitleStreamLimit || !ImageSubtitle(track.Codec) || ocrLanguageFor(track.Language) != recognized || hasTextTwin(item, result, track.Language, track.Forced) {
+		if len(streams) == imageSubtitleStreamLimit || !ImageSubtitle(track.Codec) || OCRLanguage(track.Language) != recognized || hasTextTwin(item, result, track.Language, track.Forced) {
 			continue
 		}
 		path := embeddedSubtitlePath(options.CacheDir, item, track.SourceIndex)
@@ -76,13 +76,13 @@ func (probe *Probe) ImageTextCandidates(ctx context.Context, item library.Item, 
 
 func hasTextTwin(item library.Item, result Result, code string, forced bool) bool {
 	for _, track := range result.SubtitleFacts {
-		if track.Text && !track.Converted && track.Forced == forced && ocrLanguageFor(track.Language) == ocrLanguageFor(code) {
+		if track.Text && !track.Converted && track.Forced == forced && OCRLanguage(track.Language) == OCRLanguage(code) {
 			return true
 		}
 	}
 	for _, path := range item.Subtitles {
 		sidecarForced := strings.Contains(strings.ToLower(filepath.Base(path)), ".forced.")
-		if sidecarForced == forced && ocrLanguageFor(playback.SubtitleFileLanguage(path)) == ocrLanguageFor(code) {
+		if sidecarForced == forced && OCRLanguage(playback.SubtitleFileLanguage(path)) == OCRLanguage(code) {
 			return true
 		}
 	}
@@ -90,7 +90,7 @@ func hasTextTwin(item library.Item, result Result, code string, forced bool) boo
 }
 
 func (probe *Probe) ConvertImageSubtitles(ctx context.Context, item library.Item, streams []int, options ImageTextOptions) error {
-	recognized := probe.ocrLanguage(ctx, options.Tesseract, options.Language)
+	recognized, data := probe.ocrLanguage(ctx, options)
 	if recognized == "" || !validFFmpegExecutable(options.FFmpeg) || len(streams) == 0 || len(streams) > imageSubtitleStreamLimit {
 		return ErrImageSubtitleOCR
 	}
@@ -112,7 +112,7 @@ func (probe *Probe) ConvertImageSubtitles(ctx context.Context, item library.Item
 	results := make([][]byte, len(streams))
 	errs := make([]error, len(streams))
 	for position, stream := range streams {
-		results[position], errs[position] = recognizeImageSubtitle(ctx, options.Tesseract, recognized, filepath.Join(workspace, strconv.Itoa(stream)))
+		results[position], errs[position] = recognizeImageSubtitle(ctx, options.Tesseract, recognized, data, filepath.Join(workspace, strconv.Itoa(stream)))
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
@@ -155,6 +155,10 @@ func extractImageSubtitleFrames(ctx context.Context, ffmpeg, media, workspace st
 		return ctx.Err()
 	}
 	return err
+}
+
+func (probe *Probe) ConvertedSubtitle(item library.Item, stream int, cacheDir string) ([]byte, error) {
+	return readEmbeddedSubtitle(embeddedSubtitlePath(cacheDir, item, stream))
 }
 
 func ocrLanguageCode(code string) string {

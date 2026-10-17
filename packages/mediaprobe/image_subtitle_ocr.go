@@ -15,8 +15,12 @@ import (
 	"unicode"
 
 	"github.com/MikeO7/kinosail/packages/playback"
+	"github.com/MikeO7/kinosail/packages/privatefile"
 	"github.com/MikeO7/kinosail/packages/workload"
+	"golang.org/x/text/language"
 )
+
+const ocrLanguageDataLimit = 64 << 20
 
 var (
 	ocrLanguages sync.Map
@@ -24,24 +28,49 @@ var (
 	webVTTText   = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;")
 )
 
-func (probe *Probe) ocrLanguage(ctx context.Context, tesseract, code string) string {
-	name := ocrLanguageFor(code)
-	if name == "" || !validFFmpegExecutable(tesseract) {
-		return ""
+func (probe *Probe) ocrLanguage(ctx context.Context, options ImageTextOptions) (string, string) {
+	name := OCRLanguage(options.Language)
+	if name == "" || !validFFmpegExecutable(options.Tesseract) {
+		return "", ""
 	}
-	if slices.Contains(availableOCRLanguages(ctx, tesseract), name) {
-		return name
+	if slices.Contains(availableOCRLanguages(ctx, options.Tesseract), name) {
+		return name, ""
 	}
-	return ""
+	if options.TessdataDir != "" && privatefile.Exists(filepath.Join(options.TessdataDir, name+".traineddata"), ocrLanguageDataLimit) {
+		return name, options.TessdataDir
+	}
+	return "", ""
 }
 
-func ocrLanguageFor(code string) string {
-	switch name := ocrLanguageCode(code); name {
-	case "nob", "nno":
+func OCRLanguage(code string) string {
+	tag, err := language.Parse(strings.TrimSpace(code))
+	if err != nil {
+		return ""
+	}
+	script, _ := tag.Script()
+	region, _ := tag.Region()
+	name := ocrLanguageCode(code)
+	switch {
+	case name == "zho" && (script.String() == "Hant" || region.String() == "TW" || region.String() == "HK" || region.String() == "MO"):
+		return "chi_tra"
+	case name == "zho":
+		return "chi_sim"
+	case name == "nob" || name == "nno":
 		return "nor"
+	case name == "kur":
+		return "kmr"
+	case (name == "srp" && script.String() == "Latn") || (name == "aze" || name == "uzb") && script.String() == "Cyrl":
+		return name + "_" + strings.ToLower(script.String())
 	default:
 		return name
 	}
+}
+
+func InstalledOCRLanguages(ctx context.Context, tesseract string) []string {
+	if !validFFmpegExecutable(tesseract) {
+		return nil
+	}
+	return slices.Clone(availableOCRLanguages(ctx, tesseract))
 }
 
 func availableOCRLanguages(ctx context.Context, tesseract string) []string {
@@ -73,7 +102,7 @@ func availableOCRLanguages(ctx context.Context, tesseract string) []string {
 	return actual.([]string)
 }
 
-func recognizeImageSubtitle(ctx context.Context, tesseract, recognized, directory string) ([]byte, error) {
+func recognizeImageSubtitle(ctx context.Context, tesseract, recognized, data, directory string) ([]byte, error) {
 	cues, err := imageSubtitleCues(directory)
 	if err != nil || len(cues) == 0 {
 		return nil, errors.Join(errImageSubtitleUnreadable, err)
@@ -87,7 +116,11 @@ func recognizeImageSubtitle(ctx context.Context, tesseract, recognized, director
 		return nil, err
 	}
 	output := boundedOutput{remaining: embeddedSubtitleLimit + 1}
-	command := exec.CommandContext(ctx, tesseract, list, "stdout", "-l", recognized, "--psm", "6")
+	arguments := []string{list, "stdout", "-l", recognized, "--psm", "6"}
+	if data != "" {
+		arguments = append(arguments, "--tessdata-dir", data)
+	}
+	command := exec.CommandContext(ctx, tesseract, arguments...)
 	command.Stdout = &output
 	if err = workload.RunContext(ctx, command); err != nil || ctx.Err() != nil {
 		return nil, errors.Join(ctx.Err(), err)

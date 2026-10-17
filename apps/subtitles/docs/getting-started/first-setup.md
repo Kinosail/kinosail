@@ -25,4 +25,4 @@ Run a scan, open a wanted video, and fetch a subtitle. Check that the file appea
 
 No provider result, quota exhaustion, an invalid subtitle, or a write-permission failure can prevent a fetch. Read the reported result before retrying. See [troubleshooting]({{ '/troubleshooting/' | relative_url }}).
 
-Local coverage still works without a provider. Optional OCR/transcription produces local drafts for review; those drafts do not automatically replace existing subtitles.
+Local coverage still works without a provider. Kinosail copies embedded text tracks and reads image subtitles with OCR to fill missing languages. The manual OCR and transcription tools produce drafts for review; those drafts do not replace existing subtitles.

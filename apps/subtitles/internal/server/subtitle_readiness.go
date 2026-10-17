@@ -40,7 +40,7 @@ func (manager *subtitleManager) readiness() subtitleReadiness {
 	if configured > 0 {
 		sourceDetail = "Provider credentials are configured; connections are checked automatically"
 	} else if embeddedAvailable {
-		sourceDetail = "Local embedded text extraction is available"
+		sourceDetail = "Local embedded text extraction and image subtitle conversion are available"
 	}
 	watching, _ := manager.index.Monitoring()
 	background := watching || manager.settings.scanFrequency() != "off"

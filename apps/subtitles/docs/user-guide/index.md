@@ -24,13 +24,13 @@ In **Settings → Languages**, choose the languages and their order. **Playback 
 
 ## Automatic maintenance
 
-After scans, maintenance fills missing subtitles and considers safer upgrades, with a minimum of 15 minutes between bounded automatic cycles. Existing embedded text and sidecars are considered before a provider search. Provider requests still depend on account quotas and network availability.
+After scans, maintenance fills missing subtitles and considers safer upgrades, with a minimum of 15 minutes between bounded automatic cycles. Existing embedded text and sidecars are considered before a provider search. If the video has only image subtitles (PGS or VobSub) in a selected language, Kinosail reads them with text recognition (OCR) and saves a clean SRT sidecar. This works without a provider account. Provider requests still depend on account quotas and network availability.
 
 Managed sidecars require a score improvement of at least ten points for the conservative automatic upgrade. Unknown sidecars require an exact OpenSubtitles file-hash match; the replaced original is kept as a `.kinosail.bak` recovery copy. Keep that original until the replacement is checked. SubSource sidecars are preserved unchanged under its terms.
 
 ## Review uncertain results
 
-Check language, episode, release, and timing when a subtitle is wrong. Optional OCR/transcription creates drafts for review and does not automatically replace sidecars. Review changes before accepting them. See [matching and timing]({{ '/user-guide/playback/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
+Check language, episode, release, and timing when a subtitle is wrong. The manual OCR and transcription tools create drafts for review and do not replace sidecars by themselves. Review changes before accepting them. See [matching and timing]({{ '/user-guide/playback/' | relative_url }}) and [recovery]({{ '/owner-guide/backups-and-updates/' | relative_url }}).
 
 **Before and after** keeps transformed dialogue beside its source cues. Removed cues stay visible. Merged rows show every source cue and the proposed cue. Each timing button seeks that side's cue.
 
