@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func recognizeSubtitleImage(ctx context.Context, executable, language string, image []byte) (string, []subtitleDraftWord, error) {
@@ -17,7 +19,7 @@ func recognizeSubtitleImage(ctx context.Context, executable, language string, im
 	command.Stdin = bytes.NewReader(image)
 	buffer := &subtitleLimitedOutput{limit: 1 << 20}
 	command.Stdout = buffer
-	if err := command.Run(); err != nil {
+	if err := workload.RunBackground(command); err != nil {
 		return "", nil, err
 	}
 	text, recognized, err := parseSubtitleOCR(buffer.Bytes())
