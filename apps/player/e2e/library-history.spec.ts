@@ -11,10 +11,10 @@ const continuation = (request: Request) => request.headers()["x-kinosail-library
 
 async function observeLayoutShift(page: Page) {
   await page.addInitScript(() => {
-    const record = window as unknown as {historyLayoutShifts: object[]};
+    const record = window as Window & {historyLayoutShifts: object[]};
     record.historyLayoutShifts = [];
     new PerformanceObserver(list => {
-      for (const entry of list.getEntries() as unknown as {value: number, hadRecentInput: boolean, sources: {node?: Node | null}[]}[]) {
+      for (const entry of list.getEntries() as (PerformanceEntry & {value: number, hadRecentInput: boolean, sources: {node?: Node | null}[]})[]) {
         if (entry.hadRecentInput) continue;
         const library = document.querySelector("#library");
         for (const source of entry.sources) {
@@ -139,7 +139,7 @@ test.describe("loaded history", () => {
       await expect(status).not.toHaveAttribute("data-failure");
       await expect(page.locator("[data-title-jump]")).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(size.width);
-      expect(await page.evaluate(() => (window as unknown as {historyLayoutShifts: object[]}).historyLayoutShifts)).toEqual([]);
+      expect(await page.evaluate(() => (window as Window & {historyLayoutShifts: object[]}).historyLayoutShifts)).toEqual([]);
       await page.evaluate(() => scrollTo(0, 0));
       await page.waitForFunction(() => scrollY === 0);
       expect(await catalogAnchors(page)).toEqual(anchors);

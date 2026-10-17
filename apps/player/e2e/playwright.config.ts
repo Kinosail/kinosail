@@ -11,7 +11,7 @@ const extendedProjects = fullMatrix || selectedProject === "firefox" || selected
 const projects = [
 	{ name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}) } },
 	...(extendedProjects ? [
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "browser.tabs.remote.useCrossOriginOpenerPolicy": false } } } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ] : []),
 ];

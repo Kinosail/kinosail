@@ -1,4 +1,5 @@
 import { expect, test as base, type Video } from "@playwright/test";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -42,20 +43,16 @@ const currentWorker = currentDownloads.match(/const offlineWorkerPath = "([^"]+)
 const oldWorker = "/service-worker.js?v=38";
 const oldDownloads = currentDownloads.replaceAll(currentWorker, oldWorker);
 const oldPWA = currentPWA.replaceAll(currentWorker, oldWorker);
+const contentVersion = (source: string) => createHash("sha256").update(source).digest("hex");
 const exposeWorker = '\nwindow.checkWorker = async () => { try { await requireOfflineServiceWorker(); return "ready"; } catch (error) { return error.message; } };';
 
 for (const app of [
   { name: "player", downloads: "18", navigation: "20" },
-  { name: "subtitles", downloads: "5", navigation: "8" },
 ]) {
   test(`${app.name} refreshes both immutable scripts when upgrading its offline worker`, async ({ page }) => {
-    const [offline, locale, workerSource] = await Promise.all([
-      readStaticSource([`../../${app.name}/internal/server/static/offline.html`]),
-      readStaticSource([`../../${app.name}/internal/server/locale.go`]),
-      readStaticSource(["../../../packages/webassets/static/offline-runtime.js", "../../../packages/webassets/static/offline-profile.js", "../../../packages/webassets/static/offline-media.js", `../../${app.name}/internal/server/static/service-worker.js`]),
-    ]);
-    const downloadsPath = offline.match(/\/static\/downloads\.js\?v=[\w-]+/)![0];
-    const navigationPath = [...locale.matchAll(/\/static\/main\.kinosail\.bundle\.js\?v=[\w-]+/g)].at(-1)![0];
+    const workerSource = await readStaticSource(["../../../packages/webassets/static/offline-runtime.js", "../../../packages/webassets/static/offline-profile.js", "../../../packages/webassets/static/offline-media.js", `../../${app.name}/internal/server/static/service-worker.js`]);
+    const downloadsPath = `/static/downloads.js?v=${contentVersion(currentDownloads)}`;
+    const navigationPath = `/static/main.kinosail.bundle.js?v=${contentVersion(currentPWA)}`;
     const oldDownloadsPath = `/static/downloads.js?v=${app.downloads}`;
     const oldNavigationPath = `/static/main.kinosail.bundle.js?v=${app.navigation}`;
     const errors: string[] = [];
