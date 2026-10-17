@@ -118,7 +118,7 @@ func (analyzer *Analyzer) visualFingerprint(ctx context.Context, item library.It
 	revision := mediaRevision(item)
 	path := filepath.Join(analyzer.cache, item.ID+"-"+window+"-visual.json")
 	var cached visualFingerprintFile
-	if analyzer.cache != "" && readCache(path, &cached) && cached.Revision == revision && cached.Version == DetectorVersion {
+	if analyzer.cache != "" && readCache(path, &cached) && cached.Revision == revision && cached.Version == visualFingerprintVersion {
 		return cached.Points, nil
 	}
 	if analyzer.extractVisual == nil && analyzer.cache == "" {
@@ -137,7 +137,7 @@ func (analyzer *Analyzer) visualFingerprint(ctx context.Context, item library.It
 		return nil, err
 	}
 	if analyzer.cache != "" {
-		_ = saveJSON(path, visualFingerprintFile{Revision: revision, Version: DetectorVersion, Points: points})
+		_ = saveJSON(path, visualFingerprintFile{Revision: revision, Version: visualFingerprintVersion, Points: points})
 	}
 	return points, nil
 }

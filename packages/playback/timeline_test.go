@@ -167,3 +167,20 @@ func TestApplyAPIPlaybackTimelineProjectsServerAndClientModes(t *testing.T) {
 		t.Fatalf("client response = %#v tokens=%d", response, tokens)
 	}
 }
+
+func TestConfidentCreditRollSkipsAutomatically(t *testing.T) {
+	values := []markers.Marker{{Type: "credits", Start: 80, End: 100, Source: "text"}}
+	if got := AutomaticSkipTypes(values, []string{"credits"}); !reflect.DeepEqual(got, []string{"credits"}) {
+		t.Fatalf("skip types = %#v", got)
+	}
+	timeline := TimelineForAutomaticSkip(100, values, []string{"credits"})
+	if !reflect.DeepEqual(timeline.Omitted, []Range{{80, 100}}) || timeline.Duration != 80 {
+		t.Fatalf("timeline = %#v", timeline)
+	}
+	if remaining := RemainingMarkers(values, []string{"credits"}, timeline); len(remaining) != 0 {
+		t.Fatalf("remaining = %#v", remaining)
+	}
+	if got := AutomaticSkipTypes(values, []string{"intro"}); len(got) != 0 {
+		t.Fatalf("disabled type skipped: %#v", got)
+	}
+}

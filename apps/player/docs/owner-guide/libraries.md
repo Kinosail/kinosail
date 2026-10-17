@@ -42,7 +42,7 @@ Kinosail skips a folder or file that it cannot read and shows the rest of the ro
 
 Kinosail uses local NFO files, embedded tags, folder artwork, and media facts first. If TMDB is configured, select **Refresh missing metadata** in **Library discovery**. TMDB requests leave the Server and follow the provider's terms and attribution requirements.
 
-Open **Settings → Playback segment analysis** and select **Analyze playback segments now** to detect intro, recap, commercial, outro, and credits markers. Enable the matching **Skip … automatically** choices in **Settings → Playback** only after you review the results.
+Kinosail analyzes new and changed videos for intro, outro, and credits markers after each library scan. Open **Settings → Playback → Playback segment analysis** to check the status or select **Analyze playback segments now** to analyze the whole library again. Enable the matching **Skip … automatically** choices in **Settings → Playback** only after you review the results.
 
 ## Diagnose an item that is missing or wrong
 
