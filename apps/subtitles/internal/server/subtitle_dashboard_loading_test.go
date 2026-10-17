@@ -43,6 +43,15 @@ func TestSubtitleDashboardShowsTheLibraryScanUntilTheFirstScanPublishes(t *testi
 	if strings.Contains(body, "Coverage is unavailable.") {
 		t.Fatalf("pending dashboard rendered the failure state: %s", body)
 	}
+	germanRequest := ownerRequest("/?view=library")
+	germanRequest.Header.Set("Accept-Language", "de")
+	german := httptest.NewRecorder()
+	manager.dashboard(german, germanRequest)
+	for _, want := range []string{`<h2 id="subtitle-list-title" tabindex="-1">Ihre Bibliothek wird gescannt</h2>`, `<p role="status">Kinosail Subtitles liest Ihre Medienordner. Die Untertitelabdeckung erscheint hier, sobald der Scan abgeschlossen ist.</p>`} {
+		if !strings.Contains(german.Body.String(), want) || strings.Contains(german.Body.String(), "Scanning your") {
+			t.Fatalf("German pending dashboard lacks %q: %s", want, german.Body.String())
+		}
+	}
 	api := httptest.NewRecorder()
 	manager.statusAPI(api, ownerRequest("/api/v1/subtitle-library?view=library"))
 	if api.Code != http.StatusServiceUnavailable || api.Header().Get("Retry-After") != "5" {
