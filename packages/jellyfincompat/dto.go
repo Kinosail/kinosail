@@ -13,8 +13,7 @@ import (
 
 type ItemOptions struct {
 	CanDownload bool
-	UserData    map[string]any
-	MediaSource any
+	UserData    UserData
 }
 
 func ID(id string) string { return id + "0000000000000000" }
@@ -49,8 +48,8 @@ func Seasons(show library.Show) []int {
 	return seasons
 }
 
-func FolderDTO(id, name, collection string) map[string]any {
-	return map[string]any{"Id": id, "Name": name, "Type": "CollectionFolder", "CollectionType": collection, "IsFolder": true, "SortName": name}
+func FolderDTO(id, name, collection string) FolderRecord {
+	return FolderRecord{ID: id, Name: name, Type: "CollectionFolder", CollectionType: collection, IsFolder: true, SortName: name}
 }
 
 func itemClass(item library.Item) (string, string, string) {
@@ -65,49 +64,47 @@ func itemClass(item library.Item) (string, string, string) {
 	return "Movie", "Video", MoviesID
 }
 
-func ItemDTO(item library.Item, options ItemOptions) map[string]any {
+func ItemDTO(item library.Item, options ItemOptions) ItemRecord {
 	kind, mediaType, parent := itemClass(item)
-	dto := map[string]any{
-		"Id": ID(item.ID), "Name": item.Title, "SortName": item.Title, "Type": kind, "MediaType": mediaType,
-		"IsFolder": false, "CanDelete": false, "CanDownload": options.CanDownload, "Container": strings.ToLower(item.Container),
-		"ParentId": parent, "Overview": item.Plot, "OfficialRating": item.Rating, "DateCreated": item.Added.UTC().Format(time.RFC3339Nano),
-		"UserData": options.UserData, "ProviderIds": ProviderIDs(item.ProviderIDs), "LocationType": "FileSystem", "HasSubtitles": len(item.Subtitles) > 0,
-		"MediaSources": []any{options.MediaSource}, "MediaSourceCount": 1,
+	id := ID(item.ID)
+	record := ItemRecord{
+		ID: id, Name: item.Title, SortName: item.Title, Type: kind, MediaType: mediaType, CanDownload: options.CanDownload,
+		Container: strings.ToLower(item.Container), ParentID: parent, Overview: item.Plot, OfficialRating: item.Rating,
+		DateCreated: item.Added.UTC().Format(time.RFC3339Nano), UserData: options.UserData, ProviderIDs: ProviderIDs(item.ProviderIDs),
+		LocationType: "FileSystem", HasSubtitles: len(item.Subtitles) > 0, MediaSourceCount: 1,
 	}
 	if item.Artwork != "" {
-		dto["ImageTags"] = map[string]string{"Primary": ID(item.ID)}
+		record.ImageTags = &ImageTags{Primary: id}
 	}
 	if year, err := strconv.Atoi(item.Year); item.Year != "" && err == nil {
-		dto["ProductionYear"] = year
+		record.ProductionYear = &year
 	}
 	if item.Genres != "" {
-		dto["Genres"] = strings.Split(item.Genres, " · ")
+		record.Genres = strings.Split(item.Genres, " · ")
 	}
 	if item.Show != "" {
 		showID, showName := ShowID(item.Show), item.ShowTitle
 		if showName == "" {
 			showName = item.Show
 		}
-		dto["SeriesId"], dto["SeriesName"], dto["SeasonId"] = ID(showID), showName, SeasonID(showID, item.Season)
-		dto["ParentIndexNumber"], dto["IndexNumber"] = item.Season, item.Episode
+		record.EpisodeRecord = &EpisodeRecord{SeriesID: ID(showID), SeriesName: showName, SeasonID: SeasonID(showID, item.Season), ParentIndexNumber: item.Season, IndexNumber: item.Episode}
 	}
-	return dto
+	return record
 }
 
-func SeriesDTO(show library.Show) map[string]any {
+func SeriesDTO(show library.Show) SeriesRecord {
 	id := ID(show.ID)
-	dto := map[string]any{
-		"Id": id, "Name": show.Title, "SortName": show.Title, "Type": "Series", "MediaType": "Video", "ParentId": ShowsID,
-		"IsFolder": true, "ChildCount": len(show.Episodes), "ProviderIds": ShowProviderIDs(show.Episodes), "LocationType": "FileSystem",
-		"UserData": map[string]any{"ItemId": id, "Key": id},
+	record := SeriesRecord{
+		ID: id, Name: show.Title, SortName: show.Title, Type: "Series", MediaType: "Video", ParentID: ShowsID, IsFolder: true,
+		ChildCount: len(show.Episodes), ProviderIDs: ShowProviderIDs(show.Episodes), LocationType: "FileSystem", UserData: FolderUserData{ItemID: id, Key: id},
 	}
 	if show.ArtworkID != "" {
-		dto["ImageTags"] = map[string]string{"Primary": show.ArtworkID}
+		record.ImageTags = &ImageTags{Primary: show.ArtworkID}
 	}
-	return dto
+	return record
 }
 
-func SeasonDTO(show library.Show, season int) map[string]any {
+func SeasonDTO(show library.Show, season int) SeasonRecord {
 	count, art := 0, ""
 	for _, item := range show.Episodes {
 		if item.Season == season {
@@ -118,13 +115,12 @@ func SeasonDTO(show library.Show, season int) map[string]any {
 		}
 	}
 	id := SeasonID(show.ID, season)
-	dto := map[string]any{
-		"Id": id, "Name": "Season " + strconv.Itoa(season), "Type": "Season", "MediaType": "Video", "SeriesId": ID(show.ID),
-		"SeriesName": show.Title, "ParentId": ID(show.ID), "IndexNumber": season, "IsFolder": true, "ChildCount": count,
-		"UserData": map[string]any{"ItemId": id, "Key": id},
+	record := SeasonRecord{
+		ID: id, Name: "Season " + strconv.Itoa(season), Type: "Season", MediaType: "Video", SeriesID: ID(show.ID), SeriesName: show.Title,
+		ParentID: ID(show.ID), IndexNumber: season, IsFolder: true, ChildCount: count, UserData: FolderUserData{ItemID: id, Key: id},
 	}
 	if art != "" {
-		dto["ImageTags"] = map[string]string{"Primary": show.ArtworkID}
+		record.ImageTags = &ImageTags{Primary: show.ArtworkID}
 	}
-	return dto
+	return record
 }

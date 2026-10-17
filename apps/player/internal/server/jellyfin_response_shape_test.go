@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"io/fs"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -136,24 +137,18 @@ func writeJellyfinShapeMedia(t *testing.T, media string) {
 		"Pluribus (2025) {tvdb-123456}/Season 01/Pluribus.S01E01.We.Is.Us.mkv": "video",
 		"Photos/Coast.jpg": "photo",
 	}
-	for name, content := range files {
+	modified := time.Date(2026, time.March, 1, 9, 0, 0, 0, time.UTC)
+	for _, name := range slices.Sorted(maps.Keys(files)) {
 		path := filepath.Join(media, filepath.FromSlash(name))
 		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		if err := os.WriteFile(path, []byte(files[name]), 0o600); err != nil {
 			t.Fatal(err)
 		}
-	}
-	modified := time.Date(2026, time.March, 1, 9, 0, 0, 0, time.UTC)
-	err := filepath.WalkDir(media, func(path string, entry fs.DirEntry, err error) error {
-		if err != nil || entry.IsDir() {
-			return err
-		}
 		modified = modified.Add(time.Hour)
-		return os.Chtimes(path, modified, modified)
-	})
-	if err != nil {
-		t.Fatal(err)
+		if err := os.Chtimes(path, modified, modified); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

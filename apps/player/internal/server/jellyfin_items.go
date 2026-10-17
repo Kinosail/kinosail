@@ -49,7 +49,7 @@ func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request)
 
 func (api *jellyfinAPI) item(writer http.ResponseWriter, request *http.Request) {
 	view, _ := visibleView(request, api.index)
-	result, found := sharedjellyfin.NewCatalog(view, func(item library.Item) map[string]any { return api.itemDTO(request, item, api.userDataDTO) }).Item(request.PathValue("id"))
+	result, found := sharedjellyfin.NewCatalog(view, func(item library.Item) sharedjellyfin.ItemRecord { return api.itemDTO(request, item, api.userDataDTO) }).Item(request.PathValue("id"))
 	if !found {
 		http.NotFound(writer, request)
 		return
@@ -78,14 +78,15 @@ func (api *jellyfinAPI) episodes(writer http.ResponseWriter, request *http.Reque
 }
 
 func (api *jellyfinAPI) listing(request *http.Request, view *library.View) sharedjellyfin.Catalog {
-	return sharedjellyfin.NewCatalog(view, func(item library.Item) map[string]any { return api.itemDTO(request, item, api.listingUserDataDTO) })
+	return sharedjellyfin.NewCatalog(view, func(item library.Item) sharedjellyfin.ItemRecord {
+		return api.itemDTO(request, item, api.listingUserDataDTO)
+	})
 }
 
-func (api *jellyfinAPI) itemDTO(request *http.Request, item library.Item, userData func(*http.Request, library.Item) map[string]any) map[string]any {
+func (api *jellyfinAPI) itemDTO(request *http.Request, item library.Item, userData func(*http.Request, library.Item) sharedjellyfin.UserData) sharedjellyfin.ItemRecord {
 	viewer := currentViewer(request)
 	return sharedjellyfin.ItemDTO(item, sharedjellyfin.ItemOptions{
 		CanDownload: viewer.Owner || viewer.Downloads,
 		UserData:    userData(request, item),
-		MediaSource: jellyfinMediaSource(item, mediaFactsFor(item, probeResult{}), PlaybackPlan{Allowed: true, Mode: "direct", Reason: "catalog-summary", SubtitleMode: "none", ColorMode: "preserve"}, "", ""),
 	})
 }
