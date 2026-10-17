@@ -7,9 +7,12 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 const streamBufferBytes = 32 << 10
+
+var streamBuffers sync.Pool
 
 type Page struct {
 	Items            any `json:"Items"`
@@ -117,8 +120,14 @@ func (out *streamEncoder) value(value any) {
 }
 
 func writeJSONStream(writer http.ResponseWriter, stream jsonStream) {
-	buffered := bufio.NewWriterSize(writer, streamBufferBytes)
+	buffered, pooled := streamBuffers.Get().(*bufio.Writer)
+	if !pooled {
+		buffered = bufio.NewWriterSize(nil, streamBufferBytes)
+	}
+	buffered.Reset(writer)
 	if stream.writeJSON(buffered) == nil && buffered.WriteByte('\n') == nil {
 		_ = buffered.Flush()
 	}
+	buffered.Reset(nil)
+	streamBuffers.Put(buffered)
 }
