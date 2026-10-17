@@ -83,51 +83,29 @@
         ".verification/hls-audio-source/*/receipt.json"
       ]
     },
-    "diag-legacy-hog": {
+    "diag-forced-legacy": {
       "browser": true,
       "timeout": 40,
       "gomaxprocs": 2,
       "commands": [
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2", "KINOSAIL_DIAG_LEGACY": "1"}}
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1", "KINOSAIL_DIAG_LEGACY": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "32000", "--recovery", "first"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1", "KINOSAIL_DIAG_LEGACY": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "48000", "--recovery", "tail"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1", "KINOSAIL_DIAG_LEGACY": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1", "KINOSAIL_DIAG_LEGACY": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1", "KINOSAIL_DIAG_LEGACY": "1"}}
       ],
       "evidence": [".verification/hls-audio-splice/*/*.json", ".verification/hls-audio-splice/*/*.f32", ".verification/hls-audio-splice/*/*-private.log"]
     },
-    "diag-native-hog": {
+    "diag-forced-native": {
       "browser": true,
       "timeout": 40,
       "gomaxprocs": 2,
       "commands": [
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "2"}}
-      ],
-      "evidence": [".verification/hls-audio-splice/*/*.json", ".verification/hls-audio-splice/*/*.f32", ".verification/hls-audio-splice/*/*-private.log"]
-    },
-    "diag-legacy-plain": {
-      "browser": true,
-      "timeout": 40,
-      "gomaxprocs": 2,
-      "commands": [
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_LEGACY": "1"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_LEGACY": "1"}}
-      ],
-      "evidence": [".verification/hls-audio-splice/*/*.json", ".verification/hls-audio-splice/*/*.f32", ".verification/hls-audio-splice/*/*-private.log"]
-    },
-    "diag-native-plain": {
-      "browser": true,
-      "timeout": 40,
-      "gomaxprocs": 2,
-      "commands": [
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0"}},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "6", "KINOSAIL_DIAG_HOG": "0"}}
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "8000", "--recovery", "early"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "32000", "--recovery", "first"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "48000", "--recovery", "tail"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1"}},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "96000", "--recovery", "middle", "--coarse-video-clock"], "env": {"KINOSAIL_DIAG_REPEAT": "3", "KINOSAIL_DIAG_HOG": "0", "KINOSAIL_DIAG_EARLY_RESUME": "1", "KINOSAIL_DIAG_LOCK_STRESS": "1"}}
       ],
       "evidence": [".verification/hls-audio-splice/*/*.json", ".verification/hls-audio-splice/*/*.f32", ".verification/hls-audio-splice/*/*-private.log"]
     },

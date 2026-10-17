@@ -8,6 +8,7 @@ const id = process.env.QA_RESUME_ITEM, output = process.env.QA_AUDIO_OUTPUT;
 const point = Number(process.env.QA_AUDIO_CAPTURE_POINT);
 const span = Number(process.env.QA_AUDIO_CAPTURE_SPAN || '3');
 const trim = process.env.KINOSAIL_DIAG_LEGACY !== '1';
+const diag = {earlyResume: process.env.KINOSAIL_DIAG_EARLY_RESUME === '1', lockStress: process.env.KINOSAIL_DIAG_LOCK_STRESS === '1'};
 const rate = Number(process.env.QA_AUDIO_SAMPLE_RATE || '48000');
 if (![8000, 32000, 44100, 48000, 96000].includes(rate)) throw new Error('capture_rate_bound');
 if (!Number.isFinite(span) || span < 1 || span > 10) throw new Error('capture_span_bound');
@@ -31,7 +32,7 @@ try {
   });
   await page.goto(`${origin}/watch/${id}?compatible=1`);
   await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
-  const capture = await page.evaluate(async ({point, span, rate, trim}) => {
+  const capture = await page.evaluate(async ({point, span, rate, trim, diag}) => {
     const video = document.querySelector('video'), events = [], checkpoints = [];
     const rawTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
     let ac;
@@ -100,16 +101,20 @@ try {
     });
     source.connect(worklet);worklet.connect(ac.destination);
     video.muted = false;video.volume = 1;
+    let stress;
+    if(diag.lockStress)stress=setInterval(()=>{for(let i=0;i<200;i++){const g=ac.createGain();g.connect(ac.destination);g.disconnect();}},0);
+    if(diag.earlyResume){await ac.resume();checkpoint('audio-resumed');await new Promise(r=>setTimeout(r,20));}
     checkpoint('play-request');await video.play();checkpoint('play-resolved');
-    await ac.resume();checkpoint('audio-resumed');
+    if(!diag.earlyResume){await ac.resume();checkpoint('audio-resumed');}
     await new Promise((resolve,reject) => {
       const timer=setTimeout(()=>reject(new Error('capture_play_timeout')),15000);
       const tick=()=>{if(video.currentTime>=Math.min(point+span,video.duration)||video.ended){clearTimeout(timer);resolve();}else setTimeout(tick,20);};tick();
     });
+    clearInterval(stress);
     video.pause();worklet.port.postMessage('stop');const recorded=await done;
     worklet.disconnect();source.disconnect();await ac.close();
     return {...recorded,events,checkpoints,sampleRate:ac.sampleRate,currentTime:video.currentTime,duration:video.duration,ended:video.ended};
-  },{point,span,rate,trim});
+  },{point,span,rate,trim,diag});
   const {pcm,...facts}=capture;
   await writeFile(output+'.f32',Buffer.from(new Float32Array(pcm).buffer));
   result.capture={...facts,sampleCount:pcm.length};
