@@ -10,11 +10,12 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
 )
 
-func TestRealEmbeddedSubtitlesShareOneExtractionPassWithPerStreamBytes(t *testing.T) {
+func TestRealSubtitlePreparationExtractsEveryTrackInOnePassWithPerStreamBytes(t *testing.T) {
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
 		t.Skip("FFmpeg is required for the embedded subtitle integration test")
@@ -30,7 +31,16 @@ func TestRealEmbeddedSubtitlesShareOneExtractionPassWithPerStreamBytes(t *testin
 	if err = os.WriteFile(counting, []byte("#!/bin/sh\nprintf x >> '"+calls+"'\nexec '"+ffmpeg+"' \"$@\"\n"), 0o700); err != nil { //nolint:gosec // The test wrapper must be executable.
 		t.Fatal(err)
 	}
-	handler, id := formatTestItem(t, server.Config{Lifecycle: t.Context(), MediaDir: media, CacheDir: t.TempDir(), FFmpeg: counting, FFprobe: ffprobe})
+	cache := t.TempDir()
+	handler, id := formatTestItem(t, server.Config{Lifecycle: t.Context(), MediaDir: media, CacheDir: cache, FFmpeg: counting, FFprobe: ffprobe})
+	for deadline := time.Now().Add(30 * time.Second); ; time.Sleep(20 * time.Millisecond) {
+		if prepared, _ := filepath.Glob(filepath.Join(cache, "embedded-subtitles", "*", "*", "*.vtt")); len(prepared) == 3 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("background subtitle preparation did not cache every text track")
+		}
+	}
 	playback := apiCall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback", nil)
 	sources := regexp.MustCompile(`/subtitle/`+regexp.QuoteMeta(id)+`/embedded/(\d+)`).FindAllStringSubmatch(playback.Body.String(), -1)
 	streams := map[string]bool{}

@@ -30,10 +30,11 @@ var (
 )
 
 type EmbeddedOptions struct {
-	FFmpeg     string
-	CacheDir   string
-	Enrichment Enrichment
-	Timeline   *playback.Timeline
+	FFmpeg         string
+	CacheDir       string
+	Enrichment     Enrichment
+	Timeline       *playback.Timeline
+	AllTextStreams bool
 }
 
 type EmbeddedSubtitle struct {
@@ -121,7 +122,11 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 	} else if data, err := readEmbeddedSubtitle(path); err == nil {
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
-	data, err := probe.embeddedData(ctx, item, stream, options, path, embeddedCompanions(facts, item, stream, options.CacheDir))
+	var companions []int
+	if options.AllTextStreams {
+		companions = embeddedCompanions(facts, item, stream, options.CacheDir)
+	}
+	data, err := probe.embeddedData(ctx, item, stream, options, path, companions)
 	if err != nil {
 		return EmbeddedSubtitle{}, err
 	}

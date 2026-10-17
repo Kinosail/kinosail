@@ -13,6 +13,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/privatefile"
 )
 
+const embeddedBatchKey = "\x00batch"
+
 var errEmbeddedRetry = errors.New("embedded subtitle extraction must be retried")
 
 type embeddedCall struct {
@@ -38,6 +40,9 @@ func (probe *Probe) embeddedData(ctx context.Context, item library.Item, stream 
 	for ctx.Err() == nil {
 		probe.mu.Lock()
 		call := probe.embeddedCalls[key]
+		if call == nil && len(companions) > 0 {
+			call = probe.embeddedCalls[key+embeddedBatchKey]
+		}
 		if call == nil {
 			targets := probe.claimEmbedded(item, version, options.CacheDir, embeddedTarget{stream: stream, path: path, key: key}, companions)
 			probe.mu.Unlock()
@@ -68,9 +73,12 @@ func (probe *Probe) claimEmbedded(item library.Item, version, cacheDir string, l
 		if position >= 0 {
 			target.stream, target.path = companions[position], embeddedSubtitlePath(cacheDir, item, companions[position])
 			target.key = embeddedCallKey(item, version, target.stream, target.path)
-			if probe.embeddedCalls[target.key] != nil {
+			if probe.embeddedCalls[target.key] != nil || probe.embeddedCalls[target.key+embeddedBatchKey] != nil {
 				continue
 			}
+		}
+		if len(companions) > 0 {
+			target.key += embeddedBatchKey
 		}
 		target.call = &embeddedCall{done: make(chan struct{})}
 		probe.embeddedCalls[target.key] = target.call

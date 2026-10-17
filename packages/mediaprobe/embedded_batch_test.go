@@ -2,6 +2,7 @@ package mediaprobe
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
 )
@@ -34,7 +36,7 @@ func writeMultiSubtitleFixture(tb testing.TB, ffmpeg, root string, seconds int) 
 		var subtitle strings.Builder
 		for cue := range seconds / 2 {
 			start := cue * 2
-			fmt.Fprintf(&subtitle, "%d\n00:%02d:%02d,000 --> 00:%02d:%02d,500\n%s cue %d <i>styled</i> & more\n\n", cue+1, start/60, start%60, start/60, start%60+1, language, position*1000+cue)
+			fmt.Fprintf(&subtitle, "%d\n%02d:%02d:%02d,000 --> %02d:%02d:%02d,500\n%s cue %d <i>styled</i> & more\n\n", cue+1, start/3600, start%3600/60, start%60, start/3600, start%3600/60, start%60+1, language, position*1000+cue)
 		}
 		path := filepath.Join(root, language+".srt")
 		if err := os.WriteFile(path, []byte(subtitle.String()), 0o600); err != nil {
@@ -76,7 +78,7 @@ func textStreams(t *testing.T, probe *Probe, item library.Item) []int {
 	return streams
 }
 
-func TestEmbeddedExtractsEveryTextStreamInOnePassWithIdenticalBytes(t *testing.T) {
+func TestEmbeddedPreparationExtractsEveryTextStreamInOnePassWithIdenticalBytes(t *testing.T) {
 	t.Parallel()
 	ffmpeg, ffprobe := realSubtitleTools(t)
 	root := t.TempDir()
@@ -94,7 +96,8 @@ func TestEmbeddedExtractsEveryTextStreamInOnePassWithIdenticalBytes(t *testing.T
 	writeProbeScript(t, counting, "#!/bin/sh\nprintf x >> '"+calls+"'\nexec '"+ffmpeg+"' \"$@\"\n")
 	probe, cache := New(ffprobe), filepath.Join(root, "cache")
 	options := EmbeddedOptions{FFmpeg: counting, CacheDir: cache}
-	for _, stream := range []int{streams[1], streams[0], streams[3], streams[2]} {
+	for position, stream := range []int{streams[1], streams[0], streams[3], streams[2]} {
+		options.AllTextStreams = position == 0
 		subtitle, err := probe.Embedded(t.Context(), item, stream, options)
 		if err != nil || subtitle.Path != embeddedSubtitlePath(cache, item, stream) {
 			t.Fatalf("cached extraction %d = %#v, %v", stream, subtitle, err)
@@ -125,7 +128,7 @@ func TestEmbeddedFallsBackToSingleStreamWhenCombinedPassFails(t *testing.T) {
 	}}
 	calls, ffmpeg, cache := filepath.Join(root, "calls"), filepath.Join(root, "ffmpeg"), filepath.Join(root, "cache")
 	writeProbeScript(t, ffmpeg, "#!/bin/sh\nmaps=0\nfor argument in \"$@\"; do [ \"$argument\" = -map ] && maps=$((maps+1)); done\nprintf '%s ' \"$maps\" >> '"+calls+"'\n[ \"$maps\" -gt 1 ] && { printf partial > \"$(eval echo \\${$#})\"; exit 1; }\nprintf '%s' '"+testWebVTT+"'\n")
-	subtitle, err := probe.Embedded(t.Context(), item, 4, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache})
+	subtitle, err := probe.Embedded(t.Context(), item, 4, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache, AllTextStreams: true})
 	if err != nil || subtitle.Path != embeddedSubtitlePath(cache, item, 4) {
 		t.Fatalf("fallback extraction = %#v, %v", subtitle, err)
 	}
@@ -141,7 +144,7 @@ func TestEmbeddedFallsBackToSingleStreamWhenCombinedPassFails(t *testing.T) {
 	}
 }
 
-func TestEmbeddedCompanionRequestJoinsRunningCombinedPass(t *testing.T) {
+func TestEmbeddedPreparationRequestJoinsRunningCombinedPass(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
 	item := library.Item{ID: "film", Path: filepath.Join(root, "film.mkv")}
@@ -149,7 +152,7 @@ func TestEmbeddedCompanionRequestJoinsRunningCombinedPass(t *testing.T) {
 	probe.cache[item.ID] = Result{SubtitleFacts: []SubtitleFacts{{SourceIndex: 2, Text: true}, {SourceIndex: 4, Text: true}}}
 	calls, release, ffmpeg := filepath.Join(root, "calls"), filepath.Join(root, "release"), filepath.Join(root, "ffmpeg")
 	writeProbeScript(t, ffmpeg, "#!/bin/sh\nprintf x >> '"+calls+"'\nwhile [ ! -f '"+release+"' ]; do sleep 0.01; done\nfor argument in \"$@\"; do case \"$argument\" in file:*) printf '%s' '"+testWebVTT+"' > \"${argument#file:}\";; esac; done\n")
-	options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: filepath.Join(root, "cache")}
+	options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: filepath.Join(root, "cache"), AllTextStreams: true}
 	owner := make(chan error, 1)
 	go func() { _, err := probe.Embedded(t.Context(), item, 2, options); owner <- err }()
 	waitEmbeddedFile(t, calls, owner)
@@ -181,7 +184,7 @@ func TestEmbeddedCombinedPassRejectsOversizedAndMissingOutputs(t *testing.T) {
 	probe.cache[item.ID] = Result{SubtitleFacts: []SubtitleFacts{{SourceIndex: 2, Text: true}, {SourceIndex: 4, Text: true}, {SourceIndex: 5, Text: true}, {SourceIndex: 6, Text: true}}}
 	ffmpeg, cache := filepath.Join(root, "ffmpeg"), filepath.Join(root, "cache")
 	writeProbeScript(t, ffmpeg, "#!/bin/sh\nfor argument in \"$@\"; do case \"$argument\" in file:*/2.vtt) printf '%s' '"+testWebVTT+"' > \"${argument#file:}\";; file:*/4.vtt) head -c 16777217 /dev/zero > \"${argument#file:}\";; file:*/5.vtt) : > \"${argument#file:}\";; esac; done\n")
-	options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache}
+	options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache, AllTextStreams: true}
 	if subtitle, err := probe.Embedded(t.Context(), item, 2, options); err != nil || subtitle.Path == "" {
 		t.Fatalf("valid stream = %#v, %v", subtitle, err)
 	}
@@ -196,25 +199,47 @@ func TestEmbeddedCombinedPassRejectsOversizedAndMissingOutputs(t *testing.T) {
 	}
 }
 
-func BenchmarkEmbeddedAllTextStreams(b *testing.B) {
-	ffmpeg, ffprobe := realSubtitleTools(b)
-	root := b.TempDir()
-	item := writeMultiSubtitleFixture(b, ffmpeg, root, 1200)
-	probe := New(ffprobe)
-	var streams []int
-	for _, subtitle := range probe.Facts(b.Context(), item).SubtitleFacts {
-		if subtitle.Text {
-			streams = append(streams, subtitle.SourceIndex)
+func TestEmbeddedViewerRequestIsNotDelayedByPreparationPass(t *testing.T) {
+	t.Parallel()
+	root := t.TempDir()
+	item := library.Item{ID: "film", Path: filepath.Join(root, "film.mkv")}
+	probe := New("unused")
+	probe.cache[item.ID] = Result{SubtitleFacts: []SubtitleFacts{{SourceIndex: 2, Text: true}, {SourceIndex: 4, Text: true}, {SourceIndex: 5, Text: true}}}
+	calls, release, ffmpeg := filepath.Join(root, "calls"), filepath.Join(root, "release"), filepath.Join(root, "ffmpeg")
+	writeProbeScript(t, ffmpeg, "#!/bin/sh\noutputs=0\nfor argument in \"$@\"; do case \"$argument\" in file:*) outputs=$((outputs+1));; esac; done\nprintf '%s ' \"$outputs\" >> '"+calls+"'\nif [ \"$outputs\" = 0 ]; then printf '%s' '"+testWebVTT+"'; exit 0; fi\nwhile [ ! -f '"+release+"' ]; do sleep 0.01; done\nfor argument in \"$@\"; do case \"$argument\" in file:*) printf '%s' '"+testWebVTT+"' > \"${argument#file:}\";; esac; done\n")
+	cache := filepath.Join(root, "cache")
+	preparation := make(chan error, 1)
+	go func() {
+		_, err := probe.Embedded(t.Context(), item, 2, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache, AllTextStreams: true})
+		preparation <- err
+	}()
+	waitEmbeddedFile(t, calls, preparation)
+	for _, stream := range []int{2, 4} {
+		viewer, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+		subtitle, err := probe.Embedded(viewer, item, stream, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: cache})
+		cancel()
+		if err != nil || subtitle.Path != embeddedSubtitlePath(cache, item, stream) {
+			t.Fatalf("viewer stream %d waited for preparation: %#v, %v", stream, subtitle, err)
 		}
 	}
-	iteration := 0
-	for b.Loop() {
-		iteration++
-		options := EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: filepath.Join(root, "cache-"+strconv.Itoa(iteration))}
-		for _, stream := range streams {
-			if _, err := probe.Embedded(b.Context(), item, stream, options); err != nil {
-				b.Fatal(err)
-			}
-		}
+	if err := os.WriteFile(release, nil, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := <-preparation; err != nil {
+		t.Fatal(err)
+	}
+	if data, err := os.ReadFile(calls); err != nil || string(data) != "3 0 0 " {
+		t.Fatalf("FFmpeg outputs per pass = %q, %v", data, err)
+	}
+	if _, err := probe.Embedded(t.Context(), item, 5, EmbeddedOptions{CacheDir: cache}); err != nil {
+		t.Fatalf("preparation did not cache its companion stream: %v", err)
+	}
+	other := filepath.Join(root, "other-cache")
+	if _, err := probe.Embedded(t.Context(), item, 4, EmbeddedOptions{FFmpeg: ffmpeg, CacheDir: other}); err != nil {
+		t.Fatal(err)
+	}
+	entries, err := os.ReadDir(filepath.Dir(embeddedSubtitlePath(other, item, 4)))
+	if err != nil || len(entries) != 1 || entries[0].Name() != "4.vtt" {
+		t.Fatalf("viewer request extracted companion streams: %v, %v", entries, err)
 	}
 }

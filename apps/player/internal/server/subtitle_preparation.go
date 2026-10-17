@@ -189,7 +189,9 @@ func (probe *mediaProbe) preparePreferredSubtitle(ctx context.Context, item libr
 		return nil
 	}
 	if stream, selected := preferredTextStream(item, probe.core.Facts(ctx, item), preferred); selected {
-		_, _, err := probe.extractEmbedded(ctx, item, stream)
+		options := probe.embeddedOptions()
+		options.AllTextStreams = true
+		_, err := probe.core.Embedded(ctx, item, stream, options)
 		return err
 	}
 	return ctx.Err()
