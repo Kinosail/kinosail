@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -59,10 +60,10 @@ func TestLibraryBrowseMatchesUncachedVisibilityForEveryPolicy(t *testing.T) {
 			lists.values[profile.ID+":"+item.ID] = true
 		}
 	}
-	cached := catalogapi.Library(func(request *http.Request) (catalog.Result, error) {
+	cachedResult := func(request *http.Request) (catalog.Result, error) {
 		return browseLibrary(request, index, progress, lists)
-	}, progress.ClientItem)
-	uncached := catalogapi.Library(func(request *http.Request) (catalog.Result, error) {
+	}
+	uncachedResult := func(request *http.Request) (catalog.Result, error) {
 		snapshot, err := index.Library()
 		if err != nil {
 			return catalog.Result{}, err
@@ -77,7 +78,8 @@ func TestLibraryBrowseMatchesUncachedVisibilityForEveryPolicy(t *testing.T) {
 		}, func() catalog.BrowseAccess {
 			return progress.BrowseAccess(&lists.mu, &lists.values, request, viewerPolicy(currentViewer(request)).Allows)
 		})
-	}, progress.ClientItem)
+	}
+	cached, uncached := catalogapi.Library(cachedResult, progress.ClientItem), catalogapi.Library(uncachedResult, progress.ClientItem)
 	compare := func(t *testing.T, phase string) {
 		t.Helper()
 		var requests sync.WaitGroup
@@ -89,6 +91,11 @@ func TestLibraryBrowseMatchesUncachedVisibilityForEveryPolicy(t *testing.T) {
 					cached(got, snapshotRequest(t.Context(), http.MethodGet, target, profile))
 					if got.Code != want.Code || got.Body.String() != want.Body.String() {
 						t.Errorf("%s %s %s = %d %.300q, want %d %.300q", phase, profile.ID, target, got.Code, got.Body.String(), want.Code, want.Body.String())
+					}
+					wantPage, wantErr := uncachedResult(snapshotRequest(t.Context(), http.MethodGet, target, profile))
+					gotPage, gotErr := cachedResult(snapshotRequest(t.Context(), http.MethodGet, target, profile))
+					if (gotErr == nil) != (wantErr == nil) || !reflect.DeepEqual(gotPage.Letters, wantPage.Letters) || gotPage.PreviousURL() != wantPage.PreviousURL() || gotPage.NextURL() != wantPage.NextURL() {
+						t.Errorf("%s %s %s web links = %+v %q %q, want %+v %q %q", phase, profile.ID, target, gotPage.Letters, gotPage.PreviousURL(), gotPage.NextURL(), wantPage.Letters, wantPage.PreviousURL(), wantPage.NextURL())
 					}
 				})
 			}
