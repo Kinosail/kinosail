@@ -51,7 +51,7 @@ with zipfile.ZipFile(archive) as bundle:
     source_files = subprocess.check_output(["git", "ls-tree", "-r", "--name-only", revision,
                                            "apps/player/apps/android/wear/src"], text=True).splitlines()
     expected_pins = {p for p in source_files if p.endswith(".kt")} | {
-        "apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
+        "apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/deep.yml",
         "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_home_readiness.py"}
     check(set(pins) == expected_pins, "source_pin_inventory")
     for path, digest in pins.items():
@@ -59,7 +59,7 @@ with zipfile.ZipFile(archive) as bundle:
               "source_pin_path")
         source = subprocess.check_output(["git", "show", revision + ":" + path])
         check(sha(source) == digest, "source_pin_mismatch")
-    check({"apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
+    check({"apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/deep.yml",
            "apps/player/apps/android/wear/build.gradle.kts"} <= set(pins), "source_pins_missing")
     check(len(receipt["apkSHA256"]) == 2 and all(re.fullmatch(r"[0-9a-f]{64}", value)
           for value in receipt["apkSHA256"].values()), "apk_hashes_missing")

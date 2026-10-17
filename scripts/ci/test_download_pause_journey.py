@@ -49,7 +49,7 @@ class DownloadPauseJourneyTest(unittest.TestCase):
                     "KINOSAIL_E2E_ARTIFACT_DIR": str(root / "artifacts with spaces" / mode)})
 
     def test_container_runs_both_modes_before_general_smoke(self):
-        source = CONTAINER.read_text()
+        source = CONTAINER.read_text() + HELPER.read_text()
         pause = source.index('run_download_pause_journeys "$project"')
         smoke = source.index('pnpm --dir e2e test "${browser_args[@]}"')
         self.assertLess(pause, smoke)

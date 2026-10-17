@@ -168,7 +168,7 @@ try:
     receipt["revision"] = command(["git", "rev-parse", "HEAD"]).decode().strip()
     check(re.fullmatch(r"[0-9a-f]{40}", receipt["revision"]), "revision_invalid")
     check(not command(["git", "status", "--porcelain"]).strip(), "checkout_not_clean")
-    paths = ["apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/app.yml",
+    paths = ["apps/player/scripts/test-wear-journeys.py", "apps/player/scripts/inspect-wear-evidence.py", ".github/workflows/deep.yml",
              "apps/player/apps/android/wear/build.gradle.kts", "apps/player/scripts/wear_home_readiness.py"]
     source = ROOT / "apps/player/apps/android/wear/src"
     paths += [str(p.relative_to(ROOT)) for p in sorted(source.rglob("*.kt"))]

@@ -2,7 +2,7 @@
 
 ## GitHub Actions verification
 
-- Required quality and security gates run on GitHub-hosted runners. Select affected apps using `scripts/ci/affected.py`; unknown inputs select every consumer. PRs and main pushes require quick Go tests and populated Chromium smoke journeys. Weekly and manual deep runs add race/coverage and complete cross-browser suites. Do not add `.gates-disabled` or bypass required checks to obtain a passing run.
+- Required quality and security gates run on GitHub-hosted runners. Select affected apps using `scripts/ci/plan.py` (selection rules live in `scripts/ci/affected.py`); unknown inputs select every consumer. PRs and merge queue runs require quick Go tests and populated Chromium smoke journeys. A main push that the merge queue already tested only rescans security, builds docs, and publishes. Weekly and manual deep runs (`deep.yml`) add race/coverage and complete cross-browser suites. Do not add `.gates-disabled` or bypass required checks to obtain a passing run.
 - Local hooks enforce the source-file cap and the current worktree lease; GitHub Actions runs complete selected suites. Run focused checks locally when changing their implementation.
 
 ## Scope and ownership
@@ -68,7 +68,7 @@
 - Prove the task commit is included in remote main with a fetched ancestry check. `git ls-remote` alone proves only the ref value.
 - GitHub Actions is the CI and container-publication authority. Green main pushes publish affected app containers automatically; version tags and major releases are not required. Keep the local deployment watcher separate from artifact publication.
 - Nox deployment requires successful CI and the selected app's production-image promotion for the exact current main commit. Its locally rebuilt ARM image must pass its own scan and remote health check; report that image separately from the published GHCR digest.
-- Current CI/CD decisions and evidence live in `engineering/research/ci-cd-reset-2026-09-22.md`.
+- Current CI/CD decisions and evidence live in `engineering/research/ci-speed-2026-10-17.md`; the 2026-09-22 reset note records the earlier design.
 - Treat source tests, browser checks, remote publication, deployed revision, container health, TLS, and physical-device proof as separate facts.
 - End implementation delivery reports with `MAIN: YES — <remote main SHA>` after proof, or `MAIN: NO — <specific blocker>`.
 

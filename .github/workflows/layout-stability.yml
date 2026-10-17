@@ -2,6 +2,7 @@ name: Layout stability evidence
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
     paths:
       - "apps/player/internal/server/**"
       - "apps/subtitles/internal/server/**"
@@ -12,6 +13,8 @@ on:
       - "packages/webassets/**"
       - "scripts/testing/*layout-stability*"
       - ".github/workflows/layout-stability.yml"
+  schedule:
+    - cron: "47 8 * * 1"
   workflow_dispatch:
     inputs:
       populated_suite:
@@ -30,7 +33,10 @@ concurrency:
 jobs:
   native:
     name: Native layout (${{ matrix.browser }})
-    if: github.event_name != 'workflow_dispatch' || inputs.populated_suite == 'none'
+    if: >-
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'layout-evidence')) ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.populated_suite == 'none')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:

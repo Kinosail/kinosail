@@ -17,10 +17,12 @@ QUEUE = '''    concurrency:
 
 class RuntimeContracts(unittest.TestCase):
     def test_quick_go_checks_reject_unknown_modes_before_side_effects(self):
-        app = (WORKFLOWS / 'app.yml').read_text()
+        deep = (WORKFLOWS / 'deep.yml').read_text()
         ci = (WORKFLOWS / 'ci.yml').read_text()
-        self.assertIn("KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}", app)
-        self.assertIn("KINOSAIL_GO_TEST_MODE: ${{ fromJSON(needs.plan.outputs.plan).deep && 'deep' || 'quick' }}", ci)
+        self.assertIn("KINOSAIL_GO_TEST_MODE: quick", ci)
+        self.assertNotIn("KINOSAIL_GO_TEST_MODE: deep", ci)
+        self.assertIn("KINOSAIL_GO_TEST_MODE: deep", deep)
+        self.assertNotIn("KINOSAIL_GO_TEST_MODE: quick", deep)
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / 'go-called'
             binary = Path(directory) / 'go'
@@ -64,13 +66,25 @@ class RuntimeContracts(unittest.TestCase):
             self.assertIn(f'/release.yml@refs/tags/{app}-v$version', installer)
 
     def test_browser_selection_cannot_succeed_without_running_a_project(self):
-        workflow = (WORKFLOWS / 'app.yml').read_text()
-        self.assertIn("fromJSON(inputs.plan).deep && 'full' || ''", workflow)
-        self.assertIn("engine: ${{ fromJSON(fromJSON(inputs.plan).deep && '[\"chromium\",\"firefox\",\"webkit\"]' || '[\"chromium\"]') }}", workflow)
-        self.assertIn('KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}', workflow)
-        self.assertIn("KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}", workflow)
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        deep = (WORKFLOWS / 'deep.yml').read_text()
+        self.assertIn('KINOSAIL_BROWSER_PROJECT: chromium', ci)
+        self.assertIn('KINOSAIL_BROWSER_SMOKE: "1"', ci)
+        self.assertIn('KINOSAIL_BROWSER_PHASE: ${{ matrix.phase }}', ci)
+        self.assertNotIn('KINOSAIL_BROWSER_MATRIX', ci)
+        self.assertIn('KINOSAIL_BROWSER_MATRIX: full', deep)
+        self.assertIn('engine: [chromium, firefox, webkit]', deep)
+        self.assertIn('KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}', deep)
+        self.assertNotIn('KINOSAIL_BROWSER_SMOKE', deep)
         for app in ('player', 'subtitles'):
             self.assertIn('browser_args+=(--grep=@smoke)', (ROOT / f'apps/{app}/scripts/test-container.sh').read_text())
+        launcher = (ROOT / 'apps/player/scripts/test-container.sh').read_text()
+        self.assertIn('run_browser_phases "$project" "$browser_phase" "$port"', launcher)
+        player = (ROOT / 'apps/player/scripts/test-browser-journeys.sh').read_text()
+        self.assertIn('if [[ "$phase" != populated ]]; then', player)
+        self.assertIn('if [[ "$phase" != journeys ]]; then', player)
+        self.assertLess(player.index('run_local_player_journeys "$project"'), player.index('if [[ "$phase" != journeys ]]; then'))
+        self.assertLess(player.index('if [[ "$phase" != journeys ]]; then'), player.index('run_populated_player_journeys "$project" "$url"'))
         with tempfile.TemporaryDirectory() as directory:
             marker = Path(directory) / 'effects'
             for tool in ('docker', 'podman', 'mktemp'):
@@ -89,13 +103,19 @@ class RuntimeContracts(unittest.TestCase):
                     capture_output=True)
                 self.assertEqual(result.returncode, 2)
                 self.assertFalse(marker.exists())
+            for phase in ('unknown', 'ALL', 'journeys populated', 'x' * 10000):
+                result = subprocess.run(['bash', str(ROOT / 'apps/player/scripts/test-container.sh')],
+                    env=env | {'KINOSAIL_BROWSER_MATRIX': '', 'KINOSAIL_BROWSER_PHASE': phase}, capture_output=True)
+                self.assertEqual(result.returncode, 2, phase[:20])
+                self.assertFalse(marker.exists())
 
     def test_browser_integrity_runs_even_without_go_jobs(self):
-        source = (WORKFLOWS / 'ci.yml').read_text().split('  web:')[0]
+        source = (WORKFLOWS / 'ci.yml').read_text().split('\n  repository:\n', 1)[1].split('\n  go:\n', 1)[0]
         self.assertIn('python3 scripts/quality/check-dependency-integrity.py --browser-only', source)
+        self.assertNotIn('if: ', source.split('    steps:', 1)[1])
 
     def test_browser_failure_upload_covers_actual_launcher_output(self):
-        workflow = (WORKFLOWS / 'app.yml').read_text()
+        workflow = (WORKFLOWS / 'ci.yml').read_text().split('\n  e2e:\n', 1)[1].split('\n  proofs:\n', 1)[0]
         configured = next(line.split('KINOSAIL_E2E_OUTPUT_DIR: ', 1)[1]
             for line in workflow.splitlines() if 'KINOSAIL_E2E_OUTPUT_DIR: ' in line)
         upload = workflow.split('- name: Keep verifiable E2E artifact', 1)[1]
@@ -104,13 +124,16 @@ class RuntimeContracts(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             for app in ('player', 'subtitles'):
                 launcher = (ROOT / f'apps/{app}/scripts/test-container.sh').read_text()
+                if app == 'player':
+                    launcher += (ROOT / 'apps/player/scripts/test-browser-journeys.sh').read_text()
                 command = next(line.strip() for line in launcher.splitlines()
                     if 'KINOSAIL_E2E_OUTPUT_DIR=' in line and 'pnpm --dir e2e test' in line)
-                for engine in ('chromium', 'firefox', 'webkit'):
-                    with self.subTest(app=app, engine=engine):
+                command = command.replace('$results-$project', '$KINOSAIL_E2E_OUTPUT_DIR-$project')
+                for engine in ('journeys', 'populated', 'all'):
+                    with self.subTest(app=app, phase=engine):
                         def expand(value):
                             return value.replace('${{ runner.temp }}', directory).replace(
-                                '${{ inputs.app }}', app).replace('${{ matrix.engine }}', engine)
+                                '${{ matrix.app }}', app).replace('${{ matrix.phase }}', engine)
                         base = expand(configured)
                         env = os.environ | {'KINOSAIL_E2E_OUTPUT_DIR': base, 'project': engine}
                         result = subprocess.run(['bash', '-c',

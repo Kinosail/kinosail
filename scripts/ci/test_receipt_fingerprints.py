@@ -53,10 +53,13 @@ class ReceiptFingerprintPolicy(unittest.TestCase):
         self.assertTrue(fingerprints().issubset(actual))
 
     def test_hosted_secret_gate_runs_real_controls_before_scan(self):
-        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        self.assertTrue("KINOSAIL_REAL_SCANNER: gitleaks" in workflow)
-        self.assertLess(workflow.index("python3 -m unittest scripts.ci.test_receipt_fingerprints"),
-                        workflow.index("run: python3 scripts/ci/secrets.py"))
+        for name in ("ci.yml", "deep.yml"):
+            with self.subTest(workflow=name):
+                workflow = (ROOT / ".github/workflows" / name).read_text()
+                self.assertIn("KINOSAIL_REAL_SCANNER: gitleaks", workflow)
+                self.assertEqual(workflow.count("python3 scripts/ci/secrets.py"), 1)
+                self.assertLess(workflow.index("python3 -m unittest scripts.ci.test_receipt_fingerprints"),
+                                workflow.index("python3 scripts/ci/secrets.py"))
 
 
 @unittest.skipUnless(SCANNER, "real scanner is explicitly run by the hosted secret gate")

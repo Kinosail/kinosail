@@ -126,9 +126,9 @@ class ScanDiagnosticTests(unittest.TestCase):
                     self.assertEqual(output.exists(), expected == 0)
 
     def test_manual_projection_does_not_replace_the_existing_gate(self):
-        workflow = SCRIPT.parents[2] / '.github/workflows/ci.yml'
+        workflow = SCRIPT.parents[2] / '.github/workflows/deep.yml'
         source = workflow.read_text()
-        gate = source.split('  secrets:\n', 1)[1].split('\n  codeql:', 1)[0]
+        gate = source.split('  security:\n', 1)[1].split('\n  swift-analysis:', 1)[0]
         self.assertEqual(gate.count('run: python3 scripts/ci/secrets.py'), 1)
         self.assertEqual(gate.count('go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1'), 1)
         self.assertIn("always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic", gate)

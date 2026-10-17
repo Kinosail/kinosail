@@ -13,7 +13,7 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 class NativeProbeContractTests(unittest.TestCase):
     def test_focused_native_probe_rejects_unknown_modes_before_outputs(self):
-        source = (WORKFLOWS / 'app.yml').read_text()
+        source = (WORKFLOWS / 'deep.yml').read_text()
         step = source.split('      - name: Validate focused probe\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split('        run: |\n', 1)[1])
         with tempfile.TemporaryDirectory() as directory:
@@ -34,14 +34,13 @@ class NativeProbeContractTests(unittest.TestCase):
         self.assertIn('if: always()', source)
         self.assertIn('exit "$status"', source)
         self.assertNotIn('continue-on-error', source)
-        root = (WORKFLOWS / 'ci.yml').read_text()
-        self.assertIn('options: [none, AAC, storage, reader]', root)
-        self.assertIn("native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}", root)
+        self.assertIn('options: [none, AAC, storage, reader]', source)
+        self.assertIn("if: always() && inputs.native_probe != 'none'", source)
         self.assertIn("steps.probe.outcome == 'success'", source)
 
     def test_reader_probe_checks_all_parameter_repetitions_from_xcresult(self):
         from unittest.mock import patch
-        source = (WORKFLOWS / 'app.yml').read_text()
+        source = (WORKFLOWS / 'deep.yml').read_text()
         step = source.split('      - name: Execute one iOS probe suite\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split("          python3 - <<'PY'\n", 1)[1].split('\n          PY', 1)[0])
         selector = 'NativePreferencesUXTests/readerPendingMatchesLoadedColumnAndClearsAtTerminalStates(light:fontSize:)'
