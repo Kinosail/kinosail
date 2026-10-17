@@ -21,8 +21,15 @@ class SecurityContracts(unittest.TestCase):
         toolchains = [line.split("DEVELOPER_DIR:", 1)[1].strip()
                       for line in (ci + workflow).splitlines() if "DEVELOPER_DIR:" in line]
         self.assertEqual(toolchains, ["/Applications/Xcode_27.1.app/Contents/Developer"] * 5)
-        self.assertIn("languages: go,java-kotlin,javascript-typescript,python,actions", workflow)
+        self.assertIn("languages: javascript-typescript,python,actions", workflow)
+        self.assertIn("languages: go,java-kotlin", workflow)
         self.assertIn("languages: ${{ needs.plan.outputs.codeql }}", ci)
+        self.assertIn("languages: ${{ needs.plan.outputs.compiled }}", ci)
+        for source in (ci, workflow):
+            interpreted = source.split("build-mode: none", 1)[0].rsplit("languages:", 1)[1]
+            compiled = source.split("build-mode: manual", 1)[0].rsplit("languages:", 1)[1]
+            self.assertNotIn("go", interpreted)
+            self.assertNotIn("javascript", compiled)
         self.assertIn("queries: security-extended", ci)
         self.assertIn("config-file: .github/codeql-config.yml", ci)
         self.assertIn("languages: swift", workflow)

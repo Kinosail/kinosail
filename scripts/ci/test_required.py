@@ -108,6 +108,7 @@ class RequiredTests(unittest.TestCase):
         plan = make_plan(False, actions=True)
         needs = needs_for("security", plan)
         self.assertEqual(needs["security"]["result"], "success")
+        self.assertEqual(needs["codeql-compiled"]["result"], "skipped")
         verify("security", needs, "pull_request")
         needs["security"]["result"] = "skipped"
         with self.assertRaises(ValueError):
@@ -121,7 +122,7 @@ class RequiredTests(unittest.TestCase):
             if scope == "repository":
                 self.assertEqual(states, {"repository": "skipped", "docs": "success"})
             elif scope == "security":
-                self.assertEqual(states, {"security": "success"})
+                self.assertEqual(states, {"security": "success", "codeql-compiled": "success"})
             else:
                 self.assertEqual(set(states.values()), {"skipped"})
             verify(scope, needs, "push")

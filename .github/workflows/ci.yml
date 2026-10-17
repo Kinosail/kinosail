@@ -25,6 +25,7 @@ jobs:
     outputs:
       plan: ${{ steps.select.outputs.plan }}
       codeql: ${{ steps.select.outputs.codeql }}
+      compiled: ${{ steps.select.outputs.compiled }}
       modules: ${{ steps.select.outputs.modules }}
       apps: ${{ steps.select.outputs.apps }}
       shards: ${{ steps.select.outputs.shards }}
@@ -485,20 +486,6 @@ jobs:
           ignore-unfixed: true
       - if: fromJSON(needs.plan.outputs.plan).supply && github.event_name == 'pull_request'
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
-      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
-        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-          cache-dependency-path: |
-            apps/player/apps/android/**/*.gradle*
-            apps/player/apps/android/**/gradle.properties
-            apps/player/apps/android/**/gradle-wrapper.properties
-      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
-        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
-        with:
-          packages: 'platform-tools platforms;android-37.0'
       - if: contains(needs.plan.outputs.codeql, 'javascript-typescript')
         run: |
           echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
@@ -508,17 +495,64 @@ jobs:
         with:
           languages: ${{ needs.plan.outputs.codeql }}
           config-file: .github/codeql-config.yml
-          build-mode: ${{ (contains(needs.plan.outputs.codeql, 'go') || contains(needs.plan.outputs.codeql, 'java-kotlin')) && 'manual' || 'none' }}
+          build-mode: none
           queries: security-extended
-      - if: contains(needs.plan.outputs.codeql, 'go')
-        run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
-      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
-        run: ./gradlew :app:assembleDebug :wear:assembleDebug
-        working-directory: apps/player/apps/android
       - if: needs.plan.outputs.codeql != ''
         uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
       - name: Require zero open security findings on this ref
         if: needs.plan.outputs.codeql != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
+            -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
+          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
+
+  codeql-compiled:
+    name: CodeQL compiled languages
+    needs: plan
+    if: (needs.plan.outputs.verified != 'true' || github.event_name == 'push') && needs.plan.outputs.compiled != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - if: contains(needs.plan.outputs.compiled, 'go')
+        uses: ./.github/actions/setup-go
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - if: contains(needs.plan.outputs.compiled, 'java-kotlin')
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
+      - if: contains(needs.plan.outputs.compiled, 'java-kotlin')
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0'
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
+        with:
+          languages: ${{ needs.plan.outputs.compiled }}
+          config-file: .github/codeql-config.yml
+          build-mode: manual
+          queries: security-extended
+      - if: contains(needs.plan.outputs.compiled, 'go')
+        run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
+      - if: contains(needs.plan.outputs.compiled, 'java-kotlin')
+        run: ./gradlew :app:assembleDebug :wear:assembleDebug
+        working-directory: apps/player/apps/android
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
+      - name: Require zero open security findings on this ref
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -574,7 +608,7 @@ jobs:
   security-required:
     name: Security checks
     if: always()
-    needs: [plan, security]
+    needs: [plan, security, codeql-compiled]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

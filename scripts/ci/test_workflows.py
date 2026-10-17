@@ -207,14 +207,14 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertNotIn('    paths:', ci)
         self.assertIn('needs: [plan, repository, docs]', ci)
         self.assertEqual(ci.count('needs: [plan, go, e2e, proofs, arm, tools, client, android]'), 2)
-        self.assertIn('needs: [plan, security]', ci)
+        self.assertIn('needs: [plan, security, codeql-compiled]', ci)
         from required import SCOPES
         self.assertEqual(SCOPES, {'repository': ('repository', 'docs'),
                                   'app': ('go', 'e2e', 'proofs', 'arm', 'tools', 'client', 'android'),
-                                  'security': ('security',)})
+                                  'security': ('security', 'codeql-compiled')})
         jobs = re.findall(r'^  ([a-z][a-z0-9-]*):$', ci.split('\njobs:\n', 1)[1], re.M)
         self.assertEqual(jobs, ['plan', 'repository', 'go', 'e2e', 'proofs', 'arm', 'tools', 'client', 'android', 'docs',
-                                'security', 'repository-required', 'player-required', 'subtitles-required',
+                                'security', 'codeql-compiled', 'repository-required', 'player-required', 'subtitles-required',
                                 'security-required', 'publish', 'publish-docs', 'notify-indexnow'])
 
     def test_invalid_quality_scope_has_no_side_effects(self):

@@ -10,7 +10,7 @@ from plan import expected
 
 SCOPES = {"repository": ("repository", "docs"),
           "app": ("go", "e2e", "proofs", "arm", "tools", "client", "android"),
-          "security": ("security",)}
+          "security": ("security", "codeql-compiled")}
 
 
 def parse_plan(raw):

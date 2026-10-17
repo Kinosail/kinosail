@@ -38,10 +38,9 @@ class FastPathContracts(unittest.TestCase):
             section = ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
             condition = section.split('    if: ', 1)[1].split('\n', 1)[0]
             self.assertTrue(condition.startswith("needs.plan.outputs.verified != 'true'"), (job, condition))
-        for job, nxt in (('docs', 'security'), ('security', 'repository-required')):
+        for job, nxt in (('docs', 'security'), ('security', 'codeql-compiled'), ('codeql-compiled', 'repository-required')):
             section = ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
-            self.assertIn("(needs.plan.outputs.verified != 'true' || github.event_name == 'push')" if job == 'docs'
-                          else "if: needs.plan.outputs.verified != 'true' || github.event_name == 'push'", section)
+            self.assertIn("needs.plan.outputs.verified != 'true' || github.event_name == 'push'", section)
         publish = (WORKFLOWS / 'publish.yml').read_text()
         verified = publish.split('\n  verified:\n', 1)[1].split('\n  images:\n', 1)[0]
         self.assertIn('      actions: read\n', verified)

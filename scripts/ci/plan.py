@@ -10,7 +10,9 @@ import subprocess
 from affected import APPS, LANGUAGES, affected, changed_paths
 from proof_shard import load, plan as proof_plan
 
-KEYS = ("plan", "codeql", "modules", "apps", "shards", "arm", "tools", "verified")
+KEYS = ("plan", "codeql", "compiled", "modules", "apps", "shards", "arm", "tools", "verified")
+INTERPRETED = ("javascript-typescript", "python", "actions")
+COMPILED = ("go", "java-kotlin")
 MODULES = ({"module": "player", "directory": "apps/player", "media": "true", "contract": "single-container tidy-check"},
            {"module": "subtitles", "directory": "apps/subtitles", "media": "false", "contract": "single-container tidy-check"},
            {"module": "packages", "directory": "packages", "media": "false", "contract": "tidy-check"})
@@ -22,7 +24,8 @@ def derive(plan):
         raise ValueError("invalid selection plan")
     selected = {app for app in APPS if plan[app]}
     return {
-        "codeql": ",".join(name for name in LANGUAGES if plan[name]),
+        "codeql": ",".join(name for name in INTERPRETED if plan[name]),
+        "compiled": ",".join(name for name in COMPILED if plan[name]),
         "modules": [entry for entry in MODULES if plan[entry["module"]]],
         "apps": [{"app": app, "phase": phase, "system": system, "workers": workers}
                  for app in APPS if app in selected for phase, system, workers in PHASES[app]],
@@ -47,6 +50,7 @@ def expected(plan, event_name):
         "client": live and plan["client"],
         "android": live and plan["android"],
         "security": live or event_name == "push",
+        "codeql-compiled": (live or event_name == "push") and bool(derived["compiled"]),
     }
 
 
@@ -95,7 +99,7 @@ def main():
     plan, derived, run = build(os.environ["GITHUB_EVENT_NAME"], event, os.environ["GITHUB_SHA"],
                                os.environ["GITHUB_REPOSITORY"], flags["CI_FULL"] == "true", flags["CI_DEEP"] == "true")
     outputs = {"plan": json.dumps(plan, separators=(",", ":")), "verified": "true" if plan["verified"] else "false",
-               **{key: value if key == "codeql" else json.dumps(value, separators=(",", ":"))
+               **{key: value if key in ("codeql", "compiled") else json.dumps(value, separators=(",", ":"))
                   for key, value in derived.items()}}
     with open(os.environ["GITHUB_OUTPUT"], "a") as output:
         output.writelines(f"{key}={outputs[key]}\n" for key in KEYS)
