@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -69,14 +70,15 @@ func (manager *hlsManager) prepareRecipeSegmentFile(ctx context.Context, item li
 
 func waitForHLSJobFile(ctx context.Context, path string, job *hlsJob) (bool, error) {
 	var failure error
+	directories := []string{filepath.Dir(path)}
 	if job == nil {
-		ready := playback.WaitHLSReady(ctx, func() error {
+		ready := playback.WaitHLSChange(ctx, directories, nil, func() error {
 			_, failure = os.Stat(path)
 			return failure
 		})
 		return ready, failure
 	}
-	ready := playback.WaitHLSReady(ctx, func() error {
+	ready := playback.WaitHLSChange(ctx, directories, job.done, func() error {
 		_, failure = os.Stat(path)
 		if errors.Is(failure, os.ErrNotExist) {
 			select {
