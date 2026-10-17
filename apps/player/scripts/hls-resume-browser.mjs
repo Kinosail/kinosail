@@ -17,7 +17,8 @@ const forceConversion = process.env.QA_RESUME_FORCE_AUDIO_CONVERSION === 'true';
 const channel = process.env.PLAYWRIGHT_CHANNEL || (!process.env.CI && process.platform === 'darwin' ? 'chrome' : undefined);
 const browser = await (engine.startsWith('webkit') ? webkit.launch() : chromium.launch({channel}));
 const context = await browser.newContext({...(forceConversion ? {userAgent: 'Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36'} : {}), extraHTTPHeaders: {Authorization: `Bearer ${token}`}});
-const rows = [], responses = [], playlists = [], playlistCaptures = [];
+const rows = [], diagnostics = [], responses = [], playlists = [], playlistCaptures = [];
+const diag = process.env.QA_RESUME_DIAG === '1';
 let failureClass, stage = 'setup';
 
 try {
@@ -25,7 +26,7 @@ try {
   if (planResponse.status() !== 200) throw new Error('playback_plan_status');
   const plan = await planResponse.json(), reference = plan.direct;
   if (!reference?.startsWith('/') || reference.startsWith('//')) throw new Error('reference_source_shape');
-  for (const variant of ['reference', 'compatible']) {
+  for (const variant of ['reference', 'compatible', ...(diag ? [...Array(12).fill('reference-natural'), 'reference-race', 'reference-race', 'reference-control'] : [])]) {
     const progress = await context.request.put(`${origin}/api/v1/items/${id}/progress`, {data: {seconds: resume, watched: false}});
     if (progress.status() !== 200) throw new Error('save_resume_status_' + progress.status());
     const page = await context.newPage();
@@ -33,6 +34,29 @@ try {
       if (event.target instanceof HTMLVideoElement && window.qaResumeFirstPlaying === undefined)
         window.qaResumeFirstPlaying = event.target.currentTime;
     }, true));
+    if (variant === 'reference-race' || variant === 'reference-control') await page.addInitScript(() => {
+      const descriptor = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime');
+      const nativeRequest = HTMLVideoElement.prototype.requestVideoFrameCallback;
+      let pending, raced = 0;
+      window.qaRaces = 0;
+      Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {configurable: true, get: descriptor.get, set(value) {
+        if (this instanceof HTMLVideoElement && raced < 6 && this.paused && value < this.duration - 1) {
+          raced++; pending = value; descriptor.set.call(this, value - 1); return;
+        }
+        descriptor.set.call(this, value);
+      }});
+      HTMLVideoElement.prototype.requestVideoFrameCallback = function (callback) {
+        const video = this;
+        return nativeRequest.call(video, (now, metadata) => {
+          if (pending !== undefined && Math.abs(metadata.mediaTime - (pending - 1)) < .1) {
+            const target = pending; pending = undefined; window.qaRaces++;
+            descriptor.set.call(video, target);
+            const until = performance.now() + 1500; while (performance.now() < until);
+          }
+          callback(now, metadata);
+        });
+      };
+    });
     if (native) await page.addInitScript(() => {
       for (const name of ['MediaSource', 'ManagedMediaSource', 'WebKitMediaSource'])
         Object.defineProperty(window, name, {configurable: true, value: undefined});
@@ -79,7 +103,7 @@ try {
         finally {clearTimeout(timer);}
       })());
     });
-    if (variant === 'reference') {
+    if (variant.startsWith('reference')) {
       await page.route(`${origin}/__qa_reference`, route => route.fulfill({contentType: 'text/html',
         body: `<video muted playsinline src="${reference.replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"></video>`}));
       await page.goto(`${origin}/__qa_reference`);
@@ -173,8 +197,9 @@ try {
         firstPlaying: window.qaResumeFirstPlaying, eofStart, seeking: video.seeking, readyState: video.readyState,
         start: Number(video.dataset.start), mode: video.dataset.compatibilityMode,
         adapter: video.currentSrc.startsWith('blob:') ? 'mse' : 'native', currentTime: video.currentTime, samples, presentations};
-    }, {variant, duration, native, resume, frameRate, currentFrames: engine === 'chromium'});
-    rows.push(row);
+    }, {variant, duration, native, resume, frameRate, currentFrames: engine === 'chromium' && variant !== 'reference-control'});
+    if (variant.startsWith('reference-')) row.races = await page.evaluate(() => window.qaRaces);
+    (variant.startsWith('reference-') ? diagnostics : rows).push(row);
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await Promise.all(playlistCaptures);
     await page.close();
@@ -189,7 +214,18 @@ finally {
   await browser.close();
 }
 const matches = (rows[0]?.samples || []).map((sample, index) => sample.digest === rows[1]?.samples[index]?.digest);
-const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error || !row.ended)
+const expected = (rows[0]?.samples || []).map(sample => [sample.mediaTime, sample.digest].join());
+const diagnosticRow = row => row.variant === 'reference-control' ? row.error === 'frame_presentation_timeout' && row.races >= 1
+  : !row.error && row.ended && row.samples.length === 7 && row.samples.every((sample, index) => [sample.mediaTime, sample.digest].join() === expected[index]);
+const diagnosticSummary = diag ? {rows: diagnostics.length, passed: diagnostics.filter(diagnosticRow).length,
+  byVariant: Object.fromEntries(['reference-natural', 'reference-race', 'reference-control'].map(name => [name, {
+    rows: diagnostics.filter(row => row.variant === name).length, passed: diagnostics.filter(row => row.variant === name && diagnosticRow(row)).length,
+    errors: diagnostics.filter(row => row.variant === name && row.error).map(row => row.error),
+    races: diagnostics.filter(row => row.variant === name).reduce((sum, row) => sum + (row.races || 0), 0),
+    currentSamples: diagnostics.filter(row => row.variant === name).flatMap(row => row.samples).filter(sample => sample.source === 'current').length,
+    staleCallbacks: diagnostics.filter(row => row.variant === name).flatMap(row => row.presentations).filter(entry => entry.source === 'callback' && Math.abs(entry.mediaTime - entry.point) > .1).length,
+    staleInitial: diagnostics.filter(row => row.variant === name && row.presentations[0]?.mediaTime === 0).length}]))} : null;
+const passed = (!diag || diagnosticSummary.rows === 15 && diagnosticSummary.passed === 15) && !failureClass && rows.length === 2 && !rows.some(row => row.error || !row.ended)
   && matches.length === 7 && matches.every(Boolean) && expectedMode.split(',').includes(rows[1].mode)
   && Math.abs(rows[1].duration - rows[0].duration) < .1
   && rows[1].firstPlaying >= resume - .05 && rows[1].firstPlaying < resume + .5
@@ -198,6 +234,6 @@ const passed = !failureClass && rows.length === 2 && !rows.some(row => row.error
 await writeFile(output, JSON.stringify({engine, browserVersion: browser.version(),
   capabilitySimulation: [native ? 'MSE disabled to exercise native WebKit HLS policy' : '', forceConversion ? 'Chrome user agent forces server AAC conversion policy' : ''].filter(Boolean).join('; ') || null,
   proofClass: 'Real authenticated Server process; synthetic source; unmodified watch page and HLS; original-file or independently certified stream-copy MP4 reference',
-  stage, passed, failureClass, rows, matches, responses, playlists}, null, 2) + '\n');
-console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length}));
+  stage, passed, failureClass, rows, diagnosticSummary, diagnostics, matches, responses, playlists}, null, 2) + '\n');
+console.log(JSON.stringify({engine, passed, failureClass, matched: matches.filter(Boolean).length, total: matches.length, diagnosticSummary}));
 process.exitCode = passed ? 0 : 1;

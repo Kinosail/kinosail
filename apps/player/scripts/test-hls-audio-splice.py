@@ -166,7 +166,7 @@ try:
             child = dict(os.environ, QA_RESUME_ORIGIN=origin, QA_RESUME_TOKEN=api.token, QA_RESUME_ITEM=item['id'],
                          QA_RESUME_OUTPUT=str(run / 'video.json'), QA_RESUME_ENGINE='chromium', QA_RESUME_SECONDS='12.5',
                          QA_RESUME_FORCE_AUDIO_CONVERSION='true', QA_RESUME_EXPECTED_MODE='audio-transcode',
-                         QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']))
+                         QA_RESUME_FRAME_RATE=str(frame_rate), QA_RESUME_DURATION=str(metadata['durationSeconds']), QA_RESUME_DIAG='1')
             with (run / 'video-private.log').open('w') as output:
                 video = subprocess.run(['node', str(ROOT / 'apps/player/scripts/hls-resume-browser.mjs')],
                                        cwd=ROOT, env=child, stdout=output, stderr=output, timeout=300)

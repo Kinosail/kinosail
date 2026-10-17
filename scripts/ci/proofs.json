@@ -61,7 +61,7 @@
     },
     "audio-splice": {
       "browser": true,
-      "timeout": 20,
+      "timeout": 45,
       "gomaxprocs": 2,
       "commands": [
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "48000", "--recovery", "tail"]},
