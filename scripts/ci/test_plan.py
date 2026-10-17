@@ -24,7 +24,8 @@ def flags(selected=False, **overrides):
 class DeriveTests(unittest.TestCase):
     def test_every_matrix_follows_the_selection(self):
         full = derive(flags(True))
-        self.assertEqual([entry["module"] for entry in full["modules"]], ["player", "subtitles", "packages"])
+        self.assertEqual([(entry["module"], entry["shard"], entry["fragment"]) for entry in full["modules"]],
+                         [("player", "1/2", "true"), ("player", "2/2", "false"), ("subtitles", "", "false"), ("packages", "", "false")])
         self.assertEqual([(entry["app"], entry["phase"]) for entry in full["apps"]],
                          [("player", "journeys"), ("player", "populated"), ("subtitles", "all")])
         self.assertEqual({entry["system"] for entry in full["apps"] if entry["phase"] != "populated"}, {"true"})
@@ -52,7 +53,11 @@ class DeriveTests(unittest.TestCase):
         nothing = expected({**flags(False), "deep": False, "verified": False}, "pull_request")
         self.assertEqual({job for job, run in nothing.items() if run}, {"repository", "security"})
         verified = expected({**flags(True), "deep": False, "verified": True}, "push")
-        self.assertEqual({job for job, run in verified.items() if run}, {"docs", "security", "codeql-compiled"})
+        self.assertEqual({job for job, run in verified.items() if run}, {"docs"})
+        queued = expected({**flags(True), "deep": False, "verified": False}, "merge_group")
+        self.assertEqual({job for job, run in queued.items() if not run}, {"security", "codeql-compiled"})
+        pushed = expected({**flags(True), "deep": False, "verified": False}, "push")
+        self.assertTrue(pushed["security"] and pushed["codeql-compiled"])
         self.assertFalse(any(expected({**flags(True), "deep": False, "verified": True}, "pull_request").values()))
 
 

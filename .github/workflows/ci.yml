@@ -108,7 +108,7 @@ jobs:
               if [[ "$TOOLING" == true ]]; then make tooling-check; fi
 
   go:
-    name: Go (${{ matrix.module }})
+    name: Go (${{ matrix.module }}${{ matrix.shard && format(' {0}', matrix.shard) || '' }})
     needs: plan
     if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.modules != '[]'
     runs-on: ubuntu-24.04
@@ -147,9 +147,10 @@ jobs:
         env:
           MODULE: ${{ matrix.module }}
           KINOSAIL_GO_TEST_MODE: quick
+          KINOSAIL_GO_SHARD: ${{ matrix.shard }}
         run: ./scripts/ci/test-go.sh "$MODULE"
       - name: Verify certified first-fragment regeneration and cold reopen
-        if: matrix.module == 'player'
+        if: matrix.fragment == 'true'
         timeout-minutes: 3
         env:
           GOMAXPROCS: "2"
@@ -463,7 +464,7 @@ jobs:
   security:
     name: Security scans
     needs: plan
-    if: needs.plan.outputs.verified != 'true' || github.event_name == 'push'
+    if: needs.plan.outputs.verified != 'true' && github.event_name != 'merge_group'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -521,7 +522,7 @@ jobs:
   codeql-compiled:
     name: CodeQL compiled languages
     needs: plan
-    if: (needs.plan.outputs.verified != 'true' || github.event_name == 'push') && needs.plan.outputs.compiled != ''
+    if: needs.plan.outputs.verified != 'true' && github.event_name != 'merge_group' && needs.plan.outputs.compiled != ''
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:

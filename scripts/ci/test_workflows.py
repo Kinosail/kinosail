@@ -84,13 +84,15 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertLess(go.index('Install media fixture codecs'), go.index('scripts/ci/test-go.sh'))
         self.assertIn('KINOSAIL_GO_TEST_MODE: quick', go)
         fragment = go.split('      - name: Verify certified first-fragment regeneration and cold reopen\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn("if: matrix.module == 'player'", fragment)
+        self.assertIn("if: matrix.fragment == 'true'", fragment)
+        from plan import MODULES
+        self.assertEqual([entry['fragment'] for entry in MODULES], ['true', 'false', 'false', 'false'])
         self.assertIn('KINOSAIL_COPIED_RECOVERY_MEDIA: "1"', fragment)
         self.assertIn("-run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$'", fragment)
         self.assertNotIn('continue-on-error', fragment)
         self.assertLess(go.index('scripts/ci/test-go.sh'), go.index('Verify certified first-fragment'))
         from plan import MODULES
-        self.assertEqual([entry['media'] for entry in MODULES], ['true', 'false', 'false'])
+        self.assertEqual([entry['media'] for entry in MODULES], ['true', 'true', 'false', 'false'])
         race = (WORKFLOWS / 'deep.yml').read_text().split('\n  race:\n', 1)[1].split('\n  browser:\n', 1)[0]
         self.assertIn('KINOSAIL_COPIED_RECOVERY_MEDIA: "1"', race)
         self.assertIn(deb, race)

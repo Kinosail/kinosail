@@ -14,7 +14,7 @@
     },
     "prepared-timeline": {
       "browser": true,
-      "timeout": 20,
+      "timeout": 15,
       "gomaxprocs": 2,
       "commands": [
         {"argv": ["python3", "-B", "apps/player/scripts/test_hls_timeline_packets.py"]},
@@ -24,7 +24,20 @@
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--small-video"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--prepared", "--controls"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium"]},
-        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--long-remux"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--long-remux"]}
+      ],
+      "evidence": [
+        ".verification/hls-prepared-timeline/*/receipt.json",
+        ".verification/hls-prepared-timeline/*/SHA256SUMS",
+        ".verification/hls-resume-browser/*/receipt.json",
+        ".verification/hls-resume-browser/*/chromium.json"
+      ]
+    },
+    "resume-audio": {
+      "browser": true,
+      "timeout": 15,
+      "gomaxprocs": 2,
+      "commands": [
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "none"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--resume-seconds", ".5"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-resume-browser.py", "--engines", "chromium", "--audio-mode", "ac3", "--force-audio-conversion", "--prepared", "--tail-recovery", "--audio-reference"]},
@@ -34,8 +47,6 @@
         {"argv": ["python3", "apps/player/scripts/test-hls-cold-suffix.py"]}
       ],
       "evidence": [
-        ".verification/hls-prepared-timeline/*/receipt.json",
-        ".verification/hls-prepared-timeline/*/SHA256SUMS",
         ".verification/hls-resume-browser/*/receipt.json",
         ".verification/hls-resume-browser/*/chromium.json",
         ".verification/hls-cold-suffix/*/receipt.json"
@@ -61,14 +72,26 @@
     },
     "audio-splice": {
       "browser": true,
-      "timeout": 20,
+      "timeout": 15,
       "gomaxprocs": 2,
       "commands": [
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "48000", "--recovery", "tail"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "32000", "--recovery", "first"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--video-offset", ".13"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--video-offset", ".075"]},
-        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"]},
+        {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video"]}
+      ],
+      "evidence": [
+        ".verification/hls-audio-splice/*/receipt.json",
+        ".verification/hls-audio-splice/*/*-comparison.json",
+        ".verification/hls-audio-splice/*/video.json"
+      ]
+    },
+    "audio-clock": {
+      "browser": true,
+      "timeout": 15,
+      "gomaxprocs": 2,
+      "commands": [
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--fractional-video", "--submicrosecond-origin"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--quantized-mux-clock"]},
         {"argv": ["python3", "apps/player/scripts/test-hls-audio-splice.py", "--audio-sample-rate", "44100", "--recovery", "middle", "--half-sample-clock"]},
@@ -89,7 +112,7 @@
       "gomaxprocs": 4,
       "commands": [
         {"argv": ["python3", "apps/player/scripts/test-hls-source-version.py"]},
-        {"argv": ["python3", "apps/player/scripts/test-startup-local.py"], "env": {"KINOSAIL_STARTUP_BROWSER_CHANNEL": "chromium"}},
+        {"argv": ["python3", "apps/player/scripts/test-startup-local.py"], "env": { "KINOSAIL_STARTUP_BROWSER_CHANNEL": "chromium" }},
         {"argv": ["python3", "apps/player/scripts/hls-phase-evidence.py"], "always": true}
       ],
       "evidence": [
