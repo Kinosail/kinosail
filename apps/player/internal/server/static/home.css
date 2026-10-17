@@ -268,3 +268,15 @@ body .app-header .web-beta-badge{display:inline-flex;flex:none;align-items:cente
 .player-native-options .player-scrubber{height:auto;min-height:44px}.player-native-options [data-player-seek]{width:100%;min-height:44px}.player-native-options [data-player-time]{font-variant-numeric:tabular-nums;color:var(--muted)}
 .player-controls.is-idle{visibility:hidden}
 @media(max-width:700px),(max-height:500px){.player-controls:not(.player-native-controls) .player-center-control{top:max(34px,calc((100% - 88px - max(.65rem,env(safe-area-inset-bottom)))/2))}}
+body .library-shell.library-loading-shell{position:relative}
+body .library-shell.library-loading-shell::before{content:"";position:absolute;z-index:9;top:0;inset-inline:0;height:3px;background:var(--signal)}
+.library-loading-art{display:block;width:100%;aspect-ratio:2/3;border-radius:12px;background:var(--surface-2)}
+.library-loading .home-feature-copy p{max-width:36rem;margin:0}
+body .library-loading-shelf .grid.rail{grid-template-rows:auto;grid-auto-rows:0;row-gap:0;overflow:hidden}
+body .library-loading-shelf .card{display:block;min-width:0;overflow:hidden;pointer-events:none}
+@media(max-width:600px){.library-loading p{grid-column:1/-1}}
+body .library-loading-shelf .poster{display:block;width:100%;height:auto;aspect-ratio:2/3;border-radius:12px;background:var(--surface-2)}
+.library-loading-line{display:block;width:70%;height:.85rem;margin-top:.65rem;border-radius:4px;background:var(--surface-2)}
+body .library-loading-shelf .library-loading-heading{width:9rem;height:1.35rem;margin:.6rem 0}
+@media(prefers-reduced-motion:no-preference){.library-loading-art,body .library-loading-shelf .poster,.library-loading-line{background-image:linear-gradient(110deg,var(--surface-2) 35%,var(--surface-3) 50%,var(--surface-2) 65%);background-size:200% 100%;animation:skeleton-shimmer 2s ease-in-out infinite}}
+@media(forced-colors:active){body .library-shell.library-loading-shell::before{background:Highlight}.library-loading-art,body .library-loading-shelf .poster,.library-loading-line{background:Canvas;border:1px solid GrayText}}

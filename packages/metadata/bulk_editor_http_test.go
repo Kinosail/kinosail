@@ -88,6 +88,14 @@ func TestBulkEditorPageFailures(t *testing.T) {
 			t.Fatalf("failure = %#v", result)
 		}
 	})
+	t.Run("loading", func(t *testing.T) {
+		result := &bulkHTTPResult{}
+		recorder := httptest.NewRecorder()
+		newHTTPBulkEditor(&bulkIndexStub{snapshotErr: library.ErrLoading}, &bulkEffects{initial: map[string]Record{}}, result).Page(recorder, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/metadata/bulk", nil))
+		if result.status != http.StatusServiceUnavailable || recorder.Header().Get("Retry-After") != "5" {
+			t.Fatalf("loading = %#v Retry-After=%q", result, recorder.Header().Get("Retry-After"))
+		}
+	})
 	t.Run("render", func(t *testing.T) {
 		index := &bulkIndexStub{}
 		result := &bulkHTTPResult{err: errors.New("template failed")}

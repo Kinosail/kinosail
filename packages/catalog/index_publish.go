@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"context"
-	"errors"
 	"reflect"
 	"time"
 
@@ -18,8 +17,6 @@ type Decoration struct {
 }
 
 const ManagedStartupWait = 5 * time.Second
-
-var ErrLibraryLoading = errors.New("Library scan is in progress")
 
 type enrichedItem struct {
 	raw, value library.Item

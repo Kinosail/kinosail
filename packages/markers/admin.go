@@ -44,6 +44,7 @@ func (admin Admin) analysisStatus(writer http.ResponseWriter, _ *http.Request) {
 func (admin Admin) runAnalysis(writer http.ResponseWriter, request *http.Request, redirect bool) {
 	items, err := admin.Snapshot()
 	if err != nil {
+		library.MarkLoadingRetry(writer.Header(), err)
 		admin.Error(writer, request, "marker analysis is unavailable", http.StatusServiceUnavailable)
 		return
 	}

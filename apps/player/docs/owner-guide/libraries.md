@@ -38,7 +38,7 @@ Kinosail rescans only the folders that changed when it receives file-system even
 
 Kinosail skips a folder or file that it cannot read and shows the rest of the root. The log reports how many entries it skipped. If a folder that Kinosail scanned before becomes unreadable, Kinosail keeps the titles that it found there and tries the folder again at the next check. When a folder no longer exists, Kinosail removes its titles. If a whole root is missing or unreadable, the scan fails and Kinosail keeps the last Library it showed.
 
-When Kinosail starts, it waits up to 5 seconds for the first scan. If the scan takes longer, the server starts and answers health checks. Library pages then report that the Library scan is in progress until the first scan finishes.
+When Kinosail starts, it waits up to 5 seconds for the first scan. If the scan takes longer, the server starts and answers health checks. Library pages then show that the Library is being scanned. They open the Library automatically when the first scan finishes. If the scan fails, the page shows the scan error.
 
 ## Refresh metadata and markers
 

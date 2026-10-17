@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/catalog"
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func blockedFirstScan(ctx context.Context, root string, wait time.Duration) (*catalog.Index, chan struct{}, time.Duration) {
@@ -32,10 +33,10 @@ func TestStartupReturnsWhileTheFirstLibraryScanIsBlocked(t *testing.T) {
 		t.Fatalf("startup waited %s for a blocked Library scan", elapsed)
 	}
 	snapshot, err := index.Library()
-	if !errors.Is(err, catalog.ErrLibraryLoading) || snapshot.Len() != 0 {
+	if !errors.Is(err, library.ErrLoading) || snapshot.Len() != 0 {
 		t.Fatalf("library during blocked scan = %d items, %v", snapshot.Len(), err)
 	}
-	if _, _, statusErr := index.Status(); !errors.Is(statusErr, catalog.ErrLibraryLoading) {
+	if _, _, statusErr := index.Status(); !errors.Is(statusErr, library.ErrLoading) {
 		t.Fatalf("status during blocked scan = %v", statusErr)
 	}
 	close(release)

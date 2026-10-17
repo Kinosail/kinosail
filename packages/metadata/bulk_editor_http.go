@@ -63,6 +63,7 @@ func (editor *BulkEditor) Edit(writer http.ResponseWriter, request *http.Request
 func (editor *BulkEditor) renderPage(writer http.ResponseWriter, request *http.Request, message string) {
 	items, err := editor.index.Snapshot()
 	if err != nil {
+		library.MarkLoadingRetry(writer.Header(), err)
 		editor.fail(writer, request, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}

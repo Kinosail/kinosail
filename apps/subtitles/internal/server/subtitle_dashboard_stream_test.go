@@ -24,8 +24,6 @@ func TestSubtitleDashboardFlushesNavigationBeforeReadingLibrary(t *testing.T) {
 	for _, view := range []string{"summary", "wanted", "library"} {
 		t.Run(view, func(t *testing.T) {
 			manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
-			index := manager.index
-			manager.index = nil
 			response := httptest.NewRecorder()
 			writer := &subtitleShellWriter{ResponseRecorder: response, onFlush: func() {
 				body := response.Body.String()
@@ -37,7 +35,6 @@ func TestSubtitleDashboardFlushesNavigationBeforeReadingLibrary(t *testing.T) {
 				if strings.Contains(body, "subtitle-browser") || strings.Contains(body, "</html>") {
 					t.Error("coverage was rendered before the initial flush")
 				}
-				manager.index = index
 			}}
 			manager.dashboard(writer, ownerRequest("/?view="+view+"&q=%3CFilm%3E"))
 			if !response.Flushed || response.Code != http.StatusOK || response.Header().Get("X-Accel-Buffering") != "no" {
@@ -53,7 +50,6 @@ func TestSubtitleDashboardFlushesNavigationBeforeReadingLibrary(t *testing.T) {
 func TestSubtitleDashboardDisconnectAfterShellSkipsProjection(t *testing.T) {
 	t.Parallel()
 	manager, _ := subtitleFactsFixture(t, "#!/bin/sh\nexit 1\n")
-	manager.index = nil
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	response := httptest.NewRecorder()

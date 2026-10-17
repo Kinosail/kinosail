@@ -21,6 +21,7 @@ func Library(browse func(*http.Request) (catalog.Result, error), project func(*h
 			if errors.Is(err, catalog.ErrInvalidBrowse) {
 				status = http.StatusBadRequest
 			}
+			library.MarkLoadingRetry(writer.Header(), err)
 			apiAction{err: err, status: status}.serve(writer)
 			return
 		}

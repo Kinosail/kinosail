@@ -120,7 +120,7 @@ func serveScript(content []byte) http.HandlerFunc {
 	return compressedAsset(content, "text/javascript; charset=utf-8")
 }
 
-var mainBundle = append(append([]byte(nil), pwaJS...), shortcutsJS...)
+var mainBundle = joinScripts(pwaJS, shortcutsJS, webassets.LibraryLoading)
 
 func serveServiceWorker(writer http.ResponseWriter, _ *http.Request) {
 	writer.Header().Set("Content-Type", "text/javascript; charset=utf-8")

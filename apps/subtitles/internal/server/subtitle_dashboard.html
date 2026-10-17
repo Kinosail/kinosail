@@ -22,7 +22,7 @@
 {{end}}
 {{define "content"}}
 <div id="subtitle-content" data-total="{{.Total}}" data-ready="{{.Ready}}" data-wanted="{{.Wanted}}" data-pending="{{.Pending}}" data-unavailable="{{.Unavailable}}">
-{{if .LoadFailed}}<div class="subtitle-empty" role="alert"><h2>{{if eq .View "history"}}Subtitle history is unavailable.{{else}}Coverage is unavailable.{{end}}</h2><p>Try loading this view again.</p><a class="button quiet" href="" data-subtitle-nav>Try again</a></div>{{else}}
+{{if .LibraryLoading}}<div class="subtitle-empty subtitle-library-loading" data-library-loading data-retry-after="{{.RetryAfter}}"><h2 id="subtitle-list-title" tabindex="-1">Scanning your Library</h2><p role="status">Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.</p></div>{{else if .LoadFailed}}<div class="subtitle-empty" role="alert"><h2>{{if eq .View "history"}}Subtitle history is unavailable.{{else}}Coverage is unavailable.{{end}}</h2><p>Try loading this view again.</p><a class="button quiet" href="" data-subtitle-nav>Try again</a></div>{{else}}
 {{if eq .View "history"}}
 <section class="subtitle-history" aria-labelledby="subtitle-list-title">
 <header class="subtitle-list-heading"><div><h2 id="subtitle-list-title" tabindex="-1">Recent changes</h2><p>What changed and why, newest first. This Server keeps the latest 200 changes.</p></div>{{if .Matched}}<span class="subtitle-history-count"><span data-number>{{.Matched}}</span> {{if eq .Matched 1}}change{{else}}changes{{end}}</span>{{end}}</header>

@@ -78,7 +78,7 @@ func NewDecoratedIndex(ctx context.Context, roots []ScanRoot, cache string, inte
 }
 
 func (index *Index) startFirstRefresh(ctx context.Context, wait time.Duration) {
-	index.err = ErrLibraryLoading
+	index.err = library.ErrLoading
 	done := make(chan struct{})
 	started := time.Now()
 	go func() {

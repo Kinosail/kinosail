@@ -1,0 +1,4 @@
+package server
+
+const libraryLoadingTemplate = `
+{{define "libraryLoading"}}<section class="home-feature library-loading" data-artwork="poster" data-library-loading data-retry-after="{{.RetryAfter}}" aria-labelledby="library-loading-title"><span class="library-loading-art" aria-hidden="true"></span><div class="home-feature-copy"><h2 id="library-loading-title">Scanning your Library</h2><p role="status" data-library-loading-status>Kinosail is reading your media folders. Your Library appears here when the scan is complete.</p></div></section><section class="home-shelf library-loading-shelf" aria-hidden="true"><header><span class="library-loading-line library-loading-heading"></span></header><div class="grid rail recent-grid">{{range 12}}<span class="card recent-card"><span class="poster"></span><span class="library-loading-line"></span></span>{{end}}</div></section>{{end}}`

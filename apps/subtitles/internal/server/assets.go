@@ -19,7 +19,8 @@ var (
 	//go:embed static/supporter/badges/*.svg
 	supporterBadges embed.FS
 	//go:embed static/subtitle-status.js
-	subtitleStatusJS []byte
+	subtitleStatusAppJS []byte
+	subtitleStatusJS    = joinScripts(subtitleStatusAppJS, webassets.LibraryLoading)
 	//go:embed static/subtitle-inspector.js
 	subtitleInspectorAppJS []byte
 	//go:embed static/subtitle-save-operation.js

@@ -22,10 +22,14 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 		}
 		page, err := source.Browse(request)
 		if err != nil {
+			if library.MarkLoadingRetry(writer.Header(), err) && !fragment {
+				renderLoading(source, view, tmdb, writer, request)
+				return
+			}
 			status := http.StatusInternalServerError
 			if errors.Is(err, catalog.ErrInvalidBrowse) {
 				status = http.StatusBadRequest
-			} else if errors.Is(err, catalog.ErrLibraryLoading) {
+			} else if errors.Is(err, library.ErrLoading) {
 				status = http.StatusServiceUnavailable
 			}
 			failure(writer, request, err.Error(), status)
