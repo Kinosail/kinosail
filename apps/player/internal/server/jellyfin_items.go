@@ -31,7 +31,7 @@ func (api *jellyfinAPI) views(writer http.ResponseWriter, request *http.Request)
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
-	jellyfinJSON(writer, api.listing(request, view).Views())
+	sharedjellyfin.Listing(writer, request, api.listing(request, view).Views())
 }
 
 func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request) {
@@ -46,7 +46,7 @@ func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request)
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) item(writer http.ResponseWriter, request *http.Request) {
@@ -58,7 +58,7 @@ func (api *jellyfinAPI) item(writer http.ResponseWriter, request *http.Request) 
 		http.NotFound(writer, request)
 		return
 	}
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) seasons(writer http.ResponseWriter, request *http.Request) {
@@ -68,7 +68,7 @@ func (api *jellyfinAPI) seasons(writer http.ResponseWriter, request *http.Reques
 		http.NotFound(writer, request)
 		return
 	}
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) episodes(writer http.ResponseWriter, request *http.Request) {
@@ -78,7 +78,7 @@ func (api *jellyfinAPI) episodes(writer http.ResponseWriter, request *http.Reque
 		http.NotFound(writer, request)
 		return
 	}
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) listing(request *http.Request, view *library.View) sharedjellyfin.Catalog {

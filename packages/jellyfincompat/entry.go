@@ -3,9 +3,11 @@ package jellyfincompat
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strings"
 
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 	"github.com/MikeO7/kinosail/packages/httpguard"
 	"github.com/MikeO7/kinosail/packages/identitycore"
 	"github.com/MikeO7/kinosail/packages/quickconnect"
@@ -113,6 +115,18 @@ func JSONStatus(writer http.ResponseWriter, value any, status int) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.WriteHeader(status)
+	encodeJSON(writer, value)
+}
+
+func Listing(writer http.ResponseWriter, request *http.Request, value any) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Cache-Control", "no-store")
+	stream := httpcompress.NewStream(writer, request, http.StatusOK)
+	encodeJSON(stream, value)
+	_ = stream.Close()
+}
+
+func encodeJSON(writer io.Writer, value any) {
 	if stream, streamed := value.(jsonStream); streamed {
 		writeJSONStream(writer, stream)
 		return
