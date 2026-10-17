@@ -19,6 +19,7 @@ type MediaSourcePolicy struct {
 	IncludeToken             bool
 	QueryOnDirectPath        bool
 	TranscodingProtocolField string
+	SubtitleFormat           string
 }
 
 type PlaybackHTTP struct {
@@ -78,14 +79,15 @@ func (module PlaybackHTTP) PlaybackInfo(writer http.ResponseWriter, request *htt
 	if profileProvided && len(input.DeviceProfile.TranscodingProfiles) == 0 {
 		policy.AllowTranscode = false
 	}
-	intent := playback.NetworkIntent{MaxBitrate: input.MaxStreamingBitrate, AudioIndex: input.AudioStreamIndex, SubtitleIndex: input.SubtitleStreamIndex}
-	plan := module.Decide(media.Facts, client, policy, intent, media.Markers, module.AutomaticSkip())
+	plan := module.Decide(media.Facts, client, policy, playback.JellyfinIntent(media.Facts, input), media.Markers, module.AutomaticSkip())
 	playID, err := module.NewSession(request, item.ID, plan)
 	if err != nil {
 		http.Error(writer, "could not create playback session", http.StatusInternalServerError)
 		return
 	}
-	source, err := MediaSource(item, media.Facts, plan, module.SourcePolicy, playID, token)
+	sourcePolicy := module.SourcePolicy
+	sourcePolicy.SubtitleFormat = playback.JellyfinSubtitleFormat(input.DeviceProfile.SubtitleProfiles)
+	source, err := MediaSource(item, media.Facts, plan, sourcePolicy, playID, token)
 	if err != nil {
 		http.Error(writer, "could not create playback session", http.StatusInternalServerError)
 		return
@@ -99,7 +101,7 @@ func MediaSource(item library.Item, facts playback.MediaFacts, plan playback.Pla
 	}
 	return playback.JellyfinMediaSource(item, facts, plan, playback.JellyfinMediaSourceOptions{
 		PlaySessionID: playID, Token: token, QueryOnDirectPath: policy.QueryOnDirectPath,
-		TranscodingProtocolField: policy.TranscodingProtocolField,
+		TranscodingProtocolField: policy.TranscodingProtocolField, SubtitleFormat: policy.SubtitleFormat,
 	})
 }
 

@@ -14,3 +14,11 @@ func TestEmbeddedTextCaptionsAreSemanticAndExtractedThroughEveryAdapter(t *testi
 	}
 	fixture.TextCaptionsAcrossAdapters(t)
 }
+
+func TestJellyfinSubtitleChoicesUseConvertedTextInsteadOfBurnIn(t *testing.T) {
+	fixture := servertest.EmbeddedSubtitleFixture{
+		New: automaticSkipFixture.New, SignIn: signInTestProfile, Login: jellyfinLogin,
+		WebCall: requestWithCookie, Call: jellyfinCall, Decode: decodeJellyfin,
+	}
+	fixture.JellyfinSubtitleChoicesUseConvertedTextInsteadOfBurnIn(t)
+}

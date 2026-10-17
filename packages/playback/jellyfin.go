@@ -61,7 +61,7 @@ func ValidJellyfinPlaybackRequest(input JellyfinPlaybackRequest) bool {
 		validJellyfinTrack(input.SubtitleStreamIndex) && validJellyfinDeviceProfile(input.DeviceProfile)
 }
 
-func validJellyfinTrack(index *int) bool { return index == nil || *index >= 0 && *index <= 1024 }
+func validJellyfinTrack(index *int) bool { return index == nil || *index >= -1 && *index <= 1024 }
 
 func validJellyfinDeviceProfile(profile JellyfinDeviceProfile) bool {
 	return validJellyfinMediaProfiles(profile.DirectPlayProfiles) && validJellyfinMediaProfiles(profile.DirectStreamProfiles) &&
@@ -135,6 +135,7 @@ type JellyfinMediaSourceOptions struct {
 	PlaySessionID, Token     string
 	QueryOnDirectPath        bool
 	TranscodingProtocolField string
+	SubtitleFormat           string
 }
 
 func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan, options JellyfinMediaSourceOptions) (map[string]any, error) {
@@ -152,14 +153,7 @@ func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan,
 	if query != "" {
 		query = "?" + query
 	}
-	streams := JellyfinMediaStreams(item, facts, query)
-	for index := range item.Subtitles {
-		streams = append(streams, map[string]any{
-			"Index": index + 1, "Type": "Subtitle", "Codec": "vtt", "DisplayTitle": "Subtitle " + strconv.Itoa(index+1),
-			"IsExternal": true, "IsTextSubtitleStream": true, "SupportsExternalStream": true, "DeliveryMethod": "External",
-			"DeliveryUrl": "/Videos/" + JellyfinID(item.ID) + "/" + JellyfinID(item.ID) + "/Subtitles/" + strconv.Itoa(index) + "/Stream.vtt" + query,
-		})
-	}
+	streams := append(JellyfinMediaStreams(item, facts, options.SubtitleFormat, query), jellyfinSidecarStreams(item, facts, options.SubtitleFormat, query)...)
 	direct, transcode := plan.Mode == "direct", plan.Allowed && plan.Mode != "direct"
 	directStream := plan.Mode == "remux" || plan.Mode == "audio-transcode"
 	defaultAudio := -1
@@ -191,7 +185,7 @@ func JellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan,
 	return result, nil
 }
 
-func JellyfinMediaStreams(item library.Item, facts MediaFacts, query string) []any {
+func JellyfinMediaStreams(item library.Item, facts MediaFacts, subtitleFormat, query string) []any {
 	streams := make([]any, 0, 1+len(facts.Audio)+len(facts.Subtitles))
 	if facts.Video.Codec != "" {
 		stream := map[string]any{"Index": 0, "Type": "Video", "Codec": facts.Video.Codec, "Profile": facts.Video.Profile, "Width": facts.Video.Width, "Height": facts.Video.Height, "BitDepth": facts.Video.BitDepth, "VideoRangeType": map[bool]string{true: "SDR", false: strings.ToUpper(facts.Video.HDR)}[facts.Video.HDR == ""], "IsDefault": true}
@@ -210,7 +204,7 @@ func JellyfinMediaStreams(item library.Item, facts MediaFacts, query string) []a
 		stream := map[string]any{"Index": track.SourceIndex, "Type": "Subtitle", "Codec": track.Codec, "Language": track.Language, "DisplayTitle": track.Role, "IsDefault": track.Default, "IsForced": track.Forced, "IsExternal": false, "IsTextSubtitleStream": track.Text}
 		if track.Text {
 			stream["SupportsExternalStream"], stream["DeliveryMethod"] = true, "External"
-			stream["DeliveryUrl"] = "/Videos/" + JellyfinID(item.ID) + "/" + JellyfinID(item.ID) + "/Subtitles/" + strconv.Itoa(track.SourceIndex) + "/Stream.vtt" + query
+			stream["DeliveryUrl"] = jellyfinSubtitleURL(item, track.SourceIndex, subtitleFormat, query)
 		}
 		streams = append(streams, stream)
 	}
