@@ -42,6 +42,14 @@
       let readable = FileManager.default.fileExists(atPath: partial.path) ? partial : final
       let size = (try? readable.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0
       for index in job.verified.indices where Int64(index) * manifest.chunkSize + manifest.length(index) > size { job.verified[index] = false }
+      if jobs[job.id] == nil, size > 0, let input = try? FileHandle(forReadingFrom: readable) {
+        defer { try? input.close() }
+        for index in job.verified.indices where Int64(index) * manifest.chunkSize + manifest.length(index) <= size {
+          guard (try? input.seek(toOffset: UInt64(Int64(index) * manifest.chunkSize))) != nil,
+                let block = try? input.read(upToCount: Int(manifest.length(index))), block.count == Int(manifest.length(index)) else { continue }
+          job.verified[index] = VerifiedDownload.hash(block) == manifest.chunks[index]
+        }
+      }
       let available = try store.availableBytes()
       let reserved = jobs.values.filter { $0.id != job.id && $0.status != "complete" }.reduce(Int64(0)) { $0 + $1.manifest.size - $1.bytes }
       guard let available, available - reserved - 512 * 1024 * 1024 >= job.manifest.size - job.bytes else {
@@ -93,12 +101,7 @@
           guard let first = job.verified.indices.first(where: { index in
             !job.verified[index] && !occupied.contains(where: { index >= $0.first && index < $0.first + $0.count })
           }) else { continue }
-          var count = 1
-          while count < (job.retries == 0 ? 8 : 1), first + count < job.verified.count, !job.verified[first + count],
-                !occupied.contains(where: { first + count >= $0.first && first + count < $0.first + $0.count })
-          {
-            count += 1
-          }
+          let count = 1
           let start = Int64(first) * job.manifest.chunkSize
           let end = min(job.manifest.size, Int64(first + count) * job.manifest.chunkSize) - 1
           var request = URLRequest(url: URL(string: job.uri)!, cachePolicy: .reloadIgnoringLocalCacheData)
