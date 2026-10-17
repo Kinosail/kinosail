@@ -11,9 +11,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
+const specialsSeason = "ffffffffffffffff"
+
 type ItemOptions struct {
 	CanDownload bool
 	UserData    UserData
+	MediaSource map[string]any
 }
 
 func ID(id string) string { return id + "0000000000000000" }
@@ -31,8 +34,19 @@ func ShowID(name string) string {
 }
 
 func SeasonID(showID string, season int) string {
+	if season == 0 {
+		return showID + specialsSeason
+	}
 	encoded := strconv.FormatInt(int64(season), 16)
 	return showID + strings.Repeat("0", 16-len(encoded)) + encoded
+}
+
+func seasonMatches(showID string, season int, id string) bool {
+	return id == SeasonID(showID, season) || season == 0 && id == ID(showID)
+}
+
+func HasMediaSources(item library.Item) bool {
+	return item.Kind == "video" || item.Kind == "audio" || item.Kind == "audiobook"
 }
 
 func Seasons(show library.Show) []int {
@@ -71,7 +85,10 @@ func ItemDTO(item library.Item, options ItemOptions) ItemRecord {
 		ID: id, Name: item.Title, SortName: item.Title, Type: kind, MediaType: mediaType, CanDownload: options.CanDownload,
 		Container: strings.ToLower(item.Container), ParentID: parent, Overview: item.Plot, OfficialRating: item.Rating,
 		DateCreated: item.Added.UTC().Format(time.RFC3339Nano), UserData: options.UserData, ProviderIDs: ProviderIDs(item.ProviderIDs),
-		LocationType: "FileSystem", HasSubtitles: len(item.Subtitles) > 0, MediaSourceCount: 1,
+		LocationType: "FileSystem", HasSubtitles: len(item.Subtitles) > 0,
+	}
+	if options.MediaSource != nil {
+		record.MediaSources = []map[string]any{options.MediaSource}
 	}
 	if item.Artwork != "" {
 		record.ImageTags = &ImageTags{Primary: id}
