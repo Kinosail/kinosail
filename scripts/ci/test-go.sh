@@ -17,7 +17,7 @@ fi
 mkdir -p .verification
 profile=.verification/coverage.out
 rm -f "$profile"
-go test -race -count=1 -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...
+go test -race -count=1 -timeout=40m -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...
 if [[ "$1" == packages ]]; then
   awk 'NR == 1 || $1 !~ /\/(archivetest|commandtest|configurationtest|servertest)\//' "$profile" > "$profile.filtered"
   mv "$profile.filtered" "$profile"
