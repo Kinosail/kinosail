@@ -18,6 +18,7 @@ struct KinosailApp: App {
         AppDependencyManager.shared.add(dependency: session)
         #endif
         #if os(tvOS)
+        RemoteTouchDelays.install()
         let bar = UINavigationBar.appearance()
         bar.titleTextAttributes = [.foregroundColor: UIColor(KinoTheme.text).resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))]
         bar.isTranslucent = true

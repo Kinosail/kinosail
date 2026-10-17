@@ -22,8 +22,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored var userNavigated: ((AVPlayer, Double) -> Void)?
     @ObservationIgnored private var closing: Task<Void, Never>?
     @ObservationIgnored private var isolatedRecognizers: [(UIGestureRecognizer, touches: [NSNumber], presses: [NSNumber])] = []
-    @ObservationIgnored private var releasedTouchDelays: [(UIGestureRecognizer, began: Bool, ended: Bool)] = []
-    @ObservationIgnored private var touchDelaySweep: Timer?
+    @ObservationIgnored private var remoteTouchesIsolated = false
     #endif
     @ObservationIgnored var visible = false
     @ObservationIgnored var showingOptions = false
@@ -132,7 +131,8 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     }
 
     func isolateRemoteTouches() {
-        guard touchDelaySweep == nil, controller.view.window != nil else { return }
+        guard !remoteTouchesIsolated, controller.view.window != nil else { return }
+        remoteTouchesIsolated = true
         let indirect = NSNumber(value: UITouch.TouchType.indirect.rawValue)
         let select = NSNumber(value: UIPress.PressType.select.rawValue)
         var view = controller.view.superview
@@ -145,23 +145,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
             }
             view = current.superview
         }
-        guard let window = controller.view.window else { return }
-        releaseTouchDelays(in: window)
-        touchDelaySweep = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated {
-                guard let self, let window = self.controller.view.window else { return }
-                self.releaseTouchDelays(in: window)
-            }
-        }
-    }
-
-    private func releaseTouchDelays(in view: UIView) {
-        for recognizer in view.gestureRecognizers ?? [] where recognizer.delaysTouchesBegan || recognizer.delaysTouchesEnded {
-            releasedTouchDelays.append((recognizer, recognizer.delaysTouchesBegan, recognizer.delaysTouchesEnded))
-            recognizer.delaysTouchesBegan = false
-            recognizer.delaysTouchesEnded = false
-        }
-        view.subviews.forEach(releaseTouchDelays)
     }
 
     func restoreRemoteTouches() {
@@ -170,13 +153,7 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
             recognizer.allowedPressTypes = presses
         }
         isolatedRecognizers = []
-        touchDelaySweep?.invalidate()
-        touchDelaySweep = nil
-        for (recognizer, began, ended) in releasedTouchDelays {
-            recognizer.delaysTouchesBegan = began
-            recognizer.delaysTouchesEnded = ended
-        }
-        releasedTouchDelays = []
+        remoteTouchesIsolated = false
     }
 
     func limitSubtitleLanguages(to language: String?) {
