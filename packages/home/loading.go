@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -15,7 +14,10 @@ func renderLoading[Show, Resume, Playlist, Collection any](source Source[Show, R
 		View: "all", TMDB: tmdb, NavigationPrimary: shell.NavigationPrimary, NavigationMore: shell.NavigationMore, UpdateAvailable: shell.UpdateAvailable,
 		CommandMenu: true, Loading: true, RetryAfter: library.LoadingRetrySeconds,
 	}
-	if err := view.Execute(catalog.LoadingResponse(writer), request, data); err != nil {
+	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	library.MarkLoadingRetry(writer.Header(), library.ErrLoading)
+	writer.WriteHeader(http.StatusServiceUnavailable)
+	if err := view.Execute(writer, request, data); err != nil {
 		slog.Error("render home", "operation", "library.loading", "error", err)
 	}
 }

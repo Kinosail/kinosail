@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/MikeO7/kinosail/packages/catalog"
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
@@ -146,8 +145,8 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 	writer.Header().Set("X-Accel-Buffering", "no")
 	shell := subtitleDashboardData{ServerName: manager.settings.serverName(), Owner: true, subtitleDashboardOptions: options}
 	if _, err := manager.index.Library(); library.MarkLoadingRetry(writer.Header(), err) {
-		writer = catalog.LoadingResponse(writer)
 		shell.LibraryLoading, shell.RetryAfter = true, library.LoadingRetrySeconds
+		writer.WriteHeader(http.StatusServiceUnavailable)
 	}
 	if err := subtitleDashboardView.ExecuteTemplate(writer, request, "shell", shell); err != nil {
 		return

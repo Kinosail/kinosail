@@ -182,7 +182,6 @@ type writingView struct{ data any }
 
 func (view *writingView) Execute(writer http.ResponseWriter, _ *http.Request, data any) error {
 	view.data = data
-	writer.Header().Set("Content-Language", "en")
 	_, err := writer.Write([]byte("loading page"))
 	return err
 }
@@ -203,7 +202,7 @@ func TestHandlerRendersTheLibraryLoadingPageWhileTheFirstScanRuns(t *testing.T) 
 	if failed || !ok || !page.Loading || page.RetryAfter != library.LoadingRetrySeconds || page.ServerName != "Home Server" || !page.Owner || page.View != "all" || !page.CommandMenu || !page.UpdateAvailable || len(page.NavigationPrimary) != 1 {
 		t.Fatalf("loading page failed=%v data=%+v", failed, view.data)
 	}
-	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "5" || response.Header().Get("Cache-Control") != "no-store" || response.Header().Get("Content-Language") != "en" || response.Body.String() != "loading page" {
+	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "5" || response.Header().Get("Cache-Control") != "no-store" || response.Header().Get("Content-Type") != "text/html; charset=utf-8" || response.Body.String() != "loading page" {
 		t.Fatalf("loading response = %d %v %q", response.Code, response.Header(), response.Body.String())
 	}
 	if source.personalCalls != 0 {
