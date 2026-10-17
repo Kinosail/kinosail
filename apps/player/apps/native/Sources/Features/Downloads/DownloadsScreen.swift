@@ -8,11 +8,14 @@ struct DownloadsScreen: View {
     @State private var busy = false
     @State private var reset = false
     @State private var removal: OfflineDownload?
+    @State private var selection = Set<String>()
+    @State private var editing = EditMode.inactive
+    @State private var bulkRemoval = false
     #endif
 
     var body: some View {
         #if os(iOS)
-        List {
+        List(selection: $selection) {
             if session.connection.unavailable {
                 Section {
                     Text("Completed downloads are ready to play offline. Unfinished downloads need a connection to continue.")
@@ -49,6 +52,12 @@ struct DownloadsScreen: View {
                                 .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                         } else {
                             Text(download.state == .preparing ? "Preparing on your Server" : download.state.rawValue.capitalized).font(.callout)
+                            if download.state == .preparing || (download.state == .queued && download.totalBytes == 0) {
+                                ProgressView().progressViewStyle(.linear).accessibilityLabel("Preparing download")
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    Text(preparingDetail(download, now: context.date)).font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
                             if download.totalBytes > 0 {
                                 ProgressView(value: Double(download.receivedBytes), total: Double(download.totalBytes))
                                     .accessibilityLabel("Download progress")
@@ -73,7 +82,29 @@ struct DownloadsScreen: View {
         }
         .navigationTitle("Downloads")
         .scrollContentBackground(.hidden).background(KinoTheme.background)
-        .toolbar { ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } } }
+        .environment(\.editMode, $editing)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } }
+            if !session.downloads.downloads.isEmpty { ToolbarItem(placement: .secondaryAction) { EditButton() } }
+            if editing.isEditing {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Button(selection.count == session.downloads.downloads.count ? "Select none" : "Select all") {
+                        selection = selection.count == session.downloads.downloads.count ? [] : Set(session.downloads.downloads.map(\.id))
+                    }
+                    Spacer()
+                    Button("Remove\(selection.isEmpty ? "" : " \(selection.count)")", role: .destructive) { bulkRemoval = true }
+                        .disabled(selection.isEmpty || busy || session.downloads.busy)
+                }
+            }
+        }
+        .onChange(of: session.downloads.downloads.map(\.id)) { _, ids in selection.formIntersection(ids) }
+        .alert("Remove \(selection.count) downloads?", isPresented: $bulkRemoval) {
+            Button("Remove downloads", role: .destructive) {
+                let ids = Array(selection)
+                perform { for id in ids { try await session.downloads.remove(id: id) }; selection = []; editing = .inactive }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { Text("This removes the selected downloads from this device. The titles stay in your Server library.") }
         .alert("Reset downloads?", isPresented: $reset) {
             Button("Remove all downloads", role: .destructive) { perform {
                 try await session.downloads.resetDeviceStorage()
@@ -91,6 +122,13 @@ struct DownloadsScreen: View {
     }
     #if os(iOS)
     private func bytes(_ value: Int64) -> String { ByteCountFormatter.string(fromByteCount: value, countStyle: .file) }
+    private func preparingDetail(_ download: OfflineDownload, now: Date) -> String {
+        let what = download.quality == .original ? "Packaging the original file" : "Making a \(download.quality.title.lowercased()) copy"
+        guard let since = download.preparingSince else { return "\(what). Your Server reports no percentage; this can take several minutes." }
+        let seconds = max(0, Int(now.timeIntervalSince(since)))
+        let elapsed = seconds < 60 ? "\(seconds)s" : "\(seconds / 60) min \(seconds % 60)s"
+        return "\(what) · \(elapsed) so far. Your Server reports no percentage; this can take several minutes."
+    }
     private func perform(_ action: @escaping @MainActor () async throws -> Void) {
         guard !busy else { return }
         busy = true

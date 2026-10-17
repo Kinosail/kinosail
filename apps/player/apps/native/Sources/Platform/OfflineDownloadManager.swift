@@ -281,7 +281,7 @@ final class OfflineDownloadManager {
                 else { state = OfflineDownload.State(rawValue: snapshot?.status ?? (record.error.isEmpty ? "queued" : "failed")) ?? .failed }
                 let explanation = record.deleting ? "Removal interrupted. Remove this download again." : playback && state == .waiting ? "Downloads resume after playback." : snapshot?.message ?? record.error
                 return OfflineDownload(id: record.key, item: record.item, quality: record.quality, state: state, receivedBytes: snapshot?.bytes ?? 0,
-                                       totalBytes: snapshot?.total ?? 0, message: explanation.isEmpty ? nil : explanation)
+                                       totalBytes: snapshot?.total ?? 0, message: explanation.isEmpty ? nil : explanation, preparingSince: snapshot?.preparingSince)
             }
             message = nil
         } catch is CancellationError {} catch { if generation == attempt { message = AppSession.message(error) } }

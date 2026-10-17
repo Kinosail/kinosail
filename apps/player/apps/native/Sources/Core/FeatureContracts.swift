@@ -220,6 +220,7 @@ struct OfflineDownload: Identifiable, Sendable {
     let receivedBytes: Int64
     let totalBytes: Int64
     let message: String?
+    var preparingSince: Date? = nil
 }
 
 struct ReaderBook: Identifiable, Sendable {

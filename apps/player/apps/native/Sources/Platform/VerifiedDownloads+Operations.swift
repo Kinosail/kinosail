@@ -11,7 +11,7 @@
     func snapshot(_ scope: String) async throws -> [VerifiedDownloadSnapshot] {
       try await ready(scope: scope) {
         let preparing = self.plans.values.filter { $0.scope == scope }.map {
-          VerifiedDownloadSnapshot(key: $0.key, bytes: 0, total: 0, status: $0.status, message: $0.error, manifest: nil)
+          VerifiedDownloadSnapshot(key: $0.key, bytes: 0, total: 0, status: $0.status, message: $0.error, manifest: nil, preparingSince: $0.startedAt)
         }
         return preparing + self.jobs.values.filter { $0.scope == scope }.map { job in
           let pending = self.tasks.filter { $0.value.id == job.id }.reduce(Int64(0)) { $0 + (self.progress[$1.key] ?? 0) }
