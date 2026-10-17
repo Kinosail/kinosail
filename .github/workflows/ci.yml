@@ -610,6 +610,7 @@ jobs:
         run: |
           set -euo pipefail
           for directory in $DIRECTORIES; do
+            go -C "$directory" mod download
             go -C "$directory" test -count=1 -run '^$' ./...
           done
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
