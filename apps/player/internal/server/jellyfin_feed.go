@@ -7,8 +7,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
-func (api *jellyfinAPI) persons(writer http.ResponseWriter, _ *http.Request) {
-	jellyfinJSON(writer, sharedjellyfin.Result(make([]map[string]any, 0), 0))
+func (api *jellyfinAPI) persons(writer http.ResponseWriter, request *http.Request) {
+	sharedjellyfin.Listing(writer, request, sharedjellyfin.Result(make([]map[string]any, 0), 0))
 }
 
 func (api *jellyfinAPI) latest(writer http.ResponseWriter, request *http.Request) {
@@ -18,7 +18,7 @@ func (api *jellyfinAPI) latest(writer http.ResponseWriter, request *http.Request
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) resume(writer http.ResponseWriter, request *http.Request) {
@@ -27,13 +27,13 @@ func (api *jellyfinAPI) resume(writer http.ResponseWriter, request *http.Request
 		state := api.progress.Get(request, item.ID)
 		return sharedjellyfin.UserState{Seconds: state.Seconds, Watched: state.Watched}
 	})
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func (api *jellyfinAPI) nextUp(writer http.ResponseWriter, request *http.Request) {
 	view, _ := visibleView(request, api.index)
 	result := api.listing(request, view).NextUp(func(item library.Item) bool { return api.progress.Watched(request, item.ID) })
-	jellyfinJSON(writer, result)
+	sharedjellyfin.Listing(writer, request, result)
 }
 
 func jellyfinPlaySessionQuery(request *http.Request) string {

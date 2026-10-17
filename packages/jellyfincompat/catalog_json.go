@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"net/http"
 	"strconv"
 	"sync"
 )
@@ -119,7 +118,7 @@ func (out *streamEncoder) value(value any) {
 	}
 }
 
-func writeJSONStream(writer http.ResponseWriter, stream jsonStream) {
+func writeJSONStream(writer io.Writer, stream jsonStream) {
 	buffered, pooled := streamBuffers.Get().(*bufio.Writer)
 	if !pooled {
 		buffered = bufio.NewWriterSize(nil, streamBufferBytes)
