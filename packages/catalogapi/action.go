@@ -33,12 +33,9 @@ func (action apiAction) serve(writer http.ResponseWriter) {
 	_ = json.NewEncoder(writer).Encode(action.body)
 }
 
-func (action apiAction) serveListing(writer http.ResponseWriter, request *http.Request) {
-	var body bytes.Buffer
-	if action.err != nil || action.notFound || action.status != http.StatusOK || json.NewEncoder(&body).Encode(action.body) != nil {
-		action.serve(writer)
-		return
-	}
+func serveListing(writer http.ResponseWriter, request *http.Request, body any) {
+	var encoded bytes.Buffer
+	_ = json.NewEncoder(&encoded).Encode(body)
 	writer.Header().Set("Cache-Control", "no-store")
-	httpcompress.Write(writer, request, "application/json", body.Bytes())
+	httpcompress.Write(writer, request, "application/json", encoded.Bytes())
 }
