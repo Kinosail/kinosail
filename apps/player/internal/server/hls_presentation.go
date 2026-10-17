@@ -43,6 +43,13 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 	if graph != "" {
 		arguments = append(arguments, "-filter_complex", graph)
 	}
+	audioGraph := ""
+	if audioBitrate > 0 && refill == nil {
+		audioGraph = presentationAudioGraph(recipe, len(qualities))
+	}
+	if audioGraph != "" {
+		arguments = append(arguments, "-filter_complex", audioGraph)
+	}
 	for index, quality := range qualities {
 		layoutNumber := startNumber
 		if refill != nil {
@@ -61,9 +68,12 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		}
 		arguments = append(arguments, mapping...)
 		if audioBitrate > 0 {
-			if refill != nil {
+			switch {
+			case refill != nil:
 				arguments = refill.audio(arguments, recipe.audio, quality.Label)
-			} else {
+			case audioGraph != "":
+				arguments = append(arguments, "-map", "[a"+strconv.Itoa(index)+"]")
+			default:
 				arguments = append(arguments, "-map", "0:a:"+strconv.Itoa(recipe.audio)+"?")
 				arguments = append(arguments, playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())...)
 			}
@@ -95,6 +105,19 @@ func (manager *hlsManager) encodePresentation(ctx context.Context, item library.
 		return finalizePresentationPlaylists(root, qualities, 0)
 	}
 	return finalizePresentationPlaylists(root, qualities, startNumber)
+}
+
+func presentationAudioGraph(recipe hlsRecipe, renditions int) string {
+	filter := playback.AudioFilterArguments(sharedHLSRecipe(recipe), hlsPolicy())
+	if renditions < 2 || len(filter) != 2 {
+		return ""
+	}
+	var graph strings.Builder
+	graph.WriteString("[0:a:" + strconv.Itoa(recipe.audio) + "]" + filter[1] + ",asplit=" + strconv.Itoa(renditions))
+	for index := range renditions {
+		graph.WriteString("[a" + strconv.Itoa(index) + "]")
+	}
+	return graph.String()
 }
 
 func preparePresentationDirectories(root, label string, startNumber int) (string, string, error) {

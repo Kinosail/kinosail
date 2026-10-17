@@ -183,6 +183,10 @@ struct PlaybackToolsScreen: View {
     var body: some View {
         List {
             if let item = session.player.currentItem {
+                #if os(tvOS)
+                TVPlaybackOptionRows(item: item)
+                if let message { Text(message).foregroundStyle(.secondary) }
+                #else
                 Section {
                     Text(sourceStatus).foregroundStyle(.secondary)
                     if let progress = session.player.progressMessage { Text(progress) }
@@ -199,10 +203,13 @@ struct PlaybackToolsScreen: View {
                 }
                 if let message { Text(message).foregroundStyle(.secondary) }
                 PlaybackTrackSections()
+                #endif
                 if let source = session.player.source {
+                    #if !os(tvOS)
                     if !source.chapters.isEmpty {
                         Section("Chapters") { ForEach(source.chapters) { chapter in Button("\(chapter.title) · \(chapter.start.clock)") { perform { try await session.player.seek(to: chapter.start); dismiss() } } } }
                     }
+                    #endif
                     if !source.markers.isEmpty {
                         Section("Skip a section") { ForEach(source.markers) { marker in Button("Skip \(marker.label.isEmpty ? marker.type : marker.label)") { perform { try await session.player.seek(to: marker.end); dismiss() } } } }
                     }

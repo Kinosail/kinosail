@@ -37,6 +37,12 @@ type BrowseAccess struct {
 	ProfileID     string
 	Owner         bool
 	Visible       func(library.Item) bool
+	Policy        *library.Policy
+}
+
+func (access BrowseAccess) WithPolicy(policy library.Policy) BrowseAccess {
+	access.Policy, access.Visible = &policy, policy.Allows
+	return access
 }
 
 func NewBrowseAccess(progressMutex sync.Locker, listMutex *sync.RWMutex, progress *map[string]PlaybackState, listed *map[string]bool, profileID string, owner bool, visible func(library.Item) bool) BrowseAccess {
@@ -112,10 +118,10 @@ func ParseBrowse(values url.Values, locale string) (Browse, error) {
 }
 
 func BrowseLibrary(ctx context.Context, values url.Values, locale string, load func() ([]*library.Item, error), access func() BrowseAccess) (Result, error) {
-	return browseLibrary(ctx, values, locale, func(Browse) ([]*library.Item, bool, error) { items, err := load(); return items, false, err }, access)
+	return browseLibrary(ctx, values, locale, func(Browse) (browseSource, error) { items, err := load(); return browseSource{items: items}, err }, access)
 }
 
-func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) ([]*library.Item, bool, error), access func() BrowseAccess) (Result, error) {
+func browseLibrary(ctx context.Context, values url.Values, locale string, load func(Browse) (browseSource, error), access func() BrowseAccess) (Result, error) {
 	browse, err := ParseBrowse(values, locale)
 	if err != nil {
 		return Result{}, err
@@ -123,15 +129,23 @@ func browseLibrary(ctx context.Context, values url.Values, locale string, load f
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
-	items, ordered, err := load(browse)
-	browse.titleOrdered = ordered
+	source, err := load(browse)
+	browse.titleOrdered = source.ordered
 	if err != nil {
 		return Result{}, err
 	}
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
-	return browse.ApplyAccess(ctx, items, access())
+	grant := access()
+	if source.visible != nil && grant.Policy != nil && browse.policyOnly() {
+		order, err := source.visible(ctx, browse, *grant.Policy)
+		if err != nil {
+			return Result{}, err
+		}
+		return browse.result(ctx, order.items, order.letters)
+	}
+	return browse.ApplyAccess(ctx, source.references(), grant)
 }
 
 func ProfileProgress(values map[string]PlaybackState, profileID string, owner bool, itemID string) PlaybackState {

@@ -40,8 +40,8 @@ func (stub *mediaProgressStub) Dismiss(*http.Request, string) error {
 
 func (stub *mediaProgressStub) Get(*http.Request, string) catalog.PlaybackState { return stub.state }
 
-func (stub *mediaProgressStub) History(_ *http.Request, items []library.Item) []library.Item {
-	return items
+func (stub *mediaProgressStub) History(_ *http.Request, items []library.Item, _ catalog.Page) ([]library.Item, int) {
+	return items, len(items)
 }
 
 func (stub *mediaProgressStub) SetRevision(_ *http.Request, _ string, seconds float64, _ *bool, _ string, _ uint64) (bool, error) {

@@ -4,22 +4,33 @@ import (
 	"context"
 	"errors"
 	"os"
-	"time"
 )
 
 func WaitHLSReady(ctx context.Context, probe func() error) bool {
-	ticker := time.NewTicker(25 * time.Millisecond)
-	defer ticker.Stop()
+	return WaitHLSChange(ctx, nil, nil, probe)
+}
+
+func WaitHLSChange(ctx context.Context, directories []string, done <-chan struct{}, probe func() error) bool {
+	if ready, final := probeHLSReady(probe); final {
+		return ready
+	}
+	changes := watchHLSChanges(ctx, directories)
+	defer changes.Close()
 	for {
-		if err := probe(); err == nil {
-			return true
-		} else if !errors.Is(err, os.ErrNotExist) {
-			return false
+		if ready, final := probeHLSReady(probe); final {
+			return ready
 		}
 		select {
 		case <-ctx.Done():
 			return false
-		case <-ticker.C:
+		case <-done:
+			done = nil
+		case <-changes.changed:
 		}
 	}
+}
+
+func probeHLSReady(probe func() error) (bool, bool) {
+	err := probe()
+	return err == nil, err == nil || !errors.Is(err, os.ErrNotExist)
 }

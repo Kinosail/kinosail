@@ -26,23 +26,39 @@ func parseLetter(values url.Values, locale string) (string, error) {
 	return normalizeLetter(value, locale), nil
 }
 
-func browseLetters(values url.Values, items []*library.Item, current, locale string) []Letter {
-	letters := make([]Letter, 0, 26)
+type letterBucket struct {
+	label         string
+	offset, count int
+}
+
+func letterBuckets(items []*library.Item, locale string) []letterBucket {
+	buckets := make([]letterBucket, 0, 26)
 	upper := cases.Upper(language.Make(locale))
 	for offset, item := range items {
 		label := titleLetterWithCaser(sortTitle(*item), upper)
-		if len(letters) == 0 || letters[len(letters)-1].Label != label {
-			query := cloneValues(values)
-			query.Del("offset")
-			selected := label == current
-			if selected {
-				query.Del("letter")
-			} else {
-				query.Set("letter", label)
-			}
-			letters = append(letters, Letter{Label: label, Offset: offset, Href: "/?" + query.Encode(), Current: selected})
+		if len(buckets) == 0 || buckets[len(buckets)-1].label != label {
+			buckets = append(buckets, letterBucket{label: label, offset: offset})
 		}
-		letters[len(letters)-1].Count++
+		buckets[len(buckets)-1].count++
+	}
+	return buckets
+}
+
+func browseLetterLinks(values url.Values, buckets []letterBucket, current string) []Letter {
+	if buckets == nil {
+		return nil
+	}
+	letters := make([]Letter, len(buckets))
+	for position, bucket := range buckets {
+		query := cloneValues(values)
+		query.Del("offset")
+		selected := bucket.label == current
+		if selected {
+			query.Del("letter")
+		} else {
+			query.Set("letter", bucket.label)
+		}
+		letters[position] = Letter{Label: bucket.label, Count: bucket.count, Offset: bucket.offset, Href: "/?" + query.Encode(), Current: selected}
 	}
 	return letters
 }

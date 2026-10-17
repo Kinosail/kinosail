@@ -57,7 +57,7 @@ func (adapter *Gateway) recommendationContext(ctx context.Context, _ *mcp.CallTo
 	if err != nil {
 		return nil, mcpRecommendationOutput{}, err
 	}
-	history, err := adapter.callAPI(ctx, http.MethodGet, "/api/v1/history", nil, ReadAccess)
+	history, err := adapter.callAPI(ctx, http.MethodGet, "/api/v1/history?limit="+strconv.Itoa(limit), nil, ReadAccess)
 	if err != nil {
 		return nil, mcpRecommendationOutput{}, err
 	}

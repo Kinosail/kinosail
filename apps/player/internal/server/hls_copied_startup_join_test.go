@@ -207,7 +207,7 @@ func copiedStartupPublishOutcome(t *testing.T, outcome, directory, source string
 	status := http.StatusOK
 	switch outcome {
 	case "published":
-		writeHLSLoadingFile(t, fragment, "first fragment")
+		publishHLSLoadingFile(t, fragment, "first fragment")
 	case "completed":
 		join()
 	case "canceled":
@@ -218,7 +218,7 @@ func copiedStartupPublishOutcome(t *testing.T, outcome, directory, source string
 		writeHLSLoadingFile(t, source, "changed source")
 		check = copiedStartupRetained(t, directory, source)
 		if outcome == "source-changed-published" {
-			writeHLSLoadingFile(t, fragment, "first fragment")
+			publishHLSLoadingFile(t, fragment, "first fragment")
 		} else {
 			join()
 		}
@@ -278,4 +278,12 @@ func TestCopiedStartupChangedPolicyRejectsBeforeAdoption(t *testing.T) {
 		t.Fatal("rejected policy started an encoder")
 	}
 	check()
+}
+
+func publishHLSLoadingFile(t *testing.T, path, data string) {
+	t.Helper()
+	writeHLSLoadingFile(t, path+".tmp", data)
+	if err := os.Rename(path+".tmp", path); err != nil {
+		t.Fatal(err)
+	}
 }

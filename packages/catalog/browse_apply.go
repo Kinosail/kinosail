@@ -34,7 +34,11 @@ func (browse Browse) applyItems(ctx context.Context, references []*library.Item)
 	if err != nil {
 		return Result{}, err
 	}
-	letters := browseLetterGroups(items, browse)
+	return browse.result(ctx, items, browseLetterBuckets(items, browse))
+}
+
+func (browse Browse) result(ctx context.Context, items []*library.Item, buckets []letterBucket) (Result, error) {
+	letters := browseLetterLinks(browse.values, buckets, browse.letter)
 	if err := ctx.Err(); err != nil {
 		return Result{}, err
 	}
@@ -87,9 +91,9 @@ func browseReferences(ctx context.Context, items []*library.Item, browse Browse)
 	return items, nil
 }
 
-func browseLetterGroups(items []*library.Item, browse Browse) []Letter {
+func browseLetterBuckets(items []*library.Item, browse Browse) []letterBucket {
 	if browse.query == "" && normalizeSort(browse.order) == "title" {
-		return browseLetters(browse.values, items, browse.letter, browse.locale)
+		return letterBuckets(items, browse.locale)
 	}
 	return nil
 }

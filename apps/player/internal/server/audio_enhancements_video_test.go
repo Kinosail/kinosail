@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -20,7 +21,7 @@ import (
 func TestVideoTranscodingAppliesAudioEnhancementsToEveryRendition(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
 	defer cancel()
-	handler, id, ffmpeg := videoAudioEnhancementFixture(t, ctx)
+	handler, id, ffmpeg, commands := videoAudioEnhancementFixture(t, ctx)
 	host := httptest.NewServer(handler)
 	defer host.Close()
 	var preferences map[string]any
@@ -29,13 +30,17 @@ func TestVideoTranscodingAppliesAudioEnhancementsToEveryRendition(t *testing.T) 
 	for _, test := range []struct {
 		name            string
 		dialogue, night bool
+		filters         []string
 	}{
-		{"plain", false, false},
-		{"dialogue", true, false},
-		{"night", false, true},
-		{"both", true, true},
+		{"plain", false, false, nil},
+		{"dialogue", true, false, []string{"equalizer=f=1600"}},
+		{"night", false, true, []string{"dynaudnorm="}},
+		{"both", true, true, []string{"equalizer=f=1600", "dynaudnorm="}},
 	} {
 		t.Run(test.name, func(t *testing.T) {
+			if err := os.WriteFile(commands, nil, 0o600); err != nil {
+				t.Fatal(err)
+			}
 			settings := preferences["playback"].(map[string]any)
 			settings["dialogueBoost"], settings["nightMode"] = test.dialogue, test.night
 			assertAPIBody(t, apiCall(t, handler, "", http.MethodPut, "/api/v1/me/media-preferences", preferences), http.StatusOK)
@@ -51,11 +56,12 @@ func TestVideoTranscodingAppliesAudioEnhancementsToEveryRendition(t *testing.T) 
 			if len(observed) == 0 || len(observed) != len(baseline) {
 				t.Fatalf("enhancement changed the rendition count: %d, baseline %d", len(observed), len(baseline))
 			}
+			assertEnhancementFilteredOnce(t, commands, test.filters)
 		})
 	}
 }
 
-func videoAudioEnhancementFixture(t *testing.T, ctx context.Context) (http.Handler, string, string) {
+func videoAudioEnhancementFixture(t *testing.T, ctx context.Context) (http.Handler, string, string, string) {
 	t.Helper()
 	ffmpeg, err := exec.LookPath("ffmpeg")
 	if err != nil {
@@ -70,8 +76,34 @@ func videoAudioEnhancementFixture(t *testing.T, ctx context.Context) (http.Handl
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("generate video: %v: %s", err, output)
 	}
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: ffmpeg, FFprobe: ffprobe}) //nolint:contextcheck // The Server lifecycle carries ctx through configuration.
-	return handler, id, ffmpeg
+	tools := t.TempDir()
+	commands, recorder := filepath.Join(tools, "commands"), filepath.Join(tools, "ffmpeg")
+	writeExecutable(t, recorder, "#!/bin/sh\nprintf '%s\\n' \"$*\" >> '"+commands+"'\nexec '"+ffmpeg+"' \"$@\"\n")
+	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: t.TempDir(), FFmpeg: recorder, FFprobe: ffprobe}) //nolint:contextcheck // The Server lifecycle carries ctx through configuration.
+	return handler, id, ffmpeg, commands
+}
+
+func assertEnhancementFilteredOnce(t *testing.T, commands string, filters []string) {
+	t.Helper()
+	recorded, err := os.ReadFile(commands)
+	if err != nil {
+		t.Fatal(err)
+	}
+	presentations := 0
+	for _, command := range strings.Split(string(recorded), "\n") {
+		if !strings.Contains(command, "-f hls") || len(filters) == 0 {
+			continue
+		}
+		presentations++
+		for _, filter := range filters {
+			if count := strings.Count(command, filter); count != 1 {
+				t.Errorf("presentation applies %q %d times for one ladder: %s", filter, count, command)
+			}
+		}
+	}
+	if len(filters) > 0 && presentations == 0 {
+		t.Fatalf("no presentation command was recorded: %q", recorded)
+	}
 }
 
 func enhancedVideoRenditions(t *testing.T, ctx context.Context, handler http.Handler, id, origin, ffmpeg string) map[string]float64 {

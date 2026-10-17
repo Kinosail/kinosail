@@ -34,7 +34,9 @@ Use the same token for the Profile whose state the integration represents:
 - `PUT /api/v1/items/{id}/progress` saves viewing progress;
 - `DELETE /api/v1/items/{id}/continue-watching` dismisses a shelf item;
 - `PUT /api/v1/items/{id}/list` changes My List; and
-- `GET /api/v1/history` reads that Profile's history.
+- `GET /api/v1/history` reads that Profile's history, most recent first.
+
+To read history one page at a time, add `offset` and `limit` (1 to 200) to `GET /api/v1/history`. A paged response also returns `total`, `offset`, and `limit`.
 
 Do not use an Owner token for shared automation unless the automation truly acts as the Owner.
 

@@ -33,6 +33,25 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
                              "Options should sit in a side panel so the paused video stays visible")
         XCTAssertTrue(app.frame.contains(preferences.frame), "The title preferences control must fit on screen")
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Couldn’t save your position'")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["Playing the original file"].exists, "The panel should say which version is playing")
+        XCTAssertFalse(app.cells.matching(NSPredicate(format: "label BEGINSWITH 'Playing '")).firstMatch.exists,
+                       "Playback status is information, not a focusable row")
+        let speed = app.cells.matching(NSPredicate(format: "label BEGINSWITH 'Playback speed'")).firstMatch
+        XCTAssertTrue(speed.exists, app.debugDescription)
+        XCTAssertTrue(speed.label.contains("Normal"), "Each option row shows its current value, got \(speed.label)")
+        for _ in 0..<12 where !speed.hasFocus { remote.press(.down) }
+        XCTAssertTrue(speed.hasFocus, app.debugDescription)
+        let status = app.staticTexts["Playing the original file"]
+        XCTAssertGreaterThanOrEqual(speed.frame.minX, status.frame.minX - 32, "A focused row must line up with the panel content, not run past its edge")
+        record("playback options speed focus", app)
+        remote.press(.select)
+        let normal = app.cells.matching(NSPredicate(format: "label BEGINSWITH 'Normal'")).firstMatch
+        XCTAssertTrue(normal.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(normal.hasFocus, "A picker opens on the current choice")
+        XCTAssertTrue(normal.label.contains("Selected"), "The current choice must read as selected, got \(normal.label)")
+        record("playback speed picker", app)
+        remote.press(.menu)
+        XCTAssertTrue(speed.waitForExistence(timeout: 10))
         for _ in 0..<12 where !preferences.hasFocus { remote.press(.down) }
         XCTAssertTrue(preferences.hasFocus, app.debugDescription)
         remote.press(.select)
