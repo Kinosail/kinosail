@@ -77,7 +77,7 @@ func browseReferences(ctx context.Context, items []*library.Item, browse Browse)
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	if !browse.titleOrdered {
+	if !browse.titleOrdered && !browse.historyOrdered() {
 		if err := sortReferences(ctx, items, browse.order, browse.query, browse.locale); err != nil {
 			return nil, err
 		}
@@ -91,8 +91,12 @@ func browseReferences(ctx context.Context, items []*library.Item, browse Browse)
 	return items, nil
 }
 
+func (browse Browse) historyOrdered() bool {
+	return browse.view == "history" && browse.query == "" && normalizeSort(browse.order) == "title"
+}
+
 func browseLetterBuckets(items []*library.Item, browse Browse) []letterBucket {
-	if browse.query == "" && normalizeSort(browse.order) == "title" {
+	if browse.query == "" && normalizeSort(browse.order) == "title" && !browse.historyOrdered() {
 		return letterBuckets(items, browse.locale)
 	}
 	return nil
