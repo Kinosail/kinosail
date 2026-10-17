@@ -95,7 +95,7 @@ try {
       await stage.press('k');
       await page.waitForFunction(() => document.querySelector('video').paused);
     }
-    const row = await page.evaluate(async ({variant, duration, native, resume, frameRate}) => {
+    const row = await page.evaluate(async ({variant, duration, native, resume, frameRate, currentFrames}) => {
       const video = document.querySelector('video'), samples = [], presentations = [];
       if (!video) return {variant, error: 'video_missing', samples};
       const wait = (event, action) => new Promise((resolve, reject) => {
@@ -114,27 +114,45 @@ try {
         const points = resume >= 60 ? [resume + .05, resume + .55, resume + 1.55, resume + 2.55, resume + 3.55, resume + 4.55, duration - .05]
           : [resume + .05, resume + .55, resume + 5.05, resume + 9.05, resume + 13.05, resume + 17.05, duration > 40 ? duration - .05 : Math.min(31.55, duration - .05)];
         for (const point of points) {
+          let confirmCurrent;
           const presented = new Promise((resolve, reject) => {
-            let callback;
+            let callback, settled = false, lastCurrent;
             const timer = setTimeout(() => {
+              settled = true;
               video.cancelVideoFrameCallback(callback);
               reject(new Error('frame_presentation_timeout'));
             }, 30000);
-            const frame = (_, metadata) => {
+            const observe = (mediaTime, source) => {
               const decodedTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get.call(video);
-              const presentedTime = metadata.mediaTime + video.currentTime - decodedTime;
-              if (presentations.length < 64) presentations.push({point, mediaTime: metadata.mediaTime, presentedTime,
-                currentTime: video.currentTime, decodedTime, paused: video.paused});
-              if (presentedTime >= point - 1 / frameRate - .002 && presentedTime <= point + .002) {
-                video.pause(); clearTimeout(timer); resolve({presentedTime, mediaTime: metadata.mediaTime});
-              } else callback = video.requestVideoFrameCallback(frame);
+              const presentedTime = mediaTime + video.currentTime - decodedTime;
+              if (presentations.length < 64) presentations.push({point, source, mediaTime, presentedTime,
+                currentTime: video.currentTime, decodedTime, paused: video.paused, seeking: video.seeking});
+              if (presentedTime < point - 1 / frameRate - .002 || presentedTime > point + .002) return;
+              settled = true;
+              video.pause(); clearTimeout(timer); video.cancelVideoFrameCallback(callback);
+              resolve({presentedTime, mediaTime, source});
             };
+            const frame = (_, metadata) => {
+              if (settled) return;
+              observe(metadata.mediaTime, 'callback');
+              if (!settled) callback = video.requestVideoFrameCallback(frame);
+            };
+            const current = () => {
+              if (settled) return;
+              let image;
+              try { image = new VideoFrame(video); } catch {}
+              const mediaTime = image ? image.timestamp / 1e6 : undefined;
+              image?.close();
+              if (mediaTime !== undefined && mediaTime !== lastCurrent) { lastCurrent = mediaTime; observe(mediaTime, 'current'); }
+              if (!settled) requestAnimationFrame(current);
+            };
+            confirmCurrent = () => { if (currentFrames) current(); };
             callback = video.requestVideoFrameCallback(frame);
           });
           const [, frame] = await Promise.all([wait('seeked', () => {
             video.currentTime = point;
             if (native && variant === 'compatible') { video.muted = true; video.play().catch(() => {}); }
-          }), presented]);
+          }).then(() => confirmCurrent()), presented]);
           video.pause();
           const canvas = document.createElement('canvas');
           canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -152,10 +170,10 @@ try {
         ended = video.ended;
       } catch (caught) { error = caught.message; }
       return {variant, error, ended, duration: video.duration, width: video.videoWidth, height: video.videoHeight,
-        firstPlaying: window.qaResumeFirstPlaying, eofStart,
+        firstPlaying: window.qaResumeFirstPlaying, eofStart, seeking: video.seeking, readyState: video.readyState,
         start: Number(video.dataset.start), mode: video.dataset.compatibilityMode,
         adapter: video.currentSrc.startsWith('blob:') ? 'mse' : 'native', currentTime: video.currentTime, samples, presentations};
-    }, {variant, duration, native, resume, frameRate});
+    }, {variant, duration, native, resume, frameRate, currentFrames: engine === 'chromium'});
     rows.push(row);
     await page.screenshot({path: output.replace('.json', `-${variant}.png`)});
     await Promise.all(playlistCaptures);
