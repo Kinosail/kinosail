@@ -28,10 +28,10 @@ func Library(browse func(*http.Request) (catalog.Result, error), project func(*h
 		for _, item := range page.Items {
 			items = append(items, project(request, item))
 		}
-		apiAction{body: map[string]any{
+		serveListing(writer, request, map[string]any{
 			"items": items, "view": page.View, "sort": page.Sort, "query": page.Query,
 			"letter": page.Letter, "letters": page.Letters, "total": page.Total,
 			"offset": page.Offset, "limit": page.Limit,
-		}, status: http.StatusOK}.serve(writer)
+		})
 	}
 }
