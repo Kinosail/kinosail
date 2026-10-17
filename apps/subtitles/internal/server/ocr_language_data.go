@@ -109,8 +109,13 @@ func (store *ocrLanguageStore) download(ctx context.Context, name string, pkg oc
 			return nil, errors.Join(errOCRLanguagePackage, err)
 		}
 	}
-	data, err := privatefile.Read(filepath.Join(workspace, member), ocrLanguageDataLimit)
-	if err != nil || len(data) == 0 {
+	file, err := os.Open(filepath.Join(workspace, member))
+	if err != nil {
+		return nil, errors.Join(errOCRLanguagePackage, err)
+	}
+	defer func() { _ = file.Close() }()
+	data, err := io.ReadAll(io.LimitReader(file, ocrLanguageDataLimit+1))
+	if err != nil || len(data) == 0 || len(data) > ocrLanguageDataLimit {
 		return nil, errors.Join(errOCRLanguagePackage, err)
 	}
 	return data, nil
