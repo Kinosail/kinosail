@@ -106,8 +106,6 @@ func logFirstRefresh(err error, duration time.Duration) {
 		slog.Info("first Library scan published", "operation", "library.startup", "outcome", "published", "duration_ms", duration.Milliseconds())
 	case errors.Is(err, context.Canceled):
 		slog.Debug("first Library scan stopped", "operation", "library.startup", "outcome", "cancelled", "duration_ms", duration.Milliseconds())
-	default:
-		slog.Warn("first Library scan failed", "operation", "library.startup", "outcome", "failed", "duration_ms", duration.Milliseconds())
 	}
 }
 
@@ -180,7 +178,7 @@ func (index *Index) Library() (*library.Snapshot, error) {
 	if index.ready {
 		err = nil
 	}
-	return index.current.Load(), err
+	return index.current.Load(), availabilityError(err)
 }
 
 func (index *Index) View(policy library.Policy) (*library.View, error) {

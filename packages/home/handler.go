@@ -29,7 +29,7 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 			status := http.StatusInternalServerError
 			if errors.Is(err, catalog.ErrInvalidBrowse) {
 				status = http.StatusBadRequest
-			} else if errors.Is(err, library.ErrLoading) {
+			} else if errors.Is(err, library.ErrLoading) || errors.Is(err, library.ErrUnavailable) {
 				status = http.StatusServiceUnavailable
 			}
 			failure(writer, request, err.Error(), status)

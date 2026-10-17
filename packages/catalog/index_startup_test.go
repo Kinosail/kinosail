@@ -64,6 +64,7 @@ func TestStartupReportsAFirstScanThatCannotStart(t *testing.T) {
 	cancel()
 	eventually(t, "cancelled first scan still reported loading", func() bool {
 		_, err := index.Library()
-		return errors.Is(err, context.Canceled)
+		_, _, cause := index.Status()
+		return errors.Is(err, library.ErrUnavailable) && errors.Is(cause, context.Canceled)
 	})
 }

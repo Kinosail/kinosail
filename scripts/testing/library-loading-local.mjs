@@ -80,8 +80,10 @@ async function observe(browser, name, viewport) {
   } else {
     const text = await page.locator("main").innerText();
     record.settled.text = text.slice(0, 400);
-    const failed = app === "player" ? state.status === 500 && /could not complete the request/i.test(await page.locator("h1").innerText()) : /Coverage is unavailable\./.test(text);
-    check(failed, `${name}: failed scan did not show the real failure (status ${state.status})`);
+    const html = await page.content();
+    record.settled.mediaPathVisible = html.includes(process.env.KINOSAIL_MEDIA_DIR) || /input\/output error/i.test(html);
+    const failed = app === "player" ? state.status === 503 && /library is unavailable/.test(text) : /Coverage is unavailable\./.test(text);
+    check(failed && !record.settled.mediaPathVisible, `${name}: failed scan did not show the generic failure without the media path (status ${state.status})`);
   }
   if (name === "desktop" && evidence.api.pending) check(evidence.api.pending.status === 503 && evidence.api.pending.retryAfter === "5", `api pending ${evidence.api.pending.status} Retry-After ${evidence.api.pending.retryAfter}`);
   await context.close();

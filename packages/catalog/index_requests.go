@@ -80,7 +80,6 @@ func (index *Index) serveRequest(ctx context.Context, request refreshRequest) {
 	}
 	if request.full {
 		if err := index.Refresh(ctx); err != nil {
-			slog.Warn("background Library scan failed", "error", err)
 			return
 		}
 		items, scanned, _ := index.Status()
@@ -95,7 +94,6 @@ func (index *Index) serveRequest(ctx context.Context, request refreshRequest) {
 		return
 	}
 	if err := index.refreshChanged(ctx, changed); err != nil {
-		slog.Warn("incremental Library scan failed", "operation", "library.rescan", "paths", len(changed), "error", err)
 		return
 	}
 	items, _, _ := index.Status()
