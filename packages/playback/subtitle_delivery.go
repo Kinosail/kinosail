@@ -1,8 +1,10 @@
 package playback
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -56,17 +58,6 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 		timelines = append(timelines, timeline)
 	}
 	vtt := strings.EqualFold(filepath.Ext(path), ".vtt")
-	if vtt && len(timelines) == 0 {
-		setSubtitleHeaders(writer)
-		if httpcompress.GzipRequested(request) {
-			if data, err := readSubtitle(path); err == nil {
-				httpcompress.WriteWebVTT(writer, request, data)
-				return
-			}
-		}
-		http.ServeFile(writer, request, path)
-		return
-	}
 	data, err := readSubtitle(path)
 	if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrPermission) {
 		dependencies.NotFound(writer, request)
@@ -76,7 +67,22 @@ func ServeSubtitle(writer http.ResponseWriter, request *http.Request, path strin
 		dependencies.Error(writer, request, "could not read subtitles", http.StatusInternalServerError)
 		return
 	}
-	data = normalizeSubtitle(data, vtt)
+	text, err := DecodeSubtitleText(data, SubtitleFileLanguage(path))
+	if err != nil {
+		slog.WarnContext(request.Context(), "subtitle text could not be decoded", "operation", "subtitles.deliver", "failure", "encoding")
+		dependencies.Error(writer, request, "could not read subtitles", http.StatusUnprocessableEntity)
+		return
+	}
+	if vtt && len(timelines) == 0 && bytes.Equal(text, data) {
+		setSubtitleHeaders(writer)
+		if httpcompress.GzipRequested(request) {
+			httpcompress.WriteWebVTT(writer, request, data)
+			return
+		}
+		http.ServeFile(writer, request, path)
+		return
+	}
+	data = normalizeSubtitle(text, vtt)
 	if len(timelines) > 0 {
 		data = MapWebVTT(data, timelines[0])
 	}

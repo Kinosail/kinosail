@@ -24,7 +24,7 @@ func TestDeliverySubtitleSelectsExternalAndTimelineModes(t *testing.T) {
 	state := newDeliveryState(t)
 	module := state.module()
 	response := httptest.NewRecorder()
-	module.Subtitle(response, subtitleRequest(t, "0", ""))
+	module.Subtitle(response, subtitleRequest(t, "1", ""))
 	if state.subtitle != "film.vtt" || state.timeline != nil {
 		t.Fatalf("external subtitle = %q timeline=%#v", state.subtitle, state.timeline)
 	}
@@ -33,11 +33,11 @@ func TestDeliverySubtitleSelectsExternalAndTimelineModes(t *testing.T) {
 	plan.MarkerMode = "server"
 	plan.Timeline = playback.Timeline{SourceDuration: 60, Duration: 50}
 	state.session = deliveryTestSession{item: state.item.ID, profile: "viewer", revision: 2, expires: state.now.Add(1), plan: plan}
-	module.Subtitle(httptest.NewRecorder(), subtitleRequest(t, "0", "playSessionId=play"))
+	module.Subtitle(httptest.NewRecorder(), subtitleRequest(t, "1", "playSessionId=play"))
 	if state.subtitle != "film.vtt" || state.timeline == nil || state.timeline.Duration != 50 {
 		t.Fatalf("mapped subtitle = %q timeline=%#v", state.subtitle, state.timeline)
 	}
-	for _, index := range []string{"bad", "-1", "1025", "1"} {
+	for _, index := range []string{"bad", "-1", "1025", "0", "2"} {
 		missing := httptest.NewRecorder()
 		module.Subtitle(missing, subtitleRequest(t, index, ""))
 		if missing.Code != http.StatusNotFound {
@@ -46,7 +46,7 @@ func TestDeliverySubtitleSelectsExternalAndTimelineModes(t *testing.T) {
 	}
 	state.visible = false
 	hidden := httptest.NewRecorder()
-	module.Subtitle(hidden, subtitleRequest(t, "0", ""))
+	module.Subtitle(hidden, subtitleRequest(t, "1", ""))
 	if hidden.Code != http.StatusNotFound {
 		t.Fatalf("hidden subtitle = %d", hidden.Code)
 	}

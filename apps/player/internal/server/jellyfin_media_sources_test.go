@@ -65,7 +65,7 @@ func TestJellyfinListingsAttachMediaSourcesOnlyWhenRequested(t *testing.T) {
 		}
 	}
 	decodeJellyfin(t, jellyfinCall(t, handler, http.MethodGet, "/Items/"+ids["Arrival"], "", owner), &subtitles)
-	if streams := subtitles.MediaSources[0].MediaStreams; len(streams) != 2 || streams[0].Type != "Subtitle" || !strings.HasSuffix(streams[1].DeliveryURL, "/Subtitles/1/Stream.vtt") {
+	if streams := subtitles.MediaSources[0].MediaStreams; len(streams) != 2 || streams[0].Type != "Subtitle" || !strings.HasSuffix(streams[1].DeliveryURL, "/Subtitles/2/Stream.vtt") {
 		t.Fatalf("Arrival media streams = %#v", streams)
 	}
 }

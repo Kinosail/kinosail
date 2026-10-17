@@ -99,7 +99,7 @@ func TestJellyfinMediaSourcePreservesBothProductContracts(t *testing.T) {
 	if err != nil || strings.Contains(subtitles["Path"].(string), "?") || subtitles["TranscodingProtocol"] != "hls" {
 		t.Fatalf("Subtitles media source = %#v, %v", subtitles, err)
 	}
-	if streams := JellyfinMediaStreams(item, facts, "?x=1"); len(streams) != 3 {
+	if streams := JellyfinMediaStreams(item, facts, "vtt", "?x=1"); len(streams) != 3 {
 		t.Fatalf("streams = %#v", streams)
 	}
 	if _, err := JellyfinMediaSource(item, facts, plan, JellyfinMediaSourceOptions{TranscodingProtocolField: "bad"}); err == nil {

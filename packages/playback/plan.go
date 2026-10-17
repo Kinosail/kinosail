@@ -102,7 +102,7 @@ func applySubtitle(plan *PlaybackPlan, tracks []SubtitleFacts, requested *int, c
 	plan.SubtitleIndex, plan.SubtitleSourceIndex, plan.SubtitleText = subtitle.Index, subtitle.SourceIndex, subtitle.Text
 	plan.SubtitleExternal, plan.SubtitleExternalIndex = subtitle.External, subtitle.ExternalIndex
 	switch {
-	case !subtitle.Text || subtitle.External && !client.SupportsExternalSubtitles || !Includes(client.TextSubtitleCodecs, subtitle.Codec):
+	case !subtitle.Text || subtitle.External && !client.SupportsExternalSubtitles || !textSubtitleDeliverable(client, subtitle.Codec):
 		plan.SubtitleMode = "burn-in"
 	case subtitle.External:
 		plan.SubtitleMode = "external"

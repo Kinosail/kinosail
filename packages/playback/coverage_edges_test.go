@@ -265,7 +265,7 @@ func TestHLSDeliveryAndJellyfinValidationEdges(t *testing.T) {
 		t.Fatalf("mismatched capabilities = %#v", capabilities)
 	}
 	facts := MediaFacts{Subtitles: []SubtitleFacts{{External: true}, {SourceIndex: 2, Text: true}}}
-	if streams := JellyfinMediaStreams(library.Item{ID: "id"}, facts, ""); len(streams) != 1 {
+	if streams := JellyfinMediaStreams(library.Item{ID: "id"}, facts, "vtt", ""); len(streams) != 1 {
 		t.Fatalf("subtitle streams = %#v", streams)
 	}
 	plain := errors.New("plain failure")

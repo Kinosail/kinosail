@@ -62,7 +62,11 @@ Transcoded output uses MP4 with H.264 video and AAC audio. Hardware acceleration
 
 Hardware decoding is separate from hardware encoding. At startup, Kinosail tests each usable graphics device with small synthetic clips in H.264, HEVC, HEVC 10-bit, AV1, AV1 10-bit, VP9, and VP9 10-bit. A source decodes on the device only when its format passed that test. Other sources decode on the processor and encode on the device. When the device also passed the HDR tests, 10-bit HEVC HDR sources stay on the device for tone mapping or HDR output. **Settings → Video conversion → Video compatibility** lists the verified decode formats for each device.
 
-External and embedded text subtitles can remain a separate text track. Kinosail burns subtitles into video only when the client cannot use the selected text track. Tone mapping can convert unsupported HDR to SDR.
+External and embedded text subtitles stay a separate text track. Kinosail converts each text format to WebVTT for its own apps and the browser. Text formats include SubRip, ASS, SSA, MP4 timed text, and EIA-608 closed captions. A Jellyfin client that accepts only SubRip gets SubRip instead.
+
+Kinosail also converts sidecar subtitle files to UTF-8. It reads UTF-8 and UTF-16 byte order marks. For other legacy files, it uses the language code in the filename to choose the encoding. For example, `Movie.ru.srt` uses Windows-1251. A file without a language code uses Windows-1252.
+
+Kinosail burns subtitles into video only when the client cannot show any text subtitle, or when the selected track is an image format such as PGS, VobSub, or DVB. Tone mapping can convert unsupported HDR to SDR.
 
 ## Reader and non-video behavior
 

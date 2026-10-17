@@ -219,7 +219,7 @@ func TestJellyfinClientCanPlayAndSyncProgress(t *testing.T) {
 		t.Fatalf("progress = %d %q, item = %d %q", progress.Code, progress.Body.String(), item.Code, item.Body.String())
 	}
 	image := jellyfinCall(t, handler, http.MethodGet, "/Items/"+id+"/Images/Primary", "", token)
-	subtitle := jellyfinCall(t, handler, http.MethodGet, "/Videos/"+id+"/"+id+"/Subtitles/0/Stream.vtt?playSessionId="+playbackInfo.PlaySessionID, "", "")
+	subtitle := jellyfinCall(t, handler, http.MethodGet, "/Videos/"+id+"/"+id+"/Subtitles/1/Stream.vtt?playSessionId="+playbackInfo.PlaySessionID, "", "")
 	if image.Body.String() != "poster" || !strings.Contains(subtitle.Body.String(), "WEBVTT") {
 		t.Fatalf("image = %d %q, subtitle = %d %q", image.Code, image.Body.String(), subtitle.Code, subtitle.Body.String())
 	}
