@@ -5,23 +5,7 @@ on:
   push:
     branches: [main]
   merge_group:
-  schedule:
-    - cron: "17 7 * * 1"
   workflow_dispatch:
-    inputs:
-      scan_diagnostic:
-        description: Keep metadata-only full-history scan evidence
-        type: boolean
-        default: false
-      native_probe:
-        description: Add one isolated native regression suite after the complete deep run
-        type: choice
-        options: [none, AAC, storage, reader]
-        default: none
-      coverage_diagnostic:
-        description: Keep exact deep Go coverage profiles
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -35,9 +19,18 @@ jobs:
     name: Select affected components
     runs-on: ubuntu-24.04
     timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: read
     outputs:
       plan: ${{ steps.select.outputs.plan }}
-      languages: ${{ steps.select.outputs.languages }}
+      codeql: ${{ steps.select.outputs.codeql }}
+      modules: ${{ steps.select.outputs.modules }}
+      apps: ${{ steps.select.outputs.apps }}
+      shards: ${{ steps.select.outputs.shards }}
+      arm: ${{ steps.select.outputs.arm }}
+      tools: ${{ steps.select.outputs.tools }}
+      verified: ${{ steps.select.outputs.verified }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -45,30 +38,17 @@ jobs:
           persist-credentials: false
       - run: test ! -e .gates-disabled
       - id: select
-        run: python3 scripts/ci/affected.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_FULL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: python3 scripts/ci/plan.py
 
-  static:
-    name: Repository policy
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - parallel:
-          - run: make max-loc
-          - run: make comments-check
-          - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
-          - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
-          - run: ./scripts/ci/validate-workflows.sh
-          - run: ./scripts/ci/check-source-tools.sh
-
-  tooling:
+  repository:
+    name: Repository policy and tooling
     needs: plan
-    if: fromJSON(needs.plan.outputs.plan).tooling
+    if: needs.plan.outputs.verified != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -88,13 +68,34 @@ jobs:
           node-version: 26
           cache: pnpm
           cache-dependency-path: scripts/quality/pnpm-lock.yaml
-      - run: make tooling-check
+      - parallel:
+          - run: make max-loc
+          - run: make comments-check
+          - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
+          - run: python3 -m unittest discover -s scripts/ci -p 'test_*.py'
+          - run: ./scripts/ci/validate-workflows.sh
+          - run: ./scripts/ci/check-source-tools.sh
+          - name: Check shared scripts and repository tooling
+            env:
+              WEB: ${{ fromJSON(needs.plan.outputs.plan).web }}
+              TOOLING: ${{ fromJSON(needs.plan.outputs.plan).tooling }}
+            run: |
+              if [[ "$WEB" == true ]]; then
+                pnpm --dir scripts/quality install --frozen-lockfile
+                ./scripts/quality/check-script-lint.sh
+              fi
+              if [[ "$TOOLING" == true ]]; then make tooling-check; fi
 
-  packages:
+  go:
+    name: Go (${{ matrix.module }})
     needs: plan
-    if: fromJSON(needs.plan.outputs.plan).packages
+    if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.modules != '[]'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.modules) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -102,30 +103,247 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-go
         with:
-          go-version-file: packages/go.mod
+          go-version-file: ${{ matrix.directory }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
-      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-        with:
-          version: v2.14.0
-          working-directory: packages
-          args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
-      - run: make -C packages tidy-check
-      - env:
-          KINOSAIL_GO_TEST_MODE: ${{ fromJSON(needs.plan.outputs.plan).deep && 'deep' || 'quick' }}
-        run: ./scripts/ci/test-go.sh packages
-      - run: go -C packages run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
-      - run: go -C apps/subtitles mod download && python3 scripts/quality/check-dependency-integrity.py
+      - name: Install media fixture codecs
+        env:
+          MEDIA: ${{ matrix.media }}
+        run: |
+          [[ "$MEDIA" == true ]] || exit 0
+          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/deep-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
+          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/deep-ffmpeg.deb" | sha256sum --check
+          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/deep-ffmpeg.deb"
+          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
+      - parallel:
+          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+            with:
+              version: v2.14.0
+              working-directory: ${{ matrix.directory }}
+              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+          - name: Check the module contract
+            env:
+              DIRECTORY: ${{ matrix.directory }}
+              CONTRACT: ${{ matrix.contract }}
+            run: |
+              read -ra targets <<< "$CONTRACT"
+              make -C "$DIRECTORY" "${targets[@]}"
+          - name: Check Go vulnerabilities
+            env:
+              DIRECTORY: ${{ matrix.directory }}
+            run: go -C "$DIRECTORY" run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+          - name: Run quick Go tests
+            env:
+              MODULE: ${{ matrix.module }}
+              KINOSAIL_GO_TEST_MODE: quick
+            run: ./scripts/ci/test-go.sh "$MODULE"
+      - name: Verify certified first-fragment regeneration and cold reopen
+        if: matrix.module == 'player'
+        timeout-minutes: 3
+        env:
+          GOMAXPROCS: "2"
+          KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
+        run: timeout --kill-after=5s 180s go -C apps/player test -p=1 ./internal/server -run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$' -count=1 -timeout=170s -v
+      - name: Check dependency integrity across consumers
+        if: matrix.module == 'packages'
+        run: go -C apps/subtitles mod download && python3 scripts/quality/check-dependency-integrity.py
 
-  web:
+  e2e:
+    name: E2E (${{ matrix.app }} ${{ matrix.phase }})
     needs: plan
-    if: fromJSON(needs.plan.outputs.plan).web
+    if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.apps != '[]'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.apps) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/${{ matrix.app }}/go.mod
+          cache-dependency-path: "**/go.sum"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - parallel:
+          - uses: ./.github/actions/setup-e2e
+            with:
+              app: ${{ matrix.app }}
+          - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+            with:
+              context: .
+              file: apps/${{ matrix.app }}/Containerfile
+              platforms: linux/amd64
+              cache-from: type=gha,scope=${{ matrix.app }}-linux/amd64
+              cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/amd64
+              load: true
+              push: false
+              tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+              build-args: |
+                VERSION=sha-${{ github.sha }}
+                REVISION=${{ github.sha }}
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.75.0
+          image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Test production paths
+        if: matrix.system == 'true'
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ matrix.app }}-system-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Test populated browser journeys
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_TEST: "1"
+          KINOSAIL_BROWSER_PROJECT: chromium
+          KINOSAIL_BROWSER_SMOKE: "1"
+          KINOSAIL_BROWSER_PHASE: ${{ matrix.phase }}
+          KINOSAIL_BROWSER_WORKERS: ${{ matrix.workers }}
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ matrix.app }}-${{ matrix.phase }}-e2e-artifact/browser-results
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ matrix.app }}-${{ matrix.phase }}-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable system E2E artifact
+        if: always() && matrix.system == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ matrix.app }}-system-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.app }}-system-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Keep verifiable E2E artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ matrix.app }}-${{ matrix.phase }}-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.app }}-${{ matrix.phase }}-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
+
+  proofs:
+    name: Media proof (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+      - uses: ./.github/actions/setup-e2e
+        with:
+          app: player
+          browsers: ${{ matrix.browser && 'chromium' || '' }}
+      - name: Run the media proof shard
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: python3 scripts/ci/proof_shard.py run player "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"
+      - name: Keep safe media proof evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: player-proof-${{ matrix.shard }}-evidence
+          path: ${{ runner.temp }}/proof-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  arm:
+    name: Production container (${{ matrix.app }} arm64)
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.arm != '[]'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.plan.outputs.arm) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Containerfile
+          platforms: linux/arm64
+          cache-from: type=gha,scope=${{ matrix.app }}-linux/arm64
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/arm64
+          load: true
+          push: false
+          tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          build-args: |
+            VERSION=sha-${{ github.sha }}
+            REVISION=${{ github.sha }}
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.75.0
+          image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}-arm64
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Test production paths
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ matrix.app }}-arm64-system-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable system E2E artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ matrix.app }}-arm64-system-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.app }}-arm64-system-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
+
+  tools:
+    name: Installer and local pipeline (${{ matrix.app }})
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && needs.plan.outputs.tools != '[]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.plan.outputs.tools) }}
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/${{ matrix.app }}/go.mod
+          cache-dependency-path: "**/go.sum"
+      - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
           version: 11.28.5
@@ -135,13 +353,69 @@ jobs:
         with:
           node-version: 26
           cache: pnpm
-          cache-dependency-path: scripts/quality/pnpm-lock.yaml
-      - run: pnpm --dir scripts/quality install --frozen-lockfile
-      - run: ./scripts/quality/check-script-lint.sh
+          cache-dependency-path: apps/${{ matrix.app }}/e2e/pnpm-lock.yaml
+      - run: pnpm --dir e2e install --frozen-lockfile
+      - run: make installer-test native-build local-pipeline-test
+
+  client:
+    name: Player Swift compilation
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).client
+    runs-on: xcode-27
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: make -C apps/player client-check
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
+
+  android:
+    name: Player Android compilation
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0'
+      - run: ./gradlew --continue :app:assembleDebug :app:lintDebug :app:testDebugUnitTest :watchcore:testDebugUnitTest :wear:assembleDebug :wear:testDebugUnitTest
+        working-directory: apps/player/apps/android
+      - name: Keep Android lint evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: android-lint-evidence
+          path: apps/player/apps/android/app/build/reports/lint-results-debug.xml
+          retention-days: 14
+      - name: Keep Android unit evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: android-unit-evidence
+          path: |
+            apps/player/apps/android/app/build/test-results/testDebugUnitTest/*.xml
+            apps/player/apps/android/wear/build/test-results/testDebugUnitTest/*.xml
+          retention-days: 14
 
   docs:
+    name: Documentation build
     needs: plan
-    if: fromJSON(needs.plan.outputs.plan).docs
+    if: fromJSON(needs.plan.outputs.plan).docs && (needs.plan.outputs.verified != 'true' || github.event_name == 'push')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -158,7 +432,7 @@ jobs:
           node-version: 26
           cache: npm
           cache-dependency-path: engineering/documentation/package-lock.json
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+      - uses: ./.github/actions/setup-go
         with:
           go-version-file: go.work
           cache-dependency-path: "**/go.sum"
@@ -175,10 +449,87 @@ jobs:
         with:
           path: ${{ runner.temp }}/kinosail-docs
 
+  security:
+    name: Security scans
+    needs: plan
+    if: needs.plan.outputs.verified != 'true' || github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - name: Scan every introduced commit for secrets
+        env:
+          KINOSAIL_REAL_SCANNER: gitleaks
+        run: |
+          go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1
+          python3 -m unittest scripts.ci.test_receipt_fingerprints
+          python3 scripts/ci/secrets.py
+      - if: fromJSON(needs.plan.outputs.plan).supply
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.75.0
+          scan-type: fs
+          scanners: vuln,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+      - if: fromJSON(needs.plan.outputs.plan).supply && github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
+      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
+      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0'
+      - if: contains(needs.plan.outputs.codeql, 'javascript-typescript')
+        run: |
+          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
+          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
+      - if: needs.plan.outputs.codeql != ''
+        uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
+        with:
+          languages: ${{ needs.plan.outputs.codeql }}
+          config-file: .github/codeql-config.yml
+          build-mode: ${{ (contains(needs.plan.outputs.codeql, 'go') || contains(needs.plan.outputs.codeql, 'java-kotlin')) && 'manual' || 'none' }}
+          queries: security-extended
+      - if: contains(needs.plan.outputs.codeql, 'go')
+        run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
+      - if: contains(needs.plan.outputs.codeql, 'java-kotlin')
+        run: ./gradlew :app:assembleDebug :wear:assembleDebug
+        working-directory: apps/player/apps/android
+      - if: needs.plan.outputs.codeql != ''
+        uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
+      - name: Require zero open security findings on this ref
+        if: needs.plan.outputs.codeql != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
+            -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
+          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
+
   repository-required:
     name: Repository checks
     if: always()
-    needs: [plan, static, tooling, packages, web, docs]
+    needs: [plan, repository, docs]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
@@ -190,184 +541,40 @@ jobs:
           RESULTS: ${{ toJSON(needs) }}
         run: python3 scripts/ci/required.py repository
 
-  player:
-    needs: plan
-    if: fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).client || fromJSON(needs.plan.outputs.plan).android
-    uses: ./.github/workflows/app.yml
-    permissions:
-      contents: read
-      pull-requests: read
-    with:
-      app: player
-      native_probe: ${{ github.event_name == 'workflow_dispatch' && inputs.native_probe || 'none' }}
-      plan: ${{ needs.plan.outputs.plan }}
-      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
-
   player-required:
     name: Player checks
     if: always()
-    needs: [plan, player]
+    needs: [plan, go, e2e, proofs, arm, tools, client, android]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
       - env:
-          SELECTION: ${{ needs.plan.result }}
-          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).player || fromJSON(needs.plan.outputs.plan).client || fromJSON(needs.plan.outputs.plan).android }}
-          RESULT: ${{ needs.player.result }}
-        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
-
-  subtitles:
-    needs: plan
-    if: fromJSON(needs.plan.outputs.plan).subtitles
-    uses: ./.github/workflows/app.yml
-    permissions:
-      contents: read
-      pull-requests: read
-    with:
-      app: subtitles
-      plan: ${{ needs.plan.outputs.plan }}
-      coverage_diagnostic: ${{ github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic }}
+          RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci/required.py app
 
   subtitles-required:
     name: Subtitles checks
     if: always()
-    needs: [plan, subtitles]
+    needs: [plan, go, e2e, proofs, arm, tools, client, android]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: test ! -e .gates-disabled
       - env:
-          SELECTION: ${{ needs.plan.result }}
-          SELECTED: ${{ fromJSON(needs.plan.outputs.plan).subtitles }}
-          RESULT: ${{ needs.subtitles.result }}
-        run: test "$SELECTION" = success && { if test "$SELECTED" = true; then test "$RESULT" = success; else test "$RESULT" = skipped; fi; }
-
-  secrets:
-    name: Changed-commit secret scan
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup-go
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - id: scanner_install
-        run: go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1
-      - name: Test exact receipt digest exceptions with the pinned scanner
-        env:
-          KINOSAIL_REAL_SCANNER: gitleaks
-        run: python3 -m unittest scripts.ci.test_receipt_fingerprints
-      - run: python3 scripts/ci/secrets.py
-      - name: Keep full-history finding locations
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
-        run: python3 scripts/ci/scan-diagnostic.py --output "$RUNNER_TEMP/scan-safe.json"
-      - name: Upload only validated finding locations
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: full-history-scan-metadata-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/scan-safe.json
-          if-no-files-found: error
-          retention-days: 3
-
-  codeql:
-    needs: plan
-    if: needs.plan.outputs.languages != '[]'
-    name: CodeQL (${{ matrix.language }})
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    permissions:
-      contents: read
-      security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ${{ fromJSON(needs.plan.outputs.languages) }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-go
-        if: matrix.language == 'go'
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
-        if: matrix.language == 'java-kotlin'
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-          cache-dependency-path: |
-            apps/player/apps/android/**/*.gradle*
-            apps/player/apps/android/**/gradle.properties
-            apps/player/apps/android/**/gradle-wrapper.properties
-      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
-        if: matrix.language == 'java-kotlin'
-        with:
-          packages: 'platform-tools platforms;android-37.0'
-      - if: matrix.language == 'javascript-typescript'
-        run: |
-          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
-          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
-      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
-        with:
-          languages: ${{ matrix.language }}
-          config-file: .github/codeql-config.yml
-          build-mode: ${{ (matrix.language == 'go' || matrix.language == 'java-kotlin') && 'manual' || 'none' }}
-          queries: security-extended
-      - if: matrix.language == 'go'
-        run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
-      - if: matrix.language == 'java-kotlin'
-        run: ./gradlew :app:assembleDebug :wear:assembleDebug
-        working-directory: apps/player/apps/android
-      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
-
-  supply-chain:
-    needs: plan
-    if: fromJSON(needs.plan.outputs.plan).supply
-    name: Supply chain security
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-        with:
-          version: v0.75.0
-          scan-type: fs
-          scanners: vuln,misconfig
-          severity: HIGH,CRITICAL
-          exit-code: "1"
-          ignore-unfixed: true
-      - if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294
-
-  findings:
-    needs: [plan, codeql]
-    if: needs.plan.outputs.languages != '[]'
-    name: CodeQL findings policy
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      security-events: read
-    steps:
-      - env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
-            -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
-          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
+          RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/ci/required.py app
 
   security-required:
     name: Security checks
     if: always()
-    needs: [plan, secrets, codeql, supply-chain, findings]
+    needs: [plan, security]
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
@@ -395,6 +602,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
     permissions:
       contents: read
+      actions: read
       packages: write
       id-token: write
       attestations: write
@@ -443,58 +651,3 @@ jobs:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
         run: python3 engineering/documentation/indexnow.py "$BEFORE" "$AFTER"
-
-  diagnostics:
-    if: github.event_name == 'schedule'
-    name: Deep quality metrics
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup-go
-        with:
-          go-version-file: go.work
-          cache-dependency-path: "**/go.sum"
-      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
-        with:
-          version: 11.28.5
-          install: false
-          node-version-file: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
-        with:
-          node-version: 26
-          cache: pnpm
-          cache-dependency-path: scripts/quality/pnpm-lock.yaml
-      - run: go -C apps/subtitles mod download
-      - run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
-      - run: ./scripts/quality/check-static.sh
-
-  swift-analysis:
-    if: github.event_name == 'schedule'
-    name: Swift code scanning
-    runs-on: xcode-27
-    timeout-minutes: 90
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
-        with:
-          languages: swift
-          config-file: .github/codeql-config.yml
-          build-mode: manual
-          queries: security-extended
-      - run: |
-          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
-            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
-            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
-            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
-          DEVELOPER_DIR=/Applications/Xcode_27.1.app/Contents/Developer \
-            XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
-      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d

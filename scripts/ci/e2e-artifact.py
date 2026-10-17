@@ -48,7 +48,7 @@ def main():
     status = capture(["git", "status", "--porcelain", "--untracked-files=normal"])
     patch = subprocess.run(["git", "diff", "HEAD", "--binary"], capture_output=True, check=True)
     safe_keys = ("CI", "CONTAINER_ENGINE", "KINOSAIL_BROWSER_TEST", "KINOSAIL_BROWSER_MATRIX",
-                 "KINOSAIL_BROWSER_PROJECT", "KINOSAIL_BROWSER_SMOKE", "KINOSAIL_BROWSER_WORKERS",
+                 "KINOSAIL_BROWSER_PROJECT", "KINOSAIL_BROWSER_SMOKE", "KINOSAIL_BROWSER_PHASE", "KINOSAIL_BROWSER_WORKERS",
                  "KINOSAIL_E2E_WORKERS", "KINOSAIL_E2E_VIDEO", "KINOSAIL_TEST_INSTANCE",
                  "KINOSAIL_TEST_IMAGE", "KINOSAIL_TEST_IMAGE_READY", "KINOSAIL_POPULATED_SUITE", "PLAYWRIGHT_CHANNEL", "GOCACHE")
     receipt = {

@@ -103,3 +103,24 @@ run_populated_player_journeys() {
     --required-title 'closing a signed-in tab resumes its saved login URL @smoke' \
     -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-offline-profile.spec.ts test-instance-session-persistence.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
+
+run_browser_phases() {
+  local project="$1" phase="$2" port="$3"
+  local results="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}"
+  local artifacts="${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}"
+  if [[ "$phase" != populated ]]; then
+    run_local_player_journeys "$project" "$results-$project-library-pagination" "$artifacts/library-pagination-$project"
+    run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
+      "$results-$project-caption-recovery" "$artifacts/caption-recovery-$project"
+    run_download_pause_journeys "$project" "$results-$project" "$artifacts/downloads-$project"
+    start_fresh_server "$port"
+    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="$results-$project" pnpm --dir e2e test "${browser_args[@]}"
+    if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then
+      run_native_intent_regression "$project" "$results-$project-native-intent" "$artifacts/native-intent-$project"
+    fi
+  fi
+  if [[ "$phase" != journeys ]]; then
+    start_fresh_server "$port"
+    run_populated_player_journeys "$project" "$url" "$artifacts/settings-$project"
+  fi
+}

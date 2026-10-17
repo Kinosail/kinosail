@@ -27,18 +27,24 @@ def results(plan):
             **{job: {"result": "success"} for job in REQUIRED}}
 
 
+def full_plan(selected, **overrides):
+    plan = dict.fromkeys((*FLAGS, "deep", "verified"), selected)
+    plan["deep"] = plan["verified"] = False
+    plan.update(overrides)
+    return plan
+
+
 class DeliveryTests(unittest.TestCase):
     def test_delivery_plan_rejects_unknown_missing_and_non_boolean_values(self):
-        plan = dict.fromkeys((*FLAGS, "deep"), False)
-        plan["player"] = True
+        plan = full_plan(False, player=True)
         self.assertEqual(targets(json.dumps(plan)), ["player"])
         for value in ("", "[]", "{}", "x" * 16385, json.dumps(plan | {"x": True}),
-                      json.dumps(plan | {"player": "false"})):
+                      json.dumps(plan | {"player": "false"}), json.dumps(dict.fromkeys((*FLAGS, "deep"), True))):
             with self.subTest(value=value[:40]), self.assertRaises(ValueError):
                 targets(value)
 
     def test_untrusted_context_has_no_side_effect(self):
-        plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
+        plan = json.dumps(full_plan(True))
         for replacement in ({"GITHUB_SHA": "--help"}, {"GITHUB_REPOSITORY": "other/repo"},
                             {"GITHUB_EVENT_NAME": "pull_request"}, {"GITHUB_REF": "refs/tags/v1"}):
             with patch.dict(os.environ, ENV | {"CI_PLAN": plan, "CI_RESULTS": json.dumps(results(plan))} | replacement), \
@@ -48,7 +54,7 @@ class DeliveryTests(unittest.TestCase):
                 run.assert_not_called()
 
     def test_missing_failed_cancelled_stale_and_malformed_checks_do_not_publish(self):
-        plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), True))
+        plan = json.dumps(full_plan(True))
         for job in ("plan", *REQUIRED):
             for state in ("missing", "failure", "cancelled", "skipped"):
                 with self.subTest(job=job, state=state), tempfile.TemporaryDirectory() as directory:
@@ -73,7 +79,7 @@ class DeliveryTests(unittest.TestCase):
             verify_results(json.dumps(malformed), plan)
 
     def test_no_selected_app_causes_no_side_effect(self):
-        plan = json.dumps(dict.fromkeys((*FLAGS, "deep"), False))
+        plan = json.dumps(full_plan(False))
         with patch.dict(os.environ, ENV | {"CI_PLAN": plan, "CI_RESULTS": json.dumps(results(plan))}), \
                 patch("delivery.subprocess.run") as run:
             with self.assertRaises(ValueError):
@@ -81,16 +87,35 @@ class DeliveryTests(unittest.TestCase):
             run.assert_not_called()
 
     def test_success_emits_selected_apps_after_ancestry_proof(self):
-        plan = dict.fromkeys((*FLAGS, "deep"), False)
-        plan["player"] = plan["subtitles"] = True
+        plan = full_plan(False, player=True, subtitles=True)
         raw = json.dumps(plan)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "output"
             with patch.dict(os.environ, ENV | {"CI_PLAN": raw, "CI_RESULTS": json.dumps(results(raw)),
-                                             "GITHUB_OUTPUT": str(output)}), patch("delivery.subprocess.run") as run:
+                                             "GITHUB_OUTPUT": str(output)}), patch("delivery.subprocess.run") as run, \
+                    patch("delivery.tested_run") as tested:
                 deliver()
                 run.assert_called_once_with(["git", "merge-base", "--is-ancestor", SHA, "origin/main"], check=True)
+                tested.assert_not_called()
             self.assertEqual(json.loads(output.read_text().removeprefix("apps=")), ["player", "subtitles"])
+
+    def test_merge_queue_verified_push_requires_the_successful_queue_run(self):
+        raw = json.dumps(full_plan(False, player=True, verified=True))
+        for run_id, published in ((None, False), (123, True)):
+            with self.subTest(run_id=run_id), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "output"
+                with patch.dict(os.environ, ENV | {"CI_PLAN": raw, "CI_RESULTS": json.dumps(results(raw)),
+                                                 "GITHUB_OUTPUT": str(output)}), patch("delivery.subprocess.run") as run, \
+                        patch("delivery.tested_run", return_value=run_id) as tested:
+                    if published:
+                        deliver()
+                        run.assert_called_once()
+                    else:
+                        with self.assertRaises(ValueError):
+                            deliver()
+                        run.assert_not_called()
+                    tested.assert_called_once_with(SHA, "Kinosail/kinosail")
+                self.assertEqual(output.exists(), published)
 
     def test_promotion_allows_docs_and_unrelated_apps_but_never_rolls_back_affected_app(self):
         for paths, expected in ((b"README.md\0", True), (b"apps/subtitles/main.go\0", True),

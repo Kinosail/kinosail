@@ -58,7 +58,7 @@ for app in player subtitles; do
   require_text "apps/$app/Makefile" '@$(MAKE) -C ../.. hooks'
 done
 
-require_text .github/workflows/ci.yml './scripts/quality/check-static.sh'
+require_text .github/workflows/deep.yml './scripts/quality/check-static.sh'
 
 require_text scripts/quality/check-static.sh 'pnpm --dir "$repo/scripts/quality" install --frozen-lockfile'
 require_text scripts/quality/check-script-duplicates.sh '--threshold 0'

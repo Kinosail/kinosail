@@ -1,85 +1,88 @@
-name: App suite
+name: Deep verification
 
 on:
-  workflow_call:
+  schedule:
+    - cron: "17 7 * * 1"
+  workflow_dispatch:
     inputs:
-      app:
-        required: true
-        type: string
-      plan:
-        required: true
-        type: string
+      scan_diagnostic:
+        description: Keep metadata-only full-history scan evidence
+        type: boolean
+        default: false
       native_probe:
-        type: string
+        description: Add one isolated native regression suite after the complete deep run
+        type: choice
+        options: [none, AAC, storage, reader]
         default: none
       coverage_diagnostic:
+        description: Keep exact deep Go coverage profiles
         type: boolean
         default: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: deep-${{ github.run_id }}
+  cancel-in-progress: false
+
 jobs:
-  static:
-    name: ${{ inputs.app }} lint and module contract
-    if: fromJSON(inputs.plan)[inputs.app]
+  plan:
+    name: Select every component
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: apps/${{ inputs.app }}
+    timeout-minutes: 3
+    outputs:
+      plan: ${{ steps.select.outputs.plan }}
+      shards: ${{ steps.select.outputs.shards }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: ./.github/actions/setup-go
-        with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
-          cache-dependency-path: "**/go.sum"
-      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-        with:
-          version: v2.14.0
-          working-directory: apps/${{ inputs.app }}
-          args: --timeout=5m --new-from-rev=${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before || 'HEAD~1' }}
-      - run: make single-container tidy-check
+      - run: test ! -e .gates-disabled
+      - id: select
+        env:
+          CI_FULL: "true"
+          CI_DEEP: "true"
+        run: python3 scripts/ci/plan.py
 
   race:
-    name: ${{ inputs.app }} Go tests
-    if: fromJSON(inputs.plan)[inputs.app]
+    name: Go race and coverage (${{ matrix.module }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: player
+            directory: apps/player
+          - module: subtitles
+            directory: apps/subtitles
+          - module: packages
+            directory: packages
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-go
         with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
+          go-version-file: ${{ matrix.directory }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - name: Install media fixture codecs
-        if: inputs.app == 'player' || fromJSON(inputs.plan).deep
         run: |
           curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/deep-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
           printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/deep-ffmpeg.deb" | sha256sum --check
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/deep-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
       - env:
-          APP: ${{ inputs.app }}
-          KINOSAIL_GO_TEST_MODE: ${{ fromJSON(inputs.plan).deep && 'deep' || 'quick' }}
-          KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}
-          KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ inputs.app == 'player' && fromJSON(inputs.plan).deep && format('{0}/transcode-refill', runner.temp) || '' }}
-        run: ./scripts/ci/test-go.sh "$APP"
-      - name: Verify certified first-fragment regeneration and cold reopen
-        if: inputs.app == 'player' && !fromJSON(inputs.plan).deep
-        timeout-minutes: 3
-        env:
-          GOMAXPROCS: "2"
+          APP: ${{ matrix.module }}
+          KINOSAIL_GO_TEST_MODE: deep
           KINOSAIL_COPIED_RECOVERY_MEDIA: "1"
-        run: timeout --kill-after=5s 180s go -C apps/player test -p=1 ./internal/server -run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$' -count=1 -timeout=170s -v
+          KINOSAIL_TRANSCODE_REFILL_EVIDENCE: ${{ matrix.module == 'player' && format('{0}/transcode-refill', runner.temp) || '' }}
+        run: ./scripts/ci/test-go.sh "$APP"
       - name: Checksum public transcode refill evidence
-        if: always() && inputs.app == 'player' && fromJSON(inputs.plan).deep
+        if: always() && matrix.module == 'player'
         run: |
           git diff --quiet
           test -z "$(git status --porcelain)"
@@ -87,7 +90,7 @@ jobs:
           cd "$RUNNER_TEMP/transcode-refill"
           sha256sum -- *.jsonl revision.txt > SHA256SUMS
       - name: Keep public transcode refill evidence
-        if: always() && inputs.app == 'player' && fromJSON(inputs.plan).deep
+        if: always() && matrix.module == 'player'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-transcode-refill-${{ github.sha }}
@@ -96,61 +99,196 @@ jobs:
           retention-days: 30
       - name: Verify CLI startup latency
         id: cli_startup
-        if: fromJSON(inputs.plan).deep
+        if: matrix.module != 'packages'
         env:
-          APP: ${{ inputs.app }}
+          APP: ${{ matrix.module }}
         run: python3 scripts/testing/test-cli-startup.py --app "$APP" --output "$RUNNER_TEMP/cli-startup"
       - name: Keep CLI startup evidence
-        if: always() && fromJSON(inputs.plan).deep && (steps.cli_startup.outcome == 'success' || steps.cli_startup.outcome == 'failure')
+        if: always() && matrix.module != 'packages' && (steps.cli_startup.outcome == 'success' || steps.cli_startup.outcome == 'failure')
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: ${{ inputs.app }}-cli-startup-${{ github.sha }}
+          name: ${{ matrix.module }}-cli-startup-${{ github.sha }}
           path: |
             ${{ runner.temp }}/cli-startup/*.json
             ${{ runner.temp }}/cli-startup/*.log
           if-no-files-found: error
           retention-days: 30
       - name: Summarize exact deep coverage
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep
-        working-directory: apps/${{ inputs.app }}
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic
+        working-directory: ${{ matrix.directory }}
         run: go tool cover -func=.verification/coverage.out > .verification/coverage-functions.txt
       - name: Keep exact deep coverage profiles
-        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic && fromJSON(inputs.plan).deep
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.coverage_diagnostic
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: ${{ inputs.app }}-go-coverage-${{ github.sha }}
+          name: ${{ matrix.module }}-go-coverage-${{ github.sha }}
           path: |
-            apps/${{ inputs.app }}/.verification/coverage.out
-            apps/${{ inputs.app }}/.verification/coverage-functions.txt
+            ${{ matrix.directory }}/.verification/coverage.out
+            ${{ matrix.directory }}/.verification/coverage-functions.txt
           if-no-files-found: error
           retention-days: 3
 
-  security:
-    name: ${{ inputs.app }} Go vulnerabilities
-    if: fromJSON(inputs.plan)[inputs.app]
+  browser:
+    name: Complete browser suite (${{ matrix.app }} ${{ matrix.engine }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: apps/${{ inputs.app }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [player, subtitles]
+        engine: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-go
         with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
+          go-version-file: apps/${{ matrix.app }}/go.mod
           cache-dependency-path: "**/go.sum"
-      - run: go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - parallel:
+          - uses: ./.github/actions/setup-e2e
+            with:
+              app: ${{ matrix.app }}
+              browsers: ${{ matrix.engine }}
+          - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+            with:
+              context: .
+              file: apps/${{ matrix.app }}/Containerfile
+              platforms: linux/amd64
+              cache-from: type=gha,scope=${{ matrix.app }}-linux/amd64
+              cache-to: type=gha,mode=max,scope=${{ matrix.app }}-linux/amd64
+              load: true
+              push: false
+              tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+              build-args: |
+                VERSION=sha-${{ github.sha }}
+                REVISION=${{ github.sha }}
+      - name: Test complete browser journeys
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_BROWSER_TEST: "1"
+          KINOSAIL_BROWSER_MATRIX: full
+          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
+          KINOSAIL_BROWSER_WORKERS: ${{ matrix.app == 'player' && '3' || '1' }}
+          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ matrix.app }}-${{ matrix.engine }}-e2e-artifact/browser-results
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ matrix.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable E2E artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ matrix.app }}-${{ matrix.engine }}-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.app }}-${{ matrix.engine }}-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
 
-  tooling:
-    name: ${{ inputs.app }} installer and local pipeline
-    if: fromJSON(inputs.plan)[format('{0}_tools', inputs.app)]
+  system:
+    name: Production container (${{ matrix.app }} ${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [player, subtitles]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+        platform: [linux/amd64, linux/arm64]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Containerfile
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=${{ matrix.app }}-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}-${{ matrix.platform }}
+          load: true
+          push: false
+          tags: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          build-args: |
+            VERSION=sha-${{ github.sha }}
+            REVISION=${{ github.sha }}
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.75.0
+          image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}-${{ matrix.runner }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+      - name: Test production paths
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CONTAINER_ENGINE: docker
+          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
+          KINOSAIL_TEST_IMAGE_READY: "1"
+        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ matrix.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
+      - name: Keep verifiable system E2E artifact
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ matrix.app }}-${{ matrix.runner }}-system-e2e-${{ github.sha }}
+          path: ${{ runner.temp }}/${{ matrix.app }}-${{ matrix.runner }}-system-e2e-artifact
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
+
+  proofs:
+    name: Media proof (${{ matrix.shard }})
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: apps/player/go.mod
+          cache-dependency-path: "**/go.sum"
+      - uses: ./.github/actions/setup-e2e
+        with:
+          app: player
+          browsers: ${{ matrix.browser && 'chromium' || '' }}
+      - name: Run the media proof shard
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: python3 scripts/ci/proof_shard.py run player "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"
+      - name: Keep safe media proof evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: player-proof-${{ matrix.shard }}-evidence
+          path: ${{ runner.temp }}/proof-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  tools:
+    name: Installer and local pipeline (${{ matrix.app }})
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [player, subtitles]
     defaults:
       run:
-        working-directory: apps/${{ inputs.app }}
+        working-directory: apps/${{ matrix.app }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -158,7 +296,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-go
         with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
+          go-version-file: apps/${{ matrix.app }}/go.mod
           cache-dependency-path: "**/go.sum"
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
@@ -170,15 +308,14 @@ jobs:
         with:
           node-version: 26
           cache: pnpm
-          cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
+          cache-dependency-path: apps/${{ matrix.app }}/e2e/pnpm-lock.yaml
       - run: pnpm --dir e2e install --frozen-lockfile
       - run: make installer-test native-build local-pipeline-test
 
   client:
-    name: Player Swift compilation
-    if: inputs.app == 'player' && fromJSON(inputs.plan).client
+    name: Player native contracts
     runs-on: xcode-27
-    timeout-minutes: 40
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -187,7 +324,6 @@ jobs:
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
       - name: Prepare decoded native media fixture
-        if: fromJSON(inputs.plan).deep
         env:
           HOMEBREW_NO_AUTO_UPDATE: "1"
         run: |
@@ -204,7 +340,6 @@ jobs:
             ln "$media" "/tmp/$name"
           done
       - name: Execute iOS and tvOS native contracts
-        if: fromJSON(inputs.plan).deep
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
         run: |
@@ -230,7 +365,7 @@ jobs:
           done
           exit "$native_failed"
       - name: Inspect native contract results
-        if: always() && fromJSON(inputs.plan).deep
+        if: always()
         env:
           DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
         run: |
@@ -251,7 +386,7 @@ jobs:
           exit "$native_failed"
       - name: Validate focused probe
         id: probe
-        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none'
+        if: always() && inputs.native_probe != 'none'
         env:
           NATIVE_PROBE: ${{ inputs.native_probe }}
         run: |
@@ -264,7 +399,7 @@ jobs:
           esac
           printf 'selector=%s\n' "$selector" >> "$GITHUB_OUTPUT"
       - name: Execute one iOS probe suite
-        if: always() && fromJSON(inputs.plan).deep && inputs.native_probe != 'none' && steps.probe.outcome == 'success'
+        if: always() && inputs.native_probe != 'none' && steps.probe.outcome == 'success'
         env:
           SELECTOR: ${{ steps.probe.outputs.selector }}
           NATIVE_PROBE: ${{ inputs.native_probe }}
@@ -321,7 +456,7 @@ jobs:
           PY
           exit "$status"
       - name: Retain native test results
-        if: always() && fromJSON(inputs.plan).deep
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: player-native-contracts-${{ github.sha }}
@@ -339,10 +474,9 @@ jobs:
           if-no-files-found: error
 
   android:
-    name: Player Android compilation
-    if: inputs.app == 'player' && fromJSON(inputs.plan).android
+    name: Player Android runtime
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -358,38 +492,18 @@ jobs:
             apps/player/apps/android/**/gradle-wrapper.properties
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
         with:
-          packages: ${{ fromJSON(inputs.plan).deep && 'platform-tools platforms;android-37.0 emulator system-images;android-36;google_apis;x86_64' || 'platform-tools platforms;android-37.0' }}
+          packages: 'platform-tools platforms;android-37.0 emulator system-images;android-36;google_apis;x86_64'
       - run: ./gradlew --continue :app:assembleDebug :app:lintDebug :app:testDebugUnitTest :watchcore:testDebugUnitTest :wear:assembleDebug :wear:testDebugUnitTest
         working-directory: apps/player/apps/android
-      - name: Keep Android lint evidence
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: android-lint-evidence
-          path: apps/player/apps/android/app/build/reports/lint-results-debug.xml
-          retention-days: 14
-
-      - name: Keep Android unit evidence
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: android-unit-evidence
-          path: |
-            apps/player/apps/android/app/build/test-results/testDebugUnitTest/*.xml
-            apps/player/apps/android/wear/build/test-results/testDebugUnitTest/*.xml
-          retention-days: 14
-
       - name: Build Android UI test APK
-        if: fromJSON(inputs.plan).deep
         run: ./gradlew :app:assembleDebugAndroidTest
         working-directory: apps/player/apps/android
       - uses: ./.github/actions/setup-go
-        if: fromJSON(inputs.plan).deep
         with:
           go-version-file: apps/player/go.mod
           cache-dependency-path: "**/go.sum"
       - name: Exercise native Android caption safe areas
-        if: ${{ !cancelled() && fromJSON(inputs.plan).deep }}
+        if: ${{ !cancelled() }}
         timeout-minutes: 25
         env:
           GOMAXPROCS: "2"
@@ -399,7 +513,7 @@ jobs:
           sudo chown "$USER" /dev/kvm
           python3 apps/player/scripts/test-android-captions.py --output "${{ runner.temp }}/android-caption-qa"
       - name: Keep safe Android caption evidence
-        if: always() && fromJSON(inputs.plan).deep
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: android-caption-evidence
@@ -409,7 +523,6 @@ jobs:
 
   wear:
     name: Player Wear journeys (${{ matrix.profile }})
-    if: inputs.app == 'player' && fromJSON(inputs.plan).android && fromJSON(inputs.plan).deep
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
@@ -449,258 +562,130 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
-  image:
-    name: ${{ inputs.app }} amd64 image
-    if: fromJSON(inputs.plan)[inputs.app]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
-        with:
-          context: .
-          file: apps/${{ inputs.app }}/Containerfile
-          platforms: linux/amd64
-          cache-from: type=gha,scope=${{ inputs.app }}-linux/amd64
-          cache-to: type=gha,mode=max,scope=${{ inputs.app }}-linux/amd64
-          outputs: type=docker,dest=${{ runner.temp }}/image.tar
-          tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          build-args: |
-            VERSION=sha-${{ github.sha }}
-            REVISION=${{ github.sha }}
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
-          path: ${{ runner.temp }}/image.tar
-          retention-days: 1
-          compression-level: 1
-          overwrite: true
-          if-no-files-found: error
-  system:
-    name: ${{ inputs.app }} production container (${{ matrix.platform }})
-    if: fromJSON(inputs.plan)[inputs.app]
-    needs: image
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(fromJSON(inputs.plan)[format('{0}_arm', inputs.app)] && '[{"platform":"linux/amd64","runner":"ubuntu-24.04"},{"platform":"linux/arm64","runner":"ubuntu-24.04-arm"}]' || '[{"platform":"linux/amd64","runner":"ubuntu-24.04"}]') }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - name: Download the run's amd64 image
-        if: matrix.platform == 'linux/amd64'
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
-        with:
-          name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
-          path: ${{ runner.temp }}/image
-      - name: Load the run's amd64 image
-        if: matrix.platform == 'linux/amd64'
-        run: docker load --input "$RUNNER_TEMP/image/image.tar"
-      - if: matrix.platform != 'linux/amd64'
-        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069
-      - if: matrix.platform != 'linux/amd64'
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
-        with:
-          context: .
-          file: apps/${{ inputs.app }}/Containerfile
-          platforms: ${{ matrix.platform }}
-          cache-from: type=gha,scope=${{ inputs.app }}-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.app }}-${{ matrix.platform }}
-          load: true
-          push: false
-          tags: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          build-args: |
-            VERSION=sha-${{ github.sha }}
-            REVISION=${{ github.sha }}
-      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
-        with:
-          version: v0.75.0
-          image-ref: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          cache-dir: ${{ runner.temp }}/trivy-${{ inputs.app }}-${{ matrix.runner }}
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
-      - name: Test production paths
-        working-directory: apps/${{ inputs.app }}
-        env:
-          CONTAINER_ENGINE: docker
-          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          KINOSAIL_TEST_IMAGE_READY: "1"
-        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact" -- ./scripts/test-container.sh
-      - name: Keep verifiable system E2E artifact
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: ${{ inputs.app }}-${{ matrix.runner }}-system-e2e-${{ github.sha }}
-          path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.runner }}-system-e2e-artifact
-          retention-days: 30
-          if-no-files-found: error
-          include-hidden-files: true
-  browser:
-    name: ${{ inputs.app }} populated browser (${{ matrix.engine }})
-    if: fromJSON(inputs.plan)[inputs.app]
-    needs: image
+  security:
+    name: Complete security scans
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        engine: ${{ fromJSON(fromJSON(inputs.plan).deep && '["chromium","firefox","webkit"]' || '["chromium"]') }}
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          persist-credentials: false
-      - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
-        with:
-          version: 11.28.5
-          install: false
-          node-version-file: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
-        with:
-          node-version: 26
-          cache: pnpm
-          cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
-      - env:
-          APP: ${{ inputs.app }}
-        run: pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
-      - parallel:
-          - env:
-              APP: ${{ inputs.app }}
-              BROWSERS: ${{ matrix.engine == 'full' && 'chromium firefox webkit' || matrix.engine }}
-            run: |
-              read -ra browsers <<< "$BROWSERS"
-              pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
-          - name: Download the run's amd64 image
-            uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
-            with:
-              name: ${{ inputs.app }}-amd64-image-${{ github.sha }}
-              path: ${{ runner.temp }}/image
-      - name: Load the run's amd64 image
-        run: docker load --input "$RUNNER_TEMP/image/image.tar"
-      - name: Install startup fixture codecs
-        run: |
-          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/startup-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
-          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/startup-ffmpeg.deb" | sha256sum --check
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/startup-ffmpeg.deb"
-          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Test populated browsers
-        working-directory: apps/${{ inputs.app }}
-        env:
-          CONTAINER_ENGINE: docker
-          KINOSAIL_BROWSER_TEST: "1"
-          KINOSAIL_BROWSER_MATRIX: ${{ fromJSON(inputs.plan).deep && 'full' || '' }}
-          KINOSAIL_BROWSER_PROJECT: ${{ matrix.engine }}
-          KINOSAIL_BROWSER_SMOKE: ${{ !fromJSON(inputs.plan).deep && '1' || '' }}
-          KINOSAIL_BROWSER_WORKERS: ${{ inputs.app == 'player' && '3' || '1' }}
-          KINOSAIL_E2E_OUTPUT_DIR: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact/browser-results
-          KINOSAIL_TEST_IMAGE: localhost/kinosail-${{ inputs.app }}:${{ github.sha }}
-          KINOSAIL_TEST_IMAGE_READY: "1"
-        run: python3 ../../scripts/ci/e2e-artifact.py --output "${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact" -- ./scripts/test-container.sh
-      - name: Keep verifiable E2E artifact
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: ${{ inputs.app }}-${{ matrix.engine }}-e2e-${{ github.sha }}
-          path: ${{ runner.temp }}/${{ inputs.app }}-${{ matrix.engine }}-e2e-artifact
-          retention-days: 30
-          if-no-files-found: error
-          include-hidden-files: true
-
-  proof-plan:
-    name: ${{ inputs.app }} media proof shards
-    if: inputs.app == 'player' && fromJSON(inputs.plan)[inputs.app]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 3
-    outputs:
-      shards: ${{ steps.plan.outputs.shards }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - id: plan
-        env:
-          APP: ${{ inputs.app }}
-        run: python3 scripts/ci/proof_shard.py plan "$APP"
-
-  proofs:
-    name: ${{ inputs.app }} media proof (${{ matrix.shard }})
-    needs: proof-plan
-    if: inputs.app == 'player' && fromJSON(inputs.plan)[inputs.app]
-    runs-on: ubuntu-24.04
-    timeout-minutes: ${{ matrix.timeout }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.proof-plan.outputs.shards) }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: ./.github/actions/setup-go
         with:
-          go-version-file: apps/${{ inputs.app }}/go.mod
+          go-version-file: go.work
+          cache-dependency-path: "**/go.sum"
+      - id: scanner_install
+        run: go install -ldflags="-X github.com/zricethezav/gitleaks/v8/version.Version=8.30.1" github.com/zricethezav/gitleaks/v8@v8.30.1
+      - name: Test exact receipt digest exceptions with the pinned scanner
+        env:
+          KINOSAIL_REAL_SCANNER: gitleaks
+        run: python3 -m unittest scripts.ci.test_receipt_fingerprints
+      - run: python3 scripts/ci/secrets.py
+      - name: Keep full-history finding locations
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
+        run: python3 scripts/ci/scan-diagnostic.py --output "$RUNNER_TEMP/scan-safe.json"
+      - name: Upload only validated finding locations
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.scan_diagnostic && steps.scanner_install.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: full-history-scan-metadata-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/scan-safe.json
+          if-no-files-found: error
+          retention-days: 3
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          version: v0.75.0
+          scan-type: fs
+          scanners: vuln,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            apps/player/apps/android/**/*.gradle*
+            apps/player/apps/android/**/gradle.properties
+            apps/player/apps/android/**/gradle-wrapper.properties
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-37.0'
+      - run: |
+          echo 'CODEQL_ACTION_DIFF_INFORMED_QUERIES=false' >> "$GITHUB_ENV"
+          echo 'CODEQL_OVERLAY_DATABASE_MODE=none' >> "$GITHUB_ENV"
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
+        with:
+          languages: go,java-kotlin,javascript-typescript,python,actions
+          config-file: .github/codeql-config.yml
+          build-mode: manual
+          queries: security-extended
+      - run: go build ./apps/player/... ./apps/subtitles/... ./packages/...
+      - run: ./gradlew :app:assembleDebug :wear:assembleDebug
+        working-directory: apps/player/apps/android
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
+      - name: Require zero open security findings on this ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method GET --paginate --slurp "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
+            -f state=open -f ref="$GITHUB_REF" -f tool_name=CodeQL -f per_page=100 > alerts.json
+          jq -e '[.[][] | select(.rule.security_severity_level != null)] | length == 0' alerts.json
+
+  swift-analysis:
+    name: Swift code scanning
+    runs-on: xcode-27
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@24c54180a607b1449ed407dd24f251e4e9147c8d
+        with:
+          languages: swift
+          config-file: .github/codeql-config.yml
+          build-mode: manual
+          queries: security-extended
+      - run: |
+          printf '%s\n' 'ARCHS = arm64' 'ONLY_ACTIVE_ARCH = YES' \
+            'COMPILATION_CACHE_ENABLE_CACHING = NO' 'SWIFT_ENABLE_COMPILE_CACHE = NO' \
+            'SWIFT_USE_INTEGRATED_DRIVER = NO' 'CODE_SIGNING_ALLOWED = NO' \
+            'CODE_SIGNING_REQUIRED = NO' > "$RUNNER_TEMP/codeql.xcconfig"
+          DEVELOPER_DIR=/Applications/Xcode_27.1.app/Contents/Developer \
+            XCODE_XCCONFIG_FILE="$RUNNER_TEMP/codeql.xcconfig" make -C apps/player client-check
+      - uses: github/codeql-action/analyze@24c54180a607b1449ed407dd24f251e4e9147c8d
+
+  diagnostics:
+    name: Deep quality metrics
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+        with:
+          go-version-file: go.work
           cache-dependency-path: "**/go.sum"
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
-        if: matrix.browser
         with:
           version: 11.28.5
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
-        if: matrix.browser
         with:
           node-version: 26
           cache: pnpm
-          cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
-      - name: Install the Chromium journey driver
-        if: matrix.browser
-        env:
-          APP: ${{ inputs.app }}
-        run: |
-          pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
-          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps chromium
-      - name: Install proof fixture codecs
-        run: |
-          curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/proof-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
-          printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/proof-ffmpeg.deb" | sha256sum --check
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/proof-ffmpeg.deb"
-          echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - name: Run the media proof shard
-        env:
-          APP: ${{ inputs.app }}
-          SHARD: ${{ matrix.shard }}
-        run: python3 scripts/ci/proof_shard.py run "$APP" "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"
-      - name: Keep safe media proof evidence
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
-        with:
-          name: ${{ inputs.app }}-proof-${{ matrix.shard }}-evidence
-          path: ${{ runner.temp }}/proof-evidence
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 14
-
-  required:
-    name: ${{ inputs.app }} suite complete
-    if: always()
-    needs: [static, race, security, tooling, client, android, wear, system, browser, proofs]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - run: test ! -e .gates-disabled
-      - env:
-          CI_APP: ${{ inputs.app }}
-          CI_PLAN: ${{ inputs.plan }}
-          RESULTS: ${{ toJSON(needs) }}
-        run: python3 scripts/ci/required.py app
+          cache-dependency-path: scripts/quality/pnpm-lock.yaml
+      - run: go -C apps/subtitles mod download
+      - run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
+      - run: ./scripts/quality/check-static.sh

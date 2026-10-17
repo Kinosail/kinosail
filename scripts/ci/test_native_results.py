@@ -134,9 +134,9 @@ class NativeResultsTests(unittest.TestCase):
 
     def test_workflow_checks_both_platforms_and_preserves_any_failure(self):
         root = SCRIPT.parents[2]
-        source = (root / '.github/workflows/app.yml').read_text()
+        source = (root / '.github/workflows/deep.yml').read_text()
         step = source.split('      - name: Inspect native contract results\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn('if: always() && fromJSON(inputs.plan).deep', step)
+        self.assertIn('if: always()', step)
         script = textwrap.dedent(step.split('        run: |\n', 1)[1])
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)

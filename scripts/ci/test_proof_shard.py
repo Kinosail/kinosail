@@ -29,22 +29,27 @@ def write(directory, manifest):
 
 class ManifestTests(unittest.TestCase):
     def test_independent_media_proofs_run_as_isolated_shards(self):
-        source = (ROOT / '.github/workflows/app.yml').read_text()
-        plan = source.split('  proof-plan:\n', 1)[1].split('\n  proofs:\n', 1)[0]
-        self.assertIn('run: python3 scripts/ci/proof_shard.py plan "$APP"', plan)
-        proofs = source.split('  proofs:\n', 1)[1].split('\n  required:\n', 1)[0]
-        self.assertIn('needs: proof-plan', proofs)
-        self.assertIn("if: inputs.app == 'player' && fromJSON(inputs.plan)[inputs.app]", proofs)
-        self.assertIn('fail-fast: false', proofs)
-        self.assertIn('include: ${{ fromJSON(needs.proof-plan.outputs.shards) }}', proofs)
-        self.assertIn('timeout-minutes: ${{ matrix.timeout }}', proofs)
-        self.assertIn('run: python3 scripts/ci/proof_shard.py run "$APP" "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"', proofs)
-        self.assertNotIn('continue-on-error', proofs)
-        self.assertNotIn('docker/', proofs)
-        upload = proofs.split('      - name: Keep safe media proof evidence\n', 1)[1]
-        self.assertIn('if: always()', upload)
-        self.assertIn('if-no-files-found: error', upload)
-        self.assertIn('name: ${{ inputs.app }}-proof-${{ matrix.shard }}-evidence', upload)
+        from affected import FLAGS
+        from plan import derive
+        shards = derive(dict.fromkeys(FLAGS, True))['shards']
+        self.assertEqual(shards, proof_shard.plan('player', proof_shard.load()))
+        for workflow, nxt in (('ci.yml', '\n  arm:\n'), ('deep.yml', '\n  tools:\n')):
+            with self.subTest(workflow=workflow):
+                source = (ROOT / '.github/workflows' / workflow).read_text()
+                proofs = source.split('  proofs:\n', 1)[1].split(nxt, 1)[0]
+                self.assertIn('needs: plan', proofs)
+                self.assertIn('fail-fast: false', proofs)
+                self.assertIn('include: ${{ fromJSON(needs.plan.outputs.shards) }}', proofs)
+                self.assertIn('timeout-minutes: ${{ matrix.timeout }}', proofs)
+                self.assertIn('run: python3 scripts/ci/proof_shard.py run player "$SHARD" --evidence-dir "$RUNNER_TEMP/proof-evidence"', proofs)
+                self.assertNotIn('continue-on-error', proofs)
+                self.assertNotIn('docker/', proofs)
+                upload = proofs.split('      - name: Keep safe media proof evidence\n', 1)[1]
+                self.assertIn('if: always()', upload)
+                self.assertIn('if-no-files-found: error', upload)
+                self.assertIn('name: player-proof-${{ matrix.shard }}-evidence', upload)
+        self.assertIn("if: needs.plan.outputs.verified != 'true' && fromJSON(needs.plan.outputs.plan).player",
+                      (ROOT / '.github/workflows/ci.yml').read_text().split('  proofs:\n', 1)[1])
         startup = proof_shard.load()['player']['startup']
         scripts = [command['argv'][1] for command in startup['commands']]
         self.assertEqual(scripts, ['apps/player/scripts/test-hls-source-version.py', 'apps/player/scripts/test-startup-local.py',

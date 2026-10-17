@@ -16,7 +16,7 @@ WORKFLOWS = ROOT / '.github/workflows'
 
 class WorkflowSecurityTests(unittest.TestCase):
     def test_wear_requires_both_independent_hardware_profiles(self):
-        source = (WORKFLOWS / 'app.yml').read_text().split('  wear:\n', 1)[1].split('\n  system:', 1)[0]
+        source = (WORKFLOWS / 'deep.yml').read_text().split('  wear:\n', 1)[1].split('\n  security:', 1)[0]
         self.assertIn('fail-fast: false', source)
         self.assertIn('profile: [small-round, large-round]', source)
         self.assertIn('--profile "${{ matrix.profile }}"', source)
@@ -40,7 +40,7 @@ class WorkflowSecurityTests(unittest.TestCase):
 
     def test_backup_runs_first_without_leaking_its_flag_or_hiding_later_runs(self):
         root = ROOT
-        source = (root / '.github/workflows/app.yml').read_text()
+        source = (root / '.github/workflows/deep.yml').read_text()
         step = source.split('      - name: Execute iOS and tvOS native contracts\n', 1)[1].split('      - name:', 1)[0]
         script = textwrap.dedent(step.split('        run: |\n', 1)[1])
         with tempfile.TemporaryDirectory() as directory:
@@ -72,39 +72,47 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 self.assertEqual(result.returncode, 1 if failure else 0, result.stderr)
 
     def test_go_lane_installs_real_media_dependencies_before_testing(self):
-        source = (WORKFLOWS / 'app.yml').read_text().split('  race:\n', 1)[1].split('  security:\n', 1)[0]
-        self.assertIn("KINOSAIL_COPIED_RECOVERY_MEDIA: ${{ fromJSON(inputs.plan).deep && '1' || '' }}", source)
-        step = source.split('      - name: Install media fixture codecs\n', 1)[1].split('      - env:', 1)[0]
-        self.assertIn("if: inputs.app == 'player' || fromJSON(inputs.plan).deep", step)
-        version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)',
-                            (ROOT / 'apps/player/Containerfile').read_text()).group(1)
-        self.assertIn(f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb', step)
-        self.assertIn('sha256sum --check', step)
-        self.assertIn('188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4', step)
-        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
-        self.assertLess(source.index('Install media fixture codecs'), source.index('scripts/ci/test-go.sh'))
-        fragment = source.split('      - name: Verify certified first-fragment regeneration and cold reopen\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn("if: inputs.app == 'player' && !fromJSON(inputs.plan).deep", fragment)
+        version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)', (ROOT / 'apps/player/Containerfile').read_text()).group(1)
+        deb = f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb'
+        go = (WORKFLOWS / 'ci.yml').read_text().split('\n  go:\n', 1)[1].split('\n  e2e:\n', 1)[0]
+        step = go.split('      - name: Install media fixture codecs\n', 1)[1].split('      - parallel:', 1)[0]
+        self.assertIn('[[ "$MEDIA" == true ]] || exit 0', step)
+        self.assertIn('MEDIA: ${{ matrix.media }}', step)
+        for text in (deb, 'sha256sum --check', '188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4',
+                     'echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"'):
+            self.assertIn(text, step)
+        self.assertLess(go.index('Install media fixture codecs'), go.index('scripts/ci/test-go.sh'))
+        self.assertIn('KINOSAIL_GO_TEST_MODE: quick', go)
+        fragment = go.split('      - name: Verify certified first-fragment regeneration and cold reopen\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn("if: matrix.module == 'player'", fragment)
         self.assertIn('KINOSAIL_COPIED_RECOVERY_MEDIA: "1"', fragment)
         self.assertIn("-run '^TestCopiedRecoveryRealFirstFragmentRegenerationReopens$'", fragment)
         self.assertNotIn('continue-on-error', fragment)
-        self.assertLess(source.index('scripts/ci/test-go.sh'), source.index('Verify certified first-fragment'))
+        self.assertLess(go.index('scripts/ci/test-go.sh'), go.index('Verify certified first-fragment'))
+        from plan import MODULES
+        self.assertEqual([entry['media'] for entry in MODULES], ['true', 'false', 'false'])
+        race = (WORKFLOWS / 'deep.yml').read_text().split('\n  race:\n', 1)[1].split('\n  browser:\n', 1)[0]
+        self.assertIn('KINOSAIL_COPIED_RECOVERY_MEDIA: "1"', race)
+        self.assertIn(deb, race)
+        self.assertLess(race.index('Install media fixture codecs'), race.index('scripts/ci/test-go.sh'))
+        action = (ROOT / '.github/actions/setup-e2e/action.yml').read_text()
+        self.assertIn(deb, action)
+        self.assertIn('sha256sum --check', action)
+        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', action)
 
     def test_deep_apple_lane_executes_both_native_test_targets_and_retains_results(self):
-        source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
-        self.assertIn('if: fromJSON(inputs.plan).deep', source)
+        source = (WORKFLOWS / 'deep.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
         self.assertIn('for contract in iOS-backup iOS tvOS', source)
         self.assertIn('xcodebuild test', source)
         self.assertIn('-scheme "Kinosail-$platform"', source)
         self.assertIn('-resultBundlePath "$RUNNER_TEMP/native-$contract.xcresult"', source)
-        self.assertIn('if: always() && fromJSON(inputs.plan).deep', source)
+        self.assertIn('        if: always()\n', source)
         self.assertIn('${{ runner.temp }}/native-*.xcresult', source)
         self.assertNotIn('continue-on-error', source)
 
     def test_deep_apple_media_contracts_receive_bounded_decodable_fixtures(self):
-        source = (WORKFLOWS / 'app.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
+        source = (WORKFLOWS / 'deep.yml').read_text().split('  client:\n', 1)[1].split('  android:\n', 1)[0]
         step = source.split('      - name: Prepare decoded native media fixture\n', 1)[1].split('      - name:', 1)[0]
-        self.assertIn('if: fromJSON(inputs.plan).deep', step)
         self.assertIn('ffmpeg', step)
         self.assertIn('-le 1048576', step)
         for path in ('kinosail-appletv-task7-media.mp4', 'kinosail-player-buffer-bar.mp4', 'kinosail-landscape-task10-media.mp4'):
@@ -113,36 +121,21 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         self.assertIn('${{ runner.temp }}/native-media.json', source)
 
     def test_system_scan_finishes_before_exact_revision_evidence_starts(self):
-        source = (WORKFLOWS / 'app.yml').read_text().split('  system:\n', 1)[1].split('  browser:\n', 1)[0]
-        scan = re.search(r'^      - uses: aquasecurity/trivy-action@[a-f0-9]{40}', source, re.M)
-        evidence = re.search(r'^      - name: Test production paths\n', source, re.M)
-        self.assertIsNotNone(scan, 'checkout-mutating scan must be a foreground step')
-        self.assertIsNotNone(evidence, 'exact revision evidence must be a foreground step')
-        self.assertLess(scan.start(), evidence.start())
-        self.assertNotIn('background:', source)
-
-    def test_each_run_builds_the_amd64_app_image_once(self):
-        app = (WORKFLOWS / 'app.yml').read_text()
-        publish = (WORKFLOWS / 'publish.yml').read_text()
-        image = app.split('\n  image:\n', 1)[1].split('\n  system:\n', 1)[0]
-        system = app.split('\n  system:\n', 1)[1].split('\n  browser:\n', 1)[0]
-        browser = app.split('\n  browser:\n', 1)[1].split('\n  proof-plan:\n', 1)[0]
-        self.assertEqual(app.count('uses: docker/build-push-action@'), 2)
-        self.assertEqual(image.count('uses: docker/build-push-action@'), 1)
-        self.assertIn('platforms: linux/amd64', image)
-        self.assertIn('outputs: type=docker,dest=${{ runner.temp }}/image.tar', image)
-        self.assertIn('name: ${{ inputs.app }}-amd64-image-${{ github.sha }}', image)
-        for job in (system, browser):
-            self.assertIn('\n    needs: image\n', job)
-            self.assertIn('name: ${{ inputs.app }}-amd64-image-${{ github.sha }}', job)
-            self.assertIn('docker load --input "$RUNNER_TEMP/image/image.tar"', job)
-        self.assertNotIn('docker/build-push-action@', browser)
-        arm_build = system.split('uses: docker/build-push-action@', 1)[0].rsplit('\n      - ', 1)[1]
-        self.assertEqual(arm_build, "if: matrix.platform != 'linux/amd64'\n        ")
-        versions = set(re.findall(r'^\s+(VERSION=.+)$', app + publish, re.M))
-        self.assertEqual(versions, {'VERSION=sha-${{ github.sha }}'})
-        self.assertIn('cache-to: type=gha,mode=max,scope=${{ inputs.app }}-linux/amd64', image)
-        self.assertIn('cache-from: type=gha,scope=${{ matrix.app }}-linux/${{ matrix.arch }}', publish)
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        deep = (WORKFLOWS / 'deep.yml').read_text()
+        for source, job, nxt in ((ci, 'e2e', 'proofs'), (ci, 'arm', 'tools'), (deep, 'system', 'proofs')):
+            with self.subTest(job=job):
+                section = source.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
+                scan = re.search(r'^      - uses: aquasecurity/trivy-action@[a-f0-9]{40}', section, re.M)
+                evidence = re.search(r'^      - name: Test production paths\n', section, re.M)
+                self.assertIsNotNone(scan, 'checkout-mutating scan must be a foreground step')
+                self.assertIsNotNone(evidence, 'exact revision evidence must be a foreground step')
+                self.assertLess(scan.start(), evidence.start())
+                self.assertLess(section.index('- parallel:') if '- parallel:' in section else -1, scan.start())
+                self.assertNotIn('background:', section)
+                self.assertIn('e2e-artifact.py', section)
+        browser = ci.split('\n  e2e:\n', 1)[1].split('\n  proofs:\n', 1)[0]
+        self.assertLess(browser.index('name: Test production paths'), browser.index('name: Test populated browser journeys'))
 
     def test_parallel_image_checks_finish_before_digest_export(self):
         for workflow, test_name, export_name in (
@@ -167,14 +160,19 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
                 self.assertNotIn('digests/', checks)
 
     def test_browser_and_proof_lanes_receive_verified_fixture_codecs(self):
-        app = (WORKFLOWS / 'app.yml').read_text()
-        for name in ('Install startup fixture codecs', 'Install proof fixture codecs'):
-            step = app.split('      - name: ' + name + '\n', 1)[1].split('      - name:', 1)[0]
-            self.assertNotIn('if:', step)
-            self.assertIn('sha256sum --check', step)
-            self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', step)
-        browser = app.split('  browser:\n', 1)[1].split('\n  proof-plan:\n', 1)[0]
-        self.assertNotIn('actions/setup-go@', browser)
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        action = (ROOT / '.github/actions/setup-e2e/action.yml').read_text()
+        codecs = action.split('    - name: Install verified fixture codecs\n', 1)[1]
+        self.assertNotIn('if:', codecs)
+        self.assertIn('sha256sum --check', codecs)
+        self.assertIn('echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"', codecs)
+        self.assertIn("case \"$APP\" in player|subtitles) ;; *) echo 'invalid app' >&2; exit 2 ;; esac", action)
+        for job, nxt in (('e2e', 'proofs'), ('proofs', 'arm')):
+            section = ci.split(f'\n  {job}:\n', 1)[1].split(f'\n  {nxt}:\n', 1)[0]
+            self.assertIn('uses: ./.github/actions/setup-e2e', section)
+            self.assertNotIn('actions/setup-go@', section)
+            self.assertIn('uses: ./.github/actions/setup-go', section)
+        browser = ci.split('\n  e2e:\n', 1)[1].split('\n  proofs:\n', 1)[0]
         self.assertNotIn('apps/player/scripts/', browser)
 
     def test_subtitles_full_browser_selection_covers_removed_routes(self):
@@ -195,21 +193,29 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
     def test_ci_cannot_silently_bypass_checks(self):
         self.assertFalse((ROOT / '.gates-disabled').exists())
         ci = (WORKFLOWS / 'ci.yml').read_text()
-        app = (WORKFLOWS / 'app.yml').read_text()
-        self.assertEqual(ci.count('run: python3 scripts/ci/affected.py'), 1)
+        deep = (WORKFLOWS / 'deep.yml').read_text()
+        self.assertEqual(ci.count('run: python3 scripts/ci/plan.py'), 1)
+        self.assertEqual(deep.count('run: python3 scripts/ci/plan.py'), 1)
         for scope in ('Repository', 'Player', 'Subtitles', 'Security'):
             self.assertIn(f'name: {scope} checks', ci)
         self.assertEqual(len(re.findall(r'^  [a-z-]+-required:$', ci, re.M)), 4)
-        for source in (ci, app):
+        for source in (ci, deep):
             self.assertNotIn('continue-on-error:', source)
             self.assertNotIn('enabled=false', source)
-            self.assertIn('    if: always()', source)
-            self.assertIn('python3 scripts/ci/required.py ', source)
+        self.assertIn('    if: always()', ci)
+        self.assertEqual(ci.count('python3 scripts/ci/required.py '), 4)
         self.assertNotIn('    paths:', ci)
-        self.assertIn('needs: [plan, static, tooling, packages, web, docs]', ci)
-        self.assertIn('needs: [plan, secrets, codeql, supply-chain, findings]', ci)
-        self.assertIn('needs: [static, race, security, tooling, client, android, wear, system, browser, proofs]', app)
-        self.assertNotIn('  validate:', app)
+        self.assertIn('needs: [plan, repository, docs]', ci)
+        self.assertEqual(ci.count('needs: [plan, go, e2e, proofs, arm, tools, client, android]'), 2)
+        self.assertIn('needs: [plan, security]', ci)
+        from required import SCOPES
+        self.assertEqual(SCOPES, {'repository': ('repository', 'docs'),
+                                  'app': ('go', 'e2e', 'proofs', 'arm', 'tools', 'client', 'android'),
+                                  'security': ('security',)})
+        jobs = re.findall(r'^  ([a-z][a-z0-9-]*):$', ci.split('\njobs:\n', 1)[1], re.M)
+        self.assertEqual(jobs, ['plan', 'repository', 'go', 'e2e', 'proofs', 'arm', 'tools', 'client', 'android', 'docs',
+                                'security', 'repository-required', 'player-required', 'subtitles-required',
+                                'security-required', 'publish', 'publish-docs', 'notify-indexnow'])
 
     def test_invalid_quality_scope_has_no_side_effects(self):
         import os
@@ -253,7 +259,7 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
     def test_publication_gates_ignore_skipped_unselected_jobs(self):
         source = (WORKFLOWS / 'ci.yml').read_text()
         publish = source.split('  publish:\n')[1].split('  publish-docs:\n')[0]
-        publish_docs = source.split('  publish-docs:\n')[1].split('  diagnostics:\n')[0]
+        publish_docs = source.split('  publish-docs:\n')[1].split('  notify-indexnow:\n')[0]
         for job in (publish, publish_docs):
             self.assertIn('always() &&', job)
             for required in ('plan', 'repository-required', 'player-required',

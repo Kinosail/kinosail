@@ -16,6 +16,11 @@ case "${KINOSAIL_BROWSER_SMOKE:-}" in
   ""|1) ;;
   *) echo 'unsupported browser smoke mode' >&2; exit 2 ;;
 esac
+browser_phase="${KINOSAIL_BROWSER_PHASE:-all}"
+case "$browser_phase" in
+  all|journeys|populated) ;;
+  *) echo 'unsupported browser phase' >&2; exit 2 ;;
+esac
 browser_projects=""
 if [[ "${KINOSAIL_BROWSER_TEST:-}" == 1 ]]; then
   browser_projects="$(./scripts/browser-projects.sh)"
@@ -205,23 +210,7 @@ if [[ "${KINOSAIL_BROWSER_TEST:-}" == "1" ]]; then
   browser_args=()
   if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then browser_args+=(--grep=@smoke); fi
   while IFS= read -r project; do
-    run_local_player_journeys "$project" \
-      "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-library-pagination" \
-      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/library-pagination-$project"
-    run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4" \
-      "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-caption-recovery" "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/caption-recovery-$project"
-    run_download_pause_journeys "$project" "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" \
-      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/downloads-$project"
-    start_fresh_server "$port"
-    KINOSAIL_BROWSER_PROJECT="$project" KINOSAIL_E2E_URL="$url" KINOSAIL_E2E_OUTPUT_DIR="${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project" pnpm --dir e2e test "${browser_args[@]}"
-    if [[ "${KINOSAIL_BROWSER_SMOKE:-}" == "1" ]]; then
-      run_native_intent_regression "$project" \
-        "${KINOSAIL_E2E_OUTPUT_DIR:-$media_dir/playwright-results}-$project-native-intent" \
-        "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/native-intent-$project"
-    fi
-    start_fresh_server "$port"
-    run_populated_player_journeys "$project" "$url" \
-      "${KINOSAIL_E2E_ARTIFACT_DIR:-$media_dir/playwright-artifact}/settings-$project"
+    run_browser_phases "$project" "$browser_phase" "$port"
   done <<< "$browser_projects"
   exit
 fi

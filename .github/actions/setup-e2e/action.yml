@@ -1,0 +1,43 @@
+name: Set up browser journey tools
+description: Install the pnpm store, Playwright browsers, and the verified jellyfin-ffmpeg fixture codecs for one app
+inputs:
+  app:
+    description: App whose e2e lockfile keys the pnpm cache
+    required: true
+  browsers:
+    description: Space-separated Playwright browsers to install; empty installs none
+    default: chromium
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
+      with:
+        version: 11.28.5
+        install: false
+        node-version-file: false
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+      with:
+        node-version: 26
+        cache: pnpm
+        cache-dependency-path: apps/${{ inputs.app }}/e2e/pnpm-lock.yaml
+    - shell: bash
+      env:
+        APP: ${{ inputs.app }}
+        BROWSERS: ${{ inputs.browsers }}
+      run: |
+        set -euo pipefail
+        case "$APP" in player|subtitles) ;; *) echo 'invalid app' >&2; exit 2 ;; esac
+        pnpm --dir "apps/$APP/e2e" install --frozen-lockfile
+        if [[ -n "$BROWSERS" ]]; then
+          read -ra browsers <<< "$BROWSERS"
+          pnpm --dir "apps/$APP/e2e" exec playwright install --with-deps "${browsers[@]}"
+        fi
+    - name: Install verified fixture codecs
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/fixture-ffmpeg.deb" https://github.com/jellyfin/jellyfin-ffmpeg/releases/download/v8.1.3-1/jellyfin-ffmpeg8_8.1.3-1-noble_amd64.deb
+        printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/fixture-ffmpeg.deb" | sha256sum --check
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/fixture-ffmpeg.deb"
+        echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"

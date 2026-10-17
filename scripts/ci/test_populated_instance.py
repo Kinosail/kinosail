@@ -14,7 +14,8 @@ TITLE = 'Connection choices stay optional and secure by default'
 class PopulatedInstanceTests(unittest.TestCase):
     def test_populated_instance_admission_is_explicit_and_retains_failures(self):
         source = (ROOT / '.github/workflows/layout-stability.yml').read_text()
-        self.assertIn("if: github.event_name != 'workflow_dispatch' || inputs.populated_suite == 'none'", source)
+        self.assertIn("contains(github.event.pull_request.labels.*.name, 'layout-evidence')", source)
+        self.assertIn("(github.event_name == 'workflow_dispatch' && inputs.populated_suite == 'none')", source)
         section = source.split('  populated-instance:\n', 1)[1]
         self.assertIn("if: github.event_name == 'workflow_dispatch' && inputs.populated_suite != 'none'", section)
         self.assertIn('runs-on: ubuntu-24.04', section)

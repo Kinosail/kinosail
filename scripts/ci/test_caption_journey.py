@@ -46,7 +46,7 @@ class CaptionJourneyTest(unittest.TestCase):
                                              "KINOSAIL_E2E_ARTIFACT_DIR": str(root / "artifacts")})
 
     def test_container_runs_caption_journey_before_general_smoke(self):
-        source = CONTAINER.read_text()
+        source = CONTAINER.read_text() + HELPER.read_text()
         caption = source.index('run_subtitle_recovery_journey "$project" "$media_dir/Direct Retry Control.mp4"')
         smoke = source.index('pnpm --dir e2e test "${browser_args[@]}"')
         self.assertLess(caption, smoke)
