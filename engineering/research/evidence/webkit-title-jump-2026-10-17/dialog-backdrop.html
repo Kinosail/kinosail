@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{--surface:#151815;--surface-2:#1d211d;--line:#333;--line-strong:#555;--text:#eee;--shadow:0 20px 60px rgba(0,0,0,.5)}
+body{margin:0;background:#0b0d0b;color:#eee;font-family:sans-serif}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px}
+.grid img{width:100%;aspect-ratio:2/3;border-radius:12px;display:block}
+.title-jump-dialog{width:min(100% - 2rem,28rem);padding:1rem;border:1px solid var(--line-strong);border-radius:20px;background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.title-jump-dialog::backdrop{background:rgba(0,0,0,.72);BACKDROP}
+.title-jump-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.45rem;margin-top:1rem}
+.title-jump-grid a{display:grid;min-height:44px;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);font-weight:800;text-decoration:none}
+</style></head><body><button id=open>Jump to title</button><div class=grid id=g></div>
+<dialog class=title-jump-dialog id=d><h2>Jump to title</h2><nav class=title-jump-grid id=n></nav></dialog>
+<script>
+const g=document.getElementById('g');
+for(let i=0;i<60;i++){const c=document.createElement('canvas');c.width=200;c.height=300;const x=c.getContext('2d');const gr=x.createLinearGradient(0,0,200,300);gr.addColorStop(0,`hsl(${i*37%360},70%,50%)`);gr.addColorStop(1,`hsl(${i*91%360},60%,20%)`);x.fillStyle=gr;x.fillRect(0,0,200,300);x.fillStyle='#fff';x.font='40px sans-serif';x.fillText(String(i),60,150);const im=new Image();im.src=c.toDataURL();g.appendChild(im);}
+const n=document.getElementById('n');for(const l of '#ABCDEFGHIJKLMNOPQRSTUVWXYZ'){const a=document.createElement('a');a.href='#';a.textContent=l;n.appendChild(a);}
+window.measure=async()=>{const gaps=[];let last=performance.now(),stop=false;const tick=t=>{gaps.push(t-last);last=t;if(!stop)requestAnimationFrame(tick)};requestAnimationFrame(tick);
+await new Promise(r=>setTimeout(r,300));const before=gaps.length;const t0=performance.now();document.getElementById('d').showModal();
+await new Promise(r=>setTimeout(r,1500));document.getElementById('d').close();await new Promise(r=>setTimeout(r,800));stop=true;
+const after=gaps.slice(before);return {max:Math.max(...after),p95:after.slice().sort((a,b)=>a-b)[Math.floor(after.length*.95)],frames:after.length}};
+</script></body></html>
