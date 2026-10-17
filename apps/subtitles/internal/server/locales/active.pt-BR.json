@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "Sua biblioteca"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Verificando sua biblioteca"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "O Kinosail Subtitles está lendo suas pastas de mídia. A cobertura de legendas aparecerá aqui quando a verificação terminar."
   }
 ]

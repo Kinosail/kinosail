@@ -2042,5 +2042,13 @@
   {
     "id": "Document",
     "other": "文档"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "正在扫描您的媒体库"
+  },
+  {
+    "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
+    "other": "Kinosail 正在读取您的媒体文件夹。扫描完成后，您的媒体库将显示在这里。"
   }
 ]

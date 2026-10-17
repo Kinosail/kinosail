@@ -144,15 +144,35 @@ func (catalog *Catalog) translateBody(source, tag string) string {
 }
 
 func (catalog *Catalog) translateText(source, tag string) string {
+	var translations []string
 	for _, message := range catalog.state().messages {
 		if message.Other == "" || !strings.Contains(source, message.Other) {
 			continue
 		}
 		if translated := catalog.Localize(tag, message.ID); translated != message.Other {
-			source = replaceLocalizedPhrase(source, message.Other, translated)
+			marker := translationMarker(len(translations))
+			if replaced := replaceLocalizedPhrase(source, message.Other, marker); replaced != source {
+				source = replaced
+				translations = append(translations, translated)
+			}
 		}
 	}
+	for position, translated := range translations {
+		source = strings.ReplaceAll(source, translationMarker(position), translated)
+	}
 	return source
+}
+
+func translationMarker(position int) string {
+	const digits = "\x01\x02\x03\x04\x05\x06\x07\x08"
+	marker := []byte{0}
+	for {
+		marker = append(marker, digits[position%len(digits)])
+		position /= len(digits)
+		if position == 0 {
+			return string(append(marker, 0))
+		}
+	}
 }
 
 func (catalog *Catalog) translateTag(source, tag string) string {

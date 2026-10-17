@@ -42,6 +42,15 @@ func TestHomeShowsTheLibraryScanUntilTheFirstScanPublishes(t *testing.T) {
 	if strings.Contains(body, "Your Server is ready.") || strings.Contains(body, "Could not complete the request") {
 		t.Fatalf("pending home rendered an empty or failed Library: %s", body)
 	}
+	germanRequest := ownerRequest("/")
+	germanRequest.Header.Set("Accept-Language", "de")
+	german := httptest.NewRecorder()
+	handler(german, germanRequest)
+	for _, want := range []string{`<h2 id="library-loading-title">Ihre Bibliothek wird gescannt</h2>`, `data-library-loading-status>Kinosail liest Ihre Medienordner. Ihre Bibliothek erscheint hier, sobald der Scan abgeschlossen ist.</p>`} {
+		if !strings.Contains(german.Body.String(), want) || strings.Contains(german.Body.String(), "Scanning your") {
+			t.Fatalf("German pending home lacks %q: %s", want, german.Body.String())
+		}
+	}
 	fragment := httptest.NewRecorder()
 	fragmentRequest := ownerRequest("/?view=movies&offset=100")
 	fragmentRequest.Header.Set("X-Kinosail-Library-Page", "1")

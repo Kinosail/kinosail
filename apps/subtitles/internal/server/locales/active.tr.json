@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "Kütüphaneniz"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Kütüphaneniz taranıyor"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles medya klasörlerinizi okuyor. Tarama tamamlandığında altyazı kapsamı burada görünür."
   }
 ]

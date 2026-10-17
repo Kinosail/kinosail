@@ -2042,5 +2042,13 @@
   {
     "id": "Document",
     "other": "Dokument"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Ditt bibliotek genomsöks"
+  },
+  {
+    "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
+    "other": "Kinosail läser dina mediemappar. Ditt bibliotek visas här när genomsökningen är klar."
   }
 ]
