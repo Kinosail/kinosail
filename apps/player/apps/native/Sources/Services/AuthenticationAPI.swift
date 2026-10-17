@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let pairingLog = Logger(subsystem: "com.kinosail.player", category: "pairing")
 
 extension ServerClient {
     func startQuickConnect(device: String) async throws -> ConnectChallenge {
@@ -20,6 +23,22 @@ extension ServerClient {
         let value = try response.body.object(allowing: ["token", "expiresIn"])
         _ = try value.requiredNumber("expiresIn", max: 315_360_000, integer: true)
         return try Input.secret(value.text("token", max: 512, required: true))
+    }
+
+    func awaitQuickConnect(secret: String, until deadline: Date, interval: Duration = .seconds(2)) async throws -> String {
+        while Date() < deadline {
+            try await Task.sleep(for: interval)
+            do {
+                if let token = try await pollQuickConnect(secret: secret) { return token }
+            } catch is CancellationError where !Task.isCancelled {
+                pairingLog.warning("Quick Connect poll interrupted operation=quick-connect-token outcome=retry reason=cancelled")
+            } catch ClientError.unavailable {
+                pairingLog.warning("Quick Connect poll interrupted operation=quick-connect-token outcome=retry reason=unavailable")
+            } catch ClientError.http(let status) where [408, 500, 502, 503, 504].contains(status) {
+                pairingLog.warning("Quick Connect poll interrupted operation=quick-connect-token outcome=retry reason=http status=\(status)")
+            }
+        }
+        throw ClientError.invalidInput("That code expired. Connect again to get a new code.")
     }
 
     func cancelQuickConnect(secret: String) async throws {
