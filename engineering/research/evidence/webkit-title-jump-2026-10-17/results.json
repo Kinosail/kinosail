@@ -1,0 +1,98 @@
+[
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 0,
+  "firstOpenMaxGapMs": 1468,
+  "secondOpenMaxGapMs": 27
+ },
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 1,
+  "firstOpenMaxGapMs": 1471,
+  "secondOpenMaxGapMs": 29
+ },
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 2,
+  "firstOpenMaxGapMs": 1440,
+  "secondOpenMaxGapMs": 28
+ },
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:none",
+  "sample": 0,
+  "firstOpenMaxGapMs": 1026,
+  "secondOpenMaxGapMs": 43
+ },
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:none",
+  "sample": 1,
+  "firstOpenMaxGapMs": 1021,
+  "secondOpenMaxGapMs": 22
+ },
+ {
+  "engine": "webkit",
+  "version": "26.6",
+  "backdrop": "backdrop-filter:none",
+  "sample": 2,
+  "firstOpenMaxGapMs": 1204,
+  "secondOpenMaxGapMs": 21
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 0,
+  "firstOpenMaxGapMs": 17,
+  "secondOpenMaxGapMs": 17
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 1,
+  "firstOpenMaxGapMs": 17,
+  "secondOpenMaxGapMs": 17
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:blur(5px)",
+  "sample": 2,
+  "firstOpenMaxGapMs": 33,
+  "secondOpenMaxGapMs": 50
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:none",
+  "sample": 0,
+  "firstOpenMaxGapMs": 17,
+  "secondOpenMaxGapMs": 17
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:none",
+  "sample": 1,
+  "firstOpenMaxGapMs": 17,
+  "secondOpenMaxGapMs": 17
+ },
+ {
+  "engine": "chromium",
+  "version": "153.0.8010.12",
+  "backdrop": "backdrop-filter:none",
+  "sample": 2,
+  "firstOpenMaxGapMs": 17,
+  "secondOpenMaxGapMs": 17
+ }
+]
