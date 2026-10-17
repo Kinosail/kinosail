@@ -15,7 +15,11 @@ func (probe *mediaProbe) decorate(ctx context.Context, items []library.Item) []l
 }
 
 func libraryDecoration(metadata *metadataStore, probe *mediaProbe, background bool) catalog.Decoration {
-	return catalog.Decoration{Apply: metadata.apply, Enrich: func(ctx context.Context, items []library.Item) []library.Item {
+	decoration := catalog.Decoration{Apply: metadata.apply, Enrich: func(ctx context.Context, items []library.Item) []library.Item {
 		return probe.decorate(workload.WithBackgroundPriority(ctx), items)
 	}, Enriches: mediaprobe.Decorates, Background: background}
+	if background {
+		decoration.StartupWait = catalog.ManagedStartupWait
+	}
+	return decoration
 }

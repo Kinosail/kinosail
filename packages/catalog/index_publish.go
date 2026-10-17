@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"time"
 
@@ -9,11 +10,16 @@ import (
 )
 
 type Decoration struct {
-	Apply      func([]library.Item) []library.Item
-	Enrich     func(context.Context, []library.Item) []library.Item
-	Enriches   func(library.Item) bool
-	Background bool
+	Apply       func([]library.Item) []library.Item
+	Enrich      func(context.Context, []library.Item) []library.Item
+	Enriches    func(library.Item) bool
+	Background  bool
+	StartupWait time.Duration
 }
+
+const ManagedStartupWait = 5 * time.Second
+
+var ErrLibraryLoading = errors.New("Library scan is in progress")
 
 type enrichedItem struct {
 	raw, value library.Item

@@ -146,6 +146,7 @@ func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) {
 		{name: "repeated header", header: []string{"1", "1"}, wantStatus: http.StatusBadRequest},
 		{name: "bad browse", sourceErr: catalog.ErrInvalidBrowse, wantStatus: http.StatusBadRequest},
 		{name: "index failure", sourceErr: internal, wantStatus: http.StatusInternalServerError},
+		{name: "library loading", sourceErr: catalog.ErrLibraryLoading, wantStatus: http.StatusServiceUnavailable},
 		{name: "full render failure", viewErr: internal},
 		{name: "fragment render failure", header: []string{"1"}, viewErr: internal, fragment: true},
 	}

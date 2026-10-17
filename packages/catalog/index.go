@@ -2,6 +2,8 @@ package catalog
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -67,8 +69,46 @@ func NewDecoratedIndex(ctx context.Context, roots []ScanRoot, cache string, inte
 	index := NewMemoryIndex(nil, false)
 	index.roots, index.cache, index.interval, index.defaultInterval, index.acquire = roots, cache, interval, interval, acquire
 	index.lifecycle, index.decorate, index.enrich, index.enriches, index.background = ctx, decoration.Apply, decoration.Enrich, decoration.Enriches, decoration.Background
-	_ = index.Refresh(ctx)
+	if decoration.StartupWait <= 0 {
+		_ = index.Refresh(ctx)
+		return index
+	}
+	index.startFirstRefresh(ctx, decoration.StartupWait)
 	return index
+}
+
+func (index *Index) startFirstRefresh(ctx context.Context, wait time.Duration) {
+	index.err = ErrLibraryLoading
+	done := make(chan struct{})
+	started := time.Now()
+	go func() {
+		defer close(done)
+		err := index.Refresh(ctx)
+		index.mu.Lock()
+		if err != nil && !index.ready {
+			index.err = err
+		}
+		index.mu.Unlock()
+		logFirstRefresh(err, time.Since(started))
+	}()
+	timer := time.NewTimer(wait)
+	defer timer.Stop()
+	select {
+	case <-done:
+	case <-timer.C:
+		slog.Info("serving before the first Library scan finished", "operation", "library.startup", "outcome", "scanning", "wait_ms", wait.Milliseconds())
+	}
+}
+
+func logFirstRefresh(err error, duration time.Duration) {
+	switch {
+	case err == nil:
+		slog.Info("first Library scan published", "operation", "library.startup", "outcome", "published", "duration_ms", duration.Milliseconds())
+	case errors.Is(err, context.Canceled):
+		slog.Debug("first Library scan stopped", "operation", "library.startup", "outcome", "cancelled", "duration_ms", duration.Milliseconds())
+	default:
+		slog.Warn("first Library scan failed", "operation", "library.startup", "outcome", "failed", "duration_ms", duration.Milliseconds())
+	}
 }
 
 func NewMemoryIndex(items []library.Item, ready bool) *Index {

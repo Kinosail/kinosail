@@ -38,6 +38,8 @@ Kinosail rescans only the folders that changed when it receives file-system even
 
 Kinosail skips a folder or file that it cannot read and shows the rest of the root. The log reports how many entries it skipped. If a whole root is missing or unreadable, the scan fails and Kinosail keeps the last Library it showed.
 
+When Kinosail starts, it waits up to 5 seconds for the first scan. If the scan takes longer, the server starts and answers health checks. Library pages then report that the Library scan is in progress until the first scan finishes.
+
 ## Refresh metadata and markers
 
 Kinosail uses local NFO files, embedded tags, folder artwork, and media facts first. If TMDB is configured, select **Refresh missing metadata** in **Library discovery**. TMDB requests leave the Server and follow the provider's terms and attribution requirements.
