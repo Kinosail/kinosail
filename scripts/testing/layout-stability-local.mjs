@@ -35,7 +35,7 @@ function recordFailure(error, failedPage = flowProbe.page || activePage) {
   if (failureCapture) return failureCapture;
   failureCapture = (async () => {
     const source = String(error.stack || "").match(/(layout-stability[\w-]*\.mjs):(\d+):(\d+)/);
-    const failure = {app, engine, stage: phase, flowStage: flowProbe.stage,
+    const failure = {app, engine, browserLaunch: launchOptions, stage: phase, flowStage: flowProbe.stage,
       errorClass: ["TimeoutError", "TypeError", "ReferenceError", "SyntaxError"].includes(error.name) ? error.name : "Error",
       sourceLocation: source ? {file: source[1], line: Number(source[2]), column: Number(source[3])} : undefined,
       request: routeFailure,
@@ -74,7 +74,9 @@ process.once("uncaughtException", async error => {
   await browser?.close();
   process.exit(1);
 });
-const launchBrowser = () => ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+const launchOptions = engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} :
+  engine === "firefox" ? {firefoxUserPrefs: {"browser.tabs.remote.useCrossOriginOpenerPolicy": false}} : {};
+const launchBrowser = () => ({chromium, webkit, firefox}[engine]).launch(launchOptions);
 browser = await launchBrowser();
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 await context.tracing.start({screenshots:true,snapshots:true});
@@ -279,7 +281,7 @@ try {
   if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(engine==="firefox"?isolatedFlowBrowser:browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
   await Promise.all([...isolatedBrowsers].map(isolated => isolated.close().catch(() => {})));
-  await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
+  await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),browserLaunch:launchOptions,
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
 }
 await browser.close();
