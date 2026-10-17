@@ -64,7 +64,7 @@ func (probe *Probe) storeAccess(item library.Item, version, intervals string, po
 	probe.mu.Unlock()
 	if found && current && version != "" {
 		facts.RandomAccess = points
-		probe.saveEntry(item, probeCacheEntry{Schema: 3, Version: version, Result: facts, RandomAccessFor: intervals})
+		probe.saveEntry(item, probeCacheEntry{Schema: 4, Version: version, Result: facts, RandomAccessFor: intervals})
 	}
 }
 

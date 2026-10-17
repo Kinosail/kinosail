@@ -18,6 +18,13 @@ type Playback struct {
 
 func (playback Playback) SubtitlesDefault() bool { return playback.Subtitles != "off" }
 
+func (playback Playback) SubtitleMode() string {
+	if playback.Subtitles == "on" || playback.Subtitles == "off" {
+		return playback.Subtitles
+	}
+	return "auto"
+}
+
 func (playback Playback) AutoplayDefault() bool {
 	return playback.PlaybackMode == "" || playback.Autoplay
 }
@@ -56,9 +63,9 @@ func ChangePlayback(input Playback, editable func(...string) error, persist func
 		return errors.New("playback mode is invalid")
 	}
 	if input.Subtitles == "" {
-		input.Subtitles = "on"
+		input.Subtitles = "auto"
 	}
-	if input.Subtitles != "on" && input.Subtitles != "off" {
+	if input.Subtitles != "auto" && input.Subtitles != "on" && input.Subtitles != "off" {
 		return errors.New("subtitle preference is invalid")
 	}
 	if input.AutoSkip != nil {

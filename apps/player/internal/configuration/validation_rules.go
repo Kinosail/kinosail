@@ -73,7 +73,7 @@ var configurationValidators = map[string]func(string) error{
 	"integrations.saml.identity_attribute": requiredValid(federation.ValidIdentityField, "must contain 1 to 256 non-whitespace characters"),
 	"integrations.saml.metadata_xml":       validateSAMLDocument,
 	"logging.level":                        allowed("debug", "info", "warn", "error"),
-	"playback.subtitles":                   allowed("", "on", "off"),
+	"playback.subtitles":                   allowed("", "auto", "on", "off"),
 	"transcoding.quality":                  allowed("", "automatic", "speed", "quality"),
 	"transcoding.codec":                    allowed("", "auto", "h264", "hevc", "av1", "vp9"),
 	"transcoding.accelerator":              requiredValid(ValidTranscodingAccelerator, "unsupported value"),

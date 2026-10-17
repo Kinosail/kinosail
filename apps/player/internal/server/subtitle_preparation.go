@@ -167,15 +167,15 @@ func (probe *mediaProbe) subtitlePrepared(ctx context.Context, item library.Item
 }
 
 func preferredTextStream(item library.Item, facts probeResult, preferred string) (int, bool) {
-	selected := defaultTextSubtitle(playbackSubtitles(item, facts, preferred, true), preferred, true)
-	for _, track := range facts.SubtitleFacts {
-		if !track.Text {
-			continue
+	candidates := orderedSubtitleCandidates(item, facts, preferred)
+	if selected := defaultSubtitleCandidate(candidates, subtitleDefaults{language: preferred, mode: "on"}); selected >= 0 {
+		stream := candidates[selected].stream
+		return stream, stream >= 0 && !candidates[selected].option.Converted
+	}
+	for _, candidate := range candidates {
+		if candidate.stream >= 0 && !candidate.option.Converted && !candidate.option.Forced {
+			return candidate.stream, true
 		}
-		if selected == 0 {
-			return track.SourceIndex, true
-		}
-		selected--
 	}
 	return 0, false
 }

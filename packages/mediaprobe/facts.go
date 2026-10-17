@@ -5,6 +5,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 func parseStreams(streams []probeStream) ([]string, VideoFacts, []AudioFacts, []SubtitleFacts, []AudioTrack) {
@@ -63,7 +65,15 @@ func subtitleFactsFor(stream probeStream, index int) SubtitleFacts {
 	} else if stream.Disposition.Commentary != 0 {
 		role = "commentary"
 	}
-	return SubtitleFacts{Index: index, SourceIndex: stream.Index, Codec: lower(stream.CodecName), Language: lower(tagValue(stream.Tags, "language")), Role: role, Default: stream.Disposition.Default != 0, Forced: stream.Disposition.Forced != 0, Text: oneOf(lower(stream.CodecName), textSubtitleCodecs...)}
+	return SubtitleFacts{Index: index, SourceIndex: stream.Index, Codec: lower(stream.CodecName), Language: lower(tagValue(stream.Tags, "language")), Title: boundedTitle(tagValue(stream.Tags, "title")), Role: role, Default: stream.Disposition.Default != 0, Forced: stream.Disposition.Forced != 0, Text: oneOf(lower(stream.CodecName), textSubtitleCodecs...)}
+}
+
+func boundedTitle(value string) string {
+	value = strings.TrimSpace(value)
+	if len(value) > 80 || !utf8.ValidString(value) || strings.IndexFunc(value, unicode.IsControl) >= 0 {
+		return ""
+	}
+	return value
 }
 
 func rational(value string) float64 {
