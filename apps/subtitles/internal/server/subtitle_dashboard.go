@@ -103,6 +103,8 @@ type subtitleManager struct {
 	drafts           subtitleDraftStore
 	operations       *subtitleOperations
 	automationCursor int
+	ocrOnce          sync.Once
+	ocr              *ocrLanguageStore
 }
 
 func newSubtitleManager(index *libraryIndex, settings *settingsStore, provider *subtitleProvider, probe *mediaProbe, backups ...*backupManager) *subtitleManager {

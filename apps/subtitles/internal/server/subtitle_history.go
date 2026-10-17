@@ -92,6 +92,8 @@ func subtitleHistoryDescription(event subtitleHistoryEvent) (string, string, str
 		explanation = "Added a new subtitle file for a missing language."
 	case "embedded":
 		explanation = "Copied an embedded text track to a new subtitle file."
+	case "image":
+		explanation = "Read the image subtitles in the video with text recognition and saved them as text."
 	case "higher-score":
 		action, explanation = "Upgraded", fmt.Sprintf("Automatic upgrade: match score improved by %d points.", *event.Score-*event.PreviousScore)
 	case "exact-hash":

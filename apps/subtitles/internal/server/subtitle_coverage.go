@@ -17,6 +17,11 @@ func (manager *subtitleManager) searchableSubtitleLanguage(ctx context.Context, 
 		if _, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
 			return language, true
 		}
+		if manager.embeddedReady() {
+			if _, found := manager.imageSubtitleFacts(manager.probe.facts(ctx, item), language); found {
+				return language, true
+			}
+		}
 	}
 	return "", false
 }
@@ -27,6 +32,9 @@ func (manager *subtitleManager) searchableSubtitleFacts(languages []string, medi
 			return language, true
 		}
 		if _, found := manager.embeddedSubtitleFacts(media, language); manager.embeddedReady() && found {
+			return language, true
+		}
+		if _, found := manager.imageSubtitleFacts(media, language); manager.embeddedReady() && found {
 			return language, true
 		}
 	}

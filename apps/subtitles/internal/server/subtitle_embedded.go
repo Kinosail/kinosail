@@ -26,7 +26,16 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 	if !manager.embeddedReady() {
 		return manager.provider.fetchSidecar(ctx, item, language)
 	}
+	source, score, role := "embedded", 100, ""
 	data, found := manager.embeddedSubtitle(ctx, item, language)
+	if track, trackFound := manager.embeddedSubtitleTrack(ctx, item, language); found && trackFound {
+		role = track.Role
+	}
+	if !found {
+		var track SubtitleFacts
+		data, track, found = manager.imageSubtitle(ctx, item, language)
+		source, score, role = "ocr", 90, track.Role
+	}
 	if !found {
 		return manager.provider.fetchSidecar(ctx, item, language)
 	}
@@ -38,13 +47,10 @@ func (manager *subtitleManager) fetchSidecar(ctx context.Context, item library.I
 		return err
 	}
 	now := time.Now().Unix()
-	record := target.record(cleaned.Data, subtitleRecord{Source: "embedded", Score: 100, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true})
-	if track, found := manager.embeddedSubtitleTrack(ctx, item, language); found {
-		record.Role = track.Role
-	}
+	record := target.record(cleaned.Data, subtitleRecord{Source: source, Score: score, ReleaseMatch: 1, CheckedAt: now, InstalledAt: now, Cleanup: cleaned.Cleanup, Synchronization: "none", TimingEvidence: "embedded", Managed: true, Role: role})
 	err = manager.provider.retainSubtitleOriginal(cleaned.Original, &record)
 	if err == nil {
-		err = manager.provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added", "embedded")
+		err = manager.provider.ledger.storeHistory(subtitleRecordKey(item.ID, language), record, "added", map[string]string{"embedded": "embedded", "ocr": "image"}[source]) //nolint:contextcheck // Ledger commits must finish after client cancellation.
 	}
 	if err != nil {
 		_ = target.remove()

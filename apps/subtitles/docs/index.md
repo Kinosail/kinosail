@@ -31,7 +31,7 @@ Kinosail Subtitles is a free, self-hosted app that scans local movies and episod
 
 ## How does Kinosail Subtitles find a match?
 
-The Server scans the movie and episode folders you choose. It checks existing sidecars and embedded text tracks first. For missing coverage, it searches your configured SubDL, OpenSubtitles.com, or SubSource account. It ranks results by release identity, episode, language, and other match signals, then validates subtitle content and timing before a save.
+The Server scans the movie and episode folders you choose. It checks existing sidecars and embedded text tracks first, and reads image subtitles with OCR. For missing coverage, it searches your configured SubDL, OpenSubtitles.com, or SubSource account. It ranks results by release identity, episode, language, and other match signals, then validates subtitle content and timing before a save.
 
 You can fetch one wanted file or let bounded maintenance fill gaps. The dashboard shows what is ready, wanted, pending, or unavailable. [See matching and timing]({{ '/user-guide/playback/' | relative_url }}) and [configure providers]({{ '/owner-guide/integrations/' | relative_url }}).
 
