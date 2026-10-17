@@ -2,10 +2,11 @@
 """Split one Go module's quick tests across runners; every test runs exactly once and an empty shard fails."""
 
 import argparse
+from pathlib import Path
 import re
 import subprocess
-import sys
 
+ROOT = Path(__file__).resolve().parents[2]
 HEAVY = {"apps/player": "./internal/server"}
 NAME = re.compile(r"^(Test|Example|Fuzz)[A-Za-z0-9_]*$")
 
@@ -19,7 +20,7 @@ def parse_shard(value):
 
 def list_tests(directory, package):
     result = subprocess.run(["go", "-C", directory, "test", "-list", ".*", package],
-                            capture_output=True, text=True, check=True, timeout=1800)
+                            stdout=subprocess.PIPE, text=True, check=True, timeout=1800)
     names = [line.strip() for line in result.stdout.splitlines()]
     tests = sorted({name for name in names if NAME.fullmatch(name)})
     if not tests:
@@ -34,17 +35,18 @@ def partition(tests, index, count):
     return chosen
 
 
-def commands(directory, shard):
+def commands(module, shard):
     index, count = parse_shard(shard)
-    heavy = HEAVY.get(directory)
+    heavy = HEAVY.get(module)
     if heavy is None:
-        raise ValueError(f"{directory} has no sharding plan")
-    packages = subprocess.run(["go", "-C", directory, "list", "./..."], capture_output=True, text=True,
+        raise ValueError(f"{module} has no sharding plan")
+    directory = str(ROOT / module)
+    packages = subprocess.run(["go", "-C", directory, "list", "./..."], stdout=subprocess.PIPE, text=True,
                               check=True, timeout=600).stdout.split()
-    heavy_import = subprocess.run(["go", "-C", directory, "list", heavy], capture_output=True, text=True,
+    heavy_import = subprocess.run(["go", "-C", directory, "list", heavy], stdout=subprocess.PIPE, text=True,
                                   check=True, timeout=600).stdout.strip()
     if heavy_import not in packages:
-        raise ValueError(f"{heavy} is not a package of {directory}")
+        raise ValueError(f"{heavy} is not a package of {module}")
     chosen = partition(list_tests(directory, heavy), index, count)
     pattern = "^(" + "|".join(re.escape(name) for name in chosen) + ")$"
     plan = [["go", "-C", directory, "test", "-count=1", "-run", pattern, heavy]]
@@ -57,10 +59,10 @@ def commands(directory, shard):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("directory")
+    parser.add_argument("module")
     parser.add_argument("shard")
     args = parser.parse_args()
-    plan, chosen = commands(args.directory, args.shard)
+    plan, chosen = commands(args.module, args.shard)
     print(f"shard {args.shard}: {chosen} heavy tests, {len(plan)} go test invocations", flush=True)
     for command in plan:
         shown = [part if len(part) < 120 else part[:117] + "..." for part in command]
