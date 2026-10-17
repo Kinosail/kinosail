@@ -20,9 +20,9 @@ def floats(data):
     return samples
 
 
-def decode_source(source):
+def decode_source(source, rate):
     command = ['ffmpeg', '-v', 'error', '-i', str(source), '-map', '0:a:0',
-               '-ac', '1', '-ar', '48000', '-f', 'f32le', 'pipe:1']
+               '-ac', '1', '-ar', str(rate), '-f', 'f32le', 'pipe:1']
     result = subprocess.run(command, capture_output=True, check=True, timeout=30)
     return floats(result.stdout), command
 
@@ -32,40 +32,57 @@ def correlation(left, right):
     return sum(a * b for a, b in zip(left, right)) / math.sqrt(energy) if energy > 1e-15 else 0
 
 
-def capture_audio(root, run, api, item, label, point, span, source_pcm):
+def render_continuity(blocks):
+    expected, previous, gaps, stale = blocks[0]['frame'] if blocks else 0, None, [], 0
+    for block in blocks:
+        if block['frame'] != expected:
+            if block['frame'] == previous and block['frame'] < expected:
+                stale += 1
+            else:
+                gaps.append(block['frame'] - expected)
+                expected = block['frame']
+        previous = block['frame']
+        expected += block['length']
+    return gaps, stale
+
+
+def capture_audio(root, run, api, item, label, point, span, source_pcm, rate):
     env = dict(os.environ, QA_RESUME_ORIGIN=api.url, QA_RESUME_TOKEN=api.token,
                QA_RESUME_ITEM=item['id'], QA_AUDIO_OUTPUT=str(run / label),
-               QA_AUDIO_CAPTURE_POINT=str(point), QA_AUDIO_CAPTURE_SPAN=str(span))
+               QA_AUDIO_CAPTURE_POINT=str(point), QA_AUDIO_CAPTURE_SPAN=str(span), QA_AUDIO_SAMPLE_RATE=str(rate))
     command = ['node', str(root / 'apps/player/scripts/hls-audio-capture.mjs')]
     with (run / (label + '-private.log')).open('w') as log:
         result = subprocess.run(command, cwd=root, env=env, stdout=log, stderr=log, timeout=90)
     check(result.returncode == 0, 'browser_audio_capture')
     facts = json.loads((run / (label + '.json')).read_text())
     samples = floats((run / (label + '.f32')).read_bytes())
-    check(facts['passed'] and facts['capture']['sampleRate'] == 48000, 'capture_sample_rate')
-    check(len(samples) > (span - .6) * 48000, 'capture_incomplete')
-    anchor, size = 4800, 512
-    expected = round(point * 48000) + anchor
-    lags = range(-2048, 2049)
+    check(facts['passed'] and facts['capture']['sampleRate'] == rate, 'capture_sample_rate')
+    check(len(samples) > (span - .6) * rate, 'capture_incomplete')
+    scale = rate / 48000
+    anchor, size, window, step = round(4800 * scale), round(512 * scale), round(2048 * scale), round(512 * scale)
+    origin = round(point * rate)
+    expected = origin + anchor
+    lags = range(-round(2048 * scale), round(2048 * scale) + 1)
     lag = max(lags, key=lambda n: correlation(samples[anchor:anchor + size], source_pcm[expected + n:expected + n + size]))
     rows = []
-    end = min(len(samples) - 4096, len(source_pcm) - round(point * 48000) - 4096, round((span - .1) * 48000))
-    for at in range(anchor, end, 512):
-        start = round(point * 48000) + at + lag
-        rows.append({'sourceSeconds': start / 48000,
-                     'correlation': correlation(samples[at:at + 2048], source_pcm[start:start + 2048])})
-    blocks = facts['capture']['blocks']
-    gaps = [b['frame'] - a['frame'] - a['length'] for a, b in zip(blocks, blocks[1:])]
+    end = min(len(samples) - 2 * window, len(source_pcm) - origin - 2 * window, round((span - .1) * rate))
+    for at in range(anchor, end, step):
+        start = origin + at + lag
+        rows.append({'sourceSeconds': start / rate,
+                     'correlation': correlation(samples[at:at + window], source_pcm[start:start + window])})
+    gaps, stale = render_continuity(facts['capture']['blocks'])
+    leading = facts['capture']['leadingSilentFrames']
     minimum = min(row['correlation'] for row in rows)
-    verdict = abs(lag) <= 48 and minimum >= .90 and not any(gaps)
-    comparison = {'label': label, 'command': command, 'point': point, 'span': span,
-                  'lagSamples': lag, 'minimumCorrelation': minimum, 'rows': rows,
-                  'renderGapFrames': [gap for gap in gaps if gap], 'passed': verdict,
+    verdict = abs(lag) <= rate / 1000 and minimum >= .90 and not gaps and leading <= rate // 4
+    comparison = {'label': label, 'command': command, 'point': point, 'span': span, 'sampleRate': rate,
+                  'lagSamples': lag, 'lagMilliseconds': lag * 1000 / rate, 'minimumCorrelation': minimum, 'rows': rows,
+                  'renderGapFrames': gaps, 'staleFrameReads': stale, 'leadingSilentFrames': leading, 'passed': verdict,
                   'pcmSHA256': sha(run / (label + '.f32')),
                   'startup': {key: facts['capture'][key] for key in ['checkpoints', 'events']},
-                  'oracle': 'One fixed source alignment; all 2048-sample windows at least .90 correlation; initial offset at most 1ms; contiguous render blocks.'}
+                  'oracle': 'Capture at the served AAC rate; skip render quanta of exact zeros that the media element emits before its sink starts, at most 250ms; one fixed source alignment; all 42.7ms windows at least .90 correlation; initial offset at most 1ms; no render quantum missing, where an unchanged currentFrame read is a stale counter.'}
     (run / (label + '-comparison.json')).write_text(json.dumps(comparison, indent=2) + '\n')
-    return {key: comparison[key] for key in ['label', 'point', 'span', 'lagSamples', 'minimumCorrelation', 'renderGapFrames', 'passed', 'pcmSHA256', 'startup']}
+    return {key: comparison[key] for key in ['label', 'point', 'span', 'sampleRate', 'lagSamples', 'minimumCorrelation', 'renderGapFrames',
+                                             'staleFrameReads', 'leadingSilentFrames', 'passed', 'pcmSHA256', 'startup']}
 
 
 def packet_grid(rendition):
