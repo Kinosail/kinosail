@@ -7,6 +7,7 @@ const origin = process.env.QA_RESUME_ORIGIN, token = process.env.QA_RESUME_TOKEN
 const id = process.env.QA_RESUME_ITEM, output = process.env.QA_AUDIO_OUTPUT;
 const point = Number(process.env.QA_AUDIO_CAPTURE_POINT);
 const span = Number(process.env.QA_AUDIO_CAPTURE_SPAN || '3');
+const trim = process.env.KINOSAIL_DIAG_LEGACY !== '1';
 const rate = Number(process.env.QA_AUDIO_SAMPLE_RATE || '48000');
 if (![8000, 32000, 44100, 48000, 96000].includes(rate)) throw new Error('capture_rate_bound');
 if (!Number.isFinite(span) || span < 1 || span > 10) throw new Error('capture_span_bound');
@@ -30,7 +31,7 @@ try {
   });
   await page.goto(`${origin}/watch/${id}?compatible=1`);
   await page.waitForFunction(() => document.querySelector('video')?.readyState >= 2);
-  const capture = await page.evaluate(async ({point, span, rate}) => {
+  const capture = await page.evaluate(async ({point, span, rate, trim}) => {
     const video = document.querySelector('video'), events = [], checkpoints = [];
     const rawTime = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime').get;
     let ac;
@@ -74,13 +75,13 @@ try {
     await ac.suspend();
     const module = URL.createObjectURL(new Blob([`
       class Capture extends AudioWorkletProcessor {
-        constructor(options) {super();this.limit=options.processorOptions.limit;this.pcm=[];this.blocks=[];this.leading=0;this.active=true;
+        constructor(options) {super();this.limit=options.processorOptions.limit;this.trim=options.processorOptions.trim;this.pcm=[];this.blocks=[];this.leading=0;this.active=true;
           this.port.onmessage=()=>{this.active=false;this.port.postMessage({pcm:this.pcm,blocks:this.blocks,leadingSilentFrames:this.leading});};}
         process(inputs) {const data=inputs[0]?.[0];
           if(this.active && data && this.pcm.length+data.length<=this.limit && this.blocks.length<65536) {
             if(this.blocks.length===0)this.port.postMessage({first:true,frame:currentFrame});
             this.blocks.push({frame:currentFrame,length:data.length});
-            if(this.pcm.length===0 && data.every(value=>value===0))this.leading+=data.length;
+            if(this.trim && this.pcm.length===0 && data.every(value=>value===0))this.leading+=data.length;
             else {
               if(this.pcm.length===0)this.port.postMessage({onset:true,frame:currentFrame});
               for(let i=0;i<data.length;i++)this.pcm.push(data[i]);
@@ -92,7 +93,7 @@ try {
       registerProcessor('qa-long-audio',Capture);`],{type:'text/javascript'}));
     await ac.audioWorklet.addModule(module);URL.revokeObjectURL(module);
     const worklet = new AudioWorkletNode(ac,'qa-long-audio',{channelCount:1,channelCountMode:'explicit',
-      processorOptions:{limit:Math.ceil((span+1)*rate)}});
+      processorOptions:{limit:Math.ceil((span+1)*rate),trim}});
     const done = new Promise(resolve => worklet.port.onmessage = event => {
       if(event.data.first)checkpoint('first-worklet-message',event.data.frame);
       else if(event.data.onset)checkpoint('first-audio-message',event.data.frame);else resolve(event.data);
@@ -108,7 +109,7 @@ try {
     video.pause();worklet.port.postMessage('stop');const recorded=await done;
     worklet.disconnect();source.disconnect();await ac.close();
     return {...recorded,events,checkpoints,sampleRate:ac.sampleRate,currentTime:video.currentTime,duration:video.duration,ended:video.ended};
-  },{point,span,rate});
+  },{point,span,rate,trim});
   const {pcm,...facts}=capture;
   await writeFile(output+'.f32',Buffer.from(new Float32Array(pcm).buffer));
   result.capture={...facts,sampleCount:pcm.length};

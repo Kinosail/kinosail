@@ -29,6 +29,9 @@ parser.add_argument('--half-sample-clock', action='store_true')
 parser.add_argument('--quantized-mux-clock', action='store_true')
 parser.add_argument('--coarse-video-clock', action='store_true')
 args = parser.parse_args()
+DIAG_REPEAT = int(os.environ.get('KINOSAIL_DIAG_REPEAT', '0'))
+DIAG_HOG = int(os.environ.get('KINOSAIL_DIAG_HOG', '0'))
+CAPTURE_RATE = 48000 if os.environ.get('KINOSAIL_DIAG_LEGACY') == '1' else args.audio_sample_rate
 run = ROOT / '.verification/hls-audio-splice' / time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())
 media = run / 'media'
 media.mkdir(parents=True)
@@ -87,7 +90,7 @@ try:
         metadata.update(shiftCommand=command, sha256=sha(source), durationSeconds=frames / frame_rate + args.video_offset)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
-    source_pcm, receipt['decodeCommand'] = decode_source(source, args.audio_sample_rate)
+    source_pcm, receipt['decodeCommand'] = decode_source(source, CAPTURE_RATE)
     with (run / 'build-private.log').open('w') as log:
         subprocess.run(build, cwd=ROOT, check=True, stdout=log, stderr=log, timeout=180)
     receipt['binarySHA256'] = sha(run / 'player')
@@ -95,7 +98,7 @@ try:
         listener.bind(('127.0.0.1', 0))
         port = listener.getsockname()[1]
     origin = f'http://localhost:{port}'
-    env = dict(os.environ, KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=origin,
+    env = dict({k: v for k, v in os.environ.items() if not k.startswith('KINOSAIL_DIAG_')}, KINOSAIL_LISTEN=f'127.0.0.1:{port}', KINOSAIL_AUTH_URL=origin,
                KINOSAIL_TLS_ENABLED='false', KINOSAIL_DATA_DIR=str(run / 'config'),
                KINOSAIL_MEDIA_DIR=str(media), KINOSAIL_CACHE_DIR=str(run / 'cache'),
                KINOSAIL_BACKUP_DIR=str(run / 'backups'), KINOSAIL_BACKUP_KEY='synthetic-splice-key')
@@ -138,8 +141,22 @@ try:
             point, span = keys[target] - 1, 3 if args.recovery == 'tail' else keys[target + 1] - keys[target] + 2
             if args.recovery == 'first':
                 point, span = keys[0] + .2, keys[1] - keys[0] + 1
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm, args.audio_sample_rate))
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm, args.audio_sample_rate))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'initial-join', 20 + args.video_offset, 3, source_pcm, CAPTURE_RATE))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'control', point, span, source_pcm, CAPTURE_RATE))
+            hogs = [subprocess.Popen([sys.executable, '-c', 'while True: pass']) for _ in range(DIAG_HOG)]
+            try:
+                for n in range(DIAG_REPEAT):
+                    receipt['captures'].append(capture_audio(ROOT, run, api, item, f'diag-control-{n}', point, span, source_pcm, CAPTURE_RATE))
+                for n in range(DIAG_REPEAT):
+                    victim = rendition / f'segment-{target:05d}.m4s'
+                    check(victim.exists(), 'diag_fragment_missing')
+                    victim.unlink()
+                    receipt['captures'].append(capture_audio(ROOT, run, api, item, f'diag-recovered-{n}', point, span, source_pcm, CAPTURE_RATE))
+                    settled(server, source)
+            finally:
+                for hog in hogs:
+                    hog.kill()
+                    hog.wait()
             fragment = rendition / f'segment-{target:05d}.m4s'
             check(fragment.exists(), 'eviction_requires_existing_fragment')
             neighbors = [rendition / f'segment-{n:05d}.m4s' for n in (target - 1, target + 1) if 0 <= n < len(keys)]
@@ -149,7 +166,7 @@ try:
             stable += [rendition / 'index.m3u8', rendition / 'init.mp4']
             stable_hashes = {p.name + str(n): sha(p) for n, p in enumerate(stable)}
             fragment.unlink()
-            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm, args.audio_sample_rate))
+            receipt['captures'].append(capture_audio(ROOT, run, api, item, 'recovered', point, span, source_pcm, CAPTURE_RATE))
             settled(server, source)
             receipt['neighborHashesAfterRecovery'] = {p.name: sha(p) for p in neighbors}
             if args.recovery != 'tail':
@@ -157,7 +174,7 @@ try:
                     temporary = p.with_suffix('.qa-pending')
                     temporary.write_bytes(saved[p.name])
                     temporary.replace(p)
-                receipt['captures'].append(capture_audio(ROOT, run, api, item, 'retained-neighbors', point, span, source_pcm, args.audio_sample_rate))
+                receipt['captures'].append(capture_audio(ROOT, run, api, item, 'retained-neighbors', point, span, source_pcm, CAPTURE_RATE))
                 receipt['neighborHashesRetained'] = {p.name: sha(p) for p in neighbors}
                 check(receipt['neighborHashesBefore'] == receipt['neighborHashesRetained'], 'retained_neighbor_changed')
             receipt['recoveredGrid'] = packet_grid(rendition)
@@ -193,4 +210,6 @@ finally:
     receipt['artifactsSHA256'] = {p.name: sha(p) for p in run.iterdir() if p.is_file() and p.name != 'player'}
     (run / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({'receipt': str(run / 'receipt.json'), 'result': receipt['result']}), flush=True)
-raise SystemExit(0 if receipt['result'] == 'passed' else 1)
+summary = [(c['label'], c['passed'], c['lagSamples'], c['renderGapFrames'], c.get('leadingSilentFrames')) for c in receipt['captures']]
+print(json.dumps({'diag': summary, 'failureClass': receipt.get('failureClass')}), flush=True)
+raise SystemExit(0 if receipt['result'] == 'passed' or DIAG_REPEAT else 1)

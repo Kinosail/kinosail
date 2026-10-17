@@ -80,6 +80,21 @@ def capture_audio(root, run, api, item, label, point, span, source_pcm, rate):
                   'pcmSHA256': sha(run / (label + '.f32')),
                   'startup': {key: facts['capture'][key] for key in ['checkpoints', 'events']},
                   'oracle': 'Capture at the served AAC rate; skip render quanta of exact zeros that the media element emits before its sink starts, at most 250ms; one fixed source alignment; all 42.7ms windows at least .90 correlation; initial offset at most 1ms; no render quantum missing, where an unchanged currentFrame read is a stale counter.'}
+    zeros = next((n for n, v in enumerate(samples) if v != 0), len(samples))
+    trimmed = samples[zeros:]
+    blocks = facts['capture']['blocks']
+    comparison['diag'] = {
+        'legacy': os.environ.get('KINOSAIL_DIAG_LEGACY') == '1', 'pcmLeadingZeroSamples': zeros,
+        'lagAfterZeroTrim': max(lags, key=lambda n: correlation(trimmed[anchor:anchor + size], source_pcm[expected + n:expected + n + size])),
+        'pairwiseGaps': [b['frame'] - a['frame'] - a['length'] for a, b in zip(blocks, blocks[1:]) if b['frame'] - a['frame'] - a['length']],
+        'blockAnomalies': [{'index': n, 'previous': blocks[n - 1], 'block': b, 'next': blocks[n + 1] if n + 1 < len(blocks) else None}
+                           for n, b in enumerate(blocks) if n and b['frame'] - blocks[n - 1]['frame'] - blocks[n - 1]['length']][:16],
+        'firstBlockFrame': blocks[0]['frame'] if blocks else None, 'blockCount': len(blocks),
+        'firstSamples': [round(v, 6) for v in samples[:16]], 'samplesAroundZeroEnd': [round(v, 6) for v in samples[max(0, zeros - 4):zeros + 12]],
+        'legacyVerdict': abs(lag) <= rate / 1000 and minimum >= .90 and not any(b['frame'] - a['frame'] - a['length'] for a, b in zip(blocks, blocks[1:])),
+        'responses': facts.get('responses', [])[:64]}
+    if verdict and comparison['diag']['legacyVerdict']:
+        (run / (label + '.f32')).unlink()
     (run / (label + '-comparison.json')).write_text(json.dumps(comparison, indent=2) + '\n')
     return {key: comparison[key] for key in ['label', 'point', 'span', 'sampleRate', 'lagSamples', 'minimumCorrelation', 'renderGapFrames',
                                              'staleFrameReads', 'leadingSilentFrames', 'passed', 'pcmSHA256', 'startup']}
