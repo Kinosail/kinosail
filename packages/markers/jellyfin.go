@@ -32,7 +32,7 @@ func JellyfinHandler(resolve func(*http.Request) (string, []Marker, bool), write
 func JellyfinSegments(itemID string, markers []Marker) []JellyfinSegment {
 	segments := make([]JellyfinSegment, 0, len(markers))
 	for index, marker := range markers {
-		if marker.Source != "manual" && marker.Source != "chapter" && marker.Source != "fingerprint" {
+		if marker.Source != "manual" && marker.Source != "chapter" && marker.Source != "fingerprint" && marker.Source != "text" {
 			continue
 		}
 		kind := map[string]string{"intro": "Intro", "recap": "Recap", "commercial": "Commercial", "outro": "Outro", "credits": "Outro"}[marker.Type]

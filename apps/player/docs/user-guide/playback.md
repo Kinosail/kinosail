@@ -19,7 +19,7 @@ The player provides controls that depend on the media type and device:
 - Choose subtitles from embedded or sidecar text tracks.
 - Choose an audio track when the file has more than one.
 - Open **Chapters** and select a chapter.
-- Skip detected or Owner-created recap, intro, commercial, outro, or credits markers when the control appears.
+- Skip detected or Owner-created recap, intro, commercial, outro, or credits markers when the control appears. Confident markers skip on their own when the Owner keeps automatic skipping on.
 - Continue to the next episode when the item belongs to a Show and another episode is available.
 
 Video and audio progress is private to your Profile. Kinosail records progress while you watch. You can mark a supported item watched or unwatched from its detail page.

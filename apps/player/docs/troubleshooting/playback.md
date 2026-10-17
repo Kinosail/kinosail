@@ -60,7 +60,9 @@ Embedded and matching `.srt` or `.vtt` sidecar subtitles can appear in the playe
 
 Skipping depends on named chapters, analyzed playback segments, and the Owner’s selected auto-skip types. A marker can be **recap**, **intro**, **commercial**, **outro**, or **credits**. An Owner can review or edit markers from the item’s **Manage media** controls.
 
-If a marker is wrong, disable that type in Owner playback settings or edit the marker. Do not treat ordinary chapter names as proof of an intro or credits boundary.
+A segment skips on its own only when it comes from a chapter name, an Owner marker, an audio match across at least three episodes or Movies, or a credit roll with moving text. A segment that shows a **Skip** button but does not skip was detected with weaker evidence.
+
+If a segment is missing, open **Settings → Playback → Playback segment analysis** and check the status. A season needs at least three episodes before Kinosail can find its intro. If a marker is wrong, disable that type in Owner playback settings or edit the marker. Do not treat ordinary chapter names as proof of an intro or credits boundary.
 
 ## Offline preparation fails
 

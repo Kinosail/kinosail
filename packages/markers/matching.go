@@ -5,7 +5,11 @@ import (
 	"sort"
 )
 
-const fingerprintPointSeconds = 4096.0 / 11025.0 / 3.0
+const (
+	fingerprintPointSeconds = 4096.0 / 11025.0 / 3.0
+	minimumSegmentSeconds   = 10.0
+	maximumSegmentSeconds   = 180.0
+)
 
 type timeRange struct{ Start, End float64 }
 
@@ -54,7 +58,7 @@ func sharedFingerprintSegment(left, right []uint32) (timeRange, timeRange, bool)
 			bestLeft, bestRight = leftRange, rightRange
 		}
 	}
-	return bestLeft, bestRight, bestLeft.End-bestLeft.Start >= 20
+	return bestLeft, bestRight, bestLeft.End-bestLeft.Start >= minimumSegmentSeconds
 }
 
 func fingerprintRun(left, right []uint32, shift int) (timeRange, timeRange) {
@@ -65,9 +69,11 @@ func fingerprintRun(left, right []uint32, shift int) (timeRange, timeRange) {
 		rightOffset = shift
 	}
 	limit := min(len(left)-leftOffset, len(right)-rightOffset)
+	matched := make([]bool, max(limit, 0))
 	start, last, matches, bestStart, bestLast, bestMatches := -1, -1, 0, -1, -1, 0
 	for index := range limit {
 		if bits.OnesCount32(left[index+leftOffset]^right[index+rightOffset]) <= 6 {
+			matched[index] = true
 			if start < 0 || index-last > 28 {
 				start, matches = index, 0
 			}
@@ -80,6 +86,7 @@ func fingerprintRun(left, right []uint32, shift int) (timeRange, timeRange) {
 	if bestStart < 0 {
 		return timeRange{}, timeRange{}
 	}
+	bestStart, bestLast = trimSparseEdges(matched, bestStart, bestLast, 16, 8)
 	return timeRange{float64(bestStart+leftOffset) * fingerprintPointSeconds, float64(bestLast+leftOffset+1) * fingerprintPointSeconds},
 		timeRange{float64(bestStart+rightOffset) * fingerprintPointSeconds, float64(bestLast+rightOffset+1) * fingerprintPointSeconds}
 }
@@ -88,7 +95,7 @@ func sharedVisualSegment(left, right []uint64) (timeRange, timeRange, bool) {
 	positions := indexedVisualPositions(right)
 	candidates := visualShiftCandidates(left, positions)
 	bestLeft, bestRight := bestVisualRun(left, right, candidates)
-	return bestLeft, bestRight, bestLeft.End-bestLeft.Start >= 20
+	return bestLeft, bestRight, bestLeft.End-bestLeft.Start >= minimumSegmentSeconds
 }
 
 func visualRun(left, right []uint64, shift int) (timeRange, timeRange) {
@@ -99,9 +106,11 @@ func visualRun(left, right []uint64, shift int) (timeRange, timeRange) {
 		rightOffset = shift
 	}
 	limit := min(len(left)-leftOffset, len(right)-rightOffset)
+	matched := make([]bool, max(limit, 0))
 	start, last, matches, bestStart, bestLast, bestMatches := -1, -1, 0, -1, -1, 0
 	for index := range limit {
 		if bits.OnesCount64(left[index+leftOffset]^right[index+rightOffset]) <= 8 {
+			matched[index] = true
 			if start < 0 || index-last > 3 {
 				start, matches = index, 0
 			}
@@ -114,8 +123,28 @@ func visualRun(left, right []uint64, shift int) (timeRange, timeRange) {
 	if bestStart < 0 {
 		return timeRange{}, timeRange{}
 	}
+	bestStart, bestLast = trimSparseEdges(matched, bestStart, bestLast, 3, 2)
 	return timeRange{float64(bestStart + leftOffset), float64(bestLast + leftOffset + 1)},
 		timeRange{float64(bestStart + rightOffset), float64(bestLast + rightOffset + 1)}
+}
+
+func trimSparseEdges(matched []bool, start, last, window, needed int) (int, int) {
+	dense := func(from int) bool {
+		count := 0
+		for index := max(from, 0); index < min(from+window, len(matched)); index++ {
+			if matched[index] {
+				count++
+			}
+		}
+		return count >= needed
+	}
+	for start < last && (!matched[start] || !dense(start)) {
+		start++
+	}
+	for last > start && (!matched[last] || !dense(last-window+1)) {
+		last--
+	}
+	return start, last
 }
 
 func mergePlaybackMarkers(authoritative, generated []Marker) []Marker {
@@ -134,7 +163,7 @@ func mergePlaybackMarkers(authoritative, generated []Marker) []Marker {
 
 func acceptCandidate(candidate *markerCandidate, value timeRange, duration float64, tail bool) {
 	length := value.End - value.Start
-	if length < 20 || length > 120 || !tail && value.End >= duration/2 || tail && duration-value.End > 120 {
+	if length < minimumSegmentSeconds || length > maximumSegmentSeconds || !tail && value.End >= duration/2 || tail && duration-value.End > 120 {
 		return
 	}
 	candidate.ranges = append(candidate.ranges, value)
@@ -158,7 +187,7 @@ func (candidate markerCandidate) consensus(minimum int) (timeRange, bool) {
 		for _, value := range cluster[1:] {
 			shared.Start, shared.End = max(shared.Start, value.Start), min(shared.End, value.End)
 		}
-		if length := shared.End - shared.Start; length >= 20 && (len(cluster) > bestSupport || len(cluster) == bestSupport && length > best.End-best.Start) {
+		if length := shared.End - shared.Start; length >= minimumSegmentSeconds && (len(cluster) > bestSupport || len(cluster) == bestSupport && length > best.End-best.Start) {
 			best, bestSupport = shared, len(cluster)
 		}
 	}
@@ -187,5 +216,5 @@ func agreeingRange(audio timeRange, audioOK bool, visual timeRange, visualOK boo
 	}
 	shared := timeRange{Start: max(audio.Start, visual.Start), End: min(audio.End, visual.End)}
 	minimum := min(audio.End-audio.Start, visual.End-visual.Start) / 2
-	return shared, shared.End-shared.Start >= max(20, minimum)
+	return shared, shared.End-shared.Start >= max(minimumSegmentSeconds, minimum)
 }

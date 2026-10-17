@@ -24,8 +24,9 @@ type Record struct {
 }
 
 const (
-	DetectorVersion     = 3
-	failedAnalysisRetry = 7 * 24 * time.Hour
+	DetectorVersion          = 4
+	visualFingerprintVersion = 3
+	failedAnalysisRetry      = 7 * 24 * time.Hour
 )
 
 type Analyzer struct {
