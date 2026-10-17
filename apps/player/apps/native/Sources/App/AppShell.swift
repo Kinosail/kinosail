@@ -4,7 +4,7 @@ enum ScreenDestination: Hashable {
     case search, library(LibraryView), detail(String), show(String), actor(String), collections, collection(String)
     case music, album(String), audio(String), playback(String), photos(String)
     case reader(String), downloads, offlinePlayback(String), approval, playbackPreferences, readerPreferences
-    case tabPreferences, offlinePreferences, bookmarks(String), progressSync, playOnTV(String)
+    case tabPreferences, offlinePreferences, bookmarks(String), playOnTV(String)
 }
 
 struct AppShell: View {
@@ -133,7 +133,6 @@ struct DestinationScreen: View {
         case .tabPreferences: TabPreferencesScreen()
         case .offlinePreferences: OfflinePreferencesScreen()
         case .bookmarks(let id): BookmarksScreen(itemID: id)
-        case .progressSync: ProgressSyncScreen()
         case .playOnTV(let id): PlayOnTVScreen(itemID: id)
         }
     }

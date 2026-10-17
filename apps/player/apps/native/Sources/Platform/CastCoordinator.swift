@@ -50,7 +50,7 @@ final class CastCoordinator {
                     if Date().timeIntervalSince(lastSaved) >= 15, let writer {
                         lastSaved = Date()
                         let synced = try await writer.update(seconds: next.position, watched: next.state == .stopped && next.duration > 0 && next.position >= next.duration - 2)
-                        if generation == attempt, !synced { message = "Your playback position is saved on this device. Open Progress sync to finish syncing." }
+                        if generation == attempt, !synced { message = "Your playback position is saved on this device and will sync when the Server is reachable." }
                     }
                 } catch is CancellationError { return }
                 catch { if generation == attempt { message = AppSession.message(error) } }

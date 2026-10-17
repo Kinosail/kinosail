@@ -141,7 +141,7 @@ final class RemoteScreenAuditTests: RemoteTestCase {
         press(.up, 8, in: app)
         press(.select, then: "settings-10-first-row", in: app)
         press(.menu, then: "settings-11-back", in: app)
-        for (index, row) in ["Connect a TV", "Playback", "Progress sync", "Supporter collection", "Made possible by", "Privacy policy"].enumerated() {
+        for (index, row) in ["Connect a TV", "Playback", "Supporter collection", "Made possible by", "Privacy policy"].enumerated() {
             let element = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", row)).firstMatch
             guard element.waitForExistence(timeout: 5) else { continue }
             for _ in 0..<12 where !element.hasFocus { remote.press(.down); usleep(350_000) }

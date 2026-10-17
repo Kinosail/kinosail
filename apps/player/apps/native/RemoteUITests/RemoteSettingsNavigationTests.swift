@@ -10,7 +10,7 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
         remote.press(.right)
         remote.press(.select)
         XCTAssertTrue(app.buttons["Change Server"].waitForExistence(timeout: 10))
-        let rows = ["Change Server", "Connect a TV", "Playback", "Progress sync",
+        let rows = ["Change Server", "Connect a TV", "Playback",
                     "Show titles on Apple TV Home", "Supporter collection",
                     "Made possible by", "Privacy policy"]
         for (index, row) in rows.enumerated() {
@@ -23,8 +23,6 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
                 XCTAssertTrue(app.textFields["Server address"].waitForExistence(timeout: 10))
             case "Connect a TV":
                 XCTAssertTrue(app.textFields["Six-digit code"].waitForExistence(timeout: 10))
-            case "Progress sync":
-                XCTAssertTrue(app.staticTexts["Progress sync"].waitForExistence(timeout: 10))
             case "Supporter collection":
                 XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 10),
                               "The navigation fixture deliberately does not supply supporter state")
@@ -56,7 +54,7 @@ final class RemoteSettingsNavigationTests: RemoteTestCase {
         remote.press(.right)
         remote.press(.select)
         XCTAssertTrue(app.buttons["Change Server"].waitForExistence(timeout: 10))
-        let rows = ["Change Server", "Connect a TV", "Playback", "Progress sync",
+        let rows = ["Change Server", "Connect a TV", "Playback",
                     "Show titles on Apple TV Home", "Supporter collection",
                     "Made possible by", "Privacy policy", "Sign out"]
         for (index, row) in rows.enumerated() {
