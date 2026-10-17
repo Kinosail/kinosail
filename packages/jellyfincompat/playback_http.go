@@ -103,6 +103,12 @@ func MediaSource(item library.Item, facts playback.MediaFacts, plan playback.Pla
 	})
 }
 
+func CatalogMediaSource(item library.Item, facts playback.MediaFacts, plan playback.PlaybackPlan, policy MediaSourcePolicy) (map[string]any, error) {
+	return playback.JellyfinMediaSource(item, facts, plan, playback.JellyfinMediaSourceOptions{
+		QueryOnDirectPath: policy.QueryOnDirectPath, TranscodingProtocolField: policy.TranscodingProtocolField,
+	})
+}
+
 func (module PlaybackHTTP) Image(writer http.ResponseWriter, request *http.Request) {
 	id := request.PathValue("id")
 	if !validRequiredValue(id, 128) {

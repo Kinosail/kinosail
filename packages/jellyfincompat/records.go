@@ -18,28 +18,27 @@ type FolderUserData struct {
 }
 
 type ItemRecord struct {
-	CanDelete        bool              `json:"CanDelete"`
-	CanDownload      bool              `json:"CanDownload"`
-	Container        string            `json:"Container"`
-	DateCreated      string            `json:"DateCreated"`
-	Genres           []string          `json:"Genres,omitempty"`
-	HasSubtitles     bool              `json:"HasSubtitles"`
-	ID               string            `json:"Id"`
-	ImageTags        *ImageTags        `json:"ImageTags,omitempty"`
-	IsFolder         bool              `json:"IsFolder"`
-	LocationType     string            `json:"LocationType"`
-	MediaSourceCount int               `json:"MediaSourceCount"`
-	MediaSources     [1]any            `json:"MediaSources"`
-	MediaType        string            `json:"MediaType"`
-	Name             string            `json:"Name"`
-	OfficialRating   string            `json:"OfficialRating"`
-	Overview         string            `json:"Overview"`
-	ParentID         string            `json:"ParentId"`
-	ProductionYear   *int              `json:"ProductionYear,omitempty"`
-	ProviderIDs      map[string]string `json:"ProviderIds"`
-	SortName         string            `json:"SortName"`
-	Type             string            `json:"Type"`
-	UserData         UserData          `json:"UserData"`
+	CanDelete      bool              `json:"CanDelete"`
+	CanDownload    bool              `json:"CanDownload"`
+	Container      string            `json:"Container"`
+	DateCreated    string            `json:"DateCreated"`
+	Genres         []string          `json:"Genres,omitempty"`
+	HasSubtitles   bool              `json:"HasSubtitles"`
+	ID             string            `json:"Id"`
+	ImageTags      *ImageTags        `json:"ImageTags,omitempty"`
+	IsFolder       bool              `json:"IsFolder"`
+	LocationType   string            `json:"LocationType"`
+	MediaSources   []map[string]any  `json:"MediaSources,omitempty"`
+	MediaType      string            `json:"MediaType"`
+	Name           string            `json:"Name"`
+	OfficialRating string            `json:"OfficialRating"`
+	Overview       string            `json:"Overview"`
+	ParentID       string            `json:"ParentId"`
+	ProductionYear *int              `json:"ProductionYear,omitempty"`
+	ProviderIDs    map[string]string `json:"ProviderIds"`
+	SortName       string            `json:"SortName"`
+	Type           string            `json:"Type"`
+	UserData       UserData          `json:"UserData"`
 	*EpisodeRecord
 }
 

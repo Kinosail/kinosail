@@ -24,6 +24,18 @@ func (api *jellyfinAPI) newPlaySession(itemID string, viewer viewerProfile, plan
 	return playback.StoreJellyfinPlaySession(&api.plays, now, sharedjellyfin.NewID, session)
 }
 
+func jellyfinCatalogSource(item library.Item, media probeResult) map[string]any {
+	if !sharedjellyfin.HasMediaSources(item) {
+		return nil
+	}
+	plan := PlaybackPlan{Allowed: true, Mode: "direct", Reason: "catalog-summary", SubtitleMode: "none", ColorMode: "preserve"}
+	source, err := sharedjellyfin.CatalogMediaSource(item, media.MediaFacts(item, "", subtitleLanguageFromPath, subtitleRoleFromPath), plan, playerMediaSourcePolicy())
+	if err != nil {
+		return nil
+	}
+	return source
+}
+
 func playerMediaSourcePolicy() sharedjellyfin.MediaSourcePolicy {
 	return sharedjellyfin.MediaSourcePolicy{IncludeToken: true, QueryOnDirectPath: true, TranscodingProtocolField: "TranscodingSubProtocol"}
 }

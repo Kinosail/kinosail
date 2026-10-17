@@ -18,10 +18,6 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Arrival",
           "OfficialRating": "PG-13",
@@ -51,10 +47,6 @@
           "Id": "f2cd31474d9c935e0000000000000000",
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Heat",
           "OfficialRating": "R",
@@ -81,10 +73,6 @@
           "Id": "09fa369d96e1028d0000000000000000",
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Untitled Short",
           "OfficialRating": "",
@@ -148,10 +136,6 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Photo",
           "Name": "Coast",
           "OfficialRating": "",
@@ -177,10 +161,6 @@
           "Id": "ab8b3301e68a9db30000000000000000",
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Audio",
           "Name": "Reach for the Dead",
           "OfficialRating": "",
@@ -215,10 +195,6 @@
         "Id": "09fa369d96e1028d0000000000000000",
         "IsFolder": false,
         "LocationType": "FileSystem",
-        "MediaSourceCount": 1,
-        "MediaSources": [
-          null
-        ],
         "MediaType": "Video",
         "Name": "Untitled Short",
         "OfficialRating": "",
@@ -247,10 +223,6 @@
         },
         "IsFolder": false,
         "LocationType": "FileSystem",
-        "MediaSourceCount": 1,
-        "MediaSources": [
-          null
-        ],
         "MediaType": "Photo",
         "Name": "Coast",
         "OfficialRating": "",
@@ -276,10 +248,6 @@
         "Id": "f2cd31474d9c935e0000000000000000",
         "IsFolder": false,
         "LocationType": "FileSystem",
-        "MediaSourceCount": 1,
-        "MediaSources": [
-          null
-        ],
         "MediaType": "Video",
         "Name": "Heat",
         "OfficialRating": "R",
@@ -306,10 +274,6 @@
         "Id": "ab8b3301e68a9db30000000000000000",
         "IsFolder": false,
         "LocationType": "FileSystem",
-        "MediaSourceCount": 1,
-        "MediaSources": [
-          null
-        ],
         "MediaType": "Audio",
         "Name": "Reach for the Dead",
         "OfficialRating": "",
@@ -352,9 +316,46 @@
       },
       "IsFolder": false,
       "LocationType": "FileSystem",
-      "MediaSourceCount": 1,
       "MediaSources": [
-        null
+        {
+          "Container": "mp4",
+          "DefaultAudioStreamIndex": -1,
+          "ETag": "53ae726daeaed3fa0000000000000000",
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "MediaStreams": [
+            {
+              "Codec": "vtt",
+              "DeliveryMethod": "External",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+              "DisplayTitle": "Subtitle 1",
+              "Index": 1,
+              "IsExternal": true,
+              "IsTextSubtitleStream": true,
+              "SupportsExternalStream": true,
+              "Type": "Subtitle"
+            },
+            {
+              "Codec": "vtt",
+              "DeliveryMethod": "External",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+              "DisplayTitle": "Subtitle 2",
+              "Index": 2,
+              "IsExternal": true,
+              "IsTextSubtitleStream": true,
+              "SupportsExternalStream": true,
+              "Type": "Subtitle"
+            }
+          ],
+          "Name": "Arrival",
+          "Path": "/Videos/53ae726daeaed3fa0000000000000000/stream",
+          "Protocol": "Http",
+          "RunTimeTicks": 0,
+          "Size": 5,
+          "SupportsDirectPlay": true,
+          "SupportsDirectStream": false,
+          "SupportsTranscoding": false,
+          "Type": "Default"
+        }
       ],
       "MediaType": "Video",
       "Name": "Arrival",
@@ -444,10 +445,6 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Arrival",
           "OfficialRating": "PG-13",
@@ -488,10 +485,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · We Is Us",
           "OfficialRating": "",
@@ -522,18 +515,14 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S00E01 · Main Titles",
           "OfficialRating": "",
           "Overview": "",
-          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentId": "e5c1355ac7827864ffffffffffffffff",
           "ParentIndexNumber": 0,
           "ProviderIds": {},
-          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeasonId": "e5c1355ac7827864ffffffffffffffff",
           "SeriesId": "e5c1355ac78278640000000000000000",
           "SeriesName": "Severance",
           "SortName": "S00E01 · Main Titles",
@@ -559,10 +548,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · Good News",
           "OfficialRating": "",
@@ -593,10 +578,6 @@
           "IndexNumber": 2,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E02 · Half Loop",
           "OfficialRating": "TV-14",
@@ -627,10 +608,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S02E01 · Hello Ms Cobel",
           "OfficialRating": "",
@@ -671,18 +648,14 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S00E01 · Main Titles",
           "OfficialRating": "",
           "Overview": "",
-          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentId": "e5c1355ac7827864ffffffffffffffff",
           "ParentIndexNumber": 0,
           "ProviderIds": {},
-          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeasonId": "e5c1355ac7827864ffffffffffffffff",
           "SeriesId": "e5c1355ac78278640000000000000000",
           "SeriesName": "Severance",
           "SortName": "S00E01 · Main Titles",
@@ -708,10 +681,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · Good News",
           "OfficialRating": "",
@@ -764,10 +733,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · Good News",
           "OfficialRating": "",
@@ -798,10 +763,6 @@
           "IndexNumber": 2,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E02 · Half Loop",
           "OfficialRating": "TV-14",
@@ -834,7 +795,7 @@
       "Items": [
         {
           "ChildCount": 1,
-          "Id": "e5c1355ac78278640000000000000000",
+          "Id": "e5c1355ac7827864ffffffffffffffff",
           "IndexNumber": 0,
           "IsFolder": true,
           "MediaType": "Video",
@@ -844,8 +805,8 @@
           "SeriesName": "Severance",
           "Type": "Season",
           "UserData": {
-            "ItemId": "e5c1355ac78278640000000000000000",
-            "Key": "e5c1355ac78278640000000000000000"
+            "ItemId": "e5c1355ac7827864ffffffffffffffff",
+            "Key": "e5c1355ac7827864ffffffffffffffff"
           }
         },
         {
@@ -909,9 +870,143 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 100000000,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T17:00:00Z",
+          "HasSubtitles": false,
+          "Id": "f2cd31474d9c935e0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Heat",
+          "OfficialRating": "R",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 1995,
+          "ProviderIds": {},
+          "SortName": "Heat",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "f2cd31474d9c935e0000000000000000",
+            "Key": "f2cd31474d9c935e0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "webm",
+          "DateCreated": "2026-03-02T04:00:00Z",
+          "HasSubtitles": false,
+          "Id": "09fa369d96e1028d0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Untitled Short",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProviderIds": {},
+          "SortName": "Untitled Short",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "09fa369d96e1028d0000000000000000",
+            "Key": "09fa369d96e1028d0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 3
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId={movies}\u0026fields=MediaSources": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
           "MediaSources": [
-            null
+            {
+              "Container": "mp4",
+              "DefaultAudioStreamIndex": -1,
+              "ETag": "53ae726daeaed3fa0000000000000000",
+              "Id": "53ae726daeaed3fa0000000000000000",
+              "MediaStreams": [
+                {
+                  "Codec": "vtt",
+                  "DeliveryMethod": "External",
+                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+                  "DisplayTitle": "Subtitle 1",
+                  "Index": 1,
+                  "IsExternal": true,
+                  "IsTextSubtitleStream": true,
+                  "SupportsExternalStream": true,
+                  "Type": "Subtitle"
+                },
+                {
+                  "Codec": "vtt",
+                  "DeliveryMethod": "External",
+                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+                  "DisplayTitle": "Subtitle 2",
+                  "Index": 2,
+                  "IsExternal": true,
+                  "IsTextSubtitleStream": true,
+                  "SupportsExternalStream": true,
+                  "Type": "Subtitle"
+                }
+              ],
+              "Name": "Arrival",
+              "Path": "/Videos/53ae726daeaed3fa0000000000000000/stream",
+              "Protocol": "Http",
+              "RunTimeTicks": 0,
+              "Size": 5,
+              "SupportsDirectPlay": true,
+              "SupportsDirectStream": false,
+              "SupportsTranscoding": false,
+              "Type": "Default"
+            }
           ],
           "MediaType": "Video",
           "Name": "Arrival",
@@ -942,9 +1037,23 @@
           "Id": "f2cd31474d9c935e0000000000000000",
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
           "MediaSources": [
-            null
+            {
+              "Container": "mkv",
+              "DefaultAudioStreamIndex": -1,
+              "ETag": "f2cd31474d9c935e0000000000000000",
+              "Id": "f2cd31474d9c935e0000000000000000",
+              "MediaStreams": [],
+              "Name": "Heat",
+              "Path": "/Videos/f2cd31474d9c935e0000000000000000/stream",
+              "Protocol": "Http",
+              "RunTimeTicks": 0,
+              "Size": 5,
+              "SupportsDirectPlay": true,
+              "SupportsDirectStream": false,
+              "SupportsTranscoding": false,
+              "Type": "Default"
+            }
           ],
           "MediaType": "Video",
           "Name": "Heat",
@@ -972,9 +1081,23 @@
           "Id": "09fa369d96e1028d0000000000000000",
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
           "MediaSources": [
-            null
+            {
+              "Container": "webm",
+              "DefaultAudioStreamIndex": -1,
+              "ETag": "09fa369d96e1028d0000000000000000",
+              "Id": "09fa369d96e1028d0000000000000000",
+              "MediaStreams": [],
+              "Name": "Untitled Short",
+              "Path": "/Videos/09fa369d96e1028d0000000000000000/stream",
+              "Protocol": "Http",
+              "RunTimeTicks": 0,
+              "Size": 5,
+              "SupportsDirectPlay": true,
+              "SupportsDirectStream": false,
+              "SupportsTranscoding": false,
+              "Type": "Default"
+            }
           ],
           "MediaType": "Video",
           "Name": "Untitled Short",
@@ -1066,10 +1189,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · We Is Us",
           "OfficialRating": "",
@@ -1100,18 +1219,14 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S00E01 · Main Titles",
           "OfficialRating": "",
           "Overview": "",
-          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentId": "e5c1355ac7827864ffffffffffffffff",
           "ParentIndexNumber": 0,
           "ProviderIds": {},
-          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeasonId": "e5c1355ac7827864ffffffffffffffff",
           "SeriesId": "e5c1355ac78278640000000000000000",
           "SeriesName": "Severance",
           "SortName": "S00E01 · Main Titles",
@@ -1144,18 +1259,14 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S00E01 · Main Titles",
           "OfficialRating": "",
           "Overview": "",
-          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentId": "e5c1355ac7827864ffffffffffffffff",
           "ParentIndexNumber": 0,
           "ProviderIds": {},
-          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeasonId": "e5c1355ac7827864ffffffffffffffff",
           "SeriesId": "e5c1355ac78278640000000000000000",
           "SeriesName": "Severance",
           "SortName": "S00E01 · Main Titles",
@@ -1181,10 +1292,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E01 · Good News",
           "OfficialRating": "",
@@ -1215,10 +1322,6 @@
           "IndexNumber": 2,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E02 · Half Loop",
           "OfficialRating": "TV-14",
@@ -1249,10 +1352,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S02E01 · Hello Ms Cobel",
           "OfficialRating": "",
@@ -1293,10 +1392,6 @@
           "IndexNumber": 1,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S02E01 · Hello Ms Cobel",
           "OfficialRating": "",
@@ -1324,12 +1419,52 @@
     "contentType": "application/json",
     "status": 200
   },
+  "owner GET /Shows/{Severance}/Episodes?seasonId={Severance Season 0}": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T21:00:00Z",
+          "HasSubtitles": false,
+          "Id": "75e02b0f378f3d5b0000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "S00E01 · Main Titles",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac7827864ffffffffffffffff",
+          "ParentIndexNumber": 0,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac7827864ffffffffffffffff",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S00E01 · Main Titles",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "75e02b0f378f3d5b0000000000000000",
+            "Key": "75e02b0f378f3d5b0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 1
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
   "owner GET /Shows/{Severance}/Seasons": {
     "body": {
       "Items": [
         {
           "ChildCount": 1,
-          "Id": "e5c1355ac78278640000000000000000",
+          "Id": "e5c1355ac7827864ffffffffffffffff",
           "IndexNumber": 0,
           "IsFolder": true,
           "MediaType": "Video",
@@ -1339,8 +1474,8 @@
           "SeriesName": "Severance",
           "Type": "Season",
           "UserData": {
-            "ItemId": "e5c1355ac78278640000000000000000",
-            "Key": "e5c1355ac78278640000000000000000"
+            "ItemId": "e5c1355ac7827864ffffffffffffffff",
+            "Key": "e5c1355ac7827864ffffffffffffffff"
           }
         },
         {
@@ -1404,10 +1539,6 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Arrival",
           "OfficialRating": "PG-13",
@@ -1475,9 +1606,23 @@
       "IndexNumber": 1,
       "IsFolder": false,
       "LocationType": "FileSystem",
-      "MediaSourceCount": 1,
       "MediaSources": [
-        null
+        {
+          "Container": "mkv",
+          "DefaultAudioStreamIndex": -1,
+          "ETag": "4e2921a61dcae0a70000000000000000",
+          "Id": "4e2921a61dcae0a70000000000000000",
+          "MediaStreams": [],
+          "Name": "S01E01 · Good News",
+          "Path": "/Videos/4e2921a61dcae0a70000000000000000/stream",
+          "Protocol": "Http",
+          "RunTimeTicks": 0,
+          "Size": 5,
+          "SupportsDirectPlay": true,
+          "SupportsDirectStream": false,
+          "SupportsTranscoding": false,
+          "Type": "Default"
+        }
       ],
       "MediaType": "Video",
       "Name": "S01E01 · Good News",
@@ -1521,10 +1666,6 @@
           },
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "Arrival",
           "OfficialRating": "PG-13",
@@ -1589,10 +1730,6 @@
         },
         "IsFolder": false,
         "LocationType": "FileSystem",
-        "MediaSourceCount": 1,
-        "MediaSources": [
-          null
-        ],
         "MediaType": "Video",
         "Name": "Arrival",
         "OfficialRating": "PG-13",
@@ -1653,9 +1790,46 @@
       },
       "IsFolder": false,
       "LocationType": "FileSystem",
-      "MediaSourceCount": 1,
       "MediaSources": [
-        null
+        {
+          "Container": "mp4",
+          "DefaultAudioStreamIndex": -1,
+          "ETag": "53ae726daeaed3fa0000000000000000",
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "MediaStreams": [
+            {
+              "Codec": "vtt",
+              "DeliveryMethod": "External",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+              "DisplayTitle": "Subtitle 1",
+              "Index": 1,
+              "IsExternal": true,
+              "IsTextSubtitleStream": true,
+              "SupportsExternalStream": true,
+              "Type": "Subtitle"
+            },
+            {
+              "Codec": "vtt",
+              "DeliveryMethod": "External",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+              "DisplayTitle": "Subtitle 2",
+              "Index": 2,
+              "IsExternal": true,
+              "IsTextSubtitleStream": true,
+              "SupportsExternalStream": true,
+              "Type": "Subtitle"
+            }
+          ],
+          "Name": "Arrival",
+          "Path": "/Videos/53ae726daeaed3fa0000000000000000/stream",
+          "Protocol": "Http",
+          "RunTimeTicks": 0,
+          "Size": 5,
+          "SupportsDirectPlay": true,
+          "SupportsDirectStream": false,
+          "SupportsTranscoding": false,
+          "Type": "Default"
+        }
       ],
       "MediaType": "Video",
       "Name": "Arrival",
@@ -1693,10 +1867,6 @@
           "IndexNumber": 2,
           "IsFolder": false,
           "LocationType": "FileSystem",
-          "MediaSourceCount": 1,
-          "MediaSources": [
-            null
-          ],
           "MediaType": "Video",
           "Name": "S01E02 · Half Loop",
           "OfficialRating": "TV-14",

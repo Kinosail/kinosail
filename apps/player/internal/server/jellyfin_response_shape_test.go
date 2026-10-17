@@ -103,11 +103,11 @@ func jellyfinShapeServer(t *testing.T) (http.Handler, []jellyfinShapeSession, ma
 	}
 	return handler, []jellyfinShapeSession{
 		{name: "owner", token: owner, paths: []string{
-			"/UserViews", "/Items", "/Items?includeItemTypes=Episode", "/Items?parentId={movies}", "/Items?parentId={shows}",
+			"/UserViews", "/Items", "/Items?includeItemTypes=Episode", "/Items?parentId={movies}", "/Items?parentId={movies}&fields=MediaSources", "/Items?parentId={shows}",
 			"/Items?parentId={Severance}", "/Items?parentId={Severance Season 1}", "/Items?parentId=missing",
 			"/Items?includeItemTypes=Episode&searchTerm=s0&limit=2&startIndex=1", "/Items?ids={Arrival},{S01E01 · Good News}", "/Items/Latest?limit=4",
 			"/Items/Latest?parentId=missing", "/Items/{Arrival}", "/Users/{user}/Items/{S01E01 · Good News}", "/Items/{Severance}",
-			"/Items/{Severance Season 1}", "/Shows/{Severance}/Seasons", "/Shows/{Severance}/Episodes", "/Shows/{Severance}/Episodes?season=2",
+			"/Items/{Severance Season 1}", "/Shows/{Severance}/Seasons", "/Shows/{Severance}/Episodes", "/Shows/{Severance}/Episodes?season=2", "/Shows/{Severance}/Episodes?seasonId={Severance Season 0}",
 			"/Shows/NextUp", "/UserItems/Resume", "/Persons",
 		}},
 		{name: "teen", token: viewer, paths: []string{"/Items", "/Items?includeItemTypes=Episode", "/Items/Latest", "/Items/{Arrival}"}},
