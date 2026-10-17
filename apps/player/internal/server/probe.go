@@ -16,6 +16,7 @@ type mediaProbe struct {
 	core       *mediaprobe.Probe
 	executable string
 	ffmpeg     string
+	tesseract  string
 	cacheDir   string
 	markers    *markerAnalyzer
 	chapters   *chapterProvider

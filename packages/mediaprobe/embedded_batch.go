@@ -35,7 +35,7 @@ func embeddedCompanions(result Result, item library.Item, stream int, cacheDir s
 		if len(companions) == embeddedBatchLimit-1 {
 			break
 		}
-		if !subtitle.Text || index == stream || index < 0 || index > 65535 || slices.Contains(companions, index) {
+		if !subtitle.Text || subtitle.Converted || index == stream || index < 0 || index > 65535 || slices.Contains(companions, index) {
 			continue
 		}
 		if !privatefile.Exists(embeddedSubtitlePath(cacheDir, item, index), embeddedSubtitleLimit) {

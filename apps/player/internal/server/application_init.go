@@ -20,6 +20,9 @@ func prepareApplicationConfig(config *Config) (context.Context, bool) {
 	if config.FPCalc == "" {
 		config.FPCalc = "fpcalc"
 	}
+	if config.Tesseract == "" {
+		config.Tesseract = "tesseract"
+	}
 	return lifecycle, lifecycle != nil
 }
 

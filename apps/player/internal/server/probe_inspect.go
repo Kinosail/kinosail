@@ -8,7 +8,7 @@ import (
 
 func (probe *mediaProbe) inspect(ctx context.Context, item library.Item) probeResult {
 	probe.core.ConfigureCache(probe.cacheDir)
-	return probe.core.Inspect(ctx, item, probe.enrichment())
+	return probe.core.WithConvertedSubtitles(item, probe.core.Inspect(ctx, item, probe.enrichment()), probe.cacheDir)
 }
 
 func (probe *mediaProbe) cachedFacts(item library.Item) (probeResult, bool) {
@@ -20,10 +20,10 @@ func (probe *mediaProbe) cachedFacts(item library.Item) (probeResult, bool) {
 	if found && probe.markers != nil {
 		result.Markers = probe.markers.Markers(item, result.Markers)
 	}
-	return result, found
+	return probe.core.WithConvertedSubtitles(item, result, probe.cacheDir), found
 }
 
 func (probe *mediaProbe) facts(ctx context.Context, item library.Item) probeResult {
 	probe.core.ConfigureCache(probe.cacheDir)
-	return probe.core.Facts(ctx, item)
+	return probe.core.WithConvertedSubtitles(item, probe.core.Facts(ctx, item), probe.cacheDir)
 }

@@ -20,7 +20,7 @@ The supported self-hosted deployment starts one Kinosail Server container. It do
 | `/cache` | reproducible playback and analysis cache | disposable |
 | `/backups` | encrypted backup files | private; use another disk or NAS when possible |
 
-The container includes or invokes FFmpeg, FFprobe, and `fpcalc` through configured paths. It stores metadata, Profiles, credentials, sessions, viewing state, and the activity journal in the application data boundary. It does not copy Library Content into the application database.
+The container includes or invokes FFmpeg, FFprobe, and `fpcalc` through configured paths. It also invokes `tesseract` to convert image subtitles to text. It stores metadata, Profiles, credentials, sessions, viewing state, and the activity journal in the application data boundary. It does not copy Library Content into the application database.
 
 ## Media data flow
 
