@@ -121,7 +121,7 @@ try:
     if fractional:
         receipt['browserReference'] = browser_reference(source)
     if args.decoded_audio:
-        source_pcm, receipt['decodeCommand'] = decode_source(source)
+        source_pcm, receipt['decodeCommand'] = decode_source(source, args.audio_sample_rate)
     before = source_state(source)
     receipt.update(fixture=metadata, sourceBefore=before)
     with (run / 'build-private.log').open('w') as log:
@@ -222,7 +222,7 @@ try:
                         case['exitCode'] = 1
                 print(json.dumps({k: v for k, v in case.items() if not k.startswith('audio')}), flush=True)
             if args.decoded_audio:
-                receipt['audioCaptures'] = [capture_audio(ROOT, run, api, item, label, point, 3, source_pcm)
+                receipt['audioCaptures'] = [capture_audio(ROOT, run, api, item, label, point, 3, source_pcm, args.audio_sample_rate)
                     for label, point in [('decoded-initial', min(duration - 5, args.resume_seconds + 5)),
                                          ('decoded-later', duration - 4)]]
                 check(all(row['passed'] for row in receipt['audioCaptures']), 'decoded_audio_clock')
