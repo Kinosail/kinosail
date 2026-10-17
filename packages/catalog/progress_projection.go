@@ -54,6 +54,11 @@ func ActiveProgress(values map[string]PlaybackState, profile string, owner bool,
 }
 
 func ProgressHistory(values map[string]PlaybackState, profile string, owner bool, items []library.Item) []library.Item {
+	history, _ := ProgressHistoryPage(values, profile, owner, items, Page{})
+	return history
+}
+
+func ProgressHistoryPage(values map[string]PlaybackState, profile string, owner bool, items []library.Item, page Page) ([]library.Item, int) {
 	type played struct {
 		position int
 		updated  time.Time
@@ -65,11 +70,15 @@ func ProgressHistory(values map[string]PlaybackState, profile string, owner bool
 		}
 	}
 	sort.SliceStable(history, func(left, right int) bool { return history[left].updated.After(history[right].updated) })
-	result := make([]library.Item, len(history))
-	for index, entry := range history {
+	start, end := 0, len(history)
+	if page.Requested {
+		start, end = page.Window(len(history))
+	}
+	result := make([]library.Item, end-start)
+	for index, entry := range history[start:end] {
 		result[index] = items[entry.position]
 	}
-	return result
+	return result, len(history)
 }
 
 func RecentAdminProgress(values map[string]PlaybackState, items []library.Item, names map[string]string) []PlaybackView {

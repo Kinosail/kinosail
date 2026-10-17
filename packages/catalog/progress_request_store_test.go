@@ -148,7 +148,7 @@ func TestRequestProgressStoreMutationsAndHistory(t *testing.T) {
 		values["viewer:"+id] = PlaybackState{Updated: time.Unix(int64(index+1), 0)}
 	}
 	store.Replace(values)
-	if history := store.History(request, append([]library.Item(nil), items...)); len(history) != 21 || history[0].ID != "u" {
+	if history, total := store.History(request, append([]library.Item(nil), items...), Page{}); len(history) != 21 || total != 21 || history[0].ID != "u" {
 		t.Fatalf("history = %#v", history)
 	}
 	listed := map[string]bool{"viewer:a": true}

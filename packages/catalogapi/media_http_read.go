@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 	"slices"
+
+	"github.com/MikeO7/kinosail/packages/catalog"
 )
 
 func (handlers MediaHandlers) audioQueue(writer http.ResponseWriter, request *http.Request) {
@@ -16,9 +18,17 @@ func (handlers MediaHandlers) audioQueue(writer http.ResponseWriter, request *ht
 }
 
 func (handlers MediaHandlers) history(writer http.ResponseWriter, request *http.Request) {
-	items := handlers.Index.VisibleLibrary(request)
-	items = handlers.Progress.History(request, items)
-	apiAction{body: map[string]any{"items": handlers.Progress.ClientItems(request, items)}, status: http.StatusOK}.serve(writer)
+	page, err := catalog.ParsePage(request.URL.Query())
+	if err != nil {
+		apiAction{err: err, status: http.StatusBadRequest}.serve(writer)
+		return
+	}
+	items, total := handlers.Progress.History(request, handlers.Index.VisibleLibrary(request), page)
+	body := map[string]any{"items": handlers.Progress.ClientItems(request, items)}
+	if page.Requested {
+		body["total"], body["offset"], body["limit"] = total, page.Offset, page.Limit
+	}
+	apiAction{body: body, status: http.StatusOK}.serve(writer)
 }
 
 func (handlers MediaHandlers) item(writer http.ResponseWriter, request *http.Request) {
