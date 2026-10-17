@@ -47,7 +47,25 @@ Use the **Quality** control in an adaptive player to choose **Auto** or an avail
 
 Open the **CC** control or **Playback settings** and choose a subtitle track. Choose **Off** to hide subtitles. Kinosail can use embedded tracks and trusted sidecar text subtitles.
 
-Set **Preferred language** in **Settings → Subtitles**. Kinosail selects a matching local track when one is available. Name sidecars with a language code, such as `Movie.en.vtt` or `Movie.fr.srt`.
+Each track name says what the track is:
+
+| Name | Meaning |
+| --- | --- |
+| English | Regular subtitles for the dialogue. |
+| English [CC] | Closed captions. They add sound effects and speaker names for viewers who are deaf or hard of hearing. |
+| English · Foreign dialogue only | Forced subtitles. They show only signs and lines spoken in another language. |
+| English · Commentary | The text of a commentary track. |
+| … · Converted from image | Kinosail read image subtitles with text recognition. Some words can be wrong. |
+
+A name can also include the title from the file, such as **English · Signs & Songs**. The list shows the best track of each kind first. Other tracks of the same kind are under **More tracks**, marked **Built-in** (inside the video file) or **File** (a separate subtitle file).
+
+Set **Preferred language** in **Settings → Subtitles**. Set **Subtitles** in **Settings → Playback**:
+
+- **Automatic** (default) turns on subtitles in your language when the audio is in another language. Forced subtitles always turn on. When the audio track has no language tag, Kinosail treats it as your language.
+- **On** always turns on subtitles in your language.
+- **Off** never turns on subtitles by itself.
+
+Name sidecars with a language code, such as `Movie.en.vtt` or `Movie.fr.srt`.
 
 If the source has multiple audio tracks, open **Audio tracks** and choose a track. Selecting a track can open a compatible playback URL for the chosen stream.
 

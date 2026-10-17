@@ -76,7 +76,7 @@ func jellyfinSidecarStreams(item library.Item, facts MediaFacts, format, query s
 		}
 		for _, track := range facts.Subtitles {
 			if track.External && track.ExternalIndex == index {
-				stream["IsForced"] = track.Forced
+				stream["DisplayTitle"], stream["IsForced"] = jellyfinSubtitleTitle(track), track.Forced
 				if track.Language != "" && track.Language != "und" {
 					stream["Language"] = track.Language
 				}
@@ -85,6 +85,14 @@ func jellyfinSidecarStreams(item library.Item, facts MediaFacts, format, query s
 		streams = append(streams, stream)
 	}
 	return streams
+}
+
+func jellyfinSubtitleTitle(track SubtitleFacts) string {
+	role := track.Role
+	if role == "translation" {
+		role = ""
+	}
+	return SubtitleLabel(SubtitleOption{Language: track.Language, Role: role, Title: track.Title, Forced: track.Forced, Converted: track.Converted, External: track.External})
 }
 
 func jellyfinSubtitleURL(item library.Item, index int, format, query string) string {

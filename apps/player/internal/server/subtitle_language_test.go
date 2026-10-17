@@ -41,10 +41,10 @@ func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) {
 	apiSettings := httptest.NewRecorder()
 	handler.ServeHTTP(apiSettings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/settings", nil))
 
-	if saved.Code != http.StatusSeeOther || !strings.Contains(settings.Body.String(), `name="language" value="fr"`) || !strings.Contains(settings.Body.String(), `href="https://github.com/Kinosail/kinosail/tree/main/apps/subtitles" rel="noreferrer">Kino Subtitles on GitHub</a>`) || strings.Contains(settings.Body.String(), "SubDL") {
+	if saved.Code != http.StatusSeeOther || !strings.Contains(settings.Body.String(), `<option value="fr" selected>French · français</option>`) || !strings.Contains(settings.Body.String(), `href="https://github.com/Kinosail/kinosail/tree/main/apps/subtitles" rel="noreferrer">Kino Subtitles on GitHub</a>`) || strings.Contains(settings.Body.String(), "SubDL") {
 		t.Fatalf("save = %d, settings = %q", saved.Code, settings.Body.String())
 	}
-	if !strings.Contains(player.Body.String(), `<track default kind="subtitles" label="French · Subtitles" data-subtitle-source="`) || !strings.Contains(playback.Body.String(), `"label":"French · Subtitles","source":"/subtitle/`+id+`/2","default":true,"language":"fr"`) {
+	if !strings.Contains(player.Body.String(), `<track default kind="subtitles" label="French · Foreign dialogue only" data-subtitle-source="`) || !strings.Contains(playback.Body.String(), `"label":"French · Foreign dialogue only","source":"/subtitle/`+id+`/1","default":true,"language":"fr"`) || !strings.Contains(playback.Body.String(), `"label":"French","source":"/subtitle/`+id+`/2","default":false,"language":"fr"`) {
 		t.Fatalf("player = %q, playback = %q", player.Body.String(), playback.Body.String())
 	}
 	if strings.Contains(apiSettings.Body.String(), "subtitleProvider") {
@@ -58,7 +58,7 @@ func TestPreferredSubtitleLanguageAndPickerLimitAcrossWebAndAPI(t *testing.T) {
 	handler.ServeHTTP(limitedPlayer, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/watch/"+id, nil))
 	limitedPlayback := httptest.NewRecorder()
 	handler.ServeHTTP(limitedPlayback, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/items/"+id+"/playback", nil))
-	if limitSave.Code != http.StatusSeeOther || strings.Contains(limitedPlayer.Body.String(), "English · Subtitles") || strings.Contains(limitedPlayer.Body.String(), "Dutch · Forced") || strings.Contains(limitedPlayback.Body.String(), `"language":"en"`) || strings.Contains(limitedPlayback.Body.String(), `"language":"nl"`) {
+	if limitSave.Code != http.StatusSeeOther || strings.Contains(limitedPlayer.Body.String(), `label="English"`) || strings.Contains(limitedPlayer.Body.String(), "Dutch") || strings.Contains(limitedPlayback.Body.String(), `"language":"en"`) || strings.Contains(limitedPlayback.Body.String(), `"language":"nl"`) {
 		t.Fatalf("unselected track remained visible: save=%d player=%s API=%s", limitSave.Code, limitedPlayer.Body.String(), limitedPlayback.Body.String())
 	}
 	videoTag := regexp.MustCompile(`<video\b[^>]*>`)
@@ -154,7 +154,7 @@ func TestPreferredSubtitleLanguageRejectsInvalidValuesWithoutChangingSettings(t 
 	}
 	settings := httptest.NewRecorder()
 	handler.ServeHTTP(settings, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/settings", nil))
-	if match := regexp.MustCompile(`name="language" value="([^"]+)"`).FindStringSubmatch(settings.Body.String()); len(match) != 2 || match[1] != "en" {
+	if match := regexp.MustCompile(`<option value="([a-z]+)" selected>`).FindStringSubmatch(settings.Body.String()); len(match) != 2 || match[1] != "en" {
 		t.Fatalf("subtitle language changed after rejected input: %q", settings.Body.String())
 	}
 }

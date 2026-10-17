@@ -87,6 +87,8 @@ type SubtitleTrack struct {
 	Kind     string `json:"kind,omitempty"`
 	Forced   bool   `json:"forced,omitempty"`
 	Embedded bool   `json:"embedded,omitempty"`
+	Group    string `json:"-"`
+	Detail   string `json:"-"`
 }
 
 func NewPlayerData(item library.Item, viewerProfile, playbackSession string) PlayerData {

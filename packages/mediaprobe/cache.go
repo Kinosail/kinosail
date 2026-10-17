@@ -191,7 +191,7 @@ func (probe *Probe) load(item library.Item, version string) (Result, bool) {
 }
 
 func (probe *Probe) save(item library.Item, version string, result Result) {
-	probe.saveEntry(item, probeCacheEntry{Schema: 3, Version: version, Result: result})
+	probe.saveEntry(item, probeCacheEntry{Schema: 4, Version: version, Result: result})
 }
 
 func (probe *Probe) saveEntry(item library.Item, entry probeCacheEntry) {
@@ -214,7 +214,7 @@ func (probe *Probe) cachePath(id string) string {
 }
 
 func validProbeCache(entry probeCacheEntry, version string) bool {
-	return entry.Schema == 3 && entry.Version == version && len(entry.RandomAccessFor) <= 4096 && validProbeResult(entry.Result)
+	return entry.Schema == 4 && entry.Version == version && len(entry.RandomAccessFor) <= 4096 && validProbeResult(entry.Result)
 }
 
 func validProbeResult(result Result) bool {

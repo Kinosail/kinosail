@@ -122,7 +122,7 @@ The following table describes typed application settings. Use the running config
 ## Enum values and validation
 
 - `playback.mode`: `automatic`, `direct`, or `compatible`.
-- `playback.subtitles`: `on` or `off`.
+- `playback.subtitles`: `auto`, `on`, or `off`. Blank means `auto`.
 - `transcoding.quality`: `automatic`, `speed`, or `quality`.
 - `transcoding.accelerator`: `none`, `auto`, `vaapi`, `qsv`, `cuda`, `videotoolbox`, `rkmpp`, `v4l2m2m`, `amf`, or `mf`.
 - `transcoding.codec`: `auto`, `h264`, `hevc`, `av1`, or `vp9`.

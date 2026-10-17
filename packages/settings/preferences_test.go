@@ -23,7 +23,7 @@ func TestChangePlaybackValidationAndEffects(t *testing.T) {
 		{"subtitles", Playback{PlaybackMode: "direct", Subtitles: "sometimes"}, nil, nil, Playback{}, "subtitle preference is invalid"},
 		{"markers", Playback{PlaybackMode: "compatible", Subtitles: "off", AutoSkip: []string{"unknown"}}, nil, nil, Playback{}, "unknown automatic skip marker type"},
 		{"persist", Playback{PlaybackMode: "automatic", Subtitles: "on"}, nil, failed, Playback{PlaybackMode: "automatic", Subtitles: "on"}, "failed"},
-		{"defaults", Playback{PlaybackMode: "automatic", Autoplay: true, AutoSkip: []string{"intro", "intro", "credits"}}, nil, nil, Playback{PlaybackMode: "automatic", Subtitles: "on", Autoplay: true, AutoSkip: []string{"intro", "credits"}}, ""},
+		{"defaults", Playback{PlaybackMode: "automatic", Autoplay: true, AutoSkip: []string{"intro", "intro", "credits"}}, nil, nil, Playback{PlaybackMode: "automatic", Subtitles: "auto", Autoplay: true, AutoSkip: []string{"intro", "credits"}}, ""},
 		{"nil markers", Playback{PlaybackMode: "direct", Subtitles: "off"}, nil, nil, Playback{PlaybackMode: "direct", Subtitles: "off"}, ""},
 	}
 	for _, test := range tests {
@@ -67,7 +67,7 @@ func TestPersistAndRead(t *testing.T) {
 
 func TestPlaybackAndScanDefaults(t *testing.T) {
 	t.Parallel()
-	if PlaybackMode("") != "automatic" || PlaybackMode("direct") != "direct" || !(Playback{}).SubtitlesDefault() || (Playback{Subtitles: "off"}).SubtitlesDefault() || !(Playback{}).AutoplayDefault() || !(Playback{PlaybackMode: "direct", Autoplay: true}).AutoplayDefault() || (Playback{PlaybackMode: "direct"}).AutoplayDefault() {
+	if PlaybackMode("") != "automatic" || PlaybackMode("direct") != "direct" || !(Playback{}).SubtitlesDefault() || (Playback{}).SubtitleMode() != "auto" || (Playback{Subtitles: "on"}).SubtitleMode() != "on" || (Playback{Subtitles: "off"}).SubtitleMode() != "off" || (Playback{Subtitles: "off"}).SubtitlesDefault() || !(Playback{}).AutoplayDefault() || !(Playback{PlaybackMode: "direct", Autoplay: true}).AutoplayDefault() || (Playback{PlaybackMode: "direct"}).AutoplayDefault() {
 		t.Fatal("playback defaults are invalid")
 	}
 	defaults := (Playback{}).AutoSkipDefault()

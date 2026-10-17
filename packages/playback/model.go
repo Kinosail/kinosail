@@ -32,7 +32,7 @@ type AudioFacts struct {
 
 type SubtitleFacts struct {
 	Index, SourceIndex              int
-	Codec, Language, Role           string
+	Codec, Language, Role, Title    string
 	Default, Forced, Text, External bool
 	Converted                       bool
 	ExternalIndex                   int
