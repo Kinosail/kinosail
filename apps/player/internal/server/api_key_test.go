@@ -25,7 +25,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	createRequest.Header.Set("Accept-Language", "ar")
 	create := httptest.NewRecorder()
 	handler.ServeHTTP(create, createRequest)
-	secret := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(create.Body.String())
+	secret := servertest.APIKeySecret(create.Body.String())
 	if create.Code != http.StatusCreated || secret == "" {
 		t.Fatalf("create key = %d %q", create.Code, create.Body.String())
 	}

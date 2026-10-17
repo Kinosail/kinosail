@@ -41,7 +41,7 @@ func (fixture LibraryAPIFixture) RemovingProfileRevokesItsAPIKeys(t *testing.T) 
 	handler := fixture.NewHandler("", dataDir, true)
 	primary := fixture.SignIn(t, handler, "/setup", "name=Primary&password=primary-password")
 	created := cookieForm(t, handler, http.MethodPost, "/settings/api-keys", "name=PrimaryKey&scopes=library", primary)
-	secret := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(created.Body.String())
+	secret := APIKeySecret(created.Body.String())
 	cookieForm(t, handler, http.MethodPost, "/settings/profiles", "name=Second&password=second-password&owner=true", primary)
 	removed := cookieForm(t, handler, http.MethodPost, "/settings/profiles/remove", "id="+fixture.StoredProfileID(t, dataDir, "Primary"), primary)
 	if removed.Code != http.StatusSeeOther {
