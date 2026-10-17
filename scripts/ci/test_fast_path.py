@@ -67,6 +67,18 @@ class FastPathContracts(unittest.TestCase):
         for script in ('scripts/tooling/deploy-nox-app.sh', 'scripts/tooling/watch-nox-main.sh'):
             self.assertIn('Publish verified containers / Advance $app production tags', (ROOT / script).read_text())
 
+    def test_go_tests_run_alone_while_lint_and_vulnerability_checks_share_the_policy_runner(self):
+        ci = (WORKFLOWS / 'ci.yml').read_text()
+        go = ci.split('\n  go:\n', 1)[1].split('\n  e2e:\n', 1)[0]
+        self.assertNotIn('parallel:', go)
+        self.assertNotIn('golangci-lint-action', go)
+        self.assertNotIn('govulncheck', go)
+        repository = ci.split('\n  repository:\n', 1)[1].split('\n  go:\n', 1)[0]
+        self.assertEqual(repository.count('uses: golangci/golangci-lint-action@'), 3)
+        for directory in ('apps/player', 'apps/subtitles', 'packages'):
+            self.assertIn(f'working-directory: {directory}\n', repository)
+        self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.8.0', repository)
+        self.assertIn("jq -r '.[].directory'", repository)
 
 if __name__ == '__main__':
     unittest.main()

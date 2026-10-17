@@ -70,6 +70,28 @@ jobs:
           cache: pnpm
           cache-dependency-path: scripts/quality/pnpm-lock.yaml
       - parallel:
+          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+            with:
+              version: v2.14.0
+              working-directory: apps/player
+              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+            with:
+              version: v2.14.0
+              working-directory: apps/subtitles
+              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
+            with:
+              version: v2.14.0
+              working-directory: packages
+              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+          - name: Check Go vulnerabilities in selected modules
+            env:
+              MODULES: ${{ needs.plan.outputs.modules }}
+            run: |
+              for directory in $(jq -r '.[].directory' <<< "$MODULES"); do
+                go -C "$directory" run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+              done
           - run: make max-loc
           - run: make comments-check
           - run: python3 scripts/quality/check-dependency-integrity.py --browser-only
@@ -116,28 +138,18 @@ jobs:
           printf '%s  %s\n' 188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4 "$RUNNER_TEMP/deep-ffmpeg.deb" | sha256sum --check
           sudo apt-get install -y --no-install-recommends "$RUNNER_TEMP/deep-ffmpeg.deb"
           echo /usr/lib/jellyfin-ffmpeg >> "$GITHUB_PATH"
-      - parallel:
-          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-            with:
-              version: v2.14.0
-              working-directory: ${{ matrix.directory }}
-              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
-          - name: Check the module contract
-            env:
-              DIRECTORY: ${{ matrix.directory }}
-              CONTRACT: ${{ matrix.contract }}
-            run: |
-              read -ra targets <<< "$CONTRACT"
-              make -C "$DIRECTORY" "${targets[@]}"
-          - name: Check Go vulnerabilities
-            env:
-              DIRECTORY: ${{ matrix.directory }}
-            run: go -C "$DIRECTORY" run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
-          - name: Run quick Go tests
-            env:
-              MODULE: ${{ matrix.module }}
-              KINOSAIL_GO_TEST_MODE: quick
-            run: ./scripts/ci/test-go.sh "$MODULE"
+      - name: Check the module contract
+        env:
+          DIRECTORY: ${{ matrix.directory }}
+          CONTRACT: ${{ matrix.contract }}
+        run: |
+          read -ra targets <<< "$CONTRACT"
+          make -C "$DIRECTORY" "${targets[@]}"
+      - name: Run quick Go tests
+        env:
+          MODULE: ${{ matrix.module }}
+          KINOSAIL_GO_TEST_MODE: quick
+        run: ./scripts/ci/test-go.sh "$MODULE"
       - name: Verify certified first-fragment regeneration and cold reopen
         if: matrix.module == 'player'
         timeout-minutes: 3

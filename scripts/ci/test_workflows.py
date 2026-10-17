@@ -75,7 +75,7 @@ sys.exit(1 if contract == os.environ['TEST_COMMAND_FAILURE'] else 0)
         version = re.search(r'ARG JELLYFIN_FFMPEG_VERSION=(\S+)', (ROOT / 'apps/player/Containerfile').read_text()).group(1)
         deb = f'/download/v{version}/jellyfin-ffmpeg8_{version}-noble_amd64.deb'
         go = (WORKFLOWS / 'ci.yml').read_text().split('\n  go:\n', 1)[1].split('\n  e2e:\n', 1)[0]
-        step = go.split('      - name: Install media fixture codecs\n', 1)[1].split('      - parallel:', 1)[0]
+        step = go.split('      - name: Install media fixture codecs\n', 1)[1].split('      - name: Check the module contract', 1)[0]
         self.assertIn('[[ "$MEDIA" == true ]] || exit 0', step)
         self.assertIn('MEDIA: ${{ matrix.media }}', step)
         for text in (deb, 'sha256sum --check', '188fa8b31f7e0ded9dadd1d11d1cd05482a7f03cec4e5c0af80aae21fde44ce4',
