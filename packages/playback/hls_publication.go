@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
-	"time"
 )
 
 type AtomicWriter func(string, []byte) error
@@ -17,15 +16,16 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 	if expected <= 0 || expected > 64 || write == nil {
 		return errors.New("HLS publication configuration is invalid")
 	}
-	ticker := time.NewTicker(25 * time.Millisecond)
-	defer ticker.Stop()
-	completed, published := 0, false
+	changes := watchHLSChanges(ctx, publicationDirectories(directory, qualities))
+	defer changes.Close()
+	completed, published, wake := 0, false, changes.changed
 	for completed < expected {
 		if !published && VariantsReady(source, directory, qualities) {
 			if err := WriteMaster(filepath.Join(directory, "index.m3u8"), transcoder, qualities, independent, write); err != nil {
 				return err
 			}
-			published = true
+			published, wake = true, nil
+			changes.Close()
 			if ready != nil {
 				ready()
 			}
@@ -41,7 +41,7 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 			if err != nil {
 				return err
 			}
-		case <-ticker.C:
+		case <-wake:
 		}
 	}
 	if !VariantsReady(source, directory, qualities) {
@@ -54,4 +54,12 @@ func PublishVariantsObserved(ctx context.Context, source, directory, transcoder 
 		ready()
 	}
 	return nil
+}
+
+func publicationDirectories(directory string, qualities []PlaybackQuality) []string {
+	directories := []string{directory}
+	for _, quality := range qualities {
+		directories = append(directories, filepath.Join(directory, quality.Label))
+	}
+	return directories
 }
