@@ -3,11 +3,11 @@ package server_test
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/MikeO7/kinosail-player/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestTrustedProxyUsesPublicInternetPolicy(t *testing.T) {
@@ -25,7 +25,7 @@ func TestTrustedProxyUsesPublicInternetPolicy(t *testing.T) {
 		t.Fatalf("trusted proxy Owner settings = %d %q", response.Code, response.Body.String())
 	}
 	createdKey := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Library+tool&scopes=library", owner)
-	key := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(createdKey.Body.String())
+	key := servertest.APIKeySecret(createdKey.Body.String())
 	if createdKey.Code != http.StatusCreated || key == "" {
 		t.Fatalf("create API key = %d %q", createdKey.Code, createdKey.Body.String())
 	}

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
+	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
 func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
@@ -21,7 +22,7 @@ func TestScopedAPIKeysAreHashedEnforcedAndRevocable(t *testing.T) {
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, RequireAuth: true})
 	owner := signInTestProfile(t, handler, "/setup", "name=Owner&password=owner-password")
 	create := requestWithCookie(t, handler, http.MethodPost, "/settings/api-keys", "name=Automation&scopes=library", owner)
-	secret := regexp.MustCompile(`ks_[A-Z2-7]+`).FindString(create.Body.String())
+	secret := servertest.APIKeySecret(create.Body.String())
 	if create.Code != http.StatusCreated || secret == "" {
 		t.Fatalf("create key = %d %q", create.Code, create.Body.String())
 	}
