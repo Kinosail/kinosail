@@ -74,9 +74,13 @@ class FastPathContracts(unittest.TestCase):
         self.assertNotIn('golangci-lint-action', go)
         self.assertNotIn('govulncheck', go)
         repository = ci.split('\n  repository:\n', 1)[1].split('\n  go:\n', 1)[0]
-        self.assertEqual(repository.count('uses: golangci/golangci-lint-action@'), 3)
-        for directory in ('apps/player', 'apps/subtitles', 'packages'):
-            self.assertIn(f'working-directory: {directory}\n', repository)
+        self.assertNotIn('golangci-lint-action', repository)
+        self.assertEqual(repository.count('golangci-lint-2.14.0-linux-amd64.tar.gz'), 1)
+        self.assertIn('ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab', repository)
+        self.assertIn('sha256sum --check', repository)
+        self.assertIn('./scripts/quality/check-lint.sh', repository)
+        self.assertIn('KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || \'HEAD~1\' }}', repository)
+        self.assertIn('path: ~/.cache/golangci-lint', repository)
         self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.8.0', repository)
         self.assertIn("jq -r '.[].directory'", repository)
 

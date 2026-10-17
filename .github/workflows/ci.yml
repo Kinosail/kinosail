@@ -69,22 +69,20 @@ jobs:
           node-version: 26
           cache: pnpm
           cache-dependency-path: scripts/quality/pnpm-lock.yaml
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.cache/golangci-lint
+          key: golangci-lint-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: golangci-lint-${{ runner.os }}-
       - parallel:
-          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-            with:
-              version: v2.14.0
-              working-directory: apps/player
-              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
-          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-            with:
-              version: v2.14.0
-              working-directory: apps/subtitles
-              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
-          - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a
-            with:
-              version: v2.14.0
-              working-directory: packages
-              args: --timeout=5m --new-from-rev=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+          - name: Lint new Go issues in every module
+            env:
+              KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
+            run: |
+              curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/golangci-lint.tar.gz" https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-linux-amd64.tar.gz
+              printf '%s  %s\n' ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab "$RUNNER_TEMP/golangci-lint.tar.gz" | sha256sum --check
+              tar -xzf "$RUNNER_TEMP/golangci-lint.tar.gz" -C "$RUNNER_TEMP" golangci-lint-2.14.0-linux-amd64/golangci-lint
+              PATH="$RUNNER_TEMP/golangci-lint-2.14.0-linux-amd64:$PATH" ./scripts/quality/check-lint.sh
           - name: Check Go vulnerabilities in selected modules
             env:
               MODULES: ${{ needs.plan.outputs.modules }}
