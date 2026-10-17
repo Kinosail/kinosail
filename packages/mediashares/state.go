@@ -27,7 +27,7 @@ func (store *Store) RevokeAll() error {
 	if err := store.persist(store.file, state); err != nil {
 		return err
 	}
-	store.state, store.active = state, make(map[string]int)
+	store.state, store.active = state, make(map[string]map[string]int)
 	return nil
 }
 

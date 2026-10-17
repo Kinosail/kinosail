@@ -50,7 +50,7 @@ type Store struct {
 	persist  func(string, any) error
 	find     func(string) (library.Item, bool)
 	snapshot func() ([]library.Item, error)
-	active   map[string]int
+	active   map[string]map[string]int
 	now      func() time.Time
 	random   io.Reader
 	err      error
@@ -67,7 +67,7 @@ type View struct {
 
 func New(dataDir string, dependencies Dependencies) *Store {
 	dependencies, dependencyErr := normalizedDependencies(dependencies)
-	store := &Store{file: filepath.Join(dataDir, "media_shares.json"), persist: dependencies.Persist, find: dependencies.Find, snapshot: dependencies.Snapshot, active: make(map[string]int), now: dependencies.Now, random: dependencies.Random, err: dependencyErr}
+	store := &Store{file: filepath.Join(dataDir, "media_shares.json"), persist: dependencies.Persist, find: dependencies.Find, snapshot: dependencies.Snapshot, active: make(map[string]map[string]int), now: dependencies.Now, random: dependencies.Random, err: dependencyErr}
 	if dependencyErr != nil {
 		return store
 	}

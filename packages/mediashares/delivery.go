@@ -9,6 +9,8 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
+const maxStreamsPerDevice = 4
+
 func (store *Store) Item(request *http.Request, id string) (string, func(), bool) {
 	cookie, _ := request.Cookie("__Host-kinosail_share")
 	if cookie == nil {
@@ -19,24 +21,32 @@ func (store *Store) Item(request *http.Request, id string) (string, func(), bool
 	if store.err != nil {
 		return "", nil, false
 	}
-	session, found := store.state.Sessions[sessionKey(cookie.Value)]
+	device := sessionKey(cookie.Value)
+	session, found := store.state.Sessions[device]
 	share, active := store.state.Shares[session.ShareID]
 	item, exists := store.find(id)
-	if !canStream(found, active, exists, session, share, store.now().Unix(), slices.Contains(share.ItemIDs, id), store.active[share.ID]) {
+	if !canStream(found, active, exists, session, share, store.now().Unix(), slices.Contains(share.ItemIDs, id), store.active[share.ID], device) {
 		return "", nil, false
 	}
-	store.active[share.ID]++
-	return item.Path, sync.OnceFunc(func() { store.release(share.ID) }), true
+	if store.active[share.ID] == nil {
+		store.active[share.ID] = make(map[string]int, share.MaxDevices)
+	}
+	store.active[share.ID][device]++
+	return item.Path, sync.OnceFunc(func() { store.release(share.ID, device) }), true
 }
 
-func (store *Store) release(shareID string) {
+func (store *Store) release(shareID, device string) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
-	if store.active[shareID] > 1 {
-		store.active[shareID]--
+	devices := store.active[shareID]
+	if devices[device] > 1 {
+		devices[device]--
 		return
 	}
-	delete(store.active, shareID)
+	delete(devices, device)
+	if len(devices) == 0 {
+		delete(store.active, shareID)
+	}
 }
 
 func (store *Store) Items(request *http.Request) ([]library.Item, bool) {
@@ -63,8 +73,15 @@ func (store *Store) Items(request *http.Request) ([]library.Item, bool) {
 	return items, len(items) != 0
 }
 
-func canStream(found, active, exists bool, session Session, share Share, now int64, contains bool, streams int) bool {
-	return found && active && exists && session.ExpiresAt > now && share.ExpiresAt > now && contains && streams < share.MaxDevices
+func canStream(found, active, exists bool, session Session, share Share, now int64, contains bool, streaming map[string]int, device string) bool {
+	return found && active && exists && session.ExpiresAt > now && share.ExpiresAt > now && contains && hasStreamSlot(streaming, device, share.MaxDevices)
+}
+
+func hasStreamSlot(streaming map[string]int, device string, maxDevices int) bool {
+	if streams, streamingNow := streaming[device]; streamingNow {
+		return streams < maxStreamsPerDevice
+	}
+	return len(streaming) < maxDevices
 }
 
 func canRead(found, active bool, session Session, share Share, now int64) bool {

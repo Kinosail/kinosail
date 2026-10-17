@@ -18,7 +18,7 @@ func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 				Sessions: map[string]Session{sessionKey(token): {ShareID: shareID, ExpiresAt: now + 1}},
 			},
 			find:   func(id string) (library.Item, bool) { return library.Item{ID: id, Path: "movie"}, id == "item" },
-			active: make(map[string]int), now: func() time.Time { return time.Unix(now, 0) },
+			active: make(map[string]map[string]int), now: func() time.Time { return time.Unix(now, 0) },
 		}
 	}
 	request := capabilityRequest(t, token)
@@ -35,7 +35,7 @@ func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 		"unlisted item": func(store *Store) {
 			store.state.Shares[shareID] = Share{ID: shareID, ItemIDs: []string{"other"}, ExpiresAt: now + 1, MaxDevices: 1}
 		},
-		"at capacity": func(store *Store) { store.active[shareID] = 1 },
+		"another device at capacity": func(store *Store) { store.active[shareID] = map[string]int{indexedHash(1): 1} },
 	} {
 		store := base()
 		mutate(store)
@@ -66,13 +66,13 @@ func TestStoreDeliveryChecksEveryCapabilityState(t *testing.T) {
 	}
 	release()
 	release()
-	if _, again, ok := store.Item(request, "item"); !ok || store.active[shareID] != 1 {
-		t.Fatalf("released slot was not reusable: active=%d", store.active[shareID])
+	if _, again, ok := store.Item(request, "item"); !ok || store.active[shareID][sessionKey(token)] != 1 {
+		t.Fatalf("released slot was not reusable: active=%v", store.active[shareID])
 	} else {
 		again()
 	}
-	if store.active[shareID] != 0 {
-		t.Fatalf("release left active slots = %d", store.active[shareID])
+	if len(store.active) != 0 {
+		t.Fatalf("release left active slots = %v", store.active)
 	}
 }
 

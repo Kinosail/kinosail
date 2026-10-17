@@ -43,9 +43,11 @@ func mediaShareCapabilityBoundaries(t *testing.T, newStore MediaShareFactory) {
 	if !ok {
 		t.Fatal("first active stream was rejected")
 	}
-	if _, _, ok := store.Item(request, "item"); ok {
-		t.Fatal("active stream limit was bypassed")
+	_, overlapping, ok := store.Item(request, "item")
+	if !ok {
+		t.Fatal("overlapping stream from the claimed device was rejected")
 	}
+	overlapping()
 	release()
 	assertMediaShareRanges(t, store)
 	if err := store.Revoke("short"); err == nil {

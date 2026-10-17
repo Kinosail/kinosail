@@ -91,9 +91,11 @@ func TestStoreCapabilityLifecycle(t *testing.T) {
 	if !ok || path != media {
 		t.Fatalf("item = %q, %v", path, ok)
 	}
-	if _, _, ok := store.Item(request, "item"); ok {
-		t.Fatal("active stream limit was bypassed")
+	_, overlapping, ok := store.Item(request, "item")
+	if !ok {
+		t.Fatal("overlapping stream from the claimed device was rejected")
 	}
+	overlapping()
 	release()
 	response := httptest.NewRecorder()
 	store.Serve(response, request)
