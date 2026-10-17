@@ -53,8 +53,19 @@ function recordFailure(error, failedPage = flowProbe.page || activePage) {
   return failureCapture;
 }
 flowProbe.openPage = async context => {
-  await context.tracing.start({screenshots: true, snapshots: true});
+  if (engine !== "firefox") await context.tracing.start({screenshots: true, snapshots: true});
   return flowProbe.page = await context.newPage();
+};
+const isolatedBrowsers = new Set();
+const isolatedFlowBrowser = {
+  browserType: () => browser.browserType(),
+  newContext: async options => {
+    const isolated = await launchBrowser();
+    isolatedBrowsers.add(isolated);
+    const context = await isolated.newContext(options);
+    context.once("close", () => { isolatedBrowsers.delete(isolated); isolated.close().catch(() => {}); });
+    return context;
+  },
 };
 flowProbe.captureFailure = recordFailure;
 flowProbe.captureSnapshot = (name, page) => page.screenshot({path: join(run, name + ".png")});
@@ -63,7 +74,8 @@ process.once("uncaughtException", async error => {
   await browser?.close();
   process.exit(1);
 });
-browser = await ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+const launchBrowser = () => ({chromium, webkit, firefox}[engine]).launch(engine === "chromium" && process.platform === "darwin" ? {channel: "chrome"} : {});
+browser = await launchBrowser();
 const context = authContext = await browser.newContext({baseURL, ignoreHTTPSErrors: false, reducedMotion: "reduce"});
 await context.tracing.start({screenshots:true,snapshots:true});
 loginTracing = true;
@@ -170,6 +182,7 @@ if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of [app==="player"?"/sett
 }
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of ["/settings#%61ccess","/settings#%E0%A4%A"])cases.push({viewport:{width:390,height:844},path,variant:"fragment"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS)for(const path of routes.filter(path=>path.startsWith("/settings#")))for(const viewport of [{width:390,height:844},{width:320,height:800}])cases.push({viewport,path,variant:"slow-css",scale:viewport.width===320?"200%":undefined});
+if(process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:390,height:844},path:app==="player"?"/?view=movies":"/?view=library",variant:"slow-css"});
 if(process.env.KINOSAIL_LAYOUT_VARIANTS&&app==="player")for(const viewport of [{width:320,height:800},{width:390,height:844},{width:844,height:390}])cases.push({viewport,path:"/settings#access",variant:"saved-mobile-tabs",scale:"200%",savedTabs:true});
 if(process.env.KINOSAIL_LAYOUT_APPLE_SHIM&&app==="player")cases.push({viewport:{width:768,height:1024},path:`/watch/${item.id}?playback=direct`,variant:"desktop-UA-iPad-shim",apple:true});
 if(app==="subtitles"&&process.env.KINOSAIL_LAYOUT_VARIANTS)cases.push({viewport:{width:320,height:800},path:"/?view=library",variant:"text-200",scale:"200%"});
@@ -263,8 +276,9 @@ try {
     if(traced)await context.tracing.stop({path:join(run,name+"-trace.zip")});
     await context.close();
   }
-  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
+  if(process.env.KINOSAIL_LAYOUT_FLOWS){phase="measure-flows";await measureFlows(engine==="firefox"?isolatedFlowBrowser:browser,{baseURL,storageState:auth},app==="player"?`/watch/${item.id}?playback=direct`:null,routes.find(path=>path.startsWith("/subtitles/inspect/")),flows,flowProbe);}
 } finally {
+  await Promise.all([...isolatedBrowsers].map(isolated => isolated.close().catch(() => {})));
   await writeFile(join(run, "measurements.json"), JSON.stringify({revision: process.env.KINOSAIL_TEST_REVISION, app, engine,browserVersion:browser.version(),
     result: "measurement", command: "python3 scripts/testing/test-layout-stability-local.py", data: "Synthetic media and account; delayed real font/bundle/image responses", reports,flows}, null, 2));
 }

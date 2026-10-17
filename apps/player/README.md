@@ -60,7 +60,7 @@ Jellyfin compatibility is off by default and stays behind its integration flag. 
 
 Follow [Connect phones, TVs, and Jellyfin apps](docs/getting-started/connect-devices.md) for the complete Server URL, trusted HTTPS provider, and troubleshooting steps.
 
-Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Then create a ten-minute pairing code and add the [Kinosail Home Assistant integration](https://github.com/Kinosail/kinosail-home-assistant). The connection can browse Library Content and control active Kinosail browser players. Media streams directly from this Server. Turning the setting off hides every Home Assistant route and revokes every paired connection. Operators can manage the same setting with `KINOSAIL_HOME_ASSISTANT_ENABLED`.
+Home Assistant support is off by default. Enable it in the setup wizard or Owner settings. Then create a ten-minute pairing code and add the [Kinosail Home Assistant integration](https://github.com/Kinosail/kinosail-home-assistant). Each device can try 10 pairing codes per minute. After 100 incorrect codes, the Server cancels every open pairing code. Create a new code if this happens. The connection can browse Library Content and control active Kinosail browser players. Media streams directly from this Server. Turning the setting off hides every Home Assistant route and revokes every paired connection. Operators can manage the same setting with `KINOSAIL_HOME_ASSISTANT_ENABLED`.
 
 Turn public remote viewing off without changing local access:
 

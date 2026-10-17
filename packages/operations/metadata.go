@@ -4,9 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"reflect"
-	"slices"
 	"sync"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -85,16 +83,11 @@ func fetchMissing(ctx context.Context, config MetadataRefresh, missing []library
 		wait.Add(1)
 		go func(group []library.Item) {
 			defer func() { <-slots; wait.Done() }()
-			groupUpdates, err := fetchMetadataGroup(ctx, config, group)
+			outcome := fetchMetadataGroup(ctx, config, group)
 			updateMu.Lock()
 			defer updateMu.Unlock()
-			if err != nil && ctx.Err() == nil {
-				failed += len(group)
-				config.Misses.Fail(group[0])
-			} else if err == nil {
-				config.Misses.Clear(group[0])
-			}
-			for id, record := range groupUpdates {
+			failed += outcome.record(ctx, config.Misses, group)
+			for id, record := range outcome.updates {
 				updates[id] = record
 			}
 		}(group)
@@ -124,63 +117,6 @@ func groupMetadata(items []library.Item) [][]library.Item {
 		groups[position] = append(groups[position], item)
 	}
 	return groups
-}
-
-func fetchMetadataGroup(ctx context.Context, config MetadataRefresh, group []library.Item) (map[string]metadata.Record, error) {
-	results := make([]metadata.Result, len(group))
-	first, err := config.Resolve(ctx, group[0])
-	if err != nil {
-		return nil, err
-	}
-	results[0] = first
-	for position := 1; position < len(group); position++ {
-		record, found := config.Record(group[position].ID)
-		if found && metadata.Valid(record) {
-			record.ShowTitle, record.ShowYear, record.ShowPlot, record.ShowArtwork, record.ShowBackdrop = first.Record.ShowTitle, first.Record.ShowYear, first.Record.ShowPlot, first.Record.ShowArtwork, first.Record.ShowBackdrop
-			record.BackdropChecked = first.Record.BackdropChecked
-			record.ShowProviderIDs = maps.Clone(first.Record.ShowProviderIDs)
-			record.ShowCast = append([]library.Person(nil), first.Record.ShowCast...)
-			record.CastFetched = first.Record.CastFetched
-			results[position] = metadata.Result{Record: record}
-			continue
-		}
-		results[position], err = config.ResolveEpisode(ctx, group[position], first.Record)
-		if err != nil {
-			return nil, err
-		}
-	}
-	updates := make(map[string]metadata.Record, len(group))
-	showArtwork, showBackdrop, backdropChecked := "", "", false
-	var downloadErr error
-	for position, item := range group {
-		var missingImages []string
-		for _, image := range results[position].Images {
-			if config.replacesImage(image) {
-				missingImages = append(missingImages, image.Target)
-			}
-		}
-		record, err := results[position].Record, error(nil)
-		if previous, found := config.Record(item.ID); !found || len(missingImages) > 0 || !reflect.DeepEqual(previous, record) {
-			record, err = config.Download(ctx, results[position])
-		}
-		if err != nil {
-			downloadErr = err
-		}
-		if position == 0 {
-			showArtwork = record.ShowArtwork
-			showBackdrop = record.ShowBackdrop
-			backdropChecked = record.BackdropChecked
-		} else if item.Show != "" {
-			record.ShowArtwork = showArtwork
-			record.ShowBackdrop = showBackdrop
-			record.BackdropChecked = backdropChecked
-		}
-		if previous, found := config.Record(item.ID); found && reflect.DeepEqual(previous, record) && metadataApplied(item, record) && !slices.ContainsFunc(missingImages, metadata.RegularFile) {
-			continue
-		}
-		updates[item.ID] = record
-	}
-	return updates, downloadErr
 }
 
 func metadataApplied(item library.Item, record metadata.Record) bool {

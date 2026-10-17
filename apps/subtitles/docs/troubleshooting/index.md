@@ -37,7 +37,7 @@ For deeper analysis, turn on the profiling socket. Profiling is off by default. 
 
 1. Add `KINOSAIL_PROFILING: "1"` to the `environment` list of the `kinosail` service in a Compose override file. Compose does not forward variables that a Compose file does not declare.
 2. Restart the Server. The log shows `profiling socket listening`.
-3. Find the socket at `profiling/pprof.sock` in the data directory. Only the Server account can open it.
+3. Find the socket at `profiling/pprof.sock` in the data directory. Only the Server account can open it. If that path is longer than 103 characters, the Server uses a private temporary folder instead. The `socket` field of the `profiling socket listening` log line shows that path inside the container.
 4. On the host, as an account that can open the socket, save a profile. For a rootless Podman volume, run the command inside `podman unshare`.
 
    ```sh

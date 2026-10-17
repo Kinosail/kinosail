@@ -2,7 +2,6 @@ package markers
 
 import (
 	"context"
-	"errors"
 	"strconv"
 	"strings"
 
@@ -72,12 +71,12 @@ func (analyzer *Analyzer) analyzeCredits(ctx context.Context, items []library.It
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		if item.Kind != "video" || !analyzer.targeted(item) || analyzer.failed[item.ID] {
+		if item.Kind != "video" || !analyzer.targeted(item) || analyzer.failed[item.ID] || analyzer.deferred[item.ID] {
 			continue
 		}
 		media := analyzer.inspect(ctx, item)
-		if !finite(media.Duration) || media.Duration <= 0 {
-			if err := analyzer.itemFailed(ctx, item, errors.New("playback segment media duration is unavailable")); err != nil {
+		if err := mediaUnavailable(media); err != nil {
+			if err := analyzer.itemFailed(ctx, item, err); err != nil {
 				return err
 			}
 			continue

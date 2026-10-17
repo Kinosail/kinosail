@@ -82,12 +82,12 @@ func browseNumber(value string) (int, error) {
 	return int(number), err
 }
 
-func playable(view *library.View) []*library.Item {
+func playable(view *library.View, index Library) []*library.Item {
 	return library.Derive(view, "dlna.playable", func(view *library.View) []*library.Item {
 		items := view.Items()
 		result := make([]*library.Item, 0, len(items))
 		for position := range items {
-			if playableKind(items[position]) {
+			if playableKind(items[position]) && index.Safe(items[position].Path) {
 				result = append(result, &items[position])
 			}
 		}
@@ -107,11 +107,11 @@ func (server server) browse(writer http.ResponseWriter, request *http.Request) {
 	}
 	arguments, err := readBrowseRequest(request, writer)
 	snapshot, _ := server.config.Library.Library()
-	items := playable(snapshot.View(library.NewPolicy(true, "", nil)))
+	items := playable(snapshot.View(library.NewPolicy(true, "", nil)), server.config.Library)
 	var page []*library.Item
 	total := 0
 	if err == nil {
-		page, total, err = browsePage(snapshot, items, arguments)
+		page, total, err = browsePage(snapshot, items, arguments, server.config.Library)
 	}
 	var failure browseError
 	if errors.As(err, &failure) {
@@ -145,7 +145,7 @@ func returnedContainer(arguments browseRequest) int {
 	return 0
 }
 
-func browsePage(snapshot *library.Snapshot, items []*library.Item, arguments browseRequest) ([]*library.Item, int, error) {
+func browsePage(snapshot *library.Snapshot, items []*library.Item, arguments browseRequest, index Library) ([]*library.Item, int, error) {
 	if arguments.ObjectID == "0" {
 		if arguments.BrowseFlag == "BrowseMetadata" {
 			return nil, 1, nil
@@ -158,7 +158,7 @@ func browsePage(snapshot *library.Snapshot, items []*library.Item, arguments bro
 		return items[start:end], len(items), nil
 	}
 	item, found := snapshot.Find(arguments.ObjectID)
-	if !found || !playableKind(item) {
+	if !found || !playableKind(item) || !index.Safe(item.Path) {
 		return nil, 0, errNoSuchObject
 	}
 	if arguments.BrowseFlag == "BrowseDirectChildren" {

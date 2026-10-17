@@ -41,7 +41,7 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 			NavigationPrimary: shell.NavigationPrimary, NavigationMore: shell.NavigationMore, UpdateAvailable: shell.UpdateAvailable, CommandMenu: true,
 		}
 		if !fragment && page.Query == "" && page.View == "all" && page.Offset == 0 {
-			populateLanding(request, source, source.Library(request), page.AllItems(), &data)
+			populateLanding(request, source, source.Library(request), page, &data)
 		}
 		if renderErr := render(view, writer, request, data, fragment); renderErr != nil {
 			slog.Error("render home", "error", renderErr)
@@ -49,10 +49,10 @@ func NewHandler[Show, Resume, Playlist, Collection any](source Source[Show, Resu
 	}
 }
 
-func populateLanding[Show, Resume, Playlist, Collection any](request *http.Request, source Source[Show, Resume, Playlist, Collection], view *library.View, items []library.Item, page *Page[Show, Resume, Playlist, Collection]) {
+func populateLanding[Show, Resume, Playlist, Collection any](request *http.Request, source Source[Show, Resume, Playlist, Collection], view *library.View, result catalog.Result, page *Page[Show, Resume, Playlist, Collection]) {
 	cached := libraryLanding(view, source.HasArtwork)
 	page.HomeArtwork, page.HomeShowTitle = cached.artwork, cached.titles
-	personal := source.Personal(request, items)
+	personal := source.Personal(request, result, view)
 	page.Continue, page.List = personal.Continue, personal.List
 	page.Played = RecentlyPlayed(personal.Played, page.HomeArtwork, page.HomeShowTitle)
 	page.Recent = cached.recent

@@ -33,6 +33,10 @@ func MissKey(item library.Item) string {
 	if item.Show != "" {
 		return item.Library + "\x00" + item.Show + "\x00" + item.ShowTitle
 	}
+	return itemMissKey(item)
+}
+
+func itemMissKey(item library.Item) string {
 	return item.ID + "\x00" + item.Title
 }
 
@@ -42,17 +46,29 @@ func (misses *Misses) Blocked(item library.Item) bool {
 	}
 	misses.mu.Lock()
 	defer misses.mu.Unlock()
-	entry, found := misses.entries[MissKey(item)]
-	return found && misses.now().Before(entry.until)
+	now := misses.now()
+	for _, key := range []string{MissKey(item), itemMissKey(item)} {
+		if entry, found := misses.entries[key]; found && now.Before(entry.until) {
+			return true
+		}
+	}
+	return false
 }
 
 func (misses *Misses) Fail(item library.Item) {
+	misses.fail(MissKey(item))
+}
+
+func (misses *Misses) FailItem(item library.Item) {
+	misses.fail(itemMissKey(item))
+}
+
+func (misses *Misses) fail(key string) {
 	if misses == nil {
 		return
 	}
 	misses.mu.Lock()
 	defer misses.mu.Unlock()
-	key := MissKey(item)
 	delay := firstMissBackoff
 	if previous, found := misses.entries[key]; found {
 		delay = min(maximumMissBackoff, previous.delay*2)
@@ -69,5 +85,15 @@ func (misses *Misses) Clear(item library.Item) {
 	}
 	misses.mu.Lock()
 	delete(misses.entries, MissKey(item))
+	delete(misses.entries, itemMissKey(item))
+	misses.mu.Unlock()
+}
+
+func (misses *Misses) Reset() {
+	if misses == nil {
+		return
+	}
+	misses.mu.Lock()
+	clear(misses.entries)
 	misses.mu.Unlock()
 }

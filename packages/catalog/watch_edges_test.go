@@ -145,11 +145,11 @@ func TestPollRescansChangedDirectoriesOnlyWhileTheWatcherIsUnavailable(t *testin
 	}
 	index := NewIndex(t.Context(), []ScanRoot{{Path: root, Namespace: "Movies"}}, "", time.Hour, nil)
 	index.pollInterval, index.watchStability = 5*time.Millisecond, 5*time.Millisecond
-	if polled := index.pollRoots(); len(polled) != 1 {
+	if polled, _ := index.pollRoots(); len(polled) != 1 {
 		t.Fatalf("roots polled without a watcher = %#v", polled)
 	}
 	index.setMonitoring(true, nil)
-	if polled := index.pollRoots(); len(polled) != 0 {
+	if polled, _ := index.pollRoots(); len(polled) != 0 {
 		t.Fatalf("local roots polled while the watcher is healthy = %#v", polled)
 	}
 	index.setMonitoring(false, errors.New("watch failed"))

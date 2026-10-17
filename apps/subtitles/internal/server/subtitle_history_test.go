@@ -17,7 +17,7 @@ func TestSubtitleHistoryMigratesLatestProviderInstall(t *testing.T) {
 	t.Parallel()
 	media, dataDir := t.TempDir(), t.TempDir()
 	writeTestFile(t, filepath.Join(media, "Arrival.mp4"), "video")
-	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: dataDir, CacheDir: t.TempDir()})
+	handler := server.New(server.Config{SubtitleApp: true, MediaDir: media, DataDir: t.TempDir(), CacheDir: t.TempDir()})
 	home := requestApp(t, handler, http.MethodGet, "/", "")
 	match := regexp.MustCompile(`/subtitles/inspect/([a-f0-9]+)`).FindStringSubmatch(home.Body.String())
 	if len(match) != 2 {

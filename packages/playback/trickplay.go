@@ -3,11 +3,13 @@ package playback
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
 	"golang.org/x/sync/singleflight"
@@ -24,9 +26,18 @@ type TrickplayDependencies struct {
 	RecipePolicy  HLSRecipePolicy
 }
 
+const (
+	trickplayTimeout  = 15 * time.Second
+	trickplayMissTime = 30 * time.Second
+)
+
+var errEmptyTrickplayFrame = errors.New("encoder wrote an empty frame")
+
 type Trickplay struct {
 	dependencies TrickplayDependencies
 	generating   singleflight.Group
+	mu           sync.Mutex
+	misses       map[string]time.Time
 }
 
 func NewTrickplay(dependencies TrickplayDependencies) (*Trickplay, error) {
@@ -67,7 +78,15 @@ func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request
 	second -= second % 10
 	target := filepath.Join(frames.dependencies.Cache, "trickplay", item.ID, strconv.Itoa(second)+".jpg")
 	if !Fresh(target, item.Path) {
-		if err := frames.generate(request.Context(), item.Path, target, second); err != nil {
+		err := errTrickplayMiss
+		if !frames.missed(target) {
+			err = frames.generate(request.Context(), item.ID, item.Path, target, second)
+		}
+		if errors.Is(err, errTrickplayMiss) {
+			frames.dependencies.NotFound(writer, request)
+			return
+		}
+		if err != nil {
 			frames.dependencies.Unavailable(writer, request)
 			return
 		}
@@ -76,9 +95,14 @@ func (frames *Trickplay) Serve(writer http.ResponseWriter, request *http.Request
 	http.ServeFile(writer, request, target)
 }
 
-func (frames *Trickplay) generate(ctx context.Context, source, target string, second int) error {
-	_, err, _ := frames.generating.Do(target, func() (any, error) {
-		release, acquireErr := frames.dependencies.Acquire(ctx)
+func (frames *Trickplay) generate(ctx context.Context, id, source, target string, second int) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	result := frames.generating.DoChan(target, func() (any, error) {
+		flight, cancel := context.WithTimeout(context.WithoutCancel(ctx), trickplayTimeout)
+		defer cancel()
+		release, acquireErr := frames.dependencies.Acquire(flight)
 		if acquireErr != nil {
 			return nil, acquireErr
 		}
@@ -86,9 +110,20 @@ func (frames *Trickplay) generate(ctx context.Context, source, target string, se
 		if Fresh(target, source) {
 			return nil, nil
 		}
-		return nil, GenerateTrickplay(ctx, frames.dependencies.Cache, frames.dependencies.FFmpeg, source, target, second)
+		err := GenerateTrickplay(flight, frames.dependencies.Cache, frames.dependencies.FFmpeg, source, target, second)
+		if !encoderMiss(flight, err) {
+			return nil, err
+		}
+		frames.rememberMiss(target)
+		slog.LogAttrs(flight, slog.LevelWarn, "trickplay frame unavailable", slog.String("item_id", id), slog.Int("second", second), slog.String("failure_class", encoderMissClass(err)))
+		return nil, errTrickplayMiss
 	})
-	return err
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case outcome := <-result:
+		return outcome.Err
+	}
 }
 
 func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
@@ -115,9 +150,12 @@ func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, se
 		_ = os.Remove(temporary)
 		return err
 	}
-	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, trickplayTimeout)
 	defer cancel()
 	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
+	if err == nil {
+		err = nonEmptyFrame(temporary)
+	}
 	if err == nil {
 		err = os.Rename(temporary, target)
 	}

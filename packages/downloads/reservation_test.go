@@ -21,11 +21,8 @@ func TestDownloadsReserveExactlyOneSlot(t *testing.T) {
 			ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 			defer cancel()
 			root := t.TempDir()
-			media, executable := filepath.Join(root, "film.mp4"), filepath.Join(root, "ffmpeg")
+			media, executable := filepath.Join(root, "film.mp4"), linkFakeEncoder(t, root, "media")
 			if err := os.WriteFile(media, []byte("media"), 0o600); err != nil {
-				t.Fatal(err)
-			}
-			if err := os.WriteFile(executable, []byte("#!/bin/sh\nfor output; do :; done\nprintf media > \"$output\"\n"), 0o700); err != nil { //nolint:gosec // This private temporary fixture must be executable by the test.
 				t.Fatal(err)
 			}
 			governor := workload.New(1)

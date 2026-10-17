@@ -155,18 +155,6 @@ func (store *RequestProgressStore) SetReaderPosition(request *http.Request, id s
 	return err
 }
 
-func (store *RequestProgressStore) Active(request *http.Request, items []library.Item) []ResumeItem {
-	store.mu.RLock()
-	defer store.mu.RUnlock()
-	viewer := store.viewer(request)
-	return ActiveProgress(store.values, viewer.ID, viewer.Owner, items)
-}
-
-func (store *RequestProgressStore) Recent(request *http.Request, items []library.Item) []library.Item {
-	items = store.History(request, items)
-	return items[:min(20, len(items))]
-}
-
 func (store *RequestProgressStore) History(request *http.Request, items []library.Item) []library.Item {
 	store.mu.RLock()
 	defer store.mu.RUnlock()

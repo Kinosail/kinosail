@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/MikeO7/kinosail/packages/documentdb"
 )
 
 func TestWriteRejectsInvalidInputsBeforeOutput(t *testing.T) {
@@ -97,7 +99,8 @@ func TestWritePropagatesDatabaseFailuresBeforeOutput(t *testing.T) {
 
 func testService(t *testing.T, open func(string) (Database, error), validate func([]byte) error) *Service {
 	t.Helper()
-	service, err := New(Config{"kinosail.db", open, validate})
+	config := documentdb.PlayerConfig()
+	service, err := New(Config{DatabaseFilename: "kinosail.db", Documents: config.Documents, EntryDocuments: config.EntryDocuments, OpenDatabase: open, ValidateSettings: validate})
 	if err != nil {
 		t.Fatal(err)
 	}

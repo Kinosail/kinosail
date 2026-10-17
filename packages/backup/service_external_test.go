@@ -5,10 +5,18 @@ import (
 	"io"
 
 	sharedbackup "github.com/MikeO7/kinosail/packages/backup"
+	"github.com/MikeO7/kinosail/packages/documentdb"
+)
+
+var (
+	testDocuments      = documentdb.PlayerDocuments()
+	testEntryDocuments = documentdb.PlayerConfig().EntryDocuments
 )
 
 var testArchive = archiveHarness{sharedbackup.MustNew(sharedbackup.Config{
 	DatabaseFilename: "kinosail.db",
+	Documents:        testDocuments,
+	EntryDocuments:   testEntryDocuments,
 	OpenDatabase: func(string) (sharedbackup.Database, error) {
 		return nil, errors.New("unexpected test database")
 	},

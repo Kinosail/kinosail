@@ -3,14 +3,19 @@ package library
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"slices"
+	"strings"
 	"sync"
 )
 
-func (scanner *Scanner) Changed(ctx context.Context) map[string]int64 {
+func (scanner *Scanner) Changed(ctx context.Context, within ...string) map[string]int64 {
 	scanner.mu.Lock()
 	known := make(map[string]int64, len(scanner.dirs))
 	for path, directory := range scanner.dirs {
-		known[path] = directory.modified
+		if len(within) == 0 || slices.ContainsFunc(within, func(subtree string) bool { return pathWithin(path, subtree) }) {
+			known[path] = directory.modified
+		}
 	}
 	scanner.mu.Unlock()
 	paths := make(chan string)
@@ -41,4 +46,8 @@ func (scanner *Scanner) Changed(ctx context.Context) map[string]int64 {
 	close(paths)
 	workers.Wait()
 	return changed
+}
+
+func pathWithin(path, subtree string) bool {
+	return path == subtree || strings.HasPrefix(path, strings.TrimSuffix(subtree, string(filepath.Separator))+string(filepath.Separator))
 }

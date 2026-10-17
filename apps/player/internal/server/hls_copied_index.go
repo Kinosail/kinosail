@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 
 	"github.com/MikeO7/kinosail/packages/library"
@@ -12,7 +13,10 @@ import (
 
 const maximumCopiedHLSKeys = 4096
 
-var errCopiedHLSIndex = errors.New("copied HLS timeline is unavailable")
+var (
+	errCopiedHLSIndex    = errors.New("copied HLS timeline is unavailable")
+	errCopiedHLSReplaced = fmt.Errorf("%w: cache file was replaced while it was read", errCopiedHLSIndex)
+)
 
 type copiedHLSKey = mediaprobe.H264Key
 

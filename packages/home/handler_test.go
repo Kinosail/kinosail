@@ -33,7 +33,7 @@ func (source *testSource) Catalog(*http.Request, []library.Show, catalog.Result,
 	return source.cards
 }
 
-func (source *testSource) Personal(*http.Request, []library.Item) PersonalProjection[string] {
+func (source *testSource) Personal(*http.Request, catalog.Result, *library.View) PersonalProjection[string] {
 	source.personalCalls++
 	return source.personal
 }

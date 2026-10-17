@@ -68,7 +68,7 @@ JSON requests must contain one object. Unknown fields are rejected. Request bodi
 
 ## Errors and compatibility
 
-Errors use a JSON object with an `error` string. Common statuses are `400` for invalid input, `401` for missing or invalid credentials, `403` for a policy denial, `404` for an unknown resource, `409` for a state or configuration conflict, `429` for throttled login attempts, and `500` or `503` for Server failure or unavailable work.
+Errors use a JSON object with an `error` string. Common statuses are `400` for invalid input, `401` for missing or invalid credentials, `403` for a policy denial, `404` for an unknown resource, `409` for a state or configuration conflict, `429` for throttled login or pairing attempts, and `500` or `503` for Server failure or unavailable work.
 
 The bundled web interface and optional Jellyfin-compatible surface call the same application operations as the API. Jellyfin protocol coverage is tested for supported flows; it is not a certification of every physical client.
 

@@ -1,15 +1,21 @@
 package markers
 
 import (
+	"bytes"
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 type extractionCounter struct {
@@ -45,9 +51,12 @@ func countingAnalyzer(t testing.TB, failing string) (*Analyzer, *extractionCount
 		counter.held.Add(1)
 		return func() { counter.held.Add(-1) }, nil
 	}})
-	analyzer.SetProbe(func(context.Context, library.Item) Media {
+	analyzer.SetProbe(func(ctx context.Context, _ library.Item) Media {
 		if counter.held.Load() != 0 {
 			t.Error("media inspection ran while holding a background slot")
+		}
+		if !workload.BackgroundPriority(ctx) {
+			t.Error("media inspection ran at playback priority")
 		}
 		return Media{Duration: 7200}
 	})
@@ -136,5 +145,62 @@ func TestOneFailingMovieIsRecordedWithoutRepeatingTheGroup(t *testing.T) {
 	runChanged(t, analyzer, items)
 	if counter.total() != before {
 		t.Fatalf("unchanged library reran %d extractions", counter.total()-before)
+	}
+}
+
+func TestInterruptedInspectionIsRetriedWhileBrokenMediaBacksOff(t *testing.T) {
+	for _, scenario := range []struct {
+		name    string
+		media   Media
+		pending bool
+	}{
+		{"interrupted", Media{Interrupted: true}, true},
+		{"broken", Media{}, false},
+	} {
+		for _, show := range []string{"", "Show"} {
+			t.Run(scenario.name+"/"+cmp.Or(show, "movies"), func(t *testing.T) {
+				analyzer, _ := countingAnalyzer(t, "")
+				items := libraryMovies(4)
+				for index := range items {
+					items[index].Show, items[index].Season, items[index].Episode = show, 1, index+1
+				}
+				unavailable := items[1]
+				var recovered atomic.Bool
+				analyzer.SetProbe(func(_ context.Context, item library.Item) Media {
+					if item.ID == unavailable.ID && !recovered.Load() {
+						return scenario.media
+					}
+					return Media{Duration: 7200}
+				})
+				var logs bytes.Buffer
+				previous := slog.Default()
+				slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+				runChanged(t, analyzer, items)
+				slog.SetDefault(previous)
+				deferred := map[bool]string{true: `"failed":0,"deferred":1`, false: `"failed":1,"deferred":0`}[scenario.pending]
+				if !strings.Contains(logs.String(), `"level":"WARN","msg":"playback marker analysis skipped titles","operation":"markers.analyze","outcome":"partial",`+deferred) {
+					t.Errorf("analysis log = %s", logs.String())
+				}
+				pending := analyzer.changedItems(items)
+				retried := slices.ContainsFunc(pending, func(item library.Item) bool { return item.ID == unavailable.ID })
+				if record := analyzer.records[unavailable.ID]; retried != scenario.pending || (record.Failed != 0) == scenario.pending {
+					t.Fatalf("pending=%t record=%#v", retried, record)
+				}
+				if reloaded := NewAnalyzer(Config{DataDir: filepathDir(analyzer.file)}); len(reloaded.changedItems(items)) != len(pending) {
+					t.Fatalf("reloaded pending = %d, want %d", len(reloaded.changedItems(items)), len(pending))
+				}
+				if !scenario.pending {
+					return
+				}
+				recovered.Store(true)
+				runChanged(t, analyzer, items)
+				if record := analyzer.records[unavailable.ID]; record.Revision != mediaRevision(unavailable) || record.Failed != 0 {
+					t.Fatalf("recovered record = %#v", record)
+				}
+				if pending := analyzer.changedItems(items); len(pending) != 0 {
+					t.Fatalf("pending after recovery = %d", len(pending))
+				}
+			})
+		}
 	}
 }

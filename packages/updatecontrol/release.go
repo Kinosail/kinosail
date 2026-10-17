@@ -11,7 +11,7 @@ import (
 func releasePolicy(app string, stateSchema, configurationSchema int) Policy {
 	return Policy{
 		tagPrefix:           app,
-		signatureIdentity:   fmt.Sprintf(`^https://github\.com/Kinosail/kinosail/\.github/workflows/%s-release\.yml@refs/tags/%s-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`, app, app),
+		signatureIdentity:   fmt.Sprintf(`^https://github\.com/Kinosail/kinosail/\.github/workflows/release\.yml@refs/tags/%s-v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$`, app),
 		stateSchema:         stateSchema,
 		configurationSchema: configurationSchema,
 	}

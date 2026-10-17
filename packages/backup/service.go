@@ -10,10 +10,7 @@ import (
 
 const databaseDocumentLimit = 16 << 20
 
-var (
-	databaseDocuments = []string{"api_keys.json", "collections.json", "history.json", "lists.json", "metadata.json", "playback_markers.json", "playlist_order.json", "playlists.json", "profiles.json", "progress.json", "sessions.json", "settings.json", "smart_playlists.json"}
-	versionPattern    = regexp.MustCompile(`^(dev|[A-Za-z0-9][A-Za-z0-9._+-]{0,127})$`)
-)
+var versionPattern = regexp.MustCompile(`^(dev|[A-Za-z0-9][A-Za-z0-9._+-]{0,127})$`)
 
 type Database interface {
 	Export() (map[string][]byte, error)
@@ -30,12 +27,15 @@ func (liveDatabase) Close() error { return nil }
 
 type Config struct {
 	DatabaseFilename string
+	Documents        []string
+	EntryDocuments   []string
 	OpenDatabase     func(string) (Database, error)
 	ValidateSettings func([]byte) error
 }
 
 type Service struct {
 	databaseFilename string
+	state            stateNames
 	openDatabase     func(string) (Database, error)
 	validateSettings func([]byte) error
 	random           io.Reader
@@ -43,10 +43,11 @@ type Service struct {
 }
 
 func New(config Config) (*Service, error) {
-	if config.DatabaseFilename == "" || config.DatabaseFilename == "." || config.DatabaseFilename == ".." || filepath.Base(config.DatabaseFilename) != config.DatabaseFilename || config.OpenDatabase == nil || config.ValidateSettings == nil {
+	state, valid := newStateNames(config.Documents, config.EntryDocuments)
+	if !valid || config.DatabaseFilename == "" || config.DatabaseFilename == "." || config.DatabaseFilename == ".." || filepath.Base(config.DatabaseFilename) != config.DatabaseFilename || config.OpenDatabase == nil || config.ValidateSettings == nil {
 		return nil, errors.New("invalid backup configuration")
 	}
-	return &Service{databaseFilename: config.DatabaseFilename, openDatabase: config.OpenDatabase, validateSettings: config.ValidateSettings, random: rand.Reader, restore: defaultRestoreOperations()}, nil
+	return &Service{databaseFilename: config.DatabaseFilename, state: state, openDatabase: config.OpenDatabase, validateSettings: config.ValidateSettings, random: rand.Reader, restore: defaultRestoreOperations()}, nil
 }
 
 func (service *Service) WithLiveDatabase(database Exporter) *Service {

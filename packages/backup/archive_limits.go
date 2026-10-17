@@ -4,24 +4,23 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"slices"
 )
 
-const maxEntryDocumentSize = 256 << 20
+const (
+	maxEntryDocumentSize = 256 << 20
+	entryDocumentBudget  = 2
+)
 
 var (
-	entryDocuments  = []string{"metadata.json", "progress.json"}
-	entryAllowances = int64(len(entryDocuments)) * archiveEntrySize(maxEntryDocumentSize)
+	entryAllowances = entryDocumentBudget * archiveEntrySize(maxEntryDocumentSize)
 	maxDecodedTotal = maxDecodedSize + entryAllowances
 	maxEncodedSize  = maxArchiveSize + int(entryAllowances)
 )
 
-func entryDocument(name string) bool { return slices.Contains(entryDocuments, name) }
-
-func entryAllowance(contents map[string][]byte, written []string) int {
+func entryAllowance(contents map[string][]byte, written []string, entry func(string) bool) int {
 	allowance := int64(0)
 	for _, name := range written {
-		if entryDocument(name) {
+		if entry(name) {
 			allowance += archiveEntrySize(len(contents[name]))
 		}
 	}
@@ -40,14 +39,16 @@ func (buffer *archiveBuffer) Write(data []byte) (int, error) {
 	return buffer.Buffer.Write(data)
 }
 
-func validateArchiveSize(contents map[string][]byte, written []string, manifest []byte) error {
-	size := int64(1024) + archiveEntrySize(len(manifest))
+func validateArchiveSize(contents map[string][]byte, written []string, manifest []byte, entry func(string) bool) error {
+	size, entries := int64(1024)+archiveEntrySize(len(manifest)), int64(0)
 	for _, name := range written {
-		if !entryDocument(name) {
+		if entry(name) {
+			entries += archiveEntrySize(len(contents[name]))
+		} else {
 			size += archiveEntrySize(len(contents[name]))
 		}
 	}
-	if size > maxDecodedSize {
+	if size > maxDecodedSize || entries > entryAllowances {
 		return errors.New("backup exceeds maximum decoded size")
 	}
 	return nil

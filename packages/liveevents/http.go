@@ -29,12 +29,13 @@ func (hub *Hub) Register(mux *http.ServeMux, access Access) {
 
 func (hub *Hub) Handler(access Access) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		changed := access.changes()
 		subscription, controller, ok := hub.openStream(writer, request, access)
 		if !ok {
 			return
 		}
 		defer subscription.close()
-		hub.stream(writer, request, access, subscription, controller)
+		hub.stream(writer, request, access, subscription, controller, changed)
 	}
 }
 
@@ -47,6 +48,11 @@ func (hub *Hub) openStream(writer http.ResponseWriter, request *http.Request, ac
 	backlog, subscription, ok := hub.subscribe(access.Profile(request), after)
 	if !ok {
 		access.Error(writer, request, errors.New("too many event streams"), http.StatusTooManyRequests)
+		return nil, nil, false
+	}
+	if !access.Allowed(request) {
+		subscription.close()
+		access.Error(writer, request, errors.New("event stream access was revoked"), http.StatusUnauthorized)
 		return nil, nil, false
 	}
 	writer.Header().Set("Content-Type", "text/event-stream")
@@ -68,12 +74,11 @@ func (hub *Hub) openStream(writer http.ResponseWriter, request *http.Request, ac
 	return subscription, controller, true
 }
 
-func (hub *Hub) stream(writer http.ResponseWriter, request *http.Request, access Access, subscription *subscription, controller *http.ResponseController) {
+func (hub *Hub) stream(writer http.ResponseWriter, request *http.Request, access Access, subscription *subscription, controller *http.ResponseController, changed <-chan struct{}) {
 	heartbeat := time.NewTicker(hub.heartbeat)
 	accessCheck := time.NewTicker(hub.accessCheck)
 	defer heartbeat.Stop()
 	defer accessCheck.Stop()
-	changed := access.changes()
 	for {
 		select {
 		case <-request.Context().Done():

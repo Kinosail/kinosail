@@ -8,16 +8,18 @@ import (
 	"maps"
 	"path/filepath"
 	"slices"
+	"syscall"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
 )
 
 const (
-	libraryWatchDebounce  = 2 * time.Second
-	libraryWatchStability = 2 * time.Second
-	libraryWatchRetry     = 30 * time.Second
-	libraryPollInterval   = time.Minute
+	libraryWatchDebounce     = 2 * time.Second
+	libraryWatchStability    = 2 * time.Second
+	libraryWatchRetry        = 30 * time.Second
+	libraryWatchBackoffSteps = 5
+	libraryPollInterval      = time.Minute
 )
 
 func (index *Index) Watch(ctx context.Context) {
@@ -27,6 +29,7 @@ func (index *Index) Watch(ctx context.Context) {
 	}
 	go index.poll(ctx)
 	go func() {
+		failures := 0
 		for ctx.Err() == nil {
 			err := index.watch(ctx)
 			if ctx.Err() != nil {
@@ -35,17 +38,48 @@ func (index *Index) Watch(ctx context.Context) {
 			if err == nil {
 				continue
 			}
-			index.setMonitoring(false, err)
-			index.RequestRefresh()
-			slog.Warn("real-time Library monitoring failed; scheduled scans remain active", "error", err)
+			var retry time.Duration
+			failures, retry = index.watchFailed(err, failures)
 			select {
 			case <-ctx.Done():
 				return
 			case <-index.watchChange:
-			case <-time.After(index.watchRetry):
+			case <-time.After(retry):
 			}
 		}
 	}()
+}
+
+func (index *Index) watchFailed(err error, failures int) (int, time.Duration) {
+	healthy, _ := index.Monitoring()
+	index.setMonitoring(false, err)
+	if healthy {
+		failures = 0
+		index.RequestRefresh()
+	}
+	failures++
+	retry := index.watchRetry << min(failures-1, libraryWatchBackoffSteps)
+	if failures == 1 {
+		slog.Warn("real-time Library monitoring failed; polling Library folders until it recovers", "operation", "library.watch", "failure_class", watchFailureClass(err), "retry", retry)
+	} else {
+		slog.Debug("real-time Library monitoring is still unavailable", "operation", "library.watch", "failure_class", watchFailureClass(err), "attempt", failures, "retry", retry)
+	}
+	return failures, retry
+}
+
+func watchFailureClass(err error) string {
+	switch {
+	case errors.Is(err, syscall.ENOSPC):
+		return "watch_limit"
+	case errors.Is(err, syscall.EMFILE):
+		return "open_file_limit"
+	case errors.Is(err, fs.ErrPermission):
+		return "permission"
+	case errors.Is(err, fs.ErrNotExist):
+		return "missing"
+	default:
+		return "watcher"
+	}
 }
 
 func (index *Index) poll(ctx context.Context) {
@@ -57,11 +91,11 @@ func (index *Index) poll(ctx context.Context) {
 			return
 		case <-ticker.C:
 		}
-		roots := index.pollRoots()
+		roots, within := index.pollRoots()
 		if len(roots) == 0 {
 			continue
 		}
-		current := index.changedDirectories(ctx, roots)
+		current := index.changedDirectories(ctx, roots, within)
 		for len(current) > 0 {
 			timer := time.NewTimer(index.watchStability)
 			select {
@@ -70,7 +104,7 @@ func (index *Index) poll(ctx context.Context) {
 				return
 			case <-timer.C:
 			}
-			next := index.changedDirectories(ctx, roots)
+			next := index.changedDirectories(ctx, roots, within)
 			if maps.Equal(current, next) {
 				index.RequestChanges(slices.Collect(maps.Keys(current)))
 				break
@@ -80,18 +114,26 @@ func (index *Index) poll(ctx context.Context) {
 	}
 }
 
-func (index *Index) pollRoots() []ScanRoot {
+func (index *Index) pollRoots() ([]ScanRoot, map[ScanRoot][]string) {
 	roots := index.Roots()
 	if watching, _ := index.Monitoring(); !watching {
-		return roots
+		return roots, nil
 	}
-	polled := make([]ScanRoot, 0, len(roots))
+	polled, local := make([]ScanRoot, 0, len(roots)), make([]ScanRoot, 0, len(roots))
 	for _, root := range roots {
 		if networkFilesystem(root.Path) {
 			polled = append(polled, root)
+		} else {
+			local = append(local, root)
 		}
 	}
-	return polled
+	within := nestedNetworkMounts(local)
+	for _, root := range local {
+		if len(within[root]) > 0 {
+			polled = append(polled, root)
+		}
+	}
+	return polled, within
 }
 
 func (index *Index) watchChanges(ctx context.Context) error {

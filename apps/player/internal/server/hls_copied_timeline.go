@@ -80,13 +80,15 @@ func (timeline *copiedHLSTimeline) segmentEnd(number int) float64 {
 func copiedHLSCacheFile(root *os.Root, name string, limit int64) ([]byte, error) {
 	file, info, err := copiedHLSOpenFile(root, name, limit)
 	if err != nil {
-		return nil, errCopiedHLSIndex
+		return nil, err
 	}
 	defer file.Close()
 	data, err := io.ReadAll(io.LimitReader(file, limit+1))
-	after, statErr := root.Lstat(name)
-	if err != nil || statErr != nil || int64(len(data)) != info.Size() || !sameCopiedHLSFile(info, after) {
+	if err != nil || int64(len(data)) != info.Size() {
 		return nil, errCopiedHLSIndex
+	}
+	if after, statErr := root.Lstat(name); statErr != nil || !sameCopiedHLSFile(info, after) {
+		return nil, errCopiedHLSReplaced
 	}
 	return data, nil
 }
@@ -101,7 +103,9 @@ func (manager *hlsManager) readCopiedHLSTimelineContext(ctx context.Context, dir
 		return nil, errCopiedHLSIndex
 	}
 	defer root.Close()
-	return manager.readCopiedHLSTimelineRoot(ctx, directory, policy, root)
+	return hlsStableRead(func() (*copiedHLSTimeline, error) {
+		return manager.readCopiedHLSTimelineRoot(ctx, directory, policy, root)
+	}, errCopiedHLSReplaced)
 }
 
 func (manager *hlsManager) readCopiedHLSTimelineRoot(ctx context.Context, directory, policy string, root *os.Root) (*copiedHLSTimeline, error) {
@@ -110,8 +114,8 @@ func (manager *hlsManager) readCopiedHLSTimelineRoot(ctx context.Context, direct
 		return nil, errCopiedHLSIndex
 	}
 	if timeline.Clock != nil {
-		if err := manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline); errors.Is(err, errCopiedHLSBusy) {
-			return nil, errCopiedHLSBusy
+		if err := manager.verifyCopiedHLSCertificate(ctx, directory, root, data, timeline); errors.Is(err, errCopiedHLSBusy) || errors.Is(err, errCopiedHLSReplaced) {
+			return nil, err
 		} else if err != nil {
 			return nil, errCopiedHLSIndex
 		}

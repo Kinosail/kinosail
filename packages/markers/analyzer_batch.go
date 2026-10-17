@@ -81,7 +81,7 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 	}
 	updates := make(map[string]Record)
 	for _, item := range items {
-		if item.Kind != "video" || !staged.targeted(item) {
+		if item.Kind != "video" || !staged.targeted(item) || staged.deferred[item.ID] {
 			continue
 		}
 		current := analyzer.records[item.ID]
@@ -97,8 +97,8 @@ func (analyzer *Analyzer) analyzeGroup(ctx context.Context, items []library.Item
 	if err := analyzer.persistLocked(updates); err != nil {
 		return ErrPersistence
 	}
-	if len(staged.failed) > 0 {
-		slog.Warn("playback marker analysis skipped unreadable titles", "operation", "markers.analyze", "outcome", "partial", "failed", len(staged.failed), "titles", len(items))
+	if len(staged.failed) > 0 || len(staged.deferred) > 0 {
+		slog.Warn("playback marker analysis skipped titles", "operation", "markers.analyze", "outcome", "partial", "failed", len(staged.failed), "deferred", len(staged.deferred), "titles", len(items))
 	}
 	return nil
 }

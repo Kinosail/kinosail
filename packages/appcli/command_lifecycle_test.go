@@ -1,11 +1,16 @@
 package appcli
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
+	"strings"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -30,7 +35,7 @@ func TestApplicationLifecycleOutlivesShutdownDrain(t *testing.T) { //nolint:para
 		drainingErr = lifecycle.Err()
 		writer.WriteHeader(http.StatusNoContent)
 	})
-	build := func(ctx context.Context, _ *remoteaccess.Manager, _ *trustedhttps.Manager) *http.Server {
+	build := func(ctx context.Context, _ *sync.WaitGroup, _ *remoteaccess.Manager, _ *trustedhttps.Manager) *http.Server {
 		lifecycles <- ctx
 		return &http.Server{Handler: handler, ReadHeaderTimeout: time.Second}
 	}
@@ -85,4 +90,35 @@ func waitForListenerClose(t *testing.T, address string) {
 		time.Sleep(5 * time.Millisecond)
 	}
 	t.Fatal("server did not stop accepting connections after the signal")
+}
+
+func TestRunBoundsAStuckApplicationDrainAndWarns(t *testing.T) { //nolint:paralleltest // The test replaces the process-wide logger.
+	var logs bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(&logs, nil)))
+	defer slog.SetDefault(previous)
+	build := func(_ context.Context, drain *sync.WaitGroup, _ *remoteaccess.Manager, _ *trustedhttps.Manager) *http.Server {
+		drain.Add(1)
+		return &http.Server{ReadHeaderTimeout: time.Second}
+	}
+	started := time.Now()
+	exit := run(testSettings{"remote.mode": "off"}, nil, build, func(next http.Handler) http.Handler { return next },
+		func(Settings) (*remoteaccess.Manager, error) { return nil, nil },
+		func(Settings) (*trustedhttps.Manager, error) { return nil, nil },
+		func(*http.Server, servertransport.TLSConfig) error { return http.ErrServerClosed })
+	elapsed := time.Since(started)
+	if exit != 0 || elapsed < applicationDrainTimeout || elapsed > applicationDrainTimeout+5*time.Second {
+		t.Fatalf("exit = %d after %v", exit, elapsed)
+	}
+	var warning struct {
+		Level, Msg, Operation, Outcome string
+	}
+	for line := range strings.Lines(logs.String()) {
+		if strings.Contains(line, `"operation":"shutdown"`) && json.Unmarshal([]byte(line), &warning) == nil {
+			break
+		}
+	}
+	if warning.Level != "WARN" || warning.Outcome != "timeout" {
+		t.Fatalf("drain timeout log = %+v in %s", warning, logs.String())
+	}
 }

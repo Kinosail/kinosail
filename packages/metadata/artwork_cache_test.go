@@ -115,3 +115,26 @@ func TestArtworkPruningPropagatesStorageFailures(t *testing.T) {
 		}
 	}
 }
+
+func TestCachedArtworkAppliesDownloadsThatFollowAMiss(t *testing.T) {
+	t.Parallel()
+	cache, paths := artworkCacheFixture(t)
+	var artwork ArtworkCache
+	pending := filepath.Join(cache, "metadata", "pending.jpg")
+	for range 2 {
+		if got := artwork.Current(cache, paths["current.jpg"]); got != paths["current.jpg"] {
+			t.Fatalf("current artwork = %q", got)
+		}
+		for _, path := range []string{paths["expired.JPG"], pending, filepath.Join(cache, "outside.jpg")} {
+			if got := artwork.Current(cache, path); got != "" {
+				t.Fatalf("invalid artwork accepted: %q", got)
+			}
+		}
+	}
+	if err := os.WriteFile(pending, []byte("art"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if got := artwork.Current(cache, pending); got != pending {
+		t.Fatalf("artwork downloaded after a miss = %q", got)
+	}
+}

@@ -11,7 +11,7 @@ import (
 	"github.com/MikeO7/kinosail-subtitles/internal/server"
 )
 
-func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) {
+func TestProviderRejectsInvalidEpisodeWithoutDiscardingItsShow(t *testing.T) {
 	t.Parallel()
 	imageRequests := 0
 	provider := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -44,9 +44,10 @@ func TestProviderRejectsInvalidShowGroupBeforeArtworkSideEffects(t *testing.T) {
 	handler := server.New(server.Config{MediaDir: mediaDir, DataDir: dataDir, CacheDir: t.TempDir(), Metadata: server.MetadataConfig{URL: provider.URL, ImageURL: provider.URL, Token: "token"}})
 	refresh := httptest.NewRecorder()
 	handler.ServeHTTP(refresh, httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/api/v1/tasks/metadata", nil))
-	metadata, _ := os.ReadFile(filepath.Join(dataDir, "metadata.json"))
-	if refresh.Code != http.StatusBadGateway || imageRequests != 0 || len(metadata) != 0 {
-		t.Fatalf("refresh = %d, images = %d, metadata = %q", refresh.Code, imageRequests, metadata)
+	library := httptest.NewRecorder()
+	handler.ServeHTTP(library, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/library", nil))
+	if refresh.Code != http.StatusBadGateway || imageRequests != 1 || !strings.Contains(library.Body.String(), "Good News About Hell") || strings.Contains(library.Body.String(), "Half Loop") {
+		t.Fatalf("refresh = %d, images = %d, library = %q", refresh.Code, imageRequests, library.Body.String())
 	}
 }
 

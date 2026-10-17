@@ -1,9 +1,12 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -14,11 +17,12 @@ import (
 
 func TestSubtitlePreparationRevisitsOnlyChangedTitles(t *testing.T) {
 	root := t.TempDir()
-	calls := filepath.Join(root, "calls")
+	calls, priorities := filepath.Join(root, "calls"), filepath.Join(root, "priorities")
 	ffprobe, ffmpeg := filepath.Join(root, "ffprobe"), filepath.Join(root, "ffmpeg")
+	recordPriority := "cut -d ' ' -f 19 /proc/self/stat >> '" + priorities + "' 2>/dev/null\n"
 	for path, content := range map[string]string{
-		ffprobe: "#!/bin/sh\nprintf '%s' '{\"streams\":[{\"index\":2,\"codec_type\":\"subtitle\",\"codec_name\":\"subrip\",\"tags\":{\"language\":\"eng\"}}],\"format\":{\"duration\":\"30\"}}'\n",
-		ffmpeg:  "#!/bin/sh\nprintf x >> '" + calls + "'\nprintf 'WEBVTT\\n\\n00:00.000 --> 00:02.000\\nCaptions\\n'\n",
+		ffprobe: "#!/bin/sh\n" + recordPriority + "printf '%s' '{\"streams\":[{\"index\":2,\"codec_type\":\"subtitle\",\"codec_name\":\"subrip\",\"tags\":{\"language\":\"eng\"}}],\"format\":{\"duration\":\"30\"}}'\n",
+		ffmpeg:  "#!/bin/sh\n" + recordPriority + "printf x >> '" + calls + "'\nprintf 'WEBVTT\\n\\n00:00.000 --> 00:02.000\\nCaptions\\n'\n",
 	} {
 		if err := os.WriteFile(path, []byte(content), 0o700); err != nil { //nolint:gosec // Test executables must be runnable.
 			t.Fatal(err)
@@ -53,6 +57,7 @@ func TestSubtitlePreparationRevisitsOnlyChangedTitles(t *testing.T) {
 	if acquired.Load() != 3 {
 		t.Fatalf("first pass acquired %d background slots, want 3", acquired.Load())
 	}
+	requireBackgroundChildren(t, priorities, 6)
 	preparation.prepare(t.Context(), items)
 	newPreparation().prepare(t.Context(), items)
 	if acquired.Load() != 3 {
@@ -71,5 +76,33 @@ func TestSubtitlePreparationRevisitsOnlyChangedTitles(t *testing.T) {
 	data, _ := os.ReadFile(calls)
 	if acquired.Load() != 4 || strings.Count(string(data), "x") != 4 {
 		t.Fatalf("changed title: slots=%d extractions=%q", acquired.Load(), data)
+	}
+}
+
+func requireBackgroundChildren(t *testing.T, log string, want int) {
+	t.Helper()
+	if runtime.GOOS != "linux" {
+		return
+	}
+	stat, err := os.ReadFile("/proc/self/stat")
+	if err != nil {
+		t.Fatal(err)
+	}
+	own, err := strconv.Atoi(strings.Fields(string(stat[bytes.LastIndexByte(stat, ')')+1:]))[16])
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(log)
+	if err != nil {
+		t.Fatal(err)
+	}
+	priorities := strings.Fields(string(data))
+	if len(priorities) != want {
+		t.Fatalf("child priorities = %q, want %d children", priorities, want)
+	}
+	for _, value := range priorities {
+		if nice, err := strconv.Atoi(value); err != nil || nice < min(19, max(own, 10)) {
+			t.Fatalf("background child nice = %q, server nice = %d", value, own)
+		}
 	}
 }

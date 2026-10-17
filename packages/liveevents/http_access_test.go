@@ -48,6 +48,44 @@ func TestHandlerRechecksAccessWhenAccessChanges(t *testing.T) {
 	}
 }
 
+func TestHandlerClosesStreamRevokedWhileItOpens(t *testing.T) {
+	hub := New()
+	hub.accessCheck = time.Hour
+	hub.Publish("", "library.updated", "/api/v1/library")
+	var allowed atomic.Bool
+	allowed.Store(true)
+	var signal sync.Mutex
+	changed := make(chan struct{})
+	access := testAccess(func(*http.Request) bool { return allowed.Load() })
+	access.Changed = func() <-chan struct{} {
+		signal.Lock()
+		defer signal.Unlock()
+		return changed
+	}
+	access.Profile = func(*http.Request) string {
+		allowed.Store(false)
+		signal.Lock()
+		close(changed)
+		changed = make(chan struct{})
+		signal.Unlock()
+		return "viewer"
+	}
+	writer := newStreamWriter()
+	done := make(chan struct{})
+	go func() {
+		hub.Handler(access).ServeHTTP(writer, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/events", nil))
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("stream revoked while opening stayed open until the periodic check")
+	}
+	if body, _ := writer.snapshot(); strings.Contains(body, "library.updated") || hub.Metrics().Subscribers != 0 {
+		t.Fatalf("revoked stream body = %q, subscribers = %d", body, hub.Metrics().Subscribers)
+	}
+}
+
 func TestStalledStreamIsReleasedByItsWriteDeadline(t *testing.T) {
 	hub := New()
 	hub.heartbeat, hub.writeTimeout = time.Hour, 100*time.Millisecond

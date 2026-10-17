@@ -14,14 +14,17 @@ func browseFixtureMux(t *testing.T) (*http.ServeMux, *int) {
 	t.Helper()
 	safeCalls := 0
 	fixture := &dlnaFixture{token: "secret", name: "Kinosail", items: []library.Item{
-		{ID: "one", Kind: "video", Title: `One & "Only"`, Container: "MKV"},
-		{ID: "book", Kind: "book", Title: "Book"},
-		{ID: "two", Kind: "audio", Title: "Two <Live>", Container: "MP3"},
-		{ID: "three", Kind: "photo", Title: "Three's", Container: "JPG"},
-		{ID: "four", Kind: "video", Title: "Four", Container: "MP4"},
-		{ID: "five", Kind: "video", Title: "Five", Container: "WEBM"},
-	}}
+		{ID: "one", Kind: "video", Title: `One & "Only"`, Container: "MKV", Path: "one"},
+		{ID: "outside", Kind: "video", Title: "Outside", Container: "MP4", Path: "outside"},
+		{ID: "book", Kind: "book", Title: "Book", Path: "book"},
+		{ID: "two", Kind: "audio", Title: "Two <Live>", Container: "MP3", Path: "two"},
+		{ID: "three", Kind: "photo", Title: "Three's", Container: "JPG", Path: "three"},
+		{ID: "four", Kind: "video", Title: "Four", Container: "MP4", Path: "four"},
+		{ID: "five", Kind: "video", Title: "Five", Container: "WEBM", Path: "five"},
+	}, safe: map[string]bool{"one": true, "book": true, "two": true, "three": true, "four": true, "five": true}}
 	adapter := fixture.library()
+	snapshot, _ := adapter.Library()
+	adapter.LibraryFunc = func() (*library.Snapshot, error) { return snapshot, nil }
 	safe := adapter.SafeFunc
 	adapter.SafeFunc = func(path string) bool { safeCalls++; return safe(path) }
 	mux := http.NewServeMux()
@@ -48,7 +51,7 @@ func TestBrowseReturnsTheRequestedPage(t *testing.T) {
 		`&lt;item id=&#34;two&#34; parentID=&#34;0&#34; restricted=&#34;1&#34;&gt;&lt;dc:title&gt;Two &amp;lt;Live&amp;gt;&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.audioItem.musicTrack&lt;/upnp:class&gt;&lt;res protocolInfo=&#34;http-get:*:audio/mpeg:*&#34;&gt;http://media.test/dlna/secret/media/two&lt;/res&gt;&lt;/item&gt;` +
 		`&lt;item id=&#34;three&#34; parentID=&#34;0&#34; restricted=&#34;1&#34;&gt;&lt;dc:title&gt;Three&amp;#39;s&lt;/dc:title&gt;&lt;upnp:class&gt;object.item.imageItem.photo&lt;/upnp:class&gt;&lt;res protocolInfo=&#34;http-get:*:image/jpeg:*&#34;&gt;http://media.test/dlna/secret/media/three&lt;/res&gt;&lt;/item&gt;` +
 		`&lt;/DIDL-Lite&gt;</Result><NumberReturned>2</NumberReturned><TotalMatches>5</TotalMatches>`
-	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), want) || *safeCalls != 0 {
+	if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), want) {
 		t.Fatalf("page = %d %q, safe checks = %d", page.Code, page.Body.String(), *safeCalls)
 	}
 	for _, test := range []struct {
@@ -62,9 +65,12 @@ func TestBrowseReturnsTheRequestedPage(t *testing.T) {
 		{browseEnvelope("four", "BrowseMetadata", 0, 0), `media/four&lt;/res&gt;&lt;/item&gt;&lt;/DIDL-Lite&gt;</Result><NumberReturned>1</NumberReturned><TotalMatches>1</TotalMatches>`},
 	} {
 		response := browseCall(t, mux, test.body)
-		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), test.contains) || strings.Contains(response.Body.String(), "Book") {
+		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), test.contains) || strings.Contains(response.Body.String(), "Book") || strings.Contains(response.Body.String(), "Outside") {
 			t.Fatalf("browse %q = %d %q", test.body, response.Code, response.Body.String())
 		}
+	}
+	if *safeCalls > 7 {
+		t.Fatalf("seven Browse requests ran %d path checks; want one per playable item per snapshot", *safeCalls)
 	}
 }
 
@@ -79,6 +85,7 @@ func TestBrowseRejectsInvalidArguments(t *testing.T) {
 		browseEnvelope("0", "BrowseDirectChildren", 0, 0) + strings.Repeat(" ", 70_000):       "402",
 		browseEnvelope("missing", "BrowseMetadata", 0, 0):                                     "701",
 		browseEnvelope("book", "BrowseMetadata", 0, 0):                                        "701",
+		browseEnvelope("outside", "BrowseMetadata", 0, 0):                                     "701",
 		browseEnvelope("four", "BrowseDirectChildren", 0, 0):                                  "710",
 		browseEnvelope(strings.Repeat("x", 300), "BrowseMetadata", 0, 0):                      "402",
 	} {

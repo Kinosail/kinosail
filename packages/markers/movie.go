@@ -52,8 +52,8 @@ func (analyzer *Analyzer) analyzeMovieOpenings(ctx context.Context, items []libr
 
 func (analyzer *Analyzer) movieFingerprint(ctx context.Context, item library.Item) (episodeFingerprint, error) {
 	media := analyzer.inspect(ctx, item)
-	if !finite(media.Duration) || media.Duration <= 0 {
-		return episodeFingerprint{}, errors.New("playback segment media duration is unavailable")
+	if err := mediaUnavailable(media); err != nil {
+		return episodeFingerprint{}, err
 	}
 	length := min(media.Duration*.1, 300)
 	opening, audioErr := analyzer.fingerprint(ctx, item, "opening", 0, length)

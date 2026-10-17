@@ -95,3 +95,30 @@ func TestScannerHandlesFileAndSymlinkRoots(t *testing.T) {
 		t.Fatalf("empty root = %#v, %v", items, err)
 	}
 }
+
+func TestScannerReportsChangesOnlyWithinRequestedSubtrees(t *testing.T) {
+	root := t.TempDir()
+	local, remote, sibling := filepath.Join(root, "Local"), filepath.Join(root, "Remote"), filepath.Join(root, "Remote Copy")
+	nested := filepath.Join(remote, "Nested")
+	for _, directory := range []string{local, nested, sibling} {
+		writeScannerFile(t, filepath.Join(directory, "Film (2020).mp4"), "media")
+	}
+	scanner := library.NewScanner(root, "Library")
+	if _, err := scanner.Scan(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	time.Sleep(10 * time.Millisecond)
+	for _, directory := range []string{local, remote, nested, sibling} {
+		writeScannerFile(t, filepath.Join(directory, "Added (2021).mp4"), "media")
+	}
+	changed := scanner.Changed(t.Context(), remote)
+	if _, found := changed[remote]; !found || len(changed) != 2 {
+		t.Fatalf("changes within the remote subtree = %#v", changed)
+	}
+	if _, found := changed[nested]; !found {
+		t.Fatalf("nested remote change missing: %#v", changed)
+	}
+	if all := scanner.Changed(t.Context()); len(all) != 4 {
+		t.Fatalf("changes across the root = %#v", all)
+	}
+}

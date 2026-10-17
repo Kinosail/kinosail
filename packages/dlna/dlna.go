@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"log/slog"
 	"net"
 	"net/http"
 	"net/url"
@@ -171,15 +172,54 @@ type ssdpConnection interface {
 
 func serveSSDPConnection(ctx context.Context, base string, settings Settings, connection ssdpConnection) {
 	buffer := make([]byte, 2048)
+	var links linkNetworks
 	for ctx.Err() == nil {
 		_ = connection.SetReadDeadline(time.Now().Add(time.Second))
 		length, sender, err := connection.ReadFromUDP(buffer)
 		search := strings.ToUpper(string(buffer[:length]))
 		recognized := strings.Contains(search, "ST: SSDP:ALL") || strings.Contains(search, "ST: URN:SCHEMAS-UPNP-ORG:DEVICE:MEDIASERVER:")
 		if token := settings.Token(); err == nil && strings.Contains(search, "M-SEARCH") && recognized && token != "" && len(token) <= 256 {
+			if !links.local(sender.IP, time.Now()) {
+				slog.DebugContext(ctx, "SSDP search ignored", "operation", "dlna.ssdp", "outcome", "non_local_sender")
+				continue
+			}
 			_, _ = connection.WriteToUDP([]byte(SSDPResponse(base, token)), sender)
 		}
 	}
+}
+
+type linkNetworks struct {
+	networks  []*net.IPNet
+	refreshed time.Time
+}
+
+func (links *linkNetworks) local(address net.IP, now time.Time) bool {
+	if address.IsPrivate() || address.IsLoopback() || address.IsLinkLocalUnicast() {
+		return true
+	}
+	if now.Sub(links.refreshed) >= time.Minute || now.Before(links.refreshed) {
+		links.networks, links.refreshed = interfaceNetworks(), now
+	}
+	for _, network := range links.networks {
+		if network.Contains(address) {
+			return true
+		}
+	}
+	return false
+}
+
+func interfaceNetworks() []*net.IPNet {
+	addresses, err := net.InterfaceAddrs()
+	if err != nil {
+		return nil
+	}
+	networks := make([]*net.IPNet, 0, len(addresses))
+	for _, address := range addresses {
+		if network, ok := address.(*net.IPNet); ok {
+			networks = append(networks, network)
+		}
+	}
+	return networks
 }
 
 func SSDPResponse(base, token string) string {

@@ -49,7 +49,7 @@ func assertFuzzRestoreConfined(t *testing.T, destination, outside, keep string) 
 		t.Fatal(err)
 	}
 	allowed := map[string]bool{
-		"api_keys.json": true, "audit.jsonl": true, "collections.json": true, "configuration.json": true,
+		"api_keys.json": true, "collections.json": true, "configuration.json": true,
 		"history.json": true, "lists.json": true, "metadata.json": true,
 		"playback_markers.json": true, "playlists.json": true, "profiles.json": true, "progress.json": true,
 		"server-identity.json": true, "sessions.json": true, "settings.json": true,

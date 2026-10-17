@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/webassets"
@@ -19,6 +20,7 @@ import (
 
 type Config struct {
 	Lifecycle           context.Context
+	Drain               *sync.WaitGroup
 	MediaDir            string
 	DataDir             string
 	CacheDir            string
@@ -70,7 +72,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	if err != nil {
 		return unavailableApplication(config, "application state is unavailable")
 	}
-	beforeDatabaseClose := closeApplicationDatabase(config.Lifecycle, stateDB, managedLifecycle)
+	beforeDatabaseClose := closeApplicationDatabase(config.Lifecycle, config.Drain, stateDB, managedLifecycle)
 	settings, updates, unavailable := initializeApplicationSettings(config, stateDB, managedLifecycle)
 	if unavailable != "" {
 		return unavailableApplication(config, unavailable)
@@ -83,6 +85,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen // The composi
 	}
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
+	sweepSubtitleTranscriptionWorkspaces(config.CacheDir)
 	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
 	}, libraryDecoration(metadata, probe, managedLifecycle))}

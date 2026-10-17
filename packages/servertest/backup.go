@@ -14,19 +14,25 @@ import (
 type SQLiteDatabase interface {
 	SaveJSON(string, any) error
 	LoadJSON(string, any) (bool, error)
+	EnableEntries(string) error
+	SaveEntry(string, string, any) error
+	SaveEntries(string, map[string]any, []string) error
 	Close() error
 }
 
 type SQLiteBackupFixture[Database SQLiteDatabase] struct {
-	Filename string
-	Open     func(string, bool) (Database, error)
-	Write    func(io.Writer, string) error
-	Restore  func(io.Reader, string) error
+	Filename       string
+	Documents      []string
+	EntryDocuments []string
+	Open           func(string, bool) (Database, error)
+	Write          func(io.Writer, string) error
+	Restore        func(io.Reader, string) error
 }
 
 func SQLiteBackupContract[Database SQLiteDatabase](t *testing.T, fixture SQLiteBackupFixture[Database]) {
 	t.Helper()
 	t.Run("SQLite state round trips through logical backup", fixture.sqliteRoundTrip)
+	t.Run("every state document round trips through logical backup", fixture.everyDocumentRoundTrips)
 	t.Run("non-regular SQLite paths are rejected", fixture.rejectNonRegularSQLite)
 	t.Run("restore rejects a non-regular SQLite target before changing state", fixture.rejectNonRegularRestoreTarget)
 }

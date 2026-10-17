@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -20,7 +21,7 @@ type subtitleDashboardOptions struct {
 	Page   int    `json:"page"`
 }
 
-func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, error) {
+func subtitleDashboardQuery(request *http.Request, ignored ...string) (subtitleDashboardOptions, error) {
 	invalid := errors.New("invalid subtitle dashboard request")
 	options := subtitleDashboardOptions{View: "summary", Status: "all", Kind: "all", Sort: "title", Page: 1}
 	if len(request.URL.RawQuery) > 1024 {
@@ -30,10 +31,8 @@ func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, er
 	if err != nil {
 		return options, invalid
 	}
-	for key, entries := range values {
-		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") {
-			return options, invalid
-		}
+	if !subtitleDashboardKeysValid(values, ignored) {
+		return options, invalid
 	}
 	if value, exists := values["view"]; exists {
 		options.View = value[0]
@@ -68,6 +67,15 @@ func subtitleDashboardQuery(request *http.Request) (subtitleDashboardOptions, er
 		return options, invalid
 	}
 	return options, nil
+}
+
+func subtitleDashboardKeysValid(values url.Values, ignored []string) bool {
+	for key, entries := range values {
+		if len(entries) != 1 || !oneOf(key, "view", "q", "status", "kind", "sort", "page") && !slices.Contains(ignored, key) {
+			return false
+		}
+	}
+	return true
 }
 
 func (options subtitleDashboardOptions) pageURL(page int) string {

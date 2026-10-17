@@ -142,30 +142,49 @@ class WorktreeGuardTest(unittest.TestCase):
         self.run_guard("cleanup", check=True)
         self.assertFalse(path.exists())
 
-    def test_finish_serializes_fast_forward_and_removes_task(self) -> None:
-        path = self.add_worktree()
-        (path / "tracked").write_text("finished\n", encoding="utf-8")
-        self.git("add", "tracked", cwd=path)
-        self.commit("finished", cwd=path)
-        self.run_guard("lease", "--task", "finish", cwd=path, check=True)
+    def finish_env(self) -> dict[str, str]:
         fake_bin = self.temp / "bin"
-        fake_bin.mkdir()
+        fake_bin.mkdir(exist_ok=True)
         fake_make = fake_bin / "make"
         fake_make.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
         fake_make.chmod(0o755)
         env = os.environ.copy()
         env["PATH"] = f"{fake_bin}{os.pathsep}{env['PATH']}"
-        result = self.run_guard("finish", "--task", "finish", cwd=path, env=env)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertFalse(path.exists())
-        self.assertEqual((self.repo / "tracked").read_text(encoding="utf-8"), "finished\n")
-        self.assertNotIn("task", self.git("branch", "--format=%(refname:short)").stdout.splitlines())
+        return env
 
-    def test_finish_after_remote_merge_fast_forwards_local_main(self) -> None:
+    def add_origin(self) -> None:
         remote = self.temp / "remote.git"
         subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
         self.git("remote", "add", "origin", str(remote))
         self.git("push", "-q", "origin", "main")
+
+    def test_finish_refuses_task_missing_from_remote_main(self) -> None:
+        for with_origin in (True, False):
+            with self.subTest(with_origin=with_origin):
+                self.tearDown()
+                self.setUp()
+                if with_origin:
+                    self.add_origin()
+                path = self.add_worktree()
+                (path / "tracked").write_text("unreviewed\n", encoding="utf-8")
+                self.git("add", "tracked", cwd=path)
+                self.commit("unreviewed", cwd=path)
+                if with_origin:
+                    self.git("push", "-q", "origin", "HEAD:refs/heads/task", cwd=path)
+                self.run_guard("lease", "--task", "finish", cwd=path, check=True)
+                main_before = self.git("rev-parse", "main").stdout
+
+                result = self.run_guard("finish", "--task", "finish", cwd=path, env=self.finish_env())
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("origin/main", result.stderr)
+                self.assertEqual(self.git("rev-parse", "main").stdout, main_before)
+                self.assertEqual((self.repo / "tracked").read_text(encoding="utf-8"), "initial\n")
+                self.assertEqual((path / "tracked").read_text(encoding="utf-8"), "unreviewed\n")
+                self.assertIn("task", self.git("branch", "--format=%(refname:short)").stdout.splitlines())
+
+    def test_finish_after_remote_merge_fast_forwards_local_main(self) -> None:
+        self.add_origin()
         path = self.add_worktree()
         (path / "tracked").write_text("merged remotely\n", encoding="utf-8")
         self.git("add", "tracked", cwd=path)
@@ -173,16 +192,11 @@ class WorktreeGuardTest(unittest.TestCase):
         self.git("push", "-q", "origin", "HEAD:main", cwd=path)
         self.run_guard("lease", "--task", "finish", cwd=path, check=True)
 
-        fake_bin = self.temp / "bin"
-        fake_bin.mkdir()
-        fake_make = fake_bin / "make"
-        fake_make.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-        fake_make.chmod(0o755)
-        env = os.environ.copy()
-        env["PATH"] = f"{fake_bin}{os.pathsep}{env['PATH']}"
-        result = self.run_guard("finish", "--task", "finish", cwd=path, env=env)
+        result = self.run_guard("finish", "--task", "finish", cwd=path, env=self.finish_env())
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(path.exists())
+        self.assertEqual((self.repo / "tracked").read_text(encoding="utf-8"), "merged remotely\n")
+        self.assertNotIn("task", self.git("branch", "--format=%(refname:short)").stdout.splitlines())
         self.assertEqual(self.git("rev-parse", "HEAD").stdout,
                          self.git("rev-parse", "origin/main").stdout)
 

@@ -16,6 +16,7 @@ type subtitleMaintenanceResult struct {
 	Upgraded   int `json:"upgraded"`
 	Failed     int `json:"failed"`
 	NextCursor int `json:"-"`
+	changed    []string
 }
 
 func (manager *subtitleManager) maintainLanguageItems(ctx context.Context, items []library.Item, languages []string, limit, start int) subtitleMaintenanceResult {
@@ -78,6 +79,7 @@ func (result *subtitleMaintenanceResult) add(outcome subtitleMaintenanceResult) 
 	result.Added += outcome.Added
 	result.Upgraded += outcome.Upgraded
 	result.Failed += outcome.Failed
+	result.changed = append(result.changed, outcome.changed...)
 }
 
 func (manager *subtitleManager) maintainLanguageItem(ctx context.Context, item library.Item, language string) subtitleMaintenanceResult {
@@ -85,10 +87,16 @@ func (manager *subtitleManager) maintainLanguageItem(ctx context.Context, item l
 		return subtitleMaintenanceResult{}
 	}
 	ready, sidecarReady, tracks := manager.planSidecarCoverage(ctx, item, language)
+	var result subtitleMaintenanceResult
 	if ready {
-		return manager.maintainReadySubtitle(ctx, item, language, tracks, sidecarReady)
+		result = manager.maintainReadySubtitle(ctx, item, language, tracks, sidecarReady)
+	} else {
+		result = manager.maintainMissingSubtitle(ctx, item, language)
 	}
-	return manager.maintainMissingSubtitle(ctx, item, language)
+	if result.Added+result.Upgraded > 0 {
+		result.changed = []string{item.Path}
+	}
+	return result
 }
 
 func (manager *subtitleManager) maintainMissingSubtitle(ctx context.Context, item library.Item, language string) subtitleMaintenanceResult {
