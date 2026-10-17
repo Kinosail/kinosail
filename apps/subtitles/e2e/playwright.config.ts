@@ -8,7 +8,7 @@ const artifactDir = process.env.KINOSAIL_E2E_ARTIFACT_DIR;
 const projects = [
   { name: "chromium", use: { ...devices["Desktop Chrome"], ...(channel ? { channel } : {}) } },
   ...(fullMatrix ? [
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "firefox", use: { ...devices["Desktop Firefox"], launchOptions: { firefoxUserPrefs: { "browser.tabs.remote.useCrossOriginOpenerPolicy": false } } } },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ] : []),
 ];

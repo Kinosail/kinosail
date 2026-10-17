@@ -21,15 +21,16 @@ done`)
 	tesseract := subtitleProcessFixture(t, `size=$(wc -c)
 marker='`+evidence+`'/running.$$
 : > "$marker"
-sleep 0.5
+for attempt in $(seq 1 60); do
+if [ "$(ls '`+evidence+`' | grep -c '^running')" -ge 2 ]; then break; fi
+sleep 0.05
+done
 printf '%s %s\n' "$OMP_THREAD_LIMIT" "$(ls '`+evidence+`' | grep -c '^running')" >> '`+evidence+`'/calls
 rm "$marker"
 word=Hello
 if [ "$size" -lt 2000000 ]; then word=World; fi
 printf 'level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext\n5\t1\t1\t1\t1\t1\t0\t0\t20\t10\t95\t%s\n' "$word"`)
-	started := time.Now()
 	document, _, err := localSubtitleOCR(t.Context(), ffmpeg, tesseract, "media", 0, "eng", 10)
-	elapsed := time.Since(started)
 	if err != nil || len(document.Cues) != 4 {
 		t.Fatalf("OCR = %#v, %v", document.Cues, err)
 	}
@@ -51,7 +52,7 @@ printf 'level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidt
 			t.Fatalf("tesseract thread limit = %q; want OMP_THREAD_LIMIT=1", line)
 		}
 	}
-	if runtime.GOMAXPROCS(0) > 1 && !strings.Contains(string(calls), " 2") && elapsed > 900*time.Millisecond {
-		t.Fatalf("distinct crops were recognized one at a time: %q in %s", calls, elapsed)
+	if runtime.GOMAXPROCS(0) > 1 && !strings.Contains(string(calls), " 2") {
+		t.Fatalf("distinct crops were recognized one at a time: %q", calls)
 	}
 }

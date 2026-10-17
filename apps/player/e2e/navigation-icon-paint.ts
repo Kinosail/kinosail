@@ -37,10 +37,10 @@ export async function expectNavigationIconPaint(page: Page, info: TestInfo, name
 		primaryFailed = true;
 		throw error;
 	} finally {
-		let cleanupError: unknown;
+		let cleanupError: Error | undefined;
 		await sheet.evaluate(sheet => { document.adoptedStyleSheets = document.adoptedStyleSheets.filter(candidate => candidate !== sheet); })
-			.catch(error => { cleanupError = error; });
-		await sheet.dispose().catch(error => { cleanupError ??= error; });
+			.catch((error: Error) => { cleanupError = error; });
+		await sheet.dispose().catch((error: Error) => { cleanupError ??= error; });
 		if (cleanupError && !primaryFailed) throw cleanupError;
 	}
 	const pixels = await page.evaluate(async ({ original, firstControl, secondControl, boxes }) => {
