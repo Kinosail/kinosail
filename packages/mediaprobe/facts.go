@@ -54,6 +54,8 @@ func audioFactsFor(stream probeStream, index int) AudioFacts {
 	return AudioFacts{Index: index, SourceIndex: stream.Index, Codec: lower(stream.CodecName), Profile: stream.Profile, Language: lower(tagValue(stream.Tags, "language")), Role: role, ChannelLayout: stream.ChannelLayout, Channels: stream.Channels, SampleRate: sampleRate, Default: stream.Disposition.Default != 0, Forced: stream.Disposition.Forced != 0}
 }
 
+var textSubtitleCodecs = []string{"ass", "ssa", "subrip", "srt", "mov_text", "text", "webvtt", "eia_608", "jacosub", "microdvd", "mpl2", "pjs", "realtext", "sami", "stl", "subviewer", "subviewer1", "vplayer"}
+
 func subtitleFactsFor(stream probeStream, index int) SubtitleFacts {
 	role := "translation"
 	if stream.Disposition.HearingImpaired != 0 {
@@ -61,7 +63,7 @@ func subtitleFactsFor(stream probeStream, index int) SubtitleFacts {
 	} else if stream.Disposition.Commentary != 0 {
 		role = "commentary"
 	}
-	return SubtitleFacts{Index: index, SourceIndex: stream.Index, Codec: lower(stream.CodecName), Language: lower(tagValue(stream.Tags, "language")), Role: role, Default: stream.Disposition.Default != 0, Forced: stream.Disposition.Forced != 0, Text: oneOf(lower(stream.CodecName), "ass", "ssa", "subrip", "srt", "mov_text", "text", "webvtt")}
+	return SubtitleFacts{Index: index, SourceIndex: stream.Index, Codec: lower(stream.CodecName), Language: lower(tagValue(stream.Tags, "language")), Role: role, Default: stream.Disposition.Default != 0, Forced: stream.Disposition.Forced != 0, Text: oneOf(lower(stream.CodecName), textSubtitleCodecs...)}
 }
 
 func rational(value string) float64 {

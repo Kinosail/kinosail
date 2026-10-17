@@ -326,10 +326,11 @@
             {
               "Codec": "vtt",
               "DeliveryMethod": "External",
-              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
               "DisplayTitle": "Subtitle 1",
               "Index": 1,
               "IsExternal": true,
+              "IsForced": false,
               "IsTextSubtitleStream": true,
               "SupportsExternalStream": true,
               "Type": "Subtitle"
@@ -337,11 +338,13 @@
             {
               "Codec": "vtt",
               "DeliveryMethod": "External",
-              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/2/Stream.vtt",
               "DisplayTitle": "Subtitle 2",
               "Index": 2,
               "IsExternal": true,
+              "IsForced": false,
               "IsTextSubtitleStream": true,
+              "Language": "fr",
               "SupportsExternalStream": true,
               "Type": "Subtitle"
             }
@@ -977,10 +980,11 @@
                 {
                   "Codec": "vtt",
                   "DeliveryMethod": "External",
-                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
                   "DisplayTitle": "Subtitle 1",
                   "Index": 1,
                   "IsExternal": true,
+                  "IsForced": false,
                   "IsTextSubtitleStream": true,
                   "SupportsExternalStream": true,
                   "Type": "Subtitle"
@@ -988,11 +992,13 @@
                 {
                   "Codec": "vtt",
                   "DeliveryMethod": "External",
-                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+                  "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/2/Stream.vtt",
                   "DisplayTitle": "Subtitle 2",
                   "Index": 2,
                   "IsExternal": true,
+                  "IsForced": false,
                   "IsTextSubtitleStream": true,
+                  "Language": "fr",
                   "SupportsExternalStream": true,
                   "Type": "Subtitle"
                 }
@@ -1800,10 +1806,11 @@
             {
               "Codec": "vtt",
               "DeliveryMethod": "External",
-              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/0/Stream.vtt",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
               "DisplayTitle": "Subtitle 1",
               "Index": 1,
               "IsExternal": true,
+              "IsForced": false,
               "IsTextSubtitleStream": true,
               "SupportsExternalStream": true,
               "Type": "Subtitle"
@@ -1811,11 +1818,13 @@
             {
               "Codec": "vtt",
               "DeliveryMethod": "External",
-              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/1/Stream.vtt",
+              "DeliveryUrl": "/Videos/53ae726daeaed3fa0000000000000000/53ae726daeaed3fa0000000000000000/Subtitles/2/Stream.vtt",
               "DisplayTitle": "Subtitle 2",
               "Index": 2,
               "IsExternal": true,
+              "IsForced": false,
               "IsTextSubtitleStream": true,
+              "Language": "fr",
               "SupportsExternalStream": true,
               "Type": "Subtitle"
             }

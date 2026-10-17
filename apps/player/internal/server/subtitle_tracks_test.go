@@ -7,3 +7,8 @@ func TestViewerCanChooseMultipleSubtitleTracks(t *testing.T) {
 
 	libraryAPIFixture.ViewerCanChooseMultipleSubtitleTracks(t)
 }
+
+func TestLegacySubtitleFilesAreServedAsUTF8(t *testing.T) {
+	t.Parallel()
+	libraryAPIFixture.LegacySubtitleFilesAreServedAsUTF8(t)
+}

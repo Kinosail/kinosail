@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/httpcompress"
@@ -82,23 +83,35 @@ func (module DeliveryHTTP) Subtitle(writer http.ResponseWriter, request *http.Re
 		http.NotFound(writer, request)
 		return
 	}
-	if module.serveEmbeddedSubtitle(writer, request, item, index) {
+	if strings.EqualFold(request.PathValue("stream"), "Stream.srt") {
+		writeSubRip(writer, request, func(capture http.ResponseWriter, captured *http.Request) {
+			module.serveSubtitle(capture, captured, item, index)
+		})
 		return
 	}
-	if index >= len(item.Subtitles) {
+	module.serveSubtitle(writer, request, item, index)
+}
+
+func (module DeliveryHTTP) serveSubtitle(writer http.ResponseWriter, request *http.Request, item library.Item, index int) {
+	facts := module.Playback.Inspect(request.Context(), item).Facts
+	if module.serveEmbeddedSubtitle(writer, request, item, facts, index) {
+		return
+	}
+	sidecar := index - playback.JellyfinSidecarBase(facts)
+	if sidecar < 0 || sidecar >= len(item.Subtitles) {
 		http.NotFound(writer, request)
 		return
 	}
 	if session, valid := module.PlaySession(request, item.ID); valid && session.JellyfinPlan().MarkerMode == "server" {
 		timeline := session.JellyfinPlan().Timeline
-		module.WriteSubtitle(writer, request, item.Subtitles[index], &timeline)
+		module.WriteSubtitle(writer, request, item.Subtitles[sidecar], &timeline)
 		return
 	}
-	module.WriteSubtitle(writer, request, item.Subtitles[index], nil)
+	module.WriteSubtitle(writer, request, item.Subtitles[sidecar], nil)
 }
 
-func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, request *http.Request, item library.Item, index int) bool {
-	for _, track := range module.Playback.Inspect(request.Context(), item).Facts.Subtitles {
+func (module DeliveryHTTP) serveEmbeddedSubtitle(writer http.ResponseWriter, request *http.Request, item library.Item, facts playback.MediaFacts, index int) bool {
+	for _, track := range facts.Subtitles {
 		if track.SourceIndex != index || !track.Text {
 			continue
 		}
