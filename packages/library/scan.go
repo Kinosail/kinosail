@@ -126,12 +126,19 @@ func (scanner *Scanner) read(ctx context.Context, starts []string, known map[str
 		mu.Lock()
 		defer mu.Unlock()
 		if err != nil {
-			if path == scanner.root {
+			switch {
+			case path == scanner.root:
 				rootErr = err
-			} else if !errors.Is(err, fs.ErrNotExist) {
+			case errors.Is(err, fs.ErrNotExist):
+				missing[path] = true
+			default:
 				failures.record(err, true)
+				if !retainSubtree(fresh, previous, path) {
+					missing[path] = true
+				} else {
+					failures.retained.Add(1)
+				}
 			}
-			missing[path] = true
 			return nil
 		}
 		fresh[path] = directory
@@ -157,7 +164,30 @@ func (failures *scanFailures) log() {
 		return
 	}
 	class, _ := failures.class.Load().(string)
-	slog.Warn("Library scan skipped unreadable entries", "operation", "library.scan", "outcome", "partial", "failure_class", class, "directories", directories, "files", files)
+	retained, outcome := failures.retained.Load(), "partial"
+	if retained > 0 {
+		outcome = "retained"
+	}
+	slog.Warn("Library scan skipped unreadable entries", "operation", "library.scan", "outcome", outcome, "failure_class", class, "directories", directories, "files", files, "retained", retained)
+}
+
+const retryModified = -2
+
+func retainSubtree(fresh, previous map[string]*scanDir, path string) bool {
+	known := previous[path]
+	if known == nil {
+		return false
+	}
+	prefix := path + string(filepath.Separator)
+	for candidate, directory := range previous {
+		if strings.HasPrefix(candidate, prefix) {
+			fresh[candidate] = directory
+		}
+	}
+	retained := *known
+	retained.modified = retryModified
+	fresh[path] = &retained
+	return true
 }
 
 func (scanner *Scanner) targets(changed []string) []string {

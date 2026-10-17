@@ -36,7 +36,7 @@ Safety scans repair missed file-system events on network mounts, containers, and
 
 Kinosail rescans only the folders that changed when it receives file-system events. It checks folder change times once a minute when it cannot watch for changes, and always for NFS, SMB, and FUSE mounts. A folder check finds added, removed, and renamed files. It does not find a file that a remote host edits in place. The next safety scan finds that edit.
 
-Kinosail skips a folder or file that it cannot read and shows the rest of the root. The log reports how many entries it skipped. If a whole root is missing or unreadable, the scan fails and Kinosail keeps the last Library it showed.
+Kinosail skips a folder or file that it cannot read and shows the rest of the root. The log reports how many entries it skipped. If a folder that Kinosail scanned before becomes unreadable, Kinosail keeps the titles that it found there and tries the folder again at the next check. When a folder no longer exists, Kinosail removes its titles. If a whole root is missing or unreadable, the scan fails and Kinosail keeps the last Library it showed.
 
 When Kinosail starts, it waits up to 5 seconds for the first scan. If the scan takes longer, the server starts and answers health checks. Library pages then report that the Library scan is in progress until the first scan finishes.
 
