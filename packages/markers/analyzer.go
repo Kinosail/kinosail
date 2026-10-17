@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -33,7 +34,7 @@ type Analyzer struct {
 	records                   map[string]Record
 	jobs                      chan markerJob
 	targets, failed, deferred map[string]bool
-	threads                   int
+	threads, workers          int
 	saveEntries               func(string, map[string]any, []string) error
 	probe                     func(context.Context, library.Item) Media
 	extract                   func(context.Context, library.Item, string, float64, float64) ([]uint32, error)
@@ -68,7 +69,7 @@ type Config struct {
 	DataDir, CacheDir, FFmpeg, Fingerprint string
 	Database                               *documentdb.Store
 	Acquire                                func(context.Context) (func(), error)
-	Threads                                int
+	Threads, BackgroundSlots               int
 }
 
 type markerJob struct {
@@ -91,7 +92,10 @@ func NewAnalyzer(config Config) *Analyzer {
 	if acquire == nil {
 		acquire = func(context.Context) (func(), error) { return func() {}, nil }
 	}
-	analyzer := &Analyzer{cache: cache, ffmpeg: config.FFmpeg, tool: config.Fingerprint, records: make(map[string]Record), jobs: make(chan markerJob, 1), acquire: acquire, state: "idle", persist: statePersistence(config.Database), threads: max(1, config.Threads)}
+	analyzer := &Analyzer{cache: cache, ffmpeg: config.FFmpeg, tool: config.Fingerprint, records: make(map[string]Record), jobs: make(chan markerJob, 1), acquire: acquire, state: "idle", persist: statePersistence(config.Database), threads: max(1, config.Threads), workers: max(1, min(2, runtime.GOMAXPROCS(0)-1))}
+	if config.BackgroundSlots > 0 {
+		analyzer.workers = max(1, min(analyzer.workers, config.BackgroundSlots-1))
+	}
 	if config.DataDir == "" {
 		return analyzer
 	}

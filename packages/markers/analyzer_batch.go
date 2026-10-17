@@ -3,7 +3,6 @@ package markers
 import (
 	"context"
 	"log/slog"
-	"runtime"
 	"slices"
 	"sync"
 	"time"
@@ -24,7 +23,7 @@ func (analyzer *Analyzer) analyzeBatch(ctx context.Context, items []library.Item
 	}
 	jobs, failures := make(chan int), make([]error, len(titles))
 	var workers sync.WaitGroup
-	for range min(len(titles), max(1, min(2, runtime.GOMAXPROCS(0)-1))) {
+	for range min(len(titles), max(1, analyzer.workers)) {
 		workers.Add(1)
 		go func() {
 			defer workers.Done()
