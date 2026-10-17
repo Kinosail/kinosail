@@ -231,6 +231,30 @@ export async function measurePersonalNavigationFlow(browser, options, results, p
   }
 }
 
+export const titleFilterSampling = {settleAfter: 550, window: 800, minimumSettled: 3, cap: 3000};
+
+export async function sampleTitleFilterFrames(rule) {
+  const started = performance.now(), samples = [];
+  const settled = () => samples.filter(sample => sample.at >= rule.settleAfter).length;
+  do { await new Promise(resolve => requestAnimationFrame(resolve));
+    samples.push({at: performance.now() - started, y: scrollY});
+  } while ((samples.at(-1).at < rule.window || settled() < rule.minimumSettled) && samples.at(-1).at < rule.cap);
+  return {documentStarted: performance.timeOrigin, samples,
+    scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
+    reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+    cards: document.querySelectorAll("#library a.card").length,
+    extent: document.documentElement.scrollHeight - innerHeight,
+    overflow: document.documentElement.scrollWidth - innerWidth};
+}
+
+export function titleFilterOutcome(state, documentStarted, rule) {
+  const settled = state.samples.filter(sample => sample.at >= rule.settleAfter);
+  const gaps = state.samples.map((sample, index) => sample.at - (index ? state.samples[index - 1].at : 0));
+  return {sampleCount: state.samples.length, settledSamples: settled.length, longestFrameGap: Math.round(Math.max(0, ...gaps)),
+    stable: state.documentStarted === documentStarted && settled.length >= rule.minimumSettled &&
+      settled.every(sample => sample.y === 0) && !state.reducedMotion && state.cards === 4 && state.overflow <= 1};
+}
+
 export async function measureTitleFilterFlow(browser, options, results, probe) {
   for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 650},
     {width: 390, height: 844}, {width: 1920, height: 1080}]) {
@@ -261,23 +285,10 @@ export async function measureTitleFilterFlow(browser, options, results, probe) {
       await page.waitForURL(url => !url.searchParams.has("letter"));
       await page.waitForFunction(() => document.querySelectorAll("#library a.card").length === 4 &&
         document.querySelector("#main")?.getAttribute("aria-busy") !== "true");
-      const state = await page.evaluate(async () => {
-        const started = performance.now(), samples = [];
-        do { await new Promise(resolve => requestAnimationFrame(resolve));
-          samples.push({at: performance.now() - started, y: scrollY});
-        } while (samples.at(-1).at < 800);
-        return {documentStarted: performance.timeOrigin, samples,
-          scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior,
-          reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
-          cards: document.querySelectorAll("#library a.card").length,
-          extent: document.documentElement.scrollHeight - innerHeight,
-          overflow: document.documentElement.scrollWidth - innerWidth};
-      });
-      const settled = state.samples.filter(sample => sample.at >= 550);
-      const stable = state.documentStarted === documentStarted && settled.length > 1 &&
-        settled.every(sample => sample.y === 0) && !state.reducedMotion && state.cards === 4 && state.overflow <= 1;
-      results.push({flow: probe.stage, viewport, ...state, stable});
-      if (!stable) throw new Error("Title filtering did not retain the page top");
+      const state = await page.evaluate(sampleTitleFilterFrames, titleFilterSampling);
+      const outcome = titleFilterOutcome(state, documentStarted, titleFilterSampling);
+      results.push({flow: probe.stage, viewport, ...state, ...outcome});
+      if (!outcome.stable) throw new Error("Title filtering did not retain the page top");
       await probe.captureSnapshot(`title-filter-${viewport.width}x${viewport.height}`, page);
     } catch (error) {
       await probe.captureFailure(error, page);
