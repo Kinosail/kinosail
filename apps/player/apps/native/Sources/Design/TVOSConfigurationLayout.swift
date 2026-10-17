@@ -161,6 +161,7 @@ private struct TVPanelSection<Content: View>: View {
                 .padding(.horizontal, 56)
                 .padding(.top, 64)
             content()
+                .padding(.horizontal, 40)
                 .focusSection()
                 .id(layoutID)
                 .accessibilityIdentifier(layoutID)
