@@ -146,7 +146,7 @@ func newApplication(config Config) http.Handler { //nolint:funlen,cyclop,gocogni
 	probe := newMediaProbe(config.FFprobe)
 	probe.ffmpeg, probe.cacheDir = config.FFmpeg, config.CacheDir
 	probe.chapters = newChapterProvider(config.Metadata.ChaptersURL)
-	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Threads: min(4, max(1, runtime.GOMAXPROCS(0)/workload.HeavyCapacity())), Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
+	markers := markerlogic.NewAnalyzer(markerlogic.Config{DataDir: config.DataDir, CacheDir: config.CacheDir, FFmpeg: config.FFmpeg, Fingerprint: config.FPCalc, Database: stateDB, Threads: min(4, max(1, runtime.GOMAXPROCS(0)/workload.HeavyCapacity())), BackgroundSlots: workloads.Metrics().BackgroundCapacity, Acquire: func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) }})
 	probe.markers = markers
 	index := &libraryIndex{Index: catalog.NewDecoratedIndex(config.Lifecycle, settings.roots(), config.CacheDir, config.ScanInterval, func(ctx context.Context) (func(), error) {
 		return workloads.Acquire(ctx, workload.Background)
