@@ -43,7 +43,7 @@ func TestHLSWaitersReturnWithoutLeaksWhenCanceledOrDone(t *testing.T) {
 	source := filepath.Join(root, "movie.mkv")
 	writeTestFile(t, source, "source")
 	quality := PlaybackQuality{Label: "360p", Width: 640, Height: 360, Bitrate: 493_000}
-	baseline := runtime.NumGoroutine()
+	baseline := hlsWaitBaseline(t)
 	ctx, cancel := context.WithCancel(t.Context())
 	done := make(chan struct{})
 	restart := errors.New("producer finished")
@@ -92,9 +92,35 @@ func TestHLSWaitersReturnWithoutLeaksWhenCanceledOrDone(t *testing.T) {
 			t.Fatal("HLS waiter did not return after cancellation")
 		}
 	}
+	assertHLSWatchesReleased(t, root)
 	for start := time.Now(); runtime.NumGoroutine() > baseline; time.Sleep(10 * time.Millisecond) {
 		if time.Since(start) > 2*time.Second {
 			t.Fatalf("goroutines = %d, baseline = %d", runtime.NumGoroutine(), baseline)
+		}
+	}
+}
+
+func assertHLSWatchesReleased(t *testing.T, root string) {
+	t.Helper()
+	hub := hlsWatches
+	hub.mu.Lock()
+	defer hub.mu.Unlock()
+	for directory := range hub.watched {
+		if strings.HasPrefix(directory, root) {
+			t.Errorf("subscription for %s outlived its waiters", directory)
+		}
+	}
+	for directory := range hub.pending {
+		if strings.HasPrefix(directory, root) {
+			t.Errorf("pending subscription for %s outlived its waiters", directory)
+		}
+	}
+	if hub.watcher == nil {
+		return
+	}
+	for _, directory := range hub.watcher.WatchList() {
+		if strings.HasPrefix(directory, root) {
+			t.Errorf("inotify watch for %s outlived its waiters", directory)
 		}
 	}
 }
@@ -197,6 +223,17 @@ func publishHLSTestFile(tb testing.TB, path, content string) time.Time {
 
 func hlsWakeDelay(trial int) time.Duration {
 	return 2*time.Millisecond + time.Duration(trial*7%25)*time.Millisecond
+}
+
+func hlsWaitBaseline(t *testing.T) int {
+	t.Helper()
+	hlsWatches.mu.Lock()
+	ready := hlsWatches.ready(t.Context())
+	hlsWatches.mu.Unlock()
+	if !ready {
+		t.Fatal("shared HLS watch is unavailable")
+	}
+	return runtime.NumGoroutine()
 }
 
 func medianDuration(values []time.Duration) time.Duration {

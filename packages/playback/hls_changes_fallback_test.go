@@ -26,6 +26,7 @@ func TestWaitHLSChangePollsAndWarnsWhenWatchesAreExhausted(t *testing.T) {
 	slog.SetDefault(slog.New(slog.NewTextHandler(&logs, &slog.HandlerOptions{Level: slog.LevelDebug})))
 	t.Cleanup(func() { slog.SetDefault(previous) })
 	hlsWatchWarned.Store(0)
+	useHLSWatchHub(t, newHLSWatchHub())
 	var probes atomic.Int64
 	probe := func() error { probes.Add(1); _, err := os.Stat(target); return err }
 	ready := make(chan bool, 1)
@@ -50,6 +51,7 @@ func TestWaitHLSChangePollsAndWarnsWhenWatchesAreExhausted(t *testing.T) {
 	}
 	canceled, cancel := context.WithCancel(t.Context())
 	cancel()
+	useHLSWatchHub(t, newHLSWatchHub())
 	exhaustFileDescriptors(t, func() {
 		if WaitHLSChange(canceled, []string{directory}, nil, func() error { return os.ErrNotExist }) {
 			t.Error("canceled fallback wait became ready")
@@ -58,6 +60,13 @@ func TestWaitHLSChangePollsAndWarnsWhenWatchesAreExhausted(t *testing.T) {
 	if strings.Count(logs.String(), "HLS change watch unavailable") != 1 {
 		t.Fatalf("repeated watch fallback was not rate limited: %q", logs.String())
 	}
+}
+
+func useHLSWatchHub(t *testing.T, hub *hlsWatchHub) {
+	t.Helper()
+	previous := hlsWatches
+	hlsWatches = hub
+	t.Cleanup(func() { hlsWatches = previous })
 }
 
 func exhaustFileDescriptors(t *testing.T, run func()) {
