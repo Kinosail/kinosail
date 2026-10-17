@@ -201,7 +201,11 @@ func JellyfinMediaStreams(item library.Item, facts MediaFacts, subtitleFormat, q
 		if track.External {
 			continue
 		}
-		stream := map[string]any{"Index": track.SourceIndex, "Type": "Subtitle", "Codec": track.Codec, "Language": track.Language, "DisplayTitle": track.Role, "IsDefault": track.Default, "IsForced": track.Forced, "IsExternal": false, "IsTextSubtitleStream": track.Text}
+		codec := track.Codec
+		if track.Converted {
+			codec = map[bool]string{true: "srt", false: "vtt"}[subtitleFormat == "srt"]
+		}
+		stream := map[string]any{"Index": track.SourceIndex, "Type": "Subtitle", "Codec": codec, "Language": track.Language, "DisplayTitle": track.Role, "IsDefault": track.Default, "IsForced": track.Forced, "IsExternal": false, "IsTextSubtitleStream": track.Text}
 		if track.Text {
 			stream["SupportsExternalStream"], stream["DeliveryMethod"] = true, "External"
 			stream["DeliveryUrl"] = jellyfinSubtitleURL(item, track.SourceIndex, subtitleFormat, query)

@@ -14,6 +14,8 @@ listed license files control. Kinosail's license does not replace them.
 | Jellyfin FFmpeg runtime | 8.1.3-1 | GNU GPL v3 or later for the packaged build | [Exact release, source, and build files](https://github.com/jellyfin/jellyfin-ffmpeg/tree/v8.1.3-1) |
 | FDK AAC stripped library in Jellyfin FFmpeg | stripped5 | Fraunhofer FDK AAC terms | [NOTICE](third_party/fdk-aac-stripped.NOTICE), [source](https://gitlab.freedesktop.org/wtaymans/fdk-aac-stripped/-/tree/stripped5) |
 | libarchive tools | Debian runtime package | BSD-2-Clause and Debian package terms | [libarchive](https://github.com/libarchive/libarchive) |
+| Tesseract OCR and language data | Debian runtime packages | Apache License 2.0 and Debian package terms | [Tesseract](https://github.com/tesseract-ocr/tesseract), [tessdata](https://github.com/tesseract-ocr/tessdata) |
+| Leptonica | Debian runtime package | BSD-2-Clause-style Leptonica license and Debian package terms | [Leptonica](https://github.com/DanBloomberg/leptonica) |
 
 SecLists is used only by repository tests and is not included in the runtime
 image. Jellyfin FFmpeg is installed in the runtime image from its checksum-verified upstream Debian package. The package's own notices remain
@@ -30,6 +32,10 @@ licenses and any later dependency changes.
 
 libarchive tools are used for bounded CB7/7z and CBT/tar comic reads. RAR/CBR
 support is not enabled.
+
+Tesseract reads image subtitles, such as PGS and VobSub, and converts them to
+text tracks in the cache. The package manager installs its notices under
+`/usr/share/doc/tesseract-ocr/copyright`.
 
 Private management includes the following Go dependencies. Their license files
 are included in the shared third-party notices directory in the container.

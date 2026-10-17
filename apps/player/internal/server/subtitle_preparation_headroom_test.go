@@ -67,7 +67,7 @@ func TestSubtitlePreparationLeavesABackgroundSlotForOtherWork(t *testing.T) {
 	}
 	<-done
 	for _, item := range items {
-		if !probe.subtitlePrepared(item, "en") {
+		if !probe.subtitlePrepared(t.Context(), item, "en") {
 			t.Fatalf("item %s was not prepared", item.ID)
 		}
 	}

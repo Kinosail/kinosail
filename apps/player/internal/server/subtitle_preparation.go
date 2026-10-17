@@ -114,7 +114,7 @@ func subtitlePreparationKey(item library.Item, language string) string {
 }
 
 func (preparation *subtitlePreparation) prepareItem(ctx context.Context, item library.Item, language string) error {
-	if preparation.probe.subtitlePrepared(item, language) {
+	if preparation.probe.subtitlePrepared(ctx, item, language) {
 		return nil
 	}
 	for ctx.Err() == nil {
@@ -125,7 +125,7 @@ func (preparation *subtitlePreparation) prepareItem(ctx context.Context, item li
 		if err != nil {
 			return err
 		}
-		work, cancel := context.WithTimeout(workload.WithBackgroundPriority(ctx), 5*time.Minute)
+		work, cancel := context.WithTimeout(workload.WithBackgroundPriority(ctx), 30*time.Minute)
 		finished := make(chan struct{})
 		go preparation.cancelOnForeground(work, cancel, finished)
 		err = preparation.probe.preparePreferredSubtitle(work, item, language)
@@ -153,7 +153,7 @@ func (preparation *subtitlePreparation) cancelOnForeground(work context.Context,
 	}
 }
 
-func (probe *mediaProbe) subtitlePrepared(item library.Item, language string) bool {
+func (probe *mediaProbe) subtitlePrepared(ctx context.Context, item library.Item, language string) bool {
 	preferred, err := canonicalSubtitleLanguage(language)
 	if err != nil || item.Kind != "video" {
 		return err == nil
@@ -163,7 +163,7 @@ func (probe *mediaProbe) subtitlePrepared(item library.Item, language string) bo
 		return false
 	}
 	stream, selected := preferredTextStream(item, facts, preferred)
-	return !selected || probe.core.HasEmbedded(item, stream, probe.cacheDir)
+	return (!selected || probe.core.HasEmbedded(item, stream, probe.cacheDir)) && probe.imageSubtitlesPrepared(ctx, item, facts, preferred)
 }
 
 func preferredTextStream(item library.Item, facts probeResult, preferred string) (int, bool) {
@@ -191,8 +191,12 @@ func (probe *mediaProbe) preparePreferredSubtitle(ctx context.Context, item libr
 	if stream, selected := preferredTextStream(item, probe.core.Facts(ctx, item), preferred); selected {
 		options := probe.embeddedOptions()
 		options.AllTextStreams = true
-		_, err := probe.core.Embedded(ctx, item, stream, options)
+		if _, err = probe.core.Embedded(ctx, item, stream, options); err != nil {
+			return err
+		}
+	}
+	if err = ctx.Err(); err != nil {
 		return err
 	}
-	return ctx.Err()
+	return probe.prepareImageSubtitles(ctx, item, preferred)
 }

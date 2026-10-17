@@ -34,6 +34,7 @@ type SubtitleFacts struct {
 	Index, SourceIndex              int
 	Codec, Language, Role           string
 	Default, Forced, Text, External bool
+	Converted                       bool
 	ExternalIndex                   int
 }
 

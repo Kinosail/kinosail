@@ -66,7 +66,15 @@ External and embedded text subtitles stay a separate text track. Kinosail conver
 
 Kinosail also converts sidecar subtitle files to UTF-8. It reads UTF-8 and UTF-16 byte order marks. For other legacy files, it uses the language code in the filename to choose the encoding. For example, `Movie.ru.srt` uses Windows-1251. A file without a language code uses Windows-1252.
 
-Kinosail burns subtitles into video only when the client cannot show any text subtitle, or when the selected track is an image format such as PGS, VobSub, or DVB. Tone mapping can convert unsupported HDR to SDR.
+Image subtitles, such as PGS from Blu-ray and VobSub from DVD, are pictures of text. Kinosail converts them to text in the background with Tesseract optical character recognition (OCR). The converted track then plays like any other text track. Kinosail converts an image track when all of these are true:
+
+1. The track language matches **Settings → Subtitles → Preferred language**.
+2. The container includes OCR data for that language.
+3. The file has no text track or sidecar in the same language with the same forced setting.
+
+The container includes OCR data for Czech, Danish, Dutch, English, Finnish, French, German, Greek, Hungarian, Italian, Norwegian, Polish, Portuguese, Romanian, Russian, Spanish, Swedish, Turkish, and Ukrainian. A native installation converts image subtitles only when the `tesseract` command and its language data are installed. OCR text can contain recognition errors, and it does not keep the original color or font.
+
+Kinosail burns subtitles into video only when the client cannot show any text subtitle, or when the selected image track has not been converted. Tone mapping can convert unsupported HDR to SDR.
 
 ## Reader and non-video behavior
 

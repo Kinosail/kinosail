@@ -145,7 +145,7 @@ func resolveHLSSubtitle(recipe HLSRecipe, subtitles []SubtitleFacts, sidecars []
 			continue
 		}
 		if subtitle.SourceIndex == recipe.Subtitle && recipe.Burn != "external" {
-			if subtitle.Text != (recipe.Burn == "text") {
+			if (subtitle.Text && !subtitle.Converted) != (recipe.Burn == "text") {
 				return HLSRecipe{}, ErrHLSSource
 			}
 			recipe.SubtitleOrdinal = ordinal

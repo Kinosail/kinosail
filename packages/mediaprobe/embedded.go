@@ -110,7 +110,7 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	probe.ConfigureCache(options.CacheDir)
-	facts := probe.Facts(ctx, item)
+	facts := probe.WithConvertedSubtitles(item, probe.Facts(ctx, item), options.CacheDir)
 	if !textSubtitle(facts, stream) {
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
@@ -121,6 +121,9 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		}
 	} else if data, err := readEmbeddedSubtitle(path); err == nil {
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
+	}
+	if convertedSubtitle(facts, stream) {
+		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	var companions []int
 	if options.AllTextStreams {
@@ -140,6 +143,15 @@ func (probe *Probe) HasEmbedded(item library.Item, stream int, cacheDir string) 
 func textSubtitle(result Result, stream int) bool {
 	for _, subtitle := range result.SubtitleFacts {
 		if subtitle.SourceIndex == stream && subtitle.Text {
+			return true
+		}
+	}
+	return false
+}
+
+func convertedSubtitle(result Result, stream int) bool {
+	for _, subtitle := range result.SubtitleFacts {
+		if subtitle.SourceIndex == stream && subtitle.Converted {
 			return true
 		}
 	}

@@ -162,7 +162,7 @@ func subtitleTrackMaps(tracks []playback.SubtitleFacts, sidecars []string, subti
 		if !includesTrack(subtitles, track.Index) {
 			continue
 		}
-		if !track.Text || track.Codec == "ass" || track.Codec == "ssa" {
+		if !track.Text || track.Converted || track.Codec == "ass" || track.Codec == "ssa" {
 			matroska = true
 		}
 		var err error
