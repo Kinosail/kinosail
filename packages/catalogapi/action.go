@@ -1,9 +1,12 @@
 package catalogapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/MikeO7/kinosail/packages/httpcompress"
 )
 
 type apiAction struct {
@@ -28,4 +31,14 @@ func (action apiAction) serve(writer http.ResponseWriter) {
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.WriteHeader(action.status)
 	_ = json.NewEncoder(writer).Encode(action.body)
+}
+
+func (action apiAction) serveListing(writer http.ResponseWriter, request *http.Request) {
+	var body bytes.Buffer
+	if action.err != nil || action.notFound || action.status != http.StatusOK || json.NewEncoder(&body).Encode(action.body) != nil {
+		action.serve(writer)
+		return
+	}
+	writer.Header().Set("Cache-Control", "no-store")
+	httpcompress.Write(writer, request, "application/json", body.Bytes())
 }

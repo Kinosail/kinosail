@@ -32,8 +32,12 @@ func GzipRequested(request *http.Request) bool {
 }
 
 func WriteWebVTT(writer http.ResponseWriter, request *http.Request, body []byte) {
+	Write(writer, request, "text/vtt; charset=utf-8", body)
+}
+
+func Write(writer http.ResponseWriter, request *http.Request, contentType string, body []byte) {
 	header := writer.Header()
-	header.Set("Content-Type", "text/vtt; charset=utf-8")
+	header.Set("Content-Type", contentType)
 	AddVary(header)
 	if len(body) < MinimumSize || !GzipRequested(request) {
 		header.Set("Content-Length", strconv.Itoa(len(body)))

@@ -10,12 +10,15 @@ import (
 	"github.com/MikeO7/kinosail/packages/library"
 )
 
+const RevalidatedImage = "private, no-cache"
+
 type LibraryFileDependencies struct {
 	Lookup      func(*http.Request, string) (library.Item, bool)
 	Select      func(library.Item) string
 	Safe        func(string) bool
 	NotFound    func(http.ResponseWriter, *http.Request)
 	ContentType string
+	Revalidate  bool
 }
 
 type LibraryDownloadDependencies struct {
@@ -46,6 +49,9 @@ func LibraryFileHandler(dependencies LibraryFileDependencies) http.HandlerFunc {
 		} else if contentType := map[string]string{".m4a": "audio/mp4", ".m4b": "audio/mp4", ".flac": "audio/flac"}[strings.ToLower(filepath.Ext(path))]; contentType != "" {
 			writer.Header().Set("Content-Type", contentType)
 		}
+		if dependencies.Revalidate {
+			writer.Header().Set("Cache-Control", RevalidatedImage)
+		}
 		http.ServeFile(writer, request, path)
 	}
 }
@@ -73,6 +79,7 @@ func LibraryPersonHandler(lookup func(*http.Request, string) (library.Item, bool
 			http.NotFound(writer, request)
 			return
 		}
+		writer.Header().Set("Cache-Control", RevalidatedImage)
 		http.ServeFile(writer, request, item.Cast[person].Image)
 	}
 }

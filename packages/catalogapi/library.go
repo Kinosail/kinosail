@@ -32,6 +32,6 @@ func Library(browse func(*http.Request) (catalog.Result, error), project func(*h
 			"items": items, "view": page.View, "sort": page.Sort, "query": page.Query,
 			"letter": page.Letter, "letters": page.Letters, "total": page.Total,
 			"offset": page.Offset, "limit": page.Limit,
-		}, status: http.StatusOK}.serve(writer)
+		}, status: http.StatusOK}.serveListing(writer, request)
 	}
 }

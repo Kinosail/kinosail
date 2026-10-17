@@ -9,7 +9,7 @@ import (
 
 func registerFiles(mux *http.ServeMux, index *libraryIndex, auth *authentication) {
 	mux.Handle("GET /media/{id}", auth.owner(serveFile(index, playback.MediaPath, "")))
-	mux.HandleFunc("GET /art/{id}", serveFile(index, playback.ArtworkPath, ""))
+	mux.HandleFunc("GET /art/{id}", playback.LibraryFileHandler(playback.LibraryFileDependencies{Lookup: index.VisibleItem, Select: playback.ArtworkPath, Safe: index.Safe, NotFound: localizedNotFound, Revalidate: true}))
 }
 
 func serveFile(index *libraryIndex, selectPath func(library.Item) string, contentType string) http.HandlerFunc {

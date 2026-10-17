@@ -83,7 +83,7 @@ func assertEpisodeStillImages(t *testing.T, handler http.Handler, episodes []epi
 		for attempt := 0; attempt < 2; attempt++ {
 			still := httptest.NewRecorder()
 			handler.ServeHTTP(still, httptest.NewRequestWithContext(t.Context(), http.MethodGet, episode.Artwork, nil))
-			if still.Code != http.StatusOK || still.Header().Get("Content-Type") != "image/jpeg" || still.Body.String() != []string{"first", "second"}[episode.Episode-1] {
+			if still.Code != http.StatusOK || still.Header().Get("Content-Type") != "image/jpeg" || still.Header().Get("Cache-Control") != "private, no-cache" || still.Body.String() != []string{"first", "second"}[episode.Episode-1] {
 				t.Fatalf("episode %s still = %d %q", episode.ID, still.Code, still.Body.String())
 			}
 		}
