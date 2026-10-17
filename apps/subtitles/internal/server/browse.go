@@ -19,7 +19,8 @@ var (
 func browseLibrary(request *http.Request, index *libraryIndex) (catalog.Result, error) {
 	return index.BrowseLibrary(request.Context(), request.URL.Query(), preferredLanguage(request), func() catalog.BrowseAccess {
 		viewer := currentViewer(request)
-		return catalog.NewBrowseAccess(&browseProgressMu, &browseListMu, &browseProgress, &browseListed, viewer.ID, viewer.Owner, viewerPolicy(viewer).Allows)
+		policy := viewerPolicy(viewer)
+		return catalog.NewBrowseAccess(&browseProgressMu, &browseListMu, &browseProgress, &browseListed, viewer.ID, viewer.Owner, policy.Allows).WithPolicy(policy)
 	})
 }
 
