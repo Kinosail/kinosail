@@ -113,6 +113,10 @@ func JSONStatus(writer http.ResponseWriter, value any, status int) {
 	writer.Header().Set("Content-Type", "application/json")
 	writer.Header().Set("Cache-Control", "no-store")
 	writer.WriteHeader(status)
+	if stream, streamed := value.(jsonStream); streamed {
+		writeJSONStream(writer, stream)
+		return
+	}
 	_ = json.NewEncoder(writer).Encode(value)
 }
 

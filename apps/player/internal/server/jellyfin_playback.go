@@ -24,11 +24,6 @@ func (api *jellyfinAPI) newPlaySession(itemID string, viewer viewerProfile, plan
 	return playback.StoreJellyfinPlaySession(&api.plays, now, sharedjellyfin.NewID, session)
 }
 
-func jellyfinMediaSource(item library.Item, facts MediaFacts, plan PlaybackPlan, playID, token string) map[string]any {
-	result, _ := sharedjellyfin.MediaSource(item, facts, plan, playerMediaSourcePolicy(), playID, token)
-	return result
-}
-
 func playerMediaSourcePolicy() sharedjellyfin.MediaSourcePolicy {
 	return sharedjellyfin.MediaSourcePolicy{IncludeToken: true, QueryOnDirectPath: true, TranscodingProtocolField: "TranscodingSubProtocol"}
 }

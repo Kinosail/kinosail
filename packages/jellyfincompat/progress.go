@@ -25,15 +25,12 @@ type OperationError struct {
 	Message string
 }
 
-func ProjectUserDataDTO(item library.Item, state UserState, favorite bool, presentation func(float64) float64) map[string]any {
+func ProjectUserDataDTO(item library.Item, state UserState, favorite bool, presentation func(float64) float64) UserData {
 	if state.Seconds > 0 && item.Kind == "video" && presentation != nil {
 		state.Seconds = presentation(state.Seconds)
 	}
 	id := ID(item.ID)
-	return map[string]any{
-		"ItemId": id, "Key": id, "PlaybackPositionTicks": int64(state.Seconds * 1e7),
-		"Played": state.Watched, "IsFavorite": favorite,
-	}
+	return UserData{ItemID: id, Key: id, PlaybackPositionTicks: int64(state.Seconds * 1e7), Played: state.Watched, IsFavorite: favorite}
 }
 
 func SaveProgress(found bool, ticks int64, save func(float64) (bool, error), invalid func(error) bool) *OperationError {

@@ -1,0 +1,1727 @@
+{
+  "owner GET /Items": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 100000000,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T17:00:00Z",
+          "HasSubtitles": false,
+          "Id": "f2cd31474d9c935e0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Heat",
+          "OfficialRating": "R",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 1995,
+          "ProviderIds": {},
+          "SortName": "Heat",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "f2cd31474d9c935e0000000000000000",
+            "Key": "f2cd31474d9c935e0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "webm",
+          "DateCreated": "2026-03-02T04:00:00Z",
+          "HasSubtitles": false,
+          "Id": "09fa369d96e1028d0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Untitled Short",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProviderIds": {},
+          "SortName": "Untitled Short",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "09fa369d96e1028d0000000000000000",
+            "Key": "09fa369d96e1028d0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "ChildCount": 1,
+          "Id": "4fb59032d1bcbc7b0000000000000000",
+          "IsFolder": true,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Pluribus",
+          "ParentId": "00000000000000000000000000000002",
+          "ProviderIds": {},
+          "SortName": "Pluribus",
+          "Type": "Series",
+          "UserData": {
+            "ItemId": "4fb59032d1bcbc7b0000000000000000",
+            "Key": "4fb59032d1bcbc7b0000000000000000"
+          }
+        },
+        {
+          "ChildCount": 4,
+          "Id": "e5c1355ac78278640000000000000000",
+          "ImageTags": {
+            "Primary": "75e02b0f378f3d5b"
+          },
+          "IsFolder": true,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Severance",
+          "ParentId": "00000000000000000000000000000002",
+          "ProviderIds": {},
+          "SortName": "Severance",
+          "Type": "Series",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000000",
+            "Key": "e5c1355ac78278640000000000000000"
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "jpg",
+          "DateCreated": "2026-03-01T19:00:00Z",
+          "HasSubtitles": false,
+          "Id": "11d5c0b90bd35bf30000000000000000",
+          "ImageTags": {
+            "Primary": "11d5c0b90bd35bf30000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Photo",
+          "Name": "Coast",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "",
+          "ProviderIds": {},
+          "SortName": "Coast",
+          "Type": "Photo",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "11d5c0b90bd35bf30000000000000000",
+            "Key": "11d5c0b90bd35bf30000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp3",
+          "DateCreated": "2026-03-01T15:00:00Z",
+          "HasSubtitles": false,
+          "Id": "ab8b3301e68a9db30000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Audio",
+          "Name": "Reach for the Dead",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "",
+          "ProviderIds": {},
+          "SortName": "Reach for the Dead",
+          "Type": "Audio",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "ab8b3301e68a9db30000000000000000",
+            "Key": "ab8b3301e68a9db30000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 7
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items/Latest?limit=4": {
+    "body": [
+      {
+        "CanDelete": false,
+        "CanDownload": true,
+        "Container": "webm",
+        "DateCreated": "2026-03-02T04:00:00Z",
+        "HasSubtitles": false,
+        "Id": "09fa369d96e1028d0000000000000000",
+        "IsFolder": false,
+        "LocationType": "FileSystem",
+        "MediaSourceCount": 1,
+        "MediaSources": [
+          null
+        ],
+        "MediaType": "Video",
+        "Name": "Untitled Short",
+        "OfficialRating": "",
+        "Overview": "",
+        "ParentId": "00000000000000000000000000000001",
+        "ProviderIds": {},
+        "SortName": "Untitled Short",
+        "Type": "Movie",
+        "UserData": {
+          "IsFavorite": false,
+          "ItemId": "09fa369d96e1028d0000000000000000",
+          "Key": "09fa369d96e1028d0000000000000000",
+          "PlaybackPositionTicks": 0,
+          "Played": false
+        }
+      },
+      {
+        "CanDelete": false,
+        "CanDownload": true,
+        "Container": "jpg",
+        "DateCreated": "2026-03-01T19:00:00Z",
+        "HasSubtitles": false,
+        "Id": "11d5c0b90bd35bf30000000000000000",
+        "ImageTags": {
+          "Primary": "11d5c0b90bd35bf30000000000000000"
+        },
+        "IsFolder": false,
+        "LocationType": "FileSystem",
+        "MediaSourceCount": 1,
+        "MediaSources": [
+          null
+        ],
+        "MediaType": "Photo",
+        "Name": "Coast",
+        "OfficialRating": "",
+        "Overview": "",
+        "ParentId": "",
+        "ProviderIds": {},
+        "SortName": "Coast",
+        "Type": "Photo",
+        "UserData": {
+          "IsFavorite": false,
+          "ItemId": "11d5c0b90bd35bf30000000000000000",
+          "Key": "11d5c0b90bd35bf30000000000000000",
+          "PlaybackPositionTicks": 0,
+          "Played": false
+        }
+      },
+      {
+        "CanDelete": false,
+        "CanDownload": true,
+        "Container": "mkv",
+        "DateCreated": "2026-03-01T17:00:00Z",
+        "HasSubtitles": false,
+        "Id": "f2cd31474d9c935e0000000000000000",
+        "IsFolder": false,
+        "LocationType": "FileSystem",
+        "MediaSourceCount": 1,
+        "MediaSources": [
+          null
+        ],
+        "MediaType": "Video",
+        "Name": "Heat",
+        "OfficialRating": "R",
+        "Overview": "",
+        "ParentId": "00000000000000000000000000000001",
+        "ProductionYear": 1995,
+        "ProviderIds": {},
+        "SortName": "Heat",
+        "Type": "Movie",
+        "UserData": {
+          "IsFavorite": false,
+          "ItemId": "f2cd31474d9c935e0000000000000000",
+          "Key": "f2cd31474d9c935e0000000000000000",
+          "PlaybackPositionTicks": 0,
+          "Played": false
+        }
+      },
+      {
+        "CanDelete": false,
+        "CanDownload": true,
+        "Container": "mp3",
+        "DateCreated": "2026-03-01T15:00:00Z",
+        "HasSubtitles": false,
+        "Id": "ab8b3301e68a9db30000000000000000",
+        "IsFolder": false,
+        "LocationType": "FileSystem",
+        "MediaSourceCount": 1,
+        "MediaSources": [
+          null
+        ],
+        "MediaType": "Audio",
+        "Name": "Reach for the Dead",
+        "OfficialRating": "",
+        "Overview": "",
+        "ParentId": "",
+        "ProviderIds": {},
+        "SortName": "Reach for the Dead",
+        "Type": "Audio",
+        "UserData": {
+          "IsFavorite": false,
+          "ItemId": "ab8b3301e68a9db30000000000000000",
+          "Key": "ab8b3301e68a9db30000000000000000",
+          "PlaybackPositionTicks": 0,
+          "Played": false
+        }
+      }
+    ],
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items/Latest?parentId=missing": {
+    "body": null,
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items/{Arrival}": {
+    "body": {
+      "CanDelete": false,
+      "CanDownload": true,
+      "Container": "mp4",
+      "DateCreated": "2026-03-01T12:00:00Z",
+      "Genres": [
+        "Drama",
+        "Science Fiction"
+      ],
+      "HasSubtitles": true,
+      "Id": "53ae726daeaed3fa0000000000000000",
+      "ImageTags": {
+        "Primary": "53ae726daeaed3fa0000000000000000"
+      },
+      "IsFolder": false,
+      "LocationType": "FileSystem",
+      "MediaSourceCount": 1,
+      "MediaSources": [
+        null
+      ],
+      "MediaType": "Video",
+      "Name": "Arrival",
+      "OfficialRating": "PG-13",
+      "Overview": "A linguist meets visitors.",
+      "ParentId": "00000000000000000000000000000001",
+      "ProductionYear": 2016,
+      "ProviderIds": {
+        "Imdb": "tt2543164",
+        "Tmdb": "329865"
+      },
+      "SortName": "Arrival",
+      "Type": "Movie",
+      "UserData": {
+        "IsFavorite": false,
+        "ItemId": "53ae726daeaed3fa0000000000000000",
+        "Key": "53ae726daeaed3fa0000000000000000",
+        "PlaybackPositionTicks": 100000000,
+        "Played": false
+      }
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items/{Severance Season 1}": {
+    "body": {
+      "ChildCount": 2,
+      "Id": "e5c1355ac78278640000000000000001",
+      "ImageTags": {
+        "Primary": "75e02b0f378f3d5b"
+      },
+      "IndexNumber": 1,
+      "IsFolder": true,
+      "MediaType": "Video",
+      "Name": "Season 1",
+      "ParentId": "e5c1355ac78278640000000000000000",
+      "SeriesId": "e5c1355ac78278640000000000000000",
+      "SeriesName": "Severance",
+      "Type": "Season",
+      "UserData": {
+        "ItemId": "e5c1355ac78278640000000000000001",
+        "Key": "e5c1355ac78278640000000000000001"
+      }
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items/{Severance}": {
+    "body": {
+      "ChildCount": 4,
+      "Id": "e5c1355ac78278640000000000000000",
+      "ImageTags": {
+        "Primary": "75e02b0f378f3d5b"
+      },
+      "IsFolder": true,
+      "LocationType": "FileSystem",
+      "MediaType": "Video",
+      "Name": "Severance",
+      "ParentId": "00000000000000000000000000000002",
+      "ProviderIds": {},
+      "SortName": "Severance",
+      "Type": "Series",
+      "UserData": {
+        "ItemId": "e5c1355ac78278640000000000000000",
+        "Key": "e5c1355ac78278640000000000000000"
+      }
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?ids={Arrival},{S01E01 · Good News}": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 100000000,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 1
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?includeItemTypes=Episode": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T20:00:00Z",
+          "HasSubtitles": false,
+          "Id": "66b35834584c66510000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · We Is Us",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "4fb59032d1bcbc7b0000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "4fb59032d1bcbc7b0000000000000001",
+          "SeriesId": "4fb59032d1bcbc7b0000000000000000",
+          "SeriesName": "Pluribus",
+          "SortName": "S01E01 · We Is Us",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "66b35834584c66510000000000000000",
+            "Key": "66b35834584c66510000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T21:00:00Z",
+          "HasSubtitles": false,
+          "Id": "75e02b0f378f3d5b0000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S00E01 · Main Titles",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentIndexNumber": 0,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S00E01 · Main Titles",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "75e02b0f378f3d5b0000000000000000",
+            "Key": "75e02b0f378f3d5b0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T23:00:00Z",
+          "HasSubtitles": false,
+          "Id": "4e2921a61dcae0a70000000000000000",
+          "ImageTags": {
+            "Primary": "4e2921a61dcae0a70000000000000000"
+          },
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · Good News",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E01 · Good News",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "4e2921a61dcae0a70000000000000000",
+            "Key": "4e2921a61dcae0a70000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": true
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T00:00:00Z",
+          "HasSubtitles": false,
+          "Id": "8a6ee2cb390e09ac0000000000000000",
+          "IndexNumber": 2,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E02 · Half Loop",
+          "OfficialRating": "TV-14",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E02 · Half Loop",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": true,
+            "ItemId": "8a6ee2cb390e09ac0000000000000000",
+            "Key": "8a6ee2cb390e09ac0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T02:00:00Z",
+          "HasSubtitles": false,
+          "Id": "d3754f51becf71890000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S02E01 · Hello Ms Cobel",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000002",
+          "ParentIndexNumber": 2,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000002",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S02E01 · Hello Ms Cobel",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "d3754f51becf71890000000000000000",
+            "Key": "d3754f51becf71890000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 5
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?includeItemTypes=Episode\u0026searchTerm=s0\u0026limit=2\u0026startIndex=1": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T21:00:00Z",
+          "HasSubtitles": false,
+          "Id": "75e02b0f378f3d5b0000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S00E01 · Main Titles",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentIndexNumber": 0,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S00E01 · Main Titles",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "75e02b0f378f3d5b0000000000000000",
+            "Key": "75e02b0f378f3d5b0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T23:00:00Z",
+          "HasSubtitles": false,
+          "Id": "4e2921a61dcae0a70000000000000000",
+          "ImageTags": {
+            "Primary": "4e2921a61dcae0a70000000000000000"
+          },
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · Good News",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E01 · Good News",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "4e2921a61dcae0a70000000000000000",
+            "Key": "4e2921a61dcae0a70000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": true
+          }
+        }
+      ],
+      "StartIndex": 1,
+      "TotalRecordCount": 5
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId=missing": {
+    "body": {
+      "Items": null,
+      "StartIndex": 0,
+      "TotalRecordCount": 0
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId={Severance Season 1}": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T23:00:00Z",
+          "HasSubtitles": false,
+          "Id": "4e2921a61dcae0a70000000000000000",
+          "ImageTags": {
+            "Primary": "4e2921a61dcae0a70000000000000000"
+          },
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · Good News",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E01 · Good News",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "4e2921a61dcae0a70000000000000000",
+            "Key": "4e2921a61dcae0a70000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": true
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T00:00:00Z",
+          "HasSubtitles": false,
+          "Id": "8a6ee2cb390e09ac0000000000000000",
+          "IndexNumber": 2,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E02 · Half Loop",
+          "OfficialRating": "TV-14",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E02 · Half Loop",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": true,
+            "ItemId": "8a6ee2cb390e09ac0000000000000000",
+            "Key": "8a6ee2cb390e09ac0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 2
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId={Severance}": {
+    "body": {
+      "Items": [
+        {
+          "ChildCount": 1,
+          "Id": "e5c1355ac78278640000000000000000",
+          "IndexNumber": 0,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 0",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000000",
+            "Key": "e5c1355ac78278640000000000000000"
+          }
+        },
+        {
+          "ChildCount": 2,
+          "Id": "e5c1355ac78278640000000000000001",
+          "ImageTags": {
+            "Primary": "75e02b0f378f3d5b"
+          },
+          "IndexNumber": 1,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 1",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000001",
+            "Key": "e5c1355ac78278640000000000000001"
+          }
+        },
+        {
+          "ChildCount": 1,
+          "Id": "e5c1355ac78278640000000000000002",
+          "IndexNumber": 2,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 2",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000002",
+            "Key": "e5c1355ac78278640000000000000002"
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 3
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId={movies}": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 100000000,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T17:00:00Z",
+          "HasSubtitles": false,
+          "Id": "f2cd31474d9c935e0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Heat",
+          "OfficialRating": "R",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 1995,
+          "ProviderIds": {},
+          "SortName": "Heat",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "f2cd31474d9c935e0000000000000000",
+            "Key": "f2cd31474d9c935e0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "webm",
+          "DateCreated": "2026-03-02T04:00:00Z",
+          "HasSubtitles": false,
+          "Id": "09fa369d96e1028d0000000000000000",
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Untitled Short",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "00000000000000000000000000000001",
+          "ProviderIds": {},
+          "SortName": "Untitled Short",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "09fa369d96e1028d0000000000000000",
+            "Key": "09fa369d96e1028d0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 3
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Items?parentId={shows}": {
+    "body": {
+      "Items": [
+        {
+          "ChildCount": 1,
+          "Id": "4fb59032d1bcbc7b0000000000000000",
+          "IsFolder": true,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Pluribus",
+          "ParentId": "00000000000000000000000000000002",
+          "ProviderIds": {},
+          "SortName": "Pluribus",
+          "Type": "Series",
+          "UserData": {
+            "ItemId": "4fb59032d1bcbc7b0000000000000000",
+            "Key": "4fb59032d1bcbc7b0000000000000000"
+          }
+        },
+        {
+          "ChildCount": 4,
+          "Id": "e5c1355ac78278640000000000000000",
+          "ImageTags": {
+            "Primary": "75e02b0f378f3d5b"
+          },
+          "IsFolder": true,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Severance",
+          "ParentId": "00000000000000000000000000000002",
+          "ProviderIds": {},
+          "SortName": "Severance",
+          "Type": "Series",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000000",
+            "Key": "e5c1355ac78278640000000000000000"
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 2
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Persons": {
+    "body": {
+      "Items": [],
+      "StartIndex": 0,
+      "TotalRecordCount": 0
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Shows/NextUp": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T20:00:00Z",
+          "HasSubtitles": false,
+          "Id": "66b35834584c66510000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · We Is Us",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "4fb59032d1bcbc7b0000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "4fb59032d1bcbc7b0000000000000001",
+          "SeriesId": "4fb59032d1bcbc7b0000000000000000",
+          "SeriesName": "Pluribus",
+          "SortName": "S01E01 · We Is Us",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "66b35834584c66510000000000000000",
+            "Key": "66b35834584c66510000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T21:00:00Z",
+          "HasSubtitles": false,
+          "Id": "75e02b0f378f3d5b0000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S00E01 · Main Titles",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentIndexNumber": 0,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S00E01 · Main Titles",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "75e02b0f378f3d5b0000000000000000",
+            "Key": "75e02b0f378f3d5b0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 2
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Shows/{Severance}/Episodes": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T21:00:00Z",
+          "HasSubtitles": false,
+          "Id": "75e02b0f378f3d5b0000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S00E01 · Main Titles",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "ParentIndexNumber": 0,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S00E01 · Main Titles",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "75e02b0f378f3d5b0000000000000000",
+            "Key": "75e02b0f378f3d5b0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-01T23:00:00Z",
+          "HasSubtitles": false,
+          "Id": "4e2921a61dcae0a70000000000000000",
+          "ImageTags": {
+            "Primary": "4e2921a61dcae0a70000000000000000"
+          },
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E01 · Good News",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E01 · Good News",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "4e2921a61dcae0a70000000000000000",
+            "Key": "4e2921a61dcae0a70000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": true
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T00:00:00Z",
+          "HasSubtitles": false,
+          "Id": "8a6ee2cb390e09ac0000000000000000",
+          "IndexNumber": 2,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E02 · Half Loop",
+          "OfficialRating": "TV-14",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E02 · Half Loop",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": true,
+            "ItemId": "8a6ee2cb390e09ac0000000000000000",
+            "Key": "8a6ee2cb390e09ac0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T02:00:00Z",
+          "HasSubtitles": false,
+          "Id": "d3754f51becf71890000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S02E01 · Hello Ms Cobel",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000002",
+          "ParentIndexNumber": 2,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000002",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S02E01 · Hello Ms Cobel",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "d3754f51becf71890000000000000000",
+            "Key": "d3754f51becf71890000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 4
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Shows/{Severance}/Episodes?season=2": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T02:00:00Z",
+          "HasSubtitles": false,
+          "Id": "d3754f51becf71890000000000000000",
+          "IndexNumber": 1,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S02E01 · Hello Ms Cobel",
+          "OfficialRating": "",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000002",
+          "ParentIndexNumber": 2,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000002",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S02E01 · Hello Ms Cobel",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "d3754f51becf71890000000000000000",
+            "Key": "d3754f51becf71890000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 1
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Shows/{Severance}/Seasons": {
+    "body": {
+      "Items": [
+        {
+          "ChildCount": 1,
+          "Id": "e5c1355ac78278640000000000000000",
+          "IndexNumber": 0,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 0",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000000",
+            "Key": "e5c1355ac78278640000000000000000"
+          }
+        },
+        {
+          "ChildCount": 2,
+          "Id": "e5c1355ac78278640000000000000001",
+          "ImageTags": {
+            "Primary": "75e02b0f378f3d5b"
+          },
+          "IndexNumber": 1,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 1",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000001",
+            "Key": "e5c1355ac78278640000000000000001"
+          }
+        },
+        {
+          "ChildCount": 1,
+          "Id": "e5c1355ac78278640000000000000002",
+          "IndexNumber": 2,
+          "IsFolder": true,
+          "MediaType": "Video",
+          "Name": "Season 2",
+          "ParentId": "e5c1355ac78278640000000000000000",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "Type": "Season",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000002",
+            "Key": "e5c1355ac78278640000000000000002"
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 3
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /UserItems/Resume": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": true,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 100000000,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 1
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /UserViews": {
+    "body": {
+      "Items": [
+        {
+          "CollectionType": "movies",
+          "Id": "00000000000000000000000000000001",
+          "IsFolder": true,
+          "Name": "Movies",
+          "SortName": "Movies",
+          "Type": "CollectionFolder"
+        },
+        {
+          "CollectionType": "tvshows",
+          "Id": "00000000000000000000000000000002",
+          "IsFolder": true,
+          "Name": "Shows",
+          "SortName": "Shows",
+          "Type": "CollectionFolder"
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 2
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "owner GET /Users/{user}/Items/{S01E01 · Good News}": {
+    "body": {
+      "CanDelete": false,
+      "CanDownload": true,
+      "Container": "mkv",
+      "DateCreated": "2026-03-01T23:00:00Z",
+      "HasSubtitles": false,
+      "Id": "4e2921a61dcae0a70000000000000000",
+      "ImageTags": {
+        "Primary": "4e2921a61dcae0a70000000000000000"
+      },
+      "IndexNumber": 1,
+      "IsFolder": false,
+      "LocationType": "FileSystem",
+      "MediaSourceCount": 1,
+      "MediaSources": [
+        null
+      ],
+      "MediaType": "Video",
+      "Name": "S01E01 · Good News",
+      "OfficialRating": "",
+      "Overview": "",
+      "ParentId": "e5c1355ac78278640000000000000001",
+      "ParentIndexNumber": 1,
+      "ProviderIds": {},
+      "SeasonId": "e5c1355ac78278640000000000000001",
+      "SeriesId": "e5c1355ac78278640000000000000000",
+      "SeriesName": "Severance",
+      "SortName": "S01E01 · Good News",
+      "Type": "Episode",
+      "UserData": {
+        "IsFavorite": false,
+        "ItemId": "4e2921a61dcae0a70000000000000000",
+        "Key": "4e2921a61dcae0a70000000000000000",
+        "PlaybackPositionTicks": 0,
+        "Played": true
+      }
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "teen GET /Items": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": false,
+          "Container": "mp4",
+          "DateCreated": "2026-03-01T12:00:00Z",
+          "Genres": [
+            "Drama",
+            "Science Fiction"
+          ],
+          "HasSubtitles": true,
+          "Id": "53ae726daeaed3fa0000000000000000",
+          "ImageTags": {
+            "Primary": "53ae726daeaed3fa0000000000000000"
+          },
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "Arrival",
+          "OfficialRating": "PG-13",
+          "Overview": "A linguist meets visitors.",
+          "ParentId": "00000000000000000000000000000001",
+          "ProductionYear": 2016,
+          "ProviderIds": {
+            "Imdb": "tt2543164",
+            "Tmdb": "329865"
+          },
+          "SortName": "Arrival",
+          "Type": "Movie",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "53ae726daeaed3fa0000000000000000",
+            "Key": "53ae726daeaed3fa0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        },
+        {
+          "ChildCount": 1,
+          "Id": "e5c1355ac78278640000000000000000",
+          "ImageTags": {
+            "Primary": "8a6ee2cb390e09ac"
+          },
+          "IsFolder": true,
+          "LocationType": "FileSystem",
+          "MediaType": "Video",
+          "Name": "Severance",
+          "ParentId": "00000000000000000000000000000002",
+          "ProviderIds": {},
+          "SortName": "Severance",
+          "Type": "Series",
+          "UserData": {
+            "ItemId": "e5c1355ac78278640000000000000000",
+            "Key": "e5c1355ac78278640000000000000000"
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 2
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "teen GET /Items/Latest": {
+    "body": [
+      {
+        "CanDelete": false,
+        "CanDownload": false,
+        "Container": "mp4",
+        "DateCreated": "2026-03-01T12:00:00Z",
+        "Genres": [
+          "Drama",
+          "Science Fiction"
+        ],
+        "HasSubtitles": true,
+        "Id": "53ae726daeaed3fa0000000000000000",
+        "ImageTags": {
+          "Primary": "53ae726daeaed3fa0000000000000000"
+        },
+        "IsFolder": false,
+        "LocationType": "FileSystem",
+        "MediaSourceCount": 1,
+        "MediaSources": [
+          null
+        ],
+        "MediaType": "Video",
+        "Name": "Arrival",
+        "OfficialRating": "PG-13",
+        "Overview": "A linguist meets visitors.",
+        "ParentId": "00000000000000000000000000000001",
+        "ProductionYear": 2016,
+        "ProviderIds": {
+          "Imdb": "tt2543164",
+          "Tmdb": "329865"
+        },
+        "SortName": "Arrival",
+        "Type": "Movie",
+        "UserData": {
+          "IsFavorite": false,
+          "ItemId": "53ae726daeaed3fa0000000000000000",
+          "Key": "53ae726daeaed3fa0000000000000000",
+          "PlaybackPositionTicks": 0,
+          "Played": false
+        }
+      },
+      {
+        "ChildCount": 1,
+        "Id": "e5c1355ac78278640000000000000000",
+        "ImageTags": {
+          "Primary": "8a6ee2cb390e09ac"
+        },
+        "IsFolder": true,
+        "LocationType": "FileSystem",
+        "MediaType": "Video",
+        "Name": "Severance",
+        "ParentId": "00000000000000000000000000000002",
+        "ProviderIds": {},
+        "SortName": "Severance",
+        "Type": "Series",
+        "UserData": {
+          "ItemId": "e5c1355ac78278640000000000000000",
+          "Key": "e5c1355ac78278640000000000000000"
+        }
+      }
+    ],
+    "contentType": "application/json",
+    "status": 200
+  },
+  "teen GET /Items/{Arrival}": {
+    "body": {
+      "CanDelete": false,
+      "CanDownload": false,
+      "Container": "mp4",
+      "DateCreated": "2026-03-01T12:00:00Z",
+      "Genres": [
+        "Drama",
+        "Science Fiction"
+      ],
+      "HasSubtitles": true,
+      "Id": "53ae726daeaed3fa0000000000000000",
+      "ImageTags": {
+        "Primary": "53ae726daeaed3fa0000000000000000"
+      },
+      "IsFolder": false,
+      "LocationType": "FileSystem",
+      "MediaSourceCount": 1,
+      "MediaSources": [
+        null
+      ],
+      "MediaType": "Video",
+      "Name": "Arrival",
+      "OfficialRating": "PG-13",
+      "Overview": "A linguist meets visitors.",
+      "ParentId": "00000000000000000000000000000001",
+      "ProductionYear": 2016,
+      "ProviderIds": {
+        "Imdb": "tt2543164",
+        "Tmdb": "329865"
+      },
+      "SortName": "Arrival",
+      "Type": "Movie",
+      "UserData": {
+        "IsFavorite": false,
+        "ItemId": "53ae726daeaed3fa0000000000000000",
+        "Key": "53ae726daeaed3fa0000000000000000",
+        "PlaybackPositionTicks": 0,
+        "Played": false
+      }
+    },
+    "contentType": "application/json",
+    "status": 200
+  },
+  "teen GET /Items?includeItemTypes=Episode": {
+    "body": {
+      "Items": [
+        {
+          "CanDelete": false,
+          "CanDownload": false,
+          "Container": "mkv",
+          "DateCreated": "2026-03-02T00:00:00Z",
+          "HasSubtitles": false,
+          "Id": "8a6ee2cb390e09ac0000000000000000",
+          "IndexNumber": 2,
+          "IsFolder": false,
+          "LocationType": "FileSystem",
+          "MediaSourceCount": 1,
+          "MediaSources": [
+            null
+          ],
+          "MediaType": "Video",
+          "Name": "S01E02 · Half Loop",
+          "OfficialRating": "TV-14",
+          "Overview": "",
+          "ParentId": "e5c1355ac78278640000000000000001",
+          "ParentIndexNumber": 1,
+          "ProviderIds": {},
+          "SeasonId": "e5c1355ac78278640000000000000001",
+          "SeriesId": "e5c1355ac78278640000000000000000",
+          "SeriesName": "Severance",
+          "SortName": "S01E02 · Half Loop",
+          "Type": "Episode",
+          "UserData": {
+            "IsFavorite": false,
+            "ItemId": "8a6ee2cb390e09ac0000000000000000",
+            "Key": "8a6ee2cb390e09ac0000000000000000",
+            "PlaybackPositionTicks": 0,
+            "Played": false
+          }
+        }
+      ],
+      "StartIndex": 0,
+      "TotalRecordCount": 1
+    },
+    "contentType": "application/json",
+    "status": 200
+  }
+}

@@ -12,11 +12,11 @@ func TestProgressAndFavoriteSemanticsUsePlayerCopy(t *testing.T) {
 	t.Parallel()
 	item := library.Item{ID: "1234567890abcdef"}
 	data := ProjectUserDataDTO(item, UserState{Seconds: 1.25, Watched: true}, true, nil)
-	if data["PlaybackPositionTicks"] != int64(12_500_000) || data["Played"] != true || data["IsFavorite"] != true {
+	if data.PlaybackPositionTicks != 12_500_000 || !data.Played || !data.IsFavorite {
 		t.Fatalf("user data = %#v", data)
 	}
 	projected := ProjectUserDataDTO(library.Item{ID: item.ID, Kind: "video"}, UserState{Seconds: 2}, false, func(seconds float64) float64 { return seconds / 2 })
-	if projected["PlaybackPositionTicks"] != int64(10_000_000) {
+	if projected.PlaybackPositionTicks != 10_000_000 {
 		t.Fatalf("projected user data = %#v", projected)
 	}
 

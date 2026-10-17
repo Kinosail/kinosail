@@ -1,6 +1,7 @@
 package jellyfincompat
 
 import (
+	"encoding/json"
 	"net/url"
 	"reflect"
 	"testing"
@@ -50,7 +51,7 @@ func TestCatalogProjectsViewsItemsAndHierarchy(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertResultCount(t, result, 0)
-	if result["StartIndex"] != 3 || result["TotalRecordCount"] != 3 {
+	if result.StartIndex != 3 || result.TotalRecordCount != 3 {
 		t.Fatalf("paged result = %#v", result)
 	}
 
@@ -117,7 +118,11 @@ func TestCatalogFeedsAndQueryHelpers(t *testing.T) {
 	catalog := fixtureCatalog(items)
 
 	latest, err := catalog.Latest(url.Values{"Limit": {"1"}})
-	if err != nil || len(latest) != 1 || latest[0]["Name"] != "Photo" {
+	var newest []ItemRecord
+	if err == nil {
+		err = json.Unmarshal(mustMarshal(t, latest), &newest)
+	}
+	if err != nil || len(newest) != 1 || newest[0].Name != "Photo" {
 		t.Fatalf("latest = %#v, %v", latest, err)
 	}
 	if _, err = catalog.Latest(url.Values{"ids": {"one", "two"}}); err == nil {
@@ -144,49 +149,47 @@ func TestCatalogFeedsAndQueryHelpers(t *testing.T) {
 func TestDTOProjectionUsesPlayerContract(t *testing.T) {
 	t.Parallel()
 	movie := catalogFixture()[0]
-	options := ItemOptions{CanDownload: true, UserData: map[string]any{"Played": true}, MediaSource: map[string]any{"Id": "source"}}
+	options := ItemOptions{CanDownload: true, UserData: UserData{Played: true}}
 	dto := ItemDTO(movie, options)
-	for key, want := range map[string]any{"Type": "Movie", "MediaType": "Video", "CanDownload": true, "ProductionYear": 2024} {
-		if dto[key] != want {
-			t.Fatalf("movie %s = %#v, want %#v", key, dto[key], want)
-		}
+	if dto.Type != "Movie" || dto.MediaType != "Video" || !dto.CanDownload || dto.ProductionYear == nil || *dto.ProductionYear != 2024 {
+		t.Fatalf("movie = %#v", dto)
 	}
-	if _, ok := dto["ImageTags"]; !ok {
+	if dto.ImageTags == nil {
 		t.Fatal("movie image tag missing")
 	}
-	if !reflect.DeepEqual(dto["Genres"], []string{"Drama", "Mystery"}) {
-		t.Fatalf("genres = %#v", dto["Genres"])
+	if !reflect.DeepEqual(dto.Genres, []string{"Drama", "Mystery"}) {
+		t.Fatalf("genres = %#v", dto.Genres)
 	}
 
 	episode := catalogFixture()[1]
 	episodeDTO := ItemDTO(episode, options)
-	if episodeDTO["Type"] != "Episode" || episodeDTO["SeriesName"] != "Display Show" || episodeDTO["IndexNumber"] != 1 {
+	if episodeDTO.Type != "Episode" || episodeDTO.EpisodeRecord == nil || episodeDTO.SeriesName != "Display Show" || episodeDTO.IndexNumber != 1 {
 		t.Fatalf("episode = %#v", episodeDTO)
 	}
 	episode.ShowTitle, episode.Year, episode.Genres, episode.Artwork = "", "invalid", "", ""
-	if fallback := ItemDTO(episode, options); fallback["SeriesName"] != "Raw Show" {
-		t.Fatalf("fallback series = %#v", fallback["SeriesName"])
+	if fallback := ItemDTO(episode, options); fallback.SeriesName != "Raw Show" {
+		t.Fatalf("fallback series = %#v", fallback.SeriesName)
 	}
 
 	audio := ItemDTO(library.Item{ID: "audio0000000001", Kind: "audio"}, options)
 	photo := ItemDTO(library.Item{ID: "photo0000000001", Kind: "photo"}, options)
-	if audio["Type"] != "Audio" || audio["MediaType"] != "Audio" || photo["Type"] != "Photo" || photo["MediaType"] != "Photo" {
+	if audio.Type != "Audio" || audio.MediaType != "Audio" || photo.Type != "Photo" || photo.MediaType != "Photo" {
 		t.Fatalf("media kinds = %#v %#v", audio, photo)
 	}
 
 	episode.Artwork = "episode.jpg"
 	showWithArt := library.Show{ID: ShowID("Raw Show"), Title: "Display Show", ArtworkID: "episode00000001", Episodes: []library.Item{episode}}
-	if _, ok := SeriesDTO(showWithArt)["ImageTags"]; !ok {
+	if SeriesDTO(showWithArt).ImageTags == nil {
 		t.Fatal("series image tag missing")
 	}
 	showWithoutArt := library.Show{ID: "show00000000001", Title: "No Art"}
-	if _, ok := SeriesDTO(showWithoutArt)["ImageTags"]; ok {
+	if SeriesDTO(showWithoutArt).ImageTags != nil {
 		t.Fatal("unexpected series image tag")
 	}
-	if _, ok := SeasonDTO(showWithArt, 1)["ImageTags"]; !ok {
+	if SeasonDTO(showWithArt, 1).ImageTags == nil {
 		t.Fatal("season image tag missing")
 	}
-	if _, ok := SeasonDTO(showWithoutArt, 2)["ImageTags"]; ok {
+	if SeasonDTO(showWithoutArt, 2).ImageTags != nil {
 		t.Fatal("unexpected season image tag")
 	}
 
@@ -199,7 +202,7 @@ func TestDTOProjectionUsesPlayerContract(t *testing.T) {
 	if !reflect.DeepEqual(Seasons(library.Show{Episodes: []library.Item{{Season: 2}, {Season: 1}, {Season: 2}}}), []int{1, 2}) {
 		t.Fatal("seasons were not unique and sorted")
 	}
-	if FolderDTO("id", "Name", "kind")["CollectionType"] != "kind" {
+	if FolderDTO("id", "Name", "kind").CollectionType != "kind" {
 		t.Fatal("folder collection mismatch")
 	}
 }
@@ -218,14 +221,23 @@ func fixtureCatalog(items []library.Item) Catalog {
 	return NewCatalog(library.NewSnapshot(items, 1).View(library.NewPolicy(true, "", nil)), fixtureProject)
 }
 
-func fixtureProject(item library.Item) map[string]any {
-	return ItemDTO(item, ItemOptions{UserData: ProjectUserDataDTO(item, UserState{}, false, nil), MediaSource: map[string]any{"Id": item.ID}})
+func fixtureProject(item library.Item) ItemRecord {
+	return ItemDTO(item, ItemOptions{UserData: ProjectUserDataDTO(item, UserState{}, false, nil)})
 }
 
-func assertResultCount(t *testing.T, result map[string]any, want int) {
+func assertResultCount(t *testing.T, result Page, want int) {
 	t.Helper()
-	items, ok := result["Items"].([]map[string]any)
-	if !ok || len(items) != want {
-		t.Fatalf("items = %#v, want %d", result["Items"], want)
+	var page struct{ Items []json.RawMessage }
+	if err := json.Unmarshal(mustMarshal(t, result), &page); err != nil || len(page.Items) != want {
+		t.Fatalf("items = %#v, want %d: %v", result.Items, want, err)
 	}
+}
+
+func mustMarshal(t *testing.T, value any) []byte {
+	t.Helper()
+	data, err := json.Marshal(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return data
 }

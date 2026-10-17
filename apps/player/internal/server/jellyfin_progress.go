@@ -84,7 +84,7 @@ func (api *jellyfinAPI) favorite(writer http.ResponseWriter, request *http.Reque
 	jellyfinJSON(writer, api.userDataDTO(request, item))
 }
 
-func (api *jellyfinAPI) userDataDTO(request *http.Request, item library.Item) map[string]any {
+func (api *jellyfinAPI) userDataDTO(request *http.Request, item library.Item) sharedjellyfin.UserData {
 	return api.projectUserData(request, item, func(seconds float64) float64 { return api.jellyfinPresentationSeconds(request, item, seconds) })
 }
 
@@ -92,7 +92,7 @@ func (api *jellyfinAPI) jellyfinPresentationSeconds(request *http.Request, item 
 	return api.presentationSeconds(api.probe.inspect(request.Context(), item), seconds)
 }
 
-func (api *jellyfinAPI) listingUserDataDTO(request *http.Request, item library.Item) map[string]any {
+func (api *jellyfinAPI) listingUserDataDTO(request *http.Request, item library.Item) sharedjellyfin.UserData {
 	return api.projectUserData(request, item, func(seconds float64) float64 {
 		media, found := api.probe.cachedFacts(item)
 		if !found {
@@ -102,7 +102,7 @@ func (api *jellyfinAPI) listingUserDataDTO(request *http.Request, item library.I
 	})
 }
 
-func (api *jellyfinAPI) projectUserData(request *http.Request, item library.Item, present func(float64) float64) map[string]any {
+func (api *jellyfinAPI) projectUserData(request *http.Request, item library.Item, present func(float64) float64) sharedjellyfin.UserData {
 	state := api.progress.Get(request, item.ID)
 	var presentation func(float64) float64
 	if viewer := currentViewer(request); viewer.Owner || viewer.Transcode {
