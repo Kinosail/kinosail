@@ -20,7 +20,7 @@ type MediaProgress interface {
 	ClientItem(*http.Request, library.Item) any
 	Dismiss(*http.Request, string) error
 	Get(*http.Request, string) catalog.PlaybackState
-	History(*http.Request, []library.Item) []library.Item
+	History(*http.Request, []library.Item, catalog.Page) ([]library.Item, int)
 	SetRevision(*http.Request, string, float64, *bool, string, uint64) (bool, error)
 }
 

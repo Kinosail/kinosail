@@ -155,11 +155,11 @@ func (store *RequestProgressStore) SetReaderPosition(request *http.Request, id s
 	return err
 }
 
-func (store *RequestProgressStore) History(request *http.Request, items []library.Item) []library.Item {
+func (store *RequestProgressStore) History(request *http.Request, items []library.Item, page Page) ([]library.Item, int) {
 	store.mu.RLock()
 	defer store.mu.RUnlock()
 	viewer := store.viewer(request)
-	return ProgressHistory(store.values, viewer.ID, viewer.Owner, items)
+	return ProgressHistoryPage(store.values, viewer.ID, viewer.Owner, items, page)
 }
 
 func (store *RequestProgressStore) Dismiss(request *http.Request, id string) error {
