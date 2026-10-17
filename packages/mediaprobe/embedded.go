@@ -26,13 +26,15 @@ const embeddedSubtitleLimit = 16 << 20
 var (
 	ErrEmbeddedSubtitleStream = errors.New("embedded subtitle stream is unsupported")
 	errEmbeddedSubtitleOutput = errors.New("subtitle output is empty or too large")
+	errInvalidFFmpeg          = errors.New("invalid FFmpeg executable")
 )
 
 type EmbeddedOptions struct {
-	FFmpeg     string
-	CacheDir   string
-	Enrichment Enrichment
-	Timeline   *playback.Timeline
+	FFmpeg         string
+	CacheDir       string
+	Enrichment     Enrichment
+	Timeline       *playback.Timeline
+	AllTextStreams bool
 }
 
 type EmbeddedSubtitle struct {
@@ -108,7 +110,8 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	probe.ConfigureCache(options.CacheDir)
-	if !textSubtitle(probe.Facts(ctx, item), stream) {
+	facts := probe.Facts(ctx, item)
+	if !textSubtitle(facts, stream) {
 		return EmbeddedSubtitle{}, ErrEmbeddedSubtitleStream
 	}
 	path := embeddedSubtitlePath(options.CacheDir, item, stream)
@@ -119,7 +122,11 @@ func (probe *Probe) Embedded(ctx context.Context, item library.Item, stream int,
 	} else if data, err := readEmbeddedSubtitle(path); err == nil {
 		return presentEmbeddedSubtitle(path, data, options.Timeline), nil
 	}
-	data, err := probe.embeddedData(ctx, item, stream, options, path)
+	var companions []int
+	if options.AllTextStreams {
+		companions = embeddedCompanions(facts, item, stream, options.CacheDir)
+	}
+	data, err := probe.embeddedData(ctx, item, stream, options, path, companions)
 	if err != nil {
 		return EmbeddedSubtitle{}, err
 	}
@@ -168,9 +175,13 @@ func presentEmbeddedSubtitle(path string, data []byte, timeline *playback.Timeli
 	return EmbeddedSubtitle{Data: data}
 }
 
+func validFFmpegExecutable(ffmpeg string) bool {
+	return ffmpeg != "" && len(ffmpeg) <= 4096 && !strings.ContainsRune(ffmpeg, '\x00')
+}
+
 func extractEmbeddedSubtitle(ctx context.Context, ffmpeg, media string, stream int) ([]byte, error) {
-	if ffmpeg == "" || len(ffmpeg) > 4096 || strings.ContainsRune(ffmpeg, '\x00') {
-		return nil, errors.New("invalid FFmpeg executable")
+	if !validFFmpegExecutable(ffmpeg) {
+		return nil, errInvalidFFmpeg
 	}
 	output := boundedOutput{remaining: embeddedSubtitleLimit + 1}
 	//nolint:gosec // The executable is installation config. The media path is scanned content. The stream index is probe-validated.

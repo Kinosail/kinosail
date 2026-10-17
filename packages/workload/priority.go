@@ -24,6 +24,10 @@ func RunContext(ctx context.Context, command *exec.Cmd) error {
 	return command.Run()
 }
 
+func StartBackground(command *exec.Cmd) error {
+	return startBackground(command)
+}
+
 func RunBackground(command *exec.Cmd) error {
 	if err := startBackground(command); err != nil {
 		return err

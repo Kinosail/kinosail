@@ -21,6 +21,7 @@ type subtitlePreparation struct {
 	waitIdle func(context.Context) error
 	busy     func() bool
 	started  func() <-chan struct{}
+	workers  int
 	mu       sync.Mutex
 	prepared map[string]string
 }
@@ -29,12 +30,7 @@ func (probe *mediaProbe) scheduleSubtitles(ctx context.Context, index *libraryIn
 	if probe.ffmpeg == "" || probe.cacheDir == "" {
 		return
 	}
-	probe.core.ConfigureCache(probe.cacheDir)
-	preparation := &subtitlePreparation{
-		probe: probe, language: settings.subtitleLanguage, prepared: make(map[string]string),
-		acquire:  func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) },
-		waitIdle: maintenance.WaitIdle, busy: maintenance.Busy, started: maintenance.ForegroundStarted,
-	}
+	preparation := newSubtitlePreparation(probe, settings.subtitleLanguage, workloads, maintenance)
 	pending := make(chan []library.Item, 1)
 	index.AddAnalyzer(func(items []library.Item) {
 		select {
@@ -44,6 +40,15 @@ func (probe *mediaProbe) scheduleSubtitles(ctx context.Context, index *libraryIn
 		pending <- items
 	})
 	go preparation.run(ctx, pending)
+}
+
+func newSubtitlePreparation(probe *mediaProbe, language func() string, workloads *workload.Governor, maintenance *maintenanceManager) *subtitlePreparation {
+	probe.core.ConfigureCache(probe.cacheDir)
+	return &subtitlePreparation{
+		probe: probe, language: language, prepared: make(map[string]string), workers: min(subtitlePreparationWorkers, workloads.Metrics().BackgroundCapacity-1),
+		acquire:  func(ctx context.Context) (func(), error) { return workloads.Acquire(ctx, workload.Background) },
+		waitIdle: maintenance.WaitIdle, busy: maintenance.Busy, started: maintenance.ForegroundStarted,
+	}
 }
 
 func (preparation *subtitlePreparation) run(ctx context.Context, pending <-chan []library.Item) {
@@ -61,7 +66,7 @@ func (preparation *subtitlePreparation) prepare(ctx context.Context, items []lib
 	language := preparation.language()
 	work := make(chan library.Item)
 	var workers sync.WaitGroup
-	for range subtitlePreparationWorkers {
+	for range max(1, preparation.workers) {
 		workers.Go(func() { preparation.work(ctx, work, language) })
 	}
 	present := make(map[string]bool, len(items))
@@ -184,7 +189,9 @@ func (probe *mediaProbe) preparePreferredSubtitle(ctx context.Context, item libr
 		return nil
 	}
 	if stream, selected := preferredTextStream(item, probe.core.Facts(ctx, item), preferred); selected {
-		_, _, err := probe.extractEmbedded(ctx, item, stream)
+		options := probe.embeddedOptions()
+		options.AllTextStreams = true
+		_, err := probe.core.Embedded(ctx, item, stream, options)
 		return err
 	}
 	return ctx.Err()

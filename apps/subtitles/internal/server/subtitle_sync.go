@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MikeO7/kinosail/packages/library"
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 const (
@@ -124,7 +125,7 @@ func (synchronizer *subtitleSynchronizer) extractAudio(ctx context.Context, medi
 	if err != nil {
 		return subtitleAudioReference{}, errors.New("audio analysis failed")
 	}
-	if err = command.Start(); err != nil {
+	if err = workload.StartBackground(command); err != nil {
 		return subtitleAudioReference{}, errors.New("audio analysis failed")
 	}
 	reference, readErr := processSubtitleAudio(stdout, subtitleWorkerCount(), synchronizer.slots)

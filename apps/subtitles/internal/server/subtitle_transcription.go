@@ -15,6 +15,8 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/MikeO7/kinosail/packages/workload"
 )
 
 func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media string, stream int, language, model, architecture string, duration float64, workspace string) (cleanedSubtitle, []subtitleDraftWord, error) {
@@ -30,11 +32,11 @@ func localSubtitleTranscription(ctx context.Context, ffmpeg, whisper, media stri
 	defer os.RemoveAll(directory)
 	wav, output := filepath.Join(directory, "audio.wav"), filepath.Join(directory, "transcript")
 	command := exec.CommandContext(ctx, ffmpeg, "-v", "error", "-nostdin", "-i", media, "-map", "0:"+strconv.Itoa(stream), "-vn", "-ac", "1", "-ar", "16000", "-t", strconv.FormatFloat(duration, 'f', 3, 64), "-fs", "1000000000", "-c:a", "pcm_s16le", wav)
-	if err = command.Run(); err != nil {
+	if err = workload.RunBackground(command); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
 	command = exec.CommandContext(ctx, whisper, "--model", model, "--language", language, "--file", wav, "--output-json-full", "--output-file", output, "--dtw", architecture, "--max-len", "42", "--split-on-word", "--threads", strconv.Itoa(min(runtime.GOMAXPROCS(0), 8)), "--no-prints")
-	if err = command.Run(); err != nil {
+	if err = workload.RunBackground(command); err != nil {
 		return cleanedSubtitle{}, nil, err
 	}
 	file, err := os.Open(output + ".json")
