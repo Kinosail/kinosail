@@ -1,7 +1,6 @@
 package identitycore
 
 import (
-	"maps"
 	"sort"
 	"strings"
 	"time"
@@ -46,47 +45,22 @@ func (sessions *Sessions) RevokeAll() error {
 	return sessions.replace(func(map[string]Session) (map[string]Session, error) { return map[string]Session{}, nil })
 }
 
-func (sessions *Sessions) put(key string, session Session) error {
-	values := sessions.values()
-	previous, existed := values[key]
-	values[key] = session
-	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
-		if existed {
-			values[key] = previous
-		} else {
-			delete(values, key)
-		}
-		return err
-	}
-	return nil
-}
-
 func (sessions *Sessions) remove(selectKeys func(map[string]Session) ([]string, error)) error {
 	if !sessions.valid() {
 		return ErrCurrentSession
 	}
 	sessions.config.Mutex.Lock()
-	defer sessions.config.Mutex.Unlock()
-	values := sessions.values()
-	keys, err := selectKeys(values)
+	keys, err := selectKeys(sessions.values())
 	if err != nil {
+		sessions.config.Mutex.Unlock()
 		return err
 	}
-	removed := make(map[string]Session, len(keys))
-	for _, key := range keys {
-		if session, found := values[key]; found {
-			removed[key] = session
-			delete(values, key)
-		}
-	}
-	if len(removed) == 0 {
+	change := applySessionChange(sessions.values(), nil, keys)
+	sessions.config.Mutex.Unlock()
+	if change.empty() {
 		return nil
 	}
-	if err := sessions.config.Persist(sessions.config.File, values); err != nil {
-		maps.Copy(values, removed)
-		return err
-	}
-	return nil
+	return sessions.persistChange(change)
 }
 
 func (sessions *Sessions) replace(next func(map[string]Session) (map[string]Session, error)) error {
