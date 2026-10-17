@@ -74,14 +74,21 @@ try {
     await ac.suspend();
     const module = URL.createObjectURL(new Blob([`
       class Capture extends AudioWorkletProcessor {
-        constructor(options) {super();this.limit=options.processorOptions.limit;this.pcm=[];this.blocks=[];this.leading=0;this.active=true;
-          this.port.onmessage=()=>{this.active=false;this.port.postMessage({pcm:this.pcm,blocks:this.blocks,leadingSilentFrames:this.leading});};}
+        constructor(options) {super();this.limit=options.processorOptions.limit;this.stallLimit=options.processorOptions.stallLimit;
+          this.pcm=[];this.blocks=[];this.leading=0;this.zeros=0;this.waited=false;this.stalled=0;this.active=true;
+          this.port.onmessage=event=>{if(event.data==='waiting'){this.waited=true;return;}
+            this.settle();this.active=false;this.port.postMessage({pcm:this.pcm,blocks:this.blocks,leadingSilentFrames:this.leading,stalledSilentFrames:this.stalled});};}
+        settle() {if(this.waited && this.stalled+this.zeros<=this.stallLimit)this.stalled+=this.zeros;else for(let i=0;i<this.zeros;i++)this.pcm.push(0);
+          this.zeros=0;this.waited=false;}
         process(inputs) {const data=inputs[0]?.[0];
           if(this.active && data && this.pcm.length+data.length<=this.limit && this.blocks.length<65536) {
             if(this.blocks.length===0)this.port.postMessage({first:true,frame:currentFrame});
             this.blocks.push({frame:currentFrame,length:data.length});
-            if(this.pcm.length===0 && data.every(value=>value===0))this.leading+=data.length;
+            const silent=data.every(value=>value===0);
+            if(this.pcm.length===0 && silent)this.leading+=data.length;
+            else if(silent)this.zeros+=data.length;
             else {
+              if(this.zeros)this.settle();
               if(this.pcm.length===0)this.port.postMessage({onset:true,frame:currentFrame});
               for(let i=0;i<data.length;i++)this.pcm.push(data[i]);
             }
@@ -92,7 +99,8 @@ try {
       registerProcessor('qa-long-audio',Capture);`],{type:'text/javascript'}));
     await ac.audioWorklet.addModule(module);URL.revokeObjectURL(module);
     const worklet = new AudioWorkletNode(ac,'qa-long-audio',{channelCount:1,channelCountMode:'explicit',
-      processorOptions:{limit:Math.ceil((span+1)*rate)}});
+      processorOptions:{limit:Math.ceil((span+1)*rate),stallLimit:2*rate}});
+    video.addEventListener('waiting',()=>worklet.port.postMessage('waiting'));
     const done = new Promise(resolve => worklet.port.onmessage = event => {
       if(event.data.first)checkpoint('first-worklet-message',event.data.frame);
       else if(event.data.onset)checkpoint('first-audio-message',event.data.frame);else resolve(event.data);
