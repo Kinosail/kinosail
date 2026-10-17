@@ -21,7 +21,10 @@ class CoverageEvidenceTests(unittest.TestCase):
         self.assertNotIn('coverage_diagnostic', (ROOT / '.github/workflows/ci.yml').read_text())
         script = (ROOT / 'scripts/ci/test-go.sh').read_text()
         self.assertIn('player|subtitles) directory="apps/$1"; minimum=89', script)
-        self.assertIn('go test -race -count=1 -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...', script)
+        self.assertIn('go test -race -count=1 -timeout=40m -coverpkg=./... -covermode=atomic -coverprofile="$profile" ./...', script)
+        deep = (ROOT / '.github/workflows/deep.yml').read_text()
+        race_job = deep.split('  race:\n', 1)[1].split('\n  browser:', 1)[0]
+        self.assertIn('timeout-minutes: 45', race_job)
 
 
 if __name__ == '__main__':
