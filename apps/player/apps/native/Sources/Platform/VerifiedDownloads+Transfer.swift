@@ -67,7 +67,9 @@
     func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
       if let (_, id) = planTasks.removeValue(forKey: task.taskIdentifier) {
         if let error, var plan = plans[id] {
-          if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: plan.retries ?? 0) {
+          if (error as NSError).domain == NSURLErrorDomain, (error as NSError).code == NSURLErrorCancelled {
+            plan.status = "preparing"; plan.error = ""
+          } else if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: plan.retries ?? 0) {
             plan.retries = (plan.retries ?? 0) + 1
             plan.retryAt = Date(timeIntervalSinceNow: max(15, delay))
           } else {
@@ -80,7 +82,11 @@
       guard let extent = tasks.removeValue(forKey: task.taskIdentifier), var job = jobs[extent.id] else { return }
       progress.removeValue(forKey: task.taskIdentifier)
       if let error, job.status != "paused" {
-        if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: job.retries) {
+        if (error as NSError).domain == NSURLErrorDomain, (error as NSError).code == NSURLErrorCancelled {
+          job.retries += 1
+          if job.retries < 5 { job.status = "queued"; job.error = ""; job.retryAt = nil }
+          else { job.retries = 5; job.status = "paused"; job.error = "Download interrupted. Resume to continue." }
+        } else if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: job.retries) {
           job.retryAt = Date(timeIntervalSinceNow: delay); job.retries += 1; job.status = "waiting"; job.error = "Connection interrupted. Retrying automatically."
         } else {
           job.status = "paused"; job.error = "Download interrupted. Resume to continue."

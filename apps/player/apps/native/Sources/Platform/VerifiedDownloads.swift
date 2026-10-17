@@ -116,8 +116,8 @@
               self.tasks[task.taskIdentifier] = (task, extent.id, extent.first, extent.count)
             }
             for (id, var job) in self.jobs where job.status != "complete" {
-              if !self.tasks.values.contains(where: { $0.id == id }), job.status != "paused" {
-                job.status = "queued"
+              if !self.tasks.values.contains(where: { $0.id == id }), job.status != "paused" || job.error == "Download interrupted. Resume to continue." {
+                job.status = "queued"; if job.error == "Download interrupted. Resume to continue." { job.error = "" }
               }
               self.jobs[id] = job
             }
