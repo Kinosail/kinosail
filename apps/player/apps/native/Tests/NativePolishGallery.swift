@@ -44,7 +44,6 @@ import WebKit
             ("tabs", AnyView(TabPreferencesScreen())), ("supporter", AnyView(SupporterScreen())),
             ("approval", AnyView(ApprovalScreen(showsDismiss: true))), ("cast", AnyView(PlayOnTVScreen(itemID: "movie"))),
             ("downloads-empty", AnyView(DownloadsScreen())), ("bookmarks-empty", AnyView(BookmarksScreen(itemID: "movie"))),
-            ("progress-sync", AnyView(ProgressSyncScreen())),
             ("reader", AnyView(ReaderScreen(itemID: "book"))), ("photo", AnyView(PhotoScreen(itemID: "photo")))
         ]
         for (name, screen) in screens where mode != "confirm" || ["reader", "approval", "cast"].contains(name) {
@@ -64,8 +63,7 @@ import WebKit
         try await render(AnyView(SupporterScreen()), name: "supporter-empty", scene: scene, session: session)
         let disconnected = AppSession()
         for (name, screen) in [("preferences-failed", AnyView(OfflinePreferencesScreen())), ("reader-failed", AnyView(ReaderScreen(itemID: "book"))),
-                               ("photo-failed", AnyView(PhotoScreen(itemID: "photo"))), ("bookmarks-failed", AnyView(BookmarksScreen(itemID: "movie"))),
-                               ("sync-failed", AnyView(ProgressSyncScreen()))] {
+                               ("photo-failed", AnyView(PhotoScreen(itemID: "photo"))), ("bookmarks-failed", AnyView(BookmarksScreen(itemID: "movie")))] {
             try await render(screen, name: name, scene: scene, session: disconnected)
         }
     }

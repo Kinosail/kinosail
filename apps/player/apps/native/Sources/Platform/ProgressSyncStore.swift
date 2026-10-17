@@ -61,7 +61,7 @@ actor ProgressSyncStore {
             if next[index].progress.session == entry.progress.session { next[index].progress = entry.progress }
             else { next[index] = entry }
         } else {
-            guard next.count < 50 else { throw ClientError.invalidInput("Open Progress sync to save your pending positions before starting more titles.") }
+            guard next.count < 50 else { throw ClientError.invalidInput("Too many positions are waiting to sync. Reconnect to the Server before starting more titles.") }
             next.append(entry)
         }
         try persist(next)
@@ -76,8 +76,9 @@ actor ProgressSyncStore {
         var results: [String: ProgressSyncResult] = [:]
         repeat {
             syncRequested = false
-            for entry in entries where entry.conflict == nil {
+            for entry in entries {
                 try Task.checkCancellation()
+                if let remote = entry.conflict { try settle(entry, against: remote); syncRequested = true; continue }
                 let result: ProgressSyncResult
                 do { result = try await client.syncProgress(itemID: entry.itemID, progress: entry.progress, expected: entry.expected, playbackToken: "") }
                 catch ClientError.http(let status) where status == 404 || status == 410 {
@@ -87,7 +88,7 @@ actor ProgressSyncStore {
                 }
                 guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { continue }
                 var next = entries
-                if result.conflict { next[index].conflict = result.progress }
+                if result.conflict { try settle(entry, against: result.progress); syncRequested = true; results[entry.itemID] = result; continue }
                 else if next[index].progress == entry.progress { next.remove(at: index) }
                 else { next[index].expected = result.progress }
                 try persist(next)
@@ -97,15 +98,12 @@ actor ProgressSyncStore {
         return results
     }
 
-    func resolve(itemID: String, useDevice: Bool) throws {
-        let id = try Input.id(itemID)
-        try load()
-        guard let index = entries.firstIndex(where: { $0.itemID == id }), let remote = entries[index].conflict else {
-            throw ClientError.invalidInput("These saved positions have changed. Reopen Progress sync.")
-        }
+    private func settle(_ entry: PendingProgress, against remote: WatchProgress) throws {
+        guard let index = entries.firstIndex(where: { $0.itemID == entry.itemID }) else { return }
         var next = entries
-        if useDevice { next[index].expected = remote; next[index].conflict = nil }
+        if entry.progress.seconds >= remote.seconds { next[index].expected = remote; next[index].conflict = nil }
         else { next.remove(at: index) }
+        progressSyncLog.info("operation=progress-sync outcome=conflict-auto-resolved kept=\(entry.progress.seconds >= remote.seconds ? "device" : "server", privacy: .public) item=\(entry.itemID, privacy: .public)")
         try persist(next)
     }
 

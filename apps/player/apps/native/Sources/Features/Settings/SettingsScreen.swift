@@ -43,7 +43,6 @@ struct SettingsScreen: View {
                 NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Downloads", systemImage: "arrow.down.circle") }
                 NavigationLink(value: ScreenDestination.readerPreferences) { Label("Reader", systemImage: "book") }
                 #endif
-                NavigationLink(value: ScreenDestination.progressSync) { Label("Progress sync", systemImage: "arrow.triangle.2.circlepath") }
             }
             Section("Personalize") {
                 #if os(iOS)
