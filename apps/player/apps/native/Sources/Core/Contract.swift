@@ -2,11 +2,11 @@ import Foundation
 import Darwin
 
 enum ClientError: LocalizedError, Equatable {
-    case invalidInput(String), invalidResponse, http(Int), unavailable, secureStorage, discovery
+    case invalidInput(String), invalidResponse, http(Int), retryAfter(Int), unavailable, secureStorage, discovery
 
     var permitsOfflineRestore: Bool {
         switch self {
-        case .unavailable, .http(408), .http(429), .http(500), .http(502), .http(503), .http(504): true
+        case .unavailable, .retryAfter, .http(408), .http(429), .http(500), .http(502), .http(503), .http(504): true
         default: false
         }
     }
@@ -18,6 +18,7 @@ enum ClientError: LocalizedError, Equatable {
         case .invalidInput(let message): message
         case .invalidResponse: "Could not read the Server’s response. Try again."
         case .unavailable: "Could not reach Kinosail Server. Check your connection and try again."
+        case .retryAfter: "Your Server is still getting ready. Kinosail will try again shortly."
         case .http(401): "Your session has expired. Connect to your Server again."
         case .http(403): "This Viewer Profile cannot use that feature."
         case .http(404): "The requested title is no longer available."

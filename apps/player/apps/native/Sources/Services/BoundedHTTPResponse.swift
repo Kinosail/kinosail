@@ -45,13 +45,21 @@ final class BoundedHTTPResponse: NSObject, URLSessionDataDelegate, Sendable {
         let allowed = state.withLock { state in
             guard state.result == nil else { return false }
             guard let http = response as? HTTPURLResponse, http.url == url else { state.error = ClientError.invalidResponse; return false }
-            guard expected.contains(http.statusCode) else { state.error = ClientError.http(http.statusCode); return false }
+            guard expected.contains(http.statusCode) else { state.error = Self.failure(http); return false }
             guard http.expectedContentLength <= maximum else { state.error = ClientError.invalidResponse; return false }
             state.response = http
             state.data.reserveCapacity(min(maximum, max(0, Int(http.expectedContentLength))))
             return true
         }
         completionHandler(allowed ? .allow : .cancel)
+    }
+
+    static func failure(_ response: HTTPURLResponse) -> ClientError {
+        guard response.statusCode == 503, let value = response.value(forHTTPHeaderField: "Retry-After"),
+              (1...4).contains(value.count), value.allSatisfy({ $0.isASCII && $0.isNumber }), let seconds = Int(value) else {
+            return .http(response.statusCode)
+        }
+        return .retryAfter(min(max(seconds, 1), 60))
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {

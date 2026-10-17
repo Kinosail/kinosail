@@ -17,6 +17,7 @@ struct PlaybackSafeFailure: Encodable, Sendable {
             switch client {
             case .http(let status):
                 kind = .http; code = (100...599).contains(status) ? status : nil
+            case .retryAfter: kind = .http; code = 503
             case .invalidInput(let message):
                 kind = message == "Could not skip to that position. Try again." ? .seekUnfinished : .invalidInput
                 code = nil
