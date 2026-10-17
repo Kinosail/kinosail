@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func (manager *subtitleManager) fetchWeb(writer http.ResponseWriter, request *http.Request) {
@@ -102,6 +104,7 @@ func (manager *subtitleManager) statusAPI(writer http.ResponseWriter, request *h
 	}
 	data, err := manager.projection(request, options)
 	if err != nil {
+		library.MarkLoadingRetry(writer.Header(), err)
 		apiError(writer, errors.New("subtitle library is unavailable"), http.StatusServiceUnavailable)
 		return
 	}

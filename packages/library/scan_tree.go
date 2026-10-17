@@ -45,6 +45,7 @@ type sidecarStamp struct {
 type scanFailures struct {
 	directories atomic.Int64
 	files       atomic.Int64
+	retained    atomic.Int64
 	class       atomic.Value
 }
 

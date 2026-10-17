@@ -87,4 +87,6 @@ type Page[Show, Resume, Playlist, Collection any] struct {
 	HomeArtwork, HomeShowTitle        map[string]string
 	UpdateAvailable                   bool
 	CommandMenu                       bool
+	Loading                           bool
+	RetryAfter                        int
 }

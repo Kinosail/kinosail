@@ -147,17 +147,28 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 	}
 	now := sessions.config.Now()
 	sessions.config.Mutex.Lock()
-	defer sessions.config.Mutex.Unlock()
+	token, change, err := sessions.prepareSession(profileID, name, browser, strong, channel, revision, deviceKey, now)
+	sessions.config.Mutex.Unlock()
+	if err != nil {
+		return "", err
+	}
+	if err := sessions.persistChange(change); err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+func (sessions *Sessions) prepareSession(profileID, name string, browser, strong bool, channel string, revision *uint64, deviceKey string, now time.Time) (string, sessionChange, error) {
 	profile, found := findSessionProfile(sessions.config.Profiles(), profileID)
 	if !found || profile.Disabled || profile.Deleted {
-		return "", ErrProfileNotFound
+		return "", sessionChange{}, ErrProfileNotFound
 	}
 	if err := validateSessionAuthority(profile, channel, revision, deviceKey); err != nil {
-		return "", err
+		return "", sessionChange{}, err
 	}
 	publicInactive, publicAbsolute := sessions.TimeoutsFor(Session{Channel: "public"})
 	if channel == "public" && activePublic(*sessions.config.Values, profileID, now.Unix(), publicInactive, publicAbsolute) >= publicSessionLimit {
-		return "", ErrPublicLimit
+		return "", sessionChange{}, ErrPublicLimit
 	}
 	expires := now.Add(30 * 24 * time.Hour)
 	if browser {
@@ -177,14 +188,11 @@ func (sessions *Sessions) create(profileID, name string, browser, strong bool, c
 	}
 	token := sessions.config.NewToken()
 	if !ValidSessionToken(token) {
-		return "", ErrSessionToken
+		return "", sessionChange{}, ErrSessionToken
 	}
 	inactive, _ := sessions.TimeoutsFor(Session{Channel: channel})
 	created := Session{InactiveSeconds: browserInactiveSeconds(browser, inactive), ManagementDevice: deviceKey, ProfileID: profileID, ExpiresAt: expires.Unix(), Name: CleanDeviceName(name), CreatedAt: now.Unix(), LastSeen: now.Unix(), Browser: browser, StrongAt: strongAt, Channel: channel, ProfileRevision: profile.Revision}
-	if err := sessions.put(SessionKey(token), created); err != nil {
-		return "", err
-	}
-	return token, nil
+	return token, applySessionChange(sessions.values(), map[string]Session{SessionKey(token): created}, nil), nil
 }
 
 func (sessions *Sessions) MarkStrong(token string) error {
@@ -193,13 +201,15 @@ func (sessions *Sessions) MarkStrong(token string) error {
 	}
 	key := SessionKey(token)
 	sessions.config.Mutex.Lock()
-	defer sessions.config.Mutex.Unlock()
 	current, found := (*sessions.config.Values)[key]
 	if !found {
+		sessions.config.Mutex.Unlock()
 		return ErrCurrentSession
 	}
 	current.StrongAt = sessions.config.Now().Unix()
-	return sessions.put(key, current)
+	change := applySessionChange(sessions.values(), map[string]Session{key: current}, nil)
+	sessions.config.Mutex.Unlock()
+	return sessions.persistChange(change)
 }
 
 func (sessions *Sessions) RecentlyAuthenticated(token string, maximumAge time.Duration) bool {

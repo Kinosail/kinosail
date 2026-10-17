@@ -146,6 +146,7 @@ func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) {
 		{name: "repeated header", header: []string{"1", "1"}, wantStatus: http.StatusBadRequest},
 		{name: "bad browse", sourceErr: catalog.ErrInvalidBrowse, wantStatus: http.StatusBadRequest},
 		{name: "index failure", sourceErr: internal, wantStatus: http.StatusInternalServerError},
+		{name: "library loading fragment", header: []string{"1"}, sourceErr: library.ErrLoading, wantStatus: http.StatusServiceUnavailable},
 		{name: "full render failure", viewErr: internal},
 		{name: "fragment render failure", header: []string{"1"}, viewErr: internal, fragment: true},
 	}
@@ -174,5 +175,37 @@ func TestHandlerPreservesFragmentAndErrorBoundaries(t *testing.T) {
 				t.Fatalf("non-landing page used personal state %d times", source.personalCalls)
 			}
 		})
+	}
+}
+
+type writingView struct{ data any }
+
+func (view *writingView) Execute(writer http.ResponseWriter, _ *http.Request, data any) error {
+	view.data = data
+	_, err := writer.Write([]byte("loading page"))
+	return err
+}
+
+func (view *writingView) ExecuteTemplate(http.ResponseWriter, *http.Request, string, any) error {
+	panic("loading page rendered a fragment")
+}
+
+func TestHandlerRendersTheLibraryLoadingPageWhileTheFirstScanRuns(t *testing.T) {
+	shell := NewShell("Home Server", true, "Sam", "sam", []navigation.Link{{Href: "/"}}, nil, true)
+	source := &testSource{err: library.ErrLoading, shell: shell}
+	view := &writingView{}
+	failed := false
+	response := httptest.NewRecorder()
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "http://example.test/?view=movies", nil)
+	NewHandler[string, string, string, string](source, view, true, func(http.ResponseWriter, *http.Request, string, int) { failed = true })(response, request)
+	page, ok := view.data.(Page[string, string, string, string])
+	if failed || !ok || !page.Loading || page.RetryAfter != library.LoadingRetrySeconds || page.ServerName != "Home Server" || !page.Owner || page.View != "all" || !page.CommandMenu || !page.UpdateAvailable || len(page.NavigationPrimary) != 1 {
+		t.Fatalf("loading page failed=%v data=%+v", failed, view.data)
+	}
+	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "5" || response.Header().Get("Cache-Control") != "no-store" || response.Header().Get("Content-Type") != "text/html; charset=utf-8" || response.Body.String() != "loading page" {
+		t.Fatalf("loading response = %d %v %q", response.Code, response.Header(), response.Body.String())
+	}
+	if source.personalCalls != 0 {
+		t.Fatal("loading page read personal state")
 	}
 }

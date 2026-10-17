@@ -28,7 +28,7 @@ func storeWithClaim(now time.Time, token string, expiry int64) *Store {
 			Shares:   map[string]Share{shareID: {ID: shareID, ItemIDs: []string{"item"}, ClaimHash: sessionKey(token), ExpiresAt: expiry, MaxDevices: 1, RightsAcknowledged: true}},
 			Sessions: make(map[string]Session),
 		},
-		persist: func(string, any) error { return nil }, active: make(map[string]int), now: func() time.Time { return now },
+		persist: func(string, any) error { return nil }, active: make(map[string]map[string]int), now: func() time.Time { return now },
 		random: bytes.NewReader(bytes.Repeat([]byte{7}, 64)),
 	}
 }
@@ -53,7 +53,7 @@ func TestRevokeRemovesOnlyMatchingSessions(t *testing.T) {
 			Shares:   map[string]Share{shareID: {ID: shareID}, otherID: {ID: otherID}},
 			Sessions: map[string]Session{"matching": {ShareID: shareID}, "other": {ShareID: otherID}},
 		},
-		persist: func(string, any) error { return nil }, active: make(map[string]int),
+		persist: func(string, any) error { return nil }, active: make(map[string]map[string]int),
 	}
 	if err := store.Revoke(shareID); err != nil {
 		t.Fatal(err)

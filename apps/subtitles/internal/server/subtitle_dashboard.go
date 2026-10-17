@@ -71,6 +71,8 @@ type subtitleDashboardData struct {
 	NextURL            string                   `json:"nextURL,omitempty"`
 	FilterURL          string                   `json:"-"`
 	LoadFailed         bool                     `json:"-"`
+	LibraryLoading     bool                     `json:"-"`
+	RetryAfter         int                      `json:"-"`
 	Pending            int                      `json:"pending"`
 	Unavailable        int                      `json:"unavailable"`
 	ServerName         string                   `json:"serverName"`
@@ -142,6 +144,10 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
 	writer.Header().Set("X-Accel-Buffering", "no")
 	shell := subtitleDashboardData{ServerName: manager.settings.serverName(), Owner: true, subtitleDashboardOptions: options}
+	if _, err := manager.index.Library(); library.MarkLoadingRetry(writer.Header(), err) {
+		shell.LibraryLoading, shell.RetryAfter = true, library.LoadingRetrySeconds
+		writer.WriteHeader(http.StatusServiceUnavailable)
+	}
 	if err := subtitleDashboardView.ExecuteTemplate(writer, request, "shell", shell); err != nil {
 		return
 	}
@@ -149,6 +155,10 @@ func (manager *subtitleManager) dashboard(writer http.ResponseWriter, request *h
 		return
 	}
 	if request.Context().Err() != nil {
+		return
+	}
+	if shell.LibraryLoading {
+		_ = subtitleDashboardView.ExecuteTemplate(writer, request, "content", shell)
 		return
 	}
 	data, err := manager.projection(request, options)

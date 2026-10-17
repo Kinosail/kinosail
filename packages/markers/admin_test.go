@@ -99,8 +99,14 @@ func TestAdminRoutesPreserveNotFoundAndUnavailableResponses(t *testing.T) {
 		t.Fatalf("oversized ID status = %d", response.Code)
 	}
 	response = markerRequest(t, mux, http.MethodPost, "/api/v1/marker-analysis", "", "")
-	if response.Code != http.StatusServiceUnavailable {
-		t.Fatalf("unavailable status = %d", response.Code)
+	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "" {
+		t.Fatalf("unavailable status = %d Retry-After=%q", response.Code, response.Header().Get("Retry-After"))
+	}
+	loading := http.NewServeMux()
+	RegisterAdmin(loading, testAdmin(analyzer, library.Item{}, library.ErrLoading))
+	response = markerRequest(t, loading, http.MethodPost, "/api/v1/marker-analysis", "", "")
+	if response.Code != http.StatusServiceUnavailable || response.Header().Get("Retry-After") != "5" {
+		t.Fatalf("loading status = %d Retry-After=%q", response.Code, response.Header().Get("Retry-After"))
 	}
 }
 

@@ -27,6 +27,7 @@ func ownJellyfinUser(next http.HandlerFunc) http.HandlerFunc {
 func (api *jellyfinAPI) views(writer http.ResponseWriter, request *http.Request) {
 	view, err := visibleView(request, api.index)
 	if err != nil {
+		library.MarkLoadingRetry(writer.Header(), err)
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}
@@ -36,6 +37,7 @@ func (api *jellyfinAPI) views(writer http.ResponseWriter, request *http.Request)
 func (api *jellyfinAPI) items(writer http.ResponseWriter, request *http.Request) {
 	view, err := visibleView(request, api.index)
 	if err != nil {
+		library.MarkLoadingRetry(writer.Header(), err)
 		http.Error(writer, "library is unavailable", http.StatusServiceUnavailable)
 		return
 	}

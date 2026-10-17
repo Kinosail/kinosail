@@ -46,7 +46,7 @@ func (index *Index) titleReferences(ctx context.Context, key titleOrderKey, loca
 	index.mu.Lock()
 	version := index.titleOrderVersion
 	snapshot := index.current.Load()
-	err := index.err
+	err := availabilityError(index.err)
 	if index.ready {
 		err = nil
 	}

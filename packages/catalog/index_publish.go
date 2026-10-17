@@ -9,11 +9,14 @@ import (
 )
 
 type Decoration struct {
-	Apply      func([]library.Item) []library.Item
-	Enrich     func(context.Context, []library.Item) []library.Item
-	Enriches   func(library.Item) bool
-	Background bool
+	Apply       func([]library.Item) []library.Item
+	Enrich      func(context.Context, []library.Item) []library.Item
+	Enriches    func(library.Item) bool
+	Background  bool
+	StartupWait time.Duration
 }
+
+const ManagedStartupWait = 5 * time.Second
 
 type enrichedItem struct {
 	raw, value library.Item
@@ -23,7 +26,9 @@ func (index *Index) commit(ctx context.Context, raw []library.Item, err error, a
 	if err != nil {
 		index.mu.Lock()
 		index.err = err
+		kept := index.ready
 		index.mu.Unlock()
+		logScanFailure(err, kept)
 		return err
 	}
 	if !index.background {

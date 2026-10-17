@@ -85,6 +85,8 @@ var (
 	PWANavigation   = append(append([]byte(nil), pwaNavigation...), pwaBrowseReturn...)
 	//go:embed static/pwa-settings.js
 	PWASettings []byte
+	//go:embed static/library-loading.js
+	LibraryLoading []byte
 	//go:embed static/shortcuts.js
 	Shortcuts []byte
 	//go:embed static/supporter.js
