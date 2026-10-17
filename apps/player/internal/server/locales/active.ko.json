@@ -2042,5 +2042,13 @@
   {
     "id": "Document",
     "other": "문서"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "라이브러리를 스캔하는 중"
+  },
+  {
+    "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
+    "other": "Kinosail이 미디어 폴더를 읽는 중입니다. 스캔이 완료되면 여기에 라이브러리가 표시됩니다."
   }
 ]

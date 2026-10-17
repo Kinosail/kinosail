@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "あなたのライブラリ"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "ライブラリをスキャンしています"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles がメディア フォルダーを読み込んでいます。スキャンが完了すると、ここに字幕の対応状況が表示されます。"
   }
 ]

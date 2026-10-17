@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "내 도서관"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "라이브러리를 스캔하는 중"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles가 미디어 폴더를 읽는 중입니다. 스캔이 완료되면 여기에 자막 현황이 표시됩니다."
   }
 ]

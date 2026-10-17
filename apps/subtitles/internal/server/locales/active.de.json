@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "Ihre Bibliothek"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "Ihre Bibliothek wird gescannt"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles liest Ihre Medienordner. Die Untertitelabdeckung erscheint hier, sobald der Scan abgeschlossen ist."
   }
 ]

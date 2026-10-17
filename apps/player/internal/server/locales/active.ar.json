@@ -2042,5 +2042,13 @@
   {
     "id": "Document",
     "other": "المستند"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "جارٍ فحص مكتبتك"
+  },
+  {
+    "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
+    "other": "يقرأ Kinosail مجلدات الوسائط لديك. ستظهر مكتبتك هنا عند اكتمال الفحص."
   }
 ]

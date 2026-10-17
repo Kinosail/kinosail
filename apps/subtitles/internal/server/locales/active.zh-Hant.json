@@ -1250,5 +1250,13 @@
   {
     "id": "Your library",
     "other": "您的图书馆"
+  },
+  {
+    "id": "Scanning your Library",
+    "other": "正在掃描您的媒體庫"
+  },
+  {
+    "id": "Kinosail Subtitles is reading your media folders. Subtitle coverage appears here when the scan is complete.",
+    "other": "Kinosail Subtitles 正在讀取您的媒體資料夾。掃描完成後，字幕覆蓋情況將顯示在這裡。"
   }
 ]
