@@ -18,7 +18,7 @@ func registerFiles(mux *http.ServeMux, index *libraryIndex, probe *mediaProbe, w
 	mux.HandleFunc("GET /subtitle/{id}/embedded/{stream}", probe.serveEmbedded(index))
 	mux.HandleFunc("GET /art/{id}", serveArtwork(index))
 	mux.HandleFunc("GET /episode-art/{id}", serveEpisodeStill(index, probe, workloads))
-	mux.HandleFunc("GET /backdrop/{id}", serveImage(index, playback.BackdropPath))
+	mux.HandleFunc("GET /backdrop/{id}", serveFile(index, playback.BackdropPath, ""))
 	mux.HandleFunc("GET /person/{id}/{person}", playback.LibraryPersonHandler(index.VisibleItem))
 }
 
@@ -58,7 +58,6 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 			}
 		}
 		writer.Header().Set("Content-Type", "image/jpeg")
-		writer.Header().Set("Cache-Control", playback.RevalidatedImage)
 		http.ServeFile(writer, request, target)
 	}
 }
@@ -88,7 +87,7 @@ func serveArtwork(index *libraryIndex) http.HandlerFunc {
 		if len(variant) == 1 {
 			selectPath = episodeArtworkPath
 		}
-		serveImage(index, selectPath)(writer, request)
+		serveFile(index, selectPath, "")(writer, request)
 	}
 }
 
@@ -103,10 +102,6 @@ func canDownload(request *http.Request) bool {
 
 func serveFile(index *libraryIndex, selectPath func(library.Item) string, contentType string) http.HandlerFunc {
 	return playback.LibraryFileHandler(playback.LibraryFileDependencies{Lookup: index.VisibleItem, Select: selectPath, Safe: index.Safe, NotFound: localizedNotFound, ContentType: contentType})
-}
-
-func serveImage(index *libraryIndex, selectPath func(library.Item) string) http.HandlerFunc {
-	return playback.LibraryFileHandler(playback.LibraryFileDependencies{Lookup: index.VisibleItem, Select: selectPath, Safe: index.Safe, NotFound: localizedNotFound, Revalidate: true})
 }
 
 func serveSubtitle(index *libraryIndex) http.HandlerFunc {

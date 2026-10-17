@@ -12,13 +12,12 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
 type wireLibrary struct {
-	media, poster string
-	ids           map[string]string
-	direct        []byte
+	media  string
+	ids    map[string]string
+	direct []byte
 }
 
 func (fixture AssetsFixture) CatalogListingsCompressWithoutChangingMediaOrPages(t *testing.T, listings ...string) {
@@ -41,40 +40,6 @@ func (fixture AssetsFixture) CatalogListingsCompressWithoutChangingMediaOrPages(
 	}
 	if partial.Code != http.StatusPartialContent || partial.Header().Get("Content-Encoding") != "" || partial.Header().Get("Content-Range") != fmt.Sprintf("bytes 2-9/%d", len(populated.direct)) || !bytes.Equal(partial.Body.Bytes(), populated.direct[2:10]) {
 		t.Fatalf("direct media range = %d %v %q", partial.Code, partial.Header(), partial.Body.Bytes())
-	}
-}
-
-func (fixture AssetsFixture) ArtworkRevalidatesInsteadOfRedownloading(t *testing.T, images ...string) {
-	t.Helper()
-	t.Parallel()
-	populated := populateWireLibrary(t)
-	handler := fixture.NewHandler(populated.media, t.TempDir(), false)
-	populated.discover(t, handler)
-	for _, image := range images {
-		path := populated.resolve(image)
-		first := wireGet(t, handler, path, nil)
-		modified := first.Header().Get("Last-Modified")
-		if first.Code != http.StatusOK || first.Header().Get("Cache-Control") != "private, no-cache" || modified == "" || first.Body.Len() == 0 {
-			t.Fatalf("%s = %d cache %q modified %q", path, first.Code, first.Header().Get("Cache-Control"), modified)
-		}
-		unchanged := wireGet(t, handler, path, http.Header{"If-Modified-Since": {modified}})
-		if unchanged.Code != http.StatusNotModified || unchanged.Body.Len() != 0 || unchanged.Header().Get("Cache-Control") != "private, no-cache" {
-			t.Fatalf("%s revalidation = %d cache %q, %d bytes", path, unchanged.Code, unchanged.Header().Get("Cache-Control"), unchanged.Body.Len())
-		}
-		t.Logf("%s: first load %d bytes, revalidation %d bytes", image, first.Body.Len(), unchanged.Body.Len())
-	}
-	replacement := []byte("replacement poster bytes")
-	later := time.Now().Add(time.Hour)
-	if err := os.WriteFile(populated.poster, replacement, 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chtimes(populated.poster, later, later); err != nil {
-		t.Fatal(err)
-	}
-	path := populated.resolve("/art/{movie}")
-	changed := wireGet(t, handler, path, http.Header{"If-Modified-Since": {time.Now().UTC().Format(http.TimeFormat)}})
-	if changed.Code != http.StatusOK || !bytes.Equal(changed.Body.Bytes(), replacement) {
-		t.Fatalf("%s after replacement = %d %q", path, changed.Code, changed.Body.Bytes())
 	}
 }
 
@@ -121,10 +86,8 @@ func populateWireLibrary(t *testing.T) wireLibrary {
 	for position := range 40 {
 		base := filepath.Join(media, fmt.Sprintf("The Long Voyage Part %02d (1999)", position))
 		write(base+".mp4", populated.direct)
-		write(base+".jpg", bytes.Repeat([]byte("poster"), 8<<10))
-		write(base+"-fanart.jpg", bytes.Repeat([]byte("backdrop"), 16<<10))
+		write(base+".jpg", []byte("poster"))
 	}
-	populated.poster = filepath.Join(media, "The Long Voyage Part 00 (1999).jpg")
 	for group := range 30 {
 		count := 1
 		if group == 0 {

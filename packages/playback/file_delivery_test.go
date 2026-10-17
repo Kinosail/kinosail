@@ -110,8 +110,8 @@ func TestLibraryPersonHandler(t *testing.T) {
 	request.SetPathValue("person", "0")
 	response := httptest.NewRecorder()
 	LibraryPersonHandler(lookup)(response, request)
-	if response.Code != http.StatusOK || response.Body.String() != "image" || response.Header().Get("Cache-Control") != "private, no-cache" {
-		t.Fatalf("person image = %d %q %q", response.Code, response.Body.String(), response.Header().Get("Cache-Control"))
+	if response.Code != http.StatusOK || response.Body.String() != "image" {
+		t.Fatalf("person image = %d %q", response.Code, response.Body.String())
 	}
 
 	for _, value := range []string{"bad", "-1", "1", "2"} {
