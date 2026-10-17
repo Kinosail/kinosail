@@ -10,12 +10,26 @@ import (
 	"github.com/MikeO7/kinosail/packages/workload"
 )
 
-const creditFrameWidth, creditFrameHeight = 160, 90
+const (
+	creditFrameWidth, creditFrameHeight = 160, 90
+	creditRollMinimumSeconds            = 30.0
+	creditRollMotionShare               = .35
+)
 
 type creditFile struct {
 	Revision string   `json:"revision"`
 	Version  int      `json:"version"`
 	Markers  []Marker `json:"markers"`
+}
+
+type creditProfile struct {
+	likely bool
+	rows   []int
+}
+
+type creditPoint struct {
+	second float64
+	moving bool
 }
 
 func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, duration float64) ([]Marker, error) {
@@ -44,11 +58,14 @@ func (analyzer *Analyzer) visualCredits(ctx context.Context, item library.Item, 
 	if len(frames)%frameSize != 0 {
 		return nil, errors.New("credit analysis returned malformed frames")
 	}
-	points := make([]float64, 0, len(frames)/frameSize)
+	points := make([]creditPoint, 0, len(frames)/frameSize)
+	var previous creditProfile
 	for index := 0; index < len(frames)/frameSize; index++ {
-		if creditFrameLikely(frames[index*frameSize : (index+1)*frameSize]) {
-			points = append(points, float64(index))
+		profile := creditFrameProfile(frames[index*frameSize : (index+1)*frameSize])
+		if profile.likely {
+			points = append(points, creditPoint{float64(index), previous.likely && creditTextMoves(previous.rows, profile.rows)})
 		}
+		previous = profile
 	}
 	markers := creditMarkers(points, duration-window, duration)
 	if analyzer.cache != "" {
@@ -77,9 +94,11 @@ func (analyzer *Analyzer) creditFrames(ctx context.Context, item library.Item, s
 	return workload.BackgroundOutput(command)
 }
 
-func creditFrameLikely(frame []byte) bool {
+func creditFrameLikely(frame []byte) bool { return creditFrameProfile(frame).likely }
+
+func creditFrameProfile(frame []byte) creditProfile {
 	if len(frame) != creditFrameWidth*creditFrameHeight {
-		return false
+		return creditProfile{}
 	}
 	width, height := creditFrameWidth, creditFrameHeight
 	dark, bright, edges := 0, 0, 0
@@ -114,7 +133,36 @@ func creditFrameLikely(frame []byte) bool {
 	}
 	edgeRatio := float64(edges) / float64(interior)
 	backgroundRatio := float64(max(dark, bright)) / float64(interior)
-	return backgroundRatio >= .4 && edgeRatio >= .015 && edgeRatio <= .3 && activeRows >= height/8 && activeColumns >= width/4
+	likely := backgroundRatio >= .4 && edgeRatio >= .015 && edgeRatio <= .3 && activeRows >= height/8 && activeColumns >= width/4
+	return creditProfile{likely: likely, rows: rowEdges}
+}
+
+func creditTextMoves(previous, current []int) bool {
+	if len(previous) != len(current) || len(previous) == 0 {
+		return false
+	}
+	static, best := rowProfileSimilarity(previous, current, 0), 0.0
+	for shift := 2; shift <= len(previous)/2; shift++ {
+		best = max(best, rowProfileSimilarity(previous, current, shift))
+	}
+	scrolls := best >= .6 && best >= static+.15
+	changed := static < .5 && best < .5
+	return scrolls || changed
+}
+
+func rowProfileSimilarity(previous, current []int, shift int) float64 {
+	shared, previousTotal, currentTotal := 0, 0, 0
+	for row := shift; row < len(previous); row++ {
+		before, after := previous[row], current[row-shift]
+		shared += min(before, after)
+		previousTotal += before
+		currentTotal += after
+	}
+	total := max(previousTotal, currentTotal)
+	if total == 0 {
+		return 0
+	}
+	return float64(shared) / float64(total)
 }
 
 func absInt(value int) int {
@@ -124,19 +172,26 @@ func absInt(value int) int {
 	return value
 }
 
-func creditMarkers(points []float64, offset, duration float64) []Marker {
+func creditMarkers(points []creditPoint, offset, duration float64) []Marker {
 	markers := make([]Marker, 0)
 	for start := 0; start < len(points); {
-		end := start
-		for end+1 < len(points) && points[end+1]-points[end] <= 2.5 {
+		end, moving := start, 0
+		for end+1 < len(points) && points[end+1].second-points[end].second <= 2.5 {
 			end++
+			if points[end].moving {
+				moving++
+			}
 		}
-		if points[end]-points[start] >= 20 {
-			markerEnd := offset + points[end] + 1
+		if points[end].second-points[start].second >= 20 {
+			markerEnd := offset + points[end].second + 1
 			if duration-markerEnd <= 5 {
 				markerEnd = duration
 			}
-			markers = append(markers, Marker{Type: "credits", Label: "Credits", Start: offset + points[start], End: markerEnd, Source: "visual"})
+			source := "visual"
+			if markerEnd == duration && markerEnd-(offset+points[start].second) >= creditRollMinimumSeconds && float64(moving) >= creditRollMotionShare*float64(end-start) {
+				source = "text"
+			}
+			markers = append(markers, Marker{Type: "credits", Label: "Credits", Start: offset + points[start].second, End: markerEnd, Source: source})
 		}
 		start = end + 1
 	}

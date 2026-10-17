@@ -15,8 +15,10 @@ func TestJellyfinSegmentsExposeOnlyAuthoritativeMarkerTypes(t *testing.T) {
 		{Type: "credits", Source: "manual", Start: 90, End: 100},
 		{Type: "recap", Source: "visual", Start: 0, End: 1},
 		{Type: "unknown", Source: "chapter", Start: 2, End: 3},
+		{Type: "credits", Source: "text", Start: 100, End: 110},
+		{Type: "credits", Source: "recurrence", Start: 110, End: 120},
 	})
-	if len(segments) != 2 || segments[0].Type != "Intro" || segments[1].Type != "Outro" || segments[0].ItemID != "episode" || len(segments[0].ID) != 32 || segments[0].StartTicks != 1e7 || segments[0].EndTicks != 2e7 {
+	if len(segments) != 3 || segments[0].Type != "Intro" || segments[1].Type != "Outro" || segments[2].Type != "Outro" || segments[2].StartTicks != 100e7 || segments[0].ItemID != "episode" || len(segments[0].ID) != 32 || segments[0].StartTicks != 1e7 || segments[0].EndTicks != 2e7 {
 		t.Fatalf("segments = %#v", segments)
 	}
 	if repeat := JellyfinSegments("episode", []Marker{{Type: "intro", Source: "chapter", Start: 1, End: 2}}); repeat[0].ID != segments[0].ID {

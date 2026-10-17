@@ -103,8 +103,11 @@ func TestMarkerAnalyzerUsesVisualConsensusForSilentShowIntro(t *testing.T) {
 }
 
 func TestMatchingAndConsensusBoundaries(t *testing.T) {
-	if _, _, ok := sharedFingerprintSegment(sequence(100, 500), sequence(100, 500)); ok {
+	if _, _, ok := sharedFingerprintSegment(sequence(60, 500), sequence(60, 500)); ok {
 		t.Fatal("short repeated audio was accepted")
+	}
+	if left, _, ok := sharedFingerprintSegment(sequence(100, 500), sequence(100, 500)); !ok || left.End-left.Start < 12 {
+		t.Fatalf("twelve-second repeated audio = %#v, %v", left, ok)
 	}
 	if _, _, ok := sharedFingerprintSegment(sequence(300, 1), sequence(300, 10000)); ok {
 		t.Fatal("unrelated audio was accepted")
@@ -114,6 +117,14 @@ func TestMatchingAndConsensusBoundaries(t *testing.T) {
 	acceptCandidate(&candidate, timeRange{100, 130}, 400, false)
 	if _, ok := candidate.consensus(2); ok {
 		t.Fatalf("candidate = %#v", candidate)
+	}
+	candidate = markerCandidate{}
+	acceptCandidate(&candidate, timeRange{10, 18}, 400, false)
+	acceptCandidate(&candidate, timeRange{10, 195}, 400, false)
+	acceptCandidate(&candidate, timeRange{10, 22}, 400, false)
+	acceptCandidate(&candidate, timeRange{10, 170}, 400, false)
+	if len(candidate.ranges) != 2 {
+		t.Fatalf("duration bounds accepted %#v", candidate.ranges)
 	}
 	candidate = markerCandidate{}
 	acceptCandidate(&candidate, timeRange{8, 72}, 400, false)
@@ -208,12 +219,12 @@ func TestAnalyzerRejectsInvalidPersistedMarkerState(t *testing.T) {
 }
 
 func TestCreditMarkersKeepMidCreditSceneWatchable(t *testing.T) {
-	points := append(floatSequence(0, 31), floatSequence(45, 26)...)
+	points := append(creditPoints(0, 31, true), creditPoints(45, 26, true)...)
 	want := []Marker{{Type: "credits", Label: "Credits", Start: 900, End: 931, Source: "visual"}, {Type: "credits", Label: "Credits", Start: 945, End: 971, Source: "visual"}}
 	if got := creditMarkers(points, 900, 1000); !reflect.DeepEqual(got, want) {
 		t.Fatalf("credits = %#v, want %#v", got, want)
 	}
-	if got := creditMarkers(floatSequence(0, 31), 900, 1100); len(got) != 0 {
+	if got := creditMarkers(creditPoints(0, 31, true), 900, 1100); len(got) != 0 {
 		t.Fatalf("unanchored credits = %#v", got)
 	}
 }
@@ -246,10 +257,27 @@ func visualSequence(length int, offset uint64) []uint64 {
 	return values
 }
 
-func floatSequence(start, length int) []float64 {
-	values := make([]float64, length)
+func creditPoints(start, length int, moving bool) []creditPoint {
+	values := make([]creditPoint, length)
 	for index := range values {
-		values[index] = float64(start + index)
+		values[index] = creditPoint{float64(start + index), moving && index > 0}
 	}
 	return values
+}
+
+func TestSparseRunEdgesAreTrimmedToDenseMatches(t *testing.T) {
+	matched := make([]bool, 60)
+	for index := 10; index < 40; index++ {
+		matched[index] = true
+	}
+	matched[2], matched[5], matched[44], matched[49] = true, true, true, true
+	if start, last := trimSparseEdges(matched, 2, 49, 8, 5); start != 10 || last != 39 {
+		t.Fatalf("trimmed run = %d..%d", start, last)
+	}
+	if start, last := trimSparseEdges(matched, 2, 5, 8, 5); start != 5 || last != 5 {
+		t.Fatalf("sparse-only run = %d..%d", start, last)
+	}
+	if start, last := trimSparseEdges([]bool{true, true}, 0, 1, 8, 5); start != 1 || last != 1 {
+		t.Fatalf("short run = %d..%d", start, last)
+	}
 }

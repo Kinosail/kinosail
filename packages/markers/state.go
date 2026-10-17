@@ -65,7 +65,7 @@ func validRecordID(value string) bool {
 
 func validPersistedMarker(marker Marker) bool {
 	return slices.Contains(markerTypes, marker.Type) && marker.Label != "" && len(marker.Label) <= 64 && !hasControl(marker.Label) &&
-		slices.Contains([]string{"chapter", "fingerprint", "manual", "recurrence", "visual"}, marker.Source) && finite(marker.Start) && finite(marker.End) && marker.Start >= 0 && marker.End > marker.Start
+		slices.Contains([]string{"chapter", "fingerprint", "manual", "recurrence", "text", "visual"}, marker.Source) && finite(marker.Start) && finite(marker.End) && marker.Start >= 0 && marker.End > marker.Start
 }
 
 func hasControl(value string) bool { return strings.IndexFunc(value, unicode.IsControl) >= 0 }

@@ -20,7 +20,7 @@ Select whether **Subtitles** are **On** or **Off**. Enable **Play the next Episo
 
 ## Configure automatic skip
 
-Select any of these options in **Playback**:
+All five options in **Playback** are on for a new Server:
 
 - **Skip intros automatically**;
 - **Skip recaps automatically**;
@@ -28,7 +28,22 @@ Select any of these options in **Playback**:
 - **Skip outros automatically**; and
 - **Skip credits automatically**.
 
-Kinosail applies detected markers to the playback timeline. Analyze markers first from **Settings → Playback segment analysis**. A marker can be absent or incorrect when the source does not provide enough evidence.
+Clear an option to stop automatic skipping for that segment type. Viewers still see a **Skip** button for the segment.
+
+Kinosail skips a segment on its own only when the evidence is strong:
+
+- a chapter name such as *Intro* or *End credits*;
+- an Owner marker from **Manage media → Edit skip markers**;
+- an intro or outro that repeats in the audio of at least three episodes of a season, or a studio opening that repeats across at least three Movies; or
+- a closing credit roll with sustained moving text that runs to the end of the video.
+
+Other detected segments, such as a repeat that only matches on video or a static credit card, show a **Skip** button and do not skip on their own.
+
+## Playback segment analysis
+
+Kinosail analyzes new and changed videos in the background after each library scan. You do not need to start it. **Settings → Playback → Playback segment analysis** shows the status and the number of analyzed items. Select **Analyze playback segments now** to analyze the whole library again, for example after an update that changes the detector.
+
+Analysis needs at least three episodes in a season to find a repeating intro or outro. A marker can be absent or incorrect when the source does not provide enough evidence. Correct it from **Manage media → Edit skip markers**.
 
 ## Select video conversion policy
 

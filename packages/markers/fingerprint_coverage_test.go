@@ -43,7 +43,7 @@ func TestVisualCreditsCollectsLikelyFramesAndClosesAtDuration(t *testing.T) {
 	if markers, err := analyzer.visualCredits(t.Context(), library.Item{}, 200); err != nil || markers != nil {
 		t.Fatalf("single likely frame = %#v, %v", markers, err)
 	}
-	markers := creditMarkers(floatSequence(0, 21), 79, 100)
+	markers := creditMarkers(creditPoints(0, 21, false), 79, 100)
 	if len(markers) != 1 || markers[0].End != 100 {
 		t.Fatalf("closing credit marker = %#v", markers)
 	}
