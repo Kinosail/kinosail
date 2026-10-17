@@ -18,6 +18,8 @@ Use these sequences as integration shapes. Read the live OpenAPI document for th
 
 Keep pagination bounded. Do not assume that every Profile sees the same items or fields.
 
+With `view=history` and the default `title` sort, the most recent playback comes first. This view returns no `letters`.
+
 ## Start playback
 
 1. Call `GET /api/v1/items/{id}/playback` with the client video codecs when known.
