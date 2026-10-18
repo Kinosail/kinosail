@@ -23,6 +23,7 @@ struct LibraryScreen: View {
     @State private var page: LibraryPage?
     @State private var loading = false
     @State private var failure: String?
+    @State private var deferred: DeferredRetry?
     @State private var generation = UUID()
     @State private var loadedKey: String?
     @State private var loadedRevision: UUID?
@@ -84,7 +85,7 @@ struct LibraryScreen: View {
                         #if os(iOS)
                         Text("Titles").font(.callout).redacted(reason: .placeholder).accessibilityHidden(true)
                         #endif
-                        LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid)
+                        if let deferred { DeferredLoadingState(retry: deferred, layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) } else { LoadingState(layout: selection == .music || selection == .audiobooks ? .squareGrid : .grid) }
                     }
                     else if let failure { RetryState(message: failure) { Task { await load(reset: true) } } }
                     else {
@@ -98,8 +99,7 @@ struct LibraryScreen: View {
                             Task { await load(reset: false) }
                         }
                     }, onQuickPlay: { quickPlay = $0 },
-                    requestFirstCardFocus: !searchMode,
-                    opensShows: selection == .shows,
+                    requestFirstCardFocus: !searchMode, opensShows: selection == .shows,
                     takesFirstFocus: !searchMode && gridFocusPending, onTookFocus: { gridFocusPending = false })
                     .id("library-results")
                     #else
@@ -143,8 +143,7 @@ struct LibraryScreen: View {
                     }
                 }
             }
-            .padding(.horizontal, KinoTheme.contentPadding)
-            .padding(.vertical, 24)
+            .padding(.horizontal, KinoTheme.contentPadding).padding(.vertical, 24)
             #if os(tvOS)
             .padding(.trailing, jumpLetters.isEmpty ? 0 : 72)
             #endif
@@ -156,8 +155,7 @@ struct LibraryScreen: View {
                 TVLetterIndex(letters: jumpLetters, onFocus: { focusedLetter = $0 }) { letter in
                     guard letter.offset != page?.offset else { return }
                     Task { await load(reset: true, start: letter.offset) }
-                }
-                .padding(.trailing, 16)
+                }.padding(.trailing, 16)
             }
         }
         .onChange(of: page?.offset) { _, _ in
@@ -199,6 +197,7 @@ struct LibraryScreen: View {
             await load(reset: true)
         }
         .refreshable { await load(reset: true, force: true) }
+        .retrying(after: deferred) { await load(reset: true) }
         .toolbar {
             if selection == .music {
                 ToolbarItem(placement: .primaryAction) {
@@ -281,19 +280,20 @@ struct LibraryScreen: View {
             let combined = base + result.items
             items = try Input.unique(combined)
             page = result
-            loadedKey = key
+            loadedKey = key; deferred = nil
             loadedRevision = revision
             session.resourceSnapshots.store(LibrarySnapshot(items: items, page: result, revision: revision),
                                             for: snapshotKey, clientID: clientID, refreshID: revision.uuidString)
         } catch is CancellationError {}
         catch {
             if generation == attempt, session.client?.identity == clientID, session.contentRevision == revision {
+                if reset, let retry = DeferredRetry(error) { deferred = retry; return }
                 if (error as? ClientError)?.discardsCachedContent == true {
                     items = []; page = nil
                     session.resourceSnapshots.remove(for: snapshotKey, clientID: clientID, as: LibrarySnapshot.self)
                     if error as? ClientError == .http(401) || error as? ClientError == .http(403) { session.resourceSnapshots.clear() }
                 }
-                failure = AppSession.message(error)
+                failure = AppSession.message(error); deferred = nil
             }
         }
     }

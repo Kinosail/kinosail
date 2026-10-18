@@ -13,6 +13,8 @@ final class LibraryRecoveryFixture: @unchecked Sendable {
         var libraryReads = 0
         var libraryHeld = false
         var libraryPending: [(NWConnection, String)] = []
+        var libraryDeferrals = 0
+        var libraryArrivals: [ContinuousClock.Instant] = []
         var nextReads = 0
     }
     let state = Mutex(State())
@@ -22,6 +24,8 @@ final class LibraryRecoveryFixture: @unchecked Sendable {
     var photoReads: Int { state.withLock { $0.photoReads } }
     var held: Bool { get { state.withLock { $0.held } } set { state.withLock { $0.held = newValue } } }
     var libraryReads: Int { state.withLock { $0.libraryReads } }
+    var libraryArrivals: [ContinuousClock.Instant] { state.withLock { $0.libraryArrivals } }
+    var libraryDeferrals: Int { get { state.withLock { $0.libraryDeferrals } } set { state.withLock { $0.libraryDeferrals = newValue } } }
     var libraryHeld: Bool { get { state.withLock { $0.libraryHeld } } set { state.withLock { $0.libraryHeld = newValue } } }
     var nextReads: Int { state.withLock { $0.nextReads } }
     let image = UIGraphicsImageRenderer(size: CGSize(width: 120, height: 80)).pngData { context in
@@ -106,12 +110,16 @@ final class LibraryRecoveryFixture: @unchecked Sendable {
                 }
                 if !pending { send(connection, status: 200, type: "application/json", data: photo) }
             } else if path == "/api/v1/library" {
-                let pending = state.withLock { value in
+                let (pending, deferred) = state.withLock { value -> (Bool, Bool) in
                     value.libraryReads += 1
+                    value.libraryArrivals.append(ContinuousClock.now)
+                    if value.libraryDeferrals > 0 { value.libraryDeferrals -= 1; return (false, true) }
                     if value.libraryHeld { value.libraryPending.append((connection, String(parts[1]))) }
-                    return value.libraryHeld
+                    return (value.libraryHeld, false)
                 }
-                if !pending { send(connection, status: 200, type: "application/json", data: library(String(parts[1]))) }
+                if deferred {
+                    send(connection, status: 503, type: "application/json", data: Data("{\"error\":\"Library scan is in progress\"}".utf8), headers: "Retry-After: 1\r\n")
+                } else if !pending { send(connection, status: 200, type: "application/json", data: library(String(parts[1]))) }
             } else if path == "/api/v1/items/next" {
                 state.withLock { $0.nextReads += 1 }
                 send(connection, status: 503, type: "application/json", data: Data("{}".utf8))
@@ -124,8 +132,8 @@ final class LibraryRecoveryFixture: @unchecked Sendable {
         }
     }
 
-    private func send(_ connection: NWConnection, status: Int, type: String, data: Data) {
-        let response = Data("HTTP/1.1 \(status) Fixture\r\nContent-Type: \(type)\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n".utf8) + data
+    private func send(_ connection: NWConnection, status: Int, type: String, data: Data, headers: String = "") {
+        let response = Data("HTTP/1.1 \(status) Fixture\r\nContent-Type: \(type)\r\nContent-Length: \(data.count)\r\n\(headers)Connection: close\r\n\r\n".utf8) + data
         connection.send(content: response, completion: .contentProcessed { _ in connection.cancel() })
     }
 }
