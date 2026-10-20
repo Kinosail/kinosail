@@ -9,7 +9,7 @@ require (
 	github.com/crewjam/saml v0.5.1
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/fxamacker/cbor/v2 v2.9.6
-	github.com/go-jose/go-jose/v4 v4.1.5
+	github.com/go-jose/go-jose/v4 v4.1.6
 	github.com/go-webauthn/webauthn v0.18.2
 	github.com/libp2p/zeroconf/v2 v2.2.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
