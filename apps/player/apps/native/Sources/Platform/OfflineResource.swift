@@ -9,6 +9,7 @@ struct VerifiedDownloadSnapshot: Sendable {
     let message: String
     let manifest: OfflineManifest?
     var preparingSince: Date? = nil
+    var retryAt: Date? = nil
 }
 
 enum OfflineResource {

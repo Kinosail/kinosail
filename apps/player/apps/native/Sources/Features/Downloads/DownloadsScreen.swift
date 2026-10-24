@@ -44,7 +44,13 @@ struct DownloadsScreen: View {
             }
             let ready = all.filter { $0.state == .ready }, pending = all.filter { $0.state != .ready }
             if !pending.isEmpty {
-                Section("In progress") { ForEach(pending) { row($0) } }
+                Section("In progress") {
+                    if pending.contains(where: \.inProgress) {
+                        DownloadQueueSummary(downloads: pending, network: session.downloads.network,
+                                             wifiOnly: session.downloads.preferences.wifiOnly) { allowCellular() }
+                    }
+                    ForEach(pending) { row($0) }
+                }
             }
             if !ready.isEmpty {
                 Section("Ready to watch") { ForEach(ready) { row($0) } }
@@ -94,6 +100,16 @@ struct DownloadsScreen: View {
     private func row(_ download: OfflineDownload) -> some View {
         DownloadRow(download: download, compact: dynamicType.isAccessibilitySize, offline: session.connection.unavailable,
                     disabled: busy || session.downloads.busy, toggle: { toggle(download) }, remove: { removal = download })
+    }
+    private func allowCellular() {
+        guard let client = session.client else { return }
+        perform {
+            var value = try await client.mediaPreferences()
+            value.wifiOnly = false
+            let saved = try await client.saveMediaPreferences(value)
+            try await session.downloads.updatePreferences(saved)
+            await session.downloads.retryWaiting()
+        }
     }
     private func toggle(_ download: OfflineDownload) {
         if [.paused, .failed].contains(download.state) { perform { try await session.downloads.resume(id: download.id) } }

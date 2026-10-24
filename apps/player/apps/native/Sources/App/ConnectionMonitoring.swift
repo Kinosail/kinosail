@@ -23,6 +23,17 @@ struct ConnectionMonitoring: ViewModifier {
                     if session.connection.unavailable { await session.connection.check(client) }
                 }
             }
+            #if os(iOS)
+            .onChange(of: DownloadNetwork(online: session.connection.networkAvailable, expensive: session.connection.expensive,
+                                             server: session.connection.server != .unreachable), initial: true) { _, network in
+                Task { await session.downloads.updateNetwork(network) }
+            }
+            .onChange(of: scenePhase, initial: true) { _, phase in
+                session.downloads.engine.setForeground(phase == .active)
+                guard phase == .active else { return }
+                Task { await session.downloads.resumeInterrupted() }
+            }
+            #endif
             .onChange(of: session.connection.unavailable) { wasUnavailable, unavailable in
                 if unavailable {
                     UIAccessibility.post(notification: .announcement, argument: session.connection.title)

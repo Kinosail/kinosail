@@ -28,16 +28,22 @@
         let start = Int64(extent.first) * job.manifest.chunkSize
         let end = min(job.manifest.size, Int64(extent.first + extent.count) * job.manifest.chunkSize) - 1
         guard let response = downloadTask.response as? HTTPURLResponse else { throw failure() }
-        if let delay = DownloadRecovery.delay(error: nil, response: response, attempt: job.retries) {
-          job.retries += 1; job.retryAt = Date(timeIntervalSinceNow: delay); job.status = "waiting"; job.error = "The Server is busy. Retrying automatically."
+        if [401, 403].contains(response.statusCode) {
+          job.status = "paused"; job.error = DownloadRecovery.signIn
+          try persist(job); notifyAttention(job); return
+        }
+        if let delay = DownloadRecovery.retry(error: nil, response: response, retries: job.retries) {
+          job.retries = min(job.retries + 1, DownloadRecovery.attempts); job.retryAt = Date(timeIntervalSinceNow: delay)
+          job.status = "waiting"; job.error = DownloadRecovery.message(response: response)
+          DownloadLog.retry(kind: "server-status", status: response.statusCode, attempt: job.retries)
           try persist(job); return
         }
         guard response.statusCode == 206, response.url?.absoluteString == job.uri,
-              response.value(forHTTPHeaderField: "ETag") == "\"\(job.manifest.sha256)\"",
-              response.value(forHTTPHeaderField: "Content-Range") == "bytes \(start)-\(end)/\(job.manifest.size)",
-              response.value(forHTTPHeaderField: "Content-Length") == String(end - start + 1),
+              response.value(forHTTPHeaderField: "ETag") == "\"\(job.manifest.sha256)\""
+        else { DownloadLog.stopped(reason: "validator-mismatch", status: response.statusCode); job.retries = DownloadRecovery.attempts; throw failure() }
+        guard Self.covers(response.value(forHTTPHeaderField: "Content-Range"), start: start, end: end, size: job.manifest.size),
               try location.resourceValues(forKeys: [.fileSizeKey]).fileSize == Int(end - start + 1)
-        else { throw failure() }
+        else { DownloadLog.retry(kind: "range-mismatch", status: response.statusCode, attempt: job.retries + 1); throw failure() }
         let input = try FileHandle(forReadingFrom: location); defer { try? input.close() }
         let output = try FileHandle(forWritingTo: store.staging(job)); defer { try? output.close() }
         var corrupt = false
@@ -59,9 +65,21 @@
         }
         try persist(job)
       } catch {
-        job.status = "paused"; job.error = "Could not verify the download. Resume to try again; the parts already checked are kept."
+        job.retries += 1
+        if job.retries > DownloadRecovery.attempts {
+          job.retries = DownloadRecovery.attempts; job.status = "paused"
+          job.error = "Could not verify the download. Resume to try again; the parts already checked are kept."
+          notifyAttention(job)
+        } else { job.status = "queued" }
         do { try persist(job) } catch { storageError = true }
       }
+    }
+
+    static func covers(_ header: String?, start: Int64, end: Int64, size: Int64) -> Bool {
+      guard let header, header.utf8.count <= 96, header.hasPrefix("bytes "), let slash = header.firstIndex(of: "/") else { return false }
+      let bounds = header[header.index(header.startIndex, offsetBy: 6)..<slash].split(separator: "-")
+      guard bounds.count == 2, let first = Int64(bounds[0]), let last = Int64(bounds[1]), Int64(header[header.index(after: slash)...]) == size else { return false }
+      return first >= start && first <= last && last == end
     }
 
     func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -69,9 +87,10 @@
         if let error, var plan = plans[id] {
           if (error as NSError).domain == NSURLErrorDomain, (error as NSError).code == NSURLErrorCancelled {
             plan.status = "preparing"; plan.error = ""
-          } else if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: plan.retries ?? 0) {
-            plan.retries = (plan.retries ?? 0) + 1
-            plan.retryAt = Date(timeIntervalSinceNow: max(15, delay))
+          } else if let delay = DownloadRecovery.retry(error: error as NSError, response: task.response as? HTTPURLResponse, retries: plan.retries ?? 0) {
+            plan.retries = min((plan.retries ?? 0) + 1, DownloadRecovery.attempts)
+            plan.retryAt = Date(timeIntervalSinceNow: max(15, delay)); plan.error = DownloadRecovery.unreachable
+            DownloadLog.retry(kind: "preparation-network", status: (error as NSError).code, attempt: plan.retries ?? 0)
           } else {
             plan.status = "paused"; plan.error = VerifiedDownload.preparationInterrupted
           }
@@ -86,10 +105,14 @@
           job.retries += 1
           if job.retries < 5 { job.status = "queued"; job.error = ""; job.retryAt = nil }
           else { job.retries = 5; job.status = "paused"; job.error = VerifiedDownload.interrupted }
-        } else if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: job.retries) {
-          job.retryAt = Date(timeIntervalSinceNow: delay); job.retries += 1; job.status = "waiting"; job.error = "Connection interrupted. Retrying automatically."
+        } else if let delay = DownloadRecovery.retry(error: error as NSError, response: task.response as? HTTPURLResponse, retries: job.retries) {
+          job.retryAt = Date(timeIntervalSinceNow: foreground ? delay : max(delay, 300)); job.retries = min(job.retries + 1, DownloadRecovery.attempts)
+          job.status = "waiting"; job.error = DownloadRecovery.unreachable
+          DownloadLog.retry(kind: "network", status: (error as NSError).code, attempt: job.retries)
         } else {
           job.status = "paused"; job.error = VerifiedDownload.interrupted
+          DownloadLog.stopped(reason: "network-permanent", status: (error as NSError).code)
+          notifyAttention(job)
         }
         do { try persist(job) } catch { storageError = true }
       }
@@ -98,6 +121,7 @@
 
     func finish(_ input: VerifiedDownload) {
       guard !checking.contains(input.id) else { return }
+      if input.status != "complete" { announce.insert(input.id) }
       var job = input
       job.status = "verifying"
       do { try persist(job) } catch { storageError = true; return }
@@ -144,10 +168,13 @@
         let finalStamp = try DownloadFileStamp(store.media(current))
         try persist(current)
         verifiedFiles[current.id] = finalStamp
+        if announce.remove(current.id) != nil { notifyReady(current) }
       } catch {
         current.status = "paused"
         current.error = stamp != nil ? "The file downloaded correctly, but this device could not play it. Download a compatible version." : "The download check stopped. Resume to check again."
         do { try persist(current) } catch { storageError = true }
+        DownloadLog.stopped(reason: stamp != nil ? "unplayable" : "verification", status: 0)
+        notifyAttention(current)
       }
     }
 

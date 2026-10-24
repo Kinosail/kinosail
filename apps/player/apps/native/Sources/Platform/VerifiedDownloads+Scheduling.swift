@@ -7,7 +7,7 @@
       _ = try StrictJSON.decode(Data(raw.utf8))
       guard raw.utf8.count <= 2 * 1024 * 1024, let data = raw.data(using: .utf8),
             let input = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-            Set(input.keys) == Set(["scope", "key", "uri", "manifest", "kind", "authorization", "wifiOnly", "quota"]),
+            Set(input.keys).subtracting(["title"]) == Set(["scope", "key", "uri", "manifest", "kind", "authorization", "wifiOnly", "quota"]),
             let scope = input["scope"] as? String, let key = input["key"] as? String, let uri = input["uri"] as? String,
             let kind = input["kind"] as? String, let manifestObject = input["manifest"] as? [String: Any],
             Set(manifestObject.keys) == Set(["version", "id", "size", "sha256", "chunkSize", "chunks"]),
@@ -23,12 +23,14 @@
       guard try credential(scope, uri: uri) == authorization else { throw ClientError.http(403) }
       var job = VerifiedDownload(scope: scope, key: key, uri: uri, manifest: manifest, kind: kind, wifiOnly: wifi.boolValue,
                                  verified: Array(repeating: false, count: manifest.chunks.count))
+      if let title = input["title"] as? String, !title.isEmpty { job.title = title }
       try job.validate()
       if let old = jobs[job.id] {
         guard old.uri == uri, old.manifest == manifest, old.kind == kind else {
           throw VerifiedDownload.failure("This title changed. Remove the download before choosing a new version.")
         }
         job.verified = old.verified
+        job.title = job.title ?? old.title
       } else if jobs.count + plans.count >= 1000 && plans[job.id] == nil {
         throw VerifiedDownload.failure("Remove a download before adding another.")
       }
@@ -77,31 +79,45 @@
       return (String(fields[0]), first, count)
     }
 
-    private var occupiedSlots: Int { tasks.values.filter { $0.task.state != .suspended }.count + planTasks.count }
+    static let queueDepth = 12
+    static let extentBlocks = 4
+    private var activeTransfers: Int { tasks.values.filter { $0.task.state != .suspended }.count }
+
+    func nextExtent(_ job: VerifiedDownload) -> (first: Int, count: Int)? {
+      let occupied = tasks.values.filter { $0.id == job.id }
+      func free(_ index: Int) -> Bool {
+        !job.verified[index] && !occupied.contains(where: { index >= $0.first && index < $0.first + $0.count })
+      }
+      guard let first = job.verified.indices.first(where: free) else { return nil }
+      var count = 1
+      while count < Self.extentBlocks, first + count < job.verified.count, free(first + count) { count += 1 }
+      return (first, count)
+    }
 
     func pump() {
       guard restored, !storageError, !playback, authorization != nil else { return }
       for value in tasks.values.sorted(by: { $0.id < $1.id }) where jobs[value.id]?.status != "paused" && jobs[value.id]?.scope == authorization?.scope {
-        if occupiedSlots >= 2 { break }
+        if activeTransfers >= Self.queueDepth { break }
         if value.task.state == .suspended { value.task.resume() }
       }
-      for (_, var job) in jobs.sorted(by: { $0.key < $1.key }) where job.scope == authorization?.scope && ["queued", "waiting", "downloading", "verifying"].contains(job.status) {
+      for (_, job) in jobs.sorted(by: { $0.key < $1.key }) where job.scope == authorization?.scope && ["queued", "waiting", "downloading", "verifying"].contains(job.status) {
         if job.verified.allSatisfy({ $0 }) {
           if !checking.contains(job.id) {
             finish(job)
           }
           continue
         }
-        if occupiedSlots >= 2 || tasks.count + planTasks.count >= 100 {
-          return
+        while activeTransfers < Self.queueDepth, tasks.count + planTasks.count < 100, let extent = nextExtent(jobs[job.id] ?? job) {
+          guard schedule(jobs[job.id] ?? job, first: extent.first, count: extent.count) else { break }
         }
+      }
+      pumpPlans()
+    }
+
+    private func schedule(_ input: VerifiedDownload, first: Int, count: Int) -> Bool {
+        var job = input
         do {
           let authorization = try credential(job.scope, uri: job.uri)
-          let occupied = tasks.values.filter { $0.id == job.id }
-          guard let first = job.verified.indices.first(where: { index in
-            !job.verified[index] && !occupied.contains(where: { index >= $0.first && index < $0.first + $0.count })
-          }) else { continue }
-          let count = 1
           let start = Int64(first) * job.manifest.chunkSize
           let end = min(job.manifest.size, Int64(first + count) * job.manifest.chunkSize) - 1
           var request = URLRequest(url: URL(string: job.uri)!, cachePolicy: .reloadIgnoringLocalCacheData)
@@ -123,17 +139,14 @@
           try persist(job)
           tasks[task.taskIdentifier] = (task, job.id, first, count)
           task.resume()
+          return true
         } catch {
           job.status = "paused"; job.error = "Sign in again or free storage, then resume."
           do { try persist(job) } catch { storageError = true }
+          DownloadLog.stopped(reason: "schedule", status: 0)
+          notifyAttention(job)
+          return false
         }
-      }
-      pumpPlans()
-      if occupiedSlots == 1, planTasks.isEmpty, let active = tasks.values.first(where: { $0.task.state != .suspended }) {
-        if let job = jobs[active.id], ["queued", "waiting", "downloading"].contains(job.status), job.verified.indices.contains(where: { !job.verified[$0] && ($0 < active.first || $0 >= active.first + active.count) }) {
-          pump()
-        }
-      }
     }
 
     func cancelPlan(_ id: String) {
@@ -144,7 +157,7 @@
 
     func pumpPlans() {
       for plan in plans.values.sorted(by: { $0.id < $1.id }) where plan.status == "preparing" && plan.scope == authorization?.scope {
-        if occupiedSlots >= 2 || tasks.count + planTasks.count >= 100 {
+        if planTasks.count >= 2 || tasks.count + planTasks.count >= 100 {
           return
         }
         if planTasks.values.contains(where: { $0.1 == plan.id }) {
@@ -173,8 +186,9 @@
         let pending = response.statusCode == 503 && (try? StrictJSON.decode(body).object()["error"]) == .string("download is preparing")
         if plan.startedAt == nil { plan.startedAt = Date() }
         guard Date().timeIntervalSince(plan.startedAt!) < 24 * 60 * 60 else { throw failure() }
-        if let delay = DownloadRecovery.delay(error: nil, response: response, attempt: pending ? 0 : plan.retries ?? 0) {
-          plan.retries = pending ? 0 : (plan.retries ?? 0) + 1
+        if let delay = DownloadRecovery.retry(error: nil, response: response, retries: pending ? 0 : plan.retries ?? 0) {
+          plan.retries = pending ? 0 : min((plan.retries ?? 0) + 1, DownloadRecovery.attempts)
+          plan.error = pending ? "" : DownloadRecovery.message(response: response)
           plan.retryAt = Date(timeIntervalSinceNow: max(15, delay)); try savePlan(plan); return
         }
         guard response.statusCode == 200, response.url?.absoluteString == plan.uri.replacingOccurrences(of: "/file", with: "/manifest"),
@@ -182,7 +196,8 @@
         let manifest = try OfflineManifest(StrictJSON.decode(Data(contentsOf: location)))
         guard try OfflineResource.url(plan.uri).path == "/api/v1/downloads/\(manifest.id)/file" else { throw failure() }
         let input: [String: Any] = try ["scope": plan.scope, "key": plan.key, "uri": plan.uri, "kind": plan.kind, "wifiOnly": plan.wifiOnly, "quota": plan.quota,
-                                        "authorization": credential(plan.scope, uri: plan.uri), "manifest": JSONSerialization.jsonObject(with: JSONEncoder().encode(manifest))]
+                                        "authorization": credential(plan.scope, uri: plan.uri), "manifest": JSONSerialization.jsonObject(with: JSONEncoder().encode(manifest)),
+                                        "title": plan.title ?? ""]
         try start(String(data: JSONSerialization.data(withJSONObject: input), encoding: .utf8)!)
         try store.removePlan(plan); plans.removeValue(forKey: id)
       } catch { plan.status = "paused"; plan.error = "Preparation could not finish. Check Server access and storage, then resume."; try? savePlan(plan) }

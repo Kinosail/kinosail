@@ -133,8 +133,8 @@ struct ResilienceTests {
         let firstKey = String(repeating: "a", count: 64), secondKey = String(repeating: "b", count: 64)
         try await engine.enqueuePreparation(scope: access.scope, key: firstKey, uri: "https://" + fixture.host + "/api/v1/downloads/" + firstID + "/file", kind: "video", wifiOnly: false, quota: 0)
         var deadline = Date().addingTimeInterval(3)
-        while fixture.requests.filter({ $0.url?.path.hasSuffix("/file") == true }).count < 2, Date() < deadline { try await Task.sleep(for: .milliseconds(10)) }
-        #expect(fixture.requests.filter { $0.url?.path.hasSuffix("/file") == true }.count == 2)
+        while fixture.requests.filter({ $0.url?.path.hasSuffix("/file") == true }).count < 4, Date() < deadline { try await Task.sleep(for: .milliseconds(10)) }
+        #expect(fixture.requests.filter { $0.url?.path.hasSuffix("/file") == true }.count == 4)
         try await engine.pause(access.scope, key: firstKey)
         try await engine.enqueuePreparation(scope: access.scope, key: secondKey, uri: "https://" + fixture.host + "/api/v1/downloads/" + secondID + "/file", kind: "video", wifiOnly: false, quota: 0)
         deadline = Date().addingTimeInterval(3)

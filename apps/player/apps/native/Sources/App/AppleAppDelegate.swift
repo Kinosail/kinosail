@@ -1,8 +1,14 @@
 #if os(iOS)
 import UIKit
+import UserNotifications
 
 @MainActor
 final class AppleAppDelegate: NSObject, UIApplicationDelegate {
+    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().delegate = DownloadNotifications.shared
+        return true
+    }
+
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String,
                      completionHandler: @escaping () -> Void) {
         guard identifier == VerifiedDownloads.identifier else { completionHandler(); return }
