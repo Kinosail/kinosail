@@ -75,7 +75,7 @@ func projectedArtwork(item library.Item) string {
 	if item.Artwork != "" {
 		return ArtworkURLForItem(item)
 	}
-	if item.Kind == "video" && item.Show != "" {
+	if item.Kind == "video" && (item.Show != "" || item.Backdrop == "") {
 		return "/episode-art/" + item.ID
 	}
 	return ""

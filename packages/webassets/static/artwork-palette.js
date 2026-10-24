@@ -8,6 +8,11 @@
         image.hidden = true;
         image.parentElement?.classList.remove("has-media-backdrop");
       });
+      image.addEventListener("load", () => {
+        if (!image.hidden || !image.naturalWidth) return;
+        image.hidden = false;
+        image.parentElement?.classList.add("has-media-backdrop");
+      });
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);

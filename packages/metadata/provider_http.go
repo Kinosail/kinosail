@@ -28,6 +28,9 @@ func GetProviderJSON(ctx context.Context, client *http.Client, endpoint, token s
 }
 
 func DownloadProviderImage(ctx context.Context, client *http.Client, baseURL, path, target string) error {
+	if baseURL == defaultImageURL {
+		return downloadProviderImage(ctx, client, baseURL, path, target, validateProviderJPEG)
+	}
 	return downloadProviderImage(ctx, client, baseURL, path, target, nil)
 }
 

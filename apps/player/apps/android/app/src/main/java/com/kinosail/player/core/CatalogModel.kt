@@ -38,7 +38,7 @@ internal fun catalogEmptyMessage(view: String, searched: Boolean): String =
 
 class CatalogModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)
-    private val artworkCache = object : LruCache<String, Bitmap>(24 * 1024 * 1024) {
+    private val artworkCache = object : LruCache<String, Bitmap>(maxOf(24 * 1024 * 1024, (Runtime.getRuntime().maxMemory() / 6).toInt())) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
     private var session: SavedSession? = null

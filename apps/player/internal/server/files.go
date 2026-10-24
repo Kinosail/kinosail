@@ -2,7 +2,9 @@ package server
 
 import (
 	"net/http"
+	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/MikeO7/kinosail/packages/catalogapi"
 	"github.com/MikeO7/kinosail/packages/library"
@@ -42,7 +44,7 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 			return
 		}
 		item, found := index.VisibleItem(request, request.PathValue("id"))
-		if !found || item.Kind != "video" || item.Show == "" || !index.Safe(item.Path) {
+		if !found || item.Kind != "video" || !index.Safe(item.Path) {
 			localizedNotFound(writer, request)
 			return
 		}
@@ -50,12 +52,13 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 			localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		target := filepath.Join(probe.cacheDir, "episode-stills", item.ID+".jpg")
+		target := filepath.Join(probe.cacheDir, "episode-stills", item.ID+"-hd.jpg")
 		if !playback.Fresh(target, item.Path) {
 			if err := generateEpisodeStill(request, probe, workloads, item, target); err != nil {
 				localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
 				return
 			}
+			_ = os.Remove(filepath.Join(probe.cacheDir, "episode-stills", item.ID+".jpg"))
 		}
 		writer.Header().Set("Content-Type", "image/jpeg")
 		http.ServeFile(writer, request, target)
@@ -71,8 +74,18 @@ func generateEpisodeStill(request *http.Request, probe *mediaProbe, workloads *w
 	if playback.Fresh(target, item.Path) {
 		return nil
 	}
-	second := min(300, int(probe.core.Duration(request.Context(), item)*0.2))
-	return playback.GenerateEpisodeStill(request.Context(), probe.cacheDir, probe.ffmpeg, item.Path, target, second)
+	duration := probe.core.Duration(request.Context(), item)
+	return playback.GenerateEpisodeStill(request.Context(), probe.cacheDir, probe.ffmpeg, item.Path, target, stillSeconds(duration)...)
+}
+
+func stillSeconds(duration float64) []int {
+	seconds := []int{min(300, int(duration*0.2))}
+	for _, share := range []float64{0.35, 0.5, 0.1} {
+		if second := int(duration * share); second > 0 && !slices.Contains(seconds, second) {
+			seconds = append(seconds, second)
+		}
+	}
+	return seconds
 }
 
 func serveArtwork(index *libraryIndex) http.HandlerFunc {

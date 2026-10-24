@@ -45,6 +45,8 @@ struct ResourceView<Value: Sendable, Content: View>: View {
     @State private var revision = 0
     @State private var generation = UUID()
     @State private var loadedIdentity: String?
+    @State private var healing = 0
+    @State private var transientFailure = false
     private var cacheRevision: String { refreshID.isEmpty ? session.contentRevision.uuidString : refreshID }
 
     private var savedValue: Value? {
@@ -69,7 +71,18 @@ struct ResourceView<Value: Sendable, Content: View>: View {
             }
         }
         .retrying(after: deferred) { revision += 1 }
+        .task(id: "\(transientFailure):\(healing)") {
+            guard transientFailure, healing < Self.healDelays.count else { return }
+            do { try await Task.sleep(for: Self.healDelays[healing]) } catch { return }
+            healing += 1
+            revision += 1
+        }
+        .onChange(of: session.connection.unavailable) { _, unavailable in
+            if !unavailable && failure != nil { revision += 1 }
+        }
     }
+
+    static var healDelays: [Duration] { [.seconds(2), .seconds(5), .seconds(15), .seconds(30)] }
 
     private var resourceContent: some View {
         Group {
@@ -111,6 +124,8 @@ struct ResourceView<Value: Sendable, Content: View>: View {
             if revalidates, let clientID { session.resourceSnapshots.store(next, for: identity, clientID: clientID, refreshID: expectedRevision) }
             failure = nil
             deferred = nil
+            transientFailure = false
+            healing = 0
         } catch is CancellationError {}
         catch {
             if generation == attempt, session.client?.identity == clientID,
@@ -127,6 +142,7 @@ struct ResourceView<Value: Sendable, Content: View>: View {
                     if error as? ClientError == .http(401) || error as? ClientError == .http(403) { session.resourceSnapshots.clear() }
                 }
                 failure = AppSession.message(error)
+                transientFailure = (error as? ClientError)?.discardsCachedContent != true
             }
         }
     }

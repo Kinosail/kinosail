@@ -10,7 +10,8 @@ changing Android screens. Translate controls into Android conventions.
 | iPad navigation | Tablet navigation | Use available window space; Android uses a navigation rail |
 | Apple TV Home | Android TV Home | Fixed Search and Settings, landscape continuation, Browse, recent shelves |
 | Personal tabs | Phone and tablet tabs | Home, TV Shows, Movies, Search, and persistent More; save choices per Viewer Profile |
-| CinemaHero and MediaCard | MediaHero and HomeShelf | Contained artwork, separate title and metadata, truthful saved position |
+| CinemaSpotlight and CinemaHero | MediaSpotlight and MediaHero | Full-bleed backdrop on compact phones, contained artwork on wider windows |
+| MediaCard | HomeShelf | Separate title and metadata, truthful saved position |
 | LoadingState | LibraryLoading | Pending placeholders follow the loaded artwork sizes, spacing, and shelf structure |
 | Collections | Collections | Named collections open a title grid; returning from details preserves the collection |
 | EPUB reader | Phone and tablet reader | Chapter contents, readable text width, appearance controls, and recoverable saved position |
@@ -28,6 +29,17 @@ Landscape continuation cards keep a 16:9 artwork box even with portrait-only
 artwork. Fit the image inside that box. Poster shelves use 2:3 artwork; music
 and audiobooks use square artwork. Place Home shelf titles, metadata, and saved
 positions below the image. Keep Home cards open against the shared backdrop.
+
+Compact phone Home, title details, and show pages open with `MediaSpotlight` when a
+backdrop or episode image exists. The image spans the full width, runs under the top
+bar, and fades into the canvas. An Electric eyebrow (Watching, Listening, For you, or
+Up next), the bold title, metadata, and actions overlap the fade. Wider windows and
+large text keep `MediaHero`.
+
+Artwork retries after 1, 3, 8, and 20 seconds when a load fails, and again when the app
+resumes. A card without a poster uses the backdrop. Every failure message uses the same
+filled Try again button. A failed screen also retries by itself after 2, 5, 15 and 30
+seconds, then every minute, and again when the app returns to the foreground.
 
 Use the same card widths in pending and loaded Home shelves. Keep an 18dp shelf
 gap and enough padding for TV focus. Large text can wrap card titles. Compact

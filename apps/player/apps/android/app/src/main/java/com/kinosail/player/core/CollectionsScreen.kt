@@ -24,6 +24,7 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
     val model: CollectionsModel = viewModel()
     val state = model.state
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
+    AutoRetry(state.notice != null && !state.loading) { model.refresh() }
     BackHandler(state.name != null) { model.back() }
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
@@ -37,7 +38,7 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
                 color = KinoColor.text, modifier = Modifier.semantics { heading() })
             state.notice?.let {
                 Text(interfaceText(it), color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                CollectionAction("Try again", tv, !state.loading) { model.refresh() }
+                RetryAction(tv, !state.loading) { model.refresh() }
             }
             if (state.loading && (if (state.name == null) state.names.isEmpty() else state.items.isEmpty())) {
                 if (state.name != null) LibraryLoading(tv = tv)

@@ -235,8 +235,9 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Continue watching").performScrollTo()
         val card = compose.onNodeWithContentDescription("Next Film")
         card.performScrollTo().assertIsDisplayed()
-        val bounds = card.fetchSemanticsNode().boundsInRoot
-        assertTrue("Landscape fallback must keep a wide card: $bounds", bounds.height < bounds.width)
+        val size = card.fetchSemanticsNode().size
+        val wide = homeCardWidth(tv, landscape = true).value * context.resources.displayMetrics.density
+        assertTrue("Landscape fallback must keep a wide card: $size", size.width >= wide - 1)
         compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
             useUnmergedTree = true).assertExists()
         compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),

@@ -130,8 +130,23 @@ func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string
 	return generateFrame(ctx, cache, ffmpeg, source, target, second, 320)
 }
 
-func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
-	return generateFrame(ctx, cache, ffmpeg, source, target, second, 960)
+func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, seconds ...int) error {
+	var err error
+	for _, second := range seconds {
+		if err = generateFrame(ctx, cache, ffmpeg, source, target, second, 1920); err == nil && visibleStill(target) {
+			return nil
+		}
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+	}
+	if nonEmptyFrame(target) == nil {
+		return nil
+	}
+	if err == nil {
+		err = errEmptyTrickplayFrame
+	}
+	return err
 }
 
 func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, second, width int) error {
@@ -152,7 +167,7 @@ func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, se
 	}
 	ctx, cancel := context.WithTimeout(ctx, trickplayTimeout)
 	defer cancel()
-	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
+	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale='min("+strconv.Itoa(width)+",iw)':-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
 	if err == nil {
 		err = nonEmptyFrame(temporary)
 	}

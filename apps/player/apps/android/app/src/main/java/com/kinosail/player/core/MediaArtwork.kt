@@ -35,15 +35,30 @@ internal fun mediaClock(seconds: Double): String {
         else "%d:%02d".format(value / 60, value % 60)
 }
 
+private val artworkRetryDelays = listOf(1_000L, 3_000L, 8_000L, 20_000L)
+
+@Composable
+internal fun rememberArtwork(catalog: CatalogModel, path: String, dimension: Int): State<android.graphics.Bitmap?> {
+    var retry by remember(path, dimension) { mutableIntStateOf(0) }
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
+    val image = produceState<android.graphics.Bitmap?>(null, path, catalog, dimension, retry) {
+        if (path.isEmpty()) { value = null; return@produceState }
+        catalog.artwork(path, dimension)?.let { value = it; return@produceState }
+        for (delay in artworkRetryDelays) {
+            kotlinx.coroutines.delay(delay)
+            catalog.artwork(path, dimension)?.let { value = it; return@produceState }
+        }
+    }
+    OnReturnToForeground(lifecycle) { if (image.value == null && path.isNotEmpty()) retry++ }
+    return image
+}
+
 @Composable
 internal fun MediaArtwork(item: CatalogItem, catalog: CatalogModel, modifier: Modifier = Modifier,
-                          landscape: Boolean = false, dimension: Int = 400, progress: Boolean = true) {
-    val path = if (landscape) item.landscapePath else item.artwork
+                          landscape: Boolean = false, dimension: Int = 800, progress: Boolean = true) {
+    val path = if (landscape) item.landscapePath else item.artwork.ifEmpty { item.backdrop }
     val ratio = if (landscape) 16f / 9f else item.artworkRatio
-    val image by produceState<android.graphics.Bitmap?>(null, path, catalog, dimension) {
-        value = null
-        value = catalog.artwork(path, dimension)
-    }
+    val image by rememberArtwork(catalog, path, dimension)
     Box(modifier.aspectRatio(ratio).clip(RoundedCornerShape(12.dp)).background(KinoColor.raised),
         contentAlignment = Alignment.Center) {
         Text(item.title.firstOrNull()?.uppercase() ?: "K", color = KinoColor.signal,
@@ -65,7 +80,7 @@ internal fun MediaHero(item: CatalogItem, catalog: CatalogModel, tv: Boolean,
         val picture: @Composable () -> Unit = {
             MediaArtwork(item, catalog, if (wide) Modifier.width(if (item.backdrop.isNotEmpty()) maxWidth * 0.46f else 200.dp) else
                 if (item.backdrop.isNotEmpty()) Modifier.fillMaxWidth() else Modifier.width(200.dp),
-                landscape = item.backdrop.isNotEmpty(), dimension = 800, progress = false)
+                landscape = item.backdrop.isNotEmpty(), dimension = 1600, progress = false)
         }
         val information: @Composable () -> Unit = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

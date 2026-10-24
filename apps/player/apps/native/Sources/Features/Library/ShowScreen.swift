@@ -39,7 +39,7 @@ struct ShowScreen: View {
                         let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? next.season
                         tvSeasons(groups, selected: season)
                         MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season },
-                                   landscape: true, onQuickPlay: { quickPlay = $0 })
+                                   landscape: true, onQuickPlay: { quickPlay = $0 }, playsOnSelect: true)
                             .id(season)
                     } else {
                         ContentUnavailableView("No episodes", systemImage: "tv",

@@ -97,7 +97,7 @@ func resolveTMDBShow(ctx context.Context, item library.Item, baseURL string, fet
 		if result.Record.Artwork == "" || !Bounded(result.Record) {
 			return Result{}, errors.New("metadata artwork path is invalid")
 		}
-		result.Images = append(result.Images, Image{Source: poster, Target: result.Record.Artwork})
+		result.Images = append(result.Images, Image{Source: poster, Target: result.Record.Artwork, Still: true})
 	}
 	return enrichTMDBCast(ctx, baseURL, "tv", show.ID, fetch, artwork, result)
 }

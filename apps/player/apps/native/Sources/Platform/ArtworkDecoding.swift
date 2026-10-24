@@ -7,7 +7,7 @@ extension ArtworkLoader {
 
     static var deviceMemoryBudget: Int {
         #if os(tvOS)
-        64 * 1024 * 1024
+        128 * 1024 * 1024
         #else
         imageLimit
         #endif

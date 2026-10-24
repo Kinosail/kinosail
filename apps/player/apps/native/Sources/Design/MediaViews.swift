@@ -14,6 +14,7 @@ struct MediaCard: View {
     var onQuickPlay: ((ScreenDestination) -> Void)?
     var opensShow = false
     #if os(tvOS)
+    var playsOnSelect = false
     var takesFocus = false
     var onTookFocus: (() -> Void)?
     private var quickPlayAction: (() -> Void)? {
@@ -21,11 +22,16 @@ struct MediaCard: View {
         return { if focused { onQuickPlay(destination) } }
     }
     #endif
-    private var destination: ScreenDestination { resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow) }
+    private var destination: ScreenDestination {
+        #if os(tvOS)
+        if playsOnSelect { return item.playingDestination }
+        #endif
+        return resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)
+    }
     var body: some View {
         NavigationLink(value: destination) {
             VStack(alignment: .leading, spacing: 10) {
-                Artwork(path: landscape ? item.landscapeArtwork : item.poster,
+                Artwork(path: landscape ? item.landscapeArtwork : item.cardPoster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: MediaArtworkSize.dimension(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize, displayScale: displayScale),
                         fillsFrame: item.kind == .video || item.kind == .show || (landscape && item.kind == .photo))
@@ -98,7 +104,13 @@ struct MediaCard: View {
             onTookFocus?()
         }
         .onPlayPauseCommand(perform: quickPlayAction)
-        .accessibilityHint(item.kind == .photo ? "Select to view photo."
+        .contextMenu {
+            if playsOnSelect, let onQuickPlay {
+                Button("Details", systemImage: "info.circle") { onQuickPlay(item.destination(inShows: opensShow)) }
+            }
+        }
+        .accessibilityHint(playsOnSelect ? "Select to play. Press and hold for details."
+                           : item.kind == .photo ? "Select to view photo."
                            : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #else
@@ -188,6 +200,7 @@ struct MediaShelf: View {
     var opensShows = false
     var onFocus: ((MediaItem) -> Void)?
     #if os(tvOS)
+    var playsOnSelect = false
     var takesFocus = false
     var onTookFocus: (() -> Void)?
     #endif
@@ -208,7 +221,7 @@ struct MediaShelf: View {
                     ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                         #if os(tvOS)
                         MediaCard(item: item, landscape: landscape, resumesPlayback: resumesPlayback,
-                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows,
+                                  onFocus: onFocus, onQuickPlay: onQuickPlay, opensShow: opensShows, playsOnSelect: playsOnSelect,
                                   takesFocus: takesFocus && index == 0, onTookFocus: onTookFocus).frame(width: width)
                             .prefetchArtwork(Array(items.dropFirst(index + 1).prefix(8)), landscape: landscape)
                         #else

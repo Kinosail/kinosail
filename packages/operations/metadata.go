@@ -21,6 +21,7 @@ type MetadataRefresh struct {
 	ResolveEpisode        func(context.Context, library.Item, metadata.Record) (metadata.Result, error)
 	Download              func(context.Context, metadata.Result) (metadata.Record, error)
 	LegacyBackdrop        func(string) bool
+	Damaged               func(string) bool
 	Store                 func(map[string]metadata.Record) error
 	RefreshLibrary        func(context.Context) error
 	Misses                *metadata.Misses
@@ -57,7 +58,7 @@ func missingMetadata(config MetadataRefresh) []library.Item {
 		if config.Misses.Blocked(item) {
 			continue
 		}
-		if needsMetadata(item, record, found, config.Configured) || config.Configured && found && legacyBackdrop(item, record, config.LegacyBackdrop) {
+		if needsMetadata(item, record, found, config.Configured) || config.Configured && found && (legacyBackdrop(item, record, config.LegacyBackdrop) || damagedRecord(record, config.Damaged)) {
 			missing = append(missing, item)
 		}
 	}
@@ -154,10 +155,10 @@ func needsConfiguredMetadata(item library.Item, record metadata.Record) bool {
 }
 
 func (config MetadataRefresh) replacesImage(image metadata.Image) bool {
-	if !metadata.RegularFile(image.Target) {
+	if !metadata.RegularFile(image.Target) || config.Damaged != nil && config.Damaged(image.Target) {
 		return true
 	}
-	return image.Backdrop && config.LegacyBackdrop != nil && config.LegacyBackdrop(image.Target)
+	return (image.Backdrop || image.Still) && config.LegacyBackdrop != nil && config.LegacyBackdrop(image.Target)
 }
 
 func legacyBackdrop(item library.Item, record metadata.Record, legacy func(string) bool) bool {
@@ -168,7 +169,23 @@ func legacyBackdrop(item library.Item, record metadata.Record, legacy func(strin
 	if item.Show != "" {
 		backdrop = record.ShowBackdrop
 	}
-	return backdrop != "" && legacy(backdrop)
+	return backdrop != "" && legacy(backdrop) || legacyStill(item, record, legacy)
+}
+
+func damagedRecord(record metadata.Record, damaged func(string) bool) bool {
+	if damaged == nil || record.Owner {
+		return false
+	}
+	for _, path := range []string{record.Artwork, record.ShowArtwork, record.Backdrop, record.ShowBackdrop} {
+		if path != "" && damaged(path) {
+			return true
+		}
+	}
+	return false
+}
+
+func legacyStill(item library.Item, record metadata.Record, legacy func(string) bool) bool {
+	return legacy != nil && item.Show != "" && !record.Owner && record.Artwork != "" && legacy(record.Artwork)
 }
 
 func needsMovieRating(item library.Item, record metadata.Record) bool {

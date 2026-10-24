@@ -179,3 +179,30 @@ function bindDocumentControls() {
 
 if (document.readyState === "loading") addEventListener("DOMContentLoaded", bindDocumentControls, { once: true });
 else bindDocumentControls();
+
+(() => {
+  const delays = [1000, 3000, 8000, 20000];
+  const failed = new Set();
+  const artwork = (image) => {
+    if (!(image instanceof HTMLImageElement) || !image.src) return false;
+    const url = new URL(image.src, location.href);
+    return url.origin === location.origin && /^\/(art|episode-art)\//.test(url.pathname);
+  };
+  const retry = (image) => {
+    failed.delete(image);
+    if (image.isConnected && artwork(image) && image.complete && !image.naturalWidth) image.src = image.src;
+  };
+  document.addEventListener("error", (event) => {
+    const image = event.target;
+    if (!artwork(image)) return;
+    failed.add(image);
+    const attempt = Number(image.dataset.artworkRetry || 0);
+    if (attempt >= delays.length) return;
+    image.dataset.artworkRetry = String(attempt + 1);
+    setTimeout(() => retry(image), delays[attempt]);
+  }, true);
+  document.addEventListener("load", (event) => { if (event.target instanceof HTMLImageElement) failed.delete(event.target); }, true);
+  const healAll = () => [...failed].forEach(retry);
+  addEventListener("online", healAll);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") healAll(); });
+})();

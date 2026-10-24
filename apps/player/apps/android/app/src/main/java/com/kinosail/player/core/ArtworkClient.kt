@@ -72,7 +72,7 @@ class ArtworkClient(
     }
 
     fun bitmap(path: String, token: String, viewerId: String, dimension: Int): Bitmap {
-        require(dimension == 400 || dimension == 800) { "Invalid artwork size." }
+        require(dimension == 400 || dimension == 800 || dimension == 1600) { "Invalid artwork size." }
         return decode(bytes(path, token, viewerId), dimension)
     }
 
@@ -85,9 +85,14 @@ class ArtworkClient(
         var sample = 1
         while (maxOf(bounds.outWidth, bounds.outHeight) / sample > dimension * oversample) sample *= 2
         val options = BitmapFactory.Options().apply { inSampleSize = sample }
-        return requireNotNull(BitmapFactory.decodeByteArray(data, 0, data.size, options)) {
+        val decoded = requireNotNull(BitmapFactory.decodeByteArray(data, 0, data.size, options)) {
             "The artwork could not be decoded."
         }
+        val longest = maxOf(decoded.width, decoded.height)
+        if (longest <= dimension) return decoded
+        val scale = dimension.toFloat() / longest
+        return Bitmap.createScaledBitmap(decoded, maxOf(1, (decoded.width * scale).toInt()),
+            maxOf(1, (decoded.height * scale).toInt()), true).also { if (it !== decoded) decoded.recycle() }
     }
 
     companion object {

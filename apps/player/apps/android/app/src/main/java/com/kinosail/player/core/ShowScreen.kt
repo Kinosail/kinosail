@@ -29,28 +29,34 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
     val season = chosenSeason?.takeIf { it in (detail?.seasons ?: emptyList()) }
         ?: featured?.season ?: detail?.seasons?.firstOrNull()
     LaunchedEffect(showId, viewer.id) { model.open(showId, viewer.id) }
+    AutoRetry(state.notice != null && !state.loading, model::retry)
     DisposableEffect(Unit) { onDispose { model.reset() } }
+    val hero = if (featured != null && detail != null) featured.copy(title = detail.title, plot = detail.plot, year = detail.year) else null
+    val spotlight = !tv && hero != null && spotlightFits(hero, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp)
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         LazyColumn(Modifier.fillMaxSize().safeDrawingPadding(), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            item {
+            val back: @Composable () -> Unit = {
                 if (tv) androidx.tv.material3.Button(onClick = close) { androidx.tv.material3.Text(interfaceText("Back to Library")) }
                 else TextButton(onClick = close) { Text(interfaceText("Back")) }
             }
+            if (!spotlight) item { back() }
             if (state.loading && detail == null) item { LibraryLoading(home = true, tv = tv, show = true) }
             state.notice?.let { notice -> item {
                 Text(notice, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                if (tv) androidx.tv.material3.Button(onClick = model::retry) { androidx.tv.material3.Text(interfaceText("Try again")) }
-                else TextButton(onClick = model::retry) { Text(interfaceText("Try again")) }
+                RetryAction(tv, onClick = model::retry)
             } }
             if (featured != null) {
                 item {
-                    MediaHero(featured.copy(title = detail.title, plot = detail.plot, year = detail.year), catalog, tv) {
+                    val action: @Composable () -> Unit = {
                         val label = "${featured.playLabel} · S${featured.season} E${featured.episode}"
                         if (tv) androidx.tv.material3.Button(onClick = { play(featured) }) { androidx.tv.material3.Text(label) }
                         else Button(onClick = { play(featured) }) { Text(label) }
                     }
+                    if (spotlight) MediaSpotlight(hero!!, catalog, interfaceText("Up next") + " · S${featured.season} E${featured.episode}",
+                        bleed = 20.dp, topBleed = 20.dp, top = back, actions = action)
+                    else MediaHero(hero!!, catalog, tv, actions = action)
                 }
                 val visible = detail.episodes.filter { it.season == season }
                 if (tv) item {

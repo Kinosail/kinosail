@@ -31,3 +31,24 @@ test("Collections keep poster geometry while artwork loads", async ({ page, brow
 		await page.screenshot({ path: testInfo.outputPath("collections-loaded.png") });
 	} finally { release(); }
 });
+
+test("Failed artwork retries and heals without a reload", async ({ page, browserName }, testInfo) => {
+	await login(page);
+	const attempts = new Map<string, number>();
+	await page.route("**/art/**", async route => {
+		const path = new URL(route.request().url()).pathname;
+		const attempt = (attempts.get(path) ?? 0) + 1;
+		attempts.set(path, attempt);
+		if (attempt === 1) await route.abort("connectionreset");
+		else await route.continue();
+	});
+	await page.goto("/?view=collections", { waitUntil: "domcontentloaded" });
+	const image = page.locator(".curation-card img").first();
+	await expect(image).toBeVisible();
+	await expect.poll(() => image.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0), { timeout: 15_000 }).toBe(true);
+	const path = await image.evaluate((image: HTMLImageElement) => new URL(image.src).pathname);
+	expect(attempts.get(path)).toBe(2);
+	expect(await image.getAttribute("data-artwork-retry")).toBe("1");
+	await page.screenshot({ path: testInfo.outputPath("collections-healed.png") });
+	await testInfo.attach("artwork-heal", { contentType: "application/json", body: Buffer.from(JSON.stringify({ revision: process.env.KINOSAIL_TEST_REVISION, browser: browserName, command: "playwright test collections-loading.spec.ts", data: "populated generated collection artwork", failure: "first /art/ request reset", requests: attempts.get(path), result: "passed" })) });
+});

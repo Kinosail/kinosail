@@ -33,6 +33,9 @@ struct ConnectionMonitoring: ViewModifier {
                     await client.invalidateCatalog()
                     guard session.client?.identity == client.identity else { return }
                     session.contentRevision = UUID()
+                    #if os(iOS)
+                    await session.downloads.resumeInterrupted()
+                    #endif
                 }
             }
     }
