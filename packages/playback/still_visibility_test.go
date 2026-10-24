@@ -19,9 +19,7 @@ func TestEpisodeStillSkipsDarkFramesForTheNextTimestamp(t *testing.T) {
 	calls := filepath.Join(directory, "calls")
 	ffmpeg := filepath.Join(directory, "ffmpeg")
 	script := "#!/bin/sh\nfor last; do :; done\necho \"$6\" >> " + calls + "\nif [ \"$6\" = 60 ]; then cp " + bright + " \"$last\"; else cp " + dark + " \"$last\"; fi\n"
-	if err := os.WriteFile(ffmpeg, []byte(script), 0o700); err != nil {
-		t.Fatal(err)
-	}
+	writeFakeFFmpeg(t, ffmpeg, script)
 	target := filepath.Join(directory, "stills", "episode.jpg")
 	if err := GenerateEpisodeStill(t.Context(), directory, ffmpeg, filepath.Join(directory, "source.mkv"), target, 30, 60, 90); err != nil {
 		t.Fatal(err)
@@ -40,9 +38,7 @@ func TestEpisodeStillKeepsTheLastFrameWhenEveryTimestampIsDark(t *testing.T) {
 	dark := filepath.Join(directory, "dark.jpg")
 	writeStillFixture(t, dark, func(int, int) color.Color { return color.Gray{Y: 4} })
 	ffmpeg := filepath.Join(directory, "ffmpeg")
-	if err := os.WriteFile(ffmpeg, []byte("#!/bin/sh\nfor last; do :; done\ncp "+dark+" \"$last\"\n"), 0o700); err != nil {
-		t.Fatal(err)
-	}
+	writeFakeFFmpeg(t, ffmpeg, "#!/bin/sh\nfor last; do :; done\ncp "+dark+" \"$last\"\n")
 	target := filepath.Join(directory, "stills", "episode.jpg")
 	if err := GenerateEpisodeStill(t.Context(), directory, ffmpeg, filepath.Join(directory, "source.mkv"), target, 30, 60); err != nil {
 		t.Fatal(err)
@@ -65,6 +61,13 @@ func writeStillFixture(t *testing.T, path string, pixel func(int, int) color.Col
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(path, data.Bytes(), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func writeFakeFFmpeg(t *testing.T, path, script string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(script), 0o700); err != nil { //nolint:gosec // The fake ffmpeg must be executable by the test process.
 		t.Fatal(err)
 	}
 }
