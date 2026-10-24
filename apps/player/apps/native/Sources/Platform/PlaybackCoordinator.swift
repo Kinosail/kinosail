@@ -174,7 +174,7 @@ final class PlaybackEngine {
         let scope = try await client.profileScope()
         try Task.checkCancellation()
         stop(clearQueue: item.kind != .music)
-        let attempt = generation
+        let attempt = generation, started = ContinuousClock.now
         let installation = beginInstallation()
         devicePreferencesScope = scope
         self.client = client; self.store = store; currentItem = item; loading = true; wantsPlayback = true
@@ -209,7 +209,7 @@ final class PlaybackEngine {
             nowPlaying.activate(item: item, coordinator: self)
             beginMonitoring(attempt: attempt)
             observeAudioSession()
-            if nativeIntent.playing.withLock({ $0 }) ?? wantsPlayback { player?.play() }
+            beginPlayback(since: started, session: attempt)
         } catch {
             if generation == attempt, self.installation == installation, !(error is CancellationError) { message = Self.playbackMessage(error); player?.pause() }
             throw error

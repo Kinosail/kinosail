@@ -1,0 +1,80 @@
+import SwiftUI
+import CoreImage.CIFilterBuiltins
+
+struct PairingCodeScreen: View {
+    let code: String
+    let server: ServerAddress
+    @Environment(AppSession.self) private var session
+    @ScaledMetric(relativeTo: .largeTitle) private var codeSize = 44.0
+
+    private var contentSpacing: CGFloat {
+        #if os(tvOS)
+        16
+        #else
+        24
+        #endif
+    }
+
+    private var verticalPadding: CGFloat {
+        #if os(tvOS)
+        28
+        #else
+        KinoTheme.contentPadding
+        #endif
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: contentSpacing) {
+                Text("Approve this device").font(.title.bold()).accessibilityAddTraits(.isHeader)
+                if let url = try? ApprovalLink.url(server: server, code: code) {
+                    QRCodeView(value: url.absoluteString)
+                        .frame(width: 224, height: 224)
+                        .accessibilityLabel("Scan with your phone to approve this device")
+                }
+                Text(code).font(.system(size: codeSize, weight: .semibold, design: .monospaced))
+                    .accessibilityLabel("Approval code \(code.map(String.init).joined(separator: " "))")
+                Text("Scan the QR code with your phone, or enter the six-digit code in Settings → Connect a TV on a signed-in Player.")
+                    .multilineTextAlignment(.center).frame(maxWidth: 540)
+                #if os(iOS)
+                if let url = try? server.mediaURL("/quick-connect?code=\(code)") {
+                    Link("Approve in browser", destination: url)
+                }
+                #endif
+                Text(server.url.absoluteString).font(.caption).foregroundStyle(.secondary)
+                Text("Waiting for approval…").font(.callout).foregroundStyle(.secondary)
+                Button("Cancel") { Task { await session.cancelPairing() } }
+            }
+            .padding(.horizontal, KinoTheme.contentPadding)
+            .padding(.vertical, verticalPadding)
+            .frame(maxWidth: .infinity)
+        }
+        #if os(tvOS)
+        .onExitCommand { Task { await session.cancelPairing() } }
+        #endif
+    }
+}
+
+struct QRCodeView: View {
+    let value: String
+    var body: some View {
+        Group {
+            if let image = qrImage {
+                Image(uiImage: image).interpolation(.none).resizable().scaledToFit()
+            } else {
+                Image(systemName: "qrcode").resizable().scaledToFit().padding(32)
+                    .accessibilityLabel("QR code unavailable")
+            }
+        }
+        .padding(16).background(.white).clipShape(.rect(cornerRadius: 12))
+    }
+
+    private var qrImage: UIImage? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(value.utf8)
+        filter.correctionLevel = "M"
+        guard let output = filter.outputImage?.transformed(by: CGAffineTransform(scaleX: 6, y: 6)),
+              let image = CIContext().createCGImage(output, from: output.extent) else { return nil }
+        return UIImage(cgImage: image)
+    }
+}

@@ -17,6 +17,7 @@ The Xcode synchronized groups include new Swift files automatically. `Kinosail-i
 | Area | Behavior |
 | --- | --- |
 | Session | Manual Server address, bounded Bonjour discovery, local QR generation, six-digit Quick Connect, cancellation/expiry, device approval, Keychain restoration and sign-out. Cached viewer identity permits access to existing downloads when the Server is unreachable. |
+| Other servers | Jellyfin and Emby through the on-device device library (`Sources/DeviceLibrary`, ADR 0010): /24 discovery on port 8096, Who's watching, password and Quick Connect sign-in, one combined library with provider-ID matching, direct and converted playback through a loopback proxy, and progress written back to the source. Accounts sync with iCloud Keychain; other devices add them with one tap. An iPhone approves a TV's Jellyfin Quick Connect by scanning its QR code. Downloads, bookmarks, casting, device approval, Supporter and Reader stay Kinosail Server features. |
 | Library | Home, Continue watching, recent media, search, filters, sorting, paging, letter jumps, details, My List, collections, shows/seasons, albums and music queues. |
 | Playback | Native AVKit controls, capability hints from Apple APIs, direct playback first, Server-compatible HLS after supported format failures, opt-in dialog boost and loudness normalization through effect-specific compatible streams, canonical timeline seeking, chapters, markers, next episode, speed and track selection. |
 | Audio | Album/track queues, shuffle/repeat, sleep timer, mini player, background audio, Now Playing, remote commands, interruption and route-change handling. |
@@ -48,6 +49,8 @@ Reading resources are restricted to the active book. Each chapter has request, c
 `TopShelfShared` owns the credential-free snapshot contract, shared with `TopShelf`. The extension reuses Core's strict JSON parser, rejects unknown/duplicate fields and enforces byte, item, identifier, image and age limits before rendering. Snapshots refresh on foreground/library changes and clear on sign-out, profile change, disabled sharing or refresh failure. Changing connections preserves the sharing preference; an unset preference defaults to on. The app performs a one-time migration from older saved-off defaults, then preserves later opt-outs. Revocation while the app is not running cannot be detected by the offline extension; a cached snapshot expires after 24 hours. Playback always goes through current Server authorization. TV signing must provision both bundle identifiers with App Group `group.com.kinosail.player`. User Management is omitted so the shared-profile app can be provisioned by the configured Personal Team.
 
 ## Deliberate limits
+
+- Shared Jellyfin and Emby accounts use the synchronizable Keychain service `com.kinosail.player.swift.sources.shared.v1`, readable after first unlock so iCloud Keychain can sync it. Device-only data, including the device library token, stays `ThisDeviceOnly`. Emby and Jellyfin servers without Quick Connect reuse the shared token on the new device.
 
 - Google Cast has no native sender SDK in these targets and is not offered in the UI. Its existing Server wire protocol remains represented by the validated casting contract.
 - Downloads and book reading are iPhone/iPad features. Apple TV uses Server streaming.

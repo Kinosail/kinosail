@@ -36,7 +36,7 @@ final class AppSession {
     #endif
     private let keychain = SessionKeychain()
     private var restoreTask: Task<Void, Never>?
-    private var generation = UUID()
+    private(set) var generation = UUID()
     private var pairingTask: Task<Void, Never>?
     private var pairingClient: ServerClient?
     private var challenge: ConnectChallenge?
@@ -67,7 +67,8 @@ final class AppSession {
         var restoredClient: UUID?
         defer { restoring = false }
         do {
-            guard let saved = try await keychain.restore() else { return }
+            guard let stored = try await keychain.restore() else { return }
+            let saved = try await DeviceLibraryHost.shared.prepare(stored)
             let candidate = try ServerClient(server: saved.server, token: saved.token, viewer: saved.viewer)
             guard generation == attempt else { await candidate.close(); return }
             client = candidate
@@ -147,28 +148,7 @@ final class AppSession {
             do {
                 let profile = try await authenticated.viewer()
                 guard generation == attempt, !Task.isCancelled else { throw CancellationError() }
-                let saved = try SavedSession(server: candidate.server, token: token, viewer: profile)
-                try await keychain.save(saved)
-                guard generation == attempt, !Task.isCancelled else {
-                    try await keychain.discard(saved)
-                    throw CancellationError()
-                }
-                player.stop()
-                await casting.clear()
-                await artwork.clear()
-                resourceSnapshots.clear()
-                guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
-                let previous = client
-                clearSystemContent()
-                client = authenticated
-                viewer = profile
-                configureProgress()
-                showsSetup = false
-                contentRevision = UUID()
-                #if os(iOS)
-                await downloads.restore(viewer: profile, server: candidate.server, client: authenticated)
-                #endif
-                if let previous { await previous.close() }
+                try await adopt(authenticated, server: candidate.server, token: token, profile: profile, attempt: attempt)
             } catch {
                 try? await authenticated.signOut()
                 await authenticated.close()
@@ -184,6 +164,31 @@ final class AppSession {
                 if !(error is CancellationError) { notice = Self.message(error) }
             }
         }
+    }
+
+    func adopt(_ authenticated: ServerClient, server: ServerAddress, token: String, profile: Viewer, attempt: UUID) async throws {
+        let saved = try SavedSession(server: server, token: token, viewer: profile)
+        try await keychain.save(saved)
+        guard generation == attempt, !Task.isCancelled else {
+            try await keychain.discard(saved)
+            throw CancellationError()
+        }
+        player.stop()
+        await casting.clear()
+        await artwork.clear()
+        resourceSnapshots.clear()
+        guard generation == attempt, !Task.isCancelled else { try await keychain.discard(saved); throw CancellationError() }
+        let previous = client
+        clearSystemContent()
+        client = authenticated
+        viewer = profile
+        configureProgress()
+        showsSetup = false
+        contentRevision = UUID()
+        #if os(iOS)
+        await downloads.restore(viewer: profile, server: server, client: authenticated)
+        #endif
+        if let previous { await previous.close() }
     }
 
     private func finishPairing(attempt: UUID) {
@@ -226,7 +231,8 @@ final class AppSession {
         await artwork.clear()
         resourceSnapshots.clear()
         guard generation == attempt else { return }
-        let previous = client
+        let previous = client, local = DeviceLibraryHost.isDeviceLibrary(viewer)
+        if local { await DeviceLibraryHost.shared.reset() }
         client = nil
         viewer = nil
         progress = nil
@@ -238,8 +244,10 @@ final class AppSession {
         await downloads.lock()
         #endif
         if let previous {
-            do { try await previous.signOut() }
-            catch { notice = "Signed out on this device. The Server could not be reached to revoke its session." }
+            if !local {
+                do { try await previous.signOut() }
+                catch { notice = "Signed out on this device. The Server could not be reached to revoke its session." }
+            }
             await previous.close()
         }
     }

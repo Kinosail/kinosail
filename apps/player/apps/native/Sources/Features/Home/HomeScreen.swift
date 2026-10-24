@@ -140,7 +140,7 @@ struct HomeScreen: View {
         #endif
         .toolbar {
             #if os(iOS)
-            if let mode, let changeMode {
+            if let mode, let changeMode, !session.usesDeviceLibrary {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(mode.other.title) { changeMode(mode.other) }
                         .accessibilityLabel("Switch to \(mode.other.title) mode")

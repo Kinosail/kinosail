@@ -140,7 +140,7 @@ private struct DetailContent: View {
             if !item.genres.isEmpty { Text(item.genres).font(.callout).foregroundStyle(.secondary) }
             #if os(iOS)
             if !item.showID.isEmpty { NavigationLink("All episodes", value: ScreenDestination.show(item.showID)).frame(minHeight: 44) }
-            if item.kind == .video || item.isAudio {
+            if (item.kind == .video || item.isAudio) && !session.usesDeviceLibrary {
                 NavigationLink(value: ScreenDestination.bookmarks(item.id)) { Label("Bookmarks", systemImage: "bookmark") }
                     .frame(minHeight: 44)
                 NavigationLink(value: ScreenDestination.playOnTV(item.id)) { Label("Play on another device", systemImage: "tv") }
@@ -190,7 +190,7 @@ private struct DetailContent: View {
             #endif
             .disabled(busy)
         #if os(tvOS)
-        if item.kind == .video || item.isAudio {
+        if (item.kind == .video || item.isAudio) && !session.usesDeviceLibrary {
             NavigationLink(value: ScreenDestination.bookmarks(item.id)) {
                 Label("Bookmarks", systemImage: "bookmark").frame(minHeight: detailActionHeight)
             }

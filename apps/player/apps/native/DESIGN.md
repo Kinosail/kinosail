@@ -166,6 +166,16 @@ Media cards combine artwork, title, optional metadata and true Resume or Watched
 
 ### Inputs / Fields
 
+### Server setup
+
+Setup is one scrolling page on the cinema background. It shows, in order: servers from the viewer's other Apple devices, servers found on the network, and an address field. Each server is a card with a brand monogram, its name, its kind and host, and one short badge. Kinosail cards carry Best experience. Shared cards carry Ready · no sign-in needed. Placeholder cards pulse only while the network scan runs.
+
+Brand monograms use colored letters, not third-party logos. Jellyfin, Emby and Plex logos are trademarks; add them only with permission.
+
+Sign-in puts the server header first, then Who's watching (fixed columns, so one profile stays centered), then the password card. On Apple TV, the header and Quick Connect card sit on the left and the account column on the right. The Quick Connect code is large and tabular, with a QR code on Apple TV and iPad.
+
+The ready screen fans up to five real posters from the new library, then Connected, You're all set, the server and counts, Start watching and Add another server. Short setup screens center vertically on iPad. Focused primary buttons on Apple TV use the TV primary fill with dark ink.
+
 ### Downloads
 
 The Detail Download action shows live state. Before a download it reads Download. While preparing or transferring, an Electric progress ring and the status or percentage replace the arrow; selecting it opens Downloads. When the file is ready, it reads Downloaded with a filled Electric check and plays a success haptic. iOS cards for downloaded titles show a small Electric download badge at the top-leading corner.

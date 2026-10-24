@@ -4,6 +4,7 @@ struct PlayerTabs: View {
     @AppStorage private var watchStored: String
     @AppStorage private var listenStored: String
     @AppStorage private var modeStored: String
+    @Environment(AppSession.self) private var session
     @State private var selection = PlayerTab.home
     @State private var paths: [PlayerTab: NavigationPath] = [:]
     #if os(iOS)
@@ -185,7 +186,7 @@ struct PlayerTabs: View {
                 .toolbar {
                     #if os(iOS)
                     if tab != .home && tab != .more && tab != .settings && tab != .downloads,
-                       paths[tab]?.isEmpty ?? true {
+                       paths[tab]?.isEmpty ?? true, !session.usesDeviceLibrary {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(mode.other.title) { changeMode(mode.other) }
                                 .accessibilityLabel("Switch to \(mode.other.title) mode")

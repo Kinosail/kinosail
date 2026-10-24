@@ -1,5 +1,40 @@
 # Swift Apple verification
 
+## Jellyfin and Emby servers — 2026-10-24
+
+ADR 0010 first delivery: the on-device device library, Jellyfin and Emby sources, the new setup flow, iCloud Keychain sharing, iPhone approval of a TV sign-in, and background library loading on the ready screen. Everything below ran on a Mac with Xcode 27.1 (27A9275).
+
+**Revision.** `943366fb93db4f7d0b62ffea8a24cfc52595a6d2`. The next commit, `9b8151a2`, only stops Supporter badge reads for the device library; it was compiled (`Kinosail-iOS`, iOS Simulator) but the journeys were not rerun on it.
+
+**Test data.** `scripts/other-servers-fixture/up.sh <work directory>` builds synthetic media with ffmpeg (three movies: H.264/AAC MP4, HEVC/AC-3 MKV with ASS subtitles, MPEG-4/MP3 AVI; one show with three episodes) and starts Jellyfin 10.11.11 and Emby 4.10.2.0 on `127.0.0.1:8096` and `127.0.0.1:8097`, pinned by image digest. The user is `kino` with password `kino-test-password`. The containers fetch titles and artwork from TheMovieDb, so they need internet access. The script waits until that metadata is present and the show lists its episodes. A fresh Jellyfin 10.11.11 lists no episodes until a second library refresh, so the script requests one.
+
+The table below ran against containers set up by hand with the same steps and 30-second clips. After the script was added, `OtherServersJourneyTests` passed again on a fixture built from an empty directory by `up.sh`. That run uses 90-second clips and a test that taps Close player a second time when the first tap only shows the controls, because a 30-second clip could finish before the test closed the player.
+
+**Commands.** Each journey ran after `xcrun simctl uninstall <device> com.kinosail.player` and `xcrun simctl keychain <device> reset`, with `TEST_RUNNER_KINOSAIL_SOURCE_JELLYFIN`, `…_EMBY`, `…_USER` and `…_PASSWORD` set to the fixture:
+
+```bash
+xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS-Touch -destination 'platform=iOS Simulator,id=<device>' -parallel-testing-enabled NO -only-testing:Kinosail-iOSTouchUITests/<class> test
+xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS-Remote -destination 'platform=tvOS Simulator,id=<device>' -parallel-testing-enabled NO -only-testing:Kinosail-tvOSRemoteUITests/RemoteOtherServersTests test
+```
+
+| Journey | Device | Result |
+| --- | --- | --- |
+| `OtherServersJourneyTests`: Jellyfin password sign-in, ready screen with real posters and counts, Home, Movies, direct play, converted play, show page, then Emby through Add a server (single profile goes straight to its password), Libraries in Settings, and one combined Movies row (Big Buck Bunny shows once) | iPhone 18 Pro simulator | Passed |
+| `OtherServersHandoffTests`: sign in, open `kinosail://quickconnect?…` for a Quick Connect code started over the API, approve it, confirm the server reports it authenticated, sign out, add the server again from From your Apple devices without a password | iPhone 18 Pro simulator | Passed |
+| `OtherServersHandoffTests` | iPad simulator | Passed |
+| `OtherServersSpeedTests`: timed install-to-first-frame funnel | iPhone 18 Pro simulator | Passed |
+| `RemoteOtherServersTests`: type the address with the remote, Quick Connect code and QR code shown, approve over the API, focus Start watching, reach Home | Apple TV 4K simulator | Passed |
+
+**Funnel timings** (XCUITest clock, so each step includes about 0.5–1 s of test-harness waiting): launch to setup 6.03 s, Connect to sign-in 1.97 s, Sign in to ready 2.02 s, library preview 1.12 s, Start watching to Home titles 1.59 s (3.56 s before background loading), detail 2.2–2.3 s, Play to playing 1.75–1.80 s. The app's own `operation=playback-start outcome=ready` log measured 296–320 ms for direct play and 712–833 ms for converted play on the loopback fixture.
+
+**Logs.** Route timings log at `debug`. Sign-in, share, adopt, Quick Connect approval and playback start log at `info` with the operation, outcome, source kind and playback session. No log line contains a token, password, URL or user name.
+
+**Artifacts.** `.verification/other-servers/final/` (git-ignored) holds the result bundles, 32 screenshots, `environment.txt`, `results.txt`, `funnel.txt`, `playback-ready.txt` and `checksums.txt` (SHA-256 `2aea778730a6e0587131503518404d7bdd530129a6000342762f82cffde779a8`).
+
+`make max-loc` passed.
+
+**Not verified.** Physical iPhone, iPad and Apple TV. Real iCloud Keychain sync between two devices: the simulator stores the synchronizable item but does not sync it. A real camera scan of the TV QR code (the test opens the same link directly). Emby and Jellyfin servers on another host, over HTTPS, or with large libraries. Plex, the on-device engine and Kinosail Server in the combined library are not implemented.
+
 ## Library scan retry — 2026-10-17
 
 This change was written in a Linux container without Xcode. **Nothing in this section was compiled or run here.** The Mac results are recorded below when they arrive.

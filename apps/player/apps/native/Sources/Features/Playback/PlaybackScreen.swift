@@ -191,10 +191,12 @@ struct PlaybackToolsScreen: View {
                     Text(sourceStatus).foregroundStyle(.secondary)
                     if let progress = session.player.progressMessage { Text(progress) }
                     NavigationLink("This title’s preferences") { PlaybackPreferencesScreen(itemID: item.id) }
-                    NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id))
-                    #if os(iOS)
-                    NavigationLink("Play on another device", value: ScreenDestination.playOnTV(item.id))
-                    #endif
+                    if !session.usesDeviceLibrary {
+                        NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id))
+                        #if os(iOS)
+                        NavigationLink("Play on another device", value: ScreenDestination.playOnTV(item.id))
+                        #endif
+                    }
                     NavigationLink("Playback speed") { PlaybackSpeedScreen() }
                 } header: {
                     #if !os(tvOS)

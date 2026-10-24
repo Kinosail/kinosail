@@ -9,6 +9,7 @@ struct ConnectionMonitoring: ViewModifier {
         content
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(scenePhase)") {
                 guard scenePhase == .active, let client = session.client else { return }
+                await session.resumeDeviceLibrary()
                 await session.connection.monitor(client)
             }
             .task(id: "\(session.client?.identity.uuidString ?? ""):\(String(describing: session.connection.networkAvailable)):\(scenePhase)") {

@@ -154,5 +154,8 @@ struct SupporterToolbar: ViewModifier {
         .task(id: session.supporterRevision) { await load() }
         .onChange(of: phase) { _, phase in if phase == .active { Task { await load() } } }
     }
-    private func load() async { collection = try? await session.client?.supporterCollection() }
+    private func load() async {
+        guard !session.usesDeviceLibrary else { collection = nil; return }
+        collection = try? await session.client?.supporterCollection()
+    }
 }
