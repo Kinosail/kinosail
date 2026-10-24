@@ -138,7 +138,7 @@ iOS Home's Play or Resume uses `.borderedProminent`, the signal tint and explici
 
 Launch keeps the system launch screen: the Kinosail mark centered on black. `LaunchReveal` then dips the mark to 84% and grows it until the app shows through the sail, as a mask, in about 0.8 seconds. The app settles from 108% to its normal size underneath. Restore never waits on the network. Reduce Motion replaces the reveal with a 0.25-second fade.
 
-iOS navigation from a video, show, album or collection card uses the native zoom transition from that card's artwork. Reduce Motion uses the standard push. The iOS tab bar minimizes while scrolling down. My List changes its symbol with a replace transition and plays a success haptic.
+iOS navigation from a video, show, album or collection card uses the native zoom transition from that card's artwork. Reduce Motion uses the standard push. The iOS tab bar stays fully visible while scrolling. My List changes its symbol with a replace transition and plays a success haptic.
 
 ### Video playback
 
