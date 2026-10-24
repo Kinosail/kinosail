@@ -62,7 +62,7 @@ jobs:
           cache-scope: repository
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.28.5
+          version: 12.15.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
@@ -363,7 +363,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4
         with:
-          version: 11.28.5
+          version: 12.15.0
           install: false
           node-version-file: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1

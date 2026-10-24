@@ -50,5 +50,5 @@ require (
 	golang.org/x/exp v0.0.0-20261014143641-f0251eb4aa3e // indirect
 	golang.org/x/time v0.16.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
-	gvisor.dev/gvisor v0.0.0-20261024033739-cb4151eda8c5 // indirect
+	gvisor.dev/gvisor v0.0.0-20261024034507-a85164f292c3 // indirect
 )
