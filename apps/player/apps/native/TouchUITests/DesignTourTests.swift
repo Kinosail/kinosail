@@ -99,6 +99,60 @@ final class DesignTourTests: XCTestCase {
         }
     }
 
+    @MainActor func testCaptureConsistencyTour() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard let server = environment["KINOSAIL_DESIGN_TOUR_SERVER"], !server.isEmpty else {
+            throw XCTSkip("Set KINOSAIL_DESIGN_TOUR_SERVER to a populated test Server.")
+        }
+        continueAfterFailure = true
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launch()
+        try await connect(app, server: server, token: environment["KINOSAIL_DESIGN_TOUR_TOKEN"] ?? "", records: false)
+        let home = tab("Home", in: app)
+        XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)
+        let shows = tab("Shows", in: app)
+        if shows.exists {
+            shows.tap()
+            let show = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Example Show'")).firstMatch
+            XCTAssertTrue(show.waitForExistence(timeout: 20), app.debugDescription)
+            show.tap()
+            sleep(4)
+            record("c1 show", app)
+            app.swipeUp()
+            sleep(1)
+            record("c2 show lower", app)
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+        let movies = tab("Movies", in: app)
+        if movies.exists {
+            movies.tap()
+            let movie = app.buttons.matching(NSPredicate(format: "label CONTAINS 'Arrival'")).firstMatch
+            XCTAssertTrue(movie.waitForExistence(timeout: 20), app.debugDescription)
+            movie.tap()
+            sleep(4)
+            record("c3 movie", app)
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+        for (index, (name, item)) in [("Collections", "Example Collection"), ("Music", "Example Album")].enumerated() {
+            reveal(home, in: app)
+            tab("More", in: app).tap()
+            let link = app.buttons[name].firstMatch
+            guard link.waitForExistence(timeout: 5) else { continue }
+            link.tap()
+            sleep(3)
+            record("c\(4 + index * 2) \(name.lowercased())", app)
+            let entry = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", item)).firstMatch
+            if entry.waitForExistence(timeout: 10) {
+                entry.tap()
+                sleep(3)
+                record("c\(5 + index * 2) \(item.lowercased())", app)
+            }
+            tab("More", in: app).tap()
+            tab("More", in: app).tap()
+        }
+    }
+
     @MainActor private func tour(_ app: XCUIApplication) async throws {
         let home = tab("Home", in: app)
         XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)

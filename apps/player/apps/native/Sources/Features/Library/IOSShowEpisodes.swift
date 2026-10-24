@@ -25,8 +25,7 @@ struct IOSShowEpisodes: View {
                     if downloading == .series { Label("Adding series…", systemImage: "arrow.down.circle") }
                     else { Label("Download series", systemImage: "arrow.down.circle") }
                 }
-                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
-                .tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk).controlSize(.large)
+                .buttonStyle(SpotlightSecondaryButtonStyle()).controlSize(.large)
                 .disabled(downloading != nil || session.downloads.busy || episodes.count > 50)
                 if episodes.count > 50 {
                     Text("Series downloads support up to 50 episodes. Download one season at a time.")

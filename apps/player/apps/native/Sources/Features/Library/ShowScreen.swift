@@ -9,6 +9,8 @@ struct ShowScreen: View {
     @State private var quickPlay: ScreenDestination?
     @Environment(\.dynamicTypeSize) private var dynamicType
     @ScaledMetric(relativeTo: .body) private var playHeight = 44
+    #else
+    @State private var scroll = SpotlightScroll()
     #endif
 
     var body: some View {
@@ -46,11 +48,18 @@ struct ShowScreen: View {
                     CastShelf(people: show.cast)
                     #else
                     if let next = ShowSeasonSelection.featuredEpisode(in: episodes) {
-                        CinemaHero(item: next, title: next.show.isEmpty ? "Episodes" : next.show,
-                                   subtitle: next.title, showsPlot: false) {
+                        CinemaSpotlight(item: next, artwork: show.backdrop.isEmpty ? next.poster : show.backdrop,
+                                        eyebrow: "\(String(localized: "Up next")) · S\(next.season) E\(next.episode)",
+                                        title: show.title.isEmpty ? next.show : show.title,
+                                        subtitle: [show.year, show.genres].filter { !$0.isEmpty }.joined(separator: " · "),
+                                        scroll: scroll) {
                             NavigationLink(value: ScreenDestination.playback(next.id)) {
-                                Label("\(next.playLabel) · S\(next.season) E\(next.episode)", systemImage: "play.fill")
+                                Label(next.playLabel, systemImage: "play.fill").padding(.horizontal, 6)
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            NavigationLink("Details", value: ScreenDestination.detail(next.id)).buttonStyle(SpotlightSecondaryButtonStyle())
+                        }
+                        if !show.plot.isEmpty {
+                            Text(show.plot).font(.body).fixedSize(horizontal: false, vertical: true).frame(maxWidth: 900, alignment: .leading)
                         }
                         IOSShowEpisodes(episodes: episodes, nextID: next.id, jumpTo: jumpTo)
                             .id(showID)
@@ -63,6 +72,8 @@ struct ShowScreen: View {
         }
         #if os(tvOS)
         .tvMovieHeroViewport()
+        #else
+        .spotlightScroll(scroll)
         #endif
         .cinemaBackground()
         #if os(tvOS)
@@ -72,7 +83,7 @@ struct ShowScreen: View {
         #if os(tvOS)
         .navigationTitle("")
         #else
-        .navigationTitle("Seasons & episodes")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)

@@ -109,11 +109,7 @@ struct LoadingState: View {
                 }
                 .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
                 #else
-                CinemaHeroLayout {
-                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(16 / 9, contentMode: .fit)
-                } information: {
-                    featureInformation.frame(maxWidth: .infinity, alignment: .leading)
-                }.accessibilityHidden(true)
+                SpotlightSkeleton()
                 line(width: 240, height: 48).accessibilityHidden(true)
                 #endif
             }
@@ -131,9 +127,12 @@ struct LoadingState: View {
                 line(width: 100, height: 28).accessibilityHidden(true)
                 #else
                 RoundedRectangle(cornerRadius: 16).fill(KinoTheme.surface)
-                    .aspectRatio(1, contentMode: .fit).frame(maxWidth: 360).accessibilityHidden(true)
-                line(width: 300, height: 42).accessibilityHidden(true)
-                line(width: 180, height: 20).accessibilityHidden(true)
+                    .aspectRatio(1, contentMode: .fit).frame(maxWidth: 280).accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 6) {
+                    line(width: 300, height: 42)
+                    line(width: 180, height: 18)
+                }.accessibilityHidden(true)
+                Capsule().fill(KinoTheme.raised).frame(width: 112, height: 50).accessibilityHidden(true)
                 #endif
                 ForEach(0..<4) { _ in
                     HStack(spacing: 20) {
@@ -187,8 +186,10 @@ struct LoadingState: View {
                         VStack(alignment: .leading, spacing: 8) { line(width: 260, height: 42); line(width: 160, height: 20) }
                     }.accessibilityHidden(true)
                     #else
-                    RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(2 / 3, contentMode: .fit).frame(width: 200).accessibilityHidden(true)
-                    line(width: 180, height: 28).accessibilityHidden(true)
+                    HStack(alignment: .bottom, spacing: 20) {
+                        RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface).aspectRatio(2 / 3, contentMode: .fit).frame(width: 120)
+                        VStack(alignment: .leading, spacing: 8) { line(width: 200, height: 40); line(width: 160, height: 18) }
+                    }.accessibilityHidden(true)
                     #endif
                     line(width: 120, height: 24).accessibilityHidden(true)
                 }

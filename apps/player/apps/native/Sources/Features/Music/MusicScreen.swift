@@ -37,7 +37,7 @@ struct MusicScreen: View {
                                 Artwork(path: album.artwork, symbol: "music.note", ratio: 1).clipShape(.rect(cornerRadius: 12))
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text(album.title).font(KinoTheme.cardTitle).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                                    Text(album.artist).font(.caption).foregroundStyle(.secondary).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                                    Text(album.artist).font(.caption).foregroundStyle(KinoTheme.muted).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                                 }
                                 #if os(tvOS)
                                 .padding([.horizontal, .bottom], 12)
@@ -107,11 +107,29 @@ struct AlbumScreen: View {
                         }
                     }
                     #else
-                    if let first = album.tracks.first { Artwork(path: first.artwork, symbol: "music.note", ratio: 1).frame(maxWidth: 360).clipShape(.rect(cornerRadius: 16)) }
-                    Text(album.title).font(.largeTitle.bold())
-                    Text(album.artist).font(.headline).foregroundStyle(.secondary)
+                    if let first = album.tracks.first {
+                        Artwork(path: first.artwork, symbol: "music.note", ratio: 1)
+                            .frame(maxWidth: 280).clipShape(.rect(cornerRadius: 16))
+                            .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(album.title).font(.system(.largeTitle, design: .rounded).bold())
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityAddTraits(.isHeader)
+                        Text([album.artist, "\(album.tracks.count) \(album.tracks.count == 1 ? "track" : "tracks")"]
+                            .filter { !$0.isEmpty }.joined(separator: " · "))
+                            .font(.subheadline.weight(.medium)).foregroundStyle(KinoTheme.muted)
+                    }
+                    if !album.tracks.isEmpty {
+                        Button { play(album.tracks, at: 0) } label: {
+                            Label("Play", systemImage: "play.fill").padding(.horizontal, 6)
+                        }
+                        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).controlSize(.large)
+                        .tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                        .disabled(starting)
+                    }
                     #endif
-                    if let message { Text(message).foregroundStyle(.secondary) }
+                    if let message { Text(message).foregroundStyle(KinoTheme.muted) }
                     if album.tracks.isEmpty { ContentUnavailableView("No tracks", systemImage: "music.note") }
                     #if os(tvOS)
                     if !album.tracks.isEmpty { Text("Tracks").font(.title2.bold()).accessibilityAddTraits(.isHeader) }
@@ -119,8 +137,8 @@ struct AlbumScreen: View {
                     ForEach(Array(album.tracks.enumerated()), id: \.element.id) { index, item in
                         Button { play(album.tracks, at: index) } label: {
                             HStack(spacing: 20) {
-                                Text("\(index + 1)").monospacedDigit().foregroundStyle(.secondary).frame(minWidth: 30)
-                                VStack(alignment: .leading) { Text(item.title).font(.headline); Text(item.artist).font(.caption).foregroundStyle(.secondary) }
+                                Text("\(index + 1)").monospacedDigit().foregroundStyle(KinoTheme.muted).frame(minWidth: 30)
+                                VStack(alignment: .leading) { Text(item.title).font(.headline); Text(item.artist).font(.caption).foregroundStyle(KinoTheme.muted) }
                                 Spacer()
                                 Image(systemName: session.player.currentItem?.id == item.id && session.player.isPlaying ? "waveform" : "play.fill")
                             }.padding(.vertical, 12).contentShape(.rect)
@@ -143,7 +161,7 @@ struct AlbumScreen: View {
         #if os(tvOS)
         .navigationTitle("")
         #else
-        .navigationTitle("Album")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
