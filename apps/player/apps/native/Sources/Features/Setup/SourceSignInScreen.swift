@@ -61,6 +61,7 @@ struct SourceSignInScreen: View {
             .frame(maxWidth: 620)
             .frame(maxWidth: .infinity)
         }
+        .defaultScrollAnchor(.center, for: .alignment)
         #endif
     }
 

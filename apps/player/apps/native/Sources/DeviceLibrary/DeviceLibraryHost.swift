@@ -52,6 +52,7 @@ final class DeviceLibraryHost {
     func add(_ account: SourceAccount) async throws {
         let account = try account.validated()
         var list = try await accounts.load()
+        if configured, list.contains(account) { return }
         list.removeAll { $0.id == account.id }
         list.append(account)
         try await accounts.save(list)
@@ -68,6 +69,16 @@ final class DeviceLibraryHost {
         sources = list
         await catalog.configure(list)
         await SourceSharedStore.shared.withdraw(id)
+    }
+
+    func warm(_ account: SourceAccount) async {
+        do {
+            try await add(account)
+            _ = try await start()
+            await catalog.prefetch()
+        } catch {
+            deviceLibraryLog.warning("operation=device-library-warm outcome=failed failure_class=\(String(describing: error).prefix(48), privacy: .public)")
+        }
     }
 
     func refresh() async {

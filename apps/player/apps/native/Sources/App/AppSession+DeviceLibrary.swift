@@ -6,7 +6,6 @@ extension AppSession {
     func connectLibrary(_ account: SourceAccount) async throws {
         try await DeviceLibraryHost.shared.add(account)
         if usesDeviceLibrary {
-            await DeviceLibraryHost.shared.refresh()
             resourceSnapshots.clear()
             showsSetup = false
             contentRevision = UUID()

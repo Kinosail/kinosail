@@ -8,6 +8,11 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
     let streams: DeviceStreamRegistry
 
     func handle(_ request: DeviceRequest) async -> DeviceResponse {
+        let started = ContinuousClock.now
+        defer {
+            let elapsed = started.duration(to: .now).components
+            deviceLibraryLog.debug("operation=device-library-route route=\(Self.pattern(request.path), privacy: .public) method=\(request.method, privacy: .public) ms=\(elapsed.seconds * 1000 + elapsed.attoseconds / 1_000_000_000_000_000, privacy: .public)")
+        }
         do { return try await route(request) }
         catch is CancellationError { return .failure(ClientError.unavailable) }
         catch {

@@ -47,6 +47,10 @@ actor DeviceCatalog {
         return merged
     }
 
+    func prefetch() async {
+        _ = try? await recentActivity()
+    }
+
     func recentActivity() async throws -> [DeviceItem] {
         if let activity, Date().timeIntervalSince(activity.loaded) < Self.activityLifetime { return activity.items }
         _ = try await library()

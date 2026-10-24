@@ -17,7 +17,7 @@ struct QuickConnectApprovalScreen: View {
         ScrollView {
             VStack(spacing: 24) {
                 if !loaded {
-                    ProgressView().controlSize(.large).padding(.top, 80)
+                    ProgressView().controlSize(.large)
                 } else if approved {
                     success
                 } else if let account {
@@ -32,6 +32,7 @@ struct QuickConnectApprovalScreen: View {
             .frame(maxWidth: .infinity)
             .animation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(duration: 0.45, bounce: 0.2), value: "\(loaded)\(approved)")
         }
+        .defaultScrollAnchor(.center, for: .alignment)
         .cinemaBackground()
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button(approved ? "Done" : "Cancel", action: done) } }
         #if os(iOS)
@@ -79,7 +80,6 @@ struct QuickConnectApprovalScreen: View {
                 .accessibilityAddTraits(.isHeader)
             Text("It opens your library in a moment.").font(.body).foregroundStyle(KinoTheme.muted)
         }
-        .padding(.top, 60)
     }
 
     private var missing: some View {
@@ -90,7 +90,6 @@ struct QuickConnectApprovalScreen: View {
             Text("This iPhone is not signed in to the Jellyfin server your TV shows. Add that server here, then scan the code again.")
                 .font(.body).foregroundStyle(KinoTheme.muted).multilineTextAlignment(.center)
         }
-        .padding(.top, 60)
     }
 
     private func load() async {

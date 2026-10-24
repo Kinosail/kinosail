@@ -33,7 +33,7 @@ struct SourceReadyScreen: View {
         #else
         ScrollView {
             VStack(spacing: 28) {
-                PosterFan(posters: posters, loading: loading).frame(height: 250).padding(.top, 12)
+                PosterFan(posters: posters, loading: loading).frame(height: UIDevice.current.userInterfaceIdiom == .pad ? 380 : 250).padding(.top, 12)
                 message
                 actions
             }
@@ -42,6 +42,7 @@ struct SourceReadyScreen: View {
             .frame(maxWidth: 560)
             .frame(maxWidth: .infinity)
         }
+        .defaultScrollAnchor(.center, for: .alignment)
         #endif
     }
 
@@ -99,6 +100,7 @@ struct SourceReadyScreen: View {
 
     private func load() async {
         defer { withAnimation(.easeOut(duration: 0.3)) { loading = false } }
+        Task { await DeviceLibraryHost.shared.warm(account) }
         guard let value = try? await SourceConnect.preview(account) else { return }
         let images = value.posters.compactMap(UIImage.init(data:))
         withAnimation(reduceMotion ? .easeInOut(duration: 0.3) : .spring(duration: 0.8, bounce: 0.25)) {
