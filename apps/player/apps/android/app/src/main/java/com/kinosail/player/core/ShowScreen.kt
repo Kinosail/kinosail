@@ -29,6 +29,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
     val season = chosenSeason?.takeIf { it in (detail?.seasons ?: emptyList()) }
         ?: featured?.season ?: detail?.seasons?.firstOrNull()
     LaunchedEffect(showId, viewer.id) { model.open(showId, viewer.id) }
+    AutoRetry(state.notice != null && !state.loading, model::retry)
     DisposableEffect(Unit) { onDispose { model.reset() } }
     val hero = if (featured != null && detail != null) featured.copy(title = detail.title, plot = detail.plot, year = detail.year) else null
     val spotlight = !tv && hero != null && spotlightFits(hero, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp)

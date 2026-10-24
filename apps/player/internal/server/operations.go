@@ -64,7 +64,8 @@ func metadataRefreshConfig(store *metadataStore, items []library.Item, refresh f
 		LegacyBackdrop: func(path string) bool {
 			return metadata.LegacyProviderBackdrop(provider.config.ImageURL, provider.cache, path)
 		},
-		Store: store.setAll, RefreshLibrary: refresh,
+		Damaged: func(path string) bool { return metadata.DamagedArtwork(provider.cache, path) },
+		Store:   store.setAll, RefreshLibrary: refresh,
 	}
 }
 

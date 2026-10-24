@@ -24,6 +24,7 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
     val model: CollectionsModel = viewModel()
     val state = model.state
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
+    AutoRetry(state.notice != null && !state.loading) { model.refresh() }
     BackHandler(state.name != null) { model.back() }
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()

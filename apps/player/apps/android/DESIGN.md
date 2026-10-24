@@ -38,7 +38,8 @@ large text keep `MediaHero`.
 
 Artwork retries after 1, 3, 8, and 20 seconds when a load fails, and again when the app
 resumes. A card without a poster uses the backdrop. Every failure message uses the same
-filled Try again button.
+filled Try again button. A failed screen also retries by itself after 2, 5, 15 and 30
+seconds, then every minute, and again when the app returns to the foreground.
 
 Use the same card widths in pending and loaded Home shelves. Keep an 18dp shelf
 gap and enough padding for TV focus. Large text can wrap card titles. Compact

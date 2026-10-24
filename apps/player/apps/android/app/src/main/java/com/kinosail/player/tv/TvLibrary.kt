@@ -45,6 +45,8 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
             catalog.changeView(if (chosen == "search") "all" else chosen, refreshIfEmpty = true)
     }
     LaunchedEffect(viewer.serverId, viewer.id) { catalog.open(viewer) }
+    AutoRetry(state.notice != null && !state.loading && !state.connectionExpired, catalog::retry)
+    AutoRetry(state.detailNotice != null && state.listed == null && !state.listBusy, catalog::retryDetail)
     LaunchedEffect(destination, state.loading) {
         if (!state.loading && destination !in setOf("home", "listen", "settings", "collections"))
             catalog.changeView(if (destination == "search") "all" else destination)

@@ -70,7 +70,7 @@ func resolveMetadataGroup(ctx context.Context, config MetadataRefresh, group []l
 
 func resolveGroupEpisode(ctx context.Context, config MetadataRefresh, item library.Item, show metadata.Record) (metadata.Result, error) {
 	record, found := config.Record(item.ID)
-	if !found || !metadata.Valid(record) || legacyStill(item, record, config.LegacyBackdrop) {
+	if !found || !metadata.Valid(record) || legacyStill(item, record, config.LegacyBackdrop) || damagedRecord(record, config.Damaged) {
 		return config.ResolveEpisode(ctx, item, show)
 	}
 	record.ShowTitle, record.ShowYear, record.ShowPlot, record.ShowArtwork, record.ShowBackdrop = show.ShowTitle, show.ShowYear, show.ShowPlot, show.ShowArtwork, show.ShowBackdrop

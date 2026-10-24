@@ -28,6 +28,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
     val model: HomeModel = viewModel()
     val state = model.state.copy(listening = listening)
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
+    AutoRetry(state.notice != null && !state.loading, model::retry)
     DisposableEffect(Unit) { onDispose { model.reset() } }
     val spotlight = !tv && state.featured?.let { spotlightFits(it, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp) } == true
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {

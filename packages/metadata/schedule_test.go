@@ -61,3 +61,16 @@ func waitForRefreshCalls(t *testing.T, calls *atomic.Int32, want int32) {
 	}
 	t.Fatalf("refresh calls = %d, want %d", calls.Load(), want)
 }
+
+func TestScheduleRetriesMissingMetadataWithoutLibraryChanges(t *testing.T) {
+	previous := healInterval
+	healInterval = 20 * time.Millisecond
+	defer func() { healInterval = previous }()
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	var calls atomic.Int32
+	if Schedule(ctx, true, func(func([]library.Item)) {}, func(context.Context) error { calls.Add(1); return nil }) == nil {
+		t.Fatal("schedule was not created")
+	}
+	waitForRefreshCalls(t, &calls, 2)
+}

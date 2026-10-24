@@ -10,6 +10,8 @@ import (
 
 const scheduleDelay = 250 * time.Millisecond
 
+var healInterval = time.Hour
+
 func Schedule(ctx context.Context, available bool, observe func(func([]library.Item)), refresh func(context.Context) error) func() {
 	if ctx == nil || !available || observe == nil || refresh == nil {
 		return nil
@@ -22,6 +24,18 @@ func Schedule(ctx context.Context, available bool, observe func(func([]library.I
 		}
 	}
 	observe(func([]library.Item) { trigger() })
+	go func() {
+		ticker := time.NewTicker(healInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				trigger()
+			}
+		}
+	}()
 	go func() {
 		for {
 			select {

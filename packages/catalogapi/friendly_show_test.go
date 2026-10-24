@@ -51,8 +51,11 @@ func TestEpisodeWithoutSuppliedArtworkExposesItsOwnStill(t *testing.T) {
 			t.Fatalf("episode %s artwork = %q", item.ID, result.Artwork)
 		}
 	}
+	if result := ProjectItem(library.Item{ID: "movie", Kind: "video"}, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "/episode-art/movie" {
+		t.Fatalf("movie without artwork or backdrop = %q", result.Artwork)
+	}
 	for _, item := range []library.Item{
-		{ID: "movie", Kind: "video"},
+		{ID: "movie-with-backdrop", Kind: "video", Backdrop: "movie-backdrop.jpg"},
 		{ID: "track", Kind: "audio", Show: "Series", Episode: 1},
 	} {
 		if result := ProjectItem(item, catalog.PlaybackState{}, ItemAccess{}); result.Artwork != "" {

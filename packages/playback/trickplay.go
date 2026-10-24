@@ -130,8 +130,23 @@ func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string
 	return generateFrame(ctx, cache, ffmpeg, source, target, second, 320)
 }
 
-func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
-	return generateFrame(ctx, cache, ffmpeg, source, target, second, 1920)
+func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, seconds ...int) error {
+	var err error
+	for _, second := range seconds {
+		if err = generateFrame(ctx, cache, ffmpeg, source, target, second, 1920); err == nil && visibleStill(target) {
+			return nil
+		}
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+	}
+	if nonEmptyFrame(target) == nil {
+		return nil
+	}
+	if err == nil {
+		err = errEmptyTrickplayFrame
+	}
+	return err
 }
 
 func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, second, width int) error {

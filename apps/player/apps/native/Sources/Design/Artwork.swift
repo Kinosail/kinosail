@@ -37,6 +37,7 @@ struct Artwork: View {
             .clipped()
             .accessibilityHidden(true)
             .onChange(of: scenePhase) { _, phase in if phase == .active && image == nil && !loading && !path.isEmpty { retry += 1 } }
+            .onChange(of: session.connection.unavailable) { _, unavailable in if !unavailable && image == nil && !loading && !path.isEmpty { retry += 1 } }
             .task(id: "\(session.profileKey ?? ""):\(session.client == nil):\(path):\(dimension):\(retry)") {
                 let attempt = UUID()
                 generation = attempt

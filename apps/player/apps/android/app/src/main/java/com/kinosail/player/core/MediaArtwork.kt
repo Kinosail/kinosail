@@ -49,13 +49,7 @@ internal fun rememberArtwork(catalog: CatalogModel, path: String, dimension: Int
             catalog.artwork(path, dimension)?.let { value = it; return@produceState }
         }
     }
-    DisposableEffect(lifecycle, path) {
-        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME && image.value == null && path.isNotEmpty()) retry++
-        }
-        lifecycle.addObserver(observer)
-        onDispose { lifecycle.removeObserver(observer) }
-    }
+    OnReturnToForeground(lifecycle) { if (image.value == null && path.isNotEmpty()) retry++ }
     return image
 }
 
