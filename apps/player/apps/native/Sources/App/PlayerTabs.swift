@@ -132,7 +132,7 @@ struct PlayerTabs: View {
         }
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
-        .tabBarMinimizeBehavior(.onScrollDown)
+        .tabBarMinimizeBehavior(.never)
         .modifier(MiniPlayerTabAccessory())
         #endif
     }
