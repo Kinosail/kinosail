@@ -41,6 +41,48 @@ final class RemoteOtherServersTests: RemoteTestCase {
         record("tv4 home", app)
     }
 
+    @MainActor func testPlexCodeOnboarding() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard let accounts = environment["KINOSAIL_PLEX_TV"], !accounts.isEmpty else {
+            throw XCTSkip("Set KINOSAIL_PLEX_TV to the plex.tv stand-in from scripts/other-servers-fixture/up.sh.")
+        }
+        continueAfterFailure = false
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launchEnvironment["KINOSAIL_PLEX_TV"] = accounts
+        let remote = XCUIRemote.shared
+        app.launch()
+        let entry = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Sign in with Plex'")).firstMatch
+        XCTAssertTrue(entry.waitForExistence(timeout: 20), app.debugDescription)
+        sleep(4)
+        for _ in 0..<10 where !entry.hasFocus { remote.press(.down) }
+        XCTAssertTrue(entry.hasFocus, app.debugDescription)
+        record("tvp1 setup", app)
+        remote.press(.select)
+
+        let code = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Plex code '")).firstMatch
+        XCTAssertTrue(code.waitForExistence(timeout: 30), app.debugDescription)
+        sleep(2)
+        record("tvp2 plex code", app)
+        let value = String(code.label.dropFirst("Plex code ".count)).replacingOccurrences(of: " ", with: "")
+        var link = URLRequest(url: try XCTUnwrap(URL(string: "\(accounts)/link?code=\(value)")))
+        link.httpMethod = "POST"
+        let (_, response) = try await URLSession.shared.data(for: link)
+        XCTAssertEqual((response as? HTTPURLResponse)?.statusCode, 200)
+
+        let start = app.buttons["Start watching"]
+        XCTAssertTrue(start.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'ready to watch'")).firstMatch.waitForExistence(timeout: 30), app.debugDescription)
+        sleep(2)
+        record("tvp3 ready", app)
+        for _ in 0..<4 where !start.hasFocus { remote.press(.up) }
+        XCTAssertTrue(start.hasFocus, app.debugDescription)
+        remote.press(.select)
+        XCTAssertTrue(start.waitForNonExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Big Buck Bunny' OR label BEGINSWITH 'Sintel' OR label BEGINSWITH 'Tears of Steel'")).firstMatch.waitForExistence(timeout: 60), app.debugDescription)
+        sleep(4)
+        record("tvp4 home", app)
+    }
+
     private func approve(_ code: String, server: String, user: String, password: String) async throws {
         let header = "MediaBrowser Client=\"Kinosail QA\", Device=\"QA\", DeviceId=\"kinosail-remote-qa\", Version=\"1\""
         var login = URLRequest(url: try XCTUnwrap(URL(string: "\(server)/Users/AuthenticateByName")))

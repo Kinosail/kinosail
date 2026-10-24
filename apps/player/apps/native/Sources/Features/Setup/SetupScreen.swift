@@ -2,6 +2,7 @@ import SwiftUI
 
 enum SetupStep: Hashable {
     case signIn(SourceServerInfo)
+    case plex(String?)
     case ready(SourceAccount)
 }
 
@@ -52,6 +53,8 @@ struct SetupScreen: View {
                 switch step {
                 case .signIn(let server):
                     SourceSignInScreen(server: server) { path.append(.ready($0)) }
+                case .plex(let target):
+                    PlexSignInScreen(target: target) { path.append(.ready($0)) }
                 case .ready(let account):
                     SourceReadyScreen(account: account, earlier: added, addAnother: { try await keep(account) },
                                       start: { try await session.connectLibrary(account) })
@@ -69,9 +72,10 @@ struct SetupScreen: View {
                 #endif
                 SharedServersSection(shared: shared, excluded: Set((DeviceLibraryHost.shared.sources + added).map(\.id))) { path.append(.ready($0)) }
                 nearby
+                PlexEntryRow { path.append(.plex(nil)) }
                 manual
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Works with Kinosail, Jellyfin and Emby. Your media stays on your server. Servers you sign in to sync to your other Apple devices with iCloud Keychain.")
+                    Text("Works with Kinosail, Jellyfin, Emby and Plex. Your media stays on your server. Servers you sign in to sync to your other Apple devices with iCloud Keychain.")
                         .font(.footnote).foregroundStyle(KinoTheme.muted)
                     PrivacyPolicyLink().font(.footnote)
                 }
@@ -112,7 +116,7 @@ struct SetupScreen: View {
                 }
                 ForEach(sources) { server in
                     let connected = isConnected(server)
-                    Button { path.append(.signIn(server)) } label: {
+                    Button { path.append(server.kind == .plex ? .plex(server.serverID) : .signIn(server)) } label: {
                         ServerCard(brand: .source(server.kind), name: server.name, detail: "\(server.kind.title) · \(server.address.host ?? "")", connected: connected)
                     }
                     .serverCardButtonStyle()
@@ -239,8 +243,8 @@ struct SetupScreen: View {
         probing = true
         Task {
             defer { probing = false }
-            if let url = try? SourceAddress.parse(address, defaultPort: 8096), let server = try? await SourceConnect.probe(url) {
-                path.append(.signIn(server))
+            if let server = await SourceDiscovery.identify(address) {
+                path.append(server.kind == .plex ? .plex(server.serverID) : .signIn(server))
                 return
             }
             connectKinosail(address)
@@ -263,30 +267,3 @@ private extension View {
         #endif
     }
 }
-
-#if os(iOS)
-private struct SetupBrandHeader: View {
-    let adding: Bool
-    @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 34.0
-
-    var body: some View {
-        VStack(spacing: 14) {
-            Image("LaunchMark")
-                .resizable().scaledToFit()
-                .frame(width: 52, height: 67)
-                .shadow(color: KinoTheme.signal.opacity(0.35), radius: 18)
-                .accessibilityHidden(true)
-            Text(adding ? "Add a server" : "Kinosail Player")
-                .font(.system(size: titleSize, weight: .bold, design: .rounded))
-                .tracking(-0.4)
-                .accessibilityAddTraits(.isHeader)
-            Text(adding ? "Titles from every server appear together in one library." : "All your movies and shows, from every server, in one place.")
-                .font(.subheadline).foregroundStyle(KinoTheme.muted)
-                .multilineTextAlignment(.center)
-        }
-        .foregroundStyle(KinoTheme.text)
-        .frame(maxWidth: .infinity)
-        .padding(.top, adding ? 0 : 24)
-    }
-}
-#endif

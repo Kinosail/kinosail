@@ -157,9 +157,12 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
     private func list(_ id: String, request: DeviceRequest) async throws -> DeviceResponse {
         let listed = try Self.body(request) { try $0.object(allowing: ["listed"]).flag("listed") }
         guard let item = try await catalog.lookup(id) else { throw DeviceFailure.notFound }
+        var stored = false
         for version in item.versions.isEmpty ? [item.ref] : item.versions {
-            try await catalog.client(for: version).setFavorite(version.item, favorite: listed)
+            do { try await catalog.client(for: version).setFavorite(version.item, favorite: listed); stored = true }
+            catch DeviceFailure.unsupported { continue }
         }
+        guard stored else { throw DeviceFailure.unsupported }
         await catalog.updateState(id) { $0.favorite = listed }
         return .json(200, .object(["listed": .bool(listed)]))
     }
@@ -212,6 +215,17 @@ struct DeviceLibraryRouter: DeviceRequestHandler {
         guard file.hasSuffix(".vtt"), let index = Int(file.dropLast(4)), let playback = await state.playback(id),
               let request = playback.subtitles[index] else { throw DeviceFailure.notFound }
         let (data, _) = try await BoundedHTTPResponse.receive(request, session: SourceHTTP.session, maximum: 8 * 1024 * 1024, expected: [200])
-        return .data(200, data, "text/vtt")
+        return .data(200, Self.webVTT(data), "text/vtt")
+    }
+
+    static func webVTT(_ data: Data) -> Data {
+        guard var text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .isoLatin1) else { return data }
+        if text.hasPrefix("\u{FEFF}") { text.removeFirst() }
+        if text.hasPrefix("WEBVTT") { return data }
+        let lines = text.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n").components(separatedBy: "\n")
+        let cues = lines.map { line in
+            line.contains("-->") ? line.replacingOccurrences(of: #"(\d{2}:\d{2}:\d{2}),(\d{3})"#, with: "$1.$2", options: .regularExpression) : line
+        }
+        return Data(("WEBVTT\n\n" + cues.joined(separator: "\n")).utf8)
     }
 }

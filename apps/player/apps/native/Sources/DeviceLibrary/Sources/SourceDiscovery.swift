@@ -2,7 +2,7 @@ import Darwin
 import Foundation
 
 enum SourceDiscovery {
-    static let ports = [8096]
+    static let ports = [8096, 32400]
     private static let session: URLSession = {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpCookieStorage = nil
@@ -22,7 +22,7 @@ enum SourceDiscovery {
             var pending = hosts.flatMap { host in ports.compactMap { URL(string: "http://\(host):\($0)") } }.makeIterator()
             func next() -> Bool {
                 guard let address = pending.next() else { return false }
-                group.addTask { try? await SourceConnect.probe(address, session: session) }
+                group.addTask { address.port == 32400 ? try? await PlexRoutes.probe(address, session: session) : try? await SourceConnect.probe(address, session: session) }
                 return true
             }
             for _ in 0..<48 where next() {}
@@ -33,6 +33,12 @@ enum SourceDiscovery {
                 _ = next()
             }
         }
+    }
+
+    static func identify(_ input: String) async -> SourceServerInfo? {
+        if let url = try? SourceAddress.parse(input, defaultPort: 8096), let server = try? await SourceConnect.probe(url) { return server }
+        if let url = try? SourceAddress.parse(input, defaultPort: 32400), let server = try? await PlexRoutes.probe(url) { return server }
+        return nil
     }
 
     static func candidates() -> [String] {

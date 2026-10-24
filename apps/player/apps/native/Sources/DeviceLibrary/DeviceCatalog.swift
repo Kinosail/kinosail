@@ -25,6 +25,7 @@ actor DeviceCatalog {
     static func client(for account: SourceAccount) -> MediaSourceClient {
         switch account.kind {
         case .jellyfin, .emby: JellyfinClient(account: account)
+        case .plex: PlexClient(account: account)
         }
     }
 
