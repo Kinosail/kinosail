@@ -44,6 +44,9 @@
       verified.enumerated().reduce(0) { $0 + ($1.element ? manifest.length($1.offset) : 0) }
     }
 
+    static let interrupted = "Download interrupted. Resume to continue."
+    static let preparationInterrupted = "Preparation interrupted. Resume to try again."
+
     static func failure(_ message: String) -> ClientError { .invalidInput(message) }
 
     func validate() throws {

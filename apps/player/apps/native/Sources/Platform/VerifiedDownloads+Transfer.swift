@@ -73,7 +73,7 @@
             plan.retries = (plan.retries ?? 0) + 1
             plan.retryAt = Date(timeIntervalSinceNow: max(15, delay))
           } else {
-            plan.status = "paused"; plan.error = "Preparation interrupted. Resume to try again."
+            plan.status = "paused"; plan.error = VerifiedDownload.preparationInterrupted
           }
           try? savePlan(plan)
         }
@@ -85,11 +85,11 @@
         if (error as NSError).domain == NSURLErrorDomain, (error as NSError).code == NSURLErrorCancelled {
           job.retries += 1
           if job.retries < 5 { job.status = "queued"; job.error = ""; job.retryAt = nil }
-          else { job.retries = 5; job.status = "paused"; job.error = "Download interrupted. Resume to continue." }
+          else { job.retries = 5; job.status = "paused"; job.error = VerifiedDownload.interrupted }
         } else if let delay = DownloadRecovery.delay(error: error as NSError, response: task.response as? HTTPURLResponse, attempt: job.retries) {
           job.retryAt = Date(timeIntervalSinceNow: delay); job.retries += 1; job.status = "waiting"; job.error = "Connection interrupted. Retrying automatically."
         } else {
-          job.status = "paused"; job.error = "Download interrupted. Resume to continue."
+          job.status = "paused"; job.error = VerifiedDownload.interrupted
         }
         do { try persist(job) } catch { storageError = true }
       }
