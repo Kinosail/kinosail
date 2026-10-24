@@ -153,6 +153,49 @@ final class DesignTourTests: XCTestCase {
         }
     }
 
+    @MainActor func testCaptureEveryScreen() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard let server = environment["KINOSAIL_DESIGN_TOUR_SERVER"], !server.isEmpty else {
+            throw XCTSkip("Set KINOSAIL_DESIGN_TOUR_SERVER to a populated test Server.")
+        }
+        continueAfterFailure = true
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launch()
+        try await connect(app, server: server, token: environment["KINOSAIL_DESIGN_TOUR_TOKEN"] ?? "", records: false)
+        let home = tab("Home", in: app)
+        XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)
+        let pages: [(String, [String])] = [
+            ("My List", []), ("Library", []), ("Music", []), ("Audiobooks", ["first"]), ("Books", ["first"]),
+            ("Photos", ["first"]), ("Downloads", []),
+            ("Settings", ["Playback", "Downloads", "Reader", "Customize tabs", "Connect a TV"]),
+        ]
+        for (index, (name, children)) in pages.enumerated() {
+            reveal(home, in: app)
+            let more = tab("More", in: app)
+            more.tap()
+            more.tap()
+            let link = app.buttons[name].firstMatch
+            guard link.waitForExistence(timeout: 5) else { continue }
+            link.tap()
+            sleep(3)
+            record(String(format: "e%02d %@", index * 10, name.lowercased()), app)
+            for (offset, child) in children.enumerated() {
+                let target = child == "first"
+                    ? app.scrollViews.firstMatch.buttons.element(boundBy: 0)
+                    : app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", child)).element(boundBy: 0)
+                guard target.waitForExistence(timeout: 5) else { continue }
+                target.tap()
+                sleep(4)
+                record(String(format: "e%02d %@ %@", index * 10 + offset + 1, name.lowercased(), child.lowercased()), app)
+                if app.buttons["Close player"].exists { app.buttons["Close player"].tap() }
+                let back = app.navigationBars.buttons.firstMatch
+                if back.exists && back.isHittable { back.tap() } else { app.swipeDown() }
+                sleep(1)
+            }
+        }
+    }
+
     @MainActor private func tour(_ app: XCUIApplication) async throws {
         let home = tab("Home", in: app)
         XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)

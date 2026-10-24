@@ -4,6 +4,14 @@ extension View {
     @ViewBuilder func cinemaBackground() -> some View {
         background(CinemaBackground())
     }
+
+    @ViewBuilder func listCanvas() -> some View {
+        #if os(iOS)
+        scrollContentBackground(.hidden).cinemaBackground()
+        #else
+        background(KinoTheme.background)
+        #endif
+    }
 }
 
 private struct CinemaBackground: View {

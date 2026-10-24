@@ -211,8 +211,8 @@ struct LibraryScreen: View {
         #if os(iOS)
         Picker("Library", selection: $selection) {
             ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
-        }
-        sortPicker
+        }.fixedSize()
+        sortPicker.fixedSize()
         if let page = visiblePage, !page.letters.isEmpty, sort == .title {
             Button { showsLetterJump = true } label: {
                 Label("A–Z", systemImage: "textformat.abc")

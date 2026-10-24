@@ -64,7 +64,7 @@ extension View {
             .scrollContentBackground(.hidden)
             .frame(maxWidth: 760)
             .frame(maxWidth: .infinity)
-            .background(KinoTheme.background)
+            .cinemaBackground()
             .navigationBarTitleDisplayMode(large ? .large : .inline)
         #endif
     }

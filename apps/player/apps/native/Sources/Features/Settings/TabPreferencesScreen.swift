@@ -65,8 +65,9 @@ private struct TabPreferencesEditor: View {
         }
         #if os(iOS)
         .scrollContentBackground(.hidden)
-        #endif
+        #else
         .background(KinoTheme.background)
+        #endif
         .configurationNavigationTitle(mode == .listen ? "Customize Listen tabs" : "Customize tabs")
         .tvOSConfigurationLayout(title: "Customize tabs", symbol: "rectangle.3.group")
         .onChange(of: mode) { _, _ in message = nil }
