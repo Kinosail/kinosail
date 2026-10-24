@@ -52,6 +52,7 @@ actor SourceSharedStore {
 
 extension SourceConnect {
     static func adopt(_ shared: SourceAccount) async throws -> SourceAccount {
+        if shared.kind == .plex { return try await adoptPlex(shared) }
         var failure: (any Error)?
         for address in shared.addresses.prefix(4) {
             do {
@@ -98,5 +99,19 @@ extension SourceConnect {
         let account = try await awaitQuickConnect(server, pending, until: Date().addingTimeInterval(20), interval: .milliseconds(300))
         deviceLibraryLog.info("operation=source-adopt outcome=own-token kind=jellyfin")
         return account
+    }
+
+    private static func adoptPlex(_ shared: SourceAccount) async throws -> SourceAccount {
+        let address = try await PlexRoutes.shared.resolve(shared)
+        var check = URLRequest(url: try SourceHTTP.url(address, "/library/sections"))
+        PlexAccounts.sign(&check, token: shared.token)
+        do { _ = try await SourceHTTP.data(check, maximum: 4 * 1024 * 1024, expected: [200]) }
+        catch ClientError.http(let status) where status == 401 || status == 403 {
+            throw ClientError.invalidInput("This sign-in has expired. Sign in to \(shared.name) again on this device.")
+        }
+        var account = shared
+        account.addresses = [address] + shared.addresses.filter { $0 != address }
+        deviceLibraryLog.info("operation=source-adopt outcome=shared-token kind=plex")
+        return try account.validated()
     }
 }

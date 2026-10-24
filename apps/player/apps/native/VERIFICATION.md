@@ -1,5 +1,37 @@
 # Swift Apple verification
 
+## Plex servers — 2026-10-24
+
+ADR 0010 second delivery: Plex sign-in, Plex servers in the combined library, playback, subtitles and progress. Everything below ran on a Mac with Xcode 27.1 (27A9275).
+
+**Revision.** `490ca318`. The app sources in the iPad and Apple TV runs match that commit. Only `PlexJourneyTests` changed after those runs: it gained the From your Apple devices step and two waits.
+
+**Test data.** `scripts/other-servers-fixture/up.sh <work directory>` now also starts Plex Media Server 1.43.5 on `127.0.0.1:32400`, pinned by image digest, and a plex.tv stand-in (`plex_tv.py`) on `127.0.0.1:8099`. The media now includes a sidecar English SRT file for Big Buck Bunny. The Plex server is not claimed. `ALLOWED_NETWORKS` lets the fixture reach it without a plex.tv account, and it still fetches Plex metadata, so it needs internet access.
+
+The plex.tv stand-in is an isolated test piece. It protects against a concrete failure: without it, no test could exercise the plex.tv code flow, connection ranking or server choice, because the project has no Plex account. It answers `POST /api/v2/pins`, `GET /api/v2/pins/<id>`, `/api/v2/user` and `/api/v2/resources` in the plex.tv format. Its resource list puts an unreachable remote connection before the working local one, so the test proves that the app ranks and checks connections. The app reads its address from `KINOSAIL_PLEX_TV` only in Debug builds and only for `http://127.0.0.1:<port>`. Release builds always use `https://plex.tv`.
+
+**Commands.** Each journey ran after `xcrun simctl uninstall <device> com.kinosail.player` and `xcrun simctl keychain <device> reset`, with the Jellyfin and Emby variables from the section below plus `TEST_RUNNER_KINOSAIL_SOURCE_PLEX=http://127.0.0.1:32400` and `TEST_RUNNER_KINOSAIL_PLEX_TV=http://127.0.0.1:8099`:
+
+```bash
+xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS-Touch -destination 'platform=iOS Simulator,id=<device>' -parallel-testing-enabled NO -only-testing:Kinosail-iOSTouchUITests/PlexJourneyTests test
+xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-tvOS-Remote -destination 'platform=tvOS Simulator,id=<device>' -parallel-testing-enabled NO -only-testing:Kinosail-tvOSRemoteUITests/RemoteOtherServersTests/testPlexCodeOnboarding test
+```
+
+| Journey | Device | Result |
+| --- | --- | --- |
+| `PlexJourneyTests`: Sign in with Plex, Continue with Plex web sheet, ready screen, Home, Movies, direct play of an MP4 with the sidecar subtitle chosen and shown, HEVC/AC-3 MKV played through a Plex remux, MPEG-4 AVI converted by Plex (the test reads `/transcode/sessions` on the server during both), the show page with 3 episodes, Jellyfin added through Add a server with Big Buck Bunny shown once, then sign out and add Plex again from From your Apple devices without signing in | iPhone 18 Pro simulator | Passed |
+| `PlexJourneyTests`, without the last step | iPad simulator | Passed |
+| `RemoteOtherServersTests.testPlexCodeOnboarding`: focus Sign in with Plex with the remote, code and QR code shown, code linked through the plex.tv stand-in, focus Start watching, reach Home | Apple TV 4K simulator | Passed |
+| `OtherServersJourneyTests`: the Jellyfin and Emby journey, rerun for regressions | iPhone 18 Pro simulator | Passed |
+
+**Playback start.** The app's `operation=playback-start outcome=ready` log measured 278 ms for the direct MP4, 327 ms for the HEVC remux and 463 ms for the converted AVI.
+
+**Logs.** With the subsystem set to keep `info`, the iPhone run logged Plex sign-in, the share publish, the shared-token adopt, playback preparation and playback start with operation, outcome, kind and playback session. The log has no token, URL or user name. The setting was reset afterwards.
+
+**Artifacts.** `.verification/other-servers/plex/` (git-ignored) holds the four result bundles and logs, 43 screenshots, `environment.txt`, `results.txt`, `playback-ready.txt`, `app-log-iphone.txt` and `checksums.txt` (SHA-256 `23e4743f800425b13a19f6efdc08e3324a50d0cb9505c40005a6c94f6b1fe489`).
+
+**Not verified.** Real plex.tv sign-in, a claimed server, shared servers from another account, remote and relay connections, and Plex Home users. Physical iPhone, iPad and Apple TV. A real camera scan of the Apple TV QR code. Resume positions on Plex: the server keeps a position only after 60 seconds, and the test clips stop sooner. Plex subtitles embedded in MKV files are not shown yet (see ADR 0010).
+
 ## Jellyfin and Emby servers — 2026-10-24
 
 ADR 0010 first delivery: the on-device device library, Jellyfin and Emby sources, the new setup flow, iCloud Keychain sharing, iPhone approval of a TV sign-in, and background library loading on the ready screen. Everything below ran on a Mac with Xcode 27.1 (27A9275).

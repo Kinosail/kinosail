@@ -15,6 +15,7 @@ enum ServerBrand: Equatable {
         case .kinosail: "K"
         case .source(.jellyfin): "J"
         case .source(.emby): "E"
+        case .source(.plex): "P"
         }
     }
 
@@ -23,10 +24,11 @@ enum ServerBrand: Equatable {
         case .kinosail: [Color(red: 0.77, green: 1, blue: 0.28), Color(red: 0.36, green: 0.62, blue: 0.05)]
         case .source(.jellyfin): [Color(red: 0.67, green: 0.36, blue: 0.84), Color(red: 0.0, green: 0.64, blue: 0.86)]
         case .source(.emby): [Color(red: 0.32, green: 0.71, blue: 0.29), Color(red: 0.12, green: 0.42, blue: 0.16)]
+        case .source(.plex): [Color(red: 0.98, green: 0.72, blue: 0.13), Color(red: 0.8, green: 0.45, blue: 0.0)]
         }
     }
 
-    var ink: Color { self == .kinosail ? KinoTheme.signalInk : .white }
+    var ink: Color { self == .kinosail || self == .source(.plex) ? KinoTheme.signalInk : .white }
 }
 
 struct ServerMonogram: View {

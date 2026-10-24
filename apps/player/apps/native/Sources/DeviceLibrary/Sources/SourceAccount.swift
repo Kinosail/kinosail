@@ -3,12 +3,13 @@ import Foundation
 import Security
 
 enum SourceKind: String, Codable, Sendable, CaseIterable {
-    case jellyfin, emby
+    case jellyfin, emby, plex
 
     var title: String {
         switch self {
         case .jellyfin: "Jellyfin"
         case .emby: "Emby"
+        case .plex: "Plex"
         }
     }
 }
