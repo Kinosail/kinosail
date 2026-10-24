@@ -27,7 +27,7 @@
 	<key>KinosailSourceRevision</key>
 	<string>$(KINOSAIL_SOURCE_REVISION)</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Kinosail Player connects directly to your Kinosail Server on your local network.</string>
+	<string>Kinosail Player finds and connects to your Kinosail, Jellyfin and Emby servers on your local network.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_kinosail-player._tcp</string>

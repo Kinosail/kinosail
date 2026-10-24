@@ -8,6 +8,9 @@ struct SetupScreen: View {
     @State private var discovery = BonjourDiscovery()
     @State private var scanError: String?
     @State private var scanRevision = 0
+    @State private var sources: [SourceServerInfo] = []
+    @State private var signIn: SourceServerInfo?
+    @State private var probing = false
 
     var body: some View {
         NavigationStack {
@@ -32,10 +35,10 @@ struct SetupScreen: View {
                                 #endif
                                 .accessibilityLabel("Server address")
                                 .onSubmit { connect() }
-                            Button(session.connecting ? "Connecting…" : "Connect") { connect() }
-                                .disabled(address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || session.connecting)
+                            Button(session.connecting || probing ? "Connecting…" : "Connect") { connect() }
+                                .disabled(address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || session.connecting || probing)
                         } header: { Text("Server address") } footer: {
-                            Text("Your media stays on your Server. Kinosail connects directly to it.")
+                            Text("Works with Kinosail, Jellyfin and Emby. Your media stays on your server, and Kinosail connects directly to it.")
                         }
                         Section("Nearby") {
                             ForEach(discovery.servers) { server in
@@ -51,8 +54,12 @@ struct SetupScreen: View {
                                 .accessibilityElement(children: .combine)
                                 .disabled(session.connecting)
                             }
-                            if discovery.servers.isEmpty {
-                                Text(discovery.scanning ? "Looking for your Server…" : "No nearby Servers found.")
+                            ForEach(sources) { server in
+                                Button { signIn = server } label: { NearbySourceRow(server: server) }
+                                    .disabled(session.connecting)
+                            }
+                            if discovery.servers.isEmpty && sources.isEmpty {
+                                Text(discovery.scanning ? "Looking for servers on your network…" : "No nearby servers found. Enter the address above.")
                                     .foregroundStyle(.secondary)
                             }
                             Button(discovery.scanning ? "Searching…" : "Search again") { scanRevision += 1 }
@@ -63,10 +70,15 @@ struct SetupScreen: View {
                     }
                     .task(id: scanRevision) {
                         scanError = nil
+                        async let others: Void = SourceDiscovery.scan { found in
+                            if !sources.contains(found) { sources.append(found) }
+                        }
                         do { try await discovery.scan() }
                         catch is CancellationError {}
                         catch { scanError = AppSession.message(error) }
+                        await others
                     }
+                    .navigationDestination(item: $signIn) { SourceSignInScreen(server: $0) }
                     #if os(iOS)
                     .scrollContentBackground(.hidden)
                     .frame(maxWidth: 600)
@@ -94,9 +106,18 @@ struct SetupScreen: View {
     }
 
     private func connect() {
-        guard !session.connecting else { return }
+        guard !session.connecting, !probing else { return }
         discovery.stop()
-        Task { await session.connect(address: address) }
+        probing = true
+        Task {
+            defer { probing = false }
+            if let url = try? SourceAddress.parse(address, defaultPort: 8096),
+               let found = try? await SourceConnect.probe(url) {
+                signIn = found
+                return
+            }
+            await session.connect(address: address)
+        }
     }
 }
 
@@ -193,7 +214,7 @@ private struct SetupBrandHeader: View {
                 .font(.system(size: titleSize, weight: .bold, design: .rounded))
                 .tracking(-0.4)
                 .accessibilityAddTraits(.isHeader)
-            Text("Connect to your Server to watch and listen.")
+            Text("Connect your Kinosail, Jellyfin or Emby server.")
                 .font(.subheadline).foregroundStyle(KinoTheme.muted)
                 .multilineTextAlignment(.center)
         }

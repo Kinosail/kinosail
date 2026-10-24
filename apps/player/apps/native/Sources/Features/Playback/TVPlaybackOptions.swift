@@ -19,7 +19,7 @@ struct TVPlaybackOptionRows: View {
                     TVPlaybackValueLabel(title: "Chapters", value: chapters.count == 1 ? "1 chapter" : "\(chapters.count) chapters")
                 }
             }
-            NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id))
+            if !session.usesDeviceLibrary { NavigationLink("Bookmarks", value: ScreenDestination.bookmarks(item.id)) }
             NavigationLink("This title’s preferences") { PlaybackPreferencesScreen(itemID: item.id) }
         } header: {
             VStack(alignment: .leading, spacing: 4) {

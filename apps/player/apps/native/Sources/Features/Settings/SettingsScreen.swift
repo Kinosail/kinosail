@@ -9,6 +9,7 @@ struct SettingsScreen: View {
     #endif
     var body: some View {
         Form {
+            if session.usesDeviceLibrary { LibrariesSection() } else {
             Section("Server & Viewer Profile") {
                 if let viewer = session.viewer {
                     Label {
@@ -37,11 +38,14 @@ struct SettingsScreen: View {
                         #endif
                 }
             }
+            }
             Section("Playback & library") {
                 NavigationLink(value: ScreenDestination.playbackPreferences) { Label("Playback", systemImage: "play.circle") }
                 #if os(iOS)
-                NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Downloads", systemImage: "arrow.down.circle") }
-                NavigationLink(value: ScreenDestination.readerPreferences) { Label("Reader", systemImage: "book") }
+                if !session.usesDeviceLibrary {
+                    NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Downloads", systemImage: "arrow.down.circle") }
+                    NavigationLink(value: ScreenDestination.readerPreferences) { Label("Reader", systemImage: "book") }
+                }
                 #endif
             }
             Section("Personalize") {
@@ -53,14 +57,17 @@ struct SettingsScreen: View {
                 Text("Show Continue watching, My List and recent titles when Kinosail is selected in the top row. Titles and artwork are visible to anyone using this Apple TV.")
                     .font(.footnote).foregroundStyle(.secondary)
                 #endif
-                NavigationLink { SupporterScreen() } label: { Label("Supporter collection", systemImage: "sparkles") }
+                if !session.usesDeviceLibrary {
+                    NavigationLink { SupporterScreen() } label: { Label("Supporter collection", systemImage: "sparkles") }
+                }
             }
             Section("About") {
                 NavigationLink { ThanksScreen() } label: { Label("Made possible by", systemImage: "heart") }
                 PrivacyPolicyLink()
             }
             Section {
-                Text("Kinosail plays directly from your Server. Your session is stored securely on this device.")
+                Text(session.usesDeviceLibrary ? "Kinosail plays directly from your servers. Sign-ins are stored securely on this device."
+                     : "Kinosail plays directly from your Server. Your session is stored securely on this device.")
                     .font(.footnote).foregroundStyle(.secondary)
                 Button(signingOut ? "Signing out…" : "Sign out", role: .destructive) {
                     confirmsSignOut = true
@@ -81,7 +88,7 @@ struct SettingsScreen: View {
                 Task { await session.disconnect(); signingOut = false }
             }
             Button("Cancel", role: .cancel) {}
-        } message: { Text("You’ll need to connect this device to your Server again.") }
+        } message: { Text(session.usesDeviceLibrary ? "This removes every library from this device." : "You’ll need to connect this device to your Server again.") }
     }
 }
 
