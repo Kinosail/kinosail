@@ -9,19 +9,15 @@ struct LibrariesSection: View {
     var body: some View {
         Section {
             ForEach(sources) { source in
-                Label {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(source.name).font(.headline).foregroundStyle(KinoTheme.text)
-                        Text("\(source.kind.title) · \(source.userName)").font(.subheadline).foregroundStyle(KinoTheme.muted)
-                    }
-                } icon: {
-                    Image(systemName: "play.rectangle.on.rectangle").foregroundStyle(KinoTheme.signal)
-                }
-                .accessibilityElement(children: .combine)
-                .swipeActions { Button("Remove", role: .destructive) { removing = source } }
-                .contextMenu { Button("Remove", systemImage: "trash", role: .destructive) { removing = source } }
+                #if os(tvOS)
+                Button { removing = source } label: { row(source) }
+                #else
+                row(source)
+                    .swipeActions { Button("Remove", role: .destructive) { removing = source } }
+                    .contextMenu { Button("Remove", systemImage: "trash", role: .destructive) { removing = source } }
+                #endif
             }
-            Button("Add a library", systemImage: "plus") { session.showsSetup = true }
+            Button("Add a server", systemImage: "plus") { session.showsSetup = true }
             Button("Refresh libraries", systemImage: "arrow.clockwise") {
                 Task {
                     await DeviceLibraryHost.shared.refresh()
@@ -45,5 +41,17 @@ struct LibrariesSection: View {
             }
             Button("Cancel", role: .cancel) { removing = nil }
         } message: { Text("Its titles leave this device. Nothing changes on the server.") }
+    }
+
+    private func row(_ source: SourceAccount) -> some View {
+        HStack(spacing: 14) {
+            ServerMonogram(brand: .source(source.kind), size: 40)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(source.name).font(.headline).foregroundStyle(KinoTheme.text)
+                Text(source.name == source.kind.title ? "Signed in as \(source.userName)" : "\(source.kind.title) · \(source.userName)").font(.subheadline).foregroundStyle(KinoTheme.muted)
+            }
+        }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
     }
 }

@@ -58,6 +58,7 @@ final class DeviceLibraryHost {
         sources = list
         configured = true
         await catalog.configure(list)
+        await SourceSharedStore.shared.publish(account)
     }
 
     func remove(_ id: String) async throws {
@@ -66,6 +67,7 @@ final class DeviceLibraryHost {
         try await accounts.save(list)
         sources = list
         await catalog.configure(list)
+        await SourceSharedStore.shared.withdraw(id)
     }
 
     func refresh() async {

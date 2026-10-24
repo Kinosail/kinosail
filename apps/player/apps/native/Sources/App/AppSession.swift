@@ -231,7 +231,8 @@ final class AppSession {
         await artwork.clear()
         resourceSnapshots.clear()
         guard generation == attempt else { return }
-        let previous = client, previousViewer = viewer
+        let previous = client, local = DeviceLibraryHost.isDeviceLibrary(viewer)
+        if local { await DeviceLibraryHost.shared.reset() }
         client = nil
         viewer = nil
         progress = nil
@@ -242,10 +243,11 @@ final class AppSession {
         #if os(iOS)
         await downloads.lock()
         #endif
-        if DeviceLibraryHost.isDeviceLibrary(previousViewer) { await DeviceLibraryHost.shared.reset() }
         if let previous {
-            do { try await previous.signOut() }
-            catch { notice = "Signed out on this device. The Server could not be reached to revoke its session." }
+            if !local {
+                do { try await previous.signOut() }
+                catch { notice = "Signed out on this device. The Server could not be reached to revoke its session." }
+            }
             await previous.close()
         }
     }

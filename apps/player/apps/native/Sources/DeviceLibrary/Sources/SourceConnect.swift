@@ -59,9 +59,10 @@ enum SourceConnect {
         return SourceQuickConnect(code: code, secret: secret)
     }
 
-    static func awaitQuickConnect(_ server: SourceServerInfo, _ pending: SourceQuickConnect, until deadline: Date) async throws -> SourceAccount {
+    static func awaitQuickConnect(_ server: SourceServerInfo, _ pending: SourceQuickConnect, until deadline: Date,
+                                  interval: Duration = .seconds(2)) async throws -> SourceAccount {
         while Date() < deadline {
-            try await Task.sleep(for: .seconds(2))
+            try await Task.sleep(for: interval)
             let state = try JellyfinClient.request(SourceHTTP.url(server.address, "/QuickConnect/Connect", ["Secret": pending.secret]), token: nil)
             let value = try await SourceHTTP.json(state, maximum: 64 * 1024)
             guard value["Authenticated"] as? Bool == true else { continue }

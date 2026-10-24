@@ -10,6 +10,7 @@ struct KinosailApp: App {
     @UIApplicationDelegateAdaptor(AppleAppDelegate.self) private var appDelegate
     #endif
     @State private var session: AppSession
+    @State private var quickConnect: QuickConnectLink?
 
     init() {
         let session = AppSession()
@@ -37,8 +38,21 @@ struct KinosailApp: App {
                 .foregroundStyle(KinoTheme.text, KinoTheme.muted)
                 #endif
                 .environment(session)
-                .onOpenURL { url in Task { await session.restore(); session.handleIncomingURL(url) } }
+                .onOpenURL { url in open(url) }
+                .sheet(item: $quickConnect) { link in
+                    NavigationStack { QuickConnectApprovalScreen(link: link) { quickConnect = nil } }
+                }
         }
+    }
+
+    private func open(_ url: URL) {
+        do {
+            if let link = try QuickConnectLink(url) { quickConnect = link; return }
+        } catch {
+            session.notice = AppSession.message(error)
+            return
+        }
+        Task { await session.restore(); session.handleIncomingURL(url) }
     }
 }
 

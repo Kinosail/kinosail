@@ -18,7 +18,7 @@ final class OtherServersJourneyTests: XCTestCase {
         let home = tourTab("Home", in: app)
         XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)
         sleep(4)
-        tourRecord("j3 home", app)
+        tourRecord("j5 home", app)
 
         tourTab("Movies", in: app).tap()
         let bunny = title("Big Buck Bunny", in: app)
@@ -26,12 +26,12 @@ final class OtherServersJourneyTests: XCTestCase {
         XCTAssertTrue(title("Sintel", in: app).exists, app.debugDescription)
         XCTAssertTrue(title("Tears of Steel", in: app).exists, app.debugDescription)
         sleep(2)
-        tourRecord("j4 movies", app)
+        tourRecord("j6 movies", app)
         bunny.tap()
-        try play(app, record: "j5 direct playback")
+        try play(app, record: "j7 direct playback")
         app.navigationBars.buttons.firstMatch.tap()
         title("Sintel", in: app).tap()
-        try play(app, record: "j6 converted playback")
+        try play(app, record: "j8 converted playback")
         app.navigationBars.buttons.firstMatch.tap()
 
         tourTab("Shows", in: app).tap()
@@ -41,47 +41,64 @@ final class OtherServersJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["Episode 1, Earthfall, next"].waitForExistence(timeout: 30), app.debugDescription)
         XCTAssertTrue(app.staticTexts["3 episodes"].exists, app.debugDescription)
         sleep(2)
-        tourRecord("j7 show", app)
+        tourRecord("j9 show", app)
         app.navigationBars.buttons.firstMatch.tap()
 
         openSettings(app)
         XCTAssertTrue(app.staticTexts["Libraries"].waitForExistence(timeout: 10), app.debugDescription)
-        app.buttons["Add a library"].tap()
+        app.buttons["Add a server"].tap()
         try signIn(app, address: fixture.emby, kind: "Emby", fixture: fixture, record: "e")
         openSettings(app)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Emby ·'")).firstMatch.waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Jellyfin ·'")).firstMatch.exists, app.debugDescription)
-        tourRecord("e3 libraries", app)
+        XCTAssertTrue(app.staticTexts["Emby"].waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Jellyfin"].exists, app.debugDescription)
+        tourRecord("e5 libraries", app)
 
         tourTab("Movies", in: app).tap()
         XCTAssertTrue(title("Big Buck Bunny", in: app).waitForExistence(timeout: 30), app.debugDescription)
         sleep(3)
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Big Buck Bunny'")).count, 1, app.debugDescription)
-        tourRecord("e4 combined movies", app)
+        tourRecord("e6 combined movies", app)
     }
 
     @MainActor private func signIn(_ app: XCUIApplication, address: String, kind: String, fixture: Fixture, record: String) throws {
         let field = app.textFields["Server address"]
         XCTAssertTrue(field.waitForExistence(timeout: 20), app.debugDescription)
+        sleep(3)
         tourRecord("\(record)1 setup", app)
         field.tap()
         app.typeText(address)
         app.buttons["Connect"].tap()
+        let header = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "\(kind) ")).firstMatch
+        XCTAssertTrue(header.waitForExistence(timeout: 20), app.debugDescription)
+        let password = app.secureTextFields["Password"]
+        XCTAssertTrue(password.waitForExistence(timeout: 15), app.debugDescription)
         let user = app.textFields["User name"]
-        XCTAssertTrue(user.waitForExistence(timeout: 20), app.debugDescription)
-        XCTAssertTrue(app.navigationBars[kind].exists, app.debugDescription)
-        user.tap()
-        app.typeText(fixture.user)
-        app.secureTextFields["Password"].tap()
+        if user.exists {
+            user.tap()
+            app.typeText(fixture.user)
+        } else {
+            XCTAssertTrue(app.staticTexts["Welcome back, \(fixture.user)"].exists, app.debugDescription)
+            sleep(1)
+            tourRecord("\(record)2 only profile", app)
+        }
+        password.tap()
         app.typeText(fixture.password)
-        tourRecord("\(record)2 sign in", app)
+        tourRecord("\(record)3 sign in", app)
         app.buttons["Sign in"].tap()
-        XCTAssertTrue(app.textFields["User name"].waitForNonExistence(timeout: 60), app.debugDescription)
+        let start = app.buttons["Start watching"]
+        XCTAssertTrue(start.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'ready to watch'")).firstMatch.waitForExistence(timeout: 30), app.debugDescription)
+        sleep(2)
+        tourRecord("\(record)4 ready", app)
+        start.tap()
+        XCTAssertTrue(start.waitForNonExistence(timeout: 60), app.debugDescription)
     }
 
     @MainActor private func play(_ app: XCUIApplication, record: String) throws {
         let play = app.buttons["Play"].firstMatch
         XCTAssertTrue(play.waitForExistence(timeout: 30), app.debugDescription)
+        sleep(3)
+        tourRecord(record + " detail", app)
         play.tap()
         XCTAssertTrue(app.buttons["Close player"].waitForExistence(timeout: 15), app.debugDescription)
         XCTAssertTrue(app.buttons["Pause"].waitForExistence(timeout: 60), app.debugDescription)
