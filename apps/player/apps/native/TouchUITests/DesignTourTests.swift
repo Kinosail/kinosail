@@ -10,9 +10,81 @@ final class DesignTourTests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         app.launch()
+        try await connect(app, server: server, token: environment["KINOSAIL_DESIGN_TOUR_TOKEN"] ?? "", records: true)
+        try await tour(app)
+    }
+
+    @MainActor func testCaptureDownloadJourney() async throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard let server = environment["KINOSAIL_DESIGN_TOUR_SERVER"], !server.isEmpty else {
+            throw XCTSkip("Set KINOSAIL_DESIGN_TOUR_SERVER to a populated test Server.")
+        }
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
+        app.launch()
+        try await connect(app, server: server, token: environment["KINOSAIL_DESIGN_TOUR_TOKEN"] ?? "", records: false)
+        let home = tab("Home", in: app)
+        XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)
+        let details = app.buttons["Details"].firstMatch
+        XCTAssertTrue(details.waitForExistence(timeout: 20), app.debugDescription)
+        details.tap()
+        if app.buttons["Downloaded"].waitForExistence(timeout: 5) {
+            app.buttons["Downloaded"].tap()
+            removeDownload(in: app)
+            app.navigationBars.buttons.firstMatch.tap()
+        }
+        let start = app.buttons["Download"].firstMatch
+        XCTAssertTrue(start.waitForExistence(timeout: 15), app.debugDescription)
+        start.tap()
+        let add = app.buttons["Add to Downloads"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10), app.debugDescription)
+        for _ in 0..<20 where !add.isEnabled { sleep(1) }
+        record("d1 download options", app)
+        add.tap()
+        let status = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Download ' OR label == 'Downloaded'")).firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 20), app.debugDescription)
+        record("d2 detail downloading", app)
+        status.tap()
+        XCTAssertTrue(app.navigationBars["Downloads"].waitForExistence(timeout: 10), app.debugDescription)
+        sleep(1)
+        record("d3 downloads in progress", app)
+        let ready = app.staticTexts["Ready to watch"]
+        XCTAssertTrue(ready.waitForExistence(timeout: 240), app.debugDescription)
+        sleep(1)
+        record("d4 downloads ready", app)
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(app.buttons["Downloaded"].waitForExistence(timeout: 10), app.debugDescription)
+        record("d5 detail downloaded", app)
+        app.navigationBars.buttons.firstMatch.tap()
+        sleep(2)
+        app.swipeUp()
+        sleep(1)
+        record("d6 home download badge", app)
+        app.swipeDown()
+        app.swipeDown()
+        XCTAssertTrue(details.waitForExistence(timeout: 10), app.debugDescription)
+        details.tap()
+        XCTAssertTrue(app.buttons["Downloaded"].waitForExistence(timeout: 10), app.debugDescription)
+        app.buttons["Downloaded"].tap()
+        removeDownload(in: app)
+        record("d7 downloads empty", app)
+    }
+
+    @MainActor private func removeDownload(in app: XCUIApplication) {
+        let row = app.buttons.matching(NSPredicate(format: "label CONTAINS ' · '")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10), app.debugDescription)
+        row.swipeLeft()
+        app.buttons["Remove"].firstMatch.tap()
+        let confirm = app.buttons["Remove download"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5), app.debugDescription)
+        confirm.tap()
+        XCTAssertTrue(app.staticTexts["Take a title with you"].waitForExistence(timeout: 20), app.debugDescription)
+    }
+
+    @MainActor private func connect(_ app: XCUIApplication, server: String, token: String, records: Bool) async throws {
         let address = app.textFields["Server address"]
         if address.waitForExistence(timeout: 5) {
-            record("01 setup", app)
+            if records { record("01 setup", app) }
             address.tap()
             for _ in 0..<3 where !(address.value(forKey: "hasKeyboardFocus") as? Bool ?? false) {
                 sleep(1)
@@ -22,10 +94,12 @@ final class DesignTourTests: XCTestCase {
             app.buttons["Connect"].tap()
             let code = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Approval code'")).firstMatch
             XCTAssertTrue(code.waitForExistence(timeout: 20), app.debugDescription)
-            record("02 pairing", app)
-            try await approve(code.label.filter(\.isNumber), server: server,
-                              token: environment["KINOSAIL_DESIGN_TOUR_TOKEN"] ?? "")
+            if records { record("02 pairing", app) }
+            try await approve(code.label.filter(\.isNumber), server: server, token: token)
         }
+    }
+
+    @MainActor private func tour(_ app: XCUIApplication) async throws {
         let home = tab("Home", in: app)
         XCTAssertTrue(home.waitForExistence(timeout: 90), app.debugDescription)
         sleep(5)

@@ -42,6 +42,9 @@ struct MediaCard: View {
                                 .accessibilityHidden(true)
                         }
                     }
+                    #if os(iOS)
+                    .downloadBadge(item)
+                    #endif
                     .clipShape(.rect(cornerRadius: 12))
                     .zoomSource(destination)
                     #if os(tvOS)

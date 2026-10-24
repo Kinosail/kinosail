@@ -214,7 +214,7 @@ private struct DetailContent: View {
         #endif
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
-            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(SpotlightSecondaryButtonStyle())
+            DetailDownloadButton(item: item) { showsDownloads = true }
         }
         #endif
     }

@@ -164,6 +164,12 @@ Media cards combine artwork, title, optional metadata and true Resume or Watched
 
 ### Inputs / Fields
 
+### Downloads
+
+The Detail Download action shows live state. Before a download it reads Download. While preparing or transferring, an Electric progress ring and the status or percentage replace the arrow; selecting it opens Downloads. When the file is ready, it reads Downloaded with a filled Electric check and plays a success haptic. iOS cards for downloaded titles show a small Electric download badge at the top-leading corner.
+
+Downloads opens with a storage summary: the space used by downloads, the free space on the device and an Electric share bar. In progress comes before Ready to watch. Rows use 16:9 artwork (square for audio) with a thin Electric progress line. A trailing ring pauses, resumes or retries; it stays at least 44pt. Ready rows play offline when selected. Swipe actions and the context menu offer Pause, Resume, Play offline and Remove. Edit mode keeps multiple selection. The Download options sheet shows the title's artwork, lists each quality with a one-line explanation and pins Add to Downloads at the bottom.
+
 Settings, setup, preparation and download screens retain native fields, lists and forms. Labels, disabled states, destructive roles and operation feedback stay attached to their controls. Fixed web input sizes and focus rings are not native tokens.
 
 Playback preferences group Boost Dialog and Normalize Loudness as native toggles with plain-language descriptions. The section states that processing uses a compatible Server stream and that existing downloads keep their encoded audio; the interface must not imply the effects work offline or without transcoding permission.
