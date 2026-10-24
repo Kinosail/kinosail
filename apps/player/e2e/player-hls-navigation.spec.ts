@@ -140,8 +140,8 @@ test('declared PiP ownership retains HLS through an accepted departure', {tag: '
     const before = peer.snapshot().requests.filter(row => row.kind.endsWith('.ts')).length;
     peer.releaseRetry();
     await expect.poll(() => peer.snapshot().requests.filter(row => row.kind.endsWith('.ts')).length).toBeGreaterThan(before);
-    await expect(page).toHaveURL(`${peer.origin}/watch/movie`);
-    expect(await video.evaluate((media: HTMLVideoElement) => media.paused)).toBe(false);
+    await expect.poll(() => page.evaluate(() => location.href)).toBe(`${peer.origin}/watch/movie`);
+    expect(await page.evaluate(() => document.querySelector<HTMLVideoElement>('video')?.paused)).toBe(false);
     await info.attach('PiP-HLS-owner', {body: JSON.stringify({facts: peer.facts, snapshot: peer.snapshot(), errors,
       proofClass: 'real-HLS-HTTP-declared-PiP-capability-no-physical-API'}), contentType: 'application/json'});
     expect(errors).toEqual([]);

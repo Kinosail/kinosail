@@ -47,7 +47,7 @@ test("canceled mobile scrub returns to the actual playback position", async ({pa
 test("native caption changes synchronize settings and CC restores the chosen language", async ({page}) => {
   await page.locator("video").evaluate(v => { v.textTracks[1].mode = "showing"; });
   const select = page.locator("[data-subtitles]");
-  const cc = page.getByRole("button", {name:"Subtitles", exact:true});
+  const cc = page.getByRole("button", {name:"CC subtitles", exact:true});
   await expect(select).toHaveValue("1");
   await expect(cc).toHaveAttribute("aria-pressed", "true");
   await cc.click();

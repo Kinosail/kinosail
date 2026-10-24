@@ -95,8 +95,8 @@ class FastPathContracts(unittest.TestCase):
         self.assertNotIn('govulncheck', go)
         repository = ci.split('\n  repository:\n', 1)[1].split('\n  go:\n', 1)[0]
         self.assertNotIn('golangci-lint-action', repository)
-        self.assertEqual(repository.count('golangci-lint-2.14.0-linux-amd64.tar.gz'), 1)
-        self.assertIn('ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab', repository)
+        self.assertEqual(repository.count('golangci-lint-2.15.0-linux-amd64.tar.gz'), 1)
+        self.assertIn('9b7fe6a6bf6334b98decf8d86b11415ea7889afdabdd1959fdce23af2a9ebcea', repository)
         self.assertIn('sha256sum --check', repository)
         self.assertIn('./scripts/quality/check-lint.sh', repository)
         self.assertIn('KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || \'HEAD~1\' }}', repository)
@@ -104,7 +104,7 @@ class FastPathContracts(unittest.TestCase):
         self.assertIn("if: matrix.fragment == 'true'", go)
         self.assertIn("name: Go (${{ matrix.module }}${{ matrix.shard && format(' {0}', matrix.shard) || '' }})", go)
         self.assertIn('path: ~/.cache/golangci-lint', repository)
-        self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.8.0', repository)
+        self.assertIn('golang.org/x/vuln/cmd/govulncheck@v1.9.0', repository)
         self.assertIn("jq -r '.[].directory'", repository)
 
 if __name__ == '__main__':

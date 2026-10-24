@@ -197,7 +197,7 @@ if (controls && player.tagName === "VIDEO") {
     const available = Boolean(subtitleSelect && subtitleSelect.options.length > 1);
     if (captions) captions.disabled = !available;
     if (captions) captions.title = available ? "Toggle subtitles" : "No subtitles available";
-    captions?.setAttribute("aria-label", available ? "Subtitles" : "No subtitles available");
+    captions?.setAttribute("aria-label", available ? "CC subtitles" : "CC, no subtitles available");
     const index = visibleTracks().findIndex((track) => track.mode === "showing");
     const selected = index < 0 ? "off" : String(index);
     if (subtitleSelect && [...subtitleSelect.options].some((option) => option.value === selected)) subtitleSelect.value = selected;
