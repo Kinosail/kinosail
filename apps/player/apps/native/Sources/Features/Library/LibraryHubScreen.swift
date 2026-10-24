@@ -44,7 +44,7 @@ struct LibraryHubScreen: View {
                 LibraryDestinationLink("History", "clock", .library(.history))
             }
         }
-        .listCanvas()
+        .listCanvas().tabBarCollapses()
         .navigationTitle("Library")
         #endif
     }

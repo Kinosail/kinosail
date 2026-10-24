@@ -42,7 +42,7 @@ struct CollectionsScreen: View {
         #if os(tvOS)
         .frame(maxWidth: .infinity)
         #endif
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(tvOS)
         .navigationTitle("")
         #else
@@ -76,7 +76,7 @@ struct CollectionScreen: View {
                 }
             }.padding(KinoTheme.contentPadding)
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(tvOS)
         .navigationTitle("")
         #else

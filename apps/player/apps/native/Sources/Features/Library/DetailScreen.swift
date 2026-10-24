@@ -39,7 +39,7 @@ struct DetailScreen: View {
         #else
         .spotlightScroll(scroll)
         #endif
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         .navigationTitle("")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)

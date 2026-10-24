@@ -51,7 +51,7 @@ struct DownloadsScreen: View {
             }
         }
         .navigationTitle("Downloads")
-        .listCanvas()
+        .listCanvas().tabBarCollapses()
         .environment(\.editMode, $editing)
         .toolbar {
             ToolbarItem(placement: .primaryAction) { NavigationLink(value: ScreenDestination.offlinePreferences) { Label("Download settings", systemImage: "gearshape") } }

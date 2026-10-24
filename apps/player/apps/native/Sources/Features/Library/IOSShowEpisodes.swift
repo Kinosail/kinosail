@@ -116,7 +116,9 @@ private struct IOSEpisodeRow: View {
     let isNext: Bool
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @State private var rowHeight: CGFloat = 0
 
+    private var thumbWidth: CGFloat { sizeClass == .regular ? 176 : 124 }
     private var title: String { ShowSeasonSelection.episodeTitle(item) }
     private var accessibilitySummary: String {
         let state = isNext ? "next" : item.progress.watched ? "watched" :
@@ -127,10 +129,12 @@ private struct IOSEpisodeRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
             NavigationLink(value: ScreenDestination.detail(item.id)) {
-                HStack(alignment: .top, spacing: 12) {
+                HStack(alignment: .top, spacing: 14) {
                     if !dynamicTypeSize.isAccessibilitySize {
-                        Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", ratio: 16 / 9, dimension: 500)
-                            .frame(width: sizeClass == .regular ? 112 : 76).clipShape(.rect(cornerRadius: 8))
+                        let height = max(rowHeight, thumbWidth * 9 / 16)
+                        Artwork(path: item.landscapeArtwork, symbol: "play.rectangle", ratio: thumbWidth / height,
+                                dimension: 500, fillsFrame: true, canvasSize: CGSize(width: thumbWidth, height: height))
+                            .clipShape(.rect(cornerRadius: 10))
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text(String(format: "%02d", item.episode))
@@ -148,6 +152,7 @@ private struct IOSEpisodeRow: View {
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { rowHeight = $0 }
                 }
                 .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
                 .contentShape(.rect)

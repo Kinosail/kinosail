@@ -163,7 +163,7 @@ struct LibraryScreen: View {
         }
         #endif
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
