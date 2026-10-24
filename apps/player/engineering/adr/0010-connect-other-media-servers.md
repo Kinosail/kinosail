@@ -1,6 +1,6 @@
 # Connect the Apple clients to other media servers
 
-Status: accepted, 2026-10-24. Jellyfin and Emby are implemented. Plex, the on-device engine and Kinosail Server in the combined library are not implemented yet.
+Status: accepted, 2026-10-24. Jellyfin, Emby and Plex are implemented. The on-device engine and Kinosail Server in the combined library are not implemented yet.
 
 ## Decision
 
@@ -34,7 +34,8 @@ Playback picks the best version: a version that plays directly before one that n
 One Add a library screen finds servers without typing:
 
 - Kinosail: Bonjour, as before.
-- Plex: Sign in with Plex shows a code and QR code for plex.tv/link. All servers on the account appear, local and remote.
+- Plex: Sign in with Plex uses a plex.tv code. On iPhone and iPad, Continue with Plex opens the Plex sign-in page in a secure browser sheet. Apple TV shows the code for plex.tv/link and a QR code that opens the same Plex page on a phone. All servers on the account appear, local and remote. One server is added at once. Plex Media Server on port 32400 also shows in the network probe, and a typed address finds Plex too.
+- Plex connections are ranked local, then remote, then relay. Each one is checked with `/identity` before use. When the chosen connection stops answering, the next working one is used.
 - Jellyfin and Emby: a bounded probe of the local /24 network on port 8096 reads `/System/Info/Public`. That response names the product, so each server shows as Jellyfin or Emby with its own name.
 - Jellyfin signs in with Quick Connect first, then username and password. Emby signs in with username and password.
 - When a server lists its users, setup shows a Who's watching picker. A server with one user goes straight to its password.
@@ -50,6 +51,8 @@ A viewer signs in to each server once. Other devices then add it with one tap.
 - The Apple TV and iPad Quick Connect card shows a QR code with the link `kinosail://quickconnect?server=<server ID>&code=<code>`. Scanning it with an iPhone camera opens Kinosail Player, which asks the viewer to approve the code with the matching signed-in Jellyfin account. The TV then signs in without typing.
 - Passwords are never stored or shared. Only server tokens are stored.
 
+Plex sign-ins sync the same way. A new device checks the shared token against the server and uses it.
+
 UDP discovery (Jellyfin and Emby port 7359, Plex GDM) needs Apple's multicast networking entitlement. It can be added when Apple grants that entitlement. The probe works without it.
 
 ## Playback
@@ -62,8 +65,10 @@ The order for each file:
 
 Buffering alone never selects conversion.
 
+Until the on-device engine exists, step 2 is a server remux. Jellyfin and Emby copy compatible video into fragmented MP4 HLS. Plex copies H.264 and HEVC video into MPEG-TS HLS and converts only the streams the device cannot play. Plex sidecar SRT and VTT subtitles are converted to WebVTT on the device. Plex cannot send subtitles that are embedded in a file without converting the video, so those subtitles wait for the on-device engine.
+
 ## Limits
 
 - Downloads, casting, bookmarks, device approval, supporter state and reader positions stay Kinosail Server features in v1.
-- Plex managed-user switching, Plex Watchlist and Emby Connect are out of scope for v1.
+- Plex managed-user switching, Plex Watchlist and Emby Connect are out of scope for v1. My List is not available for titles that only Plex holds; the app says this source does not support the feature.
 - Intro and credits markers are used when the source provides them.
