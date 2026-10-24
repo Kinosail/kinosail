@@ -74,18 +74,19 @@ struct PressableCardStyle: ButtonStyle {
 
 struct UnwatchedMark: View {
     #if os(tvOS)
-    private let size: CGFloat = 18
+    private let size: CGFloat = 24
     #else
-    private let size: CGFloat = 11
+    private let size: CGFloat = 15
     #endif
 
     var body: some View {
         Circle()
             .fill(KinoTheme.signal)
             .frame(width: size, height: size)
-            .overlay { Circle().strokeBorder(.black.opacity(0.45), lineWidth: size / 6) }
-            .shadow(color: KinoTheme.signal.opacity(0.55), radius: size / 2)
-            .padding(size * 0.8)
+            .overlay { Circle().strokeBorder(.black.opacity(0.55), lineWidth: size / 7) }
+            .shadow(color: .black.opacity(0.5), radius: 3, y: 1)
+            .shadow(color: KinoTheme.signal.opacity(0.6), radius: size / 2)
+            .padding(size * 0.6)
     }
 }
 

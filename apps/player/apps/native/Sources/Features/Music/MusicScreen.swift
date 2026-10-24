@@ -64,7 +64,7 @@ struct MusicScreen: View {
                 #endif
             }.padding(KinoTheme.contentPadding)
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(tvOS)
         .focusScope(albumsFocus)
         .navigationTitle("")
@@ -157,7 +157,7 @@ struct AlbumScreen: View {
                 }.frame(maxWidth: 1100, alignment: .leading).frame(maxWidth: .infinity)
             }.padding(KinoTheme.contentPadding)
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(tvOS)
         .navigationTitle("")
         #else

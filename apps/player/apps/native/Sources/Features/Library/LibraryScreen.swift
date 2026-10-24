@@ -163,7 +163,7 @@ struct LibraryScreen: View {
         }
         #endif
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
@@ -211,8 +211,8 @@ struct LibraryScreen: View {
         #if os(iOS)
         Picker("Library", selection: $selection) {
             ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
-        }
-        sortPicker
+        }.fixedSize()
+        sortPicker.fixedSize()
         if let page = visiblePage, !page.letters.isEmpty, sort == .title {
             Button { showsLetterJump = true } label: {
                 Label("A–Z", systemImage: "textformat.abc")

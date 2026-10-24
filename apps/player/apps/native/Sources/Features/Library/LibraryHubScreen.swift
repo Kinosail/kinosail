@@ -44,10 +44,7 @@ struct LibraryHubScreen: View {
                 LibraryDestinationLink("History", "clock", .library(.history))
             }
         }
-        #if os(iOS)
-        .scrollContentBackground(.hidden)
-        #endif
-        .background(KinoTheme.background)
+        .listCanvas().tabBarCollapses()
         .navigationTitle("Library")
         #endif
     }

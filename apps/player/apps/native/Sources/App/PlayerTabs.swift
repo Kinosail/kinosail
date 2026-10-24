@@ -6,6 +6,9 @@ struct PlayerTabs: View {
     @AppStorage private var modeStored: String
     @State private var selection = PlayerTab.home
     @State private var paths: [PlayerTab: NavigationPath] = [:]
+    #if os(iOS)
+    @State private var collapse = TabBarCollapse()
+    #endif
     #if os(tvOS)
     @FocusState private var topFocus: PlayerTab?
     @State private var homeLaunchFocus = true
@@ -122,17 +125,15 @@ struct PlayerTabs: View {
                         }
                         Section { NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences) }
                     }
-                    #if os(iOS)
-                    .scrollContentBackground(.hidden)
-                    #endif
-                    .background(KinoTheme.background).navigationTitle("More")
+                    .listCanvas().navigationTitle("More")
                 }
             }
             #endif
         }
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
-        .tabBarMinimizeBehavior(.never)
+        .tabBarMinimizeBehavior(collapse.collapsible ? .onScrollDown : .never)
+        .environment(\.tabBarCollapse, collapse)
         .modifier(MiniPlayerTabAccessory())
         #endif
     }

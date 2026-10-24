@@ -75,7 +75,7 @@ struct ShowScreen: View {
         #else
         .spotlightScroll(scroll)
         #endif
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         #if os(tvOS)
         .focusScope(showFocus)
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }

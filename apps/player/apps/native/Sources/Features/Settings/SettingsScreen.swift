@@ -69,8 +69,9 @@ struct SettingsScreen: View {
         }
         #if os(iOS)
         .scrollContentBackground(.hidden)
-        #endif
+        #else
         .background(KinoTheme.background)
+        #endif
         .configurationNavigationTitle("Settings", large: true)
         .task(id: session.client?.identity) { _ = try? await session.client?.mediaPreferences(policy: .automatic) }
         .tvOSConfigurationLayout(title: "Settings", symbol: "gearshape")

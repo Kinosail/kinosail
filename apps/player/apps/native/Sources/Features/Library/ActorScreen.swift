@@ -36,7 +36,7 @@ struct ActorScreen: View {
             }
             .padding(KinoTheme.contentPadding)
         }
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         .navigationTitle("")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)

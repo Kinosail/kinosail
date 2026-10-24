@@ -132,7 +132,7 @@ struct HomeScreen: View {
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
         .spotlightScroll(scroll)
-        .cinemaBackground()
+        .cinemaBackground().tabBarCollapses()
         .navigationTitle("Kinosail")
         #endif
         #if os(iOS)
