@@ -122,10 +122,7 @@ struct PlayerTabs: View {
                         }
                         Section { NavigationLink("Customize tabs", value: ScreenDestination.tabPreferences) }
                     }
-                    #if os(iOS)
-                    .scrollContentBackground(.hidden)
-                    #endif
-                    .background(KinoTheme.background).navigationTitle("More")
+                    .listCanvas().navigationTitle("More")
                 }
             }
             #endif
