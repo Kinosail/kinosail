@@ -3,6 +3,9 @@ import SwiftUI
 struct DetailScreen: View {
     let itemID: String
     @Environment(AppSession.self) private var session
+    #if os(iOS)
+    @State private var scroll = SpotlightScroll()
+    #endif
 
     var body: some View {
         #if os(tvOS)
@@ -19,7 +22,13 @@ struct DetailScreen: View {
             ResourceView(identity: "\(session.profileKey ?? ""):\(itemID)", refreshID: session.contentRevision.uuidString, loadingLayout: .detail, focusesRetry: true, load: { policy in
                 guard let client = session.client else { throw ClientError.unavailable }
                 return try await client.details(id: itemID, policy: policy)
-            }) { detail in DetailContent(detail: detail, onPrimaryFocus: onPrimaryFocus).id(itemID) }
+            }) { detail in
+                #if os(iOS)
+                DetailContent(detail: detail, scroll: scroll).id(itemID)
+                #else
+                DetailContent(detail: detail, onPrimaryFocus: onPrimaryFocus).id(itemID)
+                #endif
+            }
             .padding(KinoTheme.contentPadding)
             #if os(tvOS)
             .id("detail.top.\(itemID)")
@@ -27,6 +36,8 @@ struct DetailScreen: View {
         }
         #if os(tvOS)
         .tvMovieHeroViewport()
+        #else
+        .spotlightScroll(scroll)
         #endif
         .cinemaBackground()
         .navigationTitle("")
@@ -39,6 +50,9 @@ struct DetailScreen: View {
 private struct DetailContent: View {
     let detail: ItemDetail
     var onPrimaryFocus: @MainActor () -> Void = {}
+    #if os(iOS)
+    var scroll: SpotlightScroll?
+    #endif
     @Environment(AppSession.self) private var session
     @State private var listed: Bool?
     @State private var busy = false
@@ -64,7 +78,11 @@ private struct DetailContent: View {
             }
             CastShelf(people: item.cast ?? [])
             #else
-            CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
+            if !item.spotlightArtwork.isEmpty {
+                CinemaSpotlight(item: item, artwork: item.spotlightArtwork, scroll: scroll) { primaryAction } secondary: { secondaryActions }
+            } else {
+                CinemaHero(item: item, showsPlot: false, prefersEpisodeStill: true) { actions }
+            }
             information
                 .frame(maxWidth: 900, alignment: .leading)
             #endif
@@ -159,11 +177,18 @@ private struct DetailContent: View {
             change { client in listed = try await client.setListed(itemID: item.id, listed: !(listed ?? detail.listed)) }
         } label: {
             Label((listed ?? detail.listed) ? "In My List" : "My List", systemImage: (listed ?? detail.listed) ? "checkmark" : "plus")
+                .contentTransition(.symbolEffect(.replace))
                 #if os(tvOS)
                 .frame(minHeight: detailActionHeight)
                 #endif
         }
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
+            #if os(tvOS)
+            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+            #else
+            .buttonStyle(SpotlightSecondaryButtonStyle())
+            .sensoryFeedback(.success, trigger: listed) { old, new in old != nil || new != nil }
+            #endif
+            .disabled(busy)
         #if os(tvOS)
         if item.kind == .video || item.isAudio {
             NavigationLink(value: ScreenDestination.bookmarks(item.id)) {
@@ -189,7 +214,7 @@ private struct DetailContent: View {
         #endif
         #if os(iOS)
         if session.viewer?.downloads == true && (item.kind == .video || item.isAudio) {
-            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+            Button { showsDownloads = true } label: { Label("Download", systemImage: "arrow.down") }.buttonStyle(SpotlightSecondaryButtonStyle())
         }
         #endif
     }

@@ -111,6 +111,10 @@ struct AppShell: View {
 struct DestinationScreen: View {
     let destination: ScreenDestination
     var body: some View {
+        screen.zoomDestination(destination)
+    }
+
+    @ViewBuilder private var screen: some View {
         switch destination {
         case .search: LibraryScreen(searchMode: true)
         case .library(let view): LibraryScreen(initialView: view)

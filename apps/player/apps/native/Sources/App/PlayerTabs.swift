@@ -132,6 +132,7 @@ struct PlayerTabs: View {
         }
         #if os(iOS)
         .tabViewStyle(.sidebarAdaptable)
+        .tabBarMinimizeBehavior(.onScrollDown)
         .modifier(MiniPlayerTabAccessory())
         #endif
     }
@@ -193,6 +194,7 @@ struct PlayerTabs: View {
                 }
                 .navigationDestination(for: ScreenDestination.self) { DestinationScreen(destination: $0) }
         }
+        .zoomTransitionHost()
         #if os(tvOS)
         .toolbar(.hidden, for: .tabBar)
         .toolbarBackground(.hidden, for: .navigationBar, .tabBar)

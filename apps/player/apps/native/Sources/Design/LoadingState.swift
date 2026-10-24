@@ -3,6 +3,11 @@ import SwiftUI
 enum LoadingLayout { case shelf, home, homeAudio, tvHome, tvHomeAudio, detail, grid, squareGrid, musicGrid, album, show, list, playback, actor, collectionGrid }
 
 struct LoadingState: View {
+    #if os(iOS)
+    private static var spotlightHome: Bool { true }
+    #else
+    private static var spotlightHome: Bool { false }
+    #endif
     var title = "Loading your library…"
     var layout = LoadingLayout.shelf
     @Environment(\.dynamicTypeSize) private var dynamicType
@@ -37,7 +42,10 @@ struct LoadingState: View {
                     .scrollIndicators(.hidden).scrollDisabled(true).accessibilityHidden(true)
                 }
             }
-            if layout == .home || layout == .homeAudio {
+            #if os(iOS)
+            if layout == .home { SpotlightSkeleton() }
+            #endif
+            if layout == .homeAudio || (layout == .home && !Self.spotlightHome) {
                 VStack(alignment: .leading, spacing: 12) {
                     line(width: 180, height: 44).accessibilityHidden(true)
                     CinemaHeroLayout {
