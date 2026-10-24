@@ -44,43 +44,14 @@ struct KinosailApp: App {
 
 private struct LaunchingAppShell: View {
     @Environment(AppSession.self) private var session
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var showingLaunch = true
     @State private var launchMinimumElapsed = false
 
     var body: some View {
-        ZStack {
-            AppShell()
-                .accessibilityHidden(showingLaunch)
-            ZStack {
-                Color.black
-                Image("LaunchMark")
-                    .resizable()
-                    .scaledToFit()
-                    #if os(tvOS)
-                    .frame(width: 160, height: 206)
-                    #else
-                    .frame(width: 100, height: 129)
-                    #endif
-                    .accessibilityLabel("Kinosail Player")
+        LaunchReveal(ready: launchMinimumElapsed && !session.restoring) { AppShell() }
+            .task {
+                do { try await Task.sleep(for: .milliseconds(120)) }
+                catch { return }
+                launchMinimumElapsed = true
             }
-            .ignoresSafeArea()
-            .opacity(showingLaunch ? 1 : 0)
-            .allowsHitTesting(showingLaunch)
-            .accessibilityHidden(!showingLaunch)
-        }
-        .task {
-            do { try await Task.sleep(for: .milliseconds(120)) }
-            catch { return }
-            launchMinimumElapsed = true
-        }
-        .onChange(of: launchMinimumElapsed && !session.restoring) { _, ready in
-            guard ready else { return }
-            if reduceMotion {
-                showingLaunch = false
-            } else {
-                withAnimation(.easeOut(duration: 0.3)) { showingLaunch = false }
-            }
-        }
     }
 }

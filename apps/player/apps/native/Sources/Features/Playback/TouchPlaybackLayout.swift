@@ -3,6 +3,7 @@ import SwiftUI
 
 extension GeometryProxy {
     var playbackDivision: CGRect? {
+        if #available(iOS 27.1, *) { return reservedRegions(kind: .division).first?.frame }
         return nil
     }
 }

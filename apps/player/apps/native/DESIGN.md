@@ -102,7 +102,9 @@ The hero's rounded title has a 36pt iOS base and a 56pt tvOS base, scaled relati
 
 Home is a vertical scroll view with 32pt section spacing and theme content padding. iOS uses 20pt content padding; tvOS uses 64pt. Safe areas, back navigation, tab/sidebar adaptation and dismissal remain native.
 
-The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Foreground artwork stays contained and untinted. Apple TV additionally uses a subdued full-screen copy of the backdrop behind browsing content. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
+iOS Home and title details open with `CinemaSpotlight` when a backdrop or episode still exists. The artwork bleeds edge to edge under the navigation bar and fades into the canvas through a bottom mask. Compact widths use an artwork height of 86% of the width; regular widths use 46% of the width, clamped to 380–640pt. The rounded title, metadata, progress and actions overlap the fade, capped at 600pt wide on regular widths. Home adds an Electric eyebrow (Watching, Listening or For you) and an icon-only My List action. Pulling down stretches the artwork and scrolling up moves it at 32% speed; Reduce Motion keeps it still. `SpotlightSkeleton` uses the same geometry while Home or details load. Without a backdrop, iOS falls back to `CinemaHero`.
+
+The reusable hero fills the available width. Regular iOS size classes and tvOS place contained artwork beside information with a 32pt gap. Compact and accessibility sizes put 16:9 artwork above information with a 12pt gap. Hero artwork stays untinted. Apple TV additionally uses a subdued full-screen copy of the backdrop behind browsing content. Missing backdrops use 2:3 poster artwork (square for audio) capped at 240pt. Information grows with content; actions try horizontal placement and fall back to vertical through `ViewThatFits`.
 
 iOS Home labels a saved Watch feature Watching and places it above Continue watching. Continue watching shows up to 15 landscape cards with direct resume, metadata and true progress. Without a saved title, the recent feature is labeled For you. Listen mode labels its saved feature Listening and keeps compact Continue listening rows with iOS expansion controls. Apple TV Home opens with a spotlight: the rounded title, metadata and a two-line plot of the focused Continue watching title, or of the first saved or recent title before any card has focus. Episodes show the show name with season, episode and episode title. The spotlight is decorative text above up to 15 saved titles in one open Continue watching rail, including the first title, followed by Browse destinations for Movies, TV Shows, Music, Audiobooks and Photos. Browse uses native card buttons with a raised gradient platter and solid off-white and Electric green geometric category marks. Focused media artwork lifts with a 6% scale and soft shadow and keeps a bright outline. Reduce Motion removes the lift animation. A final link with the Kinosail mark switches Watch and Listen Home modes. Watch then separates recently added movies and TV shows, adds unwatched shelves and up to four movie genre shelves, each titled by its genre, from the loaded catalog. Listen separates recently added music and audiobooks. At accessibility text sizes, card titles wrap and the shelf remains horizontally scrollable.
 
@@ -110,17 +112,19 @@ Media grids adapt from 96pt posters with 12pt column spacing or 280pt landscape 
 
 ## Elevation & Depth
 
-Dark iOS and Apple TV Home, library, title details and episode browsing use one bundled CinemaSail image to establish cinematic depth. The sail stays fixed behind the scroll viewport and extends into safe areas. Its fill frame aligns to the trailing edge so portrait layouts retain the sail rather than cropping it out; the image is never stretched. A dark vertical fade protects text and settles into the shared canvas beneath the feature. Foreground artwork remains contained and untinted; forms, playback and light appearance retain their existing surfaces. Increased Contrast and Reduce Transparency omit the decorative image entirely. The background is decorative only and does not receive focus, input or accessibility traversal.
+Dark iOS and Apple TV Home, library, title details and episode browsing use one bundled CinemaSail image to establish cinematic depth. The sail stays fixed behind the scroll viewport and extends into safe areas. Its fill frame aligns to the trailing edge so portrait layouts retain the sail rather than cropping it out; the image is never stretched. A dark vertical fade protects text and settles into the shared canvas beneath the feature. Foreground artwork remains untinted; forms, playback and light appearance retain their existing surfaces. Increased Contrast and Reduce Transparency omit the decorative image entirely. The background is decorative only and does not receive focus, input or accessibility traversal.
 
 Apple TV Home keeps the static sail background. Focus changes update only the spotlight text, and focusing a Continue watching card scrolls Home to the top so the spotlight stays visible. Movie details and show pages share the same full-bleed backdrop hero, Play action and fades.
 
 Apple TV library content keeps compact navigation controls and the media grid without a focused-title header. Selection changes card focus only; it does not replace the shared sail or add a changing title above the grid. Native card focus has vertical breathing room and unclipped shelf edges.
 
-**The Native State Rule.** Let native controls own focus and interaction feedback. Media links use plain style; tvOS adds a scale-and-shadow lift, a visible focus outline and retains focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
+**The Native State Rule.** Let native controls own focus and interaction feedback. iOS media links press down to 96.5% with a spring and a slight dim; Reduce Motion keeps the dim only. tvOS adds a scale-and-shadow lift, a visible focus outline and retains focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
 
 ## Shapes
 
-Artwork and posters use the artwork radius; compact resume thumbnails use their smaller radius. Posters retain 2:3 proportions, landscape artwork 16:9 and audio artwork square proportions. Artwork is clipped at its own boundary.
+Artwork and posters use the artwork radius; compact resume thumbnails use their smaller radius. Posters retain 2:3 proportions, landscape artwork 16:9 and audio artwork square proportions. Artwork is clipped at its own boundary. Video and show cards fill their frame instead of letterboxing. Music, audiobook and book covers stay contained. Unwatched titles show an Electric dot with a soft glow at the top-trailing corner: 11pt on iOS and 18pt on tvOS.
+
+The iOS setup form opens with the Kinosail mark, a rounded Kinosail Player title and one factual line above the native Server address field. Dark appearance places the form over the shared sail background.
 
 Prominent actions use the system capsule border shape. Existing supporting bordered actions also retain native capsule treatment with the raised tint; this is a native control convention, not a rule to make every container a capsule. Native fields, lists, tab bars, sheets and card focus keep system geometry.
 
@@ -128,7 +132,13 @@ Prominent actions use the system capsule border shape. Existing supporting borde
 
 ### Buttons and navigation
 
-iOS Home's Play or Resume uses `.borderedProminent`, the signal tint and explicit action ink. Details uses `.bordered`, the raised tint and normal text. Both request large controls and capsule border shapes. Routes still follow media kind. Apple TV retains AVKit playback controls; iPhone and iPad use the coordinated touch presentation below.
+iOS Home's Play or Resume uses `.borderedProminent`, the signal tint and explicit action ink. Details and other secondary spotlight actions use the Liquid Glass button style on iOS. Fallback hero Details uses `.bordered`, the raised tint and normal text. Both request large controls and capsule border shapes. Routes still follow media kind. Apple TV retains AVKit playback controls; iPhone and iPad use the coordinated touch presentation below.
+
+### Motion
+
+Launch keeps the system launch screen: the Kinosail mark centered on black. `LaunchReveal` then dips the mark to 84% and grows it until the app shows through the sail, as a mask, in about 0.8 seconds. The app settles from 108% to its normal size underneath. Restore never waits on the network. Reduce Motion replaces the reveal with a 0.25-second fade.
+
+iOS navigation from a video, show, album or collection card uses the native zoom transition from that card's artwork. Reduce Motion uses the standard push. The iOS tab bar minimizes while scrolling down. My List changes its symbol with a replace transition and plays a success haptic.
 
 ### Video playback
 
@@ -160,7 +170,7 @@ Playback preferences group Boost Dialog and Normalize Loudness as native toggles
 
 ### Hero and watch position
 
-iOS Home selects the first Continue watching item, otherwise the first Recently added item. Apple TV Home keeps the saved titles together in Continue watching. Their cards show true progress and time left instead of the unwatched corner. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
+iOS Home selects the first Continue watching item, otherwise the first Recently added item. Apple TV Home keeps the saved titles together in Continue watching. Their cards show true progress and time left instead of the unwatched mark. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
 
 ### Loading and recovery
 

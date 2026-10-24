@@ -14,6 +14,8 @@ struct HomeScreen: View {
     @State private var launchFocusPending = true
     @State private var preparation: Task<Void, Never>?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    #else
+    @State private var scroll = SpotlightScroll()
     #endif
     private var homeMode: PlayerMode { mode ?? .watch }
     var body: some View {
@@ -45,23 +47,39 @@ struct HomeScreen: View {
                     }
                     TVHomeBrowse(selectTab: selectTab)
                     #else
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 28) {
-                            Text(selection.featuredIsContinuing ? (homeMode == .listen ? "Listening" : "Watching") : "For you")
-                                .font(.title2.bold()).frame(minHeight: 44).accessibilityAddTraits(.isHeader)
-                            NavigationLink("My List", value: ScreenDestination.library(.list))
-                                .font(.callout).frame(minHeight: 44)
-                                .foregroundStyle(KinoTheme.muted)
+                    if let featured = selection.featured, !featured.spotlightArtwork.isEmpty {
+                        CinemaSpotlight(item: featured, artwork: featured.spotlightArtwork, eyebrow: featuredHeading(selection),
+                                        subtitle: homeSubtitle(for: featured), scroll: scroll) {
+                            NavigationLink(value: featured.playingDestination) {
+                                Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
+                                    .padding(.horizontal, 6)
+                            }
+                            .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                            NavigationLink("Details", value: featured.destination).buttonStyle(SpotlightSecondaryButtonStyle())
+                            NavigationLink(value: ScreenDestination.library(.list)) {
+                                Image(systemName: "bookmark").accessibilityLabel("My List")
+                            }
+                            .buttonStyle(SpotlightSecondaryButtonStyle()).buttonBorderShape(.circle)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        if let featured = selection.featured {
-                            CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
-                                NavigationLink(value: featured.playingDestination) {
-                                    Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
-                                        .frame(maxWidth: .infinity)
+                    } else {
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack(spacing: 28) {
+                                Text(featuredHeading(selection))
+                                    .font(.title2.bold()).frame(minHeight: 44).accessibilityAddTraits(.isHeader)
+                                NavigationLink("My List", value: ScreenDestination.library(.list))
+                                    .font(.callout).frame(minHeight: 44)
+                                    .foregroundStyle(KinoTheme.muted)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            if let featured = selection.featured {
+                                CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
+                                    NavigationLink(value: featured.playingDestination) {
+                                        Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                    .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
+                                    NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                                 }
-                                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
-                                NavigationLink("Details", value: featured.destination).buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
                             }
                         }
                     }
@@ -113,6 +131,7 @@ struct HomeScreen: View {
         .navigationTitle("")
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
         #else
+        .spotlightScroll(scroll)
         .cinemaBackground()
         .navigationTitle("Kinosail")
         #endif
@@ -138,6 +157,10 @@ struct HomeScreen: View {
                 }
             }
         }
+    }
+
+    private func featuredHeading(_ selection: HomeSelection) -> String {
+        selection.featuredIsContinuing ? (homeMode == .listen ? String(localized: "Listening") : String(localized: "Watching")) : String(localized: "For you")
     }
 
     private func homeSubtitle(for item: MediaItem) -> String {

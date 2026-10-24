@@ -16,6 +16,11 @@ struct SetupScreen: View {
                     PairingCodeScreen(code: code, server: server)
                 } else {
                     Form {
+                        #if os(iOS)
+                        Section { SetupBrandHeader() }
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 24, leading: 0, bottom: 8, trailing: 0))
+                        #endif
                         Section {
                             TextField("https://your-server", text: $address)
                                 .textInputAutocapitalization(.never)
@@ -64,9 +69,9 @@ struct SetupScreen: View {
                     }
                     #if os(iOS)
                     .scrollContentBackground(.hidden)
-                    .background(KinoTheme.background)
                     .frame(maxWidth: 600)
                     .frame(maxWidth: .infinity)
+                    .cinemaBackground()
                     #endif
                 }
             }
@@ -172,3 +177,28 @@ struct QRCodeView: View {
         return UIImage(cgImage: image)
     }
 }
+
+#if os(iOS)
+private struct SetupBrandHeader: View {
+    @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 34.0
+
+    var body: some View {
+        VStack(spacing: 14) {
+            Image("LaunchMark")
+                .resizable().scaledToFit()
+                .frame(width: 52, height: 67)
+                .shadow(color: KinoTheme.signal.opacity(0.35), radius: 18)
+                .accessibilityHidden(true)
+            Text("Kinosail Player")
+                .font(.system(size: titleSize, weight: .bold, design: .rounded))
+                .tracking(-0.4)
+                .accessibilityAddTraits(.isHeader)
+            Text("Connect to your Server to watch and listen.")
+                .font(.subheadline).foregroundStyle(KinoTheme.muted)
+                .multilineTextAlignment(.center)
+        }
+        .foregroundStyle(KinoTheme.text)
+        .frame(maxWidth: .infinity)
+    }
+}
+#endif

@@ -33,7 +33,9 @@ final class TouchVideoSurface: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         let picture = playerLayer.videoRect.isEmpty ? bounds : playerLayer.videoRect
-        let division: CGRect? = nil
+        let division: CGRect?
+        if #available(iOS 27.1, *) { division = reservedRegions(kind: .division).first?.frame }
+        else { division = nil }
         captions.frame = Self.captionFrame(in: bounds, safeAreaInsets: safeAreaInsets, picture: picture,
                                           division: division, controlsVisible: controlsVisible, controlsInset: controlsInset) { size in
             captions.sizeThatFits(size)

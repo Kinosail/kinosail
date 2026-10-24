@@ -21,18 +21,18 @@ struct MediaCard: View {
         return { if focused { onQuickPlay(destination) } }
     }
     #endif
+    private var destination: ScreenDestination { resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow) }
     var body: some View {
-        NavigationLink(value: resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)) {
+        NavigationLink(value: destination) {
             VStack(alignment: .leading, spacing: 10) {
                 Artwork(path: landscape ? item.landscapeArtwork : item.poster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
                         dimension: MediaArtworkSize.dimension(landscape: landscape, accessibility: dynamicTypeSize.isAccessibilitySize, displayScale: displayScale),
-                        fillsFrame: landscape && item.kind == .photo)
+                        fillsFrame: item.kind == .video || item.kind == .show || (landscape && item.kind == .photo))
                     .background(KinoTheme.surface)
                     .overlay(alignment: .topTrailing) {
                         if item.isUnwatched && item.progress.seconds == 0 {
-                            UnwatchedCorner().fill(KinoTheme.signal).frame(width: 32, height: 32)
-                                .accessibilityHidden(true)
+                            UnwatchedMark().accessibilityHidden(true)
                         }
                     }
                     .overlay(alignment: .bottom) {
@@ -43,6 +43,7 @@ struct MediaCard: View {
                         }
                     }
                     .clipShape(.rect(cornerRadius: 12))
+                    .zoomSource(destination)
                     #if os(tvOS)
                     .overlay {
                         if focused {
@@ -98,7 +99,7 @@ struct MediaCard: View {
                            : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #else
-        .buttonStyle(.plain)
+        .buttonStyle(PressableCardStyle())
         #endif
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnwatched ? (item.progress.seconds > 0 ? "Unwatched, continue from \(item.progress.seconds.clock)" : "Unwatched")
@@ -112,17 +113,6 @@ extension MediaCard {
         guard !item.show.isEmpty, item.season > 0 || item.episode > 0 else { return item.subtitleWithoutYear }
         let code = "S\(item.season) E\(item.episode)"
         return resumesPlayback || opensShow ? "\(item.show) · \(code)" : code
-    }
-}
-
-private struct UnwatchedCorner: Shape {
-    func path(in rect: CGRect) -> Path {
-        Path { path in
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.closeSubpath()
-        }
     }
 }
 

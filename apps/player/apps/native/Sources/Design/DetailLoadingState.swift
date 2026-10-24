@@ -39,18 +39,7 @@ struct DetailLoadingState: View {
                 .scrollIndicators(.hidden).scrollDisabled(true)
             }
             #else
-            CinemaHeroLayout {
-                RoundedRectangle(cornerRadius: 12).fill(KinoTheme.surface)
-                    .aspectRatio(16 / 9, contentMode: .fit)
-            } information: {
-                VStack(alignment: .leading, spacing: 16) {
-                    line(260, 42)
-                    line(160, 18)
-                    line(100, 14)
-                    Capsule().fill(KinoTheme.raised).frame(height: 50)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            SpotlightSkeleton(eyebrow: false)
             VStack(alignment: .leading, spacing: 20) {
                 line(340, 20)
                 line(260, 16)
