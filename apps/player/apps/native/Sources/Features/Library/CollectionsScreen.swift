@@ -41,7 +41,9 @@ struct CollectionsScreen: View {
         }
         #if os(tvOS)
         .frame(maxWidth: .infinity)
+        #endif
         .cinemaBackground()
+        #if os(tvOS)
         .navigationTitle("")
         #else
         .navigationTitle("Collections")
@@ -74,12 +76,11 @@ struct CollectionScreen: View {
                 }
             }.padding(KinoTheme.contentPadding)
         }
-        #if os(tvOS)
         .cinemaBackground()
+        #if os(tvOS)
         .navigationTitle("")
         #else
         .navigationTitle(name)
-        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(tvOS)
         .navigationDestination(item: $quickPlay) { DestinationScreen(destination: $0) }
