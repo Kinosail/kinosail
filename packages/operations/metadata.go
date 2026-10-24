@@ -157,7 +157,7 @@ func (config MetadataRefresh) replacesImage(image metadata.Image) bool {
 	if !metadata.RegularFile(image.Target) {
 		return true
 	}
-	return image.Backdrop && config.LegacyBackdrop != nil && config.LegacyBackdrop(image.Target)
+	return (image.Backdrop || image.Still) && config.LegacyBackdrop != nil && config.LegacyBackdrop(image.Target)
 }
 
 func legacyBackdrop(item library.Item, record metadata.Record, legacy func(string) bool) bool {
@@ -168,7 +168,11 @@ func legacyBackdrop(item library.Item, record metadata.Record, legacy func(strin
 	if item.Show != "" {
 		backdrop = record.ShowBackdrop
 	}
-	return backdrop != "" && legacy(backdrop)
+	return backdrop != "" && legacy(backdrop) || legacyStill(item, record, legacy)
+}
+
+func legacyStill(item library.Item, record metadata.Record, legacy func(string) bool) bool {
+	return legacy != nil && item.Show != "" && !record.Owner && record.Artwork != "" && legacy(record.Artwork)
 }
 
 func needsMovieRating(item library.Item, record metadata.Record) bool {

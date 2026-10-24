@@ -138,7 +138,7 @@ iOS Home's Play or Resume uses `.borderedProminent`, the signal tint and explici
 
 ### Motion
 
-Launch keeps the system launch screen: the Kinosail mark centered on black. `LaunchReveal` then dips the mark to 84% and grows it until the app shows through the sail, as a mask, in about 0.8 seconds. The app settles from 108% to its normal size underneath. Restore never waits on the network. Reduce Motion replaces the reveal with a 0.25-second fade.
+Launch keeps the system launch screen: the Kinosail mark centered on black. `LaunchReveal` then dips the mark to 84% and grows it until the app shows through the sail, as a mask, in about 0.8 seconds. The app settles from 108% to its normal size underneath. Apple TV does not cut the sail out of the screen. The mark dips to 92%, then grows to 135% as it fades, while the black curtain fades and the app settles from 104% with a crossfade, in about 1.1 seconds. The black backdrop fills the whole screen during the reveal, so no edge bars show. Restore never waits on the network. Reduce Motion replaces the reveal with a 0.25-second fade.
 
 iOS navigation from a video, show, album or collection card uses the native zoom transition from that card's artwork. Reduce Motion uses the standard push. The iOS tab bar collapses when scrolling down and expands as soon as scrolling turns upward, not only at the top. `TabBarCollapse` tracks the scroll direction and switches the minimize behavior. My List changes its symbol with a replace transition and plays a success haptic.
 
@@ -178,11 +178,13 @@ Playback preferences group Boost Dialog and Normalize Loudness as native toggles
 
 ### Hero and watch position
 
-iOS Home selects the first Continue watching item, otherwise the first Recently added item. Apple TV Home keeps the saved titles together in Continue watching. Their cards show true progress and time left instead of the unwatched mark. Details and episode browsing reuse the in-flow hero. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
+iOS Home selects the first Continue watching item, otherwise the first Recently added item. Apple TV Home keeps the saved titles together in Continue watching. Their cards show true progress and time left instead of the unwatched mark. Details and episode browsing reuse the in-flow hero. On Apple TV show pages, selecting an episode card opens its playback options at once; Play/Pause plays it directly; press and hold opens a Details menu for the episode page. `WatchPosition` renders a progress bar only when a valid duration produces a fraction; unavailable duration or a failed request retains the known saved position. Images stay still without an autoplay carousel.
 
 ### Loading and recovery
 
 `LoadingState` uses destination-specific shelf, home, detail, grid, music, show, album and list layouts. iOS Home/detail reuse the hero's wide/stacked layout, artwork ratio and gap. Apple TV Home placeholders follow the spotlight, the Continue watching or Listening area, Browse links and a recent shelf. Show placeholders use the full-bleed hero geometry. Grids reuse `MediaGrid.columns` and eight artwork placeholders; shelves use four cards with the loaded spacing and width policy. These policies align the known layout, while real content, missing artwork and Dynamic Type can change its final geometry.
+
+Artwork heals itself. A failed load keeps the quiet placeholder and retries after 1, 3, 8 and 20 seconds, then retries again when the app returns to the foreground. Only a final failure shows the kind symbol. A card without a poster uses the title's backdrop.
 
 `ResourceView` displays loading feedback only while initial content is pending. Native skeletons shimmer within their existing shapes and expose one accessible loading label; Reduce Motion keeps the placeholders still. Initial failure shows Try again; failed refresh retains loaded content with truthful feedback. A new resource identity clears stale content. Empty, failed and settled content must not remain a skeleton. Determinate playback and download progress remains visible; actions without a replacement layout use plain status text.
 

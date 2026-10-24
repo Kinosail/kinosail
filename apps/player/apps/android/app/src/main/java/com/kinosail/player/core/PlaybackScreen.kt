@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -276,9 +277,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     if (tv) androidx.tv.material3.Button(onClick = { playback.start(item, viewer, tv) },
                         modifier = Modifier.focusRequester(retryFocus)) {
                         androidx.tv.material3.Text(interfaceText("Try again"))
-                    } else TextButton(onClick = { playback.start(item, viewer) }) {
-                        Text(interfaceText("Try again"), color = KinoColor.signal)
-                    }
+                    } else Button(onClick = { playback.start(item, viewer) }) { Text(interfaceText("Try again")) }
                 }
                 playback.progressNotice?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }

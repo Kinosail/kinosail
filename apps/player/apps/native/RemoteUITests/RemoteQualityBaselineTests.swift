@@ -151,7 +151,7 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         return element.frame
     }
 
-    @MainActor func testSeasonChangeKeepsSeasonFocusAndDownActivatesItsEpisode() {
+    @MainActor func testSeasonChangeKeepsSeasonFocusAndEpisodeSelectPlays() {
         continueAfterFailure = false
         let app = XCUIApplication(bundleIdentifier: "com.kinosail.player")
         let remote = XCUIRemote.shared
@@ -177,12 +177,22 @@ final class RemoteQualityBaselineTests: RemoteTestCase {
         XCTAssertTrue(episode.contains("A Quiet Evening"), "Down must reach the selected season's first episode")
         record("quality-season-two-first-episode", app)
         remote.press(.select)
-        XCTAssertTrue(app.staticTexts["A Quiet Evening"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Bookmarks"].exists)
-        record("quality-season-two-episode-detail", app)
+        XCTAssertTrue(app.cells["Playback options"].waitForExistence(timeout: 20), "Select on an episode must start playback")
+        record("quality-season-two-episode-playing", app)
         remote.press(.menu)
         XCTAssertTrue(app.staticTexts["Episodes"].waitForExistence(timeout: 10))
         XCTAssertEqual(focusedLabels(app).joined(separator: ", "), episode)
         record("quality-season-two-restored-episode", app)
+        remote.press(.select, forDuration: 1.2)
+        let details = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Details'")).firstMatch
+        XCTAssertTrue(details.waitForExistence(timeout: 5), "Press and hold on an episode must offer Details")
+        record("quality-season-two-episode-menu", app)
+        remote.press(.select)
+        XCTAssertTrue(app.staticTexts["A Quiet Evening"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Bookmarks"].waitForExistence(timeout: 10))
+        record("quality-season-two-episode-detail", app)
+        remote.press(.menu)
+        XCTAssertTrue(app.staticTexts["Episodes"].waitForExistence(timeout: 10))
+        XCTAssertEqual(focusedLabels(app).joined(separator: ", "), episode)
     }
 }

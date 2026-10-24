@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Button
+import com.kinosail.player.design.KinoColor
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -73,10 +74,10 @@ internal fun ReaderPageView(title: String, bitmap: Bitmap?, page: Int, total: In
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (bitmap == null && notice == null) CircularProgressIndicator()
                 notice?.let {
-                    Text(it, color = MaterialTheme.colorScheme.error,
+                    Text(it, color = KinoColor.text,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     if (it != "This book format is not available on Android yet.") {
-                        TextButton(onClick = retry) { Text(interfaceText("Try again")) }
+                        RetryAction(onClick = retry)
                     }
                 }
                 savingNotice?.let { Text(it, color = MaterialTheme.colorScheme.error,

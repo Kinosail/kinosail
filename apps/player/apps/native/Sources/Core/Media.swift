@@ -117,6 +117,7 @@ struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     }
 
     var poster: String { show.isEmpty ? artwork : "/art/\(id)" }
+    var cardPoster: String { poster.isEmpty ? backdrop : poster }
     var landscapeArtwork: String {
         if !show.isEmpty && !artwork.isEmpty { return artwork }
         return backdrop.isEmpty ? poster : backdrop

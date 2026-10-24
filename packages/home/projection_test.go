@@ -79,10 +79,10 @@ func TestRecentShelfProjection(t *testing.T) {
 	artwork := map[string]string{"episode-one": "poster", "book": "cover"}
 	titles := map[string]string{"episode-one": "Series"}
 	played := RecentlyPlayed(items, artwork, titles)
-	if len(played) != 3 || !played[0].Stacked || played[0].Count != 2 || played[0].Title != "Series" || played[0].StackLabel != "recently played episodes stacked" || played[0].Meta != "2 episodes stacked · MP4" {
+	if len(played) != 3 || !played[0].Stacked || played[0].Count != 2 || played[0].Title != "Series" || played[0].StackLabel != "recently played episodes stacked" || played[0].Meta != "2 episodes stacked" {
 		t.Fatalf("played=%+v", played)
 	}
-	if played[1].Href != "/book/book" || played[1].Meta != "2024" || played[2].Href != "/watch/movie" || played[2].Meta != "AVI" || !played[0].Priority || !played[1].Priority || played[2].Priority {
+	if played[1].Href != "/book/book" || played[1].Meta != "2024" || played[2].Href != "/watch/movie" || played[2].Meta != "" || !played[0].Priority || !played[1].Priority || played[2].Priority {
 		t.Fatalf("played details=%+v", played)
 	}
 	addedItems := make([]library.Item, 14)
@@ -98,7 +98,7 @@ func TestRecentShelfProjection(t *testing.T) {
 	if added[0].Href != "/book/m" || added[1].Href != "/book/n" || addedItems[0].ID != "a" || addedItems[13].ID != "n" {
 		t.Fatalf("added order=%+v, input first=%q last=%q", added[:2], addedItems[0].ID, addedItems[13].ID)
 	}
-	if item := singleItem(items[0], artwork, titles, "play"); item.Title != "Series · Pilot" || item.Meta != "MKV · 2025" || item.ArtworkID != "poster" || item.Count != 1 {
+	if item := singleItem(items[0], artwork, titles, "play"); item.Title != "Series · Pilot" || item.Meta != "2025" || item.ArtworkID != "poster" || item.Count != 1 {
 		t.Fatalf("single=%+v", item)
 	}
 	if meta := stackMeta(2, library.Item{}); meta != "2 episodes stacked" {

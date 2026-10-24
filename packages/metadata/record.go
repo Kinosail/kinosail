@@ -27,6 +27,7 @@ type Image struct {
 	Show           bool
 	Person         bool
 	Backdrop       bool
+	Still          bool
 }
 
 type Result struct {
@@ -207,7 +208,7 @@ func ResolveTMDBEpisode(ctx context.Context, item library.Item, show Record, enr
 		if !Bounded(result.Record) {
 			return Result{}, errors.New("metadata artwork path is invalid")
 		}
-		result.Images = []Image{{Source: poster, Target: result.Record.Artwork}}
+		result.Images = []Image{{Source: poster, Target: result.Record.Artwork, Still: true}}
 	}
 	return result, nil
 }

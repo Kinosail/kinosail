@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.*
+import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
 
 @Composable
@@ -117,9 +118,9 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                         }
                     }
                     if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
-                        state.notice?.let { Text(it, color = MaterialTheme.colorScheme.error,
+                        state.notice?.let { Text(it, color = KinoColor.text,
                             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-                        if (state.notice != null) TextButton(onClick = catalog::retry) { Text(interfaceText("Try again")) }
+                        if (state.notice != null) RetryAction(onClick = catalog::retry)
                     }
                     if (state.loading && state.items.isEmpty()) LibraryLoading(view = state.view)
                     else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
@@ -164,8 +165,10 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
                          viewPhoto: () -> Unit, readBook: () -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        TextButton(onClick = catalog::closeDetail) { Text(interfaceText("Back")) }
-        MediaHero(item, catalog, tv = false) {
+        val back: @Composable () -> Unit = { TextButton(onClick = catalog::closeDetail) { Text(interfaceText("Back")) } }
+        val spotlight = spotlightFits(item, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp)
+        if (!spotlight) back()
+        val actions: @Composable () -> Unit = {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 when (item.kind) {
                     "video", "music", "audiobook" -> Button(onClick = play) { Text(interfaceText(item.playLabel)) }
@@ -179,11 +182,13 @@ private fun MobileDetail(item: CatalogItem, catalog: CatalogModel, play: () -> U
                 }
             }
         }
+        if (spotlight) MediaSpotlight(item, catalog, null, bleed = 20.dp, topBleed = 20.dp, top = back, actions = actions)
+        else MediaHero(item, catalog, tv = false, actions = actions)
         if (item.kind == "photo" && item.stream.isEmpty()) Text(interfaceText("Photo viewing is unavailable for this Viewer."))
         if (catalog.state.listBusy && catalog.state.listed == null) Text(interfaceText("Loading My List status…"))
         catalog.state.detailNotice?.let {
-            Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-            if (catalog.state.listed == null) TextButton(onClick = catalog::retryDetail) { Text(interfaceText("Try again")) }
+            Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            if (catalog.state.listed == null) RetryAction(onClick = catalog::retryDetail)
         }
     }
 }

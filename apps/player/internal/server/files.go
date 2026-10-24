@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/MikeO7/kinosail/packages/catalogapi"
@@ -50,12 +51,13 @@ func serveEpisodeStill(index *libraryIndex, probe *mediaProbe, workloads *worklo
 			localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		target := filepath.Join(probe.cacheDir, "episode-stills", item.ID+".jpg")
+		target := filepath.Join(probe.cacheDir, "episode-stills", item.ID+"-hd.jpg")
 		if !playback.Fresh(target, item.Path) {
 			if err := generateEpisodeStill(request, probe, workloads, item, target); err != nil {
 				localizedError(writer, request, "episode still unavailable", http.StatusServiceUnavailable)
 				return
 			}
+			_ = os.Remove(filepath.Join(probe.cacheDir, "episode-stills", item.ID+".jpg"))
 		}
 		writer.Header().Set("Content-Type", "image/jpeg")
 		http.ServeFile(writer, request, target)

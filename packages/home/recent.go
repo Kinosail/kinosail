@@ -182,13 +182,14 @@ func mediaHref(item library.Item) string {
 }
 
 func mediaMeta(item library.Item) string {
-	if item.Container == "" {
+	genre, _, _ := strings.Cut(item.Genres, " · ")
+	switch {
+	case item.Year == "":
+		return strings.TrimSpace(genre)
+	case strings.TrimSpace(genre) == "":
 		return item.Year
 	}
-	if item.Year == "" {
-		return item.Container
-	}
-	return item.Container + " · " + item.Year
+	return item.Year + " · " + strings.TrimSpace(genre)
 }
 
 func stackMeta(count int, item library.Item) string {

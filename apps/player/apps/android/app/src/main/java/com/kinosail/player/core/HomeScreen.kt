@@ -15,6 +15,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.design.KinoColor
@@ -28,20 +29,33 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
     val state = model.state.copy(listening = listening)
     LaunchedEffect(viewer.serverId, viewer.id) { model.open(viewer) }
     DisposableEffect(Unit) { onDispose { model.reset() } }
+    val spotlight = !tv && state.featured?.let { spotlightFits(it, androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp) } == true
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         Column(if (tv) Modifier.fillMaxSize().safeDrawingPadding() else Modifier.fillMaxSize()) {
             if (tv) HomeHeader(listening, browse, settings)
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)) {
-                if (!tv) item {
+                val header: @Composable () -> Unit = {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(if (listening) interfaceText("Listen") else "Kinosail",
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
                             color = KinoColor.text, modifier = Modifier.weight(1f))
                         TextButton(onClick = { browse("list") }) { Text(interfaceText("My List")) }
                     }
                 }
+                if (!tv && !spotlight) item { header() }
+                if (spotlight) state.featured?.let { featured -> item {
+                    MediaSpotlight(featured.copy(plot = ""), catalog, interfaceText(if (featured.progress.seconds > 0)
+                        if (listening) "Listening" else "Watching" else "For you"), bleed = 20.dp, topBleed = 20.dp, top = header) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            HomeAction(interfaceText(featured.playLabel), false) {
+                                if (featured.kind == "show") open(featured) else play(featured)
+                            }
+                            OutlinedButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
+                        }
+                    }
+                } }
                 if (nowPlaying != null) item {
                     HomeAction("Now playing · ${nowPlaying.title}", tv) { play(nowPlaying) }
                 }
@@ -56,7 +70,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                     HomeShelf(if (listening) "Continue listening" else "Continue watching", state.tvWatchingRail,
                         catalog, tv, landscape = true, open = play)
                 }
-                if (!tv) state.featured?.let { featured -> item {
+                if (!tv && !spotlight) state.featured?.let { featured -> item {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(interfaceText(if (featured.progress.seconds > 0) if (listening) "Listening" else "Watching" else "For you"),
                             style = MaterialTheme.typography.titleLarge, color = KinoColor.text)

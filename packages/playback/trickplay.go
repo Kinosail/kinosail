@@ -131,7 +131,7 @@ func GenerateTrickplay(ctx context.Context, cache, ffmpeg, source, target string
 }
 
 func GenerateEpisodeStill(ctx context.Context, cache, ffmpeg, source, target string, second int) error {
-	return generateFrame(ctx, cache, ffmpeg, source, target, second, 960)
+	return generateFrame(ctx, cache, ffmpeg, source, target, second, 1920)
 }
 
 func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, second, width int) error {
@@ -152,7 +152,7 @@ func generateFrame(ctx context.Context, cache, ffmpeg, source, target string, se
 	}
 	ctx, cancel := context.WithTimeout(ctx, trickplayTimeout)
 	defer cancel()
-	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale="+strconv.Itoa(width)+":-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
+	err = exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-ss", strconv.Itoa(second), "-i", source, "-frames:v", "1", "-vf", "scale='min("+strconv.Itoa(width)+",iw)':-2", "-q:v", "4", temporary).Run() //nolint:gosec // Executable is installation config and source is scanned content.
 	if err == nil {
 		err = nonEmptyFrame(temporary)
 	}

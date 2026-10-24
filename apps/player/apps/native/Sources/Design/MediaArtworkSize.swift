@@ -5,7 +5,7 @@ enum MediaArtworkSize {
         if accessibility { return 1600 }
         #if os(tvOS)
         if landscape { return 800 }
-        return displayScale > 1 ? 500 : 400
+        return displayScale > 1 ? 800 : 500
         #else
         return landscape ? 1600 : 800
         #endif
