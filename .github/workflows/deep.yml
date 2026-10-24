@@ -220,7 +220,7 @@ jobs:
             REVISION=${{ github.sha }}
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          version: v0.75.0
+          version: v0.76.1
           image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
           cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}-${{ matrix.runner }}
           severity: CRITICAL,HIGH
@@ -598,7 +598,7 @@ jobs:
           retention-days: 3
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          version: v0.75.0
+          version: v0.76.1
           scan-type: fs
           scanners: vuln,misconfig
           severity: HIGH,CRITICAL
@@ -717,5 +717,5 @@ jobs:
           cache: pnpm
           cache-dependency-path: scripts/quality/pnpm-lock.yaml
       - run: go -C apps/subtitles mod download
-      - run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
+      - run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
       - run: ./scripts/quality/check-static.sh

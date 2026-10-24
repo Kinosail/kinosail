@@ -80,16 +80,16 @@ jobs:
             env:
               KINOSAIL_LINT_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before || 'HEAD~1' }}
             run: |
-              curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/golangci-lint.tar.gz" https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-linux-amd64.tar.gz
-              printf '%s  %s\n' ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab "$RUNNER_TEMP/golangci-lint.tar.gz" | sha256sum --check
-              tar -xzf "$RUNNER_TEMP/golangci-lint.tar.gz" -C "$RUNNER_TEMP" golangci-lint-2.14.0-linux-amd64/golangci-lint
-              PATH="$RUNNER_TEMP/golangci-lint-2.14.0-linux-amd64:$PATH" ./scripts/quality/check-lint.sh
+              curl --fail --location --proto '=https' --max-time 120 --output "$RUNNER_TEMP/golangci-lint.tar.gz" https://github.com/golangci/golangci-lint/releases/download/v2.15.0/golangci-lint-2.15.0-linux-amd64.tar.gz
+              printf '%s  %s\n' 9b7fe6a6bf6334b98decf8d86b11415ea7889afdabdd1959fdce23af2a9ebcea "$RUNNER_TEMP/golangci-lint.tar.gz" | sha256sum --check
+              tar -xzf "$RUNNER_TEMP/golangci-lint.tar.gz" -C "$RUNNER_TEMP" golangci-lint-2.15.0-linux-amd64/golangci-lint
+              PATH="$RUNNER_TEMP/golangci-lint-2.15.0-linux-amd64:$PATH" ./scripts/quality/check-lint.sh
           - name: Check Go vulnerabilities in selected modules
             env:
               MODULES: ${{ needs.plan.outputs.modules }}
             run: |
               for directory in $(jq -r '.[].directory' <<< "$MODULES"); do
-                go -C "$directory" run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+                go -C "$directory" run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
               done
           - run: make max-loc
           - run: make comments-check
@@ -201,7 +201,7 @@ jobs:
                 REVISION=${{ github.sha }}
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          version: v0.75.0
+          version: v0.76.1
           image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
           cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}
           severity: CRITICAL,HIGH
@@ -314,7 +314,7 @@ jobs:
             REVISION=${{ github.sha }}
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          version: v0.75.0
+          version: v0.76.1
           image-ref: localhost/kinosail-${{ matrix.app }}:${{ github.sha }}
           cache-dir: ${{ runner.temp }}/trivy-${{ matrix.app }}-arm64
           severity: CRITICAL,HIGH
@@ -494,7 +494,7 @@ jobs:
       - if: fromJSON(needs.plan.outputs.plan).supply
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          version: v0.75.0
+          version: v0.76.1
           scan-type: fs
           scanners: vuln,misconfig
           severity: HIGH,CRITICAL

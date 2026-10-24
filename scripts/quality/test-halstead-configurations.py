@@ -30,9 +30,9 @@ class HalsteadConfigurationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=self.root) as directory:
             root = Path(directory)
             files = {
-                "go.work": "go 1.27.2\nuse (\n./apps/player\n./packages\n)\n",
-                "apps/player/go.mod": "module example.test/player\ngo 1.27.2\n",
-                "packages/go.mod": "module example.test/packages\ngo 1.27.2\n",
+                "go.work": "go 1.27.3\nuse (\n./apps/player\n./packages\n)\n",
+                "apps/player/go.mod": "module example.test/player\ngo 1.27.3\n",
+                "packages/go.mod": "module example.test/packages\ngo 1.27.3\n",
                 "packages/value/value.go": "package value\nfunc Value() int { return 3 }\n",
                 "apps/player/internal/server/base.go": "package server\n",
                 "apps/player/internal/server/hls_copied_process_other.go":
