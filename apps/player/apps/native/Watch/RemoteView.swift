@@ -10,7 +10,7 @@ struct RemoteView: View {
 
     var body: some View {
         TabView(selection: $page) {
-            NavigationStack { remotePage }
+            NavigationStack { remotePage.containerBackground(backdrop, for: .navigation) }
                 .tag(0)
             if heart.timeline != nil {
                 NavigationStack { HeartGraphView(isVisible: page == 1) }
@@ -28,6 +28,11 @@ struct RemoteView: View {
                 try? await Task.sleep(for: .seconds(5))
             }
         }
+    }
+
+    private var backdrop: LinearGradient {
+        let playing = remote.selected.map { $0.active && $0.playing } ?? false
+        return LinearGradient(colors: [electric.opacity(playing ? 0.34 : 0.14), .black], startPoint: .top, endPoint: .bottom)
     }
 
     private var remotePage: some View {
@@ -52,7 +57,7 @@ struct RemoteView: View {
                         .font(.headline)
                 } else if let player = remote.selected, player.active {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(player.title).font(.title3.bold()).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                        Text(player.title).font(.system(.title3, design: .rounded).bold()).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             .fixedSize(horizontal: false, vertical: true)
                         if !player.subtitle.isEmpty { Text(player.subtitle).font(.caption).foregroundStyle(.secondary)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2) }
@@ -76,9 +81,12 @@ struct RemoteView: View {
                         Button {
                             Task { await remote.command(player.playing ? "pause" : "play") }
                         } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill")
+                            .contentTransition(.symbolEffect(.replace))
                             .frame(maxWidth: .infinity) }
                         .buttonStyle(.borderedProminent).tint(electric).foregroundStyle(.black)
                         .frame(minWidth: 44, minHeight: 44)
+                        .handGestureShortcut(.primaryAction)
+                        .sensoryFeedback(.impact(weight: .medium), trigger: player.playing)
                         .accessibilityLabel(player.playing ? "Pause \(player.title)" : "Play \(player.title)")
                         Button {
                             Task { await remote.command(player.audio ? "next" : "forward") }
