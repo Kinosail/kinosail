@@ -1,6 +1,6 @@
 # Connect the Apple clients to other media servers
 
-Status: accepted for implementation, 2026-10-24.
+Status: accepted, 2026-10-24. Jellyfin and Emby are implemented. Plex, the on-device engine and Kinosail Server in the combined library are not implemented yet.
 
 ## Decision
 
@@ -37,7 +37,18 @@ One Add a library screen finds servers without typing:
 - Plex: Sign in with Plex shows a code and QR code for plex.tv/link. All servers on the account appear, local and remote.
 - Jellyfin and Emby: a bounded probe of the local /24 network on port 8096 reads `/System/Info/Public`. That response names the product, so each server shows as Jellyfin or Emby with its own name.
 - Jellyfin signs in with Quick Connect first, then username and password. Emby signs in with username and password.
+- When a server lists its users, setup shows a Who's watching picker. A server with one user goes straight to its password.
 - A typed address is always available.
+- After sign-in, a ready screen shows posters and counts from the new library. It starts the device library and loads the combined library in the background, so Start watching opens a populated Home.
+
+## Sign-in on other devices
+
+A viewer signs in to each server once. Other devices then add it with one tap.
+
+- A signed-in account is stored as a synchronizable Keychain item. iCloud Keychain copies it to the viewer's other Apple devices. Removing a server removes the shared copy. Signing out of one device keeps it, so other devices are not affected.
+- Setup shows these accounts under From your Apple devices. On Jellyfin, the new device starts Quick Connect and approves it with the shared token, so each device gets its own token and appears as its own device on the server. When Quick Connect is off, and on Emby, the device checks the shared token with the server and uses it.
+- The Apple TV and iPad Quick Connect card shows a QR code with the link `kinosail://quickconnect?server=<server ID>&code=<code>`. Scanning it with an iPhone camera opens Kinosail Player, which asks the viewer to approve the code with the matching signed-in Jellyfin account. The TV then signs in without typing.
+- Passwords are never stored or shared. Only server tokens are stored.
 
 UDP discovery (Jellyfin and Emby port 7359, Plex GDM) needs Apple's multicast networking entitlement. It can be added when Apple grants that entitlement. The probe works without it.
 

@@ -111,6 +111,7 @@ final class OtherServersJourneyTests: XCTestCase {
         }
         tourRecord(record, app)
         close.tap()
+        if !app.buttons["Play"].firstMatch.waitForExistence(timeout: 5), close.exists, close.isHittable { close.tap() }
         XCTAssertTrue(app.buttons["Details"].firstMatch.waitForExistence(timeout: 15) || app.buttons["Play"].firstMatch.waitForExistence(timeout: 5), app.debugDescription)
     }
 
