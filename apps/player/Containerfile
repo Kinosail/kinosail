@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.27.3-alpine@sha256:b8c9b82affbbb82a020bbcf998dad2ba9516944ac7e883524642a481a9505e9c AS build
 WORKDIR /src
 COPY packages/go.mod ./packages/go.mod
 COPY apps/player/go.mod apps/player/go.sum ./apps/player/
@@ -11,7 +11,7 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN --mount=type=cache,target=/root/.cache/go-build cd apps/player && GOCACHE=/root/.cache/go-build CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOAMD64=v1 GOARM64=v8.0 go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" -o /kinosail ./cmd/kinosail
 
-FROM docker.io/library/debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+FROM docker.io/library/debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
 ARG JELLYFIN_FFMPEG_VERSION=8.1.3-1
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -28,6 +28,7 @@ RUN apt-get update \
     && echo "$checksum  /tmp/jellyfin-ffmpeg.deb" | sha256sum -c - \
     && apt-get install -y --no-install-recommends /tmp/jellyfin-ffmpeg.deb \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' librsvg2-2)" ge '2.60.0+dfsg-1+deb13u1' \
+    && if brotli_version="$(dpkg-query -W -f='${Version}' libbrotli1 2>/dev/null)"; then dpkg --compare-versions "$brotli_version" ge '1.1.0-2+deb13u1'; fi \
     && if curl_version="$(dpkg-query -W -f='${Version}' libcurl4t64 2>/dev/null)"; then dpkg --compare-versions "$curl_version" ge '8.14.1-2+deb13u7'; fi \
     && if expat_version="$(dpkg-query -W -f='${Version}' libexpat1 2>/dev/null)"; then dpkg --compare-versions "$expat_version" ge '2.9.0-1~deb13u1'; fi \
     && apt-get purge -y --auto-remove wget \
