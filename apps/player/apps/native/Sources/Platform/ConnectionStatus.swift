@@ -5,6 +5,7 @@ import Observation
 @MainActor @Observable
 final class ConnectionStatus {
     private(set) var networkAvailable: Bool?
+    private(set) var expensive = false
     private(set) var server = ServerReachability.unknown
     private(set) var checking = false
     private var identity: UUID?
@@ -25,15 +26,15 @@ final class ConnectionStatus {
             checkID = UUID()
         }
         let monitor = NWPathMonitor()
-        let (paths, continuation) = AsyncStream<Bool>.makeStream(bufferingPolicy: .bufferingNewest(1))
-        monitor.pathUpdateHandler = { continuation.yield($0.status != .unsatisfied) }
+        let (paths, continuation) = AsyncStream<(Bool, Bool)>.makeStream(bufferingPolicy: .bufferingNewest(1))
+        monitor.pathUpdateHandler = { continuation.yield(($0.status != .unsatisfied, $0.isExpensive)) }
         monitor.start(queue: DispatchQueue(label: "com.kinosail.connection"))
         defer { monitor.cancel(); continuation.finish() }
         await withTaskGroup(of: Void.self) { group in
             group.addTask { [weak self] in
-                for await available in paths {
+                for await (available, expensive) in paths {
                     guard !Task.isCancelled else { return }
-                    await self?.updateNetwork(available, client: client, attempt: attempt)
+                    await self?.updateNetwork(available, expensive: expensive, client: client, attempt: attempt)
                 }
             }
             group.addTask { [weak self] in
@@ -55,8 +56,9 @@ final class ConnectionStatus {
         _ = try? await client.viewer()
     }
 
-    private func updateNetwork(_ available: Bool, client: ServerClient, attempt: UUID) {
+    private func updateNetwork(_ available: Bool, expensive: Bool, client: ServerClient, attempt: UUID) {
         guard identity == client.identity, observation == attempt else { return }
+        self.expensive = expensive
         if networkAvailable == false && available { server = .unreachable }
         networkAvailable = available
     }

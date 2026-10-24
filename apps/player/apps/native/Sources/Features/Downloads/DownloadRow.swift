@@ -90,8 +90,14 @@ struct DownloadRow: View {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 Text(preparingDetail(now: context.date)).font(.caption).foregroundStyle(.secondary).monospacedDigit()
             }
+        } else if let retryAt = download.retryAt {
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                Text(retryDetail(retryAt, now: context.date)).font(.caption).foregroundStyle(.secondary).monospacedDigit()
+            }
         } else if download.totalBytes > 0 && download.state == .downloading {
             Text(transferDetail).font(.caption).foregroundStyle(.secondary).monospacedDigit()
+        } else if download.totalBytes > 0 && download.inProgress {
+            Text("\(download.statusTitle) · \(bytes(download.receivedBytes)) of \(bytes(download.totalBytes))").font(.caption).foregroundStyle(.secondary).monospacedDigit()
         } else {
             Text("\(download.statusTitle) · \(download.quality.title)").font(.caption).foregroundStyle(.secondary)
         }
@@ -115,6 +121,11 @@ struct DownloadRow: View {
             parts.append("\(remaining(Double(download.totalBytes - download.receivedBytes) / rate)) left")
         }
         return parts.joined(separator: " · ")
+    }
+    private func retryDetail(_ date: Date, now: Date) -> String {
+        let seconds = Int(date.timeIntervalSince(now).rounded(.up))
+        let progress = download.totalBytes > 0 ? "\(bytes(download.receivedBytes)) of \(bytes(download.totalBytes)) · " : ""
+        return seconds > 0 ? "\(progress)Trying again in \(seconds) s" : "\(progress)Trying again now"
     }
     private func remaining(_ seconds: Double) -> String {
         let minutes = Int((seconds / 60).rounded(.up))

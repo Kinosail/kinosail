@@ -12,7 +12,9 @@ tracks by default, with explicit selection available for a single video.
   Replacing a source creates a new job; existing prepared files remain available
   until explicitly removed. Equal-size replacements with restored timestamps are
   not detectable by the source fingerprint; sealed bytes remain independently hashed.
-- iOS background URLSession downloads at most two 64 MiB extents. Android uses
+- iOS background URLSession keeps up to 12 extents of 32 MiB queued, so
+  about 384 MiB continues while the app is suspended. The session still opens
+  at most two connections to the Server. Android uses
   user-initiated jobs on API 34+ and a foreground WorkManager fallback. Android
   transfers one extent at a time and reuses OkHttp connections.
 - Each verified block is flushed before the durable journal records it. Resume
@@ -28,6 +30,28 @@ tracks by default, with explicit selection available for a single video.
   quality. Android codec/subtitle support still depends on its playback engine.
 - Check trip readiness schedules local hash and decoder checks without a server
   request. Legacy native downloads require an explicit resume to enter verification.
+
+## Recovery and feedback on iOS
+
+- A network loss, a stopped Server, or a busy Server never pauses a download.
+  Kinosail retries with backoff of at most about 40 seconds in the foreground
+  and at least 5 minutes in the background. Only sign-in, storage, and
+  integrity failures need the person to act.
+- The background transfer service can resume a dropped request part way. The
+  app accepts a resumed response when its final range covers the requested
+  extent. Every 8 MiB block is still checked against the manifest hash.
+- When the network returns, the Server answers again, or the app opens,
+  downloads that wait for a retry start at once.
+- Each row and the Downloads summary say why a download waits: no network,
+  Wi-Fi only on a cellular connection, a Server that does not answer, a retry
+  countdown, or a slow connection. The summary offers "Use cellular data for
+  downloads" when Wi-Fi only blocks a download.
+- When the app is not in front, a local notification says that a title is
+  ready to watch offline or that a download needs attention. Tapping it opens
+  Downloads. Kinosail asks for notification permission after the first download
+  is added.
+- Retry, stop, and completion events log at `warning`, `error`, and `info`
+  under the `downloads` category. They contain no titles, URLs, or tokens.
 
 ## Verification boundary
 

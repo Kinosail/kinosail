@@ -224,6 +224,8 @@ struct OfflineDownload: Identifiable, Sendable {
     var preparingSince: Date? = nil
     var preparingPercent: Int? = nil
     var bytesPerSecond: Double? = nil
+    var retryAt: Date? = nil
+    var stalled = false
 }
 
 struct ReaderBook: Identifiable, Sendable {

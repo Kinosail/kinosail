@@ -4,8 +4,10 @@ import Observation
 
 @MainActor @Observable
 final class OfflineDownloadManager {
-    private(set) var downloads: [OfflineDownload] = []
-    private(set) var message: String?
+    var downloads: [OfflineDownload] = []
+    var message: String?
+    var network = DownloadNetwork()
+    @ObservationIgnored var probed = Date.distantPast
     private(set) var busy = false
     private(set) var restoring = false
     private(set) var preferences = MediaPreferences()
@@ -52,7 +54,7 @@ final class OfflineDownloadManager {
                 try check(attempt)
                 try await engine.enqueuePreparation(scope: access.scope, key: record.key,
                                                     uri: server.mediaURL("/api/v1/downloads/\(record.jobID)/file").absoluteString,
-                                                    kind: record.item.kind == .music ? "audio" : record.item.kind.rawValue, wifiOnly: preferences.wifiOnly, quota: quota)
+                                                    kind: record.item.kind == .music ? "audio" : record.item.kind.rawValue, title: record.item.title, wifiOnly: preferences.wifiOnly, quota: quota)
             }
             try check(attempt)
             await refresh()
@@ -114,7 +116,7 @@ final class OfflineDownloadManager {
         if snapshots.contains(where: { $0.key == id }) { try await engine.resume(scope, key: id, wifiOnly: preferences.wifiOnly, quota: quota) }
         else {
             try await engine.enqueuePreparation(scope: scope, key: id, uri: client.server.mediaURL("/api/v1/downloads/\(record.jobID)/file").absoluteString,
-                                                kind: record.item.kind == .music ? "audio" : record.item.kind.rawValue, wifiOnly: preferences.wifiOnly, quota: quota)
+                                                kind: record.item.kind == .music ? "audio" : record.item.kind.rawValue, title: record.item.title, wifiOnly: preferences.wifiOnly, quota: quota)
         }
         try check(attempt)
         if let index = catalog.records.firstIndex(where: { $0.key == id }) { catalog.records[index].error = ""; try await storage?.save(catalog) }
@@ -265,31 +267,6 @@ final class OfflineDownloadManager {
             await processCompleted()
             do { try await Task.sleep(for: .seconds(2)) } catch { return }
         }
-    }
-
-    func refresh() async {
-        guard let scope else { return }
-        let attempt = generation
-        do {
-            let snapshots = try await engine.snapshot(scope)
-            let percents = await preparationPercents(snapshots)
-            let now = Date(); for snapshot in snapshots { rates.update(snapshot.key, bytes: snapshot.bytes, now: now) }
-            try check(attempt)
-            downloads = catalog.records.map { record in
-                let snapshot = snapshots.first { $0.key == record.key }
-                let state: OfflineDownload.State
-                if record.deleting { state = .failed }
-                else if snapshot?.status == "complete" { state = .ready }
-                else if playback, ["preparing", "queued", "waiting", "downloading"].contains(snapshot?.status ?? "queued") { state = .waiting }
-                else { state = OfflineDownload.State(rawValue: snapshot?.status ?? (record.error.isEmpty ? "queued" : "failed")) ?? .failed }
-                let explanation = record.deleting ? "Removal interrupted. Remove this download again." : playback && state == .waiting ? "Downloads resume after playback." : snapshot?.message ?? record.error
-                return OfflineDownload(id: record.key, item: record.item, quality: record.quality, state: state, receivedBytes: snapshot?.bytes ?? 0,
-                                       totalBytes: snapshot?.total ?? 0, message: explanation.isEmpty ? nil : explanation, preparingSince: snapshot?.preparingSince,
-                                       preparingPercent: state == .preparing ? percents[record.key] : nil,
-                                       bytesPerSecond: state == .downloading ? rates.rate(record.key) : nil)
-            }
-            message = nil
-        } catch is CancellationError {} catch { if generation == attempt { message = AppSession.message(error) } }
     }
 
 }

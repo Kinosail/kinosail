@@ -74,6 +74,11 @@ struct PlayerTabs: View {
             #else
             tabs
                 .safeAreaInset(edge: .top, spacing: 0) { connectionBanner }
+                .onChange(of: DownloadNotifications.shared.openRequested, initial: true) { _, requested in
+                    guard requested else { return }
+                    DownloadNotifications.shared.openRequested = false
+                    showDownloads()
+                }
             #endif
         }
         .onAppear { if !pinned.contains(selection) && selection != .more { selection = pinned[0] } }
@@ -92,14 +97,19 @@ struct PlayerTabs: View {
             #if os(tvOS)
             selectBrowseTab(.downloads)
             #else
-            let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
-            var path = NavigationPath()
-            if tab == .more { path.append(PlayerTab.downloads) }
-            paths[tab] = path
-            selection = tab
+            showDownloads()
             #endif
         }
     }
+    #if os(iOS)
+    private func showDownloads() {
+        let tab: PlayerTab = pinned.contains(.downloads) ? .downloads : .more
+        var path = NavigationPath()
+        if tab == .more { path.append(PlayerTab.downloads) }
+        paths[tab] = path
+        selection = tab
+    }
+    #endif
     private var tabs: some View {
         TabView(selection: $selection) {
             ForEach(pinned) { tab in

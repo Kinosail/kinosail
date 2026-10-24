@@ -25,6 +25,7 @@
     func file(_ scope: String, key: String) async throws -> URL { try await engine.file(scope, key: key) }
     func check(_ scope: String, key: String) async throws { try await engine.check(scope, key: key) }
     func setPlayback(_ active: Bool) { engine.setPlayback(active) }
+    func setForeground(_ active: Bool) { engine.queue.async { self.engine.foreground = active } }
     func backgroundCompletion(_ completion: @escaping @MainActor @Sendable () -> Void) { engine.backgroundCompletion(completion) }
     func authorize(_ access: DownloadAuthorization, wifiOnly: Bool? = nil, quota: Int64 = 0, ifCurrent revision: UUID? = nil) async throws {
       try await engine.authorize(access, wifiOnly: wifiOnly, quota: quota, ifCurrent: revision)
@@ -32,9 +33,10 @@
     func updatePolicy(scope: String, wifiOnly: Bool, quota: Int64) async throws {
       try await engine.updatePolicy(scope: scope, wifiOnly: wifiOnly, quota: quota)
     }
-    func enqueuePreparation(scope: String, key: String, uri: String, kind: String, wifiOnly: Bool, quota: Int64) async throws {
-      try await engine.enqueuePreparation(scope: scope, key: key, uri: uri, kind: kind, wifiOnly: wifiOnly, quota: quota)
+    func enqueuePreparation(scope: String, key: String, uri: String, kind: String, title: String = "", wifiOnly: Bool, quota: Int64) async throws {
+      try await engine.enqueuePreparation(scope: scope, key: key, uri: uri, kind: kind, title: title, wifiOnly: wifiOnly, quota: quota)
     }
+    func retryNow(_ scope: String) async throws { try await engine.retryNow(scope) }
   }
 
   final class VerifiedDownloadEngine: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
@@ -50,6 +52,8 @@
     var storageError = false
     var playback = false
     var checking = Set<String>()
+    var announce = Set<String>()
+    var foreground = true
     let verificationQueue = DispatchQueue(label: "com.kinosail.player.offline.verify", qos: .utility)
     var verifications: [String: DownloadVerification] = [:]
     var verifiedFiles: [String: DownloadFileStamp] = [:]

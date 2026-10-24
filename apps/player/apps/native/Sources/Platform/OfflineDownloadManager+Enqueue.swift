@@ -46,12 +46,13 @@ extension OfflineDownloadManager {
         try await saveEnqueuedCatalog(next, storage: storage, attempt: attempt)
         do {
             try await engine.enqueuePreparation(scope: scope, key: record.key, uri: client.server.mediaURL("/api/v1/downloads/\(prepared.id)/file").absoluteString,
-                                                kind: item.kind == .music ? "audio" : item.kind.rawValue, wifiOnly: preferences.wifiOnly, quota: quota)
+                                                kind: item.kind == .music ? "audio" : item.kind.rawValue, title: item.title, wifiOnly: preferences.wifiOnly, quota: quota)
         } catch {
             try check(attempt)
             if let index = catalog.records.firstIndex(where: { $0.key == record.key }) { catalog.records[index].error = AppSession.message(error); try await storage.save(catalog) }
             throw error
         }
+        Task { await DownloadNotifications.shared.requestAuthorization() }
         await refresh()
     }
 

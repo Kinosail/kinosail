@@ -1,5 +1,55 @@
 # Swift Apple verification
 
+## Downloads — 2026-10-24
+
+iOS download recovery and feedback: connection drops, Server outages, background transfer, retry countdowns, queue summary and local notifications. Everything below ran on a Mac with Xcode 27.1 (27A9275).
+
+**Revision.** Baseline: `b9325249` (main before this change). New: the task commit on `mikeo/downloads`. The app and test sources in the final runs match that commit. Only documentation changed after them.
+
+**Test data.** `scripts/download-fixture/up.sh` starts the local test Server on `https://127.0.0.1:38127`, generates `Long Haul (2024).mp4` (150 s, 8 Mbps H.264, 152,959,460 bytes, SHA-256 `a152043f2c7f90d7ef9f3a257d65ae422242b8abac70fe340e4bbeaed07ccd48`), scans it and starts `fault_proxy.py`. The proxy serves plain HTTP on `127.0.0.1:38300` and forwards to the Server over TLS. Its control port `127.0.0.1:38301` accepts `/mode/pass`, `/mode/drop` (closes live connections and refuses new ones) and `/rate/<bytes per second>` (one shared limit). `scripts/download-fixture/down.sh` stops both.
+
+The fault proxy is an isolated test piece. It protects against a concrete failure that no other E2E test reaches: a download that stops, or never resumes, when the Server disappears mid-transfer. The simulator cannot cut its own network.
+
+**Command.** After `xcrun simctl uninstall <device> com.kinosail.player`, with `TEST_RUNNER_KINOSAIL_DOWNLOAD_SERVER=http://127.0.0.1:38300`, `TEST_RUNNER_KINOSAIL_DOWNLOAD_CONTROL=http://127.0.0.1:38301` and `TEST_RUNNER_KINOSAIL_DOWNLOAD_TOKEN` set to the owner token from `up.sh`:
+
+```bash
+xcodebuild -project Kinosail.xcodeproj -scheme Kinosail-iOS-Touch -destination 'platform=iOS Simulator,id=<device>' -parallel-testing-enabled NO -only-testing:Kinosail-iOSTouchUITests/DownloadJourneyTests test
+```
+
+`DownloadJourneyTests` limits the proxy to 2 MB/s, adds Long Haul (Original) to Downloads, drops the Server for 75 s, restores it, backgrounds the app for 30 s, backgrounds it again until the download finishes, and opens the ready download.
+
+| Step | Baseline `b9325249`, iPhone | New, iPhone 18 Pro | New, iPad |
+| --- | --- | --- | --- |
+| Server dropped | Row kept showing "21 h 3 min left" | "Can’t reach your Server. Kinosail will try again automatically." with a countdown | Same |
+| 75 s later | No change | Still waiting, no Resume button, no "interrupted" | Same |
+| Server back | Transfer did not resume (proxy bytes unchanged) | Resumed by itself in seconds | Same |
+| 30 s in background | 12.6 MB moved | More than 30 MB moved (the 2 MB/s limit) | Same |
+| Finished in background | Never finished | "Ready to watch offline · Long Haul" notification | Same |
+| Result | Failed (444 s) | Passed (238 s) | Passed (236 s) |
+
+The iPad run first failed at sign-in because the simulator keychain held an old Plex account. `xcrun simctl keychain <device> reset` fixed it; the rerun above passed.
+
+**Unit tests.** `xcodebuild -scheme Kinosail-iOS test`: 353 tests in 77 suites passed. `ResilienceTests.pausedExtentsLeaveRoomForAnotherPreparation` now expects 4 extent requests for 16 blocks, because extents are 4 blocks long.
+
+**Logs.** The device log showed `operation=download-transfer outcome=complete bytes=152959460` and `usernotificationsd` accepted the request. Retries log `warning` with failure class, status code and attempt only. The download log has no title, URL or token.
+
+**Checksums (SHA-256).**
+
+| File | SHA-256 |
+| --- | --- |
+| `dl-final-iphone.log` | `e08ce28b33ea359956264073b20c627597fcbf5dff30e6434be7152b3187964e` |
+| `dl-final-ipad3.log` | `1cca9536715759671d7270b82d446c851c72c212c8602ca55274dba3dd05dfb3` |
+| `dl-baseline3.log` | `f8e5768061335a2e00e4a5cfd5bb4878ee7f64526e5869c24aac88680a85f286` |
+| `unit2.log` | `75fc7c69edaec8c57417046cb2bc59dff3be918647131e4d9783bebe66624771` |
+| iPhone `d3 server unreachable.png` | `fe0790df596f7d31005c2ac85f0f68744aa9c08da27e21ccd8ee827f9e7b0810` |
+| iPhone `d5 resumed automatically.png` | `6a86a94e4ad51885a8293181ecd46125f0dbb2e3863a150a06cbbe763df175b1` |
+| iPhone `d7 ready notification.png` | `1da1e712b0b122f7e3c24aa36fedf69895bd600f6ea05c000cbbf86f20debec2` |
+| iPhone `d8 ready.png` | `909aabd5cddd57b02d00de79429ea8b03020237f0e2df6ff3c693091c5a44fdf` |
+| iPad `d3 server unreachable.png` | `c6f07e75964d74d5be2f13069cd19f12751fcf07bb9eec681afaabad7240ffc8` |
+| iPad `d7 ready notification.png` | `20e55354ea6137b8ae2dc76271208cfe5a0e7a1b5d8680841ae4a69fc9612b09` |
+
+**Not verified.** Physical iPhone or iPad. Real offline and Wi-Fi only on cellular (the simulator cannot report them; the copy and the cellular button were not seen). Tapping the notification. App termination and relaunch mid-download. Low storage. Downloads from Jellyfin, Emby or Plex, which these servers do not offer yet. Android is unchanged.
+
 ## Plex servers — 2026-10-24
 
 ADR 0010 second delivery: Plex sign-in, Plex servers in the combined library, playback, subtitles and progress. Everything below ran on a Mac with Xcode 27.1 (27A9275).

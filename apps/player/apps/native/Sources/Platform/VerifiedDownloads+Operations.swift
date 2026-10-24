@@ -11,11 +11,11 @@
     func snapshot(_ scope: String) async throws -> [VerifiedDownloadSnapshot] {
       try await ready(scope: scope) {
         let preparing = self.plans.values.filter { $0.scope == scope }.map {
-          VerifiedDownloadSnapshot(key: $0.key, bytes: 0, total: 0, status: $0.status, message: $0.error, manifest: nil, preparingSince: $0.startedAt)
+          VerifiedDownloadSnapshot(key: $0.key, bytes: 0, total: 0, status: $0.status, message: $0.error, manifest: nil, preparingSince: $0.startedAt, retryAt: $0.retryAt)
         }
         return preparing + self.jobs.values.filter { $0.scope == scope }.map { job in
           let pending = self.tasks.filter { $0.value.id == job.id }.reduce(Int64(0)) { $0 + (self.progress[$1.key] ?? 0) }
-          return VerifiedDownloadSnapshot(key: job.key, bytes: min(job.manifest.size, job.bytes + pending), total: job.manifest.size, status: job.status, message: job.error, manifest: job.manifest)
+          return VerifiedDownloadSnapshot(key: job.key, bytes: min(job.manifest.size, job.bytes + pending), total: job.manifest.size, status: job.status, message: job.error, manifest: job.manifest, retryAt: job.retryAt)
         }
       }
     }
@@ -70,7 +70,7 @@
         let id = scope + "/" + key
         guard quota == 0 || (1_073_741_824...9_007_199_254_740_991).contains(quota) else { throw ClientError.invalidInput("The download storage limit is invalid.") }
         if let old = self.plans[id] {
-          let plan = DownloadPreparation(scope: old.scope, key: old.key, uri: old.uri, kind: old.kind, wifiOnly: wifiOnly, quota: quota, status: "preparing", error: "")
+          let plan = DownloadPreparation(scope: old.scope, key: old.key, uri: old.uri, kind: old.kind, wifiOnly: wifiOnly, quota: quota, status: "preparing", error: "", title: old.title)
           try self.savePlan(plan)
         } else if var job = self.jobs[id], self.tasks.values.contains(where: { $0.id == id }), job.wifiOnly == wifiOnly {
           let used = self.jobs.values.filter { $0.scope == scope }.reduce(Int64(0)) { $0 + $1.manifest.size }
@@ -79,7 +79,8 @@
           try self.persist(job)
         } else if let job = self.jobs[id] {
           let input: [String: Any] = try ["scope": job.scope, "key": job.key, "uri": job.uri, "kind": job.kind, "wifiOnly": wifiOnly,
-            "quota": quota, "authorization": self.credential(scope, uri: job.uri), "manifest": JSONSerialization.jsonObject(with: JSONEncoder().encode(job.manifest))]
+            "quota": quota, "authorization": self.credential(scope, uri: job.uri), "manifest": JSONSerialization.jsonObject(with: JSONEncoder().encode(job.manifest)),
+            "title": job.title ?? ""]
           try self.start(String(decoding: JSONSerialization.data(withJSONObject: input), as: UTF8.self))
         } else { throw ClientError.invalidInput("This download is no longer available.") }
         self.pump()
@@ -160,15 +161,19 @@
       plans[plan.id] = plan
     }
 
-    func enqueuePreparation(scope: String, key: String, uri: String, kind: String, wifiOnly: Bool, quota: Int64) async throws {
+    func enqueuePreparation(scope: String, key: String, uri: String, kind: String, title: String = "", wifiOnly: Bool, quota: Int64) async throws {
       try await ready(scope: scope) {
-        var plan = DownloadPreparation(scope: scope, key: key, uri: uri, kind: kind, wifiOnly: wifiOnly, quota: quota, status: "preparing", error: "")
+        var plan = DownloadPreparation(scope: scope, key: key, uri: uri, kind: kind, wifiOnly: wifiOnly, quota: quota, status: "preparing", error: "",
+                                       title: String(title.prefix(200)).filter { !$0.isNewline })
         plan.startedAt = Date()
         try plan.validate()
         _ = try self.credential(scope, uri: uri)
         if let old = self.plans[plan.id], old.uri != plan.uri { throw self.failure() }
         guard self.jobs.count + self.plans.count < 1000 || self.plans[plan.id] != nil || self.jobs[plan.id] != nil else { throw self.failure() }
-        if self.jobs[plan.id] != nil { return }
+        if var job = self.jobs[plan.id] {
+          if job.title == nil, let title = plan.title, !title.isEmpty { job.title = title; try self.persist(job) }
+          return
+        }
         self.cancelPlan(plan.id); try self.savePlan(plan); self.pump()
       }
     }

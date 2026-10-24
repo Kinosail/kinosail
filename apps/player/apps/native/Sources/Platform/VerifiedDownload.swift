@@ -12,10 +12,10 @@
       required = ["version", "id", "size", "sha256", "chunkSize", "chunks"]
     } else if type == DownloadPreparation.self {
       required = ["scope", "key", "uri", "kind", "wifiOnly", "quota", "status", "error"]
-      optional = ["retryAt", "retries", "startedAt"]
+      optional = ["retryAt", "retries", "startedAt", "title"]
     } else {
       required = ["scope", "key", "uri", "manifest", "kind", "wifiOnly", "verified", "status", "error", "retries"]
-      optional = ["retryAt"]
+      optional = ["retryAt", "title"]
       guard let manifest = fields["manifest"] as? [String: Any] else { throw VerifiedDownload.failure("Invalid download manifest.") }
       let _: OfflineManifest = try decodeOffline(OfflineManifest.self, from: JSONSerialization.data(withJSONObject: manifest))
     }
@@ -36,6 +36,7 @@
     var error = ""
     var retryAt: Date?
     var retries = 0
+    var title: String?
     var id: String {
       scope + "/" + key
     }
@@ -60,8 +61,14 @@
             url.path == "/api/v1/downloads/\(manifest.id)/file",
             ["video", "audio", "audiobook"].contains(kind), verified.count == manifest.chunks.count,
             ["queued", "waiting", "paused", "downloading", "verifying", "complete"].contains(status),
-            error.utf8.count <= 256, (0 ... 5).contains(retries), status != "complete" || verified.allSatisfy({ $0 })
+            error.utf8.count <= 256, (0 ... 5).contains(retries), status != "complete" || verified.allSatisfy({ $0 }),
+            Self.validTitle(title)
       else { throw Self.failure("The saved download is invalid.") }
+    }
+
+    static func validTitle(_ title: String?) -> Bool {
+      guard let title else { return true }
+      return title.count <= 200 && title.rangeOfCharacter(from: .controlCharacters) == nil
     }
 
     static func hash(_ bytes: Data) -> String {
@@ -81,6 +88,7 @@
     var retryAt: Date?
     var retries: Int?
     var startedAt: Date?
+    var title: String?
     var id: String {
       scope + "/" + key
     }
@@ -94,7 +102,7 @@
             let url = URL(string: uri), let host = url.host, url.user == nil, url.password == nil, url.query == nil, url.fragment == nil,
             (url.scheme == "https" || url.scheme == "http"), !host.isEmpty,
             url.path.range(of: "^/api/v1/downloads/[a-f0-9]{16}/file$", options: .regularExpression) != nil,
-            ["video", "audio", "audiobook"].contains(kind), ["preparing", "paused"].contains(status), error.utf8.count <= 256,
+            ["video", "audio", "audiobook"].contains(kind), ["preparing", "paused"].contains(status), error.utf8.count <= 256, VerifiedDownload.validTitle(title),
             quota == 0 || (1_073_741_824 ... 9_007_199_254_740_991).contains(quota) else { throw VerifiedDownload.failure("Download preparation is invalid.") }
     }
   }
