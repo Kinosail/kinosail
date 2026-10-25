@@ -217,7 +217,7 @@ private struct DetailContent: View {
     }
 
     private var playAction: some View {
-        NavigationLink(value: item.playingDestination) {
+        MediaDestinationLink(destination: item.playingDestination, item: item) {
             Label(item.kind == .photo ? "View photo" : item.playLabel, systemImage: item.kind == .book ? "book.fill" : item.kind == .photo ? "photo" : "play.fill")
                 #if os(tvOS)
                 .frame(minWidth: 240, minHeight: detailActionHeight)

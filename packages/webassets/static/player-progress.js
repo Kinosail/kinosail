@@ -16,7 +16,7 @@ const progressItem = () => {
 const progressProfile = () => document.body.dataset.viewerProfile || "";
 const progressChanged = () => Boolean(progressItem()) && progressPlayedItem === progressItem();
 const ownsProgress = (value) => value && value.profile === progressProfile() && value.item === progressItem() &&
-  value.revision === progressRevision && player.dataset.castActive !== "true" && player.dataset.offline !== "true";
+  value.revision === progressRevision && player.dataset.castActive !== "true";
 const clearProgress = (continueNavigation = false) => {
   if (!continueNavigation) cancelProgressNavigation();
   pendingProgress = undefined; progressFailure = ""; progressContinuation = undefined;
@@ -111,9 +111,9 @@ const save = (watched = false, closing = false) => {
   if (watchedDeparture || (watchedSubmission?.eventPhase === Event.NONE && !watchedSubmission.defaultPrevented)) return Promise.resolve({ok: true});
   if (playbackPreparation || queueSourceChanging || !queueProgressReady) return Promise.resolve();
   if (!watched && !progressChanged()) return Promise.resolve({ok: true});
-  if (player.dataset.castActive === "true" || player.dataset.offline === "true") {
+  if (player.dataset.castActive === "true") {
     clearProgress();
-    return player.dataset.offline === "true" ? window.KinosailOfflineMedia?.saveProgress(player, watched) : Promise.resolve();
+    return Promise.resolve();
   }
   if (pendingProgress && !ownsProgress(pendingProgress)) clearProgress();
   if (pendingProgress && progressFailure && !retryableProgress() && !watched) return Promise.resolve({ok: false});
@@ -130,7 +130,6 @@ player.addEventListener("play", () => { if (pendingProgress?.watched) clearProgr
 for (const event of ["playing", "kinosail:seek-intent"]) player.addEventListener(event, () => { if (!playbackPreparation && !queueSourceChanging && queueProgressReady && (event !== "playing" || !player.paused)) progressPlayedItem = progressItem(); });
 player.addEventListener("seeking", () => { if (!managedSeek && !playbackPreparation && !queueSourceChanging && queueProgressReady) progressPlayedItem = progressItem(); });
 const resumeFromSavedProgress = () => {
-  if (player.dataset.offline === "true") return;
   const start = Number(player.dataset.start);
   if (start > 0 && start < player.duration) {
     if (Math.abs(player.currentTime - start) >= 0.1) setPlayerTime(start);
@@ -162,10 +161,6 @@ player.addEventListener("ended", async () => {
     if (player.dataset.queue && await advanceQueue()) return;
     if (player.dataset.next) location.assign(player.dataset.next);
   };
-  if (player.dataset.offline === "true") {
-    if ((await save(true))?.ok) await continuePlayback();
-    return;
-  }
   progressContinuation = audioQueue.length || player.dataset.next ? continuePlayback : undefined;
   await save(true);
 });

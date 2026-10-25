@@ -24,11 +24,15 @@ struct AppShell: View {
             .scrollContentBackground(.hidden)
             #endif
             .background(KinoTheme.background)
-            .fullScreenCover(isPresented: $session.showsVideoPlayer) {
-                if let item = session.player.currentItem {
+            .fullScreenCover(isPresented: $session.showsVideoPlayer, onDismiss: { session.video.finish() }) {
+                if let itemID = session.presentedVideoID {
                     NavigationStack {
-                        PlaybackScreen(itemID: item.id, onClose: { session.showsVideoPlayer = false })
+                        PlaybackScreen(itemID: itemID, onClose: { session.showsVideoPlayer = false })
                     }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityIdentifier("Video player")
+                    .accessibilityAddTraits(.isModal)
+                    .videoZoomDestination(session.video.request)
                 }
             }
             #if os(tvOS)

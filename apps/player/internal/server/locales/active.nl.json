@@ -2050,5 +2050,17 @@
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
     "other": "Kinosail leest je mediamappen. Je bibliotheek verschijnt hier zodra de scan klaar is."
+  },
+  {
+    "id": "Offline",
+    "other": "Offline"
+  },
+  {
+    "id": "You’re offline",
+    "other": "Je bent offline"
+  },
+  {
+    "id": "Reconnect to your Server to keep watching.",
+    "other": "Maak opnieuw verbinding met je Server om verder te kijken."
   }
 ]

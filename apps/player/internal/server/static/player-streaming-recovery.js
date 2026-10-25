@@ -154,7 +154,7 @@ player.addEventListener("kinosail:playback-intent", ({detail}) => {
 player.addEventListener("play", () => { networkWantsPlay = true; if (networkRetryAction) networkRetryAction(); });
 player.addEventListener("pause", () => {
   networkStableSince = 0;
-  if (player.paused && !player.error && !pendingResume && player.dataset.offlineLoading !== "true") { networkWantsPlay = false; cancelNetworkRecovery(false); }
+  if (player.paused && !player.error && !pendingResume) { networkWantsPlay = false; cancelNetworkRecovery(false); }
 });
 player.addEventListener("seeking", () => { networkPosition = player.currentTime; if (pendingResume) pendingResume.seconds = networkPosition; });
 player.addEventListener("timeupdate", () => {
@@ -165,12 +165,12 @@ player.addEventListener("timeupdate", () => {
 });
 addEventListener("pagehide", cancelNetworkRecovery);
 const scheduleNetworkRetry = (retry, manual) => {
-  if (networkRetryTimer !== undefined || destroyed || player.dataset.offline === "true") return;
+  if (networkRetryTimer !== undefined || destroyed) return;
   networkStableSince = 0;
   const generation = adaptiveGeneration;
   const source = player.currentSrc || player.src;
   const action = () => {
-    if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== source) { cancelNetworkRecovery(); return; }
+    if (destroyed || generation !== adaptiveGeneration || (player.currentSrc || player.src) !== source) { cancelNetworkRecovery(); return; }
     cancelNetworkRecovery(); networkWantsPlay = true;
     if (manual) manual(); else { networkRetryCount = 0; retry(); }
   };
@@ -193,7 +193,7 @@ const scheduleNetworkRetry = (retry, manual) => {
   });
   networkRetryTimer = setTimeout(() => {
     networkRetryTimer = undefined;
-    if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== source || !networkWantsPlay) return;
+    if (destroyed || generation !== adaptiveGeneration || (player.currentSrc || player.src) !== source || !networkWantsPlay) return;
     networkRetryAction = undefined;
     retry();
   }, delay);
@@ -216,7 +216,7 @@ const directIsReachable = async () => {
   }
 };
 const recoverDirectFailure = async (code = player.error?.code || 0, verifySource = true, resume = true) => {
-  if (destroyed || player.dataset.offline === "true") return;
+  if (destroyed) return;
   if (adaptiveActive) {
     if (code === MediaError.MEDIA_ERR_ABORTED) return;
     if (code === MediaError.MEDIA_ERR_NETWORK) return scheduleNetworkRetry(() => retryStalledPlayback(networkPosition));
@@ -233,7 +233,7 @@ const recoverDirectFailure = async (code = player.error?.code || 0, verifySource
   if (code !== MediaError.MEDIA_ERR_DECODE && code !== MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) return showFailure("Playback stopped without a confirmed format problem. Try playing the original file again.", "Retry playback", retryDirect);
   if (verifySource) {
     const reachable = await directIsReachable();
-    if (destroyed || generation !== adaptiveGeneration || player.dataset.offline === "true" || (player.currentSrc || player.src) !== failedSource) return;
+    if (destroyed || generation !== adaptiveGeneration || (player.currentSrc || player.src) !== failedSource) return;
     if (!reachable) return retryNetwork();
   }
   useCompatibleFallback(resume);

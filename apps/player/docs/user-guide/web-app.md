@@ -13,7 +13,7 @@ The web Player works in a browser on your computer, tablet, or phone. You can al
 
 Open your Server in the browser you intend to use, then choose **Actions → Install** or **More → Install** on a smaller screen. Follow the browser's install prompt. On Apple devices, use the browser's share menu and **Add to Home Screen** when offered.
 
-Installation availability depends on the browser and whether the app is already installed. If no install prompt is available, bookmark the Server address and keep using the browser. Installation alone does not save media for offline use: [download each title to the device]({{ '/user-guide/offline/' | relative_url }}).
+Installation availability depends on the browser and whether the app is already installed. If no install prompt is available, bookmark the Server address and keep using the browser. The web app does not save media for offline use. To watch offline, [download titles in the iPhone or iPad app]({{ '/user-guide/offline/' | relative_url }}).
 
 ## Navigate with the keyboard
 

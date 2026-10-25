@@ -30,7 +30,7 @@ struct PlayOnTVScreen: View {
                         .allowsHitTesting(isAudio != nil)
                 }
                 Text("Choose a receiver, then play this title here. Screen Mirroring in Control Center also works with compatible TVs.").foregroundStyle(.secondary)
-                NavigationLink("Play on this device", value: isAudio == true ? ScreenDestination.audio(itemID) : .playback(itemID))
+                MediaDestinationLink("Play on this device", value: isAudio == true ? ScreenDestination.audio(itemID) : .playback(itemID))
                     .disabled(isAudio == nil)
             }
             #endif

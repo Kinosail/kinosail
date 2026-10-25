@@ -11,7 +11,7 @@ for (const width of [390, 1440]) {
 		await page.setViewportSize({ width, height: 900 });
 		await page.emulateMedia({ reducedMotion: "reduce" });
 		await login(page);
-		const routes = new Set(["/", ...["all", "movies", "shows", "music", "audiobooks", "books", "photos", "list", "collections", "playlists", "history", "unwatched"].map(view => `/?view=${view}`), "/?q=missing-focus-audit-title", "/settings", "/account", "/quick-connect", "/offline-downloads", "/supporter"]);
+		const routes = new Set(["/", ...["all", "movies", "shows", "music", "audiobooks", "books", "photos", "list", "collections", "playlists", "history", "unwatched"].map(view => `/?view=${view}`), "/?q=missing-focus-audit-title", "/settings", "/account", "/quick-connect", "/supporter"]);
 		const report: object[] = [];
 		const failures: object[] = [];
 		for (const route of routes) {

@@ -25,7 +25,6 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 	Listed                   bool
 	Next                     string
 	AutoSkip                 string
-	CanDownload              bool
 	CanTranscode             bool
 	FileSize                 string
 	DefaultSubtitles         bool
@@ -57,7 +56,6 @@ type PlayerData struct { //nolint:recvcheck // Templates need a value receiver f
 	Audiobook                bool
 	ReplayGainTrack          string
 	ReplayGainAlbum          string
-	OfflineQuality           string
 	PlaybackToken            string
 	PlaybackSession          string
 	Plan                     playback.PlaybackPlan

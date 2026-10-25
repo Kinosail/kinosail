@@ -164,26 +164,6 @@ test("overlapping queue actions authorize and advance only once", {tag: ["@smoke
   expect(writes).toBe(1);
 });
 
-for (const saved of [true, false]) test(`offline queue transition respects its own progress journal: ${saved ? "saved" : "failed"}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
-  await openAudio(page, "");
-  const serverWrites: string[] = [];
-  page.on("request", request => {if (new URL(request.url()).pathname.startsWith("/progress/")) serverWrites.push(request.url());});
-  await startQueue(page);
-  await page.evaluate(saved => {
-    document.querySelector("audio")!.dataset.offline = "true";
-    Object.assign(window, {r08Offline: {saved: 0, detached: 0}, KinosailOfflineMedia: {
-      saveProgress: async () => { (window as Window & {r08Offline: {saved: number}}).r08Offline.saved++; return {ok: saved}; },
-      unbindProgress: () => { (window as Window & {r08Offline: {detached: number}}).r08Offline.detached++; },
-    }});
-  }, saved);
-  await page.getByRole("button", {name: "Next track", exact: true}).click();
-  await expect.poll(() => page.evaluate(() => (window as Window & {r08Offline: {saved: number}}).r08Offline.saved)).toBe(1);
-  if (!saved) await expect(page.locator("[data-audio-queue-status]")).toHaveAttribute("data-queue-failure", "progress");
-  await expect(page.locator("audio")).toHaveAttribute("data-progress", saved ? "/progress/next" : "/progress/track");
-  expect(await page.evaluate(() => (window as Window & {r08Offline: {saved: number; detached: number}}).r08Offline)).toEqual({saved: 1, detached: saved ? 1 : 0});
-  expect(serverWrites).toEqual([]);
-});
-
 test("failed new artwork clears the previous cover without reverting current metadata", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
   await openAudio(page, "");
   await startQueue(page);

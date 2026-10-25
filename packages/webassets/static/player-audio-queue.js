@@ -116,7 +116,6 @@ const scopeCurrentTrackActions = item => {
 };
 const commitAudioQueueItem = (item, cursor) => {
   flushPlaybackTrace(); queueSourceChanging = true; queueProgressReady = false; progressPlayedItem = undefined; queueLoadingIntent = undefined;
-  window.KinosailOfflineMedia?.unbindProgress(player); delete player.dataset.offline;
   Object.assign(player.dataset, {progress: `/progress/${item.id}`, title: item.title, artist: item.artist, album: item.album,
     track: String(item.track), artwork: item.artwork, start: String(item.progress.seconds),
     playbackTrace: `/api/v1/items/${item.id}/playback-events`, queuePosition: String(cursor + 1), queueTotal: String(queueItems.length)});

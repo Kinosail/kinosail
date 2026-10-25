@@ -78,7 +78,7 @@ async function observeExit(page: Page, id: string, key: string) {
     document.addEventListener("visibilitychange", () => record("visibilitychange"), {capture: true});
     video.addEventListener("kinosail:page-exit", () => {
       try {
-        record("player-exit", {castActive: video.dataset.castActive === "true", offline: video.dataset.offline === "true",
+        record("player-exit", {castActive: video.dataset.castActive === "true",
           preparationActive: typeof playbackPreparation !== "undefined" && Boolean(playbackPreparation),
           progressInFlight: typeof progressFlight !== "undefined" && Boolean(progressFlight),
           pendingWatched: typeof pendingProgress !== "undefined" && Boolean(pendingProgress?.watched),

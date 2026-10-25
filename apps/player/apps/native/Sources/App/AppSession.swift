@@ -23,6 +23,7 @@ final class AppSession {
     var contentRevision = UUID()
     var supporterRevision = UUID()
     let player = PlaybackCoordinator()
+    let video = VideoPresenter()
     #if os(tvOS)
     let remotePlayer = RemotePlayerMonitor()
     #endif

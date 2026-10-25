@@ -13,28 +13,11 @@ var (
 	LastLightCSS []byte
 	//go:embed static/artwork-palette.js
 	ArtworkPalette []byte
-	//go:embed static/downloads.js
-	downloadsCore []byte
-	//go:embed static/downloads-integrity.js
-	downloadsIntegrity []byte
-	Downloads          = append(append([]byte(nil), downloadsCore...), downloadsIntegrity...)
-	//go:embed static/downloads-storage.js
-	DownloadsStorage []byte
-
-	//go:embed static/downloads-transfer.js
-	DownloadsTransfer []byte
-	//go:embed static/downloads-progress.js
-	DownloadsProgress []byte
-	//go:embed static/downloads-control.js
-	downloadsControl []byte
-	//go:embed static/downloads-ui.js
-	downloadsUI []byte
-	DownloadsUI = append(append([]byte(nil), downloadsControl...), downloadsUI...)
 	//go:embed static/offline-profile.js
 	offlineProfile []byte
-	//go:embed static/offline-media.js
-	offlineMedia []byte
-	OfflineMedia = append(append([]byte(nil), offlineProfile...), offlineMedia...)
+	//go:embed static/offline-shell.js
+	offlineShell []byte
+	OfflineShell = append(append([]byte(nil), offlineProfile...), offlineShell...)
 
 	//go:embed static/offline-runtime.js
 	OfflineRuntime []byte

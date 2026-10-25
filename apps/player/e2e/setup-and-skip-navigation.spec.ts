@@ -35,7 +35,7 @@ for (const width of [1440, 390]) {
     await page.goto('/?view=shows');
     await page.locator('a.show-details[href^="/show/"]').first().click();
     const show = page.url();
-    for (const path of [show, '/account', '/settings', '/offline-downloads']) {
+    for (const path of [show, '/account', '/settings']) {
       if (path !== show) await page.goto(path);
       const skip = page.getByRole('link', { name: 'Skip to content', exact: true });
       const main = page.getByRole('main');

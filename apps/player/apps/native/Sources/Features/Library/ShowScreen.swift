@@ -39,7 +39,7 @@ struct ShowScreen: View {
                         let season = ShowSeasonSelection.resolve(selectedSeason, among: groups.map(\.number), defaultingTo: next.season) ?? next.season
                         tvSeasons(groups, selected: season)
                         MediaShelf(title: "Episodes", items: episodes.filter { $0.season == season },
-                                   landscape: true, onQuickPlay: { quickPlay = $0 }, playsOnSelect: true)
+                                   landscape: true, onQuickPlay: { session.open($0) { quickPlay = $0 } }, playsOnSelect: true)
                             .id(season)
                     } else {
                         ContentUnavailableView("No episodes", systemImage: "tv",
@@ -53,7 +53,7 @@ struct ShowScreen: View {
                                         title: show.title.isEmpty ? next.show : show.title,
                                         subtitle: [show.year, show.genres].filter { !$0.isEmpty }.joined(separator: " · "),
                                         scroll: scroll) {
-                            NavigationLink(value: ScreenDestination.playback(next.id)) {
+                            MediaDestinationLink(destination: .playback(next.id), item: next) {
                                 Label(next.playLabel, systemImage: "play.fill").padding(.horizontal, 6)
                             }.buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
                             NavigationLink("Details", value: ScreenDestination.detail(next.id)).buttonStyle(SpotlightSecondaryButtonStyle())
@@ -108,7 +108,7 @@ struct ShowScreen: View {
                 Text(ShowSeasonSelection.episodeSummary(next))
                     .font(.headline).foregroundStyle(KinoTheme.muted)
                 if next.progress.seconds > 0 && !next.progress.watched { WatchPosition(item: next) }
-                NavigationLink(value: ScreenDestination.playback(next.id)) {
+                MediaDestinationLink(destination: .playback(next.id), item: next) {
                     Label(next.playLabel, systemImage: "play.fill")
                         .frame(minWidth: 240, minHeight: playHeight)
                         .foregroundStyle(KinoTheme.tvOSPrimaryInk)

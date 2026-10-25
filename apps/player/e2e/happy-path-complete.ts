@@ -144,7 +144,7 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 		return Boolean(registration?.active?.state === "activated" && !registration.installing && !registration.waiting && navigator.serviceWorker.controller === registration.active);
 	}), { message: "latest service worker controls the page" }).toBeTruthy();
 	const missingShell = await page.evaluate(async () => {
-		const shell = ["/offline", "/static/app.css", "/static/main.kinosail.bundle.js", "/static/theme.js", "/static/pwa.js", "/static/player.js", "/static/downloads.js", "/static/icon.svg", "/static/icon-192.png", "/static/icon-512.png", "/static/icon-maskable-512.png", "/static/apple-touch-icon.png", "/static/cinema-backdrop.jpg"];
+		const shell = ["/offline", "/static/app.css", "/static/main.kinosail.bundle.js", "/static/theme.js", "/static/pwa.js", "/static/icon.svg", "/static/icon-192.png", "/static/icon-512.png", "/static/icon-maskable-512.png", "/static/apple-touch-icon.png", "/static/cinema-backdrop.jpg"];
 		const names = (await caches.keys()).filter((name) => name.startsWith("kinosail-shell-"));
 		if (names.length !== 1) return ["Expected one active shell cache"];
 		const cache = await caches.open(names[0]);
@@ -159,8 +159,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 		await page.context().setOffline(true);
 		try {
 			await page.goto("/?offline-check=1");
-			await expect(page.getByRole("heading", { name: "Offline downloads" })).toBeVisible();
-			await expect(page.getByRole("link", { name: "Open Server downloads" })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "You’re offline" })).toBeVisible();
+			await expect(page.getByRole("link", { name: "Try again", exact: true })).toHaveAttribute("href", "/");
 			await expect(page.locator('link[rel="stylesheet"]')).toHaveAttribute("href", /\/static\/app\.css\?v=[a-z0-9-]+$/);
 			await expect(page.locator("body")).toHaveCSS("color", "rgb(246, 248, 242)");
 		} finally {

@@ -4,7 +4,7 @@ import XCTest
 final class TouchPlaybackInteractionTests: XCTestCase {
     @MainActor func testOpeningVideoHasNoPlayAndKeepsCloseAfterBackgroundTap() async throws {
         let app = try await openVideo(mode: "pending")
-        XCTAssertFalse(app.buttons["Play"].exists, app.debugDescription)
+        XCTAssertFalse(player(app).buttons["Play"].exists, app.debugDescription)
         record("opening video", app)
         background(app, x: 0.75, y: 0.3).tap()
         try await assertCloseHittable(app)
@@ -15,8 +15,8 @@ final class TouchPlaybackInteractionTests: XCTestCase {
     @MainActor func testWaitingForFirstFrameHasNoPlayOrPause() async throws {
         let app = try await openVideo(mode: "preparing")
         XCTAssertTrue(app.staticTexts["−1:00"].waitForExistence(timeout: 10), app.debugDescription)
-        XCTAssertFalse(app.buttons["Play"].exists, app.debugDescription)
-        XCTAssertFalse(app.buttons["Pause"].exists, app.debugDescription)
+        XCTAssertFalse(player(app).buttons["Play"].exists, app.debugDescription)
+        XCTAssertFalse(player(app).buttons["Pause"].exists, app.debugDescription)
         try await assertCloseHittable(app)
         record("waiting for first frame", app)
         app.buttons["Close player"].tap()
@@ -62,7 +62,7 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         let app = try await openVideo(mode: "failed")
         XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertFalse(app.staticTexts["Opening video…"].exists)
-        XCTAssertFalse(app.buttons["Play"].exists)
+        XCTAssertFalse(player(app).buttons["Play"].exists)
         try await assertCloseHittable(app)
         record("failed video", app)
         app.buttons["Close player"].tap()
@@ -81,8 +81,8 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(pause.waitForExistence(timeout: 5))
         XCTAssertTrue(pause.isHittable, app.debugDescription)
         pause.tap()
-        XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5))
-        app.buttons["Play"].tap()
+        XCTAssertTrue(player(app).buttons["Play"].waitForExistence(timeout: 5), app.debugDescription)
+        player(app).buttons["Play"].tap()
         XCTAssertTrue(pause.waitForExistence(timeout: 5))
         app.buttons["Close player"].tap()
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
@@ -135,7 +135,12 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(play.waitForExistence(timeout: 20), app.debugDescription)
         play.tap()
         XCTAssertTrue(app.buttons["Close player"].waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(player(app).buttons["Close player"].exists, app.debugDescription)
         return app
+    }
+
+    @MainActor private func player(_ app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)["Video player"]
     }
 
     @MainActor private func background(_ app: XCUIApplication, x: CGFloat, y: CGFloat) -> XCUICoordinate {

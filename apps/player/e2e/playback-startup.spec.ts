@@ -186,7 +186,7 @@ test("selecting compatibility playback starts without a second play click", asyn
 	await page.getByRole("link", { name: /Example Movie/ }).click();
 
 	const started = Date.now();
-	await page.getByText("Playback & downloads", { exact: true }).click();
+	await page.locator(".more-player-actions summary").click();
 	await page.locator(".more-player-actions a.mode").filter({ hasText: "Playback" }).click();
 	const video = page.locator("video");
 	await expect.poll(() => page.evaluate(() => (window as Window & { mediaEvents: Array<{ name: string }> }).mediaEvents.some(({ name }) => name === "playing")), { timeout: 20_000 }).toBe(true);

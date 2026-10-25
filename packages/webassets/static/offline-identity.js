@@ -17,7 +17,7 @@
   };
   const select = (profile) => update({profile, revision: Math.max(Date.now(), state().revision + 1)});
   window.kinosailOfflineIdentity = {current: () => state().profile, state};
-  const profile = document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile || document.querySelector("#downloads")?.dataset.viewerProfile;
+  const profile = document.body.dataset.viewerProfile || document.querySelector("[data-nav-profile]")?.dataset.navProfile;
   if (profile) select(profile);
   navigator.serviceWorker?.addEventListener("message", ({data}) => {
     if (data?.type === "offline-profile" && typeof data.profile === "string" && Number.isSafeInteger(data.revision)) update({profile: data.profile, revision: data.revision});

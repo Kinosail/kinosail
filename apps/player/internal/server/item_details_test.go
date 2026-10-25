@@ -36,7 +36,7 @@ func TestMovieCardsOpenPlayerAndOldDetailsRedirect(t *testing.T) {
 	}
 	path := "/item/" + match[1]
 	player := call(http.MethodGet, "/watch/"+match[1], "")
-	for _, expected := range []string{"<video", "data-cast", ">Add to My List</button>", "Playback &amp; downloads", "Movie"} {
+	for _, expected := range []string{"<video", "data-cast", ">Add to My List</button>", "<summary>Playback</summary>", "Movie"} {
 		if player.Code != http.StatusOK || !strings.Contains(player.Body.String(), expected) {
 			t.Fatalf("player lacks %q", expected)
 		}

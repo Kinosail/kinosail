@@ -4,18 +4,6 @@ export async function readStaticSource(paths: string[], base = import.meta.url):
 	return (await Promise.all(paths.map((path) => readFile(new URL(path, base), "utf8")))).join("");
 }
 
-export const downloadsSource = await readStaticSource([
-	"../../../packages/webassets/static/offline-identity.js",
-	"../../../packages/webassets/static/offline-runtime.js",
-	"../../../packages/webassets/static/downloads.js",
-	"../../../packages/webassets/static/downloads-integrity.js",
-	"../../../packages/webassets/static/downloads-storage.js",
-	"../../../packages/webassets/static/downloads-transfer.js",
-	"../../../packages/webassets/static/downloads-progress.js",
-	"../../../packages/webassets/static/downloads-control.js",
-	"../../../packages/webassets/static/downloads-ui.js",
-]);
-
 export const playerSource = await readStaticSource([
 	"../internal/server/static/playback-capabilities.js",
 	"../../../packages/webassets/static/player-core.js",
@@ -23,7 +11,7 @@ export const playerSource = await readStaticSource([
 	"../internal/server/static/player.js",
 	"../internal/server/static/player-streaming-adaptive.js",
 	"../internal/server/static/player-streaming-recovery.js",
-	"../internal/server/static/player-streaming-offline.js",
+	"../internal/server/static/player-streaming-lifecycle.js",
 	"../../../packages/webassets/static/player-preview.js",
 	"../../../packages/webassets/static/player-controls.js",
 	"../../../packages/webassets/static/player-status.js",
@@ -37,6 +25,6 @@ export const playerSource = await readStaticSource([
 export const serviceWorkerSource = await readStaticSource([
 	"../../../packages/webassets/static/offline-runtime.js",
 	"../../../packages/webassets/static/offline-profile.js",
-	"../../../packages/webassets/static/offline-media.js",
+	"../../../packages/webassets/static/offline-shell.js",
 	"../internal/server/static/service-worker.js",
 ]);

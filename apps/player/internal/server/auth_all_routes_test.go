@@ -7,12 +7,12 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "b80442d7e2a6401a63995fef913170398c914ea36e994f77b42c64a2c96b0cf5"
+const reviewedRouteInventorySHA256 = "817f92bffa18be12148c46b7e028a6dfa535bbf0dd2eeb76bd460fd9cdd3e043"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
 	"GET /healthz", "GET /manifest.webmanifest", "GET /service-worker.js", "GET /offline", "GET /favicon.ico",
-	"GET /static/htmx.min.js", "GET /static/hls.min.js", "GET /static/player.js", "GET /static/downloads.js", "GET /static/pwa.js", "GET /static/main.kinosail.bundle.js", "GET /static/theme.js", "GET /static/manrope.woff2", "GET /static/quick-connect.js", "GET /static/connect.js", "GET /static/app.css", "GET /static/supporter.js", "GET /static/supporter.css",
+	"GET /static/htmx.min.js", "GET /static/hls.min.js", "GET /static/player.js", "GET /static/pwa.js", "GET /static/main.kinosail.bundle.js", "GET /static/theme.js", "GET /static/manrope.woff2", "GET /static/quick-connect.js", "GET /static/connect.js", "GET /static/app.css", "GET /static/supporter.js", "GET /static/supporter.css",
 	"GET /static/supporter/badges/{file...}", "GET /static/tmdb-logo.svg", "GET /static/icon.svg", "GET /static/icon-192.png", "GET /static/icon-512.png", "GET /static/icon-maskable-512.png", "GET /static/apple-touch-icon.png", "GET /static/cinema-backdrop.jpg", "GET /static/passkeys.js",
 	"GET /share", "GET /static/media-share.js",
 	"GET /login", "POST /login", "GET /setup", "GET /language", "POST /setup", "POST /language", "POST /api/v1/session", "POST /api/v1/setup",
@@ -138,7 +138,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 486, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 482, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }
