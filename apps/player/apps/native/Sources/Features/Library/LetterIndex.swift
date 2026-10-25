@@ -77,7 +77,6 @@ struct LetterScrubber: View {
 #if os(tvOS)
 struct TVLetterIndex: View {
     let letters: [LibraryPage.Letter]
-    let onFocus: (String?) -> Void
     let onBrowse: (LibraryPage.Letter) -> Void
     @FocusState private var focusedLetter: String?
 
@@ -107,7 +106,6 @@ struct TVLetterIndex: View {
         .padding(.top, 96)
         .padding(.bottom, 32)
         .focusSection()
-        .onChange(of: focusedLetter) { _, letter in onFocus(letter) }
         .task(id: focusedLetter) {
             guard let focusedLetter, let letter = letters.first(where: { $0.label == focusedLetter }) else { return }
             try? await Task.sleep(for: .milliseconds(150))
