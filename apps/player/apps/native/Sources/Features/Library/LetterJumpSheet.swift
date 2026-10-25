@@ -72,21 +72,22 @@ struct TVLetterIndex: View {
 
     var body: some View {
         ScrollView(.vertical) {
-            LazyVStack(spacing: 14) {
+            LazyVStack(spacing: 10) {
                 ForEach(letters) { letter in
                     Button(letter.label) { onBrowse(letter) }
-                        .buttonStyle(.plain).focusEffectDisabled()
+                        .tvFlat()
                         .font(.callout.weight(.semibold))
-                        .frame(width: 56, height: 44)
+                        .frame(width: 60, height: 48)
                         .foregroundStyle(focusedLetter == letter.label ? KinoTheme.tvOSPrimaryInk : KinoTheme.text)
-                        .background(focusedLetter == letter.label ? KinoTheme.tvOSPrimaryFill : .clear,
-                                    in: RoundedRectangle(cornerRadius: 10))
+                        .background(focusedLetter == letter.label ? .white : .clear, in: Capsule())
+                        .animation(.snappy(duration: 0.18), value: focusedLetter)
                         .focused($focusedLetter, equals: letter.label)
                         .accessibilityLabel("\(letter.label), \(letter.count) \(letter.count == 1 ? "title" : "titles")")
                         .accessibilityHint("Focus to browse this letter")
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
         .frame(width: 88)

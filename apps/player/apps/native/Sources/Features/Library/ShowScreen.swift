@@ -113,8 +113,7 @@ struct ShowScreen: View {
                         .frame(minWidth: 240, minHeight: playHeight)
                         .foregroundStyle(KinoTheme.tvOSPrimaryInk)
                 }
-                .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
-                .controlSize(.large).tint(KinoTheme.tvOSPrimaryFill)
+                .tvCapsule(prominent: true)
                 .tvOSDefaultPlayFocus(in: showFocus, id: "show.next-play.\(next.id)")
             }
         } }

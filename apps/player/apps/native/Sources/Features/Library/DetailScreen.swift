@@ -183,7 +183,7 @@ private struct DetailContent: View {
                 #endif
         }
             #if os(tvOS)
-            .buttonStyle(.bordered).buttonBorderShape(.capsule).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+            .tvCapsule()
             #else
             .buttonStyle(SpotlightSecondaryButtonStyle())
             .sensoryFeedback(.success, trigger: listed) { old, new in old != nil || new != nil }
@@ -194,22 +194,19 @@ private struct DetailContent: View {
             NavigationLink(value: ScreenDestination.bookmarks(item.id)) {
                 Label("Bookmarks", systemImage: "bookmark").frame(minHeight: detailActionHeight)
             }
-                .buttonStyle(.bordered).buttonBorderShape(.capsule)
-                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                .tvCapsule()
         }
         if !item.showID.isEmpty {
             NavigationLink(value: ScreenDestination.show(item.showID)) {
                 Text("All episodes").frame(minHeight: detailActionHeight)
             }
-                .buttonStyle(.bordered).buttonBorderShape(.capsule)
-                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                .tvCapsule()
         }
         if item.progress.seconds > 0 || item.progress.watched {
             Button { change { client in try await client.dismissContinueWatching(itemID: item.id) } }
                 label: { Label("Remove", systemImage: "minus.circle").frame(minHeight: detailActionHeight) }
                 .accessibilityLabel("Remove from Continue watching")
-                .buttonStyle(.bordered).buttonBorderShape(.capsule)
-                .tint(KinoTheme.secondaryControlTint).secondaryControlForeground().disabled(busy)
+                .tvCapsule().disabled(busy)
         }
         #endif
         #if os(iOS)
@@ -228,8 +225,7 @@ private struct DetailContent: View {
                 #endif
         }
         #if os(tvOS)
-        .buttonStyle(.borderedProminent).buttonBorderShape(.capsule)
-        .controlSize(.large).tint(KinoTheme.tvOSPrimaryFill)
+        .tvCapsule(prominent: true)
         #else
         .buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal).foregroundStyle(KinoTheme.signalInk)
         #endif
