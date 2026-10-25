@@ -1,6 +1,5 @@
 const cacheName = "kinosail-shell-v56";
 const offlineDatabase = "kinosail-offline-v1";
-const chunkSize = 8 * 1024 * 1024;
 const retiredOfflinePages = "kinosail-offline-pages-v1";
 const imageCachePrefix = "kinosail-private-images-v1-";
 const imageCacheLimit = 512;
@@ -49,16 +48,30 @@ const clearPrivateImageCaches = async (keep) => {
   const names = await caches.keys();
   await Promise.all(names.filter((name) => name.startsWith(imageCachePrefix) && name !== keep).map((name) => caches.delete(name)));
 };
+const removeOfflineDownloads = async () => {
+  try {
+    const database = await openOfflineDatabaseConnection();
+    await new Promise((resolve) => {
+      const transaction = database.transaction(["jobs", "chunks"], "readwrite");
+      transaction.objectStore("jobs").clear();
+      transaction.objectStore("chunks").clear();
+      transaction.oncomplete = transaction.onabort = transaction.onerror = () => { database.close(); resolve(); };
+    });
+  } catch { return; }
+  try {
+    const root = await navigator.storage.getDirectory();
+    for await (const name of root.keys()) if (/^[0-9a-f]{16}$/.test(name)) await root.removeEntry(name).catch(() => {});
+  } catch { return; }
+};
 registerOfflineLifecycle(cacheName, retiredOfflinePages, populateShell, (profile) => {
   if (profile === viewerProfile) return;
   viewerProfile = profile;
   return clearPrivateImageCaches(privateImageCache());
-});
+}, removeOfflineDownloads);
 self.addEventListener("fetch", (event) => {
   const url = offlineRequestURL(event);
   if (!url) return;
-  if (url.pathname.startsWith("/offline-media/")) serveOfflineMedia(event, url);
-  else if (privateImagePath(url.pathname)) servePrivateImage(event, url);
+  if (privateImagePath(url.pathname)) servePrivateImage(event, url);
   else if (event.request.mode === "navigate") {
     const navigation = fetch(event.request);
     event.respondWith(navigation.catch(() => caches.open(cacheName).then((cache) => cache.match("/offline"))));

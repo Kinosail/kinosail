@@ -88,7 +88,7 @@ func TestDynamicAuditActionsCoverEveryRouteFamily(t *testing.T) {
 		{http.MethodPut, "/api/v1/me/mfa", "mfa.enabled", "activity"},
 		{http.MethodDelete, "/api/v1/me/mfa", "mfa.disabled", "activity"},
 		{http.MethodDelete, "/api/v1/me/oidc", "oidc.unlinked", "activity"},
-		{http.MethodPost, "/offline/id", "download.created", "activity"},
+		{http.MethodPost, "/api/v1/items/id/downloads", "download.created", "activity"},
 		{http.MethodDelete, "/api/v1/downloads/id", "download.removed", "activity"},
 		{http.MethodPost, "/list/id", "list.updated", "activity"},
 		{http.MethodPost, "/api/v1/items/id/list", "list.updated", "activity"},

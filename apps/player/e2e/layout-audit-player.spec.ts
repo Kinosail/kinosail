@@ -69,9 +69,8 @@ test("player shows and switches its playback method without crowding actions", a
 			path: testInfo.outputPath(`${viewport.width}-player-actions-closed.png`),
 			fullPage: true,
 		});
-		await actions.getByText("Playback & downloads", { exact: true }).click();
+		await actions.locator("summary").filter({ hasText: "Playback" }).click();
 		await expect(actions.getByRole("link", { name: compatibleLabel })).toBeVisible();
-		await expect(actions.getByRole("button", { name: /Prepare .* offline/ })).toBeVisible();
 		expect((await new AxeBuilder({ page }).analyze()).violations, `open actions accessibility at ${viewport.width}px`).toEqual([]);
 		expect(await layoutProblems(page), `open actions at ${viewport.width}px`).toEqual({
 			documentOverflow: 0,

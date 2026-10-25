@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -33,7 +34,8 @@ func TestActorTemplateEscapesCreditsAndLinksTitles(t *testing.T) {
 			t.Fatalf("missing %q", expected)
 		}
 	}
-	if strings.Contains(response.Body.String(), "2016") || strings.Contains(response.Body.String(), "2024") {
+	visible := regexp.MustCompile(`\?v=[0-9a-f]+`).ReplaceAllString(response.Body.String(), "")
+	if strings.Contains(visible, "2016") || strings.Contains(visible, "2024") {
 		t.Fatal("actor credits show release years")
 	}
 }

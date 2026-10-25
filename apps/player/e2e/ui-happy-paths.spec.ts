@@ -26,10 +26,11 @@ test("Owner can use keyboard utilities and persist the chosen theme", async ({ p
 	const commands = page.getByRole("dialog", { name: "Browse library" });
 	await expect(commands).toBeVisible();
 	await commands.getByLabel("Search library").fill("offline");
-	await expect(commands.getByRole("link", { name: "Offline downloads" })).toBeVisible();
+	await expect(commands.getByRole("link", { name: "Offline downloads" })).toHaveCount(0);
+	await commands.getByLabel("Search library").fill("movies");
+	await expect(commands.getByRole("link", { name: /^Movies/ })).toBeVisible();
 	await commands.getByLabel("Search library").press("Enter");
-	await expect(page).toHaveURL("/offline-downloads");
-	await expect(page.getByRole("heading", { name: "Offline downloads", exact: true })).toBeVisible();
+	await expect(page).toHaveURL("/?view=movies");
 
 	await page.goto("/settings#appearance");
 	const theme = page.getByRole("group", { name: "Theme" });

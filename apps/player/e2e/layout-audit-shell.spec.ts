@@ -53,7 +53,7 @@ test("signed-in application pages retain the navigation shell", async ({ page },
 	}
 
 	await page.setViewportSize({ width: 1440, height: 900 });
-	for (const route of ["/account", "/metadata/bulk", "/offline-downloads", "/quick-connect", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/media-shares", "/settings/remote-readiness", "/settings/system", "/supporter"]) {
+	for (const route of ["/account", "/metadata/bulk", "/quick-connect", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/media-shares", "/settings/remote-readiness", "/settings/system", "/supporter"]) {
 		const response = await page.goto(route, { waitUntil: "domcontentloaded" });
 		expect(response?.ok(), route).toBeTruthy();
 		expect(await applicationShellProblems(page), `${route} rail`).toEqual({ display: "grid", horizontalOverflow: 0, outside: [] });

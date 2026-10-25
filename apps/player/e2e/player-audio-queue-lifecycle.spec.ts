@@ -15,10 +15,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await page.getByRole("button", {name: "Next track", exact: true}).click();
     await expect.poll(() => !!lookup).toBe(true);
     await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
-    if (boundary === "pagehide") await page.evaluate(() => {
-      document.querySelector("audio")!.dataset.offline = "true";
-      dispatchEvent(new PageTransitionEvent("pagehide"));
-    });
+    if (boundary === "pagehide") await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
     else await page.locator("audio").evaluate((audio, owner) => {
       if (owner === "cast") audio.dataset.castActive = "true";
       else audio.dataset.room = "existing-room";
@@ -30,7 +27,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await expect(page.locator("[data-audio-next]")).toBeDisabled();
     await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
     await expect(page.locator(".title-block h1")).toHaveText("First track");
-    expect(writes).toEqual([]);
+    expect(writes.filter(url => boundary !== "pagehide" || !url.endsWith("/progress/track"))).toEqual([]);
     if (boundary === "pagehide") await expect(page.locator("audio")).not.toHaveAttribute("src", /media\/next/);
   });
 }
@@ -71,40 +68,6 @@ test("late initial queue response cannot warm media or publish controls after pa
   await expect(page.locator("[data-audio-next]")).toBeDisabled();
   await expect(page.locator("audio")).not.toHaveAttribute("data-queue-total");
   expect(nextReads).toEqual([]);
-});
-
-for (const saved of [true, false]) test(`ended offline queue requires its own watched acknowledgement: ${saved ? "saved" : "failed"}`, {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {
-  await openAudio(page, "");
-  await startQueue(page);
-  await page.evaluate(saved => {
-    document.querySelector("audio")!.dataset.offline = "true";
-    Object.assign(window, {r08OfflineEnded: {saved: 0, watched: false}, KinosailOfflineMedia: {
-      saveProgress: async (_audio: HTMLAudioElement, watched: boolean) => {
-        const observed = (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded;
-        observed.saved++; observed.watched = watched; return {ok: saved};
-      },
-      unbindProgress: () => {},
-    }});
-    const request = window.fetch;
-    Object.assign(window, {r08EndedTrackReads: 0});
-    window.fetch = (...args) => {
-      const input = args[0], target = new URL(input instanceof Request ? input.url : String(input), location.href);
-      if (target.pathname === "/api/v1/items/next") (window as Window & {r08EndedTrackReads: number}).r08EndedTrackReads++;
-      return request(...args);
-    };
-  }, saved);
-  await page.evaluate(async () => {
-    document.querySelector("audio")!.dispatchEvent(new Event("ended"));
-    await new Promise<void>(resolve => setTimeout(resolve, 0));
-  });
-  await expect.poll(() => page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number}}).r08OfflineEnded.saved)).toBe(1);
-  if (saved) await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/next");
-  else {
-    await expect(page.locator("[data-audio-queue-controls]")).not.toHaveAttribute("aria-busy");
-    await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
-    expect(await page.evaluate(() => (window as Window & {r08EndedTrackReads: number}).r08EndedTrackReads)).toBe(0);
-  }
-  expect(await page.evaluate(() => (window as Window & {r08OfflineEnded: {saved: number; watched: boolean}}).r08OfflineEnded)).toEqual({saved: 1, watched: true});
 });
 
 test("returning queue item does not reuse the previous source's played intent", {tag: ["@smoke", "@routed-fault"]}, async ({page}) => {

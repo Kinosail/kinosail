@@ -29,7 +29,7 @@ Audiobooks also provide playback speed and a sleep timer. Music queues support l
 
 ## Choose a playback mode
 
-Open **Playback & downloads** on an item when the mode link is available. Kinosail supports these modes:
+Open **Playback** on an item when the mode link is available. Kinosail supports these modes:
 
 | Mode | Behavior | Use it when |
 | --- | --- | --- |
@@ -69,9 +69,9 @@ Name sidecars with a language code, such as `Movie.en.vtt` or `Movie.fr.srt`.
 
 If the source has multiple audio tracks, open **Audio tracks** and choose a track. Selecting a track can open a compatible playback URL for the chosen stream.
 
-## Use offline preparation
+## Watch offline
 
-If your Profile allows downloads, select **Prepare offline** and choose the offered quality. Kinosail prepares the file on the Server. It does not place a file on your device until you select **Download to this device** or **Save file** from **Offline downloads**.
+The web app streams from your Server. To watch without a connection, download titles in the Kinosail app on iPhone or iPad. See [Download and play offline]({{ '/user-guide/offline/' | relative_url }}).
 
 See [Share and watch together]({{ '/user-guide/sharing/' | relative_url }}) for download limits and [playback troubleshooting]({{ '/troubleshooting/playback/' | relative_url }}) for buffering or unavailable playback.
 

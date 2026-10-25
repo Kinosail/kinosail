@@ -38,7 +38,7 @@ func (fixture AssetsFixture) LibraryExposesDiscoverableCommandsAndInputParity(t 
 	handler.ServeHTTP(script, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/main.kinosail.bundle.js", nil))
 	handler.ServeHTTP(styles, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/static/app.css", nil))
 
-	for _, expected := range []string{`data-command-open`, `data-command-shortcut`, `aria-keyshortcuts="Control+K Meta+K"`, `class="header-compact-menu"`, `class="nav-more-section nav-more-actions"`, `data-command-menu`, `role="dialog"`, `data-command-label="Movies"`, `data-command-label="Offline downloads"`, `data-command-label="Sync"`} {
+	for _, expected := range []string{`data-command-open`, `data-command-shortcut`, `aria-keyshortcuts="Control+K Meta+K"`, `class="header-compact-menu"`, `class="nav-more-section nav-more-actions"`, `data-command-menu`, `role="dialog"`, `data-command-label="Movies"`, `data-command-label="Sync"`} {
 		if !strings.Contains(home.Body.String(), expected) {
 			t.Fatalf("home missing %q: %q", expected, home.Body.String())
 		}

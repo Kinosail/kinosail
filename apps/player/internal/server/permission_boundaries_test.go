@@ -148,7 +148,6 @@ func TestViewerCapabilitiesGateEveryContentAdapter(t *testing.T) {
 		status       int
 	}{
 		{http.MethodGet, "/download/" + itemID, nil, http.StatusForbidden},
-		{http.MethodGet, "/offline-downloads", nil, http.StatusForbidden},
 		{http.MethodPost, "/offline/" + itemID, map[string]any{"quality": "original"}, http.StatusNotFound},
 		{http.MethodGet, "/api/v1/downloads", nil, http.StatusForbidden},
 		{http.MethodPost, "/api/v1/items/" + itemID + "/downloads", map[string]any{"quality": "original"}, http.StatusNotFound},

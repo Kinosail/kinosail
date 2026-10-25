@@ -16,7 +16,6 @@ func TestApplicationShellRouteBoundary(t *testing.T) {
 		"GET /book/{id}",
 		"GET /collection/{name}",
 		"GET /metadata/bulk",
-		"GET /offline-downloads",
 		"GET /playlist/{name}",
 		"GET /quick-connect",
 		"GET /settings",

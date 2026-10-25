@@ -2050,5 +2050,17 @@
   {
     "id": "Kinosail is reading your media folders. Your Library appears here when the scan is complete.",
     "other": "Kinosail medya klasörlerinizi okuyor. Tarama tamamlandığında kütüphaneniz burada görünür."
+  },
+  {
+    "id": "Offline",
+    "other": "Çevrimdışı"
+  },
+  {
+    "id": "You’re offline",
+    "other": "Çevrimdışısınız"
+  },
+  {
+    "id": "Reconnect to your Server to keep watching.",
+    "other": "İzlemeye devam etmek için Sunucunuza yeniden bağlanın."
   }
 ]

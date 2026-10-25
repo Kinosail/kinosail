@@ -13,7 +13,7 @@ export const betaRouteGroups = [
 	},
 	{
 		name: "utilities",
-		routes: ["/quick-connect", "/offline-downloads", "/supporter"],
+		routes: ["/quick-connect", "/supporter"],
 	},
 	{
 		name: "settings",

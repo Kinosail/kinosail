@@ -210,7 +210,7 @@ connectionTest("beta UI surfaces stay reachable and expose only working controls
   await expect(page.getByRole("heading", { name: collectionName, exact: true })).toBeVisible();
   const routes = [
     "/", "/?view=list", "/?view=movies", "/?view=shows", "/?view=collections", "/?view=playlists", "/?view=music", "/?view=audiobooks", "/?view=books", "/?view=photos",
-    "/?view=history", "/?view=unwatched", "/quick-connect", "/offline-downloads", "/settings", "/settings/configuration",
+    "/?view=history", "/?view=unwatched", "/quick-connect", "/settings", "/settings/configuration",
     "/settings/backups", "/settings/agent-connections", "/account", watch!, show!, album!, book!, `/collection/${encodeURIComponent(collectionName)}`, `/playlist/${encodeURIComponent(smartName)}`,
   ];
   for (const route of routes) {
@@ -222,18 +222,12 @@ connectionTest("beta UI surfaces stay reachable and expose only working controls
 
   await page.goto(watch!);
   await expect(page.getByRole("button", { name: new RegExp(`(?:Add to|Remove from) ${smartName}`) })).toHaveCount(0);
-  await page.getByText("Playback & downloads", { exact: true }).click();
-  await page.getByRole("button", { name: "Prepare 720p offline", exact: true }).click();
-  await expect(page.getByText("720p · Ready to download", { exact: true })).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByRole("link", { name: "Save file", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Download to this device", exact: true }).click();
-  await expect(page.getByText("Saved and verified. Play to check compatibility.", { exact: true })).toBeVisible({ timeout: 30_000 });
-  await page.goto("/offline");
-  await page.getByRole("link", { name: /Example Movie · 720p/ }).click();
-  await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//);
+  await page.locator(".more-player-actions summary").click();
+  await expect(page.locator(".more-player-actions a.mode")).toBeVisible();
+  await expect(page.getByRole("button", { name: /offline|download/i })).toHaveCount(0);
   offline = true;
   await connection.disconnect();
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.locator("video")).toHaveAttribute("src", /\/offline-media\//, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "You’re offline", exact: true })).toBeVisible({ timeout: 15_000 });
   expect(errors.filter((error) => !error.includes("blob:http://") && !error.includes("Applying inline style violates") && !(testInfo.project.name === "firefox" && error.includes("NS_BINDING_ABORTED")))).toEqual([]);
 });

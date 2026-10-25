@@ -1,6 +1,6 @@
 function progressNavigationAllowed() {
   return progressChanged() && !playbackPreparation && !isPictureInPicture() && player.dataset.castActive !== "true" &&
-    player.dataset.offline !== "true" && player.readyState >= HTMLMediaElement.HAVE_METADATA &&
+    player.readyState >= HTMLMediaElement.HAVE_METADATA &&
     !player.ended && !pendingProgress?.watched && Boolean(progressItem()) && progressProfile().length <= 128 &&
     Number.isFinite(player.currentTime) && player.currentTime >= 0 && player.currentTime <= 31536000;
 }

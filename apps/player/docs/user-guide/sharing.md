@@ -40,15 +40,11 @@ The person who starts the room is the leader. The leader controls play, pause, s
 
 Rooms expire after a period without activity. A room does not bypass library, rating, viewing-hour, remote, or transcoding policy. Every participant must use an authenticated session.
 
-## Prepare an offline download
+## Download titles
 
-Downloads are allowed only when the Owner enables **Downloads** for your Profile. Open a title, expand **Playback & downloads**, and select **Prepare offline** with an offered quality. Supported choices can include **Original**, **1080p**, **720p**, **480p**, or **audio**, depending on the item.
+Downloads are allowed only when the Owner enables **Downloads** for your Profile. Download titles in the Kinosail app on iPhone or iPad. The web app streams and does not save titles in the browser. See [Download and play offline]({{ '/user-guide/offline/' | relative_url }}).
 
-Open **Offline downloads** to watch preparation. **Ready offline** means the Server finished the file and verified its integrity. Select **Download to this device** or **Save file** to retrieve it. Prepared files remain private to your Profile.
-
-A download uses the Server’s storage and, for converted quality, its transcoding capacity. It does not copy Library Content into another user’s Profile. Remove a job from **Offline downloads** when you no longer need it.
-
-If preparation needs attention, select **Try again** once. If it fails again, see [Playback problems]({{ '/troubleshooting/playback/' | relative_url }}). Do not delete application data while a download is preparing.
+A download uses the Server’s storage and, for converted quality, its transcoding capacity. Prepared files remain private to your Profile. They do not copy Library Content into another user’s Profile.
 
 ## Understand remote sharing
 

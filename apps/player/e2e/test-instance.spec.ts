@@ -32,32 +32,6 @@ test("preferred-language subtitle choices hide other tracks without changing fil
 	await expect(page.locator('video track[srclang="es"]')).toHaveCount(1);
 });
 
-test("unavailable Web Locks do not initialize offline storage on the downloads page", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "locks", { configurable: true, value: undefined });
-    const worker = { scriptURL: new URL("/service-worker.js?v=56", location.href).href, state: "activated" };
-    Object.defineProperties(navigator.serviceWorker, {
-      controller: { configurable: true, get: () => worker },
-      getRegistration: { configurable: true, value: async () => ({ active: worker }) },
-    });
-    const opens: string[] = [];
-    Object.assign(window, { __qaOfflineOpens: opens });
-    const open = indexedDB.open.bind(indexedDB);
-    Object.defineProperty(indexedDB, "open", {
-      configurable: true,
-      value: (...args: Parameters<IDBFactory["open"]>) => {
-        opens.push(String(args[0]));
-        return open(...args);
-      },
-    });
-  });
-  await login(page);
-  await page.goto("/offline-downloads", { waitUntil: "load" });
-  await expect(page.getByRole("heading", { name: "Offline downloads", exact: true })).toBeVisible();
-  await page.evaluate(() => window.dispatchEvent(new Event("online")));
-  expect(await page.evaluate(() => (window as typeof window & { __qaOfflineOpens: string[] }).__qaOfflineOpens.filter((name) => name === "kinosail-offline-v1"))).toEqual([]);
-});
-
 test("Viewer MFA enrollment gives accurate instructions", async ({ browser, page }, testInfo) => {
   await login(page);
   await page.goto("/settings#security");

@@ -3,11 +3,11 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 const identity = readFileSync(new URL('./static/offline-identity.js', import.meta.url), 'utf8');
-const media = readFileSync(new URL('./static/offline-media.js', import.meta.url), 'utf8');
+const shell = readFileSync(new URL('./static/offline-shell.js', import.meta.url), 'utf8');
 function page(profile, storage, failWrites = false) {
   const window = new EventTarget(), document = new EventTarget(), worker = new EventTarget();
-  document.body = {dataset:{}};
-  document.querySelector = selector => selector === '#downloads' ? {dataset:{viewerProfile:profile}} : null;
+  document.body = {dataset:profile === undefined ? {} : {viewerProfile:profile}};
+  document.querySelector = () => null;
   class Form {action='https://kino.test/logout';}
   worker.postMessage = data => {worker.sent=data;};
   worker.controller = worker;
@@ -33,14 +33,11 @@ test('existing tabs follow a new profile and ignore delayed old broadcasts', () 
   assert.equal(b.window.kinosailOfflineIdentity.current(),'');
   assert.equal(page(undefined,storage).window.kinosailOfflineIdentity.current(),'');
 });
-test('authenticated downloads-only entry initializes the active profile',()=>{
-  assert.equal(page('DownloadsViewer',new Map()).window.kinosailOfflineIdentity.current(),'DownloadsViewer');
-});
 function worker(storage) {
   const handlers=new Map(), fetched=[], broadcast=[];
   const self={location:{origin:'https://kino.test'},clients:{matchAll:async()=>[{postMessage:value=>broadcast.push(value)}]},addEventListener:(name,callback)=>handlers.set(name,callback)};
   const context=vm.createContext({self, URL, Date, Number, Promise, openOfflineDatabaseConnection(){}, offlineProfileState:storage, fetch:async request=>{fetched.push(request);return new Response(null,{status:204});}});
-  vm.runInContext(media+'\nregisterOfflineLifecycle("cache","retired",()=>{});globalThis.current=selectedProfile;',context);
+  vm.runInContext(shell+'\nlet changedProfile="";registerOfflineLifecycle("cache","retired",()=>{},profile=>{changedProfile=profile;});globalThis.current=async()=>changedProfile;',context);
   return {context,handlers,fetched,broadcast};
 }
 for(const mode of ['rejected','blocked']) test(`logout reaches the Server when offline storage is ${mode}`,async()=>{

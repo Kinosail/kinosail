@@ -14,7 +14,6 @@ import (
 type DownloadFixture struct {
 	NewHandler          func(media, data, cache string) http.Handler
 	NewTranscodeHandler func(media, data, cache, ffmpeg string) http.Handler
-	DownloadsScript     string
 	APIServer           func(*testing.T) (http.Handler, string)
 	FirstItemID         func(*testing.T, http.Handler, string) string
 	SignIn              func(*testing.T, http.Handler, string, string) *http.Cookie
@@ -29,7 +28,7 @@ func DownloadsBoundaryContract(t *testing.T, fixture DownloadFixture) {
 		run  func(*testing.T, DownloadFixture)
 	}{
 		{"OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt", OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt},
-		{"OfflineDownloadValidationIsPublicThroughAPIAndWeb", OfflineDownloadValidationIsPublicThroughAPIAndWeb},
+		{"OfflineDownloadValidationIsPublicThroughAPI", OfflineDownloadValidationIsPublicThroughAPI},
 		{"OfflineDownloadRejectsTrailingJSONBeforeCreatingAJob", OfflineDownloadRejectsTrailingJSONBeforeCreatingAJob},
 	} {
 		t.Run(test.name, func(t *testing.T) { test.run(t, fixture) })
@@ -57,20 +56,20 @@ func OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt(t *testing.T, fixture D
 		t.Fatalf("repeat = %d %q", repeated.Code, repeated.Body.String())
 	}
 	assertOriginalDownloadReady(t, fixture, handler, token, job.ID)
-	page := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", cookie)
-	if page.Code != http.StatusOK {
-		t.Fatalf("downloads page = %d %q", page.Code, page.Body.String())
+	for _, retired := range []struct{ method, path string }{{http.MethodGet, "/offline-downloads"}, {http.MethodPost, "/offline-downloads/" + job.ID + "/remove"}, {http.MethodPost, "/offline/" + itemID}} {
+		if response := fixture.CookieRequest(t, handler, retired.method, retired.path, "", cookie); response.Code != http.StatusNotFound && response.Code != http.StatusMethodNotAllowed {
+			t.Fatalf("retired web download route %s %s = %d", retired.method, retired.path, response.Code)
+		}
 	}
-	removed := fixture.CookieRequest(t, handler, http.MethodPost, "/offline-downloads/"+job.ID+"/remove", "", cookie)
-	if removed.Code != http.StatusSeeOther {
-		t.Fatalf("web remove = %d %q", removed.Code, removed.Body.String())
+	if removed := fixture.APICall(t, handler, token, http.MethodDelete, "/api/v1/downloads/"+job.ID, nil); removed.Code >= 300 {
+		t.Fatalf("remove = %d %q", removed.Code, removed.Body.String())
 	}
 	if missing := fixture.APICall(t, handler, token, http.MethodDelete, "/api/v1/downloads/"+job.ID, nil); missing.Code != http.StatusNotFound {
 		t.Fatalf("removed download = %d %q", missing.Code, missing.Body.String())
 	}
 }
 
-func OfflineDownloadValidationIsPublicThroughAPIAndWeb(t *testing.T, fixture DownloadFixture) {
+func OfflineDownloadValidationIsPublicThroughAPI(t *testing.T, fixture DownloadFixture) {
 	handler, token := fixture.APIServer(t)
 	itemID := fixture.FirstItemID(t, handler, token)
 	for _, quality := range []string{"original", "invalid", "audio"} {

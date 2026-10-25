@@ -4,14 +4,6 @@ import { submitFixtureLogin } from "./fixture-credential-login";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import {gotoAuthForm} from "../../../scripts/testing/auth-form-navigation";
 
-export { downloadsSource } from "./static-sources";
-
-export type OfflineClient = {
-  KinosailOfflineMedia: { remove: (jobID: string) => Promise<boolean>; source: (itemID: string) => Promise<string> };
-  streamingOfflineDigest: () => { close: () => void; hex: () => Promise<string>; update: (data: ArrayBuffer) => Promise<void> };
-};
-
-
 export function configureTestInstance() {
   test.skip(process.env.KINOSAIL_TEST_INSTANCE !== "1", "requires the populated public test instance");
   test.beforeEach(async ({ page }) => page.addInitScript(() => Object.defineProperty(PublicKeyCredential, "isConditionalMediationAvailable", { value: async () => false })));

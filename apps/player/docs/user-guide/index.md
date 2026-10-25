@@ -32,7 +32,7 @@ The Owner can limit a Viewer by library, content rating, viewing hours, remote a
 2. Choose a destination such as **Movies**, **Shows**, **Music**, **Books**, or **Photos**.
 3. Open a title and select **Play**.
 4. Use **Add to My List** when you want to return later.
-5. Use **Playback & downloads** for playback mode, offline preparation, and subtitle search when those actions are available.
+5. Use **Playback** for playback mode and subtitle search when those actions are available.
 
 If a page does not show a control, the item type, your Profile policy, or the Server configuration may not permit it. See [Troubleshooting]({{ '/troubleshooting/' | relative_url }}).
 

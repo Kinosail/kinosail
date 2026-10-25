@@ -13,7 +13,7 @@ import (
 
 var assetVersions = contentVersions(map[string][]byte{
 	"app.css": applicationStyle, "theme.js": themeJS, "main.kinosail.bundle.js": mainBundle, "supporter.js": supporterJS,
-	"htmx.min.js": htmx, "player.js": playerJS, "downloads.js": downloadsJS, "pwa.js": pwaJS,
+	"htmx.min.js": htmx, "player.js": playerJS, "pwa.js": pwaJS,
 	"supporter.css": supporterCSS, "quick-connect.js": quickConnectJS, "connect.js": connectJS,
 	"quick-connect-scan.js": quickConnectScanJS, "qr-decoder.js": qrDecoderJS, "public-login.js": webassets.PublicLogin,
 	"passkeys.js": passkeysJS, "manrope.woff2": webassets.Manrope, "icon.svg": icon, "tmdb-logo.svg": tmdbLogo,

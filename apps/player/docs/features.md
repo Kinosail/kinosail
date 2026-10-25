@@ -18,7 +18,7 @@ Availability depends on your installed version, media type, browser, Profile per
 | Browse/search; filters; recently added; Continue Watching | [Browse and search]({{ '/user-guide/browse-and-search/' | relative_url }}) |
 | Video playback; resume; audio/subtitle tracks; chapters; skips; quality | [Play media]({{ '/user-guide/playback/' | relative_url }}) |
 | Music, album queues, audiobook speed and sleep timers, books/comics, photos | [Music, audiobooks, books, and photos]({{ '/user-guide/media-types/' | relative_url }}) |
-| Prepare, save, resume, verify, and remove offline downloads | [Download and play offline]({{ '/user-guide/offline/' | relative_url }}) |
+| Download, resume, verify, and remove titles in the iPhone and iPad app | [Download and play offline]({{ '/user-guide/offline/' | relative_url }}) |
 | Install the web app; keyboard shortcuts; theme; device playback | [Make the web Player yours]({{ '/user-guide/web-app/' | relative_url }}) |
 | My List, playlists, smart playlists, collections, import/export | [Lists and collections]({{ '/user-guide/lists-and-collections/' | relative_url }}) |
 | Media Shares and synchronized Watch Rooms | [Share and watch together]({{ '/user-guide/sharing/' | relative_url }}) |
