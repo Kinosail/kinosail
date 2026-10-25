@@ -150,7 +150,7 @@ var apiStreamRoutes = routeSet(
 	"POST /api/v1/items/{id}/playback-prepare", "DELETE /api/v1/items/{id}/playback-prepare",
 	"GET /api/v1/remote-players", "PUT /api/v1/remote-players/{id}", "POST /api/v1/remote-players/{id}/commands",
 	"POST /api/v1/items/{id}/cast", "POST /api/v1/cast/devices/scan", "GET /api/v1/cast/config", "GET /api/v1/cast/sessions/{id}", "POST /api/v1/cast/sessions/{id}/commands", "DELETE /api/v1/cast/sessions/{id}",
-	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}",
+	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}", "GET /hls/{id}/p/{recipe}/iframes/{file}",
 	"GET /Videos/{id}/{stream...}",
 	"GET /subtitle/{id}", "GET /subtitle/{id}/{track}", "GET /subtitle/{id}/embedded/{stream}", "GET /trickplay/{id}/{second}",
 	"GET /read/{id}/asset/{asset...}", "GET /read/{id}/file", "GET /api/v1/events", "GET /api/v1/watch-rooms/{id}/events",
