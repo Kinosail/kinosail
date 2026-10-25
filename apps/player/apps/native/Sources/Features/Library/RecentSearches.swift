@@ -10,10 +10,9 @@ private struct RecentSearches: ViewModifier {
         content
             .searchSuggestions {
                 if query.isEmpty, !recents.isEmpty {
-                    Section("Recent searches") {
-                        ForEach(recents, id: \.self) { recent in
-                            Label(recent, systemImage: "clock.arrow.circlepath").searchCompletion(recent)
-                        }
+                    ForEach(recents, id: \.self) { recent in
+                        Label(recent, systemImage: "clock.arrow.circlepath").searchCompletion(recent)
+                            .accessibilityHint("Recent search")
                     }
                     Button("Clear recent searches", role: .destructive) { store([]) }
                 }
