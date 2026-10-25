@@ -114,7 +114,7 @@ struct MediaCard: View {
                            : onQuickPlay != nil && TVOSQuickPlay.destination(for: item) != nil
                            ? "Select for details, or press Play/Pause to play." : "Select for details.")
         #else
-        .buttonStyle(PressableCardStyle())
+        .buttonStyle(PressableCardStyle()).mediaCardMenu(item, resumes: resumesPlayback)
         #endif
         .accessibilityElement(children: .combine)
         .accessibilityValue(item.isUnwatched ? (item.progress.seconds > 0 ? "Unwatched, continue from \(item.progress.seconds.clock)" : "Unwatched")
