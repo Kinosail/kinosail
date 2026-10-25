@@ -734,6 +734,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.watchkitapp;
 				PRODUCT_NAME = KinosailWatch;
 				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "watchos watchsimulator";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
@@ -755,6 +756,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kinosail.player.watchkitapp;
 				PRODUCT_NAME = KinosailWatch;
 				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "watchos watchsimulator";
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;

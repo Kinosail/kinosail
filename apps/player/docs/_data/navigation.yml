@@ -122,6 +122,8 @@
       url: /products/
     - title: Frequently asked questions
       url: /faq/
+    - title: Support
+      url: /support/
     - title: Build from source
       url: /source-install/
     - title: About these docs
