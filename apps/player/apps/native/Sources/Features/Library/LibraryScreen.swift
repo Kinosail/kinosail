@@ -8,7 +8,6 @@ struct LibraryScreen: View {
     private let mode: PlayerMode?
     @State private var query = ""
     #if os(iOS)
-    @State private var showsLetterJump = false
     @State private var showsSearch = false
     @State private var bottomVisible = false
     #endif
@@ -107,7 +106,7 @@ struct LibraryScreen: View {
                         Text("\(page.total.formatted()) \(page.total == 1 ? "title" : "titles")")
                             .font(.callout).foregroundStyle(KinoTheme.muted)
                     }
-                    MediaGrid(items: visibleItems, opensShows: selection == .shows)
+                    MediaGrid(items: visibleItems, opensShows: selection == .shows).id("library-results")
                     #endif
                     if let failure { Text(failure).foregroundStyle(KinoTheme.muted) }
                     if let page = visiblePage, page.offset + page.items.count < page.total {
@@ -144,11 +143,17 @@ struct LibraryScreen: View {
                 }
             }
             .padding(.horizontal, KinoTheme.contentPadding).padding(.vertical, 24)
-            #if os(tvOS)
-            .padding(.trailing, jumpLetters.isEmpty ? 0 : 72)
-            #endif
+            .padding(.trailing, jumpLetters.isEmpty ? 0 : KinoTheme.letterIndexInset)
         }
-        #if os(tvOS)
+        #if os(iOS)
+        .overlay(alignment: .trailing) {
+            if !jumpLetters.isEmpty {
+                LetterScrubber(letters: jumpLetters) { letter in
+                    Task { await load(reset: true, start: letter.offset); scroll.scrollTo("library-results", anchor: .top) }
+                }
+            }
+        }
+        #else
         .scrollClipDisabled()
         .overlay(alignment: .trailing) {
             if !jumpLetters.isEmpty {
@@ -167,13 +172,6 @@ struct LibraryScreen: View {
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
-        #endif
-        #if os(iOS)
-        .sheet(isPresented: $showsLetterJump) {
-            LetterJumpSheet(letters: visiblePage?.letters ?? []) { letter in
-                Task { await load(reset: true, start: letter.offset) }
-            }
-        }
         #endif
         #if os(tvOS)
         .navigationTitle("")
@@ -213,15 +211,6 @@ struct LibraryScreen: View {
             ForEach(searchViews ?? LibraryView.allCases) { Text($0.title).tag($0) }
         }.fixedSize()
         sortPicker.fixedSize()
-        if let page = visiblePage, !page.letters.isEmpty, sort == .title {
-            Button { showsLetterJump = true } label: {
-                Label("A–Z", systemImage: "textformat.abc")
-            }
-            .buttonStyle(.bordered)
-            .buttonBorderShape(.capsule)
-            .tint(KinoTheme.secondaryControlTint)
-            .secondaryControlForeground()
-        }
         #else
         if searchMode, let searchViews {
             Picker("Search in", selection: $selection) {

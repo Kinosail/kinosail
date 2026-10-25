@@ -120,6 +120,8 @@ Apple TV Home keeps the static sail background. Focus changes update only the sp
 
 Apple TV library content keeps compact navigation controls and the media grid without a focused-title header. Selection changes card focus only; it does not replace the shared sail or add a changing title above the grid. Native card focus has vertical breathing room and unclipped shelf edges.
 
+Long title-sorted libraries show an A–Z index on the trailing edge. On Apple TV the index starts below the top bar and sizes each letter so every letter fits without scrolling. On iPhone and iPad a narrow scrubber lists every letter. Dragging along it shows the current letter in a large bubble, ticks a selection haptic for each letter, and jumps the grid to that letter. VoiceOver reads it as an adjustable Title index.
+
 **The Native State Rule.** Let native controls own focus and interaction feedback. iOS media links press down to 96.5% with a spring and a slight dim; Reduce Motion keeps the dim only. tvOS adds a scale-and-shadow lift, a visible focus outline and retains focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
 
 ## Shapes

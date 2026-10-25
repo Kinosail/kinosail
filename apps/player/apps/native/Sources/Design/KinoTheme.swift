@@ -29,6 +29,14 @@ enum KinoTheme {
         #endif
     }
 
+    static var letterIndexInset: CGFloat {
+        #if os(tvOS)
+        72
+        #else
+        14
+        #endif
+    }
+
     static var shelfSpacing: CGFloat {
         #if os(tvOS)
         40
