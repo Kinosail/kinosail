@@ -127,7 +127,7 @@ func assertResumeFragment(t *testing.T, ctx context.Context, ffprobe string, fra
 	if err := os.WriteFile(path, fragment, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	probe := exec.CommandContext(ctx, ffprobe, "-v", "error", "-show_entries", "packet=codec_type,pts_time", "-of", "csv=p=0", path) //nolint:gosec // G204: tool path comes from LookPath; the fragment is a temporary test file.
+	probe := exec.CommandContext(ctx, ffprobe, "-v", "error", "-show_entries", "packet=codec_type,pts_time", "-of", "csv=p=0", path)
 	output, err := probe.CombinedOutput()
 	if err != nil {
 		t.Fatalf("%s probe: %v: %s", name, err, output)
