@@ -177,7 +177,7 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 	}
 	defer output.close()
 	timeline, timelineErr := manager.readCopiedHLSTimelineContext(ctx, root, options.Cache)
-	if timelineErr != nil && (copiedHLSIndexRequired(ctx) || manager.copiedHLSTimelinePresent(root) || manager.coldCopiedHLSNeedsIndex(ctx, item, sourceRecipe)) {
+	if timelineErr != nil && (copiedHLSIndexRequired(ctx) || manager.copiedHLSTimelinePresent(root) || startNumber == 0 && manager.coldCopiedHLSNeedsIndex(ctx, item, sourceRecipe)) {
 		return errCopiedHLSIndex
 	}
 	if timeline != nil {
@@ -233,6 +233,9 @@ func (manager *hlsManager) encodeVariant(ctx context.Context, item library.Item,
 		if refill != nil {
 			arguments = append(arguments, "-output_ts_offset", refill.output, "-bsf:a", refill.drop)
 		} else {
+			if recipe.mode == "remux" || recipe.mode == "audio-transcode" {
+				arguments = append(arguments, "-copypriorss", "0")
+			}
 			arguments = append(arguments, "-output_ts_offset", ffmpegSeconds(recipe.outputTime))
 		}
 	}
