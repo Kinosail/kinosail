@@ -160,7 +160,7 @@ private struct IOSEpisodeRow: View {
             .buttonStyle(.plain)
             .accessibilityLabel(accessibilitySummary)
             .accessibilityHint("Shows episode details")
-            NavigationLink(value: item.playingDestination) {
+            MediaDestinationLink(destination: item.playingDestination, item: item) {
                 Image(systemName: "play.fill").font(.body.weight(.semibold))
                     .foregroundStyle(KinoTheme.signal)
                     .frame(width: 44, height: 44)

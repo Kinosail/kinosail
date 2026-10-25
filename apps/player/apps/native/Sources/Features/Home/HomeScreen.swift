@@ -36,7 +36,7 @@ struct HomeScreen: View {
                                 }
                                 if !selection.tvWatchingRail.isEmpty {
                                     MediaShelf(title: "Continue watching", items: selection.tvWatchingRail, landscape: true,
-                                               resumesPlayback: true, onQuickPlay: { quickPlay = $0 },
+                                               resumesPlayback: true, onQuickPlay: { session.open($0) { quickPlay = $0 } },
                                                onFocus: { showWatching($0, proxy: proxy) },
                                                takesFocus: takesLaunchFocus, onTookFocus: { launchFocusPending = false })
                                 }
@@ -50,7 +50,7 @@ struct HomeScreen: View {
                     if let featured = selection.featured, !featured.spotlightArtwork.isEmpty {
                         CinemaSpotlight(item: featured, artwork: featured.spotlightArtwork, eyebrow: featuredHeading(selection),
                                         subtitle: homeSubtitle(for: featured), scroll: scroll) {
-                            NavigationLink(value: featured.playingDestination) {
+                            MediaDestinationLink(destination: featured.playingDestination, item: featured) {
                                 Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
                                     .padding(.horizontal, 6)
                             }
@@ -73,7 +73,7 @@ struct HomeScreen: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             if let featured = selection.featured {
                                 CinemaHero(item: featured, subtitle: homeSubtitle(for: featured), showsPlot: false) {
-                                    NavigationLink(value: featured.playingDestination) {
+                                    MediaDestinationLink(destination: featured.playingDestination, item: featured) {
                                         Label(featured.playLabel, systemImage: featured.kind == .book ? "book.fill" : "play.fill")
                                             .frame(maxWidth: .infinity)
                                     }
@@ -198,7 +198,7 @@ struct HomeScreen: View {
     @ViewBuilder private func recentShelf(_ title: LocalizedStringKey, items: [MediaItem], opensShows: Bool = false, leads: Bool = false) -> some View {
         if !items.isEmpty {
             #if os(tvOS)
-            MediaShelf(title: title, items: items, onQuickPlay: { quickPlay = $0 }, opensShows: opensShows,
+            MediaShelf(title: title, items: items, onQuickPlay: { session.open($0) { quickPlay = $0 } }, opensShows: opensShows,
                        takesFocus: leads && takesLaunchFocus, onTookFocus: { launchFocusPending = false })
             #else
             MediaShelf(title: title, items: items, opensShows: opensShows)

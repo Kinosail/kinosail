@@ -29,7 +29,7 @@ struct MediaCard: View {
         return resumesPlayback ? item.playingDestination : item.destination(inShows: opensShow)
     }
     var body: some View {
-        NavigationLink(value: destination) {
+        MediaDestinationLink(destination: destination, item: item, zoomsFromLabel: false) {
             VStack(alignment: .leading, spacing: 10) {
                 Artwork(path: landscape ? item.landscapeArtwork : item.cardPoster,
                         symbol: item.kind.symbol, ratio: landscape ? 16 / 9 : item.isAudio ? 1 : 2 / 3,
@@ -52,7 +52,7 @@ struct MediaCard: View {
                     .downloadBadge(item)
                     #endif
                     .clipShape(.rect(cornerRadius: 12))
-                    .zoomSource(destination)
+                    .zoomSource(destination).videoZoomArtwork()
                     #if os(tvOS)
                     .overlay {
                         if focused {

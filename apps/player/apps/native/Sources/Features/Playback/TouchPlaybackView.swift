@@ -49,6 +49,7 @@ struct TouchPlaybackView: View {
             TouchVideoView(player: playback.player, presentation: presentation, controlsVisible: controlsVisible, controlsInset: timelineHeight + 16,
                            restore: { session.showsVideoPlayer = true })
                 .ignoresSafeArea()
+            PlaybackOpeningArtwork(visible: preparing && error == nil && !presentation.pictureInPicture)
             GeometryReader { geometry in
                 Color.clear.contentShape(Rectangle())
                     .gesture(SpatialTapGesture(count: 2).onEnded { tap in
@@ -68,7 +69,7 @@ struct TouchPlaybackView: View {
             GeometryReader { geometry in
                 let area = TouchPlaybackLayout.controlArea(size: geometry.size, division: geometry.playbackDivision)
                 VStack(spacing: 0) {
-                    TouchPlaybackHeader(title: playback.currentItem?.title ?? "Playback", compact: compactControls,
+                    TouchPlaybackHeader(item: playback.currentItem ?? session.video.preview(for: session.presentedVideoID), compact: compactControls,
                                         close: { dismissal.requestClose(close) }, options: { sheet = .options; reveal() })
                     Spacer(minLength: 12)
                     if let error {
@@ -127,30 +128,10 @@ struct TouchPlaybackView: View {
     }
 
     private var transport: some View {
-        HStack(spacing: 36) {
-            Button("Back 10 seconds", systemImage: "gobackward.10") { seek(displayedPosition - 10) }
-                .font(.title2).frame(width: 56, height: 56)
-                .keyboardShortcut(.leftArrow, modifiers: [])
-            if preparing {
-                ProgressView().controlSize(.large).frame(width: 72, height: 72).accessibilityHidden(true)
-            } else {
-                Button {
-                    reveal()
-                    if playback.completed { seek(0, resume: true) } else { playback.togglePlayback() }
-                } label: {
-                    Image(systemName: playback.completed ? "arrow.counterclockwise" : playback.isPlaying || playback.buffering ? "pause.fill" : "play.fill")
-                        .font(.largeTitle).frame(width: 72, height: 72)
-                }
-                .accessibilityLabel(playback.completed ? "Replay" : playback.isPlaying || playback.buffering ? "Pause" : "Play")
-                .keyboardShortcut(.space, modifiers: [])
-            }
-            Button("Forward 10 seconds", systemImage: "goforward.10") { seek(displayedPosition + 10) }
-                .font(.title2).frame(width: 56, height: 56)
-                .keyboardShortcut(.rightArrow, modifiers: [])
-        }
-        .labelStyle(.iconOnly).buttonStyle(.plain)
-        .background(.black.opacity(0.35), in: Capsule())
-        .disabled(preparing || presentation.pictureInPicture)
+        TouchPlaybackTransport(preparing: preparing, disabled: preparing || presentation.pictureInPicture,
+                               back: { seek(displayedPosition - 10) },
+                               toggle: { reveal(); if playback.completed { seek(0, resume: true) } else { playback.togglePlayback() } },
+                               forward: { seek(displayedPosition + 10) })
     }
 
     private var timeline: some View {
@@ -216,11 +197,11 @@ struct TouchPlaybackView: View {
     private func actions(showLabel: Bool) -> some View {
         HStack(spacing: 8) {
             Button { sheet = .tracks; reveal() } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: playback.selectedSubtitleTrackID != nil ? "captions.bubble.fill" : "captions.bubble")
+                Group {
                     if showLabel { Text(playback.trackControlsTitle).fixedSize() }
+                    else { Image(systemName: playback.selectedSubtitleTrackID != nil ? "captions.bubble.fill" : "captions.bubble") }
                 }
-                .font(.subheadline)
+                .font(.subheadline.weight(.medium))
             }
             .accessibilityLabel(playback.trackControlsTitle)
             .frame(minWidth: 44, minHeight: 44).disabled(playback.audioTracks.isEmpty && playback.subtitleTracks.isEmpty)

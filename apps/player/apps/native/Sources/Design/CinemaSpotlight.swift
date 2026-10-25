@@ -30,7 +30,6 @@ struct CinemaSpotlight<Actions: View, Secondary: View>: View {
     @Environment(\.colorScheme) private var colorScheme
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 40.0
     @State private var width: CGFloat = 0
-    @State private var screenTop: CGFloat = 0
 
     private var geometry: SpotlightGeometry {
         SpotlightGeometry(width: width, wide: sizeClass == .regular && !dynamicType.isAccessibilitySize,
@@ -47,9 +46,6 @@ struct CinemaSpotlight<Actions: View, Secondary: View>: View {
     private var art: some View {
         Color.clear
             .frame(height: artHeight)
-            .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minY } action: { top in
-                if (scroll?.offset ?? 0) == 0, top >= 0, top < Self.bleed { screenTop = top }
-            }
             .overlay(alignment: .bottom) {
                 backdrop
                     .overlay(alignment: .top) {
@@ -68,7 +64,7 @@ struct CinemaSpotlight<Actions: View, Secondary: View>: View {
         let canvas = CGSize(width: geometry.canvasWidth, height: artHeight + Self.bleed)
         if artwork != item.poster && !geometry.wide && !geometry.short {
             let sharp = CGSize(width: canvas.width,
-                               height: min(max(canvas.width * 9 / 16, (screenTop + artHeight) * 0.62), canvas.width * 0.75))
+                               height: min(max(canvas.width * 9 / 16, artHeight * 0.62), canvas.width * 0.75))
             ZStack(alignment: .top) {
                 Artwork(path: artwork, ratio: canvas.width / max(canvas.height, 1), dimension: 400,
                         fillsFrame: true, isBackdrop: true, canvasSize: canvas)
@@ -77,10 +73,11 @@ struct CinemaSpotlight<Actions: View, Secondary: View>: View {
                 Artwork(path: artwork, ratio: sharp.width / max(sharp.height, 1), dimension: 1600,
                         fillsFrame: true, isBackdrop: true, canvasSize: sharp)
                     .mask {
-                        LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.6),
-                                               .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom)
+                        LinearGradient(stops: [.init(color: .clear, location: 0), .init(color: .black, location: 0.16),
+                                               .init(color: .black, location: 0.6), .init(color: .clear, location: 1)],
+                                       startPoint: .top, endPoint: .bottom)
                     }
-                    .padding(.top, max(0, Self.bleed - screenTop))
+                    .padding(.top, Self.bleed)
             }
             .frame(width: canvas.width, height: canvas.height, alignment: .top)
             .clipped()
