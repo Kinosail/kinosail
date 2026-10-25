@@ -80,9 +80,9 @@ struct TouchPlaybackView: View {
                                 .buttonStyle(.borderedProminent).foregroundStyle(.black)
                         }
                     } else {
-                        VStack(spacing: 20) {
-                            if let pending { Text(pending).font(.subheadline).foregroundStyle(.white) }
-                            if !compactControls { transport }
+                        let status = pending.map { Text($0).font(.subheadline).foregroundStyle(.white).fixedSize() }
+                        if compactControls { status } else {
+                            transport.overlay(alignment: .top) { status.alignmentGuide(.top) { $0[.bottom] + 20 } }
                         }
                     }
                     Spacer(minLength: 12)

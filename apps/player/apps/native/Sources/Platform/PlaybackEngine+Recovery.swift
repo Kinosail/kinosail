@@ -223,7 +223,7 @@ extension PlaybackEngine {
             nowPlaying.update(seconds: seconds, duration: duration, rate: isPlaying ? Double(player?.rate ?? 0) : 0)
         }
         if let marker = source?.markers.first(where: { source?.autoSkip.contains($0.type) == true && seconds >= $0.start && seconds < $0.end }) {
-            Task { try? await seek(to: marker.end) }
+            Task { if marker.end >= duration - 1, source?.nextItemID != nil { await finishIntoNextEpisode() } else { try? await seek(to: marker.end) } }
         }
         if isPlaying, abs(seconds - lastSaved) >= 15 { saveProgress(watched: false) }
     }

@@ -11,7 +11,9 @@ struct LetterScrubber: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let row = max(1, min(preferredRow, (proxy.size.height - 16) / CGFloat(max(letters.count, 1))))
+            let tall = proxy.size.height > 600
+            let top: CGFloat = tall ? 160 : 64, bottom: CGFloat = tall ? 120 : 64
+            let row = max(1, min(preferredRow, (proxy.size.height - top - bottom - 16) / CGFloat(max(letters.count, 1))))
             VStack(spacing: 0) {
                 ForEach(Array(letters.enumerated()), id: \.element.id) { index, letter in
                     Text(letter.label)
@@ -44,9 +46,10 @@ struct LetterScrubber: View {
             .background(.ultraThinMaterial.opacity(active == nil ? 0 : 1), in: Capsule())
             .animation(.snappy(duration: 0.16), value: active)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
+            .padding(.top, top).padding(.bottom, bottom)
         }
         .frame(width: 34)
-        .padding(.vertical, 12)
+        .ignoresSafeArea(.container, edges: .vertical)
         .sensoryFeedback(.selection, trigger: active) { _, new in new != nil }
         .task(id: active) {
             guard let active, active != sent else { return }
