@@ -13,10 +13,10 @@ struct LibraryScreen: View {
     #endif
     #if os(tvOS)
     @State private var quickPlay: ScreenDestination?
-    @State private var focusedLetter: String?
     @State private var gridFocusPending = true
     #endif
     @State private var selection: LibraryView
+    @State private var jumpTarget: String?
     @State private var sort = LibrarySort.title
     @State private var items: [MediaItem] = []
     @State private var page: LibraryPage?
@@ -44,7 +44,7 @@ struct LibraryScreen: View {
     private var visibleItems: [MediaItem] { loadedKey == requestKey ? items : savedSnapshot?.items ?? [] }
     private var visiblePage: LibraryPage? { loadedKey == requestKey ? page : savedSnapshot?.page }
     private var jumpLetters: [LibraryPage.Letter] {
-        guard let page = visiblePage, page.total > page.limit, page.letters.count > 1,
+        guard let page = visiblePage, page.total > 60, page.letters.count > 1,
               sort == .title, query.isEmpty, !searchMode else { return [] }
         return page.letters
     }
@@ -113,11 +113,7 @@ struct LibraryScreen: View {
                         #if os(tvOS)
                         if failure != nil {
                             Button("Try again") {
-                                Task {
-                                    if let focusedLetter, let letter = jumpLetters.first(where: { $0.label == focusedLetter }) {
-                                        await load(reset: true, start: letter.offset)
-                                    } else { await load(reset: false) }
-                                }
+                                Task { await load(reset: false) }
                             }
                             .tvCapsule()
                         }
@@ -149,7 +145,8 @@ struct LibraryScreen: View {
         .overlay(alignment: .trailing) {
             if !jumpLetters.isEmpty {
                 LetterScrubber(letters: jumpLetters) { letter in
-                    Task { await load(reset: true, start: letter.offset); scroll.scrollTo("library-results", anchor: .top) }
+                    jumpTarget = letter.label
+                    Task { if let id = await jump(to: letter), jumpTarget == letter.label { scroll.scrollTo(id, anchor: .top) } }
                 }
             }
         }
@@ -157,14 +154,11 @@ struct LibraryScreen: View {
         .scrollClipDisabled()
         .overlay(alignment: .trailing) {
             if !jumpLetters.isEmpty {
-                TVLetterIndex(letters: jumpLetters, onFocus: { focusedLetter = $0 }) { letter in
-                    guard letter.offset != page?.offset else { return }
-                    Task { await load(reset: true, start: letter.offset) }
+                TVLetterIndex(letters: jumpLetters) { letter in
+                    jumpTarget = letter.label
+                    Task { if let id = await jump(to: letter), jumpTarget == letter.label { scroll.scrollTo(id, anchor: .top) } }
                 }.padding(.trailing, 16)
             }
-        }
-        .onChange(of: page?.offset) { _, _ in
-            if focusedLetter != nil { scroll.scrollTo("library-results", anchor: .top) }
         }
         #endif
         }
@@ -231,10 +225,21 @@ struct LibraryScreen: View {
         }
     }
 
-    private func load(reset: Bool, start: Int = 0, force: Bool = false) async {
+    private func jump(to letter: LibraryPage.Letter) async -> String? {
+        let key = requestKey
+        while items.count <= letter.offset, loadedKey == key, failure == nil, let page, page.offset + page.items.count < page.total {
+            if loading { try? await Task.sleep(for: .milliseconds(50)); continue }
+            let before = items.count
+            await load(reset: false, limit: 200)
+            if items.count == before { break }
+        }
+        return loadedKey == key && items.indices.contains(letter.offset) ? items[letter.offset].id : nil
+    }
+
+    private func load(reset: Bool, force: Bool = false, limit: Int = 60) async {
         guard let client = session.client, reset || !loading else { return }
         let clientID = client.identity
-        let offset = reset ? start : (page.map { $0.offset + $0.items.count } ?? 0)
+        let offset = reset ? 0 : (page.map { $0.offset + $0.items.count } ?? 0)
         let key = requestKey
         let revision = session.contentRevision
         if reset {
@@ -252,7 +257,7 @@ struct LibraryScreen: View {
         do {
             let base = reset ? [] : items
             var policy: CatalogPolicy = force ? .reload : .automatic
-            if (!reset || page == nil), let saved = try? await client.library(query: query, view: selection, sort: sort, offset: offset, policy: .cached) {
+            if (!reset || page == nil), let saved = try? await client.library(query: query, view: selection, sort: sort, offset: offset, limit: limit, policy: .cached) {
                 try Task.checkCancellation()
                 guard attempt == generation, requestKey == key, session.client?.identity == clientID,
                       session.contentRevision == revision else { return }
@@ -263,7 +268,7 @@ struct LibraryScreen: View {
                                                     for: snapshotKey, clientID: clientID)
                 } else { policy = .reload }
             }
-            let result = try await client.library(query: query, view: selection, sort: sort, offset: offset, policy: policy)
+            let result = try await client.library(query: query, view: selection, sort: sort, offset: offset, limit: limit, policy: policy)
             try Task.checkCancellation()
             guard attempt == generation, requestKey == key, session.client?.identity == clientID,
                   session.contentRevision == revision else { return }
