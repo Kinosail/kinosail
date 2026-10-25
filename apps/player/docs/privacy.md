@@ -6,13 +6,21 @@ section: Security
 
 # Kinosail Player privacy policy
 
-Kinosail Player connects to a Kinosail Server chosen and operated by you or your household. The iPhone, iPad, and Apple TV apps use that Server to show your library and play your media. Kinosail does not operate a central account, media relay, or analytics service for these apps.
+Kinosail Player connects to media servers that you or your household choose and operate. These can be Kinosail, Jellyfin, Emby, or Plex servers. The iPhone, iPad, Apple TV, and Apple Watch apps use those servers to show your library and play your media. Kinosail does not operate a central account, media relay, or analytics service for these apps.
 
 ## Data the apps use
 
 The apps send your session credential and requests needed for browsing, playback, downloads, and saved position directly to your selected Server. The Server stores Viewer Profiles, account and session records, library metadata, and viewing activity in its private application data. The Server Owner controls that installation, its backups, access, and retention. Original media stays in the Owner's media storage unless you choose to download a copy to an iPhone or iPad.
 
 On your device, the apps keep the session credential in Keychain. They may keep preferences, viewing progress awaiting sync, cached catalog data and artwork, and, on iPhone and iPad, media you explicitly download. Apple TV can show a credential-free snapshot of titles and artwork in Top Shelf; this can be turned off in Settings, and the snapshot expires after 24 hours. The apps do not include advertising or analytics SDKs and do not use this data for tracking.
+
+## Jellyfin, Emby, and Plex servers
+
+When you add a Jellyfin or Emby server, the app sends your user name and password, or a Quick Connect request, directly to that server. When you add Plex, the app shows a code that you approve on plex.tv. The app then receives a Plex access token from plex.tv, asks plex.tv for the servers your Plex account can use, and can load artwork from Plex's metadata service. Those servers and Plex handle your data under their own privacy practices. The app keeps their credentials in Keychain on your device.
+
+## Apple Watch heart rate
+
+The Apple Watch app can make an optional heart rate graph for a movie. It is off by default. When you start a graph, the Watch asks for read-only access to heart rate in Apple Health. The app reads heart rate samples for the time you watched, matches them to the movie position, and keeps the graph on the Watch. The app does not write to Apple Health. It does not send heart rate data to the iPhone, Apple TV, any server, or Kinosail, and it does not use the data for advertising. You can turn off access at any time in Health settings. Starting a new graph replaces the saved graph, and deleting the Watch app removes it.
 
 ## Optional services
 

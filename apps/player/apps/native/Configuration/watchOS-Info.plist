@@ -11,6 +11,7 @@
 <key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
 <key>WKCompanionAppBundleIdentifier</key><string>com.kinosail.player</string>
 <key>WKApplication</key><true/>
+<key>ITSAppUsesNonExemptEncryption</key><false/>
 <key>WKRunsIndependentlyOfCompanionApp</key><false/>
 <key>NSHealthShareUsageDescription</key><string>With your permission, Kinosail maps heart rate readings to the movie you watched. The graph stays on your Watch.</string>
 </dict></plist>
