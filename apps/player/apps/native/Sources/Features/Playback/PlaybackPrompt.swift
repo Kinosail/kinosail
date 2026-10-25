@@ -23,9 +23,7 @@ extension PlaybackCoordinator {
         let ending = source.markers.filter { ($0.type == "credits" || $0.type == "outro") && $0.start > duration / 2 }
             .map(\.start).min() ?? max(duration / 2, duration - 30)
         guard completed || now >= ending else { return nil }
-        let remaining = Int((duration - now).rounded(.up))
-        let title = !completed && remaining <= 10 ? "Next Episode in \(remaining)" : "Next Episode"
-        return PlaybackPrompt(action: .next(next), title: title, symbol: "forward.fill")
+        return PlaybackPrompt(action: .next(next), title: "Next Episode", symbol: "forward.fill")
     }
 }
 

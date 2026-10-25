@@ -8,6 +8,17 @@ extension PlaybackEngine {
 
     static func viewerActed() { automaticEpisodes = 0 }
 
+    func finishIntoNextEpisode() async {
+        guard !completed, let item = currentItem else { return }
+        completed = true
+        wantsPlayback = false; nativeIntent.playing.withLock { $0 = false }
+        player?.pause(); isPlaying = false; buffering = false
+        saveProgress(watched: true)
+        episodeLog.info("operation=auto-next outcome=credits-skipped")
+        onCompleted?(item, source?.nextItemID)
+        await advanceEpisode(after: item)
+    }
+
     func advanceEpisode(after item: MediaItem) async {
         guard item.kind == .video, let nextID = source?.nextItemID, let client, let store else { return }
         guard automaticEpisodes < Self.automaticEpisodeLimit else {

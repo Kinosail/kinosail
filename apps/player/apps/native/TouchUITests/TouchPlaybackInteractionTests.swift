@@ -17,8 +17,16 @@ final class TouchPlaybackInteractionTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["−1:00"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertFalse(player(app).buttons["Play"].exists, app.debugDescription)
         XCTAssertFalse(player(app).buttons["Pause"].exists, app.debugDescription)
+        let status = app.staticTexts.matching(NSPredicate(format: "label IN %@", ["Opening video…", "Preparing video…"])).firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 5), app.debugDescription)
         try await assertCloseHittable(app)
         record("waiting for first frame", app)
+        let forward = app.buttons["Forward 10 seconds"]
+        let preparingFrame = forward.frame
+        _ = try await URLSession.shared.data(from: URL(string: "http://127.0.0.1:4281/qa/state?mode=loaded")!)
+        XCTAssertTrue(player(app).buttons["Pause"].waitForExistence(timeout: 90), app.debugDescription)
+        XCTAssertFalse(status.exists)
+        XCTAssertEqual(forward.frame, preparingFrame, "Transport moved when the status cleared")
         app.buttons["Close player"].tap()
         XCTAssertTrue(app.buttons["Details"].waitForExistence(timeout: 10))
     }
