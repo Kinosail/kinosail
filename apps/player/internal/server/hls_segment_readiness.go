@@ -34,6 +34,7 @@ func (manager *hlsManager) waitForRecipeSegment(request *http.Request, item libr
 				cancel()
 				return false
 			}
+			job.observation.emit("media_ready", "")
 		}
 		if err != nil {
 			break

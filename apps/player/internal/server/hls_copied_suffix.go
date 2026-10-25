@@ -43,11 +43,8 @@ func (manager *hlsManager) bindCopiedHLSIndex(ctx context.Context, item library.
 	if copiedHLSIndexRequired(ctx) {
 		return errCopiedHLSIndex
 	}
-	if !manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
+	if number != 0 || !manager.coldCopiedHLSNeedsIndex(ctx, item, recipe) {
 		return nil
-	}
-	if number != 0 {
-		return errCopiedHLSIndex
 	}
 	if !manager.copiedHLSCacheUnwritten(directory) {
 		return errCopiedHLSIndex
