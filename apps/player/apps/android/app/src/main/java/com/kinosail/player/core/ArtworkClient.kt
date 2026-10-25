@@ -40,6 +40,11 @@ class ArtworkClient(
         return decode(read(path, token, viewerId, MAX_PHOTO_BYTES), 4096, 250_000_000, 1)
     }
 
+    fun scrubFrame(path: String, token: String, viewerId: String): Bitmap {
+        require(path.matches(SCRUB_FRAME) && viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid preview request." }
+        return decode(read(path, token, viewerId, MAX_FRAME_BYTES), 1024, 1_048_576, 1)
+    }
+
     private fun read(path: String, token: String, viewerId: String, maximum: Int): ByteArray {
         ServerApi.checkedCredential(token, 512)
         val connection = open(URL(server.url, path))
@@ -97,6 +102,8 @@ class ArtworkClient(
 
     companion object {
         private const val MAX_BYTES = 16 * 1024 * 1024
+        private const val MAX_FRAME_BYTES = 512 * 1024
+        private val SCRUB_FRAME = Regex("/trickplay/[A-Za-z0-9_-]{1,128}/[0-9]{1,5}(?:\\?playbackToken=[A-Za-z0-9._~%-]{1,12000})?")
         private const val MAX_PHOTO_BYTES = 64 * 1024 * 1024
     }
 }

@@ -298,6 +298,7 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 }
             }
         }
+        if (!inPip) ScrubPreview(playerView, playback, tv)
     }
 }
 

@@ -57,6 +57,24 @@ class PlaybackApiTest {
         }
     }
 
+    @Test fun acceptsOnlyThisTitlesTrickplayTemplate() {
+        for (template in listOf("/trickplay/film-1/{second}", "/trickplay/film-1/{second}?playbackToken=a.b_c-1%2F")) {
+            val current = response.replace("\"progressToken\":", "\"trickplay\":\"$template\",\"progressToken\":")
+            val source = PlaybackApi(server) { PlaybackResponse(200, current) }.source("film-1", "token", "alex", capabilities)
+            assertEquals(template, source.trickplay)
+        }
+        assertEquals(null, PlaybackApi(server) { PlaybackResponse(200, response) }
+            .source("film-1", "token", "alex", capabilities).trickplay)
+        for (template in listOf("/trickplay/other/{second}", "https://evil.example/trickplay/film-1/{second}",
+            "/trickplay/film-1/10", "/trickplay/film-1/{second}?other=1", "/trickplay/film-1/{second}?playbackToken=",
+            "/trickplay/film-1/{second}?playbackToken=a b")) {
+            val current = response.replace("\"progressToken\":", "\"trickplay\":\"$template\",\"progressToken\":")
+            assertThrows(template, IllegalArgumentException::class.java) {
+                PlaybackApi(server) { PlaybackResponse(200, current) }.source("film-1", "token", "alex", capabilities)
+            }
+        }
+    }
+
     @Test fun audioConversionPlansUseTheConvertedStream() {
         val converted = response.replace("\"mode\":\"direct\",\"reason\":\"direct-preferred\"}",
             "\"mode\":\"audio-transcode\",\"reason\":\"audio-codec-unsupported\",\"audioCompatibilityRequired\":true}")
