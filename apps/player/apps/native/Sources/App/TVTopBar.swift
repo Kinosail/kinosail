@@ -12,15 +12,15 @@ struct TVTopBar: View {
                     .padding(.horizontal, 18).frame(height: 52)
             }
             .focused(focus, equals: .search)
-            .buttonStyle(.plain)
-            .foregroundStyle(focus.wrappedValue == .search ? KinoTheme.text : KinoTheme.muted)
-            .background(focus.wrappedValue == .search ? KinoTheme.raised : .clear, in: Capsule())
+            .tvFlat()
+            .foregroundStyle(focus.wrappedValue == .search ? KinoTheme.tvOSPrimaryInk : KinoTheme.muted)
+            .background(focus.wrappedValue == .search ? .white : .clear, in: Capsule())
             Spacer()
             Button { onSelect(.settings) } label: { Image(systemName: "gearshape").frame(width: 52, height: 52) }
                 .focused(focus, equals: .settings)
-                .buttonStyle(.plain)
-                .foregroundStyle(focus.wrappedValue == .settings ? KinoTheme.text : KinoTheme.muted)
-                .background(focus.wrappedValue == .settings ? KinoTheme.raised : .clear, in: RoundedRectangle(cornerRadius: 16))
+                .tvFlat()
+                .foregroundStyle(focus.wrappedValue == .settings ? KinoTheme.tvOSPrimaryInk : KinoTheme.muted)
+                .background(focus.wrappedValue == .settings ? .white : .clear, in: Circle())
                 .accessibilityLabel("Settings")
         }
         .font(.callout)

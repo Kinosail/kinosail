@@ -64,7 +64,7 @@ extension KinoTheme {
 extension View {
     @ViewBuilder func primaryCapsule() -> some View {
         #if os(tvOS)
-        buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.tvOSPrimaryFill)
+        tvCapsule(prominent: true)
         #else
         buttonStyle(.borderedProminent).buttonBorderShape(.capsule).tint(KinoTheme.signal)
         #endif
