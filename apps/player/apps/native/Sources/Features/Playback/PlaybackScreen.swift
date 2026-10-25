@@ -49,7 +49,7 @@ struct PlaybackScreen: View {
     private var playbackContent: some View {
         Group {
             #if os(iOS)
-            TouchPlaybackView(failure: failure, retry: { revision += 1 }, close: { if let onClose { onClose() } else { dismiss() } })
+            TouchPlaybackView(failure: failure, retry: { revision += 1 }, close: { closePlayback() })
             #else
             TVPlaybackSurface(failure: failure, retry: { revision += 1 }, close: { closePlayback() },
                               options: { showsTools = true }, seekPreview: { showsSeekPreview = true })
@@ -81,7 +81,10 @@ struct PlaybackScreen: View {
         }
     }
 
-    private func closePlayback() { if let onClose { onClose() } else { dismiss() } }
+    private func closePlayback() {
+        if !session.player.presentation.pictureInPicture, session.player.currentItem?.kind == .video { session.player.pause() }
+        if let onClose { onClose() } else { dismiss() }
+    }
 }
 
 #if os(tvOS)

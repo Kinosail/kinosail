@@ -71,7 +71,7 @@ private struct ResumeRow: View {
     @ScaledMetric(relativeTo: .headline) private var rowHeight: CGFloat = 176
     #endif
     var body: some View {
-        NavigationLink(value: item.playingDestination) {
+        MediaDestinationLink(destination: item.playingDestination, item: item, zoomsFromLabel: false) {
             HStack(spacing: rowSpacing) {
                 if !dynamicType.isAccessibilitySize {
                     let usesBackdrop = !item.backdrop.isEmpty
@@ -82,6 +82,7 @@ private struct ResumeRow: View {
                         .frame(width: 112)
                         #endif
                         .clipShape(.rect(cornerRadius: 8))
+                        .videoZoomArtwork()
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.title).font(.headline).foregroundStyle(KinoTheme.text)
