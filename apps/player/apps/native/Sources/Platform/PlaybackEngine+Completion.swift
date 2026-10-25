@@ -20,7 +20,7 @@ extension PlaybackEngine {
         completionLog.info("operation=native-end outcome=completed restored=\(restored) session=\(attempt.uuidString, privacy: .public)")
         onCompleted?(item, source?.nextItemID)
         guard generation == attempt, self.player === player, player.currentItem === nativeItem, completed else { return }
-        guard let next = queue.next(automatic: true), let client, let store else { return }
+        guard let next = queue.next(automatic: true), let client, let store else { return await advanceEpisode(after: item) }
         do { try await play(next, client: client, store: store) }
         catch {   }
     }

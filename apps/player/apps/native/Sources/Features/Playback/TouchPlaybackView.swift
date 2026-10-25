@@ -92,7 +92,11 @@ struct TouchPlaybackView: View {
             }
             .opacity(!presentation.pictureInPicture && (controlsVisible || error != nil) ? 1 : 0).allowsHitTesting(!presentation.pictureInPicture && (controlsVisible || error != nil))
             .accessibilityHidden(presentation.pictureInPicture || (!controlsVisible && error == nil))
+            if !presentation.pictureInPicture, error == nil, let prompt = playback.prompt {
+                PlaybackPromptButton(prompt: prompt, bottom: controlsVisible ? timelineHeight + 12 : 32)
+            }
         }
+        .animation(reduceMotion ? nil : .snappy, value: playback.prompt?.action)
         .background(.black)
         .foregroundStyle(.white)
         .tint(.white)

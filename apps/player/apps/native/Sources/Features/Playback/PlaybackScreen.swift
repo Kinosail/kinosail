@@ -116,6 +116,7 @@ struct TVPlaybackSurface: View {
                     .ignoresSafeArea()
                     .accessibilityHidden(message != nil || player == nil)
                     .onAppear { mounted = true }
+                    .background { TVPlaybackPromptActions() }
             }
             if let message {
                 ZStack {

@@ -60,7 +60,7 @@ final class PlaybackCoordinator {
         set { engine.onCompleted = newValue }
     }
 
-    func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws { try await engine.play(item, client: client, store: store) }
+    func play(_ item: MediaItem, client: ServerClient, store: ProgressSyncStore) async throws { PlaybackEngine.viewerActed(); try await engine.play(item, client: client, store: store) }
     func prepare(_ item: MediaItem, client: ServerClient) async throws { try await engine.prepare(item, client: client) }
     #if os(iOS)
     func playOffline(_ item: MediaItem, file: URL, downloadID: String, client: ServerClient, store: ProgressSyncStore,
@@ -69,10 +69,10 @@ final class PlaybackCoordinator {
                                      preferences: preferences, subtitlePolicy: subtitlePolicy)
     }
     #endif
-    func seek(to seconds: Double) async throws { try await engine.seek(to: seconds) }
-    func togglePlayback() { engine.togglePlayback() }
-    func pause() { engine.pause() }
-    func resume() { engine.resume() }
+    func seek(to seconds: Double) async throws { PlaybackEngine.viewerActed(); try await engine.seek(to: seconds) }
+    func togglePlayback() { PlaybackEngine.viewerActed(); engine.togglePlayback() }
+    func pause() { PlaybackEngine.viewerActed(); engine.pause() }
+    func resume() { PlaybackEngine.viewerActed(); engine.resume() }
     func checkpoint() { engine.checkpoint() }
     func applyPreferences(_ preferences: PlaybackPreferences, preserveDeviceChoices: Bool = false) async throws {
         let effective: PlaybackPreferences

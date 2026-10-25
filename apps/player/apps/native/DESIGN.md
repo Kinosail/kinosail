@@ -122,6 +122,8 @@ Apple TV library content keeps compact navigation controls and the media grid wi
 
 Long title-sorted libraries show an A–Z index on the trailing edge. On Apple TV the index starts below the top bar and sizes each letter so every letter fits without scrolling. On iPhone and iPad a narrow scrubber lists every letter. Dragging along it shows the current letter in a large bubble, ticks a selection haptic for each letter, and jumps the grid to that letter. VoiceOver reads it as an adjustable Title index.
 
+On iPhone and iPad, pressing and holding a poster opens a menu with Play or Resume, Details, Go to show for episodes, and Add to My List. Continue watching posters also offer Remove from Continue watching. A success or error haptic confirms the change. Library search lists up to eight recent searches for the current Viewer Profile on this device when the field is empty, with Clear recent searches.
+
 **The Native State Rule.** Let native controls own focus and interaction feedback. iOS media links press down to 96.5% with a spring and a slight dim; Reduce Motion keeps the dim only. tvOS adds a scale-and-shadow lift, a visible focus outline and retains focus sections. Preserve tvOS focus movement and platform Reduce Motion behavior rather than imposing the web no-lift rule.
 
 ## Shapes
@@ -145,6 +147,8 @@ Launch keeps the system launch screen: the Kinosail mark centered on black. `Lau
 iOS navigation from a video, show, album or collection card uses the native zoom transition from that card's artwork. Reduce Motion uses the standard push. The iOS tab bar collapses when scrolling down and expands as soon as scrolling turns upward, not only at the top. `TabBarCollapse` tracks the scroll direction and switches the minimize behavior. My List changes its symbol with a replace transition and plays a success haptic.
 
 ### Video playback
+
+During an intro, recap or commercial marker that is not set to skip automatically, video shows Skip Intro, Skip Recap or Skip. From the credits marker, or the last 30 seconds, an episode with a next episode shows Next Episode, which counts down for the last 10 seconds. iPhone and iPad draw it as a white capsule at the trailing edge above the timeline; Apple TV uses the native AVKit contextual action. When the episode ends, the next episode starts by itself, up to three in a row without viewer input.
 
 `TouchPlaybackView` owns the immersive iPhone/iPad controls: one dismissal/title row, play and ten-second seeking, a native slider with elapsed and remaining time, and direct audio/subtitle, speed, volume and Picture in Picture actions. The played timeline track uses Electric green; the remaining track, thumb and controls stay neutral white over black, with safe-area placement, semantic type and at least 44pt targets. Compact layouts keep the audio/subtitle action as a labeled accessibility icon. Controls fade together after four seconds of uninterrupted playback, stay available with VoiceOver or Switch Control, and retain keyboard shortcuts while hidden. Reduce Motion removes the fade.
 

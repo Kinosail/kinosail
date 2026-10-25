@@ -51,7 +51,7 @@ struct LibraryScreen: View {
 
     @ViewBuilder var body: some View {
         #if os(tvOS)
-        if searchMode { libraryContent.searchable(text: $query, prompt: "Search your library") }
+        if searchMode { libraryContent.searchable(text: $query, prompt: "Search your library").recentSearches($query) }
         else { libraryContent }
         #else
         libraryContent
@@ -172,6 +172,7 @@ struct LibraryScreen: View {
         #if os(iOS)
         .searchable(text: $query, isPresented: $showsSearch,
                     prompt: mode == .watch ? "Search movies and shows" : mode == .listen ? "Search music and audiobooks" : "Search your library")
+        .recentSearches($query)
         #endif
         #if os(tvOS)
         .navigationTitle("")
