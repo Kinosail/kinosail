@@ -120,7 +120,7 @@ struct LibraryScreen: View {
                                     } else { await load(reset: false) }
                                 }
                             }
-                            .buttonStyle(.bordered).tint(KinoTheme.secondaryControlTint).secondaryControlForeground()
+                            .tvCapsule()
                         }
                         #else
                         if loading { ProgressView("Loading more…") }
