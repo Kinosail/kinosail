@@ -15,10 +15,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await page.getByRole("button", {name: "Next track", exact: true}).click();
     await expect.poll(() => !!lookup).toBe(true);
     await expect(page.locator("[data-audio-queue-controls]")).toHaveAttribute("aria-busy", "true");
-    if (boundary === "pagehide") await page.evaluate(() => {
-      document.querySelector("audio")!.dataset.offline = "true";
-      dispatchEvent(new PageTransitionEvent("pagehide"));
-    });
+    if (boundary === "pagehide") await page.evaluate(() => dispatchEvent(new PageTransitionEvent("pagehide")));
     else await page.locator("audio").evaluate((audio, owner) => {
       if (owner === "cast") audio.dataset.castActive = "true";
       else audio.dataset.room = "existing-room";
@@ -30,7 +27,7 @@ for (const boundary of ["pagehide", "cast", "room"]) {
     await expect(page.locator("[data-audio-next]")).toBeDisabled();
     await expect(page.locator("audio")).toHaveAttribute("data-progress", "/progress/track");
     await expect(page.locator(".title-block h1")).toHaveText("First track");
-    expect(writes).toEqual([]);
+    expect(writes.filter(url => boundary !== "pagehide" || !url.endsWith("/progress/track"))).toEqual([]);
     if (boundary === "pagehide") await expect(page.locator("audio")).not.toHaveAttribute("src", /media\/next/);
   });
 }

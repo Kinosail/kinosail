@@ -112,7 +112,7 @@ for (const code of [401, 403, 400, 404]) test(`HTTP ${code} does not repeat poli
   expect(requests.length).toBe(1);
 });
 
-for (const owner of ["profile", "item", "cast", "offline"]) test(`pending local save cannot cross ${owner} ownership`, async ({ page }) => {
+for (const owner of ["profile", "item", "cast"]) test(`pending local save cannot cross ${owner} ownership`, async ({ page }) => {
   status = 503;
   await pauseAt(page, 42);
   await expect(page.locator("[data-progress-notice]")).toBeVisible();
@@ -121,7 +121,6 @@ for (const owner of ["profile", "item", "cast", "offline"]) test(`pending local 
     if (owner === "profile") document.body.dataset.viewerProfile = "another-viewer";
     if (owner === "item") media.dataset.progress = "/progress/next";
     if (owner === "cast") media.dataset.castActive = "true";
-    if (owner === "offline") media.dataset.offline = "true";
   }, owner);
   await page.locator("[data-progress-retry]").evaluate(button => (button as HTMLButtonElement).click());
   await expect(page.locator("[data-progress-notice]")).toBeHidden();

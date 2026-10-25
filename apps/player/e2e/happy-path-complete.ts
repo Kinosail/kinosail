@@ -159,8 +159,8 @@ export async function completeHappyPath(page: Page, testInfo: TestInfo, {capture
 		await page.context().setOffline(true);
 		try {
 			await page.goto("/?offline-check=1");
-			await expect(page.getByRole("heading", { name: "Offline downloads" })).toBeVisible();
-			await expect(page.getByRole("link", { name: "Open Server downloads" })).toBeVisible();
+			await expect(page.getByRole("heading", { name: "You’re offline" })).toBeVisible();
+			await expect(page.getByRole("link", { name: "Try again", exact: true })).toHaveAttribute("href", "/");
 			await expect(page.locator('link[rel="stylesheet"]')).toHaveAttribute("href", /\/static\/app\.css\?v=[a-z0-9-]+$/);
 			await expect(page.locator("body")).toHaveCSS("color", "rgb(246, 248, 242)");
 		} finally {
