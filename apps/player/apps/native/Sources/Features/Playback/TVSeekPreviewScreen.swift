@@ -54,14 +54,14 @@ struct TVSeekPreviewScreen: View {
         .background(KinoTheme.surface, in: RoundedRectangle(cornerRadius: 24))
         .onAppear { position = min(duration, max(0, session.player.seconds)); seekFocused = true }
         .task(id: frameSecond) {
-            image = nil; message = nil
+            message = nil
             do {
                 let preview = try await PlaybackFramePreview.load(template: session.player.source?.trickplay,
                                                                  client: session.client, asset: session.player.player?.currentItem?.asset,
                                                                  second: frameSecond)
                 try Task.checkCancellation()
                 image = preview
-            } catch is CancellationError {} catch { if !Task.isCancelled { message = "Preview unavailable" } }
+            } catch is CancellationError {} catch { if !Task.isCancelled { image = nil; message = "Preview unavailable" } }
         }
     }
 

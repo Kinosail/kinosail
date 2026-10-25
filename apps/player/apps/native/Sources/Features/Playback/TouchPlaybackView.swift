@@ -168,7 +168,7 @@ struct TouchPlaybackView: View {
                 if scrubbing { scrubPosition = $0 } else { seek($0) }
             }),
                    duration: playback.duration, buffered: playback.bufferedRanges, video: true) { editing in
-                if editing { scrubPosition = displayedPosition; scrubbing = true; reveal() }
+                if editing { scrubPosition = displayedPosition; previewImage = nil; scrubbing = true; reveal() }
                 else { seek(scrubPosition) }
             }
             .tint(KinoTheme.signal)
@@ -264,7 +264,6 @@ struct TouchPlaybackView: View {
     }
 
     private func loadPreview() async {
-        previewImage = nil
         previewUnavailable = false
         let second = Int(min(43210, max(0, scrubPosition)) / 10) * 10
         do {
@@ -273,7 +272,7 @@ struct TouchPlaybackView: View {
                                                             second: second)
             try Task.checkCancellation()
             previewImage = image
-        } catch is CancellationError {} catch { if !Task.isCancelled { previewUnavailable = true } }
+        } catch is CancellationError {} catch { if !Task.isCancelled { previewImage = nil; previewUnavailable = true } }
     }
 }
 
