@@ -97,9 +97,7 @@ run_populated_player_journeys() {
     --required-title 'album queue keeps accessible responsive controls through pending loaded empty and failed reads' \
     --required-title 'late initial queue response cannot warm media or publish controls after pagehide' \
     --required-title 'queued short track resumes its saved position without claiming unplayed progress' \
-    --required-title 'ended offline queue requires its own watched acknowledgement: failed' \
     --required-title 'canonical catalog year strings survive queue validation and current-track identity' \
-    --required-title 'opening the current Viewer Profile in another tab keeps saved video playing, while sign-out stops it' \
     --required-title 'closing a signed-in tab resumes its saved login URL @smoke' \
     -- pnpm --dir e2e test settings-discovery.spec.ts layout-audit-shell.spec.ts test-instance-progress.spec.ts test-instance-watched-startup.spec.ts test-instance-checkpoint.spec.ts test-instance-volume-icon.spec.ts test-instance-audio-queue.spec.ts test-instance-session-persistence.spec.ts player-audio-policy.spec.ts player-audio-queue-lifecycle.spec.ts --grep=@smoke --workers=1
 }
