@@ -7,7 +7,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/servertest"
 )
 
-const reviewedRouteInventorySHA256 = "817f92bffa18be12148c46b7e028a6dfa535bbf0dd2eeb76bd460fd9cdd3e043"
+const reviewedRouteInventorySHA256 = "b31940588d5b90b300c7b0ff96c1d1225092ae48f1eb32fff6d910c8644d44ee"
 
 var explicitlyAnonymousRoutes = routeSet(
 	"GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel",
@@ -118,7 +118,7 @@ var expectedStreamScopeRoutes = routeSet(
 	"POST /api/v1/items/{id}/playback-prepare", "DELETE /api/v1/items/{id}/playback-prepare",
 	"GET /api/v1/remote-players", "PUT /api/v1/remote-players/{id}", "POST /api/v1/remote-players/{id}/commands",
 	"POST /api/v1/items/{id}/cast", "POST /api/v1/cast/devices/scan", "GET /api/v1/cast/config", "GET /api/v1/cast/sessions/{id}", "POST /api/v1/cast/sessions/{id}/commands", "DELETE /api/v1/cast/sessions/{id}",
-	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}",
+	"GET /media/{id}", "GET /hls/{id}/{file...}", "GET /hls/{id}/audio/{track}/{file...}", "GET /hls/{id}/p/{recipe}/iframes/{file}",
 	"GET /Videos/{id}/{stream...}",
 	"GET /subtitle/{id}", "GET /subtitle/{id}/{track}", "GET /subtitle/{id}/embedded/{stream}", "GET /trickplay/{id}/{second}",
 	"GET /read/{id}/asset/{asset...}", "GET /read/{id}/file", "GET /api/v1/events", "GET /api/v1/watch-rooms/{id}/events",
@@ -138,7 +138,7 @@ var sessionOnlyAPIRoutes = routeSet(
 )
 
 func TestEveryRegisteredRouteHasReviewedAnonymousAccess(t *testing.T) {
-	authRoutesContract().ReviewedAnonymousAccess(t, 482, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
+	authRoutesContract().ReviewedAnonymousAccess(t, 483, reviewedRouteInventorySHA256, func(t *testing.T, data string) http.Handler {
 		return New(Config{DataDir: data, RequireAuth: true, Configuration: jellyfinRouteConfiguration(t, data)})
 	})
 }

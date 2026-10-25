@@ -26,10 +26,11 @@ type hlsManager struct {
 	keys           map[string]*hlsKeyLock
 	workloads      *workload.Governor
 	cacheOps       playback.HLSCacheControl
+	iframes        *playback.IFrames
 }
 
 func newHLS(ctx context.Context, cache, ffmpeg string, index *libraryIndex, probe *mediaProbe, settings *settingsStore, workloads *workload.Governor) *hlsManager {
-	manager := &hlsManager{ctx: ctx, cache: cache, ffmpeg: ffmpeg, index: index, probe: probe, settings: settings, jobs: make(map[string]*hlsJob), workloads: workloads}
+	manager := &hlsManager{ctx: ctx, cache: cache, ffmpeg: ffmpeg, index: index, probe: probe, settings: settings, jobs: make(map[string]*hlsJob), workloads: workloads, iframes: newHLSIFrames(cache, ffmpeg, workloads)}
 	manager.configureCache()
 	return manager
 }

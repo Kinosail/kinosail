@@ -75,6 +75,23 @@ class PlaybackApiTest {
         }
     }
 
+    @Test fun audioConversionPlansUseTheConvertedStream() {
+        val converted = response.replace("\"mode\":\"direct\",\"reason\":\"direct-preferred\"}",
+            "\"mode\":\"audio-transcode\",\"reason\":\"audio-codec-unsupported\",\"audioCompatibilityRequired\":true}")
+        val source = PlaybackApi(server) { PlaybackResponse(200, converted) }.source("film-1", "token", "alex", capabilities)
+        assertEquals(null, source.direct)
+        assertEquals("/hls/film-1/p/r-a0-s0-none-t0-b0/index.m3u8", source.compatible)
+        val compatible = converted.replace("true}", "false}")
+        assertEquals("/media/film-1", PlaybackApi(server) { PlaybackResponse(200, compatible) }
+            .source("film-1", "token", "alex", capabilities).direct)
+        for (flag in listOf("\"true\"", "1", "null", "{}")) {
+            val invalid = converted.replace(":true}", ":$flag}")
+            assertThrows(invalid, IllegalArgumentException::class.java) {
+                PlaybackApi(server) { PlaybackResponse(200, invalid) }.source("film-1", "token", "alex", capabilities)
+            }
+        }
+    }
+
     @Test fun rejectsInvalidInputsBeforeNetwork() {
         var opens = 0
         val api = PlaybackApi(server) { opens++; PlaybackResponse(200, response) }

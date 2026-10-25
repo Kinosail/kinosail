@@ -46,6 +46,7 @@ func registerPlayer(mux *http.ServeMux, index *libraryIndex, progress *progressS
 	mux.HandleFunc("GET /watch/{id}", watch(index, progress, settings, lists, probe, metadata, rooms))
 	mux.HandleFunc("GET /hls/{id}/{file...}", hls.serve)
 	mux.HandleFunc("GET /hls/{id}/audio/{track}/{file...}", hls.serve)
+	mux.HandleFunc("GET /hls/{id}/p/{recipe}/iframes/{file}", hls.serveIFrames)
 	mux.HandleFunc("POST /progress/{id}", progressHandlers.Save())
 	mux.HandleFunc("POST /continue-watching/{id}/remove", progressHandlers.Dismiss())
 	mux.HandleFunc("POST /watched/{id}", progressHandlers.SaveWatched())

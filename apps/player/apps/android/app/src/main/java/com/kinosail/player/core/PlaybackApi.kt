@@ -49,6 +49,7 @@ class PlaybackApi(
         require(plan.flag("allowed") == (plan.text("mode", 32) != "denied") &&
             plan.text("mode", 32) in MODES && plan.text("reason", 128).isNotEmpty() &&
             plan.text("markerMode", 32) in MARKER_MODES) { INVALID_RESPONSE }
+        val audioConversion = plan["audioCompatibilityRequired"]?.let { plan.strictFlag("audioCompatibilityRequired") } ?: false
         val directPath = value.text("direct", 16_384)
         val directAllowed = value.flag("directAllowed")
         require(directAllowed == directPath.isNotEmpty() &&
@@ -106,7 +107,8 @@ class PlaybackApi(
             "/trickplay/${Regex.escape(itemId)}/\\{second\\}(?:\\?playbackToken=[A-Za-z0-9._~%-]{1,12000})?"))) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
-        return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
+        val playableDirect = directPath.takeUnless { it.isEmpty() || audioConversion && compatiblePath.isNotEmpty() }
+        return PlaybackSource(itemId, playableDirect, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
             progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles, language.ifEmpty { "en" }, limited,
             trickplay.ifEmpty { null })
@@ -124,7 +126,8 @@ class PlaybackApi(
             "subtitleLanguage", "subtitlePickerLimited")
         private val PLAN_KEYS = setOf("allowed", "mode", "reason", "container", "videoCodec", "audioCodec", "subtitleMode",
             "colorMode", "audioIndex", "subtitleIndex", "subtitleSourceIndex", "subtitleText", "subtitleExternal",
-            "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline")
+            "subtitleExternalIndex", "maxBitrate", "width", "height", "adaptive", "qualities", "markerMode", "timeline",
+            "audioCompatibilityRequired")
         private val SUBTITLE_KEYS = setOf("label", "source", "default", "language", "role", "kind", "forced", "embedded")
 
         private fun JsonElement.fields(allowed: Set<String>, required: Set<String>): JsonObject {
