@@ -4,8 +4,8 @@ import "strings"
 
 func tvPlayerTemplate(template string) string {
 	template = strings.ReplaceAll(template, `data-title="{{.Title}}"`, `data-title="{{.Title}}" data-cast-api="/api/v1/items/{{.ID}}/cast" data-cast-app-id="{{.CastAppID}}"`)
-	template = strings.Replace(template, `<button class="quiet" type="button" aria-label="Play on device" data-cast>{{icon "cast"}}</button>`, `<button class="quiet play-on-tv" type="button" data-tv-open aria-haspopup="dialog">{{icon "cast"}} Play on another device</button>`, 1)
-	template = strings.Replace(template, `</audio>`, `</audio><button class="quiet play-on-tv" type="button" data-tv-open aria-haspopup="dialog">{{icon "cast"}} Play on another device</button>`, 1)
+	template = strings.Replace(template, `<button class="quiet" type="button" aria-label="Play on device" data-cast>{{icon "cast"}}</button>`, `<button class="quiet play-on-tv" type="button" data-tv-open aria-haspopup="dialog">{{icon "cast"}}<span class="play-on-tv-label">Play on another device</span></button>`, 1)
+	template = strings.Replace(template, `</audio>`, `</audio><button class="quiet play-on-tv" type="button" data-tv-open aria-haspopup="dialog">{{icon "cast"}}<span class="play-on-tv-label">Play on another device</span></button>`, 1)
 	return strings.Replace(template, `</main>`, `{{if ne .Kind "photo"}}`+tvPickerHTML+`{{end}}</main>`, 1)
 }
 

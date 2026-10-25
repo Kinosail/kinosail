@@ -234,7 +234,7 @@ func TestHomeRecentlyPlayedStacksEpisodesByShow(t *testing.T) {
 		t.Fatalf("recently played shelf = %q", body)
 	}
 	played := body[start : start+end]
-	if !strings.Contains(played, `class="card recent-card stacked" href="/show/`) || !strings.Contains(played, `aria-label="Shared Poster, 2 recently played episodes stacked; open show"`) || !strings.Contains(played, `2 episodes stacked`) || !strings.Contains(played, `<span class="recent-stack-count">2</span>`) || strings.Contains(played, `Shared Poster · S01E02 · Next</h2>`) {
+	if !strings.Contains(played, `class="card recent-card stacked" href="/show/`) || !strings.Contains(played, `aria-label="Shared Poster, 2 episodes stacked; open show"`) || !strings.Contains(played, `2 episodes stacked`) || !strings.Contains(played, `<span class="recent-stack-count">2</span>`) || strings.Contains(played, `Shared Poster · S01E02 · Next</h2>`) {
 		t.Fatalf("recently played stack = %q", played)
 	}
 }
