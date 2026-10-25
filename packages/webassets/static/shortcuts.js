@@ -15,7 +15,7 @@
     ["b", "Books", ["/?view=books"]], ["c", "Collections", ["/?view=collections"]],
     ["f", "Photos", ["/?view=photos"]], ["q", "Playlists", ["/?view=playlists"]],
     ["w", "Unwatched", ["/?view=unwatched"]], ["y", "History", ["/?view=history"]],
-    ["d", "Offline downloads", ["/offline-downloads"]], ["t", "Settings", ["/settings"]],
+    ["t", "Settings", ["/settings"]],
   ].map(([key, label, paths]) => ({ key, label, link: findLink(paths) })).filter(({ link }) => link);
   if (!destinations.some(({ key }) => key === "h") && !document.body.classList.contains("auth")) destinations.unshift({ key: "h", label: "Home", link: { href: "/" } });
   const destinationHref = (destination) => destination.link.href;
@@ -116,7 +116,7 @@
     destination.link.setAttribute?.("aria-keyshortcuts", `G ${destination.key.toUpperCase()}`);
   }
 
-  const focusTargets = () => [...document.querySelectorAll("#library a.card, .home-shelf .card > a, .destination-card, .episode, .track-list a, .download-job a")].filter((target) => target.getClientRects().length);
+  const focusTargets = () => [...document.querySelectorAll("#library a.card, .home-shelf .card > a, .destination-card, .episode, .track-list a")].filter((target) => target.getClientRects().length);
   const moveFocus = (key) => {
     const targets = focusTargets();
     if (!targets.length) return false;

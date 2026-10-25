@@ -68,7 +68,7 @@ func libraryAuditAction(request *http.Request) string {
 		return collectionAction(request.Method)
 	case strings.Contains(path, "/playlists"), strings.HasPrefix(path, "/playlist"):
 		return playlistAction(request.Method)
-	case strings.HasPrefix(path, "/offline/"), strings.Contains(path, "/downloads"):
+	case strings.Contains(path, "/downloads"):
 		return downloadAction(request.Method)
 	case strings.HasPrefix(path, "/list/"):
 		return "list.updated"

@@ -35,12 +35,6 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	if started.Code != http.StatusAccepted {
 		t.Fatalf("start = %d %q", started.Code, started.Body.String())
 	}
-	pending := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", owner)
-	script := CurrentAssetURL(t, handler, fixture.DownloadsScript)
-	AssertAPIBody(t, pending, http.StatusOK, `data-downloads-pending="true"`, script, `"includeIndicatorCSS":false`, `role="status"`, `<progress`, `Preparing Film for offline use`)
-	if strings.Contains(pending.Body.String(), `http-equiv="refresh"`) {
-		t.Fatalf("downloads page uses a timed full-page refresh: %q", pending.Body.String())
-	}
 	if err := os.WriteFile(release, nil, 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -65,13 +59,6 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 	handler.ServeHTTP(file, request)
 	if file.Code != http.StatusPartialContent || file.Body.String() != "timi" || file.Header().Get("ETag") == "" || file.Header().Get("Content-Digest") != "" || file.Header().Get("Repr-Digest") == "" {
 		t.Fatalf("range = %d %q %q", file.Code, file.Body.String(), file.Header())
-	}
-	page := fixture.CookieRequest(t, handler, http.MethodGet, "/offline-downloads", "", owner)
-	AssertAPIBody(t, page, http.StatusOK, "Film", "Ready to download", "Downloads on this device", "Play offline", `data-download-play`, "File verified on the Server", "15 bytes", "720p", `data-viewer-profile="`+job.ProfileID+`"`)
-	player := fixture.CookieRequest(t, handler, http.MethodGet, "/watch/"+catalog.Items[0].ID, "", owner)
-	AssertAPIBody(t, player, http.StatusOK, `data-viewer-profile="`+job.ProfileID+`"`, script)
-	if strings.Contains(page.Body.String(), `data-downloads-pending="true"`) {
-		t.Fatalf("completed downloads page remains pending: %q", page.Body.String())
 	}
 	handler = fixture.NewTranscodeHandler(media, data, cache, ffmpeg)
 	restored := fixture.APICall(t, handler, token, http.MethodGet, "/api/v1/downloads/"+job.ID, nil)

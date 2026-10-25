@@ -55,20 +55,6 @@ if (player.dataset.directType && navigator.mediaCapabilities?.decodingInfo) navi
   .then((result) => playbackTrace("capability-direct", result.supported ? result.smooth ? "smooth" : "supported" : "unsupported"))
   .catch(() => {});
 const showPlaybackMode = (compatible, pending = false) => {
-  if (player.dataset.offline === "true") {
-    const offlineLabel = document.body.dataset.offlineCopy || "Offline copy";
-    const offlineDescription = document.body.dataset.offlineDescription || "Verified file stored on this device.";
-    const playbackMethod = document.body.dataset.playbackMethod || "Playback method";
-    const openSettings = document.body.dataset.openPlaybackSettings || "Open playback settings.";
-    const status = pending ? `${offlineLabel}…` : offlineLabel;
-    if (playbackModeStatus) {
-      playbackModeStatus.textContent = status;
-      playbackModeStatus.setAttribute("aria-label", `${playbackMethod}: ${status}. ${openSettings}`);
-    }
-    if (playbackReason) playbackReason.textContent = pending ? status : `${offlineLabel} · ${offlineDescription}`;
-    if (playbackDetail) playbackDetail.textContent = status;
-    return;
-  }
   const label = compatible ? player.dataset.compatibilityLabel || "Compatibility" : player.dataset.playbackLabel || "Direct Play";
   const description = compatible ? player.dataset.compatibilityDescription || "Uses the smallest compatible change." : player.dataset.playbackDescription || "Original video and audio. No conversion.";
   const status = label;

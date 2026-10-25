@@ -66,9 +66,9 @@ If a segment is missing, open **Settings → Playback → Playback segment analy
 
 ## Offline preparation fails
 
-Open **Offline downloads** and read the job state. A failed job shows **Needs attention** and a **Try again** action. Retry once after checking storage and transcoding capacity.
+In the Kinosail app on iPhone or iPad, open **Downloads** and read the title's state. A failed download shows **Download needs attention**. Retry once after checking Server storage and transcoding capacity.
 
-**Ready offline** means the Server created the file and verified its integrity. If a previously ready job becomes invalid, Kinosail marks it failed. Remove that job and prepare it again. Prepared files are private to the Viewer Profile.
+If a prepared file becomes invalid, Kinosail marks it failed. Remove that download and start it again. Prepared files are private to the Viewer Profile.
 
 ## Collect playback evidence
 

@@ -84,10 +84,6 @@ body .media-hero.has-media-backdrop>.media-hero-copy{max-width:none;padding:0;bo
 body .media-hero.has-media-backdrop::after{display:none}
 body .media-hero .hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
 body .media-hero .hero-actions :is(form,.hero-action){margin:0}
-body .media-hero .hero-downloads{margin-top:1rem}
-body .media-hero .hero-downloads>summary{display:list-item;width:fit-content;min-height:44px;padding:.65rem .25rem;cursor:pointer}
-body .media-hero .hero-downloads[open]{padding-bottom:.75rem}
-body .media-hero .hero-downloads :is(a,form){margin:.5rem .75rem .5rem 0}
 body .media-hero.has-media-backdrop .quiet{color:var(--text)}
 .watch-progress{display:grid;gap:.5rem;width:100%;margin:1rem 0;color:var(--muted);font-size:.875rem;font-variant-numeric:tabular-nums}
 .watch-progress[hidden],.watch-progress progress[hidden]{display:none}

@@ -128,19 +128,11 @@ for (const owner of ["profile", "item", "cast", "offline"]) test(`pending local 
   expect(requests.length).toBe(1);
 });
 
-test("preparation and cast never emit local progress; offline uses its own journal", async ({ page }) => {
+test("preparation and cast never emit local progress", async ({ page }) => {
   await page.evaluate(() => (window as Window & {prepare(value: object): void}).prepare({}));
   await pauseAt(page, 42);
   await page.evaluate(() => { (window as Window & {prepare(value: undefined): void}).prepare(undefined); document.querySelector("video")!.dataset.castActive = "true"; });
   await pauseAt(page, 42);
-  expect(requests.length).toBe(0);
-  await page.evaluate(() => {
-    const media = document.querySelector("video")!;
-    delete media.dataset.castActive; media.dataset.offline = "true";
-    Object.assign(window, {offlineCalls: 0, KinosailOfflineMedia: {saveProgress: async () => { (window as Window & {offlineCalls: number}).offlineCalls++; return {ok: true}; }}});
-  });
-  await pauseAt(page, 42);
-  await expect.poll(() => page.evaluate(() => (window as Window & {offlineCalls: number}).offlineCalls)).toBe(1);
   expect(requests.length).toBe(0);
 });
 

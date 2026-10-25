@@ -5,7 +5,7 @@ func PublicBootstrapRouteAllowed(pattern string) bool {
 	case "GET /static/public-login.js", "POST /auth/quick-connect", "POST /auth/quick-connect/token", "POST /auth/quick-connect/cancel":
 		return true
 	case "GET /manifest.webmanifest", "GET /service-worker.js", "GET /offline", "GET /favicon.ico",
-		"GET /static/htmx.min.js", "GET /static/hls.min.js", "GET /static/player.js", "GET /static/downloads.js", "GET /static/pwa.js",
+		"GET /static/htmx.min.js", "GET /static/hls.min.js", "GET /static/player.js", "GET /static/pwa.js",
 		"GET /static/main.kinosail.bundle.js", "GET /static/theme.js", "GET /static/quick-connect.js", "GET /static/connect.js",
 		"GET /static/app.css", "GET /static/supporter.js", "GET /static/supporter.css", "GET /static/manrope.woff2", "GET /static/icon.svg",
 		"GET /static/subtitle-inspector.js", "GET /static/subtitle-inspector.css", "GET /static/supporter/badges/{file...}",

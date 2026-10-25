@@ -12,8 +12,10 @@ test("fresh installation controls the populated app and serves its complete shel
   expect(await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)).toContain("/service-worker.js?v=56");
   await connection.disconnect();
   try {
-    await page.goto("/offline");
-    await expect(page.locator("main")).toBeVisible();
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "You’re offline", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Try again", exact: true })).toHaveAttribute("href", "/");
+    await expect(page.getByText(/download/i)).toHaveCount(0);
     const font = await page.evaluate(async () => {
       const response = await fetch("/static/manrope.woff2?v=1");
       return { status: response.status, type: response.headers.get("Content-Type"), bytes: (await response.arrayBuffer()).byteLength };
@@ -74,38 +76,6 @@ test("authenticated video reports its state to Home Assistant", async ({ page })
   } finally {
     await page.context().request.put("/api/v1/settings/home-assistant", { headers: { "X-Kinosail-CSRF": csrf!, Origin: new URL(page.url()).origin }, data: { enabled: false } });
   }
-});
-
-test("a real offline download plays and seeks after the network disconnects", async ({ page, connection }, testInfo) => {
-  await login(page);
-  const library = await (await page.context().request.get("/api/v1/library")).json();
-  const item = library.items.find((candidate: { title: string }) => candidate.title === "Example Movie");
-  expect(item).toBeTruthy();
-  await page.goto(`/watch/${item.id}`);
-  await page.getByText("Playback & downloads", { exact: true }).click();
-  await page.getByRole("button", { name: "Prepare 720p offline", exact: true }).click();
-  const job = page.locator("[data-download-job]").filter({ has: page.getByRole("heading", { name: "Example Movie", exact: true }) });
-  await expect(job.getByText("720p · Ready to download", { exact: true })).toBeVisible({ timeout: 30_000 });
-  await job.getByRole("button", { name: "Download to this device", exact: true }).click();
-  await expect(job.locator("[data-download-device-status]")).toHaveText("Saved and verified. Play to check compatibility.", { timeout: 30_000 });
-  const id = await job.getAttribute("data-download-job");
-  const offlineProbe = await page.evaluate(async (id) => {
-    const profile = document.querySelector<HTMLElement>("#downloads")?.dataset.viewerProfile;
-    const response = await fetch(`/offline-media/${profile}/${id}`, { headers: { Range: "bytes=0-1" } });
-    return { status: response.status, length: (await response.arrayBuffer()).byteLength };
-  }, id);
-  expect(offlineProbe).toEqual({ status: 206, length: 2 });
-  await connection.disconnect();
-  try {
-    await page.goto(`/offline?job=${id}`);
-    const media = page.locator("video");
-    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(2);
-    await media.evaluate((video: HTMLVideoElement) => video.play());
-    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0.2);
-    await media.evaluate((video: HTMLVideoElement) => { video.currentTime = 4; });
-    await expect.poll(() => media.evaluate((video: HTMLVideoElement) => !video.seeking && video.currentTime >= 4)).toBeTruthy();
-    await page.screenshot({ path: testInfo.outputPath("offline-playback.png") });
-  } finally { await connection.disconnect(); }
 });
 
 test("video and music open the receiver picker and restore focus", async ({ page }, testInfo) => {

@@ -18,7 +18,7 @@ func AssertEveryMainNavigationDestinationRetainsTheMainBar(t *testing.T, fixture
 
 func AssertSignedInApplicationPagesRetainTheMainBar(t *testing.T, fixture NavigationFixture) {
 	handler := fixture.Library.NewHandler("", t.TempDir(), false)
-	paths := []string{"/account", "/metadata/bulk", "/offline-downloads", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/remote-readiness", "/settings/system", "/supporter"}
+	paths := []string{"/account", "/metadata/bulk", "/settings", "/settings/agent-connections", "/settings/backups", "/settings/configuration", "/settings/remote-readiness", "/settings/system", "/supporter"}
 	if !fixture.NoQuickConnectOrShares {
 		paths = append(paths, "/quick-connect", "/settings/media-shares")
 	}

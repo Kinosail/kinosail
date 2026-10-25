@@ -16,7 +16,7 @@ func (fixture LocaleWebFixture) WebSurfacesCanUseSpanish(t *testing.T, signIn fu
 		t.Fatalf("Spanish home = %d %q", home.Code, home.Body.String())
 	}
 	MustContainAll(t, home.Body.String(), ">Audiolibros<", ">Historial<")
-	MustContainAll(t, home.Body.String(), `aria-label="Acciones"`, `data-command-label="Películas">Películas<`, `data-command-label="Descargas sin conexión">Descargas sin conexión<`, `aria-label="Cancelar"`)
+	MustContainAll(t, home.Body.String(), `aria-label="Acciones"`, `data-command-label="Películas">Películas<`, `aria-label="Cancelar"`)
 	authenticated := fixture.NewHandler(t, true)
 	cookie := signIn(t, authenticated, "/setup", "name=Owner&password=owner-password")
 	account := web(t, authenticated, http.MethodGet, "/?lang=es", "", cookie)

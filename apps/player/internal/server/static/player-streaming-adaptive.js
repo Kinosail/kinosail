@@ -29,7 +29,6 @@ const useOriginal = (forcePlay = false, retainedTime) => {
   adaptiveGeneration += 1;
   adaptiveStarting = false;
   resumeAfterSourceChange(forcePlay, Number.isFinite(retainedTime), retainedTime);
-  delete player.dataset.offline;
   hls?.destroy();
   hls = undefined;
   adaptiveActive = false;
@@ -87,7 +86,6 @@ const useAdaptive = (preference = "auto", resume = false, target = resume ? pend
   cancelNetworkRecovery();
   adaptiveOriginController?.abort();
   resumeAfterSourceChange(!resume && networkWantsPlay, true, target);
-  delete player.dataset.offline;
   hls?.destroy();
   playbackTimelineOffset = 0;
   adaptiveActive = true;

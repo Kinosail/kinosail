@@ -24,8 +24,8 @@ var (
 	playerStreamingAdaptiveJS []byte
 	//go:embed static/player-streaming-recovery.js
 	playerStreamingRecoveryJS []byte
-	//go:embed static/player-streaming-offline.js
-	playerStreamingOfflineJS []byte
+	//go:embed static/player-streaming-lifecycle.js
+	playerStreamingLifecycleJS []byte
 	//go:embed static/supporter.js
 	supporterAppJS []byte
 	//go:embed static/supporter-plans.js
@@ -77,27 +77,23 @@ var (
 )
 
 var (
-	passkeysJS          = webassets.Passkeys
-	downloadsCoreJS     = webassets.Downloads
-	downloadsTransferJS = webassets.DownloadsTransfer
-	downloadsUIJS       = webassets.DownloadsUI
-	playerSharedJS      = webassets.PlayerCore
-	playerControlsJS    = webassets.PlayerControls
-	playerDevicesJS     = webassets.PlayerDevices
-	playerProgressJS    = webassets.PlayerProgress
-	pwaCoreJS           = webassets.PWA
-	pwaNavigationJS     = webassets.PWANavigation
-	pwaSettingsJS       = webassets.PWASettings
-	shortcutsJS         = webassets.Shortcuts
-	settingsInitialJS   = prepareSettingsInitial(settingsInitialSource)
-	startupScript       = versionHLSReferences(startupPreparationJS)
-	playerCoreScript    = versionHLSReferences(playerCoreJS)
-	themeJS             = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupScript, settingsInitialJS, webassets.MobileTabs)
-	supporterJS         = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
-	playerJS            = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, playerCoreScript, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingOfflineJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
-	downloadsJS         = joinScripts(webassets.OfflineIdentity, webassets.OfflineRuntime, downloadsCoreJS, webassets.DownloadsStorage, downloadsTransferJS, webassets.DownloadsProgress, downloadsUIJS)
-	serviceWorker       = joinScripts(webassets.OfflineRuntime, webassets.OfflineMedia, serviceWorkerApp)
-	pwaJS               = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
+	passkeysJS        = webassets.Passkeys
+	playerSharedJS    = webassets.PlayerCore
+	playerControlsJS  = webassets.PlayerControls
+	playerDevicesJS   = webassets.PlayerDevices
+	playerProgressJS  = webassets.PlayerProgress
+	pwaCoreJS         = webassets.PWA
+	pwaNavigationJS   = webassets.PWANavigation
+	pwaSettingsJS     = webassets.PWASettings
+	shortcutsJS       = webassets.Shortcuts
+	settingsInitialJS = prepareSettingsInitial(settingsInitialSource)
+	startupScript     = versionHLSReferences(startupPreparationJS)
+	playerCoreScript  = versionHLSReferences(playerCoreJS)
+	themeJS           = joinScripts(webassets.Theme, webassets.ArtworkPalette, webassets.WatchProgress, playbackCapabilitiesJS, startupScript, settingsInitialJS, webassets.MobileTabs)
+	supporterJS       = joinScripts(webassets.Supporter, supporterAppJS, supporterPlansJS)
+	playerJS          = joinScripts(playbackCapabilitiesJS, playerSharedJS, playerSubtitlesJS, playerCoreScript, playerStreamingAdaptiveJS, playerStreamingRecoveryJS, playerStreamingLifecycleJS, playerControlsJS, playerDevicesJS, webassets.PlayerTV, playerProgressJS)
+	serviceWorker     = joinScripts(webassets.OfflineRuntime, webassets.OfflineShell, serviceWorkerApp)
+	pwaJS             = joinScripts(webassets.OfflineIdentity, pwaCoreJS, pwaNavigationJS, pwaSettingsJS)
 )
 
 func joinScripts(parts ...[]byte) []byte {
