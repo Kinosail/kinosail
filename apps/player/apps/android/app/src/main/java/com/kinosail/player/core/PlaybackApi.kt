@@ -23,6 +23,7 @@ data class PlaybackSource(
     val subtitles: List<PlaybackSubtitle>,
     val subtitleLanguage: String,
     val subtitlePickerLimited: Boolean,
+    val trickplay: String? = null,
 ) {
     fun sourceTime(position: Double, compatible: Boolean): Double =
         if (compatible) compatibleTimeline.sourceTime(position) else position
@@ -100,11 +101,15 @@ class PlaybackApi(
         val limited = value["subtitlePickerLimited"]?.let { value.strictFlag("subtitlePickerLimited") } ?: false
         val language = value.text("subtitleLanguage", 32)
         require((language.isEmpty() && !limited) || language.matches(Regex("[A-Za-z]{2,3}"))) { INVALID_RESPONSE }
+        val trickplay = value.text("trickplay", 16_384)
+        require(trickplay.isEmpty() || trickplay.matches(Regex(
+            "/trickplay/${Regex.escape(itemId)}/\\{second\\}(?:\\?playbackToken=[A-Za-z0-9._~%-]{1,12000})?"))) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         return PlaybackSource(itemId, directPath.ifEmpty { null }, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
-            progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles, language.ifEmpty { "en" }, limited)
+            progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles, language.ifEmpty { "en" }, limited,
+            trickplay.ifEmpty { null })
     }
 
     companion object {

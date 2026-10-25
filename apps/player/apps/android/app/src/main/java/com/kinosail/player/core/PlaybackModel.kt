@@ -92,6 +92,17 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     internal var onPlayerChanged: ((ExoPlayer?) -> Unit)? = null
     internal val activeItemId get() = source?.itemId
+    internal val scrubPreviews get() = source?.trickplay != null && activeAudioItem == null
+
+    internal suspend fun scrubFrame(second: Int): android.graphics.Bitmap? {
+        val template = source?.trickplay ?: return null
+        val saved = activeSession ?: return null
+        val viewer = activeViewer ?: return null
+        if (second !in 0..43_200 || second % 10 != 0) return null
+        return withContext(Dispatchers.IO) {
+            ArtworkClient(saved.server).scrubFrame(template.replace("{second}", second.toString()), saved.token, viewer.id)
+        }
+    }
     private var activeAudioItem by mutableStateOf<CatalogItem?>(null)
 
     internal fun nowPlayingFor(viewer: Viewer): CatalogItem? = activeAudioItem?.takeIf {
