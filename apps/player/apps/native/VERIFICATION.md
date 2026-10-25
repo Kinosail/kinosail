@@ -1,5 +1,30 @@
 # Swift Apple verification
 
+## Scrub preview speed — 2026-10-25
+
+Scrub previews now keep up with remote presses and slider drags. Frames are cached in memory, the next three 10-second frames in the scrub direction load ahead (at most four loads at once), and the last frame stays on screen while the next one loads. A failed load still shows "Preview unavailable". Starting a new scrub clears the old frame.
+
+**Revision.** Baseline: `6a241d39` (main). New: the task commit on `mikeo/scrub-preview-cache`. Xcode 27.1.
+
+**Test data.** A local Player Server built from this repository, with no accounts, on `http://127.0.0.1:4283`. Media: a generated 20-minute `testsrc2` MKV (H.264, 2 s GOP, E-AC-3 5.1) with a burned-in timecode. Each preview FFmpeg call waited 0.8 s first, to match preview times measured on a slow library disk.
+
+**Command.** A scratch session seed and a scratch Remote UI probe (not committed) on the Apple TV 4K (3rd generation) simulator. The probe opens the title, plays it, opens **Seek with preview** from the transport bar, waits for the first frame, then presses right 12 times, 0.5 s apart. 0.3 s after each press it checks whether the loading placeholder is on screen.
+
+| Press | Baseline `6a241d39` | New |
+| --- | --- | --- |
+| Placeholder shown | 12 of 12 presses | 0 of 12 presses |
+| "Preview unavailable" | Never | Never |
+| Frame after the last press | — | Position 2:22 shows the 2:20 frame (burned-in timecode `00:02:20.000`) |
+
+The iOS and tvOS apps build with `./scripts/build-apple.sh ios` and `./scripts/build-apple.sh tvos`. The iPhone and iPad slider uses the same loader; it was not driven by a UI test.
+
+Not run: physical Apple TV or iPhone, Nox Server.
+
+| File | SHA-256 |
+| --- | --- |
+| `before.log` | `51154938483ea8d51ea1fd7c0cb2b0186bf5987bbaefda6d60c2a3b7b121a050` |
+| `after.log` | `393f508dc07df937b64ab4f9c66e99fcd757b0a92802cd0a7700c72786d17cdb` |
+
 ## Downloads — 2026-10-24
 
 iOS download recovery and feedback: connection drops, Server outages, background transfer, retry countdowns, queue summary and local notifications. Everything below ran on a Mac with Xcode 27.1 (27A9275).
