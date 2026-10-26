@@ -7,8 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,8 +19,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.*
@@ -103,22 +99,8 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                 Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(tabTitle(destination), style = MaterialTheme.typography.headlineLarge)
                     if (nowPlaying != null) TextButton(onClick = { playingItem = nowPlaying }) { Text("Now playing · ${nowPlaying.title}") }
-                    if (destination == "search") {
-                        OutlinedTextField(catalog.searchInput, onValueChange = { if (it.length <= 512) catalog.searchInput = it },
-                            label = { Text(interfaceText("Search library")) }, singleLine = true,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { catalog.search(); keyboard?.hide() }),
-                            modifier = Modifier.fillMaxWidth())
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Button(onClick = { catalog.search(); keyboard?.hide() }) { Text(interfaceText("Search")) }
-                            TextButton(onClick = { catalog.clearSearch(); keyboard?.hide() }) { Text(interfaceText("Clear search")) }
-                        }
-                        state.resultQuery?.let { query ->
-                            Text("${interfaceText("Results")}: ${state.total}" + if (query.isEmpty()) "" else " · “$query”",
-                                color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
-                        }
-                    }
+                    if (destination == "search") SearchField(catalog) { keyboard?.hide() }
+                    if (state.items.isNotEmpty()) TitleCount(state.total)
                     if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
                         state.notice?.let { Text(it, color = KinoColor.text,
                             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }

@@ -33,18 +33,34 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SearchFeedbackJourneyTest {
     @get:Rule val compose = createComposeRule()
-    @Test fun phoneSubmittedResultsAndClearAction() = resultsJourney("phone")
+    @Test fun phoneSearchesAsYouTypeAndClearsInline() = liveJourney("phone")
     @Test @Config(qualifiers = "w834dp-h1210dp-mdpi")
-    fun tabletSubmittedResultsAndClearAction() = resultsJourney("tablet")
+    fun tabletSearchesAsYouTypeAndClearsInline() = liveJourney("tablet")
     @Test @Config(qualifiers = "w960dp-h540dp-mdpi")
     fun tvSubmittedResultsAndClearActionRetainFocus() = resultsJourney("tv", tv = true)
 
-    @Test fun phoneHasOneExplicitClearActionAfterSubmission() = screen { fixture, catalog, field ->
+    @Test fun phoneTypingWaitsForAPauseBeforeOneSearch() = screen { fixture, catalog, field ->
+        val requests = firstPages(fixture)
+        compose.mainClock.autoAdvance = false
+        field.performTextInput("Fic")
+        compose.mainClock.advanceTimeBy(100)
+        field.performTextInput("tional")
+        compose.mainClock.advanceTimeBy(100)
+        assertEquals("Typing must wait for a pause", requests, firstPages(fixture))
+        compose.mainClock.autoAdvance = true
+        await { !catalog.state.loading && fixture.catalogQueries.last() == "Fictional" }
+        assertEquals("One pause must send one search", requests + 1, firstPages(fixture))
+        assertFalse(fixture.catalogQueries.contains("Fic"))
+    }
+
+    @Test fun phoneHasOneInlineClearActionAndNoSearchButton() = screen { fixture, catalog, field ->
+        compose.onAllNodesWithContentDescription("Clear search").assertCountEquals(0)
         field.performTextInput("Fictional")
-        field.performImeAction()
         await { !catalog.state.loading && catalog.hasActiveSearch }
         capture("phone-clear-baseline")
-        compose.onNodeWithText("Clear search").assertIsDisplayed().performClick()
+        compose.onAllNodes(hasText("Search") and hasClickAction()).assertCountEquals(1)
+        compose.onAllNodesWithText("Clear search").assertCountEquals(0)
+        compose.onNodeWithContentDescription("Clear search").assertIsDisplayed().performClick()
         await { !catalog.state.loading && !catalog.hasActiveSearch && catalog.state.resultQuery == "" }
         assertTrue(catalog.searchInput.isEmpty())
         assertEquals("", fixture.catalogQueries.last())
@@ -69,7 +85,7 @@ class SearchFeedbackJourneyTest {
         field.performTextInput("Fictional")
         field.performImeAction()
         await { !catalog.state.loading && catalog.hasActiveSearch }
-        compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
+        compose.onNodeWithText("96 titles").assertIsDisplayed()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         fixture.catalogGates["new query"] = CountDownLatch(1)
         fixture.catalogFailures["new query"] = 400
@@ -77,12 +93,11 @@ class SearchFeedbackJourneyTest {
         field.performImeAction()
         await { fixture.catalogQueries.last() == "new query" }
         assertTrue(catalog.state.loading)
-        compose.onNodeWithText("Results: 96 · “Fictional”").assertDoesNotExist()
-        compose.onNode(hasText("Results:", substring = true)).assertDoesNotExist()
+        compose.onNode(hasText("titles", substring = true)).assertDoesNotExist()
         capture("phone-search-pending")
         fixture.catalogGates.getValue("new query").countDown()
         await { !catalog.state.loading && catalog.state.notice != null }
-        compose.onNode(hasText("Results:", substring = true)).assertDoesNotExist()
+        compose.onNode(hasText("titles", substring = true)).assertDoesNotExist()
         compose.onNodeWithText("Could not load your library. Try again.").assertIsDisplayed()
         capture("phone-search-failed")
     }
@@ -95,9 +110,9 @@ class SearchFeedbackJourneyTest {
         await { !catalog.state.loading && fixture.catalogQueries.last() == query }
         assertEquals(0, catalog.state.total)
         assertTrue(catalog.state.items.isEmpty())
-        compose.onNodeWithText("Results: 0 · “$query”").assertIsDisplayed()
+        compose.onNode(hasText("titles", substring = true)).assertDoesNotExist()
         compose.onNodeWithText("No results. Try another search.").assertIsDisplayed()
-        compose.onNodeWithText("Clear search").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Clear search").assertIsDisplayed()
         capture("phone-search-zero")
     }
 
@@ -111,17 +126,38 @@ class SearchFeedbackJourneyTest {
         field.performImeAction()
         await { !catalog.state.loading && catalog.state.total == 2 }
         val latest = catalog.state.items
-        compose.onNodeWithText("Results: 2 · “new”").assertIsDisplayed()
+        compose.onNodeWithText("2 titles").assertIsDisplayed()
         fixture.catalogGates.getValue("slow").countDown()
         await { fixture.completedCatalogQueries.contains("slow") }
         assertEquals(latest, catalog.state.items)
         assertEquals(2, catalog.state.total)
-        compose.onNodeWithText("Results: 2 · “new”").assertIsDisplayed()
-        compose.onNodeWithText("Results: 96 · “slow”").assertDoesNotExist()
+        compose.onNodeWithText("2 titles").assertIsDisplayed()
+        compose.onNodeWithText("96 titles").assertDoesNotExist()
     }
 
+    private fun liveJourney(name: String) = screen { fixture, catalog, field ->
+        val requests = firstPages(fixture)
+        field.performTextInput("Fictional")
+        await { !catalog.state.loading && fixture.catalogQueries.last() == "Fictional" }
+        assertEquals("One typed query must send one search", requests + 1, firstPages(fixture))
+        compose.onNodeWithText("96 titles").assertIsDisplayed()
+            .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
+        capture("$name-search-results")
+        field.performTextReplacement("draft")
+        await { !catalog.state.loading && fixture.catalogQueries.last() == "draft" }
+        val searched = firstPages(fixture)
+        compose.onNodeWithContentDescription("Clear search").assertIsDisplayed().performClick()
+        await { !catalog.state.loading && !catalog.hasActiveSearch && fixture.catalogQueries.last().isEmpty() }
+        assertTrue(catalog.searchInput.isEmpty())
+        assertEquals("One Clear action must send one new query", searched + 1, firstPages(fixture))
+        compose.onNodeWithText("96 titles").assertIsDisplayed()
+        capture("$name-search-cleared")
+    }
+
+    private fun firstPages(fixture: AndroidRecoveryFixture) = fixture.catalogOffsets.count { it == 0 }
+
     private fun resultsJourney(name: String, tv: Boolean = false) = screen(tv) { fixture, catalog, field ->
-        val firstPages = { fixture.catalogOffsets.count { it == 0 } }
+        val firstPages = { firstPages(fixture) }
         val requests = firstPages()
         field.performTextInput("Fictional")
         compose.waitForIdle()
@@ -175,7 +211,7 @@ class SearchFeedbackJourneyTest {
                     searchDestination.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.RequestFocus) { it() }
                     searchDestination.assertIsFocused().performKeyInput { pressKey(ComposeKey.DirectionCenter) }
                 } else searchDestination.performClick()
-                val field = compose.onNodeWithText("Search library")
+                val field = compose.onNode(hasSetTextAction())
                 field.assertIsDisplayed()
                 await { !catalog.state.loading && catalog.state.view == "all" }
                 action(fixture, catalog, field)
