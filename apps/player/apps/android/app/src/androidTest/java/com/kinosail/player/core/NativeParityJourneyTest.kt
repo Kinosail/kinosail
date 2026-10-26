@@ -238,8 +238,16 @@ class NativeParityJourneyTest {
         val size = card.fetchSemanticsNode().size
         val wide = homeCardWidth(tv, landscape = true).value * context.resources.displayMetrics.density
         assertTrue("Landscape fallback must keep a wide card: $size", size.width >= wide - 1)
+        if (!tv) {
+            val heading = compose.onNode(hasText("Continue watching") and !hasClickAction()).fetchSemanticsNode().boundsInRoot
+            val bounds = card.fetchSemanticsNode().boundsInRoot
+            assertEquals("Shelf cards must start at their heading edge, as on iPhone", heading.left, bounds.left, 1f)
+            val title = compose.onNode(hasText("Next Film") and hasAnyAncestor(hasContentDescription("Next Film")),
+                useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
+            assertEquals("Card titles must align with their artwork, as on iPhone", bounds.left, title.left, 1f)
+        }
         compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
-            useUnmergedTree = true).assertExists()
+            useUnmergedTree = true).assertDoesNotExist()
         compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),
             useUnmergedTree = true).assertExists()
         capture("home-continuation")
@@ -404,6 +412,13 @@ class NativeParityJourneyTest {
         }
         else compose.onNodeWithText("Movies").activate()
         waitText("New Film")
+        if (!tv) {
+            val first = compose.onNodeWithContentDescription("New Film").fetchSemanticsNode().boundsInRoot
+            val second = compose.onNodeWithContentDescription("Continuing Film").fetchSemanticsNode().boundsInRoot
+            assertEquals("Grid cards must share a row", first.top, second.top, 1f)
+            assertTrue("Phone grids must use three iPhone-sized columns: $first",
+                first.width < 130 * context.resources.displayMetrics.density)
+        }
         capture("catalog-loaded")
     }
 
@@ -499,7 +514,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
         .replace("\"backdrop\":\"/backdrop/next-film\"", "\"backdrop\":\"\"")
     private val series = item("0123456789abcdef", "Fixture Series", kind = "show")
         .replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"genres\"")
-    private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
+    private val episodes = listOf(item("episode-one", "S01E01 · First episode", progress = 12), item("episode-two", "S02E01 · Second episode"))
         .mapIndexed { index, item -> item.replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"season\":${index+1},\"episode\":1,\"genres\"") }
     private val song = item("song", "Night Drive", kind = "music", progress = 45)
     private val book = item("book", "A quiet crossing", kind = "book")

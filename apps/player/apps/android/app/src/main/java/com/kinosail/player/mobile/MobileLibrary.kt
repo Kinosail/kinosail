@@ -127,16 +127,14 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     if (state.loading && state.items.isEmpty()) LibraryLoading(view = state.view)
                     else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 144.dp),
+                    LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
                         modifier = Modifier.weight(1f), state = grid,
-                        horizontalArrangement = Arrangement.spacedBy(18.dp), verticalArrangement = Arrangement.spacedBy(24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(28.dp),
                         contentPadding = PaddingValues(bottom = 24.dp)) {
                         items(state.items, key = CatalogItem::id) { item ->
-                            Card(onClick = { catalog.select(item) }, modifier = Modifier.semantics { contentDescription = item.title }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
-                                MediaArtwork(item, catalog, Modifier.fillMaxWidth())
-                                Text(item.title, modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.titleMedium, minLines = 2,
-                                    maxLines = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f) Int.MAX_VALUE else 2,
-                                    overflow = TextOverflow.Ellipsis)
+                            Card(onClick = { catalog.select(item) }, modifier = Modifier.semantics { contentDescription = item.title },
+                                colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color.Transparent)) {
+                                MediaCardBody(item, catalog, tv = false, progressOverlay = true)
                             }
                         }
                         if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
