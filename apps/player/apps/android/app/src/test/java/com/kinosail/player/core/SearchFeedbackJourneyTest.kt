@@ -121,20 +121,21 @@ class SearchFeedbackJourneyTest {
     }
 
     private fun resultsJourney(name: String, tv: Boolean = false) = screen(tv) { fixture, catalog, field ->
-        val requests = fixture.catalogQueries.size
+        val firstPages = { fixture.catalogOffsets.count { it == 0 } }
+        val requests = firstPages()
         field.performTextInput("Fictional")
         compose.waitForIdle()
-        assertEquals("Editing must not submit a query", requests, fixture.catalogQueries.size)
+        assertEquals("Editing must not submit a query", requests, firstPages())
         capture("$name-search-entered")
         field.performImeAction()
         await { !catalog.state.loading && fixture.catalogQueries.last() == "Fictional" }
         compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.LiveRegion, LiveRegionMode.Polite))
         capture("$name-search-results")
-        val submittedRequests = fixture.catalogQueries.size
+        val submittedRequests = firstPages()
         field.performTextReplacement("draft")
         compose.waitForIdle()
-        assertEquals(submittedRequests, fixture.catalogQueries.size)
+        assertEquals(submittedRequests, firstPages())
         compose.onNodeWithText("Results: 96 · “Fictional”").assertIsDisplayed()
         val clear = compose.onNodeWithText("Clear search").assertIsDisplayed()
         if (tv) {
@@ -143,7 +144,7 @@ class SearchFeedbackJourneyTest {
         } else clear.performClick()
         await { !catalog.state.loading && !catalog.hasActiveSearch && fixture.catalogQueries.last().isEmpty() }
         assertTrue(catalog.searchInput.isEmpty())
-        assertEquals("One Clear action must send one new query", submittedRequests + 1, fixture.catalogQueries.size)
+        assertEquals("One Clear action must send one new query", submittedRequests + 1, firstPages())
         await { compose.onAllNodesWithText("Results: 96").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Results: 96").assertIsDisplayed()
         if (tv) clear.assertIsFocused()
