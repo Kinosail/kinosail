@@ -27,11 +27,9 @@ final class RemotePlaybackCrashTests: RemoteTestCase {
             for _ in 0..<12 where !play.hasFocus { remote.press(.up) }
             XCTAssertTrue(play.hasFocus, app.debugDescription)
             remote.press(.select)
-            XCTAssertTrue(bookmarks.waitForNonExistence(timeout: 20))
-            XCTAssertTrue(app.cells["Playback options"].waitForExistence(timeout: 30), app.debugDescription)
             let options = app.cells["Playback options"]
-            let preview = app.cells["Seek with preview"]
-            for _ in 0..<3 where !options.hasFocus && !preview.hasFocus { remote.press(.up) }
+            XCTAssertTrue(options.waitForExistence(timeout: 30), app.debugDescription)
+            for _ in 0..<3 where !options.hasFocus { remote.press(.up) }
             for _ in 0..<12 where !options.hasFocus { remote.press(.right) }
             XCTAssertTrue(options.hasFocus, app.debugDescription)
             remote.press(.select)
@@ -48,6 +46,7 @@ final class RemotePlaybackCrashTests: RemoteTestCase {
             XCTAssertEqual(app.state, .runningForeground, "Remote seeking must not terminate playback")
             record("held remote playback \(attempt)", app)
             remote.press(.menu)
+            XCTAssertTrue(options.waitForNonExistence(timeout: 15), "Back must close the player")
             XCTAssertTrue(bookmarks.waitForExistence(timeout: 15), "Back must return to the movie detail")
             XCTAssertEqual(app.state, .runningForeground)
         }

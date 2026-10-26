@@ -260,7 +260,7 @@ extension PlaybackEndpointJourneys {
     var body: some View {
         if let player = coordinator.player {
             NativePlayerView(player: player, presentation: coordinator.presentation,
-                             options: {}, seekPreview: {}, close: {}, restore: {}).ignoresSafeArea()
+                             options: {}, close: {}, restore: {}).ignoresSafeArea()
         } else { Color.black.ignoresSafeArea() }
     }
 }

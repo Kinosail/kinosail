@@ -16,45 +16,47 @@ struct PlaybackPreferencesScreen: View {
         Form {
             if loaded {
                 Section("Playback") {
+                    #if os(tvOS)
+                    TVPreferenceChoiceLink(title: "Speed", symbol: "speedometer", selection: $preferences.rate,
+                                           choices: PlaybackPreferenceChoices.rates(including: preferences.rate), label: PlaybackPreferenceChoices.rateLabel)
+                    TVPreferenceChoiceLink(title: "Audio language", symbol: "speaker.wave.2", selection: $preferences.audioLanguage,
+                                           choices: PlaybackPreferenceChoices.languages(including: preferences.audioLanguage), label: PlaybackPreferenceChoices.languageLabel)
+                    TVPreferenceChoiceLink(title: "Subtitles", symbol: "captions.bubble", selection: $preferences.subtitleLanguage,
+                                           choices: PlaybackPreferenceChoices.languages(including: preferences.subtitleLanguage, allowsOff: true),
+                                           label: PlaybackPreferenceChoices.languageLabel)
+                    #else
                     Picker("Speed", selection: $preferences.rate) {
-                        ForEach(Array(Set([0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, preferences.rate])).sorted(), id: \.self) { Text("\($0.formatted())×").tag($0) }
+                        ForEach(PlaybackPreferenceChoices.rates(including: preferences.rate), id: \.self) { Text(PlaybackPreferenceChoices.rateLabel($0)).tag($0) }
                     }
                     LanguagePicker(title: "Audio language", selection: $preferences.audioLanguage)
                     LanguagePicker(title: "Subtitles", selection: $preferences.subtitleLanguage, allowsOff: true)
+                    #endif
                 }
                 Section {
                     Toggle(isOn: $preferences.dialogueBoost) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Boost Dialog")
-                            Text("Brings speech frequencies forward, so quiet conversations are easier to follow without turning everything else up.")
-                                .font(.footnote).foregroundStyle(KinoTheme.muted)
+                            Text("Makes quiet speech easier to hear.").font(.footnote).foregroundStyle(KinoTheme.muted)
                         }
                     }
                     Toggle(isOn: $preferences.nightMode) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Normalize Loudness")
-                            Text("Keeps audio at a comfortable, consistent level and takes the edge off very loud scenes.")
-                                .font(.footnote).foregroundStyle(KinoTheme.muted)
+                            Text("Evens out the volume and softens very loud scenes.").font(.footnote).foregroundStyle(KinoTheme.muted)
                         }
                     }
                 } header: {
                     Text("Audio enhancements")
                 } footer: {
-                    #if os(iOS)
-                    Text("Changes save automatically and use a compatible Server stream. Downloads keep the audio already in the file.")
-                    #else
-                    Text("Uses a compatible Server stream. Downloads keep the audio already in the file.")
-                    #endif
+                    Text(footer)
                 }
-                if itemID != nil {
+                if itemID != nil, overridden {
                     Section {
-                        Text(overridden ? "This title has its own playback preferences." : "This title follows your Viewer Profile’s defaults.").foregroundStyle(KinoTheme.muted)
-                        Button("Use profile defaults") { reset() }.disabled(busy || !overridden)
+                        Button("Use profile defaults") { reset() }.disabled(busy)
+                    } footer: {
+                        Text("This title has its own preferences. Other titles use your Viewer Profile’s defaults.")
                     }
                 }
-                #if os(tvOS)
-                Section { Button(busy ? "Saving…" : "Save preferences") { save() }.disabled(busy || preferences == original) }
-                #endif
             } else if message == nil {
                 Section("Playback") {
                     ForEach(0..<3) { index in SkeletonRow(kind: .form, status: index == 0 ? "Loading preferences…" : nil) }
@@ -65,16 +67,18 @@ struct PlaybackPreferencesScreen: View {
             }
             PreferenceFeedback(busy: busy, message: message, offersRetry: failed) { if loaded { save() } else { Task { await load() } } }
         }
-        #if os(tvOS)
-        .disabled(busy)
-        #else
         .disabled(resetting)
-        #endif
         .configurationNavigationTitle(itemID == nil ? "Playback preferences" : "This title’s preferences")
         .tvOSConfigurationLayout(title: itemID == nil ? "Playback preferences" : "This title’s preferences", symbol: "play.circle")
         .task(id: "\(session.profileKey ?? ""):\(itemID ?? "defaults")") { await load() }
-        #if os(iOS)
         .onChange(of: preferences) { _, _ in if loaded && preferences != original { save() } }
+    }
+    private var footer: String {
+        let scope = itemID == nil ? "Changes save automatically." : "Changes save automatically and apply only to this title."
+        #if os(iOS)
+        return scope + " Audio enhancements use a compatible Server stream. Downloads keep the audio already in the file."
+        #else
+        return scope + " Audio enhancements use a compatible Server stream."
         #endif
     }
     private func load() async {
@@ -159,14 +163,48 @@ struct PlaybackPreferencesScreen: View {
     }
 }
 
+enum PlaybackPreferenceChoices {
+    static func rates(including rate: Double) -> [Double] { Array(Set([0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, rate])).sorted() }
+    static func rateLabel(_ rate: Double) -> String { "\(rate.formatted())×" }
+    static func languages(including selection: String, allowsOff: Bool = false) -> [String] {
+        Array(Set(["auto", "en", "es", "fr", "de", "it", "pt", "ja", "ko", "zh", selection] + (allowsOff ? ["off"] : []))).sorted()
+    }
+    static func languageLabel(_ code: String) -> String {
+        code == "auto" ? "Automatic" : code == "off" ? "Off" : Locale.current.localizedString(forLanguageCode: code) ?? code
+    }
+}
+
 private struct LanguagePicker: View {
     let title: String
     @Binding var selection: String
     var allowsOff = false
-    private var choices: [String] { Array(Set(["auto", "en", "es", "fr", "de", "it", "pt", "ja", "ko", "zh", selection] + (allowsOff ? ["off"] : []))).sorted() }
     var body: some View {
         Picker(title, selection: $selection) {
-            ForEach(choices, id: \.self) { code in Text(code == "auto" ? "Automatic" : code == "off" ? "Off" : Locale.current.localizedString(forLanguageCode: code) ?? code).tag(code) }
+            ForEach(PlaybackPreferenceChoices.languages(including: selection, allowsOff: allowsOff), id: \.self) {
+                Text(PlaybackPreferenceChoices.languageLabel($0)).tag($0)
+            }
         }
     }
 }
+
+#if os(tvOS)
+private struct TVPreferenceChoiceLink<Value: Hashable & LosslessStringConvertible>: View {
+    let title: String
+    let symbol: String
+    @Binding var selection: Value
+    let choices: [Value]
+    let label: (Value) -> String
+
+    var body: some View {
+        NavigationLink {
+            TVPlaybackChoiceScreen(title: title, symbol: symbol,
+                                   choices: choices.map { TVPlaybackChoice(id: $0.description, title: label($0), selected: $0 == selection) }) { id in
+                guard let value = choices.first(where: { $0.description == id }) else { throw ClientError.invalidInput("Choose one of the listed options.") }
+                selection = value
+            }
+        } label: {
+            TVPlaybackValueLabel(title: title, value: label(selection))
+        }
+    }
+}
+#endif

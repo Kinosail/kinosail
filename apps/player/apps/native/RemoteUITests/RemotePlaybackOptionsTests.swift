@@ -23,6 +23,7 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
         remote.press(.up)
         for _ in 0..<12 where !options.hasFocus { remote.press(.right) }
         XCTAssertTrue(options.hasFocus, app.debugDescription)
+        XCTAssertFalse(app.cells["Seek with preview"].exists, "Scrubbing previews belong to the normal scrub bar, not a separate button")
         remote.press(.select)
         let preferences = app.cells["This title’s preferences"]
         XCTAssertTrue(preferences.waitForExistence(timeout: 10), app.debugDescription)
@@ -55,8 +56,43 @@ final class RemotePlaybackOptionsTests: RemoteTestCase {
         for _ in 0..<12 where !preferences.hasFocus { remote.press(.down) }
         XCTAssertTrue(preferences.hasFocus, app.debugDescription)
         remote.press(.select)
-        XCTAssertTrue(app.staticTexts["Speed"].waitForExistence(timeout: 10), app.debugDescription)
+        let titleSpeed = app.cells.matching(NSPredicate(format: "label BEGINSWITH 'Speed'")).firstMatch
+        XCTAssertTrue(titleSpeed.waitForExistence(timeout: 10), app.debugDescription)
         record("title playback preferences", app)
+        XCTAssertTrue(titleSpeed.label.contains("1×"), "The Speed row shows its value on the same row, got \(titleSpeed.label)")
+        for label in ["Audio language", "Subtitles"] {
+            let row = app.cells.matching(NSPredicate(format: "label BEGINSWITH %@", label)).firstMatch
+            XCTAssertTrue(row.exists && row.label.contains("Automatic"), "The \(label) row shows its value, got \(row.label)")
+        }
+        XCTAssertFalse(app.buttons["Save preferences"].exists, "Changes save automatically")
+        XCTAssertFalse(app.buttons["Use profile defaults"].exists, "There is nothing to reset while the title uses the profile defaults")
+        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Downloads'")).firstMatch.exists,
+                       "Apple TV has no downloads")
+        XCTAssertFalse(app.cells.matching(NSPredicate(format: "label BEGINSWITH 'This title'")).firstMatch.exists,
+                       "Status text is information, not a focusable row")
+        XCTAssertTrue(app.frame.contains(titleSpeed.frame))
+        for _ in 0..<6 where !titleSpeed.hasFocus { remote.press(.up) }
+        XCTAssertTrue(titleSpeed.hasFocus, app.debugDescription)
+        remote.press(.select)
+        let faster = app.cells.matching(NSPredicate(format: "label BEGINSWITH '1.5×'")).firstMatch
+        XCTAssertTrue(faster.waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertTrue(app.cells.matching(NSPredicate(format: "label BEGINSWITH '1×'")).firstMatch.label.contains("Selected"))
+        for _ in 0..<12 where !faster.hasFocus { remote.press(.down) }
+        XCTAssertTrue(faster.hasFocus, app.debugDescription)
+        remote.press(.select)
+        XCTAssertTrue(titleSpeed.waitForExistence(timeout: 10), app.debugDescription)
+        let saved = NSPredicate(format: "label CONTAINS '1.5×'")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: saved, object: titleSpeed)], timeout: 10), .completed,
+                       "The choice saves without a Save button, got \(titleSpeed.label)")
+        let reset = app.buttons["Use profile defaults"]
+        XCTAssertTrue(reset.waitForExistence(timeout: 10), "A title with its own preferences offers a reset")
+        record("title preferences saved", app)
+        for _ in 0..<12 where !focusedLabels(app).contains("Use profile defaults") { remote.press(.down) }
+        XCTAssertTrue(focusedLabels(app).contains("Use profile defaults"), app.debugDescription)
+        remote.press(.select)
+        XCTAssertTrue(reset.waitForNonExistence(timeout: 10), "After the reset the title uses the profile defaults again")
+        XCTAssertTrue(titleSpeed.label.contains("1×") && !titleSpeed.label.contains("1.5×"), titleSpeed.label)
+        record("title preferences reset", app)
         remote.press(.menu)
         XCTAssertTrue(preferences.waitForExistence(timeout: 10))
         remote.press(.menu)

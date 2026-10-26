@@ -9,6 +9,7 @@ STATE = {'mode': 'loaded', 'delay': 0, 'target': 'library'}
 PLAY = dict(rate=1, audioLanguage='auto', subtitleLanguage='auto', audioTrack='', subtitleTrack='', nightMode=False, dialogueBoost=False, volumeBoost=1)
 VIEWER = {'server':'TV Polish QA','serverId':'tv-polish-qa','viewer':dict(id='qa',name='QA Viewer',owner=True,downloads=True,transcode=True,remote=False)}
 PROGRESS = dict(seconds=0,watched=False,session='',revision=0)
+TITLE_PREFS = {}
 def read_movie(args):
     if len(args) != 1 or not args[0] or len(args[0]) > 4096:
         raise ValueError('One generated media path is required')
@@ -134,7 +135,7 @@ class Handler(BaseHTTPRequestHandler):
             if not item: return self.send(404,{'error':'missing title'})
             if not suffix: return self.send(200,dict(item={**item,'backdrop':''} if active and mode=='empty' else item,listed=False,profileId='qa'))
             if suffix=='/playback': return self.send(200,dict(media=dict(kind=item['kind'],duration=30),plan=dict(allowed=True,mode='direct',reason='compatible'),directAllowed=True,direct='/media/'+ident,directType='video/mp4',duration=30,start=item['progress']['seconds'],chapters=[],subtitles=[]))
-            if suffix=='/playback-preferences': return self.send(200,dict(playback=PLAY,overridden=False))
+            if suffix=='/playback-preferences': return self.send(200,dict(playback=TITLE_PREFS.get(ident,PLAY),overridden=ident in TITLE_PREFS))
             if suffix=='/watch-progress': return self.send(200,dict(seconds=item['progress']['seconds'],duration=30))
             if suffix=='/bookmarks': return self.send(200,{'bookmarks':[]})
         if path.startswith('/media/'):
@@ -155,17 +156,43 @@ class Handler(BaseHTTPRequestHandler):
                 headers['Content-Range']=f'bytes {start}-{end}/{len(data)}'; data=data[start:end+1]; code=206
             return self.send(code,data,'video/mp4',headers)
         return self.send(404,{'error':'unsupported fixture operation'})
+    def read_body(self):
+        lengths=self.headers.get_all('Content-Length',[])
+        if len(lengths)!=1 or self.headers.get_all('Transfer-Encoding',[]): raise ValueError()
+        if not re.fullmatch(r'[0-9]{1,5}',lengths[0]) or not 0<int(lengths[0])<=16384: raise ValueError()
+        return json.loads(self.rfile.read(int(lengths[0])))
+    def title_preferences(self):
+        if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return None,self.send(401,{'error':'fixture token required'})
+        match=re.fullmatch(r'/api/v1/items/(movie-[0-9]{3})/playback-preferences',self.path)
+        if not match: return None,self.send(404,{'error':'unsupported fixture operation'})
+        return match.group(1),None
+    def do_DELETE(self):
+        ident,sent=self.title_preferences()
+        if not ident: return sent
+        TITLE_PREFS.pop(ident,None)
+        return self.send(200,dict(playback=PLAY,overridden=False))
     def do_PUT(self):
         if STATE['target']=='connection' and STATE['mode']=='failed' and self.headers.get_all('Authorization',[])==['Bearer tv-polish-fixture-token']:
             self.close_connection=True
             return
+        if self.path.endswith('/playback-preferences'):
+            ident,sent=self.title_preferences()
+            if not ident: return sent
+            try:
+                body=self.read_body()
+                if not isinstance(body,dict) or set(body)!=set(PLAY): raise ValueError()
+                if type(body['rate']) not in [int,float] or not 0.5<=body['rate']<=3: raise ValueError()
+                if type(body['volumeBoost']) not in [int,float] or not 0<=body['volumeBoost']<=4: raise ValueError()
+                if any(type(body[k]) is not bool for k in ['nightMode','dialogueBoost']): raise ValueError()
+                if any(not isinstance(body[k],str) or len(body[k])>64 for k in ['audioLanguage','subtitleLanguage','audioTrack','subtitleTrack']): raise ValueError()
+            except (ValueError,KeyError,TypeError,RecursionError): return self.send(400,{'error':'invalid fixture preferences'})
+            TITLE_PREFS[ident]=body
+            print('PREFERENCES_FIXTURE_SAVED',json.dumps(dict(item=ident,rate=body['rate'])),flush=True)
+            return self.send(200,dict(playback=body,overridden=True))
         if not re.fullmatch(r'/api/v1/items/movie-[0-9]{3}/progress/sync',self.path): return self.send(404,{'error':'unsupported fixture operation'})
         if self.headers.get_all('Authorization',[])!=['Bearer tv-polish-fixture-token']: return self.send(401,{'error':'fixture token required'})
         try:
-            lengths=self.headers.get_all('Content-Length',[])
-            if len(lengths)!=1 or self.headers.get_all('Transfer-Encoding',[]): raise ValueError()
-            if not re.fullmatch(r'[0-9]{1,5}',lengths[0]) or not 0<int(lengths[0])<=16384: raise ValueError()
-            body=json.loads(self.rfile.read(int(lengths[0])))
+            body=self.read_body()
             if not isinstance(body,dict) or set(body)!={'progress','expected','playbackToken'}: raise ValueError()
             for value in [body['progress'],body['expected']]:
                 if not isinstance(value,dict) or set(value)!={'seconds','watched','session','revision'}: raise ValueError()

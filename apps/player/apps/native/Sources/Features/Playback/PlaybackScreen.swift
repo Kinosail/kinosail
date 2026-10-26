@@ -9,7 +9,6 @@ struct PlaybackScreen: View {
     @State private var failure: String?
     @State private var revision = 0
     @State private var showsTools = false
-    @State private var showsSeekPreview = false
     #if os(iOS) || os(tvOS)
     @State private var showsFullScreen = false
     @State private var didPresentFullScreen = false
@@ -52,14 +51,13 @@ struct PlaybackScreen: View {
             TouchPlaybackView(failure: failure, retry: { revision += 1 }, close: { closePlayback() })
             #else
             TVPlaybackSurface(failure: failure, retry: { revision += 1 }, close: { closePlayback() },
-                              options: { showsTools = true }, seekPreview: { showsSeekPreview = true })
+                              options: { showsTools = true })
             #endif
         }
         .navigationTitle(session.player.currentItem?.title ?? "Playback")
         .toolbar(.hidden, for: .navigationBar, .tabBar)
         #if os(tvOS)
         .fullScreenCover(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() }.tvPlaybackPanel() }
-        .sheet(isPresented: $showsSeekPreview) { TVSeekPreviewScreen() }
         #else
         .sheet(isPresented: $showsTools) { NavigationStack { PlaybackToolsScreen() } }
         #endif
@@ -76,7 +74,7 @@ struct PlaybackScreen: View {
             } catch is CancellationError {} catch { failure = AppSession.message(error) }
         }
         .onDisappear {
-            if !session.player.presentation.pictureInPicture, !showsTools, !showsSeekPreview, !session.player.presentation.showingOptions,
+            if !session.player.presentation.pictureInPicture, !showsTools, !session.player.presentation.showingOptions,
                session.player.currentItem?.kind == .video { session.player.stop(); session.contentRevision = UUID() }
         }
     }
@@ -93,7 +91,6 @@ struct TVPlaybackSurface: View {
     let retry: () -> Void
     let close: () -> Void
     var options: () -> Void = {}
-    var seekPreview: () -> Void = {}
     @Environment(AppSession.self) private var session
     @State private var mounted = false
 
@@ -109,7 +106,7 @@ struct TVPlaybackSurface: View {
         ZStack {
             if mounted || player != nil {
                 NativePlayerView(player: player, presentation: session.player.presentation,
-                                 options: options, seekPreview: seekPreview, close: close,
+                                 options: options, close: close,
                                  restore: { session.showsVideoPlayer = true }, interactive: message == nil)
                     .onExitCommand { session.player.presentation.requestClose() }
                     .background(.black)
@@ -140,7 +137,6 @@ struct NativePlayerView: UIViewControllerRepresentable {
     let player: AVPlayer?
     let presentation: PlayerPresentation
     let options: () -> Void
-    let seekPreview: () -> Void
     let close: () -> Void
     let restore: () -> Void
     var interactive = true
@@ -148,7 +144,6 @@ struct NativePlayerView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> AVPlayerViewController {
         presentation.restore = restore
         presentation.showOptions = options
-        presentation.showSeekPreview = seekPreview
         presentation.close = close
         presentation.controller.player = player
         presentation.controller.view.isUserInteractionEnabled = interactive
@@ -159,7 +154,6 @@ struct NativePlayerView: UIViewControllerRepresentable {
     func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
         presentation.restore = restore
         presentation.showOptions = options
-        presentation.showSeekPreview = seekPreview
         presentation.close = close
         if controller.player !== player { controller.player = player }
         if controller.view.isUserInteractionEnabled != interactive { controller.view.isUserInteractionEnabled = interactive }
