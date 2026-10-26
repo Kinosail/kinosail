@@ -87,7 +87,7 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                     check(total in 0..96)
                     val begin = if (duplicatePage && offset > 0) 0 else offset
                     val items = (begin until minOf(begin + limit, total)).joinToString(",") { item(if (sort == "added") total - it else it + 1) }
-                    val letters = catalogLetters?.takeIf { sort == "title" && search.isEmpty() }?.let { ""","letters":$it""" }.orEmpty()
+                    val letters = catalogLetters?.takeIf { sort == "title" && search.isEmpty() }?.let { ""","letters":$it""" } ?: ""","letters":null"""
                     """{"items":[$items],"total":$total,"offset":$offset,"limit":$limit,"sort":"$sort","query":${JsonPrimitive(search)}$letters}"""
                 }
                 path.endsWith("/playback") -> {
