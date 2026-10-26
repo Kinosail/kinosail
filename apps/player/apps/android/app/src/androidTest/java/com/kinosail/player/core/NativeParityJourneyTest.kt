@@ -681,7 +681,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                         "all" -> listOf(movie, newMovie, song)
                                         else -> emptyList()
                                     }
-                                    """{"items":[${items.joinToString(",")}],"total":${items.size},"offset":0,"limit":${query["limit"] ?: "24"},"view":"$view","sort":"${query["sort"] ?: "title"}","query":"${query["q"] ?: ""}"}""".toByteArray()
+                                    """{"items":[${items.joinToString(",")}],"total":${items.size},"offset":0,"limit":${query["limit"] ?: "24"},"view":"$view","sort":"${query["sort"] ?: "title"}","query":"${query["q"] ?: ""}","letters":null}""".toByteArray()
                                 }
                             }
                             path == "/api/v1/shows/0123456789abcdef" -> {

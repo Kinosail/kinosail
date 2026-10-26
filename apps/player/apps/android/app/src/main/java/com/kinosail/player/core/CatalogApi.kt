@@ -5,6 +5,7 @@ import java.net.URL
 import java.net.URLEncoder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -109,7 +110,8 @@ class CatalogApi(
         private val LETTER = Regex("#|\\p{L}[\\p{L}\\p{M}]{0,3}")
 
         private fun parseLetters(raw: JsonElement?, total: Int): List<CatalogLetter> {
-            val entries = (raw ?: return emptyList()) as? JsonArray
+            if (raw == null || raw is JsonNull) return emptyList()
+            val entries = raw as? JsonArray
             require(entries != null && entries.size <= 4096) { INVALID_RESPONSE }
             var end = 0
             val letters = entries.map { value ->
