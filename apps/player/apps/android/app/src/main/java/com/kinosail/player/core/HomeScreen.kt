@@ -7,13 +7,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.lazy.rememberLazyListState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -149,15 +145,9 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
             contentPadding = PaddingValues(horizontal = if (tv) 24.dp else 0.dp, vertical = 12.dp)) {
             items(items, key = CatalogItem::id) { item ->
                 val width = homeCardWidth(tv, landscape)
-                var focused by remember { mutableStateOf(false) }
-                val body: @Composable () -> Unit = { MediaCardBody(item, catalog, tv, landscape, resumes = landscape, focused = focused) }
-                if (tv) Column(Modifier.width(width).onFocusChanged {
-                    focused = it.isFocused
-                    if (it.isFocused) onFocus(item)
-                }.clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button) { open(item) }
-                    .semantics { contentDescription = item.title }) { body() }
+                if (tv) TvMediaCard(item, catalog, Modifier.width(width), landscape, resumes = landscape, onFocus = onFocus) { open(item) }
                 else Card(onClick = { open(item) }, modifier = Modifier.width(width).semantics { contentDescription = item.title },
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent), content = { body() })
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)) { MediaCardBody(item, catalog, tv, landscape) }
             }
         }
     }

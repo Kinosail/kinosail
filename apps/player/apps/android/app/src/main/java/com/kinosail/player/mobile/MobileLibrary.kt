@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -24,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.core.*
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
@@ -40,6 +42,9 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
     var bookItem by remember { mutableStateOf<CatalogItem?>(null) }
     val grid = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
+    var jumpTarget by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.view, state.sort) { grid.scrollToItem(0) }
     val keyboard = LocalSoftwareKeyboardController.current
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail()
@@ -100,7 +105,10 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     Text(tabTitle(destination), style = MaterialTheme.typography.headlineLarge)
                     if (nowPlaying != null) TextButton(onClick = { playingItem = nowPlaying }) { Text("Now playing · ${nowPlaying.title}") }
                     if (destination == "search") SearchField(catalog) { keyboard?.hide() }
-                    if (state.items.isNotEmpty()) TitleCount(state.total)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.weight(1f)) { if (state.items.isNotEmpty()) TitleCount(state.total) }
+                        LibrarySortMenu(state.sort, tv = false, change = catalog::changeSort)
+                    }
                     if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
                         state.notice?.let { Text(it, color = KinoColor.text,
                             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
@@ -109,10 +117,12 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                     if (state.loading && state.items.isEmpty()) LibraryLoading(view = state.view)
                     else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)),
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val letters = jumpLetters(state, destination == "search")
+                    Box(Modifier.weight(1f)) {
                     LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 240.dp else 96.dp),
-                        modifier = Modifier.weight(1f), state = grid,
+                        modifier = Modifier.fillMaxSize(), state = grid,
                         horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(28.dp),
-                        contentPadding = PaddingValues(bottom = 24.dp)) {
+                        contentPadding = PaddingValues(end = if (letters.isEmpty()) 0.dp else 32.dp, bottom = 24.dp)) {
                         items(state.items, key = CatalogItem::id) { item ->
                             Card(onClick = { catalog.select(item) }, modifier = Modifier.semantics { contentDescription = item.title },
                                 colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color.Transparent)) {
@@ -129,6 +139,11 @@ internal fun MobileLibrary(connection: ConnectionModel, viewer: Viewer) {
                                 TextButton(onClick = catalog::retry) { Text(interfaceText("Retry loading more")) }
                             }
                         }
+                    }
+                    if (letters.isNotEmpty()) LetterIndex(letters, tv = false, Modifier.align(Alignment.CenterEnd).offset(x = 8.dp)) { letter ->
+                        jumpTarget = letter.label
+                        scope.launch { if (catalog.loadThrough(letter.offset) && jumpTarget == letter.label) grid.scrollToLoaded(letter.offset) }
+                    }
                     }
                 }
             }

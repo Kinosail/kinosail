@@ -3,7 +3,6 @@ package com.kinosail.player.core
 import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
-import android.util.LruCache
 import java.io.IOException
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,34 +12,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class CatalogState(
-    val items: List<CatalogItem> = emptyList(),
-    val total: Int = 0,
-    val loading: Boolean = false,
-    val notice: String? = null,
-    val failedOffset: Int? = null,
-    val connectionExpired: Boolean = false,
-    val resultQuery: String? = null,
-    val selected: CatalogItem? = null,
-    val view: String = "all",
-    val listed: Boolean? = null,
-    val listBusy: Boolean = false,
-    val detailNotice: String? = null,
-)
-
-internal fun catalogEmptyMessage(view: String, searched: Boolean): String =
-    if (searched) "No results. Try another search."
-    else if (view == "list") "Save a title to keep it in My List." else "Nothing in your library yet."
-
 class CatalogModel(application: Application) : AndroidViewModel(application) {
     private val sessions = SessionStore(application)
-    private val artworkCache = object : LruCache<String, Bitmap>(maxOf(24 * 1024 * 1024, (Runtime.getRuntime().maxMemory() / 6).toInt())) {
-        override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
-    }
+    private val images = CatalogImages()
     private var session: SavedSession? = null
     internal val connection get() = session?.let { saved -> viewerId?.let { saved to it } }
     private var viewerId: String? = null
@@ -48,6 +27,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
     private var generation = 0
     private var activeQuery = ""
     private var activeView = "all"
+    private var activeSort = "title"
     private var refreshAfterDetail = false
     private var retryJob: Job? = null
 
@@ -63,11 +43,12 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         viewerId = viewer.id
         this.viewer = viewer
         if (changed) {
-            artworkCache.evictAll()
+            images.clear()
             state = CatalogState(loading = true)
             searchInput = ""
             activeQuery = ""
             activeView = "all"
+            activeSort = "title"
         }
         viewModelScope.launch {
             try {
@@ -93,7 +74,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         }
         activeQuery = query
         val attempt = ++generation
-        state = CatalogState(loading = true, view = activeView)
+        state = CatalogState(loading = true, view = activeView, sort = activeSort)
         viewModelScope.launch { fetch(attempt, 0) }
     }
 
@@ -110,9 +91,32 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         activeQuery = ""
         searchInput = ""
         val attempt = ++generation
-        state = CatalogState(loading = true, view = view)
+        state = CatalogState(loading = true, view = view, sort = activeSort)
         viewModelScope.launch { fetch(attempt, 0) }
     }
+
+    fun changeSort(sort: String) {
+        require(sort in LIBRARY_SORTS) { "Invalid library sort." }
+        if (session == null || sort == activeSort) return
+        activeSort = sort
+        retryJob?.cancel()
+        val attempt = ++generation
+        state = CatalogState(loading = true, view = activeView, sort = sort)
+        viewModelScope.launch { fetch(attempt, 0) }
+    }
+
+    suspend fun loadThrough(offset: Int): Boolean = viewModelScope.async {
+        val attempt = generation
+        while (attempt == generation && state.items.size <= offset && state.items.size < state.total && state.failedOffset == null) {
+            if (state.loading) { delay(50); continue }
+            val before = state.items.size
+            retryJob?.cancel()
+            state = state.copy(loading = true, notice = null)
+            fetch(attempt, before, 200)
+            if (state.items.size == before) break
+        }
+        attempt == generation && state.items.size > offset
+    }.await()
 
     fun loadMore() {
         if (state.loading || state.items.size >= state.total || session == null) return
@@ -193,7 +197,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         if (refreshAfterDetail) {
             refreshAfterDetail = false
             val attempt = ++generation
-            state = CatalogState(loading = true, view = activeView)
+            state = CatalogState(loading = true, view = activeView, sort = activeSort)
             viewModelScope.launch { fetch(attempt, 0) }
         }
     }
@@ -205,64 +209,52 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         viewerId = null
         viewer = null
         activeView = "all"
+        activeSort = "title"
         refreshAfterDetail = false
-        artworkCache.evictAll()
+        images.clear()
         state = CatalogState()
     }
 
     suspend fun artwork(path: String, dimension: Int): Bitmap? {
-        if (path.isEmpty()) return null
-        val saved = session ?: return null
-        val viewer = viewerId ?: return null
+        val (saved, viewer) = connection ?: return null
         val attempt = generation
-        val key = "$viewer:$dimension:$path"
-        artworkCache.get(key)?.let { return it }
-        return try {
-            val image = withContext(Dispatchers.IO) {
-                ArtworkClient(saved.server).bitmap(path, saved.token, viewer, dimension)
-            }
-            if (attempt != generation) null else image.also { artworkCache.put(key, it) }
-        } catch (_: Exception) { null }
+        return images.artwork(saved, viewer, path, dimension) { attempt == generation }
     }
 
     suspend fun photo(item: CatalogItem): Bitmap? {
-        val saved = session ?: return null
-        val viewer = viewerId ?: return null
+        val (saved, viewer) = connection ?: return null
         val attempt = generation
-        return try {
-            val image = withContext(Dispatchers.IO) {
-                ArtworkClient(saved.server).photo(item, saved.token, viewer)
-            }
-            image.takeIf { attempt == generation }
-        } catch (_: Exception) { null }
+        return images.photo(saved, viewer, item) { attempt == generation }
     }
 
-    private suspend fun fetch(attempt: Int, offset: Int) {
+    private suspend fun fetch(attempt: Int, offset: Int, limit: Int = CatalogApi.PAGE_SIZE) {
         val saved = session ?: return
         val viewer = viewerId ?: return
+        val cacheKey = "library-$activeView".takeIf { activeSort == "title" }
         try {
-            if (offset == 0 && activeQuery.isEmpty() && state.items.isEmpty()) {
+            if (offset == 0 && activeQuery.isEmpty() && state.items.isEmpty() && cacheKey != null) {
                 val identity = this.viewer
                 val cached = if (identity != null) withContext(Dispatchers.IO) {
-                    sessions.loadCatalog(saved.server, identity, "library-$activeView")
+                    sessions.loadCatalog(saved.server, identity, cacheKey)
                 } else null
                 if (attempt == generation && cached != null) state = state.copy(
                     items = cached.items, total = cached.total, loading = false, notice = null)
             }
             val page = withContext(Dispatchers.IO) {
-                CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset, activeView)
+                CatalogApi(saved.server).list(saved.token, viewer, activeQuery, offset, activeView, activeSort, limit)
             }
             if (attempt != generation) return
             if (offset > 0 && page.items.any { candidate -> state.items.any { it.id == candidate.id } }) {
                 Log.w("KinosailCatalog", "operation=library offset=$offset failure=duplicate_items outcome=loaded-rows-retained")
-                throw IllegalArgumentException("The Server returned a duplicate library item.")
+                throw IllegalStateException("The Server returned a duplicate library item.")
             }
             state = state.copy(items = if (offset == 0) page.items else state.items + page.items,
                 total = page.total, loading = false, notice = null, failedOffset = null,
+                letters = if (offset == 0) page.letters else state.letters,
                 connectionExpired = false, resultQuery = activeQuery)
-            if (offset == 0 && activeQuery.isEmpty()) this.viewer?.let { identity ->
+            if (offset == 0 && activeQuery.isEmpty() && cacheKey != null) this.viewer?.let { identity ->
                 withContext(Dispatchers.IO) {
-                    runCatching { sessions.saveCatalog(saved.server, identity, "library-$activeView", page) }
+                    runCatching { sessions.saveCatalog(saved.server, identity, cacheKey, page) }
                 }
             }
         } catch (error: CancellationException) { throw error } catch (error: ServerHttpException) {
@@ -271,6 +263,9 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         } catch (_: IOException) {
             failed(attempt, offset)
             retryLater(attempt, offset)
+        } catch (error: IllegalArgumentException) {
+            Log.w("KinosailCatalog", "operation=library offset=$offset failure=invalid_response outcome=rejected")
+            failed(attempt, offset)
         } catch (_: Exception) {
             failed(attempt, offset)
         }
