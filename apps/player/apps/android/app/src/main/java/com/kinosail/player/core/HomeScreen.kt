@@ -36,24 +36,13 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
             if (tv) HomeHeader(listening, browse, settings)
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)) {
-                val header: @Composable () -> Unit = {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(if (listening) interfaceText("Listen") else "Kinosail",
-                            style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
-                            color = KinoColor.text, modifier = Modifier.weight(1f))
-                        TextButton(onClick = { browse("list") }) { Text(interfaceText("My List")) }
-                    }
-                }
+                val header: @Composable () -> Unit = { PhoneHomeHeader(listening, browse) }
                 if (!tv && !spotlight) item { header() }
                 if (spotlight) state.featured?.let { featured -> item {
-                    MediaSpotlight(featured.copy(plot = ""), catalog, interfaceText(if (featured.progress.seconds > 0)
+                    MediaSpotlight(featured.homeSubtitleItem, catalog, interfaceText(if (featured.progress.seconds > 0)
                         if (listening) "Listening" else "Watching" else "For you"), bleed = 20.dp, topBleed = 20.dp, top = header) {
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            HomeAction(interfaceText(featured.playLabel), false) {
-                                if (featured.kind == "show") open(featured) else play(featured)
-                            }
-                            OutlinedButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
-                        }
+                        HomeFeatureActions(featured, myList = { browse("list") },
+                            play = { if (featured.kind == "show") open(featured) else play(featured) }) { open(featured) }
                     }
                 } }
                 if (nowPlaying != null) item {
@@ -72,15 +61,16 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
                 }
                 if (!tv && !spotlight) state.featured?.let { featured -> item {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(interfaceText(if (featured.progress.seconds > 0) if (listening) "Listening" else "Watching" else "For you"),
-                            style = MaterialTheme.typography.titleLarge, color = KinoColor.text)
-                        MediaHero(featured.copy(plot = ""), catalog, tv = false) {
-                            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                HomeAction(interfaceText(featured.playLabel), false) {
-                                    if (featured.kind == "show") open(featured) else play(featured)
-                                }
-                                OutlinedButton(onClick = { open(featured) }) { Text(interfaceText("Details")) }
-                            }
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(28.dp), verticalArrangement = Arrangement.spacedBy(4.dp),
+                            itemVerticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                            Text(interfaceText(if (featured.progress.seconds > 0) if (listening) "Listening" else "Watching" else "For you"),
+                                style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
+                                modifier = Modifier.semantics { heading() })
+                            TextButton(onClick = { browse("list") }) { Text(interfaceText("My List"), color = KinoColor.muted) }
+                        }
+                        MediaHero(featured.homeSubtitleItem, catalog, tv = false) {
+                            HomeFeatureActions(featured, myList = null,
+                                play = { if (featured.kind == "show") open(featured) else play(featured) }) { open(featured) }
                         }
                     }
                 } }
@@ -128,7 +118,7 @@ internal fun homeCardWidth(tv: Boolean, landscape: Boolean) =
 @Composable
 private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolean) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
+        Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
         val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
             else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
@@ -152,7 +142,7 @@ private fun HomeAction(label: String, tv: Boolean, onClick: () -> Unit) {
 private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogModel, tv: Boolean,
                       landscape: Boolean = false, open: (CatalogItem) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
+        Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
         LazyRow(if (tv) Modifier.bleed(24.dp, 0.dp) else Modifier, horizontalArrangement = Arrangement.spacedBy(18.dp),
             contentPadding = PaddingValues(horizontal = if (tv) 24.dp else 0.dp, vertical = 12.dp)) {

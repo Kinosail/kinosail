@@ -232,6 +232,18 @@ class NativeParityJourneyTest {
 
     @Test fun homeMatchesAppleLandscapeShelvesAndPersistentTvNavigation() = journey {
         waitText(if (tv) "Continue watching" else "Watching")
+        if (!tv) {
+            val width = context.resources.displayMetrics.widthPixels
+            val title = compose.onNodeWithText("Kinosail").fetchSemanticsNode().boundsInRoot
+            assertEquals("Home title must be centered, as on iPhone", width / 2f, title.center.x, 2f)
+            compose.onNode(hasText("Listen") and hasClickAction()).assertIsDisplayed()
+            compose.onNode(hasText("My List") and hasClickAction()).assertDoesNotExist()
+            compose.onNode(hasText("PG · Drama · Adventure") and !hasAnyAncestor(hasContentDescription("Next Film")),
+                useUnmergedTree = true).assertExists()
+            compose.onNode(hasText("Resume") and hasClickAction()).assertIsDisplayed()
+            compose.onNodeWithContentDescription("My List").assertIsDisplayed()
+            capture("home-header")
+        }
         compose.onNodeWithText("Continue watching").performScrollTo()
         val card = compose.onNodeWithContentDescription("Next Film")
         card.performScrollTo().assertIsDisplayed()
@@ -477,7 +489,7 @@ class NativeParityJourneyTest {
         }
     }
     private fun waitText(text: String) {
-        compose.waitUntil(20_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(20_000) { compose.onAllNodesWithText(text, ignoreCase = true).fetchSemanticsNodes().isNotEmpty() }
         compose.waitForIdle()
     }
     private fun capture(name: String) {

@@ -48,7 +48,7 @@ internal fun MediaSpotlight(item: CatalogItem, catalog: CatalogModel, eyebrow: S
         Column(Modifier.overlapUp(120.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 eyebrow?.let {
-                    Text(it, color = KinoColor.signal, fontWeight = FontWeight.Black,
+                    Text(it.uppercase(), color = KinoColor.signal, fontWeight = FontWeight.Black,
                         letterSpacing = 1.6.sp, style = MaterialTheme.typography.labelMedium)
                 }
                 Text(item.title, color = KinoColor.text, fontWeight = FontWeight.Bold,
