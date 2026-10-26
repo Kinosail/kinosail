@@ -93,6 +93,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
         useController = true
+        setShowPreviousButton(false)
+        setShowNextButton(false)
         controllerShowTimeoutMs = if (accessibleControls) 0 else 4_000
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
             val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or
@@ -152,7 +154,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
             playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
             Column(Modifier.background(Color.Black), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(item.title, color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
+                Text(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode} · ${item.episodeTitle}" else item.title,
+                    color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
                     overflow = TextOverflow.Ellipsis)
                 FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     if (casting?.ready == true) AndroidView(factory = { routeContext ->

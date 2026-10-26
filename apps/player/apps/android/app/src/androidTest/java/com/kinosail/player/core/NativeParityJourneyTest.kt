@@ -353,6 +353,22 @@ class NativeParityJourneyTest {
         capture("playback-accessibility")
         compose.onNodeWithText("Speed 1×").assertIsDisplayed()
         compose.onNodeWithText("Continuing Film").assertIsDisplayed()
+        fun labels(node: android.view.accessibility.AccessibilityNodeInfo?): List<String> = if (node == null) emptyList()
+            else listOfNotNull(node.contentDescription?.toString()) + (0 until node.childCount).flatMap { labels(node.getChild(it)) }
+        var shown = emptyList<String>()
+        if ("Show player controls" in labels(uiAutomation().rootInActiveWindow)) {
+            if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER)
+            else compose.onRoot().performTouchInput { click(center) }
+        }
+        runCatching { compose.waitUntil(10_000) {
+            shown = labels(uiAutomation().rootInActiveWindow)
+            "Pause" in shown || "Play" in shown
+        } }
+        assertTrue("Playback controls must be readable: $shown", "Pause" in shown || "Play" in shown)
+        assertTrue("Playback must not show Previous or Next track buttons, as on Apple clients: $shown",
+            "Previous" !in shown && "Next" !in shown)
+        assertTrue("Playback must skip ten seconds each way, as on Apple clients: $shown",
+            "Rewind 10 seconds" in shown && "Fast forward 10 seconds" in shown)
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Continue watching" else "Watching")
     }
