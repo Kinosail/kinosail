@@ -5,5 +5,6 @@ func (auth *authentication) configureFederation(oidcConfig OIDCConfig, samlConfi
 	saml := newSAML(samlConfig, auth.profiles, sso)
 	auth.oidc, auth.saml = sso.Configured(), saml.Configured()
 	auth.sso = auth.oidc || auth.saml
+	auth.passkeys.oidc, auth.passkeys.saml = auth.oidc, auth.saml
 	return sso, saml
 }
