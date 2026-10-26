@@ -41,3 +41,15 @@ func webErrorReturnPath(request *http.Request) string {
 	}
 	return back
 }
+
+func webRouting(mux *http.ServeMux, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.Method == http.MethodGet && !strings.HasPrefix(request.URL.Path, "/api/") && strings.Contains(request.Header.Get("Accept"), "text/html") {
+			if _, pattern := mux.Handler(request); pattern == "" {
+				localizedNotFound(writer, request)
+				return
+			}
+		}
+		next.ServeHTTP(writer, request)
+	})
+}
