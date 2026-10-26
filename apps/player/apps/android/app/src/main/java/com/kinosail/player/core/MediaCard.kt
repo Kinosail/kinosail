@@ -13,6 +13,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,5 +69,18 @@ internal fun MediaCardBody(item: CatalogItem, catalog: CatalogModel, tv: Boolean
             }
             if (position.isNotEmpty()) Text(position, style = MaterialTheme.typography.bodySmall, color = KinoColor.muted)
         }
+    }
+}
+
+@Composable
+internal fun TvMediaCard(item: CatalogItem, catalog: CatalogModel, modifier: Modifier = Modifier, landscape: Boolean = false,
+                         resumes: Boolean = false, onFocus: (CatalogItem) -> Unit = {}, open: () -> Unit) {
+    var focused by remember { mutableStateOf(false) }
+    Column(modifier.onFocusChanged {
+        focused = it.isFocused
+        if (it.isFocused) onFocus(item)
+    }.clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = open)
+        .semantics { contentDescription = item.title }) {
+        MediaCardBody(item, catalog, tv = true, landscape, resumes = resumes, focused = focused)
     }
 }

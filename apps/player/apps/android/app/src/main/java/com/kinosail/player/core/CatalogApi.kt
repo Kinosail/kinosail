@@ -29,7 +29,9 @@ data class CatalogItem(
     val genres: String = "",
 )
 
-data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int)
+data class CatalogPage(val items: List<CatalogItem>, val total: Int, val offset: Int, val limit: Int,
+                       val letters: List<CatalogLetter> = emptyList())
+internal val LIBRARY_SORTS = listOf("title", "added", "year")
 data class CatalogDetail(val item: CatalogItem, val listed: Boolean)
 internal val LIBRARY_VIEWS = listOf("all" to "All media", "movies" to "Movies", "shows" to "TV Shows",
     "music" to "Music", "audiobooks" to "Audiobooks", "books" to "Books", "photos" to "Photos",
@@ -46,7 +48,7 @@ class CatalogApi(
         val query = rawQuery.trim()
         require(query.toByteArray(Charsets.UTF_8).size <= 512 && query.none(Char::isISOControl) &&
             offset in 0..1_000_000 && limit in 1..200 && (view == "history" || LIBRARY_VIEWS.any { it.first == view }) &&
-            sort in setOf("title", "added")) { "Invalid library request." }
+            sort in LIBRARY_SORTS) { "Invalid library request." }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
         val result = api.catalog("/api/v1/library?q=$encoded&view=$view&sort=$sort&offset=$offset&limit=$limit",
             token, viewerId).fields(PAGE_KEYS, setOf("items", "total", "offset", "limit"))
@@ -64,7 +66,7 @@ class CatalogApi(
         }
         val items = rawItems.map(::parseItem)
         require(items.map(CatalogItem::id).toSet().size == items.size) { INVALID_RESPONSE }
-        return CatalogPage(items, total, returnedOffset, limit)
+        return CatalogPage(items, total, returnedOffset, limit, parseLetters(result["letters"], total))
     }
 
     fun item(itemId: String, token: String, viewerId: String): CatalogItem =
@@ -103,6 +105,23 @@ class CatalogApi(
         private val ITEM_KEYS = setOf("id", "kind", "title", "sortTitle", "year", "plot", "rating", "tagline",
             "genres", "director", "studio", "artist", "album", "track", "show", "showId", "size", "season",
             "episode", "stream", "download", "subtitles", "added", "cast", "artwork", "backdrop", "container", "progress")
+
+        private val LETTER = Regex("#|\\p{L}[\\p{L}\\p{M}]{0,3}")
+
+        private fun parseLetters(raw: JsonElement?, total: Int): List<CatalogLetter> {
+            val entries = (raw ?: return emptyList()) as? JsonArray
+            require(entries != null && entries.size <= 4096) { INVALID_RESPONSE }
+            var end = 0
+            val letters = entries.map { value ->
+                val entry = value.fields(setOf("label", "offset", "count"), setOf("label", "offset", "count"))
+                val letter = CatalogLetter(entry.text("label", 32), entry.number("offset", 0..1_000_000), entry.number("count", 1..10_000_000))
+                require(letter.label.matches(LETTER) && letter.offset == end && end + letter.count <= total) { INVALID_RESPONSE }
+                end += letter.count
+                letter
+            }
+            require((letters.isEmpty() || end == total) && letters.map(CatalogLetter::label).toSet().size == letters.size) { INVALID_RESPONSE }
+            return letters
+        }
 
         internal fun parseItem(raw: JsonElement): CatalogItem {
             val item = raw.fields(ITEM_KEYS, setOf("id", "kind", "title"))

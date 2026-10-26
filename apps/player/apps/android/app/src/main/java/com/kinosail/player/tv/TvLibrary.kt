@@ -11,11 +11,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -27,6 +30,8 @@ import androidx.tv.material3.*
 import com.kinosail.player.core.*
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
+import com.kinosail.player.mobile.TitleCount
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
@@ -38,6 +43,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     var photoItem by remember { mutableStateOf<CatalogItem?>(null) }
     val detailFocus = remember { FocusRequester() }
     val grid = rememberLazyGridState()
+    val scope = rememberCoroutineScope()
+    var jumpTarget by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.view, state.sort) { grid.scrollToItem(0) }
     val keyboard = LocalSoftwareKeyboardController.current
     val navigate: (String) -> Unit = { chosen ->
         catalog.closeDetail(); destination = chosen
@@ -82,10 +90,13 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         Column(Modifier.fillMaxSize().safeDrawingPadding().padding(48.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+            val browsing = state.selected == null && destination != "settings"
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(if (state.selected != null) "Kinosail" else if (destination == "settings") interfaceText("Settings")
                     else interfaceText(if (destination == "search") "Search" else LIBRARY_VIEWS.first { it.first == destination }.second),
-                    style = MaterialTheme.typography.headlineLarge, color = KinoColor.text, modifier = Modifier.weight(1f))
+                    style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
+                    modifier = Modifier.semantics { heading() })
+                Box(Modifier.weight(1f)) { if (browsing && destination != "search" && state.items.isNotEmpty()) TitleCount(state.total) }
                 Button(onClick = { navigate("home") }) { Text(interfaceText("Home")) }
                 if (destination != "search") Button(onClick = { navigate("search") }) { Text(interfaceText("Search")) }
                 if (destination != "settings") Button(onClick = { navigate("settings") }) { Text(interfaceText("Settings")) }
@@ -114,25 +125,20 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
                     }
                 }
+                LibrarySortMenu(state.sort, tv = true, change = catalog::changeSort)
                 if ((state.failedOffset ?: 0) == 0 || state.connectionExpired) {
                     state.notice?.let { Text(it, color = KinoColor.text, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
                     if (state.notice != null) Button(onClick = catalog::retry) { Text(interfaceText("Try again")) }
                 }
                 if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true, view = state.view)
                 else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)), color = KinoColor.muted)
+                val letters = jumpLetters(state, destination == "search")
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 180.dp else 115.dp),
                     modifier = Modifier.weight(1f), state = grid, contentPadding = PaddingValues(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
                     items(state.items, key = CatalogItem::id) { item ->
-                        Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.title }) {
-                            Column {
-                                MediaArtwork(item, catalog, Modifier.fillMaxWidth())
-                                Text(item.title, minLines = 2,
-                                    maxLines = if (androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f) Int.MAX_VALUE else 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(8.dp), color = KinoColor.text)
-                            }
-                        }
+                        TvMediaCard(item, catalog, Modifier.fillMaxWidth()) { catalog.select(item) }
                     }
                     if (state.loading && state.items.isNotEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(interfaceText("Loading more…"), color = KinoColor.muted)
@@ -144,6 +150,11 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                             Button(onClick = catalog::retry) { Text(interfaceText("Retry loading more")) }
                         }
                     }
+                }
+                if (letters.isNotEmpty()) LetterIndex(letters, tv = true, Modifier.fillMaxHeight()) { letter ->
+                    jumpTarget = letter.label
+                    scope.launch { if (catalog.loadThrough(letter.offset) && jumpTarget == letter.label) grid.scrollToLoaded(letter.offset) }
+                }
                 }
             }
         }

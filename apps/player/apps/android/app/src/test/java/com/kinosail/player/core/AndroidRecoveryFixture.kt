@@ -21,6 +21,8 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
     val catalogQueries = CopyOnWriteArrayList<String>()
     val completedCatalogQueries = CopyOnWriteArrayList<String>()
     val catalogTotals = ConcurrentHashMap<String, Int>()
+    val catalogSorts = CopyOnWriteArrayList<String>()
+    @Volatile var catalogLetters: String? = null
     val catalogFailures = ConcurrentHashMap<String, Int>()
     val catalogGates = ConcurrentHashMap<String, CountDownLatch>()
     val remoteUpdates = CopyOnWriteArrayList<Pair<String, String>>()
@@ -74,7 +76,9 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                     val offset = query["offset"]?.toInt() ?: 0
                     val limit = query["limit"]?.toInt() ?: 24
                     val search = query["q"].orEmpty()
+                    val sort = query["sort"] ?: "title"
                     catalogQuery = search
+                    catalogSorts += sort
                     catalogOffsets += offset; catalogQueries += search
                     check((catalogGates[search] ?: catalogGate).await(5, TimeUnit.SECONDS))
                     if (offset == failingOffset) status = catalogFailure
@@ -82,8 +86,9 @@ internal class AndroidRecoveryFixture(private val application: Application) : Au
                     val total = catalogTotals[search] ?: 96
                     check(total in 0..96)
                     val begin = if (duplicatePage && offset > 0) 0 else offset
-                    val items = (begin until minOf(begin + limit, total)).joinToString(",") { item(it + 1) }
-                    """{"items":[$items],"total":$total,"offset":$offset,"limit":$limit,"query":${JsonPrimitive(search)}}"""
+                    val items = (begin until minOf(begin + limit, total)).joinToString(",") { item(if (sort == "added") total - it else it + 1) }
+                    val letters = catalogLetters?.takeIf { sort == "title" && search.isEmpty() }?.let { ""","letters":$it""" }.orEmpty()
+                    """{"items":[$items],"total":$total,"offset":$offset,"limit":$limit,"sort":"$sort","query":${JsonPrimitive(search)}$letters}"""
                 }
                 path.endsWith("/playback") -> {
                     playbackRequests.incrementAndGet()
