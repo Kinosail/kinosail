@@ -192,7 +192,9 @@ Downloads opens with a storage summary: the space used by downloads, the free sp
 
 Settings, setup, preparation and download screens retain native fields, lists and forms. Labels, disabled states, destructive roles and operation feedback stay attached to their controls. Fixed web input sizes and focus rings are not native tokens.
 
-Playback preferences group Boost Dialog and Normalize Loudness as native toggles with plain-language descriptions. The section states that processing uses a compatible Server stream and that existing downloads keep their encoded audio; the interface must not imply the effects work offline or without transcoding permission.
+Playback preferences group Boost Dialog and Normalize Loudness as native toggles with short plain-language descriptions. Changes save automatically on every platform; there is no Save button. The section states that the effects use a compatible Server stream. On iPhone and iPad it also states that existing downloads keep their encoded audio. The interface must not imply the effects work offline or without transcoding permission. On Apple TV, Speed, Audio language and Subtitles each open a choice list and show their current value on the same row. A title with its own preferences shows Use profile defaults. A title that follows the Viewer Profile shows no reset control and no status row.
+
+Apple TV video uses the system scrub bar. There is no separate seek screen in the transport bar. The scrub bar shows keyframe thumbnails when the Server stream includes an I-frame playlist.
 
 ### Hero and watch position
 

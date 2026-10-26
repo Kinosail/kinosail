@@ -1,5 +1,34 @@
 # Swift Apple verification
 
+## Apple TV player controls and title preferences — 2026-10-25
+
+The Apple TV transport bar no longer has a separate **Seek with preview** button; scrubbing uses the system scrub bar. **This title’s preferences** now shows each value on its own row, saves changes automatically, drops the Downloads note (Apple TV has no downloads), and shows **Use profile defaults** only when the title has its own preferences. The status sentence is a footer, not a focusable row.
+
+**Revision.** Baseline: `b321cea0` (main). New: the task commit on `mikeo/player-controls-audit`. Xcode 27.1.
+
+**Test data.** `scripts/tvos-navigation-fixture.py` with a generated 30-second `testsrc2` MP4 (SHA-256 `0754f62c3f5e9fd12d7f007fe6d8186d6699bb27377fa233fd087fc50e7dce14`). The fixture now stores per-title preferences for `PUT` and clears them for `DELETE`. Invalid bodies return 400 and change nothing (`scripts/test-tvos-navigation-fixture.py`).
+
+**Command.** The `run-tvos-navigation-qa.py` flow, limited to `RemotePlaybackOptionsTests`, `RemoteDetailMovementTests/testSettingsPlaybackBackRestoresRowAndTopBarFocus` and `RemotePlaybackCrashTests`, on an erased Apple TV 4K (3rd generation) (at 1080p) simulator.
+
+| Check | Baseline `b321cea0` | New |
+| --- | --- | --- |
+| Transport bar has no Seek with preview | Fails | Passes |
+| Speed, Audio language, Subtitles rows show their value | Fails (`Speed` only) | Passes (`Speed, 1×`) |
+| No Save button, no Downloads note, no status row, no reset while following the profile | Fails | Passes |
+| Choosing 1.5× saves with no Save button | — | Passes; fixture logged one save for `movie-004` at rate 1.5 |
+| Use profile defaults appears, resets to 1× and disappears | — | Passes |
+| Held remote input and repeated playback | Fails (stale check: the movie page stays in the tree under the player) | Passes (now checks the player closes) |
+
+Not run: physical Apple TV, Nox Server. Direct-play files still show no scrub thumbnails on Apple TV; thumbnails need the Server's I-frame playlist, which only compatible streams have.
+
+| File | SHA-256 |
+| --- | --- |
+| `remote.log` | `51e1a1b7edf0a6063c1b644ddfa78527bd79d788375503afb693070b696a3dfe` |
+| `fixture.log` | `5dcf0b8efe6030e5387f0ab1374de1b729e3dcc09aedd2bfd8c4df93961abd25` |
+| title playback preferences screenshot | `90950382f7623bd94827ddba564acfb46a017caf8abc7ab9c32bc55980b46d5b` |
+| title preferences saved screenshot | `77c211c4c32e2dd1f6319dc0a7726f81d084fa1c34b2e2d7e80345829db5e8f2` |
+| title preferences reset screenshot | `c04334a5a38d5c58d858c48c99ee64ed1884bbedd96dd1f013e2e0386993c77c` |
+
 ## Scrub preview speed — 2026-10-25
 
 Scrub previews now keep up with remote presses and slider drags. Frames are cached in memory, the next three 10-second frames in the scrub direction load ahead (at most four loads at once), and the last frame stays on screen while the next one loads. A failed load still shows "Preview unavailable". Starting a new scrub clears the old frame.

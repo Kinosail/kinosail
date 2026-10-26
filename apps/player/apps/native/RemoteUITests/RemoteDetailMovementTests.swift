@@ -188,15 +188,9 @@ final class RemoteDetailMovementTests: RemoteTestCase {
             record("preferences Down to \(label)", app)
             XCTAssertTrue(focusedLabels(app).contains(where: { $0.contains(label) }))
         }
-        remote.press(.select)
-        XCTAssertTrue(app.buttons["Save preferences"].isEnabled)
+        XCTAssertFalse(app.buttons["Save preferences"].exists, "Changes save automatically")
         remote.press(.down)
-        record("preferences Down to Save preferences", app)
-        XCTAssertTrue(focusedLabels(app).contains("Save preferences"))
-        remote.press(.up)
-        XCTAssertTrue(focusedLabels(app).contains(where: { $0.contains("Normalize Loudness") }))
-        remote.press(.select)
-        XCTAssertFalse(app.buttons["Save preferences"].isEnabled)
+        XCTAssertTrue(focusedLabels(app).contains(where: { $0.contains("Normalize Loudness") }), "Normalize Loudness is the last row")
         for label in ["Boost Dialog", "Subtitles", "Audio language", "Speed"] {
             remote.press(.up)
             XCTAssertTrue(focusedLabels(app).contains(where: { $0.contains(label) }))

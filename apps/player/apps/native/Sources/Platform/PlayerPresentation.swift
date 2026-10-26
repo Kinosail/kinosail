@@ -17,7 +17,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
     @ObservationIgnored private let captions = UILabel()
     @ObservationIgnored let controller = AVPlayerViewController()
     @ObservationIgnored var showOptions: (() -> Void)?
-    @ObservationIgnored var showSeekPreview: (() -> Void)?
     @ObservationIgnored var close: (() -> Void)?
     @ObservationIgnored var userNavigated: ((AVPlayer, Double) -> Void)?
     @ObservationIgnored private var closing: Task<Void, Never>?
@@ -49,7 +48,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         }
         controller.loadViewIfNeeded()
         controller.transportBarCustomMenuItems = [
-            UIAction(title: "Seek with preview", image: UIImage(systemName: "film")) { [weak self] _ in self?.showSeekPreview?() },
             UIAction(title: "Playback options", image: UIImage(systemName: "ellipsis.circle")) { [weak self] _ in self?.showOptions?() },
         ]
         if let overlay = controller.contentOverlayView {
@@ -91,7 +89,6 @@ final class PlayerPresentation: NSObject, AVPlayerViewControllerDelegate {
         controller.player = nil
         controller.allowedSubtitleOptionLanguages = nil
         showOptions = nil
-        showSeekPreview = nil
         close = nil
         userNavigated = nil
         closing?.cancel()

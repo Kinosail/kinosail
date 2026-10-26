@@ -95,6 +95,26 @@ class NavigationFixtureTests(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertEqual(handler.rfile.tell(), 0)
 
+    def test_invalid_title_preferences_never_change_saved_state(self):
+        path = "/api/v1/items/movie-004/playback-preferences"
+        valid = dict(self.fixture.PLAY, rate=1.5)
+        (status, _), handler = self.request("PUT", path, json.dumps(valid).encode())
+        self.assertEqual((status, handler.rfile.tell()), (401, 0))
+        (status, _), handler = self.request("PUT", "/api/v1/items/../playback-preferences", b"{}", authorized=True)
+        self.assertEqual((status, handler.rfile.tell()), (404, 0))
+        for body in [b"[]", b"{", json.dumps(dict(valid, rate=9)).encode(), json.dumps(dict(valid, nightMode=1)).encode(),
+                     json.dumps(dict(valid, extra=True)).encode(), json.dumps(dict(valid, audioLanguage="x" * 65)).encode()]:
+            with self.subTest(body=body[:40]):
+                self.assertEqual(self.request("PUT", path, body, authorized=True)[0][0], 400)
+                self.assertEqual(self.fixture.TITLE_PREFS, {})
+        with patch.object(sys, "stdout", io.StringIO()):
+            self.assertEqual(self.request("PUT", path, json.dumps(valid).encode(), authorized=True)[0],
+                             (200, dict(playback=valid, overridden=True)))
+        self.assertEqual(self.request("GET", path, authorized=True)[0], (200, dict(playback=valid, overridden=True)))
+        self.assertEqual(self.request("DELETE", path)[0][0], 401)
+        self.assertEqual(self.request("DELETE", path, authorized=True)[0], (200, dict(playback=self.fixture.PLAY, overridden=False)))
+        self.assertEqual(self.fixture.TITLE_PREFS, {})
+
     def test_missing_backdrop_receipt_requires_successful_response_write(self):
         cases = [("/backdrop/movie-005", 404, None),
                  ("/backdrop/movie-005", 401, None),
