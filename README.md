@@ -23,7 +23,54 @@
 
 ## Quick start
 
-You need Docker on 64-bit Linux (amd64 or arm64). Docker Desktop on macOS works for local use. Replace the media path with a folder that exists on the Docker host:
+You need Docker on 64-bit Linux (amd64 or arm64). Docker Desktop on macOS works for local use. Use Docker Compose or `docker run`. In both, replace the media path with a folder that exists on the Docker host.
+
+### Docker Compose
+
+Save this as `compose.yaml`:
+
+```yaml
+name: kinosail
+
+services:
+  kinosail:
+    image: ghcr.io/kinosail/kinosail-player:latest
+    container_name: kinosail
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:38127:38127"
+    environment:
+      KINOSAIL_DATA_DIR: /config
+      KINOSAIL_CACHE_DIR: /cache
+      KINOSAIL_MEDIA_DIR: /media
+    volumes:
+      - config:/config
+      - cache:/cache
+      - backups:/backups
+      - /path/to/your/media:/media:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,noexec,nosuid,nodev,size=16m
+
+volumes:
+  config:
+  cache:
+  backups:
+```
+
+Then start it:
+
+```sh
+docker compose up -d
+```
+
+### docker run
 
 ```sh
 export KINOSAIL_MEDIA_PATH="/absolute/path/to/your/media"
@@ -46,11 +93,13 @@ docker run --detach --name kinosail \
   ghcr.io/kinosail/kinosail-player:latest
 ```
 
+### First run
+
 1. Open <https://localhost:38127>. Your browser warns about the local certificate. Trust it only for your own Server.
 2. Create the Owner with a password of at least 12 characters, then add a passkey or authenticator app.
 3. Add a library folder under `/media`, such as `/media/Movies`, and press Play.
 
-Prefer Docker Compose or a signed, pinned install? Follow the [Docker quickstart](https://kinosail.com/quickstart/). For TrueNAS, Unraid, ZimaOS, CasaOS, Synology, QNAP, Portainer, Dockge, or Proxmox VE, use the [platform install guide](https://kinosail.com/getting-started/platforms/). Catalog submissions are in review for [TrueNAS](https://github.com/truenas/apps/pull/5924) and [ZimaOS/CasaOS](https://github.com/IceWhaleTech/CasaOS-AppStore/pull/1069), and [Unraid templates](https://github.com/Kinosail/kinosail-unraid-templates) are ready.
+Want an `.env` file or a signed, pinned install? Follow the [Docker quickstart](https://kinosail.com/quickstart/). For TrueNAS, Unraid, ZimaOS, CasaOS, Synology, QNAP, Portainer, Dockge, or Proxmox VE, use the [platform install guide](https://kinosail.com/getting-started/platforms/). Catalog submissions are in review for [TrueNAS](https://github.com/truenas/apps/pull/5924) and [ZimaOS/CasaOS](https://github.com/IceWhaleTech/CasaOS-AppStore/pull/1069), and [Unraid templates](https://github.com/Kinosail/kinosail-unraid-templates) are ready.
 
 ## Screenshots
 
