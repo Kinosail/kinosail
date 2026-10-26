@@ -24,5 +24,5 @@ printf '%s' '{"format":{"tags":{"title":"An Eagle in Your Mind","artist":"Boards
 	api := apiCall(t, handler, "", http.MethodGet, "/api/v1/library", nil)
 	assertAPIBody(t, api, http.StatusOK, "An Eagle in Your Mind", "Boards of Canada", "Music Has the Right to Children", "Electronic")
 	home := apiCall(t, handler, "", http.MethodGet, "/?view=music", nil)
-	assertAPIBody(t, home, http.StatusOK, "Boards of Canada", "Music Has the Right to Children")
+	assertAPIBody(t, home, http.StatusOK, "Boards of Canada", "Music Has the Right to Children", "<strong>1</strong> track<")
 }

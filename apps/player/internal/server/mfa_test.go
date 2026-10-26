@@ -44,13 +44,33 @@ func TestRecoveryCodesWorkThroughWebLoginAndAccountDisable(t *testing.T) {
 	if loggedIn.Code != http.StatusSeeOther || len(loggedIn.Result().Cookies()) != 1 {
 		t.Fatalf("recovery web login = %d cookies=%v", loggedIn.Code, loggedIn.Result().Cookies())
 	}
+	assertAccountActions(t, requestWithCookie(t, handler, http.MethodGet, "/account", "", loggedIn.Result().Cookies()[0]), []string{"Turn off extra sign-in protection"}, []string{"Set up an authenticator app", "Organization sign-in", "OpenID Connect", "SAML"})
 	disabled := requestWithCookie(t, handler, http.MethodPost, "/account/mfa/disable", "code="+enrollment.RecoveryCodes[1], loggedIn.Result().Cookies()[0])
 	if disabled.Code != http.StatusSeeOther || disabled.Header().Get("Location") != "/account" {
 		t.Fatalf("recovery web disable = %d location=%q", disabled.Code, disabled.Header().Get("Location"))
 	}
+	assertAccountActions(t, requestWithCookie(t, handler, http.MethodGet, "/account", "", loggedIn.Result().Cookies()[0]), []string{"Set up an authenticator app"}, []string{"Turn off extra sign-in protection", "Organization sign-in"})
 	withoutCode := apiCall(t, handler, "", http.MethodPost, "/api/v1/session", map[string]any{"name": "Viewer", "password": "viewer-password"})
 	if withoutCode.Code != http.StatusCreated {
 		t.Fatalf("login after recovery disable = %d %q", withoutCode.Code, withoutCode.Body.String())
+	}
+}
+
+func assertAccountActions(t *testing.T, response *httptest.ResponseRecorder, wanted, unwanted []string) {
+	t.Helper()
+	body := response.Body.String()
+	if response.Code != http.StatusOK {
+		t.Fatalf("account = %d %q", response.Code, body)
+	}
+	for _, want := range wanted {
+		if !strings.Contains(body, want) {
+			t.Fatalf("account lacks %q", want)
+		}
+	}
+	for _, reject := range unwanted {
+		if strings.Contains(body, reject) {
+			t.Fatalf("account shows %q", reject)
+		}
 	}
 }
 

@@ -90,7 +90,7 @@ func TestRecentShelfProjection(t *testing.T) {
 		addedItems[index] = library.Item{ID: string(rune('a' + index)), Kind: "book", Title: "Book", Added: now.Add(time.Duration(index) * time.Minute)}
 	}
 	added := RecentlyAdded(addedItems, nil, nil)
-	if len(added) != recentItemLimit || added[0].Href != "/book/n" || added[0].PlaceholderIcon != "plus" {
+	if len(added) != recentItemLimit || added[0].Href != "/book/n" || added[0].PlaceholderIcon != "book" {
 		t.Fatalf("added=%+v", added)
 	}
 	addedItems[12].Added = addedItems[13].Added

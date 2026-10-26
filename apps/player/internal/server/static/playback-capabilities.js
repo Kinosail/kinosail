@@ -14,6 +14,13 @@ window.kinosailPlaybackCapabilities = (() => {
     return {contentType, width: Math.floor(width * scale), height: Math.floor(height * scale),
       bitrate: compatible ? Math.min(bitrate, 6128000) : bitrate, framerate: compatible ? Math.min(framerate, 60) : framerate};
   };
+  const file = (facts, type) => {
+    const container = type.split(";")[0].trim();
+    const [videoCodec, audioCodec] = (/codecs\s*=\s*"([^"]*)"/i.exec(type)?.[1] || "").split(",").map(codec => codec.trim());
+    const config = {type: "file", video: video(facts, videoCodec ? `${container}; codecs="${videoCodec}"` : container)};
+    if (audioCodec) config.audio = {contentType: `${container.replace(/^video\//, "audio/")}; codecs="${audioCodec}"`};
+    return config;
+  };
   async function supports(element, facts, [codec, contentType]) {
     const mediaSource = needsAdapter(element) || (typeof Hls !== "undefined" && Hls.isSupported());
     try {
@@ -32,5 +39,5 @@ window.kinosailPlaybackCapabilities = (() => {
   };
   const initialCompatible = (policy, mode, type, direct, planned, audioRequired) => policy === "compatible" || !direct ||
     audioIncompatible(policy, mode, audioRequired) || !planned && policy === "direct-first" && appleMatroska(type);
-  return {codecs, video, supports, needsAdapter, audioIncompatible, appleMatroska, policy, initialCompatible};
+  return {codecs, video, file, supports, needsAdapter, audioIncompatible, appleMatroska, policy, initialCompatible};
 })();
