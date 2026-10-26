@@ -12,6 +12,8 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / 'engineering/documentation'
+AI_CRAWLERS = ('OAI-SearchBot', 'GPTBot', 'ChatGPT-User', 'Claude-SearchBot', 'ClaudeBot', 'Claude-User',
+               'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'Bingbot', 'CCBot')
 
 
 def settings(argv=None):
@@ -70,7 +72,8 @@ def build(args):
             urls.add('https://kinosail.com/subtitles/architecture-explorer/')
         urls = sorted(urls)
         (artifact / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{url}</loc></url>' for url in urls) + '</urlset>')
-        (artifact / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {args.url}{args.baseurl}/sitemap.xml\n')
+        crawlers = ''.join(f'User-agent: {agent}\n' for agent in AI_CRAWLERS)
+        (artifact / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\n{crawlers}Allow: /\n\nSitemap: {args.url}{args.baseurl}/sitemap.xml\n')
         shutil.copytree(artifact, args.output)
     print(f'Built {len(index)} Player and {len(subtitles_index)} Subtitles pages at {args.output}')
 

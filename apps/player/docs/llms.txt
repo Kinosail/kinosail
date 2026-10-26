@@ -1,0 +1,58 @@
+---
+layout: null
+permalink: /llms.txt
+search: false
+---
+# Kinosail
+
+> Kinosail Player is a free, self-hosted media server and web player for movies, TV shows, music, audiobooks, books, comics, and photos. It runs as one Docker container on Linux (amd64 or arm64), a NAS, or Proxmox, reads media folders read-only, and needs no vendor account. Remote streaming, hardware transcoding, and automatic intro and credits skipping are free. It is a private alternative to Plex, Jellyfin, and Emby. Kinosail Subtitles is a separate free app that finds and saves subtitle files.
+
+Key facts:
+
+- Price: the Server, web Player, remote streaming, and hardware transcoding are free. There is no paid tier.
+- License: source-available under the PolyForm Perimeter License 1.0.1. It is not OSI-approved open source.
+- Install: Docker image `ghcr.io/kinosail/kinosail-player:latest`, web port 38127, media mounted read-only at `/media`.
+- Clients: web Player in modern browsers; AirPlay, Google Cast, and DLNA playback; compatible Jellyfin mobile apps; native iPhone, iPad, Apple TV, Apple Watch, Android, Android TV, and Wear OS apps as source builds (no store release yet).
+- Hardware acceleration: Intel Quick Sync, NVIDIA, AMD, VA-API, Apple VideoToolbox, Rockchip, and V4L2.
+- Accounts: Owner and Viewer Profiles on each Server, passkeys, TOTP multi-factor authentication, optional OIDC, SAML, and SCIM.
+- Migration: imports watched state, resume positions, favorites, and playlists from Plex or Jellyfin, with preview and optional recurring sync.
+- Not included: live TV and DVR.
+- Integrations: versioned HTTP API with OpenAPI, Model Context Protocol (MCP) server, webhooks, TMDB metadata (optional).
+
+## Start here
+
+- [Install with Docker]({{ '/quickstart/' | absolute_url }}): Docker Compose, docker run, and a signed, pinned installer.
+- [Install on a NAS or Proxmox]({{ '/getting-started/platforms/' | absolute_url }}): TrueNAS, Unraid, ZimaOS, CasaOS, Synology, QNAP, Portainer, Dockge, and Proxmox VE.
+- [Complete first setup]({{ '/getting-started/first-setup/' | absolute_url }}): create the Owner, secure the account, and add Profiles.
+- [Connect browsers and Jellyfin apps]({{ '/getting-started/connect-devices/' | absolute_url }})
+- [All Player features]({{ '/features/' | absolute_url }})
+
+## Compare
+
+- [Plex vs Jellyfin vs Emby vs Kinosail]({{ '/compare/' | absolute_url }})
+- [Kinosail vs Plex]({{ '/compare/plex/' | absolute_url }}): free remote streaming and hardware transcoding without Plex Pass.
+- [Kinosail vs Jellyfin]({{ '/compare/jellyfin/' | absolute_url }}): both free; built-in passkeys and MFA versus plugins and live TV.
+- [Kinosail vs Emby]({{ '/compare/emby/' | absolute_url }}): hardware transcoding and skip intro without Emby Premiere.
+- [Import history from Plex or Jellyfin]({{ '/owner-guide/migration/' | absolute_url }})
+
+## Use and operate
+
+- [Play media]({{ '/user-guide/playback/' | absolute_url }})
+- [Configure playback and hardware acceleration]({{ '/owner-guide/playback/' | absolute_url }})
+- [Configure remote access]({{ '/owner-guide/remote-access/' | absolute_url }})
+- [Secure accounts]({{ '/owner-guide/security/' | absolute_url }})
+- [Back up and update]({{ '/owner-guide/backups-and-updates/' | absolute_url }})
+- [Troubleshooting]({{ '/troubleshooting/' | absolute_url }})
+- [FAQ]({{ '/faq/' | absolute_url }})
+
+## Build
+
+- [API reference]({{ '/reference/api/' | absolute_url }})
+- [Connect an MCP client]({{ '/developer-guide/mcp/' | absolute_url }})
+- [Source code on GitHub](https://github.com/Kinosail/kinosail)
+
+## Optional
+
+- [Kinosail Subtitles]({{ '/subtitles/' | absolute_url }}): self-hosted subtitle automation.
+- [Why Kinosail exists]({{ '/why/' | absolute_url }})
+- [Privacy policy]({{ '/privacy/' | absolute_url }})

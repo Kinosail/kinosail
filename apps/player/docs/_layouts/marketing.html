@@ -7,7 +7,7 @@
 <title>{{ page.title }}{% unless page.url == '/' %} · Kinosail{% endunless %}</title>
 <meta name="description" content="{{ page.description | escape }}">
 {% if page.url == '/' %}<meta name="google-site-verification" content="CyK7nEwl7e61vmJVjO4nsO4JpjaeKGUMffYcSNcUhFg">{% endif %}
-<meta property="og:title" content="{% if page.url == '/' %}Kinosail Player · Your media, on your own server{% else %}{{ page.title | escape }} · Kinosail{% endif %}">
+<meta property="og:title" content="{% if page.url == '/' %}Kinosail · Free self-hosted media server for movies, shows, and music{% else %}{{ page.title | escape }} · Kinosail{% endif %}">
 <meta property="og:description" content="{{ page.description | escape }}">
 <meta property="og:image" content="{{ '/assets/images/kinosail-share.png' | absolute_url }}">
 <meta property="og:image:type" content="image/png">
@@ -27,6 +27,7 @@
 <header class="masthead wrap">
 <a class="brand" href="{{ '/' | relative_url }}"><img src="{{ '/assets/images/kinosail-mark.svg' | relative_url }}" width="32" height="32" alt="">Kinosail</a>
 <nav aria-label="Main navigation">
+<a href="{{ '/compare/' | relative_url }}">Compare</a>
 <a href="{{ '/why/' | relative_url }}">Why Kinosail</a>
 <a href="{{ '/subtitles/' | relative_url }}">Subtitles</a>
 <a class="source-primary" href="https://github.com/Kinosail/kinosail">GitHub <span aria-hidden="true">↗</span></a>
@@ -38,7 +39,7 @@
 <footer class="wrap footer">
 <a class="brand" href="{{ '/' | relative_url }}">Kinosail</a>
 <p>Your media, on your own server.</p>
-<nav aria-label="Footer"><a href="{{ '/quickstart/' | relative_url }}">Install Player</a><a href="{{ '/subtitles/' | relative_url }}">Subtitles</a><a href="{{ '/products/' | relative_url }}">Choose an app</a><a href="{{ '/docs/' | relative_url }}">Documentation</a><a href="https://github.com/Kinosail/kinosail/issues/new/choose">Report a bug</a><a href="https://github.com/Kinosail/kinosail/blob/main/LICENSING.md">License</a></nav>
+<nav aria-label="Footer"><a href="{{ '/quickstart/' | relative_url }}">Install Player</a><a href="{{ '/subtitles/' | relative_url }}">Subtitles</a><a href="{{ '/products/' | relative_url }}">Choose an app</a><a href="{{ '/docs/' | relative_url }}">Documentation</a><a href="{{ '/compare/plex/' | relative_url }}">Plex alternative</a><a href="{{ '/compare/jellyfin/' | relative_url }}">Jellyfin alternative</a><a href="{{ '/compare/emby/' | relative_url }}">Emby alternative</a><a href="https://github.com/Kinosail/kinosail/issues/new/choose">Report a bug</a><a href="https://github.com/Kinosail/kinosail/blob/main/LICENSING.md">License</a></nav>
 <small>Source-available. <a href="{{ '/why/' | relative_url }}">Read the project story.</a></small>
 </footer>
 </body>

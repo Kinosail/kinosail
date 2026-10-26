@@ -1,0 +1,2 @@
+{% assign faq_base = 'href="' | append: site.baseurl | append: '/' %}{% for item in page.faq %}<details><summary>{{ item.q }}</summary><p>{{ item.a | replace: 'href="/', faq_base }}</p></details>
+{% endfor %}
