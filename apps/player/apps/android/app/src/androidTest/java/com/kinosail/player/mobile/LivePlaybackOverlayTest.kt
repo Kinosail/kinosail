@@ -240,7 +240,7 @@ class LivePlaybackOverlayTest {
                     compose.onAllNodesWithText("Captions ", substring = true).fetchSemanticsNodes().isNotEmpty()
                 }
                 compose.onNodeWithText(captionsLabel()).assertIsDisplayed()
-                waitForText("Done")
+                compose.onNodeWithContentDescription("Close player").assertIsDisplayed()
                 return pixels
             } catch (error: Throwable) {
                 pixels.recycle()
@@ -511,7 +511,7 @@ class LivePlaybackOverlayTest {
                     }
                     if (pauseOnStart) withPlayer { pause() }
                     check(json, title)
-                    compose.onNodeWithText("Done").assertIsEnabled().performClick()
+                    compose.onNodeWithContentDescription("Close player").assertIsEnabled().performClick()
                     waitForText("Back")
                 } catch (error: Throwable) {
                     runCatching {
@@ -563,7 +563,8 @@ class LivePlaybackOverlayTest {
         .single().config[SemanticsProperties.Text].single().text
 
     private fun verifyLabels(pixels: Bitmap, title: String) {
-        val actions = listOfNotNull(title, "Done",
+        compose.onNodeWithContentDescription("Close player").assertIsDisplayed()
+        val actions = listOfNotNull(title,
             if (compose.onAllNodesWithText("Speed ", substring = true).fetchSemanticsNodes().isEmpty()) null else speedLabel(),
             if (compose.onAllNodesWithText("Captions ", substring = true).fetchSemanticsNodes().isEmpty()) null else captionsLabel())
         for (label in actions) {

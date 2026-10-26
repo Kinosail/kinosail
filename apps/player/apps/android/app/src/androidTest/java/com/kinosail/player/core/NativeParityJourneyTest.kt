@@ -407,7 +407,8 @@ class NativeParityJourneyTest {
         else compose.onRoot().performTouchInput { click(center) }
         waitText("Speed 1×")
         capture("playback-controls")
-        instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+        else compose.onNodeWithContentDescription("Close player").activate()
         waitText(if (tv) "Continue watching" else "Watching")
     }
 
@@ -436,6 +437,26 @@ class NativeParityJourneyTest {
             "Previous" !in shown && "Next" !in shown)
         assertTrue("Playback must skip ten seconds each way, as on Apple clients: $shown",
             "Rewind 10 seconds" in shown && "Fast forward 10 seconds" in shown)
+        assertTrue("Speed and tracks have one control each, so the player's own settings menu stays hidden: $shown",
+            "Settings" !in shown)
+        assertEquals(0, compose.onAllNodesWithText("Done").fetchSemanticsNodes().size)
+        assertEquals(0, compose.onAllNodesWithText("Google Cast", substring = true).fetchSemanticsNodes().size)
+        assertEquals(if (tv) 0 else 1, compose.onAllNodesWithContentDescription("Close player").fetchSemanticsNodes().size)
+        compose.onNodeWithText("Continuing Film").assertIsDisplayed()
+        compose.onNodeWithText("Speed 1×").activate()
+        waitText("Playback speed")
+        compose.onNode(hasText("Normal") and isSelected()).assertIsDisplayed()
+        assertEquals(1, compose.onAllNodes(isSelected()).fetchSemanticsNodes().size)
+        capture("playback-speed-picker")
+        compose.onNodeWithText("1.5×").activate()
+        waitText("Speed 1.5×")
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Playback speed").fetchSemanticsNodes().isEmpty() }
+        compose.onNodeWithText("Speed 1.5×").activate()
+        waitText("Playback speed")
+        compose.onNode(hasText("1.5×") and isSelected()).assertIsDisplayed()
+        compose.onNodeWithText("Normal").activate()
+        waitText("Speed 1×")
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Playback speed").fetchSemanticsNodes().isEmpty() }
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Continue watching" else "Watching")
     }
@@ -549,13 +570,13 @@ class NativeParityJourneyTest {
         Thread.sleep(300)
         val prefix = InstrumentationRegistry.getArguments().getString("capture") ?: if (tv) "tv" else "phone"
         val directory = File(context.filesDir, "parity-evidence").apply { mkdirs() }
-        File(directory, "$prefix-$name-semantics.txt").writeText(compose.onRoot().printToString())
+        File(directory, "$prefix-$name-semantics.txt").writeText(compose.onAllNodes(isRoot()).printToString())
         if (!tv && !name.startsWith("playback") && Build.VERSION.SDK_INT >= 34) {
             compose.enableAccessibilityChecks()
             compose.onRoot().tryPerformAccessibilityChecks()
             compose.disableAccessibilityChecks()
         }
-        uiAutomation().takeScreenshot().let { bitmap ->
+        (uiAutomation().takeScreenshot() ?: run { Thread.sleep(1_000); uiAutomation().takeScreenshot() })?.let { bitmap ->
             File(directory, "$prefix-$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             if (name == "epub-loaded") {
                 val done = compose.onNodeWithText("Done").fetchSemanticsNode().boundsInRoot
