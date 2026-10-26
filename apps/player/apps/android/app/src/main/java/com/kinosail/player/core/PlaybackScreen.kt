@@ -9,14 +9,11 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -82,16 +79,17 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
     }
     var speedPicker by remember { mutableStateOf(false) }
     var trackPicker by remember { mutableStateOf(false) }
-    val speedFocus = remember { FocusRequester() }
+    val speedButtonFocus = remember { FocusRequester() }
     val retryFocus = remember { FocusRequester() }
-    val trackFocus = remember { FocusRequester() }
     val trackButtonFocus = remember { FocusRequester() }
     val context = LocalContext.current
     var controlsVisible by remember(player) { mutableStateOf(true) }
     val accessibleControls = (context.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as? AccessibilityManager)?.isEnabled == true
-    val closeTracks = { trackPicker = false; if (tv) trackButtonFocus.requestFocus() }
+    val closeTracks = { trackPicker = false; if (tv) runCatching { trackButtonFocus.requestFocus() } }
+    val closeSpeed = { speedPicker = false; if (tv) runCatching { speedButtonFocus.requestFocus() } }
     val playerView = remember(player, context) { player?.let { engine -> PlayerView(context).apply {
         this.player = engine
+        findViewById<View>(androidx.media3.ui.R.id.exo_settings)?.visibility = View.GONE
         useController = true
         setShowPreviousButton(false)
         setShowNextButton(false)
@@ -116,14 +114,13 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
         onDispose { videoPipHost?.setVideoPipView(null) }
     }
     val inPip = videoPipHost?.inPictureInPicture == true
-    BackHandler { if (speedPicker) speedPicker = false else if (trackPicker) closeTracks() else close() }
+    BackHandler { if (speedPicker) closeSpeed() else if (trackPicker) closeTracks() else close() }
     LaunchedEffect(item.id, viewer.id, playback) {
         if (playback.activeItemId != item.id || playback.player?.playbackState == Player.STATE_ENDED)
             playback.start(item, viewer, tv)
     }
-    LaunchedEffect(speedPicker, tv) { if (speedPicker && tv) speedFocus.requestFocus() }
+    LaunchedEffect(speedPicker, trackPicker) { if (speedPicker || trackPicker) playerView?.hideController() }
     LaunchedEffect(playback.retryable, tv) { if (playback.retryable && tv) retryFocus.requestFocus() }
-    LaunchedEffect(trackPicker, tv) { if (trackPicker && tv) trackFocus.requestFocus() }
     DisposableEffect(playback, audio) { onDispose { if (!audio) playback.stop() } }
     DisposableEffect(player, videoPipHost) {
         val session = if (player != null && videoPipHost != null)
@@ -150,58 +147,30 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                     playerView.dispatchKeyEvent(it.nativeKeyEvent)
             } else Modifier),
         )
-        if (!inPip && (controlsVisible || accessibleControls || audio || speedPicker || trackPicker || playback.loading ||
-            playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
+        val overlay = !inPip && (controlsVisible || accessibleControls || audio || speedPicker || trackPicker || playback.loading ||
+            playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)
+        if (overlay) PlaybackTopFade(tv)
+        if (overlay) Column(Modifier.fillMaxSize().safeDrawingPadding().padding(if (tv) 40.dp else 16.dp),
             verticalArrangement = Arrangement.SpaceBetween) {
-            Column(Modifier.background(Color.Black), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode} · ${item.episodeTitle}" else item.title,
-                    color = Color.White, modifier = Modifier.fillMaxWidth(), maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
-                FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                PlaybackHeader(item, tv, close) {
                     if (casting?.ready == true) AndroidView(factory = { routeContext ->
                         MediaRouteButton(routeContext).apply {
                             contentDescription = "Choose Google Cast device"
                             CastButtonFactory.setUpMediaRouteButton(routeContext.applicationContext, this)
                         }
                     })
-                    if (casting?.connected == true) TextButton(onClick = casting::playSelected,
-                        enabled = !casting.busy) { Text(interfaceText("Play on Cast"), color = KinoColor.signal) }
-                    if (player != null) {
-                        val label = "Speed ${speedText(playback.playbackSpeed)}"
-                        if (tv) androidx.tv.material3.Button(onClick = { speedPicker = !speedPicker }) {
-                            androidx.tv.material3.Text(label)
-                        } else TextButton(onClick = { speedPicker = !speedPicker }) {
-                            Text(label, color = KinoColor.signal)
-                        }
-                    }
-                    if (playback.captionsAvailable) {
-                        val label = if (playback.captionsEnabled) "Captions on" else "Captions off"
-                        if (tv) androidx.tv.material3.Button(onClick = playback::toggleCaptions) {
-                            androidx.tv.material3.Text(label)
-                        } else TextButton(onClick = playback::toggleCaptions) {
-                            Text(label, color = KinoColor.signal)
-                        }
-                    }
-                    if (playback.audioTracks.size > 1 || playback.textTracks.size > 1) {
-                        if (tv) androidx.tv.material3.Button(onClick = {
-                            speedPicker = false; trackPicker = !trackPicker
-                        }, modifier = Modifier.focusRequester(trackButtonFocus)) {
-                            androidx.tv.material3.Text(interfaceText("Audio & captions"))
-                        }
-                        else TextButton(onClick = { speedPicker = false; trackPicker = !trackPicker }) {
-                            Text(interfaceText("Audio & captions"), color = KinoColor.signal)
-                        }
-                    }
-                    if (playback.nextItemId != null) {
-                        if (tv) androidx.tv.material3.Button(onClick = { playback.playNext(onNext) },
-                            enabled = !playback.nextBusy) { androidx.tv.material3.Text(interfaceText("Next episode")) }
-                        else TextButton(onClick = { playback.playNext(onNext) }, enabled = !playback.nextBusy) {
-                            Text(interfaceText("Next episode"), color = KinoColor.signal)
-                        }
-                    }
-                    if (tv) androidx.tv.material3.Button(onClick = close) {
-                        androidx.tv.material3.Text(interfaceText("Done"))
-                    } else TextButton(onClick = close) { Text(interfaceText("Done"), color = KinoColor.signal) }
+                    if (casting?.connected == true) PlaybackAction(interfaceText("Play on Cast"), tv,
+                        casting::playSelected, enabled = !casting.busy)
+                    if (player != null) PlaybackAction("Speed ${speedText(playback.playbackSpeed)}", tv,
+                        { trackPicker = false; speedPicker = !speedPicker }, focus = speedButtonFocus)
+                    if (playback.audioTracks.size > 1 || playback.textTracks.size > 1) PlaybackAction(
+                        interfaceText("Audio & captions"), tv, { speedPicker = false; trackPicker = !trackPicker },
+                        focus = trackButtonFocus)
+                    else if (playback.captionsAvailable) PlaybackAction(
+                        if (playback.captionsEnabled) "Captions on" else "Captions off", tv, playback::toggleCaptions)
+                    if (playback.nextItemId != null) PlaybackAction(interfaceText("Next episode"), tv,
+                        { playback.playNext(onNext) }, enabled = !playback.nextBusy)
                 }
                 if (casting?.active != null) Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     TextButton(onClick = { casting.skip(-30.0) }) { Text(interfaceText("Back 30"), color = KinoColor.signal) }
@@ -211,62 +180,8 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
                 }
                 casting?.notice?.let { Text(it, color = Color.White,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }) }
-                if (speedPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
-                    .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(interfaceText("Playback speed"), color = Color.White)
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(PlaybackModel.SPEEDS) { rate ->
-                            val label = if (rate == 1f) "Normal" else speedText(rate)
-                            val chosen = if (playback.playbackSpeed == rate) "$label · Selected" else label
-                            val select = { playback.changeSpeed(rate); speedPicker = false }
-                            if (tv) androidx.tv.material3.Button(onClick = select,
-                                modifier = if (rate == PlaybackModel.SPEEDS.first())
-                                    Modifier.focusRequester(speedFocus) else Modifier) {
-                                androidx.tv.material3.Text(chosen)
-                            } else TextButton(onClick = select) { Text(chosen, color = KinoColor.signal) }
-                        }
-                    }
-                }
-                if (trackPicker) Column(Modifier.fillMaxWidth().background(Color.Black.copy(alpha = 0.82f))
-                    .padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    if (playback.audioTracks.size > 1) {
-                        Text(interfaceText("Audio"), color = Color.White)
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            items(playback.audioTracks) { choice ->
-                                val label = choice.label + if (choice.selected) " · Selected" else ""
-                                val select = { playback.selectAudio(choice); closeTracks() }
-                                if (tv) androidx.tv.material3.Button(onClick = select,
-                                    modifier = if (choice == playback.audioTracks.first())
-                                        Modifier.focusRequester(trackFocus) else Modifier) {
-                                    androidx.tv.material3.Text(label)
-                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
-                            }
-                        }
-                    }
-                    if (playback.textTracks.size > 1) {
-                        Text(interfaceText("Captions"), color = Color.White)
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            item {
-                                val label = if (playback.captionsEnabled) "Off" else "Off · Selected"
-                                val select = { playback.selectText(null); closeTracks() }
-                                if (tv) androidx.tv.material3.Button(onClick = select,
-                                    modifier = if (playback.audioTracks.size <= 1)
-                                        Modifier.focusRequester(trackFocus) else Modifier) {
-                                    androidx.tv.material3.Text(label)
-                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
-                            }
-                            items(playback.textTracks) { choice ->
-                                val label = choice.label + if (choice.selected) " · Selected" else ""
-                                val select = { playback.selectText(choice); closeTracks() }
-                                if (tv) androidx.tv.material3.Button(onClick = select) {
-                                    androidx.tv.material3.Text(label)
-                                } else TextButton(onClick = select) { Text(label, color = KinoColor.signal) }
-                            }
-                        }
-                    }
-                }
             }
-            Column(Modifier.fillMaxWidth().then(if (playback.loading || playback.usingCompatible ||
+            Column(Modifier.fillMaxWidth().padding(bottom = if (controlsVisible) PlaybackControllerHeight else 0.dp).then(if (playback.loading || playback.usingCompatible ||
                     playback.message != null || playback.progressNotice != null || playback.preferenceNotice != null)
                     Modifier.background(Color.Black.copy(alpha = 0.82f)).padding(12.dp) else Modifier),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -300,6 +215,16 @@ internal fun PlaybackScreen(item: CatalogItem, viewer: Viewer, tv: Boolean, clos
             }
         }
         if (!inPip) ScrubPreview(playerView, playback, tv)
+        if (speedPicker && !inPip) PlaybackChoiceSheet(interfaceText("Playback speed"), listOf(PlaybackChoiceGroup(null,
+            PlaybackModel.SPEEDS.map { rate -> PlaybackChoice(if (rate == 1f) interfaceText("Normal") else speedText(rate),
+                playback.playbackSpeed == rate) { playback.changeSpeed(rate) } })), tv, closeSpeed)
+        if (trackPicker && !inPip) PlaybackChoiceSheet(interfaceText("Audio & captions"), listOfNotNull(
+            if (playback.audioTracks.size > 1) PlaybackChoiceGroup(interfaceText("Audio"),
+                playback.audioTracks.map { PlaybackChoice(it.label, it.selected) { playback.selectAudio(it) } }) else null,
+            if (playback.textTracks.size > 1) PlaybackChoiceGroup(interfaceText("Captions"),
+                listOf(PlaybackChoice(interfaceText("Off"), !playback.captionsEnabled) { playback.selectText(null) }) +
+                    playback.textTracks.map { PlaybackChoice(it.label, it.selected) { playback.selectText(it) } }) else null),
+            tv, closeTracks)
     }
 }
 

@@ -36,6 +36,19 @@ bar, and fades into the canvas. An Electric eyebrow (Watching, Listening, For yo
 Up next), the bold title, metadata, and actions overlap the fade. Wider windows and
 large text keep `MediaHero`.
 
+The video player header follows iPhone: a round Close player button on phones (Back
+closes on TV), the bold title with the year or season and episode, and one row of pill
+actions over a top fade. Each action appears once: Speed, then Audio & captions when
+there is more than one track, otherwise a Captions on/off toggle, then Next episode.
+The Media3 settings gear stays hidden because it would repeat Speed and Audio. The
+Cast button appears only when Cast is ready; a failed Cast setup hides it and logs a
+warning instead of showing a message.
+
+Speed and Audio & captions open one list each. Phones use a bottom sheet and TV uses a
+right-side panel. Each row has a check on the current choice, and choosing a row applies
+it and closes the list. On TV, focus starts on the current choice and returns to the
+button that opened the list.
+
 Artwork retries after 1, 3, 8, and 20 seconds when a load fails, and again when the app
 resumes. A card without a poster uses the backdrop. Every failure message uses the same
 filled Try again button. A failed screen also retries by itself after 2, 5, 15 and 30

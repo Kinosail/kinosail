@@ -1,5 +1,6 @@
 package com.kinosail.player.core
 
+import android.util.Log
 import android.app.Application
 import java.util.UUID
 import androidx.compose.runtime.getValue
@@ -89,7 +90,9 @@ class AndroidCastModel(application: Application) : AndroidViewModel(application)
                 connected = cast.sessionManager.currentCastSession?.isConnected == true
                 ready = true
                 notice = null
-            } catch (_: Exception) { if (attempt == generation) notice = "Google Cast is unavailable on this device or Server." }
+            } catch (error: Exception) {
+                if (attempt == generation) Log.w("KinosailCast", "operation=cast-configure outcome=hidden failure=${error.javaClass.simpleName}")
+            }
         }
     }
 
