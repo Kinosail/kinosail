@@ -120,9 +120,9 @@ internal fun TvLibrary(connection: ConnectionModel, viewer: Viewer) {
                 }
                 if (state.loading && state.items.isEmpty()) LibraryLoading(tv = true, view = state.view)
                 else if (state.items.isEmpty() && state.notice == null) Text(interfaceText(catalogEmptyMessage(state.view, catalog.hasActiveSearch)), color = KinoColor.muted)
-                LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 280.dp else 160.dp),
+                LazyVerticalGrid(GridCells.Adaptive(if (state.view == "photos") 180.dp else 115.dp),
                     modifier = Modifier.weight(1f), state = grid, contentPadding = PaddingValues(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
+                    horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(28.dp)) {
                     items(state.items, key = CatalogItem::id) { item ->
                         Card(onClick = { catalog.select(item) }, modifier = Modifier.fillMaxWidth().semantics { contentDescription = item.title }) {
                             Column {

@@ -192,6 +192,13 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.collectionMode = "pending"
         if (!tv) compose.onNodeWithText("More").activate()
+        if (tv) {
+            compose.onNodeWithText("Browse").performScrollTo()
+            compose.waitForIdle()
+            compose.onNode(hasScrollToNodeAction() and hasAnyChild(hasContentDescription("Movies")))
+                .performScrollToIndex(6)
+            compose.waitForIdle()
+        }
         compose.onNodeWithText("Collections").performScrollTo().activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading collections").fetchSemanticsNodes().isNotEmpty() }
         val pendingCollections = compose.onNodeWithContentDescription("Loading collections").fetchSemanticsNode().boundsInRoot
@@ -244,8 +251,21 @@ class NativeParityJourneyTest {
             compose.onNode(hasText("Resume") and hasClickAction()).assertIsDisplayed()
             compose.onNodeWithContentDescription("My List").assertIsDisplayed()
             waitText("89 min left")
-            compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertIsDisplayed()
+            compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo) and !hasAnyAncestor(hasClickAction()),
+                useUnmergedTree = true).assertIsDisplayed()
             capture("home-header")
+        } else {
+            val hero = { text: String -> compose.onNode(hasText(text) and !hasAnyAncestor(hasClickAction()), useUnmergedTree = true) }
+            hero("Continuing Film").assertIsDisplayed()
+            hero("2026 · PG · Drama · Adventure").assertIsDisplayed()
+            hero("A synthetic title for a repeatable Android journey.").assertIsDisplayed()
+            compose.onNodeWithContentDescription("Next Film").performSemanticsAction(SemanticsActions.RequestFocus)
+            compose.waitUntil(5_000) { compose.onAllNodes(hasText("Next Film") and !hasAnyAncestor(hasClickAction()),
+                useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+            compose.waitForIdle()
+            hero("Next Film").assertIsDisplayed()
+            hero("2026 · PG · Drama · Adventure").assertIsDisplayed()
+            capture("home-hero-focus")
         }
         compose.onNodeWithText("Continue watching").performScrollTo()
         val card = compose.onNodeWithContentDescription("Next Film")
@@ -264,16 +284,27 @@ class NativeParityJourneyTest {
         compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
             useUnmergedTree = true).assertDoesNotExist()
         compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),
-            useUnmergedTree = true).assertExists()
+            useUnmergedTree = true).assertDoesNotExist()
+        compose.waitUntil(20_000) { compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo) and
+            hasAnyAncestor(hasContentDescription("Next Film")), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        compose.onAllNodes(hasText("60 min left") and hasAnyAncestor(hasContentDescription("Next Film")), useUnmergedTree = true)
+            .assertCountEquals(if (tv) 1 else 0)
         capture("home-continuation")
         if (tv) {
+            val screen = context.resources.displayMetrics.widthPixels.toFloat()
+            assertTrue("TV landscape cards must match Apple TV proportions: ${size.width}/$screen", size.width <= screen * 0.21f)
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasContentDescription("New Film"))
+            val poster = compose.onAllNodesWithContentDescription("New Film")[0].fetchSemanticsNode().size
+            assertTrue("TV posters must match Apple TV proportions: ${poster.width}/$screen", poster.width <= screen * 0.13f)
+            compose.onAllNodesWithText("Kinosail").assertCountEquals(0)
+            compose.onNode(hasText("Browse") and !hasClickAction()).assertExists()
             compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
             compose.onNodeWithText("Search").assertIsDisplayed().activate()
             waitText("Search library")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitText("Continue watching")
             compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
-            compose.onNodeWithText("Settings").assertIsDisplayed().activate()
+            compose.onNodeWithContentDescription("Settings").assertIsDisplayed().activate()
             waitText("Sign out")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitText("Continue watching")
@@ -290,7 +321,8 @@ class NativeParityJourneyTest {
         Thread.sleep(500)
         compose.waitForIdle()
         compose.onAllNodes(hasText("min left", substring = true)).assertCountEquals(0)
-        compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertCountEquals(0)
+        compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo) and
+            !hasAnyAncestor(hasContentDescription("Next Film")), useUnmergedTree = true).assertCountEquals(0)
         compose.onAllNodesWithText("Resume at 1:30")[0].assertIsDisplayed()
         capture("home-progress-rejected")
     }
@@ -440,7 +472,7 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.mode = "pending"
         if (tv) {
-            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse"))
             compose.onNodeWithText("Movies").performScrollTo().activate()
         }
         else compose.onNodeWithText("Movies").activate()
@@ -458,7 +490,7 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Home").activate()
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) {
-            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse"))
             compose.onNodeWithText("Movies").performScrollTo().activate()
         }
         else compose.onNodeWithText("Movies").activate()
@@ -678,6 +710,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                 InstrumentationRegistry.getInstrumentation().context.assets.open("parity-video.mp4").use { it.readBytes() }
                             }
                             path == "/api/v1/items/film/watch-progress" -> { progressRequests++; progressBody.toByteArray() }
+                            path == "/api/v1/items/next-film/watch-progress" -> """{"seconds":30,"duration":3600}""".toByteArray()
                             path.startsWith("/api/v1/items/") -> {
                                 val selected = if (path.endsWith("new-film")) newMovie else if (path.endsWith("/book")) book else movie
                                 """{"item":$selected,"listed":$listed,"profileId":"viewer"}""".toByteArray()

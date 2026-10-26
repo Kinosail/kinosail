@@ -1,11 +1,20 @@
 package com.kinosail.player.core
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,9 +33,18 @@ internal val CatalogItem.episodeTitle get() = "S%02dE%02d · ".format(season, ep
 
 @Composable
 internal fun MediaCardBody(item: CatalogItem, catalog: CatalogModel, tv: Boolean, landscape: Boolean = false,
-                           progressOverlay: Boolean = false) {
+                           progressOverlay: Boolean = false, resumes: Boolean = false, focused: Boolean = false) {
+    val resumable = item.kind == "video" && item.progress.seconds > 0 && !item.progress.watched
+    val summary = rememberWatchSummary(item, catalog)
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape, progress = progressOverlay)
+        val lift by animateFloatAsState(if (focused) 1f else 0f, tween(180), label = "card focus")
+        Box(Modifier.graphicsLayer {
+            scaleX = 1f + 0.06f * lift; scaleY = scaleX
+            shadowElevation = 16.dp.toPx() * lift; shape = RoundedCornerShape(12.dp); clip = false
+        }.then(if (focused) Modifier.border(2.dp, KinoColor.text, RoundedCornerShape(12.dp)) else Modifier)) {
+            MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape, progress = progressOverlay && !resumable)
+            summary?.let { WatchBar(it, Modifier.align(Alignment.BottomCenter).padding(start = 12.dp, end = 12.dp, bottom = 8.dp)) }
+        }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val enlarged = LocalDensity.current.fontScale >= 1.5f
             Text(item.title, style = MaterialTheme.typography.titleMedium, color = KinoColor.text, minLines = if (tv) 2 else 1,
@@ -35,8 +53,12 @@ internal fun MediaCardBody(item: CatalogItem, catalog: CatalogModel, tv: Boolean
                 Text(it, style = MaterialTheme.typography.bodySmall, color = KinoColor.muted,
                     maxLines = if (enlarged) Int.MAX_VALUE else 1, overflow = TextOverflow.Ellipsis)
             }
-            if (!progressOverlay && item.positionLabel.isNotEmpty()) Text(interfaceText(item.positionLabel),
-                style = MaterialTheme.typography.bodySmall, color = KinoColor.muted)
+            val position = when {
+                resumable && tv && resumes -> summary?.remainingLabel() ?: interfaceText(item.positionLabel)
+                resumable || progressOverlay -> ""
+                else -> interfaceText(item.positionLabel)
+            }
+            if (position.isNotEmpty()) Text(position, style = MaterialTheme.typography.bodySmall, color = KinoColor.muted)
         }
     }
 }
