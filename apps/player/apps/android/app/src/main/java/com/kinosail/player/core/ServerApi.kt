@@ -136,10 +136,10 @@ class ServerApi(
             token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200, 409))
     }
 
-    internal fun item(itemId: String, token: String, viewerId: String): kotlinx.serialization.json.JsonElement {
-        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) &&
+    internal fun item(itemId: String, token: String, viewerId: String, part: String = ""): kotlinx.serialization.json.JsonElement {
+        require(itemId.matches(Regex("[A-Za-z0-9_-]{1,128}")) && part in setOf("", "/watch-progress") &&
             viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid item request." }
-        return requestWithStatus("/api/v1/items/$itemId", "GET", token = checkedCredential(token, 512),
+        return requestWithStatus("/api/v1/items/$itemId$part", "GET", token = checkedCredential(token, 512),
             viewerId = viewerId, expected = setOf(200), maximum = 2 * 1024 * 1024).second
     }
 

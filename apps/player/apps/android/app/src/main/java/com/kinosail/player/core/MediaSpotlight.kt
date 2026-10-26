@@ -57,8 +57,7 @@ internal fun MediaSpotlight(item: CatalogItem, catalog: CatalogModel, eyebrow: S
                     if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else "")
                     .filter(String::isNotEmpty).joinToString(" · ")
                 if (metadata.isNotEmpty()) Text(metadata, color = KinoColor.muted, style = MaterialTheme.typography.bodyMedium)
-                if (item.positionLabel.isNotEmpty()) Text(interfaceText(item.positionLabel), color = KinoColor.muted,
-                    style = MaterialTheme.typography.bodyMedium)
+                WatchPosition(item, catalog)
             }
             actions()
             if (item.plot.isNotEmpty()) Text(item.plot, color = KinoColor.text, style = MaterialTheme.typography.bodyLarge)

@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
@@ -242,6 +243,8 @@ class NativeParityJourneyTest {
                 useUnmergedTree = true).assertExists()
             compose.onNode(hasText("Resume") and hasClickAction()).assertIsDisplayed()
             compose.onNodeWithContentDescription("My List").assertIsDisplayed()
+            waitText("89 min left")
+            compose.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertIsDisplayed()
             capture("home-header")
         }
         compose.onNodeWithText("Continue watching").performScrollTo()
@@ -276,6 +279,20 @@ class NativeParityJourneyTest {
             waitText("Continue watching")
             capture("home-navigation-return")
         }
+    }
+
+    @Test fun homeProgressIgnoresInvalidWatchSummary() = journey(prepare = {
+        it.progressBody = """{"seconds":9000,"duration":5400}"""
+    }) { fixture ->
+        org.junit.Assume.assumeFalse(tv)
+        waitText("Watching")
+        compose.waitUntil(20_000) { fixture.progressRequests > 0 }
+        Thread.sleep(500)
+        compose.waitForIdle()
+        compose.onAllNodes(hasText("min left", substring = true)).assertCountEquals(0)
+        compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)).assertCountEquals(0)
+        compose.onAllNodesWithText("Resume at 1:30")[0].assertIsDisplayed()
+        capture("home-progress-rejected")
     }
 
     @Test fun populatedNavigationDetailsAndMyList() = journey { fixture ->
@@ -466,7 +483,8 @@ class NativeParityJourneyTest {
         } else performClick()
     }
 
-    private fun journey(mode: String = "ready", accessibility: Boolean = true, check: (ParityFixture) -> Unit) {
+    private fun journey(mode: String = "ready", accessibility: Boolean = true, prepare: (ParityFixture) -> Unit = {},
+                        check: (ParityFixture) -> Unit) {
         org.junit.Assume.assumeTrue("Disabling UiAutomation accessibility requires API 31", accessibility || Build.VERSION.SDK_INT >= 31)
         automationFlags = if (accessibility) 0 else android.app.UiAutomation.FLAG_DONT_USE_ACCESSIBILITY
         uiAutomation()
@@ -474,6 +492,7 @@ class NativeParityJourneyTest {
             as android.view.accessibility.AccessibilityManager
         compose.waitUntil(10_000) { manager.isEnabled == accessibility }
         ParityFixture(mode).use { fixture ->
+            prepare(fixture)
             context.getSharedPreferences("kinosail_session", 0).edit().clear().commit()
             context.getSharedPreferences("kinosail_tabs", 0).edit().clear().commit()
             context.getSharedPreferences("kinosail_reading_pending", 0).edit().clear().commit()
@@ -538,6 +557,8 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
     @Volatile var readerPage = 1
     @Volatile var failReaderSaves = false
     @Volatile var holdReaderSave = false
+    @Volatile var progressBody = """{"seconds":90,"duration":5400}"""
+    @Volatile var progressRequests = 0
     @Volatile var readerSaveInFlight = false
     @Volatile var readerWrites = 0
     @Volatile var listWrites = 0
@@ -656,6 +677,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
                                 type = "video/mp4"
                                 InstrumentationRegistry.getInstrumentation().context.assets.open("parity-video.mp4").use { it.readBytes() }
                             }
+                            path == "/api/v1/items/film/watch-progress" -> { progressRequests++; progressBody.toByteArray() }
                             path.startsWith("/api/v1/items/") -> {
                                 val selected = if (path.endsWith("new-film")) newMovie else if (path.endsWith("/book")) book else movie
                                 """{"item":$selected,"listed":$listed,"profileId":"viewer"}""".toByteArray()

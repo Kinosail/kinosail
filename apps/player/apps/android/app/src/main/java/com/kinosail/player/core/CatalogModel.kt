@@ -42,6 +42,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
     private var session: SavedSession? = null
+    internal val connection get() = session?.let { saved -> viewerId?.let { saved to it } }
     private var viewerId: String? = null
     private var viewer: Viewer? = null
     private var generation = 0
