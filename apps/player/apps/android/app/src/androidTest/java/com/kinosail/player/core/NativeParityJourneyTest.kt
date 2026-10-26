@@ -287,6 +287,12 @@ class NativeParityJourneyTest {
         if (tv) compose.onNodeWithText("Home").activate()
         else compose.onNodeWithText("More").activate()
         if (!tv) {
+            waitText("Music")
+            val row = compose.onNode(hasText("Music") and hasClickAction()).fetchSemanticsNode().boundsInRoot
+            val density = context.resources.displayMetrics.density
+            assertTrue("More destinations must be full-width list rows, as on iPhone: $row",
+                row.height >= 56 * density && row.width >= 300 * density)
+            capture("more")
             compose.onNodeWithText("Customize tabs").performScrollTo().activate()
             compose.onNodeWithText("Remove Movies").performScrollTo().activate()
             compose.onNodeWithText("Add Listen").performScrollTo().activate()

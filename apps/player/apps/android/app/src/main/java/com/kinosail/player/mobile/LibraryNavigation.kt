@@ -46,16 +46,24 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
 }
 
 @Composable
-private fun DestinationIcon(destination: String) {
+internal fun DestinationIcon(destination: String, tint: androidx.compose.ui.graphics.Color = LocalContentColor.current) {
     val icon = when (destination) {
         "home" -> R.drawable.nav_home
         "shows" -> R.drawable.nav_shows
         "movies" -> R.drawable.nav_movies
         "search" -> R.drawable.nav_search
         "more" -> R.drawable.nav_more
+        "music" -> R.drawable.nav_music
+        "listen" -> R.drawable.nav_listen
+        "audiobooks" -> R.drawable.nav_audiobooks
+        "books" -> R.drawable.nav_books
+        "photos" -> R.drawable.nav_photos
+        "collections" -> R.drawable.nav_collections
+        "list" -> R.drawable.nav_list
+        "all" -> R.drawable.nav_all
         else -> R.drawable.nav_library
     }
-    Icon(painterResource(icon), contentDescription = null)
+    Icon(painterResource(icon), contentDescription = null, tint = tint)
 }
 
 @Composable
@@ -70,7 +78,7 @@ internal fun MoreScreen(viewer: Viewer, tabs: List<String>, saveTabs: (List<Stri
     var thanks by remember { mutableStateOf(false) }
     var notices by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        verticalArrangement = Arrangement.spacedBy(if (editing) 12.dp else 20.dp)) {
         Text(interfaceText(if (editing) "Customize tabs" else "More"), style = MaterialTheme.typography.headlineLarge)
         if (editing) {
             Text(interfaceText("Choose one to four destinations. More keeps everything else available."))
@@ -97,17 +105,24 @@ internal fun MoreScreen(viewer: Viewer, tabs: List<String>, saveTabs: (List<Stri
             TextButton(onClick = { saveTabs(PersonalTabs.defaults) }) { Text(interfaceText("Reset tabs")) }
             Button(onClick = { editing = false }) { Text(interfaceText("Done")) }
         } else {
-            PersonalTabs.destinations.filterNot { it.first in tabs }.forEach { (id, title) ->
-                TextButton(onClick = { navigate(id) }, modifier = Modifier.fillMaxWidth()) {
-                    Text(interfaceText(title), modifier = Modifier.fillMaxWidth())
+            MoreGroup {
+                PersonalTabs.destinations.filterNot { it.first in tabs }.forEachIndexed { index, (id, title) ->
+                    if (index > 0) MoreDivider()
+                    MoreRow(interfaceText(title), icon = id) { navigate(id) }
                 }
             }
-            HorizontalDivider()
-            Text(interfaceText("Settings"), style = MaterialTheme.typography.titleLarge)
-            Text(viewer.name, style = MaterialTheme.typography.titleMedium)
-            Text(viewer.server, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            TextButton(onClick = { editing = true }) { Text(interfaceText("Customize tabs")) }
-            TextButton(onClick = { thanks = !thanks }) { Text("Made possible by") }
+            MoreGroup { MoreRow(interfaceText("Customize tabs")) { editing = true } }
+            Text(interfaceText("Settings"), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 12.dp))
+            MoreGroup {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(viewer.name, style = MaterialTheme.typography.titleMedium)
+                    Text(viewer.server, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                MoreDivider(icon = false)
+                MoreRow("Made possible by") { thanks = !thanks }
+                MoreDivider(icon = false)
+                MoreRow(interfaceText("Sign out"), color = com.kinosail.player.design.KinoColor.danger, chevron = false, onClick = signOut)
+            }
             if (thanks) {
                 Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.")
                 Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
@@ -119,7 +134,6 @@ internal fun MoreScreen(viewer: Viewer, tabs: List<String>, saveTabs: (List<Stri
                     Text(text ?: "Notices could not be opened. Reinstall Kinosail and try again.")
                 }
             }
-            TextButton(onClick = signOut) { Text(interfaceText("Sign out")) }
         }
     }
 }
