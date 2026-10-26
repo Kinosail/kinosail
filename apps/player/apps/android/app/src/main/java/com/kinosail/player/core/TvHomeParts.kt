@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -76,6 +78,21 @@ internal fun TvBrowseTiles(views: List<Pair<String, String>>, browse: (String) -
                 }
             }
         }
+    }
+}
+
+@Composable
+internal fun TvHomeHero(item: CatalogItem) {
+    val metadata = listOf(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else item.year, item.rating, item.genres)
+        .filter(String::isNotEmpty).joinToString(" · ")
+    Column(Modifier.widthIn(max = 520.dp).padding(top = 20.dp).semantics { hideFromAccessibility() },
+        verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        Text(item.title, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = KinoColor.text,
+            maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(metadata.ifEmpty { " " }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Medium,
+            color = KinoColor.muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(item.plot.ifEmpty { " " }, style = MaterialTheme.typography.bodyLarge, color = KinoColor.text.copy(alpha = 0.88f),
+            minLines = 2, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.widthIn(max = 430.dp))
     }
 }
 
