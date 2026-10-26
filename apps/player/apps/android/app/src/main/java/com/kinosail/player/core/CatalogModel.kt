@@ -52,6 +52,7 @@ class CatalogModel(application: Application) : AndroidViewModel(application) {
 
     var searchInput by mutableStateOf("")
     val hasActiveSearch get() = activeQuery.isNotEmpty()
+    val activeSearch get() = activeQuery
     var state by mutableStateOf(CatalogState())
         private set
 
