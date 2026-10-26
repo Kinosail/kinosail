@@ -28,7 +28,7 @@ func (fixture SAMLConfiguration[S]) OwnerCanConfigureSAMLWithProviderMetadataURL
 	handler := fixture.New(directory, configured)
 	owner := fixture.SignIn(t, handler, "/setup", "name=Owner&password=owner-password")
 	page := fixture.WebCall(t, handler, http.MethodGet, "/settings/configuration", "", owner)
-	for _, expected := range []string{`id="integrations.saml"`, `aria-label="SAML provider metadata URL"`, `aria-label="SAML provider metadata XML"`, `aria-label="SAML identity attribute"`, `value="NameID"`, `SCIM <code>externalId</code>`, `aria-label="Copy service provider metadata URL"`, `aria-label="Copy Assertion Consumer Service URL"`, `rows="6"`, `value="https://media.example/login/saml/metadata"`, `value="https://media.example/login/saml/acs"`} {
+	for _, expected := range []string{`id="integrations.saml"`, `aria-label="SAML provider metadata URL"`, `aria-label="SAML provider metadata XML"`, `aria-label="SAML identity attribute"`, `value="NameID"`, `SCIM <code>externalId</code>`, `aria-label="Copy URL for service provider metadata"`, `aria-label="Copy URL for Assertion Consumer Service"`, `rows="6"`, `value="https://media.example/login/saml/metadata"`, `value="https://media.example/login/saml/acs"`} {
 		if page.Code != http.StatusOK || !strings.Contains(page.Body.String(), expected) {
 			t.Fatalf("SAML configuration page lacks %q: %d %q", expected, page.Code, page.Body.String())
 		}

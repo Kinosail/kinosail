@@ -10,11 +10,7 @@ import (
 func TestPasskeyAccountRendersHonestUsageStatesAndCompactRemoval(t *testing.T) {
 	t.Parallel()
 	body := httptest.NewRecorder()
-	data := struct {
-		Passkeys         []passkeySummary
-		HasPasskeys      bool
-		Next, AccountURL string
-	}{[]passkeySummary{{Display: "tracked-key", UsageTracked: true, LastUsedLabel: "Aug 27, 2026 at 10:42 AM", MostRecent: true, BackupEligible: true, BackedUp: true}, {Display: "ready-key", UsageTracked: true, BackupEligible: true}, {Display: "device-key", UsageTracked: true}, {Display: "warning-key", UsageTracked: true, CloneWarning: true}, {Display: "legacy-key"}}, true, "/", "http://localhost:38127/account"}
+	data := accountPage{Passkeys: []passkeySummary{{Display: "tracked-key", UsageTracked: true, LastUsedLabel: "Aug 27, 2026 at 10:42 AM", MostRecent: true, BackupEligible: true, BackedUp: true}, {Display: "ready-key", UsageTracked: true, BackupEligible: true}, {Display: "device-key", UsageTracked: true}, {Display: "warning-key", UsageTracked: true, CloneWarning: true}, {Display: "legacy-key"}}, HasPasskeys: true, Next: "/", AccountURL: "http://localhost:38127/account", OIDC: true}
 	if err := accountView.Execute(body, httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/account", nil), data); err != nil {
 		t.Fatal(err)
 	}

@@ -73,14 +73,10 @@ func TestWriteUIStateFixtures(t *testing.T) {
 		return err
 	}
 	fixtures := map[string]func(*bytes.Buffer) error{
-		"api-key-created":   localized(apiKeySecretView, map[string]string{"Name": "Living Room remote", "Secret": "ks_example_local_only"}),
-		"media-share-items": plain(mediaShareItemsView, []map[string]string{{"Title": "Signal Garden", "ID": "fixture"}}),
-		"mfa-setup":         localized(mfaSetupView, mfaSetupPage{mfaEnrollment: mfaEnrollment{Secret: strings.Repeat("A", 32), URI: "otpauth://totp/Kinosail:Owner", RecoveryCodes: []string{"AAAA-BBBB-CCCC-DDDD", "EEEE-FFFF-GGGG-HHHH"}}}),
-		"passkey-account": localized(accountView, struct {
-			Passkeys         []passkeySummary
-			HasPasskeys      bool
-			Next, AccountURL string
-		}{[]passkeySummary{{Display: "tracked-key", UsageTracked: true, LastUsedLabel: "Aug 27, 2026 at 10:42 AM", MostRecent: true, BackupEligible: true, BackedUp: true}, {Display: "ready-key", UsageTracked: true, BackupEligible: true}, {Display: "device-key", UsageTracked: true}, {Display: "warning-key", UsageTracked: true, CloneWarning: true}, {Display: "legacy-key"}}, true, "/", "https://kinosail.test/account"}),
+		"api-key-created":              localized(apiKeySecretView, map[string]string{"Name": "Living Room remote", "Secret": "ks_example_local_only"}),
+		"media-share-items":            plain(mediaShareItemsView, []map[string]string{{"Title": "Signal Garden", "ID": "fixture"}}),
+		"mfa-setup":                    localized(mfaSetupView, mfaSetupPage{mfaEnrollment: mfaEnrollment{Secret: strings.Repeat("A", 32), URI: "otpauth://totp/Kinosail:Owner", RecoveryCodes: []string{"AAAA-BBBB-CCCC-DDDD", "EEEE-FFFF-GGGG-HHHH"}}}),
+		"passkey-account":              localized(accountView, accountPage{Passkeys: []passkeySummary{{Display: "tracked-key", UsageTracked: true, LastUsedLabel: "Aug 27, 2026 at 10:42 AM", MostRecent: true, BackupEligible: true, BackedUp: true}, {Display: "ready-key", UsageTracked: true, BackupEligible: true}, {Display: "device-key", UsageTracked: true}, {Display: "warning-key", UsageTracked: true, CloneWarning: true}, {Display: "legacy-key"}}, HasPasskeys: true, Next: "/", AccountURL: "https://kinosail.test/account", OIDC: true, SAML: true, SAMLLinked: true}),
 		"passkey-prompt":               localized(passkeyPromptView, nil),
 		"supporter-certificate":        supporterCertificate,
 		"supporter-living-certificate": supporterOwnedCertificateFixture(livingStandardFamily),

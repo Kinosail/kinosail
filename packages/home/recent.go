@@ -43,7 +43,7 @@ func recentShelf(newest []*library.Item, artwork, showTitles map[string]string, 
 			selected = append(selected, *item)
 		}
 	}
-	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
+	return episodeShelf(selected, artwork, showTitles, "play", "recently added episodes stacked")
 }
 
 func homeKind(item library.Item, kind string) bool {
@@ -115,7 +115,7 @@ func RecentlyAdded(items []library.Item, artwork, showTitles map[string]string) 
 	for position := range selected {
 		selected[position] = *recent[position]
 	}
-	return episodeShelf(selected, artwork, showTitles, "plus", "recently added episodes stacked")
+	return episodeShelf(selected, artwork, showTitles, "play", "recently added episodes stacked")
 }
 
 func RecentlyPlayed(items []library.Item, artwork, showTitles map[string]string) []ShelfItem {
@@ -162,10 +162,15 @@ func episodeShelf(items []library.Item, artwork, showTitles map[string]string, p
 	return result
 }
 
+var kindPlaceholderIcons = map[string]string{"audio": "music", "audiobook": "audiobook", "book": "book", "photo": "photo"}
+
 func singleItem(item library.Item, artwork, showTitles map[string]string, placeholderIcon string) ShelfItem {
 	title := item.Title
 	if showTitle := showTitles[item.ID]; showTitle != "" {
 		title = showTitle + " · " + title
+	}
+	if icon := kindPlaceholderIcons[item.Kind]; icon != "" {
+		placeholderIcon = icon
 	}
 	card := ShelfItem{Href: mediaHref(item), Title: title, Meta: mediaMeta(item), ArtworkID: artwork[item.ID], PlaceholderIcon: placeholderIcon, Count: 1}
 	if item.Kind == "video" {

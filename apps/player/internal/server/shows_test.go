@@ -19,7 +19,7 @@ func TestViewerCanBrowseAShowsEpisodes(t *testing.T) {
 
 	servertest.ViewerCanBrowseAShowsEpisodes(t, func(t *testing.T, media string) http.Handler {
 		return newJellyfinServer(t, server.Config{MediaDir: media})
-	}, `class="episode-index" aria-hidden="true">01`, ">Good News</strong>", `aria-label="Play again episode 1, Good News, watched"`)
+	}, `class="episode-index" aria-hidden="true">01`, ">Good News</strong>", `<span class="sr-only">Play episode 1: </span>Good News</strong>`)
 }
 
 func TestEpisodeStillUsesItsArtworkVariantWithoutReplacingShowPoster(t *testing.T) {

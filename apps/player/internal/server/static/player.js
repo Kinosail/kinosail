@@ -50,8 +50,7 @@ let pendingResume;
 const codecCapabilities = window.kinosailPlaybackCapabilities;
 const playbackMediaFacts = {width: player.dataset.mediaWidth, height: player.dataset.mediaHeight,
   bitrate: player.dataset.mediaBitrate, framerate: player.dataset.mediaFramerate};
-const mediaVideo = (contentType, compatible = false) => codecCapabilities.video(playbackMediaFacts, contentType, compatible);
-if (player.dataset.directType && navigator.mediaCapabilities?.decodingInfo) navigator.mediaCapabilities.decodingInfo({type: "file", video: mediaVideo(player.dataset.directType)})
+if (player.dataset.directType && navigator.mediaCapabilities?.decodingInfo) navigator.mediaCapabilities.decodingInfo(codecCapabilities.file(playbackMediaFacts, player.dataset.directType))
   .then((result) => playbackTrace("capability-direct", result.supported ? result.smooth ? "smooth" : "supported" : "unsupported"))
   .catch(() => {});
 const showPlaybackMode = (compatible, pending = false) => {
