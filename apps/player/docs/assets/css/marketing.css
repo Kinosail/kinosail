@@ -110,6 +110,16 @@ body{background:linear-gradient(180deg,rgba(11,13,11,.48),var(--bg) 1000px),url(
 .terminal-bar{display:flex;align-items:center;gap:8px;margin:0;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700}
 .terminal-bar span{width:10px;height:10px;border-radius:50%;background:#30382c}.terminal-bar span:nth-child(3){margin-right:10px}
 .terminal pre{margin:0;padding:20px;overflow:auto;font-size:12.5px;line-height:1.7;color:#d9e0d2}
+.tab-input{position:absolute;opacity:0;pointer-events:none}
+.terminal-bar label{display:inline-flex;align-items:center;min-height:32px;padding:4px 12px;border:1px solid transparent;border-radius:999px;color:var(--muted);cursor:pointer}
+.terminal-bar label:hover{color:var(--text)}
+#install-compose:checked~.terminal-bar label[for=install-compose],#install-run:checked~.terminal-bar label[for=install-run]{border-color:var(--line);background:#1a2015;color:var(--lime)}
+#install-compose:focus-visible~.terminal-bar label[for=install-compose],#install-run:focus-visible~.terminal-bar label[for=install-run]{outline:3px solid var(--lime);outline-offset:2px}
+.pane-run,#install-run:checked~.pane-compose{display:none}
+#install-run:checked~.pane-run{display:block}
+.pane-note{margin:0;padding:14px 20px 0;color:var(--muted);font-size:13px}
+.pane-note code{color:var(--text)}
+.terminal .pane-command{border-top:1px solid var(--line);color:var(--lime)}
 .screens{padding-block:112px 40px}
 .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:44px}
 .shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#10140e}

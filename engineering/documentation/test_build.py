@@ -73,6 +73,12 @@ class BuildInputsTest(unittest.TestCase):
                         if path.startswith('compare/'):
                             self.assertIn(f'<loc>{origin}{prefix}/{path}</loc>', (args.output / 'sitemap.xml').read_text())
                     self.assertNotIn('llms.txt', (args.output / 'sitemap.xml').read_text())
+                    quick = homepage.split('<section class="quick wrap"', 1)[1].split('</section>', 1)[0]
+                    for command in ('docker compose up -d', 'docker run --detach --name kinosail',
+                                    'image: ghcr.io/kinosail/kinosail-player:latest', 'read_only: true',
+                                    'cap_drop: [ALL]', '/path/to/your/media:/media:ro'):
+                        self.assertIn(command, quick)
+                    self.assertLess(quick.index('docker compose up -d'), quick.index('docker run --detach'))
                     self.assertIn('free, source-available media server', hero)
                     self.assertIn('<a class="button button-quiet" href="https://github.com/Kinosail/kinosail">View source on GitHub</a>', hero)
                     hero_links = LinkText(hero).links

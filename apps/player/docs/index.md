@@ -46,13 +46,53 @@ faq:
 <h2 id="quick-title">Running in five minutes.</h2>
 <ol class="quick-steps">
 <li><strong>Install Docker</strong> on 64-bit Linux (amd64 or arm64), a NAS, or Proxmox. Docker Desktop on macOS works for local use.</li>
-<li><strong>Start Kinosail</strong> with your media folder. It is mounted read-only, so your files stay untouched.</li>
+<li><strong>Start Kinosail</strong> with Docker Compose or <code>docker run</code>. Change the media path to your folder. It is mounted read-only, so your files stay untouched.</li>
 <li><strong>Open <code>https://localhost:38127</code></strong>, create the Owner, add a passkey, and add <code>/media/Movies</code> as a library.</li>
 </ol>
-<p class="fine">Prefer Compose, a NAS app, or a signed and pinned install? <a href="{{ '/quickstart/' | relative_url }}">Docker quickstart</a> · <a href="{{ '/getting-started/platforms/' | relative_url }}">NAS, Unraid, TrueNAS, Proxmox</a></p>
+<p class="fine">Prefer a NAS app or a signed, pinned install? <a href="{{ '/quickstart/' | relative_url }}">Docker quickstart</a> · <a href="{{ '/getting-started/platforms/' | relative_url }}">NAS, Unraid, TrueNAS, Proxmox</a></p>
 </div>
-<div class="terminal" role="region" aria-label="Docker command">
-<p class="terminal-bar"><span></span><span></span><span></span>docker run</p>
+<div class="terminal" role="region" aria-label="Install commands">
+<input class="tab-input" type="radio" name="install-method" id="install-compose" checked>
+<input class="tab-input" type="radio" name="install-method" id="install-run">
+<div class="terminal-bar"><span></span><span></span><span></span><label for="install-compose">Docker Compose</label><label for="install-run">docker run</label></div>
+<div class="pane pane-compose">
+<p class="pane-note">Save as <code>compose.yaml</code>, set your media path, then run <code>docker compose up -d</code>.</p>
+<pre><code>name: kinosail
+
+services:
+  kinosail:
+    image: ghcr.io/kinosail/kinosail-player:latest
+    container_name: kinosail
+    restart: unless-stopped
+    init: true
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:38127:38127"
+    environment:
+      KINOSAIL_DATA_DIR: /config
+      KINOSAIL_CACHE_DIR: /cache
+      KINOSAIL_MEDIA_DIR: /media
+    volumes:
+      - config:/config
+      - cache:/cache
+      - backups:/backups
+      - /path/to/your/media:/media:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /run:rw,noexec,nosuid,nodev,size=16m
+
+volumes:
+  config:
+  cache:
+  backups:</code></pre>
+<pre class="pane-command"><code>docker compose up -d</code></pre>
+</div>
+<div class="pane pane-run">
+<p class="pane-note">Set your media path, then run the command.</p>
 <pre><code>export KINOSAIL_MEDIA_PATH="/absolute/path/to/your/media"
 
 docker run --detach --name kinosail \
@@ -71,6 +111,7 @@ docker run --detach --name kinosail \
   --env KINOSAIL_CACHE_DIR=/cache \
   --env KINOSAIL_MEDIA_DIR=/media \
   ghcr.io/kinosail/kinosail-player:latest</code></pre>
+</div>
 </div>
 </section>
 <section class="screens wrap" id="inside" aria-labelledby="screens-title">
