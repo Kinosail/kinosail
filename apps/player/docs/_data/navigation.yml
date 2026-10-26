@@ -15,6 +15,17 @@
       url: /getting-started/connect-devices/
     - title: Add your media
       url: /getting-started/add-media/
+- title: Compare
+  url: /compare/
+  pages:
+    - title: Compare media servers
+      url: /compare/
+    - title: Kinosail vs Plex
+      url: /compare/plex/
+    - title: Kinosail vs Jellyfin
+      url: /compare/jellyfin/
+    - title: Kinosail vs Emby
+      url: /compare/emby/
 - title: Use Kinosail
   url: /user-guide/
   pages:

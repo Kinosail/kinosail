@@ -62,10 +62,22 @@ class BuildInputsTest(unittest.TestCase):
                                      in (args.output / 'sitemap.xml').read_text(), name == 'production')
                     homepage = (args.output / 'index.html').read_text()
                     hero = homepage.split('<section class="hero wrap">', 1)[1].split('</section>', 1)[0]
+                    robots = (args.output / 'robots.txt').read_text().splitlines()
+                    for agent in ('OAI-SearchBot', 'GPTBot', 'ClaudeBot', 'Claude-SearchBot', 'PerplexityBot', 'Google-Extended'):
+                        self.assertIn(f'User-agent: {agent}', robots)
+                    self.assertNotIn('Disallow: /', robots)
+                    llms = (args.output / 'llms.txt').read_text()
+                    self.assertTrue(llms.startswith('# Kinosail\n\n> '))
+                    for path in ('quickstart/', 'compare/plex/', 'compare/jellyfin/', 'compare/emby/'):
+                        self.assertIn(f'({origin}{prefix}/{path})', llms)
+                        if path.startswith('compare/'):
+                            self.assertIn(f'<loc>{origin}{prefix}/{path}</loc>', (args.output / 'sitemap.xml').read_text())
+                    self.assertNotIn('llms.txt', (args.output / 'sitemap.xml').read_text())
                     self.assertIn('free, source-available media server', hero)
-                    self.assertIn('<a class="button" href="https://github.com/Kinosail/kinosail">View source on GitHub</a>', hero)
+                    self.assertIn('<a class="button button-quiet" href="https://github.com/Kinosail/kinosail">View source on GitHub</a>', hero)
                     hero_links = LinkText(hero).links
-                    self.assertEqual(hero_links[0], ['https://github.com/Kinosail/kinosail', 'View source on GitHub'])
+                    self.assertEqual(hero_links[0], [f'{prefix}/quickstart/', 'Get started with Docker'])
+                    self.assertIn(['https://github.com/Kinosail/kinosail', 'View source on GitHub'], hero_links)
                     self.assertIn([f'{prefix}/docs/', 'Read the docs'], hero_links)
                     self.assertIn([f'{prefix}/quickstart/', 'Get started with Docker'], hero_links)
                     self.assertIn(['#inside', 'See the Player'], hero_links)
@@ -98,6 +110,16 @@ class BuildInputsTest(unittest.TestCase):
                     self.assertIn('viewBox="0 0 512 512"', (args.output / 'assets/images/kinosail-mark.svg').read_text())
                     app = next(item for item in graph if item['@type'] == 'SoftwareApplication')
                     self.assertEqual(app['offers'], {'@type': 'Offer', 'price': 0})
+                    self.assertTrue(app['isAccessibleForFree'])
+                    for page_path in ('index.html', 'compare/index.html', 'compare/plex/index.html',
+                                      'compare/jellyfin/index.html', 'compare/emby/index.html'):
+                        source = (args.output / page_path).read_text()
+                        faq = next(item for item in json.loads(SearchMetadata(source).blocks[0])['@graph']
+                                   if item['@type'] == 'FAQPage')
+                        self.assertGreaterEqual(len(faq['mainEntity']), 4)
+                        for question in faq['mainEntity']:
+                            self.assertIn(f'<summary>{question["name"]}</summary>', source)
+                            self.assertNotIn('<a', question['acceptedAnswer']['text'])
                     subtitles = (args.output / 'subtitles/index.html').read_text()
                     self.assertIn(f'<link rel="canonical" href="{origin}{prefix}/subtitles/">', subtitles)
                     self.assertIn(f'<meta property="og:url" content="{origin}{prefix}/subtitles/">', subtitles)
