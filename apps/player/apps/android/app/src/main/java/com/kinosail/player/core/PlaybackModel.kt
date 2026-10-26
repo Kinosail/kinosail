@@ -179,6 +179,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 }
                 val engine = ExoPlayer.Builder(getApplication<Application>())
                     .setMediaSourceFactory(PlaybackMediaSourceFactory(guarded))
+                    .setSeekBackIncrementMs(10_000).setSeekForwardIncrementMs(10_000)
                     .build()
                 engine.setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA)
                     .setContentType(if (item.kind == "video") C.AUDIO_CONTENT_TYPE_MOVIE else C.AUDIO_CONTENT_TYPE_MUSIC)

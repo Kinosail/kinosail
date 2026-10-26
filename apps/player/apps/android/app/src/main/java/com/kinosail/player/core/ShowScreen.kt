@@ -117,7 +117,7 @@ internal fun ShowScreen(showId: String, viewer: Viewer, catalog: CatalogModel, t
 @Composable
 private fun EpisodeDescription(item: CatalogItem, modifier: Modifier = Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text("S${item.season} E${item.episode} · ${item.title}", color = KinoColor.text, style = MaterialTheme.typography.titleMedium)
+        Text("S${item.season} E${item.episode} · ${item.episodeTitle}", color = KinoColor.text, style = MaterialTheme.typography.titleMedium)
         if (item.plot.isNotEmpty()) Text(item.plot, color = KinoColor.muted, style = MaterialTheme.typography.bodyMedium)
     }
 }

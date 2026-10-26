@@ -64,7 +64,9 @@ internal fun MediaArtwork(item: CatalogItem, catalog: CatalogModel, modifier: Mo
         Text(item.title.firstOrNull()?.uppercase() ?: "K", color = KinoColor.signal,
             style = MaterialTheme.typography.displayMedium, modifier = Modifier.clearAndSetSemantics { })
         image?.let { Image(it.asImageBitmap(), contentDescription = null,
-            contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize()) }
+            contentScale = if ((item.kind == "video" || item.kind == "show") && !(landscape && item.backdrop.isEmpty()) ||
+                landscape && item.kind == "photo") ContentScale.Crop
+                else ContentScale.Fit, modifier = Modifier.fillMaxSize()) }
         if (progress && item.positionLabel.isNotEmpty()) Text(interfaceText(item.positionLabel), color = KinoColor.text,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.align(Alignment.BottomStart).padding(8.dp)

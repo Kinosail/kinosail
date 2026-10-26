@@ -66,7 +66,7 @@ internal fun MediaSpotlight(item: CatalogItem, catalog: CatalogModel, eyebrow: S
     }
 }
 
-private fun Modifier.bleed(horizontal: Dp, top: Dp) = layout { measurable, constraints ->
+internal fun Modifier.bleed(horizontal: Dp, top: Dp) = layout { measurable, constraints ->
     val extra = horizontal.roundToPx() * 2
     val rise = top.roundToPx()
     val width = constraints.maxWidth + extra

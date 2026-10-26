@@ -238,8 +238,16 @@ class NativeParityJourneyTest {
         val size = card.fetchSemanticsNode().size
         val wide = homeCardWidth(tv, landscape = true).value * context.resources.displayMetrics.density
         assertTrue("Landscape fallback must keep a wide card: $size", size.width >= wide - 1)
+        if (!tv) {
+            val heading = compose.onNode(hasText("Continue watching") and !hasClickAction()).fetchSemanticsNode().boundsInRoot
+            val bounds = card.fetchSemanticsNode().boundsInRoot
+            assertEquals("Shelf cards must start at their heading edge, as on iPhone", heading.left, bounds.left, 1f)
+            val title = compose.onNode(hasText("Next Film") and hasAnyAncestor(hasContentDescription("Next Film")),
+                useUnmergedTree = true).fetchSemanticsNode().boundsInRoot
+            assertEquals("Card titles must align with their artwork, as on iPhone", bounds.left, title.left, 1f)
+        }
         compose.onNode(hasText("PG · Drama · Adventure") and hasAnyAncestor(hasContentDescription("Next Film")),
-            useUnmergedTree = true).assertExists()
+            useUnmergedTree = true).assertDoesNotExist()
         compose.onNode(hasText("Resume at 0:30") and hasAnyAncestor(hasContentDescription("Next Film")),
             useUnmergedTree = true).assertExists()
         capture("home-continuation")
@@ -345,6 +353,22 @@ class NativeParityJourneyTest {
         capture("playback-accessibility")
         compose.onNodeWithText("Speed 1×").assertIsDisplayed()
         compose.onNodeWithText("Continuing Film").assertIsDisplayed()
+        fun labels(node: android.view.accessibility.AccessibilityNodeInfo?): List<String> = if (node == null) emptyList()
+            else listOfNotNull(node.contentDescription?.toString()) + (0 until node.childCount).flatMap { labels(node.getChild(it)) }
+        var shown = emptyList<String>()
+        if ("Show player controls" in labels(uiAutomation().rootInActiveWindow)) {
+            if (tv) instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER)
+            else compose.onRoot().performTouchInput { click(center) }
+        }
+        runCatching { compose.waitUntil(10_000) {
+            shown = labels(uiAutomation().rootInActiveWindow)
+            "Pause" in shown || "Play" in shown
+        } }
+        assertTrue("Playback controls must be readable: $shown", "Pause" in shown || "Play" in shown)
+        assertTrue("Playback must not show Previous or Next track buttons, as on Apple clients: $shown",
+            "Previous" !in shown && "Next" !in shown)
+        assertTrue("Playback must skip ten seconds each way, as on Apple clients: $shown",
+            "Rewind 10 seconds" in shown && "Fast forward 10 seconds" in shown)
         instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
         waitText(if (tv) "Continue watching" else "Watching")
     }
@@ -404,6 +428,13 @@ class NativeParityJourneyTest {
         }
         else compose.onNodeWithText("Movies").activate()
         waitText("New Film")
+        if (!tv) {
+            val first = compose.onNodeWithContentDescription("New Film").fetchSemanticsNode().boundsInRoot
+            val second = compose.onNodeWithContentDescription("Continuing Film").fetchSemanticsNode().boundsInRoot
+            assertEquals("Grid cards must share a row", first.top, second.top, 1f)
+            assertTrue("Phone grids must use three iPhone-sized columns: $first",
+                first.width < 130 * context.resources.displayMetrics.density)
+        }
         capture("catalog-loaded")
     }
 
@@ -499,7 +530,7 @@ private class ParityFixture(@Volatile var mode: String) : AutoCloseable {
         .replace("\"backdrop\":\"/backdrop/next-film\"", "\"backdrop\":\"\"")
     private val series = item("0123456789abcdef", "Fixture Series", kind = "show")
         .replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"genres\"")
-    private val episodes = listOf(item("episode-one", "First episode", progress = 12), item("episode-two", "Second episode"))
+    private val episodes = listOf(item("episode-one", "S01E01 · First episode", progress = 12), item("episode-two", "S02E01 · Second episode"))
         .mapIndexed { index, item -> item.replace("\"genres\"", "\"showId\":\"0123456789abcdef\",\"season\":${index+1},\"episode\":1,\"genres\"") }
     private val song = item("song", "Night Drive", kind = "music", progress = 45)
     private val book = item("book", "A quiet crossing", kind = "book")

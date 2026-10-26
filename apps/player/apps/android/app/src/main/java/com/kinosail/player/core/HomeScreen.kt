@@ -16,7 +16,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kinosail.player.design.KinoColor
 import com.kinosail.player.design.SailBackdrop
@@ -134,7 +133,8 @@ private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolea
         val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
             else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
                 listOf("collections" to "Collections", "all" to "Library")
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(8.dp)) {
+        LazyRow(if (tv) Modifier.bleed(24.dp, 0.dp) else Modifier, horizontalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(horizontal = if (tv) 24.dp else 0.dp, vertical = 8.dp)) {
             items(views, key = { it.first }) { (view, title) ->
                 HomeAction(interfaceText(if (view == "all") "Library" else title), tv) { browse(view) }
             }
@@ -154,27 +154,11 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(interfaceText(title), style = MaterialTheme.typography.titleLarge, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(12.dp)) {
+        LazyRow(if (tv) Modifier.bleed(24.dp, 0.dp) else Modifier, horizontalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(horizontal = if (tv) 24.dp else 0.dp, vertical = 12.dp)) {
             items(items, key = CatalogItem::id) { item ->
                 val width = homeCardWidth(tv, landscape)
-                val body: @Composable () -> Unit = {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MediaArtwork(item, catalog, Modifier.fillMaxWidth(), landscape, progress = false)
-                        Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            val enlarged = androidx.compose.ui.platform.LocalDensity.current.fontScale >= 1.5f
-                            Text(item.title, style = MaterialTheme.typography.titleMedium, color = KinoColor.text, minLines = 2,
-                                maxLines = if (enlarged) Int.MAX_VALUE else 2, overflow = TextOverflow.Ellipsis)
-                            val metadata = if (item.kind in setOf("music", "audiobook")) listOf(item.artist, item.album)
-                                else listOf(if (item.showId.isNotEmpty()) "S${item.season} E${item.episode}" else "", item.rating, item.genres)
-                            metadata.filter(String::isNotEmpty).joinToString(" · ").takeIf(String::isNotEmpty)?.let {
-                                Text(it, style = MaterialTheme.typography.bodySmall, color = KinoColor.muted,
-                                    maxLines = if (enlarged) Int.MAX_VALUE else 2, overflow = TextOverflow.Ellipsis)
-                            }
-                            if (item.positionLabel.isNotEmpty()) Text(interfaceText(item.positionLabel),
-                                style = MaterialTheme.typography.bodySmall, color = KinoColor.muted)
-                        }
-                    }
-                }
+                val body: @Composable () -> Unit = { MediaCardBody(item, catalog, tv, landscape) }
                 if (tv) androidx.tv.material3.Card(onClick = { open(item) }, modifier = Modifier.width(width).semantics { contentDescription = item.title },
                     colors = androidx.tv.material3.CardDefaults.colors(containerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent), content = { body() })
