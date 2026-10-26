@@ -57,8 +57,8 @@ internal fun LibraryLoading(home: Boolean = false, tv: Boolean = false, show: Bo
                 }
             }
         } else BoxWithConstraints(Modifier.padding(if (tv) 12.dp else 0.dp)) {
-            val spacing = if (tv) 20.dp else 18.dp
-            val minimum = if (view == "photos") if (tv) 280.dp else 240.dp else if (tv) 160.dp else 144.dp
+            val spacing = if (tv) 16.dp else 12.dp
+            val minimum = if (view == "photos") if (tv) 180.dp else 240.dp else if (tv) 115.dp else 96.dp
             val columns = ((maxWidth + spacing) / (minimum + spacing)).toInt().coerceAtLeast(1)
             val width = (maxWidth - spacing * (columns - 1)) / columns
             val ratio = if (view in setOf("music", "audiobooks")) 1f else if (view == "photos") 16f / 9f else 2f / 3f

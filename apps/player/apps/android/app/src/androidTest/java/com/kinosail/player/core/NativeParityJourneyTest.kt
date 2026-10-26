@@ -192,6 +192,13 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.collectionMode = "pending"
         if (!tv) compose.onNodeWithText("More").activate()
+        if (tv) {
+            compose.onNodeWithText("Browse").performScrollTo()
+            compose.waitForIdle()
+            compose.onNode(hasScrollToNodeAction() and hasAnyChild(hasContentDescription("Movies")))
+                .performScrollToIndex(6)
+            compose.waitForIdle()
+        }
         compose.onNodeWithText("Collections").performScrollTo().activate()
         compose.waitUntil(20_000) { compose.onAllNodesWithContentDescription("Loading collections").fetchSemanticsNodes().isNotEmpty() }
         val pendingCollections = compose.onNodeWithContentDescription("Loading collections").fetchSemanticsNode().boundsInRoot
@@ -267,13 +274,20 @@ class NativeParityJourneyTest {
             useUnmergedTree = true).assertExists()
         capture("home-continuation")
         if (tv) {
+            val screen = context.resources.displayMetrics.widthPixels.toFloat()
+            assertTrue("TV landscape cards must match Apple TV proportions: ${size.width}/$screen", size.width <= screen * 0.21f)
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasContentDescription("New Film"))
+            val poster = compose.onAllNodesWithContentDescription("New Film")[0].fetchSemanticsNode().size
+            assertTrue("TV posters must match Apple TV proportions: ${poster.width}/$screen", poster.width <= screen * 0.13f)
+            compose.onAllNodesWithText("Kinosail").assertCountEquals(0)
+            compose.onNode(hasText("Browse") and !hasClickAction()).assertExists()
             compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
             compose.onNodeWithText("Search").assertIsDisplayed().activate()
             waitText("Search library")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitText("Continue watching")
             compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Unwatched movies"))
-            compose.onNodeWithText("Settings").assertIsDisplayed().activate()
+            compose.onNodeWithContentDescription("Settings").assertIsDisplayed().activate()
             waitText("Sign out")
             instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
             waitText("Continue watching")
@@ -440,7 +454,7 @@ class NativeParityJourneyTest {
         waitText(if (tv) "Continue watching" else "Watching")
         fixture.mode = "pending"
         if (tv) {
-            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse"))
             compose.onNodeWithText("Movies").performScrollTo().activate()
         }
         else compose.onNodeWithText("Movies").activate()
@@ -458,7 +472,7 @@ class NativeParityJourneyTest {
         compose.onNodeWithText("Home").activate()
         waitText(if (tv) "Continue watching" else "Watching")
         if (tv) {
-            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse library"))
+            compose.onAllNodes(hasScrollAction())[0].performScrollToNode(hasText("Browse"))
             compose.onNodeWithText("Movies").performScrollTo().activate()
         }
         else compose.onNodeWithText("Movies").activate()

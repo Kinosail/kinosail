@@ -67,9 +67,9 @@ internal fun CollectionsScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolea
             } else {
                 if (state.items.isEmpty() && state.notice == null) Text(interfaceText("This collection is empty."), color = KinoColor.muted)
                 val largeText = LocalDensity.current.fontScale >= 1.5f
-                LazyVerticalGrid(if (largeText) GridCells.Fixed(1) else GridCells.Adaptive(if (tv) 160.dp else 144.dp),
+                LazyVerticalGrid(if (largeText) GridCells.Fixed(1) else GridCells.Adaptive(if (tv) 115.dp else 96.dp),
                     modifier = Modifier.weight(1f), contentPadding = PaddingValues(if (tv) 12.dp else 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(if (tv) 20.dp else 18.dp),
+                    horizontalArrangement = Arrangement.spacedBy(if (tv) 16.dp else 12.dp),
                     verticalArrangement = Arrangement.spacedBy(28.dp)) {
                     items(state.items, key = CatalogItem::id) { item ->
                         val content: @Composable () -> Unit = {

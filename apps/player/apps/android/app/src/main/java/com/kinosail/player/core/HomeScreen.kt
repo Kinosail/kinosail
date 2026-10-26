@@ -33,7 +33,7 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
     Box(Modifier.fillMaxSize().background(KinoColor.background)) {
         SailBackdrop()
         Column(if (tv) Modifier.fillMaxSize().safeDrawingPadding() else Modifier.fillMaxSize()) {
-            if (tv) HomeHeader(listening, browse, settings)
+            if (tv) TvHomeHeader(listening, browse, settings)
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(if (tv) 48.dp else 20.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)) {
                 val header: @Composable () -> Unit = { PhoneHomeHeader(listening, browse) }
@@ -100,42 +100,24 @@ internal fun HomeScreen(viewer: Viewer, catalog: CatalogModel, tv: Boolean, nowP
     }
 }
 
-@Composable
-private fun HomeHeader(listening: Boolean, browse: (String) -> Unit, settings: () -> Unit) {
-    FlowRow(Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(if (listening) interfaceText("Listen") else "Kinosail", style = MaterialTheme.typography.headlineLarge,
-            color = KinoColor.text, modifier = Modifier.weight(1f))
-        HomeAction(interfaceText(if (listening) "Watch" else "Listen"), true) { browse(if (listening) "home" else "listen") }
-        HomeAction(interfaceText("Search"), true) { browse("search") }
-        HomeAction(interfaceText("Settings"), true, settings)
-    }
-}
-
 internal fun homeCardWidth(tv: Boolean, landscape: Boolean) =
-    if (landscape) if (tv) 390.dp else 260.dp else if (tv) 230.dp else 164.dp
+    if (landscape) if (tv) 180.dp else 260.dp else if (tv) 115.dp else 164.dp
 
 @Composable
 private fun BrowseLinks(browse: (String) -> Unit, tv: Boolean, listening: Boolean) {
+    val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
+        else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
+            listOf("collections" to "Collections", "all" to "Library")
+    if (tv) return TvBrowseTiles(views, browse)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(interfaceText("Browse library"), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = KinoColor.text,
             modifier = Modifier.semantics { heading() })
-        val views = if (listening) LIBRARY_VIEWS.filter { it.first in setOf("music", "audiobooks") }
-            else LIBRARY_VIEWS.filter { it.first in setOf("movies", "shows", "music", "audiobooks", "photos", "list") } +
-                listOf("collections" to "Collections", "all" to "Library")
-        LazyRow(if (tv) Modifier.bleed(24.dp, 0.dp) else Modifier, horizontalArrangement = Arrangement.spacedBy(18.dp),
-            contentPadding = PaddingValues(horizontal = if (tv) 24.dp else 0.dp, vertical = 8.dp)) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(18.dp), contentPadding = PaddingValues(vertical = 8.dp)) {
             items(views, key = { it.first }) { (view, title) ->
-                HomeAction(interfaceText(if (view == "all") "Library" else title), tv) { browse(view) }
+                Button(onClick = { browse(view) }) { Text(interfaceText(if (view == "all") "Library" else title)) }
             }
         }
     }
-}
-
-@Composable
-private fun HomeAction(label: String, tv: Boolean, onClick: () -> Unit) {
-    if (tv) androidx.tv.material3.Button(onClick = onClick) { androidx.tv.material3.Text(label) }
-    else Button(onClick = onClick) { Text(label) }
 }
 
 @Composable
@@ -157,4 +139,10 @@ private fun HomeShelf(title: String, items: List<CatalogItem>, catalog: CatalogM
             }
         }
     }
+}
+
+@Composable
+private fun HomeAction(label: String, tv: Boolean, onClick: () -> Unit) {
+    if (tv) androidx.tv.material3.Button(onClick = onClick) { androidx.tv.material3.Text(label) }
+    else Button(onClick = onClick) { Text(label) }
 }
