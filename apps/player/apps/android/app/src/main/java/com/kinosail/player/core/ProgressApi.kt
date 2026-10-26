@@ -27,6 +27,9 @@ class ProgressApi(server: ServerAddress,
         return WatchProgress.parse(item.getValue("progress"))
     }
 
+    fun summary(itemId: String, token: String, viewerId: String): WatchSummary =
+        WatchSummary.parse(api.item(itemId, token, viewerId, "/watch-progress"))
+
     fun sync(itemId: String, token: String, viewerId: String, progress: WatchProgress,
              expected: WatchProgress): ProgressResult {
         progress.validated(required = true)
