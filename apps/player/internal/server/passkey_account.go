@@ -17,8 +17,10 @@ func (auth *passkeyAuth) account(writer http.ResponseWriter, request *http.Reque
 	viewer := currentViewer(request)
 	passkeys := auth.profiles.passkeyInventory(viewer.ID)
 	stored, _ := auth.profiles.byID(viewer.ID)
-	data := accountPage{Passkeys: passkeys, HasPasskeys: len(passkeys) > 0, Next: "/", AccountURL: auth.origin + "/account",
-		MFAEnabled: stored.TOTPSecret != "", OIDC: auth.oidc, SAML: auth.saml, OIDCLinked: stored.OIDCSubject != "", SAMLLinked: stored.SAMLSubject != ""}
+	data := accountPage{
+		Passkeys: passkeys, HasPasskeys: len(passkeys) > 0, Next: "/", AccountURL: auth.origin + "/account",
+		MFAEnabled: stored.TOTPSecret != "", OIDC: auth.oidc, SAML: auth.saml, OIDCLinked: stored.OIDCSubject != "", SAMLLinked: stored.SAMLSubject != "",
+	}
 	if request.URL.Query().Get("setup") == "1" {
 		page = passkeyPromptView
 	} else if request.URL.Query().Get("mfa") == "required" {
