@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/MikeO7/kinosail/packages/dlna"
+	"github.com/MikeO7/kinosail/packages/library"
 )
 
 func applyPlayback(request *http.Request, settings *settingsStore, facts MediaFacts, data *playerData) {
@@ -168,4 +171,30 @@ func directVideoCodec(video VideoFacts, webm bool) string {
 		return ""
 	}
 	return "avc1." + profile + fmt.Sprintf("%02x", level)
+}
+
+func apiDirectMediaType(item library.Item, facts MediaFacts) string {
+	if value := directMediaType(item.Path, facts); value != "" {
+		return value
+	}
+	return dlna.MediaType(item)
+}
+
+func (result *apiPlayback) withLists() *apiPlayback {
+	if result.Audio == nil {
+		result.Audio = []apiAudioTrack{}
+	}
+	if result.Chapters == nil {
+		result.Chapters = []chapter{}
+	}
+	if result.Markers == nil {
+		result.Markers = []playbackMarker{}
+	}
+	if result.AutoSkip == nil {
+		result.AutoSkip = []string{}
+	}
+	if result.Subtitles == nil {
+		result.Subtitles = []subtitleTrack{}
+	}
+	return result
 }

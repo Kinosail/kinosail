@@ -9,6 +9,8 @@ import (
 	"unicode/utf8"
 )
 
+const maximumProbeTracks = 64
+
 func parseStreams(streams []probeStream) ([]string, VideoFacts, []AudioFacts, []SubtitleFacts, []AudioTrack) {
 	parts, video, audioFacts, subtitleFacts, audio := make([]string, 0), VideoFacts{}, make([]AudioFacts, 0), make([]SubtitleFacts, 0), make([]AudioTrack, 0)
 	for _, stream := range streams {
@@ -22,9 +24,12 @@ func parseStreams(streams []probeStream) ([]string, VideoFacts, []AudioFacts, []
 	}
 	for _, stream := range streams {
 		if stream.CodecType != "audio" {
-			if stream.CodecType == "subtitle" {
+			if stream.CodecType == "subtitle" && len(subtitleFacts) < maximumProbeTracks {
 				subtitleFacts = append(subtitleFacts, subtitleFactsFor(stream, len(subtitleFacts)))
 			}
+			continue
+		}
+		if len(audio) >= maximumProbeTracks {
 			continue
 		}
 		index := len(audio)

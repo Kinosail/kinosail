@@ -38,7 +38,7 @@ type apiPlayback struct {
 	Download                string            `json:"download,omitempty"`
 	DirectType              string            `json:"directType,omitempty"`
 	Summary                 string            `json:"summary,omitempty"`
-	Duration                float64           `json:"duration,omitempty"`
+	Duration                float64           `json:"duration"`
 	Start                   float64           `json:"start,omitempty"`
 	Audio                   []apiAudioTrack   `json:"audio"`
 	Chapters                []chapter         `json:"chapters"`
@@ -155,7 +155,7 @@ func apiPlaybackInfo(api apiServices) http.HandlerFunc {
 		if result.Download != "" {
 			result.DownloadNext = nextEpisode(request, api.index, item)
 		}
-		writeJSON(writer, result, http.StatusOK)
+		writeJSON(writer, result.withLists(), http.StatusOK)
 	}
 }
 
@@ -164,7 +164,7 @@ func (api apiServices) applyPlaybackSources(result *apiPlayback, item library.It
 	if canStream && plan.MarkerMode != "server" && !effects {
 		result.DirectAllowed = true
 		result.Direct = "/media/" + item.ID
-		result.DirectType = directMediaType(item.Path, facts)
+		result.DirectType = apiDirectMediaType(item, facts)
 		result.Subtitles = playbackSubtitleChoices(item, media, api.settings.subtitleDefaults(media, preferences.SubtitleLanguage))
 	}
 	if canStream && item.Kind == "video" {

@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 
+	"github.com/MikeO7/kinosail/packages/library"
 	"github.com/MikeO7/kinosail/packages/markers"
 	"github.com/MikeO7/kinosail/packages/metadata"
 )
@@ -104,7 +105,8 @@ func validMarkerRange(marker markers.Marker) bool {
 func TimelineChapters(timeline Timeline, values []metadata.Chapter) []metadata.Chapter {
 	result := make([]metadata.Chapter, 0, len(values))
 	for _, chapter := range values {
-		chapter.Start, chapter.End = timeline.PresentationTime(chapter.Start), timeline.PresentationTime(chapter.End)
+		chapter.Start, chapter.End = min(timeline.Duration, timeline.PresentationTime(chapter.Start)), min(timeline.Duration, timeline.PresentationTime(chapter.End))
+		chapter.Title = library.RepairedText(chapter.Title)
 		if chapter.End > chapter.Start {
 			chapter.Index = len(result)
 			result = append(result, chapter)
@@ -171,10 +173,7 @@ func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, star
 		response.SetPlaybackTimeline(plan.Timeline.Duration, plan.Timeline.PresentationTime(start), TimelineChapters(plan.Timeline, chapters), RemainingMarkers(bounded, enabled, plan.Timeline), []string{}, progressToken())
 		return normalized
 	}
-	if duration > 0 {
-		chapters = TimelineChapters(Timeline{SourceDuration: duration, Duration: duration}, chapters)
-	}
-	response.SetPlaybackTimeline(duration, AutomaticStart(start, duration, values, enabled), chapters, bounded, autoSkip, "")
+	response.SetPlaybackTimeline(duration, AutomaticStart(start, duration, values, enabled), TimelineChapters(Timeline{SourceDuration: duration, Duration: duration}, chapters), bounded, autoSkip, "")
 	return normalized
 }
 

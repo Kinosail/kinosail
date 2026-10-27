@@ -44,13 +44,8 @@ func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recip
 		if options.ToneMapInput == "hdr10+" {
 			options.ToneMapInput = "hdr10"
 		}
-		if facts.Video.HDR == "dolby-vision" {
-			if facts.Video.DolbyVisionCompatibility == 1 {
-				options.ToneMapInput = "hdr10"
-			}
-			if facts.Video.DolbyVisionCompatibility == 4 {
-				options.ToneMapInput = "hlg"
-			}
+		if base := DolbyVisionBaseLayer(facts.Video); base != "" {
+			options.ToneMapInput = base
 		}
 	}
 	options.Deinterlace = Interlaced(facts.Video)
@@ -58,15 +53,6 @@ func SourceTranscoding(options transcodepolicy.Settings, facts MediaFacts, recip
 	options.DecodeInput = transcodepolicy.DecodeInput(facts.Video.Codec, facts.Video.BitDepth)
 	options.HardwareDecode = transcodepolicy.HardwareDecodeAvailable(options) && !options.Deinterlace && !options.SoftwareFilters
 	return options
-}
-
-func oneOfInt(value int, allowed ...int) bool {
-	for _, candidate := range allowed {
-		if value == candidate {
-			return true
-		}
-	}
-	return false
 }
 
 func validHLSRecipeBounds(recipe HLSRecipe, sidecarCount int) bool {
@@ -126,7 +112,7 @@ func validateHLSVideo(recipe HLSRecipe, facts MediaFacts) error {
 		if !validRemuxAudio(recipe, facts.Audio) {
 			return ErrHLSSource
 		}
-	} else if facts.Video.HDR == "dolby-vision" && !oneOfInt(facts.Video.DolbyVisionCompatibility, 1, 4) {
+	} else if dolbyVisionNeedsConversion(facts.Video) {
 		return errors.New("this Dolby Vision conversion is unsupported")
 	}
 	if recipe.ToneMap && (facts.Video.HDR == "" || facts.Video.HDR == "sdr") {

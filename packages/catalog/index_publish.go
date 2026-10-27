@@ -98,7 +98,7 @@ func (index *Index) compose(raw []library.Item) []library.Item {
 	if decorate != nil {
 		items = decorate(items)
 	}
-	return items
+	return library.WithVisibleText(items)
 }
 
 func (index *Index) pruneEnriched() {

@@ -236,7 +236,7 @@ func convertedVideoFacts(plan PlaybackPlan, source VideoFacts) VideoFacts {
 }
 
 func validOutputCodec(client ClientCapabilities, plan PlaybackPlan, source VideoFacts) bool {
-	if !transcodepolicy.ValidCodec(plan.VideoCodec) || plan.VideoCodec == "auto" || source.HDR == "dolby-vision" && !oneOfInt(source.DolbyVisionCompatibility, 1, 4) {
+	if !transcodepolicy.ValidCodec(plan.VideoCodec) || plan.VideoCodec == "auto" || dolbyVisionNeedsConversion(source) {
 		return false
 	}
 	if len(client.DeliveryProfiles) == 0 && len(client.VideoCodecs) > 0 && !Includes(client.VideoCodecs, plan.VideoCodec) {
