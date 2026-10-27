@@ -1,4 +1,4 @@
-#if os(tvOS) && targetEnvironment(simulator)
+#if targetEnvironment(simulator)
 import Foundation
 import Testing
 @testable import KinosailPlayer

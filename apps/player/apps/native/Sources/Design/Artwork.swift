@@ -47,22 +47,20 @@ struct Artwork: View {
                 if image == nil, let cached = session.artwork.cachedImage(path: path, client: client, dimension: dimension) { image = cached }
                 loading = image == nil
                 defer { if generation == attempt { loading = false } }
-                for delay in Self.retryDelays {
-                    do {
-                        let decoded = try await session.artwork.image(path: path, client: client, dimension: dimension)
-                        try Task.checkCancellation()
-                        guard generation == attempt, decoded !== image else { return }
+                for failures in 0... {
+                    let decoded = try? await session.artwork.image(path: path, client: client, dimension: dimension)
+                    guard generation == attempt, !Task.isCancelled else { return }
+                    if let decoded {
+                        guard decoded !== image else { return }
                         withAnimation(isBackdrop && !reduceMotion ? .easeInOut(duration: 0.45) : nil) {
                             image = decoded
                             imageIdentity = UUID()
                         }
                         return
-                    } catch {
-                        guard generation == attempt, !Task.isCancelled, !(error is CancellationError) else { return }
-                        if image != nil { return }
-                        guard let delay else { return }
-                        do { try await Task.sleep(for: delay) } catch { return }
                     }
+                    if image != nil { return }
+                    if failures >= Self.retryDelays.count { loading = false }
+                    do { try await Task.sleep(for: Self.retryDelay(after: failures)) } catch { return }
                 }
             }
     }
@@ -74,7 +72,11 @@ struct Artwork: View {
         }
     }
 
-    static let retryDelays: [Duration?] = [.seconds(1), .seconds(3), .seconds(8), .seconds(20), nil]
+    static let retryDelays: [Duration] = [.seconds(1), .seconds(3), .seconds(8), .seconds(20)]
+
+    static func retryDelay(after failures: Int) -> Duration {
+        failures < retryDelays.count ? retryDelays[failures] : .seconds(30)
+    }
 
     static func contentMode(fillsFrame: Bool) -> ContentMode {
         fillsFrame ? .fill : .fit

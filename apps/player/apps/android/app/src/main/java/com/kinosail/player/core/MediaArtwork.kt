@@ -44,8 +44,9 @@ internal fun rememberArtwork(catalog: CatalogModel, path: String, dimension: Int
     val image = produceState<android.graphics.Bitmap?>(null, path, catalog, dimension, retry) {
         if (path.isEmpty()) { value = null; return@produceState }
         catalog.artwork(path, dimension)?.let { value = it; return@produceState }
-        for (delay in artworkRetryDelays) {
-            kotlinx.coroutines.delay(delay)
+        var failures = 0
+        while (true) {
+            kotlinx.coroutines.delay(artworkRetryDelays.getOrElse(failures++) { 30_000L })
             catalog.artwork(path, dimension)?.let { value = it; return@produceState }
         }
     }

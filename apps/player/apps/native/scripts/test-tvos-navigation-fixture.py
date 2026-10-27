@@ -57,7 +57,9 @@ class NavigationFixtureTests(unittest.TestCase):
     def test_invalid_state_preserves_mode_and_viewer(self):
         for query in ["mode=unknown", "mode=failed&mode=loaded", "delay=-1", "delay=inf",
                       "delay=31", "profile=production", "target=unknown", "extra=1", "mode=%GG",
-                      "target=connection&mode=empty", "target=connection&delay=1"]:
+                      "target=connection&mode=empty", "target=connection&delay=1",
+                      "target=artwork&delay=45", "target=artwork&mode=failed",
+                      "target=artwork&mode=failed&delay=91", "target=artwork&mode=failed&delay=nan"]:
             before = dict(self.fixture.STATE), dict(self.fixture.VIEWER["viewer"])
             with self.subTest(query=query):
                 self.assertEqual(self.request("GET", "/qa/state?" + query)[0][0], 400)
@@ -82,6 +84,27 @@ class NavigationFixtureTests(unittest.TestCase):
             self.assertEqual(status, 200)
             self.assertEqual(restored["item"], original_items[4])
             self.assertEqual(self.fixture.ITEMS, original_items)
+        finally:
+            self.fixture.STATE.clear()
+            self.fixture.STATE.update(original_state)
+
+    def test_artwork_outage_fails_only_posters_until_it_ends(self):
+        original_state = dict(self.fixture.STATE)
+        try:
+            with patch.object(self.fixture.time, "time", return_value=1000.0):
+                self.assertEqual(self.request("GET", "/qa/state?mode=failed&target=artwork&delay=45")[0][0], 200)
+            with patch.object(self.fixture.time, "sleep"), patch.object(sys, "stdout", io.StringIO()) as output:
+                with patch.object(self.fixture.time, "time", return_value=1044.0):
+                    self.assertEqual(self.request("GET", "/art/movie-004", authorized=True)[0][0], 404)
+                    self.assertEqual(self.request("GET", "/backdrop/movie-004", authorized=True)[0][0], 200)
+                    self.assertEqual(self.request("GET", "/art/movie-004")[0][0], 401)
+                with patch.object(self.fixture.time, "time", return_value=1045.0):
+                    self.assertEqual(self.request("GET", "/art/movie-004", authorized=True)[0][0], 200)
+            receipts = [json.loads(line.split(" ", 1)[1]) for line in output.getvalue().splitlines()
+                        if line.startswith("ARTWORK_OUTAGE_RESPONSE ")]
+            self.assertEqual(receipts, [dict(path="/art/movie-004", status=404, unixTime=1044.0)])
+            self.assertEqual(self.request("GET", "/qa/state?mode=loaded&target=library")[0][0], 200)
+            self.assertEqual(self.fixture.STATE["artworkUntil"], 0)
         finally:
             self.fixture.STATE.clear()
             self.fixture.STATE.update(original_state)
