@@ -171,6 +171,9 @@ func ApplyAPIPlaybackTimeline(response TimelineResponse, plan PlaybackPlan, star
 		response.SetPlaybackTimeline(plan.Timeline.Duration, plan.Timeline.PresentationTime(start), TimelineChapters(plan.Timeline, chapters), RemainingMarkers(bounded, enabled, plan.Timeline), []string{}, progressToken())
 		return normalized
 	}
+	if duration > 0 {
+		chapters = TimelineChapters(Timeline{SourceDuration: duration, Duration: duration}, chapters)
+	}
 	response.SetPlaybackTimeline(duration, AutomaticStart(start, duration, values, enabled), chapters, bounded, autoSkip, "")
 	return normalized
 }
