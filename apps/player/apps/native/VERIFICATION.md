@@ -1,5 +1,41 @@
 # Swift Apple verification
 
+## Posters return after a failed load — 2026-10-26
+
+A poster that failed to load stayed a film icon until the app went to the background. The card retried four times in about 32 seconds, then stopped. It retried again only when the app returned to the foreground or the Server came back after being marked unreachable. A 404, a loader cancellation, or a timeout while other requests succeeded left the icon on screen. A Server log showed `/art/{id}` 404s from the iPhone app while the poster files were present. Now a card keeps retrying every 30 seconds while it is on screen. A loader cancellation that the card did not cause also counts as a failure to retry. The Android app had the same four-retry limit and gets the same change.
+
+**Revision.** Baseline: `aa9928cc` (main). New: the task commit on `mikeo/artwork-recovery`. Xcode 27.1.
+
+**Test data.** `scripts/tvos-navigation-fixture.py` (160 generated titles) with a generated 30-second `testsrc2` MP4 (SHA-256 `aa51ca917d5dc0787a01f7e9e1613b52b23693ffbf3ded60b4ee2154565a6aa2`). The new state `target=artwork&mode=failed&delay=60` returns 404 for every `/art/` poster for 60 seconds. Backdrops still load. `Tests/TVQualitySessionSeed.swift` now also seeds iPhone simulators.
+
+**Commands.** On a new iPhone 18 Pro Max simulator (iOS 27.0):
+
+1. Start the fixture with the MP4.
+2. Seed the session: `xcodebuild -scheme Kinosail-iOS -only-testing:Kinosail-iOSTests/TVQualitySessionSeed test`, with `TEST_RUNNER_KINOSAIL_TV_QUALITY_SEED=1`, `TEST_RUNNER_KINOSAIL_TV_QUALITY_FIXTURE_MODE=loaded` and `TEST_RUNNER_KINOSAIL_TV_QUALITY_FIXTURE_ID=tv-polish-qa-ios-artwork`.
+3. Before each run, stop the app and delete `Library/Caches/KinosailMediaCache` and `Library/Caches/com.kinosail.player` in its data container. A cached poster hides the outage.
+4. Run `xcodebuild -scheme Kinosail-iOS-Touch -only-testing:Kinosail-iOSTouchUITests/ArtworkRecoveryTouchTests test` with `TEST_RUNNER_KINOSAIL_TV_FIXTURE_QA=1` and the same fixture ID.
+
+The test opens Movies during the outage and samples the **After the Rain** poster.
+
+| Check | Baseline `aa9928cc` | New (two runs) |
+| --- | --- | --- |
+| Poster at 55 s, during the outage | Film icon (0% poster pixels) | Film icon (0%) |
+| Poster after the outage ends at 60 s | Still a film icon at 131 s (0%) | Poster at 73 s and 75 s (55%) |
+| Other posters on screen | Film icons | Posters, except the fixture title with no image |
+
+Android: `./gradlew :app:testDebugUnitTest --tests com.kinosail.player.core.ArtworkRecoveryTest` (Robolectric, a local HTTP fixture and virtual time). Baseline: 5 poster requests, then no more, and no poster. New: a sixth request after 30 seconds loads the poster.
+
+Apple TV uses the same Swift artwork view. In the tvOS fixture a 500 outage did not reproduce the failure, because the library refresh marked the Server reachable again and the cards retried. The 404 outage was not run on Apple TV. Not run: physical iPhone, Apple TV or Android devices, and the Nox Server.
+
+| File | SHA-256 |
+| --- | --- |
+| baseline iPhone log | `37492e3c30a54120bef64b3f3e46a1fc6923ed6c876c111669f12cb8bff78129` |
+| new iPhone log, run 1 | `7a7fa427b6044311d1acc3ca43ea929b4a1e395b3da445e4f01dd3964b87622b` |
+| new iPhone log, run 2 | `966167bff3a45616c58b29d0d334170a41196774d7e7de0a4b08b9e14968c7b6` |
+| baseline after-outage screenshot | `55152a83f0a7a22fbe89c594cefdd6e22032bdc96b5432403c7fec32718b372f` |
+| new after-outage screenshot | `efc5294ad1e3c9b65c4ce7c7091e62da23de6c35e38df66aa3535c1ba5c97024` |
+| Android recovered capture | `d41ea566d266bfaf50cccb59c4058cb34cb2dda544d1d8f78f1abd4495e7fdda` |
+
 ## Apple TV player controls and title preferences — 2026-10-25
 
 The Apple TV transport bar no longer has a separate **Seek with preview** button; scrubbing uses the system scrub bar. **This title’s preferences** now shows each value on its own row, saves changes automatically, drops the Downloads note (Apple TV has no downloads), and shows **Use profile defaults** only when the title has its own preferences. The status sentence is a footer, not a focusable row.

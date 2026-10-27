@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from PIL import Image, ImageDraw
 from io import BytesIO
-STATE = {'mode': 'loaded', 'delay': 0, 'target': 'library'}
+STATE = {'mode': 'loaded', 'delay': 0, 'target': 'library', 'artworkUntil': 0}
 PLAY = dict(rate=1, audioLanguage='auto', subtitleLanguage='auto', audioTrack='', subtitleTrack='', nightMode=False, dialogueBoost=False, volumeBoost=1)
 VIEWER = {'server':'TV Polish QA','serverId':'tv-polish-qa','viewer':dict(id='qa',name='QA Viewer',owner=True,downloads=True,transcode=True,remote=False)}
 PROGRESS = dict(seconds=0,watched=False,session='',revision=0)
@@ -79,12 +79,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not set(q) <= {'mode','delay','target','profile','identity'} or any(len(v)!=1 for v in q.values()): raise ValueError()
                 mode=q.get('mode',['loaded'])[0]; delay=float(q.get('delay',['0'])[0]); target=q.get('target',['library'])[0]
                 identity=q.get('identity',[VIEWER['serverId']])[0]
-                if mode not in ['loaded','empty','failed'] or target not in ['library','details','shows','playback','media','connection']: raise ValueError()
+                if mode not in ['loaded','empty','failed'] or target not in ['library','details','shows','playback','media','connection','artwork']: raise ValueError()
                 if target=='connection' and (mode=='empty' or delay!=0): raise ValueError()
-                if not math.isfinite(delay) or not 0 <= delay <= 30 or q.get('profile',['qa'])[0] != 'qa': raise ValueError()
+                if target=='artwork' and (mode!='failed' or not 0 < delay <= 90): raise ValueError()
+                if not math.isfinite(delay) or not 0 <= delay <= (90 if target=='artwork' else 30) or q.get('profile',['qa'])[0] != 'qa': raise ValueError()
                 if not re.fullmatch(r'tv-polish-qa(?:-[a-z0-9-]{1,64})?',identity): raise ValueError()
             except (ValueError, UnicodeError): return self.send(400,{'error':'invalid fixture state'})
-            STATE.update(mode=mode,delay=delay,target=target); VIEWER['serverId']=identity
+            STATE.update(mode=mode,delay=delay,target=target,artworkUntil=time.time()+delay if target=='artwork' else 0); VIEWER['serverId']=identity
             return self.send(200,STATE)
         if self.headers.get('Authorization')!='Bearer tv-polish-fixture-token': return self.send(401,{'error':'fixture token required'})
         if STATE['target']=='connection' and STATE['mode']=='failed':
@@ -117,6 +118,9 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(200,dict(items=entries[offset:offset+limit],total=len(entries),offset=offset,limit=limit,letters=letters,view=view,sort=sort,query=query))
         if path.startswith(('/art/','/backdrop/','/episode-art/')):
             if path.endswith('movie-005'): return self.send(404,{'error':'missing image'})
+            if path.startswith('/art/') and time.time()<STATE['artworkUntil']:
+                print('ARTWORK_OUTAGE_RESPONSE',json.dumps(dict(path=path,status=404,unixTime=time.time())),flush=True)
+                return self.send(404,{'error':'simulated artwork outage'})
             time.sleep(.1); return self.send(200,artwork(path),'image/jpeg')
         if path=='/api/v1/albums': return self.send(200,{'albums':[dict(id='evening',title='Evening Light',artist='Signal Lab',artwork='/art/music')]})
         if path=='/api/v1/albums/evening': return self.send(200,dict(id='evening',title='Evening Light',artist='Signal Lab',tracks=[next(i for i in ITEMS if i['id']=='music')]))
