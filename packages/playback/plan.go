@@ -87,7 +87,21 @@ func conversionFailure(plan PlaybackPlan, facts MediaFacts, audioOnly bool) stri
 }
 
 func dolbyVisionNeedsConversion(video VideoFacts) bool {
-	return video.HDR == "dolby-vision" && video.DolbyVisionCompatibility != 1 && video.DolbyVisionCompatibility != 4
+	return video.HDR == "dolby-vision" && DolbyVisionBaseLayer(video) == ""
+}
+
+func DolbyVisionBaseLayer(video VideoFacts) string {
+	switch {
+	case video.HDR != "dolby-vision":
+		return ""
+	case video.DolbyVisionCompatibility == 1:
+		return "hdr10"
+	case video.DolbyVisionCompatibility == 4:
+		return "hlg"
+	case video.DolbyVisionProfile != 8 || video.DolbyVisionCompatibility != 0:
+		return ""
+	}
+	return map[string]string{"smpte2084": "hdr10", "arib-std-b67": "hlg"}[Lower(video.Transfer)]
 }
 
 type compatibility struct {
