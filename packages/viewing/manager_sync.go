@@ -94,7 +94,7 @@ func (manager *Manager) RunSync(ctx context.Context, id string) (SyncView, error
 	case <-ctx.Done():
 		return SyncView{}, errors.New("viewing activity sync was canceled")
 	default:
-		return SyncView{}, errors.New("viewing activity sync capacity is in use")
+		return SyncView{}, ErrSyncCapacity
 	}
 	return manager.runReserved(ctx, id)
 }
@@ -104,11 +104,11 @@ func (manager *Manager) runReserved(ctx context.Context, id string) (SyncView, e
 	sync, found := manager.syncs[id]
 	if !found {
 		manager.mu.Unlock()
-		return SyncView{}, errors.New("viewing activity sync was not found")
+		return SyncView{}, ErrSyncNotFound
 	}
 	if sync.Running {
 		manager.mu.Unlock()
-		return SyncView{}, errors.New("viewing activity sync is already running")
+		return SyncView{}, ErrSyncRunning
 	}
 	sync.Running, sync.Queued = true, false
 	manager.syncs[id] = sync
@@ -274,7 +274,7 @@ func (manager *Manager) RemoveSync(id string) error {
 	manager.mu.Lock()
 	defer manager.mu.Unlock()
 	if _, found := manager.syncs[id]; !found {
-		return errors.New("viewing activity sync was not found")
+		return ErrSyncNotFound
 	}
 	syncs := CloneSyncs(manager.syncs)
 	delete(syncs, id)

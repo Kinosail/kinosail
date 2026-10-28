@@ -1,6 +1,25 @@
 package viewing
 
-import "net/http"
+import (
+	"errors"
+	"net/http"
+)
+
+var (
+	ErrSyncNotFound = errors.New("viewing activity sync was not found")
+	ErrSyncRunning  = errors.New("viewing activity sync is already running")
+	ErrSyncCapacity = errors.New("viewing activity sync capacity is in use")
+)
+
+func SyncRunStatus(err error) int {
+	switch {
+	case errors.Is(err, ErrSyncNotFound):
+		return http.StatusNotFound
+	case errors.Is(err, ErrSyncRunning), errors.Is(err, ErrSyncCapacity):
+		return http.StatusConflict
+	}
+	return http.StatusBadGateway
+}
 
 type HTTPHandlers interface {
 	APIPreview(http.ResponseWriter, *http.Request)
