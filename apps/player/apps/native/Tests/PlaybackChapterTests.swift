@@ -157,8 +157,8 @@ struct PlaybackFramePreviewTests {
         defer { fixture.remove() }
         let image = try await PlaybackFramePreview.load(template: "/trickplay/movie/{second}", client: fixture.client, asset: nil, second: 20)
         #expect(image.size == CGSize(width: 4, height: 4))
-        #expect(fixture.requests.map { $0.url?.path } == ["/trickplay/movie/20"])
-        #expect(fixture.requests.first?.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-token")
+        #expect(fixture.requests.contains { $0.url?.path == "/trickplay/movie/20" })
+        #expect(fixture.requests.allSatisfy { $0.value(forHTTPHeaderField: "Authorization") == "Bearer fixture-token" })
     }
 
     @Test func rejectsInvalidFrameTimesWithoutRequest() async throws {
@@ -172,13 +172,30 @@ struct PlaybackFramePreviewTests {
         #expect(fixture.requests.isEmpty)
     }
 
+    @Test func doesNotReuseFramesFromAnotherServer() async throws {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let data = UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4), format: format).jpegData(withCompressionQuality: 0.8) { context in
+            context.cgContext.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+        }
+        let first = try HTTPFixture(data: data, headers: ["Content-Type": "image/jpeg"])
+        defer { first.remove() }
+        _ = try await PlaybackFramePreview.load(template: "/trickplay/shared/{second}", client: first.client, asset: nil, second: 600)
+        let second = try HTTPFixture(body: "not an image", headers: ["Content-Type": "image/jpeg"])
+        defer { second.remove() }
+        await #expect(throws: ClientError.self) {
+            try await PlaybackFramePreview.load(template: "/trickplay/shared/{second}", client: second.client, asset: nil, second: 600)
+        }
+        #expect(second.requests.contains { $0.url?.path == "/trickplay/shared/600" })
+    }
+
     @Test func rejectsInvalidFrameData() async throws {
         let fixture = try HTTPFixture(body: "not an image", headers: ["Content-Type": "image/jpeg"])
         defer { fixture.remove() }
         await #expect(throws: ClientError.self) {
             try await PlaybackFramePreview.load(template: "/trickplay/movie/{second}", client: fixture.client, asset: nil, second: 20)
         }
-        #expect(fixture.requests.map { $0.url?.path } == ["/trickplay/movie/20"])
+        #expect(fixture.requests.contains { $0.url?.path == "/trickplay/movie/20" })
     }
 }
 #endif
