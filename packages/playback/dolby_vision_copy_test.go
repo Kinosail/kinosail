@@ -25,9 +25,11 @@ func TestDolbyVisionWithAnHDR10BaseLayerIsCopiedForHDR10Clients(t *testing.T) {
 		{"profile 5 has no base layer", 5, 0, "smpte2084", appleTV, "denied", "tone-map-sdr", ""},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			facts := MediaFacts{Kind: "video", Container: "mkv", Duration: 60, Bitrate: 20_000_000,
+			facts := MediaFacts{
+				Kind: "video", Container: "mkv", Duration: 60, Bitrate: 20_000_000,
 				Video: VideoFacts{Codec: "hevc", Width: 3840, Height: 2160, BitDepth: 10, PixelFormat: "yuv420p10le", HDR: "dolby-vision", Transfer: test.transfer, DolbyVisionProfile: test.profile, DolbyVisionCompatibility: test.compat},
-				Audio: []AudioFacts{{Index: 0, Codec: "eac3", Channels: 6}}}
+				Audio: []AudioFacts{{Index: 0, Codec: "eac3", Channels: 6}},
+			}
 			plan := Decide(facts, test.client, policy, NetworkIntent{PreferCompatibility: true}, DecisionPolicy{})
 			if plan.Allowed == (test.mode == "denied") || plan.Mode != test.mode || plan.ColorMode != test.color {
 				t.Fatalf("plan = %s %s %s; want %s %s", plan.Mode, plan.ColorMode, plan.Reason, test.mode, test.color)
