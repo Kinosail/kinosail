@@ -58,6 +58,7 @@ func (manager *hlsManager) serveRecipe(writer http.ResponseWriter, request *http
 		return
 	}
 	projection = manager.iframeProjection(request, item, recipe, name, duration, projection)
+	projection = manager.stableCopiedProjection(request.Context(), item, recipe, key, localName, duration, projection)
 	if filepath.Ext(name) == ".m3u8" && serveHLSPlaylistWithSession(writer, request, path, start, hlsPlaybackDuration(recipe, duration), projection) {
 		return
 	}

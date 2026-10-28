@@ -21,6 +21,7 @@ type copiedHLSMetadata struct {
 	gate      chan struct{}
 	endpoints map[string]copiedHLSEndpoint
 	verified  map[string]copiedHLSVerifiedAssets
+	lateAudio map[string]bool
 }
 
 type copiedHLSEndpoint struct {

@@ -73,6 +73,8 @@ type HLSCodecInput struct {
 	AudioOnly                                 bool
 	Arguments, Video, Compatibility           []string
 	ItemPath, VideoRate, AudioRate, CopyInput string
+	DolbyVisionCodec                          string
+	RemuxAudio                                []string
 	Recipe                                    HLSRecipe
 	Policy                                    HLSRecipePolicy
 }
@@ -91,7 +93,7 @@ func HLSCodecArguments(input HLSCodecInput) ([]string, error) {
 	case "audio-transcode":
 		arguments = append(arguments, "-map", input.CopyInput+":v:0", "-map", "0:a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
 		arguments = append(arguments, AudioFilterArguments(input.Recipe, input.Policy)...)
-		arguments = append(arguments, "-c:v", "copy", "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
+		arguments = append(append(arguments, copiedVideoArguments(input)...), "-c:a", "aac", "-ac", "2", "-b:a", input.AudioRate)
 	case "transcode":
 		return transcodeCodecArguments(input, arguments)
 	default:
@@ -104,7 +106,27 @@ func remuxCodecArguments(input HLSCodecInput, arguments []string) ([]string, err
 	if input.Recipe.DialogueBoost || input.Recipe.NormalizeLoudness {
 		return nil, errors.New("audio effects require audio conversion")
 	}
-	return append(arguments, "-map", input.CopyInput+":v:0", "-map", input.CopyInput+":a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn", "-c:v", "copy", "-c:a", "copy"), nil
+	audio := input.RemuxAudio
+	if len(audio) == 0 {
+		audio = []string{"-c:a", "copy"}
+	}
+	arguments = append(arguments, "-map", input.CopyInput+":v:0", "-map", input.CopyInput+":a:"+strconv.Itoa(input.Recipe.Audio)+"?", "-sn")
+	return append(append(arguments, copiedVideoArguments(input)...), audio...), nil
+}
+
+func copiedVideoArguments(input HLSCodecInput) []string {
+	tag, found := map[string]string{"hevc": "hvc1", "av1": "av01"}[input.DolbyVisionCodec]
+	if !found {
+		return []string{"-c:v", "copy"}
+	}
+	return []string{"-c:v", "copy", "-bsf:v", "dovi_rpu=strip=1", "-tag:v", tag}
+}
+
+func DolbyVisionCopyCodec(video VideoFacts) string {
+	if DolbyVisionBaseLayer(video) == "" {
+		return ""
+	}
+	return Lower(video.Codec)
 }
 
 func transcodeCodecArguments(input HLSCodecInput, arguments []string) ([]string, error) {
