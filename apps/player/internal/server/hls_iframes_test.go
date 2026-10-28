@@ -55,7 +55,7 @@ func TestRealIFramePlaylistGivesAppleScrubbingThumbnails(t *testing.T) {
 		t.Fatalf("I-frame fragment 300 decodes as %q (%v); want one 320x180 key frame at 300 s", probe, err)
 	}
 	matching, earlier := iframePSNR(t, ctx, ffmpeg, frame, source, 300), iframePSNR(t, ctx, ffmpeg, frame, source, 290)
-	if matching < 25 || matching < earlier+5 {
+	if matching < 35 || matching < earlier+15 {
 		t.Fatalf("I-frame at 300 s matches source 300 s at %.1f dB and 290 s at %.1f dB", matching, earlier)
 	}
 	cached := iframeCacheFiles(t, cache)
@@ -79,7 +79,7 @@ func TestRealIFramePlaylistGivesAppleScrubbingThumbnails(t *testing.T) {
 func iframePSNR(t *testing.T, ctx context.Context, ffmpeg, frame, source string, second int) float64 {
 	t.Helper()
 	output, err := exec.CommandContext(ctx, ffmpeg, "-hide_banner", "-nostdin", "-i", frame, "-ss", strconv.Itoa(second), "-i", source,
-		"-lavfi", "[1:v]scale=320:180,setsar=1[reference];[0:v][reference]psnr", "-frames:v", "1", "-f", "null", "-").CombinedOutput()
+		"-lavfi", "[0:v]setpts=0[frame];[1:v]trim=end_frame=1,scale=320:180,setsar=1,setpts=0[reference];[frame][reference]psnr", "-frames:v", "1", "-f", "null", "-").CombinedOutput()
 	match := regexp.MustCompile(`PSNR .* average:([0-9.]+|inf)`).FindSubmatch(output)
 	if err != nil || match == nil {
 		t.Fatalf("compare I-frame with source %d s: %v: %s", second, err, output)
