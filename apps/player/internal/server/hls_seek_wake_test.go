@@ -56,7 +56,9 @@ while :; do sleep .02; done
 	if err := os.Mkdir(stamps, 0o700); err != nil {
 		t.Fatal(err)
 	}
-	handler, id := firstWebItem(t, server.Config{Lifecycle: t.Context(), MediaDir: media, CacheDir: cache, FFprobe: ffprobe, FFmpeg: ffmpeg})
+	lifecycle, stop := context.WithCancel(t.Context())
+	t.Cleanup(func() { stop(); settleDirectory(t, cache) })
+	handler, id := firstWebItem(t, server.Config{Lifecycle: lifecycle, MediaDir: media, CacheDir: cache, FFprobe: ffprobe, FFmpeg: ffmpeg})
 	base := "/hls/" + id + "/p/t-a0-s0-none-t0-b0/"
 	master := httptest.NewRecorder()
 	handler.ServeHTTP(master, httptest.NewRequestWithContext(t.Context(), http.MethodGet, base+"index.m3u8", nil))
@@ -84,6 +86,19 @@ while :; do sleep .02; done
 	t.Logf("seek response after segment publication: median = %v, latencies = %v", latencies[len(latencies)/2], latencies)
 	if median := latencies[len(latencies)/2]; median > 5*time.Millisecond {
 		t.Fatalf("median seek response after publication = %v, latencies = %v", median, latencies)
+	}
+}
+
+func settleDirectory(t *testing.T, directory string) {
+	t.Helper()
+	quiet := 0
+	for deadline := time.Now().Add(5 * time.Second); quiet < 5 && time.Now().Before(deadline); time.Sleep(20 * time.Millisecond) {
+		if _, err := os.Stat(directory); os.IsNotExist(err) {
+			quiet++
+			continue
+		}
+		quiet = 0
+		_ = os.RemoveAll(directory)
 	}
 }
 
