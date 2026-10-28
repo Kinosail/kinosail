@@ -9,26 +9,6 @@ import (
 	settingsops "github.com/MikeO7/kinosail/packages/settings"
 )
 
-type apiProfileInput struct {
-	Name, Password, Rating, AccessStart, AccessEnd string
-	Libraries                                      []string
-	Owner, Downloads, Transcode, Remote            bool
-}
-
-type apiProfile struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Rating      string   `json:"rating"`
-	AccessStart string   `json:"accessStart,omitempty"`
-	AccessEnd   string   `json:"accessEnd,omitempty"`
-	Owner       bool     `json:"owner"`
-	Downloads   bool     `json:"downloads"`
-	Transcode   bool     `json:"transcode"`
-	Remote      bool     `json:"remote"`
-	Libraries   []string `json:"libraries"`
-	MFAEnabled  bool     `json:"mfaEnabled"`
-}
-
 func registerAdminAPI(mux *http.ServeMux, api apiServices) {
 	owner := func(pattern string, handler http.Handler) { mux.Handle(pattern, api.auth.owner(handler)) }
 	owner("GET /api/v1/settings", apiSettings(api))
