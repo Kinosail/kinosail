@@ -162,7 +162,7 @@ func firstVideoTime(t *testing.T, ctx context.Context, ffprobe string, fragment 
 	if err := os.WriteFile(path, fragment, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	output, err := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "packet=pts_time", "-of", "csv=p=0", "-read_intervals", "%+#1", path).Output() //nolint:gosec // G204: ffprobe comes from LookPath and the path is a test temporary file.
+	output, err := exec.CommandContext(ctx, ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "packet=pts_time", "-of", "csv=p=0", "-read_intervals", "%+#1", path).Output()
 	value, parseErr := strconv.ParseFloat(strings.TrimSpace(strings.SplitN(string(output), "\n", 2)[0]), 64)
 	if err != nil || parseErr != nil {
 		t.Fatalf("segment has no readable video: %v %v %q", err, parseErr, output)
