@@ -32,7 +32,9 @@ func TestRealIFramePlaylistGivesAppleScrubbingThumbnails(t *testing.T) {
 		"-c:v", "libx264", "-g", "96", "-c:a", "aac", "-ac", "2", source).CombinedOutput(); err != nil {
 		t.Fatalf("generate fixture: %v: %s", err, output)
 	}
-	handler, id := formatTestItem(t, server.Config{Lifecycle: ctx, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
+	lifecycle, stop := context.WithCancel(ctx)
+	t.Cleanup(func() { stop(); settleDirectory(t, cache) })
+	handler, id := formatTestItem(t, server.Config{Lifecycle: lifecycle, MediaDir: media, CacheDir: cache, FFmpeg: ffmpeg, FFprobe: ffprobe})
 	var info struct{ Compatible string }
 	mustJSON(t, apiCall(t, handler, "", http.MethodGet, "/api/v1/items/"+id+"/playback?videoCodecs=h264&audioCodecs=aac", nil), &info)
 	master := string(speedTestGET(t, ctx, handler, info.Compatible))
