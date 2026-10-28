@@ -134,7 +134,7 @@ func playbackCompatibility(facts MediaFacts, client ClientCapabilities, audio Au
 		audio:     audio.Codec == "" || Includes(client.AudioCodecs, audio.Codec) && (client.MaxAudioChannels == 0 || audio.Channels <= client.MaxAudioChannels) && codecConditions(client.CodecProfiles, "Audio", facts, audio),
 		size:      (client.MaxWidth == 0 || width <= client.MaxWidth) && (client.MaxHeight == 0 || height <= client.MaxHeight),
 		bitrate:   limit == 0 || facts.Bitrate == 0 || facts.Bitrate <= limit,
-		hdr:       hdr == "" || hdr == "sdr" || Includes(client.HDRFormats, hdr),
+		hdr:       hdr == "" || hdr == "sdr" || Includes(client.HDRFormats, hdr) || Includes(client.HDRFormats, DolbyVisionBaseLayer(facts.Video)),
 	}
 }
 
