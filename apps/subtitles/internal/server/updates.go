@@ -8,10 +8,7 @@ import (
 	"github.com/MikeO7/kinosail/packages/updatecontrol"
 )
 
-type (
-	updateStatus  = updatecontrol.Status
-	updateChecker = updatecontrol.Checker
-)
+type updateChecker = updatecontrol.Checker
 
 func updateReleasePolicy() updatecontrol.Policy {
 	return updatecontrol.SubtitlesPolicy(database.SchemaVersion, configuration.SchemaVersion)

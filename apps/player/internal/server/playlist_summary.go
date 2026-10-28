@@ -24,5 +24,3 @@ func (store *listStore) playlistRule(request *http.Request, name string) (playli
 	defer store.mu.RUnlock()
 	return store.storage().PlaylistRule(currentViewer(request).ID, name)
 }
-
-var describePlaylistRule = catalog.DescribePlaylistRule
