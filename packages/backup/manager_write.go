@@ -48,7 +48,8 @@ func (manager *Manager) write(ctx context.Context) error {
 		manager.lastVerify, manager.lastError = manager.lastSuccess, ""
 	}
 	if err != nil {
-		manager.lastError = err.Error()
+		manager.lastError = backupFailureMessage(err)
+		return backupFailure{err}
 	}
-	return err
+	return nil
 }
