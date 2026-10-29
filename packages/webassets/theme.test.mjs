@@ -11,9 +11,10 @@ function loadTheme(saved, dark = false, storageError = false) {
   const meta = {setAttribute(name, value) { this[name] = value; }};
   const media = {matches: dark, addEventListener(name, listener) { this.change = listener; }};
   runInNewContext(source, {
-    document: {documentElement: root, readyState: 'complete', querySelector: () => meta, querySelectorAll: () => [control]},
+    document: {documentElement: root, readyState: 'complete', querySelector: () => meta, querySelectorAll: () => [control], addEventListener() {}},
     localStorage: {getItem() { if (storageError) throw new Error('Unavailable'); return saved; }, setItem(key, value) { writes.push([key, value]); }},
     HTMLInputElement: class {},
+    HTMLIFrameElement: class {},
     matchMedia: () => media,
     addEventListener() {},
   });
