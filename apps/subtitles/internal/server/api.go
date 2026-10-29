@@ -12,8 +12,6 @@ import (
 	"github.com/MikeO7/kinosail/packages/trustedhttps"
 )
 
-type clientItem = catalogapi.ClientItem
-
 type apiServices struct {
 	index       *libraryIndex
 	auth        *authentication

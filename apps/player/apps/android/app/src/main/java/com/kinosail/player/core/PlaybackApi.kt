@@ -24,6 +24,8 @@ data class PlaybackSource(
     val subtitleLanguage: String,
     val subtitlePickerLimited: Boolean,
     val trickplay: String? = null,
+    val markers: List<PlaybackMarker> = emptyList(),
+    val autoSkip: Set<String> = emptySet(),
 ) {
     fun sourceTime(position: Double, compatible: Boolean): Double =
         if (compatible) compatibleTimeline.sourceTime(position) else position
@@ -105,13 +107,35 @@ class PlaybackApi(
         val trickplay = value.text("trickplay", 16_384)
         require(trickplay.isEmpty() || trickplay.matches(Regex(
             "/trickplay/${Regex.escape(itemId)}/\\{second\\}(?:\\?playbackToken=[A-Za-z0-9._~%-]{1,12000})?"))) { INVALID_RESPONSE }
+        val primary = if (plan.text("markerMode", 32) == "server") plan["timeline"]?.let(MediaTimeline::parse) else null
+        val markerRows = value["markers"]?.let { it as? JsonArray ?: throw IllegalArgumentException(INVALID_RESPONSE) }
+            ?: JsonArray(emptyList())
+        require(markerRows.size <= 128) { INVALID_RESPONSE }
+        val markers = markerRows.map { raw ->
+            val marker = raw.fields(setOf("type", "label", "start", "end", "source"), setOf("type", "end"))
+            val type = marker.text("type", 32)
+            marker.text("label", 512)
+            val begin = if (marker["start"] == null) 0.0 else marker.number("start", 0.0..duration)
+            val end = marker.number("end", 0.0..duration)
+            require(type in PlaybackMarkers.TYPES && end > begin) { INVALID_RESPONSE }
+            PlaybackMarker(type, primary?.sourceTime(begin) ?: begin, primary?.sourceTime(end) ?: end)
+        }
+        require(markers.toSet().size == markers.size) { INVALID_RESPONSE }
+        val skipRows = value["autoSkip"]?.let { it as? JsonArray ?: throw IllegalArgumentException(INVALID_RESPONSE) }
+            ?: JsonArray(emptyList())
+        val autoSkip = skipRows.map { raw ->
+            val type = raw as? JsonPrimitive
+            require(type != null && type.isString && type.content in PlaybackMarkers.TYPES) { INVALID_RESPONSE }
+            type.content
+        }
+        require(autoSkip.size <= 5 && autoSkip.toSet().size == autoSkip.size) { INVALID_RESPONSE }
         val safeStart = if (start < duration) start else 0.0
         val compatibleTimeline = timeline ?: MediaTimeline(duration, duration)
         val playableDirect = directPath.takeUnless { it.isEmpty() || audioConversion && compatiblePath.isNotEmpty() }
         return PlaybackSource(itemId, playableDirect, compatiblePath.ifEmpty { null },
             type, compatibleTimeline.sourceDuration, safeStart, compatibleTimeline.presentationTime(safeStart),
             progressToken, compatibleTimeline, next.ifEmpty { null }, subtitles, language.ifEmpty { "en" }, limited,
-            trickplay.ifEmpty { null })
+            trickplay.ifEmpty { null }, markers, autoSkip.toSet())
     }
 
     companion object {

@@ -5,7 +5,7 @@ internal fun diagnosticOperation(rawPath: String): String {
     val parts = rawPath.substringBefore('?').split('/').filter(String::isNotEmpty)
     if (parts.size >= 3 && parts[0] == "api" && parts[1] == "v1") {
         if (parts[2] == "items" && parts.size >= 5 && parts[4] in setOf(
-                "playback", "playback-preferences", "progress", "list", "reader", "watch-progress")) {
+                "playback", "playback-preferences", "progress", "list", "reader", "watch-progress", "continue-watching")) {
             return "items-${parts[4]}"
         }
         return if (parts[2] in setOf("items", "library", "me", "session", "quick-connect", "shows",

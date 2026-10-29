@@ -5,18 +5,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.kinosail.player.R
 import com.kinosail.player.core.PersonalTabs
-import com.kinosail.player.core.Viewer
 import com.kinosail.player.core.interfaceText
 
 @Composable
@@ -29,7 +34,7 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
             NavigationRail {
                 destinations.forEach { destination ->
                     NavigationRailItem(selected = selected == destination, onClick = { navigate(destination) },
-                        icon = { DestinationIcon(destination) }, label = { Text(tabTitle(destination)) })
+                        icon = { DestinationIcon(destination) }, label = { TabLabel(destination) })
                 }
             }
             Box(Modifier.weight(1f)) { content() }
@@ -38,7 +43,7 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
             NavigationBar(windowInsets = WindowInsets(0, 0, 0, 0)) {
                 destinations.forEach { destination ->
                     NavigationBarItem(selected = selected == destination, onClick = { navigate(destination) },
-                        icon = { DestinationIcon(destination) }, label = { Text(tabTitle(destination)) })
+                        icon = { DestinationIcon(destination) }, label = { TabLabel(destination) })
                 }
             }
         }
@@ -46,7 +51,16 @@ internal fun LibraryNavigation(tabs: List<String>, selected: String, navigate: (
 }
 
 @Composable
+private fun TabLabel(destination: String) {
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density, minOf(density.fontScale, 1.15f))) {
+        Text(tabTitle(destination), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
 internal fun DestinationIcon(destination: String, tint: androidx.compose.ui.graphics.Color = LocalContentColor.current) {
+    if (destination == "settings") return Icon(Icons.Filled.Settings, contentDescription = null, tint = tint)
     val icon = when (destination) {
         "home" -> R.drawable.nav_home
         "shows" -> R.drawable.nav_shows
@@ -71,69 +85,50 @@ internal fun tabTitle(id: String) = interfaceText(if (id == "more") "More"
     else PersonalTabs.destinations.first { it.first == id }.second)
 
 @Composable
-internal fun MoreScreen(viewer: Viewer, tabs: List<String>, saveTabs: (List<String>) -> Unit,
-                        navigate: (String) -> Unit, signOut: () -> Unit) {
-    var editing by remember { mutableStateOf(false) }
+internal fun MoreScreen(tabs: List<String>, saveTabs: (List<String>) -> Unit, navigate: (String) -> Unit) {
+    var editing by rememberSaveable { mutableStateOf(false) }
     BackHandler(editing) { editing = false }
-    var thanks by remember { mutableStateOf(false) }
-    var notices by remember { mutableStateOf(false) }
+    if (editing) return TabEditor(tabs, saveTabs) { editing = false }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(if (editing) 12.dp else 20.dp)) {
-        Text(interfaceText(if (editing) "Customize tabs" else "More"), style = MaterialTheme.typography.headlineLarge)
-        if (editing) {
-            Text(interfaceText("Choose one to four destinations. More keeps everything else available."))
-            tabs.forEachIndexed { index, id ->
-                Column {
-                    Text(tabTitle(id), style = MaterialTheme.typography.titleMedium)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = { saveTabs(tabs.toMutableList().apply {
-                            java.util.Collections.swap(this, index, index - 1)
-                        }) }, enabled = index > 0) { Text("Move ${tabTitle(id)} earlier") }
-                        TextButton(onClick = { saveTabs(tabs.toMutableList().apply {
-                            java.util.Collections.swap(this, index, index + 1)
-                        }) }, enabled = index < tabs.lastIndex) { Text("Move ${tabTitle(id)} later") }
-                        TextButton(onClick = { saveTabs(tabs - id) }, enabled = tabs.size > 1) {
-                            Text("Remove ${tabTitle(id)}")
-                        }
+        verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        Text(interfaceText("More"), style = MaterialTheme.typography.headlineLarge, modifier = Modifier.semantics { heading() })
+        MoreGroup {
+            PersonalTabs.destinations.filterNot { it.first in tabs }.forEachIndexed { index, (id, title) ->
+                if (index > 0) MoreDivider()
+                MoreRow(interfaceText(title), icon = id) { navigate(id) }
+            }
+        }
+        MoreGroup { MoreRow(interfaceText("Customize tabs")) { editing = true } }
+    }
+}
+
+@Composable
+internal fun TabEditor(tabs: List<String>, saveTabs: (List<String>) -> Unit, done: () -> Unit) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(interfaceText("Customize tabs"), style = MaterialTheme.typography.headlineLarge, modifier = Modifier.semantics { heading() })
+        Text(interfaceText("Choose one to four destinations. More keeps everything else available."))
+        tabs.forEachIndexed { index, id ->
+            Column {
+                Text(tabTitle(id), style = MaterialTheme.typography.titleMedium)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = { saveTabs(tabs.toMutableList().apply {
+                        java.util.Collections.swap(this, index, index - 1)
+                    }) }, enabled = index > 0) { Text("Move ${tabTitle(id)} earlier") }
+                    TextButton(onClick = { saveTabs(tabs.toMutableList().apply {
+                        java.util.Collections.swap(this, index, index + 1)
+                    }) }, enabled = index < tabs.lastIndex) { Text("Move ${tabTitle(id)} later") }
+                    TextButton(onClick = { saveTabs(tabs - id) }, enabled = tabs.size > 1) {
+                        Text("Remove ${tabTitle(id)}")
                     }
                 }
             }
-            HorizontalDivider()
-            PersonalTabs.destinations.filterNot { it.first in tabs }.forEach { (id, title) ->
-                TextButton(onClick = { saveTabs(tabs + id) }, enabled = tabs.size < 4) { Text("Add ${interfaceText(title)}") }
-            }
-            TextButton(onClick = { saveTabs(PersonalTabs.defaults) }) { Text(interfaceText("Reset tabs")) }
-            Button(onClick = { editing = false }) { Text(interfaceText("Done")) }
-        } else {
-            MoreGroup {
-                PersonalTabs.destinations.filterNot { it.first in tabs }.forEachIndexed { index, (id, title) ->
-                    if (index > 0) MoreDivider()
-                    MoreRow(interfaceText(title), icon = id) { navigate(id) }
-                }
-            }
-            MoreGroup { MoreRow(interfaceText("Customize tabs")) { editing = true } }
-            Text(interfaceText("Settings"), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 12.dp))
-            MoreGroup {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(viewer.name, style = MaterialTheme.typography.titleMedium)
-                    Text(viewer.server, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                MoreDivider(icon = false)
-                MoreRow("Made possible by") { thanks = !thanks }
-                MoreDivider(icon = false)
-                MoreRow(interfaceText("Sign out"), color = com.kinosail.player.design.KinoColor.danger, chevron = false, onClick = signOut)
-            }
-            if (thanks) {
-                Text("Thank you to the people behind Jetpack Compose, Media3, and the Android libraries that bring Kinosail to this device. FFmpeg and Jellyfin FFmpeg power media tools on your Server.")
-                Text("This product uses the TMDB API but is not endorsed or certified by TMDB.")
-                TextButton(onClick = { notices = !notices }) { Text("Third-party notices") }
-                if (notices) {
-                    val context = LocalContext.current
-                    val text = remember { runCatching { context.assets.open("THIRD_PARTY_NOTICES.md")
-                        .bufferedReader().use { it.readText() } }.getOrNull() }
-                    Text(text ?: "Notices could not be opened. Reinstall Kinosail and try again.")
-                }
-            }
         }
+        HorizontalDivider()
+        PersonalTabs.destinations.filterNot { it.first in tabs }.forEach { (id, title) ->
+            TextButton(onClick = { saveTabs(tabs + id) }, enabled = tabs.size < 4) { Text("Add ${interfaceText(title)}") }
+        }
+        TextButton(onClick = { saveTabs(PersonalTabs.defaults) }) { Text(interfaceText("Reset tabs")) }
+        Button(onClick = done) { Text(interfaceText("Done")) }
     }
 }

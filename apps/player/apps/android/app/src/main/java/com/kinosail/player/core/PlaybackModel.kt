@@ -82,6 +82,13 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         private set
     var nextBusy by mutableStateOf(false)
         private set
+    internal var prompt by mutableStateOf<PlaybackPrompt?>(null)
+        private set
+    var autoNext by mutableStateOf(false)
+        private set
+    private var completed = false
+    private var promptJob: Job? = null
+    private var automaticStart = false
     val captionsAvailable get() = trackChoices.text.isNotEmpty()
     val captionsEnabled get() = trackChoices.captionsEnabled
     internal val audioTracks get() = trackChoices.audio
@@ -112,6 +119,8 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
     @androidx.annotation.OptIn(markerClass = [UnstableApi::class])
     fun start(item: CatalogItem, viewer: Viewer, tv: Boolean = false) {
         stop()
+        if (!automaticStart) automaticEpisodes = 0
+        automaticStart = false
         if (item.kind !in setOf("video", "music", "audiobook")) {
             message = "This title cannot be played here."
             return
@@ -207,6 +216,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                         if (state == Player.STATE_ENDED) {
                             checkpoint()
                             activeAudioItem = null
+                            if (!completed && !activeAudio) finishEpisode()
                         }
                     }
 
@@ -265,6 +275,9 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                 progressJob = viewModelScope.launch {
                     while (attempt == generation) { delay(15_000); checkpoint() }
                 }
+                if (!activeAudio) promptJob = viewModelScope.launch {
+                    while (attempt == generation && player === engine) { followMarkers(engine, plan); delay(250) }
+                }
                 if (tv) remoteJob = viewModelScope.launch { publishRemote(attempt, saved, viewer) }
             } catch (error: ServerHttpException) {
                 if (attempt == generation) fail(if (error.status == 401 || error.status == 403)
@@ -306,7 +319,49 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         retryable = canRetry
     }
 
-    private fun checkpoint() {
+    private fun followMarkers(engine: ExoPlayer, plan: PlaybackSource) {
+        val now = plan.sourceTime(engine.currentPosition.coerceAtLeast(0) / 1000.0, usingCompatible)
+        if (!completed && engine.playbackState != Player.STATE_ENDED) PlaybackMarkers.automatic(plan, now)?.let { marker ->
+            if (PlaybackMarkers.finishesEpisode(plan, marker)) finishEpisode() else seekSource(marker.end)
+        }
+        prompt = PlaybackMarkers.prompt(plan, now, completed)
+    }
+
+    private fun seekSource(seconds: Double) {
+        val engine = player ?: return
+        val plan = source ?: return
+        engine.seekTo(((if (usingCompatible) plan.compatibleTimeline.presentationTime(seconds) else seconds) * 1000).toLong())
+    }
+
+    private fun finishEpisode() {
+        completed = true
+        player?.pause()
+        checkpoint(watched = true)
+        prompt = source?.let { PlaybackMarkers.prompt(it, it.duration, true) }
+        if (source?.nextItemId == null) return
+        if (automaticEpisodes < PlaybackMarkers.AUTOMATIC_EPISODE_LIMIT) autoNext = true
+        else android.util.Log.i("KinosailPlayback", "operation=auto-next outcome=paused-for-viewer limit=${PlaybackMarkers.AUTOMATIC_EPISODE_LIMIT}")
+    }
+
+    internal fun choosePrompt(open: (CatalogItem) -> Unit) {
+        automaticEpisodes = 0
+        when (val chosen = prompt) {
+            is PlaybackPrompt.Skip -> seekSource(chosen.to)
+            PlaybackPrompt.Next -> playNext(open)
+            null -> Unit
+        }
+    }
+
+    internal fun advanceAutomatically(open: (CatalogItem) -> Unit) {
+        if (!autoNext) return
+        autoNext = false
+        automaticEpisodes++
+        automaticStart = true
+        android.util.Log.i("KinosailPlayback", "operation=auto-next outcome=started count=$automaticEpisodes")
+        playNext(open)
+    }
+
+    private fun checkpoint(watched: Boolean = false) {
         val engine = player ?: return
         val plan = source ?: return
         val savedJournal = journal ?: return
@@ -316,7 +371,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         if (engine.currentPosition <= 0 || progressConflict || progressRevision >= 9_007_199_254_740_991) return
         val seconds = plan.sourceTime(engine.currentPosition / 1000.0, usingCompatible)
             .coerceIn(0.0, 31_536_000.0)
-        val watched = engine.playbackState == Player.STATE_ENDED ||
+        val watched = watched || engine.playbackState == Player.STATE_ENDED ||
             engine.duration > 0 && engine.duration != C.TIME_UNSET &&
             engine.currentPosition >= engine.duration - 2_000
         if (lastRecorded?.let { abs(it.first - seconds) < 1.0 && it.second == watched } == true) return
@@ -426,6 +481,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
                     open(item)
                 }
             } catch (_: Exception) {
+                automaticStart = false
                 if (attempt == generation) message = "Could not load the next episode. Try again."
             } finally {
                 if (attempt == generation) nextBusy = false
@@ -480,6 +536,11 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
         generation++
         progressJob?.cancel()
         progressJob = null
+        promptJob?.cancel()
+        promptJob = null
+        prompt = null
+        autoNext = false
+        completed = false
         recoveryJob?.cancel()
         recoveryJob = null
         recoveryResetJob?.cancel()
@@ -583,6 +644,7 @@ class PlaybackModel(application: Application) : AndroidViewModel(application) {
 
     companion object {
         private var currentPhoneRef: WeakReference<PlaybackModel>? = null
+        private var automaticEpisodes = 0
         internal fun currentPhone(): PlaybackModel? = currentPhoneRef?.get()?.takeIf { !it.remoteTV && it.player != null }
             ?: AudioPlaybackService.phonePlayback()
         internal val SPEEDS = listOf(0.5f, 0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f, 2.5f, 3f)

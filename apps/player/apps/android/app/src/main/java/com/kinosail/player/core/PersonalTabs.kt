@@ -27,7 +27,7 @@ internal class PersonalTabs(context: Context) {
         val defaults = listOf("home", "shows", "movies", "search")
         val destinations = listOf("home" to "Home", "shows" to "TV Shows", "movies" to "Movies",
             "search" to "Search", "listen" to "Listen", "music" to "Music", "audiobooks" to "Audiobooks",
-            "books" to "Books", "photos" to "Photos", "collections" to "Collections", "list" to "My List", "all" to "Library")
+            "books" to "Books", "photos" to "Photos", "collections" to "Collections", "list" to "My List", "all" to "Library", "settings" to "Settings")
         private fun valid(tabs: List<String>) = tabs.size in 1..4 && tabs.distinct().size == tabs.size &&
             tabs.all { id -> destinations.any { it.first == id } }
     }

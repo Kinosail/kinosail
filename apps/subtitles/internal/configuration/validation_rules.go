@@ -217,6 +217,7 @@ func oneOf(value string, allowed ...string) error {
 func validLocalSubtitlePath(raw string) bool {
 	return raw != "" && len(raw) <= 4096 && utf8.ValidString(raw) && raw == strings.TrimSpace(raw) && !strings.HasPrefix(raw, "-") && !strings.Contains(raw, "://") && strings.IndexFunc(raw, unicode.IsControl) < 0
 }
+
 func validateLocalSubtitleBinary(raw string) error {
 	if !validLocalSubtitlePath(raw) || strings.ContainsAny(raw, "/\\") && !filepath.IsAbs(raw) {
 		return errors.New("must be an executable name or absolute local path")

@@ -21,7 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kinosail.player.design.KinoColor
 
@@ -32,14 +36,27 @@ internal fun MoreGroup(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 internal fun MoreRow(title: String, icon: String? = null, color: Color = KinoColor.text, chevron: Boolean = true,
-                     onClick: () -> Unit) {
+                     vector: ImageVector? = null, value: String? = null, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().heightIn(min = 60.dp).clickable(role = Role.Button, onClick = onClick)
         .padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(18.dp)) {
         if (icon != null) DestinationIcon(icon, KinoColor.signal)
-        Text(title, color = color, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        if (vector != null) Icon(vector, contentDescription = null, tint = KinoColor.signal)
+        if (value != null && LocalDensity.current.fontScale >= 1.5f) Column(Modifier.weight(1f).padding(vertical = 8.dp)) {
+            Text(title, color = color, style = MaterialTheme.typography.bodyLarge)
+            Text(value, color = KinoColor.muted, style = MaterialTheme.typography.bodyLarge)
+        } else {
+            Text(title, color = color, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            if (value != null) Text(value, color = KinoColor.muted, style = MaterialTheme.typography.bodyLarge)
+        }
         if (chevron) Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = KinoColor.muted)
     }
+}
+
+@Composable
+internal fun MoreSection(title: String) {
+    Text(title, color = KinoColor.muted, style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(start = 18.dp, top = 12.dp).semantics { heading() })
 }
 
 @Composable

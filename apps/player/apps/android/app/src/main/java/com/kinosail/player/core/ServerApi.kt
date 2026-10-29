@@ -228,6 +228,13 @@ class ServerApi(
             token = checkedCredential(token, 512), viewerId = viewerId, expected = setOf(200)).second
     }
 
+    internal fun account(path: String, method: String, token: String, viewerId: String, body: JsonObject? = null,
+                         expected: Set<Int> = setOf(200)): Pair<Int, kotlinx.serialization.json.JsonElement> {
+        require(ACCOUNT_PATH.matches(path) && method in setOf("GET", "PUT", "POST", "DELETE") &&
+            viewerId.matches(Regex("[A-Za-z0-9_-]{1,128}"))) { "Invalid account request." }
+        return requestWithStatus(path, method, body, checkedCredential(token, 512), viewerId, expected)
+    }
+
     private fun request(path: String, method: String, body: JsonObject? = null, token: String? = null,
                         expected: Int = 200): kotlinx.serialization.json.JsonElement =
         requestWithStatus(path, method, body, token, expected = setOf(expected)).second
@@ -312,6 +319,7 @@ class ServerApi(
 
     companion object {
         private const val INVALID_RESPONSE = "The Server returned an invalid response."
+        private val ACCOUNT_PATH = Regex("/api/v1/(me/media-preferences|quick-connect/[0-9]{6}|items/[A-Za-z0-9_-]{1,128}/continue-watching)")
 
         fun checkedCredential(value: String, max: Int): String {
             require(value.isNotEmpty() && value.length <= max && value.all { it.code in 33..126 }) {

@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,6 +61,23 @@ internal fun PlaybackHeader(item: CatalogItem, tv: Boolean, close: () -> Unit, a
 }
 
 internal val PlaybackControllerHeight = 96.dp
+
+@Composable
+internal fun PlaybackPromptButton(prompt: PlaybackPrompt, tv: Boolean, controlsVisible: Boolean, focus: FocusRequester,
+                                  onClick: () -> Unit) {
+    Box(Modifier.fillMaxSize().safeDrawingPadding()
+        .padding(end = if (tv) 48.dp else 24.dp, bottom = (if (controlsVisible) PlaybackControllerHeight else 0.dp) + 24.dp),
+        contentAlignment = Alignment.BottomEnd) {
+        val label = interfaceText(prompt.title)
+        if (tv) androidx.tv.material3.Button(onClick = onClick, modifier = Modifier.focusRequester(focus),
+            colors = androidx.tv.material3.ButtonDefaults.colors(containerColor = Color.White, contentColor = Color.Black)) {
+            androidx.tv.material3.Text(label, fontWeight = FontWeight.SemiBold)
+        } else androidx.compose.material3.Button(onClick = onClick, modifier = Modifier.focusRequester(focus),
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)) {
+            Text(label, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
 
 @Composable
 internal fun PlaybackTopFade(tv: Boolean) {

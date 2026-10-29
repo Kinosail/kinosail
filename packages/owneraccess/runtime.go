@@ -228,6 +228,7 @@ func (m *Manager) stopLocked() {
 		r.close()
 	}
 }
+
 func (r *runtime) close() {
 	r.cancel()
 	if r.server != nil {
