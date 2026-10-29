@@ -11,7 +11,7 @@ import (
 )
 
 func (fixture TranscodeFixture) AdaptiveHLSPublishesACompleteTruthfulLadder(t *testing.T, segmentSeconds string, appArguments ...string) {
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

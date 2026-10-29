@@ -40,7 +40,7 @@ func HLSScheduler(t *testing.T, newHandler func(HLSSchedulerConfig) http.Handler
 
 func (fixture HLSSchedulerFixture) LimitsConcurrentFFmpegWork(t *testing.T) {
 	t.Helper()
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	for _, name := range []string{"One.mkv", "Two.mkv", "Three.mkv"} {
 		if err := os.WriteFile(filepath.Join(media, name), []byte("video"), 0o600); err != nil {
 			t.Fatal(err)
@@ -88,7 +88,7 @@ func (fixture HLSSchedulerFixture) PublishesOneCompleteStableMaster(t *testing.T
 	t.Helper()
 	previous := runtime.GOMAXPROCS(8)
 	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -121,7 +121,7 @@ func (fixture HLSSchedulerFixture) PublishesOneCompleteStableMaster(t *testing.T
 
 func (fixture HLSSchedulerFixture) FallsBackToSoftwareAfterHardwareFailure(t *testing.T) {
 	t.Helper()
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

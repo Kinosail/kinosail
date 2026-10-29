@@ -14,7 +14,7 @@ import (
 func (suite SettingsRegression) OwnerCanPreferHighQualityTranscoding(t *testing.T) {
 	t.Parallel()
 
-	mediaDir, dataDir, cacheDir := t.TempDir(), t.TempDir(), t.TempDir()
+	mediaDir, dataDir, cacheDir := t.TempDir(), t.TempDir(), CacheDir(t)
 	if err := os.WriteFile(filepath.Join(mediaDir, "Brazil.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

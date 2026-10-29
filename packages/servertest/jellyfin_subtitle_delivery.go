@@ -60,7 +60,7 @@ func (fixture EmbeddedSubtitleFixture) JellyfinSubtitleChoicesUseConvertedTextIn
 
 func (fixture EmbeddedSubtitleFixture) jellyfinSubtitleServer(t *testing.T) http.Handler {
 	t.Helper()
-	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache, tools := t.TempDir(), t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

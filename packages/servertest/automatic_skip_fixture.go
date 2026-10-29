@@ -41,7 +41,7 @@ func (fixture AutomaticSkipFixture) server(t *testing.T) (http.Handler, string, 
 
 func (fixture AutomaticSkipFixture) serverWithFrames(t *testing.T, frames string) (http.Handler, string, string, string, string, string) {
 	t.Helper()
-	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache, tools := t.TempDir(), t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Episode.S01E01.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}

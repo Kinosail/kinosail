@@ -13,7 +13,7 @@ import (
 )
 
 func (fixture DownloadFixture) TranscodedDownloadBecomesIntegrityCheckedReadyOfflineFile(t *testing.T) {
-	media, data, cache, tools := t.TempDir(), t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache, tools := t.TempDir(), t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mkv"), []byte("source"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","width":1920,
 }
 
 func (fixture DownloadFixture) RestartDoesNotTrustMissingOrChangedReadyDownload(t *testing.T) {
-	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache := t.TempDir(), t.TempDir(), CacheDir(t)
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("original-media"), 0o600); err != nil {
 		t.Fatal(err)
 	}

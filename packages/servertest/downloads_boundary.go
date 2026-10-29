@@ -36,7 +36,7 @@ func DownloadsBoundaryContract(t *testing.T, fixture DownloadFixture) {
 }
 
 func OwnerCanCreateIdempotentOriginalDownloadAndRemoveIt(t *testing.T, fixture DownloadFixture) {
-	media, data, cache := t.TempDir(), t.TempDir(), t.TempDir()
+	media, data, cache := t.TempDir(), t.TempDir(), CacheDir(t)
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("original-media"), 0o600); err != nil {
 		t.Fatal(err)
 	}

@@ -15,7 +15,7 @@ import (
 
 func (fixture TranscodeFixture) CompatiblePlaybackGeneratesAnAlignedSeekableSuffix(t *testing.T, offset, seconds string) {
 	t.Parallel()
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +40,7 @@ printf '%s' '{"streams":[{"codec_type":"video","codec_name":"h264","profile":"Hi
 
 func (fixture TranscodeFixture) CompatiblePlaybackRejectsInvalidSeekOffsetsWithoutEncoding(t *testing.T) {
 	t.Parallel()
-	media, cache, tools := t.TempDir(), t.TempDir(), t.TempDir()
+	media, cache, tools := t.TempDir(), CacheDir(t), t.TempDir()
 	if err := os.WriteFile(filepath.Join(media, "Film.mp4"), []byte("video"), 0o600); err != nil {
 		t.Fatal(err)
 	}
