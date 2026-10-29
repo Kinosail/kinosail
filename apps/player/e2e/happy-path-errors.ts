@@ -48,7 +48,10 @@ export function captureHappyPathErrors(page: Page, browser: string) {
       if (source.origin === current.origin && source.pathname === "/api/v1/me" && !source.search && current.pathname === "/login" &&
           /^Failed to load resource: the server responded with a status of 401 \([^)]*\)$/.test(message.text())) return;
     } catch {   }
-    record(message.text());
+    const location = message.location();
+    let source = "";
+    try { source = location.url ? ` at ${new URL(location.url).pathname}:${location.lineNumber}:${location.columnNumber}` : ""; } catch {   }
+    record(message.text() + source);
   });
   page.on("pageerror", error => record(error.message, error.name, error.stack ?? ""));
   page.on("request", request => {
